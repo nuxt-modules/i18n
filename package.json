@@ -4,6 +4,7 @@
   "description": "i18n for Nuxt",
   "main": "lib/module.js",
   "license": "MIT",
+  "repository": "https://github.com/paulgv/nuxt-i18n",
   "scripts": {
     "eslint": "eslint --ext .js ./lib"
   },
