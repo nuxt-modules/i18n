@@ -1,6 +1,6 @@
 # nuxt-i18n
 
-> Add i18n to your Nuxt application
+> Add i18n to your [Nuxt](https://github.com/nuxt/nuxt.js) application
 
 This module attempts to provide i18n features to Nuxt applications by installing and enabling [vue-i18n](https://github.com/kazupon/vue-i18n) as well as providing routing helpers to help you customize URLs for your languages.
 
