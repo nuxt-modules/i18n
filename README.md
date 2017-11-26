@@ -81,19 +81,21 @@ module.exports = {
         }
       ],
       defaultLocale: 'en',
-      fallbackLocale: 'en',
-      messages: {
-        fr: {
-          home: 'Accueil',
-          about: 'À propos',
-          category: 'Catégorie'
+      vueI18n: {
+        messages: {
+          fr: {
+            home: 'Accueil',
+            about: 'À propos',
+            category: 'Catégorie'
+          },
+          en: {
+            home: 'Homepage',
+            about: 'About us',
+            category: 'Category'
+          }
         },
-        en: {
-          home: 'Homepage',
-          about: 'About us',
-          category: 'Category'
-        }
-      },
+        fallbackLocale: 'en',
+      }
       routes: {
         about: {
           fr: '/a-propos',
@@ -184,10 +186,9 @@ In the app, you'll need to preserve the language option when showing links. To d
 
 ## Options
 
-| Option           | Type   | Description                                                                                                          |
-|------------------|--------|----------------------------------------------------------------------------------------------------------------------|
-| `locales`        | Array  | A list of objects that describes the locales available in your app, each object should contain at least a `code` key |
-| `defaultLocale`  | String | The app's default locale, URLs for this language won't be prefixed with the locale code                              |
-| `fallbackLocale` | String | Fallback locale used by vue-i18n when no message is available in the current language                                |
-| `messages`       | Object | Translated message to use with vue-i18n                                                                              |
-| `routes`         | Object | Custom routing configuration, if routes are omitted, Nuxt's default routes are used                                  |
+| Option          | Type   | Description                                                                                                                                     |
+|-----------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `locales`       | Array  | A list of objects that describes the locales available in your app, each object should contain at least a `code` key                            |
+| `defaultLocale` | String | The app's default locale, URLs for this language won't be prefixed with the locale code                                                         |
+| `vueI18n`       | Object | Configuration options for vue-i18n, refer to [the doc](http://kazupon.github.io/vue-i18n/en/api.html#constructor-options) for supported options |
+| `routes`        | Object | Custom routing configuration, if routes are omitted, Nuxt's default routes are used                                                             |
