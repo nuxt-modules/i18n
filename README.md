@@ -7,6 +7,10 @@ This module attempts to provide i18n features to Nuxt applications by installing
 > This module is a compilation of work that was developed to address some specific needs and it might not work as expected in other setups.
 > Any help to improve the module and/or its documentation would be very appreciated! 
 
+## Demo
+
+Have a look at the example project to see the module in action: [nuxt-i18n-example](https://github.com/paulgv/nuxt-i18n-example)
+
 ## Install
 
 Install the module using Yarn or NPM:
