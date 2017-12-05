@@ -1,71 +1,45 @@
 # nuxt-i18n
+[![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
+[![npm](https://img.shields.io/npm/dt/nuxt-i18n.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
+[![CircleCI](https://img.shields.io/circleci/project/github/paulgv/nuxt-i18n.svg?style=flat-square)](https://circleci.com/gh/paulgv/nuxt-i18n)
+[![Codecov](https://img.shields.io/codecov/c/github/paulgv/nuxt-i18n.svg?style=flat-square)](https://codecov.io/gh/paulgv/nuxt-i18n)
+[![Dependencies](https://david-dm.org/paulgv/nuxt-i18n/status.svg?style=flat-square)](https://david-dm.org/paulgv/nuxt-i18n)
+[![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
 
-> Add i18n to your [Nuxt](https://github.com/nuxt/nuxt.js) application
+> i18n for [Nuxt](https://github.com/nuxt/nuxt.js)
+
+[📖 **Release Notes**](./CHANGELOG.md)
+
+## Features
 
 This module attempts to provide i18n features to Nuxt applications by installing and enabling [vue-i18n](https://github.com/kazupon/vue-i18n) as well as providing routing helpers to help you customize URLs for your languages.
 
-> This module is a compilation of work that was developed to address some specific needs and it might not work as expected in other setups.
-> Any help to improve the module and/or its documentation would be very appreciated! 
-
-## Demo
-
-Have a look at the example project to see the module in action: [nuxt-i18n-example](https://github.com/paulgv/nuxt-i18n-example)
-
-## Install
-
-Install the module using Yarn or NPM:
+## Setup
+- Add `nuxt-i18n` dependency using yarn or npm to your project
 
 ```sh
-yarn add nuxt-i18n # or npm i nuxt-i18n -S
+yarn add nuxt-i18n
+# npm i nuxt-i18n -S
 ```
 
-Add **nuxt-i18n** to Nuxt's config:
+- Add `nuxt-i18n` to `modules` section of `nuxt.config.js`
 
 ```js
-// nuxt.config.js
-
-module.exports = {
-  modules: ['nuxt-i18n']
-}
-```
-
-## Configuration
-
-The module can be configured directly in the `modules` key:
-
-```js
-// nuxt.config.js
-
-module.exports = {
+{
   modules: [
-    ['nuxt-i18n', {
-      // options
-    }]
-  ]
+    ['nuxt-i18n', { /* module options */ }],
+ ]
 }
 ```
 
-Or via the `i18n` key:
+## Usage
+
+### Available languages
+
+To configure your app's languages, use the `locales` option and the `defaultLocale` option if needed:
 
 ```js
-// nuxt.config.js
-
-module.exports = {
-  modules: ['nuxt-i18n'],
-  i18n: {
-    // options
-  }
-}
-```
-
-## Configuration example
-
-Here's an example configuration for an app that supports English and French, with English as the default and fallback language and some custom routes. You'll probably want to split the configuration accross multiple files to prevent bloating `nuxt.config.js`.
-
-```js
-// nuxt.config.js
-
-module.exports = {
+{
   modules: [
     ['nuxt-i18n', {
       locales: [
@@ -81,6 +55,32 @@ module.exports = {
         }
       ],
       defaultLocale: 'en',
+      // ...
+    }]
+  ]
+}
+```
+These locales are used to generate the app's routes, the `code` will be used as the URL prefix (except for the default locale).
+
+`locales` and `defaultLocale` are both added to `app.i18n` which means you can refer to them in any component via the `$i18n` property:
+
+```vue
+<nuxt-link
+  v-for="(locale, index) in $i18n.locales"
+  v-if="locale.code !== $i18n.locale"
+  :key="index"
+  :exact="true"
+  :to="switchLocalePath(locale.code)">{{ locale.name }}</nuxt-link>
+```
+
+### Translations
+
+Messages translation is achieved by **vue-i18n** which you can configure via the `vueI18n` option:
+
+```js
+{
+  modules: [
+    ['nuxt-i18n', {
       vueI18n: {
         messages: {
           fr: {
@@ -94,36 +94,23 @@ module.exports = {
             category: 'Category'
           }
         },
-        fallbackLocale: 'en',
+        fallbackLocale: 'en'
       }
-      routes: {
-        about: {
-          fr: '/a-propos',
-          en: '/about-us'
-        },
-        category: {
-          fr: '/categorie'
-        },
-        'category-slug': {
-          fr: '/categorie/:slug'
-        }
-      }
+      // ...
     }]
   ]
 }
 ```
 
-## Usage
-
-### Translations
-
-Messages translation is achieved by **vue-i18n** using the `messages` passed in the module's configuration. Refer to [vue-i18n's doc](https://kazupon.github.io/vue-i18n/en/) for more info.
+Refer to [vue-i18n's doc](https://kazupon.github.io/vue-i18n/en/) for more info.
 
 ### Routing
 
-This module overrides Nuxt default routes to add locale prefixes to every page.
+**nuxt-i18n** overrides Nuxt default routes to add locale prefixes to every URL.
 
-Let's say your app supports English (default) and French, and you have this files structure for your pages:
+> If you define a `defaultLocale`, the URL prefix is omitted for this language
+
+Say your app supports English (as the default language) and French, and you have this files structure for your pages:
 
 ```
 pages/
@@ -158,30 +145,32 @@ The resulting routes would look like this:
 ]
 ```
 
-You can also customize the path for each route/language using the `routes` key in your configuration (see configuration example above).
+You can also customize the path for each route/language using the `routes` key in your configuration, this can be useful if you want to have different paths depending on the user's language (see configuration example below).
 
-In the app, you'll need to preserve the language option when showing links. To do this, this module registers a global mixin that provides some helper functions:
+In the app, you'll need to preserve the language when generating URLs. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
 
-- `getLocalizedRoute` – Returns the localized URL for a given page. The first parameter can be either the name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
+- `localePath` – Returns the localized URL for a given page. The first parameter can be either the name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
 
 ```vue
-<nuxt-link :to="getLocalizedRoute('index')">{{ $t('home') }}</nuxt-link>
-<nuxt-link :to="getLocalizedRoute('index', 'en')">Homepage in English</nuxt-link>
+<nuxt-link :to="localePath('index')">{{ $t('home') }}</nuxt-link>
+<nuxt-link :to="localePath('index', 'en')">Homepage in English</nuxt-link>
 <nuxt-link
-  :to="getLocalizedRoute({ name: 'category-slug', params: { slug: category.slug } })">
+  :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
   {{ category.title }}
 </nuxt-link>
 ```
 
-> Note that `getLocalizedRoute` uses the route's base name to generate the localized URL. The base name corresponds to the names Nuxt generates when parsing your `pages/` directory, more info in [Nuxt's doc](https://nuxtjs.org/guide/routing).
+> Note that `localePath` uses the route's base name to generate the localized URL. The base name corresponds to the names Nuxt generates when parsing your `pages/` directory, more info in [Nuxt's doc](https://nuxtjs.org/guide/routing).
 
 
-- `getSwitchLocaleRoute` – Returns a link to the current page for another language passed:
+- `switchLocalePath` – Returns a link to the current page in another language:
 
 ```vue
-<nuxt-link :to="getSwitchLocaleRoute('en')">English</nuxt-link>
-<nuxt-link :to="getSwitchLocaleRoute('fr')">Français</nuxt-link>
+<nuxt-link :to="switchLocalePath('en')">English</nuxt-link>
+<nuxt-link :to="switchLocalePath('fr')">Français</nuxt-link>
 ```
+
+> You might want to add `:exact=true` to your `<nuxt-link>` to prevent the `active-class` from being added somewhere you did not expect
 
 
 ## Options
@@ -192,3 +181,65 @@ In the app, you'll need to preserve the language option when showing links. To d
 | `defaultLocale` | String | The app's default locale, URLs for this language won't be prefixed with the locale code                                                         |
 | `vueI18n`       | Object | Configuration options for vue-i18n, refer to [the doc](http://kazupon.github.io/vue-i18n/en/api.html#constructor-options) for supported options |
 | `routes`        | Object | Custom routing configuration, if routes are omitted, Nuxt's default routes are used                                                             |
+
+
+## Configuration example
+
+Here's an example configuration for an app that supports English and French, with English as the default and fallback language and some custom routes. You'll probably want to split the configuration accross multiple files to avoid bloating `nuxt.config.js`.
+
+```js
+// nuxt.config.js
+
+module.exports = {
+  modules: [
+    ['nuxt-i18n', {
+      locales: [
+        {
+          code: 'en',
+          iso: 'en-US',
+          name: 'English'
+        },
+        {
+          code: 'fr',
+          iso: 'fr-FR',
+          name: 'Français'
+        }
+      ],
+      defaultLocale: 'en',
+      vueI18n: {
+        messages: {
+          fr: {
+            home: 'Accueil',
+            about: 'À propos',
+            category: 'Catégorie'
+          },
+          en: {
+            home: 'Homepage',
+            about: 'About us',
+            category: 'Category'
+          }
+        },
+        fallbackLocale: 'en'
+      },
+      routes: {
+        about: {
+          fr: '/a-propos',
+          en: '/about-us'
+        },
+        category: {
+          fr: '/categorie'
+        },
+        'category-slug': {
+          fr: '/categorie/:slug'
+        }
+      }
+    }]
+  ]
+}
+```
+
+## License
+
+[MIT License](./LICENSE)
+
+Copyright (c) Paul Gascou-Vaillancourt (@paulgv)
