@@ -26,7 +26,7 @@ describe('Module', () => {
 
   afterAll(async () => {
     // Close all opened resources
-    // await nuxt.close()
+    await nuxt.close()
   })
 
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {
