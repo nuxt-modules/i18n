@@ -23,11 +23,13 @@ module.exports = {
         messages: {
           fr: {
             home: 'Accueil',
-            about: 'À propos'
+            about: 'À propos',
+            posts: 'Articles'
           },
           en: {
             home: 'Homepage',
-            about: 'About us'
+            about: 'About us',
+            posts: 'Posts'
           }
         },
         fallbackLocale: 'en'
