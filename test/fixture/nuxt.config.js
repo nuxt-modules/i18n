@@ -36,14 +36,11 @@ module.exports = {
         about: {
           fr: '/a-propos',
           en: '/about-us'
-        },
-        category: {
-          fr: '/categorie'
-        },
-        'category-slug': {
-          fr: '/categorie/:slug'
         }
-      }
+      },
+      ignoreRoutes: [
+        'fr-notlocalized'
+      ]
     }]
   ]
 }
