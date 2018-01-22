@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* Add ignoreRoutes option ([56ec3db](https://github.com/paulgv/nuxt-i18n/commit/56ec3db))
+* Add ignorePaths option ([1a0fc57](https://github.com/paulgv/nuxt-i18n/commit/1a0fc57))
 
 
 
