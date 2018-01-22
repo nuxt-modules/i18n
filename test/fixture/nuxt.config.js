@@ -40,8 +40,8 @@ module.exports = {
           en: '/about-us'
         }
       },
-      ignoreRoutes: [
-        'fr-notlocalized'
+      ignorePaths: [
+        '/fr/notlocalized'
       ]
     }]
   ]

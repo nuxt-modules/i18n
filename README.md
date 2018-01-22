@@ -181,6 +181,7 @@ In the app, you'll need to preserve the language when generating URLs. To do thi
 | `defaultLocale` | String | The app's default locale, URLs for this language won't be prefixed with the locale code                                                         |
 | `vueI18n`       | Object | Configuration options for vue-i18n, refer to [the doc](http://kazupon.github.io/vue-i18n/en/api.html#constructor-options) for supported options |
 | `routes`        | Object | Custom routing configuration, if routes are omitted, Nuxt's default routes are used                                                             |
+| `ignorePaths`   | Array  | A list of paths that should not be localized                                                                                                    |
 
 
 ## Configuration example
@@ -232,7 +233,10 @@ module.exports = {
         'category-slug': {
           fr: '/categorie/:slug'
         }
-      }
+      },
+      ignorePaths: [
+        '/fr/notlocalized'
+      ]
     }]
   ]
 }
