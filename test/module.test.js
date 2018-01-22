@@ -57,6 +57,27 @@ describe('Module', () => {
     expect(html).toContain('<a href="/fr/">Accueil</a>')
   })
 
+  test('/fr/notlocalized contains FR text', async () => {
+    let html = await get('/fr/notlocalized')
+    expect(html).toContain('FR only')
+  })
+
+  test('/notlocalized & /fr/fr/notlocalized return 404', async () => {
+    let response
+    try {
+      response = await get('/notlocalized')
+    } catch (error) {
+      response = error
+    }
+    expect(response.statusCode).toBe(404)
+    try {
+      response = await get('/fr/fr/notlocalized')
+    } catch (error) {
+      response = error
+    }
+    expect(response.statusCode).toBe(404)
+  })
+
   test('/posts contains EN text, link to /fr/posts/ & link to /posts/my-slug', async () => {
     let html = await get('/posts')
     expect(html).toContain('Posts')
