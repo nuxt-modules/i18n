@@ -41,7 +41,7 @@ module.exports = {
         }
       },
       ignoreRoutes: [
-        'fr-notlocalized'
+        '/fr/notlocalized'
       ]
     }]
   ]

@@ -62,10 +62,16 @@ describe('Module', () => {
     expect(html).toContain('FR only')
   })
 
-  test('/notlocalized returns 404', async () => {
+  test('/notlocalized & /fr/fr/notlocalized return 404', async () => {
     let response
     try {
       response = await get('/notlocalized')
+    } catch (error) {
+      response = error
+    }
+    expect(response.statusCode).toBe(404)
+    try {
+      response = await get('/fr/fr/notlocalized')
     } catch (error) {
       response = error
     }
