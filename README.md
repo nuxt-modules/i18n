@@ -230,7 +230,7 @@ module.exports = {
         category: {
           fr: '/categorie'
         },
-        'category-slug': {
+        'category/_slug': {
           fr: '/categorie/:slug'
         }
       },
