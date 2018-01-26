@@ -2,20 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="1.2.0"></a>
-# [1.2.0](https://github.com/paulgv/nuxt-i18n/compare/v1.0.2...v1.2.0) (2018-01-26)
-
-
-### Bug Fixes
-
-* Remove pages/ prefix for routes aliases options ([c26cf16](https://github.com/paulgv/nuxt-i18n/commit/c26cf16))
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/paulgv/nuxt-i18n/compare/v1.0.2...v2.0.0) (2018-01-26)
 
 
 ### Features
 
-* Add ignoreRoutes option ([56ec3db](https://github.com/paulgv/nuxt-i18n/commit/56ec3db))
+* Improved dynamic nested routes support ([e08935e](https://github.com/paulgv/nuxt-i18n/commit/e08935e))
 
+### BREAKING CHANGES
 
+* Custom routes translations now use routes `chunkName` instead of `name`, you should update your config accordlingly.
 
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/paulgv/nuxt-i18n/compare/v1.0.2...v1.1.0) (2018-01-22)
