@@ -35,7 +35,7 @@ module.exports = {
         fallbackLocale: 'en'
       },
       routes: {
-        about: {
+        'pages/about': {
           fr: '/a-propos',
           en: '/about-us'
         }

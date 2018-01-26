@@ -1,6 +1,6 @@
 {
   "name": "nuxt-i18n",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "i18n for Nuxt",
   "license": "MIT",
   "contributors": [
@@ -38,6 +38,6 @@
     "vue-i18n-extensions": "^0.1.0"
   },
   "devDependencies": {
-    "nuxt-module-builder": "latest"
+    "nuxt-module-builder": "^1.0.0"
   }
 }
