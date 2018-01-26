@@ -38,6 +38,6 @@
     "vue-i18n-extensions": "^0.1.0"
   },
   "devDependencies": {
-    "nuxt-module-builder": "latest"
+    "nuxt-module-builder": "^1.0.0"
   }
 }
