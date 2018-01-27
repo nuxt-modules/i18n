@@ -10,22 +10,16 @@ const config = require('./fixture/nuxt.config')
 const url = path => `http://localhost:${process.env.PORT}${path}`
 const get = path => request(url(path))
 
-describe('Module', () => {
+describe('basic', () => {
   let nuxt
 
   beforeAll(async () => {
-    config.modules.unshift(function () {
-      // Add test specific test only hooks on nuxt life cycle
-    })
-
-    // Build a fresh nuxt
     nuxt = new Nuxt(config)
     await new Builder(nuxt).build()
     await nuxt.listen(process.env.PORT)
   })
 
   afterAll(async () => {
-    // Close all opened resources
     await nuxt.close()
   })
 
@@ -106,5 +100,15 @@ describe('Module', () => {
     expect(html).toContain('<h1>my-slug</h1>')
     expect(html).toContain('<a href="/posts/my-slug">English</a>')
     expect(html).toContain('<a href="/fr/posts/">index</a>')
+  })
+
+  test('/dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3', async () => {
+    let html = await get('/dynamicNested/1/2/3')
+    expect(html).toContain('<a href="/fr/imbrication-dynamique/1/2/3">Français</a>')
+  })
+
+  test('/fr/imbrication-dynamique/1/2/3 contains link to /dynamicNested/1/2/3', async () => {
+    let html = await get('/fr/imbrication-dynamique/1/2/3')
+    expect(html).toContain('<a href="/dynamicNested/1/2/3">English</a>')
   })
 })
