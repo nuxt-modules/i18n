@@ -38,6 +38,18 @@
     "vue-i18n-extensions": "^0.1.0"
   },
   "devDependencies": {
-    "nuxt-module-builder": "^1.0.0"
+    "nuxt": "latest",
+    "codecov": "latest",
+    "eslint": "latest",
+    "eslint-config-standard": "latest",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jest": "latest",
+    "eslint-plugin-node": "latest",
+    "eslint-plugin-promise": "latest",
+    "eslint-plugin-standard": "latest",
+    "eslint-plugin-vue": "latest",
+    "jest": "latest",
+    "jsdom": "latest",
+    "standard-version": "latest"
   }
 }
