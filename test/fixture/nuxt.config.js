@@ -19,6 +19,8 @@ module.exports = {
         }
       ],
       defaultLocale: 'en',
+      noPrefixDefaultLocale: true,
+      redirectRootToLocale: 'en',
       vueI18n: {
         messages: {
           fr: {
