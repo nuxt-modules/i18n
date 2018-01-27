@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 <a name="2.0.0"></a>
-# [2.0.0](https://github.com/paulgv/nuxt-i18n/compare/v1.0.2...v2.0.0) (2018-01-26)
+# [2.0.0](https://github.com/paulgv/nuxt-i18n/compare/v1.1.0...v2.0.0) (2018-01-26)
 
 
 ### Features
