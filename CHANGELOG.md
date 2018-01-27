@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/paulgv/nuxt-i18n/compare/v2.0.1...v2.1.0) (2018-01-27)
+
+
+### Features
+
+* Add noPrefixDefaultLocale option ([dac14ae](https://github.com/paulgv/nuxt-i18n/commit/dac14ae))
+* Add redirectRootToLocale option ([65cacfd](https://github.com/paulgv/nuxt-i18n/commit/65cacfd))
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/paulgv/nuxt-i18n/compare/v2.0.0...v2.0.1) (2018-01-27)
 
