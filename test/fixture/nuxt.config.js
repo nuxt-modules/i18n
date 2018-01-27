@@ -35,9 +35,12 @@ module.exports = {
         fallbackLocale: 'en'
       },
       routes: {
-        'pages/about': {
+        about: {
           fr: '/a-propos',
           en: '/about-us'
+        },
+        'dynamicNested/_category': {
+          fr: 'imbrication-dynamique/:category'
         }
       },
       ignorePaths: [
