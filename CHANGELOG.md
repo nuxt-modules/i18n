@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/paulgv/nuxt-i18n/compare/v2.1.0...v2.1.1) (2018-02-08)
+
+
+### Bug Fixes
+
+* Fix for URLs with hashes ([#13](https://github.com/paulgv/nuxt-i18n/issues/13)) ([2e0649a](https://github.com/paulgv/nuxt-i18n/commit/2e0649a)), closes [#12](https://github.com/paulgv/nuxt-i18n/issues/12)
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/paulgv/nuxt-i18n/compare/v2.0.1...v2.1.0) (2018-01-27)
 
