@@ -195,6 +195,7 @@ To customize SEO metadata for any page, simply declare your own `head ()` method
 | `ignorePaths`           | Array   |         | A list of paths that should not be localized                                                                                                    |
 | `noPrefixDefaultLocale` | Boolean | `true`  | By default, paths generated for the default language don't contain a locale prefix, set this option to `false` to disable this behavior         |
 | `redirectRootToLocale`  | String  |         | Specify a locale to which the user should be redirected when visiting root URL (/), doesn't do anything if `noPrefixDefaultLocale` is enabled   |
+| `seo`                   | Boolean | `true`  | Set to `false` to disable SEO metadata generation                                                                                               |
 
 ## Configuration example
 
