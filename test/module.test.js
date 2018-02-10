@@ -23,6 +23,13 @@ describe('basic', () => {
     await nuxt.close()
   })
 
+  test('sets SEO metadata properly', async () => {
+    let html = await get('/')
+    expect(html).toMatch(/<html[^>]*lang="en-US"/)
+    expect(html).toMatch(/<link[^>]*rel="alternate" href="\/"[^>]*hreflang="en-US"/)
+    expect(html).toMatch(/<link[^>]*rel="alternate" href="\/fr\/"[^>]*hreflang="fr-FR"/)
+  })
+
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {
     let html = await get('/')
     expect(html).toContain('Homepage')
