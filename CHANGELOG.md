@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/paulgv/nuxt-i18n/compare/v2.1.1...v2.2.0) (2018-02-10)
+
+
+### Features
+
+* Generate pages SEO metadata ([dfb8432](https://github.com/paulgv/nuxt-i18n/commit/dfb8432))
+
+
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/paulgv/nuxt-i18n/compare/v2.1.0...v2.1.1) (2018-02-08)
 
