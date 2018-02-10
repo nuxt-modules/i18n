@@ -1,9 +1,9 @@
 # nuxt-i18n
 [![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
 [![npm](https://img.shields.io/npm/dt/nuxt-i18n.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
-[![CircleCI](https://img.shields.io/circleci/project/github/paulgv/nuxt-i18n.svg?style=flat-square)](https://circleci.com/gh/paulgv/nuxt-i18n)
-[![Codecov](https://img.shields.io/codecov/c/github/paulgv/nuxt-i18n.svg?style=flat-square)](https://codecov.io/gh/paulgv/nuxt-i18n)
-[![Dependencies](https://david-dm.org/paulgv/nuxt-i18n/status.svg?style=flat-square)](https://david-dm.org/paulgv/nuxt-i18n)
+[![CircleCI](https://img.shields.io/circleci/project/github/nuxt-community/nuxt-i18n.svg?style=flat-square)](https://circleci.com/gh/nuxt-community/nuxt-i18n)
+[![Codecov](https://img.shields.io/codecov/c/github/nuxt-community/nuxt-i18n.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/nuxt-i18n)
+[![Dependencies](https://david-dm.org/nuxt-community/nuxt-i18n/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/nuxt-i18n)
 [![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
 
 > i18n for [Nuxt](https://github.com/nuxt/nuxt.js)
