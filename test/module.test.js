@@ -27,13 +27,13 @@ describe('basic', () => {
     let html = await get('/')
     expect(html).toMatch(/<html[^>]*lang="en-US"/)
     expect(html).toMatch(/<link[^>]*rel="alternate" href="\/"[^>]*hreflang="en-US"/)
-    expect(html).toMatch(/<link[^>]*rel="alternate" href="\/fr\/"[^>]*hreflang="fr-FR"/)
+    expect(html).toMatch(/<link[^>]*rel="alternate" href="\/fr"[^>]*hreflang="fr-FR"/)
   })
 
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {
     let html = await get('/')
     expect(html).toContain('Homepage')
-    expect(html).toContain('<a href="/fr/">Français</a>')
+    expect(html).toContain('<a href="/fr">Français</a>')
     expect(html).toContain('<a href="/about-us">About us</a>')
   })
 
@@ -55,7 +55,7 @@ describe('basic', () => {
     let html = await get('/fr/a-propos')
     expect(html).toContain('À propos')
     expect(html).toContain('<a href="/about-us">English</a>')
-    expect(html).toContain('<a href="/fr/">Accueil</a>')
+    expect(html).toContain('<a href="/fr">Accueil</a>')
   })
 
   test('/fr/notlocalized contains FR text', async () => {
