@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.2.4"></a>
+## [2.2.4](https://github.com/paulgv/nuxt-i18n/compare/v2.2.3...v2.2.4) (2018-02-11)
+
+
+### Bug Fixes
+
+* Use same Regex for matching URL locale in plugin and middleware ([a590e93](https://github.com/paulgv/nuxt-i18n/commit/a590e93)), closes [#17](https://github.com/paulgv/nuxt-i18n/issues/17)
+
+
+
 <a name="2.2.3"></a>
 ## [2.2.3](https://github.com/paulgv/nuxt-i18n/compare/v2.2.2...v2.2.3) (2018-02-11)
 
