@@ -183,19 +183,74 @@ Here's what it does:
 
 To customize SEO metadata for any page, simply declare your own `head ()` method, have a look at [lib/templates/i18n.seo.plugin.js](lib/templates/i18n.seo.plugin.js) if you want to copy some of **nuxt-i18n**'s logic.
 
+### Lazy-load translations
+
+To prevent loading all translations at once, messages can be loaded asynchronously when a user loads the app or switches to another language.
+This can be done by setting option `loadLanguagesAsync` to true and by configuring `langDir` and `langFiles` to match your setup.
+
+Say your files are organized this way:
+
+```
+nuxt/
+├── lang/
+│   ├── en-US.js
+│   ├── es-ES.js
+│   ├── fr-FR.js
+├── nuxt.config.js
+```
+
+Your config could then reflect this files structure to let the module load messages from your translations files:
+
+```js
+// nuxt.config.js
+
+{
+  // ...
+  ['nuxt-i18n', {
+    locales: [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
+      },
+      {
+        code: 'es',
+        iso: 'es-ES',
+        name: 'Español'
+      }
+    ],
+    loadLanguagesAsync: true,
+    langDir: 'lang/',
+    langFiles: {
+      en: 'en-US.js',
+      fr: 'fr-FR.js',
+      es: 'es-ES.js'
+    }
+  }],
+  // ...
+}
+```
 
 ## Options
 
-| Option                  | Type    | Default | Description                                                                                                                                     |
-|-------------------------|---------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| `locales`               | Array   |         | A list of objects that describes the locales available in your app, each object should contain at least a `code` key                            |
-| `defaultLocale`         | String  |         | The app's default locale, URLs for this language won't be prefixed with the locale code                                                         |
-| `vueI18n`               | Object  |         | Configuration options for vue-i18n, refer to [the doc](http://kazupon.github.io/vue-i18n/en/api.html#constructor-options) for supported options |
-| `routes`                | Object  |         | Custom routing configuration, if routes are omitted, Nuxt's default routes are used                                                             |
-| `ignorePaths`           | Array   |         | A list of paths that should not be localized                                                                                                    |
-| `noPrefixDefaultLocale` | Boolean | `true`  | By default, paths generated for the default language don't contain a locale prefix, set this option to `false` to disable this behavior         |
-| `redirectRootToLocale`  | String  |         | Specify a locale to which the user should be redirected when visiting root URL (/), doesn't do anything if `noPrefixDefaultLocale` is enabled   |
-| `seo`                   | Boolean | `true`  | Set to `false` to disable SEO metadata generation                                                                                               |
+| Option                  | Type    | Default | Description                                                                                                                                                  |
+|-------------------------|---------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `locales`               | Array   |         | A list of objects that describes the locales available in your app, each object should contain at least a `code` key                                         |
+| `defaultLocale`         | String  |         | The app's default locale, URLs for this language won't be prefixed with the locale code                                                                      |
+| `vueI18n`               | Object  |         | Configuration options for vue-i18n, refer to [the doc](http://kazupon.github.io/vue-i18n/en/api.html#constructor-options) for supported options              |
+| `routes`                | Object  |         | Custom routing configuration, if routes are omitted, Nuxt's default routes are used                                                                          |
+| `ignorePaths`           | Array   |         | A list of paths that should not be localized                                                                                                                 |
+| `noPrefixDefaultLocale` | Boolean | `true`  | By default, paths generated for the default language don't contain a locale prefix, set this option to `false` to disable this behavior                      |
+| `redirectRootToLocale`  | String  |         | Specify a locale to which the user should be redirected when visiting root URL (/), doesn't do anything if `noPrefixDefaultLocale` is enabled                |
+| `seo`                   | Boolean | `true`  | Set to `false` to disable SEO metadata generation                                                                                                            |
+| `loadLanguagesAsync`    | Boolean | `false` | If `true`, the module will attempt to asynchronously load translations from files defined in `langFiles`, when using this, `vueI18n.messages` can be omitted |
+| `langDir`               | String  | 'lang/' | Directory in which translations files are stored (used when loading translations asynchronously)                                                             |
+| `langFiles`             | Object  | `{}`    | An object that maps each locale to a translations file from `langDir` (used when loading translations asynchronously)                                        |
 
 ## Configuration example
 
