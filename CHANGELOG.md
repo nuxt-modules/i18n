@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/paulgv/nuxt-i18n/compare/v2.3.0-0...v2.3.0) (2018-02-20)
+
+
+### Bug Fixes
+
+* Prevent adding hreflang data to non-localized pages ([7ba097d](https://github.com/paulgv/nuxt-i18n/commit/7ba097d))
+
+
+
 <a name="2.3.0-0"></a>
 # [2.3.0-0](https://github.com/paulgv/nuxt-i18n/compare/v2.2.4...v2.3.0-0) (2018-02-17)
 
