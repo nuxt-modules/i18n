@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.1"></a>
+## [2.3.1](https://github.com/paulgv/nuxt-i18n/compare/v2.3.0...v2.3.1) (2018-02-21)
+
+
+### Bug Fixes
+
+* Set langDir default value to 'lang/' to prevent webpack dynamic import issue ([7ce1f11](https://github.com/paulgv/nuxt-i18n/commit/7ce1f11)), closes [#28](https://github.com/paulgv/nuxt-i18n/issues/28)
+
+
+
 <a name="2.3.0"></a>
 # [2.3.0](https://github.com/paulgv/nuxt-i18n/compare/v2.3.0-0...v2.3.0) (2018-02-20)
 
