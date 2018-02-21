@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.2"></a>
+## [2.3.2](https://github.com/paulgv/nuxt-i18n/compare/v2.3.1...v2.3.2) (2018-02-21)
+
+
+### Bug Fixes
+
+* Require loadLanguageAsync only when needed ([2b8cd9e](https://github.com/paulgv/nuxt-i18n/commit/2b8cd9e))
+
+
+
 <a name="2.3.1"></a>
 ## [2.3.1](https://github.com/paulgv/nuxt-i18n/compare/v2.3.0...v2.3.1) (2018-02-21)
 
