@@ -9,7 +9,7 @@
     }
   ],
   "main": "lib/module.js",
-  "repository": "https://github.com/paulgv/nuxt-i18n",
+  "repository": "https://github.com/nuxt-community/nuxt-i18n",
   "publishConfig": {
     "access": "public"
   },
