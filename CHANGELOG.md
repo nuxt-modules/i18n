@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.3.4"></a>
+## [2.3.4](https://github.com/nuxt-community/nuxt-i18n/compare/v2.3.3...v2.3.4) (2018-02-25)
+
+
+### Bug Fixes
+
+* Fix issue where locale messages would not be preserved after lazy-loading ([c39b33d](https://github.com/nuxt-community/nuxt-i18n/commit/c39b33d))
+
+
+
 <a name="2.3.3"></a>
 ## [2.3.3](https://github.com/paulgv/nuxt-i18n/compare/v2.3.2...v2.3.3) (2018-02-21)
 
