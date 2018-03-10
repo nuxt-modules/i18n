@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.3.4...v2.4.0) (2018-03-10)
+
+
+### Features
+
+* Add support for Regexp for ignorePaths option ([65f8b45](https://github.com/nuxt-community/nuxt-i18n/commit/65f8b45)), closes [#38](https://github.com/nuxt-community/nuxt-i18n/issues/38)
+
+
+
 <a name="2.3.4"></a>
 ## [2.3.4](https://github.com/nuxt-community/nuxt-i18n/compare/v2.3.3...v2.3.4) (2018-02-25)
 
