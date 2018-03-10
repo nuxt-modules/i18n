@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "cookie": "^0.3.1",
+    "lodash.has": "^4.5.2",
     "vue-i18n": "^7.3.2",
     "vue-i18n-extensions": "^0.1.0"
   },
