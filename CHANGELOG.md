@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.6.0"></a>
+# [2.6.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.5.1...v2.6.0) (2018-03-10)
+
+
+### Features
+
+* Add useRedirectCookie option ([6d6aad0](https://github.com/nuxt-community/nuxt-i18n/commit/6d6aad0))
+
+
+
 <a name="2.5.1"></a>
 ## [2.5.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.5.0...v2.5.1) (2018-03-10)
 
