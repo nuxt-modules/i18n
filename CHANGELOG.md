@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.7.0"></a>
+# [2.7.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.6.1...v2.7.0) (2018-03-14)
+
+
+### Features
+
+* Add beforeLanguageSwitch & onLanguageSwitched callbacks ([21b5f13](https://github.com/nuxt-community/nuxt-i18n/commit/21b5f13))
+
+
+
 <a name="2.6.1"></a>
 ## [2.6.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.6.0...v2.6.1) (2018-03-11)
 
