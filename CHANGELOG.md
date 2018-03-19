@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.7.1"></a>
+## [2.7.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.7.0...v2.7.1) (2018-03-19)
+
+
+### Bug Fixes
+
+* Avoid server error without accept-language header ([#46](https://github.com/nuxt-community/nuxt-i18n/issues/46)) ([a194d8c](https://github.com/nuxt-community/nuxt-i18n/commit/a194d8c)), closes [/github.com/nuxt/nuxt.js/issues/2034#issuecomment-342602183](https://github.com//github.com/nuxt/nuxt.js/issues/2034/issues/issuecomment-342602183)
+
+
+
 <a name="2.7.0"></a>
 # [2.7.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.6.1...v2.7.0) (2018-03-14)
 
