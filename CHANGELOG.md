@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* Avoid server error without accept-language header ([#46](https://github.com/nuxt-community/nuxt-i18n/issues/46)) ([a194d8c](https://github.com/nuxt-community/nuxt-i18n/commit/a194d8c)), closes [/github.com/nuxt/nuxt.js/issues/2034#issuecomment-342602183](https://github.com//github.com/nuxt/nuxt.js/issues/2034/issues/issuecomment-342602183)
+* Avoid server error without accept-language header ([#46](https://github.com/nuxt-community/nuxt-i18n/issues/46)) ([a194d8c](https://github.com/nuxt-community/nuxt-i18n/commit/a194d8c))
 
 
 
