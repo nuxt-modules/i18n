@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.8.0"></a>
+# [2.8.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.7.2...v2.8.0) (2018-03-21)
+
+
+### Features
+
+* Allow usage of redirectRootToLocale option even with noPrefixDefaultLocale disabled ([6994072](https://github.com/nuxt-community/nuxt-i18n/commit/6994072)), closes [#45](https://github.com/nuxt-community/nuxt-i18n/issues/45)
+
+
+
 <a name="2.7.2"></a>
 ## [2.7.2](https://github.com/nuxt-community/nuxt-i18n/compare/v2.7.1...v2.7.2) (2018-03-21)
 
