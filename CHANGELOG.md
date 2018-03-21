@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.7.2"></a>
+## [2.7.2](https://github.com/nuxt-community/nuxt-i18n/compare/v2.7.1...v2.7.2) (2018-03-21)
+
+
+### Bug Fixes
+
+* Prevent language from switching back to default when navigating to ignored route ([fb4889b](https://github.com/nuxt-community/nuxt-i18n/commit/fb4889b)), closes [#47](https://github.com/nuxt-community/nuxt-i18n/issues/47)
+
+
+
 <a name="2.7.1"></a>
 ## [2.7.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.7.0...v2.7.1) (2018-03-19)
 
