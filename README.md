@@ -17,6 +17,7 @@
 * SEO tags generation
 * Translations messages lazy-loading
 * Redirection based on browser language
+* Different domain names for each language
 
 ## Install
 - Add `nuxt-i18n` dependency using yarn or npm to your project
