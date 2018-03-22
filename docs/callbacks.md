@@ -26,7 +26,7 @@ Parameters:
 
 A typical usage would be to define those callbacks via a plugin where you can access the app's context \(useful if you need to change Axios' config when the language changes for example\).
 
-```es6
+```js
 // ~/plugins/i18n.js
 
 export default function ({ app }) {
@@ -40,6 +40,8 @@ export default function ({ app }) {
   }
 }
 ```
+
+Add the plugin to Nuxt's config:
 
 ```js
 // nuxt.config.js
