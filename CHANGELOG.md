@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.8.1"></a>
+## [2.8.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.8.0...v2.8.1) (2018-03-22)
+
+
+### Bug Fixes
+
+* Make detectBrowserLanguage redirection work with noPrefixDefaultLocale disabled ([90d9e45](https://github.com/nuxt-community/nuxt-i18n/commit/90d9e45)), closes [#45](https://github.com/nuxt-community/nuxt-i18n/issues/45)
+
+
+
 <a name="2.8.0"></a>
 # [2.8.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.7.2...v2.8.0) (2018-03-21)
 
