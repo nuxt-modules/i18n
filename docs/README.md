@@ -7,3 +7,4 @@
 * SEO tags generation
 * Translations messages lazy-loading
 * Redirection based on browser language
+* Different domain names for each language
