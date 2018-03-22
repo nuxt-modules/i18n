@@ -1,15 +1,15 @@
-# Summary
+# nuxt-i18n
 
-* [Introduction](README.md)
-* [Setup](chapter1.md)
+* [Setup](setup.md)
 * [Basic Usage](basic-usage.md)
-* [Routing](routing.md)
-  * [Basic Routing](routing/basic-routin.md)
+* [Callbacks](callbacks.md)
+- Routing
+  * [Basic Routing](routing/basic-routing.md)
   * [Customize Routes](routing/customize-routes.md)
   * [Ignore Routes](routing/ignore-routes.md)
-* [Browser language detection](browser-language-detection.md)
-* [SEO](seo.md)
+* [Browser Language Detection](browser-language-detection.md)
+* [Seo](seo.md)
+* [Lazy Load Translations](lazy-load-translations.md)
 * [Lang Switcher](lang-switcher.md)
-* [Lazy-load translations](lazy-load-translations.md)
+* [Configuration Example](configuration-example.md)
 * [Options](options.md)
-

@@ -6,6 +6,4 @@
 * Automatic routes generation prefixed with locales code
 * SEO tags generation
 * Translations messages lazy-loading
-
-
-
+* Redirection based on browser language

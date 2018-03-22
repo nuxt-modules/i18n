@@ -2,13 +2,13 @@
 
 Add **nuxt-i18n** to your dependencies using Yarn:
 
-```Shell
+```bash
 yarn add nuxt-i18n
 ```
 
 Or NPM:
 
-```Shell
+```bash
 npm i nuxt-i18n
 ```
 
