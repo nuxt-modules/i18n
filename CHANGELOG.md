@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.0"></a>
+# [2.9.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.8.1...v2.9.0) (2018-03-22)
+
+
+### Features
+
+* Different domain names ([055403a](https://github.com/nuxt-community/nuxt-i18n/commit/055403a))
+
+
+
 <a name="2.8.1"></a>
 ## [2.8.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.8.0...v2.8.1) (2018-03-22)
 
