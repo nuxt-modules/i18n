@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.1"></a>
+## [2.9.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.0...v2.9.1) (2018-03-26)
+
+
+### Bug Fixes
+
+* Fallback to using route's name if chunkName empty ([0969229](https://github.com/nuxt-community/nuxt-i18n/commit/0969229)), closes [#52](https://github.com/nuxt-community/nuxt-i18n/issues/52)
+
+
+
 <a name="2.9.0"></a>
 # [2.9.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.8.1...v2.9.0) (2018-03-22)
 
