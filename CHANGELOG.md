@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.2"></a>
+## [2.9.2](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.1...v2.9.2) (2018-04-06)
+
+
+### Bug Fixes
+
+* Fix redirection based on browser language ([64ff3ce](https://github.com/nuxt-community/nuxt-i18n/commit/64ff3ce)), closes [#65](https://github.com/nuxt-community/nuxt-i18n/issues/65)
+
+
+
 <a name="2.9.1"></a>
 ## [2.9.1](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.0...v2.9.1) (2018-03-26)
 
