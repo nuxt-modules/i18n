@@ -6,6 +6,7 @@ module.exports = {
   },
   modules: [
     ['@@', {
+      seo: true,
       locales: [
         {
           code: 'en',
@@ -19,7 +20,7 @@ module.exports = {
         }
       ],
       defaultLocale: 'en',
-      noPrefixDefaultLocale: true,
+      lazy: false,
       vueI18n: {
         messages: {
           fr: {
@@ -34,19 +35,7 @@ module.exports = {
           }
         },
         fallbackLocale: 'en'
-      },
-      routes: {
-        about: {
-          fr: '/a-propos',
-          en: '/about-us'
-        },
-        'dynamicNested/_category': {
-          fr: 'imbrication-dynamique/:category'
-        }
-      },
-      ignorePaths: [
-        '/fr/notlocalized'
-      ]
+      }
     }]
   ]
 }

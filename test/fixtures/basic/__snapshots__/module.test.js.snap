@@ -1,0 +1,172 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`basic / contains EN text, link to /fr/ & link /about-us 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr\\">Français</a></div>
+  Homepage
+  <a href=\\"/about-us\\">About us</a></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /about-us contains EN text, link to /fr/a-propos & link / 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/about-us\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/a-propos\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr/a-propos\\">Français</a></div>
+  About us
+  <a href=\\"/\\">Homepage</a></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/dynamicNested/1/2/3\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/imbrication-dynamique/1/2/3\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div>
+  Category 1
+  <div><div>Subcategory 2</div> <div>Post 3</div> <div><!----><a href=\\"/fr/imbrication-dynamique/1/2/3\\">Français</a></div></div></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{},{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /fr contains FR text, link to / & link to /fr/a-propos 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><a href=\\"/\\">English</a><!----></div>
+  Accueil
+  <a href=\\"/fr/a-propos\\">À propos</a></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /fr/a-propos contains FR text, link to /about-us & link to /fr/ 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/about-us\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/a-propos\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><a href=\\"/about-us\\">English</a><!----></div>
+  À propos
+  <a href=\\"/fr\\">Accueil</a></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /fr/imbrication-dynamique/1/2/3 contains link to /dynamicNested/1/2/3 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/dynamicNested/1/2/3\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/imbrication-dynamique/1/2/3\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div>
+  Category 1
+  <div><div>Subcategory 2</div> <div>Post 3</div> <div><a href=\\"/dynamicNested/1/2/3\\">English</a><!----></div></div></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{},{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /fr/notlocalized contains FR text 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/fr/notlocalized\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/notlocalized\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div>
+  FR only
+</div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /fr/posts contains FR text, link to /posts/ & link to /fr/posts/my-slug 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/posts/\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/posts/\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><a href=\\"/posts/\\">English</a><!----></div>
+  Articles
+  <div><a href=\\"/fr/posts/my-slug\\">my-slug</a></div></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{},{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /fr/posts/my-slug contains FR text, post's slug, link to /posts/my-slug & link to /fr/posts/ 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/posts/my-slug\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/posts/my-slug\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><a href=\\"/posts/my-slug\\">English</a><!----></div>
+  Articles
+  <div><h1>my-slug</h1> <a href=\\"/fr/posts/\\">index</a></div></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{},{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /posts contains EN text, link to /fr/posts/ & link to /posts/my-slug 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/posts/\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/posts/\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr/posts/\\">Français</a></div>
+  Posts
+  <div><a href=\\"/posts/my-slug\\">my-slug</a></div></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{},{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic /posts/my-slug contains EN text, post's slug, link to /fr/posts/my-slug & link to /posts/ 1`] = `
+"<!DOCTYPE html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head>
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/posts/my-slug\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr/posts/my-slug\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  </head>
+  <body data-n-head=\\"\\">
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><div class=\\"nuxt-progress\\" style=\\"width:0%;height:2px;background-color:black;opacity:0;\\"></div><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr/posts/my-slug\\">Français</a></div>
+  Posts
+  <div><h1>my-slug</h1> <a href=\\"/posts/\\">index</a></div></div></div></div><script>window.__NUXT__={\\"layout\\":\\"default\\",\\"data\\":[{},{}],\\"error\\":null,\\"serverRendered\\":true};</script><script src=\\"/_nuxt/9158873563ce0cfeaa5d.js\\" defer></script><script src=\\"/_nuxt/3fbb83245afe59fb0e07.js\\" defer></script><script src=\\"/_nuxt/40503be071f1a8873948.js\\" defer></script>
+  </body>
+</html>
+"
+`;
+
+exports[`basic sets SEO metadata properly 1`] = `
+"
+    <title data-n-head=\\"true\\"></title><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"/\\" hreflang=\\"en-US\\"/><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"/fr\\" hreflang=\\"fr-FR\\"/><style data-vue-ssr-id=\\"96d064c2:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;-webkit-transition:width .2s,opacity .4s;transition:width .2s,opacity .4s;opacity:1;background-color:#efc14e;z-index:999999}</style>
+  "
+`;

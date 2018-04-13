@@ -6,5 +6,6 @@
 
 <script>
 export default {
+  i18n: false
 }
 </script>

@@ -5,5 +5,11 @@
 </template>
 
 <script>
-export default {}
+export default {
+  i18n: {
+    paths: {
+      fr: '/imbrication-dynamique'
+    }
+  }
+}
 </script>

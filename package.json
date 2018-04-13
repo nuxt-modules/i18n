@@ -1,6 +1,6 @@
 {
-  "name": "nuxt-i18n",
-  "version": "2.9.3",
+  "name": "@nuxtjs/i18n",
+  "version": "3.0.0",
   "description": "i18n for Nuxt",
   "license": "MIT",
   "contributors": [
@@ -8,21 +8,22 @@
       "name": "Paul Gascou-Vaillancourt (@paulgv)"
     }
   ],
-  "main": "lib/module.js",
+  "main": "src/index.js",
   "repository": "https://github.com/nuxt-community/nuxt-i18n",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "lint": "eslint lib test",
-    "test": "npm run lint && jest",
+    "lint": "eslint src test",
+    "test": "jest",
     "release": "standard-version && git push --follow-tags && npm publish"
   },
   "eslintIgnore": [
-    "lib/templates/*.*"
+    "src/templates/*.*",
+    "src/plugins/*.*"
   ],
   "files": [
-    "lib"
+    "src"
   ],
   "jest": {
     "testEnvironment": "node",
@@ -34,7 +35,10 @@
     ]
   },
   "dependencies": {
+    "acorn": "^5.5.3",
+    "consola": "^1.2.0",
     "cookie": "^0.3.1",
+    "fs": "^0.0.1-security",
     "vue-i18n": "^7.5.0",
     "vue-i18n-extensions": "^0.1.0"
   },
@@ -50,7 +54,7 @@
     "eslint-plugin-vue": "^4.3.0",
     "jest": "^22.3.0",
     "jsdom": "^11.6.2",
-    "nuxt": "^1.4.0",
+    "nuxt": "npm:nuxt-edge",
     "standard-version": "latest"
   }
 }
