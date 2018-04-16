@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.9.3"></a>
+## [2.9.3](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.2...v2.9.3) (2018-04-16)
+
+
+### Bug Fixes
+
+* support for deprecated vendor in nuxt-edge build ([#71](https://github.com/nuxt-community/nuxt-i18n/issues/71)) ([f841e60](https://github.com/nuxt-community/nuxt-i18n/commit/f841e60))
+
+
+
 <a name="2.9.2"></a>
 ## [2.9.2](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.1...v2.9.2) (2018-04-06)
 
