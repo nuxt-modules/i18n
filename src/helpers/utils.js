@@ -29,7 +29,8 @@ export const getLocaleCodes = (locales = []) => {
  * @return {String}                     Locale code found if any
  */
 export const getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales = []) => {
-  const localesPattern = `(${locales.join('|')})`
+  const codes = getLocaleCodes(locales)
+  const localesPattern = `(${codes.join('|')})`
   // Extract from route name
   if (route.name) {
     const regexp = new RegExp(`${routesNameSeparator}${localesPattern}$`, 'i')

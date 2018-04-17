@@ -8,8 +8,8 @@ middleware['i18n'] = function ({ app, req, res, route, redirect, isHMR }) {
 
   // Helpers
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-  const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const getLocaleCodes = <%= options.getLocaleCodes %>
+  const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const routesNameSeparator = '<%= options.routesNameSeparator %>'
   const locales = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
 
@@ -78,12 +78,12 @@ middleware['i18n'] = function ({ app, req, res, route, redirect, isHMR }) {
   app.i18n.beforeLanguageSwitch(oldLocale, locale)
   // Lazy-loading enabled
   if (lazy) {
-    // const { loadLanguageAsync } = require('./utils')
-    // loadLanguageAsync(app.i18n, locale)
-    //   .then(() => {
-    //     app.i18n.locale = locale
-    //     app.i18n.onLanguageSwitched(oldLocale, locale)
-    //   })
+    const { loadLanguageAsync } = require('./utils')
+    loadLanguageAsync(app.i18n, locale)
+      .then(() => {
+        app.i18n.locale = locale
+        app.i18n.onLanguageSwitched(oldLocale, locale)
+      })
   } else {
     // Lazy-loading disabled
     app.i18n.locale = locale

@@ -17,7 +17,6 @@ export function loadLanguageAsync (i18n, locale) {
       const file = langOptions[LOCALE_FILE_KEY];
       return import(/* webpackChunkName: "lang-[request]" */ '~/<%= options.langDir %>' + file)
         .then(messages => {
-          console.log(file + ' loaded')
           i18n.setLocaleMessage(locale, messages)
           i18n.loadedLanguages.push(locale)
           return

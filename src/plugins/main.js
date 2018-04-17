@@ -7,6 +7,7 @@ export default ({ app, route, req }) => {
   // Helpers
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
   const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
+  const getLocaleCodes = <%= options.getLocaleCodes %>
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const getHostname = <%= options.getHostname %>
   const getLocaleDomain = <%= options.getLocaleDomain %>
@@ -35,8 +36,8 @@ export default ({ app, route, req }) => {
 
   app.i18n.locale = locale
 
-  // if (lazy) {
-  //   const { loadLanguageAsync } = require('./utils')
-  //   return loadLanguageAsync(app.i18n, app.i18n.locale)
-  // }
+  if (lazy) {
+    const { loadLanguageAsync } = require('./utils')
+    return loadLanguageAsync(app.i18n, app.i18n.locale)
+  }
 }
