@@ -23,7 +23,7 @@ export const DEFAULT_OPTIONS = {
   routesNameSeparator: '___',
   strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,
   lazy: false,
-  langDir: 'lang/',
+  langDir: null,
   redirectRootToLocale: null,
   detectBrowserLanguage: {
     useCookie: true,
