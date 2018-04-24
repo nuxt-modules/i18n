@@ -75,6 +75,11 @@ export default function (userOptions) {
     })
   }
 
+  // Add vue-i18n to vendors if using Nuxt 1.x
+  if (this.options.build.vendor) {
+    this.options.build.vendor.push('vue-i18n')
+  }
+
   this.options.router.middleware.push('i18n')
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensions.directive
