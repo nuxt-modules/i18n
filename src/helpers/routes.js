@@ -1,5 +1,6 @@
-import logger from './logger'
-import { STRATEGIES } from './constants'
+import {
+  MODULE_NAME,
+  STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
 import { getLocaleCodes } from './utils'
 
@@ -39,7 +40,7 @@ export const makeRoutes = (baseRoutes, {
 
       // Skip if locale not in module's configuration
       if (locales.indexOf(locale) === -1) {
-        logger.warn(`Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`)
+        console.warn(`[${MODULE_NAME}] Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`)
         continue
       }
 

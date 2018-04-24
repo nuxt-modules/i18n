@@ -1,7 +1,4 @@
 import Vue from 'vue'
-import consola from 'consola'
-
-const logger = consola.withScope('<%= options.MODULE_NAME %>')
 
 Vue.mixin({
   head () {
@@ -27,7 +24,7 @@ Vue.mixin({
               hreflang: locale[LOCALE_ISO_KEY]
             }
           } else {
-            logger.warn('Locale ISO code is required to generate alternate link')
+            console.warn('[<%= options.MODULE_NAME %>] Locale ISO code is required to generate alternate link')
             return null
           }
         })

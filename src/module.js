@@ -2,7 +2,6 @@ import { resolve, join } from 'path'
 import { readdirSync } from 'fs'
 import i18nExtensions from 'vue-i18n-extensions'
 
-import logger from './helpers/logger'
 import {
   MODULE_NAME,
   ROOT_DIR,
@@ -23,7 +22,6 @@ import {
 } from './helpers/utils'
 
 export default function (userOptions) {
-  logger.info('Module initialized')
   const pluginsPath = join(__dirname, PLUGINS_DIR)
   const templatesPath = join(__dirname, TEMPLATES_DIR)
   const requiredPlugins = ['main', 'routing']

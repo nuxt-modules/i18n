@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "acorn": "^5.5.3",
-    "consola": "^1.2.0",
     "cookie": "^0.3.1",
     "fs": "^0.0.1-security",
     "vue-i18n": "^7.5.0",

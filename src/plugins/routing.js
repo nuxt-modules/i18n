@@ -1,8 +1,6 @@
 import './middleware';
 import Vue from 'vue'
-import consola from 'consola'
 
-const logger = consola.withScope('<%= options.MODULE_NAME %>')
 
 function localePathFactory (i18nPath, routerPath) {
   return function localePath (route, locale) {
@@ -61,7 +59,7 @@ function switchLocalePathFactory (i18nPath) {
         }
         path = protocol + '://' + lang[LOCALE_DOMAIN_KEY] + path
       } else {
-        logger.warn('Could not find domain name for locale ' + locale)
+        console.warn('[<%= options.MODULE_NAME %>] Could not find domain name for locale ' + locale)
       }
     }
     return path
