@@ -7,7 +7,7 @@ const request = require('request-promise-native')
 
 const config = require('./nuxt.config')
 
-const { cleanUpScripts } = require('../../utils');
+const { cleanUpScripts } = require('../../utils')
 
 const url = path => `http://localhost:${process.env.PORT}${path}`
 const get = path => request(url(path))
