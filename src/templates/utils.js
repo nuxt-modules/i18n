@@ -1,7 +1,3 @@
-import consola from 'consola'
-
-const logger = consola.withScope('<%= options.MODULE_NAME %>')
-
 /**
  * Asynchronously load messages from translation files
  * @param  {VueI18n}  i18n  vue-i18n instance
@@ -31,7 +27,7 @@ export async function loadLanguageAsync (i18n, locale) {
         }
         <% } %>
       } else {
-        logger.warn('Could not find lang file for locale ' + locale)
+        console.warn('[<%= options.MODULE_NAME %>] Could not find lang file for locale ' + locale)
       }
     }
   }
