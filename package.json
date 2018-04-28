@@ -30,7 +30,7 @@
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "lib",
+      "src",
       "test"
     ]
   },
