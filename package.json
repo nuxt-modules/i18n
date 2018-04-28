@@ -42,14 +42,14 @@
     "vue-i18n-extensions": "^0.1.0"
   },
   "devDependencies": {
-    "codecov": "latest",
+    "codecov": "^3.0.1",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jest": "^21.15.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "latest",
+    "eslint-plugin-standard": "^3.1.0",
     "eslint-plugin-vue": "^4.3.0",
     "jest": "^22.3.0",
     "jsdom": "^11.6.2",
