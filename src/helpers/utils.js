@@ -1,3 +1,5 @@
+/* global vuex, store */
+
 import { LOCALE_CODE_KEY, LOCALE_DOMAIN_KEY } from './constants'
 
 /**
@@ -70,4 +72,21 @@ export const getLocaleDomain = () => {
     }
   }
   return null
+}
+
+/**
+ * Dispatch store module actions to keep it in sync with app's locale data
+ * @param  {String} locale   Current locale
+ * @param  {Object} messages Current messages
+ * @return {void}
+ */
+export const syncVuex = (locale = null, messages = null) => {
+  if (vuex) {
+    if (locale !== null && vuex.mutations.setLocale) {
+      store.dispatch(vuex.moduleName + '/setLocale', locale)
+    }
+    if (messages !== null && vuex.mutations.setMessages) {
+      store.dispatch(vuex.moduleName + '/setMessages', messages)
+    }
+  }
 }

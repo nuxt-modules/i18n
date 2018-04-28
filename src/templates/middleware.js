@@ -1,10 +1,15 @@
 import cookie from 'cookie'
 import middleware from '../middleware'
 
-middleware['i18n'] = function ({ app, req, res, route, redirect, isHMR }) {
+middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) => {
   if (isHMR) {
     return
   }
+
+  // Options
+  const lazy = <%= options.lazy %>
+  const vuex = <%= JSON.stringify(options.vuex) %>
+  const differentDomains = <%= options.differentDomains %>
 
   // Helpers
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
@@ -12,10 +17,8 @@ middleware['i18n'] = function ({ app, req, res, route, redirect, isHMR }) {
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const routesNameSeparator = '<%= options.routesNameSeparator %>'
   const locales = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
+  const syncVuex = <%= options.syncVuex %>
 
-  // Options
-  const lazy = <%= options.lazy %>
-  const differentDomains = <%= options.differentDomains %>
 
   let locale = app.i18n.locale || app.i18n.defaultLocale || null
 
@@ -33,7 +36,7 @@ middleware['i18n'] = function ({ app, req, res, route, redirect, isHMR }) {
     const { useCookie, cookieKey } = detectBrowserLanguage
 
     const redirectToBrowserLocale = () => {
-      const routeName = route && route.name ? app.getRouteBaseName(route) : 'index';
+      const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
       if (browserLocale && browserLocale !== app.i18n.locale && locales.indexOf(browserLocale) !== -1) {
         locale = browserLocale
         redirect(app.localePath(Object.assign({}, route , {
@@ -79,14 +82,14 @@ middleware['i18n'] = function ({ app, req, res, route, redirect, isHMR }) {
   // Lazy-loading enabled
   if (lazy) {
     const { loadLanguageAsync } = require('./utils')
-    loadLanguageAsync(app.i18n, locale)
-      .then(() => {
-        app.i18n.locale = locale
-        app.i18n.onLanguageSwitched(oldLocale, locale)
-      })
+    const messages = await loadLanguageAsync(app.i18n, locale)
+    app.i18n.locale = locale
+    app.i18n.onLanguageSwitched(oldLocale, locale)
+    syncVuex(locale, messages)
   } else {
     // Lazy-loading disabled
     app.i18n.locale = locale
     app.i18n.onLanguageSwitched(oldLocale, locale)
+    syncVuex(locale, app.i18n.getLocaleMessage(locale))
   }
 }

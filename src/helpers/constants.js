@@ -31,6 +31,14 @@ export const DEFAULT_OPTIONS = {
   },
   differentDomains: false,
   seo: true,
+  vuex: {
+    moduleName: 'i18n',
+    mutations: {
+      setLocale: 'I18N_SET_LOCALE',
+      setMessages: 'I18N_SET_MESSAGES'
+    }
+  },
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }
+export const NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']

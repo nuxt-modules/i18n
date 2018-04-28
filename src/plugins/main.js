@@ -3,7 +3,11 @@ import VueI18n from 'vue-i18n'
 
 Vue.use(VueI18n)
 
-export default ({ app, route, req }) => {
+export default async ({ app, route, store, req }) => {
+  // Options
+  const lazy = <%= options.lazy %>
+  const vuex = <%= JSON.stringify(options.vuex) %>
+
   // Helpers
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
   const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
@@ -11,9 +15,35 @@ export default ({ app, route, req }) => {
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const getHostname = <%= options.getHostname %>
   const getLocaleDomain = <%= options.getLocaleDomain %>
+  const syncVuex = <%= options.syncVuex %>
 
-  // Options
-  const lazy = <%= options.lazy %>
+
+  // Register Vuex module
+  if (vuex) {
+    store.registerModule(vuex.moduleName, {
+      namespaced: true,
+      state: () => ({
+        locale: '',
+        messages: {}
+      }),
+      actions: {
+        setLocale ({ commit }, locale) {
+          commit(vuex.mutations.setLocale, locale)
+        },
+        setMessages ({ commit }, messages) {
+          commit(vuex.mutations.setMessages, messages)
+        }
+      },
+      mutations: {
+        [vuex.mutations.setLocale] (state, locale) {
+          state.locale = locale
+        },
+        [vuex.mutations.setMessages] (state, messages) {
+          state.messages = messages
+        }
+      }
+    })
+  }
 
   // Set instance options
   app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)
@@ -36,8 +66,14 @@ export default ({ app, route, req }) => {
 
   app.i18n.locale = locale
 
+  // Lazy-load translations
   if (lazy) {
     const { loadLanguageAsync } = require('./utils')
-    return loadLanguageAsync(app.i18n, app.i18n.locale)
+    const messages = await loadLanguageAsync(app.i18n, app.i18n.locale)
+    syncVuex(locale, messages)
+    return messages
+  } else {
+    // Sync Vuex
+    syncVuex(locale, app.i18n.getLocaleMessage(locale))
   }
 }

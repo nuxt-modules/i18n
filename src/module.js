@@ -8,6 +8,7 @@ import {
   PLUGINS_DIR,
   TEMPLATES_DIR,
   DEFAULT_OPTIONS,
+  NESTED_OPTIONS,
   LOCALE_CODE_KEY,
   LOCALE_ISO_KEY,
   LOCALE_DOMAIN_KEY,
@@ -18,7 +19,8 @@ import {
   getLocaleCodes,
   getLocaleFromRoute,
   getHostname,
-  getLocaleDomain
+  getLocaleDomain,
+  syncVuex
 } from './helpers/utils'
 
 export default function (userOptions) {
@@ -26,6 +28,14 @@ export default function (userOptions) {
   const templatesPath = join(__dirname, TEMPLATES_DIR)
   const requiredPlugins = ['main', 'routing']
   const options = { ...DEFAULT_OPTIONS, ...userOptions }
+  // Options that have nested config options must be merged
+  // individually with defaults to prevent missing options
+  for (const key of NESTED_OPTIONS) {
+    if (options[key] !== false) {
+      options[key] = { ...DEFAULT_OPTIONS[key], ...options[key] }
+    }
+  }
+
   const templatesOptions = {
     ...options,
     MODULE_NAME,
@@ -36,7 +46,8 @@ export default function (userOptions) {
     getLocaleCodes,
     getLocaleFromRoute,
     getHostname,
-    getLocaleDomain
+    getLocaleDomain,
+    syncVuex
   }
 
   // Generate localized routes
