@@ -19,7 +19,7 @@ export default async ({ app, route, store, req }) => {
 
 
   // Register Vuex module
-  if (vuex) {
+  if (vuex && store) {
     store.registerModule(vuex.moduleName, {
       namespaced: true,
       state: () => ({

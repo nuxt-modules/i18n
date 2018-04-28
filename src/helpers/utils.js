@@ -81,7 +81,7 @@ export const getLocaleDomain = () => {
  * @return {void}
  */
 export const syncVuex = (locale = null, messages = null) => {
-  if (vuex) {
+  if (vuex && store) {
     if (locale !== null && vuex.mutations.setLocale) {
       store.dispatch(vuex.moduleName + '/setLocale', locale)
     }
