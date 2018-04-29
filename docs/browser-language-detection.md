@@ -39,7 +39,7 @@ If you'd rather have users be redirected to their browser's language every time 
 }]
 ```
 
-To completely disable de browser's language detection feature, set `detectBrowserLanguage` to `false`.
+To completely disable the browser's language detection feature, set `detectBrowserLanguage` to `false`.
 
 ```js
 // nuxt.config.js

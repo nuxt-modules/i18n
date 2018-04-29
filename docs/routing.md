@@ -48,7 +48,7 @@ Using this strategy, all of your routes will have a locale prefix added except f
 
 ### prefix
 
-With this strategy, all the routes will have a locale prefix.
+With this strategy, all routes will have a locale prefix.
 
 To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default** strategy.
 
@@ -56,10 +56,10 @@ To configure the strategy, use the `strategy` option. Make sure you have a `defa
 ```js
 // nuxt.config.js
 
-{
+['@nuxtjs/i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en'
-}
+}]
 ```
 
 
