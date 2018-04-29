@@ -38,10 +38,9 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
     const redirectToBrowserLocale = () => {
       const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
       if (browserLocale && browserLocale !== app.i18n.locale && locales.indexOf(browserLocale) !== -1) {
-        locale = browserLocale
         redirect(app.localePath(Object.assign({}, route , {
           name: routeName
-        })))
+        }), browserLocale))
       }
     }
 
