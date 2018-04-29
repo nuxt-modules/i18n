@@ -28,6 +28,9 @@ describe('basic', () => {
     expect(html).toMatch(/<html[^>]*lang="en-US"/)
     expect(html).toMatch(/<link[^>]*rel="alternate" href="\/"[^>]*hreflang="en-US"/)
     expect(html).toMatch(/<link[^>]*rel="alternate" href="\/fr"[^>]*hreflang="fr-FR"/)
+
+    expect(html).toMatch(/<meta[^>]*property="og:locale"[^>]*content="en_US"/)
+    expect(html).toMatch(/<meta[^>]*property="og:locale:alternate"[^>]*content="fr_FR"/)
   })
 
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {
