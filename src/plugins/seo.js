@@ -6,7 +6,7 @@ Vue.mixin({
       this.$i18n &&
       this.$i18n.locales &&
       this.i18n !== false &&
-      this.i18n.seo !== false &&
+      (typeof this.i18n === 'undefined' || this.i18n.seo !== false) &&
       this._hasMetaInfo
     ) {
       const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
