@@ -1,47 +1,65 @@
-# nuxt-i18n
-[![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
-[![npm](https://img.shields.io/npm/dt/nuxt-i18n.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
-[![CircleCI](https://img.shields.io/circleci/project/github/nuxt-community/nuxt-i18n.svg?style=flat-square)](https://circleci.com/gh/nuxt-community/nuxt-i18n)
-[![Codecov](https://img.shields.io/codecov/c/github/nuxt-community/nuxt-i18n.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/nuxt-i18n)
-[![Dependencies](https://david-dm.org/nuxt-community/nuxt-i18n/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/nuxt-i18n)
-[![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
+<h1 align="center" >i18n-module</h1>
+<p align="center">i18n features for your Nuxt project</p>
 
-> i18n for [Nuxt](https://github.com/nuxt/nuxt.js)
+<p align="center">
+<a href="https://nuxt-community.github.io/i18n-module/">Documentation</a> | <a href="./CHANGELOG.md">Release notes</a>
+</p>
 
-[📖 **Release Notes**](./CHANGELOG.md)
 
-## Features
+<p align="center">
+<a href="https://david-dm.org/nuxt-community/i18n-module">
+    <img alt="" src="https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square">
+</a>
+<a href="https://standardjs.com">
+    <img alt="" src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square">
+</a>
+<a href="https://circleci.com/gh/nuxt-community/i18n-module">
+    <img alt="" src="https://img.shields.io/circleci/project/github/nuxt-community/i18n-module.svg?style=flat-square">
+</a>
+<a href="https://codecov.io/gh/nuxt-community/i18n-module">
+    <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square">
+</a>
+<br>
+<a href="https://npmjs.com/package/@nuxtjs/i18n">
+    <img alt="" src="https://img.shields.io/npm/v/@nuxtjs/i18n/latest.svg?style=flat-square">
+</a>
+<a href="https://npmjs.com/package/@nuxtjs/i18n">
+    <img alt="" src="https://img.shields.io/npm/dt/@nuxtjs/i18n.svg?style=flat-square">
+</a>
+</p>
 
-* [vue-i18n](https://github.com/kazupon/vue-i18n) integration
-* Automatic routes generation prefixed with locales code
-* SEO tags generation
-* Translations messages lazy-loading
-* Redirection based on browser language
-* Different domain names for each language
+## Development
 
-## Install
-- Add `nuxt-i18n` dependency using yarn or npm to your project
+- Fork the project and clone it in your existing Nuxt project:
 
 ```sh
-yarn add nuxt-i18n
-# npm i nuxt-i18n -S
+cd my-nuxt-project/
+mkdir modules/
+git clone git@github.com:<username>/i18n-module.git modules/i18n-module
 ```
 
-- Add `nuxt-i18n` to `modules` section of `nuxt.config.js`
+- Edit your Nuxt config to use the local module:
 
 ```js
+// nuxt.config.js
+
 {
   modules: [
-    ['nuxt-i18n', { /* module options */ }],
- ]
+    ['./modules/i18n-module', {
+      // options...
+    }]
+  ]
 }
 ```
 
+- Code, code, code!
+- Submit awesome PRs
 
-📖 [**Read Documentation**](https://nuxt-community.github.io/nuxt-i18n/) 
+## Issues, questions & requests
+
+Please use [CMTY](https://nuxtjs.cmty.io/) for any question you might have.
+
 
 ## License
 
-[MIT License](./LICENSE)
-
-Copyright (c) Paul Gascou-Vaillancourt (@paulgv)
+[MIT License](./LICENSE) - Copyright (c) Nuxt Community
