@@ -17,9 +17,9 @@ export default async ({ app, route, store, req }) => {
   const getLocaleDomain = <%= options.getLocaleDomain %>
   const syncVuex = <%= options.syncVuex %>
 
-
+  <% if (options.vuex) { %>
   // Register Vuex module
-  if (vuex && store) {
+  if (store) {
     store.registerModule(vuex.moduleName, {
       namespaced: true,
       state: () => ({
@@ -44,6 +44,7 @@ export default async ({ app, route, store, req }) => {
       }
     })
   }
+  <% } %>
 
   // Set instance options
   app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)

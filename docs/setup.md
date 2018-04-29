@@ -3,13 +3,13 @@
 Add **nuxt-i18n** to your dependencies using Yarn:
 
 ```bash
-yarn add nuxt-i18n
+yarn add @nuxtjs/i18n
 ```
 
 Or NPM:
 
 ```bash
-npm i nuxt-i18n
+npm i @nuxtjs/i18n
 ```
 
 Then add the module to `nuxt.config.js`:
@@ -17,7 +17,7 @@ Then add the module to `nuxt.config.js`:
 ```js
 {
   modules: [
-    ['nuxt-i18n', {
+    ['@nuxtjs/i18n', {
       // Options
     }]
   ]

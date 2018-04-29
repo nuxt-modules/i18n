@@ -18,16 +18,17 @@ export const STRATEGIES = {
 }
 export const COMPONENT_OPTIONS_KEY = 'i18n'
 export const DEFAULT_OPTIONS = {
+  vueI18n: {},
   locales: [],
   defaultLocale: null,
   routesNameSeparator: '___',
   strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
-  redirectRootToLocale: null,
+  rootRedirect: null,
   detectBrowserLanguage: {
     useCookie: true,
-    cookieKey: `${MODULE_NAME}_redirected`
+    cookieKey: 'i18n_redirected'
   },
   differentDomains: false,
   seo: true,

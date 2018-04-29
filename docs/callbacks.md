@@ -1,6 +1,6 @@
 # Callbacks
 
-**nuxt-i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language.
+**i18n-module** exposes some callbacks that you can use to perform specific tasks that depend on the app's language.
 
 ### `beforeLanguageSwitch(oldLocale, newLocale)`
 

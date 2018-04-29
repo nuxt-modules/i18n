@@ -3,8 +3,9 @@
 **nuxt-i18n** provides i18n features for your Nuxt project:
 
 * [vue-i18n](https://github.com/kazupon/vue-i18n) integration
-* Automatic routes generation prefixed with locales code
-* SEO tags generation
+* Automatic routes generation prefixed with locale code
+* SEO tags generation (lang attribute & alternate-hreflang link tags)
 * Translations messages lazy-loading
 * Redirection based on browser language
 * Different domain names for each language
+* Vuex store module with current locale & messages

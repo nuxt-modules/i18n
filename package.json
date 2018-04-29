@@ -16,7 +16,9 @@
   "scripts": {
     "lint": "eslint src test",
     "test": "jest",
-    "release": "standard-version && git push --follow-tags && npm publish"
+    "release": "standard-version && git push --follow-tags && npm publish",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "eslintIgnore": [
     "src/templates/*.*",
@@ -54,6 +56,7 @@
     "jest": "^22.3.0",
     "jsdom": "^11.6.2",
     "nuxt": "npm:nuxt-edge",
-    "standard-version": "latest"
+    "standard-version": "latest",
+    "vuepress": "^0.8.4"
   }
 }

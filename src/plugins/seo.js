@@ -2,7 +2,13 @@ import Vue from 'vue'
 
 Vue.mixin({
   head () {
-    if (this.$i18n && this.$i18n.locales && this.i18n !== false && this._hasMetaInfo) {
+    if (
+      this.$i18n &&
+      this.$i18n.locales &&
+      this.i18n !== false &&
+      this.i18n.seo !== false &&
+      this._hasMetaInfo
+    ) {
       const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
       const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
 
