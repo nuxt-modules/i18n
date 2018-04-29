@@ -1,6 +1,6 @@
-# nuxt-i18n
+# i18n-module
 
-**nuxt-i18n** provides i18n features for your Nuxt project:
+**i18n-module** provides i18n features for your Nuxt project:
 
 * [vue-i18n](https://github.com/kazupon/vue-i18n) integration
 * Automatic routes generation prefixed with locale code
