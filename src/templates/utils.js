@@ -14,12 +14,12 @@ export async function loadLanguageAsync (i18n, locale) {
   if (!i18n.loadedLanguages.includes(locale)) {
     const langOptions = i18n.locales.find(l => l[LOCALE_CODE_KEY] === locale)
     if (langOptions) {
-      const file = langOptions[LOCALE_FILE_KEY];
+      const file = langOptions[LOCALE_FILE_KEY]
       if (file) {
         <% if (options.langDir) { %>
         try {
           const module = await import(/* webpackChunkName: "lang-[request]" */ '~/<%= options.langDir %>' + file)
-          const messages = module.default
+          const messages = module.default ? module.default : module
           i18n.setLocaleMessage(locale, messages)
           i18n.loadedLanguages.push(locale)
           return messages
