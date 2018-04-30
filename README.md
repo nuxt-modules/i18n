@@ -19,6 +19,7 @@
 <a href="https://codecov.io/gh/nuxt-community/nuxt-i18n">
     <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/nuxt-i18n.svg?style=flat-square">
 </a>
+<a href="https://snyk.io/test/github/nuxt-community/nuxt-i18n"><img src="https://snyk.io/test/github/nuxt-community/nuxt-i18n/badge.svg" alt="Known Vulnerabilities" data-canonical-src="https://snyk.io/test/github/nuxt-community/nuxt-i18n" style="max-width:100%;"/></a>
 <br>
 <a href="https://npmjs.com/package/nuxt-i18n">
     <img alt="" src="https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square">
