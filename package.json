@@ -10,6 +10,10 @@
   ],
   "main": "src/index.js",
   "repository": "https://github.com/nuxt-community/nuxt-i18n",
+  "homepage": "https://nuxt-community.github.io/nuxt-i18n/",
+  "bugs": {
+    "url": "https://nuxtjs.cmty.io/nuxt-community/nuxt-i18n/issues"
+  },
   "publishConfig": {
     "access": "public"
   },
