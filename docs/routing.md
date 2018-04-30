@@ -1,6 +1,6 @@
 # Routing
 
-**i18n-module** overrides Nuxt default routes to add locale prefixes to every URL.  
+**nuxt-i18n** overrides Nuxt default routes to add locale prefixes to every URL.  
 Say your app supports two languages: French and English as the default language, and you have the following pages in your project:
 
 ```asciidoc

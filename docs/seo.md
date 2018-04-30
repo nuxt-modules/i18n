@@ -1,6 +1,6 @@
 # SEO
 
-By default, **i18n-module** attempts to add some metadata to improve your pages SEO. Here's what it does:
+By default, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does:
 
 * Add a _lang_ attribute containing current locale's ISO code to the `<html>` tag.
 * Generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. For each language, the ISO code is used as `hreflang` attribute's value.
@@ -51,5 +51,5 @@ export default {
 }
 ```
 
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/plugins/seo.js](/src/plugins/seo.js) if you want to copy some of **i18n-module**'s logic.
+To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/plugins/seo.js](/src/plugins/seo.js) if you want to copy some of **nuxt-i18n**'s logic.
 

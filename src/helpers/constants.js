@@ -2,7 +2,7 @@ const packageJson = require('../../package.json')
 
 // Internals
 export const MODULE_NAME = packageJson.name
-export const ROOT_DIR = 'i18n-module'
+export const ROOT_DIR = 'nuxt-i18n'
 export const HELPERS_PATH = 'helpers/'
 export const PLUGINS_DIR = 'plugins/'
 export const TEMPLATES_DIR = 'templates/'

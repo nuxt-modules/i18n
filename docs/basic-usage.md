@@ -1,6 +1,6 @@
 # Basic Usage
 
-The fastest way to get started with **i18n-module** is to defined the supported `locales` list as well as providing some translations messages to **vue-i18n** via the `vueI18n` option:
+The fastest way to get started with **nuxt-i18n** is to defined the supported `locales` list as well as providing some translations messages to **vue-i18n** via the `vueI18n` option:
 
 ```js
 {
@@ -27,13 +27,13 @@ The fastest way to get started with **i18n-module** is to defined the supported 
 }
 ```
 
-With this setup, **i18n-module** generates localized URLs for all your pages, using the locale codes provided in the `locales` option as the prefix, except for the `defaultLocale`.
+With this setup, **nuxt-i18n** generates localized URLs for all your pages, using the locale codes provided in the `locales` option as the prefix, except for the `defaultLocale`.
 
 The `vueI18n` is passed as is to **vue-i18n**, refer to the [doc](https://kazupon.github.io/vue-i18n/) for available options.
 
 ## nuxt-link
 
-When rendering internal links in you app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **i18n-module** registers a global mixin that provides some helper functions:
+When rendering internal links in you app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
 
 * `localePath` – Returns the localized URL for a given page. The first parameter can be either the name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
 

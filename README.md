@@ -1,23 +1,23 @@
-<h1 align="center" >i18n-module</h1>
+<h1 align="center" >nuxt-i18n</h1>
 <p align="center">i18n features for your Nuxt project</p>
 
 <p align="center">
-<a href="https://nuxt-community.github.io/i18n-module/">Documentation</a> | <a href="./CHANGELOG.md">Release notes</a>
+<a href="https://nuxt-community.github.io/nuxt-i18n/">Documentation</a> | <a href="./CHANGELOG.md">Release notes</a>
 </p>
 
 
 <p align="center">
-<a href="https://david-dm.org/nuxt-community/i18n-module">
-    <img alt="" src="https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square">
+<a href="https://david-dm.org/nuxt-community/nuxt-i18n">
+    <img alt="" src="https://david-dm.org/nuxt-community/nuxt-i18n/status.svg?style=flat-square">
 </a>
 <a href="https://standardjs.com">
     <img alt="" src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square">
 </a>
-<a href="https://circleci.com/gh/nuxt-community/i18n-module">
-    <img alt="" src="https://img.shields.io/circleci/project/github/nuxt-community/i18n-module.svg?style=flat-square">
+<a href="https://circleci.com/gh/nuxt-community/nuxt-i18n">
+    <img alt="" src="https://img.shields.io/circleci/project/github/nuxt-community/nuxt-i18n.svg?style=flat-square">
 </a>
-<a href="https://codecov.io/gh/nuxt-community/i18n-module">
-    <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square">
+<a href="https://codecov.io/gh/nuxt-community/nuxt-i18n">
+    <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/nuxt-i18n.svg?style=flat-square">
 </a>
 <br>
 <a href="https://npmjs.com/package/nuxt-i18n">
@@ -35,7 +35,7 @@
 ```sh
 cd my-nuxt-project/
 mkdir modules/
-git clone git@github.com:<username>/i18n-module.git modules/i18n-module
+git clone git@github.com:<username>/nuxt-i18n.git modules/nuxt-i18n
 ```
 
 - Edit your Nuxt config to use the local module:
@@ -45,7 +45,7 @@ git clone git@github.com:<username>/i18n-module.git modules/i18n-module
 
 {
   modules: [
-    ['./modules/i18n-module', {
+    ['./modules/nuxt-i18n', {
       // options...
     }]
   ]

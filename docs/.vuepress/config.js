@@ -1,9 +1,9 @@
 module.exports = {
   title: 'i18n Module',
   description: 'i18n for Nuxt',
-  base: '/i18n-module/',
+  base: '/nuxt-i18n/',
   themeConfig: {
-    repo: 'nuxt-community/i18n-module',
+    repo: 'nuxt-community/nuxt-i18n',
     editLinks: true,
     docsDir: 'docs',
     locales: {

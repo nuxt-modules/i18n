@@ -1,6 +1,6 @@
 # Setup
 
-Add **i18n-module** to your dependencies using Yarn:
+Add **nuxt-i18n** to your dependencies using Yarn:
 
 ```bash
 yarn add nuxt-i18n

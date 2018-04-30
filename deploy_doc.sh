@@ -20,6 +20,6 @@ git commit -m 'deploy'
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:nuxt-community/i18n-module.git master:gh-pages
+git push -f git@github.com:nuxt-community/nuxt-i18n.git master:gh-pages
 
 cd -
