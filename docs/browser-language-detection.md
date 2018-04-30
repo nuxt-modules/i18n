@@ -6,7 +6,7 @@ By default, **i18n-module** attempts to redirect users to their preferred langua
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   detectBrowserLanguage: {
     useCookie: true,
     cookieKey: 'i18n_redirected'
@@ -19,7 +19,7 @@ To prevent redirecting users every time they visit the app, **i18n-module** sets
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   detectBrowserLanguage: {
     useCookie: true,
     cookieKey: 'my_custom_cookie_name'
@@ -32,7 +32,7 @@ If you'd rather have users be redirected to their browser's language every time 
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   detectBrowserLanguage: {
     useCookie: false
   }
@@ -44,7 +44,7 @@ To completely disable the browser's language detection feature, set `detectBrows
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   detectBrowserLanguage: false
 }]
 ```

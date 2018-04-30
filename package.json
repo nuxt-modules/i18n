@@ -1,5 +1,5 @@
 {
-  "name": "@nuxtjs/i18n",
+  "name": "nuxt-i18n",
   "version": "3.0.0",
   "description": "i18n for Nuxt",
   "license": "MIT",

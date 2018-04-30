@@ -15,7 +15,7 @@ Here's an example lang switcher where a `name` key has been added to each locale
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   locales: [
     {
       code: 'en',

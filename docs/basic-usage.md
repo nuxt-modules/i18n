@@ -5,7 +5,7 @@ The fastest way to get started with **i18n-module** is to defined the supported 
 ```js
 {
   modules: [
-    ['@nuxtjs/i18n', {
+    ['nuxt-i18n', {
       locales: ['en', 'fr', 'es'],
       defaultLocale: 'en',
       vueI18n: {

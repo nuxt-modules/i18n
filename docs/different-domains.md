@@ -8,7 +8,7 @@ You might want to use a different domain name for each language your app support
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   locales: [
     {
       code: 'en',

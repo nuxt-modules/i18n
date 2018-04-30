@@ -20,11 +20,11 @@
     <img alt="" src="https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square">
 </a>
 <br>
-<a href="https://npmjs.com/package/@nuxtjs/i18n">
-    <img alt="" src="https://img.shields.io/npm/v/@nuxtjs/i18n/latest.svg?style=flat-square">
+<a href="https://npmjs.com/package/nuxt-i18n">
+    <img alt="" src="https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square">
 </a>
-<a href="https://npmjs.com/package/@nuxtjs/i18n">
-    <img alt="" src="https://img.shields.io/npm/dt/@nuxtjs/i18n.svg?style=flat-square">
+<a href="https://npmjs.com/package/nuxt-i18n">
+    <img alt="" src="https://img.shields.io/npm/dt/nuxt-i18n.svg?style=flat-square">
 </a>
 </p>
 

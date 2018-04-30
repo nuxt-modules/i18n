@@ -11,7 +11,7 @@ For this feature to work, you must configure `locales` option as an array of obj
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   locales: [
     {
       code: 'en',
@@ -34,7 +34,7 @@ To disable this feature everywhere in your app, set `seo` option to `false`:
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   seo: false
 }]
 ```

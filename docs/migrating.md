@@ -1,23 +1,6 @@
 # Migrating from 2.x
 
-There are a few breaking changes that should be taken into consideration when migrating from 2.x to 3.x, the first one being that the npm package has been renamed to `@nuxtjs/i18n` instead of `nuxt-i18n`, make sure you update your `package.json` and your Nuxt config accordingly:
-
-```sh
-yarn remove nuxt-i18n
-yarn add @nuxtjs/i18n
-```
-
-```js
-// nuxt.config.js
-
-{
-  modules: [
-    ['@nuxtjs/i18n', {
-      // options
-    }]
-  ]
-}
-```
+This is a list of breaking changes that you should take into consideration when migrating from 2.x to 3.x.
 
 
 ## Custom routes
@@ -115,7 +98,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 {
   modules: [
-    ['@nuxtjs/i18n', {
+    ['nuxt-i18n', {
       strategy: 'prefix'
     }]
   ]
@@ -153,7 +136,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 {
   modules: [
-    ['@nuxtjs/i18n', {
+    ['nuxt-i18n', {
       detectBrowserLanguage: {
         cookieKey: 'redirected',
         useCookie: true

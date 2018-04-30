@@ -56,7 +56,7 @@ To configure the strategy, use the `strategy` option. Make sure you have a `defa
 ```js
 // nuxt.config.js
 
-['@nuxtjs/i18n', {
+['nuxt-i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en'
 }]
