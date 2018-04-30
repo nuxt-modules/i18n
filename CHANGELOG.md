@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.10.0"></a>
+# [2.10.0](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.5...v2.10.0) (2018-04-30)
+
+
+### Features
+
+* **seo:** Add og:locale tags ([a688b6a](https://github.com/nuxt-community/nuxt-i18n/commit/a688b6a))
+
+
+
 <a name="2.9.5"></a>
 ## [2.9.5](https://github.com/nuxt-community/nuxt-i18n/compare/v2.9.4...v2.9.5) (2018-04-18)
 
