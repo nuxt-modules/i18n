@@ -30,15 +30,15 @@ Configuration example:
   locales: [
     {
       code: 'en',
-      langFile: 'en-US.js'
+      file: 'en-US.js'
     },
     {
       code: 'es',
-      langFile: 'es-ES.js'
+      file: 'es-ES.js'
     },
     {
       code: 'fr',
-      langFile: 'fr-FR.js'
+      file: 'fr-FR.js'
     }
   ],
   lazy: true,

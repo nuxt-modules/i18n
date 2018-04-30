@@ -107,7 +107,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 ## loadLanguagesAsync
 
-`loadLanguagesAsync` option has been renamed to `lazy`.
+`loadLanguagesAsync` option has been renamed to `lazy`. `langFile` option in `locales` has been renamed to `file`.
 
 ## redirectCookieKey & useRedirectCookie
 
