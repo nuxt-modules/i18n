@@ -52,8 +52,46 @@ git clone git@github.com:<username>/nuxt-i18n.git modules/nuxt-i18n
 }
 ```
 
+- Install the module's dependencies
+
+```sh
+cd modules/nuxt-i18n/
+yarn
+```
+
 - Code, code, code!
+- Run ESLint & Jest
+
+```sh
+yarn lint && yarn test
+```
+
 - Submit awesome PRs
+
+## Contribute to the documentation
+
+- Fork and clone the project
+
+```sh
+git clone git@github.com:<username>/nuxt-i18n.git
+```
+
+- Install the dependencies
+
+```sh
+cd nuxt-i18n/
+yarn
+```
+
+- Start the docs server
+
+```sh
+yarn docs:dev
+```
+
+- Write some doc by editing files in `docs/` directory, if you're adding new pages, make sure you add them to the table of contents in `docs/.vuepress/config`
+
+- Once you're done, submit that shiny PR!
 
 ## Issues, questions & requests
 
