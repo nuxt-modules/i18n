@@ -39,6 +39,8 @@ export const DEFAULT_OPTIONS = {
       setMessages: 'I18N_SET_MESSAGES'
     }
   },
+  parsePages: true,
+  pages: {},
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }

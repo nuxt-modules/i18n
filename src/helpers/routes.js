@@ -2,13 +2,16 @@ import {
   MODULE_NAME,
   STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
-import { getLocaleCodes } from './utils'
+import { getPageOptions, getLocaleCodes } from './utils'
 
 export const makeRoutes = (baseRoutes, {
   locales,
   defaultLocale,
   routesNameSeparator,
   strategy,
+  parsePages,
+  pages,
+  pagesDir,
   differentDomains
 }) => {
   locales = getLocaleCodes(locales)
@@ -16,20 +19,35 @@ export const makeRoutes = (baseRoutes, {
 
   const buildLocalizedRoutes = (route, routeOptions = {}, isChild = false) => {
     const routes = []
+    let pageOptions
 
     // Extract i18n options from page
-    const extractedOptions = extractComponentOptions(route.component)
+    if (parsePages) {
+      pageOptions = extractComponentOptions(route.component)
+    } else {
+      pageOptions = getPageOptions(route, pages, locales, pagesDir)
+    }
 
     // Skip route if i18n is disabled on page
-    if (extractedOptions === false) {
+    if (pageOptions === false) {
       return route
     }
 
     // Component's specific options
     const componentOptions = {
       locales,
-      ...extractComponentOptions(route.component),
+      ...pageOptions,
       ...routeOptions
+    }
+    // Double check locales to remove any locales not found in pageOptions
+    // This is there to prevent children routes being localized even though
+    // they are disabled in the configuration
+    if (
+      typeof componentOptions.locales !== 'undefined' && componentOptions.locales.length > 0 &&
+      typeof pageOptions.locales !== 'undefined' && pageOptions.locales.length > 0) {
+      componentOptions.locales = componentOptions.locales.filter((locale) => (
+        pageOptions.locales.indexOf(locale) !== -1
+      ))
     }
 
     // Generate routes for component's supported locales
@@ -82,7 +100,7 @@ export const makeRoutes = (baseRoutes, {
 
   for (let i = 0, length1 = baseRoutes.length; i < length1; i++) {
     const route = baseRoutes[i]
-    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, locales))
+    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, { locales }))
   }
 
   return localizedRoutes
