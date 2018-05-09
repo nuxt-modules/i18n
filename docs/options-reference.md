@@ -80,6 +80,14 @@ Here are all the options available when configuring the module and their default
     }
   },
 
+  // By default, custom routes are extracted from page files using acorn parsing,
+  // set this to false to disable this
+  parsePages: true,
+
+  // If parsePages option is disabled, the module will look for custom routes in
+  // the pages option, refer to the "Routing" section for usage
+  pages: {},
+
   // Called right before app's locale changes
   beforeLanguageSwitch: () => null,
 
