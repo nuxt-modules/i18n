@@ -24,7 +24,7 @@ export async function loadLanguageAsync (i18n, locale) {
           i18n.loadedLanguages.push(locale)
           return messages
         } catch (error) {
-          logger.error(error)
+          console.error(error)
         }
         <% } %>
       } else {
