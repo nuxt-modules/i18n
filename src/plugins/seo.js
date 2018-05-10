@@ -39,18 +39,28 @@ Vue.mixin({
     .filter(item => !!item)
 
     // og:locale meta
-    const meta = [
-      // Replace dash with underscore as defined in spec: language_TERRITORY
-      { hid: 'og:locale', name: 'og:locale', property: 'og:locale', content: currentLocaleData[LOCALE_ISO_KEY].replace(/-/g, '_') },
+    const meta = []
+    // og:locale - current
+    if (currentLocaleData && currentLocaleData[LOCALE_ISO_KEY]) {
+      meta.push({
+        hid: 'og:locale',
+        name: 'og:locale',
+        property: 'og:locale',
+        // Replace dash with underscore as defined in spec: language_TERRITORY
+        content: currentLocaleData[LOCALE_ISO_KEY].replace(/-/g, '_')
+      })
+    }
+    // og:locale - alternate
+    meta.push(
       ...this.$i18n.locales
-        .filter(l => l[LOCALE_ISO_KEY] !== currentLocaleData[LOCALE_ISO_KEY])
+        .filter(l => l[LOCALE_ISO_KEY] && l[LOCALE_ISO_KEY] !== currentLocaleData[LOCALE_ISO_KEY])
         .map(locale => ({
           hid: 'og:locale:alternate-' + locale[LOCALE_ISO_KEY],
           name: 'og:locale:alternate',
           property: 'og:locale:alternate',
           content: locale[LOCALE_ISO_KEY].replace(/-/g, '_')
         }))
-    ]
+    );
 
     return {
       htmlAttrs,
