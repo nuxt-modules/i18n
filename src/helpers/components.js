@@ -1,9 +1,9 @@
 import {readFileSync} from 'fs'
 import acorn from 'acorn'
 import walker from 'acorn/dist/walk'
+import {COMPONENT_OPTIONS_KEY} from './constants'
 
 const compiler = require('vue-template-compiler')
-import {COMPONENT_OPTIONS_KEY} from './constants'
 
 export const extractComponentOptions = (path) => {
   let componentOptions = {}
@@ -18,8 +18,8 @@ export const extractComponentOptions = (path) => {
     sourceType: 'module'
   })
   walker.simple(parsed, {
-    Property(node) {
-      if (node.key.name === COMPONENT_OPTIONS_KEY){
+    Property (node) {
+      if (node.key.name === COMPONENT_OPTIONS_KEY) {
         const data = script.substring(node.start, node.end)
         componentOptions = eval(`({${data}})`).i18n // eslint-disable-line
       }
