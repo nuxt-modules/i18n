@@ -14,6 +14,7 @@ export default async ({ app, route, store, req }) => {
   const getLocaleCodes = <%= options.getLocaleCodes %>
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const getHostname = <%= options.getHostname %>
+  const getForwarded = <%= options.getForwarded %>
   const getLocaleDomain = <%= options.getLocaleDomain %>
   const syncVuex = <%= options.syncVuex %>
 
@@ -51,6 +52,7 @@ export default async ({ app, route, store, req }) => {
   app.i18n.locales = <%= JSON.stringify(options.locales) %>
   app.i18n.defaultLocale = '<%= options.defaultLocale %>'
   app.i18n.differentDomains = <%= options.differentDomains %>
+  app.i18n.forwardedHost = <%= options.forwardedHost %>
   app.i18n.routesNameSeparator = '<%= options.routesNameSeparator %>'
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
