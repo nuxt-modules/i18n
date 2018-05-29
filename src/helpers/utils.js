@@ -89,19 +89,26 @@ export const getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales
 }
 
 /**
+ * Get x-forwarded-host
+ * @return {String} x-forwarded-host
+ */
+export const getForwarded = () => (
+  process.browser ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host) // eslint-disable-line
+)
+
+/**
  * Get hostname
  * @return {String} Hostname
  */
 export const getHostname = () => (
   process.browser ? window.location.href.split('/')[2] : req.headers.host // eslint-disable-line
 )
-
 /**
  * Get locale code that corresponds to current hostname
  * @return {String} Locade code found if any
  */
 export const getLocaleDomain = () => {
-  const hostname = getHostname()
+  const hostname = app.i18n.forwardedHost ? getForwarded() : getHostname()
   if (hostname) {
     const localeDomain = app.i18n.locales.find(l => l[LOCALE_DOMAIN_KEY] === hostname) // eslint-disable-line
     if (localeDomain) {
