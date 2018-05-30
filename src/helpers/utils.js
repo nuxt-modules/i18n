@@ -1,4 +1,4 @@
-/* global vuex, store */
+/* global app, req, vuex, store */
 
 import { LOCALE_CODE_KEY, LOCALE_DOMAIN_KEY } from './constants'
 
@@ -93,7 +93,7 @@ export const getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales
  * @return {String} x-forwarded-host
  */
 export const getForwarded = () => (
-  process.browser ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host) // eslint-disable-line
+  process.browser ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host)
 )
 
 /**
