@@ -31,6 +31,7 @@ export const DEFAULT_OPTIONS = {
     cookieKey: 'i18n_redirected'
   },
   differentDomains: false,
+  forwardedHost: false,
   seo: true,
   vuex: {
     moduleName: 'i18n',
