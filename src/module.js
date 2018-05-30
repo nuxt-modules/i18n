@@ -18,6 +18,7 @@ import { makeRoutes } from './helpers/routes'
 import {
   getLocaleCodes,
   getLocaleFromRoute,
+  getForwarded,
   getHostname,
   getLocaleDomain,
   syncVuex
@@ -45,6 +46,7 @@ export default function (userOptions) {
     LOCALE_FILE_KEY,
     getLocaleCodes,
     getLocaleFromRoute,
+    getForwarded,
     getHostname,
     getLocaleDomain,
     syncVuex
