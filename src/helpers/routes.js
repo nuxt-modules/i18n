@@ -54,7 +54,7 @@ export const makeRoutes = (baseRoutes, {
     for (let i = 0, length1 = componentOptions.locales.length; i < length1; i++) {
       const locale = componentOptions.locales[i]
       let { name, path } = route
-      const localizedRoute = { ...route, children: [] }
+      const localizedRoute = { ...route }
 
       // Skip if locale not in module's configuration
       if (locales.indexOf(locale) === -1) {
@@ -64,6 +64,7 @@ export const makeRoutes = (baseRoutes, {
 
       // Generate localized children routes if any
       if (route.children) {
+        localizedRoute.children = []
         for (let i = 0, length1 = route.children.length; i < length1; i++) {
           localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true))
         }
