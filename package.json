@@ -45,7 +45,7 @@
     "cookie": "^0.3.1",
     "esm": "3.0.28",
     "fs": "^0.0.1-security",
-    "vue-i18n": "^7.5.0",
+    "vue-i18n": "^7.8.0",
     "vue-i18n-extensions": "^0.1.0"
   },
   "devDependencies": {
