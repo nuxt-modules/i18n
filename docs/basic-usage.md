@@ -33,7 +33,7 @@ The `vueI18n` option is passed as is to **vue-i18n**, refer to the [doc](https:/
 
 ## nuxt-link
 
-When rendering internal links in you app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
+When rendering internal links in your app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
 
 * `localePath` – Returns the localized URL for a given page. The first parameter can be either the name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
 
