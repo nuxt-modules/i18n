@@ -1,9 +1,46 @@
-# Migrating from 2.x
+# Migration guide
 
-This is a list of breaking changes that you should take into consideration when migrating from 2.x to 3.x.
+Follow this guide to upgrade from one major version to the other.
 
+## Upgrading from 3.x to 4.x
 
-## Custom routes
+### In-component options key
+
+v4.x introduces a single change that requires you to rename the `i18n` key to `nuxtI18n` in your pages that use in-component configuration, this should prevent conflicts with vue-i18n.
+
+**3.x:**
+
+```js
+// pages/about.vue
+
+export default {
+  i18n: {
+    paths: {
+      fr: '/a-propos',
+      en: '/about-us'
+    }
+  }
+}
+```
+
+**4.x:**
+
+```js
+// pages/about.vue
+
+export default {
+  nuxtI18n: {
+    paths: {
+      fr: '/a-propos',
+      en: '/about-us'
+    }
+  }
+}
+```
+
+## Upgrading from 2.x to 3.x
+
+### Custom routes
 
 The `routes` option has been dropped in favor of in-component configuration, any custom path configuration should be placed in their corresponding page file.
 
@@ -28,7 +65,7 @@ The `routes` option has been dropped in favor of in-component configuration, any
 
 **3.x:**
 
-```vue
+```js
 // pages/about.vue
 
 export default {
@@ -41,7 +78,7 @@ export default {
 }
 ```
 
-## Ignored paths
+### Ignored paths
 
 
 The `ignorePaths` option has been dropped as well, its behaviour can be reproduces by setting `i18n` to `false` right in your pages.
@@ -64,7 +101,7 @@ The `ignorePaths` option has been dropped as well, its behaviour can be reproduc
 
 **3.x:**
 
-```vue
+```js
 // pages/fr/notlocalized.vue
 
 export default {
@@ -72,7 +109,7 @@ export default {
 }
 ```
 
-## noPrefixDefaultLocale
+### noPrefixDefaultLocale
 
 The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
@@ -105,11 +142,11 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 }
 ```
 
-## loadLanguagesAsync
+### loadLanguagesAsync
 
 `loadLanguagesAsync` option has been renamed to `lazy`. `langFile` option in `locales` has been renamed to `file`.
 
-## redirectCookieKey & useRedirectCookie
+### redirectCookieKey & useRedirectCookie
 
 `redirectCookieKey` and `useRedirectCookie` have been merged into `detectBrowserLanguage` option and renamed to `cookieKey` and `useCookie` respectively.
 

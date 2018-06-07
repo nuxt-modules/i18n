@@ -59,6 +59,10 @@ Here are all the options available when configuring the module and their default
   // as an array of objects, each containing a domain key
   differentDomains: false,
 
+  // If using different domains, set this to true to get hostname from X-Forwared-Host
+  // HTTP header instead of window.location
+  forwardedHost: false,
+
   // If true, SEO metadata is generated for routes that have i18n enabled
   // Set to false to disable app-wide
   seo: true,

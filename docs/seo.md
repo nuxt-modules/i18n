@@ -46,7 +46,7 @@ If you'd like to disable SEO on specific pages, set `i18n.seo` to `false` right 
 // pages/about.vue
 
 export default {
-  i18n: {
+  nuxtI18n: {
     seo: false
   }
 }

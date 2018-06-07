@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'i18n Module',
+  title: 'nuxt-i18n',
   description: 'i18n for Nuxt',
   base: '/nuxt-i18n/',
   themeConfig: {

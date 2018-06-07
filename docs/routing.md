@@ -77,7 +77,7 @@ Add a `i18n.paths` property to your page and set your custom paths there:
 // pages/about.vue
 
 export default {
-  i18n: {
+  nuxtI18n: {
     paths: {
       en: '/about-us', // -> accessible at /about-us (no prefix since it's the default locale)
       fr: '/a-propos', // -> accessible at /fr/a-propos
@@ -141,7 +141,7 @@ If you'd like some page to be available to some languages only, you can configur
 // pages/about.vue
 
 export default {
-  i18n: {
+  nuxtI18n: {
     locales: ['fr', 'es']
   }
 }
@@ -153,7 +153,7 @@ To completely disable i18n on a given page:
 // pages/about.vue
 
 export default {
-  i18n: false
+  nuxtI18n: false
 }
 ```
 
