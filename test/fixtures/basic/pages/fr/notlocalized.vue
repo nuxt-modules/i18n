@@ -6,6 +6,6 @@
 
 <script>
 export default {
-  i18n: false
+  nuxtI18n: false
 }
 </script>

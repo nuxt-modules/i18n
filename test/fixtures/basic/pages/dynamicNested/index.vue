@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  i18n: {
+  nuxtI18n: {
     paths: {
       fr: '/imbrication-dynamique'
     }

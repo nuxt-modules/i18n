@@ -13,7 +13,7 @@ export default {
   components: {
     LangSwitcher
   },
-  i18n: {
+  nuxtI18n: {
     paths: {
       en: '/about-us',
       fr: '/a-propos'
