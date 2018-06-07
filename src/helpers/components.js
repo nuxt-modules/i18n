@@ -14,7 +14,7 @@ export const extractComponentOptions = (path) => {
 
   const script = Component.script.content
   const parsed = acorn.parse(script, {
-    ecmaVersion: 9,
+    ecmaVersion: 10,
     sourceType: 'module'
   })
   walker.simple(parsed, {
