@@ -21,7 +21,7 @@ export const extractComponentOptions = (path) => {
     Property (node) {
       if (node.key.name === COMPONENT_OPTIONS_KEY) {
         const data = script.substring(node.start, node.end)
-        componentOptions = eval(`({${data}})`).i18n // eslint-disable-line
+        componentOptions = eval(`({${data}})`)[COMPONENT_OPTIONS_KEY] // eslint-disable-line
       }
     }
   })

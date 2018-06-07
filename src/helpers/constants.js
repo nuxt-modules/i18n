@@ -16,7 +16,7 @@ export const STRATEGIES = {
   PREFIX: 'prefix',
   PREFIX_EXCEPT_DEFAULT: 'prefix_except_default'
 }
-export const COMPONENT_OPTIONS_KEY = 'i18n'
+export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 export const DEFAULT_OPTIONS = {
   vueI18n: {},
   locales: [],

@@ -12,7 +12,8 @@ import {
   LOCALE_CODE_KEY,
   LOCALE_ISO_KEY,
   LOCALE_DOMAIN_KEY,
-  LOCALE_FILE_KEY
+  LOCALE_FILE_KEY,
+  COMPONENT_OPTIONS_KEY
 } from './helpers/constants'
 import { makeRoutes } from './helpers/routes'
 import {
@@ -44,6 +45,7 @@ export default function (userOptions) {
     LOCALE_ISO_KEY,
     LOCALE_DOMAIN_KEY,
     LOCALE_FILE_KEY,
+    COMPONENT_OPTIONS_KEY,
     getLocaleCodes,
     getLocaleFromRoute,
     getForwarded,

@@ -2,12 +2,13 @@ import Vue from 'vue'
 
 Vue.mixin({
   head () {
+    const COMPONENT_OPTIONS_KEY = '<%= options.COMPONENT_OPTIONS_KEY %>'
     if (
       !this._hasMetaInfo ||
       !this.$i18n ||
       !this.$i18n.locales ||
-      this.$options.i18n === false ||
-      (this.$options.i18n && this.$options.i18n.seo === false)
+      this.$options[COMPONENT_OPTIONS_KEY] === false ||
+      (this.$options[COMPONENT_OPTIONS_KEY] && this.$options[COMPONENT_OPTIONS_KEY].seo === false)
     ) {
       return {};
     }
