@@ -130,6 +130,68 @@ Here's how you would configure this particular page in the configuration:
 }]
 ```
 
+Thus when setting `pages, make sure `pages paths` are: 
+  1. relative `paths` to the `pages/` folder (don't start your path with a `/`)
+  2. each `path` needs to point directly to the file (make sure to add `/index` at the end if it's in `root named folder`)
+
+
+End so when setting the `localized path` for each `page path` keep in mind that this path is from `root` and thus: 
+  1. you need to start with a `/`
+  2. you need to repeat the full path for each one of your `child pages paths`
+
+With the following `pages` folder:
+
+```asciidoc
+pages/
+├── about.vue
+├── services/
+├──── index.vue
+├──── development/
+├────── index.vue
+├────── app/
+├──────── index.vue
+├────── website/
+├──────── index.vue
+├──── coaching/
+├────── index.vue
+```
+
+You would need to set up your `pages` property as follow:
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  parsePages: false,
+  pages: {
+    about: {
+      en: '/about',
+      fr: '/a-propos', 
+    },
+    'services/index': {
+      en: '/services',
+      fr: '/offres', 
+    },
+    'services/development/index': {
+      en: '/services/development',
+      fr: '/offres/developement', 
+    },
+    'services/development/app/index': {
+      en: '/services/development/app',
+      fr: '/offres/developement/app', 
+    },
+    'services/development/website/index': {
+      en: '/services/development/website',
+      fr: '/offres/developement/site-web', 
+    },
+    'services/coaching/index': {
+      en: '/services/coaching',
+      fr: '/offres/formation', 
+    }
+  }
+}]
+```
+
 ## Ignore routes
 
 
