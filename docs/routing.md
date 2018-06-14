@@ -106,7 +106,19 @@ Make sure you set the `parsePages` option to `false` to disable acorn parsing an
 }]
 ```
 
-Note that each key in the `pages` object should correspond to the full file path in your page directory, say you have some nested page like:
+Note that each key in the `pages` object should correspond to the full file path in your `pages/` directory.
+
+Make sure all keys:
+  1. Are relative to the `pages/` directory and don't start with a `/`
+  2. Point directly to their corresponding file without `.vue` (make sure you add `/index` when translating root paths)
+
+Localized routes are full URIs, so keep in mind that:
+  1. They need to start with a `/`
+  2. You must repeat the full URI for each child route
+
+#### Example 1
+
+Say you have some nested page like:
 
 ```asciidoc
 pages/
@@ -130,16 +142,9 @@ Here's how you would configure this particular page in the configuration:
 }]
 ```
 
-Thus when setting `pages, make sure `pages paths` are: 
-  1. relative `paths` to the `pages/` folder (don't start your path with a `/`)
-  2. each `path` needs to point directly to the file (make sure to add `/index` at the end if it's in `root named folder`)
+#### Example 2
 
-
-End so when setting the `localized path` for each `page path` keep in mind that this path is from `root` and thus: 
-  1. you need to start with a `/`
-  2. you need to repeat the full path for each one of your `child pages paths`
-
-With the following `pages` folder:
+With the following `pages` directory:
 
 ```asciidoc
 pages/
@@ -156,7 +161,7 @@ pages/
 ├────── index.vue
 ```
 
-You would need to set up your `pages` property as follow:
+You would need to set up your `pages` property as follows:
 
 ```js
 // nuxt.config.js
