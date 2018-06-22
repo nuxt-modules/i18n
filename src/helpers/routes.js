@@ -61,9 +61,13 @@ export const makeRoutes = (baseRoutes, {
         console.warn(`[${MODULE_NAME}] Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`)
         continue
       }
+      
+      // Make localized route name
+      localizedRoute.name = name + routesNameSeparator + locale
 
       // Generate localized children routes if any
       if (route.children) {
+        delete localizedRoute.name
         localizedRoute.children = []
         for (let i = 0, length1 = route.children.length; i < length1; i++) {
           localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true))
@@ -74,9 +78,6 @@ export const makeRoutes = (baseRoutes, {
       if (componentOptions.paths && componentOptions.paths[locale]) {
         path = componentOptions.paths[locale]
       }
-
-      // Make localized route name
-      localizedRoute.name = name + routesNameSeparator + locale
 
       // Add route prefix if needed
       const shouldAddPrefix = (
