@@ -106,7 +106,19 @@ Make sure you set the `parsePages` option to `false` to disable acorn parsing an
 }]
 ```
 
-Note that each key in the `pages` object should correspond to the full file path in your page directory, say you have some nested page like:
+Note that each key in the `pages` object should correspond to the full file path in your `pages/` directory.
+
+Make sure all keys:
+  1. Are relative to the `pages/` directory and don't start with a `/`
+  2. Point directly to their corresponding file without `.vue` (make sure you add `/index` when translating root paths)
+
+Localized routes are full URIs, so keep in mind that:
+  1. They need to start with a `/`
+  2. You must repeat the full URI for each child route
+
+#### Example 1
+
+Say you have some nested page like:
 
 ```asciidoc
 pages/
@@ -125,6 +137,61 @@ Here's how you would configure this particular page in the configuration:
   pages: {
     '_nested/_route/index': {
       en: '/mycustompath/:nested/:route?' // Params need to be put back here as you would with vue-router
+    }
+  }
+}]
+```
+
+#### Example 2
+
+With the following `pages` directory:
+
+```asciidoc
+pages/
+├── about.vue
+├── services/
+├──── index.vue
+├──── development/
+├────── index.vue
+├────── app/
+├──────── index.vue
+├────── website/
+├──────── index.vue
+├──── coaching/
+├────── index.vue
+```
+
+You would need to set up your `pages` property as follows:
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  parsePages: false,
+  pages: {
+    about: {
+      en: '/about',
+      fr: '/a-propos', 
+    },
+    'services/index': {
+      en: '/services',
+      fr: '/offres', 
+    },
+    'services/development/index': {
+      en: '/services/development',
+      fr: '/offres/developement', 
+    },
+    'services/development/app/index': {
+      en: '/services/development/app',
+      fr: '/offres/developement/app', 
+    },
+    'services/development/website/index': {
+      en: '/services/development/website',
+      fr: '/offres/developement/site-web', 
+    },
+    'services/coaching/index': {
+      en: '/services/coaching',
+      fr: '/offres/formation', 
     }
   }
 }]
