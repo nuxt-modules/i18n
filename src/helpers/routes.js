@@ -61,7 +61,7 @@ export const makeRoutes = (baseRoutes, {
         console.warn(`[${MODULE_NAME}] Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`)
         continue
       }
-      
+
       // Make localized route name
       localizedRoute.name = name + routesNameSeparator + locale
 
