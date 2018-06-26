@@ -74,16 +74,12 @@ function getRouteBaseNameFactory (contextRoute) {
   }
 
   return function getRouteBaseName (route) {
-    const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-    const getLocaleCodes = <%= options.getLocaleCodes %>
     const routesNameSeparator = '<%= options.routesNameSeparator %>'
     route = routeGetter.call(this, route)
     if (!route.name) {
       return null
     }
-    const locales = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
-    const regexp = new RegExp(routesNameSeparator + '(' + locales.join('|') + ')')
-    return route.name.replace(regexp, '')
+    return route.name.split(routesNameSeparator)[0]
   }
 }
 
