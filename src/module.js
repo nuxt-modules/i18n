@@ -51,7 +51,8 @@ export default function (userOptions) {
     getForwarded,
     getHostname,
     getLocaleDomain,
-    syncVuex
+    syncVuex,
+    isSpa: this.options.mode === 'spa'
   }
 
   // Generate localized routes
