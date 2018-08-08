@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### BREAKING CHANGES
 
-* - https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23
+* [https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23](https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23)
 
 
 
