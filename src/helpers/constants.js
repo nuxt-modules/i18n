@@ -33,6 +33,7 @@ export const DEFAULT_OPTIONS = {
   differentDomains: false,
   forwardedHost: false,
   seo: true,
+  baseUrl: '',
   vuex: {
     moduleName: 'i18n',
     mutations: {
