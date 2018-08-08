@@ -7,6 +7,7 @@ module.exports = {
   modules: [
     ['@@', {
       seo: true,
+      baseUrl: 'nuxt-app.localhost',
       locales: [
         {
           code: 'en',
