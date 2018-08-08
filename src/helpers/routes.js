@@ -100,7 +100,6 @@ export const makeRoutes = (baseRoutes, {
       localizedRoute.path = path
 
       routes.push(localizedRoute)
-
     }
 
     return routes
