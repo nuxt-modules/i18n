@@ -67,6 +67,9 @@ Here are all the options available when configuring the module and their default
   // Set to false to disable app-wide
   seo: true,
 
+  // Base URL to use as prefix for alternate URLs in hreflang tags
+  baseUrl: '',
+
   // By default a store module is registered and kept in sync with the
   // app's i18n current state
   // Set to false to disable

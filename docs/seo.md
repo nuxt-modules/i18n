@@ -3,7 +3,7 @@
 By default, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does:
 
 * Add a _lang_ attribute containing current locale's ISO code to the `<html>` tag.
-* Generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. For each language, the ISO code is used as `hreflang` attribute's value.
+* Generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. For each language, the ISO code is used as `hreflang` attribute's value. [More on hreflang](https://support.google.com/webmasters/answer/189077)
 * Generate `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional)
 
 
@@ -29,6 +29,17 @@ For this feature to work, you must configure `locales` option as an array of obj
   ]
 }]
 ```
+
+You should also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  baseUrl: 'https://my-nuxt-app.com'
+}]
+```
+
 
 To disable this feature everywhere in your app, set `seo` option to `false`:
 
