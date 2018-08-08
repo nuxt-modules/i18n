@@ -88,6 +88,11 @@ export const makeRoutes = (baseRoutes, {
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
         !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
       )
+
+      if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
+        routes.push({...localizedRoute, path})
+      }
+
       if (shouldAddPrefix) {
         path = `/${locale}${path}`
       }
@@ -95,6 +100,7 @@ export const makeRoutes = (baseRoutes, {
       localizedRoute.path = path
 
       routes.push(localizedRoute)
+
     }
 
     return routes

@@ -14,7 +14,8 @@ export const LOCALE_FILE_KEY = 'file'
 // Options
 export const STRATEGIES = {
   PREFIX: 'prefix',
-  PREFIX_EXCEPT_DEFAULT: 'prefix_except_default'
+  PREFIX_EXCEPT_DEFAULT: 'prefix_except_default',
+  PREFIX_AND_DEFAULT: 'prefix_and_default'
 }
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 export const DEFAULT_OPTIONS = {

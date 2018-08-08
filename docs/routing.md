@@ -50,7 +50,11 @@ Using this strategy, all of your routes will have a locale prefix added except f
 
 With this strategy, all routes will have a locale prefix.
 
-To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default** strategy.
+### prefix_and_default
+
+Using this strategy, in addition to 'prefix' strategy, the route add `/` that use the default language
+
+To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default**  or **prefix_and_default** strategy.
 
 
 ```js
