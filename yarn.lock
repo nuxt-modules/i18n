@@ -9919,9 +9919,9 @@ vue-i18n-extensions@^0.1.0:
   dependencies:
     vm2 "^3.5.0"
 
-vue-i18n@^7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-7.8.0.tgz#fa49c3f90d20edab2048e9ef825774d39f1906d9"
+vue-i18n@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.0.0.tgz#ae0c6e05ec8e36151bcf5f47c7b538c8af6d0282"
 
 vue-loader@^15.2.4, vue-loader@^15.2.6:
   version "15.3.0"
