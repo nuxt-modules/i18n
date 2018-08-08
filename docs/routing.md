@@ -52,7 +52,7 @@ With this strategy, all routes will have a locale prefix.
 
 ### prefix_and_default
 
-Using this strategy, in addition to 'prefix' strategy, the route add `/` that use the default language
+This strategy combines both previous strategies behaviours, meaning that you will get URLs with prefixes for every language, but URLs for the default language will also have a non-prefixed version.
 
 To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default**  or **prefix_and_default** strategy.
 
