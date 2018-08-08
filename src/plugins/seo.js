@@ -14,6 +14,7 @@ Vue.mixin({
     }
     const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
     const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
+    const BASE_URL = '<%= options.baseUrl %>'
 
     // Prepare html lang attribute
     const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
@@ -29,7 +30,7 @@ Vue.mixin({
           return {
             hid: 'alternate-hreflang-' + locale[LOCALE_ISO_KEY],
             rel: 'alternate',
-            href: this.switchLocalePath(locale.code),
+            href: BASE_URL + this.switchLocalePath(locale.code),
             hreflang: locale[LOCALE_ISO_KEY]
           }
         } else {
