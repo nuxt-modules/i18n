@@ -35,7 +35,7 @@ export const getPageOptions = (route, pages, locales, pagesDir) => {
     paths: {}
   }
   const pattern = new RegExp(`${pagesDir}/`, 'i')
-  const chunkName = route.chunkName.replace(pattern, '')
+  const chunkName = route.chunkName ? route.chunkName.replace(pattern, '') : route.name
   const pageOptions = pages[chunkName]
   // Routing disabled
   if (pageOptions === false) {
