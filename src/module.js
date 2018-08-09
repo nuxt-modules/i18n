@@ -60,7 +60,7 @@ export default function (userOptions) {
   this.extendRoutes((routes) => {
     const localizedRoutes = makeRoutes(routes, {
       ...options,
-      pagesDir,
+      pagesDir
     })
     routes.splice(0, routes.length)
     routes.unshift(...localizedRoutes)
