@@ -56,10 +56,11 @@ export default function (userOptions) {
   }
 
   // Generate localized routes
+  const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
   this.extendRoutes((routes) => {
     const localizedRoutes = makeRoutes(routes, {
       ...options,
-      pagesDir: this.options.dir.pages
+      pagesDir,
     })
     routes.splice(0, routes.length)
     routes.unshift(...localizedRoutes)
