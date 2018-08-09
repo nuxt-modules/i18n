@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.0.2"></a>
+## [5.0.2](https://github.com/nuxt-community/nuxt-i18n/compare/v5.0.1...v5.0.2) (2018-08-09)
+
+
+### Bug Fixes
+
+* Fix `TypeError: Cannot read property 'pages' of undefined` in `extendRoutes` ([10ba9ed](https://github.com/nuxt-community/nuxt-i18n/commit/10ba9ed)), closes [#113](https://github.com/nuxt-community/nuxt-i18n/issues/113)
+
+
+
 <a name="5.0.1"></a>
 ## [5.0.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.0.0...v5.0.1) (2018-08-09)
 
