@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.0.3"></a>
+## [5.0.3](https://github.com/nuxt-community/nuxt-i18n/compare/v5.0.2...v5.0.3) (2018-08-10)
+
+
+### Bug Fixes
+
+* **middleware:** Return after root redirect ([c2ce741](https://github.com/nuxt-community/nuxt-i18n/commit/c2ce741)), closes [#104](https://github.com/nuxt-community/nuxt-i18n/issues/104)
+
+
+
 <a name="5.0.2"></a>
 ## [5.0.2](https://github.com/nuxt-community/nuxt-i18n/compare/v5.0.1...v5.0.2) (2018-08-09)
 
