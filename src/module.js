@@ -98,6 +98,14 @@ export default function (userOptions) {
     this.options.build.vendor.push('vue-i18n')
   }
 
+  // Add vue-i18n-loader if applicable
+  if (options.vueI18nLoader) {
+    this.extendBuild(config => {
+      config.module.rules.find(el => el.loader === 'vue-loader')
+        .options.loaders.i18n = '@kazupon/vue-i18n-loader'
+    })
+  }
+
   this.options.router.middleware.push('i18n')
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensions.directive
