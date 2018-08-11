@@ -7,6 +7,9 @@ Here are all the options available when configuring the module and their default
   // vue-i18n configuration
   vueI18n: {},
 
+  // If true, vue-i18n-loader is added to Nuxt's Webpack config
+  vueI18nLoader: false,
+
   // List of locales supported by your app
   // This can either be an array of codes: ['en', 'fr', 'es']
   // Or an array of objects for more complex configurations:

@@ -53,6 +53,7 @@ function sidebarLinks (locale) {
         'lazy-load-translations',
         'lang-switcher',
         'different-domains',
+        'vue-i18n-loader',
         'migrating',
       ].map(child => localePageTitle(child))
     }
