@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.1.0"></a>
+# [5.1.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.0.3...v5.1.0) (2018-08-11)
+
+
+### Features
+
+* Add option to automatically add vue-i18n-loader to Webpack config ([d997b81](https://github.com/nuxt-community/nuxt-i18n/commit/d997b81)), closes [#58](https://github.com/nuxt-community/nuxt-i18n/issues/58)
+
+
+
 <a name="5.0.3"></a>
 ## [5.0.3](https://github.com/nuxt-community/nuxt-i18n/compare/v5.0.2...v5.0.3) (2018-08-10)
 
