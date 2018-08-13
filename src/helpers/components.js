@@ -1,8 +1,8 @@
 import {readFileSync} from 'fs'
-import acorn from 'acorn'
-import walker from 'acorn/dist/walk'
 import {COMPONENT_OPTIONS_KEY} from './constants'
 
+const acorn = require('acorn')
+const walker = require('acorn/dist/walk')
 const compiler = require('vue-template-compiler')
 
 export const extractComponentOptions = (path) => {
