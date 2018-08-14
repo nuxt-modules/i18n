@@ -44,7 +44,7 @@
     "@kazupon/vue-i18n-loader": "^0.3.0",
     "acorn": "^5.6.2",
     "cookie": "^0.3.1",
-    "esm": "^3.0.75",
+    "esm": "^3.0.76",
     "js-cookie": "^2.2.0",
     "vue-i18n": "^8.0.0",
     "vue-i18n-extensions": "^0.2.0"
@@ -63,6 +63,6 @@
     "jsdom": "^11.6.2",
     "nuxt": "npm:nuxt-edge",
     "standard-version": "^4.4.0",
-    "vuepress": "^0.14.0"
+    "vuepress": "^0.14.2"
   }
 }
