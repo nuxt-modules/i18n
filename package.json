@@ -45,7 +45,6 @@
     "acorn": "^5.6.2",
     "cookie": "^0.3.1",
     "esm": "^3.0.75",
-    "fs": "^0.0.1-security",
     "js-cookie": "^2.2.0",
     "vue-i18n": "^8.0.0",
     "vue-i18n-extensions": "^0.2.0"
