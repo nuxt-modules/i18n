@@ -36,7 +36,9 @@
 ```sh
 cd my-nuxt-project/
 mkdir modules/
-git clone git@github.com:<username>/nuxt-i18n.git modules/nuxt-i18n
+git clone https://github.com/nuxt-community/nuxt-i18n.git modules/nuxt-i18n
+# or
+git clone git@github.com:nuxt-community/nuxt-i18n.git modules/nuxt-i18n
 ```
 
 - Edit your Nuxt config to use the local module:
@@ -74,7 +76,9 @@ yarn lint && yarn test
 - Fork and clone the project
 
 ```sh
-git clone git@github.com:<username>/nuxt-i18n.git
+git clone git@github.com:nuxt-community/nuxt-i18n.git
+# or
+git clone https://github.com/nuxt-community/nuxt-i18n.git
 ```
 
 - Install the dependencies
