@@ -36,6 +36,8 @@
 ```sh
 cd my-nuxt-project/
 mkdir modules/
+git clone https://github.com/<username>/nuxt-i18n.git modules/nuxt-i18n
+# or
 git clone git@github.com:<username>/nuxt-i18n.git modules/nuxt-i18n
 ```
 
@@ -75,6 +77,8 @@ yarn lint && yarn test
 
 ```sh
 git clone git@github.com:<username>/nuxt-i18n.git
+# or
+git clone https://github.com/<username>/nuxt-i18n.git
 ```
 
 - Install the dependencies
