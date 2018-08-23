@@ -26,6 +26,10 @@ import {
 } from './helpers/utils'
 
 export default function (userOptions) {
+  console.log("doing some stuff... i18n");
+  console.log("i18n default options");
+  console.log(DEFAULT_OPTIONS);
+  console.log(userOptions);
   const pluginsPath = join(__dirname, PLUGINS_DIR)
   const templatesPath = join(__dirname, TEMPLATES_DIR)
   const requiredPlugins = ['main', 'routing']

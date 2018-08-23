@@ -49,7 +49,12 @@ export default async ({ app, route, store, req }) => {
 
   // Set instance options
   app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)
-  app.i18n.locales = <%= JSON.stringify(options.locales) %>
+
+  <% if (options.useStateLocales) { %>
+       app.i18n.locales = store.getters.getLocales;
+  <% } else { %>
+       app.i18n.locales = <%= JSON.stringify(options.locales) %>
+  <% } %>
   app.i18n.defaultLocale = '<%= options.defaultLocale %>'
   app.i18n.differentDomains = <%= options.differentDomains %>
   app.i18n.forwardedHost = <%= options.forwardedHost %>
