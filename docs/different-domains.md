@@ -39,3 +39,50 @@ When using different domain names, your lang swicher should use regular `<a>` ta
   {{ locale.code }}
 </a>
 ```
+
+## Runtime environment variables
+
+Sometimes there's a need to change domains in different environments, e.g. staging and production. 
+As `nuxt.config.js` is used at build time it would be necessary to create different builds for different environments.
+
+The alternative way is to keep the domains in Vuex store under `localeDomains` property. It can be accessed by the plugin
+during the initialisation, saving the trouble building multiple images.
+
+```js
+// config/locale-domains.js
+module.exports = {
+  uk: process.env.DOMAIN_UK,
+  fr: process.env.DOMAIN_FR,
+};
+```
+
+```js
+// nuxt.config.js
+const localeDomains = require('./config/locale-domains')
+//...
+[
+  'nuxt-i18n',
+  {
+    differentDomains: process.env.NODE_ENV === 'production',
+    locales: [
+      {
+        code: 'uk',
+        domain: localeDomains.uk, // optional
+      },
+      {
+        code: 'fr',
+        domain: localeDomains.fr, // optional
+      },
+    ],
+  },
+]
+```
+
+```js
+// store/index.js
+const localeDomains = require('~~/config/locale-domains');
+
+export const state = () => ({
+  localeDomains,
+});
+```
