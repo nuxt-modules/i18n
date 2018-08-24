@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.2.0"></a>
+## [5.2.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.1.1...v5.2.0) (2018-08-24)
+
+### Features
+
+* Ability to define locale domains at runtime via Vuex store ([0226b07](https://github.com/nuxt-community/nuxt-i18n/commit/0226b07))
+
 <a name="5.1.1"></a>
 ## [5.1.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.1.0...v5.1.1) (2018-08-14)
 
