@@ -57,6 +57,12 @@ export default async ({ app, route, store, req }) => {
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
 
+  if (store && store.state.localeDomains) {
+    app.i18n.locales.forEach(locale => {
+      locale.domain = store.state.localeDomains[locale.code];
+    })
+  }
+
   let locale = app.i18n.defaultLocale || null
 
   if (app.i18n.differentDomains) {
