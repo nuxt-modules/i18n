@@ -7,7 +7,7 @@ const { LOCALE_CODE_KEY, LOCALE_DOMAIN_KEY } = require('./constants')
  * @param  {Array}  locales Locales list from nuxt config
  * @return {Array}          List of locale codes
  */
-exports.getLocaleCodes = (locales = []) => {
+const getLocaleCodes = (locales = []) => {
   if (locales.length) {
     // If first item is a sting, assume locales is a list of codes already
     if (typeof locales[0] === 'string') {
@@ -20,6 +20,8 @@ exports.getLocaleCodes = (locales = []) => {
   }
   return []
 }
+
+exports.getLocaleCodes = getLocaleCodes
 
 /**
  * Retrieve page's options from the module's configuration for a given route
@@ -92,17 +94,22 @@ exports.getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales = []
  * Get x-forwarded-host
  * @return {String} x-forwarded-host
  */
-exports.getForwarded = () => (
+const getForwarded = () => (
   process.browser ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host)
 )
+
+exports.getForwarded = getForwarded
 
 /**
  * Get hostname
  * @return {String} Hostname
  */
-exports.getHostname = () => (
+const getHostname = () => (
   process.browser ? window.location.href.split('/')[2] : req.headers.host // eslint-disable-line
 )
+
+exports.getHostname = getHostname
+
 /**
  * Get locale code that corresponds to current hostname
  * @return {String} Locade code found if any

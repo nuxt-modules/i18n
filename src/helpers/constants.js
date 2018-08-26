@@ -12,11 +12,14 @@ exports.LOCALE_DOMAIN_KEY = 'domain'
 exports.LOCALE_FILE_KEY = 'file'
 
 // Options
-exports.STRATEGIES = {
+const STRATEGIES = {
   PREFIX: 'prefix',
   PREFIX_EXCEPT_DEFAULT: 'prefix_except_default',
   PREFIX_AND_DEFAULT: 'prefix_and_default'
 }
+
+exports.STRATEGIES = STRATEGIES
+
 exports.COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 exports.DEFAULT_OPTIONS = {
   vueI18n: {},
