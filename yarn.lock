@@ -3943,7 +3943,7 @@ eslint@^5.3.0:
     table "^4.0.3"
     text-table "^0.2.0"
 
-esm@^3.0.74, esm@^3.0.76:
+esm@^3.0.74:
   version "3.0.76"
   resolved "https://registry.yarnpkg.com/esm/-/esm-3.0.76.tgz#54bdaf751b2a566e5cf50dab3d91a59f484c84ef"
 

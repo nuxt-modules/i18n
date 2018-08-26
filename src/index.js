@@ -1,6 +1,6 @@
 const { resolve, join } = require('path')
 const { readdirSync } = require('fs')
-const i18nExtensions = require('vue-i18n-extensions').default
+const i18nExtensions = require('vue-i18n-extensions')
 
 const {
   MODULE_NAME,
