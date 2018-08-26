@@ -1,11 +1,11 @@
-import {readFileSync} from 'fs'
-import {COMPONENT_OPTIONS_KEY} from './constants'
+const { readFileSync } = require('fs')
+const { COMPONENT_OPTIONS_KEY } = require('./constants')
 
 const acorn = require('acorn')
 const walker = require('acorn/dist/walk')
 const compiler = require('vue-template-compiler')
 
-export const extractComponentOptions = (path) => {
+exports.extractComponentOptions = (path) => {
   let componentOptions = {}
   let Component = compiler.parseComponent(readFileSync(path).toString())
   if (!Component.script || Component.script.content.length < 1) {

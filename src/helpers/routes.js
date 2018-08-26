@@ -1,10 +1,10 @@
-import {
+const {
   MODULE_NAME,
-  STRATEGIES } from './constants'
-import { extractComponentOptions } from './components'
-import { getPageOptions, getLocaleCodes } from './utils'
+  STRATEGIES } = require('./constants')
+const { extractComponentOptions } = require('./components')
+const { getPageOptions, getLocaleCodes } = require('./utils')
 
-export const makeRoutes = (baseRoutes, {
+exports.makeRoutes = (baseRoutes, {
   locales,
   defaultLocale,
   routesNameSeparator,

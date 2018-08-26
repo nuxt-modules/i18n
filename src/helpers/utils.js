@@ -1,13 +1,13 @@
 /* global app, req, vuex, store */
 
-import { LOCALE_CODE_KEY, LOCALE_DOMAIN_KEY } from './constants'
+const { LOCALE_CODE_KEY, LOCALE_DOMAIN_KEY } = require('./constants')
 
 /**
  * Get an array of locale codes from a list of locales
  * @param  {Array}  locales Locales list from nuxt config
  * @return {Array}          List of locale codes
  */
-export const getLocaleCodes = (locales = []) => {
+exports.getLocaleCodes = (locales = []) => {
   if (locales.length) {
     // If first item is a sting, assume locales is a list of codes already
     if (typeof locales[0] === 'string') {
@@ -29,7 +29,7 @@ export const getLocaleCodes = (locales = []) => {
  * @param  {String} pagesDir Pages dir from Nuxt's configuration
  * @return {Object}          Page options
  */
-export const getPageOptions = (route, pages, locales, pagesDir) => {
+exports.getPageOptions = (route, pages, locales, pagesDir) => {
   const options = {
     locales: getLocaleCodes(locales),
     paths: {}
@@ -67,7 +67,7 @@ export const getPageOptions = (route, pages, locales, pagesDir) => {
  * @param  {Array}  locales             Locales list from nuxt config
  * @return {String}                     Locale code found if any
  */
-export const getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales = []) => {
+exports.getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales = []) => {
   const codes = getLocaleCodes(locales)
   const localesPattern = `(${codes.join('|')})`
   // Extract from route name
@@ -92,7 +92,7 @@ export const getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales
  * Get x-forwarded-host
  * @return {String} x-forwarded-host
  */
-export const getForwarded = () => (
+exports.getForwarded = () => (
   process.browser ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host)
 )
 
@@ -100,14 +100,14 @@ export const getForwarded = () => (
  * Get hostname
  * @return {String} Hostname
  */
-export const getHostname = () => (
+exports.getHostname = () => (
   process.browser ? window.location.href.split('/')[2] : req.headers.host // eslint-disable-line
 )
 /**
  * Get locale code that corresponds to current hostname
  * @return {String} Locade code found if any
  */
-export const getLocaleDomain = () => {
+exports.getLocaleDomain = () => {
   const hostname = app.i18n.forwardedHost ? getForwarded() : getHostname()
   if (hostname) {
     const localeDomain = app.i18n.locales.find(l => l[LOCALE_DOMAIN_KEY] === hostname) // eslint-disable-line
@@ -124,7 +124,7 @@ export const getLocaleDomain = () => {
  * @param  {Object} messages Current messages
  * @return {void}
  */
-export const syncVuex = (locale = null, messages = null) => {
+exports.syncVuex = (locale = null, messages = null) => {
   if (vuex && store) {
     if (locale !== null && vuex.mutations.setLocale) {
       store.dispatch(vuex.moduleName + '/setLocale', locale)
