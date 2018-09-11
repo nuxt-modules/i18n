@@ -102,8 +102,17 @@ module.exports = function (userOptions) {
   // Add vue-i18n-loader if applicable
   if (options.vueI18nLoader) {
     this.extendBuild(config => {
-      config.module.rules.find(el => el.loader === 'vue-loader')
-        .options.loaders.i18n = '@kazupon/vue-i18n-loader'
+      const loaders = config.module.rules.find(el => el.loader === 'vue-loader').options.loaders
+      if (loaders) {
+        // vue-loader under 15.0.0
+        loaders.i18n = '@kazupon/vue-i18n-loader'
+      } else {
+        // vue-loader after 15.0.0
+        config.module.rules.push({
+          resourceQuery: /blockType=i18n/,
+          loader: '@kazupon/vue-i18n-loader'
+        })
+      }
     })
   }
 
