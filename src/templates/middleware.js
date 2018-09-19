@@ -1,6 +1,7 @@
 import cookie from 'cookie'
 import Cookies from 'js-cookie'
 import middleware from '../middleware'
+import Vue from 'vue'
 
 middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) => {
   if (isHMR) {
@@ -34,14 +35,20 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   // Handle browser language detection
   const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
 
+  let browserLocale = null
+  if (isSpa && typeof navigator !== 'undefined' && navigator.language) {
+    browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
+  } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
+    browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
+  }
+
+  //console.log('JE VIENS DE DETECTER LE BROWSERLOCALE 3', browserLocale, Object.keys(Vue.prototype))
+
+  app.i18n.browserLocale = browserLocale;
+
   if (detectBrowserLanguage) {
     // Get browser language either from navigator if running in mode SPA, or from the headers
-    let browserLocale = null
-    if (isSpa && typeof navigator !== 'undefined' && navigator.language) {
-      browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
-    } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-      browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
-    }
+
 
     if (browserLocale) {
       const { useCookie, cookieKey } = detectBrowserLanguage
@@ -101,8 +108,8 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   locale = routeLocale ? routeLocale : locale
 
   // Abort if locale did not change
+  return
   if (locale === app.i18n.locale) {
-    return
   }
 
   const oldLocale = app.i18n.locale

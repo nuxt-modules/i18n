@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import Cookies from 'js-cookie'
+import cookie from 'cookie'
+
 
 Vue.use(VueI18n)
 
-export default async ({ app, route, store, req }) => {
+export default async ({ app, route, store, req, res }) => {
   // Options
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
@@ -17,6 +20,7 @@ export default async ({ app, route, store, req }) => {
   const getForwarded = <%= options.getForwarded %>
   const getLocaleDomain = <%= options.getLocaleDomain %>
   const syncVuex = <%= options.syncVuex %>
+  const isSpa = <%= options.isSpa %>
 
   <% if (options.vuex) { %>
   // Register Vuex module
@@ -64,20 +68,80 @@ export default async ({ app, route, store, req }) => {
   }
 
   let locale = app.i18n.defaultLocale || null
+  let supportedLocales = getLocaleCodes(app.i18n.locales)
 
+  const getCookie = (key) => {
+    if (req && req.headers && typeof req.headers.cookie !== 'undefined') {
+      const cookies = req.headers && req.headers.cookie ? cookie.parse(req.headers.cookie) : {}
+      return cookies[key]
+    } else {
+      return Cookies.get(key);
+    }
+    return null
+  }
+
+  const setCookie = (key, val) => {
+    const date = new Date()
+    if (res && res.setHeader) {
+      const redirectCookie = cookie.serialize(key, val, {
+        expires: new Date(date.setDate(date.getDate() + 365))
+      })
+      res.setHeader('Set-Cookie', redirectCookie)
+    } else {
+      Cookies.set(key, val, {
+        expires: new Date(date.setDate(date.getDate() + 365))
+      })
+    }
+  }
+
+  let cookieLocale = getCookie('i18n-lang')
+
+  let browserLocale = null
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
+  } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
+    browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
+  }
+
+  if(!cookieLocale) {
+    if(supportedLocales.includes(browserLocale)) {
+      locale = browserLocale
+    }
+
+    setCookie('i18n-lang', locale)
+  } else {
+    locale = cookieLocale
+  }
+
+  console.log('=== COOKIE LOCALE ===', cookieLocale)
+  console.log('=== BROWSER LOCALE ===', browserLocale)
+  console.log('=== LOCALE LOCALE ===', locale)
+/*
   if (app.i18n.differentDomains) {
     const domainLocale = getLocaleDomain()
     locale = domainLocale ? domainLocale : locale
   } else {
     const routeLocale = getLocaleFromRoute(route, app.i18n.routesNameSeparator, app.i18n.locales)
     locale = routeLocale ? routeLocale : locale
-  }
+  }*/
 
   app.i18n.locale = locale
+  app.i18n.defaultLocale = locale
+
+  const { loadLanguageAsync } = require('./utils')
+
+  app.i18n.setLazyLocale = async (locale) => {
+    await loadLanguageAsync(app.i18n, locale)
+    app.i18n.locale = locale
+    setCookie('i18n-lang', locale)
+  }
+
+  if(!req || !res) {
+    store.dispatch('setLocale', locale)
+  }
 
   // Lazy-load translations
   if (lazy) {
-    const { loadLanguageAsync } = require('./utils')
     const messages = await loadLanguageAsync(app.i18n, app.i18n.locale)
     syncVuex(locale, messages)
     return messages
