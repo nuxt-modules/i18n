@@ -113,9 +113,9 @@ export default async ({ app, route, store, req, res }) => {
     locale = cookieLocale
   }
 
-  console.log('=== COOKIE LOCALE ===', cookieLocale)
-  console.log('=== BROWSER LOCALE ===', browserLocale)
-  console.log('=== LOCALE LOCALE ===', locale)
+  //console.log('=== COOKIE LOCALE ===', cookieLocale)
+  //console.log('=== BROWSER LOCALE ===', browserLocale)
+  //console.log('=== LOCALE LOCALE ===', locale)
 /*
   if (app.i18n.differentDomains) {
     const domainLocale = getLocaleDomain()
