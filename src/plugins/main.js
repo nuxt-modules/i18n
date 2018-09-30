@@ -56,6 +56,7 @@ export default async ({ app, route, store, req }) => {
   app.i18n.routesNameSeparator = '<%= options.routesNameSeparator %>'
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
+  app.i18n.onRouteChanged = (to, from) => {}
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {
@@ -74,6 +75,7 @@ export default async ({ app, route, store, req }) => {
   }
 
   app.i18n.locale = locale
+  app.i18n.nextLocale = locale
 
   // Lazy-load translations
   if (lazy) {
@@ -84,5 +86,9 @@ export default async ({ app, route, store, req }) => {
   } else {
     // Sync Vuex
     syncVuex(locale, app.i18n.getLocaleMessage(locale))
+  }
+
+  if (!req) {
+    app.router.afterEach((to, from) => app.i18n.onRouteChanged(to, from))
   }
 }
