@@ -9,6 +9,7 @@
     }
   ],
   "main": "src/index.js",
+  "types": "types/index.d.ts",
   "repository": "https://github.com/nuxt-community/nuxt-i18n",
   "homepage": "https://nuxt-community.github.io/nuxt-i18n/",
   "bugs": {
