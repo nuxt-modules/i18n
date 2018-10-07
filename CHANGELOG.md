@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.4.0"></a>
+# [5.4.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.3.0...v5.4.0) (2018-10-07)
+
+
+### Features
+
+* add TypeScript types ([#133](https://github.com/nuxt-community/nuxt-i18n/issues/133)) ([817c58e](https://github.com/nuxt-community/nuxt-i18n/commit/817c58e))
+* i18n.locale property changes when route changed ([2f2f284](https://github.com/nuxt-community/nuxt-i18n/commit/2f2f284))
+
+
+
 <a name="5.3.0"></a>
 # [5.3.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.2.1...v5.3.0) (2018-09-11)
 
