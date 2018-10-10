@@ -30,7 +30,8 @@
     "src/plugins/*.*"
   ],
   "files": [
-    "src"
+    "src",
+    "types/index.d.ts"
   ],
   "jest": {
     "testEnvironment": "node",
