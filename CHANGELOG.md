@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.4.2"></a>
+## [5.4.2](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.1...v5.4.2) (2018-10-12)
+
+
+### Bug Fixes
+
+* Revert "feat: i18n.locale property changes when route changed" ([9e04b00](https://github.com/nuxt-community/nuxt-i18n/commit/9e04b00))
+
+
+
 <a name="5.4.1"></a>
 ## [5.4.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.0...v5.4.1) (2018-10-11)
 
