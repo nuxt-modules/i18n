@@ -107,25 +107,17 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
 
   const oldLocale = app.i18n.locale
   app.i18n.beforeLanguageSwitch(oldLocale, locale)
-
-  let messages = ''
   // Lazy-loading enabled
   if (lazy) {
     const { loadLanguageAsync } = require('./utils')
-    messages = await loadLanguageAsync(app.i18n, locale)
-  } else {
-    // Lazy-loading disabled
-    messages = app.i18n.getLocaleMessage(locale)
-  }
-
-  // NOTE: `app.i18n.locale` property changes when route changed.
-  // but, `fetch` and `asyncData` methods is called before it is changed.
-  // if you using this property use `app.i18n.nextLocale` instead.
-  app.i18n.nextLocale = locale
-
-  app.i18n.onRouteChanged = (to, from) => {
+    const messages = await loadLanguageAsync(app.i18n, locale)
     app.i18n.locale = locale
     app.i18n.onLanguageSwitched(oldLocale, locale)
     syncVuex(locale, messages)
+  } else {
+    // Lazy-loading disabled
+    app.i18n.locale = locale
+    app.i18n.onLanguageSwitched(oldLocale, locale)
+    syncVuex(locale, app.i18n.getLocaleMessage(locale))
   }
 }
