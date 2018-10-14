@@ -48,22 +48,22 @@
     "acorn-walk": "^6.1.0",
     "cookie": "^0.3.1",
     "js-cookie": "^2.2.0",
-    "vue-i18n": "^8.1.0",
+    "vue-i18n": "^8.2.0",
     "vue-i18n-extensions": "^0.2.0"
   },
   "devDependencies": {
     "codecov": "^3.1.0",
-    "eslint": "^5.6.1",
+    "eslint": "^5.7.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jest": "^21.24.1",
+    "eslint-plugin-jest": "^21.25.0",
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^4.3.0",
     "jest": "^23.6.0",
     "jsdom": "^12.2.0",
-    "nuxt": "^2.1.0",
+    "nuxt": "^2.2.0",
     "standard-version": "^4.4.0",
     "vuepress": "^0.14.4"
   }
