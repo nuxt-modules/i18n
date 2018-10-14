@@ -36,11 +36,7 @@
   "jest": {
     "testEnvironment": "node",
     "coverageDirectory": "./coverage/",
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src",
-      "test"
-    ]
+    "collectCoverage": true
   },
   "dependencies": {
     "@kazupon/vue-i18n-loader": "^0.3.0",
