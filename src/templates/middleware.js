@@ -69,11 +69,13 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
         const date = new Date()
         if (isSpa) {
           Cookies.set(cookieKey, 1, {
-            expires: new Date(date.setDate(date.getDate() + 365))
+            expires: new Date(date.setDate(date.getDate() + 365)),
+            path: '/'
           })
         } else if (res) {
           const redirectCookie = cookie.serialize(cookieKey, 1, {
-            expires: new Date(date.setDate(date.getDate() + 365))
+            expires: new Date(date.setDate(date.getDate() + 365)),
+            path: '/'
           })
           res.setHeader('Set-Cookie', redirectCookie)
         }
