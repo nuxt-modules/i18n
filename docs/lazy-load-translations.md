@@ -26,7 +26,7 @@ Configuration example:
 ```js
 // nuxt.config.js
 
-['nuxt-i18n', {
+['nuxt-i18n': {
   locales: [
     {
       code: 'en',
