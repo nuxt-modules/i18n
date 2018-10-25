@@ -48,3 +48,14 @@ To completely disable the browser's language detection feature, set `detectBrows
   detectBrowserLanguage: false
 }]
 ```
+
+To redirect the user every time they visit the app and keep their selected choice, enable alwaysRedirect:
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  useCookie: true,
+  alwaysRedirect: true
+}]
+```
