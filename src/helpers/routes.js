@@ -77,7 +77,7 @@ exports.makeRoutes = (baseRoutes, {
 
       // Get custom path if any
       if (componentOptions.paths && componentOptions.paths[locale]) {
-        path = componentOptions.paths[locale]
+        path = encodeURI(componentOptions.paths[locale])
       }
 
       // Add route prefix if needed
