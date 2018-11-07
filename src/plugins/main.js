@@ -59,7 +59,7 @@ export default async ({ app, route, store, req }, inject) => {
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
 
   // Inject seo function
-  inject('nuxtI18nSeo', nuxtI18nSeo)
+  Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {
