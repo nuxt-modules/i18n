@@ -56,6 +56,7 @@ export default async ({ app, route, store, req }) => {
   app.i18n.routesNameSeparator = '<%= options.routesNameSeparator %>'
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
+  app.i18n.nuxtI18n = { baseUrl: '<%= options.baseUrl %>' }
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {
