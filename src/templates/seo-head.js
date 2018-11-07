@@ -1,8 +1,5 @@
-const LOCALE_CODE_KEY = 'code'
-const LOCALE_ISO_KEY = 'iso'
-const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
-
 export const nuxtI18nSeo = function () {
+  const COMPONENT_OPTIONS_KEY = '<%= options.COMPONENT_OPTIONS_KEY %>'
   if (
     !this._hasMetaInfo ||
     !this.$i18n ||
@@ -12,8 +9,9 @@ export const nuxtI18nSeo = function () {
   ) {
     return {};
   }
-
-  const BASE_URL = this.$i18n.nuxtI18n.baseUrl
+  const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
+  const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
+  const BASE_URL = '<%= options.baseUrl %>'
 
   // Prepare html lang attribute
   const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
@@ -33,7 +31,7 @@ export const nuxtI18nSeo = function () {
           hreflang: locale[LOCALE_ISO_KEY]
         }
       } else {
-        console.warn('[nuxt-i18n] Locale ISO code is required to generate alternate link')
+        console.warn('[<%= options.MODULE_NAME %>] Locale ISO code is required to generate alternate link')
         return null
       }
     })

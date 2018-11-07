@@ -1,8 +1,6 @@
 import Vue from 'vue'
-import { nuxtI18nSeo } from '~/modules/nuxt-i18n/src/utils/seo'
+import { nuxtI18nSeo } from './seo-head'
 
 Vue.mixin({
-  head () {
-    return nuxtI18nSeo.bind(this)()
-  }
+  head: nuxtI18nSeo
 })
