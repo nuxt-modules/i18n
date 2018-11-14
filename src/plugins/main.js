@@ -4,7 +4,7 @@ import { nuxtI18nSeo } from './seo-head'
 
 Vue.use(VueI18n)
 
-export default async ({ app, route, store, req }, inject) => {
+export default async ({ app, route, store, req }) => {
   // Options
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
