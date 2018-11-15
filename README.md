@@ -35,7 +35,7 @@ I've been lacking time to properly maintain the project lately and I would be re
 
 Feel free to email me at the address that's in [my profile](https://github.com/paulgv), or ping me on [Nuxt's Discord channel](http://discord.nuxt.xyz/) (**paulgv#1021**).
 
-## Development
+## Contribute to the module
 
 - Fork the project and clone it in your existing Nuxt project:
 
