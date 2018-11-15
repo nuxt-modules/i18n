@@ -33,7 +33,9 @@ exports.DEFAULT_OPTIONS = {
   rootRedirect: null,
   detectBrowserLanguage: {
     useCookie: true,
-    cookieKey: 'i18n_redirected'
+    cookieKey: 'i18n_redirected',
+    alwaysRedirect: '',
+    fallbackLocale: null
   },
   differentDomains: false,
   forwardedHost: false,
