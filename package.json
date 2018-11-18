@@ -20,7 +20,9 @@
   },
   "scripts": {
     "lint": "eslint src test",
-    "test": "jest",
+    "test": "yarn test:fixtures && yarn test:types",
+    "test:fixtures": "jest test/fixtures",
+    "test:types": "tsc -p types/test",
     "release": "standard-version && git push --follow-tags && npm publish",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
@@ -31,7 +33,7 @@
   ],
   "files": [
     "src",
-    "types/index.d.ts"
+    "types/*.d.ts"
   ],
   "jest": {
     "testEnvironment": "node",
@@ -61,6 +63,7 @@
     "jsdom": "^12.2.0",
     "nuxt": "^2.2.0",
     "standard-version": "^4.4.0",
+    "typescript": "^3.1.6",
     "vuepress": "^0.14.4"
   }
 }
