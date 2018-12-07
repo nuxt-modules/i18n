@@ -10,6 +10,7 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   // Options
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
+  const strategy = '<%= options.strategy %>'
   const differentDomains = <%= options.differentDomains %>
   const isSpa = <%= options.isSpa %>
 
@@ -21,8 +22,7 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   const locales = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
   const syncVuex = <%= options.syncVuex %>
 
-
-  let locale = app.i18n.locale || app.i18n.defaultLocale || null
+  let locale = app.i18n.locale || app.i18n.defaultLocale
 
   // Handle root path redirect
   const rootRedirect = '<%= options.rootRedirect %>'
@@ -62,6 +62,8 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   const { useCookie, cookieKey, alwaysRedirect, fallbackLocale } = detectBrowserLanguage
 
   const switchLocale = async (newLocale) => {
+    console.log('switchLocale', newLocale)
+
     // Abort if different domains option enabled
     if (app.i18n.differentDomains) {
       return
@@ -74,9 +76,9 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
 
     const oldLocale = app.i18n.locale
     app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
-    if(useCookie) {
-      setCookie(newLocale)
-    }
+    // if(useCookie) {
+    //   setCookie(newLocale)
+    // }
     // Lazy-loading enabled
     if (lazy) {
       const { loadLanguageAsync } = require('./utils')
@@ -116,9 +118,9 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
           redirectToLocale = browserLocale
         }
 
-        if(useCookie){
-          setCookie(redirectToLocale || 1)
-        }
+        // if(useCookie){
+        //   setCookie(redirectToLocale || 1)
+        // }
 
         if (redirectToLocale && redirectToLocale !== app.i18n.locale && locales.indexOf(redirectToLocale) !== -1) {
 
@@ -135,5 +137,21 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
     }
   }
 
-  await switchLocale(locale = routeLocale ? routeLocale : locale)
+  // if (!routeLocale && route.path)
+  console.log('route.path', route.path)
+  console.log('app.i18n.locales', app.i18n.locales)
+
+  const routePathLang = route.path.slice(1).split('/').shift()
+  console.log('routePathLang', routePathLang)
+
+  if (routePathLang && routePathLang.length === 2) {
+    console.log('REDIRECTING TO ' + (route.path.slice(3) || '/'))
+    locale = routePathLang
+    app.i18n.switchLocale(locale)
+    await switchLocale(locale)
+    setCookie(locale)
+    return redirect(route.path.slice(3) || '/') // push url without locale
+  } else {
+    await switchLocale(routeLocale ? routeLocale : locale)
+  }
 }

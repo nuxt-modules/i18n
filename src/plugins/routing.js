@@ -66,12 +66,21 @@ function switchLocalePathFactory (i18nPath) {
   }
 }
 
+// function switchLocaleFactory (i18nPath, switchLocalePath) {
+//   return function switchLocale (locale) {
+//     console.log('switchLocale', locale)
+//     this[i18nPath].locale = locale
+//     this.$store.commit('i18n/I18N_SET_LOCALE', locale)
+//     // this[switchLocalePath](locale)
+//   }
+// }
+
 function getRouteBaseNameFactory (contextRoute) {
 
-  const routeGetter  = contextRoute ? route => route || contextRoute :
-  function (route) {
-    return route || this.$route
-  }
+  const routeGetter = contextRoute ? route => route || contextRoute
+    : function (route) {
+      return route || this.$route
+    }
 
   return function getRouteBaseName (route) {
     const routesNameSeparator = '<%= options.routesNameSeparator %>'
@@ -87,6 +96,7 @@ Vue.mixin({
   methods: {
     localePath: localePathFactory('$i18n', '$router'),
     switchLocalePath: switchLocalePathFactory('$i18n'),
+    // switchLocale: switchLocaleFactory('$i18n', 'switchLocalePath'),
     getRouteBaseName: getRouteBaseNameFactory()
   }
 })
@@ -94,6 +104,7 @@ Vue.mixin({
 
 export default ({ app, route }) => {
   app.localePath = localePathFactory('i18n', 'router')
-  app.switchLocalePath = switchLocalePathFactory('i18n'),
+  app.switchLocalePath = switchLocalePathFactory('i18n')
+  // app.switchLocale = switchLocaleFactory('i18n', 'switchLocalePath')
   app.getRouteBaseName = getRouteBaseNameFactory(route)
 }

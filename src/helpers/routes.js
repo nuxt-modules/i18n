@@ -82,6 +82,8 @@ exports.makeRoutes = (baseRoutes, {
 
       // Add route prefix if needed
       const shouldAddPrefix = (
+        // No prefix if strategy is PREFIX_NONE
+        strategy !== STRATEGIES.PREFIX_NONE &&
         // No prefix if app uses different locale domains
         !differentDomains &&
         // Only add prefix on top level routes
@@ -90,7 +92,7 @@ exports.makeRoutes = (baseRoutes, {
         !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
       )
 
-      if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
+      if (strategy !== STRATEGIES.PREFIX_NONE && locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
         routes.push({ ...localizedRoute, path })
       }
 

@@ -51,6 +51,7 @@ export default async ({ app, route, store, req }) => {
   // Set instance options
   app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)
   app.i18n.locales = <%= JSON.stringify(options.locales) %>
+  app.i18n.strategy = '<%= options.strategy %>'
   app.i18n.defaultLocale = '<%= options.defaultLocale %>'
   app.i18n.differentDomains = <%= options.differentDomains %>
   app.i18n.forwardedHost = <%= options.forwardedHost %>
@@ -67,11 +68,14 @@ export default async ({ app, route, store, req }) => {
     })
   }
 
-  let locale = app.i18n.defaultLocale || null
+  let locale = app.i18n.defaultLocale || 'en'
 
   if (app.i18n.differentDomains) {
     const domainLocale = getLocaleDomain()
     locale = domainLocale ? domainLocale : locale
+  } else if (app.i18n.strategy === 'prefix_none') {
+    // TODO: get locale from cookie
+    locale = 'en'
   } else {
     const routeLocale = getLocaleFromRoute(route, app.i18n.routesNameSeparator, app.i18n.locales)
     locale = routeLocale ? routeLocale : locale

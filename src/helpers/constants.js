@@ -15,7 +15,8 @@ exports.LOCALE_FILE_KEY = 'file'
 const STRATEGIES = {
   PREFIX: 'prefix',
   PREFIX_EXCEPT_DEFAULT: 'prefix_except_default',
-  PREFIX_AND_DEFAULT: 'prefix_and_default'
+  PREFIX_AND_DEFAULT: 'prefix_and_default',
+  PREFIX_NONE: 'prefix_none'
 }
 
 exports.STRATEGIES = STRATEGIES
