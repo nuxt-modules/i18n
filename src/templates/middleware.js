@@ -135,5 +135,5 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
     }
   }
 
-  await switchLocale(locale = routeLocale ? routeLocale : locale)
+  await switchLocale(routeLocale ? routeLocale : locale)
 }
