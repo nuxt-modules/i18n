@@ -116,10 +116,6 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
           redirectToLocale = browserLocale
         }
 
-        if(useCookie){
-          setCookie(redirectToLocale || 1)
-        }
-
         if (redirectToLocale && redirectToLocale !== app.i18n.locale && locales.indexOf(redirectToLocale) !== -1) {
 
           // We switch the locale before redirect to prevent loops
