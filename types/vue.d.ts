@@ -7,7 +7,7 @@ import { RawLocation } from "vue-router";
 
 declare module "vue/types/vue" {
   interface Vue {
-    localePath(route: string | RawLocation, locale?: string): string;
+    localePath(route: RawLocation, locale?: string): string;
     switchLocalePath(locale: string): string;
     getRouteBaseName(route: RawLocation): string;
   }
