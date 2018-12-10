@@ -27,7 +27,7 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   // Handle root path redirect
   const rootRedirect = '<%= options.rootRedirect %>'
   if (route.path === '/' && rootRedirect) {
-    redirect('/' + rootRedirect)
+    redirect('/' + rootRedirect, route.query)
     return
   }
 
