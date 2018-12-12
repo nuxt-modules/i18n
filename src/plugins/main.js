@@ -85,13 +85,15 @@ export default async ({ app, route, store, req, res }) => {
     if (res && res.setHeader) {
       const redirectCookie = cookie.serialize(key, val, {
         expires: new Date(date.setDate(date.getDate() + 365)),
-        secure: true
+        path: '/',
+        secure: <%= !options.isDev %>
       })
       res.setHeader('Set-Cookie', redirectCookie)
     } else {
       Cookies.set(key, val, {
         expires: new Date(date.setDate(date.getDate() + 365)),
-        secure: true
+        path: '/',
+        secure: <%= !options.isDev %>
       })
     }
   }
