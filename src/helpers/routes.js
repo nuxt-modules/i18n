@@ -91,7 +91,7 @@ exports.makeRoutes = (baseRoutes, {
       )
 
       if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-        routes.push({ ...localizedRoute, path })
+        routes.push({ ...route, path })
       }
 
       if (shouldAddPrefix) {
