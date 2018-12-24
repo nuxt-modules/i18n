@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.5.0"></a>
+# [5.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.4...v5.5.0) (2018-12-24)
+
+
+### Features
+
+* expose head SEO function to use in layout ([#154](https://github.com/nuxt-community/nuxt-i18n/issues/154)) ([ce373c4](https://github.com/nuxt-community/nuxt-i18n/commit/ce373c4))
+* rework browser detection and save lang to cookie ([#148](https://github.com/nuxt-community/nuxt-i18n/issues/148)) ([d1bbc84](https://github.com/nuxt-community/nuxt-i18n/commit/d1bbc84))
+
+
+
 <a name="5.4.4"></a>
 ## [5.4.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.3...v5.4.4) (2018-10-23)
 
