@@ -1,6 +1,6 @@
 {
-  "name": "nuxt-i18n",
-  "version": "5.5.0",
+  "name": "@souvenir/nuxt-i18n",
+  "version": "5.5.1",
   "description": "i18n for Nuxt",
   "license": "MIT",
   "contributors": [

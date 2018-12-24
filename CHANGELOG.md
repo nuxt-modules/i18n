@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.5.1"></a>
+## [5.5.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.5.0...v5.5.1) (2018-12-24)
+
+
+
 <a name="5.5.0"></a>
 # [5.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.4...v5.5.0) (2018-12-24)
 
