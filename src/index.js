@@ -110,6 +110,7 @@ module.exports = function (userOptions) {
         // vue-loader after 15.0.0
         config.module.rules.push({
           resourceQuery: /blockType=i18n/,
+          type: 'javascript/auto',
           loader: '@kazupon/vue-i18n-loader'
         })
       }
