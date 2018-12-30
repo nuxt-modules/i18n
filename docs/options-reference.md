@@ -32,6 +32,7 @@ Here are all the options available when configuring the module and their default
   // - 'prefix_except_default': add locale prefix for every locale except default
   // - 'prefix': add locale prefix for every locale
   // - 'prefix_and_default': add locale prefix for every locale and default
+  // - 'no_prefix': don't add locale prefix
   strategy: 'prefix_except_default',
 
   // Wether or not the translations should be lazy-loaded, if this is enabled,

@@ -40,7 +40,7 @@ Note that routes for the English version do not have any prefix because it is th
 
 ## Strategy
 
-There are two supported strategies for generating the app's routes:
+There are four supported strategies for generating the app's routes:
 
 ### prefix_except_default
 
@@ -53,6 +53,10 @@ With this strategy, all routes will have a locale prefix.
 ### prefix_and_default
 
 This strategy combines both previous strategies behaviours, meaning that you will get URLs with prefixes for every language, but URLs for the default language will also have a non-prefixed version.
+
+### no_prefix
+
+This strategy allows you to create custom paths without any prefixes.
 
 To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default**  or **prefix_and_default** strategy.
 
