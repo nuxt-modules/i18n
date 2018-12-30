@@ -82,6 +82,8 @@ exports.makeRoutes = (baseRoutes, {
 
       // Add route prefix if needed
       const shouldAddPrefix = (
+        // No prefix if stragety is NO_PREFIX
+        strategy !== STRATEGIES.NO_PREFIX &&
         // No prefix if app uses different locale domains
         !differentDomains &&
         // Only add prefix on top level routes
