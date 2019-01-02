@@ -38,10 +38,10 @@ export default async ({ app, route, store, req }) => {
       },
       mutations: {
         [vuex.mutations.setLocale] (state, locale) {
-          state.locale = locale
+          if(state) state.locale = locale
         },
         [vuex.mutations.setMessages] (state, messages) {
-          state.messages = messages
+          if(state) state.messages = messages
         }
       }
     })
