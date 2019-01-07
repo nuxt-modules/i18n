@@ -44,7 +44,7 @@ export default async ({ app, route, store, req }) => {
           state.messages = messages
         }
       }
-    })
+    }, { preserveState: false })
   }
   <% } %>
 
