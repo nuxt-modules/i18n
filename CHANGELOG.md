@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.5.0"></a>
+# [5.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.4...v5.5.0) (2019-01-14)
+
+
+### Bug Fixes
+
+* preserve queryString when redirecting to rootRedirect ([#169](https://github.com/nuxt-community/nuxt-i18n/issues/169)) ([1ddcac2](https://github.com/nuxt-community/nuxt-i18n/commit/1ddcac2))
+* Set i18n_redirect cookie path to '/' ([#143](https://github.com/nuxt-community/nuxt-i18n/issues/143)) ([9ad540e](https://github.com/nuxt-community/nuxt-i18n/commit/9ad540e))
+* State not defined ([#178](https://github.com/nuxt-community/nuxt-i18n/issues/178)) ([142dcb0](https://github.com/nuxt-community/nuxt-i18n/commit/142dcb0)), closes [#173](https://github.com/nuxt-community/nuxt-i18n/issues/173)
+* Update types ([#167](https://github.com/nuxt-community/nuxt-i18n/issues/167)) ([225e700](https://github.com/nuxt-community/nuxt-i18n/commit/225e700))
+* Wait for lazy loading promises ([#163](https://github.com/nuxt-community/nuxt-i18n/issues/163)) ([8b42631](https://github.com/nuxt-community/nuxt-i18n/commit/8b42631))
+
+
+### Features
+
+* Allow i18n component to load json ([#174](https://github.com/nuxt-community/nuxt-i18n/issues/174)) ([21d4305](https://github.com/nuxt-community/nuxt-i18n/commit/21d4305))
+* expose head SEO function to use in layout ([#154](https://github.com/nuxt-community/nuxt-i18n/issues/154)) ([ce373c4](https://github.com/nuxt-community/nuxt-i18n/commit/ce373c4))
+* make t() method available server-side through app.$t() ([#168](https://github.com/nuxt-community/nuxt-i18n/issues/168)) ([90bcd80](https://github.com/nuxt-community/nuxt-i18n/commit/90bcd80))
+* rework browser detection and save lang to cookie ([#148](https://github.com/nuxt-community/nuxt-i18n/issues/148)) ([d1bbc84](https://github.com/nuxt-community/nuxt-i18n/commit/d1bbc84))
+
+
+
 <a name="5.4.4"></a>
 ## [5.4.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.3...v5.4.4) (2018-10-23)
 
