@@ -57,6 +57,10 @@ export default async ({ app, route, store, req }) => {
   app.i18n.routesNameSeparator = '<%= options.routesNameSeparator %>'
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
+  // Extension of Vue
+  if (!app.$t) {
+    app.$t = app.i18n.t
+  }
 
   // Inject seo function
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
