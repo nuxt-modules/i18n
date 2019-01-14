@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import { nuxtI18nSeo } from './seo-head'
 
 Vue.use(VueI18n)
 
@@ -43,7 +44,7 @@ export default async ({ app, route, store, req }) => {
           state.messages = messages
         }
       }
-    })
+    }, { preserveState: vuex.preserveState })
   }
   <% } %>
 
@@ -56,6 +57,9 @@ export default async ({ app, route, store, req }) => {
   app.i18n.routesNameSeparator = '<%= options.routesNameSeparator %>'
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
+
+  // Inject seo function
+  Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {

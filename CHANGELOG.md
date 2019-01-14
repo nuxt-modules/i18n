@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.4.4"></a>
+## [5.4.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.3...v5.4.4) (2018-10-23)
+
+
+### Bug Fixes
+
+* encode custom paths ([#145](https://github.com/nuxt-community/nuxt-i18n/issues/145)) ([98c9945](https://github.com/nuxt-community/nuxt-i18n/commit/98c9945)), closes [#7](https://github.com/nuxt-community/nuxt-i18n/issues/7)
+
+
+
 <a name="5.4.3"></a>
 ## [5.4.3](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.2...v5.4.3) (2018-10-12)
 
