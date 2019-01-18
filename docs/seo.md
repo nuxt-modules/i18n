@@ -5,6 +5,8 @@ By default, **nuxt-i18n** attempts to add some metadata to improve your pages SE
 * Add a _lang_ attribute containing current locale's ISO code to the `<html>` tag.
 * Generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. For each language, the ISO code is used as `hreflang` attribute's value. [More on hreflang](https://support.google.com/webmasters/answer/189077)
 * Generate `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional)
+* When using `prefix_and_default` strategy, generate `rel="canonical"` link on the default language routes containing the 
+prefix to avoid duplicate indexation. [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
 
 
 For this feature to work, you must configure `locales` option as an array of objects, where each object has an `iso` option set to the language ISO code:

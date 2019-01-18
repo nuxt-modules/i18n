@@ -12,12 +12,14 @@ export const nuxtI18nSeo = function () {
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
   const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
   const BASE_URL = '<%= options.baseUrl %>'
+  const STRATEGY = '<%= options.strategy %>'
 
   // Prepare html lang attribute
   const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
   const htmlAttrs = {}
-  if (currentLocaleData && currentLocaleData[LOCALE_ISO_KEY]) {
-    htmlAttrs.lang = currentLocaleData[LOCALE_ISO_KEY]
+  const currentLocaleIso = currentLocaleData && currentLocaleData[LOCALE_ISO_KEY]
+  if (currentLocaleIso) {
+    htmlAttrs.lang = currentLocaleIso
   }
 
   // hreflang tags
@@ -36,6 +38,23 @@ export const nuxtI18nSeo = function () {
       }
     })
     .filter(item => !!item)
+
+  // canonical links
+  if (STRATEGY === '<%= options.STRATEGIES.PREFIX_AND_DEFAULT %>') {
+    if (currentLocaleIso) {
+      const canonicalPath = this.switchLocalePath(currentLocaleIso)
+      if (canonicalPath && canonicalPath !== this.$route.path) {
+        // Current page is not the canonical one -- add a canonical link
+        link.push({
+          hid: 'canonical-lang-' + currentLocaleIso,
+          rel: "canonical",
+          href: BASE_URL + canonicalPath
+        })
+      }
+    } else {
+      console.warn('[<%= options.MODULE_NAME %>] Locale ISO code is required to generate canonical link')
+    }
+  }
 
   // og:locale meta
   const meta = []
