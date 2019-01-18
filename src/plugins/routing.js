@@ -43,9 +43,9 @@ function switchLocalePathFactory (i18nPath) {
     if (!name) {
       return ''
     }
-
-		const { params, ...routeCopy } = this.$route
-		const baseRoute = Object.assign({}, routeCopy, { name, params: { '0': params.pathMatch } })
+    
+    const { params, ...routeCopy } = this.$route
+    const baseRoute = Object.assign({}, routeCopy, { name, params: { '0': params.pathMatch } })
     let path = this.localePath(baseRoute, locale)
 
     // Handle different domains
