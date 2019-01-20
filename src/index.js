@@ -13,6 +13,7 @@ const {
   LOCALE_ISO_KEY,
   LOCALE_DOMAIN_KEY,
   LOCALE_FILE_KEY,
+  STRATEGIES,
   COMPONENT_OPTIONS_KEY
 } = require('./helpers/constants')
 
@@ -46,6 +47,7 @@ module.exports = function (userOptions) {
     LOCALE_ISO_KEY,
     LOCALE_DOMAIN_KEY,
     LOCALE_FILE_KEY,
+    STRATEGIES,
     COMPONENT_OPTIONS_KEY,
     getLocaleCodes,
     getLocaleFromRoute,

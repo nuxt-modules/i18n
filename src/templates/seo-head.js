@@ -12,6 +12,7 @@ export const nuxtI18nSeo = function () {
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
   const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
   const BASE_URL = '<%= options.baseUrl %>'
+  const STRATEGY = '<%= options.strategy %>'
 
   // Prepare html lang attribute
   const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
@@ -36,6 +37,19 @@ export const nuxtI18nSeo = function () {
       }
     })
     .filter(item => !!item)
+
+  // canonical links
+  if (STRATEGY === '<%= options.STRATEGIES.PREFIX_AND_DEFAULT %>') {
+    const canonicalPath = this.switchLocalePath(currentLocaleData[LOCALE_CODE_KEY])
+    if (canonicalPath && canonicalPath !== this.$route.path) {
+      // Current page is not the canonical one -- add a canonical link
+      link.push({
+        hid: 'canonical-lang-' + currentLocaleData[LOCALE_CODE_KEY],
+        rel: "canonical",
+        href: BASE_URL + canonicalPath
+      })
+    }
+  }
 
   // og:locale meta
   const meta = []
