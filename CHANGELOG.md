@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.6.0"></a>
+# [5.6.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.5.0...v5.6.0) (2019-01-20)
+
+
+### Bug Fixes
+
+* Create correct baseroute for switchlocalepath ([#193](https://github.com/nuxt-community/nuxt-i18n/issues/193)) ([909062f](https://github.com/nuxt-community/nuxt-i18n/commit/909062f))
+* Preserve route params in base route ([13b2e73](https://github.com/nuxt-community/nuxt-i18n/commit/13b2e73))
+
+
+### Features
+
+* Add canonical link to PREFIX_AND_DEFAULT duplicated pages ([#194](https://github.com/nuxt-community/nuxt-i18n/issues/194)) ([dcd1f79](https://github.com/nuxt-community/nuxt-i18n/commit/dcd1f79))
+
+
+
 <a name="5.5.0"></a>
 # [5.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.4.4...v5.5.0) (2019-01-14)
 
