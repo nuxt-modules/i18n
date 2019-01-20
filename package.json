@@ -64,6 +64,6 @@
     "nuxt": "2.2.0",
     "standard-version": "4.4.0",
     "typescript": "3.2.4",
-    "vuepress": "0.14.4"
+    "vuepress": "0.14.8"
   }
 }
