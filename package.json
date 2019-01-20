@@ -58,7 +58,7 @@
     "eslint-plugin-node": "7.0.1",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-standard": "4.0.0",
-    "eslint-plugin-vue": "4.7.1",
+    "eslint-plugin-vue": "5.1.0",
     "jest": "23.6.0",
     "jsdom": "12.2.0",
     "nuxt": "2.2.0",
