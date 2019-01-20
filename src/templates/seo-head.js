@@ -45,7 +45,7 @@ export const nuxtI18nSeo = function () {
       // Current page is not the canonical one -- add a canonical link
       link.push({
         hid: 'canonical-lang-' + currentLocaleData[LOCALE_CODE_KEY],
-        rel: "canonical",
+        rel: 'canonical',
         href: BASE_URL + canonicalPath
       })
     }
