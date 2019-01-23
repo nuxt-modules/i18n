@@ -12487,10 +12487,10 @@ vue-i18n-extensions@^0.2.0:
   dependencies:
     vm2 "^3.5.0"
 
-vue-i18n@^8.2.1:
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.2.1.tgz#7e21fed5f18dec6025992522500e9bd62cbe6668"
-  integrity sha512-eiqkUBP9uoADmHa1vz0jLS/JNvR+dODjn2nz14/ZD14hTaWpbOXoUZ0C5Nd2vbP6vOaxXjmkvkzJn/VISvX1BQ==
+vue-i18n@^8.7.0:
+  version "8.7.0"
+  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.7.0.tgz#846269ad9d9c40c77479a540398d4024356fa4e1"
+  integrity sha512-qey+OyZSUIje0xJW8HZrvpIss1jW8yBBRe+0QlUn7HENU31m/+Med/u4pcwjoeCaErHU9WMscBEhqK5aAvvEEQ==
 
 vue-loader@^15.2.4:
   version "15.3.0"
