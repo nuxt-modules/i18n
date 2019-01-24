@@ -216,7 +216,6 @@ If you would like to use regular expression in your custom paths, then you need 
 ```
 
 
-
 ## Ignore routes
 
 
