@@ -51,7 +51,7 @@ exports.DEFAULT_OPTIONS = {
   },
   parsePages: true,
   pages: {},
-  encodeURI: true,
+  encodePaths: true,
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }

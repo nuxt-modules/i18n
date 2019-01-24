@@ -110,7 +110,7 @@ Here are all the options available when configuring the module and their default
   // This does not work with regexp: "/foo/:slug-:id(\\d+)". If you want to use
   // regexp in the path, then set this option to false, and make sure you process
   // path encoding yourself.
-  encodeURI: true,
+  encodePaths: true,
 
   // Called right before app's locale changes
   beforeLanguageSwitch: () => null,

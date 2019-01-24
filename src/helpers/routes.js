@@ -11,7 +11,7 @@ exports.makeRoutes = (baseRoutes, {
   strategy,
   parsePages,
   pages,
-  encodeURI,
+  encodePaths,
   pagesDir,
   differentDomains
 }) => {
@@ -78,7 +78,7 @@ exports.makeRoutes = (baseRoutes, {
 
       // Get custom path if any
       if (componentOptions.paths && componentOptions.paths[locale]) {
-        path = encodeURI ? encodeURI(componentOptions.paths[locale]) : componentOptions.paths[locale]
+        path = encodePaths ? encodeURI(componentOptions.paths[locale]) : componentOptions.paths[locale]
       }
 
       // Add route prefix if needed
