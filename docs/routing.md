@@ -91,6 +91,22 @@ export default {
 }
 ```
 
+If it's a nested route, paths that start with `/` will be treated as a root path:
+
+```js
+// pages/information/about.vue
+
+export default {
+  nuxtI18n: {
+    paths: {
+      en: '/about-us', // -> accessible at /about-us (no prefix since it's the default locale)
+      fr: 'a-propos', // -> accessible at /fr/information/a-propos
+      es: '/sobre'     // -> accessible at /es/sobre
+    }
+  }
+}
+```
+
 ### Module's configuration
 
 Make sure you set the `parsePages` option to `false` to disable acorn parsing and add your custom paths in the `pages` option:
@@ -175,27 +191,27 @@ You would need to set up your `pages` property as follows:
   pages: {
     about: {
       en: '/about',
-      fr: '/a-propos', 
+      fr: '/a-propos',
     },
     'services/index': {
       en: '/services',
-      fr: '/offres', 
+      fr: '/offres',
     },
     'services/development/index': {
       en: '/services/development',
-      fr: '/offres/developement', 
+      fr: '/offres/developement',
     },
     'services/development/app/index': {
       en: '/services/development/app',
-      fr: '/offres/developement/app', 
+      fr: '/offres/developement/app',
     },
     'services/development/website/index': {
       en: '/services/development/website',
-      fr: '/offres/developement/site-web', 
+      fr: '/offres/developement/site-web',
     },
     'services/coaching/index': {
       en: '/services/coaching',
-      fr: '/offres/formation', 
+      fr: '/offres/formation',
     }
   }
 }]

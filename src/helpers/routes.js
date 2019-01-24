@@ -84,8 +84,10 @@ exports.makeRoutes = (baseRoutes, {
       const shouldAddPrefix = (
         // No prefix if app uses different locale domains
         !differentDomains &&
-        // Only add prefix on top level routes
-        !isChild &&
+        // Only add prefix when
+        // 1. on top level routes
+        // 2. parsePages is false, since we are not going from parent path to child path
+        !(isChild && parsePages) &&
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
         !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
       )
