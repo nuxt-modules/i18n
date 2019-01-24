@@ -217,6 +217,21 @@ You would need to set up your `pages` property as follows:
 }]
 ```
 
+### Regular Expression
+
+By default, all custom paths are encoded to handle non-latin characters in the path. This will convert paths with regular expression like `/foo/:slug-:id(\\d+)` to `/foo/:slug-:id(%5Cd+)`.
+
+If you would like to use regular expression in your custom paths, then you need to set the `encodePaths` option to false. Since no encoding will happen, you will have to make sure to pass in encoded paths yourself.
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  encodePaths: false
+}]
+```
+
+
 ## Ignore routes
 
 
