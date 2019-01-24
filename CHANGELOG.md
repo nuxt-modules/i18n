@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.7.0"></a>
+# [5.7.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.6.0...v5.7.0) (2019-01-23)
+
+
+### Bug Fixes
+
+* Fix broken condition in middleware & prevent cookie from being set twice ([#164](https://github.com/nuxt-community/nuxt-i18n/issues/164)) ([7c83922](https://github.com/nuxt-community/nuxt-i18n/commit/7c83922))
+
+
+### Features
+
+* Upgrade vue-i18n (v8.2.1 -> v8.7.0) ([feac945](https://github.com/nuxt-community/nuxt-i18n/commit/feac945))
+
+
+
 <a name="5.6.0"></a>
 # [5.6.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.5.0...v5.6.0) (2019-01-20)
 
