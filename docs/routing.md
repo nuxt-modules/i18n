@@ -175,31 +175,47 @@ You would need to set up your `pages` property as follows:
   pages: {
     about: {
       en: '/about',
-      fr: '/a-propos', 
+      fr: '/a-propos',
     },
     'services/index': {
       en: '/services',
-      fr: '/offres', 
+      fr: '/offres',
     },
     'services/development/index': {
       en: '/services/development',
-      fr: '/offres/developement', 
+      fr: '/offres/developement',
     },
     'services/development/app/index': {
       en: '/services/development/app',
-      fr: '/offres/developement/app', 
+      fr: '/offres/developement/app',
     },
     'services/development/website/index': {
       en: '/services/development/website',
-      fr: '/offres/developement/site-web', 
+      fr: '/offres/developement/site-web',
     },
     'services/coaching/index': {
       en: '/services/coaching',
-      fr: '/offres/formation', 
+      fr: '/offres/formation',
     }
   }
 }]
 ```
+
+### Regular Expression
+
+By default, all custom paths are encoded to handle non-latin characters in the path. This will convert paths with regular expression like `/foo/:slug-:id(\\d+)` to `/foo/:slug-:id(%5Cd+)`.
+
+If you would like to use regular expression in your custom paths, then you need to set the `encodeURI` option to false. Since no encoding will happen, you will have to make sure to pass in encoded paths yourself.
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  encodeURI: false
+}]
+```
+
+
 
 ## Ignore routes
 
