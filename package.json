@@ -19,6 +19,7 @@
     "access": "public"
   },
   "scripts": {
+    "dev:basic": "nuxt -c ./test/fixtures/basic/nuxt.config.js",
     "lint": "eslint src test",
     "test": "yarn test:fixtures && yarn test:types",
     "test:fixtures": "jest test/fixtures",
