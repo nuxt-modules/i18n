@@ -87,8 +87,8 @@ exports.makeRoutes = (baseRoutes, {
         !differentDomains &&
         // Only add prefix when
         // 1. on top level routes
-        // 2. parsePages is false, since we are not going from parent path to child path
-        !(isChild && parsePages) &&
+        // 2. path starts with /, as we assume this is a full URI
+        (!isChild || path.startsWith('/')) &&
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
         !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
       )
