@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.8.0"></a>
+# [5.8.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.7.0...v5.8.0) (2019-01-27)
+
+
+### Bug Fixes
+
+* Rename option encodeURI to encodePaths ([776c2dd](https://github.com/nuxt-community/nuxt-i18n/commit/776c2dd))
+
+
+### Features
+
+* Add encodeURI option to allow skipping encodeURI for custom paths ([#199](https://github.com/nuxt-community/nuxt-i18n/issues/199)) ([00c89f1](https://github.com/nuxt-community/nuxt-i18n/commit/00c89f1)), closes [#191](https://github.com/nuxt-community/nuxt-i18n/issues/191)
+
+
+
 <a name="5.7.0"></a>
 # [5.7.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.6.0...v5.7.0) (2019-01-23)
 

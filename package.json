@@ -1,6 +1,6 @@
 {
   "name": "nuxt-i18n",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "description": "i18n for Nuxt",
   "license": "MIT",
   "contributors": [
@@ -60,7 +60,7 @@
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-standard": "4.0.0",
     "eslint-plugin-vue": "5.1.0",
-    "jest": "23.6.0",
+    "jest": "24.0.0",
     "jsdom": "13.2.0",
     "nuxt": "2.3.4",
     "standard-version": "4.4.0",
