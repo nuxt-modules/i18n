@@ -1,4 +1,4 @@
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000
+jest.setTimeout(60000)
 process.env.PORT = process.env.PORT || 5060
 process.env.NODE_ENV = 'production'
 
@@ -27,7 +27,7 @@ describe('basic', () => {
 
   test('sets SEO metadata properly', async () => {
     const html = await get('/')
-    const match = html.match(/<head>((.|\n)*)<\/head>/)
+    const match = html.match(/<head[^>]*>((.|\n)*)<\/head>/)
     expect(match.length).toBeGreaterThanOrEqual(2)
     const head = match[1]
     expect(head).toMatchSnapshot()
