@@ -12,3 +12,9 @@ declare module "vue/types/vue" {
     getRouteBaseName(route: RawLocation): string;
   }
 }
+
+declare module 'vue-i18n' {
+  interface IVueI18n {
+    locales: any
+  }
+}
