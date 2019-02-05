@@ -6,10 +6,17 @@ Here's an example lang switcher where a `name` key has been added to each locale
 
 ```vue
 <nuxt-link
-  v-for="locale in $i18n.locales"
-  v-if="locale.code !== $i18n.locale"
+  v-for="locale in availableLocales"
   :key="locale.code"
   :to="switchLocalePath(locale.code)">{{ locale.name }}</nuxt-link>
+```
+
+```js
+computed: {
+  availableLocales () {
+    return this.$i18n.locales.filter(i => i.code !== this.$i18n.locale)
+  }
+}
 ```
 
 ```js
