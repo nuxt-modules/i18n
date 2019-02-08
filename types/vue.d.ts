@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { RawLocation } from "vue-router";
-import VueI18n from "vue-i18n"
+import VueI18n from "vue-i18n";
 
 /**
  * The nuxt-i18n types namespace
