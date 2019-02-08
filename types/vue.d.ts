@@ -54,27 +54,27 @@ declare namespace NuxtVueI18n {
       beforeLanguageSwitch: () => any
       onLanguageSwitched: () => any
     }
-  }
-
-  // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
-  interface OptionsInterface extends Options.VueI18nInterface {
-    vueI18n: VueI18n.I18nOptions
-    strategy: "prefix_except_default" | "prefix" | "prefix_and_default"
-    lazy: boolean
-    langDir: string | null
-    rootRedirect: string | null
-    detectBrowserLanguage: Options.DetectBrowserLanguageInterface
-    seo: false
-    baseUrl: string
-    vuex: Options.Vuex
-    parsePages: boolean
-    // see https://goo.gl/NbzX3f
-    pages: {
-      [key: string]: boolean | {
-        [key: string]: boolean | string
+    
+    // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
+    interface AllOptionsInterface extends VueI18nInterface {
+      vueI18n: VueI18n.I18nOptions
+      strategy: "prefix_except_default" | "prefix" | "prefix_and_default"
+      lazy: boolean
+      langDir: string | null
+      rootRedirect: string | null
+      detectBrowserLanguage: Options.DetectBrowserLanguageInterface
+      seo: false
+      baseUrl: string
+      vuex: Options.Vuex
+      parsePages: boolean
+      // see https://goo.gl/NbzX3f
+      pages: {
+        [key: string]: boolean | {
+          [key: string]: boolean | string
+        }
       }
+      encodePaths: boolean
     }
-    encodePaths: boolean
   }
 }
 
@@ -95,7 +95,7 @@ declare module "vue/types/vue" {
 declare module "vue-i18n" {
   // the VueI18n class expands here: https://goo.gl/Xtp9EG
   // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
-  interface IVueI18n extends NuxtVueI18n.OptionsInterface {
+  interface IVueI18n extends NuxtVueI18n.Options.AllOptionsInterface {
 
   }
 }
