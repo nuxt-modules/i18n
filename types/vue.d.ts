@@ -9,9 +9,6 @@ declare namespace NuxtVueI18n {
   type Locale = VueI18n.Locale
 
   namespace Options {
-    // e.g.: ['en', 'fr', 'es']
-    type LocalesCodesArr = Locale[]
-
     // e.g.:
     // [
     //   { code: 'en', iso: 'en-US', file: 'en.js' },
@@ -46,7 +43,7 @@ declare namespace NuxtVueI18n {
 
     // special options for a "app.i18n" property: https://goo.gl/UwNfZo
     interface VueI18nInterface {
-      locales: LocalesCodesArr | LocaleObject[]
+      locales: Array<Locale | LocaleObject>
       defaultLocale: null | Locale
       differentDomains: boolean
       forwardedHost: boolean
@@ -54,7 +51,7 @@ declare namespace NuxtVueI18n {
       beforeLanguageSwitch: () => any
       onLanguageSwitched: () => any
     }
-    
+
     // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
     interface AllOptionsInterface extends VueI18nInterface {
       vueI18n: VueI18n.I18nOptions
@@ -95,7 +92,7 @@ declare module "vue/types/vue" {
 declare module "vue-i18n" {
   // the VueI18n class expands here: https://goo.gl/Xtp9EG
   // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
-  interface IVueI18n extends NuxtVueI18n.Options.AllOptionsInterface {
+  interface IVueI18n extends NuxtVueI18n.Options.VueI18nInterface {
 
   }
 }
