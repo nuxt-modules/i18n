@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.8.1"></a>
+## [5.8.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.0...v5.8.1) (2019-02-10)
+
+
+### Bug Fixes
+
+* Update types ([#212](https://github.com/nuxt-community/nuxt-i18n/issues/212)) ([5f8f4d7](https://github.com/nuxt-community/nuxt-i18n/commit/5f8f4d7))
+
+
+
 <a name="5.8.0"></a>
 # [5.8.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.7.0...v5.8.0) (2019-01-27)
 
