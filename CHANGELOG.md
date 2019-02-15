@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.8.2"></a>
+## [5.8.2](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.1...v5.8.2) (2019-02-15)
+
+
+### Bug Fixes
+
+* Set new locale into vuex store module when switching languages ([#222](https://github.com/nuxt-community/nuxt-i18n/issues/222)) ([77cc393](https://github.com/nuxt-community/nuxt-i18n/commit/77cc393)), closes [#221](https://github.com/nuxt-community/nuxt-i18n/issues/221)
+
+
+
 <a name="5.8.1"></a>
 ## [5.8.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.0...v5.8.1) (2019-02-10)
 
