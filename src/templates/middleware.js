@@ -85,7 +85,7 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
       const messages = await loadLanguageAsync(app.i18n, newLocale)
       app.i18n.locale = newLocale
       app.i18n.onLanguageSwitched(oldLocale, newLocale)
-      syncVuex(locale, messages)
+      syncVuex(newLocale, messages)
     } else {
       // Lazy-loading disabled
       app.i18n.locale = newLocale
