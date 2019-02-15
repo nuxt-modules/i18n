@@ -47,7 +47,7 @@
     "acorn-walk": "^6.1.1",
     "cookie": "^0.3.1",
     "js-cookie": "^2.2.0",
-    "vue-i18n": "^8.8.0",
+    "vue-i18n": "^8.8.1",
     "vue-i18n-extensions": "^0.2.0"
   },
   "devDependencies": {
