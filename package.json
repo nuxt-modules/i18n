@@ -51,15 +51,15 @@
     "vue-i18n-extensions": "^0.2.0"
   },
   "devDependencies": {
-    "codecov": "3.1.0",
+    "codecov": "3.2.0",
     "eslint": "5.13.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-import": "2.16.0",
-    "eslint-plugin-jest": "22.2.2",
+    "eslint-plugin-jest": "22.3.0",
     "eslint-plugin-node": "8.0.1",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-standard": "4.0.0",
-    "eslint-plugin-vue": "5.1.0",
+    "eslint-plugin-vue": "5.2.1",
     "jest": "24.1.0",
     "jsdom": "13.2.0",
     "nuxt": "2.4.3",
