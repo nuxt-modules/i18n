@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.8.3"></a>
+## [5.8.3](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.2...v5.8.3) (2019-02-17)
+
+
+### Bug Fixes
+
+* Remove extraneous name from og:locale ([#225](https://github.com/nuxt-community/nuxt-i18n/issues/225)) ([9460d27](https://github.com/nuxt-community/nuxt-i18n/commit/9460d27)), closes [#224](https://github.com/nuxt-community/nuxt-i18n/issues/224)
+
+
+
 <a name="5.8.2"></a>
 ## [5.8.2](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.1...v5.8.2) (2019-02-15)
 
