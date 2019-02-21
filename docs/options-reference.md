@@ -28,6 +28,10 @@ Here are all the options available when configuring the module and their default
   // need to change this
   routesNameSeparator: '___',
 
+  // Suffix added to generated routes name for default locale if strategy is prefix_and_default,
+  // you shouldn't need to change this
+  defaultLocaleRouteNameSuffix: 'default',
+
   // Routes generation strategy, can be set to one of the following:
   // - 'prefix_except_default': add locale prefix for every locale except default
   // - 'prefix': add locale prefix for every locale

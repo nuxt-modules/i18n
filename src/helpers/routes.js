@@ -8,6 +8,7 @@ exports.makeRoutes = (baseRoutes, {
   locales,
   defaultLocale,
   routesNameSeparator,
+  defaultLocaleRouteNameSuffix,
   strategy,
   parsePages,
   pages,
@@ -92,7 +93,8 @@ exports.makeRoutes = (baseRoutes, {
       )
 
       if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-        routes.push({ ...localizedRoute, path })
+        const nameDefault = localizedRoute.name + routesNameSeparator + defaultLocaleRouteNameSuffix
+        routes.push({ ...localizedRoute, path, name: nameDefault })
       }
 
       if (shouldAddPrefix) {

@@ -1,8 +1,14 @@
 import './middleware';
 import Vue from 'vue'
 
+const routesNameSeparator = '<%= options.routesNameSeparator %>'
 
 function localePathFactory (i18nPath, routerPath) {
+  const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
+  const STRATEGY = '<%= options.strategy %>'
+  const defaultLocale = '<%= options.defaultLocale %>'
+  const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
+
   return function localePath (route, locale) {
     // Abort if no route or no locale
     if (!route) return
@@ -15,8 +21,13 @@ function localePathFactory (i18nPath, routerPath) {
     }
 
     // Build localized route options
-    const routesNameSeparator = '<%= options.routesNameSeparator %>'
-    const name = route.name + routesNameSeparator + locale
+    let name = route.name + routesNameSeparator + locale
+
+    // Match route without prefix for default locale
+    if (locale === defaultLocale && STRATEGY === STRATEGIES.PREFIX_AND_DEFAULT) {
+      name += routesNameSeparator + defaultLocaleRouteNameSuffix
+    }
+
     const localizedRoute = Object.assign({}, route, { name })
 
     // Resolve localized route
@@ -36,9 +47,10 @@ function localePathFactory (i18nPath, routerPath) {
 
 
 function switchLocalePathFactory (i18nPath) {
+  const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
+  const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
+
   return function switchLocalePath (locale) {
-    const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
-    const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
     const name = this.getRouteBaseName()
     if (!name) {
       return ''
@@ -79,7 +91,6 @@ function getRouteBaseNameFactory (contextRoute) {
   }
 
   return function getRouteBaseName (route) {
-    const routesNameSeparator = '<%= options.routesNameSeparator %>'
     route = routeGetter.call(this, route)
     if (!route.name) {
       return null
