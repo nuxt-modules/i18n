@@ -64,7 +64,7 @@
     "jsdom": "13.2.0",
     "nuxt": "2.4.3",
     "standard-version": "5.0.0",
-    "typescript": "3.3.3",
+    "typescript": "3.3.3333",
     "vuepress": "0.14.9"
   }
 }
