@@ -55,7 +55,9 @@ To redirect the user every time they visit the app and keep their selected choic
 // nuxt.config.js
 
 ['nuxt-i18n', {
-  useCookie: true,
-  alwaysRedirect: true
+  detectBrowserLanguage: {
+    useCookie: true,
+    alwaysRedirect: true
+  }
 }]
 ```
