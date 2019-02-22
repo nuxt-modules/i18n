@@ -18,6 +18,7 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
   const getLocaleCodes = <%= options.getLocaleCodes %>
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const routesNameSeparator = '<%= options.routesNameSeparator %>'
+  const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
   const locales = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
   const syncVuex = <%= options.syncVuex %>
 
@@ -33,7 +34,7 @@ middleware['i18n'] = async ({ app, req, res, route, store, redirect, isHMR }) =>
 
   // Handle browser language detection
   const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
-  const routeLocale = getLocaleFromRoute(route, routesNameSeparator, locales)
+  const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, locales)
 
   const getCookie = () => {
     if (isSpa) {

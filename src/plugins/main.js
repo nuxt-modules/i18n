@@ -54,7 +54,6 @@ export default async ({ app, route, store, req }) => {
   app.i18n.defaultLocale = '<%= options.defaultLocale %>'
   app.i18n.differentDomains = <%= options.differentDomains %>
   app.i18n.forwardedHost = <%= options.forwardedHost %>
-  app.i18n.routesNameSeparator = '<%= options.routesNameSeparator %>'
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
   // Extension of Vue
@@ -77,7 +76,10 @@ export default async ({ app, route, store, req }) => {
     const domainLocale = getLocaleDomain()
     locale = domainLocale ? domainLocale : locale
   } else {
-    const routeLocale = getLocaleFromRoute(route, app.i18n.routesNameSeparator, app.i18n.locales)
+    const routesNameSeparator = '<%= options.routesNameSeparator %>'
+    const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
+
+    const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, app.i18n.locales)
     locale = routeLocale ? routeLocale : locale
   }
 

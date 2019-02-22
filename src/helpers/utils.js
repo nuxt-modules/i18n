@@ -66,15 +66,17 @@ exports.getPageOptions = (route, pages, locales, pagesDir) => {
  * - Otherwise, fall back to using the routes'path
  * @param  {Object} route               Route
  * @param  {String} routesNameSeparator Separator used to add locale suffixes in routes names
+ * @param  {String} defaultLocaleRouteNameSuffix Suffix added to default locale routes names
  * @param  {Array}  locales             Locales list from nuxt config
  * @return {String}                     Locale code found if any
  */
-exports.getLocaleFromRoute = (route = {}, routesNameSeparator = '', locales = []) => {
+exports.getLocaleFromRoute = (route = {}, routesNameSeparator = '', defaultLocaleRouteNameSuffix = '', locales = []) => {
   const codes = getLocaleCodes(locales)
   const localesPattern = `(${codes.join('|')})`
+  const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
   // Extract from route name
   if (route.name) {
-    const regexp = new RegExp(`${routesNameSeparator}${localesPattern}$`, 'i')
+    const regexp = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
     const matches = route.name.match(regexp)
     if (matches && matches.length > 1) {
       return matches[1]
