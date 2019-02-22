@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="5.8.4"></a>
+## [5.8.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.3...v5.8.4) (2019-02-22)
+
+
+### Bug Fixes
+
+* Prevent duplicated route names issue with prefix_and_default strategy ([318850c](https://github.com/nuxt-community/nuxt-i18n/commit/318850c)), closes [#140](https://github.com/nuxt-community/nuxt-i18n/issues/140)
+
+
+
 <a name="5.8.3"></a>
 ## [5.8.3](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.2...v5.8.3) (2019-02-17)
 
