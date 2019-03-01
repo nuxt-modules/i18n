@@ -2,5 +2,8 @@
   "extends": [
     "config:base",
     "group:allNonMajor"
-  ]
+  ],
+  "lockFileMaintenance": {
+    "enabled": true
+  }
 }
