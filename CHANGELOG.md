@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.8.5](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.4...v5.8.5) (2019-03-01)
+
+
+### Bug Fixes
+
+* Prevent error "Cannot read property 'iso' of undefined" on 404 pages ([#233](https://github.com/nuxt-community/nuxt-i18n/issues/233)) ([6cb2fa1](https://github.com/nuxt-community/nuxt-i18n/commit/6cb2fa1))
+
+
+
 <a name="5.8.4"></a>
 ## [5.8.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.3...v5.8.4) (2019-02-22)
 
