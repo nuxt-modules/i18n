@@ -12104,11 +12104,6 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
-vm2@^3.5.0:
-  version "3.6.10"
-  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.6.10.tgz#a9066c3849ad8a3ea35b9c0cf79a6589ce6e3cbe"
-  integrity sha512-p4LBl7theIhmKaWPdCn25kEIG0bfDDEDx1lexXH7gcCu9pHIT+PKFgofwLHVHUGhe39lKExeaYVEZtdbQhdl2g==
-
 vue-eslint-parser@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-5.0.0.tgz#00f4e4da94ec974b821a26ff0ed0f7a78402b8a1"
@@ -12126,12 +12121,10 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.3.tgz#2756f46cb3258054c5f4723de8ae7e87302a1ccf"
   integrity sha512-KmvZVtmM26BQOMK1rwUZsrqxEGeKiYSZGA7SNWE6uExx8UX/cj9hq2MRV/wWC3Cq6AoeDGk57rL9YMFRel/q+g==
 
-vue-i18n-extensions@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/vue-i18n-extensions/-/vue-i18n-extensions-0.2.0.tgz#be566a1988f0d736a8d6cea4cc1462ffca520bc6"
-  integrity sha512-yvbwUnmfXpSRf7J7PCMRoDXnLl+9SihKn3UUyI+AQAdo3cafmfYjR8SxitBLcia+t+fINGEISN7BvWACGUfRog==
-  dependencies:
-    vm2 "^3.5.0"
+vue-i18n-extensions@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/vue-i18n-extensions/-/vue-i18n-extensions-0.2.1.tgz#86ebea45a1f9c9594cd124f264e107aea193d7dd"
+  integrity sha512-xBrItI7bEwBnG7eAlnyUARP41JYYn2+ABMR8q1Yh5FM9hHCbs4XPZwG+4+FPeIZ6b5gYk4YUP//m+fWiuU9z9A==
 
 vue-i18n@^8.8.2:
   version "8.9.0"
