@@ -1,7 +1,6 @@
 const { MODULE_NAME, STRATEGIES } = require('./constants')
 const { extractComponentOptions } = require('./components')
 const { getPageOptions, getLocaleCodes } = require('./utils')
-const fs = require('fs')
 
 exports.makeRoutes = (
   baseRoutes,
