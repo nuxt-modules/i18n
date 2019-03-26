@@ -60,13 +60,11 @@ module.exports = function (userOptions) {
 
   // Generate localized routes
   const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
-  this.extendRoutes((routes) => {
-    const localizedRoutes = makeRoutes(routes, {
+  this.extendRoutes(routes => {
+    return makeRoutes(routes, {
       ...options,
       pagesDir
     })
-    routes.splice(0, routes.length)
-    routes.unshift(...localizedRoutes)
   })
 
   // Plugins

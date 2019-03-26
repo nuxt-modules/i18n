@@ -1,21 +1,23 @@
-const {
-  MODULE_NAME,
-  STRATEGIES } = require('./constants')
+const { MODULE_NAME, STRATEGIES } = require('./constants')
 const { extractComponentOptions } = require('./components')
 const { getPageOptions, getLocaleCodes } = require('./utils')
+const fs = require('fs')
 
-exports.makeRoutes = (baseRoutes, {
-  locales,
-  defaultLocale,
-  routesNameSeparator,
-  defaultLocaleRouteNameSuffix,
-  strategy,
-  parsePages,
-  pages,
-  encodePaths,
-  pagesDir,
-  differentDomains
-}) => {
+exports.makeRoutes = (
+  baseRoutes,
+  {
+    locales,
+    defaultLocale,
+    routesNameSeparator,
+    defaultLocaleRouteNameSuffix,
+    strategy,
+    parsePages,
+    pages,
+    encodePaths,
+    pagesDir,
+    differentDomains
+  }
+) => {
   locales = getLocaleCodes(locales)
   let localizedRoutes = []
 
@@ -45,24 +47,32 @@ exports.makeRoutes = (baseRoutes, {
     // This is there to prevent children routes being localized even though
     // they are disabled in the configuration
     if (
-      typeof componentOptions.locales !== 'undefined' && componentOptions.locales.length > 0 &&
-      typeof pageOptions.locales !== 'undefined' && pageOptions.locales.length > 0) {
-      componentOptions.locales = componentOptions.locales.filter((locale) => (
-        pageOptions.locales.indexOf(locale) !== -1
-      ))
+      typeof componentOptions.locales !== 'undefined' &&
+      componentOptions.locales.length > 0 &&
+      typeof pageOptions.locales !== 'undefined' &&
+      pageOptions.locales.length > 0
+    ) {
+      componentOptions.locales = componentOptions.locales.filter(locale => pageOptions.locales.indexOf(locale) !== -1)
     }
 
     // Generate routes for component's supported locales
-    for (let i = 0, length1 = componentOptions.locales.length; i < length1; i++) {
-      const locale = componentOptions.locales[i]
+    componentOptions.locales.forEach(locale => {
       let { name, path } = route
       const localizedRoute = { ...route }
 
       // Skip if locale not in module's configuration
       if (locales.indexOf(locale) === -1) {
         // eslint-disable-next-line
-        console.warn(`[${MODULE_NAME}] Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`)
-        continue
+        console.warn(
+          `[${MODULE_NAME}] Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`
+        )
+        return
+      }
+
+      // Add origin of route
+      localizedRoute.origin = {
+        name,
+        path
       }
 
       // Make localized route name
@@ -73,7 +83,9 @@ exports.makeRoutes = (baseRoutes, {
         delete localizedRoute.name
         localizedRoute.children = []
         for (let i = 0, length1 = route.children.length; i < length1; i++) {
-          localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true))
+          localizedRoute.children = localizedRoute.children.concat(
+            buildLocalizedRoutes(route.children[i], { locales: [locale] }, true)
+          )
         }
       }
 
@@ -83,14 +95,13 @@ exports.makeRoutes = (baseRoutes, {
       }
 
       // Add route prefix if needed
-      const shouldAddPrefix = (
+      const shouldAddPrefix =
         // No prefix if app uses different locale domains
         !differentDomains &&
         // Only add prefix on top level routes
         !isChild &&
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
         !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
-      )
 
       if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
         const nameDefault = localizedRoute.name + routesNameSeparator + defaultLocaleRouteNameSuffix
@@ -104,15 +115,30 @@ exports.makeRoutes = (baseRoutes, {
       localizedRoute.path = path
 
       routes.push(localizedRoute)
-    }
+    })
 
     return routes
   }
 
-  for (let i = 0, length1 = baseRoutes.length; i < length1; i++) {
-    const route = baseRoutes[i]
-    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, { locales }))
-  }
+  // Clean old route to native
+  const cleanRoutes = []
+  baseRoutes.forEach(route => {
+    if (route.origin) {
+      if (!cleanRoutes.find(route1 => route1.name === route.origin.name)) {
+        route.name = route.origin.name
+        route.path = route.origin.path
+        delete route.origin
+
+        cleanRoutes.push(route)
+      }
+    } else {
+      cleanRoutes.push(route)
+    }
+  })
+
+  cleanRoutes.forEach(baseRoute => {
+    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(baseRoute, { locales }))
+  })
 
   return localizedRoutes
 }
