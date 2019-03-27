@@ -90,8 +90,8 @@ export default async ({ app, route, store, req }) => {
     const { loadLanguageAsync } = require('./utils')
 
     // Load fallback lang
-    if(app.i18n.fallbackLocale) {
-      loadLanguageAsync(app.i18n, app.i18n.fallbackLocale)
+    if(app.i18n.fallbackLocale && app.i18n.locale !== app.i18n.fallbackLocale) {
+      await loadLanguageAsync(app.i18n, app.i18n.fallbackLocale)
     }
 
     const messages = await loadLanguageAsync(app.i18n, app.i18n.locale)
