@@ -51,7 +51,7 @@
     "vue-i18n-extensions": "^0.2.1"
   },
   "devDependencies": {
-    "@babel/runtime": "^7.4.3",
+    "@babel/runtime": "7.4.3",
     "codecov": "3.3.0",
     "eslint": "5.16.0",
     "eslint-config-standard": "12.0.0",
