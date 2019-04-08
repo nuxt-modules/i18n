@@ -30,6 +30,11 @@ function localePathFactory (i18nPath, routerPath) {
 
     const localizedRoute = Object.assign({}, route, { name })
 
+    const { params } = localizedRoute
+    if (params && params['0'] === undefined && params.pathMatch) {
+      params['0'] = params.pathMatch
+    }
+
     // Resolve localized route
     const router = this[routerPath]
     const resolved = router.resolve(localizedRoute)
