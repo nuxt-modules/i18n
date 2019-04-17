@@ -50,6 +50,7 @@ declare namespace NuxtVueI18n {
       routesNameSeparator: string
       beforeLanguageSwitch: () => any
       onLanguageSwitched: () => any
+      setLocaleCookie: (locale: string) => undefined
     }
 
     // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
