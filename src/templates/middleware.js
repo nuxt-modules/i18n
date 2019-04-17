@@ -1,5 +1,3 @@
-import cookie from 'cookie'
-import Cookies from 'js-cookie'
 import middleware from '../middleware'
 
 middleware['i18n'] = async (context) => {
@@ -13,7 +11,6 @@ middleware['i18n'] = async (context) => {
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
   const differentDomains = <%= options.differentDomains %>
-  const isSpa = <%= options.isSpa %>
 
   // Helpers
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
@@ -23,7 +20,6 @@ middleware['i18n'] = async (context) => {
   const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
   const locales = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
   const syncVuex = <%= options.syncVuex %>
-
 
   let locale = app.i18n.locale || app.i18n.defaultLocale || null
 
@@ -37,32 +33,6 @@ middleware['i18n'] = async (context) => {
   // Handle browser language detection
   const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
   const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, locales)
-
-  const getCookie = () => {
-    if (isSpa) {
-      return Cookies.get(cookieKey);
-    } else if (req && typeof req.headers.cookie !== 'undefined') {
-      const cookies = req.headers && req.headers.cookie ? cookie.parse(req.headers.cookie) : {}
-      return cookies[cookieKey]
-    }
-    return null
-  }
-
-  const setCookie = (locale) => {
-    const date = new Date()
-    if (isSpa) {
-      Cookies.set(cookieKey, locale, {
-        expires: new Date(date.setDate(date.getDate() + 365)),
-        path: '/'
-      })
-    } else if (res) {
-      const redirectCookie = cookie.serialize(cookieKey, locale, {
-        expires: new Date(date.setDate(date.getDate() + 365)),
-        path: '/'
-      })
-      res.setHeader('Set-Cookie', redirectCookie)
-    }
-  }
 
   const { useCookie, cookieKey, alwaysRedirect, fallbackLocale } = detectBrowserLanguage
 
@@ -79,8 +49,8 @@ middleware['i18n'] = async (context) => {
 
     const oldLocale = app.i18n.locale
     app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
-    if(useCookie) {
-      setCookie(newLocale)
+    if (useCookie) {
+      app.i18n.setCookieLocale(newLocale)
     }
     // Lazy-loading enabled
     if (lazy) {
@@ -100,11 +70,11 @@ middleware['i18n'] = async (context) => {
   if (detectBrowserLanguage) {
     let browserLocale
 
-    if (useCookie && (browserLocale = getCookie()) && browserLocale !== 1 && browserLocale !== '1') {
+    if (useCookie && (browserLocale = app.i18n.getCookieLocale()) && browserLocale !== 1 && browserLocale !== '1') {
       // Get preferred language from cookie if present and enabled
       // Exclude 1 for backwards compatibility and fallback when fallbackLocale is empty
-    } else if (isSpa && typeof navigator !== 'undefined' && navigator.language) {
-      // Get browser language either from navigator if running in mode SPA, or from the headers
+    } else if (process.client && typeof navigator !== 'undefined' && navigator.language) {
+      // Get browser language either from navigator if running on client side, or from the headers
       browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
     } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
       browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
@@ -112,23 +82,26 @@ middleware['i18n'] = async (context) => {
 
     if (browserLocale) {
       // Handle cookie option to prevent multiple redirections
-      if(!useCookie || alwaysRedirect || !getCookie()) {
+      if (!useCookie || alwaysRedirect || !app.i18n.getCookieLocale()) {
         const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
         let redirectToLocale = fallbackLocale
 
         // Use browserLocale if we support it, otherwise use fallbackLocale
-        if(locales.indexOf(browserLocale) !== -1) {
+        if (locales.indexOf(browserLocale) !== -1) {
           redirectToLocale = browserLocale
         }
 
-        if (redirectToLocale && redirectToLocale !== app.i18n.locale && locales.indexOf(redirectToLocale) !== -1) {
+        if (redirectToLocale && locales.indexOf(redirectToLocale) !== -1) {
+          if (redirectToLocale !== app.i18n.locale) {
+            // We switch the locale before redirect to prevent loops
+            await switchLocale(redirectToLocale)
 
-          // We switch the locale before redirect to prevent loops
-          await switchLocale(redirectToLocale)
-
-          redirect(app.localePath(Object.assign({}, route , {
-            name: routeName
-          }), redirectToLocale))
+            redirect(app.localePath(Object.assign({}, route , {
+              name: routeName
+            }), redirectToLocale))
+          } else if (useCookie && !app.i18n.getCookieLocale()) {
+            app.setCookieLocale(redirectToLocale)
+          }
 
           return
         }

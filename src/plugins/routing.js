@@ -1,4 +1,6 @@
 import './middleware';
+import cookie from 'cookie'
+import Cookies from 'js-cookie'
 import Vue from 'vue'
 
 const routesNameSeparator = '<%= options.routesNameSeparator %>'
@@ -104,6 +106,44 @@ function getRouteBaseNameFactory (contextRoute) {
   }
 }
 
+const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
+const { useCookie, cookieKey } = detectBrowserLanguage
+
+function getCookieFactory(req) {
+  return function getCookie() {
+    if (useCookie) {
+      if (process.client) {
+        return Cookies.get(cookieKey);
+      } else if (req && typeof req.headers.cookie !== 'undefined') {
+        const cookies = req.headers && req.headers.cookie ? cookie.parse(req.headers.cookie) : {}
+        return cookies[cookieKey]
+      }
+    }
+    return null
+  }
+}
+
+function setCookieFactory(res) {
+  return function setCookie(locale) {
+    if (!useCookie) {
+      return;
+    }
+    const date = new Date()
+    if (process.client) {
+      Cookies.set(cookieKey, locale, {
+        expires: new Date(date.setDate(date.getDate() + 365)),
+        path: '/'
+      })
+    } else if (res) {
+      const redirectCookie = cookie.serialize(cookieKey, locale, {
+        expires: new Date(date.setDate(date.getDate() + 365)),
+        path: '/'
+      })
+      res.setHeader('Set-Cookie', redirectCookie)
+    }
+  }
+}
+
 Vue.mixin({
   methods: {
     localePath: localePathFactory('$i18n', '$router'),
@@ -112,9 +152,10 @@ Vue.mixin({
   }
 })
 
-
-export default ({ app, route }) => {
+export default ({ app, route, req, res }) => {
   app.localePath = localePathFactory('i18n', 'router')
-  app.switchLocalePath = switchLocalePathFactory('i18n'),
+  app.switchLocalePath = switchLocalePathFactory('i18n')
   app.getRouteBaseName = getRouteBaseNameFactory(route)
+  app.getCookieLocale = getCookieFactory(req)
+  app.setCookieLocale = setCookieFactory(res)
 }
