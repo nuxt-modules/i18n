@@ -15,11 +15,12 @@ exports.extractComponentOptions = (path) => {
   const script = Component.script.content
 
   let pos = script.indexOf(COMPONENT_OPTIONS_KEY)
-  let data_str = ''
-  let go = false
-  let chk = 0
-  let sym = ''
   if (pos !== -1) {
+    let dataStr = ''
+    let go = false
+
+    let chk = 0
+    let sym = ''
 
     for (step = pos; step < script.length; step++) {
       sym = script.charAt(step)
@@ -28,14 +29,19 @@ exports.extractComponentOptions = (path) => {
         chk++
       }
       if (sym === '}') chk--
-      data_str += sym
+      dataStr += sym
+
+      if (!go && (sym === '\n' || sym === '\r')) {
+        break
+      }
+
       if (go && !chk) break
 
     }
-  }
 
-  if (data_str.length > 0) {
-    componentOptions = eval(`({${data_str}})`)[COMPONENT_OPTIONS_KEY]
+    if (dataStr.length > 0) {
+      componentOptions = eval(`({${dataStr}})`)[COMPONENT_OPTIONS_KEY]
+    }
   }
 
   /*  
