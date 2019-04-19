@@ -98,3 +98,12 @@ declare module "vue-i18n" {
 
   }
 }
+
+/**
+ * Extends types in @nuxt/vue-app
+ */
+declare module '@nuxt/vue-app' {
+  interface Context {
+    readonly i18n: VueI18n & IVueI18n;
+  }
+}
