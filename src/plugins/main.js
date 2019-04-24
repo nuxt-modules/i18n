@@ -4,7 +4,9 @@ import { nuxtI18nSeo } from './seo-head'
 
 Vue.use(VueI18n)
 
-export default async ({ app, route, store, req }) => {
+export default async (context) => {
+  const { app, route, store, req } = context;
+
   // Options
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
@@ -88,7 +90,7 @@ export default async ({ app, route, store, req }) => {
   // Lazy-load translations
   if (lazy) {
     const { loadLanguageAsync } = require('./utils')
-    const messages = await loadLanguageAsync(app.i18n, app.i18n.locale)
+    const messages = await loadLanguageAsync(context, app.i18n.locale)
     syncVuex(locale, messages)
     return messages
   } else {
