@@ -51,7 +51,7 @@ Language file example:
 ```js
 // lang/[lang].js
 
-export default () => {
+export default (context) => {
   return new Promise(function (resolve) {
     resolve({
       welcome: 'Welcome'
