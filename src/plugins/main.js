@@ -68,7 +68,7 @@ export default async (context) => {
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {
-      locale.domain = store.state.localeDomains[locale.code];
+      locale.domain = store.state.localeDomains[locale.code]
     })
   }
 
