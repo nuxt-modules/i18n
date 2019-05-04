@@ -5,25 +5,27 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
 ```js
 {
   modules: [
-    ['nuxt-i18n', {
-      locales: ['en', 'fr', 'es'],
-      defaultLocale: 'en',
-      vueI18n: {
-        fallbackLocale: 'en',
-        messages: {
-          en: {
-            welcome: 'Welcome'
-          },
-          fr: {
-            welcome: 'Bienvenue'
-          },
-          es: {
-            welcome: 'Bienvenido'
-          }
+    'nuxt-i18n'
+  ],
+
+  i18n: {
+    locales: ['en', 'fr', 'es'],
+    defaultLocale: 'en',
+    vueI18n: {
+      fallbackLocale: 'en',
+      messages: {
+        en: {
+          welcome: 'Welcome'
+        },
+        fr: {
+          welcome: 'Bienvenue'
+        },
+        es: {
+          welcome: 'Bienvenido'
         }
       }
-    }]
-  ]
+    }
+  }
 }
 ```
 
