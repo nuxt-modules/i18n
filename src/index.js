@@ -31,7 +31,7 @@ module.exports = function (userOptions) {
   const pluginsPath = join(__dirname, PLUGINS_DIR)
   const templatesPath = join(__dirname, TEMPLATES_DIR)
   const requiredPlugins = ['main', 'routing']
-  const options = { ...DEFAULT_OPTIONS, ...userOptions }
+  const options = { ...DEFAULT_OPTIONS, ...userOptions, ...this.options.i18n }
   // Options that have nested config options must be merged
   // individually with defaults to prevent missing options
   for (const key of NESTED_OPTIONS) {
