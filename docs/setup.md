@@ -17,10 +17,14 @@ Then add the module to `nuxt.config.js`:
 ```js
 {
   modules: [
-    ['nuxt-i18n', {
-      // Options
-    }]
-  ]
+    [
+      'nuxt-i18n',
+       { /* module options */ }
+    ]
+  ],
+
+  // Or with global options
+  i18n: {}
 }
 ```
 
