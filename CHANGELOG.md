@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [5.11.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.10.0...v5.11.0) (2019-05-05)
+
+
+### Features
+
+* add global options ([fe6d114](https://github.com/nuxt-community/nuxt-i18n/commit/fe6d114))
+* Always redirect to language that was saved in cookie ([#283](https://github.com/nuxt-community/nuxt-i18n/issues/283)) ([dc66895](https://github.com/nuxt-community/nuxt-i18n/commit/dc66895))
+
+
+
 # [5.10.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.9.0...v5.10.0) (2019-04-27)
 
 
