@@ -54,8 +54,7 @@ module.exports = function (userOptions) {
     getForwarded,
     getHostname,
     getLocaleDomain,
-    syncVuex,
-    isSpa: this.options.mode === 'spa'
+    syncVuex
   }
 
   // Generate localized routes

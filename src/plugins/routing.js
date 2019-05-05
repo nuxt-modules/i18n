@@ -112,9 +112,8 @@ Vue.mixin({
   }
 })
 
-
 export default ({ app, route }) => {
   app.localePath = localePathFactory('i18n', 'router')
-  app.switchLocalePath = switchLocalePathFactory('i18n'),
+  app.switchLocalePath = switchLocalePathFactory('i18n')
   app.getRouteBaseName = getRouteBaseNameFactory(route)
 }
