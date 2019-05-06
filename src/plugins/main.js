@@ -115,6 +115,12 @@ export default async (context) => {
   // Lazy-load translations
   if (lazy) {
     const { loadLanguageAsync } = require('./utils')
+
+    // Load fallback locale.
+    if (app.i18n.fallbackLocale && app.i18n.locale !== app.i18n.fallbackLocale) {
+      await loadLanguageAsync(context, app.i18n.fallbackLocale)
+    }
+
     const messages = await loadLanguageAsync(context, app.i18n.locale)
     syncVuex(locale, messages)
     return messages
