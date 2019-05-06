@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [5.12.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.11.0...v5.12.0) (2019-05-06)
+
+
+### Features
+
+* Load fallback locale when needed if lazy-loading is enabled ([#291](https://github.com/nuxt-community/nuxt-i18n/issues/291)) ([0148546](https://github.com/nuxt-community/nuxt-i18n/commit/0148546)), closes [#34](https://github.com/nuxt-community/nuxt-i18n/issues/34)
+
+
+
 # [5.11.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.10.0...v5.11.0) (2019-05-05)
 
 
