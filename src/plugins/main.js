@@ -7,7 +7,7 @@ import { nuxtI18nSeo } from './seo-head'
 Vue.use(VueI18n)
 
 export default async (context) => {
-  const { app, route, store, res } = context;
+  const { app, route, store, req, res } = context;
 
   // Options
   const lazy = <%= options.lazy %>
