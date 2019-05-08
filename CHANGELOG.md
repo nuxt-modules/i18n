@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [5.12.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.11.0...v5.12.0) (2019-05-06)
+
+
+### Features
+
+* Load fallback locale when needed if lazy-loading is enabled ([#291](https://github.com/nuxt-community/nuxt-i18n/issues/291)) ([0148546](https://github.com/nuxt-community/nuxt-i18n/commit/0148546)), closes [#34](https://github.com/nuxt-community/nuxt-i18n/issues/34)
+
+
+
+# [5.11.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.10.0...v5.11.0) (2019-05-05)
+
+
+### Features
+
+* add global options ([fe6d114](https://github.com/nuxt-community/nuxt-i18n/commit/fe6d114))
+* Always redirect to language that was saved in cookie ([#283](https://github.com/nuxt-community/nuxt-i18n/issues/283)) ([dc66895](https://github.com/nuxt-community/nuxt-i18n/commit/dc66895))
+
+
+
+# [5.10.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.9.0...v5.10.0) (2019-04-27)
+
+
+### Bug Fixes
+
+* Prevent redirect failure when accessing a dynamic route with detectBrowserLanguage enabled ([#266](https://github.com/nuxt-community/nuxt-i18n/issues/266)) ([b7adba0](https://github.com/nuxt-community/nuxt-i18n/commit/b7adba0))
+
+
+### Features
+
+* Upgrade vue-i18n to v8.11.1 ([29f7f54](https://github.com/nuxt-community/nuxt-i18n/commit/29f7f54)), closes [/github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#8111-2019-04-26](https://github.com//github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md/issues/8111-2019-04-26)
+
+
+
+# [5.9.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.5...v5.9.0) (2019-04-25)
+
+
+### Features
+
+* pass nuxt context to loadLanguageAsync ([3834899](https://github.com/nuxt-community/nuxt-i18n/commit/3834899))
+
+
+
+## [5.8.5](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.4...v5.8.5) (2019-03-01)
+
+
+### Bug Fixes
+
+* Prevent error "Cannot read property 'iso' of undefined" on 404 pages ([#233](https://github.com/nuxt-community/nuxt-i18n/issues/233)) ([6cb2fa1](https://github.com/nuxt-community/nuxt-i18n/commit/6cb2fa1))
+
+
+
 <a name="5.8.4"></a>
 ## [5.8.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.8.3...v5.8.4) (2019-02-22)
 

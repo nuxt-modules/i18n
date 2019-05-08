@@ -1,10 +1,14 @@
+import Cookie from 'cookie'
+import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
 
 Vue.use(VueI18n)
 
-export default async ({ app, route, store, req }) => {
+export default async (context) => {
+  const { app, route, store, res } = context;
+
   // Options
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
@@ -48,6 +52,28 @@ export default async ({ app, route, store, req }) => {
   }
   <% } %>
 
+  const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
+  const { useCookie, cookieKey } = detectBrowserLanguage
+
+  const setLocaleCookie = locale => {
+    if (!useCookie) {
+      return;
+    }
+    const date = new Date()
+    if (process.client) {
+      JsCookie.set(cookieKey, locale, {
+        expires: new Date(date.setDate(date.getDate() + 365)),
+        path: '/'
+      })
+    } else if (res) {
+      const redirectCookie = Cookie.serialize(cookieKey, locale, {
+        expires: new Date(date.setDate(date.getDate() + 365)),
+        path: '/'
+      })
+      res.setHeader('Set-Cookie', redirectCookie)
+    }
+  }
+
   // Set instance options
   app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)
   app.i18n.locales = <%= JSON.stringify(options.locales) %>
@@ -56,6 +82,7 @@ export default async ({ app, route, store, req }) => {
   app.i18n.forwardedHost = <%= options.forwardedHost %>
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
+  app.i18n.setLocaleCookie = setLocaleCookie
   // Extension of Vue
   if (!app.$t) {
     app.$t = app.i18n.t
@@ -66,7 +93,7 @@ export default async ({ app, route, store, req }) => {
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {
-      locale.domain = store.state.localeDomains[locale.code];
+      locale.domain = store.state.localeDomains[locale.code]
     })
   }
 
@@ -88,7 +115,13 @@ export default async ({ app, route, store, req }) => {
   // Lazy-load translations
   if (lazy) {
     const { loadLanguageAsync } = require('./utils')
-    const messages = await loadLanguageAsync(app.i18n, app.i18n.locale)
+
+    // Load fallback locale.
+    if (app.i18n.fallbackLocale && app.i18n.locale !== app.i18n.fallbackLocale) {
+      await loadLanguageAsync(context, app.i18n.fallbackLocale)
+    }
+
+    const messages = await loadLanguageAsync(context, app.i18n.locale)
     syncVuex(locale, messages)
     return messages
   } else {

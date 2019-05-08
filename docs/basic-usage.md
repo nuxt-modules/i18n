@@ -5,25 +5,27 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
 ```js
 {
   modules: [
-    ['nuxt-i18n', {
-      locales: ['en', 'fr', 'es'],
-      defaultLocale: 'en',
-      vueI18n: {
-        fallbackLocale: 'en',
-        messages: {
-          en: {
-            welcome: 'Welcome'
-          },
-          fr: {
-            welcome: 'Bienvenue'
-          },
-          es: {
-            welcome: 'Bienvenido'
-          }
+    'nuxt-i18n'
+  ],
+
+  i18n: {
+    locales: ['en', 'fr', 'es'],
+    defaultLocale: 'en',
+    vueI18n: {
+      fallbackLocale: 'en',
+      messages: {
+        en: {
+          welcome: 'Welcome'
+        },
+        fr: {
+          welcome: 'Bienvenue'
+        },
+        es: {
+          welcome: 'Bienvenido'
         }
       }
-    }]
-  ]
+    }
+  }
 }
 ```
 
@@ -62,8 +64,8 @@ For convenience, these methods are also available in the app's context:
 
 export default ({ app }) => {
   // Get localized path for homepage
-  const localePath = app.i18n.localePath('index')
+  const localePath = app.localePath('index')
   // Get path to switch current route to French
-  const switchLocalePath = app.i18n.switchLocalePath('fr')
+  const switchLocalePath = app.switchLocalePath('fr')
 }
 ```

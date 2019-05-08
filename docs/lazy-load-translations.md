@@ -7,8 +7,8 @@ To enable translations lazy-loading, follow these 4 steps when configuring **nux
 * Set `lazy` option to `true`
 * Set `langDir` option to the directory that contains your translation files (this can NOT be empty)
 * Configure `locales` option as an array of object, where each object has a `file` key which value is the translation file corresponding to the locale
-* Optionnaly, remove all messages that you might have passed to vue-i18n via `vueI18n` option
-* Each `file` can return either an `Object` or a `function` (Supports `Promises`)
+* Optionally, remove all messages that you might have passed to vue-i18n via `vueI18n` option
+* Each `file` can return either an `Object` or a `function` (supports `Promises`)
 
 Example files structure:
 
@@ -51,7 +51,7 @@ Language file example:
 ```js
 // lang/[lang].js
 
-export default () => {
+export default (context) => {
   return new Promise(function (resolve) {
     resolve({
       welcome: 'Welcome'

@@ -30,6 +30,11 @@ function localePathFactory (i18nPath, routerPath) {
 
     const localizedRoute = Object.assign({}, route, { name })
 
+    const { params } = localizedRoute
+    if (params && params['0'] === undefined && params.pathMatch) {
+      params['0'] = params.pathMatch
+    }
+
     // Resolve localized route
     const router = this[routerPath]
     const resolved = router.resolve(localizedRoute)
@@ -107,9 +112,8 @@ Vue.mixin({
   }
 })
 
-
 export default ({ app, route }) => {
   app.localePath = localePathFactory('i18n', 'router')
-  app.switchLocalePath = switchLocalePathFactory('i18n'),
+  app.switchLocalePath = switchLocalePathFactory('i18n')
   app.getRouteBaseName = getRouteBaseNameFactory(route)
 }
