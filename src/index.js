@@ -17,7 +17,6 @@ const {
   COMPONENT_OPTIONS_KEY
 } = require('./helpers/constants')
 
-const { makeRoutes } = require('./helpers/routes')
 const {
   getLocaleCodes,
   getLocaleFromRoute,
@@ -60,6 +59,8 @@ module.exports = function (userOptions) {
   // Generate localized routes
   const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
   this.extendRoutes((routes) => {
+    const { makeRoutes } = require('./helpers/routes')
+
     const localizedRoutes = makeRoutes(routes, {
       ...options,
       pagesDir
