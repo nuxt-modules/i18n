@@ -131,15 +131,15 @@ exports.getLocaleDomain = () => {
  * Dispatch store module actions to keep it in sync with app's locale data
  * @param  {String} locale   Current locale
  * @param  {Object} messages Current messages
- * @return {void}
+ * @return {Promise(void)}
  */
-exports.syncVuex = (locale = null, messages = null) => {
+exports.syncVuex = async (locale = null, messages = null) => {
   if (vuex && store) {
     if (locale !== null && vuex.mutations.setLocale) {
-      store.dispatch(vuex.moduleName + '/setLocale', locale)
+      await store.dispatch(vuex.moduleName + '/setLocale', locale)
     }
     if (messages !== null && vuex.mutations.setMessages) {
-      store.dispatch(vuex.moduleName + '/setMessages', messages)
+      await store.dispatch(vuex.moduleName + '/setMessages', messages)
     }
   }
 }

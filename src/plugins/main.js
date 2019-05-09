@@ -122,10 +122,10 @@ export default async (context) => {
     }
 
     const messages = await loadLanguageAsync(context, app.i18n.locale)
-    syncVuex(locale, messages)
+    await syncVuex(locale, messages)
     return messages
   } else {
     // Sync Vuex
-    syncVuex(locale, app.i18n.getLocaleMessage(locale))
+    await syncVuex(locale, app.i18n.getLocaleMessage(locale))
   }
 }
