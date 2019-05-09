@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.0...v5.12.1) (2019-05-09)
+
+
+### Bug Fixes
+
+* Fix duplicate child routes with PREFIX_AND_DEFAULT strategy (fixes [#292](https://github.com/nuxt-community/nuxt-i18n/issues/292)) ([#294](https://github.com/nuxt-community/nuxt-i18n/issues/294)) ([76d5948](https://github.com/nuxt-community/nuxt-i18n/commit/76d5948))
+* Fix exception when using multiple domains option (fixes [#293](https://github.com/nuxt-community/nuxt-i18n/issues/293)) ([#295](https://github.com/nuxt-community/nuxt-i18n/issues/295)) ([17f1e07](https://github.com/nuxt-community/nuxt-i18n/commit/17f1e07))
+
+
+
 # [5.12.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.11.0...v5.12.0) (2019-05-06)
 
 
