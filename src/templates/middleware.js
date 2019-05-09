@@ -72,12 +72,12 @@ middleware['i18n'] = async (context) => {
       const messages = await loadLanguageAsync(context, newLocale)
       app.i18n.locale = newLocale
       app.i18n.onLanguageSwitched(oldLocale, newLocale)
-      syncVuex(newLocale, messages)
+      await syncVuex(newLocale, messages)
     } else {
       // Lazy-loading disabled
       app.i18n.locale = newLocale
       app.i18n.onLanguageSwitched(oldLocale, newLocale)
-      syncVuex(newLocale, app.i18n.getLocaleMessage(newLocale))
+      await syncVuex(newLocale, app.i18n.getLocaleMessage(newLocale))
     }
   }
 
