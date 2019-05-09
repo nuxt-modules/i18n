@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.2](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.1...v5.12.2) (2019-05-09)
+
+
+### Bug Fixes
+
+* add missing vue-template-compiler dependency (fixes [#297](https://github.com/nuxt-community/nuxt-i18n/issues/297)) ([#298](https://github.com/nuxt-community/nuxt-i18n/issues/298)) ([196b4e0](https://github.com/nuxt-community/nuxt-i18n/commit/196b4e0))
+
+
+
 ## [5.12.1](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.0...v5.12.1) (2019-05-09)
 
 
