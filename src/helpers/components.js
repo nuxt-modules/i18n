@@ -3,6 +3,8 @@ const { COMPONENT_OPTIONS_KEY } = require('./constants')
 
 const acorn = require('acorn')
 const walker = require('acorn-walk')
+// Must not be an explicit dependency to avoid version mismatch issue.
+// See https://github.com/nuxt-community/nuxt-i18n/issues/297
 const compiler = require('vue-template-compiler')
 
 exports.extractComponentOptions = (path) => {

@@ -59,6 +59,9 @@ module.exports = function (userOptions) {
   // Generate localized routes
   const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
   this.extendRoutes((routes) => {
+    // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
+    // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
+    // not available (at runtime, when using nuxt-start).
     const { makeRoutes } = require('./helpers/routes')
 
     const localizedRoutes = makeRoutes(routes, {
