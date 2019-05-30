@@ -82,26 +82,26 @@ declare namespace NuxtVueI18n {
 declare module "vue/types/vue" {
   interface NuxtI18nSeo {
     htmlAttrs: {
-      lang: string
-    },
-    link: [{
+      lang?: string
+    }
+    link: {
       hid: string,
       rel: string,
       href: string,
       hreflang: string
-    }],
-    meta: [{
+    }[]
+    meta: {
       hid: string,
       name: string,
       property: string,
       content: string
-    }]
+    }[]
   }
   interface Vue {
     localePath(route: RawLocation, locale?: string): string;
     switchLocalePath(locale: string): string;
     getRouteBaseName(route: RawLocation): string;
-    $nuxtI18nSeo: () => NuxtI18nSeo
+    $nuxtI18nSeo(): NuxtI18nSeo;
     // PHPStorm without this indicates that "$i18n" was not found.
     readonly $i18n: VueI18n & IVueI18n;
   }
