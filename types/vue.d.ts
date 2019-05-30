@@ -81,16 +81,16 @@ declare namespace NuxtVueI18n {
  */
 declare module "vue/types/vue" {
   interface NuxtI18nSeo {
-    htmlAttrs: {
+    htmlAttrs?: {
       lang?: string
     }
-    link: {
+    link?: {
       hid: string,
       rel: string,
       href: string,
       hreflang: string
     }[]
-    meta: {
+    meta?: {
       hid: string,
       name: string,
       property: string,
