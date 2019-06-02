@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.3...v5.12.4) (2019-06-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency cookie to ^0.4.0 ([4223f6a](https://github.com/nuxt-community/nuxt-i18n/commit/4223f6a))
+* add types for nuxtI18nSeo ([5811bbe](https://github.com/nuxt-community/nuxt-i18n/commit/5811bbe))
+* Unexpected token when using dynamic imports ([#320](https://github.com/nuxt-community/nuxt-i18n/issues/320)) ([7dd1dbc](https://github.com/nuxt-community/nuxt-i18n/commit/7dd1dbc)), closes [#134](https://github.com/nuxt-community/nuxt-i18n/issues/134) [#301](https://github.com/nuxt-community/nuxt-i18n/issues/301)
+
+
+
 ## [5.12.3](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.2...v5.12.3) (2019-05-13)
 
 
