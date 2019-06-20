@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.5](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.4...v5.12.5) (2019-06-20)
+
+
+### Bug Fixes
+
+* better server side protocol detection (fixes [#123](https://github.com/nuxt-community/nuxt-i18n/issues/123)) ([8cb3eb6](https://github.com/nuxt-community/nuxt-i18n/commit/8cb3eb6))
+
+
+
 ## [5.12.4](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.3...v5.12.4) (2019-06-02)
 
 
