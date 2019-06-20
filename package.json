@@ -58,16 +58,16 @@
     "eslint": "5.16.0",
     "eslint-config-standard": "12.0.0",
     "eslint-plugin-import": "2.17.3",
-    "eslint-plugin-jest": "22.6.4",
+    "eslint-plugin-jest": "22.7.0",
     "eslint-plugin-node": "9.1.0",
     "eslint-plugin-promise": "4.1.1",
     "eslint-plugin-standard": "4.0.0",
     "eslint-plugin-vue": "5.2.2",
     "jest": "24.8.0",
     "jsdom": "15.1.1",
-    "nuxt": "2.7.1",
+    "nuxt": "2.8.1",
     "standard-version": "6.0.1",
-    "typescript": "3.5.1",
+    "typescript": "3.5.2",
     "vuepress": "1.0.1"
   }
 }
