@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.6](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.5...v5.12.6) (2019-06-21)
+
+
+### Bug Fixes
+
+* do not discard already present set-cookie header ([#327](https://github.com/nuxt-community/nuxt-i18n/issues/327)) ([ec08be8](https://github.com/nuxt-community/nuxt-i18n/commit/ec08be8))
+
+
+
 ## [5.12.5](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.4...v5.12.5) (2019-06-20)
 
 
