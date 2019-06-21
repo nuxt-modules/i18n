@@ -1,9 +1,9 @@
-import Cookie from 'cookie'
+import Cookies from 'cookies'
 import JsCookie from 'js-cookie'
 import middleware from '../middleware'
 
 middleware['i18n'] = async (context) => {
-  const { app, req, route, store, redirect, isHMR } = context;
+  const { app, req, res, route, store, redirect, isHMR } = context;
 
   if (isHMR) {
     return
@@ -43,8 +43,8 @@ middleware['i18n'] = async (context) => {
       if (process.client) {
         return JsCookie.get(cookieKey);
       } else if (req && typeof req.headers.cookie !== 'undefined') {
-        const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
-        return cookies[cookieKey]
+        const cookies = new Cookies(req, res)
+        return cookies.get(cookieKey)
       }
     }
     return null
