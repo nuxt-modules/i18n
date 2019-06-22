@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.12.7](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.6...v5.12.7) (2019-06-22)
+
+
+### Bug Fixes
+
+* Move SEO types out of Vue module declaration ([be085d5](https://github.com/nuxt-community/nuxt-i18n/commit/be085d5))
+* Move SEO types out of Vue module declaration ([#335](https://github.com/nuxt-community/nuxt-i18n/issues/335)) ([0cc0ba0](https://github.com/nuxt-community/nuxt-i18n/commit/0cc0ba0))
+* Only require is-https dependency on the server (fixes [#329](https://github.com/nuxt-community/nuxt-i18n/issues/329)) ([8a728ef](https://github.com/nuxt-community/nuxt-i18n/commit/8a728ef))
+* revert using cookies package to fix cookie headers handling ([#332](https://github.com/nuxt-community/nuxt-i18n/issues/332)) ([9cd034d](https://github.com/nuxt-community/nuxt-i18n/commit/9cd034d)), closes [#330](https://github.com/nuxt-community/nuxt-i18n/issues/330)
+
+
+
 ## [5.12.6](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.5...v5.12.6) (2019-06-21)
 
 
