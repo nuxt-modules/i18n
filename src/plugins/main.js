@@ -1,4 +1,4 @@
-import Cookies from 'cookies'
+import Cookie from 'cookie'
 import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
@@ -66,12 +66,18 @@ export default async (context) => {
         path: '/'
       })
     } else if (res) {
-      const cookies = new Cookies(req, res)
-      cookies.set(cookieKey, locale, {
+      let headers = res.getHeader('Set-Cookie') || []
+      if (typeof headers == 'string') {
+        headers = [headers]
+      }
+
+      const redirectCookie = Cookie.serialize(cookieKey, locale, {
         expires: new Date(date.setDate(date.getDate() + 365)),
-        path: '/',
-        httpOnly: false
+        path: '/'
       })
+      headers.push(redirectCookie)
+
+      res.setHeader('Set-Cookie', headers)
     }
   }
 
