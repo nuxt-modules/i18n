@@ -76,27 +76,28 @@ declare namespace NuxtVueI18n {
   }
 }
 
+interface NuxtI18nSeo {
+  htmlAttrs?: {
+    lang?: string
+  }
+  link?: {
+    hid: string,
+    rel: string,
+    href: string,
+    hreflang: string
+  }[]
+  meta?: {
+    hid: string,
+    name: string,
+    property: string,
+    content: string
+  }[]
+}
+
 /**
  * Extends types in vue
  */
 declare module "vue/types/vue" {
-  interface NuxtI18nSeo {
-    htmlAttrs?: {
-      lang?: string
-    }
-    link?: {
-      hid: string,
-      rel: string,
-      href: string,
-      hreflang: string
-    }[]
-    meta?: {
-      hid: string,
-      name: string,
-      property: string,
-      content: string
-    }[]
-  }
   interface Vue {
     localePath(route: RawLocation, locale?: string): string;
     switchLocalePath(locale: string): string;
