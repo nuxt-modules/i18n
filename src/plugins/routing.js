@@ -1,6 +1,5 @@
 import './middleware'
 import Vue from 'vue'
-import isHTTPS from 'is-https'
 
 const routesNameSeparator = '<%= options.routesNameSeparator %>'
 
@@ -75,6 +74,7 @@ function switchLocalePathFactory (i18nPath) {
       if (lang && lang[LOCALE_DOMAIN_KEY]) {
         let protocol
         if (process.server) {
+          const isHTTPS = require('is-https');
           const { req } = this.$options._parentVnode.ssrContext
           protocol = isHTTPS(req) ? 'https' : 'http'
         } else {
