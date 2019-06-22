@@ -4,9 +4,9 @@ jobs:
     branches:
       ignore:
         - gh-pages
-    working_directory: /usr/src/app
+    working_directory: ~/nuxt-i18n
     docker:
-      - image: banian/node
+      - image: circleci/node:latest
     steps:
       # Checkout repository
       - checkout
