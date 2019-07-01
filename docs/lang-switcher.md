@@ -64,7 +64,7 @@ export default {
         fr: { slug: 'mon-article' },
       })
     })
-    store.dispatch('i18n/setRouteParams', params)
+    await store.dispatch('i18n/setRouteParams', params)
     return {
       // your data
     }
