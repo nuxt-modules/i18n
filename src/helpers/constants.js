@@ -46,9 +46,9 @@ exports.DEFAULT_OPTIONS = {
     moduleName: 'i18n',
     mutations: {
       setLocale: 'I18N_SET_LOCALE',
-      setMessages: 'I18N_SET_MESSAGES'
-    },
-    preserveState: false
+      setMessages: 'I18N_SET_MESSAGES',
+      setRouteParams: 'I18N_SET_ROUTE_PARAMS'
+    }
   },
   parsePages: true,
   pages: {},

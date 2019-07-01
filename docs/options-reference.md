@@ -95,11 +95,11 @@ Here are all the options available when configuring the module and their default
       setLocale: 'I18N_SET_LOCALE',
 
       // Mutation to commit to store current message, set to false to disable
-      setMessages: 'I18N_SET_MESSAGES'
-    },
+      setMessages: 'I18N_SET_MESSAGES',
 
-    // PreserveState from server
-    preserveState: false
+      // Mutation to commit to set route parameters translations
+      setRouteParams: 'I18N_SET_ROUTE_PARAMS'
+    }
   },
 
   // By default, custom routes are extracted from page files using acorn parsing,
