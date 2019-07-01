@@ -4,6 +4,7 @@ process.env.NODE_ENV = 'production'
 
 const { Nuxt, Builder } = require('nuxt')
 const request = require('request-promise-native')
+const { JSDOM } = require('jsdom')
 
 const config = require('./nuxt.config')
 
@@ -11,6 +12,7 @@ const { cleanUpScripts } = require('../../utils')
 
 const url = path => `http://localhost:${process.env.PORT}${path}`
 const get = path => request(url(path))
+const getDom = html => (new JSDOM(html)).window.document
 
 describe('basic', () => {
   let nuxt
@@ -74,24 +76,50 @@ describe('basic', () => {
     expect(response.statusCode).toBe(404)
   })
 
-  test('/posts contains EN text, link to /fr/posts/ & link to /posts/my-slug', async () => {
-    const html = await get('/posts')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
-  })
+  describe('posts', () => {
+    let html
+    let title
+    let langSwitcherLink
+    let link
+    const getElements = () => {
+      const dom = getDom(html)
+      title = dom.querySelector('h1')
+      const links = [...dom.querySelectorAll('a')]
+      langSwitcherLink = links[0]
+      link = links[1]
+    }
 
-  test('/posts/my-slug contains EN text, post\'s slug, link to /fr/posts/my-slug & link to /posts/', async () => {
-    const html = await get('/posts/my-slug')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
-  })
+    test('/posts contains EN text, link to /fr/articles/ & link to /posts/my-post', async () => {
+      html = await get('/posts')
+      getElements()
+      expect(title.textContent).toBe('Posts')
+      expect(langSwitcherLink.href).toBe('/fr/articles/')
+      expect(link.href).toBe('/posts/my-post')
+    })
 
-  test('/fr/posts contains FR text, link to /posts/ & link to /fr/posts/my-slug', async () => {
-    const html = await get('/fr/posts')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
-  })
+    test('/posts/my-post contains EN text, link to /fr/articles/mon-article & link to /posts/', async () => {
+      html = await get('/posts/my-post')
+      getElements()
+      expect(title.textContent).toBe('Posts')
+      expect(langSwitcherLink.href).toBe('/fr/articles/mon-article')
+      expect(link.href).toBe('/posts/')
+    })
 
-  test('/fr/posts/my-slug contains FR text, post\'s slug, link to /posts/my-slug & link to /fr/posts/', async () => {
-    const html = await get('/fr/posts/my-slug')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    test('/fr/articles contains FR text, link to /posts/ & link to /fr/articles/mon-article', async () => {
+      html = await get('/fr/articles')
+      getElements()
+      expect(title.textContent).toBe('Articles')
+      expect(langSwitcherLink.href).toBe('/posts/')
+      expect(link.href).toBe('/fr/articles/mon-article')
+    })
+
+    test('/fr/articles/mon-article contains FR text, link to /posts/my-post & link to /fr/articles/', async () => {
+      html = await get('/fr/articles/mon-article')
+      getElements()
+      expect(title.textContent).toBe('Articles')
+      expect(langSwitcherLink.href).toBe('/posts/my-post')
+      expect(link.href).toBe('/fr/articles/')
+    })
   })
 
   test('/dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3', async () => {
