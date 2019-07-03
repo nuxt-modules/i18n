@@ -40,7 +40,7 @@ exports.DEFAULT_OPTIONS = {
   },
   differentDomains: false,
   forwardedHost: false,
-  seo: true,
+  seo: false,
   baseUrl: '',
   vuex: {
     moduleName: 'i18n',
