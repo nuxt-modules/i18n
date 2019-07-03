@@ -61,7 +61,7 @@ declare namespace NuxtVueI18n {
       langDir: string | null
       rootRedirect: string | null
       detectBrowserLanguage: Options.DetectBrowserLanguageInterface
-      seo: false
+      seo: boolean
       baseUrl: string
       vuex: Options.Vuex
       parsePages: boolean
