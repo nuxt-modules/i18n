@@ -65,7 +65,7 @@ export default {
 }
 ```
 
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/plugins/seo.js](/src/plugins/seo.js) if you want to copy some of **nuxt-i18n**'s logic.
+To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/seo-head.js](https://github.com/nuxt-community/nuxt-i18n/blob/master/src/templates/seo-head.js) if you want to copy some of **nuxt-i18n**'s logic.
 
 ## Improving performance
 
