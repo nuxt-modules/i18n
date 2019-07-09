@@ -53,7 +53,7 @@
     "vue-i18n-extensions": "^0.2.1"
   },
   "devDependencies": {
-    "@babel/runtime": "7.5.1",
+    "@babel/runtime": "7.5.4",
     "codecov": "3.5.0",
     "eslint": "6.0.1",
     "eslint-config-standard": "12.0.0",
@@ -67,7 +67,7 @@
     "jsdom": "15.1.1",
     "nuxt": "2.8.1",
     "standard-version": "6.0.1",
-    "typescript": "3.5.2",
+    "typescript": "3.5.3",
     "vuepress": "1.0.2"
   }
 }
