@@ -55,7 +55,8 @@ exports.makeRoutes = (baseRoutes, {
     // Generate routes for component's supported locales
     for (let i = 0, length1 = componentOptions.locales.length; i < length1; i++) {
       const locale = componentOptions.locales[i]
-      let { name, path } = route
+      const { name } = route
+      let { path } = route
       const localizedRoute = { ...route }
 
       // Skip if locale not in module's configuration

@@ -11,7 +11,7 @@ const compiler = require('vue-template-compiler')
 
 exports.extractComponentOptions = (path) => {
   let componentOptions = {}
-  let Component = compiler.parseComponent(readFileSync(path).toString())
+  const Component = compiler.parseComponent(readFileSync(path).toString())
   if (!Component.script || Component.script.content.length < 1) {
     return componentOptions
   }
