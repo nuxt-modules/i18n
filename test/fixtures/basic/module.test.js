@@ -162,3 +162,27 @@ describe('hash mode', () => {
     expect(newRoute).toBe('/about-us')
   })
 })
+
+describe('with router base', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    config.router = {
+      base: '/app/'
+    }
+
+    nuxt = new Nuxt(config)
+    await new Builder(nuxt).build()
+    await nuxt.listen(process.env.PORT)
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('localePath returns correct path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/app/'))
+    const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/about-us')
+  })
+})
