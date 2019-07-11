@@ -38,16 +38,8 @@ function localePathFactory (i18nPath, routerPath) {
 
     // Resolve localized route
     const router = this[routerPath]
-    const resolved = router.resolve(localizedRoute)
-    let { href } = resolved
-
-    // Remove baseUrl from href (will be added back by nuxt-link)
-    if (router.options.base) {
-      const regexp = new RegExp(router.options.base)
-      href = href.replace(regexp, '/')
-    }
-
-    return href
+    const { route: { fullPath } } = router.resolve(localizedRoute)
+    return fullPath
   }
 }
 

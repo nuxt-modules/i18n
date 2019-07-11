@@ -131,4 +131,34 @@ describe('basic', () => {
     const html = await get('/fr/imbrication-dynamique/1/2/3')
     expect(cleanUpScripts(html)).toMatchSnapshot()
   })
+
+  test('localePath returns correct path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/about-us')
+  })
+})
+
+describe('hash mode', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    config.router = {
+      mode: 'hash'
+    }
+
+    nuxt = new Nuxt(config)
+    await new Builder(nuxt).build()
+    await nuxt.listen(process.env.PORT)
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('localePath returns correct path (without hash)', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/about-us')
+  })
 })
