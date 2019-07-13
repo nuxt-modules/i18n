@@ -5,9 +5,9 @@
     :to="localePath({
       name: 'posts-slug',
       params: {
-        slug: 'my-slug'
+        slug: params[$i18n.locale].slug
       }
-    })">my-slug</nuxt-link>
+    })">{{ params[$i18n.locale].slug }}</nuxt-link>
 </div>
 </template>
 
@@ -17,6 +17,14 @@ import LangSwitcher from '../../components/LangSwitcher'
 export default {
   components: {
     LangSwitcher
+  },
+  async asyncData () {
+    return {
+      params: {
+        en: { slug: 'my-post' },
+        fr: { slug: 'mon-article' }
+      }
+    }
   }
 }
 </script>

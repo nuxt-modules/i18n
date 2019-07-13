@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [6.0.0-0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.8...v6.0.0-0) (2019-07-01)
+
+
+### Features
+
+* Dynamic route parameters translation ([04373ef](https://github.com/nuxt-community/nuxt-i18n/commit/04373ef)), closes [#79](https://github.com/nuxt-community/nuxt-i18n/issues/79)
+
+
+### BREAKING CHANGES
+
+* `preserveState` is now set automatically when registering the store module and
+cannot be set via the configuration anymore
+
+
+
 ## [5.12.8](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.6...v5.12.8) (2019-07-01)
 
 > NOTE: Version bump only, all fixes were released in `v5.12.7` already
