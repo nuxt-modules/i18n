@@ -14,14 +14,11 @@ export default {
   components: {
     LangSwitcher
   },
-  async asyncData ({ app, store }) {
-    const params = await new Promise(resolve => {
-      resolve({
-        en: { slug: 'my-post' },
-        fr: { slug: 'mon-article' },
-      })
+  async asyncData ({ store }) {
+    await store.dispatch('i18n/setRouteParams', {
+      en: { slug: 'my-post' },
+      fr: { slug: 'mon-article' }
     })
-    await store.dispatch('i18n/setRouteParams', params)
     return {}
   }
 }

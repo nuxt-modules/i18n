@@ -19,14 +19,11 @@ export default {
     LangSwitcher
   },
   async asyncData () {
-    const params = await new Promise(resolve => {
-      resolve({
-        en: { slug: 'my-post' },
-        fr: { slug: 'mon-article' },
-      })
-    })
     return {
-      params
+      params: {
+        en: { slug: 'my-post' },
+        fr: { slug: 'mon-article' }
+      }
     }
   }
 }

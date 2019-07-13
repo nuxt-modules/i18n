@@ -57,14 +57,11 @@ To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` a
 
 <script>
 export default {
-  async asyncData ({ app, store }) {
-    const params = await new Promise(resolve => {
-      resolve({
-        en: { slug: 'my-post' },
-        fr: { slug: 'mon-article' },
-      })
+  async asyncData ({ store }) {
+    await store.dispatch('i18n/setRouteParams', {
+      en: { slug: 'my-post' },
+      fr: { slug: 'mon-article' }
     })
-    await store.dispatch('i18n/setRouteParams', params)
     return {
       // your data
     }
