@@ -53,7 +53,7 @@ exports.getPageOptions = (route, pages, locales, pagesDir, defaultLocale) => {
   options.locales = options.locales.filter(locale => pageOptions[locale] !== false)
 
   // Construct paths object
-  options.paths = options.locales
+  options.locales
     .forEach(locale => {
       if (typeof pageOptions[locale] === 'string') {
         // Set custom path if any
