@@ -45,9 +45,9 @@ exports.DEFAULT_OPTIONS = {
   vuex: {
     moduleName: 'i18n',
     mutations: {
-      setLocale: 'I18N_SET_LOCALE',
-      setMessages: 'I18N_SET_MESSAGES',
-      setRouteParams: 'I18N_SET_ROUTE_PARAMS'
+      setLocale: false,
+      setMessages: false,
+      setRouteParams: true
     }
   },
   parsePages: true,
