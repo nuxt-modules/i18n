@@ -27,7 +27,7 @@ exports.makeRoutes = (baseRoutes, {
     if (parsePages) {
       pageOptions = extractComponentOptions(route.component)
     } else {
-      pageOptions = getPageOptions(route, pages, locales, pagesDir)
+      pageOptions = getPageOptions(route, pages, locales, pagesDir, defaultLocale)
     }
 
     // Skip route if i18n is disabled on page
