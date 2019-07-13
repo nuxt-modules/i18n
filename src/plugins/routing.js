@@ -1,6 +1,7 @@
 import './middleware'
 import Vue from 'vue'
 
+const vuex = <%= JSON.stringify(options.vuex) %>
 const routesNameSeparator = '<%= options.routesNameSeparator %>'
 
 function localePathFactory (i18nPath, routerPath) {
@@ -62,9 +63,19 @@ function switchLocalePathFactory (i18nPath) {
     }
 
     const { params, ...routeCopy } = this.$route
+    let langSwitchParams = {}
+    <% if (options.vuex) { %>
+    if (this.$store) {
+      langSwitchParams = this.$store.getters[`${vuex.moduleName}/localeRouteParams`](locale)
+    }
+    <% } %>
     const baseRoute = Object.assign({}, routeCopy, {
       name,
-      params: { ...params, '0': params.pathMatch }
+      params: {
+        ...params,
+        ...langSwitchParams,
+        '0': params.pathMatch
+      }
     })
     let path = this.localePath(baseRoute, locale)
 

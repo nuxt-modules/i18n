@@ -3,6 +3,7 @@ import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
+import { validateRouteParams } from './utils'
 
 Vue.use(VueI18n)
 
@@ -30,7 +31,8 @@ export default async (context) => {
       namespaced: true,
       state: () => ({
         locale: '',
-        messages: {}
+        messages: {},
+        routeParams: {}
       }),
       actions: {
         setLocale ({ commit }, locale) {
@@ -38,6 +40,12 @@ export default async (context) => {
         },
         setMessages ({ commit }, messages) {
           commit(vuex.mutations.setMessages, messages)
+        },
+        setRouteParams ({ commit }, params) {
+          if (process.env.NODE_ENV === 'development') {
+            validateRouteParams(params)
+          }
+          commit(vuex.mutations.setRouteParams, params)
         }
       },
       mutations: {
@@ -46,9 +54,15 @@ export default async (context) => {
         },
         [vuex.mutations.setMessages] (state, messages) {
           state.messages = messages
+        },
+        [vuex.mutations.setRouteParams] (state, params) {
+          state.routeParams = params
         }
+      },
+      getters: {
+        localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
       }
-    }, { preserveState: vuex.preserveState })
+    }, { preserveState: !!store.state[vuex.moduleName] })
   }
   <% } %>
 
