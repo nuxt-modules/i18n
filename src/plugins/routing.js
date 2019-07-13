@@ -116,15 +116,20 @@ function getRouteBaseNameFactory (contextRoute) {
   }
 }
 
-Vue.mixin({
-  methods: {
-    localePath: localePathFactory('$i18n', '$router'),
-    switchLocalePath: switchLocalePathFactory('$i18n'),
-    getRouteBaseName: getRouteBaseNameFactory()
+const plugin = {
+  install(Vue) {
+    Vue.mixin({
+      methods: {
+        localePath: localePathFactory('$i18n', '$router'),
+        switchLocalePath: switchLocalePathFactory('$i18n'),
+        getRouteBaseName: getRouteBaseNameFactory()
+      }
+    })
   }
-})
+}
 
 export default ({ app, route }) => {
+  Vue.use(plugin)
   app.localePath = localePathFactory('i18n', 'router')
   app.switchLocalePath = switchLocalePathFactory('i18n')
   app.getRouteBaseName = getRouteBaseNameFactory(route)
