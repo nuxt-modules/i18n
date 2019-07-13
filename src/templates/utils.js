@@ -1,3 +1,11 @@
+const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
+const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
+const getLocaleCodes = <%= options.getLocaleCodes %>
+const locales = <%= JSON.stringify(options.locales) %>
+const localeCodes = getLocaleCodes(locales)
+
+const isObject = value => value && !Array.isArray(value) && typeof value === 'object'
+
 /**
  * Asynchronously load messages from translation files
  * @param  {VueI18n}  i18n  vue-i18n instance
@@ -36,4 +44,22 @@ export async function loadLanguageAsync (context, locale) {
     }
   }
   return Promise.resolve()
+}
+
+/**
+ * Validate setRouteParams action's payload
+ * @param {*} routeParams The action's payload
+ */
+export const validateRouteParams = routeParams => {
+  if (!isObject(routeParams)) {
+    console.warn(`[<%= options.MODULE_NAME %>] Route params should be an object`)
+    return
+  }
+  Object.entries(routeParams).forEach(([key, value]) => {
+    if (!localeCodes.includes(key)) {
+      console.warn(`[<%= options.MODULE_NAME %>] Trying to set route params for key ${key} which is not a valid locale`)
+    } else if (!isObject(value)) {
+      console.warn(`[<%= options.MODULE_NAME %>] Trying to set route params for locale ${key} with a non-object value`)
+    }
+  })
 }

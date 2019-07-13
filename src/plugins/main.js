@@ -3,6 +3,7 @@ import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
+import { validateRouteParams } from './utils'
 
 Vue.use(VueI18n)
 
@@ -41,6 +42,9 @@ export default async (context) => {
           commit(vuex.mutations.setMessages, messages)
         },
         setRouteParams ({ commit }, params) {
+          if (process.env.NODE_ENV === 'development') {
+            validateRouteParams(params)
+          }
           commit(vuex.mutations.setRouteParams, params)
         }
       },
