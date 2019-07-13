@@ -1,7 +1,7 @@
 <template>
 <div>
   <LangSwitcher />
-  {{ $t('posts') }}
+  <h1>{{ $t('posts') }}</h1>
   <router-view></router-view>
 </div>
 </template>
@@ -12,6 +12,11 @@ import LangSwitcher from '../components/LangSwitcher'
 export default {
   components: {
     LangSwitcher
+  },
+  nuxtI18n: {
+    paths: {
+      fr: '/articles'
+    }
   }
 }
 </script>
