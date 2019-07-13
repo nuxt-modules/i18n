@@ -93,14 +93,14 @@ Here are all the options available when configuring the module and their default
 
     // Mutations config
     mutations: {
-      // Mutation to commit to store current locale, set to false to disable
-      setLocale: 'I18N_SET_LOCALE',
+      // If enabled, current app's locale is synced with nuxt-i18n store module
+      setLocale: false,
 
-      // Mutation to commit to store current message, set to false to disable
-      setMessages: 'I18N_SET_MESSAGES',
+      // If enabled, current translation messages are synced with nuxt-i18n store module
+      setMessages: false,
 
       // Mutation to commit to set route parameters translations
-      setRouteParams: 'I18N_SET_ROUTE_PARAMS'
+      setRouteParams: true
     }
   },
 
