@@ -30,37 +30,47 @@ export default async (context) => {
     store.registerModule(vuex.moduleName, {
       namespaced: true,
       state: () => ({
-        locale: '',
-        messages: {},
-        routeParams: {}
+        <% if (options.vuex.mutations.setLocale) { %>locale: '',<% } %>
+        <% if (options.vuex.mutations.setMessages) { %>messages: {},<% } %>
+        <% if (options.vuex.mutations.setRouteParams) { %>routeParams: {}<% } %>
       }),
       actions: {
+        <% if (options.vuex.mutations.setLocale) { %>
         setLocale ({ commit }, locale) {
-          commit(vuex.mutations.setLocale, locale)
+          commit('setLocale', locale)
         },
+        <% } if (options.vuex.mutations.setMessages) { %>
         setMessages ({ commit }, messages) {
-          commit(vuex.mutations.setMessages, messages)
+          commit('setMessages', messages)
         },
+        <% } if (options.vuex.mutations.setRouteParams) { %>
         setRouteParams ({ commit }, params) {
           if (process.env.NODE_ENV === 'development') {
             validateRouteParams(params)
           }
-          commit(vuex.mutations.setRouteParams, params)
+          commit('setRouteParams', params)
         }
+        <% } %>
       },
       mutations: {
-        [vuex.mutations.setLocale] (state, locale) {
+        <% if (options.vuex.mutations.setLocale) { %>
+          setLocale (state, locale) {
           state.locale = locale
         },
-        [vuex.mutations.setMessages] (state, messages) {
+        <% } if (options.vuex.mutations.setMessages) { %>
+        setMessages (state, messages) {
           state.messages = messages
         },
-        [vuex.mutations.setRouteParams] (state, params) {
+        <% } if (options.vuex.mutations.setRouteParams) { %>
+        setRouteParams (state, params) {
           state.routeParams = params
         }
+        <% } %>
       },
       getters: {
+        <% if (options.vuex.mutations.setRouteParams) { %>
         localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
+        <% } %>
       }
     }, { preserveState: !!store.state[vuex.moduleName] })
   }
