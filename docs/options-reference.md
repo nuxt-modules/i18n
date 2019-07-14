@@ -94,17 +94,14 @@ Here are all the options available when configuring the module and their default
     // Module namespace
     moduleName: 'i18n',
 
-    // Mutations config
-    mutations: {
-      // If enabled, current app's locale is synced with nuxt-i18n store module
-      setLocale: false,
+    // If enabled, current app's locale is synced with nuxt-i18n store module
+    syncLocale: false,
 
-      // If enabled, current translation messages are synced with nuxt-i18n store module
-      setMessages: false,
+    // If enabled, current translation messages are synced with nuxt-i18n store module
+    syncMessages: false,
 
-      // Mutation to commit to set route parameters translations
-      setRouteParams: true
-    }
+    // Mutation to commit to set route parameters translations
+    syncRouteParams: true
   },
 
   // By default, custom routes are extracted from page files using acorn parsing,
