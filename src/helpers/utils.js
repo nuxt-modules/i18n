@@ -142,10 +142,10 @@ exports.getLocaleDomain = () => {
  */
 exports.syncVuex = async (locale = null, messages = null) => {
   if (vuex && store) {
-    if (locale !== null && vuex.mutations.setLocale) {
+    if (locale !== null && vuex.syncLocale) {
       await store.dispatch(vuex.moduleName + '/setLocale', locale)
     }
-    if (messages !== null && vuex.mutations.setMessages) {
+    if (messages !== null && vuex.syncMessages) {
       await store.dispatch(vuex.moduleName + '/setMessages', messages)
     }
   }

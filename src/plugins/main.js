@@ -30,20 +30,20 @@ export default async (context) => {
     store.registerModule(vuex.moduleName, {
       namespaced: true,
       state: () => ({
-        <% if (options.vuex.mutations.setLocale) { %>locale: '',<% } %>
-        <% if (options.vuex.mutations.setMessages) { %>messages: {},<% } %>
-        <% if (options.vuex.mutations.setRouteParams) { %>routeParams: {}<% } %>
+        <% if (options.vuex.syncLocale) { %>locale: '',<% } %>
+        <% if (options.vuex.syncMessages) { %>messages: {},<% } %>
+        <% if (options.vuex.syncRouteParams) { %>routeParams: {}<% } %>
       }),
       actions: {
-        <% if (options.vuex.mutations.setLocale) { %>
+        <% if (options.vuex.syncLocale) { %>
         setLocale ({ commit }, locale) {
           commit('setLocale', locale)
         },
-        <% } if (options.vuex.mutations.setMessages) { %>
+        <% } if (options.vuex.syncMessages) { %>
         setMessages ({ commit }, messages) {
           commit('setMessages', messages)
         },
-        <% } if (options.vuex.mutations.setRouteParams) { %>
+        <% } if (options.vuex.syncRouteParams) { %>
         setRouteParams ({ commit }, params) {
           if (process.env.NODE_ENV === 'development') {
             validateRouteParams(params)
@@ -53,22 +53,22 @@ export default async (context) => {
         <% } %>
       },
       mutations: {
-        <% if (options.vuex.mutations.setLocale) { %>
+        <% if (options.vuex.syncLocale) { %>
           setLocale (state, locale) {
           state.locale = locale
         },
-        <% } if (options.vuex.mutations.setMessages) { %>
+        <% } if (options.vuex.syncMessages) { %>
         setMessages (state, messages) {
           state.messages = messages
         },
-        <% } if (options.vuex.mutations.setRouteParams) { %>
+        <% } if (options.vuex.syncRouteParams) { %>
         setRouteParams (state, params) {
           state.routeParams = params
         }
         <% } %>
       },
       getters: {
-        <% if (options.vuex.mutations.setRouteParams) { %>
+        <% if (options.vuex.syncRouteParams) { %>
         localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
         <% } %>
       }
