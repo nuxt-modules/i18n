@@ -20,7 +20,7 @@ Here are all the options available when configuring the module and their default
   // ]
   //   `iso` value should have:
   //   - code of ISO 639-1
-  //   - code of ISO 639-1 and code of ISO 3166-1 alpha-2 with a hyphen
+  //   - code of ISO 639-1 and code of ISO 3166-1 alpha-2, with a hyphen
   locales: [],
 
   // The app's default locale, URLs for this locale won't have a prefix if
