@@ -18,9 +18,9 @@ Here are all the options available when configuring the module and their default
   //   { code: 'fr', iso: 'fr-FR', file: 'fr.js' },
   //   { code: 'es', iso: 'es-ES', file: 'es.js' }
   // ]
-  //   `iso` value should have:
-  //   - code of ISO 639-1
-  //   - code of ISO 639-1 and code of ISO 3166-1 alpha-2, with a hyphen
+  //   `iso` value should have either:
+  //   - code of ISO 639-1 (e.g. 'en')
+  //   - code of ISO 639-1 and code of ISO 3166-1 alpha-2, with a hyphen (e.g. 'en-US')
   locales: [],
 
   // The app's default locale, URLs for this locale won't have a prefix if
