@@ -40,7 +40,7 @@ Note that routes for the English version do not have any prefix because it is th
 
 ## Strategy
 
-There are two supported strategies for generating the app's routes:
+There are three supported strategies for generating the app's routes:
 
 ### prefix_except_default
 
