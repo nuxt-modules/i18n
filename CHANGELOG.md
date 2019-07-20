@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [6.0.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.8...v6.0.0) (2019-07-20)
+
+
+### Bug Fixes
+
+* **routing:** resolve localePath with fullPath instead of href ([b827681](https://github.com/nuxt-community/nuxt-i18n/commit/b827681))
+* Disable seo by default ([741ae12](https://github.com/nuxt-community/nuxt-i18n/commit/741ae12)), closes [#346](https://github.com/nuxt-community/nuxt-i18n/issues/346)
+* update link to SEO metadata generation logic ([#352](https://github.com/nuxt-community/nuxt-i18n/issues/352)) ([10a5ff2](https://github.com/nuxt-community/nuxt-i18n/commit/10a5ff2))
+
+
+### Code Refactoring
+
+* Disable setLocale & setMessages mutations by default ([76c9978](https://github.com/nuxt-community/nuxt-i18n/commit/76c9978))
+* Rename and flatten vuex options ([8897ac6](https://github.com/nuxt-community/nuxt-i18n/commit/8897ac6))
+
+
+### Features
+
+* Dynamic route parameters translation ([#345](https://github.com/nuxt-community/nuxt-i18n/issues/345)) ([2d1d729](https://github.com/nuxt-community/nuxt-i18n/commit/2d1d729)), closes [#79](https://github.com/nuxt-community/nuxt-i18n/issues/79)
+* Use default locale's custom path if not defined for a locale ([#354](https://github.com/nuxt-community/nuxt-i18n/issues/354)) ([d30e5f0](https://github.com/nuxt-community/nuxt-i18n/commit/d30e5f0))
+
+
+### Performance Improvements
+
+* Register global mixins from plugins ([2ceb8e4](https://github.com/nuxt-community/nuxt-i18n/commit/2ceb8e4))
+
+
+### BREAKING CHANGES
+
+* Store module's options have been flattened and renamed
+* The mutations responsible for syncing nuxt-i18n's store module with vue-i18n's
+locale and messages are now disabled by default, you'll need to manually re-enable them in the
+module's configuration
+* `preserveState` is now set automatically when registering the store module and
+cannot be set via the configuration anymore
+* Global seo option is now disabled by default. To
+preserve the previous behaviour, set `seo: true` in the module's
+options.
+Doc: https://nuxt-community.github.io/nuxt-i18n/seo.html
+
+
+
 # [6.0.0-0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.8...v6.0.0-0) (2019-07-01)
 
 
