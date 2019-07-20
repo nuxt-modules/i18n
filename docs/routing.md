@@ -201,6 +201,8 @@ You would need to set up your `pages` property as follows:
 }]
 ```
 
+If a custom path is missing for one of the locales, the `defaultLocale` custom path is used, if set.
+
 ### Regular Expression
 
 By default, all custom paths are encoded to handle non-latin characters in the path. This will convert paths with regular expression like `/foo/:slug-:id(\\d+)` to `/foo/:slug-:id(%5Cd+)`.

@@ -78,9 +78,11 @@ Here are all the options available when configuring the module and their default
   // HTTP header instead of window.location
   forwardedHost: false,
 
-  // If true, SEO metadata is generated for routes that have i18n enabled
-  // Set to false to disable app-wide
-  seo: true,
+  // If true, SEO metadata is generated for routes that have i18n enabled.
+  // Note that performance can suffer with this enabled and there might be compatibility
+  // issues with some plugins. Recommended way is to set up SEO as described in:
+  // https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance
+  seo: false,
 
   // Base URL to use as prefix for alternate URLs in hreflang tags
   baseUrl: '',
@@ -92,17 +94,14 @@ Here are all the options available when configuring the module and their default
     // Module namespace
     moduleName: 'i18n',
 
-    // Mutations config
-    mutations: {
-      // Mutation to commit to store current locale, set to false to disable
-      setLocale: 'I18N_SET_LOCALE',
+    // If enabled, current app's locale is synced with nuxt-i18n store module
+    syncLocale: false,
 
-      // Mutation to commit to store current message, set to false to disable
-      setMessages: 'I18N_SET_MESSAGES'
-    },
+    // If enabled, current translation messages are synced with nuxt-i18n store module
+    syncMessages: false,
 
-    // PreserveState from server
-    preserveState: false
+    // Mutation to commit to set route parameters translations
+    syncRouteParams: true
   },
 
   // By default, custom routes are extracted from page files using acorn parsing,

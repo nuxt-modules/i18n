@@ -105,66 +105,6 @@ exports[`basic /fr/notlocalized contains FR text 1`] = `
 "
 `;
 
-exports[`basic /fr/posts contains FR text, link to /posts/ & link to /fr/posts/my-slug 1`] = `
-"<!doctype html>
-<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
-  <head data-n-head=\\"\\">
-    <meta data-n-head=\\"true\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"fr_FR\\"><meta data-n-head=\\"true\\" data-hid=\\"og:locale:alternate-en-US\\" property=\\"og:locale:alternate\\" content=\\"en_US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/posts/\\" hreflang=\\"en-US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr/posts/\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"2eed86ac:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
-  </head>
-  <body data-n-head=\\"\\">
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/posts/\\">English</a><!----></div>
-  Articles
-  <div><a href=\\"/fr/posts/my-slug\\">my-slug</a></div></div></div></div>
-  </body>
-</html>
-"
-`;
-
-exports[`basic /fr/posts/my-slug contains FR text, post's slug, link to /posts/my-slug & link to /fr/posts/ 1`] = `
-"<!doctype html>
-<html data-n-head-ssr lang=\\"fr-FR\\" data-n-head=\\"lang\\">
-  <head data-n-head=\\"\\">
-    <meta data-n-head=\\"true\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"fr_FR\\"><meta data-n-head=\\"true\\" data-hid=\\"og:locale:alternate-en-US\\" property=\\"og:locale:alternate\\" content=\\"en_US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/posts/my-slug\\" hreflang=\\"en-US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr/posts/my-slug\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"2eed86ac:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
-  </head>
-  <body data-n-head=\\"\\">
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/posts/my-slug\\">English</a><!----></div>
-  Articles
-  <div><h1>my-slug</h1> <a href=\\"/fr/posts/\\">index</a></div></div></div></div>
-  </body>
-</html>
-"
-`;
-
-exports[`basic /posts contains EN text, link to /fr/posts/ & link to /posts/my-slug 1`] = `
-"<!doctype html>
-<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
-  <head data-n-head=\\"\\">
-    <meta data-n-head=\\"true\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"true\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/posts/\\" hreflang=\\"en-US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr/posts/\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"2eed86ac:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
-  </head>
-  <body data-n-head=\\"\\">
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr/posts/\\">Français</a></div>
-  Posts
-  <div><a href=\\"/posts/my-slug\\">my-slug</a></div></div></div></div>
-  </body>
-</html>
-"
-`;
-
-exports[`basic /posts/my-slug contains EN text, post's slug, link to /fr/posts/my-slug & link to /posts/ 1`] = `
-"<!doctype html>
-<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
-  <head data-n-head=\\"\\">
-    <meta data-n-head=\\"true\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"true\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/posts/my-slug\\" hreflang=\\"en-US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr/posts/my-slug\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"2eed86ac:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
-  </head>
-  <body data-n-head=\\"\\">
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr/posts/my-slug\\">Français</a></div>
-  Posts
-  <div><h1>my-slug</h1> <a href=\\"/posts/\\">index</a></div></div></div></div>
-  </body>
-</html>
-"
-`;
-
 exports[`basic sets SEO metadata properly 1`] = `
 "
     <meta data-n-head=\\"true\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"true\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/\\" hreflang=\\"en-US\\"><link data-n-head=\\"true\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"2eed86ac:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>

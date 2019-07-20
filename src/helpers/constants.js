@@ -40,15 +40,13 @@ exports.DEFAULT_OPTIONS = {
   },
   differentDomains: false,
   forwardedHost: false,
-  seo: true,
+  seo: false,
   baseUrl: '',
   vuex: {
     moduleName: 'i18n',
-    mutations: {
-      setLocale: 'I18N_SET_LOCALE',
-      setMessages: 'I18N_SET_MESSAGES'
-    },
-    preserveState: false
+    syncLocale: false,
+    syncMessages: false,
+    syncRouteParams: true
   },
   parsePages: true,
   pages: {},

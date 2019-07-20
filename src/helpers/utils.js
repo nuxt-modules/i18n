@@ -25,13 +25,14 @@ exports.getLocaleCodes = getLocaleCodes
 
 /**
  * Retrieve page's options from the module's configuration for a given route
- * @param  {Object} route    Route
- * @param  {Object} pages    Pages options from module's configuration
- * @param  {Array} locales   Locale from module's configuration
- * @param  {String} pagesDir Pages dir from Nuxt's configuration
- * @return {Object}          Page options
+ * @param  {Object} route         Route
+ * @param  {Object} pages         Pages options from module's configuration
+ * @param  {Array} locales        Locale from module's configuration
+ * @param  {String} pagesDir      Pages dir from Nuxt's configuration
+ * @param  {String} defaultLocale Default locale from Nuxt's configuration
+ * @return {Object}               Page options
  */
-exports.getPageOptions = (route, pages, locales, pagesDir) => {
+exports.getPageOptions = (route, pages, locales, pagesDir, defaultLocale) => {
   const options = {
     locales: getLocaleCodes(locales),
     paths: {}
@@ -47,16 +48,22 @@ exports.getPageOptions = (route, pages, locales, pagesDir) => {
   if (!pageOptions) {
     return options
   }
-  // Construct options object
-  Object.keys(pageOptions).forEach((locale) => {
-    // Remove disabled locales from page options
-    if (pageOptions[locale] === false) {
-      options.locales = options.locales.filter(l => l !== locale)
-    } else if (typeof pageOptions[locale] === 'string') {
-      // Set custom path if any
-      options.paths[locale] = pageOptions[locale]
-    }
-  })
+
+  // Remove disabled locales from page options
+  options.locales = options.locales.filter(locale => pageOptions[locale] !== false)
+
+  // Construct paths object
+  options.locales
+    .forEach(locale => {
+      if (typeof pageOptions[locale] === 'string') {
+        // Set custom path if any
+        options.paths[locale] = pageOptions[locale]
+      } else if (typeof pageOptions[defaultLocale] === 'string') {
+        // Set default locale's custom path if any
+        options.paths[locale] = pageOptions[defaultLocale]
+      }
+    })
+
   return options
 }
 
@@ -135,10 +142,10 @@ exports.getLocaleDomain = () => {
  */
 exports.syncVuex = async (locale = null, messages = null) => {
   if (vuex && store) {
-    if (locale !== null && vuex.mutations.setLocale) {
+    if (locale !== null && vuex.syncLocale) {
       await store.dispatch(vuex.moduleName + '/setLocale', locale)
     }
-    if (messages !== null && vuex.mutations.setMessages) {
+    if (messages !== null && vuex.syncMessages) {
       await store.dispatch(vuex.moduleName + '/setMessages', messages)
     }
   }

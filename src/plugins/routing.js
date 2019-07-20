@@ -1,6 +1,7 @@
 import './middleware'
 import Vue from 'vue'
 
+const vuex = <%= JSON.stringify(options.vuex) %>
 const routesNameSeparator = '<%= options.routesNameSeparator %>'
 
 function localePathFactory (i18nPath, routerPath) {
@@ -37,16 +38,8 @@ function localePathFactory (i18nPath, routerPath) {
 
     // Resolve localized route
     const router = this[routerPath]
-    const resolved = router.resolve(localizedRoute)
-    let { href } = resolved
-
-    // Remove baseUrl from href (will be added back by nuxt-link)
-    if (router.options.base) {
-      const regexp = new RegExp(router.options.base)
-      href = href.replace(regexp, '/')
-    }
-
-    return href
+    const { route: { fullPath } } = router.resolve(localizedRoute)
+    return fullPath
   }
 }
 
@@ -62,9 +55,19 @@ function switchLocalePathFactory (i18nPath) {
     }
 
     const { params, ...routeCopy } = this.$route
+    let langSwitchParams = {}
+    <% if (options.vuex) { %>
+    if (this.$store) {
+      langSwitchParams = this.$store.getters[`${vuex.moduleName}/localeRouteParams`](locale)
+    }
+    <% } %>
     const baseRoute = Object.assign({}, routeCopy, {
       name,
-      params: { ...params, '0': params.pathMatch }
+      params: {
+        ...params,
+        ...langSwitchParams,
+        '0': params.pathMatch
+      }
     })
     let path = this.localePath(baseRoute, locale)
 
@@ -105,15 +108,20 @@ function getRouteBaseNameFactory (contextRoute) {
   }
 }
 
-Vue.mixin({
-  methods: {
-    localePath: localePathFactory('$i18n', '$router'),
-    switchLocalePath: switchLocalePathFactory('$i18n'),
-    getRouteBaseName: getRouteBaseNameFactory()
+const plugin = {
+  install(Vue) {
+    Vue.mixin({
+      methods: {
+        localePath: localePathFactory('$i18n', '$router'),
+        switchLocalePath: switchLocalePathFactory('$i18n'),
+        getRouteBaseName: getRouteBaseNameFactory()
+      }
+    })
   }
-})
+}
 
 export default ({ app, route }) => {
+  Vue.use(plugin)
   app.localePath = localePathFactory('i18n', 'router')
   app.switchLocalePath = switchLocalePathFactory('i18n')
   app.getRouteBaseName = getRouteBaseNameFactory(route)

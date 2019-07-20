@@ -3,6 +3,7 @@ import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
+import { validateRouteParams } from './utils'
 
 Vue.use(VueI18n)
 
@@ -29,26 +30,49 @@ export default async (context) => {
     store.registerModule(vuex.moduleName, {
       namespaced: true,
       state: () => ({
-        locale: '',
-        messages: {}
+        <% if (options.vuex.syncLocale) { %>locale: '',<% } %>
+        <% if (options.vuex.syncMessages) { %>messages: {},<% } %>
+        <% if (options.vuex.syncRouteParams) { %>routeParams: {}<% } %>
       }),
       actions: {
+        <% if (options.vuex.syncLocale) { %>
         setLocale ({ commit }, locale) {
-          commit(vuex.mutations.setLocale, locale)
+          commit('setLocale', locale)
         },
+        <% } if (options.vuex.syncMessages) { %>
         setMessages ({ commit }, messages) {
-          commit(vuex.mutations.setMessages, messages)
+          commit('setMessages', messages)
+        },
+        <% } if (options.vuex.syncRouteParams) { %>
+        setRouteParams ({ commit }, params) {
+          if (process.env.NODE_ENV === 'development') {
+            validateRouteParams(params)
+          }
+          commit('setRouteParams', params)
         }
+        <% } %>
       },
       mutations: {
-        [vuex.mutations.setLocale] (state, locale) {
+        <% if (options.vuex.syncLocale) { %>
+          setLocale (state, locale) {
           state.locale = locale
         },
-        [vuex.mutations.setMessages] (state, messages) {
+        <% } if (options.vuex.syncMessages) { %>
+        setMessages (state, messages) {
           state.messages = messages
+        },
+        <% } if (options.vuex.syncRouteParams) { %>
+        setRouteParams (state, params) {
+          state.routeParams = params
         }
+        <% } %>
+      },
+      getters: {
+        <% if (options.vuex.syncRouteParams) { %>
+        localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
+        <% } %>
       }
-    }, { preserveState: vuex.preserveState })
+    }, { preserveState: !!store.state[vuex.moduleName] })
   }
   <% } %>
 
