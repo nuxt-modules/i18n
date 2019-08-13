@@ -1,15 +1,16 @@
 const { resolve } = require('path')
-const rootDir = resolve(__dirname, '../../..')
 
 module.exports = {
-  rootDir,
+  rootDir: resolve(__dirname, '../../..'),
   buildDir: resolve(__dirname, '.nuxt'),
   srcDir: __dirname,
   dev: false,
   render: {
     resourceHints: false
   },
-  modules: [resolve(rootDir, 'src')],
+  modules: [
+    { handler: require('../../../') }
+  ],
   i18n: {
     seo: true,
     baseUrl: 'nuxt-app.localhost',
