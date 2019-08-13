@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@kazupon/vue-i18n-loader": "^0.4.0",
-    "acorn": "^6.1.1",
+    "acorn": "^7.0.0",
     "acorn-dynamic-import": "^4.0.0",
     "acorn-walk": "^6.1.1",
     "cookie": "^0.4.0",
