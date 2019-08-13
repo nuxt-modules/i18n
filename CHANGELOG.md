@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.0.0...v6.0.1) (2019-08-13)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([612313b](https://github.com/nuxt-community/nuxt-i18n/commit/612313b))
+* **deps:** update all non-major dependencies ([#375](https://github.com/nuxt-community/nuxt-i18n/issues/375)) ([9efbbf0](https://github.com/nuxt-community/nuxt-i18n/commit/9efbbf0))
+* **deps:** update dependency acorn to v7 ([be3dd1d](https://github.com/nuxt-community/nuxt-i18n/commit/be3dd1d))
+* **deps:** update dependency acorn to v7 ([#392](https://github.com/nuxt-community/nuxt-i18n/issues/392)) ([9fc564f](https://github.com/nuxt-community/nuxt-i18n/commit/9fc564f))
+* **deps:** update dependency acorn-walk to v7 ([77111da](https://github.com/nuxt-community/nuxt-i18n/commit/77111da))
+* **deps:** update dependency acorn-walk to v7 ([#393](https://github.com/nuxt-community/nuxt-i18n/issues/393)) ([06ddf3e](https://github.com/nuxt-community/nuxt-i18n/commit/06ddf3e))
+
+
+
 # [6.0.0](https://github.com/nuxt-community/nuxt-i18n/compare/v5.12.8...v6.0.0) (2019-07-20)
 
 
