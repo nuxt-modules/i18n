@@ -9,7 +9,9 @@ module.exports = {
   render: {
     resourceHints: false
   },
-  modules: [resolve(rootDir, 'src')],
+  modules: [
+    { handler: require('../../../') }
+  ],
   i18n: {
     seo: true,
     baseUrl: 'nuxt-app.localhost',
