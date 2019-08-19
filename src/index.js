@@ -93,8 +93,8 @@ module.exports = function (userOptions) {
   // SEO plugin
   if (options.seo) {
     this.addPlugin({
-      src: resolve(pluginsPath, `seo.js`),
-      fileName: join(ROOT_DIR, `plugin.seo.js`),
+      src: resolve(pluginsPath, 'seo.js'),
+      fileName: join(ROOT_DIR, 'plugin.seo.js'),
       options: templatesOptions
     })
   }
