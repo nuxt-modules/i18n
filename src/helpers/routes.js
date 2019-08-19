@@ -1,6 +1,7 @@
 const {
   MODULE_NAME,
-  STRATEGIES } = require('./constants')
+  STRATEGIES
+} = require('./constants')
 const { extractComponentOptions } = require('./components')
 const { getPageOptions, getLocaleCodes } = require('./utils')
 
