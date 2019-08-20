@@ -1,7 +1,9 @@
+import VueMeta from 'vue-meta'
+
 export const nuxtI18nSeo = function () {
   const COMPONENT_OPTIONS_KEY = '<%= options.COMPONENT_OPTIONS_KEY %>'
   if (
-    !this._hasMetaInfo ||
+    !(VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) ||
     !this.$i18n ||
     !this.$i18n.locale ||
     !this.$i18n.locales ||
