@@ -1,6 +1,13 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [6.0.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.0.1...v6.0.2) (2019-08-20)
+
+
+### Bug Fixes
+
+* warning in nuxt 2.9.x / vue-meta 2.x ([3605632](https://github.com/nuxt-community/nuxt-i18n/commit/3605632))
 
 ## [6.0.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.0.0...v6.0.1) (2019-08-13)
 
