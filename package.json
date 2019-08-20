@@ -6,6 +6,9 @@
   "contributors": [
     {
       "name": "Paul Gascou-Vaillancourt (@paulgv)"
+    },
+    {
+      "name": "Rafal Chlodnicki (@rchl)"
     }
   ],
   "main": "src/index.js",
