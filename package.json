@@ -61,7 +61,7 @@
   "devDependencies": {
     "@babel/runtime": "7.5.5",
     "codecov": "3.5.0",
-    "eslint": "6.2.0",
+    "eslint": "6.2.1",
     "eslint-config-standard": "14.0.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-jest": "22.15.1",
@@ -71,7 +71,7 @@
     "eslint-plugin-vue": "5.2.3",
     "jest": "24.9.0",
     "jsdom": "15.1.1",
-    "nuxt": "2.8.1",
+    "nuxt": "2.9.1",
     "standard-version": "7.0.0",
     "typescript": "3.5.3",
     "vuepress": "1.0.3"
