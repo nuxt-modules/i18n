@@ -36,6 +36,7 @@ Here are all the options available when configuring the module and their default
   defaultLocaleRouteNameSuffix: 'default',
 
   // Routes generation strategy, can be set to one of the following:
+  // - 'no_prefix': routes won't be prefixed
   // - 'prefix_except_default': add locale prefix for every locale except default
   // - 'prefix': add locale prefix for every locale
   // - 'prefix_and_default': add locale prefix for every locale and default

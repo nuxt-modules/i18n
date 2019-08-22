@@ -1,5 +1,6 @@
 const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
 const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
+const LOCALE_FILE_KEY = '<%= options.LOCALE_FILE_KEY %>'
 const getLocaleCodes = <%= options.getLocaleCodes %>
 const locales = <%= JSON.stringify(options.locales) %>
 const localeCodes = getLocaleCodes(locales)
@@ -8,19 +9,16 @@ const isObject = value => value && !Array.isArray(value) && typeof value === 'ob
 
 /**
  * Asynchronously load messages from translation files
- * @param  {VueI18n}  i18n  vue-i18n instance
- * @param  {String}   lang  Language code to load
- * @return {Promise}
+ * @param  {Context}  context  Nuxt context
+ * @param  {String}   locale  Language code to load
  */
 export async function loadLanguageAsync (context, locale) {
-  const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-  const LOCALE_FILE_KEY = '<%= options.LOCALE_FILE_KEY %>'
-
   const { app } = context;
 
   if (!app.i18n.loadedLanguages) {
     app.i18n.loadedLanguages = []
   }
+
   if (!app.i18n.loadedLanguages.includes(locale)) {
     const langOptions = app.i18n.locales.find(l => l[LOCALE_CODE_KEY] === locale)
     if (langOptions) {
@@ -33,7 +31,6 @@ export async function loadLanguageAsync (context, locale) {
           const result = typeof messages === 'function' ? await Promise.resolve(messages(context)) : messages
           app.i18n.setLocaleMessage(locale, result)
           app.i18n.loadedLanguages.push(locale)
-          return result
         } catch (error) {
           console.error(error)
         }
@@ -43,7 +40,6 @@ export async function loadLanguageAsync (context, locale) {
       }
     }
   }
-  return Promise.resolve()
 }
 
 /**

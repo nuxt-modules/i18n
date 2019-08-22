@@ -47,7 +47,8 @@
       "src/**/*.js",
       "!src/templates/*.js",
       "!src/plugins/*.js",
-      "!src/helpers/utils.js"
+      "!src/helpers/utils.js",
+      "!src/helpers/constants.js"
     ]
   },
   "dependencies": {

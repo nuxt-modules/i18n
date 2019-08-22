@@ -7,7 +7,7 @@ exports[`basic / contains EN text, link to /fr/ & link /about-us 1`] = `
     <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/\\" hreflang=\\"en-US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"4d2c2316:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
   </head>
   <body >
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr\\">Français</a></div>
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/fr\\">Français</a></div>
   Homepage
   <a href=\\"/about-us\\">About us</a></div></div></div>
   </body>
@@ -22,7 +22,7 @@ exports[`basic /about-us contains EN text, link to /fr/a-propos & link / 1`] = `
     <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/about-us\\" hreflang=\\"en-US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr/a-propos\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"4d2c2316:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
   </head>
   <body >
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><!----><a href=\\"/fr/a-propos\\">Français</a></div>
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/fr/a-propos\\">Français</a></div>
   About us
   <a href=\\"/\\">Homepage</a></div></div></div>
   </body>
@@ -39,7 +39,7 @@ exports[`basic /dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1
   <body >
     <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div>
   Category 1
-  <div><div>Subcategory 2</div> <div>Post 3</div> <div><!----><a href=\\"/fr/imbrication-dynamique/1/2/3\\">Français</a></div></div></div></div></div>
+  <div><div>Subcategory 2</div> <div>Post 3</div> <div><a href=\\"/fr/imbrication-dynamique/1/2/3\\">Français</a></div></div></div></div></div>
   </body>
 </html>
 "
@@ -52,7 +52,7 @@ exports[`basic /fr contains FR text, link to / & link to /fr/a-propos 1`] = `
     <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"fr_FR\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-en-US\\" property=\\"og:locale:alternate\\" content=\\"en_US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/\\" hreflang=\\"en-US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"4d2c2316:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
   </head>
   <body >
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/\\">English</a><!----></div>
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/\\">English</a></div>
   Accueil
   <a href=\\"/fr/a-propos\\">À propos</a></div></div></div>
   </body>
@@ -67,7 +67,7 @@ exports[`basic /fr/a-propos contains FR text, link to /about-us & link to /fr/ 1
     <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"fr_FR\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-en-US\\" property=\\"og:locale:alternate\\" content=\\"en_US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/about-us\\" hreflang=\\"en-US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr/a-propos\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"4d2c2316:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
   </head>
   <body >
-    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/about-us\\">English</a><!----></div>
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div><div><a href=\\"/about-us\\">English</a></div>
   À propos
   <a href=\\"/fr\\">Accueil</a></div></div></div>
   </body>
@@ -84,7 +84,7 @@ exports[`basic /fr/imbrication-dynamique/1/2/3 contains link to /dynamicNested/1
   <body >
     <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div>
   Category 1
-  <div><div>Subcategory 2</div> <div>Post 3</div> <div><a href=\\"/dynamicNested/1/2/3\\">English</a><!----></div></div></div></div></div>
+  <div><div>Subcategory 2</div> <div>Post 3</div> <div><a href=\\"/dynamicNested/1/2/3\\">English</a></div></div></div></div></div>
   </body>
 </html>
 "
@@ -109,4 +109,34 @@ exports[`basic sets SEO metadata properly 1`] = `
 "
     <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-en-US\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/\\" hreflang=\\"en-US\\"><link data-n-head=\\"ssr\\" data-hid=\\"alternate-hreflang-fr-FR\\" rel=\\"alternate\\" href=\\"nuxt-app.localhost/fr\\" hreflang=\\"fr-FR\\"><style data-vue-ssr-id=\\"4d2c2316:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
   "
+`;
+
+exports[`no_prefix strategy / contains EN text & link /about 1`] = `
+"<!doctype html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head >
+    <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><style data-vue-ssr-id=\\"24312ed9:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
+  </head>
+  <body >
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div>
+  Homepage
+  <a href=\\"/about\\">About us</a></div></div></div>
+  </body>
+</html>
+"
+`;
+
+exports[`no_prefix strategy /about contains EN text & link / 1`] = `
+"<!doctype html>
+<html data-n-head-ssr lang=\\"en-US\\" data-n-head=\\"lang\\">
+  <head >
+    <meta data-n-head=\\"ssr\\" data-hid=\\"og:locale\\" property=\\"og:locale\\" content=\\"en_US\\"><meta data-n-head=\\"ssr\\" data-hid=\\"og:locale:alternate-fr-FR\\" property=\\"og:locale:alternate\\" content=\\"fr_FR\\"><style data-vue-ssr-id=\\"24312ed9:0\\">.nuxt-progress{position:fixed;top:0;left:0;right:0;height:2px;width:0;opacity:1;transition:width .1s,opacity .4s;background-color:#000;z-index:999999}.nuxt-progress.nuxt-progress-notransition{transition:none}.nuxt-progress-failed{background-color:red}</style>
+  </head>
+  <body >
+    <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div>
+  About us
+  <a href=\\"/\\">Homepage</a></div></div></div>
+  </body>
+</html>
+"
 `;

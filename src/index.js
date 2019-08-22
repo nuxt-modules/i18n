@@ -39,6 +39,12 @@ module.exports = function (userOptions) {
     }
   }
 
+  if (!Object.values(STRATEGIES).includes(options.strategy)) {
+    // eslint-disable-next-line no-console
+    console.error('[' + options.MODULE_NAME + '] Invalid "strategy" option "' + options.strategy + '" (must be one of: ' + Object.values(STRATEGIES).join(', ') + ').')
+    return
+  }
+
   const templatesOptions = {
     ...options,
     MODULE_NAME,
@@ -58,19 +64,25 @@ module.exports = function (userOptions) {
 
   // Generate localized routes
   const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
-  this.extendRoutes((routes) => {
-    // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
-    // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
-    // not available (at runtime, when using nuxt-start).
-    const { makeRoutes } = require('./helpers/routes')
 
-    const localizedRoutes = makeRoutes(routes, {
-      ...options,
-      pagesDir
+  if (options.strategy !== STRATEGIES.NO_PREFIX) {
+    this.extendRoutes((routes) => {
+      // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
+      // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
+      // not available (at runtime, when using nuxt-start).
+      const { makeRoutes } = require('./helpers/routes')
+
+      const localizedRoutes = makeRoutes(routes, {
+        ...options,
+        pagesDir
+      })
+      routes.splice(0, routes.length)
+      routes.unshift(...localizedRoutes)
     })
-    routes.splice(0, routes.length)
-    routes.unshift(...localizedRoutes)
-  })
+  } else if (options.differentDomains) {
+    // eslint-disable-next-line no-console
+    console.warn('[' + options.MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
+  }
 
   // Plugins
   for (const file of requiredPlugins) {

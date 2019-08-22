@@ -8,12 +8,7 @@
 </template>
 
 <script>
-import LangSwitcher from '../../components/LangSwitcher'
-
 export default {
-  components: {
-    LangSwitcher
-  },
   async asyncData ({ store }) {
     await store.dispatch('i18n/setRouteParams', {
       en: { slug: 'my-post' },

@@ -7,16 +7,18 @@ import { validateRouteParams } from './utils'
 
 Vue.use(VueI18n)
 
-export default async (context) => {
-  const { app, route, store, req, res } = context;
+// Options
+const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
+const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
+const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
+const STRATEGY = '<%= options.strategy %>'
+const lazy = <%= options.lazy %>
+const vuex = <%= JSON.stringify(options.vuex) %>
 
-  // Options
-  const lazy = <%= options.lazy %>
-  const vuex = <%= JSON.stringify(options.vuex) %>
+export default async (context) => {
+  const { app, route, store, req, res, redirect } = context;
 
   // Helpers
-  const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-  const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
   const getLocaleCodes = <%= options.getLocaleCodes %>
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const getHostname = <%= options.getHostname %>
@@ -79,6 +81,18 @@ export default async (context) => {
   const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
   const { useCookie, cookieKey } = detectBrowserLanguage
 
+  const getLocaleCookie = () => {
+    if (useCookie) {
+      if (process.client) {
+        return JsCookie.get(cookieKey);
+      } else if (req && typeof req.headers.cookie !== 'undefined') {
+        const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
+        return cookies[cookieKey]
+      }
+    }
+    return null
+  }
+
   const setLocaleCookie = locale => {
     if (!useCookie) {
       return;
@@ -105,6 +119,49 @@ export default async (context) => {
     }
   }
 
+  const loadAndSetLocale = async (newLocale, { initialSetup = false } = {}) => {
+    // Abort if different domains option enabled
+    if (app.i18n.differentDomains) {
+      return
+    }
+
+    // Abort if newLocale did not change
+    if (newLocale === app.i18n.locale) {
+      return
+    }
+
+    const oldLocale = app.i18n.locale
+    if (!initialSetup) {
+      app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
+
+      if (useCookie) {
+        app.i18n.setLocaleCookie(newLocale)
+      }
+    }
+
+    // Lazy-loading enabled
+    if (lazy) {
+      const { loadLanguageAsync } = require('./utils')
+      await loadLanguageAsync(context, newLocale)
+    }
+
+    app.i18n.locale = newLocale
+
+    if (!initialSetup) {
+      app.i18n.onLanguageSwitched(oldLocale, newLocale)
+    }
+
+    await syncVuex(newLocale, app.i18n.getLocaleMessage(newLocale))
+
+    if (!initialSetup && STRATEGY !== STRATEGIES.NO_PREFIX) {
+      const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
+
+      redirect(app.localePath(Object.assign({}, route , {
+        name: routeName
+      }), newLocale))
+    }
+  }
+
   // Set instance options
   app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)
   app.i18n.locales = <%= JSON.stringify(options.locales) %>
@@ -114,6 +171,9 @@ export default async (context) => {
   app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
   app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
   app.i18n.setLocaleCookie = setLocaleCookie
+  app.i18n.getLocaleCookie = getLocaleCookie
+  app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
+
   // Extension of Vue
   if (!app.$t) {
     app.$t = app.i18n.t
@@ -133,30 +193,15 @@ export default async (context) => {
   if (app.i18n.differentDomains) {
     const domainLocale = getLocaleDomain()
     locale = domainLocale ? domainLocale : locale
-  } else {
+  } else if (STRATEGY !== STRATEGIES.NO_PREFIX) {
     const routesNameSeparator = '<%= options.routesNameSeparator %>'
     const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
 
     const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, app.i18n.locales)
     locale = routeLocale ? routeLocale : locale
+  } else if (useCookie) {
+      locale = getLocaleCookie() || locale
   }
 
-  app.i18n.locale = locale
-
-  // Lazy-load translations
-  if (lazy) {
-    const { loadLanguageAsync } = require('./utils')
-
-    // Load fallback locale.
-    if (app.i18n.fallbackLocale && app.i18n.locale !== app.i18n.fallbackLocale) {
-      await loadLanguageAsync(context, app.i18n.fallbackLocale)
-    }
-
-    const messages = await loadLanguageAsync(context, app.i18n.locale)
-    await syncVuex(locale, messages)
-    return messages
-  } else {
-    // Sync Vuex
-    await syncVuex(locale, app.i18n.getLocaleMessage(locale))
-  }
+  await loadAndSetLocale(locale, { initialSetup: true })
 }

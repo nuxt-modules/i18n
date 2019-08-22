@@ -131,6 +131,128 @@ describe('basic', () => {
   })
 })
 
+describe('no_prefix strategy', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        strategy: 'no_prefix'
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'no-lang-switcher', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('sets SEO metadata properly', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    const metas = dom.querySelectorAll('head meta')
+    expect(metas.length).toBe(2)
+    expect(metas[0].getAttribute('property')).toBe('og:locale')
+    expect(metas[0].getAttribute('content')).toBe('en_US')
+    expect(metas[1].getAttribute('property')).toBe('og:locale:alternate')
+    expect(metas[1].getAttribute('content')).toBe('fr_FR')
+  })
+
+  test('/ contains EN text & link /about', async () => {
+    const html = await get('/')
+    expect(cleanUpScripts(html)).toMatchSnapshot()
+  })
+
+  test('/about contains EN text & link /', async () => {
+    const html = await get('/about')
+    expect(cleanUpScripts(html)).toMatchSnapshot()
+  })
+
+  test('/fr/ returns 404', async () => {
+    let response
+    try {
+      response = await get('/fr/')
+    } catch (error) {
+      response = error
+    }
+    expect(response.statusCode).toBe(404)
+  })
+
+  test('localePath returns correct path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/about')
+  })
+
+  test('localePath with non-current locale triggers warning', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const spy = jest.spyOn(window.console, 'warn').mockImplementation(() => {})
+
+    const newRoute = window.$nuxt.localePath('about', 'fr')
+    expect(spy).toHaveBeenCalled()
+    expect(spy.mock.calls[0][0]).toContain('unsupported when using no_prefix')
+    expect(newRoute).toBe('/about')
+
+    spy.mockRestore()
+  })
+})
+
+describe('no_prefix strategy + differentDomains', () => {
+  let nuxt
+  let spy
+
+  beforeAll(async () => {
+    spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterAll(async () => {
+    spy.mockRestore()
+    await nuxt.close()
+  })
+
+  test('triggers warning', async () => {
+    const override = {
+      i18n: {
+        strategy: 'no_prefix',
+        differentDomains: true
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'no-lang-switcher', override, { merge: true }))).nuxt
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy.mock.calls[0][0]).toContain('The `differentDomains` option and `no_prefix` strategy are not compatible')
+  })
+})
+
+describe('invalid strategy', () => {
+  let nuxt
+  let spy
+
+  beforeAll(async () => {
+    spy = jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterAll(async () => {
+    spy.mockRestore()
+    await nuxt.close()
+  })
+
+  test('triggers error on building', async () => {
+    const override = {
+      i18n: {
+        strategy: 'nopenope'
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'no-lang-switcher', override, { merge: true }))).nuxt
+
+    expect(spy).toHaveBeenCalled()
+    expect(spy.mock.calls[0][0]).toContain('Invalid "strategy" option "nopenope"')
+  })
+})
+
 describe('hash mode', () => {
   let nuxt
 

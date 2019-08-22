@@ -10,6 +10,8 @@ middleware['i18n'] = async (context) => {
   }
 
   // Options
+  const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
+  const STRATEGY = '<%= options.strategy %>'
   const lazy = <%= options.lazy %>
   const vuex = <%= JSON.stringify(options.vuex) %>
   const differentDomains = <%= options.differentDomains %>
@@ -37,49 +39,7 @@ middleware['i18n'] = async (context) => {
   const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, locales)
 
   const { useCookie, cookieKey, alwaysRedirect, fallbackLocale } = detectBrowserLanguage
-
-  const getLocaleCookie = () => {
-    if (useCookie) {
-      if (process.client) {
-        return JsCookie.get(cookieKey);
-      } else if (req && typeof req.headers.cookie !== 'undefined') {
-        const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
-        return cookies[cookieKey]
-      }
-    }
-    return null
-  }
-
-  const switchLocale = async (newLocale) => {
-    // Abort if different domains option enabled
-    if (app.i18n.differentDomains) {
-      return
-    }
-
-    // Abort if newLocale did not change
-    if (newLocale === app.i18n.locale) {
-      return
-    }
-
-    const oldLocale = app.i18n.locale
-    app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
-    if (useCookie) {
-      app.i18n.setLocaleCookie(newLocale)
-    }
-    // Lazy-loading enabled
-    if (lazy) {
-      const { loadLanguageAsync } = require('./utils')
-      const messages = await loadLanguageAsync(context, newLocale)
-      app.i18n.locale = newLocale
-      app.i18n.onLanguageSwitched(oldLocale, newLocale)
-      await syncVuex(newLocale, messages)
-    } else {
-      // Lazy-loading disabled
-      app.i18n.locale = newLocale
-      app.i18n.onLanguageSwitched(oldLocale, newLocale)
-      await syncVuex(newLocale, app.i18n.getLocaleMessage(newLocale))
-    }
-  }
+  const { getLocaleCookie } = app.i18n
 
   if (detectBrowserLanguage) {
     let browserLocale
@@ -97,7 +57,6 @@ middleware['i18n'] = async (context) => {
     if (browserLocale) {
       // Handle cookie option to prevent multiple redirections
       if (!useCookie || alwaysRedirect || !getLocaleCookie()) {
-        const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
         let redirectToLocale = fallbackLocale
 
         // Use browserLocale if we support it, otherwise use fallbackLocale
@@ -108,11 +67,8 @@ middleware['i18n'] = async (context) => {
         if (redirectToLocale && locales.includes(redirectToLocale)) {
           if (redirectToLocale !== app.i18n.locale) {
             // We switch the locale before redirect to prevent loops
-            await switchLocale(redirectToLocale)
-
-            redirect(app.localePath(Object.assign({}, route , {
-              name: routeName
-            }), redirectToLocale))
+            await app.i18n.setLocale(redirectToLocale)
+            }
           } else if (useCookie && !getLocaleCookie()) {
             app.i18n.setLocaleCookie(redirectToLocale)
           }
@@ -121,7 +77,6 @@ middleware['i18n'] = async (context) => {
         }
       }
     }
-  }
 
-  await switchLocale(routeLocale ? routeLocale : locale)
+  await app.i18n.setLocale(routeLocale ? routeLocale : locale)
 }
