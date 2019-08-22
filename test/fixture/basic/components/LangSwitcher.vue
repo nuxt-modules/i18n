@@ -1,8 +1,7 @@
 <template>
   <div>
     <nuxt-link
-      v-for="(locale, index) in $i18n.locales"
-      v-if="locale.code !== $i18n.locale"
+      v-for="(locale, index) in localesExcludingCurrent"
       :key="index"
       :exact="true"
       :to="switchLocalePath(locale.code)">{{ locale.name }}</nuxt-link>
@@ -11,6 +10,11 @@
 
 <script>
 export default {
-  name: 'LangSwitcher'
+  name: 'LangSwitcher',
+  computed: {
+    localesExcludingCurrent() {
+      return this.$i18n.locales.filter(locale => locale.code !== this.$i18n.locale)
+    }
+  }
 }
 </script>

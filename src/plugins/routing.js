@@ -1,19 +1,25 @@
 import './middleware'
 import Vue from 'vue'
 
+const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
+const STRATEGY = '<%= options.strategy %>'
 const vuex = <%= JSON.stringify(options.vuex) %>
 const routesNameSeparator = '<%= options.routesNameSeparator %>'
+const defaultLocale = '<%= options.defaultLocale %>'
 
 function localePathFactory (i18nPath, routerPath) {
-  const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
-  const STRATEGY = '<%= options.strategy %>'
-  const defaultLocale = '<%= options.defaultLocale %>'
   const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
 
   return function localePath (route, locale) {
     // Abort if no route or no locale
     if (!route) return
+
+    if (STRATEGY === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
+      console.warn('[<%= options.MODULE_NAME %>] Passing non-current locale to localePath is unsupported when using no_prefix strategy')
+    }
+
     locale = locale || this[i18nPath].locale
+
     if (!locale) return
 
     // If route parameters is a string, use it as the route's name
@@ -22,7 +28,7 @@ function localePathFactory (i18nPath, routerPath) {
     }
 
     // Build localized route options
-    let name = route.name + routesNameSeparator + locale
+    let name = route.name + (STRATEGY === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
 
     // Match route without prefix for default locale
     if (locale === defaultLocale && STRATEGY === STRATEGIES.PREFIX_AND_DEFAULT) {
@@ -49,6 +55,10 @@ function switchLocalePathFactory (i18nPath) {
   const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
 
   return function switchLocalePath (locale) {
+    if (STRATEGY === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
+      console.warn('[<%= options.MODULE_NAME %>] Passing non-current locale to switchLocalePath is unsupported when using no_prefix strategy')
+    }
+
     const name = this.getRouteBaseName()
     if (!name) {
       return ''

@@ -12,12 +12,7 @@
 </template>
 
 <script>
-import LangSwitcher from '../../components/LangSwitcher'
-
 export default {
-  components: {
-    LangSwitcher
-  },
   async asyncData () {
     return {
       params: {

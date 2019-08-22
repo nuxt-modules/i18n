@@ -1,7 +1,13 @@
 import VueMeta from 'vue-meta'
 
+const COMPONENT_OPTIONS_KEY = '<%= options.COMPONENT_OPTIONS_KEY %>'
+const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
+const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
+const BASE_URL = '<%= options.baseUrl %>'
+const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
+const STRATEGY = '<%= options.strategy %>'
+
 export const nuxtI18nSeo = function () {
-  const COMPONENT_OPTIONS_KEY = '<%= options.COMPONENT_OPTIONS_KEY %>'
   if (
     !(VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) ||
     !this.$i18n ||
@@ -12,11 +18,6 @@ export const nuxtI18nSeo = function () {
   ) {
     return {};
   }
-  const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-  const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
-  const BASE_URL = '<%= options.baseUrl %>'
-  const STRATEGY = '<%= options.strategy %>'
-
   // Prepare html lang attribute
   const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
   const htmlAttrs = {}
@@ -24,25 +25,28 @@ export const nuxtI18nSeo = function () {
     htmlAttrs.lang = currentLocaleData[LOCALE_ISO_KEY]
   }
 
+  const link = []
   // hreflang tags
-  const link = this.$i18n.locales
-    .map(locale => {
-      if (locale[LOCALE_ISO_KEY]) {
-        return {
-          hid: 'alternate-hreflang-' + locale[LOCALE_ISO_KEY],
-          rel: 'alternate',
-          href: BASE_URL + this.switchLocalePath(locale.code),
-          hreflang: locale[LOCALE_ISO_KEY]
+  if (STRATEGY !== STRATEGIES.NO_PREFIX) {
+    link.push(...this.$i18n.locales
+      .map(locale => {
+        if (locale[LOCALE_ISO_KEY]) {
+          return {
+            hid: 'alternate-hreflang-' + locale[LOCALE_ISO_KEY],
+            rel: 'alternate',
+            href: BASE_URL + this.switchLocalePath(locale.code),
+            hreflang: locale[LOCALE_ISO_KEY]
+          }
+        } else {
+          console.warn('[<%= options.MODULE_NAME %>] Locale ISO code is required to generate alternate link')
+          return null
         }
-      } else {
-        console.warn('[<%= options.MODULE_NAME %>] Locale ISO code is required to generate alternate link')
-        return null
-      }
-    })
-    .filter(item => !!item)
+      })
+      .filter(item => !!item))
+  }
 
   // canonical links
-  if (STRATEGY === '<%= options.STRATEGIES.PREFIX_AND_DEFAULT %>') {
+  if (STRATEGY === STRATEGIES.PREFIX_AND_DEFAULT) {
     const canonicalPath = this.switchLocalePath(currentLocaleData[LOCALE_CODE_KEY])
     if (canonicalPath && canonicalPath !== this.$route.path) {
       // Current page is not the canonical one -- add a canonical link
