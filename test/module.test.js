@@ -1,26 +1,18 @@
 jest.setTimeout(60000)
-process.env.PORT = process.env.PORT || 5060
 process.env.NODE_ENV = 'production'
 
-const { Nuxt, Builder } = require('nuxt')
-const request = require('request-promise-native')
+const { setup, loadConfig, get, url } = require('@nuxtjs/module-test-utils')
 const { JSDOM } = require('jsdom')
 
-const config = require('./nuxt.config')
+const { cleanUpScripts } = require('./utils')
 
-const { cleanUpScripts } = require('../../utils')
-
-const url = path => `http://localhost:${process.env.PORT}${path}`
-const get = path => request(url(path))
 const getDom = html => (new JSDOM(html)).window.document
 
 describe('basic', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = new Nuxt(config)
-    await new Builder(nuxt).build()
-    await nuxt.listen(process.env.PORT)
+    nuxt = (await setup(loadConfig(__dirname, 'basic'))).nuxt
   })
 
   afterAll(async () => {
@@ -143,13 +135,13 @@ describe('hash mode', () => {
   let nuxt
 
   beforeAll(async () => {
-    config.router = {
-      mode: 'hash'
+    const override = {
+      router: {
+        mode: 'hash'
+      }
     }
 
-    nuxt = new Nuxt(config)
-    await new Builder(nuxt).build()
-    await nuxt.listen(process.env.PORT)
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override))).nuxt
   })
 
   afterAll(async () => {
@@ -167,13 +159,13 @@ describe('with router base', () => {
   let nuxt
 
   beforeAll(async () => {
-    config.router = {
-      base: '/app/'
+    const override = {
+      router: {
+        base: '/app/'
+      }
     }
 
-    nuxt = new Nuxt(config)
-    await new Builder(nuxt).build()
-    await nuxt.listen(process.env.PORT)
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override))).nuxt
   })
 
   afterAll(async () => {
