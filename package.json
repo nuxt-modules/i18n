@@ -22,10 +22,10 @@
     "access": "public"
   },
   "scripts": {
-    "dev:basic": "nuxt -c ./test/fixtures/basic/nuxt.config.js",
+    "dev:basic": "nuxt -c ./test/fixture/basic/nuxt.config.js",
     "lint": "eslint src test",
     "test": "yarn test:fixtures && yarn test:types",
-    "test:fixtures": "jest test/fixtures",
+    "test:fixtures": "jest test",
     "test:types": "tsc -p types/test",
     "release": "standard-version && git push --follow-tags && npm publish",
     "docs:dev": "vuepress dev docs",
@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "@babel/runtime": "7.5.5",
+    "@nuxtjs/module-test-utils": "1.2.0",
     "codecov": "3.5.0",
     "eslint": "6.2.1",
     "eslint-config-standard": "14.0.0",
