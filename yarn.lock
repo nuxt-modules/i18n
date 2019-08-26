@@ -1176,14 +1176,15 @@
     webpack-node-externals "^1.7.2"
     webpackbar "^4.0.0"
 
-"@nuxtjs/module-test-utils@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@nuxtjs/module-test-utils/-/module-test-utils-1.2.0.tgz#017ddc3ab91f649defebd945054e28f26f506a3a"
-  integrity sha512-+N+JoRTCRz5/6RhEWGi9tCD18SSzCzUHWPuZKN1A1CwJ3IsdYPvynmfUjHf5X+lnnvRKQ0u2kiVGz0blNLudew==
+"@nuxtjs/module-test-utils@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/module-test-utils/-/module-test-utils-1.3.0.tgz#f7f4b281e8f18a53d7cfd208f4d7022d749c9525"
+  integrity sha512-Y0S70j9CAnv+8NQdoVs4fgXR7z0WVmBkJH4z6GUUz+r4VYyOAz9L1kgLTFtsxzZ0T3ez5CRemfo7L3mCBemLNw==
   dependencies:
-    get-port latest
-    request latest
-    request-promise-native latest
+    deepmerge "^4.0.0"
+    get-port "^5.0.0"
+    request "^2.88.0"
+    request-promise-native "^1.0.7"
 
 "@nuxtjs/youch@^4.2.3":
   version "4.2.3"
@@ -4989,7 +4990,7 @@ get-pkg-repo@^1.0.0:
     parse-github-repo-url "^1.3.0"
     through2 "^2.0.0"
 
-get-port@latest:
+get-port@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/get-port/-/get-port-5.0.0.tgz#aa22b6b86fd926dd7884de3e23332c9f70c031a6"
   integrity sha512-imzMU0FjsZqNa6BqOjbbW6w5BivHIuQKopjpPqcnx0AVHJQKCxK1O+Ab3OrVXhrekqfVMjwA9ZYu062R+KcIsQ==
@@ -9400,7 +9401,7 @@ request-promise-core@1.1.2:
   dependencies:
     lodash "^4.17.11"
 
-request-promise-native@^1.0.5, request-promise-native@^1.0.7, request-promise-native@latest:
+request-promise-native@^1.0.5, request-promise-native@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/request-promise-native/-/request-promise-native-1.0.7.tgz#a49868a624bdea5069f1251d0a836e0d89aa2c59"
   integrity sha512-rIMnbBdgNViL37nZ1b3L/VfPOpSi0TqVDQPAvO6U14lMzOLrt5nilxCQqtDKhZeDiW0/hkCXGoQjhgJd/tCh6w==
@@ -9409,7 +9410,7 @@ request-promise-native@^1.0.5, request-promise-native@^1.0.7, request-promise-na
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
-request@^2.87.0, request@^2.88.0, request@latest:
+request@^2.87.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
