@@ -56,6 +56,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### BREAKING CHANGES
 
+[5.x to 6.x migration path](https://nuxt-community.github.io/nuxt-i18n/migrating.html#upgrading-from-5-x-to-6-x)
+
 * Store module's options have been flattened and renamed
 * The mutations responsible for syncing nuxt-i18n's store module with vue-i18n's
 locale and messages are now disabled by default, you'll need to manually re-enable them in the
@@ -464,6 +466,8 @@ cannot be set via the configuration anymore
 
 ### BREAKING CHANGES
 
+[4.x to 5.x migration path](https://nuxt-community.github.io/nuxt-i18n/migrating.html#upgrading-from-4-x-to-5-x)
+
 * [https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23](https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23)
 
 
@@ -508,6 +512,8 @@ cannot be set via the configuration anymore
 
 
 ### BREAKING CHANGES
+
+[3.x to 4.x migration path](https://nuxt-community.github.io/nuxt-i18n/migrating.html#upgrading-from-3-x-to-4-x)
 
 * Pages using i18n key need to be updated to use nuxtI18n key instead
 
