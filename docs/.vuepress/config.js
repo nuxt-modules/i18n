@@ -15,7 +15,12 @@ module.exports = {
           '/': sidebarLinks('en')
         }
       },
-    }
+    },
+    nav: [
+      { text: 'Guide', link: '/' },
+      { text: 'API Reference', link: '/api/' },
+      { text: 'Release Notes', link: 'https://github.com/nuxt-community/nuxt-i18n/blob/master/CHANGELOG.md' }
+    ]
   }
 }
 
