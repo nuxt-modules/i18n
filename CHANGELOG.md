@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.1.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.0.2...v6.1.0) (2019-08-27)
+
+
+### Features
+
+* Add `no_prefix` strategy + `setLocale` API function ([#409](https://github.com/nuxt-community/nuxt-i18n/issues/409)) ([998011e](https://github.com/nuxt-community/nuxt-i18n/commit/998011e))
+
 ### [6.0.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.0.1...v6.0.2) (2019-08-20)
 
 
