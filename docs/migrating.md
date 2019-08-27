@@ -2,6 +2,55 @@
 
 Follow this guide to upgrade from one major version to the other.
 
+
+## Upgrading from 5.x to 6.x
+
+**nuxt-i18n 6.x** contains a few breaking changes that affect its Vuex store module.
+
+### preserveState can't be set anymore
+
+It was previously possible to manually set `preserveState` on **nuxt-i18n**'s store module, which would actually result in unexpected behaviours when using server-side rendering. This option has been removed altogether and the module's `preserveState` option is now [set automatically](https://github.com/nuxt-community/nuxt-i18n/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
+
+If you were using the `preserveState` configuration option before, it can be safely removed:
+
+```patch
+--- before	2019-08-27 11:29:00.000000000 -0400
++++ after	2019-08-27 11:28:57.000000000 -0400
+@@ -1,6 +1,5 @@
+ {
+   vuex: {
+-    preserveState: true,
+     // other configuration options
+   }
+ }
+```
+
+### Store module options have been flattened and renamed
+
+The `vuex` configuration option used to expose a `mutations` property where each mutation could be disabled or renamed. For the sake of simplicity, it isn't possible to rename these mutations anymore, the `mutations` property has been dropped to flatten the configuration and each option has been renamed to better reflect what it does.
+
+```patch
+--- before	2019-08-27 11:39:57.000000000 -0400
++++ after	2019-08-27 11:40:41.000000000 -0400
+@@ -1,9 +1,7 @@
+ {
+   vuex: {
+-    mutations: {
+-      setLocale: 'SET_LOCALE_MUTATION',
+-      setMessages: 'SET_MESSAGE_MUTATION',
+-      setRouteParams: 'SET_ROUTE_PARAMS_MUTATION'
+-    }
++    syncLocale: true,
++    syncMessages: true,
++    syncRouteParams: true
+   },
+ }
+ ```
+
+## Upgrading from 4.x to 5.x
+
+Please refer to [**vue-i18n**'s changelog](https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23) for more information on breaking changes in **nuxt-i18n 5.x**.
+
 ## Upgrading from 3.x to 4.x
 
 ### In-component options key
