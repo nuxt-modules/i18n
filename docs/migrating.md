@@ -5,7 +5,19 @@ Follow this guide to upgrade from one major version to the other.
 
 ## Upgrading from 5.x to 6.x
 
-**nuxt-i18n 6.x** contains a few breaking changes that affect its Vuex store module.
+### Global SEO features are now disabled by default
+
+In some cases, having SEO enabled globally caused performance issues and/or conflicted with other plugins. To mitigate these issues, SEO features are now disabled by default.
+
+If you were affected by one of the issues above, we recommend that you read the [Improve performances](https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance) section to enable SEO only where you need it.
+
+If you'd like to restore the old behaviour, you can reenable SEO features globally by setting the `seo` option to `true`:
+
+```js
+{
+  seo: true
+}
+```
 
 ### preserveState can't be set anymore
 
@@ -14,9 +26,6 @@ It was previously possible to manually set `preserveState` on **nuxt-i18n**'s st
 If you were using the `preserveState` configuration option before, it can be safely removed:
 
 ```patch
---- before	2019-08-27 11:29:00.000000000 -0400
-+++ after	2019-08-27 11:28:57.000000000 -0400
-@@ -1,6 +1,5 @@
  {
    vuex: {
 -    preserveState: true,
@@ -30,9 +39,6 @@ If you were using the `preserveState` configuration option before, it can be saf
 The `vuex` configuration option used to expose a `mutations` property where each mutation could be disabled or renamed. For the sake of simplicity, it isn't possible to rename these mutations anymore, the `mutations` property has been dropped to flatten the configuration and each option has been renamed to better reflect what it does.
 
 ```patch
---- before	2019-08-27 11:39:57.000000000 -0400
-+++ after	2019-08-27 11:40:41.000000000 -0400
-@@ -1,9 +1,7 @@
  {
    vuex: {
 -    mutations: {
