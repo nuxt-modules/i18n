@@ -300,3 +300,60 @@ describe('with router base', () => {
     expect(newRoute).toBe('/about-us')
   })
 })
+
+describe('differentDomains enabled', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        differentDomains: true,
+        seo: false
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        domain: 'en.nuxt-app.localhost'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français',
+        domain: 'fr.nuxt-app.localhost'
+      }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('matches domain\'s locale (en)', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    expect(cleanUpScripts(html)).toMatchSnapshot()
+  })
+
+  test('matches domain\'s locale (fr)', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'fr.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    expect(cleanUpScripts(html)).toMatchSnapshot()
+  })
+})
