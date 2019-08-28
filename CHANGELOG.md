@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.0...v6.1.1) (2019-08-28)
+
+
+### Bug Fixes
+
+* fix loading fallback locale with lazy loading ([d8db5b1](https://github.com/nuxt-community/nuxt-i18n/commit/d8db5b1))
+* locale not set with differentDomains enabled ([634690a](https://github.com/nuxt-community/nuxt-i18n/commit/634690a))
+* redirects to wrong route after SPA navigation ([8bf61d9](https://github.com/nuxt-community/nuxt-i18n/commit/8bf61d9))
+
 ## [6.1.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.0.2...v6.1.0) (2019-08-27)
 
 
