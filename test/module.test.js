@@ -131,6 +131,54 @@ describe('basic', () => {
   })
 })
 
+describe('lazy loading', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        vueI18n: {
+          fallbackLocale: 'en'
+        }
+      }
+    }
+
+    const testConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Override those after merging to overwrite original values.
+    testConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        file: 'en-US.js'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      }
+    ]
+    testConfig.i18n.vueI18n.messages = null
+
+    nuxt = (await setup(testConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('shows fallback string', async () => {
+    const html = await get('/fr/fallback')
+    const dom = getDom(html)
+    const title = dom.querySelector('h1')
+    expect(title.textContent).toBe('in english')
+  })
+})
+
 describe('no_prefix strategy', () => {
   let nuxt
 
