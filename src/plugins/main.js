@@ -143,6 +143,12 @@ export default async (context) => {
     // Lazy-loading enabled
     if (lazy) {
       const { loadLanguageAsync } = require('./utils')
+
+      // Load fallback locale.
+      if (app.i18n.fallbackLocale && newLocale !== app.i18n.fallbackLocale) {
+        await loadLanguageAsync(context, app.i18n.fallbackLocale)
+      }
+
       await loadLanguageAsync(context, newLocale)
     }
 
