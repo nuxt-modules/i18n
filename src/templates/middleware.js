@@ -34,6 +34,9 @@ middleware['i18n'] = async (context) => {
     return
   }
 
+  // Update for setLocale to have up to date route
+  app.i18n.__route = route
+
   // Handle browser language detection
   const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
   const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, locales)
