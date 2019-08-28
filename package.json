@@ -76,7 +76,7 @@
     "eslint-plugin-vue": "5.2.3",
     "jest": "24.9.0",
     "jsdom": "15.1.1",
-    "nuxt": "2.9.1",
+    "nuxt": "2.9.2",
     "standard-version": "7.0.0",
     "typescript": "3.5.3",
     "vuepress": "1.0.3"
