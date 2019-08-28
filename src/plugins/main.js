@@ -161,6 +161,7 @@ export default async (context) => {
     await syncVuex(newLocale, app.i18n.getLocaleMessage(newLocale))
 
     if (!initialSetup && STRATEGY !== STRATEGIES.NO_PREFIX) {
+      const route = app.i18n.__route
       const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
 
       redirect(app.localePath(Object.assign({}, route , {
@@ -180,6 +181,9 @@ export default async (context) => {
   app.i18n.setLocaleCookie = setLocaleCookie
   app.i18n.getLocaleCookie = getLocaleCookie
   app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
+
+  // Current route. Updated from middleware also.
+  app.i18n.__route = route
 
   // Extension of Vue
   if (!app.$t) {
