@@ -106,7 +106,7 @@ yarn docs:dev
 
 ## Issues, questions & requests
 
-Please use [CMTY](https://cmty.app/nuxt/nuxt-i18n/issues?type=question) for any question you might have.
+Please use [Discord](https://discord.nuxtjs.org/) for any question you might have.
 
 
 ## License
