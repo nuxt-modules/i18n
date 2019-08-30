@@ -163,10 +163,11 @@ export default async (context) => {
     if (!initialSetup && STRATEGY !== STRATEGIES.NO_PREFIX) {
       const route = app.i18n.__route
       const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
+      const redirectPath = app.localePath(Object.assign({}, route, { name: routeName }), newLocale)
 
-      redirect(app.localePath(Object.assign({}, route , {
-        name: routeName
-      }), newLocale))
+      if (route && route.path !== redirectPath) {
+        redirect(redirectPath)
+      }
     }
   }
 
