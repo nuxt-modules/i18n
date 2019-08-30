@@ -71,9 +71,9 @@ middleware['i18n'] = async (context) => {
           if (redirectToLocale !== app.i18n.locale) {
             // We switch the locale before redirect to prevent loops
             await app.i18n.setLocale(redirectToLocale)
+          } else if (useCookie && !getLocaleCookie()) {
+            app.i18n.setLocaleCookie(redirectToLocale)
           }
-        } else if (useCookie && !getLocaleCookie()) {
-          app.i18n.setLocaleCookie(redirectToLocale)
         }
 
         return
