@@ -1,10 +1,7 @@
-jest.setTimeout(60000)
-process.env.NODE_ENV = 'production'
+import { setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
+import { JSDOM } from 'jsdom'
 
-const { setup, loadConfig, get, url } = require('@nuxtjs/module-test-utils')
-const { JSDOM } = require('jsdom')
-
-const { cleanUpScripts } = require('./utils')
+import { cleanUpScripts } from './utils'
 
 const getDom = html => (new JSDOM(html)).window.document
 

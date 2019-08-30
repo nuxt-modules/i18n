@@ -1,7 +1,7 @@
 <template>
 <div>
   <LangSwitcher />
-  {{ $t('about') }}
+  page: {{ $t('about') }};
   <nuxt-link exact :to="localePath('index')">{{ $t('home') }}</nuxt-link>
 </div>
 </template>
