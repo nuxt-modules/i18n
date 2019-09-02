@@ -50,7 +50,7 @@ declare namespace NuxtVueI18n {
       routesNameSeparator: string
       beforeLanguageSwitch: () => any
       onLanguageSwitched: () => any
-      getLocaleCookie: () => string | undefined | null
+      getLocaleCookie: () => string | undefined
       setLocaleCookie: (locale: string) => undefined
       setLocale: (locale: string) => Promise<undefined>
     }
