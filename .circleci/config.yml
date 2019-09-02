@@ -59,6 +59,14 @@ jobs:
           name: Type Tests
           command: yarn test:types
 
+  test-unit:
+    executor: node
+    steps:
+      - attach-project
+      - run:
+          name: Unit Tests
+          command: yarn test:unit && yarn coverage
+
   test-e2e-ssr:
     executor: node
     steps:
@@ -94,6 +102,8 @@ workflows:
       - lint:
           requires: [setup]
       - test-types:
+          requires: [lint]
+      - test-unit:
           requires: [lint]
       - test-e2e-ssr:
           requires: [lint]

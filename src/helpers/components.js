@@ -1,10 +1,8 @@
 const { readFileSync } = require('fs')
-const { COMPONENT_OPTIONS_KEY } = require('./constants')
+const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
 
-const acorn = require('acorn')
-const dynamicImport = require('acorn-dynamic-import')
-const inject = require('acorn-dynamic-import/lib/walk')
-const walker = inject.default(require('acorn-walk'))
+const parser = require('@babel/parser')
+const traverse = require('@babel/traverse').default
 // Must not be an explicit dependency to avoid version mismatch issue.
 // See https://github.com/nuxt-community/nuxt-i18n/issues/297
 const compiler = require('vue-template-compiler')
@@ -17,18 +15,34 @@ exports.extractComponentOptions = (path) => {
   }
 
   const script = Component.script.content
-  const parsed = acorn.Parser.extend(dynamicImport.default).parse(script, {
-    ecmaVersion: 10,
-    sourceType: 'module'
-  })
-  walker.simple(parsed, {
-    Property (node) {
-      if (node.key.name === COMPONENT_OPTIONS_KEY) {
-        const data = script.substring(node.start, node.end)
-        componentOptions = eval(`({${data}})`)[COMPONENT_OPTIONS_KEY] // eslint-disable-line
+
+  try {
+    const parsed = parser.parse(script, {
+      sourceType: 'module',
+      plugins: [
+        'classProperties',
+        'decorators-legacy',
+        'dynamicImport',
+        'estree',
+        'exportDefaultFrom',
+        'typescript'
+      ]
+    })
+
+    traverse(parsed, {
+      enter (path) {
+        if (path.node.type === 'Property') {
+          if (path.node.key.name === COMPONENT_OPTIONS_KEY) {
+            const data = script.substring(path.node.start, path.node.end)
+            componentOptions = Function(`return ({${data}})`)()[COMPONENT_OPTIONS_KEY] // eslint-disable-line
+          }
+        }
       }
-    }
-  }, walker.base)
+    })
+  } catch (error) {
+    // eslint-disable-next-line
+    console.warn('[' + MODULE_NAME + `] Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${path}".`)
+  }
 
   return componentOptions
 }

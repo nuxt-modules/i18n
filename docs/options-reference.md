@@ -105,7 +105,7 @@ Here are all the options available when configuring the module and their default
     syncRouteParams: true
   },
 
-  // By default, custom routes are extracted from page files using acorn parsing,
+  // By default, custom routes are extracted from page files using babel parser,
   // set this to false to disable this
   parsePages: true,
 
