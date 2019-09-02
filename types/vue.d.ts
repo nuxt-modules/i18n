@@ -27,51 +27,49 @@ declare namespace NuxtVueI18n {
     }
 
     interface DetectBrowserLanguageInterface {
-      useCookie: boolean
-      cookieKey: string
-      alwaysRedirect: boolean
-      fallbackLocale: Locale | null
+      useCookie?: boolean
+      cookieKey?: string
+      alwaysRedirect?: boolean
+      fallbackLocale?: Locale | null
     }
 
-    interface Vuex {
-      moduleName: string
-      mutations: {
-        setLocale: string
-        setMessages: string
-      }
-      preserveState: boolean
+    interface VuexInterface {
+      moduleName?: string
+      syncLocale?: boolean
+      syncMessages?: boolean
+      syncRouteParams?: boolean
     }
 
-    // special options for a "app.i18n" property: https://goo.gl/UwNfZo
-    interface VueI18nInterface {
-      locales: Array<Locale | LocaleObject>
-      defaultLocale: null | Locale
-      differentDomains: boolean
-      forwardedHost: boolean
-      routesNameSeparator: string
-      beforeLanguageSwitch: () => any
-      onLanguageSwitched: () => any
+    // options that are also exposed on VueI18n instance: https://goo.gl/UwNfZo
+    interface NuxtI18nInterface {
+      beforeLanguageSwitch?: () => any
+      defaultLocale?: null | Locale
+      locales?: Array<Locale | LocaleObject>
+      differentDomains?: boolean
+      forwardedHost?: boolean
+      onLanguageSwitched?: () => any
     }
 
     // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
-    interface AllOptionsInterface extends VueI18nInterface {
-      vueI18n: VueI18n.I18nOptions
-      strategy: "prefix_except_default" | "prefix" | "prefix_and_default"
-      lazy: boolean
-      langDir: string | null
-      rootRedirect: string | null
-      detectBrowserLanguage: Options.DetectBrowserLanguageInterface
-      seo: boolean
-      baseUrl: string
-      vuex: Options.Vuex
-      parsePages: boolean
+    interface AllOptionsInterface extends NuxtI18nInterface {
+      baseUrl?: string
+      detectBrowserLanguage?: DetectBrowserLanguageInterface
+      encodePaths?: boolean
+      langDir?: string | null
+      lazy?: boolean
       // see https://goo.gl/NbzX3f
-      pages: {
+      pages?: {
         [key: string]: boolean | {
           [key: string]: boolean | string
         }
       }
-      encodePaths: boolean
+      parsePages?: boolean
+      rootRedirect?: string | null
+      routesNameSeparator?: string
+      seo?: boolean
+      strategy?: "no_prefix" | "prefix_except_default" | "prefix" | "prefix_and_default"
+      vueI18n?: VueI18n.I18nOptions
+      vuex?: VuexInterface
     }
   }
 }
@@ -102,7 +100,7 @@ declare module "vue/types/vue" {
 declare module "vue-i18n" {
   // the VueI18n class expands here: https://goo.gl/Xtp9EG
   // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
-  interface IVueI18n extends NuxtVueI18n.Options.VueI18nInterface {
+  interface IVueI18n extends NuxtVueI18n.Options.NuxtI18nInterface {
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => undefined
     setLocale: (locale: string) => Promise<undefined>
