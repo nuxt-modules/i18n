@@ -35,7 +35,8 @@
   },
   "eslintIgnore": [
     "src/templates/*.*",
-    "src/plugins/*.*"
+    "src/plugins/*.*",
+    "**/*.d.ts"
   ],
   "files": [
     "src",
