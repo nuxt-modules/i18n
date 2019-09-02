@@ -51,9 +51,6 @@ declare namespace NuxtVueI18n {
       routesNameSeparator: string
       beforeLanguageSwitch: () => any
       onLanguageSwitched: () => any
-      getLocaleCookie: () => string | undefined
-      setLocaleCookie: (locale: string) => undefined
-      setLocale: (locale: string) => Promise<undefined>
     }
 
     // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
@@ -106,6 +103,8 @@ declare module "vue-i18n" {
   // the VueI18n class expands here: https://goo.gl/Xtp9EG
   // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
   interface IVueI18n extends NuxtVueI18n.Options.VueI18nInterface {
-
+    getLocaleCookie: () => string | undefined
+    setLocaleCookie: (locale: string) => undefined
+    setLocale: (locale: string) => Promise<undefined>
   }
 }
