@@ -106,3 +106,12 @@ declare module "vue-i18n" {
     setLocale: (locale: string) => Promise<undefined>
   }
 }
+
+/**
+ * Extends types in Nuxt
+ */
+declare module '@nuxt/types/app' {
+  interface NuxtAppOptions extends NuxtVueI18n.Options.NuxtI18nInterface {
+    readonly i18n: VueI18n & IVueI18n
+  }
+}
