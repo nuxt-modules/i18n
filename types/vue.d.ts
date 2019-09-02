@@ -1,7 +1,8 @@
+import Vue from 'vue'
 import { RawLocation } from 'vue-router'
 import VueI18n, { IVueI18n } from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
-import { NuxtVueI18n, NuxtI18nSeo } from './nuxt-i18n'
+import { NuxtI18nComponentOptions, NuxtVueI18n, NuxtI18nSeo } from './nuxt-i18n'
 
 /**
  * Extends types in vue-i18n
@@ -27,6 +28,12 @@ declare module 'vue/types/vue' {
     $nuxtI18nSeo(): NuxtI18nSeo
     // PHPStorm without this indicates that "$i18n" was not found.
     readonly $i18n: VueI18n & IVueI18n
+  }
+}
+
+declare module 'vue/types/options' {
+  interface ComponentOptions<V extends Vue> {
+    nuxtI18n?: NuxtI18nComponentOptions | false
   }
 }
 

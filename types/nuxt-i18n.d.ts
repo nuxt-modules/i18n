@@ -77,3 +77,10 @@ export interface NuxtI18nSeo {
   link?: MetaInfo['link']
   meta?: MetaInfo['meta']
 }
+
+export interface NuxtI18nComponentOptions {
+  paths?: {
+    [key: string]: string | false
+  }
+  locales?: Array<string>
+}
