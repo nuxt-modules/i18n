@@ -90,7 +90,6 @@ export default async (context) => {
         return cookies[cookieKey]
       }
     }
-    return null
   }
 
   const setLocaleCookie = locale => {
