@@ -1,6 +1,7 @@
 import Vue from "vue";
 import { RawLocation } from "vue-router";
 import VueI18n, { IVueI18n } from "vue-i18n";
+import { MetaInfo } from 'vue-meta'
 
 /**
  * The nuxt-i18n types namespace
@@ -78,22 +79,10 @@ declare namespace NuxtVueI18n {
   }
 }
 
-interface NuxtI18nSeo {
-  htmlAttrs?: {
-    lang?: string
-  }
-  link?: {
-    hid: string,
-    rel: string,
-    href: string,
-    hreflang: string
-  }[]
-  meta?: {
-    hid: string,
-    name: string,
-    property: string,
-    content: string
-  }[]
+export interface NuxtI18nSeo {
+  htmlAttrs?: MetaInfo['htmlAttrs']
+  link?: MetaInfo['link']
+  meta?: MetaInfo['meta']
 }
 
 /**
