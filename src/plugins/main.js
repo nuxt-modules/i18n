@@ -185,11 +185,6 @@ export default async (context) => {
   // Current route. Updated from middleware also.
   app.i18n.__route = route
 
-  // Extension of Vue
-  if (!app.$t) {
-    app.$t = app.i18n.t
-  }
-
   // Inject seo function
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
 
