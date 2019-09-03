@@ -20,3 +20,9 @@ path = vm.switchLocalePath(locale)
 // getRouteBaseName
 
 const routeBaseName: string = vm.getRouteBaseName(vm.$route)
+
+// $i18n
+
+const cookieLocale: string | undefined = vm.$i18n.getLocaleCookie()
+vm.$i18n.setLocaleCookie(locale)
+vm.$i18n.setLocale(locale)
