@@ -3,6 +3,7 @@ node_modules
 .idea
 *.log*
 .nuxt
+.nuxt-generate
 .vscode
 .DS_STORE
 coverage
