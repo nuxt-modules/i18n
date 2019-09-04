@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.1...v6.1.2) (2019-09-04)
+
+
+### Bug Fixes
+
+* issue with locale not being updated when cookie not stored ([999ac4b](https://github.com/nuxt-community/nuxt-i18n/commit/999ac4b))
+* multiple redirects on switching to another locale ([14ceeb3](https://github.com/nuxt-community/nuxt-i18n/commit/14ceeb3))
+* **types:** add type for Nuxt's `context.app.i18n` ([d5afd8b](https://github.com/nuxt-community/nuxt-i18n/commit/d5afd8b))
+* **types:** add types for in-component options ([e2e3bca](https://github.com/nuxt-community/nuxt-i18n/commit/e2e3bca))
+* **types:** export `NuxtVueI18n` namespace to allow to annotate configuration ([906a776](https://github.com/nuxt-community/nuxt-i18n/commit/906a776))
+* **types:** fixed various types for NuxtI18n configuration ([6f6c235](https://github.com/nuxt-community/nuxt-i18n/commit/6f6c235))
+* **types:** move getLocaleCookie/setLocaleCookie/SetLocale to proper interface ([7d3eceb](https://github.com/nuxt-community/nuxt-i18n/commit/7d3eceb))
+* **types:** remove `null` result from `getLocaleCookie` to simplify types ([df5ac8a](https://github.com/nuxt-community/nuxt-i18n/commit/df5ac8a))
+* **types:** update NuxtI18nSeo interface to use VueMeta types ([3a4ada6](https://github.com/nuxt-community/nuxt-i18n/commit/3a4ada6))
+
+### Notes
+
+* `app.$t` API was removed ([ca198e5](https://github.com/nuxt-community/nuxt-i18n/commit/ca198e5)) - This is not a breaking change since this API has never worked according to my understanding.
+* `getLocaleCookie` will no longer return `null` value in case cookie is missing. Instead it will consistently return `undefined`. This is unlikely to affect anyone unless one was checking for `null` specifically which would not be a correct thing to do even before.
+
 ### [6.1.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.0...v6.1.1) (2019-08-28)
 
 
