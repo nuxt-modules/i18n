@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.1.3](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.2...v6.1.3) (2019-09-04)
+
+
+### Bug Fixes
+
+* make `parsePages` compatible with typescript decorators ([5a3db3b](https://github.com/nuxt-community/nuxt-i18n/commit/5a3db3b)), closes [#408](https://github.com/nuxt-community/nuxt-i18n/issues/408) [#76](https://github.com/nuxt-community/nuxt-i18n/issues/76)
+
 ### [6.1.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.1...v6.1.2) (2019-09-04)
 
 
