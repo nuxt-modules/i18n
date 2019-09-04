@@ -14,12 +14,14 @@ const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
 const STRATEGY = '<%= options.strategy %>'
 const lazy = <%= options.lazy %>
 const vuex = <%= JSON.stringify(options.vuex) %>
+// Helpers
+const getLocaleCodes = <%= options.getLocaleCodes %>
+const localeCodes = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
 
 export default async (context) => {
-  const { app, route, store, req, res, redirect } = context;
+  const { app, route, store, req, res, redirect } = context
 
   // Helpers
-  const getLocaleCodes = <%= options.getLocaleCodes %>
   const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
   const getHostname = <%= options.getHostname %>
   const getForwarded = <%= options.getForwarded %>
@@ -84,7 +86,7 @@ export default async (context) => {
   const getLocaleCookie = () => {
     if (useCookie) {
       if (process.client) {
-        return JsCookie.get(cookieKey);
+        return JsCookie.get(cookieKey)
       } else if (req && typeof req.headers.cookie !== 'undefined') {
         const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
         return cookies[cookieKey]
@@ -94,7 +96,7 @@ export default async (context) => {
 
   const setLocaleCookie = locale => {
     if (!useCookie) {
-      return;
+      return
     }
     const date = new Date()
     if (process.client) {
@@ -210,4 +212,49 @@ export default async (context) => {
   }
 
   await loadAndSetLocale(locale, { initialSetup: true })
+
+  app.i18n.__detectBrowserLanguage = async route => {
+    const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
+
+    if (detectBrowserLanguage) {
+      let browserLocale
+
+      if (useCookie && (browserLocale = getLocaleCookie()) && browserLocale !== 1 && browserLocale !== '1') {
+        // Get preferred language from cookie if present and enabled
+        // Exclude 1 for backwards compatibility and fallback when fallbackLocale is empty
+      } else if (process.client && typeof navigator !== 'undefined' && navigator.language) {
+        // Get browser language either from navigator if running on client side, or from the headers
+        browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
+      } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
+        browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
+      }
+
+      if (browserLocale) {
+        // Handle cookie option to prevent multiple redirections
+        if (!useCookie || alwaysRedirect || !getLocaleCookie()) {
+          let redirectToLocale = fallbackLocale
+
+          // Use browserLocale if we support it, otherwise use fallbackLocale
+          if (localeCodes.includes(browserLocale)) {
+            redirectToLocale = browserLocale
+          }
+
+          if (redirectToLocale && localeCodes.includes(redirectToLocale)) {
+            if (redirectToLocale !== app.i18n.locale) {
+              // We switch the locale before redirect to prevent loops
+              await app.i18n.setLocale(redirectToLocale)
+            } else if (useCookie && !getLocaleCookie()) {
+              app.i18n.setLocaleCookie(redirectToLocale)
+            }
+          }
+
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  await app.i18n.__detectBrowserLanguage(route)
 }
