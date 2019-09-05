@@ -18,12 +18,7 @@ const {
 } = require('./helpers/constants')
 
 const {
-  getLocaleCodes,
-  getLocaleFromRoute,
-  getForwarded,
-  getHostname,
-  getLocaleDomain,
-  syncVuex
+  getLocaleCodes
 } = require('./helpers/utils')
 
 module.exports = function (userOptions) {
@@ -54,12 +49,7 @@ module.exports = function (userOptions) {
     LOCALE_FILE_KEY,
     STRATEGIES,
     COMPONENT_OPTIONS_KEY,
-    getLocaleCodes,
-    getLocaleFromRoute,
-    getForwarded,
-    getHostname,
-    getLocaleDomain,
-    syncVuex
+    localeCodes: getLocaleCodes(options.locales)
   }
 
   // Generate localized routes

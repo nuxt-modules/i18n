@@ -40,7 +40,7 @@ exports.extractComponentOptions = (path) => {
       }
     })
   } catch (error) {
-    // eslint-disable-next-line
+    // eslint-disable-next-line no-console
     console.warn('[' + MODULE_NAME + `] Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${path}".`)
   }
 
