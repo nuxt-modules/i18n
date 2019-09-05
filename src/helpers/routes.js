@@ -67,7 +67,7 @@ exports.makeRoutes = (baseRoutes, {
 
       // Skip if locale not in module's configuration
       if (locales.indexOf(locale) === -1) {
-        // eslint-disable-next-line
+        // eslint-disable-next-line no-console
         console.warn(`[${MODULE_NAME}] Can't generate localized route for route '${name}' with locale '${locale}' because locale is not in the module's configuration`)
         continue
       }

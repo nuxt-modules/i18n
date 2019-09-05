@@ -1,21 +1,25 @@
 import './middleware'
 import Vue from 'vue'
-
-const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
-const STRATEGY = '<%= options.strategy %>'
-const vuex = <%= JSON.stringify(options.vuex) %>
-const routesNameSeparator = '<%= options.routesNameSeparator %>'
-const defaultLocale = '<%= options.defaultLocale %>'
+import {
+  defaultLocale,
+  defaultLocaleRouteNameSuffix,
+  LOCALE_CODE_KEY,
+  LOCALE_DOMAIN_KEY,
+  MODULE_NAME,
+  routesNameSeparator,
+  STRATEGIES,
+  strategy,
+  vuex
+} from './options'
 
 function localePathFactory (i18nPath, routerPath) {
-  const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
-
   return function localePath (route, locale) {
     // Abort if no route or no locale
     if (!route) return
 
-    if (STRATEGY === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
-      console.warn('[<%= options.MODULE_NAME %>] Passing non-current locale to localePath is unsupported when using no_prefix strategy')
+    if (strategy === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
+      // eslint-disable-next-line no-console
+      console.warn(`[${MODULE_NAME}] Passing non-current locale to localePath is unsupported when using no_prefix strategy`)
     }
 
     locale = locale || this[i18nPath].locale
@@ -28,10 +32,10 @@ function localePathFactory (i18nPath, routerPath) {
     }
 
     // Build localized route options
-    let name = route.name + (STRATEGY === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+    let name = route.name + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
 
     // Match route without prefix for default locale
-    if (locale === defaultLocale && STRATEGY === STRATEGIES.PREFIX_AND_DEFAULT) {
+    if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
       name += routesNameSeparator + defaultLocaleRouteNameSuffix
     }
 
@@ -49,14 +53,11 @@ function localePathFactory (i18nPath, routerPath) {
   }
 }
 
-
 function switchLocalePathFactory (i18nPath) {
-  const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
-  const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-
   return function switchLocalePath (locale) {
-    if (STRATEGY === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
-      console.warn('[<%= options.MODULE_NAME %>] Passing non-current locale to switchLocalePath is unsupported when using no_prefix strategy')
+    if (strategy === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
+      // eslint-disable-next-line no-console
+      console.warn(`[${MODULE_NAME}] Passing non-current locale to switchLocalePath is unsupported when using no_prefix strategy`)
     }
 
     const name = this.getRouteBaseName()
@@ -66,17 +67,15 @@ function switchLocalePathFactory (i18nPath) {
 
     const { params, ...routeCopy } = this.$route
     let langSwitchParams = {}
-    <% if (options.vuex) { %>
-    if (this.$store) {
+    if (vuex && this.$store) {
       langSwitchParams = this.$store.getters[`${vuex.moduleName}/localeRouteParams`](locale)
     }
-    <% } %>
     const baseRoute = Object.assign({}, routeCopy, {
       name,
       params: {
         ...params,
         ...langSwitchParams,
-        '0': params.pathMatch
+        0: params.pathMatch
       }
     })
     let path = this.localePath(baseRoute, locale)
@@ -87,7 +86,7 @@ function switchLocalePathFactory (i18nPath) {
       if (lang && lang[LOCALE_DOMAIN_KEY]) {
         let protocol
         if (process.server) {
-          const isHTTPS = require('is-https');
+          const isHTTPS = require('is-https')
           const { req } = this.$options._parentVnode.ssrContext
           protocol = isHTTPS(req) ? 'https' : 'http'
         } else {
@@ -95,7 +94,8 @@ function switchLocalePathFactory (i18nPath) {
         }
         path = protocol + '://' + lang[LOCALE_DOMAIN_KEY] + path
       } else {
-        console.warn('[<%= options.MODULE_NAME %>] Could not find domain name for locale ' + locale)
+        // eslint-disable-next-line no-console
+        console.warn(`[${MODULE_NAME}] Could not find domain name for locale ${locale}`)
       }
     }
     return path
@@ -103,11 +103,11 @@ function switchLocalePathFactory (i18nPath) {
 }
 
 function getRouteBaseNameFactory (contextRoute) {
-
-  const routeGetter  = contextRoute ? route => route || contextRoute :
-  function (route) {
+  function givenOrCurrent (route) {
     return route || this.$route
   }
+
+  const routeGetter = contextRoute ? route => route || contextRoute : givenOrCurrent
 
   return function getRouteBaseName (route) {
     route = routeGetter.call(this, route)
@@ -119,7 +119,7 @@ function getRouteBaseNameFactory (contextRoute) {
 }
 
 const plugin = {
-  install(Vue) {
+  install (Vue) {
     Vue.mixin({
       methods: {
         localePath: localePathFactory('$i18n', '$router'),

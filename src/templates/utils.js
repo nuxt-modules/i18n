@@ -1,11 +1,13 @@
-const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
-const LOCALE_FILE_KEY = '<%= options.LOCALE_FILE_KEY %>'
-const getLocaleCodes = <%= options.getLocaleCodes %>
-const locales = <%= JSON.stringify(options.locales) %>
-const localeCodes = getLocaleCodes(locales)
-
-const isObject = value => value && !Array.isArray(value) && typeof value === 'object'
+import {
+  defaultLocaleRouteNameSuffix,
+  localeCodes,
+  LOCALE_CODE_KEY,
+  LOCALE_DOMAIN_KEY,
+  LOCALE_FILE_KEY,
+  MODULE_NAME,
+  routesNameSeparator,
+  vuex
+} from './options'
 
 /**
  * Asynchronously load messages from translation files
@@ -13,7 +15,7 @@ const isObject = value => value && !Array.isArray(value) && typeof value === 'ob
  * @param  {String}   locale  Language code to load
  */
 export async function loadLanguageAsync (context, locale) {
-  const { app } = context;
+  const { app } = context
 
   if (!app.i18n.loadedLanguages) {
     app.i18n.loadedLanguages = []
@@ -24,7 +26,8 @@ export async function loadLanguageAsync (context, locale) {
     if (langOptions) {
       const file = langOptions[LOCALE_FILE_KEY]
       if (file) {
-        <% if (options.langDir) { %>
+        // Hiding template directives from eslint so that parsing doesn't break.
+        /* <% if (options.langDir) { %> */
         try {
           const module = await import(/* webpackChunkName: "lang-[request]" */ '~/<%= options.langDir %>' + file)
           const messages = module.default ? module.default : module
@@ -32,15 +35,19 @@ export async function loadLanguageAsync (context, locale) {
           app.i18n.setLocaleMessage(locale, result)
           app.i18n.loadedLanguages.push(locale)
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error(error)
         }
-        <% } %>
+        /* <% } %> */
       } else {
-        console.warn('[<%= options.MODULE_NAME %>] Could not find lang file for locale ' + locale)
+        // eslint-disable-next-line no-console
+        console.warn(`[${MODULE_NAME}] Could not find lang file for locale ${locale}`)
       }
     }
   }
 }
+
+const isObject = value => value && !Array.isArray(value) && typeof value === 'object'
 
 /**
  * Validate setRouteParams action's payload
@@ -48,14 +55,98 @@ export async function loadLanguageAsync (context, locale) {
  */
 export const validateRouteParams = routeParams => {
   if (!isObject(routeParams)) {
-    console.warn(`[<%= options.MODULE_NAME %>] Route params should be an object`)
+    // eslint-disable-next-line no-console
+    console.warn(`[${MODULE_NAME}] Route params should be an object`)
     return
   }
   Object.entries(routeParams).forEach(([key, value]) => {
     if (!localeCodes.includes(key)) {
-      console.warn(`[<%= options.MODULE_NAME %>] Trying to set route params for key ${key} which is not a valid locale`)
+    // eslint-disable-next-line no-console
+      console.warn(`[${MODULE_NAME}] Trying to set route params for key ${key} which is not a valid locale`)
     } else if (!isObject(value)) {
-      console.warn(`[<%= options.MODULE_NAME %>] Trying to set route params for locale ${key} with a non-object value`)
+    // eslint-disable-next-line no-console
+      console.warn(`[${MODULE_NAME}] Trying to set route params for locale ${key} with a non-object value`)
     }
   })
+}
+
+/**
+ * Get x-forwarded-host
+ * @param  {object} req
+ * @return {String} x-forwarded-host
+ */
+const getForwarded = req => (
+  process.client ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host)
+)
+
+/**
+ * Get hostname
+ * @param  {object} req
+ * @return {String} Hostname
+ */
+const getHostname = req => (
+  process.client ? window.location.href.split('/')[2] : req.headers.host
+)
+
+/**
+ * Get locale code that corresponds to current hostname
+ * @param  {VueI18n} nuxtI18n Instance of VueI18n
+ * @param  {object} req Request object
+ * @return {String} Locade code found if any
+ */
+export const getLocaleDomain = (nuxtI18n, req) => {
+  const hostname = nuxtI18n.forwardedHost ? getForwarded(req) : getHostname(req)
+  if (hostname) {
+    const localeDomain = nuxtI18n.locales.find(l => l[LOCALE_DOMAIN_KEY] === hostname)
+    if (localeDomain) {
+      return localeDomain[LOCALE_CODE_KEY]
+    }
+  }
+  return null
+}
+
+/**
+ * Extract locale code from given route:
+ * - If route has a name, try to extract locale from it
+ * - Otherwise, fall back to using the routes'path
+ * @param  {Object} route               Route
+ * @return {String}                     Locale code found if any
+ */
+export const getLocaleFromRoute = (route = {}) => {
+  const localesPattern = `(${localeCodes.join('|')})`
+  const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
+  // Extract from route name
+  if (route.name) {
+    const regexp = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
+    const matches = route.name.match(regexp)
+    if (matches && matches.length > 1) {
+      return matches[1]
+    }
+  } else if (route.path) {
+    // Extract from path
+    const regexp = new RegExp(`^/${localesPattern}/`, 'i')
+    const matches = route.path.match(regexp)
+    if (matches && matches.length > 1) {
+      return matches[1]
+    }
+  }
+  return null
+}
+
+/**
+ * Dispatch store module actions to keep it in sync with app's locale data
+ * @param  {Store} store     Vuex store
+ * @param  {String} locale   Current locale
+ * @param  {Object} messages Current messages
+ * @return {Promise(void)}
+ */
+export const syncVuex = async (store, locale = null, messages = null) => {
+  if (vuex && store) {
+    if (locale !== null && vuex.syncLocale) {
+      await store.dispatch(vuex.moduleName + '/setLocale', locale)
+    }
+    if (messages !== null && vuex.syncMessages) {
+      await store.dispatch(vuex.moduleName + '/setMessages', messages)
+    }
+  }
 }

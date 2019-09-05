@@ -1,11 +1,13 @@
 import VueMeta from 'vue-meta'
-
-const COMPONENT_OPTIONS_KEY = '<%= options.COMPONENT_OPTIONS_KEY %>'
-const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-const LOCALE_ISO_KEY = '<%= options.LOCALE_ISO_KEY %>'
-const BASE_URL = '<%= options.baseUrl %>'
-const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
-const STRATEGY = '<%= options.strategy %>'
+import {
+  baseUrl,
+  COMPONENT_OPTIONS_KEY,
+  LOCALE_CODE_KEY,
+  LOCALE_ISO_KEY,
+  MODULE_NAME,
+  STRATEGIES,
+  strategy
+} from './options'
 
 export const nuxtI18nSeo = function () {
   if (
@@ -16,7 +18,7 @@ export const nuxtI18nSeo = function () {
     this.$options[COMPONENT_OPTIONS_KEY] === false ||
     (this.$options[COMPONENT_OPTIONS_KEY] && this.$options[COMPONENT_OPTIONS_KEY].seo === false)
   ) {
-    return {};
+    return {}
   }
   // Prepare html lang attribute
   const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
@@ -27,18 +29,19 @@ export const nuxtI18nSeo = function () {
 
   const link = []
   // hreflang tags
-  if (STRATEGY !== STRATEGIES.NO_PREFIX) {
+  if (strategy !== STRATEGIES.NO_PREFIX) {
     link.push(...this.$i18n.locales
       .map(locale => {
         if (locale[LOCALE_ISO_KEY]) {
           return {
             hid: 'alternate-hreflang-' + locale[LOCALE_ISO_KEY],
             rel: 'alternate',
-            href: BASE_URL + this.switchLocalePath(locale.code),
+            href: baseUrl + this.switchLocalePath(locale.code),
             hreflang: locale[LOCALE_ISO_KEY]
           }
         } else {
-          console.warn('[<%= options.MODULE_NAME %>] Locale ISO code is required to generate alternate link')
+          // eslint-disable-next-line no-console
+          console.warn(`[${MODULE_NAME}] Locale ISO code is required to generate alternate link`)
           return null
         }
       })
@@ -46,14 +49,14 @@ export const nuxtI18nSeo = function () {
   }
 
   // canonical links
-  if (STRATEGY === STRATEGIES.PREFIX_AND_DEFAULT) {
+  if (strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
     const canonicalPath = this.switchLocalePath(currentLocaleData[LOCALE_CODE_KEY])
     if (canonicalPath && canonicalPath !== this.$route.path) {
       // Current page is not the canonical one -- add a canonical link
       link.push({
         hid: 'canonical-lang-' + currentLocaleData[LOCALE_CODE_KEY],
         rel: 'canonical',
-        href: BASE_URL + canonicalPath
+        href: baseUrl + canonicalPath
       })
     }
   }
@@ -78,7 +81,7 @@ export const nuxtI18nSeo = function () {
         property: 'og:locale:alternate',
         content: locale[LOCALE_ISO_KEY].replace(/-/g, '_')
       }))
-  );
+  )
 
   return {
     htmlAttrs,

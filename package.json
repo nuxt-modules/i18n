@@ -35,8 +35,7 @@
     "docs:build": "vuepress build docs"
   },
   "eslintIgnore": [
-    "src/templates/*.*",
-    "src/plugins/*.*",
+    "src/templates/options.js",
     "**/*.d.ts"
   ],
   "files": [

@@ -3,84 +3,82 @@ import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
-import { validateRouteParams } from './utils'
+import {
+  beforeLanguageSwitch,
+  defaultLocale,
+  detectBrowserLanguage,
+  differentDomains,
+  forwardedHost,
+  lazy,
+  localeCodes,
+  locales,
+  onLanguageSwitched,
+  STRATEGIES,
+  strategy,
+  vueI18n,
+  vuex
+} from './options'
+import { getLocaleDomain, getLocaleFromRoute, syncVuex, validateRouteParams } from './utils'
 
 Vue.use(VueI18n)
-
-// Options
-const LOCALE_CODE_KEY = '<%= options.LOCALE_CODE_KEY %>'
-const LOCALE_DOMAIN_KEY = '<%= options.LOCALE_DOMAIN_KEY %>'
-const STRATEGIES = <%= JSON.stringify(options.STRATEGIES) %>
-const STRATEGY = '<%= options.strategy %>'
-const lazy = <%= options.lazy %>
-const vuex = <%= JSON.stringify(options.vuex) %>
-// Helpers
-const getLocaleCodes = <%= options.getLocaleCodes %>
-const localeCodes = getLocaleCodes(<%= JSON.stringify(options.locales) %>)
 
 export default async (context) => {
   const { app, route, store, req, res, redirect } = context
 
-  // Helpers
-  const getLocaleFromRoute = <%= options.getLocaleFromRoute %>
-  const getHostname = <%= options.getHostname %>
-  const getForwarded = <%= options.getForwarded %>
-  const getLocaleDomain = <%= options.getLocaleDomain %>
-  const syncVuex = <%= options.syncVuex %>
-
-  <% if (options.vuex) { %>
-  // Register Vuex module
-  if (store) {
+  if (vuex && store) {
+    // Register Vuex module
     store.registerModule(vuex.moduleName, {
       namespaced: true,
       state: () => ({
-        <% if (options.vuex.syncLocale) { %>locale: '',<% } %>
-        <% if (options.vuex.syncMessages) { %>messages: {},<% } %>
-        <% if (options.vuex.syncRouteParams) { %>routeParams: {}<% } %>
+        ...(vuex.syncLocale ? { locale: '' } : {}),
+        ...(vuex.syncMessages ? { messages: {} } : {}),
+        ...(vuex.syncRouteParams ? { routeParams: {} } : {})
       }),
       actions: {
-        <% if (options.vuex.syncLocale) { %>
-        setLocale ({ commit }, locale) {
-          commit('setLocale', locale)
-        },
-        <% } if (options.vuex.syncMessages) { %>
-        setMessages ({ commit }, messages) {
-          commit('setMessages', messages)
-        },
-        <% } if (options.vuex.syncRouteParams) { %>
-        setRouteParams ({ commit }, params) {
-          if (process.env.NODE_ENV === 'development') {
-            validateRouteParams(params)
+        ...(vuex.syncLocale ? {
+          setLocale ({ commit }, locale) {
+            commit('setLocale', locale)
           }
-          commit('setRouteParams', params)
-        }
-        <% } %>
+        } : {}),
+        ...(vuex.syncMessages ? {
+          setMessages ({ commit }, messages) {
+            commit('setMessages', messages)
+          }
+        } : {}),
+        ...(vuex.syncRouteParams ? {
+          setRouteParams ({ commit }, params) {
+            if (process.env.NODE_ENV === 'development') {
+              validateRouteParams(params)
+            }
+            commit('setRouteParams', params)
+          }
+        } : {})
       },
       mutations: {
-        <% if (options.vuex.syncLocale) { %>
+        ...(vuex.syncLocale ? {
           setLocale (state, locale) {
-          state.locale = locale
-        },
-        <% } if (options.vuex.syncMessages) { %>
-        setMessages (state, messages) {
-          state.messages = messages
-        },
-        <% } if (options.vuex.syncRouteParams) { %>
-        setRouteParams (state, params) {
-          state.routeParams = params
-        }
-        <% } %>
+            state.locale = locale
+          }
+        } : {}),
+        ...(vuex.syncMessages ? {
+          setMessages (state, messages) {
+            state.messages = messages
+          }
+        } : {}),
+        ...(vuex.syncRouteParams ? {
+          setRouteParams (state, params) {
+            state.routeParams = params
+          }
+        } : {})
       },
       getters: {
-        <% if (options.vuex.syncRouteParams) { %>
-        localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
-        <% } %>
+        ...(vuex.syncRouteParams ? {
+          localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
+        } : {})
       }
     }, { preserveState: !!store.state[vuex.moduleName] })
   }
-  <% } %>
 
-  const detectBrowserLanguage = <%= JSON.stringify(options.detectBrowserLanguage) %>
   const { useCookie, cookieKey } = detectBrowserLanguage
 
   const getLocaleCookie = () => {
@@ -106,7 +104,7 @@ export default async (context) => {
       })
     } else if (res) {
       let headers = res.getHeader('Set-Cookie') || []
-      if (typeof headers == 'string') {
+      if (typeof headers === 'string') {
         headers = [headers]
       }
 
@@ -159,9 +157,9 @@ export default async (context) => {
       app.i18n.onLanguageSwitched(oldLocale, newLocale)
     }
 
-    await syncVuex(newLocale, app.i18n.getLocaleMessage(newLocale))
+    await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
 
-    if (!initialSetup && STRATEGY !== STRATEGIES.NO_PREFIX) {
+    if (!initialSetup && strategy !== STRATEGIES.NO_PREFIX) {
       const route = app.i18n.__route
       const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
       const redirectPath = app.localePath(Object.assign({}, route, { name: routeName }), newLocale)
@@ -173,13 +171,13 @@ export default async (context) => {
   }
 
   // Set instance options
-  app.i18n = new VueI18n(<%= JSON.stringify(options.vueI18n) %>)
-  app.i18n.locales = <%= JSON.stringify(options.locales) %>
-  app.i18n.defaultLocale = '<%= options.defaultLocale %>'
-  app.i18n.differentDomains = <%= options.differentDomains %>
-  app.i18n.forwardedHost = <%= options.forwardedHost %>
-  app.i18n.beforeLanguageSwitch = <%= options.beforeLanguageSwitch %>
-  app.i18n.onLanguageSwitched = <%= options.onLanguageSwitched %>
+  app.i18n = new VueI18n(vueI18n)
+  app.i18n.locales = locales
+  app.i18n.defaultLocale = defaultLocale
+  app.i18n.differentDomains = differentDomains
+  app.i18n.forwardedHost = forwardedHost
+  app.i18n.beforeLanguageSwitch = beforeLanguageSwitch
+  app.i18n.onLanguageSwitched = onLanguageSwitched
   app.i18n.setLocaleCookie = setLocaleCookie
   app.i18n.getLocaleCookie = getLocaleCookie
   app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
@@ -199,24 +197,21 @@ export default async (context) => {
   let locale = app.i18n.defaultLocale || null
 
   if (app.i18n.differentDomains) {
-    const domainLocale = getLocaleDomain()
-    locale = domainLocale ? domainLocale : locale
-  } else if (STRATEGY !== STRATEGIES.NO_PREFIX) {
-    const routesNameSeparator = '<%= options.routesNameSeparator %>'
-    const defaultLocaleRouteNameSuffix = '<%= options.defaultLocaleRouteNameSuffix %>'
-
-    const routeLocale = getLocaleFromRoute(route, routesNameSeparator, defaultLocaleRouteNameSuffix, app.i18n.locales)
-    locale = routeLocale ? routeLocale : locale
+    const domainLocale = getLocaleDomain(app.i18n, req)
+    locale = domainLocale || locale
+  } else if (strategy !== STRATEGIES.NO_PREFIX) {
+    const routeLocale = getLocaleFromRoute(route)
+    locale = routeLocale || locale
   } else if (useCookie) {
-      locale = getLocaleCookie() || locale
+    locale = getLocaleCookie() || locale
   }
 
   await loadAndSetLocale(locale, { initialSetup: true })
 
   app.i18n.__detectBrowserLanguage = async route => {
-    const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
-
     if (detectBrowserLanguage) {
+      const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
+
       let browserLocale
 
       if (useCookie && (browserLocale = getLocaleCookie()) && browserLocale !== 1 && browserLocale !== '1') {
