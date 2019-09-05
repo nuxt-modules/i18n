@@ -17,12 +17,14 @@ function localePathFactory (i18nPath, routerPath) {
     // Abort if no route or no locale
     if (!route) return
 
-    if (strategy === STRATEGIES.NO_PREFIX && locale && locale !== this[i18nPath].locale) {
+    const i18n = this[i18nPath]
+
+    if (strategy === STRATEGIES.NO_PREFIX && locale && locale !== i18n.locale) {
       // eslint-disable-next-line no-console
       console.warn(`[${MODULE_NAME}] Passing non-current locale to localePath is unsupported when using no_prefix strategy`)
     }
 
-    locale = locale || this[i18nPath].locale
+    locale = locale || i18n.locale
 
     if (!locale) return
 
@@ -31,19 +33,38 @@ function localePathFactory (i18nPath, routerPath) {
       route = { name: route }
     }
 
-    // Build localized route options
-    let name = route.name + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+    const localizedRoute = Object.assign({}, route)
 
-    // Match route without prefix for default locale
-    if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-      name += routesNameSeparator + defaultLocaleRouteNameSuffix
-    }
+    if (route.path && !route.name) {
+      // if route has a path defined but no name, resolve full route using the path
+      const isPrefixed = (
+        // don't prefix default locale
+        !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT) &&
+        // no prefix for any language
+        !(strategy === STRATEGIES.NO_REFIX) &&
+        // no prefix for different domains
+        !i18n.differentDomains
+      )
 
-    const localizedRoute = Object.assign({}, route, { name })
+      const path = (isPrefixed ? `/${locale}${route.path}` : route.path)
 
-    const { params } = localizedRoute
-    if (params && params['0'] === undefined && params.pathMatch) {
-      params['0'] = params.pathMatch
+      localizedRoute.path = path
+    } else {
+      // otherwise resolve route via the route name
+      // Build localized route options
+      let name = route.name + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+
+      // Match route without prefix for default locale
+      if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
+        name += routesNameSeparator + defaultLocaleRouteNameSuffix
+      }
+
+      localizedRoute.name = name
+
+      const { params } = localizedRoute
+      if (params && params['0'] === undefined && params.pathMatch) {
+        params['0'] = params.pathMatch
+      }
     }
 
     // Resolve localized route
