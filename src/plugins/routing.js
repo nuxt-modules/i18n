@@ -30,7 +30,7 @@ function localePathFactory (i18nPath, routerPath) {
     // if route has a path defined but no route name, generate path without route
     if (route.path && !route.name) {
       // prepend locale if current is not default and not using different domains
-      const appendPath = locale !== defaultLocale && !this[i18nPath].differentDomains
+      const appendPath = !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT) && !this[i18nPath].differentDomains
       const fullPath = (appendPath ? `/${locale}${route.path}` : route.path)
       return fullPath
     }
