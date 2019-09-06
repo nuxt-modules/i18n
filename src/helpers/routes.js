@@ -24,11 +24,14 @@ exports.makeRoutes = (baseRoutes, {
     const routes = []
     let pageOptions
 
+    // Skip route if it is a redirect.
+    if (route.redirect !== null) {
+      return route
+    }
+
     // Extract i18n options from page
     if (parsePages) {
-      if (route.component) {
-        pageOptions = extractComponentOptions(route.component)
-      }
+      pageOptions = extractComponentOptions(route.component)
     } else {
       pageOptions = getPageOptions(route, pages, locales, pagesDir, defaultLocale)
     }
