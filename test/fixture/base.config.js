@@ -43,7 +43,7 @@ module.exports = {
     }
   },
   router: {
-    extendRoutes(routes) {
+    extendRoutes (routes) {
       routes.push({ path: '/home', redirect: '/' })
     }
   }
