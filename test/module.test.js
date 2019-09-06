@@ -126,13 +126,31 @@ describe('basic', () => {
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
   })
+})
 
-  describe('redirect', () => {
-    test('localePath returns redirect path', async () => {
-      const window = await nuxt.renderAndGetWindow(url('/home'))
-      const newRoute = window.$nuxt.localePath('index')
-      expect(newRoute).toBe('/')
+describe('with redirect route', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      router: {
+        extendRoutes (routes) {
+          routes.push({ path: '/home', redirect: '/' })
+        }
+      }
+    }
+
+    afterAll(async () => {
+      await nuxt.close()
     })
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  test('localePath returns redirect path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/home'))
+    const newRoute = window.$nuxt.localePath('index')
+    expect(newRoute).toBe('/')
   })
 })
 
