@@ -140,11 +140,11 @@ describe('with redirect route', () => {
       }
     }
 
-    afterAll(async () => {
-      await nuxt.close()
-    })
-
     nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
   })
 
   test('localePath returns redirect path', async () => {
