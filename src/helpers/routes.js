@@ -25,7 +25,7 @@ exports.makeRoutes = (baseRoutes, {
     let pageOptions
 
     // Skip route if it is a redirect.
-    if (route.redirect !== null) {
+    if (route.redirect != null) {
       return route
     }
 
