@@ -126,6 +126,14 @@ describe('basic', () => {
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
   })
+
+  describe('redirect', () => {
+    test('localePath returns redirect path', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/home'))
+      const newRoute = window.$nuxt.localePath('index')
+      expect(newRoute).toBe('/')
+    })
+  })
 })
 
 describe('lazy loading', () => {

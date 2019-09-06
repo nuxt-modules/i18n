@@ -41,5 +41,10 @@ module.exports = {
       },
       fallbackLocale: 'en'
     }
+  },
+  router: {
+    extendRoutes(routes) {
+      routes.push({ path: '/home', redirect: '/' })
+    }
   }
 }
