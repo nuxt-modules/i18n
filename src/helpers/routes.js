@@ -25,7 +25,7 @@ exports.makeRoutes = (baseRoutes, {
     let pageOptions
 
     // Extract i18n options from page
-    if (parsePages) {
+    if (parsePages && route.component) {
       pageOptions = extractComponentOptions(route.component)
     } else {
       pageOptions = getPageOptions(route, pages, locales, pagesDir, defaultLocale)
