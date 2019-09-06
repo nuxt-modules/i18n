@@ -9,7 +9,15 @@ describe('basic', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = (await setup(loadConfig(__dirname, 'basic'))).nuxt
+    const override = {
+      router: {
+        extendRoutes (routes) {
+          routes.push({ path: '/about', redirect: '/about-us' })
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
   })
 
   afterAll(async () => {
@@ -124,6 +132,12 @@ describe('basic', () => {
   test('localePath returns correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/about-us')
+  })
+
+  test('redirects to existing route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/about'))
+    const newRoute = window.$nuxt.switchLocalePath()
     expect(newRoute).toBe('/about-us')
   })
 })

@@ -24,6 +24,11 @@ exports.makeRoutes = (baseRoutes, {
     const routes = []
     let pageOptions
 
+    // Skip route if it is only a redirect without a component.
+    if (route.redirect && !route.component) {
+      return route
+    }
+
     // Extract i18n options from page
     if (parsePages) {
       pageOptions = extractComponentOptions(route.component)
