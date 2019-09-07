@@ -200,6 +200,22 @@ describe('lazy loading', () => {
   })
 })
 
+describe('with empty configuration', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    nuxt = (await setup(loadConfig(__dirname, 'basic', { i18n: {} }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('does not remove all routes', async () => {
+    await nuxt.renderAndGetWindow(url('/fallback'))
+  })
+})
+
 describe('no_prefix strategy', () => {
   let nuxt
 

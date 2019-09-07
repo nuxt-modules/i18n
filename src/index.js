@@ -40,6 +40,8 @@ module.exports = function (userOptions) {
     return
   }
 
+  const localeCodes = getLocaleCodes(options.locales)
+
   const templatesOptions = {
     ...options,
     MODULE_NAME,
@@ -49,26 +51,28 @@ module.exports = function (userOptions) {
     LOCALE_FILE_KEY,
     STRATEGIES,
     COMPONENT_OPTIONS_KEY,
-    localeCodes: getLocaleCodes(options.locales)
+    localeCodes
   }
 
   // Generate localized routes
   const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
 
   if (options.strategy !== STRATEGIES.NO_PREFIX) {
-    this.extendRoutes((routes) => {
-      // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
-      // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
-      // not available (at runtime, when using nuxt-start).
-      const { makeRoutes } = require('./helpers/routes')
+    if (localeCodes.length) {
+      this.extendRoutes((routes) => {
+        // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
+        // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
+        // not available (at runtime, when using nuxt-start).
+        const { makeRoutes } = require('./helpers/routes')
 
-      const localizedRoutes = makeRoutes(routes, {
-        ...options,
-        pagesDir
+        const localizedRoutes = makeRoutes(routes, {
+          ...options,
+          pagesDir
+        })
+        routes.splice(0, routes.length)
+        routes.unshift(...localizedRoutes)
       })
-      routes.splice(0, routes.length)
-      routes.unshift(...localizedRoutes)
-    })
+    }
   } else if (options.differentDomains) {
     // eslint-disable-next-line no-console
     console.warn('[' + options.MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
