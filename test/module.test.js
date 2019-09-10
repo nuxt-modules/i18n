@@ -136,7 +136,6 @@ describe('with redirect route', () => {
       router: {
         extendRoutes (routes) {
           routes.push({ path: '/about', redirect: '/about-us' })
-          routes.push({ path: '/home', redirect: '' })
         }
       }
     }
@@ -152,12 +151,6 @@ describe('with redirect route', () => {
     const window = await nuxt.renderAndGetWindow(url('/about'))
     const newRoute = window.$nuxt.switchLocalePath('fr')
     expect(newRoute).toBe('/fr/a-propos')
-  })
-
-  test('an empty string redirect path goes to the localized root', async () => {
-    const window = await nuxt.renderAndGetWindow(url('/home'))
-    const newRoute = window.$nuxt.switchLocalePath('fr')
-    expect(newRoute).toBe('/fr')
   })
 })
 
