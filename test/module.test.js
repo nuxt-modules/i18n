@@ -9,7 +9,15 @@ describe('basic', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = (await setup(loadConfig(__dirname, 'basic'))).nuxt
+    const override = {
+      router: {
+        extendRoutes (routes) {
+          routes.push({ path: '/about', redirect: '/about-us' })
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
   })
 
   afterAll(async () => {
@@ -126,31 +134,11 @@ describe('basic', () => {
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
   })
-})
 
-describe('with redirect route', () => {
-  let nuxt
-
-  beforeAll(async () => {
-    const override = {
-      router: {
-        extendRoutes (routes) {
-          routes.push({ path: '/about', redirect: '/about-us' })
-        }
-      }
-    }
-
-    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
-  })
-
-  afterAll(async () => {
-    await nuxt.close()
-  })
-
-  test('switchLocalePath returns redirected path', async () => {
+  test('redirects to existing route', async () => {
     const window = await nuxt.renderAndGetWindow(url('/about'))
-    const newRoute = window.$nuxt.switchLocalePath('fr')
-    expect(newRoute).toBe('/fr/a-propos')
+    const newRoute = window.$nuxt.switchLocalePath()
+    expect(newRoute).toBe('/about-us')
   })
 })
 
