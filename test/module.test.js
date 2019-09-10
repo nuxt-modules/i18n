@@ -151,7 +151,7 @@ describe('with redirect route', () => {
   test('switchLocalePath returns redirected path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/about'))
     const newRoute = window.$nuxt.switchLocalePath('fr')
-    expect(newRoute).toBe('/fr/about-us')
+    expect(newRoute).toBe('/fr/a-propos')
   })
 
   test('an empty string redirect path goes to the localized root', async () => {
