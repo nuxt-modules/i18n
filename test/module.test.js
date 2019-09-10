@@ -148,17 +148,15 @@ describe('with redirect route', () => {
     await nuxt.close()
   })
 
-  test('localePath returns redirect path', async () => {
+  test('switchLocalePath returns redirected path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/about'))
-    window.$nuxt.switchLocalePath('fr')
-    const newRoute = window.$nuxt.localePath('about')
+    const newRoute = window.$nuxt.switchLocalePath('fr')
     expect(newRoute).toBe('/fr/about-us')
   })
 
-  test('an empty string redirect path goes to /fr', async () => {
+  test('an empty string redirect path goes to the localized root', async () => {
     const window = await nuxt.renderAndGetWindow(url('/home'))
-    window.$nuxt.switchLocalePath('fr')
-    const newRoute = window.$nuxt.localePath('index')
+    const newRoute = window.$nuxt.switchLocalePath('fr')
     expect(newRoute).toBe('/fr')
   })
 })
