@@ -135,7 +135,8 @@ describe('with redirect route', () => {
     const override = {
       router: {
         extendRoutes (routes) {
-          routes.push({ path: '/home', redirect: '/' })
+          routes.push({ path: '/about', redirect: '/about-us' })
+          routes.push({ path: '/home', redirect: '' })
         }
       }
     }
@@ -148,9 +149,17 @@ describe('with redirect route', () => {
   })
 
   test('localePath returns redirect path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/about'))
+    window.$nuxt.switchLocalePath('fr')
+    const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/fr/about-us')
+  })
+
+  test('an empty string redirect path goes to /fr', async () => {
     const window = await nuxt.renderAndGetWindow(url('/home'))
+    window.$nuxt.switchLocalePath('fr')
     const newRoute = window.$nuxt.localePath('index')
-    expect(newRoute).toBe('/')
+    expect(newRoute).toBe('/fr')
   })
 })
 
