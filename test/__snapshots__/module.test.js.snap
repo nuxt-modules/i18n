@@ -150,7 +150,7 @@ exports[`no_prefix strategy / contains EN text & link /about 1`] = `
   <body >
     <div data-server-rendered=\\"true\\" id=\\"__nuxt\\"><!----><div id=\\"__layout\\"><div>
   Homepage
-  <a href=\\"/about\\">About us</a></div></div></div>
+  <a href=\\"/about\\">About us</a> <div>locale: en</div></div></div></div>
   </body>
 </html>
 "

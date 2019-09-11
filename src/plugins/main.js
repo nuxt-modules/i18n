@@ -203,7 +203,11 @@ export default async (context) => {
     const routeLocale = getLocaleFromRoute(route)
     locale = routeLocale || locale
   } else if (useCookie) {
-    locale = getLocaleCookie() || locale
+    const localeCookie = getLocaleCookie()
+
+    if (localeCodes.includes(localeCookie)) {
+      locale = localeCookie
+    }
   }
 
   await loadAndSetLocale(locale, { initialSetup: true })

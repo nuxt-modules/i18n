@@ -140,6 +140,16 @@ describe('basic', () => {
     const newRoute = window.$nuxt.switchLocalePath()
     expect(newRoute).toBe('/about-us')
   })
+
+  test('fallbacks to default locale with invalid locale cookie', async () => {
+    const requestOptions = {
+      headers: {
+        Cookie: 'i18n_redirected=invalid'
+      }
+    }
+    const html = await get('/', requestOptions)
+    expect(cleanUpScripts(html)).toContain('locale: en')
+  })
 })
 
 describe('lazy loading', () => {
@@ -254,6 +264,16 @@ describe('no_prefix strategy', () => {
     expect(newRoute).toBe('/about')
 
     spy.mockRestore()
+  })
+
+  test('fallbacks to default locale with invalid locale cookie', async () => {
+    const requestOptions = {
+      headers: {
+        Cookie: 'i18n_redirected=invalid'
+      }
+    }
+    const html = await get('/', requestOptions)
+    expect(cleanUpScripts(html)).toContain('locale: en')
   })
 })
 
