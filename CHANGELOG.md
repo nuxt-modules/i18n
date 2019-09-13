@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.2.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.2.0...v6.2.1) (2019-09-13)
+
+
+### Bug Fixes
+
+* **types:** use correct module name for nuxt augmentation ([46f67ea](https://github.com/nuxt-community/nuxt-i18n/commit/46f67ea))
+
 ## [6.2.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.3...v6.2.0) (2019-09-13)
 
 
