@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.2.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.3...v6.2.0) (2019-09-13)
+
+
+### Bug Fixes
+
+* crash on no_prefix + invalid/tempered locale cookie ([4b56d84](https://github.com/nuxt-community/nuxt-i18n/commit/4b56d84))
+* Don't try to process routes with no component ([a53e32a](https://github.com/nuxt-community/nuxt-i18n/commit/a53e32a))
+* failure to change locale on initial try with nuxt generate ([9b4b6f6](https://github.com/nuxt-community/nuxt-i18n/commit/9b4b6f6)), closes [#378](https://github.com/nuxt-community/nuxt-i18n/issues/378)
+
+
+### Features
+
+* support 'path' parameter in localePath(...) ([bbaa266](https://github.com/nuxt-community/nuxt-i18n/commit/bbaa266)), closes [#215](https://github.com/nuxt-community/nuxt-i18n/issues/215)
+
 ### [6.1.3](https://github.com/nuxt-community/nuxt-i18n/compare/v6.1.2...v6.1.3) (2019-09-04)
 
 
