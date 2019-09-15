@@ -86,7 +86,7 @@ jobs:
       - attach-project
       - run:
           name: E2E Browser Tests
-          command: yarn test:e2e-browser
+          command: yarn test:e2e-browser && yarn coverage
           environment:
             BROWSER_STRING: << parameters.browserString >>
 
