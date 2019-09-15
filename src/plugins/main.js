@@ -22,6 +22,7 @@ import { getLocaleDomain, getLocaleFromRoute, syncVuex, validateRouteParams } fr
 
 Vue.use(VueI18n)
 
+/** @type {import('@nuxt/types').Plugin} */
 export default async (context) => {
   const { app, route, store, req, res, redirect } = context
 
@@ -187,6 +188,9 @@ export default async (context) => {
 
   // Inject seo function
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
+
+  // Inject in store.
+  store.$i18n = app.i18n
 
   if (store && store.state.localeDomains) {
     app.i18n.locales.forEach(locale => {

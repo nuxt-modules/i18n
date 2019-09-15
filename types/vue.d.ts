@@ -45,3 +45,9 @@ declare module '@nuxt/types' {
     readonly i18n: VueI18n & IVueI18n
   }
 }
+
+declare module 'vuex/types/index' {
+  interface Store<S> {
+    readonly $i18n: VueI18n & IVueI18n
+  }
+}
