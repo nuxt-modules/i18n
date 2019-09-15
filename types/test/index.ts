@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import * as types from '../index'
 
 const vm = new Vue()
@@ -26,3 +27,9 @@ const routeBaseName: string = vm.getRouteBaseName(vm.$route)
 const cookieLocale: string | undefined = vm.$i18n.getLocaleCookie()
 vm.$i18n.setLocaleCookie(locale)
 vm.$i18n.setLocale(locale)
+
+// Store
+
+const store = new Vuex.Store({})
+
+store.$i18n.setLocale(locale)

@@ -64,7 +64,7 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 ## Extension of VueI18n
 
 ::: tip
-Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class) (see its [properties and methods](http://kazupon.github.io/vue-i18n/api/#properties)) is exposed as `$i18n` on Vue instance and as `i18n` on Nuxt `context.app`.
+Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class) (see its [properties and methods](http://kazupon.github.io/vue-i18n/api/#properties)) is exposed as `$i18n` on Vue instance and Vuex Store but as `i18n` on Nuxt `context.app`.
 :::
 
 ### Methods
@@ -137,7 +137,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ### context.app.i18n
 
-  - **Type**: `VueI18n`
+  - **Type**: [`VueI18n`](#extension-of-vuei18n)
 
 See also [Nuxt context](https://nuxtjs.org/api/context#the-context).
 
@@ -155,4 +155,22 @@ export default Vue.extend({
     }
   }
 })
+````
+
+## Extension of Vuex
+
+### $i18n
+
+  - **Type**: [`VueI18n`](#extension-of-vuei18n)
+
+Can be accessed in store's actions and mutations as `this.$i18n`.
+
+Example use:
+
+```js
+export const actions = {
+  nuxtServerInit({ commit }) {
+    commit('LOCALE', this.$i18n.locale)
+  }
+}
 ````

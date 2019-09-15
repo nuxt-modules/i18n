@@ -67,7 +67,7 @@ declare namespace NuxtVueI18n {
       seo?: boolean
       strategy?: 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
       vueI18n?: VueI18n.I18nOptions
-      vuex?: VuexInterface
+      vuex?: VuexInterface | false
     }
   }
 }
