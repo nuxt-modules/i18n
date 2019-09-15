@@ -83,4 +83,5 @@ export interface NuxtI18nComponentOptions {
     [key: string]: string | false
   }
   locales?: Array<string>
+  seo?: false
 }
