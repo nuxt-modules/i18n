@@ -41,7 +41,7 @@ function localePathFactory (i18nPath, routerPath) {
         // don't prefix default locale
         !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT) &&
         // no prefix for any language
-        !(strategy === STRATEGIES.NO_REFIX) &&
+        !(strategy === STRATEGIES.NO_PREFIX) &&
         // no prefix for different domains
         !i18n.differentDomains
       )
