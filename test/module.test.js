@@ -131,8 +131,10 @@ describe('basic', () => {
 
   test('localePath returns correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
-    const newRoute = window.$nuxt.localePath('about')
-    expect(newRoute).toBe('/about-us')
+    expect(window.$nuxt.localePath('about')).toBe('/about-us')
+    expect(window.$nuxt.localePath('about', 'fr')).toBe('/fr/a-propos')
+    expect(window.$nuxt.localePath({ path: '/about' })).toBe('/about-us')
+    expect(window.$nuxt.localePath({ path: '/about/' })).toBe('/about-us')
   })
 
   test('redirects to existing route', async () => {
@@ -266,8 +268,8 @@ describe('no_prefix strategy', () => {
 
   test('localePath returns correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
-    const newRoute = window.$nuxt.localePath('about')
-    expect(newRoute).toBe('/about')
+    expect(window.$nuxt.localePath('about')).toBe('/about')
+    expect(window.$nuxt.localePath({ path: '/about' })).toBe('/about')
   })
 
   test('localePath with non-current locale triggers warning', async () => {
