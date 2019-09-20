@@ -85,7 +85,9 @@ Here are all the options available when configuring the module and their default
   // https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance
   seo: false,
 
-  // Base URL to use as prefix for alternate URLs in hreflang tags
+  // Fallback base URL to use as prefix for alternate URLs in hreflang tags.
+  // By default VueRouter's base URL will be used and only if that is not available,
+  // fallback URL will be used.
   baseUrl: '',
 
   // By default a store module is registered and kept in sync with the
@@ -120,9 +122,9 @@ Here are all the options available when configuring the module and their default
   encodePaths: true,
 
   // Called right before app's locale changes
-  beforeLanguageSwitch: () => null,
+  beforeLanguageSwitch: (oldLocale, newLocale) => null,
 
   // Called after app's locale has changed
-  onLanguageSwitched: () => null
+  onLanguageSwitched: (oldLocale, newLocale) => null
 }
 ```
