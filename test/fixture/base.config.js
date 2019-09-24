@@ -40,6 +40,10 @@ module.exports = {
         }
       },
       fallbackLocale: 'en'
+    },
+    vuex: {
+      syncLocale: true,
+      syncMessages: true
     }
   }
 }

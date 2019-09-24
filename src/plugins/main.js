@@ -189,13 +189,15 @@ export default async (context) => {
   // Inject seo function
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
 
-  // Inject in store.
-  store.$i18n = app.i18n
+  if (store) {
+    // Inject in store.
+    store.$i18n = app.i18n
 
-  if (store && store.state.localeDomains) {
-    app.i18n.locales.forEach(locale => {
-      locale.domain = store.state.localeDomains[locale.code]
-    })
+    if (store.state.localeDomains) {
+      app.i18n.locales.forEach(locale => {
+        locale.domain = store.state.localeDomains[locale.code]
+      })
+    }
   }
 
   let locale = app.i18n.defaultLocale || null

@@ -119,6 +119,24 @@ describe('basic', () => {
     })
   })
 
+  describe('store', () => {
+    test('injects $i18n in store', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/'))
+      expect(window.$nuxt.$store.$i18n).toBeDefined()
+    })
+
+    test('syncs i18n locale and messages', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/'))
+      expect(window.$nuxt.$store.state.i18n).toBeDefined()
+      expect(window.$nuxt.$store.state.i18n.locale).toBe('en')
+      expect(window.$nuxt.$store.state.i18n.messages).toEqual(expect.objectContaining({
+        about: 'About us',
+        home: 'Homepage',
+        posts: 'Posts'
+      }))
+    })
+  })
+
   test('/dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3', async () => {
     const html = await get('/dynamicNested/1/2/3')
     expect(cleanUpScripts(html)).toMatchSnapshot()
