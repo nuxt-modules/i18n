@@ -72,12 +72,13 @@ exports.makeRoutes = (baseRoutes, {
         continue
       }
 
-      // Make localized route name
-      localizedRoute.name = name + routesNameSeparator + locale
+      // Make localized route name. Name might not exist on parent route if child has same path.
+      if (name) {
+        localizedRoute.name = name + routesNameSeparator + locale
+      }
 
       // Generate localized children routes if any
       if (route.children) {
-        delete localizedRoute.name
         localizedRoute.children = []
         for (let i = 0, length1 = route.children.length; i < length1; i++) {
           localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true, isExtraRouteTree))
@@ -96,10 +97,11 @@ exports.makeRoutes = (baseRoutes, {
         if (!isChild) {
           const defaultRoute = { ...localizedRoute, path }
 
-          // Only routes without children have name
-          if (!defaultRoute.children) {
+          if (name) {
             defaultRoute.name = localizedRoute.name + routesNameSeparator + defaultLocaleRouteNameSuffix
-          } else {
+          }
+
+          if (defaultRoute.children) {
             // Recreate child routes with default suffix added
             defaultRoute.children = []
             for (const childRoute of route.children) {
@@ -109,7 +111,7 @@ exports.makeRoutes = (baseRoutes, {
           }
 
           routes.push(defaultRoute)
-        } else if (isChild && isExtraRouteTree) {
+        } else if (isChild && isExtraRouteTree && name) {
           localizedRoute.name += routesNameSeparator + defaultLocaleRouteNameSuffix
         }
       }
