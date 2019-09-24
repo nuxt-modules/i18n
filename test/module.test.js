@@ -137,6 +137,17 @@ describe('basic', () => {
     })
   })
 
+  test('navigates to dynamic child route and checks path to other locale', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/dynamicNested/1'))
+
+    const body = window.document.querySelector('body')
+    expect(body.textContent).toContain('Category')
+    expect(body.textContent).not.toContain('Subcategory')
+
+    // Will only work if navigated-to route has a name.
+    expect(window.$nuxt.switchLocalePath('fr')).toBe('/fr/imbrication-dynamique/1')
+  })
+
   test('/dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3', async () => {
     const html = await get('/dynamicNested/1/2/3')
     expect(cleanUpScripts(html)).toMatchSnapshot()
