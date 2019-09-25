@@ -256,6 +256,43 @@ describe('with empty configuration', () => {
   })
 })
 
+describe('prefix_and_default strategy', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = { i18n: { strategy: 'prefix_and_default' } }
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('default locale routes / and /en exist', async () => {
+    await expect(get('/')).resolves.toContain('page: Homepage')
+    await expect(get('/en')).resolves.toContain('page: Homepage')
+  })
+
+  test('non-default locale route /fr exists', async () => {
+    await expect(get('/fr')).resolves.toContain('page: Accueil')
+  })
+
+  test('canonical SEO link is added to prefixed default locale', async () => {
+    const html = await get('/en')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
+  })
+
+  test('canonical SEO link is not added to non-prefixed default locale', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(0)
+  })
+})
+
 describe('no_prefix strategy', () => {
   let nuxt
 
