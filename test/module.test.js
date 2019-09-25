@@ -137,6 +137,15 @@ describe('basic', () => {
     })
   })
 
+  test('navigates to child route with nameless parent and checks path to other locale', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/posts'))
+
+    const links = window.document.querySelectorAll('a')
+    expect(links.length).toBe(2)
+    expect(links[0].getAttribute('href')).toEqual('/fr/articles/')
+    expect(links[1].getAttribute('href')).toEqual('/posts/my-post')
+  })
+
   test('navigates to dynamic child route and checks path to other locale', async () => {
     const window = await nuxt.renderAndGetWindow(url('/dynamicNested/1'))
 
