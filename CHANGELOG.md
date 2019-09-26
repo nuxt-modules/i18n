@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.3.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.2.1...v6.3.0) (2019-09-26)
+
+
+### Bug Fixes
+
+* **types:** add missing seo: false type for component options ([0fae937](https://github.com/nuxt-community/nuxt-i18n/commit/0fae937))
+* all routes removed when locales are absent ([1c5e42c](https://github.com/nuxt-community/nuxt-i18n/commit/1c5e42c)), closes [#444](https://github.com/nuxt-community/nuxt-i18n/issues/444)
+* **types:** specify arguments for onLanguageSwitched and beforeLanguageSwitch ([da6a523](https://github.com/nuxt-community/nuxt-i18n/commit/da6a523))
+* Don't inject to store if store is not defined ([e547639](https://github.com/nuxt-community/nuxt-i18n/commit/e547639))
+* Locale prefixes missing for child routes with custom paths ([10c1d9d](https://github.com/nuxt-community/nuxt-i18n/commit/10c1d9d)), closes [#359](https://github.com/nuxt-community/nuxt-i18n/issues/359)
+* NO_PREFIX - localePath with `path` returns route with prefix ([4d4186c](https://github.com/nuxt-community/nuxt-i18n/commit/4d4186c)), closes [#457](https://github.com/nuxt-community/nuxt-i18n/issues/457)
+* Route name missing for routes that have children ([bd23683](https://github.com/nuxt-community/nuxt-i18n/commit/bd23683)), closes [#356](https://github.com/nuxt-community/nuxt-i18n/issues/356)
+
+
+### Features
+
+* Inject $i18n into Vuex Store as `this.$i18n` ([bb31cb0](https://github.com/nuxt-community/nuxt-i18n/commit/bb31cb0))
+
 ### [6.2.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.2.0...v6.2.1) (2019-09-13)
 
 
