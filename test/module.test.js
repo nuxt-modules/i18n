@@ -190,6 +190,12 @@ describe('basic', () => {
     const html = await get('/', requestOptions)
     expect(cleanUpScripts(html)).toContain('locale: en')
   })
+
+  test('registers message using vueI18nLoader', async () => {
+    const html = await get('/loader')
+    const dom = getDom(html)
+    expect(dom.querySelector('#container').textContent).toBe('string from loader EN')
+  })
 })
 
 describe('lazy loading', () => {
