@@ -26,6 +26,7 @@ module.exports = {
     ],
     defaultLocale: 'en',
     lazy: false,
+    vueI18nLoader: true,
     vueI18n: {
       messages: {
         fr: {

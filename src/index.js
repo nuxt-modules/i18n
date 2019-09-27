@@ -116,6 +116,7 @@ module.exports = function (userOptions) {
       const loaders = config.module.rules.find(el => el.loader === 'vue-loader').options.loaders
       if (loaders) {
         // vue-loader under 15.0.0
+        /* istanbul ignore next */
         loaders.i18n = '@kazupon/vue-i18n-loader'
       } else {
         // vue-loader after 15.0.0
