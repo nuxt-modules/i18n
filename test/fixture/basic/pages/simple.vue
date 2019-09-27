@@ -3,5 +3,9 @@
 </template>
 
 <script>
-export default {}
+export default {
+  nuxtI18n: {
+    locales: ['en', 'fr', 'es']  // locale not defined in global options
+  }
+}
 </script>
