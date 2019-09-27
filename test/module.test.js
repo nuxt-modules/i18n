@@ -535,3 +535,41 @@ describe('differentDomains enabled', () => {
     expect(cleanUpScripts(html)).toMatchSnapshot()
   })
 })
+
+describe('parsePages disabled', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        parsePages: false,
+        pages: {
+          about: false,
+          simple: {
+            en: '/simple-en',
+            fr: '/simple-fr'
+          }
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('navigates to route with paths defined in pages option', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/simple-en'))
+    expect(window.document.querySelector('#container').textContent).toBe('Homepage')
+
+    const newRoute = window.$nuxt.localePath('simple', 'fr')
+    expect(newRoute).toBe('/fr/simple-fr')
+  })
+
+  test('navigates to route with paths disabled in pages option', async () => {
+    await expect(get('/about')).resolves.toBeDefined()
+    await expect(get('/fr/about')).rejects.toBeDefined()
+  })
+})
