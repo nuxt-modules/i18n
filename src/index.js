@@ -107,6 +107,7 @@ module.exports = function (userOptions) {
 
   // Add vue-i18n to vendors if using Nuxt 1.x
   if (this.options.build.vendor) {
+    /* istanbul ignore next */
     this.options.build.vendor.push('vue-i18n')
   }
 
