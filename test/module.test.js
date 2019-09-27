@@ -73,6 +73,12 @@ describe('basic', () => {
     expect(response.statusCode).toBe(404)
   })
 
+  test('route specifies options with non-supported locale', async () => {
+    await expect(get('/simple')).resolves.toBeDefined()
+    await expect(get('/fr/simple')).resolves.toBeDefined()
+    await expect(get('/es/simple')).rejects.toBeDefined()
+  })
+
   describe('posts', () => {
     let html
     let title
