@@ -79,7 +79,7 @@
     "babel-plugin-dynamic-import-node": "2.3.0",
     "chromedriver": "77.0.0",
     "codecov": "3.6.1",
-    "eslint": "6.4.0",
+    "eslint": "6.5.0",
     "eslint-config-standard": "14.1.0",
     "eslint-plugin-import": "2.18.2",
     "eslint-plugin-jest": "22.17.0",
