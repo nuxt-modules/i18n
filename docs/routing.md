@@ -99,6 +99,21 @@ export default {
 }
 ```
 
+To configure a custom path for a dynamic route, you need to put the params in the URI similarly to how you would do it in vue-router.
+
+```js
+// pages/articles/_name.vue
+
+export default {
+  nuxtI18n: {
+    paths: {
+      en: '/articles/:name',
+      es: '/artículo/:name'
+    }
+  }
+}
+```
+
 ### Module's configuration
 
 Make sure you set the `parsePages` option to `false` to disable babel parsing and add your custom paths in the `pages` option:
