@@ -68,7 +68,7 @@
     "vue-i18n-extensions": "^0.2.1"
   },
   "devDependencies": {
-    "@babel/core": "7.6.3",
+    "@babel/core": "7.6.4",
     "@babel/plugin-syntax-dynamic-import": "7.2.0",
     "@babel/preset-env": "7.6.3",
     "@babel/runtime": "7.6.3",
@@ -90,7 +90,7 @@
     "geckodriver": "1.18.0",
     "jest": "24.9.0",
     "jsdom": "15.1.1",
-    "nuxt": "2.10.0",
+    "nuxt": "2.10.1",
     "puppeteer-core": "1.20.0",
     "selenium-webdriver": "4.0.0-alpha.5",
     "standard-version": "7.0.0",
