@@ -181,6 +181,23 @@ describe('basic', () => {
     expect(window.$nuxt.localePath({ path: '/about/' })).toBe('/about-us')
   })
 
+  test('switchLocalePath returns correct path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.switchLocalePath('fr')).toBe('/fr')
+  })
+
+  test('getRouteBaseName returns correct name', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.getRouteBaseName()).toBe('index')
+  })
+
+  test('localePath, switchLocalePath, getRouteBaseName works from a middleware', async () => {
+    const html = await get('/middleware')
+    const dom = getDom(html)
+    expect(dom.querySelector('#paths').textContent).toBe('/middleware,/fr/middleware-fr')
+    expect(dom.querySelector('#name').textContent).toBe('middleware')
+  })
+
   test('redirects to existing route', async () => {
     const window = await nuxt.renderAndGetWindow(url('/about'))
     const newRoute = window.$nuxt.switchLocalePath()
@@ -528,7 +545,9 @@ describe('differentDomains enabled', () => {
       }
     }
     const html = await get('/', requestOptions)
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    await expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+    await expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
   })
 
   test('matches domain\'s locale (fr)', async () => {
@@ -538,7 +557,9 @@ describe('differentDomains enabled', () => {
       }
     }
     const html = await get('/', requestOptions)
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    await expect(dom.querySelector('body').textContent).toContain('page: Accueil')
+    await expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
   })
 })
 
