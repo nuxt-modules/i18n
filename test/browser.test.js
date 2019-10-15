@@ -58,6 +58,14 @@ describe(browserString, () => {
 
     expect(await page.getText('body')).toContain('page: À propos')
   })
+
+  test('APIs in app context work after SPA navigation', async () => {
+    page = await browser.page(url('/'))
+    await page.navigate('/middleware')
+
+    expect(await page.getText('#paths')).toBe('/middleware,/fr/middleware-fr')
+    expect(await page.getText('#name')).toBe('middleware')
+  })
 })
 
 describe(`${browserString} (generate)`, () => {
