@@ -1,9 +1,9 @@
-# Different domains
+# Diferentes dominios
 
-You might want to use a different domain name for each language your app supports. To achieve this:
+Es posible que desee utilizar un nombre de dominio diferente para cada idioma que admita su aplicación. Debe lograr esto:
 
-* Set `differentDomains` option to `true`
-* Configure `locales` option as an array of object, where each object has a `domain` key which value is the domain name you'd like to use for the locale
+* Establezca la opción `differentDomains` en `true`
+* Configure la opción `locales` como una matriz de objetos, donde cada objeto tiene una clave `domain` cuyo valor es el nombre de dominio que desea usar para la configuración local
 
 ```js
 // nuxt.config.js
@@ -29,7 +29,7 @@ You might want to use a different domain name for each language your app support
 }]
 ```
 
-When using different domain names, your lang swicher should use regular `<a>` tags:
+Cuando use diferentes nombres de dominio, su selector de idioma debe usar etiquetas regulares `<a>`:
 
 ```vue
 <a
@@ -40,13 +40,13 @@ When using different domain names, your lang swicher should use regular `<a>` ta
 </a>
 ```
 
-## Runtime environment variables
+## Variables de entorno de tiempo de ejecución
 
-Sometimes there's a need to change domains in different environments, e.g. staging and production. 
-As `nuxt.config.js` is used at build time it would be necessary to create different builds for different environments.
+A veces es necesario cambiar dominios en diferentes entornos, por ejemplo: puesta en escena y producción. 
+Como `nuxt.config.js` se usa en el momento de la compilación, sería necesario crear diferentes compilaciones para diferentes entornos.
 
-The alternative way is to keep the domains in Vuex store under `localeDomains` property. It can be accessed by the plugin
-during the initialisation, saving the trouble building multiple images.
+La forma alternativa es mantener los dominios en la tienda Vuex bajo la propiedad `localeDomains`. Se puede acceder mediante el complemento
+durante la inicialización, ahorrando el problema de construir múltiples imágenes.
 
 ```js
 // config/locale-domains.js
