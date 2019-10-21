@@ -1,6 +1,6 @@
-# Options
+# Optiones
 
-Here are all the options available when configuring the module and their default values:
+Aquí están todas las opciones disponibles al configurar el módulo y sus valores predeterminados:
 
 ```js
 {
