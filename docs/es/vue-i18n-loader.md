@@ -1,6 +1,6 @@
 # vue-i18n-loader
 
-If you'd like to enable [vue-i18n-loader](https://github.com/kazupon/vue-i18n-loader), simply set `vueI18nLoader` option to `true`.
+Si desea habilitar [vue-i18n-loader](https://github.com/kazupon/vue-i18n-loader), simplemente configure la opción `vueI18nLoader` en `true`.
 
 ```js
 // nuxt.config.js
@@ -11,7 +11,7 @@ If you'd like to enable [vue-i18n-loader](https://github.com/kazupon/vue-i18n-lo
 
 ```
 
-You can now define translations using custom blocks in your Vue files:
+Ahora puede definir traducciones utilizando bloques personalizados en sus archivos Vue:
 
 ```vue
 <i18n>
@@ -45,7 +45,7 @@ ja:
 </template>
 ```
 
-The following is needed in nuxt config file for YAML i18n blocks to work:
+Lo siguiente es necesario en el archivo de configuración nuxt para que funcionen los bloques YAML i18n:
 
 ```js
 build: {
