@@ -64,7 +64,7 @@ function sidebarLinks (locale) {
       '/setup': 'Configuración',
       '/basic-usage': 'Uso Básico',
       '/options-reference': 'Opciones',
-      '/routing': 'Ruteado',
+      '/routing': 'Enrutamiento',
       '/browser-language-detection': 'Detectar idioma del navegador',
       '/seo': 'Optimización para motores de búsqueda',
       '/lazy-load-translations': 'Carga diferida de traducciones',
