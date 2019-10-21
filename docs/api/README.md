@@ -6,8 +6,7 @@ sidebar: auto
 
 ## Extension of Vue
 
-::: tip
-**NOTE**
+::: tip NOTE
 
 All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue-injected-methods) (like `$t`, `$i18n`, `v-t` directive and others) are also available even though they are not listed here. Below are only ones added by `nuxt-i18n`.
 :::
