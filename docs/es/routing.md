@@ -1,7 +1,6 @@
-# Routing
+# Enrutamiento
 
-**nuxt-i18n** overrides Nuxt default routes to add locale prefixes to every URL (except in no_prefix strategy).
-Say your app supports two languages: French and English as the default language, and you have the following pages in your project:
+**nuxt-i18n** anula las rutas predeterminadas de Nuxt para agregar prefijos de configuración local a cada URL (excepto en la estrategia no_prefix). Digamos que su aplicación admite dos idiomas: francés e inglés como idioma predeterminado, y tiene las siguientes páginas en su proyecto:
 
 ```asciidoc
 pages/
@@ -9,7 +8,7 @@ pages/
 ├── about.vue
 ```
 
-This would result in the following routes being generated
+Esto daría como resultado que se generen las siguientes rutas
 
 ```js
 [
@@ -36,35 +35,35 @@ This would result in the following routes being generated
 ]
 ```
 
-Note that routes for the English version do not have any prefix because it is the default language, see next section for more details.
+Tenga en cuenta que las rutas para la versión en inglés no tienen ningún prefijo porque es el idioma predeterminado; consulte la siguiente sección para obtener más detalles.
 
-## Strategy
+## Estrategia
 
-There are four supported strategies for generating the app's routes:
+Existen cuatro estrategias compatibles para generar las rutas de la aplicación:
 
 ### no_prefix
 
 > :new: 6.1.0
 
-With this strategy, your routes won't have a locale prefix added. The locale will be detected & changed without changing the URL. This implies that you have to rely on browser & cookie detection, and implement locale switches by calling the i18n API.
+Con esta estrategia, sus rutas no tendrán un prefijo de configuración local agregado. La configuración local se detectará y cambiará sin cambiar la URL. Esto implica que debe confiar en la detección del navegador y las cookies, e implementar interruptores locales llamando a la API i18n.
 
-::: warning
-This strategy doesn't support [Custom paths](#custom-paths) and [Ignore routes](#ignore-routes) features.
+::: warning ADVERTENCIA
+Esta estrategia no es compatible con las  [Rutas personalizadas](#custom-paths) y las funciones [Ignorar rutas](#ignore-routes).
 :::
 
 ### prefix_except_default
 
-Using this strategy, all of your routes will have a locale prefix added except for the default language.
+Con esta estrategia, todas sus rutas tendrán un prefijo de configuración local agregado, excepto el idioma predeterminado.
 
 ### prefix
 
-With this strategy, all routes will have a locale prefix.
+Con esta estrategia, todas las rutas tendrán un prefijo de configuración local.
 
 ### prefix_and_default
 
-This strategy combines both previous strategies behaviours, meaning that you will get URLs with prefixes for every language, but URLs for the default language will also have a non-prefixed version.
+Esta estrategia combina los comportamientos de ambas estrategias anteriores, lo que significa que obtendrá URL con prefijos para cada idioma, pero las URL para el idioma predeterminado también tendrán una versión sin prefijo.
 
-To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy.
+Para configurar la estrategia, use la opción `strategy`. Asegúrese de tener un `defaultLocale` definido si usa **prefix_except_default**, **prefix_and_default** o la estrategia **no_prefix**.
 
 
 ```js
@@ -77,13 +76,13 @@ To configure the strategy, use the `strategy` option. Make sure you have a `defa
 ```
 
 
-## Custom paths
+## Rutas personalizadas
 
-In some cases, you might want to translate URLs in addition to having them prefixed with the locale code. There are 2 ways of configuring custom paths for your pages: in-component options or via the module's configuration.
+En algunos casos, es posible que desee traducir las URL además de tener el prefijo con el código de configuración regional. Hay 2 formas de configurar rutas personalizadas para sus páginas: opciones `in-component` o mediante la configuración del módulo.
 
-### In-component options
+### Opciones in-component
 
-Add a `nuxtI18n.paths` property to your page and set your custom paths there:
+Agregue una propiedad `nuxtI18n.paths` a su página y configure sus rutas personalizadas allí:
 
 ```js
 // pages/about.vue
@@ -99,7 +98,7 @@ export default {
 }
 ```
 
-To configure a custom path for a dynamic route, you need to put the params in the URI similarly to how you would do it in vue-router.
+Para configurar una ruta personalizada para una ruta dinámica, debe colocar los parámetros en el URI de forma similar a como lo haría en vue-router.
 
 ```js
 // pages/articles/_name.vue
@@ -114,9 +113,9 @@ export default {
 }
 ```
 
-### Module's configuration
+### Configuración del módulo
 
-Make sure you set the `parsePages` option to `false` to disable babel parsing and add your custom paths in the `pages` option:
+Asegúrese de establecer la opción  `parsePages` en `false` para deshabilitar el análisis de babel y agregar sus rutas personalizadas en la opción  `pages`:
 
 ```js
 // nuxt.config.js
@@ -133,19 +132,19 @@ Make sure you set the `parsePages` option to `false` to disable babel parsing an
 }]
 ```
 
-Note that each key in the `pages` object should correspond to the full file path in your `pages/` directory.
+Tenga en cuenta que cada clave en el objeto `pages` debe corresponder a la ruta completa del archivo en su directorio `pages/`.
 
-Make sure all keys:
-  1. Are relative to the `pages/` directory and don't start with a `/`
-  2. Point directly to their corresponding file without `.vue` (make sure you add `/index` when translating root paths)
+Asegúrese de que todas las llaves:
+  1. Son relativos al directorio `pages/` y no comienzan con un `/`
+  2. Apunte directamente a su archivo correspondiente sin `.vue` (asegúrese de agregar `/index` al traducir las rutas raíz)
 
-Localized routes are full URIs, so keep in mind that:
-  1. They need to start with a `/`
-  2. You must repeat the full URI for each child route
+Las rutas localizadas son URI completos, así que tenga en cuenta que:
+  1. Necesitan comenzar con u `/`
+  2. Debe repetir el URI completo para cada ruta secundaria
 
-#### Example 1
+#### Ejemplo 1
 
-Say you have some nested page like:
+Digamos que tiene alguna página anidada como:
 
 ```asciidoc
 pages/
@@ -154,7 +153,7 @@ pages/
 ├────── index.vue
 ```
 
-Here's how you would configure this particular page in the configuration:
+Así es como configuraría esta página en particular en la configuración:
 
 ```js
 // nuxt.config.js
@@ -169,9 +168,9 @@ Here's how you would configure this particular page in the configuration:
 }]
 ```
 
-#### Example 2
+#### Ejemplo 2
 
-With the following `pages` directory:
+Con el siguiente directorio  `pages`:
 
 ```asciidoc
 pages/
@@ -188,7 +187,7 @@ pages/
 ├────── index.vue
 ```
 
-You would need to set up your `pages` property as follows:
+Debería configurar su propiedad `pages` de la siguiente manera:
 
 ```js
 // nuxt.config.js
@@ -224,14 +223,13 @@ You would need to set up your `pages` property as follows:
 }]
 ```
 
-If a custom path is missing for one of the locales, the `defaultLocale` custom path is used, if set.
+Si falta una ruta personalizada para una de las configuraciones locales, se usa la ruta personalizada `defaultLocale` si está establecida..
 
-### Regular Expression
+### Expresión regular
 
-By default, all custom paths are encoded to handle non-latin characters in the path. This will convert paths with regular expression like `/foo/:slug-:id(\\d+)` to `/foo/:slug-:id(%5Cd+)`.
+Por defecto, todas las rutas personalizadas están codificadas para manejar caracteres no latinos en la ruta. Esto convertirá rutas con expresiones regulares como `/foo/:slug-:id(\\d+)` a `/foo/:slug-:id(%5Cd+)`.
 
-If you would like to use regular expression in your custom paths, then you need to set the `encodePaths` option to false. Since no encoding will happen, you will have to make sure to pass in encoded paths yourself.
-
+Si desea utilizar expresiones regulares en sus rutas personalizadas, debe establecer la opción  `encodePaths` en false. Como no ocurrirá ninguna codificación, deberá asegurarse de pasar las rutas codificadas usted mismo.
 ```js
 // nuxt.config.js
 
@@ -241,12 +239,12 @@ If you would like to use regular expression in your custom paths, then you need 
 ```
 
 
-## Ignore routes
+## Ignorar rutas
 
 
-### In-component options
+### Opciones in-component
 
-If you'd like some page to be available to some languages only, you can configure a list of supported languages to override global settings:
+Si desea que alguna página esté disponible solo para algunos idiomas, puede configurar una lista de idiomas compatibles para anular la configuración global:
 
 ```js
 // pages/about.vue
@@ -258,7 +256,7 @@ export default {
 }
 ```
 
-To completely disable i18n on a given page:
+Para deshabilitar completamente i18n en una página determinada:
 
 ```js
 // pages/about.vue
@@ -268,9 +266,9 @@ export default {
 }
 ```
 
-### Module's configuration
+### Configuración del módulo
 
-If you disabled `parsePages` option, localization can be disabled for specific pages and locales by setting the unwanted locale(s) to `false` in the module's configuration:
+Si deshabilitó la opción `parsePages`, la localización puede deshabilitarse para páginas y configuraciones locales específicas configurando las configuraciones locales no deseadas en `false` en la configuración del módulo:
 
 ```js
 // nuxt.config.js
@@ -285,7 +283,7 @@ If you disabled `parsePages` option, localization can be disabled for specific p
 }]
 ```
 
-To completely disable routes localization on a given page:
+Para deshabilitar completamente la localización de rutas en una página determinada:
 
 ```js
 // nuxt.config.js
