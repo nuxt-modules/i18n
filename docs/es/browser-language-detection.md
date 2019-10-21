@@ -1,6 +1,6 @@
-# Browser language detection
+# Detectar idioma del navegador
 
-By default, **nuxt-i18n** attempts to redirect users to their preferred language by detecting their browser's language. This is controlled by the `detectBrowserLanguage` option:
+Por defecto, **nuxt-i18n** intenta redirigir a los usuarios a su idioma preferido al detectar el idioma de su navegador.  Esto está controlado por la opción  `detectBrowserLanguage`:
 
 
 ```js
@@ -14,7 +14,7 @@ By default, **nuxt-i18n** attempts to redirect users to their preferred language
 }]
 ```
 
-To prevent redirecting users every time they visit the app, **nuxt-i18n** sets a cookie after the first redirection. You can change the cookie's name by setting `detectBrowserLanguage.cookieKey` option to whatever you'd like, the default is _i18n_redirected_.
+Para evitar redirigir a los usuarios cada vez que visitan la aplicación, **nuxt-i18n** establece una cookie después de la primera redirección. Puede cambiar el nombre de la cookie configurando la opción `detectBrowserLanguage.cookieKey` a lo que desee, el valor predeterminado es _i18n_redirected_.
 
 ```js
 // nuxt.config.js
@@ -27,7 +27,7 @@ To prevent redirecting users every time they visit the app, **nuxt-i18n** sets a
 }]
 ```
 
-If you'd rather have users be redirected to their browser's language every time they visit the app, disable the cookie by setting `detectBrowserLanguage.useCookie` to `false`.
+Si prefiere que los usuarios sean redirigidos al idioma de su navegador cada vez que visitan la aplicación, deshabilite la cookie configurando `detectBrowserLanguage.useCookie` en `false`.
 
 ```js
 // nuxt.config.js
@@ -39,7 +39,7 @@ If you'd rather have users be redirected to their browser's language every time 
 }]
 ```
 
-To completely disable the browser's language detection feature, set `detectBrowserLanguage` to `false`.
+Para deshabilitar por completo la función de detección de idioma del navegador, configure `detectBrowserLanguage` en `false`.
 
 ```js
 // nuxt.config.js
@@ -49,7 +49,7 @@ To completely disable the browser's language detection feature, set `detectBrows
 }]
 ```
 
-To redirect the user every time they visit the app and keep their selected choice, enable alwaysRedirect:
+Para redirigir al usuario cada vez que visita la aplicación y mantener su elección seleccionada, habilite alwaysRedirect:
 
 ```js
 // nuxt.config.js
