@@ -1,16 +1,16 @@
-# Lazy-load translations
+# Carga diferida de traducciones
 
-For app's that contain a lot of translated content, it is preferable not to bundle all the messages in the main bundle but rather lazy-load only the language that the users selected.
-This can be achieved with **nuxt-i18n** by letting the module know where your translation files are located so it can dynamically import them when the app loads or when the user switches to another language.
-To enable translations lazy-loading, follow these 4 steps when configuring **nuxt-i18n**:
+Para las aplicaciones que contienen una gran cantidad de contenido traducido, es preferible no agrupar todos los mensajes en el paquete principal, sino cargar de manera diferida solo el idioma que seleccionaron los usuarios.
+Esto se puede lograr con **nuxt-i18n** al permitir que el módulo sepa dónde se encuentran sus archivos de traducción para que pueda importarlos dinámicamente cuando se carga la aplicación o cuando el usuario cambia a otro idioma.
+Para habilitar la carga diferida de traducciones, siga estos 4 pasos cuando configure **nuxt-i18n**:
 
-* Set `lazy` option to `true`
-* Set `langDir` option to the directory that contains your translation files (this can NOT be empty)
-* Configure `locales` option as an array of object, where each object has a `file` key which value is the translation file corresponding to the locale
-* Optionally, remove all messages that you might have passed to vue-i18n via `vueI18n` option
-* Each `file` can return either an `Object` or a `function` (supports `Promises`)
+* Establezca la opción `lazy` en `true`
+* Establezca la opción `langDir` en el directorio que contiene sus archivos de traducción (esto NO puede estar vacío)
+* Configure la opción `locales` como una matriz de objetos, donde cada objeto tiene una clave `file` cuyo valor es el archivo de traducción correspondiente a la configuración local
+* Opcionalmente, elimine todos los mensajes que haya pasado a vue-i18n mediante la opción `vueI18n`
+* Cada `file` puede devolver un `Object` o una `function` (admite `Promises`)
 
-Example files structure:
+Estructura de archivos de ejemplo:
 
 ```
 nuxt-project/
@@ -21,7 +21,7 @@ nuxt-project/
 ├── nuxt.config.js
 ```
 
-Configuration example:
+Ejemplo de configuración:
 
 ```js
 // nuxt.config.js
@@ -46,7 +46,7 @@ Configuration example:
 }]
 ```
 
-Language file example:
+Ejemplo de archivo de idioma:
 
 ```js
 // lang/[lang].js
