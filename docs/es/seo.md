@@ -1,15 +1,15 @@
-# SEO
+# Optimización para motores de búsqueda
 
-With `seo` option enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does:
+Con la opción `seo`  habilitada, **nuxt-i18n** intenta agregar algunos metadatos para mejorar sus páginas SEO. Esto es lo que hace:
 
-* Add a _lang_ attribute containing current locale's ISO code to the `<html>` tag.
-* Generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. For each language, the ISO code is used as `hreflang` attribute's value. [More on hreflang](https://support.google.com/webmasters/answer/189077)
-* Generate `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional)
-* When using `prefix_and_default` strategy, generate `rel="canonical"` link on the default language routes containing the
-prefix to avoid duplicate indexation. [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
+* Agregue un atributo _lang_ que contenga el código ISO del entorno local actual a la etiqueta  `<html>`.
+* Genere etiquetas `<link rel="alternate" hreflang="x">` para cada idioma configurado en `nuxt.config.js`. Para cada idioma, el código ISO se usa como valor del atributo `hreflang`. [Más sobre hreflang](https://support.google.com/webmasters/answer/189077)
+* Genere metaetiquetas `og:locale` y `og:locale:alternate` como se define en el [protocolo Open Graph](http://ogp.me/#optional)
+* Cuando utilice la estrategia `prefix_and_default`, genere el enlace `rel="canonical"` en las rutas de idioma predeterminadas que contienen
+prefijo para evitar la indexación duplicada. [Más sobre canonical](https://support.google.com/webmasters/answer/182192#dup-content)
 
 
-For this feature to work, you must configure `locales` option as an array of objects, where each object has an `iso` option set to the language ISO code:
+Para que esta característica funcione, debe configurar la opción `locales` como una matriz de objetos, donde cada objeto tiene una opción `iso` establecida en el código ISO del idioma:
 
 ```js
 // nuxt.config.js
@@ -32,7 +32,7 @@ For this feature to work, you must configure `locales` option as an array of obj
 }]
 ```
 
-You should also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
+También debe establecer la opción  `baseUrl` en su dominio de producción para que las URL alternativas sean totalmente calificadas:
 
 ```js
 // nuxt.config.js
@@ -43,7 +43,7 @@ You should also set the `baseUrl` option to your production domain in order to m
 ```
 
 
-To enable this feature everywhere in your app, set `seo` option to `true`:
+Para habilitar esta función en todas partes en su aplicación, configure la opción `seo` en `true`:
 
 ```js
 // nuxt.config.js
@@ -53,7 +53,7 @@ To enable this feature everywhere in your app, set `seo` option to `true`:
 }]
 ```
 
-If you'd like to disable SEO on specific pages, set `i18n.seo` to `false` right in the page:
+Si desea deshabilitar el SEO en páginas específicas, configure `i18n.seo` en `false` justo en la página:
 
 ```js
 // pages/about.vue
@@ -65,18 +65,17 @@ export default {
 }
 ```
 
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/seo-head.js](https://github.com/nuxt-community/nuxt-i18n/blob/master/src/templates/seo-head.js) if you want to copy some of **nuxt-i18n**'s logic.
+Para anular los metadatos de SEO para cualquier página, simplemente declare su propio método `head ()`. Echa un vistazo a [src/templates/seo-head.js](https://github.com/nuxt-community/nuxt-i18n/blob/master/src/templates/seo-head.js) si quieres copie parte de la lógica de  **nuxt-i18n**.
 
-## Improving performance
+## Mejora del rendimiento
 
-The default method to inject SEO metadata, while convenient, comes at a performance costs.
-The `head` method is registered for every component in your app.
-This means each time a component is created, the SEO metadata is recomputed for every components.
+El método predeterminado para inyectar metadatos de SEO, aunque conveniente, tiene un costo de rendimiento.
+El método `head` se registra para cada componente de su aplicación.
+Esto significa que cada vez que se crea un componente, los metadatos de SEO se vuelven a calcular para cada componente.
 
-To improve performance you can use the `$nuxtI18nSeo` method in your layout instead.
-It will generate i18n SEO metadata for the current context.
+Para mejorar el rendimiento, puede utilizar el método `$nuxtI18nSeo` en su diseño. Generará metadatos de SEO i18n para el contexto actual.
 
-First make sure automatic SEO is disabled by setting `seo` to `false` in your configuration or removing that option completely:
+Primero, asegúrese de que el SEO automático esté desactivado estableciendo `seo` en `false` en su configuración o eliminando esa opción por completo:
 
 ```js
 // nuxt.config.js
@@ -86,7 +85,7 @@ First make sure automatic SEO is disabled by setting `seo` to `false` in your co
 }]
 ```
 
-Then in your app layout declare the [`head` hook](https://nuxtjs.org/api/pages-head#the-head-method) and use `$nuxtI18nSeo` inside to generate i18n SEO meta information:
+Luego, en el diseño de su aplicación, declare el [`head` hook](https://nuxtjs.org/api/pages-head#the-head-method) y use `$nuxtI18nSeo` dentro para generar la metainformación i18n SEO:
 
 ```js
 // layouts/default.vue
@@ -98,14 +97,13 @@ export default {
 }
 ```
 
-If you have more layouts, don't forget to add it there too.
+Si tiene más diseños, no olvide agregarlo allí también.
 
-That's it!
-Now SEO metadata will only be computed for the layout instead of every component in your app.
+¡Eso es! Ahora los metadatos de SEO solo se computarán para el diseño en lugar de cada componente de su aplicación
 
-### Merging i18n SEO metadata with your own
+### Combinando metadatos de SEO i18n con los tuyos
 
-If you want to add your own meta in the layout you can easily merge the object returned by `$nuxtI18nSeo` with your own:
+Si desea agregar su propio meta en el diseño, puede combinar fácilmente el objeto devuelto por `$nuxtI18nSeo` con el suyo:
 
 ```js
 // layouts/default.vue
