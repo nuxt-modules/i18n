@@ -1,9 +1,8 @@
-# Lang Switcher
+# Selector de  idiomas
 
-When **nuxt-i18n** loads in your app, it adds your `locales` configuration to `this.$i18n` (or `app.i18n`), which makes it really easy to display a lang switcher anywhere in your app.
+Cuando **nuxt-i18n** se carga en su aplicación, agrega su configuración `locales` a `this.$i18n` (o `app.i18n`), lo que hace que sea muy fácil mostrar un selector de  idiomas en cualquier lugar de su aplicación.
 
-Here's an example lang switcher where a `name` key has been added to each locale object in order to display friendlier titles for each link:
-
+Aquí hay un ejemplo de selector de idiomas donde se ha agregado una tecla `name` a cada objeto de configuración local para mostrar títulos más amigables para cada enlace:
 ```vue
 <nuxt-link
   v-for="locale in availableLocales"
@@ -40,15 +39,15 @@ computed: {
 }]
 ```
 
-If `detectBrowserLanguage.useCookie` and `detectBrowserLanguage.alwaysRedirect` options are enabled, you might want to persist change to locale by calling `this.$i18n.setLocaleCookie(locale)` (or `app.i18n.setLocaleCookie(locale)`) method. Otherwise locale will switch back to saved one during navigation.
+Si las opciones  `detectBrowserLanguage.useCookie` y `detectBrowserLanguage.alwaysRedirect` están habilitadas, es posible que desee conservar el cambio a la configuración local llamando a `this.$i18n.setLocaleCookie(locale)` o (`app.i18n.setLocaleCookie(locale)`) método. De lo contrario, la configuración regional volverá a la guardada durante la navegación.
 
-## Dynamic route parameters
+## Parámetros de ruta dinámica
 
-Dealing with dynamic route parameters requires a bit more work because you need to provide parameters translations to **nuxt-i18n**. For this purpose, **nuxt-i18n**'s store module exposes a `routeParams` state property that will be merged with route params when generating lang switch routes with `switchLocalePath()`.
+Tratar con parámetros de ruta dinámicos requiere un poco más de trabajo porque necesita proporcionar traducciones de parámetros a **nuxt-i18n**.  Para este propósito, el módulo de tienda de **nuxt-i18n** expone una propiedad de estado `routeParams` que se fusionará con los parámetros de ruta al generar rutas del selector de idiomas con `switchLocalePath()`.
 
-> NOTE: Make sure that Vuex [is enabled](https://nuxtjs.org/guide/vuex-store) in your app and that you did not set `vuex` option to `false` in **nuxt-i18n**'s options.
+> NOTA: Asegúrese de que Vuex [esté habilitado](https://nuxtjs.org/guide/vuex-store) en su aplicación y que no haya configurado la opción  `vuex` en `false` en opciones de **nuxt-i18n**.
 
-To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` as early as possible when loading a page, eg:
+Para proporcionar traducciones de parámetros dinámicos, envíe el `i18n/setRouteParams`  lo antes posible al cargar una página, por ejemplo:
 
 ```vue
 <template>
@@ -70,4 +69,4 @@ export default {
 </script>
 ```
 
-> NOTE: **nuxt-i18n** won't reset parameters translations for you, this means that if you use identical parameters for different routes, navigating between those routes might result in conflicting parameters. Make sure you always set params translations in such cases.
+> NOTA: **nuxt-i18n** no restablecerá las traducciones de parámetros por usted, esto significa que si utiliza parámetros idénticos para diferentes rutas, navegar entre esas rutas podría generar parámetros conflictivos. Asegúrese de establecer siempre traducciones de parámetros en tales casos.
