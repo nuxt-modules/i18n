@@ -68,7 +68,7 @@ function sidebarLinks (locale) {
       '/browser-language-detection': 'Detectar idioma del navegador',
       '/seo': 'Optimización para motores de búsqueda',
       '/lazy-load-translations': 'Carga diferida de traducciones',
-      '/lang-switcher': 'Cambiador de idioma',
+      '/lang-switcher': 'Selector de idiomas',
       '/different-domains': 'Diferentes dominios',
       '/migrating': 'Migración'
     }
