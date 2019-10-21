@@ -1,18 +1,18 @@
-# Setup
+# Configuración
 
-Add **nuxt-i18n** to your dependencies using Yarn:
+Agregar **nuxt-i18n** a tus dependencias usando Yarn:
 
 ```bash
 yarn add nuxt-i18n
 ```
 
-Or NPM:
+O NPM:
 
 ```bash
 npm i nuxt-i18n
 ```
 
-Then add the module to `nuxt.config.js`:
+Luego agregue el módulo en `nuxt.config.js`:
 
 ```js
 {
@@ -28,7 +28,7 @@ Then add the module to `nuxt.config.js`:
 }
 ```
 
-If using typescript or running typescript language server to check the code (for example through Vetur), add types to `types` array in your `tsconfig.json`:
+Si está utilizando typescript o ejecuta un servidor de lenguaje de typescript para verificar el código (por ejemplo, a través de Vetur), agregue tipos a la matriz `types` en su `tsconfig.json`:
 
 ```js
 {
