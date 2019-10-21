@@ -1,6 +1,6 @@
-# Basic Usage
+# Uso básico
 
-The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translations messages to **vue-i18n** via the `vueI18n` option:
+La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entornos `locales` admitidos y proporcionar algunos mensajes de traducción a **vue-i18n** a través de la opción `vueI18n`:
 
 ```js
 {
@@ -29,15 +29,15 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
 }
 ```
 
-With this setup, **nuxt-i18n** generates localized URLs for all your pages, using the codes provided in the `locales` option as the prefix, except for the `defaultLocale` (read more on [routing](/routing.md)).
+Con esta configuración, **nuxt-i18n** genera URL localizadas para todas sus páginas, utilizando los códigos proporcionados en la opción de configuración local `locales` como prefijo, excepto la configuración local predeterminada `defaultLocale` (lea más sobre el [enrutamiento](/routing.md)).
 
-The `vueI18n` option is passed as is to **vue-i18n**, refer to the [doc](https://kazupon.github.io/vue-i18n/) for available options.
+La opción `vueI18n` ahora se pasa a **vue-i18n**, consulte el [documento](https://kazupon.github.io/vue-i18n/) para ver las opciones disponibles.
 
 ## nuxt-link
 
-When rendering internal links in your app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
+Al representar enlaces internos en su aplicación usando `<nuxt-link>`, necesita obtener las URL adecuadas para la configuración local actual. Para hacer esto, **nuxt-i18n** registra una mezcla global que proporciona algunas funciones auxiliares:
 
-* `localePath` – Returns the localized URL for a given page. The first parameter can be either the name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
+* `localePath` – Devuelve la URL localizada para una página determinada. El primer parámetro puede ser el nombre de la ruta o un objeto para rutas más complejas. Se puede pasar un código de configuración regional como el segundo parámetro para generar un enlace para un idioma específico:
 
 ```vue
 <nuxt-link :to="localePath('index')">{{ $t('home') }}</nuxt-link>
@@ -48,16 +48,16 @@ When rendering internal links in your app using `<nuxt-link>`, you need to get p
 </nuxt-link>
 ```
 
-Note that `localePath` uses the route's base name to generate the localized URL. The base name corresponds to the names Nuxt generates when parsing your `pages/` directory, more info in [Nuxt's doc](https://nuxtjs.org/guide/routing).
+Tenga en cuenta que `localePath` utiliza el nombre base de la ruta para generar la URL localizada. El nombre base corresponde a los nombres que Nuxt genera al analizar su `paginas/` directorio, más información en [el documento de Nuxt](https://nuxtjs.org/guide/routing).
 
-* `switchLocalePath` – Returns a link to the current page in another language:
+* `switchLocalePath` – Devuelve un enlace a la página actual en otro idioma:
 
 ```vue
 <nuxt-link :to="switchLocalePath('en')">English</nuxt-link>
 <nuxt-link :to="switchLocalePath('fr')">Français</nuxt-link>
 ```
 
-For convenience, these methods are also available in the app's context:
+Por conveniencia, estos métodos también están disponibles en el contexto de la aplicación:
 
 ```js
 // ~/plugins/myplugin.js
