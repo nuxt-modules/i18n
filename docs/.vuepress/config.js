@@ -63,7 +63,14 @@ function sidebarLinks (locale) {
       '/': 'Introducción',
       '/setup': 'Configuración',
       '/basic-usage': 'Uso Básico',
-      '/options-reference': 'Opciones'
+      '/options-reference': 'Opciones',
+      '/routing': 'Ruteado',
+      '/browser-language-detection': 'Detectar idioma del navegador',
+      '/seo': 'Optimización para motores de búsqueda',
+      '/lazy-load-translations': 'Carga diferida de traducciones',
+      '/lang-switcher': 'Cambiador de idioma',
+      '/different-domains': 'Diferentes dominios',
+      '/migrating': 'Migración'
     }
   }
 
