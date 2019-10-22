@@ -1,17 +1,17 @@
-# Migration guide
+# Guía de migración
 
-Follow this guide to upgrade from one major version to the other.
+Siga esta guía para actualizar de una versión principal a otra.
 
 
-## Upgrading from 5.x to 6.x
+## Actualización de 5.x a 6.x
 
-### Global SEO features are now disabled by default
+### Las funciones globales de SEO ahora están deshabilitadas por defecto
 
-In some cases, having SEO enabled globally caused performance issues and/or conflicted with other plugins. To mitigate these issues, SEO features are now disabled by default.
+En algunos casos, tener SEO habilitado globalmente causó problemas de rendimiento y / o entró en conflicto con otros complementos. Para mitigar estos problemas, las características de SEO ahora están deshabilitadas de forma predeterminada.
 
-If you were affected by one of the issues above, we recommend that you read the [Improve performances](https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance) section to enable SEO only where you need it.
+Si se vio afectado por uno de los problemas anteriores, le recomendamos que lea la sección [Mejorar el rendimiento](https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance) para habilitar el SEO solo donde lo necesites.
 
-If you'd like to restore the old behaviour, you can reenable SEO features globally by setting the `seo` option to `true`:
+Si desea restaurar el comportamiento anterior, puede habilitar las funciones de SEO a nivel mundial estableciendo la opción `seo` en `true`:
 
 ```js
 {
@@ -19,11 +19,11 @@ If you'd like to restore the old behaviour, you can reenable SEO features global
 }
 ```
 
-### preserveState can't be set anymore
+### Ya no se puede configurar preserveState
 
-It was previously possible to manually set `preserveState` on **nuxt-i18n**'s store module, which would actually result in unexpected behaviours when using server-side rendering. This option has been removed altogether and the module's `preserveState` option is now [set automatically](https://github.com/nuxt-community/nuxt-i18n/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
+Anteriormente era posible configurar manualmente `preserveState` en el módulo de tienda de **nuxt-i18n**, lo que en realidad daría lugar a comportamientos inesperados al usar la representación del lado del servidor. Esta opción se ha eliminado por completo y la opción `preserveState` del módulo ahora está [establecida automáticamente](https://github.com/nuxt-community/nuxt-i18n/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
 
-If you were using the `preserveState` configuration option before, it can be safely removed:
+Si estaba utilizando la opción de configuración `preserveState` anteriormente, puede eliminarse de manera segura:
 
 ```patch
  {
@@ -34,9 +34,9 @@ If you were using the `preserveState` configuration option before, it can be saf
  }
 ```
 
-### Store module options have been flattened and renamed
+### Las opciones del módulo de almacenamiento se han aplanado y renombrado
 
-The `vuex` configuration option used to expose a `mutations` property where each mutation could be disabled or renamed. For the sake of simplicity, it isn't possible to rename these mutations anymore, the `mutations` property has been dropped to flatten the configuration and each option has been renamed to better reflect what it does.
+La opción de configuración `vuex` se usa para exponer una propiedad `mutations` donde cada mutación se puede deshabilitar o renombrar. Por el bien de la simplicidad, ya no es posible cambiar el nombre de estas mutaciones, la propiedad `mutations` se ha eliminado para aplanar la configuración y se ha cambiado el nombre de cada opción para reflejar mejor lo que hace.
 
 ```patch
  {
@@ -53,15 +53,15 @@ The `vuex` configuration option used to expose a `mutations` property where each
  }
  ```
 
-## Upgrading from 4.x to 5.x
+## Actualización de 4.x a 5.x
 
-Please refer to [**vue-i18n**'s changelog](https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23) for more information on breaking changes in **nuxt-i18n 5.x**.
+Consulte [**vue-i18n** registro de cambios](https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23) para obtener más información sobre cambios de última hora en **nuxt-i18n 5.x**.
 
-## Upgrading from 3.x to 4.x
+## Actualización de 3.x a 4.x
 
-### In-component options key
+### Opciones de clave in-component
 
-v4.x introduces a single change that requires you to rename the `i18n` key to `nuxtI18n` in your pages that use in-component configuration, this should prevent conflicts with vue-i18n.
+v4.x introduce un solo cambio que requiere que cambie el nombre de la clave `i18n` a `nuxtI18n` en sus páginas que usan la configuración en componentes, esto debería evitar conflictos con vue-i18n.
 
 **3.x:**
 
@@ -93,11 +93,11 @@ export default {
 }
 ```
 
-## Upgrading from 2.x to 3.x
+## Actualización de 2.x a 3.x
 
-### Custom routes
+### Rutas personalizadas
 
-The `routes` option has been dropped in favor of in-component configuration, any custom path configuration should be placed in their corresponding page file.
+La opción `routes` se ha descartado a favor de la configuración en componentes, cualquier configuración de ruta personalizada debe colocarse en su archivo de página correspondiente.
 
 **2.x:**
 
@@ -133,10 +133,10 @@ export default {
 }
 ```
 
-### Ignored paths
+### Rutas ignoradas
 
 
-The `ignorePaths` option has been dropped as well, its behaviour can be reproduces by setting `i18n` to `false` right in your pages.
+La opción `ignorePaths` también se ha eliminado, su comportamiento se puede reproducir configurando `i18n` en `false` en sus páginas.
 
 **2.x:**
 
@@ -166,7 +166,7 @@ export default {
 
 ### noPrefixDefaultLocale
 
-The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
+El `noPrefixDefaultLocale` se ha descartado en favor de la opción `strategy`.
 
 
 **2.x:**
@@ -199,11 +199,11 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 ### loadLanguagesAsync
 
-`loadLanguagesAsync` option has been renamed to `lazy`. `langFile` option in `locales` has been renamed to `file`.
+La opción `loadLanguagesAsync` ha cambiado de nombre a `lazy`. La opción  `langFile` en `locales` ha cambiado de nombre a `file`.
 
 ### redirectCookieKey & useRedirectCookie
 
-`redirectCookieKey` and `useRedirectCookie` have been merged into `detectBrowserLanguage` option and renamed to `cookieKey` and `useCookie` respectively.
+`redirectCookieKey` y `useRedirectCookie` se han fusionado en la opción `detectBrowserLanguage` y han cambiado el nombre a `cookieKey` y `useCookie` respectivamente.
 
 **2.x:**
 
