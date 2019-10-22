@@ -37,7 +37,7 @@ La opción `vueI18n` ahora se pasa a **vue-i18n**, consulte el [documento](https
 
 Al representar enlaces internos en su aplicación usando `<nuxt-link>`, necesita obtener las URL adecuadas para la configuración local actual. Para hacer esto, **nuxt-i18n** registra una mezcla global que proporciona algunas funciones auxiliares:
 
-* `localePath` – Devuelve la URL localizada para una página determinada. El primer parámetro puede ser el nombre de la ruta o un objeto para rutas más complejas. Se puede pasar un código de configuración regional como el segundo parámetro para generar un enlace para un idioma específico:
+* `localePath` – Devuelve la URL localizada para una página determinada. El primer parámetro puede ser el nombre de la ruta o un objeto para rutas más complejas. Se puede pasar un código de configuración local como el segundo parámetro para generar un enlace para un idioma específico:
 
 ```vue
 <nuxt-link :to="localePath('index')">{{ $t('home') }}</nuxt-link>
