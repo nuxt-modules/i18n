@@ -161,7 +161,9 @@ export default async (context) => {
     await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
 
     if (!initialSetup && strategy !== STRATEGIES.NO_PREFIX) {
-      const route = app.i18n.__route
+      // Must retrieve from context as it might have changed since plugin initialization.
+      const { route } = context
+
       const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
       const redirectPath = app.localePath(Object.assign({}, route, { name: routeName }), newLocale)
 
@@ -182,9 +184,6 @@ export default async (context) => {
   app.i18n.setLocaleCookie = setLocaleCookie
   app.i18n.getLocaleCookie = getLocaleCookie
   app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
-
-  // Current route. Updated from middleware also.
-  app.i18n.__route = route
 
   // Inject seo function
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
@@ -218,7 +217,7 @@ export default async (context) => {
 
   await loadAndSetLocale(locale, { initialSetup: true })
 
-  app.i18n.__detectBrowserLanguage = async route => {
+  app.i18n.__detectBrowserLanguage = async () => {
     if (detectBrowserLanguage) {
       const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
 
@@ -261,5 +260,5 @@ export default async (context) => {
     return false
   }
 
-  await app.i18n.__detectBrowserLanguage(route)
+  await app.i18n.__detectBrowserLanguage()
 }
