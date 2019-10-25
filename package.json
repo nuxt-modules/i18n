@@ -91,7 +91,7 @@
     "jest": "24.9.0",
     "jsdom": "15.2.0",
     "nuxt": "2.10.2",
-    "puppeteer-core": "1.20.0",
+    "puppeteer-core": "2.0.0",
     "selenium-webdriver": "4.0.0-alpha.5",
     "standard-version": "7.0.0",
     "tib": "0.7.2",
