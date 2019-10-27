@@ -3,6 +3,9 @@ const { resolve } = require('path')
 module.exports = {
   rootDir: resolve(__dirname, '../..'),
   dev: false,
+  build: {
+    quiet: true
+  },
   render: {
     resourceHints: false
   },
