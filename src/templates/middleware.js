@@ -15,10 +15,7 @@ middleware.i18n = async (context) => {
     return
   }
 
-  // Update for setLocale to have up to date route
-  app.i18n.__route = route
-
-  if (detectBrowserLanguage && await app.i18n.__detectBrowserLanguage(route)) {
+  if (detectBrowserLanguage && await app.i18n.__detectBrowserLanguage()) {
     return
   }
 
