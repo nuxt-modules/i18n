@@ -115,3 +115,48 @@ describe(`${browserString} (generate)`, () => {
     expect(await page.getText('body')).toContain('locale: en')
   })
 })
+
+describe(`${browserString} (SPA with router in hash mode)`, () => {
+  let nuxt
+  let browser
+  let page
+
+  beforeAll(async () => {
+    const overrides = {
+      mode: 'spa',
+      router: {
+        mode: 'hash'
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+
+    browser = await createBrowser(browserString, {
+      staticServer: false,
+      extendPage (page) {
+        return {
+          navigate: createNavigator(page)
+        }
+      }
+    })
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+
+    await nuxt.close()
+  })
+
+  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/490
+  test('navigates directly to page with trailing slash', async () => {
+    page = await browser.page(url('/#/fr/'))
+    expect(await page.getText('body')).toContain('locale: fr')
+  })
+
+  test('navigates directly to page with query', async () => {
+    page = await browser.page(url('/#/fr?a=1'))
+    expect(await page.getText('body')).toContain('locale: fr')
+  })
+})
