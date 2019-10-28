@@ -18,7 +18,13 @@ import {
   vueI18n,
   vuex
 } from './options'
-import { getLocaleDomain, getLocaleFromRoute, syncVuex, validateRouteParams } from './utils'
+import {
+  getLocaleDomain,
+  getLocaleFromRoute,
+  isSameRoute,
+  syncVuex,
+  validateRouteParams
+} from './utils'
 
 Vue.use(VueI18n)
 
@@ -160,13 +166,13 @@ export default async (context) => {
     await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
 
     if (!initialSetup && strategy !== STRATEGIES.NO_PREFIX) {
+      const redirectPath = app.switchLocalePath(newLocale) || app.localePath('index', newLocale)
+      const redirectRoute = app.router.resolve(redirectPath).route
+
       // Must retrieve from context as it might have changed since plugin initialization.
       const { route } = context
 
-      const routeName = route && route.name ? app.getRouteBaseName(route) : 'index'
-      const redirectPath = app.localePath(Object.assign({}, route, { name: routeName }), newLocale)
-
-      if (route && route.path !== redirectPath) {
+      if (route && !isSameRoute(route, redirectRoute)) {
         redirect(redirectPath)
       }
     }
