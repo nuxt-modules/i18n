@@ -77,7 +77,7 @@
     "@types/jest": "24.0.20",
     "babel-core": "7.0.0-bridge.0",
     "babel-plugin-dynamic-import-node": "2.3.0",
-    "chromedriver": "77.0.0",
+    "chromedriver": "78.0.1",
     "codecov": "3.6.1",
     "eslint": "6.6.0",
     "eslint-config-standard": "14.1.0",
