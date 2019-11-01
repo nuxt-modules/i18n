@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   parserOptions: {
+    parser: 'babel-eslint',
     sourceType: 'module'
   },
   env: {
@@ -8,7 +9,10 @@ module.exports = {
     node: true,
     jest: true
   },
-  extends: 'standard',
+  extends: [
+    'standard',
+    'plugin:vue/base'
+  ],
   plugins: [
     'jest',
     'vue'

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div>Subcategory {{ $route.params.subCategory }}</div>
-    <div>Post {{ $route.params.id }}</div>
+    <h2>Subcategory {{ $route.params.subCategory }}</h2>
+    <h3>Post {{ $route.params.id }}</h3>
     <LangSwitcher />
   </div>
 </template>

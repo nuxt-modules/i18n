@@ -5,13 +5,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from 'vue'
 
-function fail() {}
+function fail () {}
 
 export default Vue.extend({
   nuxtI18n: a,
-  head() {
+  head () {
     return {
       title: 'invalid options'
     }

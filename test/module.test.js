@@ -1,7 +1,7 @@
 import { setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
 
-import { cleanUpScripts } from './utils'
+import { getSeoTags } from './utils'
 
 const getDom = html => (new JSDOM(html)).window.document
 
@@ -26,35 +26,105 @@ describe('basic', () => {
 
   test('sets SEO metadata properly', async () => {
     const html = await get('/')
-    const match = html.match(/<head[^>]*>((.|\n)*)<\/head>/)
-    expect(match.length).toBeGreaterThanOrEqual(2)
-    const head = match[1]
-    expect(head).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(getSeoTags(dom)).toEqual(expect.arrayContaining([
+      {
+        tagName: 'meta',
+        property: 'og:locale',
+        content: 'en_US'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'fr_FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'nuxt-app.localhost/',
+        hreflang: 'en-US'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'nuxt-app.localhost/fr',
+        hreflang: 'fr-FR'
+      }
+    ]))
   })
 
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {
     const html = await get('/')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: Homepage')
+
+    const langSwitcher = dom.querySelector('#lang-switcher')
+    expect(langSwitcher).not.toBeNull()
+    expect(langSwitcher.children.length).toBe(1)
+    expect(langSwitcher.children[0].getAttribute('href')).toBe('/fr')
+    expect(langSwitcher.children[0].textContent).toBe('Français')
+
+    const aboutLink = dom.querySelector('#link-about')
+    expect(aboutLink).not.toBeNull()
+    expect(aboutLink.getAttribute('href')).toBe('/about-us')
+    expect(aboutLink.textContent).toBe('About us')
   })
 
   test('/fr contains FR text, link to / & link to /fr/a-propos', async () => {
     const html = await get('/fr')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: Accueil')
+
+    const langSwitcher = dom.querySelector('#lang-switcher')
+    expect(langSwitcher).not.toBeNull()
+    expect(langSwitcher.children.length).toBe(1)
+    expect(langSwitcher.children[0].getAttribute('href')).toBe('/')
+    expect(langSwitcher.children[0].textContent).toBe('English')
+
+    const aboutLink = dom.querySelector('#link-about')
+    expect(aboutLink).not.toBeNull()
+    expect(aboutLink.getAttribute('href')).toBe('/fr/a-propos')
+    expect(aboutLink.textContent).toBe('À propos')
   })
 
   test('/about-us contains EN text, link to /fr/a-propos & link /', async () => {
     const html = await get('/about-us')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: About us')
+
+    const langSwitcher = dom.querySelector('#lang-switcher')
+    expect(langSwitcher).not.toBeNull()
+    expect(langSwitcher.children.length).toBe(1)
+    expect(langSwitcher.children[0].getAttribute('href')).toBe('/fr/a-propos')
+    expect(langSwitcher.children[0].textContent).toBe('Français')
+
+    const homeLink = dom.querySelector('#link-home')
+    expect(homeLink).not.toBeNull()
+    expect(homeLink.getAttribute('href')).toBe('/')
+    expect(homeLink.textContent).toBe('Homepage')
   })
 
   test('/fr/a-propos contains FR text, link to /about-us & link to /fr/', async () => {
     const html = await get('/fr/a-propos')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: À propos')
+
+    const langSwitcher = dom.querySelector('#lang-switcher')
+    expect(langSwitcher).not.toBeNull()
+    expect(langSwitcher.children.length).toBe(1)
+    expect(langSwitcher.children[0].getAttribute('href')).toBe('/about-us')
+    expect(langSwitcher.children[0].textContent).toBe('English')
+
+    const homeLink = dom.querySelector('#link-home')
+    expect(homeLink).not.toBeNull()
+    expect(homeLink.getAttribute('href')).toBe('/fr')
+    expect(homeLink.textContent).toBe('Accueil')
   })
 
   test('/fr/notlocalized contains FR text', async () => {
     const html = await get('/fr/notlocalized')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('main').textContent).toBe('FR only')
   })
 
   test('/notlocalized & /fr/fr/notlocalized return 404', async () => {
@@ -65,6 +135,7 @@ describe('basic', () => {
       response = error
     }
     expect(response.statusCode).toBe(404)
+
     try {
       response = await get('/fr/fr/notlocalized')
     } catch (error) {
@@ -165,12 +236,30 @@ describe('basic', () => {
 
   test('/dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3', async () => {
     const html = await get('/dynamicNested/1/2/3')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('h1').textContent).toBe('Category 1')
+    expect(dom.querySelector('h2').textContent).toBe('Subcategory 2')
+    expect(dom.querySelector('h3').textContent).toBe('Post 3')
+
+    const langSwitcher = dom.querySelector('#lang-switcher')
+    expect(langSwitcher).not.toBeNull()
+    expect(langSwitcher.children.length).toBe(1)
+    expect(langSwitcher.children[0].getAttribute('href')).toBe('/fr/imbrication-dynamique/1/2/3')
+    expect(langSwitcher.children[0].textContent).toBe('Français')
   })
 
   test('/fr/imbrication-dynamique/1/2/3 contains link to /dynamicNested/1/2/3', async () => {
     const html = await get('/fr/imbrication-dynamique/1/2/3')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('h1').textContent).toBe('Category 1')
+    expect(dom.querySelector('h2').textContent).toBe('Subcategory 2')
+    expect(dom.querySelector('h3').textContent).toBe('Post 3')
+
+    const langSwitcher = dom.querySelector('#lang-switcher')
+    expect(langSwitcher).not.toBeNull()
+    expect(langSwitcher.children.length).toBe(1)
+    expect(langSwitcher.children[0].getAttribute('href')).toBe('/dynamicNested/1/2/3')
+    expect(langSwitcher.children[0].textContent).toBe('English')
   })
 
   test('localePath returns correct path', async () => {
@@ -211,7 +300,8 @@ describe('basic', () => {
       }
     }
     const html = await get('/', requestOptions)
-    expect(cleanUpScripts(html)).toContain('locale: en')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
   })
 
   test('registers message using vueI18nLoader', async () => {
@@ -342,22 +432,46 @@ describe('no_prefix strategy', () => {
   test('sets SEO metadata properly', async () => {
     const html = await get('/')
     const dom = getDom(html)
-    const metas = dom.querySelectorAll('head meta')
-    expect(metas.length).toBe(2)
-    expect(metas[0].getAttribute('property')).toBe('og:locale')
-    expect(metas[0].getAttribute('content')).toBe('en_US')
-    expect(metas[1].getAttribute('property')).toBe('og:locale:alternate')
-    expect(metas[1].getAttribute('content')).toBe('fr_FR')
+    const seoTags = getSeoTags(dom)
+    expect(seoTags).toEqual(expect.arrayContaining([
+      {
+        tagName: 'meta',
+        property: 'og:locale',
+        content: 'en_US'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'fr_FR'
+      }
+    ]))
+    expect(seoTags.filter(tag => tag.tagName === 'link')).toHaveLength(0)
   })
 
   test('/ contains EN text & link /about', async () => {
     const html = await get('/')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: Homepage')
+
+    const currentLocale = dom.querySelector('#current-locale')
+    expect(currentLocale).not.toBeNull()
+    expect(currentLocale.textContent).toBe('locale: en')
+
+    const aboutLink = dom.querySelector('#link-about')
+    expect(aboutLink).not.toBeNull()
+    expect(aboutLink.getAttribute('href')).toBe('/about')
+    expect(aboutLink.textContent).toBe('About us')
   })
 
   test('/about contains EN text & link /', async () => {
     const html = await get('/about')
-    expect(cleanUpScripts(html)).toMatchSnapshot()
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: About us')
+
+    const homeLink = dom.querySelector('#link-home')
+    expect(homeLink).not.toBeNull()
+    expect(homeLink.getAttribute('href')).toBe('/')
+    expect(homeLink.textContent).toBe('Homepage')
   })
 
   test('/fr/ returns 404', async () => {
@@ -395,7 +509,8 @@ describe('no_prefix strategy', () => {
       }
     }
     const html = await get('/', requestOptions)
-    expect(cleanUpScripts(html)).toContain('locale: en')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
   })
 })
 

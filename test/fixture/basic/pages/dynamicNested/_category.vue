@@ -1,6 +1,6 @@
 <template>
   <div>
-    Category {{ $route.params.category }}
+    <h1>Category {{ $route.params.category }}</h1>
     <nuxt-child></nuxt-child>
   </div>
 </template>
