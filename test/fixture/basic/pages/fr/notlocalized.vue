@@ -1,7 +1,5 @@
 <template>
-<div>
-  FR only
-</div>
+  <main>FR only</main>
 </template>
 
 <script>

@@ -5,7 +5,7 @@
 <script>
 export default {
   nuxtI18n: {
-    locales: ['en', 'fr', 'es']  // locale not defined in global options
+    locales: ['en', 'fr', 'es'] // locale not defined in global options
   }
 }
 </script>

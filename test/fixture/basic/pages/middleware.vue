@@ -14,13 +14,13 @@ export default {
       fr: '/middleware-fr'
     }
   },
-  data() {
+  data () {
     return {
       allLocalePaths: [],
-      routeBaseName: '',
+      routeBaseName: ''
     }
   },
-  asyncData({ app }) {
+  asyncData ({ app }) {
     return {
       allLocalePaths: app.allLocalePaths.join(','),
       routeBaseName: app.routeBaseName

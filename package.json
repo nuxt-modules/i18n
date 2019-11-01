@@ -24,7 +24,7 @@
   "scripts": {
     "dev:basic": "nuxt -c ./test/fixture/basic/nuxt.config.js",
     "coverage": "codecov",
-    "lint": "eslint src test",
+    "lint": "eslint --ext .js,.vue src test",
     "test": "yarn test:types && yarn test:unit && yarn test:e2e-ssr && yarn test:e2e-browser",
     "test:e2e-ssr": "jest test/module.test",
     "test:e2e-browser": "jest test/browser.test",
@@ -36,6 +36,7 @@
   },
   "eslintIgnore": [
     "src/templates/options.js",
+    "test/fixture/typescript/**/*",
     "**/*.d.ts"
   ],
   "files": [
@@ -76,6 +77,7 @@
     "@nuxtjs/module-test-utils": "1.5.0",
     "@types/jest": "24.0.21",
     "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.0.3",
     "babel-plugin-dynamic-import-node": "2.3.0",
     "chromedriver": "78.0.1",
     "codecov": "3.6.1",
