@@ -56,6 +56,10 @@ This strategy doesn't support [Custom paths](#custom-paths) and [Ignore routes](
 
 Using this strategy, all of your routes will have a locale prefix added except for the default language.
 
+::: warning
+For wildcard routes to work the order of locales in you config is important, the defaultLocale (without prefix) should be last.
+:::
+
 ### prefix
 
 With this strategy, all routes will have a locale prefix.
