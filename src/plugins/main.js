@@ -98,21 +98,20 @@ export default async (context) => {
       return
     }
     const date = new Date()
+    const cookieOptions = {
+      expires: new Date(date.setDate(date.getDate() + 365)),
+      path: '/',
+      sameSite: 'lax'
+    }
     if (process.client) {
-      JsCookie.set(cookieKey, locale, {
-        expires: new Date(date.setDate(date.getDate() + 365)),
-        path: '/'
-      })
+      JsCookie.set(cookieKey, locale, cookieOptions)
     } else if (res) {
       let headers = res.getHeader('Set-Cookie') || []
       if (typeof headers === 'string') {
         headers = [headers]
       }
 
-      const redirectCookie = Cookie.serialize(cookieKey, locale, {
-        expires: new Date(date.setDate(date.getDate() + 365)),
-        path: '/'
-      })
+      const redirectCookie = Cookie.serialize(cookieKey, locale, cookieOptions)
       headers.push(redirectCookie)
 
       res.setHeader('Set-Cookie', headers)
