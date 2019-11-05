@@ -9,7 +9,7 @@
   dependencies:
     "@babel/highlight" "^7.0.0"
 
-"@babel/core@7.6.4", "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.6.0", "@babel/core@^7.6.4":
+"@babel/core@7.6.4", "@babel/core@^7.0.0", "@babel/core@^7.1.0", "@babel/core@^7.6.4":
   version "7.6.4"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.6.4.tgz#6ebd9fe00925f6c3e177bb726a188b5f578088ff"
   integrity sha512-Rm0HGw101GY8FTzpWSyRbki/jzq+/PkNQJ+nSulrdY6gFGOsNseCqD6KHRYe2E+EdzuBdr2pxCp6s4Uk6eJ+XQ==
@@ -11240,20 +11240,20 @@ thunky@^1.0.2:
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-1.0.3.tgz#f5df732453407b09191dae73e2a8cc73f381a826"
   integrity sha512-YwT8pjmNcAXBZqrubu22P4FYsh2D4dxRmnWBOL8Jk8bUcRUtc5326kx32tuTmFDAZtLOGEVNl8POAR8j896Iow==
 
-tib@0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/tib/-/tib-0.7.2.tgz#a68b3cb6bbd6e6d04d81ab77262e602dd5093570"
-  integrity sha512-r7sSulPyLh6rN/HdWEp0PJ0887fEXxMHJe88436UtlyuWy1vbhZjTB/TH+m7dxOPPMKEVMfRIlz55Z/SwCXiQw==
+tib@0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/tib/-/tib-0.7.3.tgz#06cf112ae5ccc047b4a204cc01eb6586223d34af"
+  integrity sha512-yAxDlZKLMw4Hu+VS/HVXtljGdczBe/wj2DpCNjSj7y0OW67nGH2MouOpO0VOJPSI3lO6cc5VQcYk9NYUSwFRng==
   dependencies:
-    "@babel/core" "^7.6.0"
-    "@babel/parser" "^7.5.5"
+    "@babel/core" "^7.6.4"
+    "@babel/parser" "^7.6.4"
     babel-loader "^8.0.6"
-    glob "^7.1.4"
+    glob "^7.1.5"
     hable "^2.3.2"
     signal-exit "^3.0.2"
     tree-kill "^1.2.1"
     vue-template-compiler "^2.6.10"
-    webpack "^4.39.3"
+    webpack "^4.41.2"
 
 time-fix-plugin@^2.0.6:
   version "2.0.6"
@@ -12069,10 +12069,10 @@ webpack-sources@^1.0.1, webpack-sources@^1.1.0, webpack-sources@^1.4.0, webpack-
     source-list-map "^2.0.0"
     source-map "~0.6.1"
 
-webpack@^4.39.3, webpack@^4.8.1:
-  version "4.41.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.41.1.tgz#5388dd3047d680d5d382a84249fd4750e87372fd"
-  integrity sha512-ak7u4tUu/U63sCVxA571IuPZO/Q0pZ9cEXKg+R/woxkDzVovq57uB6L2Hlg/pC8LCU+TWpvtcYwsstivQwMJmw==
+webpack@^4.41.2:
+  version "4.41.2"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.41.2.tgz#c34ec76daa3a8468c9b61a50336d8e3303dce74e"
+  integrity sha512-Zhw69edTGfbz9/8JJoyRQ/pq8FYUoY0diOXqW0T6yhgdhCv6wr0hra5DwwWexNRns2Z2+gsnrNcbe9hbGBgk/A==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
@@ -12098,10 +12098,10 @@ webpack@^4.39.3, webpack@^4.8.1:
     watchpack "^1.6.0"
     webpack-sources "^1.4.1"
 
-webpack@^4.41.2:
-  version "4.41.2"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.41.2.tgz#c34ec76daa3a8468c9b61a50336d8e3303dce74e"
-  integrity sha512-Zhw69edTGfbz9/8JJoyRQ/pq8FYUoY0diOXqW0T6yhgdhCv6wr0hra5DwwWexNRns2Z2+gsnrNcbe9hbGBgk/A==
+webpack@^4.8.1:
+  version "4.41.1"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.41.1.tgz#5388dd3047d680d5d382a84249fd4750e87372fd"
+  integrity sha512-ak7u4tUu/U63sCVxA571IuPZO/Q0pZ9cEXKg+R/woxkDzVovq57uB6L2Hlg/pC8LCU+TWpvtcYwsstivQwMJmw==
   dependencies:
     "@webassemblyjs/ast" "1.8.5"
     "@webassemblyjs/helper-module-context" "1.8.5"
