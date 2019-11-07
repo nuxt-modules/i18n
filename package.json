@@ -95,7 +95,7 @@
     "nuxt": "2.10.2",
     "puppeteer-core": "2.0.0",
     "selenium-webdriver": "4.0.0-alpha.5",
-    "standard-version": "7.0.0",
+    "standard-version": "7.0.1",
     "tib": "0.7.3",
     "typescript": "3.7.2",
     "vuepress": "1.2.0"
