@@ -1,6 +1,4 @@
-const {
-  STRATEGIES
-} = require('./constants')
+const { STRATEGIES } = require('./constants')
 const { extractComponentOptions } = require('./components')
 const { getPageOptions, getLocaleCodes } = require('./utils')
 
@@ -135,6 +133,13 @@ exports.makeRoutes = (baseRoutes, {
   for (let i = 0, length1 = baseRoutes.length; i < length1; i++) {
     const route = baseRoutes[i]
     localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, { locales }))
+  }
+
+  try {
+    const { sortRoutes } = require('@nuxt/utils')
+    localizedRoutes = sortRoutes(localizedRoutes)
+  } catch (error) {
+    // Ignore
   }
 
   return localizedRoutes

@@ -569,6 +569,28 @@ describe('invalid strategy', () => {
   })
 })
 
+describe('dynamic route', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    nuxt = (await setup(loadConfig(__dirname, 'dynamic'))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('can access catch-all route for every locale', async () => {
+    let html = await get('/aaa')
+    let dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
+
+    html = await get('/fr/aaa')
+    dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
+  })
+})
+
 describe('hash mode', () => {
   let nuxt
 
