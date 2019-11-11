@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.3.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.3.0...v6.3.1) (2019-11-11)
+
+
+### Bug Fixes
+
+* default locale catch-all route overrides locale-specific one ([196bf9c](https://github.com/nuxt-community/nuxt-i18n/commit/196bf9cb58f157a72d49a7598df77e536f272093)), closes [#152](https://github.com/nuxt-community/nuxt-i18n/issues/152)
+* Direct navigation to URL in SPA with vue-router in hash mode ([0a9c4c8](https://github.com/nuxt-community/nuxt-i18n/commit/0a9c4c8b4cffc81f5c1c5f9906f545edd1d5cd9a)), closes [#490](https://github.com/nuxt-community/nuxt-i18n/issues/490)
+* make switchLocalePath work from Nuxt plugin or middleware ([8a1c052](https://github.com/nuxt-community/nuxt-i18n/commit/8a1c052f340ad8f86d62fb1e3c6f1107360fb0e9)), closes [#480](https://github.com/nuxt-community/nuxt-i18n/issues/480)
+* set sameSite=Lax option for detected-language cookie ([8d84986](https://github.com/nuxt-community/nuxt-i18n/commit/8d8498619023296957ae56fea4ca6996b357aa6a)), closes [#516](https://github.com/nuxt-community/nuxt-i18n/issues/516)
+
 ## [6.3.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.2.1...v6.3.0) (2019-09-26)
 
 
