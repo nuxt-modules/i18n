@@ -42,7 +42,7 @@ Note that routes for the English version do not have any prefix because it is th
 
 There are four supported strategies for generating the app's routes:
 
-### no_prefix
+ - ### no_prefix
 
 > :new: 6.1.0
 
@@ -52,19 +52,21 @@ With this strategy, your routes won't have a locale prefix added. The locale wil
 This strategy doesn't support [Custom paths](#custom-paths) and [Ignore routes](#ignore-routes) features.
 :::
 
-### prefix_except_default
+ - ### prefix_except_default
 
 Using this strategy, all of your routes will have a locale prefix added except for the default language.
 
-### prefix
+ - ### prefix
 
 With this strategy, all routes will have a locale prefix.
 
-### prefix_and_default
+ - ### prefix_and_default
 
 This strategy combines both previous strategies behaviours, meaning that you will get URLs with prefixes for every language, but URLs for the default language will also have a non-prefixed version.
 
-To configure the strategy, use the `strategy` option. Make sure you have a `defaultLocale` defined if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy.
+### Configuration
+
+To configure the strategy, use the `strategy` option. Make sure that you have a `defaultLocale` defined if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy.
 
 
 ```js
@@ -76,6 +78,22 @@ To configure the strategy, use the `strategy` option. Make sure you have a `defa
 }]
 ```
 
+::: warning
+If on `Nuxt` version lower than 2.10.2, and using strategy `prefix_except_default` or `prefix_and_default`, make sure that that the locale matching `defaultLocale` is last in the array of locales. For example:
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  strategy: 'prefix_except_default',
+  defaultLocale: 'en',
+  locales: [
+    'fr',
+    'en',  // Make sure that defualt locale is the last one!
+  ]
+}]
+```
+:::
 
 ## Custom paths
 
