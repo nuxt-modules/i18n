@@ -2,7 +2,7 @@ import middleware from '../middleware'
 import { detectBrowserLanguage, rootRedirect } from './options'
 import { getLocaleFromRoute } from './utils'
 
-middleware.i18n = async (context) => {
+middleware.nuxti18n = async (context) => {
   const { app, route, redirect, isHMR } = context
 
   if (isHMR) {

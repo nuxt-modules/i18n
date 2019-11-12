@@ -130,7 +130,7 @@ module.exports = function (userOptions) {
     })
   }
 
-  this.options.router.middleware.push('i18n')
+  this.options.router.middleware.push('nuxti18n')
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensions.directive
 }
