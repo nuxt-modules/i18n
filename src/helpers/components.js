@@ -20,6 +20,8 @@ exports.extractComponentOptions = (path) => {
     const parsed = parser.parse(script, {
       sourceType: 'module',
       plugins: [
+        'nullishCoalescingOperator',
+        'optionalChaining',
         'classProperties',
         'decorators-legacy',
         'dynamicImport',
