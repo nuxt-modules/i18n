@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.4.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.3.1...v6.4.0) (2019-11-18)
+
+
+### Features
+
+* **parser:** parse typescript 3.7 shipped proposals ([a69a8fb](https://github.com/nuxt-community/nuxt-i18n/commit/a69a8fb4ba478a022e363b2f1b7990588360f07f))
+
 ### [6.3.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.3.0...v6.3.1) (2019-11-11)
 
 
