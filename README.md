@@ -19,7 +19,7 @@
 ## Features
 - Integration with [vue-i18n](https://kazupon.github.io/vue-i18n/)
 - Automatic routes generation and custom paths
-- Search Engine Optimatization
+- Search Engine Optimization
 - Lazy-loading of translations messages
 - Redirection based on auto-detected language
 - Different domain names for different languages
