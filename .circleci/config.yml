@@ -8,7 +8,7 @@ executors:
         type: boolean
         default: false
     docker:
-      - image: circleci/node:latest<<# parameters.browsers >>-browsers<</ parameters.browsers >>
+      - image: circleci/node:12<<# parameters.browsers >>-browsers<</ parameters.browsers >>
     working_directory: ~/nuxt-i18n
     environment:
       NODE_ENV: test
