@@ -120,8 +120,8 @@ function switchLocalePath (locale) {
   return path
 }
 
-function getRouteBaseName () {
-  const { route } = this
+function getRouteBaseName (givenRoute) {
+  const route = givenRoute || this.route
   if (!route.name) {
     return null
   }
