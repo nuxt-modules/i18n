@@ -280,6 +280,14 @@ describe('basic', () => {
     expect(window.$nuxt.getRouteBaseName()).toBe('index')
   })
 
+  test('getRouteBaseName returns name of passed in route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const aboutRoute = window.$nuxt.$router.options.routes.find(route => route.path === '/about-us')
+    expect(aboutRoute).toBeDefined()
+    expect(aboutRoute.name).toBeDefined()
+    expect(window.$nuxt.getRouteBaseName(aboutRoute)).toBe('about')
+  })
+
   test('localePath, switchLocalePath, getRouteBaseName works from a middleware', async () => {
     const html = await get('/middleware')
     const dom = getDom(html)
