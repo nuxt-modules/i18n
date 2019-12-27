@@ -29,11 +29,10 @@ function localePath (route, locale) {
 
   // If route parameter is a string, check if it's a path or name of route.
   if (typeof route === 'string') {
-    if(route[0]==='/'){
+    if (route[0] === '/') {
       // If route parameter is a path, create route object with path.
       route = { path: route }
-    } 
-    else {
+    } else {
       // Else use it as route name.
       route = { name: route }
     }
