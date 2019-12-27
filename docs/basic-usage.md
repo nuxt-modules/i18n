@@ -37,18 +37,20 @@ The `vueI18n` option is passed as is to **vue-i18n**, refer to the [doc](https:/
 
 When rendering internal links in your app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
 
-* `localePath` – Returns the localized URL for a given page. The first parameter can be either the name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
+* `localePath` – Returns the localized URL for a given page. The first parameter can be either the path or name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
 
 ```vue
 <nuxt-link :to="localePath('index')">{{ $t('home') }}</nuxt-link>
+<nuxt-link :to="localePath('/')">{{ $t('home') }}</nuxt-link>
 <nuxt-link :to="localePath('index', 'en')">Homepage in English</nuxt-link>
+<nuxt-link :to="localePath('/app/profile')">Route by path to: {{ $t('Profile') }}</nuxt-link>
+<nuxt-link :to="localePath('app-profile')">Route by name to: {{ $t('Profile') }}</nuxt-link>
 <nuxt-link
   :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
   {{ category.title }}
 </nuxt-link>
 ```
-
-Note that `localePath` uses the route's base name to generate the localized URL. The base name corresponds to the names Nuxt generates when parsing your `pages/` directory, more info in [Nuxt's doc](https://nuxtjs.org/guide/routing).
+Note that `localePath` can use the route's unprefixed path, which must start with `'/'` or the route's base name to generate the localized URL. The base name corresponds to the names Nuxt generates when parsing your `pages/` directory, more info in [Nuxt's doc](https://nuxtjs.org/guide/routing).
 
 * `switchLocalePath` – Returns a link to the current page in another language:
 
