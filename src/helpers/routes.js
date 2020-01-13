@@ -12,7 +12,8 @@ exports.makeRoutes = (baseRoutes, {
   pages,
   encodePaths,
   pagesDir,
-  differentDomains
+  differentDomains,
+  getTranslatedRoute
 }) => {
   locales = getLocaleCodes(locales)
   let localizedRoutes = []
@@ -76,7 +77,9 @@ exports.makeRoutes = (baseRoutes, {
       }
 
       // Get custom path if any
-      if (componentOptions.paths && componentOptions.paths[locale]) {
+      if (typeof getTranslatedRoute === 'function') {
+        path = getTranslatedRoute(path, locale);
+      } else if (componentOptions.paths && componentOptions.paths[locale]) {
         path = encodePaths ? encodeURI(componentOptions.paths[locale]) : componentOptions.paths[locale]
       }
 

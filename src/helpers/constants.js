@@ -53,6 +53,7 @@ exports.DEFAULT_OPTIONS = {
   pages: {},
   encodePaths: true,
   beforeLanguageSwitch: () => null,
-  onLanguageSwitched: () => null
+  onLanguageSwitched: () => null,
+  getTranslatedRoute: false
 }
 exports.NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']
