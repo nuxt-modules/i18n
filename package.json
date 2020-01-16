@@ -70,9 +70,11 @@
   },
   "devDependencies": {
     "@babel/core": "7.7.4",
+    "@babel/generator": "7.7.4",
     "@babel/plugin-syntax-dynamic-import": "7.7.4",
     "@babel/preset-env": "7.7.4",
     "@babel/runtime": "7.7.4",
+    "@babel/types": "7.7.4",
     "@nuxt/types": "0.5.3",
     "@nuxtjs/module-test-utils": "1.5.0",
     "@types/jest": "24.0.23",

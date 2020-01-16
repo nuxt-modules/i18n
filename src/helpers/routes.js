@@ -44,6 +44,7 @@ exports.makeRoutes = (baseRoutes, {
       ...pageOptions,
       ...routeOptions
     }
+
     // Double check locales to remove any locales not found in pageOptions
     // This is there to prevent children routes being localized even though
     // they are disabled in the configuration

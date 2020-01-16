@@ -3,6 +3,7 @@ const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
 
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
+
 // Must not be an explicit dependency to avoid version mismatch issue.
 // See https://github.com/nuxt-community/nuxt-i18n/issues/297
 const compiler = require('vue-template-compiler')
@@ -33,6 +34,14 @@ exports.extractComponentOptions = (path) => {
 
     traverse(parsed, {
       enter (path) {
+
+        if (path.node.type === 'ClassProperty' && path.node.key.name === COMPONENT_OPTIONS_KEY)
+        {
+          const data = script.substring(path.node.value.start, path.node.value.end)
+          componentOptions = eval(`(${data.replace(/\s/g,'')})`);
+          return
+        }
+
         if (path.node.type === 'Property') {
           if (path.node.key.name === COMPONENT_OPTIONS_KEY) {
             const data = script.substring(path.node.start, path.node.end)
@@ -42,6 +51,7 @@ exports.extractComponentOptions = (path) => {
       }
     })
   } catch (error) {
+    console.log(error);
     // eslint-disable-next-line no-console
     console.warn('[' + MODULE_NAME + `] Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${path}".`)
   }
