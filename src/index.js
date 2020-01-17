@@ -22,7 +22,6 @@ const {
 } = require('./helpers/utils')
 
 module.exports = function (userOptions) {
-  console.log('FIRING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
   const pluginsPath = join(__dirname, PLUGINS_DIR)
   const templatesPath = join(__dirname, TEMPLATES_DIR)
 
