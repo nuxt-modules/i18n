@@ -130,6 +130,9 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
       mode: 'spa',
       router: {
         mode: 'hash'
+      },
+      i18n: {
+        detectBrowserLanguage: false
       }
     }
 
