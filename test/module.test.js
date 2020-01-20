@@ -266,6 +266,7 @@ describe('basic', () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localePath('about')).toBe('/about-us')
     expect(window.$nuxt.localePath('about', 'fr')).toBe('/fr/a-propos')
+    expect(window.$nuxt.localePath('/about-us')).toBe('/about-us')
     expect(window.$nuxt.localePath({ path: '/about' })).toBe('/about-us')
     expect(window.$nuxt.localePath({ path: '/about/' })).toBe('/about-us')
   })
