@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.4.1...v6.5.0) (2020-01-20)
+
+
+### Features
+
+* support paths in localePath() ([#554](https://github.com/nuxt-community/nuxt-i18n/issues/554)) ([29a282e](https://github.com/nuxt-community/nuxt-i18n/commit/29a282ebf47a6dab9de3520abae5393de6f4c721))
+
 ### [6.4.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.4.0...v6.4.1) (2019-12-02)
 
 
