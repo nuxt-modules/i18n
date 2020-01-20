@@ -12,7 +12,7 @@ const createNavigator = page => {
     // Chain and return nothing to work around.
     await page.runAsyncScript(path => {
       return new Promise((resolve, reject) => {
-        window.$nuxt.$router.push(path, resolve, reject)
+        window.$nuxt.$router.push(path, () => resolve(), reject)
       })
     }, path)
     await new Promise(resolve => setTimeout(resolve, 50))
