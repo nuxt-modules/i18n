@@ -10,7 +10,11 @@ const createNavigator = page => {
     // When returning value resolved by `push`, `chrome/selenium`` crashes with:
     // WebDriverError: unknown error: unhandled inspector error: {"code":-32000,"message":"Object reference chain is too long"}
     // Chain and return nothing to work around.
-    await page.runAsyncScript(path => window.$nuxt.$router.push(path).then(() => {}), path)
+    await page.runAsyncScript(path => {
+      return new Promise((resolve, reject) => {
+        window.$nuxt.$router.push(path, resolve, reject)
+      })
+    }, path)
     await new Promise(resolve => setTimeout(resolve, 50))
   }
 }
