@@ -233,9 +233,9 @@ export default async (context) => {
         // Exclude 1 for backwards compatibility and fallback when fallbackLocale is empty
       } else if (process.client && typeof navigator !== 'undefined' && navigator.language) {
         // Get browser language either from navigator if running on client side, or from the headers
-        browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
+        browserLocale = navigator.language.toLocaleLowerCase()
       } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-        browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
+        browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase()
       }
 
       if (browserLocale) {
