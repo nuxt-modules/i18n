@@ -89,7 +89,7 @@ If on `Nuxt` version lower than 2.10.2, and using strategy `prefix_except_defaul
   defaultLocale: 'en',
   locales: [
     'fr',
-    'en',  // Make sure that defualt locale is the last one!
+    'en',  // Make sure that default locale is the last one!
   ]
 }]
 ```
