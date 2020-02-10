@@ -164,11 +164,11 @@ export default async (context) => {
 
     app.i18n.locale = newLocale
 
+    await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
+
     if (!initialSetup) {
       app.i18n.onLanguageSwitched(oldLocale, newLocale)
     }
-
-    await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
 
     if (!initialSetup && strategy !== STRATEGIES.NO_PREFIX) {
       const redirectPath = app.switchLocalePath(newLocale) || app.localePath('index', newLocale)
