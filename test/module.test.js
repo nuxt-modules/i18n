@@ -42,7 +42,7 @@ describe('basic', () => {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/',
-        hreflang: 'en-US'
+        hreflang: 'en'
       },
       {
         tagName: 'link',

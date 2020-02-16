@@ -19,7 +19,8 @@ module.exports = {
       {
         code: 'en',
         iso: 'en-US',
-        name: 'English'
+        name: 'English',
+        isRegionIndependent: true
       },
       {
         code: 'fr',

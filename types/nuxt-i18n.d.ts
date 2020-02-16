@@ -20,6 +20,7 @@ declare namespace NuxtVueI18n {
       iso?: string
       // can be undefined: https://goo.gl/ryc5pF
       file?: string
+      isRegionIndependent?: boolean
       // Allow custom properties, e.g. "name": https://goo.gl/wrcb2G
       [key: string]: any
     }
