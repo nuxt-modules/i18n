@@ -79,7 +79,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.3",
     "babel-plugin-dynamic-import-node": "2.3.0",
-    "chromedriver": "79.0.3",
+    "chromedriver": "80.0.1",
     "codecov": "3.6.5",
     "eslint": "6.8.0",
     "eslint-config-standard": "14.1.0",
