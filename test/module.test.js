@@ -48,6 +48,12 @@ describe('basic', () => {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/',
+        hreflang: 'fr_FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'nuxt-app.localhost/',
         hreflang: 'en'
       },
       {
