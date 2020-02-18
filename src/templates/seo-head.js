@@ -30,7 +30,9 @@ export const nuxtI18nSeo = function () {
   const link = []
   // hreflang tags
   if (strategy !== STRATEGIES.NO_PREFIX) {
-    link.push(...this.$i18n.locales.map(locale => {
+    const languageForLocale = locale => locale.split('-')[0] // en-US -> en
+
+    const locales = this.$i18n.locales.map(locale => {
       const localeIso = locale[LOCALE_ISO_KEY]
       if (!localeIso) {
         // eslint-disable-next-line no-console
@@ -38,15 +40,27 @@ export const nuxtI18nSeo = function () {
         return
       }
 
-      const hreflang = locale.isRegionIndependent ? localeIso.split('-')[0] : localeIso
-
       return {
-        hid: `alternate-hreflang-${hreflang}`,
+        hid: `alternate-hreflang-${localeIso}`,
         rel: 'alternate',
         href: baseUrl + this.switchLocalePath(locale.code),
-        hreflang
+        hreflang: localeIso
       }
-    }).filter(Boolean))
+    }).filter(Boolean)
+
+    link.push(...locales)
+
+    const languages = locales.map(locale => languageForLocale(locale.hreflang))
+    const uniqueLanguages = Array.from(new Set(languages))
+
+    const catchAllLocales = uniqueLanguages.map(language => {
+      const localesWithLanguage = this.$i18n.locales.filter(locale => languageForLocale(locale[LOCALE_ISO_KEY]) === language)
+      const forcedCatchallLocale = localesWithLanguage.find(locale => locale.isCatchallLocale) || localesWithLanguage[0]
+      const catchAllLocaleIso = forcedCatchallLocale[LOCALE_ISO_KEY]
+      return locales.find(locale => locale.hreflang === catchAllLocaleIso)
+    })
+
+    link.push(...catchAllLocales)
   }
 
   // canonical links
