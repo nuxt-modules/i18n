@@ -62,6 +62,10 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
     // preferred language to prevent subsequent redirections
     // Set to false to redirect every time
     useCookie: true,
+    // Enabled by default, which means the cookie domain includes the subdomain
+    // (e.g. "www.mydomain.com")
+    // If disabled, the subdomain is excluded (e.g. "mydomain.com")
+    includeCookieSubdomain: true
     // Cookie name
     cookieKey: 'i18n_redirected',
     // Set to always redirect to value stored in the cookie, not just once
