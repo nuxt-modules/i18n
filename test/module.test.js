@@ -42,19 +42,19 @@ describe('basic', () => {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/',
-        hreflang: 'en'
-      },
-      {
-        tagName: 'link',
-        rel: 'alternate',
-        href: 'nuxt-app.localhost/',
         hreflang: 'en_US'
       },
       {
         tagName: 'link',
         rel: 'alternate',
+        href: 'nuxt-app.localhost/',
+        hreflang: 'en'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
         href: 'nuxt-app.localhost/fr',
-        hreflang: 'fr-FR'
+        hreflang: 'fr'
       }
     ]))
   })

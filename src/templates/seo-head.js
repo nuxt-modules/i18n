@@ -30,7 +30,7 @@ export const nuxtI18nSeo = function () {
   const link = []
   // hreflang tags
   if (strategy !== STRATEGIES.NO_PREFIX) {
-    const languageForLocale = locale => locale.split('-')[0] // en-US -> en
+    const languageFromLocaleIso = iso => iso.split('-')[0] // en-US -> en
 
     const locales = this.$i18n.locales.map(locale => {
       const localeIso = locale[LOCALE_ISO_KEY]
@@ -50,15 +50,22 @@ export const nuxtI18nSeo = function () {
 
     link.push(...locales)
 
-    const languages = locales.map(locale => languageForLocale(locale.hreflang))
+    const languages = locales.map(locale => languageFromLocaleIso(locale.hreflang))
     const uniqueLanguages = Array.from(new Set(languages))
 
     const catchAllLocales = uniqueLanguages.map(language => {
-      const localesWithLanguage = this.$i18n.locales.filter(locale => languageForLocale(locale[LOCALE_ISO_KEY]) === language)
+      const localesWithLanguage = this.$i18n.locales.filter(locale => languageFromLocaleIso(locale[LOCALE_ISO_KEY]) === language)
+      if (!localesWithLanguage) {
+        return
+      }
+
       const forcedCatchallLocale = localesWithLanguage.find(locale => locale.isCatchallLocale) || localesWithLanguage[0]
       const catchAllLocaleIso = forcedCatchallLocale[LOCALE_ISO_KEY]
-      return locales.find(locale => locale.hreflang === catchAllLocaleIso)
-    })
+      const catchallLocale = locales.find(locale => locale.hreflang === catchAllLocaleIso)
+      catchallLocale.hreflang = languageFromLocaleIso(catchAllLocaleIso)
+
+      return catchallLocale
+    }).filter(Boolean)
 
     link.push(...catchAllLocales)
   }
