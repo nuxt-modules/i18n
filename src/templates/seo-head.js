@@ -61,8 +61,10 @@ export const nuxtI18nSeo = function () {
 
       const forcedCatchallLocale = localesWithLanguage.find(locale => locale.isCatchallLocale) || localesWithLanguage[0]
       const catchAllLocaleIso = forcedCatchallLocale[LOCALE_ISO_KEY]
+      const catchAllLanguage = languageFromLocaleIso(catchAllLocaleIso)
       const catchallLocale = { ...locales.find(locale => locale.hreflang === catchAllLocaleIso) }
-      catchallLocale.hreflang = languageFromLocaleIso(catchAllLocaleIso)
+      catchallLocale.hid = `alternate-hreflang-${catchAllLanguage}`
+      catchallLocale.hreflang = catchAllLanguage
 
       return catchallLocale
     }).filter(Boolean)
