@@ -86,7 +86,7 @@ export default async (context) => {
     }, { preserveState: !!store.state[vuex.moduleName] })
   }
 
-  const { useCookie, cookieKey } = detectBrowserLanguage
+  const { useCookie, cookieKey, cookieDomain } = detectBrowserLanguage
 
   const getLocaleCookie = () => {
     if (useCookie) {
@@ -109,6 +109,11 @@ export default async (context) => {
       path: '/',
       sameSite: 'lax'
     }
+
+    if (cookieDomain) {
+      cookieOptions.domain = cookieDomain
+    }
+
     if (process.client) {
       JsCookie.set(cookieKey, locale, cookieOptions)
     } else if (res) {
