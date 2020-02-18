@@ -62,7 +62,7 @@ Here are all the options available when configuring the module and their default
     // preferred language to prevent subsequent redirections
     // Set to false to redirect every time
     useCookie: true,
-    // Specifies the domain of the cookie
+    // Set to override the default domain of the cookie. Defaults to host of the site.
     cookieDomain: null
     // Cookie name
     cookieKey: 'i18n_redirected',
