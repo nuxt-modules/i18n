@@ -86,7 +86,7 @@ export default async (context) => {
     }, { preserveState: !!store.state[vuex.moduleName] })
   }
 
-  const { useCookie, cookieKey, includeCookieSubdomain } = detectBrowserLanguage
+  const { useCookie, cookieKey, cookieDomain } = detectBrowserLanguage
 
   const getLocaleCookie = () => {
     if (useCookie) {
@@ -97,30 +97,6 @@ export default async (context) => {
         return cookies[cookieKey]
       }
     }
-  }
-
-  const getCookieDomain = () => {
-    let hostname
-
-    if (process.client) {
-      hostname = document.location.hostname
-    } else if (req && req.hostname) {
-      hostname = req.hostname
-    }
-
-    if (!hostname) {
-      return
-    }
-
-    const hostnameSegments = hostname.split('.')
-
-    if (hostnameSegments.length === 1) {
-      // Don't modify the domain if the host is 'localhost'
-      return hostname
-    }
-
-    hostnameSegments.shift()
-    return `.${hostnameSegments.join('.')}`
   }
 
   const setLocaleCookie = locale => {
@@ -134,8 +110,8 @@ export default async (context) => {
       sameSite: 'lax'
     }
 
-    if (!includeCookieSubdomain) {
-      cookieOptions.domain = getCookieDomain()
+    if (cookieDomain) {
+      cookieOptions.domain = cookieDomain
     }
 
     if (process.client) {
