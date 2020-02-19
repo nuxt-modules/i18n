@@ -1,11 +1,10 @@
 const { readFileSync } = require('fs')
-const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
-
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 // Must not be an explicit dependency to avoid version mismatch issue.
 // See https://github.com/nuxt-community/nuxt-i18n/issues/297
 const compiler = require('vue-template-compiler')
+const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
 
 exports.extractComponentOptions = (path) => {
   let componentOptions = {}

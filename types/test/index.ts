@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import * as types from '../index'
+import '../index'
 
 const vm = new Vue()
 const locale = 'en'

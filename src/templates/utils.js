@@ -81,7 +81,9 @@ const trailingSlashRE = /\/?$/
  */
 function isObjectEqual (a = {}, b = {}) {
   // handle null value #1566
-  if (!a || !b) return a === b
+  if (!a || !b) {
+    return a === b
+  }
   const aKeys = Object.keys(a)
   const bKeys = Object.keys(b)
   if (aKeys.length !== bKeys.length) {

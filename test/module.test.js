@@ -527,7 +527,7 @@ describe('no_prefix strategy + differentDomains', () => {
   let nuxt
   let spy
 
-  beforeAll(async () => {
+  beforeAll(() => {
     spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
@@ -555,7 +555,7 @@ describe('invalid strategy', () => {
   let nuxt
   let spy
 
-  beforeAll(async () => {
+  beforeAll(() => {
     spy = jest.spyOn(console, 'error').mockImplementation(() => {})
   })
 

@@ -14,7 +14,9 @@ import {
 
 function localePath (route, locale) {
   // Abort if no route or no locale
-  if (!route) return
+  if (!route) {
+    return
+  }
 
   const { i18n } = this
 
@@ -25,7 +27,9 @@ function localePath (route, locale) {
 
   locale = locale || i18n.locale
 
-  if (!locale) return
+  if (!locale) {
+    return
+  }
 
   // If route parameter is a string, check if it's a path or name of route.
   if (typeof route === 'string') {

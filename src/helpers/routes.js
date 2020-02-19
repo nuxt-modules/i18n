@@ -50,9 +50,7 @@ exports.makeRoutes = (baseRoutes, {
     if (
       typeof componentOptions.locales !== 'undefined' && componentOptions.locales.length > 0 &&
       typeof pageOptions.locales !== 'undefined' && pageOptions.locales.length > 0) {
-      componentOptions.locales = componentOptions.locales.filter((locale) => (
-        pageOptions.locales.indexOf(locale) !== -1
-      ))
+      componentOptions.locales = componentOptions.locales.filter((locale) => pageOptions.locales.includes(locale))
     }
 
     // Generate routes for component's supported locales
