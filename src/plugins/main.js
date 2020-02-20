@@ -245,7 +245,7 @@ export default async (context) => {
 
       if (browserLocale) {
         // Handle cookie option to prevent multiple redirections
-        if (!useCookie || alwaysRedirect || !getLocaleCookie()) {
+        if (alwaysRedirect || (route.path == '/' && (!useCookie || !getLocaleCookie()))) {
           let redirectToLocale = fallbackLocale
 
           // Use browserLocale if we support it, otherwise use fallbackLocale
