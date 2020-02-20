@@ -4,7 +4,20 @@ Here are all the options available when configuring the module and their default
 
 ```js
 {
-  // vue-i18n configuration
+  // vue-i18n configuration.
+  // See documentation: http://kazupon.github.io/vue-i18n/api/#constructor-options
+  // To be able to pass more complex configuration options that can't be stringified, it's also
+  // supported to set this property to a path to a local configuration file. File needs to export
+  // a function (that will be passed a Nuxt context as a parameter) or plain object.
+  // Example path: '~/plugins/vue-i18n.js'
+  // Example file content:
+  // export default context => {
+  //   return {
+  //     modifiers: {
+  //       snakeCase: (str) => str.split(' ').join('-')
+  //     }
+  //   }
+  // }
   vueI18n: {},
 
   // If true, vue-i18n-loader is added to Nuxt's Webpack config

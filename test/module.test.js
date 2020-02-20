@@ -709,6 +709,30 @@ describe('differentDomains enabled', () => {
   })
 })
 
+describe('external vue-i18n configuration', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        vueI18n: '~/plugins/vue-i18n.js'
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('uses custom message formatter', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toBe('page: HOMEPAGE')
+  })
+})
+
 describe('parsePages disabled', () => {
   let nuxt
 

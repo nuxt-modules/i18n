@@ -184,7 +184,7 @@ export default async (context) => {
   }
 
   // Set instance options
-  app.i18n = new VueI18n(vueI18n)
+  app.i18n = new VueI18n(typeof vueI18n === 'function' ? vueI18n(context) : vueI18n)
   app.i18n.locales = locales
   app.i18n.defaultLocale = defaultLocale
   app.i18n.differentDomains = differentDomains
