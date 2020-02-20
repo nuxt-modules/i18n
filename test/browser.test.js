@@ -1,5 +1,5 @@
-import getPort from 'get-port'
 import { resolve } from 'path'
+import getPort from 'get-port'
 import { createBrowser } from 'tib'
 import { generate, setup, loadConfig, url } from '@nuxtjs/module-test-utils'
 

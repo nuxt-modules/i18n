@@ -1,4 +1,4 @@
-import VueI18n, { IVueI18n } from 'vue-i18n'
+import VueI18n from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
 
 /**

@@ -1,10 +1,8 @@
 <template>
-<div>
-  <h2>{{ $route.params.slug }}</h2>
-  <nuxt-link
-    exact
-    :to="localePath('posts')">index</nuxt-link>
-</div>
+  <div>
+    <h2>{{ $route.params.slug }}</h2>
+    <nuxt-link exact :to="localePath('posts')">index</nuxt-link>
+  </div>
 </template>
 
 <script>

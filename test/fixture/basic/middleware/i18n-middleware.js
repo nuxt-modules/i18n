@@ -1,4 +1,4 @@
-export default function ({ app, route }) {
+export default function ({ app }) {
   const localeCodes = app.i18n.locales.map(locale => locale.code)
 
   // Tests localePath, switchLocalePath and getRouteBaseName from app context.

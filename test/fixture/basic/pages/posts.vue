@@ -1,9 +1,9 @@
 <template>
-<div>
-  <LangSwitcher />
-  <h1>{{ $t('posts') }}</h1>
-  <router-view></router-view>
-</div>
+  <div>
+    <LangSwitcher />
+    <h1>{{ $t('posts') }}</h1>
+    <router-view />
+  </div>
 </template>
 
 <script>
