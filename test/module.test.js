@@ -328,6 +328,18 @@ describe('basic', () => {
     const dom = getDom(html)
     expect(dom.querySelector('#container').textContent).toBe('string from loader EN')
   })
+
+  test('registers message using vueI18nLoader from yaml block', async () => {
+    let html = await get('/loader-yaml')
+    let dom = getDom(html)
+    let title = dom.querySelector('p')
+    expect(title.textContent).toBe('hello world!')
+
+    html = await get('/fr/loader-yaml')
+    dom = getDom(html)
+    title = dom.querySelector('p')
+    expect(title.textContent).toBe('Bonjour le monde!')
+  })
 })
 
 describe('hreflang', () => {

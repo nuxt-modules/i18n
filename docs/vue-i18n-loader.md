@@ -33,7 +33,7 @@ You can now define translations using custom blocks in your Vue files:
 ## YAML
 
 ```vue
-<i18n>
+<i18n lang="yaml">
 en:
   hello: "hello world!"
 ja:
@@ -43,18 +43,4 @@ ja:
 <template>
  <p>{{ $t('hello') }}</p>
 </template>
-```
-
-The following is needed in nuxt config file for YAML i18n blocks to work:
-
-```js
-build: {
-  extend(config) {
-    config.module.rules.push({
-      resourceQuery: /blockType=i18n/,
-      type: "javascript/auto",
-      loader: ["@intlify/vue-i18n-loader", "yaml-loader"],
-    });
-  },
-}
 ```
