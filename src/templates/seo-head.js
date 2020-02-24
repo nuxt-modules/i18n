@@ -53,45 +53,34 @@ function addHreflangLinks (currentLocale, locales, link) {
     return
   }
 
-  const hreflangTagObjects = locales.map(locale => {
+  const localeMap = new Map()
+
+  for (const locale of locales) {
     const localeIso = isoFromLocale(locale)
+
     if (!localeIso) {
       // eslint-disable-next-line no-console
       console.warn(`[${MODULE_NAME}] Locale ISO code is required to generate alternate link`)
-      return
+      continue
     }
 
-    return {
-      hid: `alternate-hreflang-${localeIso}`,
+    const [language, region] = localeIso.split('-')
+
+    if (language && region && (locale.isCatchallLocale || !localeMap.has(language))) {
+      localeMap.set(language, locale)
+    }
+
+    localeMap.set(localeIso, locale)
+  }
+
+  for (const [iso, locale] of localeMap.entries()) {
+    link.push({
+      hid: `alternate-hreflang-${iso}`,
       rel: 'alternate',
       href: baseUrl + this.switchLocalePath(locale.code),
-      hreflang: localeIso
-    }
-  }).filter(Boolean)
-
-  link.push(...hreflangTagObjects)
-
-  // TODO: Maybe split here?
-
-  const usedLanguages = hreflangTagObjects.map(locale => languageFromLocaleIso(locale.hreflang))
-  const uniqueLanguages = Array.from(new Set(usedLanguages))
-  const catchAllLocales = uniqueLanguages.map(language => {
-    const localesWithLanguage = locales.filter(locale => languageFromLocaleIso(isoFromLocale(locale)) === language)
-
-    if (!localesWithLanguage.length) {
-      return
-    }
-
-    const forcedCatchallLocale = localesWithLanguage.find(locale => locale.isCatchallLocale) || localesWithLanguage[0]
-    const catchAllLocaleIso = isoFromLocale(forcedCatchallLocale)
-    const catchAllLanguage = languageFromLocaleIso(catchAllLocaleIso)
-    const catchallLocale = { ...hreflangTagObjects.find(locale => locale.hreflang === catchAllLocaleIso) }
-    catchallLocale.hid = `alternate-hreflang-${catchAllLanguage}`
-    catchallLocale.hreflang = catchAllLanguage
-
-    return catchallLocale
-  }).filter(Boolean)
-  link.push(...catchAllLocales)
+      hreflang: iso
+    })
+  }
 }
 
 function addCanonicalLinks (currentLocale, link) {
@@ -155,9 +144,4 @@ function underscoreIsoFromLocale (locale) {
 
 function codeFromLocale (locale) {
   return locale[LOCALE_CODE_KEY]
-}
-
-function languageFromLocaleIso (iso) {
-  // en-US -> en
-  return iso.split('-')[0]
 }
