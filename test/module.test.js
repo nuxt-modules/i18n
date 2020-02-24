@@ -334,35 +334,34 @@ describe('hreflang', () => {
   let nuxt
 
   beforeAll(async () => {
-    const override = {
-      i18n: {
-        locales: [
-          {
-            code: 'en',
-            iso: 'en',
-            name: 'English'
-          },
-          {
-            code: 'fr',
-            iso: 'fr-FR',
-            name: 'Français'
-          },
-          {
-            code: 'es',
-            iso: 'es-ES',
-            name: 'Spanish (Spain)'
-          },
-          {
-            code: 'esVe',
-            iso: 'es-VE',
-            name: 'Spanish (Venezuela)',
-            isCatchallLocale: true
-          }
-        ]
-      }
-    }
+    const testConfig = loadConfig(__dirname, 'basic')
 
-    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+    // Override those after merging to overwrite original values.
+    testConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
+      },
+      {
+        code: 'es',
+        iso: 'es-ES',
+        name: 'Spanish (Spain)'
+      },
+      {
+        code: 'esVe',
+        iso: 'es-VE',
+        name: 'Spanish (Venezuela)',
+        isCatchallLocale: true
+      }
+    ]
+
+    nuxt = (await setup(testConfig)).nuxt
   })
 
   test('sets SEO metadata properly', async () => {
