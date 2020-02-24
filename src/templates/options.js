@@ -10,6 +10,12 @@ function stringifyValue(value) {
 }
 
 for (const [key, value] of Object.entries(options)) {
+    if (key === 'vueI18n' && typeof value === 'string') {
+%>export const <%= key %> = require('<%= value %>').default
+<%
+    } else {
+%>export const <%= key %> = <%= stringifyValue(value) %>
+<%
+    }
+}
 %>
-export const <%= key %> = <%= stringifyValue(value) %>
-<% } %>
