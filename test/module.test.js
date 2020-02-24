@@ -27,7 +27,9 @@ describe('basic', () => {
   test('sets SEO metadata properly', async () => {
     const html = await get('/')
     const dom = getDom(html)
-    expect(getSeoTags(dom)).toEqual(expect.arrayContaining([
+    const seoTags = getSeoTags(dom)
+
+    const expectedSeoTags = [
       {
         tagName: 'meta',
         property: 'og:locale',
@@ -48,21 +50,17 @@ describe('basic', () => {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/fr',
-        hreflang: 'fr-FR'
-      },
-      {
-        tagName: 'link',
-        rel: 'alternate',
-        href: 'nuxt-app.localhost/',
-        hreflang: 'en'
+        hreflang: 'fr'
       },
       {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/fr',
-        hreflang: 'fr'
+        hreflang: 'fr-FR'
       }
-    ]))
+    ]
+
+    expect(seoTags).toEqual(expectedSeoTags)
   })
 
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {

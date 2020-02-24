@@ -25,6 +25,11 @@ module.exports = {
         code: 'fr',
         iso: 'fr-FR',
         name: 'Français'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
       }
     ],
     defaultLocale: 'en',
