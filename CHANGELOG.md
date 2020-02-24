@@ -1,6 +1,10 @@
-# Changelog
+## [6.6.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.5.0...v6.6.0) (2020-02-24)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### Features
+
+* Added cookieDomain option to override locale cookie's domain ([#599](https://github.com/nuxt-community/nuxt-i18n/issues/599)) ([7525cd7](https://github.com/nuxt-community/nuxt-i18n/commit/7525cd712fde658befdae948f75db5b95a914bf2))
+* **seo:** additional catchall hreflang tags ([#597](https://github.com/nuxt-community/nuxt-i18n/issues/597)) ([ebd2213](https://github.com/nuxt-community/nuxt-i18n/commit/ebd22137901255fffd8468464d87ac0afa43c8aa)), closes [#522](https://github.com/nuxt-community/nuxt-i18n/issues/522)
 
 ## [6.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.4.1...v6.5.0) (2020-01-20)
 
