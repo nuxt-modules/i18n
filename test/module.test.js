@@ -330,6 +330,113 @@ describe('basic', () => {
   })
 })
 
+describe('hreflang', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        locales: [
+          {
+            code: 'en',
+            iso: 'en',
+            name: 'English'
+          },
+          {
+            code: 'fr',
+            iso: 'fr-FR',
+            name: 'Français'
+          },
+          {
+            code: 'es',
+            iso: 'es-ES',
+            name: 'Spanish (Spain)'
+          },
+          {
+            code: 'esVe',
+            iso: 'es-VE',
+            name: 'Spanish (Venezuela)',
+            isCatchallLocale: true
+          }
+        ]
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  test('sets SEO metadata properly', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    const seoTags = getSeoTags(dom)
+
+    const expectedSeoTags = [
+      {
+        content: 'en',
+        property: 'og:locale',
+        tagName: 'meta'
+      },
+      {
+        content: 'fr_FR',
+        property: 'og:locale:alternate',
+        tagName: 'meta'
+      },
+      {
+        content: 'es_ES',
+        property: 'og:locale:alternate',
+        tagName: 'meta'
+      },
+      {
+        content: 'es_VE',
+        property: 'og:locale:alternate',
+        tagName: 'meta'
+      },
+      {
+        href: 'nuxt-app.localhost/',
+        hreflang: 'en',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/fr',
+        hreflang: 'fr',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/fr',
+        hreflang: 'fr-FR',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/esVe',
+        hreflang: 'es',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/es',
+        hreflang: 'es-ES',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/esVe',
+        hreflang: 'es-VE',
+        rel: 'alternate',
+        tagName: 'link'
+      }
+    ]
+
+    expect(seoTags).toEqual(expectedSeoTags)
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+})
+
 describe('lazy loading', () => {
   let nuxt
 
