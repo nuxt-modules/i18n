@@ -30,7 +30,7 @@ An example without selected catchall locale:
       iso: 'en-US' // Will be used as catchall locale by default
     },
     {
-      code: 'engb',
+      code: 'gb',
       iso: 'en-GB'
     }
   ]
@@ -48,7 +48,7 @@ Here is how you'd use `isCatchallLocale` to selected another language:
       iso: 'en-US'
     },
     {
-      code: 'engb',
+      code: 'gb',
       iso: 'en-GB',
       isCatchallLocale: true // This one will be used as catchall locale
     }
@@ -64,7 +64,7 @@ In case you already have an `en` language iso set, it'll be used as the catchall
 ['nuxt-i18n', {
   locales: [
     {
-      code: 'engb',
+      code: 'gb',
       iso: 'en-GB'
     },
     {
@@ -121,7 +121,7 @@ You must also set the `baseUrl` option to your production domain in order to mak
 
 
 To enable this feature everywhere in your app, set `seo` option to `true`. 
-**This comes with a performance drawback though**. More infos below.
+**This comes with a performance drawback though**. More information below.
 
 ```js
 // nuxt.config.js
