@@ -20,35 +20,29 @@ export const nuxtI18nSeo = function () {
   ) {
     return {}
   }
-  // Prepare html lang attribute
+
+  const metaObject = {
+    htmlAttrs: {},
+    link: [],
+    meta: []
+  }
+
   const currentLocale = this.$i18n.locales.find(l => codeFromLocale(l) === this.$i18n.locale)
   const currentLocaleIso = isoFromLocale(currentLocale)
 
-  const htmlAttrs = {}
-
   if (currentLocale && currentLocaleIso) {
-    htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
+    metaObject.htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
   }
 
-  const link = []
+  addHreflangLinks.bind(this)(this.$i18n.locales, metaObject.link)
+  addCanonicalLinks.bind(this)(currentLocale, metaObject.link)
+  addCurrentOgLocale.bind(this)(currentLocale, currentLocaleIso, metaObject.meta)
+  addAlternateOgLocales.bind(this)(this.$i18n.locales, currentLocaleIso, metaObject.meta)
 
-  addHreflangLinks.bind(this)(currentLocale, this.$i18n.locales, link)
-
-  addCanonicalLinks.bind(this)(currentLocale, link)
-
-  // og:locale meta
-  const meta = []
-  addCurrentOgLocale.bind(this)(currentLocale, meta)
-  addAlternateOgLocales.bind(this)(this.$i18n.locales, currentLocale, meta)
-
-  return {
-    htmlAttrs,
-    link,
-    meta
-  }
+  return metaObject
 }
 
-function addHreflangLinks (currentLocale, locales, link) {
+function addHreflangLinks (locales, link) {
   if (strategy === STRATEGIES.NO_PREFIX) {
     return
   }
@@ -89,9 +83,7 @@ function addCanonicalLinks (currentLocale, link) {
   }
 
   const currentLocaleCode = codeFromLocale(currentLocale)
-
   const canonicalPath = this.switchLocalePath(currentLocaleCode)
-
   const canonicalPathIsDifferentFromCurrent = canonicalPath !== this.$route.path
   const shouldAddCanonical = canonicalPath && canonicalPathIsDifferentFromCurrent
   if (!shouldAddCanonical) {
@@ -105,8 +97,8 @@ function addCanonicalLinks (currentLocale, link) {
   })
 }
 
-function addCurrentOgLocale (currentLocale, meta) {
-  const hasCurrentLocaleAndIso = currentLocale && isoFromLocale(currentLocale)
+function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
+  const hasCurrentLocaleAndIso = currentLocale && currentLocaleIso
 
   if (!hasCurrentLocaleAndIso) {
     return
@@ -120,16 +112,17 @@ function addCurrentOgLocale (currentLocale, meta) {
   })
 }
 
-function addAlternateOgLocales (locales, currentLocale, meta) {
-  const localesWithoutCurrent = l => isoFromLocale(l) && isoFromLocale(l) !== isoFromLocale(currentLocale)
+function addAlternateOgLocales (locales, currentLocaleIso, meta) {
+  const localesWithoutCurrent = locales.filter(locale => {
+    const localeIso = isoFromLocale(locale)
+    return localeIso && localeIso !== currentLocaleIso
+  })
 
-  const alternateLocales = locales
-    .filter(localesWithoutCurrent)
-    .map(locale => ({
-      hid: `og:locale:alternate-${isoFromLocale(locale)}`,
-      property: 'og:locale:alternate',
-      content: underscoreIsoFromLocale(locale)
-    }))
+  const alternateLocales = localesWithoutCurrent.map(locale => ({
+    hid: `og:locale:alternate-${isoFromLocale(locale)}`,
+    property: 'og:locale:alternate',
+    content: underscoreIsoFromLocale(locale)
+  }))
 
   meta.push(...alternateLocales)
 }
