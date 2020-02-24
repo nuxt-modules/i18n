@@ -25,12 +25,25 @@ describe(browserString, () => {
   let page
 
   beforeAll(async () => {
-    nuxt = (await setup(loadConfig(__dirname, 'basic'))).nuxt
+    const override = {
+      plugins: ['~/plugins/i18n-hooks.js']
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
 
     browser = await createBrowser(browserString, {
       staticServer: false,
       extendPage (page) {
         return {
+          getTestData () {
+            return page.runScript(() => {
+              const languageSwitchedListeners = (window.testData && window.testData.languageSwitchedListeners) || []
+
+              return {
+                languageSwitchedListeners
+              }
+            })
+          },
           navigate: createNavigator(page)
         }
       }
@@ -61,6 +74,24 @@ describe(browserString, () => {
     await page.navigate('/fr/a-propos')
 
     expect(await page.getText('body')).toContain('page: À propos')
+  })
+
+  test('onLanguageSwitched listener triggers after locale was changed', async () => {
+    page = await browser.page(url('/'))
+
+    let testData = await page.getTestData()
+    expect(testData.languageSwitchedListeners).toEqual([])
+
+    await page.navigate('/fr/')
+
+    testData = await page.getTestData()
+    expect(testData.languageSwitchedListeners).toEqual([
+      {
+        storeLocale: 'fr',
+        newLocale: 'fr',
+        oldLocale: 'en'
+      }
+    ])
   })
 
   test('APIs in app context work after SPA navigation', async () => {
