@@ -31,7 +31,7 @@ describe('basic', () => {
       {
         tagName: 'meta',
         property: 'og:locale',
-        content: 'en_US'
+        content: 'en'
       },
       {
         tagName: 'meta',
@@ -42,7 +42,7 @@ describe('basic', () => {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/',
-        hreflang: 'en-US'
+        hreflang: 'en'
       },
       {
         tagName: 'link',
@@ -458,7 +458,7 @@ describe('no_prefix strategy', () => {
       {
         tagName: 'meta',
         property: 'og:locale',
-        content: 'en_US'
+        content: 'en'
       },
       {
         tagName: 'meta',
