@@ -27,11 +27,13 @@ describe('basic', () => {
   test('sets SEO metadata properly', async () => {
     const html = await get('/')
     const dom = getDom(html)
-    expect(getSeoTags(dom)).toEqual(expect.arrayContaining([
+    const seoTags = getSeoTags(dom)
+
+    const expectedSeoTags = [
       {
         tagName: 'meta',
         property: 'og:locale',
-        content: 'en_US'
+        content: 'en'
       },
       {
         tagName: 'meta',
@@ -42,7 +44,13 @@ describe('basic', () => {
         tagName: 'link',
         rel: 'alternate',
         href: 'nuxt-app.localhost/',
-        hreflang: 'en-US'
+        hreflang: 'en'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'nuxt-app.localhost/fr',
+        hreflang: 'fr'
       },
       {
         tagName: 'link',
@@ -50,7 +58,9 @@ describe('basic', () => {
         href: 'nuxt-app.localhost/fr',
         hreflang: 'fr-FR'
       }
-    ]))
+    ]
+
+    expect(seoTags).toEqual(expectedSeoTags)
   })
 
   test('/ contains EN text, link to /fr/ & link /about-us', async () => {
@@ -320,6 +330,112 @@ describe('basic', () => {
   })
 })
 
+describe('hreflang', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const testConfig = loadConfig(__dirname, 'basic')
+
+    // Override those after merging to overwrite original values.
+    testConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
+      },
+      {
+        code: 'es',
+        iso: 'es-ES',
+        name: 'Spanish (Spain)'
+      },
+      {
+        code: 'esVe',
+        iso: 'es-VE',
+        name: 'Spanish (Venezuela)',
+        isCatchallLocale: true
+      }
+    ]
+
+    nuxt = (await setup(testConfig)).nuxt
+  })
+
+  test('sets SEO metadata properly', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    const seoTags = getSeoTags(dom)
+
+    const expectedSeoTags = [
+      {
+        content: 'en',
+        property: 'og:locale',
+        tagName: 'meta'
+      },
+      {
+        content: 'fr_FR',
+        property: 'og:locale:alternate',
+        tagName: 'meta'
+      },
+      {
+        content: 'es_ES',
+        property: 'og:locale:alternate',
+        tagName: 'meta'
+      },
+      {
+        content: 'es_VE',
+        property: 'og:locale:alternate',
+        tagName: 'meta'
+      },
+      {
+        href: 'nuxt-app.localhost/',
+        hreflang: 'en',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/fr',
+        hreflang: 'fr',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/fr',
+        hreflang: 'fr-FR',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/esVe',
+        hreflang: 'es',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/es',
+        hreflang: 'es-ES',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/esVe',
+        hreflang: 'es-VE',
+        rel: 'alternate',
+        tagName: 'link'
+      }
+    ]
+
+    expect(seoTags).toEqual(expectedSeoTags)
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+})
+
 describe('lazy loading', () => {
   let nuxt
 
@@ -446,7 +562,7 @@ describe('no_prefix strategy', () => {
       {
         tagName: 'meta',
         property: 'og:locale',
-        content: 'en_US'
+        content: 'en'
       },
       {
         tagName: 'meta',

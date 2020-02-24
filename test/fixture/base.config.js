@@ -31,7 +31,7 @@ module.exports = {
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
+        iso: 'en',
         name: 'English'
       },
       {

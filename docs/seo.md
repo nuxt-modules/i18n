@@ -1,15 +1,92 @@
 # SEO
 
-With `seo` option enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does:
 
-* Add a _lang_ attribute containing current locale's ISO code to the `<html>` tag.
-* Generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. For each language, the ISO code is used as `hreflang` attribute's value. [More on hreflang](https://support.google.com/webmasters/answer/189077)
-* Generate `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional)
-* When using `prefix_and_default` strategy, generate `rel="canonical"` link on the default language routes containing the
+## Benefits
+
+When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
+
+### `lang` attribute for `<html>` tag.
+
+With `seo` enabled, nuxt-i18n will set the correct `lang` attribute, equivalent to the current locale's ISO code, in the `<html>` tag.
+
+### Automatic hreflang generation
+
+nuxt-i18n will generate `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. 
+The language's ISO codes are used as `hreflang` values. 
+
+Since version [v6.6.0](https://github.com/nuxt-community/nuxt-i18n/releases/tag/v6.6.0), a catchall locale hreflang link
+is provided for each language group (e.g. `en-*`) as well. 
+By default, it is the first language provided but another language can be selected by setting `isCatchallLocale` to `true`
+on that specific language object in your `nuxt.config.js`. [More on hreflang](https://support.google.com/webmasters/answer/189077)
+
+An example without selected catchall locale:
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  locales: [
+    {
+      code: 'en',
+      iso: 'en-US' // Will be used as catchall locale by default
+    },
+    {
+      code: 'gb',
+      iso: 'en-GB'
+    }
+  ]
+}]
+```
+
+Here is how you'd use `isCatchallLocale` to selected another language:
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  locales: [
+    {
+      code: 'en',
+      iso: 'en-US'
+    },
+    {
+      code: 'gb',
+      iso: 'en-GB',
+      isCatchallLocale: true // This one will be used as catchall locale
+    }
+  ]
+}]
+```
+
+In case you already have an `en` language iso set, it'll be used as the catchall without doing anything
+
+```js
+// nuxt.config.js
+
+['nuxt-i18n', {
+  locales: [
+    {
+      code: 'gb',
+      iso: 'en-GB'
+    },
+    {
+      code: 'en',
+      iso: 'en' // will be used as catchall locale
+    }
+  ]
+}]
+```
+
+### OpenGraph Locale tag generation
+
+nuxt-i18n will also generate `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
+
+### Canonical links for `prefix_and_default`
+
+When using the `prefix_and_default` strategy, `rel="canonical"` links on the default language routes will be generated and contain the
 prefix to avoid duplicate indexation. [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
 
+## Requirements
 
-For this feature to work, you must configure `locales` option as an array of objects, where each object has an `iso` option set to the language ISO code:
+To leverage the SEO benefits of nuxt-i18n, you must configure the `locales` option as an array of objects, where each object has an `iso` option set to the language's ISO code:
 
 ```js
 // nuxt.config.js
@@ -32,7 +109,7 @@ For this feature to work, you must configure `locales` option as an array of obj
 }]
 ```
 
-You should also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
+You must also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
 
 ```js
 // nuxt.config.js
@@ -43,7 +120,8 @@ You should also set the `baseUrl` option to your production domain in order to m
 ```
 
 
-To enable this feature everywhere in your app, set `seo` option to `true`:
+To enable this feature everywhere in your app, set `seo` option to `true`. 
+**This comes with a performance drawback though**. More information below.
 
 ```js
 // nuxt.config.js

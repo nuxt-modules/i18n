@@ -21,71 +21,127 @@ export const nuxtI18nSeo = function () {
     return {}
   }
   // Prepare html lang attribute
-  const currentLocaleData = this.$i18n.locales.find(l => l[LOCALE_CODE_KEY] === this.$i18n.locale)
+  const currentLocale = this.$i18n.locales.find(l => codeFromLocale(l) === this.$i18n.locale)
+  const currentLocaleIso = isoFromLocale(currentLocale)
+
   const htmlAttrs = {}
-  if (currentLocaleData && currentLocaleData[LOCALE_ISO_KEY]) {
-    htmlAttrs.lang = currentLocaleData[LOCALE_ISO_KEY]
+
+  if (currentLocale && currentLocaleIso) {
+    htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
   }
 
   const link = []
-  // hreflang tags
-  if (strategy !== STRATEGIES.NO_PREFIX) {
-    link.push(...this.$i18n.locales
-      .map(locale => {
-        if (locale[LOCALE_ISO_KEY]) {
-          return {
-            hid: 'alternate-hreflang-' + locale[LOCALE_ISO_KEY],
-            rel: 'alternate',
-            href: baseUrl + this.switchLocalePath(locale.code),
-            hreflang: locale[LOCALE_ISO_KEY]
-          }
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(`[${MODULE_NAME}] Locale ISO code is required to generate alternate link`)
-          return null
-        }
-      })
-      .filter(item => !!item))
-  }
 
-  // canonical links
-  if (strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-    const canonicalPath = this.switchLocalePath(currentLocaleData[LOCALE_CODE_KEY])
-    if (canonicalPath && canonicalPath !== this.$route.path) {
-      // Current page is not the canonical one -- add a canonical link
-      link.push({
-        hid: 'canonical-lang-' + currentLocaleData[LOCALE_CODE_KEY],
-        rel: 'canonical',
-        href: baseUrl + canonicalPath
-      })
-    }
-  }
+  addHreflangLinks.bind(this)(currentLocale, this.$i18n.locales, link)
+
+  addCanonicalLinks.bind(this)(currentLocale, link)
 
   // og:locale meta
   const meta = []
-  // og:locale - current
-  if (currentLocaleData && currentLocaleData[LOCALE_ISO_KEY]) {
-    meta.push({
-      hid: 'og:locale',
-      property: 'og:locale',
-      // Replace dash with underscore as defined in spec: language_TERRITORY
-      content: currentLocaleData[LOCALE_ISO_KEY].replace(/-/g, '_')
-    })
-  }
-  // og:locale - alternate
-  meta.push(
-    ...this.$i18n.locales
-      .filter(l => l[LOCALE_ISO_KEY] && l[LOCALE_ISO_KEY] !== currentLocaleData[LOCALE_ISO_KEY])
-      .map(locale => ({
-        hid: 'og:locale:alternate-' + locale[LOCALE_ISO_KEY],
-        property: 'og:locale:alternate',
-        content: locale[LOCALE_ISO_KEY].replace(/-/g, '_')
-      }))
-  )
+  addCurrentOgLocale.bind(this)(currentLocale, meta)
+  addAlternateOgLocales.bind(this)(this.$i18n.locales, currentLocale, meta)
 
   return {
     htmlAttrs,
     link,
     meta
   }
+}
+
+function addHreflangLinks (currentLocale, locales, link) {
+  if (strategy === STRATEGIES.NO_PREFIX) {
+    return
+  }
+
+  const localeMap = new Map()
+
+  for (const locale of locales) {
+    const localeIso = isoFromLocale(locale)
+
+    if (!localeIso) {
+      // eslint-disable-next-line no-console
+      console.warn(`[${MODULE_NAME}] Locale ISO code is required to generate alternate link`)
+      continue
+    }
+
+    const [language, region] = localeIso.split('-')
+
+    if (language && region && (locale.isCatchallLocale || !localeMap.has(language))) {
+      localeMap.set(language, locale)
+    }
+
+    localeMap.set(localeIso, locale)
+  }
+
+  for (const [iso, locale] of localeMap.entries()) {
+    link.push({
+      hid: `alternate-hreflang-${iso}`,
+      rel: 'alternate',
+      href: baseUrl + this.switchLocalePath(locale.code),
+      hreflang: iso
+    })
+  }
+}
+
+function addCanonicalLinks (currentLocale, link) {
+  if (strategy !== STRATEGIES.PREFIX_AND_DEFAULT) {
+    return
+  }
+
+  const currentLocaleCode = codeFromLocale(currentLocale)
+
+  const canonicalPath = this.switchLocalePath(currentLocaleCode)
+
+  const canonicalPathIsDifferentFromCurrent = canonicalPath !== this.$route.path
+  const shouldAddCanonical = canonicalPath && canonicalPathIsDifferentFromCurrent
+  if (!shouldAddCanonical) {
+    return
+  }
+
+  link.push({
+    hid: `canonical-lang-${currentLocaleCode}`,
+    rel: 'canonical',
+    href: baseUrl + canonicalPath
+  })
+}
+
+function addCurrentOgLocale (currentLocale, meta) {
+  const hasCurrentLocaleAndIso = currentLocale && isoFromLocale(currentLocale)
+
+  if (!hasCurrentLocaleAndIso) {
+    return
+  }
+
+  meta.push({
+    hid: 'og:locale',
+    property: 'og:locale',
+    // Replace dash with underscore as defined in spec: language_TERRITORY
+    content: underscoreIsoFromLocale(currentLocale)
+  })
+}
+
+function addAlternateOgLocales (locales, currentLocale, meta) {
+  const localesWithoutCurrent = l => isoFromLocale(l) && isoFromLocale(l) !== isoFromLocale(currentLocale)
+
+  const alternateLocales = locales
+    .filter(localesWithoutCurrent)
+    .map(locale => ({
+      hid: `og:locale:alternate-${isoFromLocale(locale)}`,
+      property: 'og:locale:alternate',
+      content: underscoreIsoFromLocale(locale)
+    }))
+
+  meta.push(...alternateLocales)
+}
+
+function isoFromLocale (locale) {
+  return locale[LOCALE_ISO_KEY]
+}
+
+function underscoreIsoFromLocale (locale) {
+  return isoFromLocale(locale).replace(/-/g, '_')
+}
+
+function codeFromLocale (locale) {
+  return locale[LOCALE_CODE_KEY]
 }
