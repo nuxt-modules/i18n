@@ -1,6 +1,6 @@
 # vue-i18n-loader
 
-Si desea habilitar [vue-i18n-loader](https://github.com/kazupon/vue-i18n-loader), simplemente configure la opción `vueI18nLoader` en `true`.
+Si desea habilitar [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader), simplemente configure la opción `vueI18nLoader` en `true`.
 
 ```js
 // nuxt.config.js
@@ -53,7 +53,7 @@ build: {
     config.module.rules.push({
       resourceQuery: /blockType=i18n/,
       type: "javascript/auto",
-      loader: ["@kazupon/vue-i18n-loader", "yaml-loader"],
+      loader: ["@intlify/vue-i18n-loader", "yaml-loader"],
     });
   },
 }
