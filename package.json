@@ -61,7 +61,7 @@
   "dependencies": {
     "@babel/parser": "^7.5.5",
     "@babel/traverse": "^7.5.5",
-    "@kazupon/vue-i18n-loader": "^0.5.0",
+    "@intlify/vue-i18n-loader": "^0.6.1",
     "cookie": "^0.4.0",
     "is-https": "^1.0.0",
     "js-cookie": "^2.2.1",
