@@ -48,7 +48,7 @@ Al representar enlaces internos en su aplicación usando `<nuxt-link>`, necesita
 </nuxt-link>
 ```
 
-Tenga en cuenta que `localePath` utiliza el nombre base de la ruta para generar la URL localizada. El nombre base corresponde a los nombres que Nuxt genera al analizar su `paginas/` directorio, más información en [el documento de Nuxt](https://nuxtjs.org/guide/routing).
+Tenga en cuenta que `localePath` utiliza el nombre base de la ruta para generar la URL localizada. El nombre base corresponde a los nombres que Nuxt genera al analizar su directorio `pages/`, más información en [el documento de Nuxt](https://nuxtjs.org/guide/routing).
 
 * `switchLocalePath` – Devuelve un enlace a la página actual en otro idioma:
 
