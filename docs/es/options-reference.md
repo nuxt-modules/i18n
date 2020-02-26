@@ -1,4 +1,4 @@
-# Optiones
+# Opciones
 
 Aquí están todas las opciones disponibles al configurar el módulo y sus valores predeterminados:
 
