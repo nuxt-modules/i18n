@@ -94,7 +94,7 @@
     "@nuxt/types": "0.6.2",
     "@nuxtjs/eslint-config-typescript": "1.0.2",
     "@nuxtjs/module-test-utils": "1.5.0",
-    "@release-it/conventional-changelog": "^1.1.0",
+    "@release-it/conventional-changelog": "1.1.0",
     "@types/jest": "25.1.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.3",

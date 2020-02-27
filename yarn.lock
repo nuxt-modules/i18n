@@ -1468,7 +1468,7 @@
   dependencies:
     "@types/node" ">= 8"
 
-"@release-it/conventional-changelog@^1.1.0":
+"@release-it/conventional-changelog@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@release-it/conventional-changelog/-/conventional-changelog-1.1.0.tgz#42e33ceff37d6ae4ad1667b4a1b1586b75e58fca"
   integrity sha512-3uyHg2hgCEJMFjIbRTnGgqU//PK9u89dBlKRUmbSNALARCXiKN4XvJOWni54TsFeDSWmM3IUh9bgoGvj55ia4A==
