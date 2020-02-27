@@ -1,6 +1,16 @@
-# Changelog
+## [6.6.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.5.0...v6.6.0) (2020-02-27)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### Features
+
+* Added cookieDomain option to override locale cookie's domain ([#599](https://github.com/nuxt-community/nuxt-i18n/issues/599)) ([7525cd7](https://github.com/nuxt-community/nuxt-i18n/commit/7525cd712fde658befdae948f75db5b95a914bf2))
+* **seo:** additional catchall hreflang tags ([#597](https://github.com/nuxt-community/nuxt-i18n/issues/597)) ([ebd2213](https://github.com/nuxt-community/nuxt-i18n/commit/ebd22137901255fffd8468464d87ac0afa43c8aa)), closes [#522](https://github.com/nuxt-community/nuxt-i18n/issues/522)
+* support external configuration file for vue-i18n options ([#605](https://github.com/nuxt-community/nuxt-i18n/issues/605)) ([c55bc6a](https://github.com/nuxt-community/nuxt-i18n/commit/c55bc6a5f2cae0b2bf323f7de1e02da9e1d278d2)), closes [#585](https://github.com/nuxt-community/nuxt-i18n/issues/585) [#237](https://github.com/nuxt-community/nuxt-i18n/issues/237)
+
+
+### Bug Fixes
+
+* sync store locale before triggering onLanguageSwitched listener ([#609](https://github.com/nuxt-community/nuxt-i18n/issues/609)) ([9b699cf](https://github.com/nuxt-community/nuxt-i18n/commit/9b699cf61eb0515fe9a3479e04abce810650ed25)), closes [#556](https://github.com/nuxt-community/nuxt-i18n/issues/556)
 
 ## [6.5.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.4.1...v6.5.0) (2020-01-20)
 
