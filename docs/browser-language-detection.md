@@ -2,7 +2,6 @@
 
 By default, **nuxt-i18n** attempts to redirect users to their preferred language by detecting their browser's language. This is controlled by the `detectBrowserLanguage` option:
 
-
 ```js
 // nuxt.config.js
 
@@ -13,6 +12,10 @@ By default, **nuxt-i18n** attempts to redirect users to their preferred language
   }
 }]
 ```
+
+::: tip
+Browser language is detected either from `navigator` if running on client side, or from the `accept-language` HTTP header. Moreover, only the first two characters of the language code are currently used. That means that there is no distinction between `en-AU` and `en-US`, for instance - they will be coalesced into just `en`.
+:::
 
 To prevent redirecting users every time they visit the app, **nuxt-i18n** sets a cookie after the first redirection. You can change the cookie's name by setting `detectBrowserLanguage.cookieKey` option to whatever you'd like, the default is _i18n_redirected_.
 
