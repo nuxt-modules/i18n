@@ -40,7 +40,7 @@ computed: {
 }]
 ```
 
-If `detectBrowserLanguage.useCookie` and `detectBrowserLanguage.alwaysRedirect` options are enabled, you might want to persist change to locale by calling `this.$i18n.setLocaleCookie(locale)` (or `app.i18n.setLocaleCookie(locale)`) method. Otherwise locale will switch back to saved one during navigation.
+If `detectBrowserLanguage.useCookie` and `detectBrowserLanguage.alwaysRedirect` options are enabled, you have to update locale cookie to be able to switch locale. Either call [`setLocaleCookie(locale)`](https://nuxt-community.github.io/nuxt-i18n/api/#setlocalecookie) to persist just the cookie locale or [`setLocale(locale)`](https://nuxt-community.github.io/nuxt-i18n/api/#setlocale) to both persist the cookie locale and switch route to specified locale. Otherwise locale will switch back to saved one during navigation.
 
 ## Dynamic route parameters
 
