@@ -45,8 +45,8 @@
   ],
   "release-it": {
     "git": {
-      "commitMessage": "chore: release %s",
-      "tagName": "v%s"
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
     },
     "npm": {
       "publish": false
