@@ -1,4 +1,4 @@
-const { STRATEGIES } = require('./constants')
+const { STRATEGIES, LOCALE_CODE_KEY, LOCALE_DOMAIN_KEY} = require('./constants')
 const { extractComponentOptions } = require('./components')
 const { getPageOptions, getLocaleCodes } = require('./utils')
 
@@ -14,6 +14,7 @@ exports.makeRoutes = (baseRoutes, {
   pagesDir,
   differentDomains
 }) => {
+  let locale_objects = locales
   locales = getLocaleCodes(locales)
   let localizedRoutes = []
 
@@ -105,11 +106,12 @@ exports.makeRoutes = (baseRoutes, {
       }
 
       const isChildWithRelativePath = isChild && !path.startsWith('/')
-
+      const lang = locale_objects.find(l => l[LOCALE_CODE_KEY] === locale)
+      const domainDefined = LOCALE_DOMAIN_KEY in lang
       // Add route prefix if needed
       const shouldAddPrefix = (
         // No prefix if app uses different locale domains
-        !differentDomains &&
+        (!differentDomains || (differentDomains && !domainDefined)) &&
         // No need to add prefix if child's path is relative
         !isChildWithRelativePath &&
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
