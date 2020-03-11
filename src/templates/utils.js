@@ -130,13 +130,17 @@ export function isSameRoute (a, b) {
 }
 
 /**
- * Get x-forwarded-host
+ * Get x-forwarded-host & x-forwarded-port
  * @param  {object} req
- * @return {String} x-forwarded-host
+ * @return {String} x-forwarded-host & x-forwarded-port
  */
-const getForwarded = req => (
-  process.client ? window.location.href.split('/')[2] : (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host)
-)
+const getForwarded = function (req) {
+    if (process.client) {
+        return window.location.href.split('/')[2]
+    }
+    return (req.headers['x-forwarded-host'] ? req.headers['x-forwarded-host'] : req.headers.host) +
+      (req.headers['x-forwarded-port'] ? (':' + req.headers['x-forwarded-port']) : '')
+}
 
 /**
  * Get hostname
