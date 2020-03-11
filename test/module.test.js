@@ -837,6 +837,50 @@ describe('differentDomains enabled', () => {
   })
 })
 
+// This is a special case due to vue-i18n defaulting to en-US for `defaultLocale`
+// and `fallbackLocale` which can prevent us from applying locale initially.
+describe('en-US locale with no explicit default locale (issue #628)', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        defaultLocale: null,
+        vueI18n: {
+          fallbackLocale: null,
+          messages: null
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      {
+        code: 'en-US',
+        iso: 'en-US',
+        name: 'English',
+        file: 'en-US.js'
+      }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('prefix is present and locale is applied', async () => {
+    const html = await get('/en-US')
+    const dom = getDom(html)
+    await expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+  })
+})
+
 describe('external vue-i18n configuration', () => {
   let nuxt
 
