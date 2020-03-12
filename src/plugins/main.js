@@ -8,7 +8,6 @@ import {
   defaultLocale,
   detectBrowserLanguage,
   differentDomains,
-  forwardedHost,
   lazy,
   localeCodes,
   locales,
@@ -188,7 +187,6 @@ export default async (context) => {
   app.i18n.locales = locales
   app.i18n.defaultLocale = defaultLocale
   app.i18n.differentDomains = differentDomains
-  app.i18n.forwardedHost = forwardedHost
   app.i18n.beforeLanguageSwitch = beforeLanguageSwitch
   app.i18n.onLanguageSwitched = onLanguageSwitched
   app.i18n.setLocaleCookie = setLocaleCookie

@@ -41,7 +41,6 @@ exports.DEFAULT_OPTIONS = {
     fallbackLocale: null
   },
   differentDomains: false,
-  forwardedHost: false,
   seo: false,
   baseUrl: '',
   vuex: {
