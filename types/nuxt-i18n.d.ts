@@ -46,6 +46,7 @@ declare namespace NuxtVueI18n {
       defaultLocale?: null | Locale
       locales?: Array<Locale | LocaleObject>
       differentDomains?: boolean
+      forwardedHost?: boolean
       onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
     }
 

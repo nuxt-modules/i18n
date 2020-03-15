@@ -78,6 +78,11 @@ module.exports = function (userOptions) {
     console.warn('[' + options.MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
   }
 
+  if ('forwardedHost' in options) {
+    // eslint-disable-next-line no-console
+    console.warn('[' + options.MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/nuxt-i18n/pull/630.')
+  }
+
   // Plugins
   for (const file of requiredPlugins) {
     this.addPlugin({

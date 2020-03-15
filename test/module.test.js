@@ -812,7 +812,7 @@ describe('differentDomains enabled', () => {
     await nuxt.close()
   })
 
-  test('matches domain\'s locale (en)', async () => {
+  test('host matches locale\'s domain (en)', async () => {
     const requestOptions = {
       headers: {
         Host: 'en.nuxt-app.localhost'
@@ -824,7 +824,7 @@ describe('differentDomains enabled', () => {
     await expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
   })
 
-  test('matches domain\'s locale (fr)', async () => {
+  test('host matches locale\'s domain (fr)', async () => {
     const requestOptions = {
       headers: {
         Host: 'fr.nuxt-app.localhost'
@@ -833,7 +833,29 @@ describe('differentDomains enabled', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     await expect(dom.querySelector('body').textContent).toContain('page: Accueil')
-    await expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
+  })
+
+  test('x-forwarded-host does not match locale\'s domain', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'xx.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    // Falls back to english.
+    await expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+  })
+
+  test('x-forwarded-host does match locale\'s domain (fr)', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    await expect(dom.querySelector('body').textContent).toContain('page: Accueil')
   })
 })
 
