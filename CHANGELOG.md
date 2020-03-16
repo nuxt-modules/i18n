@@ -1,3 +1,13 @@
+### [6.6.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.6.0...v6.6.1) (2020-03-16)
+
+
+### Bug Fixes
+
+* **types:** add vueI18nLoader to AllOptionsInterface ([#634](https://github.com/nuxt-community/nuxt-i18n/issues/634)) ([f1dd816](https://github.com/nuxt-community/nuxt-i18n/commit/f1dd81676803033a210d28e3bc406a54b4c86c0c))
+* add tests for forwardedHost change, deprecate setting instead of removing ([3f4d135](https://github.com/nuxt-community/nuxt-i18n/commit/3f4d13577bbca02e3b8d4bdd156a7854a95c7f0d))
+* Incomplete initialization with 'en-US' locale code and no default ([#629](https://github.com/nuxt-community/nuxt-i18n/issues/629)) ([eeb63bb](https://github.com/nuxt-community/nuxt-i18n/commit/eeb63bb701d1b76804790e87ef8cabe9149fdb9a)), closes [#628](https://github.com/nuxt-community/nuxt-i18n/issues/628)
+* remove forwardedHost option - make domain matching consistent on server/client ([#630](https://github.com/nuxt-community/nuxt-i18n/issues/630)) ([2a17c99](https://github.com/nuxt-community/nuxt-i18n/commit/2a17c99145c280b7304691396b8e009056054ae5))
+
 ## [6.6.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.5.0...v6.6.0) (2020-02-27)
 
 
