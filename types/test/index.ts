@@ -13,8 +13,8 @@ let path: string
 
 path = vm.localePath('/')
 path = vm.localePath('/', locale)
-path = vm.localePath(vm.$route)
-path = vm.localePath(vm.$route, locale)
+path = vm.localePath({ name: 'index' })
+path = vm.localePath({ path: '/', query: { a: '1' }, params: { p: 'a' } }, locale)
 
 // switchLocalePath
 
