@@ -1,5 +1,5 @@
 import middleware from '../middleware'
-import options from './options'
+import { detectBrowserLanguage, rootRedirect } from './options'
 import { getLocaleFromRoute } from './utils'
 
 middleware.nuxti18n = async (context) => {
@@ -10,18 +10,20 @@ middleware.nuxti18n = async (context) => {
   }
 
   // Handle root path redirect
-  const rootRedirect = <%= JSON.stringify(options.rootRedirect) %>
   if (route.path === '/' && rootRedirect) {
-    if (rootRedirect.path && rootRedirect.statusCode) {
-      redirect(rootRedirect.statusCode, '/' + rootRedirect.path, route.query)
-      return
+    let statusCode = 302
+    let path = rootRedirect
+
+    if (typeof rootRedirect !== 'string' && rootRedirect.path && rootRedirect.statusCode) {
+      statusCode = rootRedirect.statusCode
+      path = rootRedirect.path
     }
 
-    redirect('/' + rootRedirect, route.query)
+    redirect(statusCode, '/' + path, route.query)
     return
   }
 
-  if (options.detectBrowserLanguage && await app.i18n.__detectBrowserLanguage()) {
+  if (detectBrowserLanguage && await app.i18n.__detectBrowserLanguage()) {
     return
   }
 

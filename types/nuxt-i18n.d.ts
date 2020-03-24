@@ -33,7 +33,7 @@ declare namespace NuxtVueI18n {
       fallbackLocale?: Locale | null
     }
 
-    interface RootRedirect {
+    interface RootRedirectInterface {
       path: string
       statusCode: number
     }
@@ -69,7 +69,7 @@ declare namespace NuxtVueI18n {
         }
       }
       parsePages?: boolean
-      rootRedirect?: string | null | RootRedirect
+      rootRedirect?: string | null | RootRedirectInterface
       routesNameSeparator?: string
       seo?: boolean
       strategy?: 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
