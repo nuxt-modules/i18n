@@ -1,3 +1,10 @@
+## [6.7.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.6.1...v6.7.0) (2020-03-24)
+
+
+### Features
+
+* allow customization of rootRedirect status code ([#639](https://github.com/nuxt-community/nuxt-i18n/issues/639)) ([38d8935](https://github.com/nuxt-community/nuxt-i18n/commit/38d893524eaefec05e754834689506b72aabe189))
+
 ### [6.6.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.6.0...v6.6.1) (2020-03-16)
 
 
