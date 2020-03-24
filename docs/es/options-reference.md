@@ -52,6 +52,11 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
   langDir: null,
 
   // Set this to a path to which you want to redirect users accessing root URL (/)
+  // Accepts either string or object with statusCode and path properties. E.g
+  // {
+  //   statusCode: 301,
+  //   path: 'about-us'
+  // }
   rootRedirect: null,
 
   // Enable browser language detection to automatically redirect user

@@ -512,6 +512,64 @@ describe('with empty configuration', () => {
   })
 })
 
+describe('with rootRedirect (string)', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        rootRedirect: 'fr',
+        strategy: 'prefix'
+      }
+    }
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('root route redirects to /fr', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/fr')
+  })
+})
+
+describe('with rootRedirect (object)', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        rootRedirect: { statusCode: 301, path: 'en' },
+        strategy: 'prefix'
+      }
+    }
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('root route redirects to /en', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/', requestOptions)
+    expect(response.statusCode).toBe(301)
+    expect(response.headers.location).toBe('/en')
+  })
+})
+
 describe('prefix_and_default strategy', () => {
   let nuxt
 
