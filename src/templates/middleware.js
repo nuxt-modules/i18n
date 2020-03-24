@@ -11,7 +11,15 @@ middleware.nuxti18n = async (context) => {
 
   // Handle root path redirect
   if (route.path === '/' && rootRedirect) {
-    redirect('/' + rootRedirect, route.query)
+    let statusCode = 302
+    let path = rootRedirect
+
+    if (typeof rootRedirect !== 'string') {
+      statusCode = rootRedirect.statusCode
+      path = rootRedirect.path
+    }
+
+    redirect(statusCode, '/' + path, route.query)
     return
   }
 
