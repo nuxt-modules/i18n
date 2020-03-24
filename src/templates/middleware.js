@@ -14,7 +14,7 @@ middleware.nuxti18n = async (context) => {
     let statusCode = 302
     let path = rootRedirect
 
-    if (typeof rootRedirect !== 'string' && rootRedirect.path && rootRedirect.statusCode) {
+    if (typeof rootRedirect !== 'string') {
       statusCode = rootRedirect.statusCode
       path = rootRedirect.path
     }
