@@ -97,7 +97,7 @@ function switchLocalePath (locale) {
   const { route, store } = this
   const { params, ...routeCopy } = route
   let langSwitchParams = {}
-  if (vuex && store) {
+  if (vuex && vuex.syncRouteParams && store) {
     langSwitchParams = store.getters[`${vuex.moduleName}/localeRouteParams`](locale)
   }
   const baseRoute = Object.assign({}, routeCopy, {
