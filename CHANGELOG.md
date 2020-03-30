@@ -1,3 +1,10 @@
+### [6.7.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.7.0...v6.7.1) (2020-03-30)
+
+
+### Bug Fixes
+
+* don't try to use route params when vuex.syncRouteParams ([1bdf320](https://github.com/nuxt-community/nuxt-i18n/commit/1bdf3207dddbf1dde66b2ea3b938a9d1411679fb)), closes [#644](https://github.com/nuxt-community/nuxt-i18n/issues/644)
+
 ## [6.7.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.6.1...v6.7.0) (2020-03-24)
 
 
