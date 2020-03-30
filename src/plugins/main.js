@@ -257,14 +257,12 @@ export default async (context) => {
 
           if (redirectToLocale && localeCodes.includes(redirectToLocale)) {
             if (redirectToLocale !== app.i18n.locale) {
-              // We switch the locale before redirect to prevent loops
               await app.i18n.setLocale(redirectToLocale)
+              return true
             } else if (useCookie && !getLocaleCookie()) {
               app.i18n.setLocaleCookie(redirectToLocale)
             }
           }
-
-          return true
         }
       }
     }

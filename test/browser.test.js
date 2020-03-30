@@ -5,7 +5,18 @@ import { generate, setup, loadConfig, url } from '@nuxtjs/module-test-utils'
 
 const browserString = process.env.BROWSER_STRING || 'puppeteer/core'
 
-const createNavigator = page => {
+async function createDefaultBrowser () {
+  return await createBrowser(browserString, {
+    staticServer: false,
+    extendPage (page) {
+      return {
+        navigate: createNavigator(page)
+      }
+    }
+  })
+}
+
+function createNavigator (page) {
   return async path => {
     // When returning value resolved by `push`, `chrome/selenium`` crashes with:
     // WebDriverError: unknown error: unhandled inspector error: {"code":-32000,"message":"Object reference chain is too long"}
@@ -151,6 +162,68 @@ describe(`${browserString} (generate)`, () => {
   })
 })
 
+describe(`${browserString} (no fallbackLocale, browser language not supported)`, () => {
+  let nuxt
+  let browser
+  let page
+
+  beforeAll(async () => {
+    const overrides = {
+      i18n: {
+        defaultLocale: 'pl',
+        detectBrowserLanguage: {
+          fallbackLocale: null
+        },
+        vueI18n: {
+          messages: {
+            pl: {
+              home: 'Strona glowna',
+              about: 'O stronie',
+              posts: 'Artykuly'
+            },
+            no: {
+              home: 'Hjemmeside',
+              about: 'Om oss',
+              posts: 'Artikkeler'
+            }
+          },
+          fallbackLocale: null
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      { code: 'pl', iso: 'pl-PL' },
+      { code: 'no', iso: 'no-NO' }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+
+    browser = await createDefaultBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+
+    await nuxt.close()
+  })
+
+  // Browser language is 'en' and so doesn't match supported ones.
+  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/643
+  test('updates language after navigating to another locale', async () => {
+    page = await browser.page(url('/'))
+    expect(await page.getText('body')).toContain('locale: pl')
+
+    await page.navigate('/no')
+    expect(await page.getText('body')).toContain('locale: no')
+  })
+})
+
 describe(`${browserString} (SPA with router in hash mode)`, () => {
   let nuxt
   let browser
@@ -169,14 +242,7 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
 
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
 
-    browser = await createBrowser(browserString, {
-      staticServer: false,
-      extendPage (page) {
-        return {
-          navigate: createNavigator(page)
-        }
-      }
-    })
+    browser = await createDefaultBrowser()
   })
 
   afterAll(async () => {
