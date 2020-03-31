@@ -24,6 +24,7 @@ import {
   syncVuex,
   validateRouteParams
 } from './utils'
+import { matchBrowserLocale, parseAcceptLanguage } from './utils-common'
 
 Vue.use(VueI18n)
 
@@ -233,36 +234,26 @@ export default async (context) => {
     if (detectBrowserLanguage) {
       const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
 
-      let browserLocale
+      let matchedLocale
 
-      if (useCookie && (browserLocale = getLocaleCookie()) && browserLocale !== 1 && browserLocale !== '1') {
+      if (useCookie && (matchedLocale = getLocaleCookie())) {
         // Get preferred language from cookie if present and enabled
-        // Exclude 1 for backwards compatibility and fallback when fallbackLocale is empty
-      } else if (process.client && typeof navigator !== 'undefined' && navigator.language) {
+      } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
         // Get browser language either from navigator if running on client side, or from the headers
-        browserLocale = navigator.language.toLocaleLowerCase().substring(0, 2)
+        matchedLocale = matchBrowserLocale(localeCodes, navigator.languages)
       } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-        browserLocale = req.headers['accept-language'].split(',')[0].toLocaleLowerCase().substring(0, 2)
+        matchedLocale = matchBrowserLocale(localeCodes, parseAcceptLanguage(req.headers['accept-language']))
       }
 
-      if (browserLocale) {
-        // Handle cookie option to prevent multiple redirections
-        if (!useCookie || alwaysRedirect || !getLocaleCookie()) {
-          let redirectToLocale = fallbackLocale
+      matchedLocale = matchedLocale || fallbackLocale
 
-          // Use browserLocale if we support it, otherwise use fallbackLocale
-          if (localeCodes.includes(browserLocale)) {
-            redirectToLocale = browserLocale
-          }
-
-          if (redirectToLocale && localeCodes.includes(redirectToLocale)) {
-            if (redirectToLocale !== app.i18n.locale) {
-              await app.i18n.setLocale(redirectToLocale)
-              return true
-            } else if (useCookie && !getLocaleCookie()) {
-              app.i18n.setLocaleCookie(redirectToLocale)
-            }
-          }
+      // Handle cookie option to prevent multiple redirections
+      if (matchedLocale && (!useCookie || alwaysRedirect || !getLocaleCookie())) {
+        if (matchedLocale !== app.i18n.locale) {
+          await app.i18n.setLocale(matchedLocale)
+          return true
+        } else if (useCookie && !getLocaleCookie()) {
+          app.i18n.setLocaleCookie(matchedLocale)
         }
       }
     }
