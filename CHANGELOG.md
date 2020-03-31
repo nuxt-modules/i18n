@@ -1,3 +1,10 @@
+### [6.7.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.7.1...v6.7.2) (2020-03-31)
+
+
+### Bug Fixes
+
+* locale not updated on navigation (no fallbackLocale) ([#647](https://github.com/nuxt-community/nuxt-i18n/issues/647)) ([1ad3ed1](https://github.com/nuxt-community/nuxt-i18n/commit/1ad3ed166ad25623c6663b34e0c21dfcdfdf94ff)), closes [#643](https://github.com/nuxt-community/nuxt-i18n/issues/643)
+
 ### [6.7.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.7.0...v6.7.1) (2020-03-30)
 
 
