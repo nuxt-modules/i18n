@@ -106,7 +106,7 @@
     "jest": "25.2.4",
     "jsdom": "16.2.2",
     "messageformat": "2.3.0",
-    "nuxt": "2.12.1",
+    "nuxt": "2.12.2",
     "puppeteer-core": "2.1.1",
     "release-it": "13.5.1",
     "selenium-webdriver": "4.0.0-alpha.7",
