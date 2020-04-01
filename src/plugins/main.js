@@ -255,7 +255,6 @@ export default async (context) => {
           localeCodes.forEach(localeCode => {
             if (browserLocale.includes(localeCode)) {
               redirectToLocale = localeCode
-              return
             }
           })
 
