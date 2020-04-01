@@ -252,13 +252,12 @@ export default async (context) => {
 
           // Use localeCodes if browserLocale supports it, otherwise use fallbackLocale
           // localeCodes can be the suffix of locale identifier i.e. country/region code e.g. cn or tw in case of zh-*
-          localeCodes.forEach(localeCode => {
+          localeCodes.some(localeCode => {
             if (browserLocale.includes(localeCode)) {
               redirectToLocale = localeCode
-              break
-            } else {
-              redirectToLocale = fallbackLocale
+              return true
             }
+            redirectToLocale = fallbackLocale
           })
 
           if (redirectToLocale && localeCodes.includes(redirectToLocale)) {
