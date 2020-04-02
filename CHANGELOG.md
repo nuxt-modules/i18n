@@ -1,5 +1,10 @@
 ## [6.8.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.7.2...v6.8.0) (2020-04-02)
 
+
+### Features
+
+* match against all language codes provided by the browser ([#651](https://github.com/nuxt-community/nuxt-i18n/pull/651)) ([93e1918)](https://github.com/nuxt-community/nuxt-i18n/commit/93e1918ce7f9e204393e24fdf649af37d4b43aee))
+
 ### [6.7.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.7.1...v6.7.2) (2020-03-31)
 
 
