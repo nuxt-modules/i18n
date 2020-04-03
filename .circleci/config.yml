@@ -75,20 +75,20 @@ jobs:
           name: E2E Tests
           command: yarn test:e2e-ssr && yarn coverage
 
-  test-e2e-browser:
-    parameters:
-      browserString:
-        type: string
-    executor:
-      name: node
-      browsers: true
-    steps:
-      - attach-project
-      - run:
-          name: E2E Browser Tests
-          command: yarn test:e2e-browser && yarn coverage
-          environment:
-            BROWSER_STRING: << parameters.browserString >>
+  # test-e2e-browser:
+  #   parameters:
+  #     browserString:
+  #       type: string
+  #   executor:
+  #     name: node
+  #     browsers: true
+  #   steps:
+  #     - attach-project
+  #     - run:
+  #         name: E2E Browser Tests
+  #         command: yarn test:e2e-browser && yarn coverage
+  #         environment:
+  #           BROWSER_STRING: << parameters.browserString >>
 
 workflows:
   version: 2
