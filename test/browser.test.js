@@ -241,7 +241,6 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
     }
 
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
-
     browser = await createDefaultBrowser()
   })
 
@@ -261,6 +260,36 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
 
   test('navigates directly to page with query', async () => {
     page = await browser.page(url('/#/fr?a=1'))
+    expect(await page.getText('body')).toContain('locale: fr')
+  })
+})
+
+describe(`${browserString} (vuex disabled)`, () => {
+  let nuxt
+  let browser
+
+  beforeAll(async () => {
+    const overrides = {
+      i18n: {
+        vuex: false
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+    browser = await createDefaultBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+    await nuxt.close()
+  })
+
+  test('navigates to route with correct locale', async () => {
+    let page = await browser.page(url('/'))
+    expect(await page.getText('body')).toContain('locale: en')
+    page = await browser.page(url('/fr'))
     expect(await page.getText('body')).toContain('locale: fr')
   })
 })
