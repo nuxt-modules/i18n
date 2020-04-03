@@ -39,13 +39,13 @@ describe('matchBrowserLocale', () => {
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en-US')
 
-    const appLocales = ['zh-CN', 'zh-cn']
-    const browserLocales = ['zh-CN', 'zh']
+    appLocales = ['zh-CN', 'zh-cn']
+    browserLocales = ['zh-CN', 'zh']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh-CN')
 
-    const appLocales = ['zh-TW', 'zh-tw']
-    const browserLocales = ['zh-TW', 'zh-CN', 'zh']
+    appLocales = ['zh-TW', 'zh-tw']
+    browserLocales = ['zh-TW', 'zh-CN', 'zh']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh-TW')
   })
@@ -60,8 +60,8 @@ describe('matchBrowserLocale', () => {
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en')
 
-    const appLocales = ['zh', 'zh-CN', 'zh-cn']
-    const browserLocales = ['zh', 'zh-CN']
+    appLocales = ['zh', 'zh-CN', 'zh-cn']
+    browserLocales = ['zh', 'zh-CN']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh')
   })
@@ -74,8 +74,8 @@ describe('matchBrowserLocale', () => {
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en')
 
-    const appLocales = ['zh']
-    const browserLocales = ['zh-CN', 'zh-TW', 'zh']
+    appLocales = ['zh']
+    browserLocales = ['zh-CN', 'zh-TW', 'zh']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh')
   })
@@ -87,6 +87,11 @@ describe('matchBrowserLocale', () => {
     const browserLocales = ['en-US', 'en-GB']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en')
+
+    appLocales = ['zh', 'ja']
+    browserLocales = ['zh-CN', 'zh-TW']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh')
   })
 
   test('does not match any locale', async () => {
