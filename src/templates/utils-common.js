@@ -28,8 +28,10 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
       if (appLocale.toLowerCase().includes(browserCode.toLowerCase())) {
         matchedLocales.push({ code: browserCode, score: 1 - index / browserLocales.length })
         return true
+      } else {
+        continue
       }
-    })) {
+    }) === true) {
       break
     }
   }
