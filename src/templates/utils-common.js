@@ -24,8 +24,9 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
 
   // First pass: match exact locale.
   for (const [index, browserCode] of browserLocales.entries()) {
-    if (appLocales.includes(browserCode)) {
-      matchedLocales.push({ code: browserCode, score: 1 - index / browserLocales.length })
+    const matchedCode = appLocales.find(appCode => appCode.toLowerCase() === browserCode.toLowerCase())
+    if (matchedCode) {
+      matchedLocales.push({ code: matchedCode, score: 1 - index / browserLocales.length })
       break
     }
   }
