@@ -1,3 +1,10 @@
+### [6.8.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.8.0...v6.8.1) (2020-04-03)
+
+
+### Bug Fixes
+
+* match full browser locale case-insensitively (same as short) ([#655](https://github.com/nuxt-community/nuxt-i18n/issues/655)) ([e614e8e](https://github.com/nuxt-community/nuxt-i18n/commit/e614e8e31010a7a0114cd9ea9d01588d7c26e510)), closes [#651](https://github.com/nuxt-community/nuxt-i18n/issues/651)
+
 ## [6.8.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.7.2...v6.8.0) (2020-04-02)
 
 
