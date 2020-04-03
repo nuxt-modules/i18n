@@ -1022,3 +1022,26 @@ describe('parsePages disabled', () => {
     await expect(get('/fr/about')).rejects.toBeDefined()
   })
 })
+
+describe('vuex disabled', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        vuex: false
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('navigates to route with correct locale', async () => {
+    expect(getDom(await get('/')).querySelector('#current-locale').textContent).toBe('locale: en')
+    expect(getDom(await get('/fr')).querySelector('#current-locale').textContent).toBe('locale: fr')
+  })
+})
