@@ -107,14 +107,14 @@ workflows:
           requires: [lint]
       - test-e2e-ssr:
           requires: [lint]
-      - test-e2e-browser:
-          name: test-e2e-firefox
-          browserString: firefox/headless
-          requires: [test-e2e-ssr]
-      - test-e2e-browser:
-          name: test-e2e-chrome
-          browserString: chrome/selenium
-          requires: [test-e2e-ssr]
+      # - test-e2e-browser:
+      #     name: test-e2e-firefox
+      #     browserString: firefox/headless
+      #     requires: [test-e2e-ssr]
+      # - test-e2e-browser:
+      #     name: test-e2e-chrome
+      #     browserString: chrome/selenium
+      #     requires: [test-e2e-ssr]
       # - test-e2e-browser:
       #     name: test-e2e-ie
       #     browserString: browserstack/local/windows 7/ie:9
