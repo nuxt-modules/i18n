@@ -34,10 +34,20 @@ describe('matchBrowserLocale', () => {
     const { matchBrowserLocale } = await import('../src/templates/utils-common')
 
     // Both locales match first browser locale - full locale should win.
-    const appLocales = ['en', 'en-US']
+    const appLocales = ['en', 'en-US', 'en-us']
     const browserLocales = ['en-US', 'en']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en-US')
+
+    const appLocales = ['zh-CN', 'zh-cn']
+    const browserLocales = ['zh-CN', 'zh']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh-CN')
+
+    const appLocales = ['zh-TW', 'zh-tw']
+    const browserLocales = ['zh-TW', 'zh-CN', 'zh']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh-TW')
   })
 
   test('matches highest-ranked short locale', async () => {
@@ -45,10 +55,15 @@ describe('matchBrowserLocale', () => {
 
     // Both locales match first browser locale - short locale should win.
     // This is because browser locale order defines scoring so we prefer higher-scored over exact.
-    const appLocales = ['en', 'en-US']
+    const appLocales = ['en', 'en-US', 'en-us']
     const browserLocales = ['en', 'en-US']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en')
+
+    const appLocales = ['zh', 'zh-CN', 'zh-cn']
+    const browserLocales = ['zh', 'zh-CN']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh')
   })
 
   test('matches highest-ranked short locale (only short defined)', async () => {
@@ -58,6 +73,11 @@ describe('matchBrowserLocale', () => {
     const browserLocales = ['en-US', 'en']
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en')
+
+    const appLocales = ['zh']
+    const browserLocales = ['zh-CN', 'zh-TW', 'zh']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('zh')
   })
 
   test('matches highest-ranked short locale', async () => {
