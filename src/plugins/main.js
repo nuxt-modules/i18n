@@ -214,7 +214,9 @@ export default async (context) => {
 
   let locale = app.i18n.defaultLocale || null
 
-  if (app.i18n.differentDomains) {
+  if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
+    locale = store.state[vuex.moduleName].locale
+  } else if (app.i18n.differentDomains) {
     const domainLocale = getLocaleDomain(app.i18n, req)
     locale = domainLocale || locale
   } else if (strategy !== STRATEGIES.NO_PREFIX) {
