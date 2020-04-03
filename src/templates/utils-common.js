@@ -31,7 +31,7 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
       } else {
         return false
       }
-    }))) {
+    })) {
       break
     }
   }
