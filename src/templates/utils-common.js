@@ -27,10 +27,8 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
     for (const appCode of appLocales) {
       if (appCode.toLowerCase() === browserCode.toLowerCase()) {
         matchedLocales.push({ code: appCode, score: 1 - index / browserLocales.length })
-        break;
+        break
       }
-    }) === true) {
-      break
     }
   }
 
