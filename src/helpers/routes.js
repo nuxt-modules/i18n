@@ -88,7 +88,7 @@ exports.makeRoutes = (baseRoutes, {
           localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true, isExtraRouteTree))
         }
         // Remove duplicates normal routes overriding specific ones
-        route.children = removeDuplicatesOfSpecificRoutes(route.children)
+        localizedRoute.children = removeDuplicatesOfSpecificRoutes(localizedRoute.children)
       }
 
       // Get custom path if any
