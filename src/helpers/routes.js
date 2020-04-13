@@ -44,6 +44,17 @@ exports.makeRoutes = (baseRoutes, {
       ...pageOptions,
       ...routeOptions
     }
+
+    // Detects if the route is for a specific locale (i.e. ends with '.xx', which xx is the iso code for a locale)
+    const localeInPathIndex = locales.findIndex(l => route.path.endsWith('.' + l))
+    let specificLocale
+    if (localeInPathIndex !== -1) {
+      specificLocale = locales[localeInPathIndex]
+
+      // Locales will be limited to the specified one
+      componentOptions.locales = [specificLocale]
+    }
+
     // Double check locales to remove any locales not found in pageOptions
     // This is there to prevent children routes being localized even though
     // they are disabled in the configuration
@@ -60,6 +71,11 @@ exports.makeRoutes = (baseRoutes, {
       let { path } = route
       const localizedRoute = { ...route }
 
+      // Remove the suffix '.xx' from the route
+      if (specificLocale) {
+        path = path.replace(new RegExp('\\.' + specificLocale + '$'), '')
+      }
+
       // Make localized route name. Name might not exist on parent route if child has same path.
       if (name) {
         localizedRoute.name = name + routesNameSeparator + locale
@@ -71,6 +87,8 @@ exports.makeRoutes = (baseRoutes, {
         for (let i = 0, length1 = route.children.length; i < length1; i++) {
           localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true, isExtraRouteTree))
         }
+        // Remove duplicates normal routes overriding specific ones
+        route.children = removeDuplicatesOfSpecificRoutes(route.children)
       }
 
       // Get custom path if any
@@ -96,6 +114,8 @@ exports.makeRoutes = (baseRoutes, {
               // isExtraRouteTree argument is true to indicate that this is extra route added for PREFIX_AND_DEFAULT strategy
               defaultRoute.children = defaultRoute.children.concat(buildLocalizedRoutes(childRoute, { locales: [locale] }, true, true))
             }
+            // Remove duplicates normal routes overriding specific ones
+            defaultRoute.children = removeDuplicatesOfSpecificRoutes(defaultRoute.children)
           }
 
           routes.push(defaultRoute)
@@ -122,6 +142,9 @@ exports.makeRoutes = (baseRoutes, {
 
       localizedRoute.path = path
 
+      // Flag the route to be detectable when checking for duplicates
+      localizedRoute.isSpecificForLocale = !!specificLocale
+
       routes.push(localizedRoute)
     }
 
@@ -132,6 +155,8 @@ exports.makeRoutes = (baseRoutes, {
     const route = baseRoutes[i]
     localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, { locales }))
   }
+  // Remove duplicates normal routes overriding specific ones
+  localizedRoutes = removeDuplicatesOfSpecificRoutes(localizedRoutes)
 
   try {
     const { sortRoutes } = require('@nuxt/utils')
@@ -141,4 +166,20 @@ exports.makeRoutes = (baseRoutes, {
   }
 
   return localizedRoutes
+}
+
+/**
+ * When specific routes are added, non-specific ones are still there,
+ * so we have to remove them to avoid specific routes from being overriden.
+ * @param {*} routes All routes, returned from buildLocalizedRoutes
+ */
+function removeDuplicatesOfSpecificRoutes (routes) {
+  routes.filter(r => r.isSpecificForLocale).forEach((route) => {
+    const duplicateIndex = routes.findIndex(r => r.path === route.path && !r.isSpecificForLocale)
+    if (duplicateIndex !== -1) {
+      routes.splice(duplicateIndex, 1)
+    }
+  })
+
+  return routes
 }
