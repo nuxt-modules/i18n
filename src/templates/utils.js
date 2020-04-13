@@ -163,7 +163,8 @@ export const getLocaleFromRoute = (route = {}) => {
     if (matches && matches.length > 1) {
       return matches[1]
     }
-  } else if (route.path) {
+  }
+  if (route.path) {
     // Extract from path
     const regexp = new RegExp(`^/${localesPattern}/`, 'i')
     const matches = route.path.match(regexp)
