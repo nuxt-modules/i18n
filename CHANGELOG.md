@@ -1,3 +1,15 @@
+## [6.9.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.8.1...v6.9.0) (2020-04-14)
+
+
+### Features
+
+* re-use the store locale on the client if set on server ([#593](https://github.com/nuxt-community/nuxt-i18n/issues/593)) ([c8b05b1](https://github.com/nuxt-community/nuxt-i18n/commit/c8b05b123288574777046302e2a258558c841410))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @intlify/vue-i18n-loader to v1 ([#659](https://github.com/nuxt-community/nuxt-i18n/issues/659)) ([9886e1f](https://github.com/nuxt-community/nuxt-i18n/commit/9886e1fcad4b443b2a09b427dd92a77f2c1e299d))
+
 ### [6.8.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.8.0...v6.8.1) (2020-04-03)
 
 
