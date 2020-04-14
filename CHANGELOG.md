@@ -1,3 +1,10 @@
+### [6.9.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.0...v6.9.1) (2020-04-14)
+
+
+### Bug Fixes
+
+* crash with invalid locale cookie + no_prefix strategy + SEO ([#666](https://github.com/nuxt-community/nuxt-i18n/issues/666)) ([2ec72bc](https://github.com/nuxt-community/nuxt-i18n/commit/2ec72bce3f5ca6841c75811bd4cf5a676a9aeafa))
+
 ## [6.9.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.8.1...v6.9.0) (2020-04-14)
 
 
