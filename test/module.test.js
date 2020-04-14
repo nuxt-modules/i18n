@@ -878,8 +878,8 @@ describe('differentDomains enabled', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    await expect(dom.querySelector('body').textContent).toContain('page: Homepage')
-    await expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
+    expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+    expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
   })
 
   test('host matches locale\'s domain (fr)', async () => {
@@ -890,7 +890,7 @@ describe('differentDomains enabled', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    await expect(dom.querySelector('body').textContent).toContain('page: Accueil')
+    expect(dom.querySelector('body').textContent).toContain('page: Accueil')
   })
 
   test('x-forwarded-host does not match locale\'s domain', async () => {
@@ -902,7 +902,7 @@ describe('differentDomains enabled', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     // Falls back to english.
-    await expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+    expect(dom.querySelector('body').textContent).toContain('page: Homepage')
   })
 
   test('x-forwarded-host does match locale\'s domain (fr)', async () => {
@@ -913,7 +913,7 @@ describe('differentDomains enabled', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    await expect(dom.querySelector('body').textContent).toContain('page: Accueil')
+    expect(dom.querySelector('body').textContent).toContain('page: Accueil')
   })
 })
 
@@ -1043,5 +1043,37 @@ describe('vuex disabled', () => {
   test('navigates to route with correct locale', async () => {
     expect(getDom(await get('/')).querySelector('#current-locale').textContent).toBe('locale: en')
     expect(getDom(await get('/fr')).querySelector('#current-locale').textContent).toBe('locale: fr')
+  })
+})
+
+describe('no_prefix + detectBrowserLanguage + alwaysRedirect', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        strategy: 'no_prefix',
+        detectBrowserLanguage: {
+          alwaysRedirect: true
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('fallbacks to default locale with invalid locale cookie', async () => {
+    const requestOptions = {
+      headers: {
+        Cookie: 'i18n_redirected=invalid'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
   })
 })

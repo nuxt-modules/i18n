@@ -90,11 +90,17 @@ export default async (context) => {
 
   const getLocaleCookie = () => {
     if (useCookie) {
+      let localeCode
+
       if (process.client) {
-        return JsCookie.get(cookieKey)
+        localeCode = JsCookie.get(cookieKey)
       } else if (req && typeof req.headers.cookie !== 'undefined') {
         const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
-        return cookies[cookieKey]
+        localeCode = cookies[cookieKey]
+      }
+
+      if (localeCodes.includes(localeCode)) {
+        return localeCode
       }
     }
   }
@@ -223,11 +229,7 @@ export default async (context) => {
     const routeLocale = getLocaleFromRoute(route)
     locale = routeLocale || locale
   } else if (useCookie) {
-    const localeCookie = getLocaleCookie()
-
-    if (localeCodes.includes(localeCookie)) {
-      locale = localeCookie
-    }
+    locale = getLocaleCookie() || locale
   }
 
   await loadAndSetLocale(locale, { initialSetup: true })
