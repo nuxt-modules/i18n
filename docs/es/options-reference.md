@@ -68,7 +68,7 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
     // Set to false to redirect every time
     useCookie: true,
     // Set to override the default domain of the cookie. Defaults to host of the site.
-    cookieDomain: null
+    cookieDomain: null,
     // Cookie name
     cookieKey: 'i18n_redirected',
     // Set to always redirect to value stored in the cookie, not just once
