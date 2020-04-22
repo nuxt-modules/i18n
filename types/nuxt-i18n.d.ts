@@ -48,7 +48,7 @@ declare namespace NuxtVueI18n {
     // options that are also exposed on VueI18n instance: https://goo.gl/UwNfZo
     interface NuxtI18nInterface {
       beforeLanguageSwitch?: (oldLocale: string, newLocale: string) => void
-      defaultLocale?: null | Locale
+      defaultLocale?: Locale
       locales?: Array<Locale | LocaleObject>
       differentDomains?: boolean
       forwardedHost?: boolean
