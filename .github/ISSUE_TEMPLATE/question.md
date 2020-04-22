@@ -7,7 +7,9 @@ assignees: ''
 
 ---
 
-/** **IMPORTANT!**
+<!--
+
+ **IMPORTANT!**
 Please make sure to look for an answer to your question in our documentation before asking a question here.
 
 If you have a general question regarding nuxt-i18n use Discord `modules` channel. Thanks!
@@ -15,4 +17,4 @@ If you have a general question regarding nuxt-i18n use Discord `modules` channel
 Documentation: https://nuxt-community.github.io/nuxt-i18n/
 Nuxt Discord: https://discord.nuxtjs.org/
 
-**/
+-->
