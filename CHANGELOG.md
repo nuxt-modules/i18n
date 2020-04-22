@@ -1,3 +1,10 @@
+### [6.9.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.1...v6.9.2) (2020-04-22)
+
+
+### Bug Fixes
+
+* lock vue-i18n version to 8.16.0 until crashing issue is fixed ([ad82009](https://github.com/nuxt-community/nuxt-i18n/commit/ad820091a9004bb16d47496dff7661023fd254eb))
+
 ### [6.9.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.0...v6.9.1) (2020-04-14)
 
 
