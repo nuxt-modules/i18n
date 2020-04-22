@@ -7,8 +7,9 @@ assignees: ''
 
 ---
 
-### nuxt-i18n version
-<!-- ex: 6.9.2 -->
+### Versions
+Nuxt-i18n: <!-- ex: 5.9.0 -->
+Nuxt: <!-- ex: 2.0.0 -->
 
 ### Reproduction Link
 <!-- A minimal test case on https://template.nuxtjs.org/ or GitHub reprository that can reproduce the bug. -->
