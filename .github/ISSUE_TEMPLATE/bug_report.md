@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a bug report to help us improve the module.
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
