@@ -5,8 +5,6 @@ const { directive: i18nExtensionsDirective } = require('@intlify/vue-i18n-extens
 const {
   MODULE_NAME,
   ROOT_DIR,
-  PLUGINS_DIR,
-  TEMPLATES_DIR,
   DEFAULT_OPTIONS,
   NESTED_OPTIONS,
   LOCALE_CODE_KEY,
@@ -22,9 +20,6 @@ const {
 } = require('./helpers/utils')
 
 module.exports = function (userOptions) {
-  const pluginsPath = join(__dirname, PLUGINS_DIR)
-  const templatesPath = join(__dirname, TEMPLATES_DIR)
-  const requiredPlugins = ['main', 'routing']
   const options = { ...DEFAULT_OPTIONS, ...userOptions, ...this.options.i18n }
   // Options that have nested config options must be merged
   // individually with defaults to prevent missing options
@@ -83,31 +78,27 @@ module.exports = function (userOptions) {
     console.warn('[' + options.MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/nuxt-i18n/pull/630.')
   }
 
-  // Plugins
-  for (const file of requiredPlugins) {
-    this.addPlugin({
-      src: resolve(pluginsPath, `${file}.js`),
-      fileName: join(ROOT_DIR, `plugin.${file}.js`),
-      options: templatesOptions
-    })
-  }
+  const templatesPath = join(__dirname, '/templates')
 
-  // Templates
+  // Templates (including plugins)
   for (const file of readdirSync(templatesPath)) {
-    this.addTemplate({
-      src: resolve(templatesPath, file),
-      fileName: join(ROOT_DIR, file),
-      options: templatesOptions
-    })
-  }
+    if (file.startsWith('plugin.')) {
+      if (file === 'plugin.seo.js' && !options.seo) {
+        continue
+      }
 
-  // SEO plugin
-  if (options.seo) {
-    this.addPlugin({
-      src: resolve(pluginsPath, 'seo.js'),
-      fileName: join(ROOT_DIR, 'plugin.seo.js'),
-      options: templatesOptions
-    })
+      this.addPlugin({
+        src: resolve(templatesPath, file),
+        fileName: join(ROOT_DIR, file),
+        options: templatesOptions
+      })
+    } else {
+      this.addTemplate({
+        src: resolve(templatesPath, file),
+        fileName: join(ROOT_DIR, file),
+        options: templatesOptions
+      })
+    }
   }
 
   // Add vue-i18n to vendors if using Nuxt 1.x

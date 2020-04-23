@@ -3,9 +3,6 @@ const packageJson = require('../../package.json')
 // Internals
 exports.MODULE_NAME = packageJson.name
 exports.ROOT_DIR = 'nuxt-i18n'
-exports.HELPERS_PATH = 'helpers/'
-exports.PLUGINS_DIR = 'plugins/'
-exports.TEMPLATES_DIR = 'templates/'
 exports.LOCALE_CODE_KEY = 'code'
 exports.LOCALE_ISO_KEY = 'iso'
 exports.LOCALE_DOMAIN_KEY = 'domain'
