@@ -1,3 +1,10 @@
+### [6.10.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.10.0...v6.10.1) (2020-04-23)
+
+
+### Bug Fixes
+
+* **types:** fix type of baseUrl to allow string ([a495cb3](https://github.com/nuxt-community/nuxt-i18n/commit/a495cb3ad0c9cf42b1e0c23c5e5be7b08caefdc5))
+
 ## [6.10.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.3...v6.10.0) (2020-04-23)
 
 
