@@ -1,17 +1,22 @@
 ---
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    env:
+      CI: true
     strategy:
       matrix:
         node-version: [10.x, 12.x]
-
     name: Use Node.js ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v1
@@ -19,10 +24,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn install, lint, and test
-        run: |
-          yarn
-          yarn lint
-          yarn test
-        env:
-          CI: true
+      - name: yarn install
+        run: yarn
+      - name: Unittesting
+        run: yarn lint
+      - name: Linting
+        run: yarn test
