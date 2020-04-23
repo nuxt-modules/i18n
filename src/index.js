@@ -1,6 +1,6 @@
 const { resolve, join } = require('path')
 const { readdirSync } = require('fs')
-const i18nExtensions = require('vue-i18n-extensions')
+const { directive: i18nExtensionsDirective } = require('@intlify/vue-i18n-extensions')
 
 const {
   MODULE_NAME,
@@ -137,5 +137,5 @@ module.exports = function (userOptions) {
 
   this.options.router.middleware.push('nuxti18n')
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
-  this.options.render.bundleRenderer.directives.t = i18nExtensions.directive
+  this.options.render.bundleRenderer.directives.t = i18nExtensionsDirective
 }
