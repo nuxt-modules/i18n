@@ -80,12 +80,12 @@
   "dependencies": {
     "@babel/parser": "^7.5.5",
     "@babel/traverse": "^7.5.5",
+    "@intlify/vue-i18n-extensions": "^1.0.1",
     "@intlify/vue-i18n-loader": "^1.0.0",
     "cookie": "^0.4.0",
     "is-https": "^1.0.0",
     "js-cookie": "^2.2.1",
-    "vue-i18n": "^8.17.3",
-    "vue-i18n-extensions": "^0.2.1"
+    "vue-i18n": "^8.17.3"
   },
   "devDependencies": {
     "@babel/core": "7.9.0",
