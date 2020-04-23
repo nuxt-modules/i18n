@@ -1,3 +1,11 @@
+### [6.9.3](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.1...v6.9.3) (2020-04-23)
+
+
+### Bug Fixes
+
+* crash with latest vue-i18n related to using null locale ([#678](https://github.com/nuxt-community/nuxt-i18n/issues/678)) ([642fddf](https://github.com/nuxt-community/nuxt-i18n/commit/642fddfb4eac8bed42e537737c74d9ec7f8e10ad))
+* lock vue-i18n version to 8.16.0 until crashing issue is fixed ([#673](https://github.com/nuxt-community/nuxt-i18n/issues/673)) ([9e99f19](https://github.com/nuxt-community/nuxt-i18n/commit/9e99f193ac25befd3e4cdcf40b3e92df1b443e58))
+
 ### [6.9.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.1...v6.9.2) (2020-04-22)
 
 
