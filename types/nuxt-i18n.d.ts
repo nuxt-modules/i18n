@@ -58,7 +58,7 @@ declare namespace NuxtVueI18n {
 
     // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
     interface AllOptionsInterface extends NuxtI18nInterface {
-      baseUrl?: (context: NuxtContext) => string | string
+      baseUrl?: string | ((context: NuxtContext) => string)
       detectBrowserLanguage?: DetectBrowserLanguageInterface
       encodePaths?: boolean
       langDir?: string | null
