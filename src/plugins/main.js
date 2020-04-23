@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
 import {
+  baseUrl,
   beforeLanguageSwitch,
   defaultLocale,
   detectBrowserLanguage,
@@ -24,7 +25,7 @@ import {
   syncVuex,
   validateRouteParams
 } from './utils'
-import { matchBrowserLocale, parseAcceptLanguage } from './utils-common'
+import { resolveBaseUrl, matchBrowserLocale, parseAcceptLanguage } from './utils-common'
 
 Vue.use(VueI18n)
 
@@ -197,6 +198,7 @@ export default async (context) => {
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
   app.i18n.locales = locales
   app.i18n.defaultLocale = defaultLocale
+  app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
   app.i18n.differentDomains = differentDomains
   app.i18n.beforeLanguageSwitch = beforeLanguageSwitch
   app.i18n.onLanguageSwitched = onLanguageSwitched
