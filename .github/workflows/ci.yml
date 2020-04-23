@@ -27,6 +27,6 @@ jobs:
       - name: yarn install
         run: yarn
       - name: Unittesting
-        run: yarn lint
-      - name: Linting
         run: yarn test
+      - name: Linting
+        run: yarn lint
