@@ -1,6 +1,7 @@
 import middleware from '../middleware'
-import { detectBrowserLanguage, rootRedirect } from './options'
+import { baseUrl, detectBrowserLanguage, rootRedirect } from './options'
 import { getLocaleFromRoute } from './utils'
+import { resolveBaseUrl } from './utils-common'
 
 middleware.nuxti18n = async (context) => {
   const { app, route, redirect, isHMR } = context
@@ -22,6 +23,8 @@ middleware.nuxti18n = async (context) => {
     redirect(statusCode, '/' + path, route.query)
     return
   }
+
+  app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
 
   if (detectBrowserLanguage && await app.i18n.__detectBrowserLanguage()) {
     return

@@ -2,7 +2,7 @@
  * Parses locales provided from browser through `accept-language` header.
  * @param {string} input
  * @return {string[]} An array of locale codes. Priority determined by order in array.
- **/
+ */
 export const parseAcceptLanguage = input => {
   // Example input: en-US,en;q=0.9,nb;q=0.8,no;q=0.7
   // Contains tags separated by comma.
@@ -17,7 +17,7 @@ export const parseAcceptLanguage = input => {
  * @param {string[]} appLocales The user-configured locale codes that are to be matched.
  * @param {string[]} browserLocales The locales to match against configured.
  * @return {string?}
- **/
+ */
 export const matchBrowserLocale = (appLocales, browserLocales) => {
   /** @type {{ code: string, score: number }[]} */
   const matchedLocales = []
@@ -58,4 +58,18 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
   }
 
   return matchedLocales.length ? matchedLocales[0].code : null
+}
+
+/**
+ * Resolves base URL value if provided as function. Otherwise just returns verbatim.
+ * @param {string | function} baseUrl
+ * @param {import('@nuxt/types').Context} context
+ * @return {string}
+ */
+export const resolveBaseUrl = (baseUrl, context) => {
+  if (typeof baseUrl === 'function') {
+    return baseUrl(context)
+  }
+
+  return baseUrl
 }

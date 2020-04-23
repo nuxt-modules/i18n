@@ -834,6 +834,78 @@ describe('with router base', () => {
   })
 })
 
+describe('baseUrl', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        strategy: 'prefix_and_default',
+        baseUrl: (context) => {
+          if (process.server) {
+            return context.req.headers['x-override-base-url']
+          }
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('evaluates baseUrl function correctly', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Override-Base-Url': 'CUSTOM'
+      }
+    }
+    const html = await get('/?noncanonical', requestOptions)
+    const dom = getDom(html)
+    const seoTags = getSeoTags(dom)
+
+    const expectedSeoTags = [
+      {
+        tagName: 'meta',
+        property: 'og:locale',
+        content: 'en'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'fr_FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'CUSTOM/?noncanonical',
+        hreflang: 'en'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'CUSTOM/fr?noncanonical',
+        hreflang: 'fr'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'CUSTOM/fr?noncanonical',
+        hreflang: 'fr-FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'canonical',
+        href: 'CUSTOM/?noncanonical' // TODO: This seems broken. Should not include query.
+      }
+    ]
+
+    expect(seoTags).toEqual(expectedSeoTags)
+  })
+})
+
 describe('differentDomains enabled', () => {
   let nuxt
 

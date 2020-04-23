@@ -1,5 +1,6 @@
 import VueI18n from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
+import { Context as NuxtContext } from '@nuxt/types'
 
 /**
  * The nuxt-i18n types namespace
@@ -57,7 +58,7 @@ declare namespace NuxtVueI18n {
 
     // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
     interface AllOptionsInterface extends NuxtI18nInterface {
-      baseUrl?: string
+      baseUrl?: (context: NuxtContext) => string | string
       detectBrowserLanguage?: DetectBrowserLanguageInterface
       encodePaths?: boolean
       langDir?: string | null

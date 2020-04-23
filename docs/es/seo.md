@@ -42,6 +42,7 @@ También debe establecer la opción  `baseUrl` en su dominio de producción para
 }]
 ```
 
+`baseUrl` can also be set to a function that will be passed a [Nuxt Context](https://nuxtjs.org/api/context) as a parameter and returns a string. It can be useful to make base URL dynamic based on request headers or `window.location`.
 
 Para habilitar esta función en todas partes en su aplicación, configure la opción `seo` en `true`:
 

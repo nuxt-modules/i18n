@@ -104,6 +104,8 @@ Here are all the options available when configuring the module and their default
   // Fallback base URL to use as prefix for alternate URLs in hreflang tags.
   // By default VueRouter's base URL will be used and only if that is not available,
   // fallback URL will be used.
+  // Can also be a function that will be passed a Nuxt context as a parameter and
+  // should return a string. Useful to make base url dynamic based on request headers.
   baseUrl: '',
 
   // By default a store module is registered and kept in sync with the
