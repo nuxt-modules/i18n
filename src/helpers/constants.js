@@ -26,7 +26,7 @@ exports.DEFAULT_OPTIONS = {
   vueI18n: {},
   vueI18nLoader: false,
   locales: [],
-  defaultLocale: null,
+  defaultLocale: '',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
   strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,
@@ -38,7 +38,7 @@ exports.DEFAULT_OPTIONS = {
     cookieDomain: null,
     cookieKey: 'i18n_redirected',
     alwaysRedirect: false,
-    fallbackLocale: null
+    fallbackLocale: ''
   },
   differentDomains: false,
   seo: false,

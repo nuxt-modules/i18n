@@ -27,7 +27,7 @@ middleware.nuxti18n = async (context) => {
     return
   }
 
-  const locale = app.i18n.locale || app.i18n.defaultLocale || null
+  const locale = app.i18n.locale || app.i18n.defaultLocale || ''
   const routeLocale = getLocaleFromRoute(route)
 
   await app.i18n.setLocale(routeLocale || locale)
