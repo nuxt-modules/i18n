@@ -1,3 +1,10 @@
+## [6.10.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.3...v6.10.0) (2020-04-23)
+
+
+### Features
+
+* allow providing function for baseUrl option ([#679](https://github.com/nuxt-community/nuxt-i18n/issues/679)) ([056a8f7](https://github.com/nuxt-community/nuxt-i18n/commit/056a8f727b678fbe64496d2fb82af08443fe471c))
+
 ### [6.9.3](https://github.com/nuxt-community/nuxt-i18n/compare/v6.9.1...v6.9.3) (2020-04-23)
 
 
