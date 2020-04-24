@@ -163,16 +163,17 @@ Localized routes are full URIs, so keep in mind that:
 
 #### Example 1
 
-Say you have some nested page like:
+Say you have some nested pages like:
 
 ```asciidoc
 pages/
 ├── _nested/
 ├──── _route/
 ├────── index.vue
+├────── _.vue
 ```
 
-Here's how you would configure this particular page in the configuration:
+Here's how you would configure these particular pages in the configuration:
 
 ```js
 // nuxt.config.js
@@ -182,6 +183,9 @@ Here's how you would configure this particular page in the configuration:
   pages: {
     '_nested/_route/index': {
       en: '/mycustompath/:nested/:route?' // Params need to be put back here as you would with vue-router
+    },
+    '_nested/_route/_': {
+      en: '/mycustompath/:nested/*' // * will match the entire route path after /:nested/
     }
   }
 }]

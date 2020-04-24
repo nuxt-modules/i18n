@@ -151,9 +151,10 @@ pages/
 ├── _nested/
 ├──── _route/
 ├────── index.vue
+├────── _.vue
 ```
 
-Así es como configuraría esta página en particular en la configuración:
+Así es como configuraría estas páginas en particular en la configuración:
 
 ```js
 // nuxt.config.js
@@ -163,6 +164,9 @@ Así es como configuraría esta página en particular en la configuración:
   pages: {
     '_nested/_route/index': {
       en: '/mycustompath/:nested/:route?' // Params need to be put back here as you would with vue-router
+    },
+    '_nested/_route/_': {
+      en: '/mycustompath/:nested/*' // * will match the entire route path after /:nested/
     }
   }
 }]
