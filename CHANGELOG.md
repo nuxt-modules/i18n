@@ -1,3 +1,10 @@
+### [6.10.2-beta.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.10.1...v6.10.2-beta.0) (2020-04-24)
+
+
+### Bug Fixes
+
+* redirect from 404 to defaultLocale if there is matching route ([b20bd58](https://github.com/nuxt-community/nuxt-i18n/commit/b20bd58e93fb025b0056f258472a2c090a20245b)), closes [#677](https://github.com/nuxt-community/nuxt-i18n/issues/677) [#491](https://github.com/nuxt-community/nuxt-i18n/issues/491)
+
 ### [6.10.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.10.0...v6.10.1) (2020-04-23)
 
 
