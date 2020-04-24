@@ -1,3 +1,6 @@
+import Cookie from 'cookie'
+import JsCookie from 'js-cookie'
+
 /**
  * Parses locales provided from browser through `accept-language` header.
  * @param {string} input
@@ -72,4 +75,61 @@ export const resolveBaseUrl = (baseUrl, context) => {
   }
 
   return baseUrl
+}
+
+/**
+ * @param {object} [req]
+ * @param {{ useCookie: boolean, localeCodes: string[], cookieKey: string}} options
+ * @return {string | void}
+ */
+export const getLocaleCookie = (req, { useCookie, cookieKey, localeCodes }) => {
+  if (useCookie) {
+    let localeCode
+
+    if (process.client) {
+      localeCode = JsCookie.get(cookieKey)
+    } else if (req && typeof req.headers.cookie !== 'undefined') {
+      const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
+      localeCode = cookies[cookieKey]
+    }
+
+    if (localeCodes.includes(localeCode)) {
+      return localeCode
+    }
+  }
+}
+
+/**
+ * @param {string} locale
+ * @param {object} [res]
+ * @param {{ useCookie: boolean, cookieDomain: string, cookieKey: string}} options
+ */
+export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKey }) => {
+  if (!useCookie) {
+    return
+  }
+  const date = new Date()
+  const cookieOptions = {
+    expires: new Date(date.setDate(date.getDate() + 365)),
+    path: '/',
+    sameSite: 'lax'
+  }
+
+  if (cookieDomain) {
+    cookieOptions.domain = cookieDomain
+  }
+
+  if (process.client) {
+    JsCookie.set(cookieKey, locale, cookieOptions)
+  } else if (res) {
+    let headers = res.getHeader('Set-Cookie') || []
+    if (typeof headers === 'string') {
+      headers = [headers]
+    }
+
+    const redirectCookie = Cookie.serialize(cookieKey, locale, cookieOptions)
+    headers.push(redirectCookie)
+
+    res.setHeader('Set-Cookie', headers)
+  }
 }

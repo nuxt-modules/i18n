@@ -1,5 +1,3 @@
-import Cookie from 'cookie'
-import JsCookie from 'js-cookie'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
@@ -25,7 +23,13 @@ import {
   syncVuex,
   validateRouteParams
 } from './utils'
-import { resolveBaseUrl, matchBrowserLocale, parseAcceptLanguage } from './utils-common'
+import {
+  getLocaleCookie,
+  resolveBaseUrl,
+  matchBrowserLocale,
+  parseAcceptLanguage,
+  setLocaleCookie
+} from './utils-common'
 
 Vue.use(VueI18n)
 
@@ -88,53 +92,6 @@ export default async (context) => {
   }
 
   const { useCookie, cookieKey, cookieDomain } = detectBrowserLanguage
-
-  const getLocaleCookie = () => {
-    if (useCookie) {
-      let localeCode
-
-      if (process.client) {
-        localeCode = JsCookie.get(cookieKey)
-      } else if (req && typeof req.headers.cookie !== 'undefined') {
-        const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
-        localeCode = cookies[cookieKey]
-      }
-
-      if (localeCodes.includes(localeCode)) {
-        return localeCode
-      }
-    }
-  }
-
-  const setLocaleCookie = locale => {
-    if (!useCookie) {
-      return
-    }
-    const date = new Date()
-    const cookieOptions = {
-      expires: new Date(date.setDate(date.getDate() + 365)),
-      path: '/',
-      sameSite: 'lax'
-    }
-
-    if (cookieDomain) {
-      cookieOptions.domain = cookieDomain
-    }
-
-    if (process.client) {
-      JsCookie.set(cookieKey, locale, cookieOptions)
-    } else if (res) {
-      let headers = res.getHeader('Set-Cookie') || []
-      if (typeof headers === 'string') {
-        headers = [headers]
-      }
-
-      const redirectCookie = Cookie.serialize(cookieKey, locale, cookieOptions)
-      headers.push(redirectCookie)
-
-      res.setHeader('Set-Cookie', headers)
-    }
-  }
 
   const loadAndSetLocale = async (newLocale, { initialSetup = false } = {}) => {
     // Abort if different domains option enabled
@@ -217,7 +174,7 @@ export default async (context) => {
 
     let matchedLocale
 
-    if (useCookie && (matchedLocale = getLocaleCookie())) {
+    if (useCookie && (matchedLocale = app.i18n.getLocaleCookie())) {
       // Get preferred language from cookie if present and enabled
     } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
       // Get browser language either from navigator if running on client side, or from the headers
@@ -229,10 +186,10 @@ export default async (context) => {
     const finalLocale = matchedLocale || fallbackLocale
 
     // Handle cookie option to prevent multiple redirections
-    if (finalLocale && (!useCookie || alwaysRedirect || !getLocaleCookie())) {
+    if (finalLocale && (!useCookie || alwaysRedirect || !app.i18n.getLocaleCookie())) {
       if (finalLocale !== app.i18n.locale) {
         return finalLocale
-      } else if (useCookie && !getLocaleCookie()) {
+      } else if (useCookie && !app.i18n.getLocaleCookie()) {
         app.i18n.setLocaleCookie(finalLocale)
       }
     }
@@ -285,8 +242,8 @@ export default async (context) => {
   app.i18n.differentDomains = differentDomains
   app.i18n.beforeLanguageSwitch = beforeLanguageSwitch
   app.i18n.onLanguageSwitched = onLanguageSwitched
-  app.i18n.setLocaleCookie = setLocaleCookie
-  app.i18n.getLocaleCookie = getLocaleCookie
+  app.i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey })
+  app.i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
   app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
   app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
   app.i18n.__onNavigate = onNavigate
@@ -316,7 +273,7 @@ export default async (context) => {
     const routeLocale = getLocaleFromRoute(route)
     finalLocale = routeLocale || finalLocale
   } else if (useCookie) {
-    finalLocale = getLocaleCookie() || finalLocale
+    finalLocale = app.i18n.getLocaleCookie() || finalLocale
   }
 
   const detectedBrowserLocale = detectBrowserLanguage && doDetectBrowserLanguage()
