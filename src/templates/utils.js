@@ -1,12 +1,7 @@
 import {
-  defaultLocaleRouteNameSuffix,
-  localeCodes,
   LOCALE_CODE_KEY,
-  LOCALE_DOMAIN_KEY,
   LOCALE_FILE_KEY,
-  MODULE_NAME,
-  routesNameSeparator,
-  vuex
+  MODULE_NAME
 } from './options'
 
 /**
@@ -43,92 +38,6 @@ export async function loadLanguageAsync (context, locale) {
         // eslint-disable-next-line no-console
         console.warn(`[${MODULE_NAME}] Could not find lang file for locale ${locale}`)
       }
-    }
-  }
-}
-
-const isObject = value => value && !Array.isArray(value) && typeof value === 'object'
-
-/**
- * Validate setRouteParams action's payload
- * @param {*} routeParams The action's payload
- */
-export const validateRouteParams = routeParams => {
-  if (!isObject(routeParams)) {
-    // eslint-disable-next-line no-console
-    console.warn(`[${MODULE_NAME}] Route params should be an object`)
-    return
-  }
-  Object.entries(routeParams).forEach(([key, value]) => {
-    if (!localeCodes.includes(key)) {
-    // eslint-disable-next-line no-console
-      console.warn(`[${MODULE_NAME}] Trying to set route params for key ${key} which is not a valid locale`)
-    } else if (!isObject(value)) {
-    // eslint-disable-next-line no-console
-      console.warn(`[${MODULE_NAME}] Trying to set route params for locale ${key} with a non-object value`)
-    }
-  })
-}
-
-/**
- * Get locale code that corresponds to current hostname
- * @param  {VueI18n} nuxtI18n Instance of VueI18n
- * @param  {object} req Request object
- * @return {String} Locade code found if any
- */
-export const getLocaleDomain = (nuxtI18n, req) => {
-  const hostname = process.client ? window.location.hostname : (req.headers['x-forwarded-host'] || req.headers.host)
-  if (hostname) {
-    const localeDomain = nuxtI18n.locales.find(l => l[LOCALE_DOMAIN_KEY] === hostname)
-    if (localeDomain) {
-      return localeDomain[LOCALE_CODE_KEY]
-    }
-  }
-  return null
-}
-
-/**
- * Extract locale code from given route:
- * - If route has a name, try to extract locale from it
- * - Otherwise, fall back to using the routes'path
- * @param  {Object} route               Route
- * @return {String}                     Locale code found if any
- */
-export const getLocaleFromRoute = (route = {}) => {
-  const localesPattern = `(${localeCodes.join('|')})`
-  const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
-  // Extract from route name
-  if (route.name) {
-    const regexp = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
-    const matches = route.name.match(regexp)
-    if (matches && matches.length > 1) {
-      return matches[1]
-    }
-  } else if (route.path) {
-    // Extract from path
-    const regexp = new RegExp(`^/${localesPattern}/`, 'i')
-    const matches = route.path.match(regexp)
-    if (matches && matches.length > 1) {
-      return matches[1]
-    }
-  }
-  return null
-}
-
-/**
- * Dispatch store module actions to keep it in sync with app's locale data
- * @param  {Store} store     Vuex store
- * @param  {String} locale   Current locale
- * @param  {Object} messages Current messages
- * @return {Promise(void)}
- */
-export const syncVuex = async (store, locale = null, messages = null) => {
-  if (vuex && store) {
-    if (locale !== null && vuex.syncLocale) {
-      await store.dispatch(vuex.moduleName + '/setLocale', locale)
-    }
-    if (messages !== null && vuex.syncMessages) {
-      await store.dispatch(vuex.moduleName + '/setMessages', messages)
     }
   }
 }

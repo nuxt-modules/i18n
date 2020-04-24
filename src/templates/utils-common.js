@@ -78,6 +78,68 @@ export const resolveBaseUrl = (baseUrl, context) => {
 }
 
 /**
+ * Get locale code that corresponds to current hostname
+ * @param  {object} locales
+ * @param  {object} [req] Request object
+ * @param  {{ localDomainKey: string, localeCodeKey: string }} options
+ * @return {string | null} Locade code found if any
+ */
+export const getLocaleDomain = (locales, req, { localDomainKey, localeCodeKey }) => {
+  const hostname = process.client ? window.location.hostname : (req.headers['x-forwarded-host'] || req.headers.host)
+
+  if (hostname) {
+    const localeDomain = locales.find(l => l[localDomainKey] === hostname)
+    if (localeDomain) {
+      return localeDomain[localeCodeKey]
+    }
+  }
+
+  return null
+}
+
+/**
+ * Creates getter for getLocaleFromRoute
+ * @param  {string[]} localeCodes
+ * @param  {{ routesNameSeparator: string, defaultLocaleRouteNameSuffix: string }} options
+ * @return {(route) => string| null}
+ */
+export const createLocaleFromRouteGetter = (localeCodes, { routesNameSeparator, defaultLocaleRouteNameSuffix }) => {
+  const localesPattern = `(${localeCodes.join('|')})`
+  const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
+  const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
+  const regexpPath = new RegExp(`^/${localesPattern}/`, 'i')
+
+  /**
+   * Extract locale code from given route:
+   * - If route has a name, try to extract locale from it
+   * - Otherwise, fall back to using the routes'path
+   * @param  {Object} route
+   * @param  {string[]} localeCodes
+   * @param  {{ routesNameSeparator: string, defaultLocaleRouteNameSuffix: string }} options
+   * @return {string | null} Locale code found if any
+   */
+  const getLocaleFromRoute = route => {
+    // Extract from route name
+    if (route.name) {
+      const matches = route.name.match(regexpName)
+      if (matches && matches.length > 1) {
+        return matches[1]
+      }
+    } else if (route.path) {
+      // Extract from path
+      const matches = route.path.match(regexpPath)
+      if (matches && matches.length > 1) {
+        return matches[1]
+      }
+    }
+
+    return null
+  }
+
+  return getLocaleFromRoute
+}
+
+/**
  * @param {object} [req]
  * @param {{ useCookie: boolean, localeCodes: string[], cookieKey: string}} options
  * @return {string | void}
@@ -131,5 +193,103 @@ export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKe
     headers.push(redirectCookie)
 
     res.setHeader('Set-Cookie', headers)
+  }
+}
+
+export const registerStore = (store, vuex, localeCodes, moduleName) => {
+  store.registerModule(vuex.moduleName, {
+    namespaced: true,
+    state: () => ({
+      ...(vuex.syncLocale ? { locale: '' } : {}),
+      ...(vuex.syncMessages ? { messages: {} } : {}),
+      ...(vuex.syncRouteParams ? { routeParams: {} } : {})
+    }),
+    actions: {
+      ...(vuex.syncLocale ? {
+        setLocale ({ commit }, locale) {
+          commit('setLocale', locale)
+        }
+      } : {}),
+      ...(vuex.syncMessages ? {
+        setMessages ({ commit }, messages) {
+          commit('setMessages', messages)
+        }
+      } : {}),
+      ...(vuex.syncRouteParams ? {
+        setRouteParams ({ commit }, params) {
+          if (process.env.NODE_ENV === 'development') {
+            validateRouteParams(params, localeCodes, moduleName)
+          }
+          commit('setRouteParams', params)
+        }
+      } : {})
+    },
+    mutations: {
+      ...(vuex.syncLocale ? {
+        setLocale (state, locale) {
+          state.locale = locale
+        }
+      } : {}),
+      ...(vuex.syncMessages ? {
+        setMessages (state, messages) {
+          state.messages = messages
+        }
+      } : {}),
+      ...(vuex.syncRouteParams ? {
+        setRouteParams (state, params) {
+          state.routeParams = params
+        }
+      } : {})
+    },
+    getters: {
+      ...(vuex.syncRouteParams ? {
+        localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
+      } : {})
+    }
+  }, { preserveState: !!store.state[vuex.moduleName] })
+}
+
+/**
+ * Dispatch store module actions to keep it in sync with app's locale data
+ * @param  {Store} store     Vuex store
+ * @param  {String} locale   Current locale
+ * @param  {Object} messages Current messages
+ * @param  {{ vuex: object }} options
+ * @return {Promise(void)}
+ */
+export const syncVuex = async (store, locale = null, messages = null, { vuex }) => {
+  if (vuex && store) {
+    if (locale !== null && vuex.syncLocale) {
+      await store.dispatch(vuex.moduleName + '/setLocale', locale)
+    }
+    if (messages !== null && vuex.syncMessages) {
+      await store.dispatch(vuex.moduleName + '/setMessages', messages)
+    }
+  }
+}
+
+const isObject = value => value && !Array.isArray(value) && typeof value === 'object'
+
+/**
+ * Validate setRouteParams action's payload
+ * @param {object} routeParams The action's payload
+ * @param {string[]} localeCodes
+ * @param {string} moduleName
+ */
+export const validateRouteParams = (routeParams, localeCodes, moduleName) => {
+  if (!isObject(routeParams)) {
+    // eslint-disable-next-line no-console
+    console.warn(`[${moduleName}] Route params should be an object`)
+    return
+  }
+
+  for (const [key, value] of Object.entries(routeParams)) {
+    if (!localeCodes.includes(key)) {
+    // eslint-disable-next-line no-console
+      console.warn(`[${moduleName}] Trying to set route params for key ${key} which is not a valid locale`)
+    } else if (!isObject(value)) {
+    // eslint-disable-next-line no-console
+      console.warn(`[${moduleName}] Trying to set route params for locale ${key} with a non-object value`)
+    }
   }
 }

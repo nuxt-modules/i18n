@@ -5,90 +5,45 @@ import {
   baseUrl,
   beforeLanguageSwitch,
   defaultLocale,
+  defaultLocaleRouteNameSuffix,
   detectBrowserLanguage,
   differentDomains,
   lazy,
+  LOCALE_CODE_KEY,
+  LOCALE_DOMAIN_KEY,
   localeCodes,
   locales,
+  MODULE_NAME,
   onLanguageSwitched,
   rootRedirect,
+  routesNameSeparator,
   STRATEGIES,
   strategy,
   vueI18n,
   vuex
 } from './options'
 import {
-  getLocaleDomain,
-  getLocaleFromRoute,
-  syncVuex,
-  validateRouteParams
-} from './utils'
-import {
+  createLocaleFromRouteGetter,
   getLocaleCookie,
+  getLocaleDomain,
   resolveBaseUrl,
   matchBrowserLocale,
   parseAcceptLanguage,
-  setLocaleCookie
+  registerStore,
+  setLocaleCookie,
+  syncVuex
 } from './utils-common'
 
 Vue.use(VueI18n)
+
+const getLocaleFromRoute = createLocaleFromRouteGetter(localeCodes, { routesNameSeparator, defaultLocaleRouteNameSuffix })
 
 /** @type {import('@nuxt/types').Plugin} */
 export default async (context) => {
   const { app, route, store, req, res, redirect } = context
 
   if (vuex && store) {
-    // Register Vuex module
-    store.registerModule(vuex.moduleName, {
-      namespaced: true,
-      state: () => ({
-        ...(vuex.syncLocale ? { locale: '' } : {}),
-        ...(vuex.syncMessages ? { messages: {} } : {}),
-        ...(vuex.syncRouteParams ? { routeParams: {} } : {})
-      }),
-      actions: {
-        ...(vuex.syncLocale ? {
-          setLocale ({ commit }, locale) {
-            commit('setLocale', locale)
-          }
-        } : {}),
-        ...(vuex.syncMessages ? {
-          setMessages ({ commit }, messages) {
-            commit('setMessages', messages)
-          }
-        } : {}),
-        ...(vuex.syncRouteParams ? {
-          setRouteParams ({ commit }, params) {
-            if (process.env.NODE_ENV === 'development') {
-              validateRouteParams(params)
-            }
-            commit('setRouteParams', params)
-          }
-        } : {})
-      },
-      mutations: {
-        ...(vuex.syncLocale ? {
-          setLocale (state, locale) {
-            state.locale = locale
-          }
-        } : {}),
-        ...(vuex.syncMessages ? {
-          setMessages (state, messages) {
-            state.messages = messages
-          }
-        } : {}),
-        ...(vuex.syncRouteParams ? {
-          setRouteParams (state, params) {
-            state.routeParams = params
-          }
-        } : {})
-      },
-      getters: {
-        ...(vuex.syncRouteParams ? {
-          localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
-        } : {})
-      }
-    }, { preserveState: !!store.state[vuex.moduleName] })
+    registerStore(store, vuex, localeCodes, MODULE_NAME)
   }
 
   const { useCookie, cookieKey, cookieDomain } = detectBrowserLanguage
@@ -128,7 +83,7 @@ export default async (context) => {
 
     app.i18n.locale = newLocale
 
-    await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
+    await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), { vuex })
 
     const redirectPath = getRedirectPathForLocale(newLocale)
 
@@ -267,7 +222,8 @@ export default async (context) => {
   if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
     finalLocale = store.state[vuex.moduleName].locale
   } else if (app.i18n.differentDomains) {
-    const domainLocale = getLocaleDomain(app.i18n, req)
+    const options = { localDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY }
+    const domainLocale = getLocaleDomain(locales, req, options)
     finalLocale = domainLocale || finalLocale
   } else if (strategy !== STRATEGIES.NO_PREFIX) {
     const routeLocale = getLocaleFromRoute(route)
