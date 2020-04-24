@@ -1,6 +1,7 @@
 <template>
   <div>
     <nuxt-link
+      id="post-link"
       exact
       :to="localePath({
         name: 'posts-slug',

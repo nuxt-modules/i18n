@@ -70,65 +70,6 @@ export const validateRouteParams = routeParams => {
   })
 }
 
-const trailingSlashRE = /\/?$/
-
-/**
- * Determines if objects are equal.
- *
- * @param {Object} [a={}]
- * @param {Object} [b={}]
- * @return {boolean} True if objects equal, False otherwise.
- */
-function isObjectEqual (a = {}, b = {}) {
-  // handle null value #1566
-  if (!a || !b) {
-    return a === b
-  }
-  const aKeys = Object.keys(a)
-  const bKeys = Object.keys(b)
-  if (aKeys.length !== bKeys.length) {
-    return false
-  }
-  return aKeys.every(key => {
-    const aVal = a[key]
-    const bVal = b[key]
-    // check nested equality
-    if (typeof aVal === 'object' && typeof bVal === 'object') {
-      return isObjectEqual(aVal, bVal)
-    }
-    return String(aVal) === String(bVal)
-  })
-}
-
-/**
- * Determines if two routes are the same.
- *
- * @param {Route} a
- * @param {Route} [b]
- * @return {boolean} True if routes the same, False otherwise.
- */
-export function isSameRoute (a, b) {
-  if (!b) {
-    return false
-  }
-  if (a.path && b.path) {
-    return (
-      a.path.replace(trailingSlashRE, '') === b.path.replace(trailingSlashRE, '') &&
-      a.hash === b.hash &&
-      isObjectEqual(a.query, b.query)
-    )
-  }
-  if (a.name && b.name) {
-    return (
-      a.name === b.name &&
-      a.hash === b.hash &&
-      isObjectEqual(a.query, b.query) &&
-      isObjectEqual(a.params, b.params)
-    )
-  }
-  return false
-}
-
 /**
  * Get locale code that corresponds to current hostname
  * @param  {VueI18n} nuxtI18n Instance of VueI18n

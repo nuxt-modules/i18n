@@ -63,8 +63,8 @@ Con esta estrategia, todas las rutas tendrán un prefijo de configuración local
 
 Esta estrategia combina los comportamientos de ambas estrategias anteriores, lo que significa que obtendrá URL con prefijos para cada idioma, pero las URL para el idioma predeterminado también tendrán una versión sin prefijo.
 
-Para configurar la estrategia, use la opción `strategy`. Asegúrese de tener un `defaultLocale` definido si usa **prefix_except_default**, **prefix_and_default** o la estrategia **no_prefix**.
-
+Para configurar la estrategia, use la opción `strategy`.
+Make sure that you have a `defaultLocale` defined, especially if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy. For other strategies it's also recommended to set it as it's gonna be used as a fallback when attempting to redirect from 404 page.
 
 ```js
 // nuxt.config.js

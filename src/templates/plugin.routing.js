@@ -131,7 +131,7 @@ function switchLocalePath (locale) {
 }
 
 function getRouteBaseName (givenRoute) {
-  const route = givenRoute || this.route
+  const route = givenRoute !== undefined ? givenRoute : this.route
   if (!route.name) {
     return null
   }

@@ -66,8 +66,8 @@ This strategy combines both previous strategies behaviours, meaning that you wil
 
 ### Configuration
 
-To configure the strategy, use the `strategy` option. Make sure that you have a `defaultLocale` defined if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy.
-
+To configure the strategy, use the `strategy` option.
+Make sure that you have a `defaultLocale` defined, especially if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy. For other strategies it's also recommended to set it as it's gonna be used as a fallback when attempting to redirect from 404 page.
 
 ```js
 // nuxt.config.js
