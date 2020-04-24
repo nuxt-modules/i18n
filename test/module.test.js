@@ -138,20 +138,9 @@ describe('basic', () => {
   })
 
   test('/notlocalized & /fr/fr/notlocalized return 404', async () => {
-    let response
-    try {
-      response = await get('/notlocalized')
-    } catch (error) {
-      response = error
-    }
-    expect(response.statusCode).toBe(404)
-
-    try {
-      response = await get('/fr/fr/notlocalized')
-    } catch (error) {
-      response = error
-    }
-    expect(response.statusCode).toBe(404)
+    expect.assertions(2)
+    await get('/notlocalized').catch(error => expect(error.statusCode).toBe(404))
+    await get('/fr/fr/notlocalized').catch(error => expect(error.statusCode).toBe(404))
   })
 
   test('route specifies options with non-supported locale', async () => {
@@ -168,9 +157,8 @@ describe('basic', () => {
     const getElements = () => {
       const dom = getDom(html)
       title = dom.querySelector('h1')
-      const links = [...dom.querySelectorAll('a')]
-      langSwitcherLink = links[0]
-      link = links[1]
+      langSwitcherLink = dom.querySelector('#lang-switcher a')
+      link = dom.querySelector('#post-link')
     }
 
     test('/posts contains EN text, link to /fr/articles/ & link to /posts/my-post', async () => {
@@ -227,10 +215,10 @@ describe('basic', () => {
   test('navigates to child route with nameless parent and checks path to other locale', async () => {
     const window = await nuxt.renderAndGetWindow(url('/posts'))
 
-    const links = window.document.querySelectorAll('a')
-    expect(links.length).toBe(2)
-    expect(links[0].getAttribute('href')).toEqual('/fr/articles/')
-    expect(links[1].getAttribute('href')).toEqual('/posts/my-post')
+    const langSwitcherLink = window.document.querySelector('#lang-switcher a')
+    const link = window.document.querySelector('#post-link')
+    expect(langSwitcherLink.getAttribute('href')).toEqual('/fr/articles/')
+    expect(link.getAttribute('href')).toEqual('/posts/my-post')
   })
 
   test('navigates to dynamic child route and checks path to other locale', async () => {
@@ -1147,5 +1135,34 @@ describe('no_prefix + detectBrowserLanguage + alwaysRedirect', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
+  })
+})
+
+describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        defaultLocale: 'fr',
+        strategy: 'prefix',
+        detectBrowserLanguage: {
+          useCookie: true,
+          alwaysRedirect: true
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('redirects to defaultLocale on navigating to root (non-existant) route', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
   })
 })

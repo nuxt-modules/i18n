@@ -23,8 +23,10 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
   //   - code of ISO 639-1 and code of ISO 3166-1 alpha-2, with a hyphen (e.g. 'en-US')
   locales: [],
 
-  // The app's default locale, URLs for this locale won't have a prefix if
-  // strategy is prefix_except_default
+  // The app's default locale.
+  // When using 'prefix_except_default' strategy, URLs for this locale won't have a prefix.
+  // It's recommended to set this to some locale regardless of chosen strategy, as it will be
+  // used as a locale fallback to use when navigating to a non-existent route.
   defaultLocale: null,
 
   // Separator used to generated routes name for each locale, you shouldn't

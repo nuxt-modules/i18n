@@ -87,6 +87,25 @@ describe(browserString, () => {
     expect(await page.getText('body')).toContain('page: À propos')
   })
 
+  test('changes route and locale with setLocale', async () => {
+    page = await browser.page(url('/'))
+
+    let testData = await page.getTestData()
+    expect(testData.languageSwitchedListeners).toEqual([])
+
+    await page.clickElement('#set-locale-link-fr')
+
+    testData = await page.getTestData()
+    expect(testData.languageSwitchedListeners).toEqual([
+      {
+        storeLocale: 'fr',
+        newLocale: 'fr',
+        oldLocale: 'en'
+      }
+    ])
+    expect(await page.getText('body')).toContain('locale: fr')
+  })
+
   test('onLanguageSwitched listener triggers after locale was changed', async () => {
     page = await browser.page(url('/'))
 
@@ -103,6 +122,7 @@ describe(browserString, () => {
         oldLocale: 'en'
       }
     ])
+    expect(await page.getText('body')).toContain('locale: fr')
   })
 
   test('APIs in app context work after SPA navigation', async () => {
@@ -260,6 +280,41 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
 
   test('navigates directly to page with query', async () => {
     page = await browser.page(url('/#/fr?a=1'))
+    expect(await page.getText('body')).toContain('locale: fr')
+  })
+})
+
+describe(`${browserString} (alwaysRedirect)`, () => {
+  let nuxt
+  let browser
+
+  beforeAll(async () => {
+    const overrides = {
+      i18n: {
+        defaultLocale: 'en',
+        strategy: 'prefix',
+        detectBrowserLanguage: {
+          useCookie: true,
+          alwaysRedirect: true
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+    browser = await createDefaultBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+    await nuxt.close()
+  })
+
+  // This seems like a wrong behavior with `alwaysRedirect` enabled...
+  test('does not redirect to default locale on navigation', async () => {
+    const page = await browser.page(url('/'))
+    await page.navigate('/fr')
     expect(await page.getText('body')).toContain('locale: fr')
   })
 })

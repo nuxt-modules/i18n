@@ -13,6 +13,7 @@ import {
   localeCodes,
   locales,
   onLanguageSwitched,
+  rootRedirect,
   STRATEGIES,
   strategy,
   vueI18n,
@@ -21,7 +22,6 @@ import {
 import {
   getLocaleDomain,
   getLocaleFromRoute,
-  isSameRoute,
   syncVuex,
   validateRouteParams
 } from './utils'
@@ -173,21 +173,105 @@ export default async (context) => {
 
     await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale))
 
-    if (!initialSetup) {
+    const redirectPath = getRedirectPathForLocale(newLocale)
+
+    if (initialSetup) {
+      // Redirect will be delayed until middleware runs as redirecting from plugin does not
+      // work in SPA (https://github.com/nuxt/nuxt.js/issues/4491).
+      app.i18n.__redirect = redirectPath
+    } else {
       app.i18n.onLanguageSwitched(oldLocale, newLocale)
-    }
 
-    if (!initialSetup && strategy !== STRATEGIES.NO_PREFIX) {
-      const redirectPath = app.switchLocalePath(newLocale) || app.localePath('index', newLocale)
-      const redirectRoute = app.router.resolve(redirectPath).route
-
-      // Must retrieve from context as it might have changed since plugin initialization.
-      const { route } = context
-
-      if (route && !isSameRoute(route, redirectRoute)) {
+      if (redirectPath) {
         redirect(redirectPath)
       }
     }
+  }
+
+  const getRedirectPathForLocale = locale => {
+    if (!locale || app.i18n.differentDomains || strategy === STRATEGIES.NO_PREFIX) {
+      return
+    }
+
+    // Must retrieve from context as it might have changed since plugin initialization.
+    const { route } = context
+    const routeLocale = getLocaleFromRoute(route)
+
+    if (routeLocale === locale) {
+      return
+    }
+
+    // At this point we are left with route that either no or different locale.
+    let redirectPath = app.switchLocalePath(locale)
+
+    if (!redirectPath) {
+      // Could be a 404 route in which case we should attemp to find matching route for given locale.
+      redirectPath = app.localePath(route.path, locale)
+    }
+
+    return redirectPath
+  }
+
+  const doDetectBrowserLanguage = () => {
+    const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
+
+    let matchedLocale
+
+    if (useCookie && (matchedLocale = getLocaleCookie())) {
+      // Get preferred language from cookie if present and enabled
+    } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
+      // Get browser language either from navigator if running on client side, or from the headers
+      matchedLocale = matchBrowserLocale(localeCodes, navigator.languages)
+    } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
+      matchedLocale = matchBrowserLocale(localeCodes, parseAcceptLanguage(req.headers['accept-language']))
+    }
+
+    const finalLocale = matchedLocale || fallbackLocale
+
+    // Handle cookie option to prevent multiple redirections
+    if (finalLocale && (!useCookie || alwaysRedirect || !getLocaleCookie())) {
+      if (finalLocale !== app.i18n.locale) {
+        return finalLocale
+      } else if (useCookie && !getLocaleCookie()) {
+        app.i18n.setLocaleCookie(finalLocale)
+      }
+    }
+
+    return false
+  }
+
+  // Called by middleware on navigation (also on the initial one).
+  const onNavigate = async () => {
+    const { route } = context
+
+    // Handle root path redirect
+    if (route.path === '/' && rootRedirect) {
+      let statusCode = 302
+      let path = rootRedirect
+
+      if (typeof rootRedirect !== 'string') {
+        statusCode = rootRedirect.statusCode
+        path = rootRedirect.path
+      }
+
+      redirect(statusCode, `/${path}`, route.query)
+      return
+    }
+
+    const storedRedirect = app.i18n.__redirect
+    if (storedRedirect) {
+      app.i18n.__redirect = null
+      redirect(storedRedirect)
+      return
+    }
+
+    app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
+
+    const finalLocale =
+      (detectBrowserLanguage && doDetectBrowserLanguage()) ||
+      getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
+
+    await app.i18n.setLocale(finalLocale)
   }
 
   // Set instance options
@@ -198,13 +282,14 @@ export default async (context) => {
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
   app.i18n.locales = locales
   app.i18n.defaultLocale = defaultLocale
-  app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
   app.i18n.differentDomains = differentDomains
   app.i18n.beforeLanguageSwitch = beforeLanguageSwitch
   app.i18n.onLanguageSwitched = onLanguageSwitched
   app.i18n.setLocaleCookie = setLocaleCookie
   app.i18n.getLocaleCookie = getLocaleCookie
   app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
+  app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
+  app.i18n.__onNavigate = onNavigate
 
   // Inject seo function
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
@@ -220,52 +305,21 @@ export default async (context) => {
     }
   }
 
-  let locale = app.i18n.defaultLocale || ''
+  let finalLocale = app.i18n.defaultLocale || ''
 
   if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
-    locale = store.state[vuex.moduleName].locale
+    finalLocale = store.state[vuex.moduleName].locale
   } else if (app.i18n.differentDomains) {
     const domainLocale = getLocaleDomain(app.i18n, req)
-    locale = domainLocale || locale
+    finalLocale = domainLocale || finalLocale
   } else if (strategy !== STRATEGIES.NO_PREFIX) {
     const routeLocale = getLocaleFromRoute(route)
-    locale = routeLocale || locale
+    finalLocale = routeLocale || finalLocale
   } else if (useCookie) {
-    locale = getLocaleCookie() || locale
+    finalLocale = getLocaleCookie() || finalLocale
   }
 
-  await loadAndSetLocale(locale, { initialSetup: true })
-
-  app.i18n.__detectBrowserLanguage = async () => {
-    if (detectBrowserLanguage) {
-      const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
-
-      let matchedLocale
-
-      if (useCookie && (matchedLocale = getLocaleCookie())) {
-        // Get preferred language from cookie if present and enabled
-      } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
-        // Get browser language either from navigator if running on client side, or from the headers
-        matchedLocale = matchBrowserLocale(localeCodes, navigator.languages)
-      } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-        matchedLocale = matchBrowserLocale(localeCodes, parseAcceptLanguage(req.headers['accept-language']))
-      }
-
-      matchedLocale = matchedLocale || fallbackLocale
-
-      // Handle cookie option to prevent multiple redirections
-      if (matchedLocale && (!useCookie || alwaysRedirect || !getLocaleCookie())) {
-        if (matchedLocale !== app.i18n.locale) {
-          await app.i18n.setLocale(matchedLocale)
-          return true
-        } else if (useCookie && !getLocaleCookie()) {
-          app.i18n.setLocaleCookie(matchedLocale)
-        }
-      }
-    }
-
-    return false
-  }
-
-  await app.i18n.__detectBrowserLanguage()
+  const detectedBrowserLocale = detectBrowserLanguage && doDetectBrowserLanguage()
+  finalLocale = detectedBrowserLocale || finalLocale
+  await loadAndSetLocale(finalLocale, { initialSetup: true })
 }
