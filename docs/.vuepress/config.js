@@ -13,6 +13,10 @@ module.exports = {
     }
   },
   themeConfig: {
+    algolia: {
+      apiKey: '3e37c242d902c4d6c469abc8573b7533',
+      indexName: 'nuxt-i18n'
+    },
     repo: 'nuxt-community/nuxt-i18n',
     editLinks: true,
     docsDir: 'docs',
