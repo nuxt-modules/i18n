@@ -1,3 +1,15 @@
+## [6.11.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.10.1...v6.11.0) (2020-04-30)
+
+
+### Features
+
+* **docs:** enable indexed search results in documentation ([#687](https://github.com/nuxt-community/nuxt-i18n/issues/687)) ([bea56a9](https://github.com/nuxt-community/nuxt-i18n/commit/bea56a90947e1bc767efe036644437f47a9d148f))
+
+
+### Bug Fixes
+
+* redirect from 404 to defaultLocale if there is matching route ([e99978d](https://github.com/nuxt-community/nuxt-i18n/commit/e99978dcba6ecea19c915e9aa6b5865dab2bc3b8)), closes [#677](https://github.com/nuxt-community/nuxt-i18n/issues/677) [#491](https://github.com/nuxt-community/nuxt-i18n/issues/491)
+
 ### [6.10.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.10.0...v6.10.1) (2020-04-23)
 
 
