@@ -11,6 +11,18 @@ assignees: ''
 nuxt-i18n: <!-- ex: 5.9.0 -->
 nuxt: <!-- ex: 2.0.0 -->
 
+### Nuxt-i18n configuration
+<!--
+    If relevant, please include the configuration you are using for this module.
+    For example:
+```
+i18n: {
+    strategy: 'prefix',
+    ...
+}
+```
+-->
+
 ### Reproduction Link
 <!-- A minimal test case on https://template.nuxtjs.org/ or GitHub reprository that can reproduce the bug. -->
 
