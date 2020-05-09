@@ -16,10 +16,6 @@ nuxt: <!-- ex: 2.0.0 -->
  - [ ] universal
  - [ ] spa
 
-#### Running in server or static mode
- - [ ] server
- - [ ] static (netlify or other provider with no backend)
-
 ### Nuxt-i18n configuration
 <!--
     If relevant, please include the configuration you are using for this module.
