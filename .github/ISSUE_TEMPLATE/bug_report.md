@@ -12,10 +12,13 @@ nuxt-i18n: <!-- ex: 5.9.0 -->
 nuxt: <!-- ex: 2.0.0 -->
 
 ### Nuxt configuration
-Please mark the [mode](https://nuxtjs.org/api/configuration-mode) in which the problem reproduces (default mode is `universal`).
+#### [mode](https://nuxtjs.org/api/configuration-mode): <!--universal is the default -->
  - [ ] universal
  - [ ] spa
-<!-- Include any othr configuration options if relevant -->
+
+#### Running in server or static mode
+ - [ ] server
+ - [ ] static (netlify or other provider with no backend)
 
 ### Nuxt-i18n configuration
 <!--
