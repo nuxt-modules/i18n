@@ -85,7 +85,9 @@ export default async (context) => {
 
     await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), { vuex })
 
-    const redirectPath = getRedirectPathForLocale(newLocale)
+    // Must retrieve from context as it might have changed since plugin initialization.
+    const { route } = context
+    const redirectPath = getRedirectPathForLocale(route, newLocale)
 
     if (initialSetup) {
       // Redirect will be delayed until middleware runs as redirecting from plugin does not
@@ -100,25 +102,24 @@ export default async (context) => {
     }
   }
 
-  const getRedirectPathForLocale = locale => {
+  const getRedirectPathForLocale = (route, locale) => {
     if (!locale || app.i18n.differentDomains || strategy === STRATEGIES.NO_PREFIX) {
-      return
+      return ''
     }
 
-    // Must retrieve from context as it might have changed since plugin initialization.
-    const { route } = context
-    const routeLocale = getLocaleFromRoute(route)
-
-    if (routeLocale === locale) {
-      return
+    if (getLocaleFromRoute(route) === locale) {
+      return ''
     }
 
-    // At this point we are left with route that either no or different locale.
+    // At this point we are left with route that either has no or different locale.
     let redirectPath = app.switchLocalePath(locale)
 
     if (!redirectPath) {
-      // Could be a 404 route in which case we should attemp to find matching route for given locale.
-      redirectPath = app.localePath(route.path, locale)
+      // Current route could be 404 in which case attempt to find matching route for given locale.
+      redirectPath = app.localePath(route.fullPath, locale)
+      if (redirectPath === route.fullPath) {
+        return ''
+      }
     }
 
     return redirectPath

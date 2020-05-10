@@ -10,7 +10,10 @@ async function createDefaultBrowser () {
     staticServer: false,
     extendPage (page) {
       return {
-        navigate: createNavigator(page)
+        navigate: createNavigator(page),
+        getRouteFullPath () {
+          return page.runScript(() => window.$nuxt.$route.fullPath)
+        }
       }
     }
   })
@@ -241,6 +244,46 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
 
     await page.navigate('/no')
     expect(await page.getText('body')).toContain('locale: no')
+  })
+})
+
+describe(`${browserString} (SPA)`, () => {
+  let nuxt
+  let browser
+  let page
+
+  beforeAll(async () => {
+    const overrides = {
+      mode: 'spa'
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+    browser = await createDefaultBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+
+    await nuxt.close()
+  })
+
+  test('renders existing page', async () => {
+    page = await browser.page(url('/'))
+    expect(await page.getText('body')).toContain('locale: en')
+  })
+
+  test('renders 404 page', async () => {
+    page = await browser.page(url('/nopage'))
+    expect(await page.getText('body')).toContain('page could not be found')
+  })
+
+  test('preserves the URL on 404 page', async () => {
+    const path = '/nopage?a#h'
+    page = await browser.page(url(path))
+    expect(await page.getText('body')).toContain('page could not be found')
+    expect(await page.getRouteFullPath()).toBe(path)
   })
 })
 
