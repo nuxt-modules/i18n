@@ -105,7 +105,7 @@
     "core-js": "3.6.5",
     "eslint": "7.0.0",
     "geckodriver": "1.19.1",
-    "jest": "25.5.3",
+    "jest": "26.0.1",
     "jsdom": "16.2.2",
     "messageformat": "2.3.0",
     "nuxt": "2.12.2",
