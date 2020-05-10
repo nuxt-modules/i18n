@@ -1,3 +1,10 @@
+### [6.11.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.11.0...v6.11.1) (2020-05-10)
+
+
+### Bug Fixes
+
+* NavigationDuplicated error on loading 404 page in SPA ([#705](https://github.com/nuxt-community/nuxt-i18n/issues/705)) ([6bd80da](https://github.com/nuxt-community/nuxt-i18n/commit/6bd80da4ee21918abb551629720723dc82d69fc0)), closes [#702](https://github.com/nuxt-community/nuxt-i18n/issues/702)
+
 ## [6.11.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.10.1...v6.11.0) (2020-04-30)
 
 
