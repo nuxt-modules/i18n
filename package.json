@@ -97,11 +97,11 @@
     "@nuxtjs/eslint-config-typescript": "1.0.2",
     "@nuxtjs/module-test-utils": "1.6.1",
     "@release-it/conventional-changelog": "1.1.4",
-    "@types/jest": "25.2.1",
+    "@types/jest": "25.2.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "chromedriver": "81.0.0",
-    "codecov": "3.6.5",
+    "codecov": "3.7.0",
     "core-js": "3.6.5",
     "eslint": "7.0.0",
     "geckodriver": "1.19.1",
@@ -109,11 +109,11 @@
     "jsdom": "16.2.2",
     "messageformat": "2.3.0",
     "nuxt": "2.12.2",
-    "puppeteer-core": "3.0.4",
-    "release-it": "13.5.8",
+    "puppeteer-core": "3.1.0",
+    "release-it": "13.6.1",
     "selenium-webdriver": "4.0.0-alpha.7",
     "tib": "0.7.4",
-    "typescript": "3.8.3",
-    "vuepress": "1.4.1"
+    "typescript": "3.9.2",
+    "vuepress": "1.5.0"
   }
 }
