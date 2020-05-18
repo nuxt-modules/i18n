@@ -1,4 +1,6 @@
-import { setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
+import { resolve } from 'path'
+import { readFileSync } from 'fs'
+import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
 
 import { getSeoTags } from './utils'
@@ -1164,5 +1166,56 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
     const html = await get('/')
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
+  })
+})
+
+describe('generate with detectBrowserLanguage.defaultLocal', () => {
+  const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+
+  beforeAll(async () => {
+    const overrides = {
+      generate: { dir: distDir },
+      i18n: {
+        locales: [
+          {
+            code: 'en',
+            iso: 'en',
+            name: 'English'
+          },
+          {
+            code: 'fr',
+            iso: 'fr-FR',
+            name: 'Français'
+          }
+        ],
+        defaultLocale: 'en',
+        lazy: false,
+        vueI18nLoader: true,
+        vueI18n: {
+          messages: {
+            fr: {
+              home: 'Accueil',
+              about: 'À propos',
+              posts: 'Articles'
+            },
+            en: {
+              home: 'Homepage',
+              about: 'About us',
+              posts: 'Posts'
+            }
+          },
+          fallbackLocale: 'en'
+        },
+        detectBrowserLanguage: { fallbackLocale: 'en' }
+      }
+    }
+
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+  })
+
+  test('check for non-existent content, on a non-default locale route', () => {
+    const html = readFileSync(resolve(distDir, 'fr/index.html'), 'utf-8')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page').textContent).toContain('page: Accueil')
   })
 })
