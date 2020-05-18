@@ -1,4 +1,6 @@
-import { setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
+import { resolve } from 'path'
+import { readFileSync } from 'fs'
+import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
 
 import { getSeoTags } from './utils'
@@ -1164,5 +1166,37 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
     const html = await get('/')
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
+  })
+})
+
+describe('generate with detectBrowserLanguage.fallbackLocale', () => {
+  const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+
+  beforeAll(async () => {
+    const overrides = {
+      generate: { dir: distDir },
+      i18n: {
+        detectBrowserLanguage: {
+          fallbackLocale: 'en'
+        }
+      }
+    }
+
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+  })
+
+  test('pre-renders all locales', () => {
+    let dom
+    let contents
+
+    contents = readFileSync(resolve(distDir, 'index.html'), 'utf-8')
+    dom = getDom(contents)
+    expect(dom.querySelector('#current-page')).toBeDefined()
+    expect(dom.querySelector('#current-page').textContent).toBe('page: Homepage')
+
+    contents = readFileSync(resolve(distDir, 'fr/index.html'), 'utf-8')
+    dom = getDom(contents)
+    expect(dom.querySelector('#current-page')).toBeDefined()
+    expect(dom.querySelector('#current-page').textContent).toBe('page: Accueil')
   })
 })
