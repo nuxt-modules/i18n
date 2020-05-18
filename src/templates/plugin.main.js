@@ -127,7 +127,7 @@ export default async (context) => {
 
   const doDetectBrowserLanguage = () => {
     // Browser detection is ignored if it is a nuxt generate.
-    if (context.isStatic && context.ssrContext) {
+    if (process.static && process.server) {
       return false
     }
 
