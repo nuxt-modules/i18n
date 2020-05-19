@@ -185,6 +185,59 @@ describe(`${browserString} (generate)`, () => {
   })
 })
 
+describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`, () => {
+  let browser
+  let page
+  let port
+  // Local method that overrides imported one.
+  let url
+
+  beforeAll(async () => {
+    const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+
+    const overrides = {
+      generate: { dir: distDir },
+      i18n: {
+        detectBrowserLanguage: {
+          fallbackLocale: 'en'
+        }
+      }
+    }
+
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+
+    port = await getPort()
+    url = path => `http://localhost:${port}${path}`
+
+    browser = await createBrowser(browserString, {
+      folder: distDir,
+      staticServer: {
+        folder: distDir,
+        port
+      },
+      extendPage (page) {
+        return {
+          navigate: createNavigator(page)
+        }
+      }
+    })
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+  })
+
+  test('generates pages in all locales', async () => {
+    page = await browser.page(url('/'))
+    expect(await page.getText('body')).toContain('locale: en')
+
+    await page.navigate('/fr')
+    expect(await page.getText('body')).toContain('locale: fr')
+  })
+})
+
 describe(`${browserString} (no fallbackLocale, browser language not supported)`, () => {
   let nuxt
   let browser

@@ -126,6 +126,11 @@ export default async (context) => {
   }
 
   const doDetectBrowserLanguage = () => {
+    // Browser detection is ignored if it is a nuxt generate.
+    if (process.static && process.server) {
+      return false
+    }
+
     const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
 
     let matchedLocale
