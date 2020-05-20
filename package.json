@@ -100,7 +100,7 @@
     "@types/jest": "25.2.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
-    "chromedriver": "81.0.0",
+    "chromedriver": "83.0.0",
     "codecov": "3.7.0",
     "core-js": "3.6.5",
     "eslint": "7.0.0",
