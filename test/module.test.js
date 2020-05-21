@@ -2,7 +2,6 @@ import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
-
 import { getSeoTags } from './utils'
 
 const getDom = html => (new JSDOM(html)).window.document
