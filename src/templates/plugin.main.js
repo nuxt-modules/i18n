@@ -8,6 +8,7 @@ import {
   defaultLocaleRouteNameSuffix,
   detectBrowserLanguage,
   differentDomains,
+  IS_UNIVERSAL_MODE,
   lazy,
   LOCALE_CODE_KEY,
   LOCALE_DOMAIN_KEY,
@@ -241,4 +242,9 @@ export default async (context) => {
   const detectedBrowserLocale = detectBrowserLanguage && doDetectBrowserLanguage()
   finalLocale = detectedBrowserLocale || finalLocale
   await loadAndSetLocale(finalLocale, { initialSetup: true })
+
+  // Trigger onNavigate manually for Nuxt generate in universal mode as Nuxt doesn't do that on load.
+  if (process.client && process.static && IS_UNIVERSAL_MODE) {
+    await onNavigate()
+  }
 }
