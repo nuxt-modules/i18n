@@ -204,11 +204,9 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
   })
 
   test('redirects to browser locale', async () => {
-    page = await browser.newPage()
+    page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body')).textContent()).toContain('locale: en')
-
-    await navigate(page, '/fr')
+    expect(page.url()).toBe(server.getUrl('/fr'))
     expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 })

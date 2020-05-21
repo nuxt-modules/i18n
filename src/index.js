@@ -39,6 +39,7 @@ module.exports = function (userOptions) {
 
   const templatesOptions = {
     ...options,
+    IS_UNIVERSAL_MODE: this.options.mode === 'universal',
     MODULE_NAME,
     LOCALE_CODE_KEY,
     LOCALE_ISO_KEY,
