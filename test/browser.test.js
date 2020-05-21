@@ -1,67 +1,51 @@
 import { resolve } from 'path'
-import getPort from 'get-port'
-import { createBrowser } from 'tib'
 import { generate, setup, loadConfig, url } from '@nuxtjs/module-test-utils'
+import { chromium } from 'playwright-chromium'
+import { startHttpServer } from './utils'
 
-const browserString = process.env.BROWSER_STRING || 'puppeteer/core'
+const browserString = process.env.BROWSER_STRING || 'chromium'
 
-async function createDefaultBrowser () {
-  return await createBrowser(browserString, {
-    staticServer: false,
-    extendPage (page) {
-      return {
-        navigate: createNavigator(page),
-        getRouteFullPath () {
-          return page.runScript(() => window.$nuxt.$route.fullPath)
-        }
-      }
-    }
-  })
+async function createBrowser () {
+  return await chromium.launch()
 }
 
-function createNavigator (page) {
-  return async path => {
-    // When returning value resolved by `push`, `chrome/selenium`` crashes with:
-    // WebDriverError: unknown error: unhandled inspector error: {"code":-32000,"message":"Object reference chain is too long"}
-    // Chain and return nothing to work around.
-    await page.runAsyncScript(path => {
-      return new Promise((resolve, reject) => {
-        window.$nuxt.$router.push(path, () => resolve(), reject)
-      })
-    }, path)
-    await new Promise(resolve => setTimeout(resolve, 50))
-  }
+/**
+ * @param {import('playwright-chromium').Page} page
+ * @param {string} path
+ */
+async function navigate (page, path) {
+  await page.evaluate(path => {
+    return new Promise((resolve, reject) => {
+      window.$nuxt.$router.push(path, () => resolve(), reject)
+    })
+  }, path)
+  await new Promise(resolve => setTimeout(resolve, 50))
+}
+
+async function getRouteFullPath (page) {
+  return await page.evaluate(() => window.$nuxt.$route.fullPath)
 }
 
 describe(browserString, () => {
   let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   let page
 
-  beforeAll(async () => {
-    const override = {
-      plugins: ['~/plugins/i18n-hooks.js']
-    }
+  async function getTestData () {
+    return await page.evaluate(() => {
+      const languageSwitchedListeners = (window.testData && window.testData.languageSwitchedListeners) || []
 
-    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
-
-    browser = await createBrowser(browserString, {
-      staticServer: false,
-      extendPage (page) {
-        return {
-          getTestData () {
-            return page.runScript(() => {
-              const languageSwitchedListeners = (window.testData && window.testData.languageSwitchedListeners) || []
-
-              return {
-                languageSwitchedListeners
-              }
-            })
-          },
-          navigate: createNavigator(page)
-        }
+      return {
+        languageSwitchedListeners
       }
     })
+  }
+
+  beforeAll(async () => {
+    const overrides = { plugins: ['~/plugins/i18n-hooks.js'] }
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
@@ -73,32 +57,34 @@ describe(browserString, () => {
   })
 
   test('navigate with SPA', async () => {
-    page = await browser.page(url('/'))
+    page = await browser.newPage()
+    await page.goto(url('/'))
 
-    expect(await page.getText('body')).toContain('page: Homepage')
+    expect(await (await page.$('body')).textContent()).toContain('page: Homepage')
 
-    const aboutLink = await page.getElement('a[href="/about-us"]')
+    const aboutLink = await page.$('a[href="/about-us"]')
     expect(aboutLink).toBeDefined()
 
-    await page.navigate('/about-us')
+    await navigate(page, '/about-us')
 
-    const aboutFrLink = await page.getElement('a[href="/fr/a-propos"]')
+    const aboutFrLink = await page.$('a[href="/fr/a-propos"]')
     expect(aboutFrLink).toBeDefined()
 
-    await page.navigate('/fr/a-propos')
+    await navigate(page, '/fr/a-propos')
 
-    expect(await page.getText('body')).toContain('page: À propos')
+    expect(await (await page.$('body')).textContent()).toContain('page: À propos')
   })
 
   test('changes route and locale with setLocale', async () => {
-    page = await browser.page(url('/'))
+    page = await browser.newPage()
+    await page.goto(url('/'))
 
-    let testData = await page.getTestData()
+    let testData = await getTestData()
     expect(testData.languageSwitchedListeners).toEqual([])
 
-    await page.clickElement('#set-locale-link-fr')
+    await page.click('#set-locale-link-fr')
 
-    testData = await page.getTestData()
+    testData = await getTestData()
     expect(testData.languageSwitchedListeners).toEqual([
       {
         storeLocale: 'fr',
@@ -106,18 +92,19 @@ describe(browserString, () => {
         oldLocale: 'en'
       }
     ])
-    expect(await page.getText('body')).toContain('locale: fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 
   test('onLanguageSwitched listener triggers after locale was changed', async () => {
-    page = await browser.page(url('/'))
+    page = await browser.newPage()
+    await page.goto(url('/'))
 
-    let testData = await page.getTestData()
+    let testData = await getTestData()
     expect(testData.languageSwitchedListeners).toEqual([])
 
-    await page.navigate('/fr/')
+    await navigate(page, '/fr/')
 
-    testData = await page.getTestData()
+    testData = await getTestData()
     expect(testData.languageSwitchedListeners).toEqual([
       {
         storeLocale: 'fr',
@@ -125,48 +112,36 @@ describe(browserString, () => {
         oldLocale: 'en'
       }
     ])
-    expect(await page.getText('body')).toContain('locale: fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 
   test('APIs in app context work after SPA navigation', async () => {
-    page = await browser.page(url('/'))
-    await page.navigate('/middleware')
+    page = await browser.newPage()
+    await page.goto(url('/'))
+    await navigate(page, '/middleware')
 
-    expect(await page.getText('#paths')).toBe('/middleware,/fr/middleware-fr')
-    expect(await page.getText('#name')).toBe('middleware')
+    expect(await (await page.$('#paths')).textContent()).toBe('/middleware,/fr/middleware-fr')
+    expect(await (await page.$('#name')).textContent()).toBe('middleware')
   })
 })
 
 describe(`${browserString} (generate)`, () => {
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   let page
-  let port
-  // Local method that overrides imported one.
-  let url
+  let server
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-
     await generate(loadConfig(__dirname, 'basic', { generate: { dir: distDir } }))
-
-    port = await getPort()
-    url = path => `http://localhost:${port}${path}`
-
-    browser = await createBrowser(browserString, {
-      folder: distDir,
-      staticServer: {
-        folder: distDir,
-        port
-      },
-      extendPage (page) {
-        return {
-          navigate: createNavigator(page)
-        }
-      }
-    })
+    server = await startHttpServer(distDir, null, true)
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
+    if (server) {
+      await server.destroy()
+    }
     if (browser) {
       await browser.close()
     }
@@ -174,23 +149,23 @@ describe(`${browserString} (generate)`, () => {
 
   // Issue https://github.com/nuxt-community/nuxt-i18n/issues/378
   test('navigate to non-default locale', async () => {
-    page = await browser.page(url('/'))
-    expect(await page.getText('body')).toContain('locale: en')
+    page = await browser.newPage()
+    await page.goto(server.getUrl('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
 
-    await page.navigate('/fr')
-    expect(await page.getText('body')).toContain('locale: fr')
+    await navigate(page, '/fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
 
-    await page.navigate('/')
-    expect(await page.getText('body')).toContain('locale: en')
+    await navigate(page, '/')
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
   })
 })
 
 describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`, () => {
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   let page
-  let port
-  // Local method that overrides imported one.
-  let url
+  let server
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
@@ -206,40 +181,41 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
 
     await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
 
-    port = await getPort()
-    url = path => `http://localhost:${port}${path}`
-
-    browser = await createBrowser(browserString, {
-      folder: distDir,
-      staticServer: {
-        folder: distDir,
-        port
-      },
-      extendPage (page) {
-        return {
-          navigate: createNavigator(page)
-        }
-      }
-    })
+    server = await startHttpServer(distDir, null, true)
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
+    if (server) {
+      await server.destroy()
+    }
     if (browser) {
       await browser.close()
     }
   })
 
   test('generates pages in all locales', async () => {
-    page = await browser.page(url('/'))
-    expect(await page.getText('body')).toContain('locale: en')
+    page = await browser.newPage()
+    await page.goto(server.getUrl('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
 
-    await page.navigate('/fr')
-    expect(await page.getText('body')).toContain('locale: fr')
+    await navigate(page, '/fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
+  })
+
+  test('redirects to browser locale', async () => {
+    page = await browser.newPage()
+    await page.goto(server.getUrl('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
+
+    await navigate(page, '/fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 })
 
 describe(`${browserString} (no fallbackLocale, browser language not supported)`, () => {
   let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   let page
 
@@ -278,7 +254,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
 
     nuxt = (await setup(localConfig)).nuxt
 
-    browser = await createDefaultBrowser()
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
@@ -292,16 +268,18 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
   // Browser language is 'en' and so doesn't match supported ones.
   // Issue https://github.com/nuxt-community/nuxt-i18n/issues/643
   test('updates language after navigating to another locale', async () => {
-    page = await browser.page(url('/'))
-    expect(await page.getText('body')).toContain('locale: pl')
+    page = await browser.newPage()
+    await page.goto(url('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: pl')
 
-    await page.navigate('/no')
-    expect(await page.getText('body')).toContain('locale: no')
+    await navigate(page, '/no')
+    expect(await (await page.$('body')).textContent()).toContain('locale: no')
   })
 })
 
 describe(`${browserString} (SPA)`, () => {
   let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   let page
 
@@ -311,7 +289,7 @@ describe(`${browserString} (SPA)`, () => {
     }
 
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
-    browser = await createDefaultBrowser()
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
@@ -323,25 +301,29 @@ describe(`${browserString} (SPA)`, () => {
   })
 
   test('renders existing page', async () => {
-    page = await browser.page(url('/'))
-    expect(await page.getText('body')).toContain('locale: en')
+    page = await browser.newPage()
+    await page.goto(url('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
   })
 
   test('renders 404 page', async () => {
-    page = await browser.page(url('/nopage'))
-    expect(await page.getText('body')).toContain('page could not be found')
+    page = await browser.newPage()
+    await page.goto(url('/nopage'))
+    expect(await (await page.$('body')).textContent()).toContain('page could not be found')
   })
 
   test('preserves the URL on 404 page', async () => {
     const path = '/nopage?a#h'
-    page = await browser.page(url(path))
-    expect(await page.getText('body')).toContain('page could not be found')
-    expect(await page.getRouteFullPath()).toBe(path)
+    page = await browser.newPage()
+    await page.goto(url(path))
+    expect(await (await page.$('body')).textContent()).toContain('page could not be found')
+    expect(await getRouteFullPath(page)).toBe(path)
   })
 })
 
 describe(`${browserString} (SPA with router in hash mode)`, () => {
   let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   let page
 
@@ -357,7 +339,7 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
     }
 
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
-    browser = await createDefaultBrowser()
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
@@ -370,18 +352,21 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
 
   // Issue https://github.com/nuxt-community/nuxt-i18n/issues/490
   test('navigates directly to page with trailing slash', async () => {
-    page = await browser.page(url('/#/fr/'))
-    expect(await page.getText('body')).toContain('locale: fr')
+    page = await browser.newPage()
+    await page.goto(url('/#/fr/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 
   test('navigates directly to page with query', async () => {
-    page = await browser.page(url('/#/fr?a=1'))
-    expect(await page.getText('body')).toContain('locale: fr')
+    page = await browser.newPage()
+    await page.goto(url('/#/fr?a=1'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 })
 
 describe(`${browserString} (alwaysRedirect)`, () => {
   let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
 
   beforeAll(async () => {
@@ -397,7 +382,7 @@ describe(`${browserString} (alwaysRedirect)`, () => {
     }
 
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
-    browser = await createDefaultBrowser()
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
@@ -409,25 +394,28 @@ describe(`${browserString} (alwaysRedirect)`, () => {
 
   // This seems like a wrong behavior with `alwaysRedirect` enabled...
   test('does not redirect to default locale on navigation', async () => {
-    const page = await browser.page(url('/'))
-    await page.navigate('/fr')
-    expect(await page.getText('body')).toContain('locale: fr')
+    const page = await browser.newPage()
+    await page.goto(url('/'))
+    await navigate(page, '/fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 })
 
 describe(`${browserString} (vuex disabled)`, () => {
   let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
 
   beforeAll(async () => {
     const overrides = {
       i18n: {
-        vuex: false
+        vuex: false,
+        detectBrowserLanguage: false
       }
     }
 
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
-    browser = await createDefaultBrowser()
+    browser = await createBrowser()
   })
 
   afterAll(async () => {
@@ -438,9 +426,12 @@ describe(`${browserString} (vuex disabled)`, () => {
   })
 
   test('navigates to route with correct locale', async () => {
-    let page = await browser.page(url('/'))
-    expect(await page.getText('body')).toContain('locale: en')
-    page = await browser.page(url('/fr'))
-    expect(await page.getText('body')).toContain('locale: fr')
+    const page = await browser.newPage()
+    await page.goto(url('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
+
+    const page2 = await browser.newPage()
+    await page2.goto(url('/fr'))
+    expect(await (await page2.$('body')).textContent()).toContain('locale: fr')
   })
 })
