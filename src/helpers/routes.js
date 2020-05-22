@@ -7,6 +7,7 @@ exports.makeRoutes = (baseRoutes, {
   defaultLocale,
   routesNameSeparator,
   defaultLocaleRouteNameSuffix,
+  isNuxtGenerate,
   strategy,
   parsePages,
   pages,
@@ -118,6 +119,13 @@ exports.makeRoutes = (baseRoutes, {
 
       if (shouldAddPrefix) {
         path = `/${locale}${path}`
+
+        if (locale === defaultLocale && strategy === STRATEGIES.PREFIX && isNuxtGenerate) {
+          routes.push({
+            path: route.path,
+            redirect: path
+          })
+        }
       }
 
       localizedRoute.path = path

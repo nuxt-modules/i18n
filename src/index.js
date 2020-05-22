@@ -55,7 +55,8 @@ module.exports = function (userOptions) {
 
   if (options.strategy !== STRATEGIES.NO_PREFIX) {
     if (localeCodes.length) {
-      this.extendRoutes((routes) => {
+      let isNuxtGenerate = false
+      const extendRoutes = routes => {
         // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
         // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
         // not available (at runtime, when using nuxt-start).
@@ -63,11 +64,17 @@ module.exports = function (userOptions) {
 
         const localizedRoutes = makeRoutes(routes, {
           ...options,
-          pagesDir
+          pagesDir,
+          isNuxtGenerate
         })
         routes.splice(0, routes.length)
         routes.unshift(...localizedRoutes)
-      })
+      }
+
+      // Doesn't seem like we can tell whether we are in nuxt generate from the module so we'll
+      // take advantage of the 'generate:before' hook to store variable.
+      this.nuxt.hook('generate:before', () => { isNuxtGenerate = true })
+      this.nuxt.hook('build:extendRoutes', routes => extendRoutes(routes, isNuxtGenerate))
     }
   } else if (options.differentDomains) {
     // eslint-disable-next-line no-console
