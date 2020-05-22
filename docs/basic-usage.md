@@ -49,6 +49,8 @@ When rendering internal links in your app using `<nuxt-link>`, you need to get p
   :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
   {{ category.title }}
 </nuxt-link>
+<!-- It's also allowed to omit 'name' and 'path'. -->
+<nuxt-link :to="localePath({ params: { slug: 'ball' } })">{{ category.title }}</nuxt-link>
 ```
 Note that `localePath` can use the route's unprefixed path, which must start with `'/'` or the route's base name to generate the localized URL. The base name corresponds to the names Nuxt generates when parsing your `pages/` directory, more info in [Nuxt's doc](https://nuxtjs.org/guide/routing).
 
