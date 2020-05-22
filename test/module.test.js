@@ -222,6 +222,20 @@ describe('basic', () => {
     expect(link.getAttribute('href')).toEqual('/posts/my-post')
   })
 
+  test('localePath with route-less params navigates to same locale route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/posts/my-post'))
+
+    const link = window.document.querySelector('#post-link-no-route')
+    expect(link.getAttribute('href')).toEqual('/posts/look-ma-no-route')
+  })
+
+  test('localePath with route-less params navigates to different locale route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/posts/my-post'))
+
+    const link = window.document.querySelector('#post-link-no-route-fr')
+    expect(link.getAttribute('href')).toEqual('/fr/articles/look-ma-no-route')
+  })
+
   test('navigates to dynamic child route and checks path to other locale', async () => {
     const window = await nuxt.renderAndGetWindow(url('/dynamicNested/1'))
 

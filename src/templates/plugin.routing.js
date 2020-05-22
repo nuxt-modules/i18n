@@ -59,9 +59,13 @@ function localePath (route, locale) {
 
     localizedRoute.path = path
   } else {
+    if (!route.name && !route.path) {
+      localizedRoute.name = this.getRouteBaseName()
+    }
+
     // otherwise resolve route via the route name
     // Build localized route options
-    let name = route.name + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+    let name = localizedRoute.name + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
 
     // Match route without prefix for default locale
     if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {

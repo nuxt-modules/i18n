@@ -41,11 +41,16 @@ Al representar enlaces internos en su aplicación usando `<nuxt-link>`, necesita
 
 ```vue
 <nuxt-link :to="localePath('index')">{{ $t('home') }}</nuxt-link>
+<nuxt-link :to="localePath('/')">{{ $t('home') }}</nuxt-link>
 <nuxt-link :to="localePath('index', 'en')">Homepage in English</nuxt-link>
+<nuxt-link :to="localePath('/app/profile')">Route by path to: {{ $t('Profile') }}</nuxt-link>
+<nuxt-link :to="localePath('app-profile')">Route by name to: {{ $t('Profile') }}</nuxt-link>
 <nuxt-link
   :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
   {{ category.title }}
 </nuxt-link>
+<!-- It's also allowed to omit 'name' and 'path'. -->
+<nuxt-link :to="localePath({ params: { slug: 'ball' } })">{{ category.title }}</nuxt-link>
 ```
 
 Tenga en cuenta que `localePath` utiliza el nombre base de la ruta para generar la URL localizada. El nombre base corresponde a los nombres que Nuxt genera al analizar su directorio `pages/`, más información en [el documento de Nuxt](https://nuxtjs.org/guide/routing).
