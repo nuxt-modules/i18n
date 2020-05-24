@@ -18,7 +18,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   - **Arguments**:
     - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
     - locale (type: `string`, default: current locale)
-  - **Returns**: `string` | `undefined`
+  - **Returns**: `string`
 
   Returns localized path for passed in `route`. If `locale` is not specified, uses current locale.
 
