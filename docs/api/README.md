@@ -56,11 +56,12 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 
   - **Arguments**:
     - route name: (type: `string`)
+    - locale: (type: `string`)
   - **Returns**: `string`
 
-  Returns the internal name assigned to the localized route based on provided base route name.
+  Returns the internal route name assigned to the localized route.
 
-  For example, might return `contact___fr` when passing `contact, fr` arguments.
+  For example, might return `contact___fr` when calling `getLocaleRouteName(contact, fr)`.
 
   See also [Basic usage - nuxt-link](../basic-usage.html#nuxt-link).
 
