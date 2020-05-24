@@ -310,11 +310,12 @@ describe('basic', () => {
     expect(window.$nuxt.getLocaleRouteName('about', 'en')).toBe('about___en')
   })
 
-  test('localePath, switchLocalePath, getRouteBaseName works from a middleware', async () => {
+  test('localePath, switchLocalePath, getRouteBaseName, getLocaleRouteName works from a middleware', async () => {
     const html = await get('/middleware')
     const dom = getDom(html)
     expect(dom.querySelector('#paths').textContent).toBe('/middleware,/fr/middleware-fr')
     expect(dom.querySelector('#name').textContent).toBe('middleware')
+    expect(dom.querySelector('#localeRouteName').textContent).toBe('middleware___fr')
   })
 
   test('redirects to existing route', async () => {

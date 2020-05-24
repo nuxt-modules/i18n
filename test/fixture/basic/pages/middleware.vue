@@ -2,6 +2,7 @@
   <div>
     <div id="paths">{{ allLocalePaths }}</div>
     <div id="name">{{ routeBaseName }}</div>
+    <div id="localeRouteName">{{ localeRouteName }}</div>
   </div>
 </template>
 
@@ -17,13 +18,15 @@ export default {
   asyncData ({ app }) {
     return {
       allLocalePaths: app.allLocalePaths.join(','),
-      routeBaseName: app.routeBaseName
+      routeBaseName: app.routeBaseName,
+      localeRouteName: app.localeRouteName
     }
   },
   data () {
     return {
       allLocalePaths: [],
-      routeBaseName: ''
+      routeBaseName: '',
+      localeRouteName: ''
     }
   }
 }

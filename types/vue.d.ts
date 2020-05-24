@@ -24,6 +24,7 @@ declare module 'vue/types/vue' {
     localePath(route: RawLocation, locale?: string): string
     switchLocalePath(locale: string): string
     getRouteBaseName(route?: Route): string
+    getLocaleRouteName(routeName: string, locale: string): string
     $nuxtI18nSeo(): NuxtI18nSeo
     // PHPStorm without this indicates that "$i18n" was not found.
     readonly $i18n: VueI18n & IVueI18n
