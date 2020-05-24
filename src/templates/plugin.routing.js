@@ -13,9 +13,9 @@ import {
 } from './options'
 
 function localePath (route, locale) {
-  const localizedRoute = localeRoute(route, locale)
+  const localizedRoute = localeRoute.call(this, route, locale)
 
-  if (!localeRoute) {
+  if (!localizedRoute) {
     return
   }
 

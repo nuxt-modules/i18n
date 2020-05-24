@@ -122,7 +122,7 @@ describe(browserString, () => {
 
     expect(await (await page.$('#paths')).textContent()).toBe('/middleware,/fr/middleware-fr')
     expect(await (await page.$('#name')).textContent()).toBe('middleware')
-    expect(await (await page.$('#localeRouteName')).textContent()).toBe('middleware___fr')
+    expect(await (await page.$('#localizeRoute')).textContent()).toBe('middleware___fr')
   })
 })
 

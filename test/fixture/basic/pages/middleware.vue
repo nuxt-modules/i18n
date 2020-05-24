@@ -2,7 +2,7 @@
   <div>
     <div id="paths">{{ allLocalePaths }}</div>
     <div id="name">{{ routeBaseName }}</div>
-    <div id="localeRouteName">{{ localeRouteName }}</div>
+    <div id="localizedRoute">{{ localizedRoute }}</div>
   </div>
 </template>
 
@@ -19,14 +19,14 @@ export default {
     return {
       allLocalePaths: app.allLocalePaths.join(','),
       routeBaseName: app.routeBaseName,
-      localeRouteName: app.localeRouteName
+      localizedRoute: app.localizedRoute
     }
   },
   data () {
     return {
       allLocalePaths: [],
       routeBaseName: '',
-      localeRouteName: ''
+      localizedRoute: {}
     }
   }
 }
