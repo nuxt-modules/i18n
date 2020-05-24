@@ -302,6 +302,14 @@ describe('basic', () => {
     expect(window.$nuxt.getRouteBaseName(aboutRoute)).toBe('about')
   })
 
+  test('getLocaleRouteName returns localized route name', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const aboutRoute = window.$nuxt.$router.options.routes.find(route => route.path === '/about-us')
+    expect(aboutRoute).toBeDefined()
+    expect(aboutRoute.name).toBeDefined()
+    expect(window.$nuxt.getLocaleRouteName('about', 'en')).toBe('about___en')
+  })
+
   test('localePath, switchLocalePath, getRouteBaseName works from a middleware', async () => {
     const html = await get('/middleware')
     const dom = getDom(html)
@@ -592,6 +600,12 @@ describe('prefix_and_default strategy', () => {
 
   test('non-default locale route /fr exists', async () => {
     await expect(get('/fr')).resolves.toContain('page: Accueil')
+  })
+
+  test('getLocaleRouteName returns localized route name for default locale', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.getLocaleRouteName('index', 'en')).toBe('index___en___default')
+    expect(window.$nuxt.getLocaleRouteName('index', 'fr')).toBe('index___fr')
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {
