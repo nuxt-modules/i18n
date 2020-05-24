@@ -302,12 +302,12 @@ describe('basic', () => {
     expect(window.$nuxt.getRouteBaseName(aboutRoute)).toBe('about')
   })
 
-  test('getLocaleRouteName returns localized route name', async () => {
+  test('localeRoute returns localized route name', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     const aboutRoute = window.$nuxt.$router.options.routes.find(route => route.path === '/about-us')
     expect(aboutRoute).toBeDefined()
     expect(aboutRoute.name).toBeDefined()
-    expect(window.$nuxt.getLocaleRouteName('about', 'en')).toBe('about___en')
+    expect(window.$nuxt.localeRoute('about', 'en')).toBe('about___en')
   })
 
   test('localePath, switchLocalePath, getRouteBaseName, getLocaleRouteName works from a middleware', async () => {
@@ -603,10 +603,10 @@ describe('prefix_and_default strategy', () => {
     await expect(get('/fr')).resolves.toContain('page: Accueil')
   })
 
-  test('getLocaleRouteName returns localized route name for default locale', async () => {
+  test('localeRoute returns localized route name for default locale', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
-    expect(window.$nuxt.getLocaleRouteName('index', 'en')).toBe('index___en___default')
-    expect(window.$nuxt.getLocaleRouteName('index', 'fr')).toBe('index___fr')
+    expect(window.$nuxt.localeRoute('index', 'en')).toBe('index___en___default')
+    expect(window.$nuxt.localeRoute('index', 'fr')).toBe('index___fr')
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {

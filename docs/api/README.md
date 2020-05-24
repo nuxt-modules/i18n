@@ -18,7 +18,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   - **Arguments**:
     - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
     - locale (type: `string`, default: current locale)
-  - **Returns**: `string`
+  - **Returns**: `string` | `undefined`
 
   Returns localized path for passed in `route`. If `locale` is not specified, uses current locale.
 
@@ -52,21 +52,19 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 
   Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
 
-#### getLocaleRouteName <Badge text="v6.12.0+" />
+#### localeRoute <Badge text="v6.12.0+" />
 
   - **Arguments**:
-    - route name: (type: `string`)
-    - locale: (type: `string`)
-  - **Returns**: `string`
+    - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
+    - locale (type: `string`, default: current locale)
+  - **Returns**: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135) | `undefined`
 
-  Returns the internal route name assigned to the localized route.
-
-  For example, might return `contact___fr` when calling `getLocaleRouteName(contact, fr)`.
+  Returns localized route for passed in `route`. If `locale` is not specified, uses current locale.
 
   See also [Basic usage - nuxt-link](../basic-usage.html#nuxt-link).
 
 ::: warning
-In `no_prefix` strategy, this API will return the same value that was passed in.
+In `no_prefix` strategy, passing `locale` other than the current one is not supported.
 :::
 
 #### $nuxtI18nSeo

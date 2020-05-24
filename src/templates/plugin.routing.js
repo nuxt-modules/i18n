@@ -13,6 +13,16 @@ import {
 } from './options'
 
 function localePath (route, locale) {
+  const localizedRoute = localeRoute(route, locale)
+
+  if (!localeRoute) {
+    return
+  }
+
+  return localizedRoute.fullPath
+}
+
+function localeRoute (route, locale) {
   // Abort if no route or no locale
   if (!route) {
     return
@@ -71,9 +81,7 @@ function localePath (route, locale) {
     }
   }
 
-  // Resolve localized route
-  const { route: { fullPath } } = this.router.resolve(localizedRoute)
-  return fullPath
+  return this.router.resolve(localizedRoute).route
 }
 
 function switchLocalePath (locale) {
@@ -183,9 +191,9 @@ const plugin = {
     Vue.mixin({
       methods: {
         localePath: VueInstanceProxy(localePath),
+        localeRoute: VueInstanceProxy(localeRoute),
         switchLocalePath: VueInstanceProxy(switchLocalePath),
-        getRouteBaseName: VueInstanceProxy(getRouteBaseName),
-        getLocaleRouteName: VueInstanceProxy(getLocaleRouteName)
+        getRouteBaseName: VueInstanceProxy(getRouteBaseName)
       }
     })
   }
@@ -195,7 +203,7 @@ export default (context) => {
   Vue.use(plugin)
   const { app } = context
   app.localePath = NuxtContextProxy(context, localePath)
+  app.localeRoute = NuxtContextProxy(context, localeRoute)
   app.switchLocalePath = NuxtContextProxy(context, switchLocalePath)
   app.getRouteBaseName = NuxtContextProxy(context, getRouteBaseName)
-  app.getLocaleRouteName = NuxtContextProxy(context, getLocaleRouteName)
 }

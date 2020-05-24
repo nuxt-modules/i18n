@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { Route } from 'vue-router'
 import '../index'
 
 const vm = new Vue()
@@ -24,9 +25,9 @@ path = vm.switchLocalePath(locale)
 
 const routeBaseName: string = vm.getRouteBaseName(vm.$route)
 
-// getLocaleRouteName
+// localeRoute
 
-const localizedRouteName: string = vm.getLocaleRouteName('about', 'fr')
+const localizedRoute: Route = vm.localeRoute('about', 'fr')
 
 // $i18n
 
