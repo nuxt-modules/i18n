@@ -124,7 +124,7 @@ describe(browserString, () => {
     expect(await (await page.$('#name')).textContent()).toBe('middleware')
     expect(JSON.parse(await (await page.$('#localizedRoute')).textContent())).toBe({
       name: 'middleware___fr',
-      path: '/fr/middleware-fr'
+      fullPath: '/fr/middleware-fr'
     })
   })
 })
