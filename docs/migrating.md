@@ -25,7 +25,7 @@ It was previously possible to manually set `preserveState` on **nuxt-i18n**'s st
 
 If you were using the `preserveState` configuration option before, it can be safely removed:
 
-```patch
+```diff
  {
    vuex: {
 -    preserveState: true,
@@ -38,7 +38,7 @@ If you were using the `preserveState` configuration option before, it can be saf
 
 The `vuex` configuration option used to expose a `mutations` property where each mutation could be disabled or renamed. For the sake of simplicity, it isn't possible to rename these mutations anymore, the `mutations` property has been dropped to flatten the configuration and each option has been renamed to better reflect what it does.
 
-```patch
+```diff
  {
    vuex: {
 -    mutations: {

@@ -25,7 +25,7 @@ Anteriormente era posible configurar manualmente `preserveState` en el módulo d
 
 Si estaba utilizando la opción de configuración `preserveState` anteriormente, puede eliminarse de manera segura:
 
-```patch
+```diff
  {
    vuex: {
 -    preserveState: true,
@@ -38,7 +38,7 @@ Si estaba utilizando la opción de configuración `preserveState` anteriormente,
 
 La opción de configuración `vuex` se usa para exponer una propiedad `mutations` donde cada mutación se puede deshabilitar o renombrar. Por el bien de la simplicidad, ya no es posible cambiar el nombre de estas mutaciones, la propiedad `mutations` se ha eliminado para aplanar la configuración y se ha cambiado el nombre de cada opción para reflejar mejor lo que hace.
 
-```patch
+```diff
  {
    vuex: {
 -    mutations: {
