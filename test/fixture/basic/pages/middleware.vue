@@ -2,7 +2,7 @@
   <div>
     <div id="paths">{{ allLocalePaths }}</div>
     <div id="name">{{ routeBaseName }}</div>
-    <div id="localizedRoute">{{ localizedRoute }}</div>
+    <div id="localizedRoute">{{ JSON.stringify(localizedRoute) }}</div>
   </div>
 </template>
 
