@@ -63,16 +63,7 @@ function localePath (route, locale) {
       localizedRoute.name = this.getRouteBaseName()
     }
 
-    // otherwise resolve route via the route name
-    // Build localized route options
-    let name = localizedRoute.name + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
-
-    // Match route without prefix for default locale
-    if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-      name += routesNameSeparator + defaultLocaleRouteNameSuffix
-    }
-
-    localizedRoute.name = name
+    localizedRoute.name = getLocaleRouteName(localizedRoute.name, locale)
 
     const { params } = localizedRoute
     if (params && params['0'] === undefined && params.pathMatch) {
@@ -142,6 +133,17 @@ function getRouteBaseName (givenRoute) {
   return route.name.split(routesNameSeparator)[0]
 }
 
+function getLocaleRouteName (routeName, locale) {
+  const name = routeName + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+
+  // Match route without prefix for default locale
+  if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
+    return name + routesNameSeparator + defaultLocaleRouteNameSuffix
+  }
+
+  return name
+}
+
 const VueInstanceProxy = function (targetFunction) {
   return function () {
     const proxy = {
@@ -182,7 +184,8 @@ const plugin = {
       methods: {
         localePath: VueInstanceProxy(localePath),
         switchLocalePath: VueInstanceProxy(switchLocalePath),
-        getRouteBaseName: VueInstanceProxy(getRouteBaseName)
+        getRouteBaseName: VueInstanceProxy(getRouteBaseName),
+        getLocaleRouteName: VueInstanceProxy(getLocaleRouteName)
       }
     })
   }
@@ -192,6 +195,7 @@ export default (context) => {
   Vue.use(plugin)
   const { app } = context
   app.localePath = NuxtContextProxy(context, localePath)
-  app.switchLocalePath = NuxtContextProxy(context, switchLocalePath)
-  app.getRouteBaseName = NuxtContextProxy(context, getRouteBaseName)
+  app.switchLocalePath = NuxtContextProxy(context, switchLocalePath),
+  app.getRouteBaseName = NuxtContextProxy(context, getRouteBaseName),
+  app.getLocaleRouteName = NuxtContextProxy(context, getLocaleRouteName)
 }

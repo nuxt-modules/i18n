@@ -73,3 +73,14 @@ export default ({ app }) => {
   const switchLocalePath = app.switchLocalePath('fr')
 }
 ```
+
+* `getLocaleRouteName` <Badge text="v6.12+" /> – Returns the localized route name for specified route name. This can be useful if you want to reference some localized route in a call to `$router.push`, for example.
+
+```vue
+<a
+  href="#"
+  @click="$router.push({
+    name: getLocaleRouteName('other', 'fr'),
+    params: { foo: '1' }
+  })">Navigate</a>
+```
