@@ -27,7 +27,7 @@ const routeBaseName: string = vm.getRouteBaseName(vm.$route)
 
 // localeRoute
 
-const localizedRoute: Route = vm.localeRoute('about', 'fr')
+const localizedRoute: Route | undefined = vm.localeRoute('about', 'fr')
 
 // $i18n
 
