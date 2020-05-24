@@ -19,7 +19,10 @@ export default {
     return {
       allLocalePaths: app.allLocalePaths.join(','),
       routeBaseName: app.routeBaseName,
-      localizedRoute: app.localizedRoute
+      localizedRoute: {
+        name: app.localizedRoute.name,
+        fullPath: app.localizedRoute.fullPath
+      }
     }
   },
   data () {
