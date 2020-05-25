@@ -8,7 +8,7 @@ sidebar: auto
 
 ::: tip NOTE
 
-All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue-injected-methods) (like `$t`, `$i18n`, `v-t` directive and others) are also available even though they are not listed here. Below are only ones added by `nuxt-i18n`.
+All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue-injected-methods) (like `$t`, `$i18n`, `v-t` directive and others) are also available even though they are not listed here. Below are only the ones that are added by `nuxt-i18n`.
 :::
 
 ### Methods
@@ -47,10 +47,25 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 #### getRouteBaseName
 
   - **Arguments**:
-    - route (type: `Route`(https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135), default: current route)
+    - route (type: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135), default: current route)
   - **Returns**: `string`
 
   Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
+
+#### localeRoute <Badge text="v6.12.0+" />
+
+  - **Arguments**:
+    - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
+    - locale (type: `string`, default: current locale)
+  - **Returns**: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135) | `undefined`
+
+  Returns localized route for passed in `route`. If `locale` is not specified, uses current locale.
+
+  See also [Basic usage - nuxt-link](../basic-usage.html#nuxt-link).
+
+::: warning
+In `no_prefix` strategy, passing `locale` other than the current one is not supported.
+:::
 
 #### $nuxtI18nSeo
 
@@ -84,9 +99,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Updates stored locale cookie with specified locale code. Consider using `setLocale` instead if you want to switch locale.
 
-#### setLocale
-
-  > :new: 6.1.0+
+#### setLocale <Badge text="v6.1.0+" />
 
   - **Arguments**:
     - locale (type: `string`)

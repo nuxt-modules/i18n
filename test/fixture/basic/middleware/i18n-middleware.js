@@ -4,4 +4,5 @@ export default function ({ app }) {
   // Tests localePath, switchLocalePath and getRouteBaseName from app context.
   app.allLocalePaths = localeCodes.map(locale => app.switchLocalePath(locale))
   app.routeBaseName = app.getRouteBaseName()
+  app.localizedRoute = app.localeRoute(app.routeBaseName, 'fr')
 }

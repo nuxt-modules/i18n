@@ -22,6 +22,7 @@ declare module 'vue-i18n' {
 declare module 'vue/types/vue' {
   interface Vue {
     localePath(route: RawLocation, locale?: string): string
+    localeRoute(route: RawLocation, locale?: string): Route | undefined
     switchLocalePath(locale: string): string
     getRouteBaseName(route?: Route): string
     $nuxtI18nSeo(): NuxtI18nSeo

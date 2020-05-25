@@ -302,11 +302,34 @@ describe('basic', () => {
     expect(window.$nuxt.getRouteBaseName(aboutRoute)).toBe('about')
   })
 
-  test('localePath, switchLocalePath, getRouteBaseName works from a middleware', async () => {
+  test('localeRoute returns localized route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.localeRoute('about', 'en')).toMatchObject({
+      name: 'about___en',
+      fullPath: '/about-us'
+    })
+  })
+
+  test('localeRoute with custom location object retains params', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.localeRoute({ name: 'about', params: { foo: '1' } }, 'en')).toMatchObject({
+      name: 'about___en',
+      fullPath: '/about-us',
+      params: {
+        foo: '1'
+      }
+    })
+  })
+
+  test('localePath, switchLocalePath, getRouteBaseName, localeRoute works from a middleware', async () => {
     const html = await get('/middleware')
     const dom = getDom(html)
     expect(dom.querySelector('#paths').textContent).toBe('/middleware,/fr/middleware-fr')
     expect(dom.querySelector('#name').textContent).toBe('middleware')
+    expect(JSON.parse(dom.querySelector('#localizedRoute').textContent)).toMatchObject({
+      name: 'middleware___fr',
+      fullPath: '/fr/middleware-fr'
+    })
   })
 
   test('redirects to existing route', async () => {
@@ -592,6 +615,12 @@ describe('prefix_and_default strategy', () => {
 
   test('non-default locale route /fr exists', async () => {
     await expect(get('/fr')).resolves.toContain('page: Accueil')
+  })
+
+  test('localeRoute returns localized route name for default locale', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default', fullPath: '/' })
+    expect(window.$nuxt.localeRoute('index', 'fr')).toMatchObject({ name: 'index___fr', fullPath: '/fr' })
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {
