@@ -3,16 +3,17 @@ const { extractComponentOptions } = require('./components')
 const { getPageOptions, getLocaleCodes } = require('./utils')
 
 exports.makeRoutes = (baseRoutes, {
-  locales,
   defaultLocale,
-  routesNameSeparator,
   defaultLocaleRouteNameSuffix,
+  differentDomains,
   isNuxtGenerate,
-  strategy,
-  parsePages,
+  locales,
   pages,
   pagesDir,
-  differentDomains
+  parsePages,
+  routesNameSeparator,
+  strategy,
+  trailingSlash
 }) => {
   locales = getLocaleCodes(locales)
   let localizedRoutes = []
@@ -78,10 +79,12 @@ exports.makeRoutes = (baseRoutes, {
         path = componentOptions.paths[locale]
       }
 
+      const isDefaultLocale = locale === defaultLocale
+
       // For PREFIX_AND_DEFAULT strategy and default locale:
       // - if it's a parent route, add it with default locale suffix added (no suffix if route has children)
       // - if it's a child route of that extra parent route, append default suffix to it
-      if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
+      if (isDefaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
         if (!isChild) {
           const defaultRoute = { ...localizedRoute, path }
 
@@ -113,18 +116,25 @@ exports.makeRoutes = (baseRoutes, {
         // No need to add prefix if child's path is relative
         !isChildWithRelativePath &&
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
-        !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
+        !(isDefaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
       )
 
       if (shouldAddPrefix) {
         path = `/${locale}${path}`
+      }
 
-        if (locale === defaultLocale && strategy === STRATEGIES.PREFIX && isNuxtGenerate) {
-          routes.push({
-            path: route.path,
-            redirect: path
-          })
-        }
+      // - Follow Nuxt and add or remove trailing slashes depending on "router.trailingSlash`
+      // - If "router.trailingSlash" is not specified then default to no trailing slash (like Nuxt)
+      // - Children with relative paths must not start with slash so don't append if path is empty.
+      if (path.length) { // Don't replace empty (child) path with a slash!
+        path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
+      }
+
+      if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && isNuxtGenerate) {
+        routes.push({
+          path: route.path,
+          redirect: path
+        })
       }
 
       localizedRoute.path = path
