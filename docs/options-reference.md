@@ -135,12 +135,6 @@ Here are all the options available when configuring the module and their default
   // the pages option, refer to the "Routing" section for usage
   pages: {},
 
-  // By default, custom paths will be encoded using encodeURI method.
-  // This does not work with regexp: "/foo/:slug-:id(\\d+)". If you want to use
-  // regexp in the path, then set this option to false, and make sure you process
-  // path encoding yourself.
-  encodePaths: true,
-
   // Called right before app's locale changes
   beforeLanguageSwitch: (oldLocale, newLocale) => null,
 

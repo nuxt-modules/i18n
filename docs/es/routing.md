@@ -229,19 +229,6 @@ Debería configurar su propiedad `pages` de la siguiente manera:
 
 Si falta una ruta personalizada para una de las configuraciones locales, se usa la ruta personalizada `defaultLocale` si está establecida..
 
-### Expresión regular
-
-Por defecto, todas las rutas personalizadas están codificadas para manejar caracteres no latinos en la ruta. Esto convertirá rutas con expresiones regulares como `/foo/:slug-:id(\\d+)` a `/foo/:slug-:id(%5Cd+)`.
-
-Si desea utilizar expresiones regulares en sus rutas personalizadas, debe establecer la opción  `encodePaths` en false. Como no ocurrirá ninguna codificación, deberá asegurarse de pasar las rutas codificadas usted mismo.
-```js
-// nuxt.config.js
-
-['nuxt-i18n', {
-  encodePaths: false
-}]
-```
-
 
 ## Ignorar rutas
 
