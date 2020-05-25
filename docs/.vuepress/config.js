@@ -12,6 +12,9 @@ module.exports = {
       title: 'Guía de nuxt-i18n'
     }
   },
+  markdown: {
+    extractHeaders: ['h2', 'h3', 'h4']
+  },
   themeConfig: {
     algolia: {
       apiKey: '3e37c242d902c4d6c469abc8573b7533',
@@ -45,12 +48,11 @@ module.exports = {
         ],
         sidebar: {
           '/es/': sidebarLinks('es')
-        },
-      },
+        }
+      }
     }
   }
 }
-
 
 function sidebarLinks (locale) {
   const translations = {
@@ -102,7 +104,7 @@ function sidebarLinks (locale) {
         'lang-switcher',
         'different-domains',
         'vue-i18n-loader',
-        'migrating',
+        'migrating'
       ].map(child => localePageTitle(child))
     }
   ]
