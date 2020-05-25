@@ -55,15 +55,15 @@ function localeRoute (route, locale) {
   const localizedRoute = Object.assign({}, route)
 
   if (route.path && !route.name) {
+    const isDefaultLocale = locale === defaultLocale
     // if route has a path defined but no name, resolve full route using the path
-    const isPrefixed = (
-      // don't prefix default locale
-      !(locale === defaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT) &&
+    const isPrefixed =
+        // don't prefix default locale
+        !(isDefaultLocale && [STRATEGIES.PREFIX_EXCEPT_DEFAULT, STRATEGIES.PREFIX_AND_DEFAULT].includes(strategy)) &&
         // no prefix for any language
         !(strategy === STRATEGIES.NO_PREFIX) &&
         // no prefix for different domains
         !i18n.differentDomains
-    )
 
     const path = (isPrefixed ? `/${locale}${route.path}` : route.path)
 
