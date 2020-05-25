@@ -617,10 +617,17 @@ describe('prefix_and_default strategy', () => {
     await expect(get('/fr')).resolves.toContain('page: Accueil')
   })
 
-  test('localeRoute returns localized route name for default locale', async () => {
+  test('localeRoute returns localized route (by route name)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default', fullPath: '/' })
     expect(window.$nuxt.localeRoute('index', 'fr')).toMatchObject({ name: 'index___fr', fullPath: '/fr' })
+  })
+
+  test('localeRoute returns localized route (by route path)', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    // Prefer unprefixed path for default locale:
+    expect(window.$nuxt.localeRoute('/simple', 'en')).toMatchObject({ name: 'simple___en___default', fullPath: '/simple' })
+    expect(window.$nuxt.localeRoute('/simple', 'fr')).toMatchObject({ name: 'simple___fr', fullPath: '/fr/simple' })
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {
