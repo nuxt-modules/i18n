@@ -1,3 +1,18 @@
+## [6.12.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.11.1...v6.12.0) (2020-05-25)
+
+
+### Features
+
+* add localeRoute API for getting the localized route ([#729](https://github.com/nuxt-community/nuxt-i18n/issues/729)) ([0c4bd52](https://github.com/nuxt-community/nuxt-i18n/commit/0c4bd52babdd868fdc254387589529600e1a3496)), closes [#728](https://github.com/nuxt-community/nuxt-i18n/issues/728)
+* add support for using localePath with no route name and path ([#727](https://github.com/nuxt-community/nuxt-i18n/issues/727)) ([7a011a0](https://github.com/nuxt-community/nuxt-i18n/commit/7a011a07bede6bad62f9faf44873643a1a8b0ec1)), closes [#691](https://github.com/nuxt-community/nuxt-i18n/issues/691)
+
+
+### Bug Fixes
+
+* don't do browser language detection during Nuxt generate ([#718](https://github.com/nuxt-community/nuxt-i18n/issues/718)) ([f1c5aca](https://github.com/nuxt-community/nuxt-i18n/commit/f1c5aca9aa35febdb19f46c45b0cf37ba5ab3db6))
+* don't leave out non-prefixed routes for generate + prefix strategy ([#726](https://github.com/nuxt-community/nuxt-i18n/issues/726)) ([97fabbf](https://github.com/nuxt-community/nuxt-i18n/commit/97fabbfafa2c7ec852f134c6587b291e4f5dfda9)), closes [#700](https://github.com/nuxt-community/nuxt-i18n/issues/700)
+* trigger language detection on initial load in generated mode ([#724](https://github.com/nuxt-community/nuxt-i18n/issues/724)) ([a853de9](https://github.com/nuxt-community/nuxt-i18n/commit/a853de929d2f764ccd08c4323c6cfb8f95e4490c))
+
 ### [6.11.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.11.0...v6.11.1) (2020-05-10)
 
 
