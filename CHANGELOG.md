@@ -1,3 +1,12 @@
+### [6.12.1-beta.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.0...v6.12.1-beta.0) (2020-05-26)
+
+
+### Bug Fixes
+
+* don't add trailing slashes to generated routes ([4825d61](https://github.com/nuxt-community/nuxt-i18n/commit/4825d6106bde71baa245875a97dfa0d88834b190)), closes [#717](https://github.com/nuxt-community/nuxt-i18n/issues/717)
+* favor non-prefixed route with prefix_and_default strategy ([#732](https://github.com/nuxt-community/nuxt-i18n/issues/732)) ([09d2c0f](https://github.com/nuxt-community/nuxt-i18n/commit/09d2c0ff39089802db67b2db9c67e46d93fda64d)), closes [#721](https://github.com/nuxt-community/nuxt-i18n/issues/721)
+* remove "encodePaths" option and don't encode paths by default ([#731](https://github.com/nuxt-community/nuxt-i18n/issues/731)) ([aba92b3](https://github.com/nuxt-community/nuxt-i18n/commit/aba92b318559521c268d2d3bbe427653bb4c14d6)), closes [#712](https://github.com/nuxt-community/nuxt-i18n/issues/712)
+
 ## [6.12.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.11.1...v6.12.0) (2020-05-25)
 
 
