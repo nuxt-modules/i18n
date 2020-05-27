@@ -90,10 +90,10 @@
     "vue-i18n": "^8.17.3"
   },
   "devDependencies": {
-    "@babel/core": "7.9.6",
-    "@babel/preset-env": "7.9.6",
-    "@babel/runtime": "7.9.6",
-    "@nuxt/types": "0.7.6",
+    "@babel/core": "7.10.0",
+    "@babel/preset-env": "7.10.0",
+    "@babel/runtime": "7.10.0",
+    "@nuxt/types": "0.7.7",
     "@nuxtjs/eslint-config-typescript": "2.0.0",
     "@nuxtjs/module-test-utils": "1.6.1",
     "@release-it/conventional-changelog": "1.1.4",
