@@ -66,11 +66,11 @@ function addHreflangLinks (locales, baseUrl, link) {
     localeMap.set(localeIso, locale)
   }
 
-  for (const [iso, locale] of localeMap.entries()) {
+  for (const [iso, mapLocale] of localeMap.entries()) {
     link.push({
       hid: `alternate-hreflang-${iso}`,
       rel: 'alternate',
-      href: baseUrl + this.switchLocalePath(locale.code),
+      href: baseUrl + this.switchLocalePath(mapLocale.code),
       hreflang: iso
     })
   }

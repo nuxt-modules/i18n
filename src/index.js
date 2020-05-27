@@ -55,6 +55,7 @@ module.exports = function (userOptions) {
 
   if (options.strategy !== STRATEGIES.NO_PREFIX) {
     if (localeCodes.length) {
+      const { trailingSlash } = this.options.router
       let isNuxtGenerate = false
       const extendRoutes = routes => {
         // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
@@ -65,7 +66,8 @@ module.exports = function (userOptions) {
         const localizedRoutes = makeRoutes(routes, {
           ...options,
           pagesDir,
-          isNuxtGenerate
+          isNuxtGenerate,
+          trailingSlash
         })
         routes.splice(0, routes.length)
         routes.unshift(...localizedRoutes)
