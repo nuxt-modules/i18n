@@ -392,6 +392,26 @@ for (const trailingSlash of TRAILING_SLASHES) {
       title = dom.querySelector('p')
       expect(title.textContent).toBe('Bonjour le monde!')
     })
+
+    test('can use nuxt-i18n extensions from component local i18n instance', async () => {
+      const html = await getRespectingTrailingSlash('/loader-yaml')
+      const dom = getDom(html)
+      const title = dom.querySelector('p#title')
+      expect(title.textContent).toBe('hello world!')
+      const locales = dom.querySelector('p#locales')
+      expect(JSON.parse(locales.textContent)).toMatchObject([
+        {
+          code: 'en',
+          iso: 'en',
+          name: 'English'
+        },
+        {
+          code: 'fr',
+          iso: 'fr-FR',
+          name: 'Français'
+        }
+      ])
+    })
   })
 }
 

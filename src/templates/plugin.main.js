@@ -193,20 +193,25 @@ export default async (context) => {
     await app.i18n.setLocale(finalLocale)
   }
 
+  const extendVueI18nInstance = i18n => {
+    i18n.locales = locales
+    i18n.defaultLocale = defaultLocale
+    i18n.differentDomains = differentDomains
+    i18n.beforeLanguageSwitch = beforeLanguageSwitch
+    i18n.onLanguageSwitched = onLanguageSwitched
+    i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey })
+    i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
+    i18n.setLocale = (locale) => loadAndSetLocale(locale)
+  }
+
   // Set instance options
   const vueI18nOptions = typeof vueI18n === 'function' ? vueI18n(context) : vueI18n
+  vueI18nOptions.componentInstanceCreatedListener = extendVueI18nInstance
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
   app.i18n.locale = ''
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
-  app.i18n.locales = locales
-  app.i18n.defaultLocale = defaultLocale
-  app.i18n.differentDomains = differentDomains
-  app.i18n.beforeLanguageSwitch = beforeLanguageSwitch
-  app.i18n.onLanguageSwitched = onLanguageSwitched
-  app.i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey })
-  app.i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
-  app.i18n.setLocale = (locale) => loadAndSetLocale(locale)
+  extendVueI18nInstance(app.i18n)
   app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
   app.i18n.__onNavigate = onNavigate
 
