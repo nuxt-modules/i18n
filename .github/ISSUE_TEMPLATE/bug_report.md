@@ -12,9 +12,9 @@ nuxt-i18n: <!-- ex: 5.9.0 -->
 nuxt: <!-- ex: 2.0.0 -->
 
 ### Nuxt configuration
-#### [mode](https://nuxtjs.org/api/configuration-mode): <!--universal is the default -->
- - [ ] universal
- - [ ] spa
+#### [mode](https://nuxtjs.org/api/configuration-mode): <!--universal is the default, please insert X where appropriate -->
+ - [] universal
+ - [] spa
 
 ### Nuxt-i18n configuration
 <!--
@@ -29,7 +29,11 @@ i18n: {
 -->
 
 ### Reproduction Link
-<!-- A minimal test case on https://template.nuxtjs.org/ or GitHub reprository that can reproduce the bug. -->
+<!--
+    A minimal test case on codesandbox or GitHub reprository that can reproduce the bug.
+    An example codesandbox that can be forked and used as a base can be found at:
+    https://codesandbox.io/s/nuxt-nuxt-i18n-base-template-sty4f
+-->
 
 ### Steps to reproduce
 
