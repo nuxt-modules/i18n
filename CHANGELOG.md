@@ -1,3 +1,13 @@
+### [6.12.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.0...v6.12.1) (2020-05-29)
+
+
+### Bug Fixes
+
+* crash on using nuxt-i18n properties in a component with i18n options ([#736](https://github.com/nuxt-community/nuxt-i18n/issues/736)) ([fd8b684](https://github.com/nuxt-community/nuxt-i18n/commit/fd8b684a19a109bb68066716ed92dfb02fe900a2)), closes [#557](https://github.com/nuxt-community/nuxt-i18n/issues/557)
+* don't add trailing slashes to generated routes ([#733](https://github.com/nuxt-community/nuxt-i18n/issues/733)) ([b062044](https://github.com/nuxt-community/nuxt-i18n/commit/b062044998062fe217f69a1e3d00184e34b7ffc5)), closes [#717](https://github.com/nuxt-community/nuxt-i18n/issues/717)
+* favor non-prefixed route with prefix_and_default strategy ([#732](https://github.com/nuxt-community/nuxt-i18n/issues/732)) ([09d2c0f](https://github.com/nuxt-community/nuxt-i18n/commit/09d2c0ff39089802db67b2db9c67e46d93fda64d)), closes [#721](https://github.com/nuxt-community/nuxt-i18n/issues/721)
+* remove "encodePaths" option and don't encode paths by default ([#731](https://github.com/nuxt-community/nuxt-i18n/issues/731)) ([aba92b3](https://github.com/nuxt-community/nuxt-i18n/commit/aba92b318559521c268d2d3bbe427653bb4c14d6)), closes [#712](https://github.com/nuxt-community/nuxt-i18n/issues/712)
+
 ## [6.12.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.11.1...v6.12.0) (2020-05-25)
 
 
