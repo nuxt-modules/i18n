@@ -36,5 +36,6 @@ If using typescript or running typescript language server to check the code (for
     "types": [
       "nuxt-i18n"
     ]
+  }
 }
 ```
