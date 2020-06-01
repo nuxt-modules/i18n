@@ -156,7 +156,7 @@ const VueInstanceProxy = function (targetFunction) {
   return function () {
     const proxy = {
       getRouteBaseName: this.getRouteBaseName,
-      i18n: this.$i18n,
+      i18n: this.$router.app.$i18n,
       localePath: this.localePath,
       req: process.server ? this.$ssrContext.req : null,
       route: this.$route,
