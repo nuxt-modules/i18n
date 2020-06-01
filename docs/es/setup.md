@@ -36,5 +36,6 @@ Si está utilizando typescript o ejecuta un servidor de lenguaje de typescript p
     "types": [
       "nuxt-i18n"
     ]
+  }
 }
 ```
