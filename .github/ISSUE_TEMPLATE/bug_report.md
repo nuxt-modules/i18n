@@ -30,7 +30,7 @@ i18n: {
 
 ### Reproduction Link
 <!--
-    A minimal test case on codesandbox or GitHub reprository that can reproduce the bug.
+    A minimal test case on codesandbox or in a repository that can be used to reproduce the bug.
     An example codesandbox that can be forked and used as a base can be found at:
     https://codesandbox.io/s/nuxt-nuxt-i18n-base-template-sty4f
 -->
