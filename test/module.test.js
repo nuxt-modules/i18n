@@ -567,6 +567,20 @@ describe('lazy loading', () => {
     const title = dom.querySelector('h1')
     expect(title.textContent).toBe('in english')
   })
+
+  test('loads strings from file exporting a function', async () => {
+    const html = await get('/fr/simple')
+    const dom = getDom(html)
+    const container = dom.querySelector('#container')
+    expect(container.textContent).toBe('Accueil')
+  })
+
+  test('exported function gets passed locale to load', async () => {
+    const html = await get('/fr/locale')
+    const dom = getDom(html)
+    const container = dom.querySelector('#t')
+    expect(container.textContent).toBe('fr')
+  })
 })
 
 describe('with empty configuration', () => {
