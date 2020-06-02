@@ -51,14 +51,14 @@ Language file example:
 ```js
 // lang/[lang].js
 
-export default (context) => {
-  return new Promise(function (resolve) {
-    resolve({
-      welcome: 'Welcome'
-    })
-  });
+export default async (context, locale) => {
+  await resolve({
+    welcome: 'Welcome'
+  })
 }
+
 // or
+
 export default {
   welcome: 'Welcome'
 }
