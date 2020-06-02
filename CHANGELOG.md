@@ -1,3 +1,11 @@
+### [6.12.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.1...v6.12.2) (2020-06-02)
+
+
+### Bug Fixes
+
+* revert back to generating routes from extendRoutes() ([#751](https://github.com/nuxt-community/nuxt-i18n/issues/751)) ([439781f](https://github.com/nuxt-community/nuxt-i18n/commit/439781f66127cf99e4318f8774dd9b441ccfca31)), closes [#750](https://github.com/nuxt-community/nuxt-i18n/issues/750)
+* **deps:** update dependency is-https to v2 ([#744](https://github.com/nuxt-community/nuxt-i18n/issues/744)) ([baf3082](https://github.com/nuxt-community/nuxt-i18n/commit/baf3082c0ac48c90a20b476a7d158e20fd2cf248))
+
 ### [6.12.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.0...v6.12.1) (2020-05-29)
 
 
