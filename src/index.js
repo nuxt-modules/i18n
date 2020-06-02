@@ -76,7 +76,7 @@ module.exports = function (userOptions) {
       // Doesn't seem like we can tell whether we are in nuxt generate from the module so we'll
       // take advantage of the 'generate:before' hook to store variable.
       this.nuxt.hook('generate:before', () => { isNuxtGenerate = true })
-      this.nuxt.hook('build:extendRoutes', routes => extendRoutes(routes, isNuxtGenerate))
+      this.extendRoutes(extendRoutes)
     }
   } else if (options.differentDomains) {
     // eslint-disable-next-line no-console
