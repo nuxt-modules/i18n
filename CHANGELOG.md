@@ -1,3 +1,15 @@
+## [6.13.0-beta.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.2...v6.13.0-beta.0) (2020-06-03)
+
+
+### Features
+
+* pass to-be-loaded locale when lazy-loading from exported function ([#752](https://github.com/nuxt-community/nuxt-i18n/issues/752)) ([145f3b2](https://github.com/nuxt-community/nuxt-i18n/commit/145f3b2a080a91028fd5ef59f9c8bd88755d3b4b)), closes [#742](https://github.com/nuxt-community/nuxt-i18n/issues/742)
+
+
+### Bug Fixes
+
+* initial redirect breaks reactivity in static mode ([ef80b0d](https://github.com/nuxt-community/nuxt-i18n/commit/ef80b0db8e2a74101929a063e7142b7ab5708ef0)), closes [#737](https://github.com/nuxt-community/nuxt-i18n/issues/737)
+
 ### [6.12.2](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.1...v6.12.2) (2020-06-02)
 
 
