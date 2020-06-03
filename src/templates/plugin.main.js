@@ -160,9 +160,7 @@ export default async (context) => {
   }
 
   // Called by middleware on navigation (also on the initial one).
-  const onNavigate = async () => {
-    const { route } = context
-
+  const onNavigate = async route => {
     // Handle root path redirect
     if (route.path === '/' && rootRedirect) {
       let statusCode = 302
@@ -173,15 +171,13 @@ export default async (context) => {
         path = rootRedirect.path
       }
 
-      redirect(statusCode, `/${path}`, route.query)
-      return
+      return [statusCode, `/${path}`]
     }
 
     const storedRedirect = app.i18n.__redirect
     if (storedRedirect) {
       app.i18n.__redirect = null
-      redirect(storedRedirect)
-      return
+      return [302, storedRedirect]
     }
 
     app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
@@ -191,6 +187,8 @@ export default async (context) => {
       getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
 
     await app.i18n.setLocale(finalLocale)
+
+    return [null, null]
   }
 
   const extendVueI18nInstance = i18n => {
@@ -248,8 +246,10 @@ export default async (context) => {
   finalLocale = detectedBrowserLocale || finalLocale
   await loadAndSetLocale(finalLocale, { initialSetup: true })
 
-  // Trigger onNavigate manually for Nuxt generate in universal mode as Nuxt doesn't do that on load.
   if (process.client && process.static && IS_UNIVERSAL_MODE) {
-    await onNavigate()
+    const redirectTo = (await onNavigate(context.route))[1]
+    if (redirectTo) {
+      location.assign(redirectTo)
+    }
   }
 }

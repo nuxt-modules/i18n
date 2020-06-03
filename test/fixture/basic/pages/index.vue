@@ -13,6 +13,11 @@ import LangSwitcher from '../components/LangSwitcher'
 export default {
   components: {
     LangSwitcher
+  },
+  head () {
+    return {
+      title: this.$t('home')
+    }
   }
 }
 </script>
