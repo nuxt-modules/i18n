@@ -163,6 +163,33 @@ describe(`${browserString} (generate)`, () => {
     await navigate(page, '/')
     expect(await (await page.$('body')).textContent()).toContain('locale: en')
   })
+
+  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/737
+  test('reactivity works after redirecting to detected browser locale (root path)', async () => {
+    page = await browser.newPage({ locale: 'fr' })
+    await page.goto(server.getUrl('/'))
+    expect(page.url()).toBe(server.getUrl('/fr/'))
+    // Need to delay a bit due to vue-meta batching with 10ms timeout.
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Accueil')
+
+    await navigate(page, '/')
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Homepage')
+  })
+
+  test('reactivity works after redirecting to detected browser locale (sub-path)', async () => {
+    page = await browser.newPage({ locale: 'fr' })
+    await page.goto(server.getUrl('/posts/'))
+    expect(page.url()).toBe(server.getUrl('/fr/articles/'))
+    // Need to delay a bit due to vue-meta batching with 10ms timeout.
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Articles')
+
+    await navigate(page, '/posts/')
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Posts')
+  })
 })
 
 describe(`${browserString} (generate, prefix strategy)`, () => {
@@ -252,7 +279,7 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
   test('redirects to browser locale', async () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
-    expect(page.url()).toBe(server.getUrl('/fr'))
+    expect(page.url()).toBe(server.getUrl('/fr/'))
     expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
 })

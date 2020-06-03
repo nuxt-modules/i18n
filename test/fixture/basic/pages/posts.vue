@@ -13,6 +13,11 @@ export default {
   components: {
     LangSwitcher
   },
+  head () {
+    return {
+      title: this.$t('posts')
+    }
+  },
   nuxtI18n: {
     paths: {
       fr: '/articles'
