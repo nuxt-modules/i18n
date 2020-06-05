@@ -49,12 +49,14 @@ module.exports = {
         fr: {
           home: 'Accueil',
           about: 'À propos',
-          posts: 'Articles'
+          posts: 'Articles',
+          dynamic: 'Dynamique'
         },
         en: {
           home: 'Homepage',
           about: 'About us',
-          posts: 'Posts'
+          posts: 'Posts',
+          dynamic: 'Dynamic'
         }
       },
       fallbackLocale: 'en'

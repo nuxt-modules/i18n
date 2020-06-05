@@ -30,6 +30,7 @@ describe(browserString, () => {
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
 
   async function getTestData () {
@@ -132,13 +133,17 @@ describe(browserString, () => {
 describe(`${browserString} (generate)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
   let server
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    await generate(loadConfig(__dirname, 'basic', { generate: { dir: distDir } }, { merge: true }))
-    server = await startHttpServer(distDir, null, true)
+    const overrides = {
+      generate: { dir: distDir }
+    }
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+    server = await startHttpServer({ path: distDir, verbose: true })
     browser = await createBrowser()
   })
 
@@ -168,6 +173,7 @@ describe(`${browserString} (generate)`, () => {
   test('reactivity works after redirecting to detected browser locale (root path)', async () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
+    // Trailing slash added by the server.
     expect(page.url()).toBe(server.getUrl('/fr/'))
     // Need to delay a bit due to vue-meta batching with 10ms timeout.
     await page.waitForTimeout(20)
@@ -190,11 +196,92 @@ describe(`${browserString} (generate)`, () => {
     await page.waitForTimeout(20)
     expect(await page.title()).toBe('Posts')
   })
+
+  test('localePath returns correct path', async () => {
+    page = await browser.newPage()
+    await page.goto(server.getUrl('/'))
+    const localePath = (...args) => page.evaluate(args => window.$nuxt.localePath(...args), args)
+    expect(await localePath('about')).toBe('/about-us')
+    expect(await localePath('about', 'fr')).toBe('/fr/a-propos')
+    expect(await localePath('/about-us')).toBe('/about-us')
+  })
+})
+
+describe(`${browserString} (generate, no subFolders, no trailingSlash)`, () => {
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+  /** @type {import('playwright-chromium').Page} */
+  let page
+  let server
+
+  beforeAll(async () => {
+    const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+    const overrides = {
+      generate: {
+        dir: distDir,
+        subFolders: false
+      },
+      router: {
+        trailingSlash: false
+      }
+    }
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+    server = await startHttpServer({ path: distDir, noTrailingSlashRedirect: true, verbose: true })
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (server) {
+      await server.destroy()
+    }
+    if (browser) {
+      await browser.close()
+    }
+  })
+
+  test('navigate to non-default locale', async () => {
+    page = await browser.newPage()
+    await page.goto(server.getUrl('/'))
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
+
+    await navigate(page, '/fr')
+    expect(await (await page.$('body')).textContent()).toContain('locale: fr')
+
+    await navigate(page, '/')
+    expect(await (await page.$('body')).textContent()).toContain('locale: en')
+  })
+
+  test('reactivity works after redirecting to detected browser locale (root path)', async () => {
+    page = await browser.newPage({ locale: 'fr' })
+    await page.goto(server.getUrl('/'))
+    expect(page.url()).toBe(server.getUrl('/fr'))
+    // Need to delay a bit due to vue-meta batching with 10ms timeout.
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Accueil')
+
+    await navigate(page, '/')
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Homepage')
+  })
+
+  test('reactivity works after redirecting to detected browser locale (sub-path)', async () => {
+    page = await browser.newPage({ locale: 'fr' })
+    await page.goto(server.getUrl('/dynamicNested'))
+    expect(page.url()).toBe(server.getUrl('/fr/imbrication-dynamique'))
+    // Need to delay a bit due to vue-meta batching with 10ms timeout.
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Dynamique')
+
+    await navigate(page, '/dynamicNested')
+    await page.waitForTimeout(20)
+    expect(await page.title()).toBe('Dynamic')
+  })
 })
 
 describe(`${browserString} (generate, prefix strategy)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
   let server
 
@@ -210,7 +297,7 @@ describe(`${browserString} (generate, prefix strategy)`, () => {
       }
     }
     await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
-    server = await startHttpServer(distDir, null, true)
+    server = await startHttpServer({ path: distDir, verbose: true })
     browser = await createBrowser()
   })
 
@@ -237,6 +324,7 @@ describe(`${browserString} (generate, prefix strategy)`, () => {
 describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
   let server
 
@@ -254,7 +342,7 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
 
     await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
 
-    server = await startHttpServer(distDir, null, true)
+    server = await startHttpServer({ path: distDir, verbose: true })
     browser = await createBrowser()
   })
 
@@ -279,6 +367,7 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
   test('redirects to browser locale', async () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
+    // Trailing slash added by the server.
     expect(page.url()).toBe(server.getUrl('/fr/'))
     expect(await (await page.$('body')).textContent()).toContain('locale: fr')
   })
@@ -288,6 +377,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
 
   beforeAll(async () => {
@@ -352,6 +442,7 @@ describe(`${browserString} (SPA)`, () => {
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
 
   beforeAll(async () => {
@@ -396,6 +487,7 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
+  /** @type {import('playwright-chromium').Page} */
   let page
 
   beforeAll(async () => {

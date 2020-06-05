@@ -9,6 +9,7 @@ import {
   routesNameSeparator,
   STRATEGIES,
   strategy,
+  trailingSlash,
   vuex
 } from './options'
 
@@ -65,8 +66,8 @@ function localeRoute (route, locale) {
         // no prefix for different domains
         !i18n.differentDomains
 
-    const path = (isPrefixed ? `/${locale}${route.path}` : route.path)
-
+    let path = (isPrefixed ? `/${locale}${route.path}` : route.path)
+    path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
     localizedRoute.path = path
   } else {
     if (!route.name && !route.path) {
