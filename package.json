@@ -98,7 +98,7 @@
     "@nuxtjs/module-test-utils": "1.6.1",
     "@release-it/conventional-changelog": "1.1.4",
     "@types/argparse": "1.0.38",
-    "@types/jest": "25.2.3",
+    "@types/jest": "26.0.0",
     "@types/jest-dev-server": "4.2.0",
     "argparse": "1.0.10",
     "babel-core": "7.0.0-bridge.0",
