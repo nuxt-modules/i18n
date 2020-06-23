@@ -587,7 +587,7 @@ describe('with empty configuration', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = (await setup(loadConfig(__dirname, 'basic', { i18n: {} }))).nuxt
+    nuxt = (await setup(loadConfig(__dirname, 'no-i18n', { i18n: {} }))).nuxt
   })
 
   afterAll(async () => {
@@ -595,7 +595,7 @@ describe('with empty configuration', () => {
   })
 
   test('does not remove all routes', async () => {
-    await nuxt.renderAndGetWindow(url('/fallback'))
+    await nuxt.renderAndGetWindow(url('/about'))
   })
 })
 
