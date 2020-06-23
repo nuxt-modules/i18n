@@ -1342,10 +1342,10 @@
     rc9 "^1.0.0"
     std-env "^2.2.1"
 
-"@nuxt/types@0.7.9":
-  version "0.7.9"
-  resolved "https://registry.yarnpkg.com/@nuxt/types/-/types-0.7.9.tgz#a6bc6911672a812063cbb17726304cb536f58a3d"
-  integrity sha512-AsKj+iVV+XlCKKdpfYuLjUCUUNgL+7SzaQPp6/Z6WMqndIXegVMXn2Iu9Ixo+Qd7Y4U1Cvy4e3LYHMj0QNH+Lg==
+"@nuxt/types@2.13.0":
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/types/-/types-2.13.0.tgz#347c77d25cf71f0ffdfccef6cce4ccca09de87f6"
+  integrity sha512-IhIMQjq8J1BPJz9H47fNBL1M9kX5jiELZm7mT4cjg25e+Bb79cvSO5GEwuuq8RSLAh7sNSSo+83YfuubwjlhjQ==
   dependencies:
     "@types/autoprefixer" "^9.7.2"
     "@types/babel__core" "^7.1.8"
@@ -1360,7 +1360,7 @@
     "@types/optimize-css-assets-webpack-plugin" "^5.0.1"
     "@types/pug" "^2.0.4"
     "@types/serve-static" "^1.13.4"
-    "@types/terser-webpack-plugin" "^2.2.1"
+    "@types/terser-webpack-plugin" "^2.2.0"
     "@types/webpack" "^4.41.17"
     "@types/webpack-bundle-analyzer" "^3.8.0"
     "@types/webpack-dev-middleware" "^3.7.1"
@@ -2016,7 +2016,7 @@
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.6.tgz#a9ca4b70a18b270ccb2bc0aaafefd1d486b7ea74"
   integrity sha512-W+bw9ds02rAQaMvaLYxAbJ6cvguW/iJXNT6lTssS1ps6QdrMKttqEAMEG/b5CR8TZl3/L7/lH0ZV5nNR1LXikA==
 
-"@types/terser-webpack-plugin@^2.2.0", "@types/terser-webpack-plugin@^2.2.1":
+"@types/terser-webpack-plugin@^2.2.0":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@types/terser-webpack-plugin/-/terser-webpack-plugin-2.2.1.tgz#d6687ed29026532764b031209a5d6dc6d44b33f2"
   integrity sha512-Z/6t/7qz4LeO64owJ9x7JQ6X791qfLxp1M1eCp6hFQlj7xuB5+Ol7DpEn5kWClTARZ7GlPLRsEWzFzQjZShF6w==
