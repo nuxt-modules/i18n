@@ -626,6 +626,17 @@ describe('with rootRedirect (string)', () => {
     expect(response.statusCode).toBe(302)
     expect(response.headers.location).toBe('/fr')
   })
+
+  test('root route redirects to /fr and preserves query', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/?q=1', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/fr?q=1')
+  })
 })
 
 describe('with rootRedirect (object)', () => {
