@@ -8,8 +8,9 @@ middleware.nuxti18n = async (context) => {
     return
   }
 
-  const [status, redirectPath] = await app.i18n.__onNavigate(context.route)
+  const [status, redirectPath, preserveQuery] = await app.i18n.__onNavigate(context.route)
   if (status && redirectPath) {
-    context.redirect(status, redirectPath)
+    const query = preserveQuery ? context.route.query : undefined
+    context.redirect(status, redirectPath, query)
   }
 }

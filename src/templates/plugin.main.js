@@ -171,7 +171,7 @@ export default async (context) => {
         path = rootRedirect.path
       }
 
-      return [statusCode, `/${path}`]
+      return [statusCode, `/${path}`, /* preserve query */true]
     }
 
     const storedRedirect = app.i18n.__redirect
@@ -247,7 +247,7 @@ export default async (context) => {
   await loadAndSetLocale(finalLocale, { initialSetup: true })
 
   if (process.client && process.static && IS_UNIVERSAL_MODE) {
-    const redirectTo = (await onNavigate(context.route))[1]
+    const [_, redirectTo] = await onNavigate(context.route)
     if (redirectTo) {
       location.assign(redirectTo)
     }
