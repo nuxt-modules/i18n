@@ -506,3 +506,39 @@ describe(`${browserString} (vuex disabled)`, () => {
     expect(await (await page2.$('body')).textContent()).toContain('locale: fr')
   })
 })
+
+describe(`${browserString} (route overrides)`, () => {
+  let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+
+  beforeAll(async () => {
+    const overrides = {
+      i18n: {
+        vuex: false,
+        detectBrowserLanguage: {
+          useCookie: false,
+          alwaysRedirect: false,
+          routeOverride: true
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+    await nuxt.close()
+  })
+
+  test('open requested page overriding detected locale with one from route ', async () => {
+    const page = await browser.newPage()
+    await page.goto(url('/fr/a-propos'))
+
+    expect(await (await page.$('body')).textContent()).toContain('page: À propos')
+  })
+})

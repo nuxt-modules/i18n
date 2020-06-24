@@ -126,17 +126,19 @@ export default async (context) => {
     return redirectPath
   }
 
-  const doDetectBrowserLanguage = () => {
+  const doDetectBrowserLanguage = (routeLocale) => {
     // Browser detection is ignored if it is a nuxt generate.
     if (process.static && process.server) {
       return false
     }
 
-    const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
+    const { alwaysRedirect, fallbackLocale, routeOverride } = detectBrowserLanguage
 
     let matchedLocale
 
-    if (useCookie && (matchedLocale = app.i18n.getLocaleCookie())) {
+    if (routeOverride && routeLocale) {
+      matchedLocale = routeLocale
+    } else if (useCookie && (matchedLocale = app.i18n.getLocaleCookie())) {
       // Get preferred language from cookie if present and enabled
     } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
       // Get browser language either from navigator if running on client side, or from the headers
@@ -182,9 +184,11 @@ export default async (context) => {
 
     app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
 
+    const routePath = getLocaleFromRoute(route)
+
     const finalLocale =
-      (detectBrowserLanguage && doDetectBrowserLanguage()) ||
-      getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
+      (detectBrowserLanguage && doDetectBrowserLanguage(routePath)) ||
+      routePath || app.i18n.locale || app.i18n.defaultLocale || ''
 
     await app.i18n.setLocale(finalLocale)
 
@@ -242,7 +246,9 @@ export default async (context) => {
     finalLocale = app.i18n.getLocaleCookie() || finalLocale
   }
 
-  const detectedBrowserLocale = detectBrowserLanguage && doDetectBrowserLanguage()
+  const { routeOverride } = detectBrowserLanguage
+  const routeLocale = routeOverride ? getLocaleFromRoute(route) : false
+  const detectedBrowserLocale = detectBrowserLanguage && doDetectBrowserLanguage(routeLocale)
   finalLocale = detectedBrowserLocale || finalLocale
   await loadAndSetLocale(finalLocale, { initialSetup: true })
 
