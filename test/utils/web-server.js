@@ -6,11 +6,12 @@ import { setup as setupDevServer, teardown as teardownDevServer } from 'jest-dev
  * Creates a static web server in a separate process.
  */
 class StaticServer {
-  constructor (path, port, verbose) {
-    this.path = path
+  constructor (options) {
+    this.path = options.path
     this.url = ''
-    this.port = port || null
-    this.verbose = verbose
+    this.port = options.port || null
+    this.noTrailingSlashRedirect = options.noTrailingSlashRedirect || false
+    this.verbose = options.verbose
   }
 
   getUrl (path) {
@@ -25,9 +26,23 @@ class StaticServer {
     this.url = `http://localhost:${this.port}`
 
     const serverPath = resolve(__dirname, 'http-server-internal.js')
+    const args = [
+      `node -r esm ${serverPath}`,
+      '--',
+      this.path,
+      `--port ${this.port}`
+    ]
+
+    if (this.verbose) {
+      args.push('--verbose')
+    }
+
+    if (this.noTrailingSlashRedirect) {
+      args.push('--no-trailing-slash-redirect')
+    }
 
     await setupDevServer({
-      command: `node -r esm ${serverPath} -- ${this.path} --port ${this.port} ${this.verbose ? '--verbose' : ''}`,
+      command: args.join(' '),
       port: this.port
     })
   }
@@ -40,14 +55,16 @@ class StaticServer {
 /**
  * Starts a server.
  *
- * @param {string} path
- * @param {number} [port]
- * @param {boolean} [verbose]
+ * @param {object} options
+ * @param {string} options.path
+ * @param {number} [options.port]
+ * @param {boolean} [options.noTrailingSlashRedirect]
+ * @param {boolean} [options.verbose]
  *
  * @return {Promise<StaticServer>} The URL of the started server
  */
-export default async function startHttpServer (path, port, verbose) {
-  const server = new StaticServer(path, port, verbose)
+export default async function startHttpServer (options) {
+  const server = new StaticServer(options)
   await server.start()
   return server
 }

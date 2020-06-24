@@ -36,6 +36,7 @@ module.exports = function (userOptions) {
   }
 
   const localeCodes = getLocaleCodes(options.locales)
+  const { trailingSlash } = this.options.router
 
   const templatesOptions = {
     ...options,
@@ -47,15 +48,14 @@ module.exports = function (userOptions) {
     LOCALE_FILE_KEY,
     STRATEGIES,
     COMPONENT_OPTIONS_KEY,
-    localeCodes
+    localeCodes,
+    trailingSlash
   }
 
-  // Generate localized routes
   const pagesDir = this.options.dir && this.options.dir.pages ? this.options.dir.pages : 'pages'
 
   if (options.strategy !== STRATEGIES.NO_PREFIX) {
     if (localeCodes.length) {
-      const { trailingSlash } = this.options.router
       let isNuxtGenerate = false
       const extendRoutes = routes => {
         // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to

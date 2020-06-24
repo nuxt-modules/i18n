@@ -10,6 +10,11 @@ export default {
     paths: {
       fr: '/imbrication-dynamique'
     }
+  },
+  head () {
+    return {
+      title: this.$t('dynamic')
+    }
   }
 }
 </script>
