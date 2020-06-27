@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { RawLocation, Route } from 'vue-router'
+import { Location, RawLocation, Route } from 'vue-router'
 import VueI18n, { IVueI18n } from 'vue-i18n'
 import { NuxtI18nComponentOptions, NuxtVueI18n, NuxtI18nSeo } from './nuxt-i18n'
 
@@ -22,7 +22,7 @@ declare module 'vue-i18n' {
 declare module 'vue/types/vue' {
   interface Vue {
     localePath(route: RawLocation, locale?: string): string
-    localeRoute(route: RawLocation, locale?: string): Route | undefined
+    localeRoute(route: RawLocation, locale?: string): Location | undefined
     switchLocalePath(locale: string): string
     getRouteBaseName(route?: Route): string
     $nuxtI18nSeo(): NuxtI18nSeo

@@ -57,9 +57,9 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
   - **Arguments**:
     - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
     - locale (type: `string`, default: current locale)
-  - **Returns**: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135) | `undefined`
+  - **Returns**: [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125) | `undefined`
 
-  Returns localized route for passed in `route`. If `locale` is not specified, uses current locale.
+  Returns localized location for passed in `route`. If `locale` is not specified, uses current locale.
 
   See also [Basic usage - nuxt-link](../basic-usage.html#nuxt-link).
 
