@@ -16,6 +16,8 @@ By default, **nuxt-i18n** attempts to redirect users to their preferred language
 
 ::: tip
 Browser language is detected either from `navigator` when running on client side, or from the `accept-language` HTTP header. Configured `locales` (or locales `code`s when locales are specified in object form) are matched against locales reported by the browser (for example `en-US,en;q=0.9,no;q=0.8`). If there is no exact match, the language code (letters before `-`) are matched against configured locales (for backwards compatibility).
+
+Keep in mind that for all strategies except `no_prefix` locale might be detected from route path when requested on client side.
 :::
 
 To prevent redirecting users every time they visit the app, **nuxt-i18n** sets a cookie after the first redirection. You can change the cookie's name by setting `detectBrowserLanguage.cookieKey` option to whatever you'd like, the default is _i18n_redirected_.

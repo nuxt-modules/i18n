@@ -136,7 +136,9 @@ export default async (context) => {
 
     let matchedLocale
 
-    if (useCookie && (matchedLocale = app.i18n.getLocaleCookie())) {
+    if (strategy !== STRATEGIES.NO_PREFIX && (matchedLocale = getLocaleFromRoute(route)) && route.path !== '/') {
+      // Get preferred language from locale route
+    } else if (useCookie && (matchedLocale = app.i18n.getLocaleCookie())) {
       // Get preferred language from cookie if present and enabled
     } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
       // Get browser language either from navigator if running on client side, or from the headers
@@ -149,7 +151,13 @@ export default async (context) => {
 
     // Handle cookie option to prevent multiple redirections
     if (finalLocale && (!useCookie || alwaysRedirect || !app.i18n.getLocaleCookie())) {
-      if (finalLocale !== app.i18n.locale) {
+      if (strategy !== STRATEGIES.NO_PREFIX && route.path !== '/') {
+        if (useCookie) {
+          app.i18n.setLocaleCookie(finalLocale)
+        } else {
+          return finalLocale
+        }
+      } else if (finalLocale !== app.i18n.locale) {
         return finalLocale
       } else if (useCookie && !app.i18n.getLocaleCookie()) {
         app.i18n.setLocaleCookie(finalLocale)

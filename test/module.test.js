@@ -716,6 +716,17 @@ describe('prefix_and_default strategy', () => {
     const links = dom.querySelectorAll('head link[rel="canonical"]')
     expect(links.length).toBe(0)
   })
+
+  test('default locale from locale path with en locale cookie', async () => {
+    const requestOptions = {
+      headers: {
+        Cookie: 'i18n_redirected=en'
+      }
+    }
+    const html = await get('/fr', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
+  })
 })
 
 describe('no_prefix strategy', () => {
