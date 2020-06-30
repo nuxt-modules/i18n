@@ -126,6 +126,38 @@ export default async (context) => {
     return redirectPath
   }
 
+  // Called by middleware on navigation (also on the initial one).
+  const onNavigate = async route => {
+    // Handle root path redirect
+    if (route.path === '/' && rootRedirect) {
+      let statusCode = 302
+      let path = rootRedirect
+
+      if (typeof rootRedirect !== 'string') {
+        statusCode = rootRedirect.statusCode
+        path = rootRedirect.path
+      }
+
+      return [statusCode, `/${path}`, /* preserve query */true]
+    }
+
+    const storedRedirect = app.i18n.__redirect
+    if (storedRedirect) {
+      app.i18n.__redirect = null
+      return [302, storedRedirect]
+    }
+
+    app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
+
+    const finalLocale =
+      (detectBrowserLanguage && doDetectBrowserLanguage()) ||
+      getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
+
+    await app.i18n.setLocale(finalLocale)
+
+    return [null, null]
+  }
+
   const doDetectBrowserLanguage = () => {
     // Browser detection is ignored if it is a nuxt generate.
     if (process.static && process.server) {
@@ -157,38 +189,6 @@ export default async (context) => {
     }
 
     return false
-  }
-
-  // Called by middleware on navigation (also on the initial one).
-  const onNavigate = async route => {
-    // Handle root path redirect
-    if (route.path === '/' && rootRedirect) {
-      let statusCode = 302
-      let path = rootRedirect
-
-      if (typeof rootRedirect !== 'string') {
-        statusCode = rootRedirect.statusCode
-        path = rootRedirect.path
-      }
-
-      return [statusCode, `/${path}`, /* preserve query */true]
-    }
-
-    const storedRedirect = app.i18n.__redirect
-    if (storedRedirect) {
-      app.i18n.__redirect = null
-      return [302, storedRedirect]
-    }
-
-    app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
-
-    const finalLocale =
-      (detectBrowserLanguage && doDetectBrowserLanguage()) ||
-      getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
-
-    await app.i18n.setLocale(finalLocale)
-
-    return [null, null]
   }
 
   const extendVueI18nInstance = i18n => {
@@ -227,23 +227,27 @@ export default async (context) => {
     }
   }
 
-  let finalLocale = app.i18n.defaultLocale || ''
+  let finalLocale = detectBrowserLanguage && doDetectBrowserLanguage()
 
-  if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
-    finalLocale = store.state[vuex.moduleName].locale
-  } else if (app.i18n.differentDomains) {
-    const options = { localDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY }
-    const domainLocale = getLocaleDomain(locales, req, options)
-    finalLocale = domainLocale || finalLocale
-  } else if (strategy !== STRATEGIES.NO_PREFIX) {
-    const routeLocale = getLocaleFromRoute(route)
-    finalLocale = routeLocale || finalLocale
-  } else if (useCookie) {
-    finalLocale = app.i18n.getLocaleCookie() || finalLocale
+  if (!finalLocale) {
+    if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
+      finalLocale = store.state[vuex.moduleName].locale
+    } else if (app.i18n.differentDomains) {
+      const options = { localDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY }
+      const domainLocale = getLocaleDomain(locales, req, options)
+      finalLocale = domainLocale
+    } else if (strategy !== STRATEGIES.NO_PREFIX) {
+      const routeLocale = getLocaleFromRoute(route)
+      finalLocale = routeLocale
+    } else if (useCookie) {
+      finalLocale = app.i18n.getLocaleCookie()
+    }
   }
 
-  const detectedBrowserLocale = detectBrowserLanguage && doDetectBrowserLanguage()
-  finalLocale = detectedBrowserLocale || finalLocale
+  if (!finalLocale) {
+    finalLocale = app.i18n.defaultLocale || ''
+  }
+
   await loadAndSetLocale(finalLocale, { initialSetup: true })
 
   if (process.client && process.static && IS_UNIVERSAL_MODE) {

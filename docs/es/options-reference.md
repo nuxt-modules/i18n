@@ -81,7 +81,8 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
 
   // Set this to true if you're using different domains for each language
   // If enabled, no prefix is added to your routes and you MUST configure locales
-  // as an array of objects, each containing a domain key
+  // as an array of objects, each containing a domain key.
+  // Refer to the "Different domains" section in the documentation for more information.
   differentDomains: false,
 
   // If true, SEO metadata is generated for routes that have i18n enabled.
