@@ -6,7 +6,13 @@ const traverse = require('@babel/traverse').default
 const compiler = require('vue-template-compiler')
 const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
 
-exports.extractComponentOptions = (path) => {
+/**
+ * Extracts nuxtI18n component options for given component file path.
+ *
+ * @param {string} path The path to the component file
+ * @return {Record<string, any>}
+ */
+exports.extractComponentOptions = path => {
   let componentOptions = {}
   const Component = compiler.parseComponent(readFileSync(path).toString())
   if (!Component.script || Component.script.content.length < 1) {

@@ -2,10 +2,19 @@ import { resolve } from 'path'
 import getPort from 'get-port'
 import { setup as setupDevServer, teardown as teardownDevServer } from 'jest-dev-server'
 
+/** @typedef {{
+ *   path: string
+ *   port?: number
+ *   noTrailingSlashRedirect?: boolean
+ *   verbose?: boolean
+ * }} ServerOptions
+ */
+
 /**
  * Creates a static web server in a separate process.
  */
-class StaticServer {
+export class StaticServer {
+  /** @param {ServerOptions} options */
   constructor (options) {
     this.path = options.path
     this.url = ''
@@ -14,6 +23,7 @@ class StaticServer {
     this.verbose = options.verbose
   }
 
+  /** @param {string} path */
   getUrl (path) {
     return `${this.url}${path}`
   }
@@ -55,15 +65,11 @@ class StaticServer {
 /**
  * Starts a server.
  *
- * @param {object} options
- * @param {string} options.path
- * @param {number} [options.port]
- * @param {boolean} [options.noTrailingSlashRedirect]
- * @param {boolean} [options.verbose]
+ * @param {ServerOptions} options
  *
  * @return {Promise<StaticServer>} The URL of the started server
  */
-export default async function startHttpServer (options) {
+export async function startHttpServer (options) {
   const server = new StaticServer(options)
   await server.start()
   return server

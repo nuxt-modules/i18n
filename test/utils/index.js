@@ -1,4 +1,4 @@
 import getSeoTags from './get-seo-tags'
-import startHttpServer from './web-server'
+import { startHttpServer, StaticServer } from './web-server'
 
-export { getSeoTags, startHttpServer }
+export { getSeoTags, startHttpServer, StaticServer }

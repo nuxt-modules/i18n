@@ -4,21 +4,28 @@ import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils
 import { JSDOM } from 'jsdom'
 import { getSeoTags } from './utils'
 
+/** @typedef {any} Nuxt */
+
+/** @param {string} html */
 const getDom = html => (new JSDOM(html)).window.document
 
 const TRAILING_SLASHES = [undefined, false, true]
 
 for (const trailingSlash of TRAILING_SLASHES) {
   describe(`basic (trailingSlash is "${trailingSlash}")`, () => {
+    /** @type {Nuxt} */
     let nuxt
 
+    /** @param {string} path */
     const pathRespectingTrailingSlash = path => {
       return path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
     }
 
-    const getRespectingTrailingSlash = async path => await get(pathRespectingTrailingSlash(path))
+    /** @type {get} */
+    const getRespectingTrailingSlash = async (path, options) => await get(pathRespectingTrailingSlash(path), options)
 
     beforeAll(async () => {
+      /** @type {import('@nuxt/types').NuxtConfig} */
       const overrides = {
         router: {
           trailingSlash,
@@ -79,75 +86,75 @@ for (const trailingSlash of TRAILING_SLASHES) {
     test('/ contains EN text, link to /fr/ & link /about-us', async () => {
       const html = await getRespectingTrailingSlash('/')
       const dom = getDom(html)
-      expect(dom.querySelector('#current-page').textContent).toBe('page: Homepage')
+      expect(dom.querySelector('#current-page')?.textContent).toBe('page: Homepage')
 
       const langSwitcher = dom.querySelector('#lang-switcher')
       expect(langSwitcher).not.toBeNull()
-      expect(langSwitcher.children.length).toBe(1)
-      expect(langSwitcher.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr'))
-      expect(langSwitcher.children[0].textContent).toBe('Français')
+      expect(langSwitcher?.children.length).toBe(1)
+      expect(langSwitcher?.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr'))
+      expect(langSwitcher?.children[0].textContent).toBe('Français')
 
       const aboutLink = dom.querySelector('#link-about')
       expect(aboutLink).not.toBeNull()
-      expect(aboutLink.getAttribute('href')).toBe(pathRespectingTrailingSlash('/about-us'))
-      expect(aboutLink.textContent).toBe('About us')
+      expect(aboutLink?.getAttribute('href')).toBe(pathRespectingTrailingSlash('/about-us'))
+      expect(aboutLink?.textContent).toBe('About us')
     })
 
     test('/fr contains FR text, link to / & link to /fr/a-propos', async () => {
       const html = await getRespectingTrailingSlash('/fr')
       const dom = getDom(html)
-      expect(dom.querySelector('#current-page').textContent).toBe('page: Accueil')
+      expect(dom.querySelector('#current-page')?.textContent).toBe('page: Accueil')
 
       const langSwitcher = dom.querySelector('#lang-switcher')
       expect(langSwitcher).not.toBeNull()
-      expect(langSwitcher.children.length).toBe(1)
-      expect(langSwitcher.children[0].getAttribute('href')).toBe('/')
-      expect(langSwitcher.children[0].textContent).toBe('English')
+      expect(langSwitcher?.children.length).toBe(1)
+      expect(langSwitcher?.children[0].getAttribute('href')).toBe('/')
+      expect(langSwitcher?.children[0].textContent).toBe('English')
 
       const aboutLink = dom.querySelector('#link-about')
       expect(aboutLink).not.toBeNull()
-      expect(aboutLink.getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr/a-propos'))
-      expect(aboutLink.textContent).toBe('À propos')
+      expect(aboutLink?.getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr/a-propos'))
+      expect(aboutLink?.textContent).toBe('À propos')
     })
 
     test('/about-us contains EN text, link to /fr/a-propos & link /', async () => {
       const html = await getRespectingTrailingSlash('/about-us')
       const dom = getDom(html)
-      expect(dom.querySelector('#current-page').textContent).toBe('page: About us')
+      expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
 
       const langSwitcher = dom.querySelector('#lang-switcher')
       expect(langSwitcher).not.toBeNull()
-      expect(langSwitcher.children.length).toBe(1)
-      expect(langSwitcher.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr/a-propos'))
-      expect(langSwitcher.children[0].textContent).toBe('Français')
+      expect(langSwitcher?.children.length).toBe(1)
+      expect(langSwitcher?.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr/a-propos'))
+      expect(langSwitcher?.children[0].textContent).toBe('Français')
 
       const homeLink = dom.querySelector('#link-home')
       expect(homeLink).not.toBeNull()
-      expect(homeLink.getAttribute('href')).toBe('/')
-      expect(homeLink.textContent).toBe('Homepage')
+      expect(homeLink?.getAttribute('href')).toBe('/')
+      expect(homeLink?.textContent).toBe('Homepage')
     })
 
     test('/fr/a-propos contains FR text, link to /about-us & link to /fr/', async () => {
       const html = await getRespectingTrailingSlash('/fr/a-propos')
       const dom = getDom(html)
-      expect(dom.querySelector('#current-page').textContent).toBe('page: À propos')
+      expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
 
       const langSwitcher = dom.querySelector('#lang-switcher')
       expect(langSwitcher).not.toBeNull()
-      expect(langSwitcher.children.length).toBe(1)
-      expect(langSwitcher.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/about-us'))
-      expect(langSwitcher.children[0].textContent).toBe('English')
+      expect(langSwitcher?.children.length).toBe(1)
+      expect(langSwitcher?.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/about-us'))
+      expect(langSwitcher?.children[0].textContent).toBe('English')
 
       const homeLink = dom.querySelector('#link-home')
       expect(homeLink).not.toBeNull()
-      expect(homeLink.getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr'))
-      expect(homeLink.textContent).toBe('Accueil')
+      expect(homeLink?.getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr'))
+      expect(homeLink?.textContent).toBe('Accueil')
     })
 
     test('/fr/notlocalized contains FR text', async () => {
       const html = await getRespectingTrailingSlash('/fr/notlocalized')
       const dom = getDom(html)
-      expect(dom.querySelector('main').textContent).toBe('FR only')
+      expect(dom.querySelector('main')?.textContent).toBe('FR only')
     })
 
     test('/notlocalized & /fr/fr/notlocalized return 404', async () => {
@@ -163,10 +170,15 @@ for (const trailingSlash of TRAILING_SLASHES) {
     })
 
     describe('posts', () => {
+      /** @type {string} */
       let html
+      /** @type {HTMLHeadingElement | null} */
       let title
+      /** @type {HTMLAnchorElement | null} */
       let langSwitcherLink
+      /** @type {HTMLAnchorElement | null} */
       let link
+
       const getElements = () => {
         const dom = getDom(html)
         title = dom.querySelector('h1')
@@ -177,41 +189,41 @@ for (const trailingSlash of TRAILING_SLASHES) {
       test('/posts contains EN text, link to /fr/articles/ & link to /posts/my-post', async () => {
         html = await getRespectingTrailingSlash('/posts')
         getElements()
-        expect(title.textContent).toBe('Posts')
-        expect(langSwitcherLink.href).toBe('/fr/articles/')
+        expect(title?.textContent).toBe('Posts')
+        expect(langSwitcherLink?.href).toBe('/fr/articles/')
         if (trailingSlash === false) {
           expect(link).toBeNull()
         } else {
-          expect(link.href).toBe(pathRespectingTrailingSlash('/posts/my-post'))
+          expect(link?.href).toBe(pathRespectingTrailingSlash('/posts/my-post'))
         }
       })
 
       test('/posts/my-post contains EN text, link to /fr/articles/mon-article & link to /posts/', async () => {
         html = await getRespectingTrailingSlash('/posts/my-post')
         getElements()
-        expect(title.textContent).toBe('Posts')
-        expect(langSwitcherLink.href).toBe(pathRespectingTrailingSlash('/fr/articles/mon-article'))
-        expect(link.href).toBe('/posts/')
+        expect(title?.textContent).toBe('Posts')
+        expect(langSwitcherLink?.href).toBe(pathRespectingTrailingSlash('/fr/articles/mon-article'))
+        expect(link?.href).toBe('/posts/')
       })
 
       test('/fr/articles contains FR text, link to /posts/ & link to /fr/articles/mon-article', async () => {
         html = await getRespectingTrailingSlash('/fr/articles')
         getElements()
-        expect(title.textContent).toBe('Articles')
-        expect(langSwitcherLink.href).toBe('/posts/')
+        expect(title?.textContent).toBe('Articles')
+        expect(langSwitcherLink?.href).toBe('/posts/')
         if (trailingSlash === false) {
           expect(link).toBeNull()
         } else {
-          expect(link.href).toBe(pathRespectingTrailingSlash('/fr/articles/mon-article'))
+          expect(link?.href).toBe(pathRespectingTrailingSlash('/fr/articles/mon-article'))
         }
       })
 
       test('/fr/articles/mon-article contains FR text, link to /posts/my-post & link to /fr/articles/', async () => {
         html = await getRespectingTrailingSlash('/fr/articles/mon-article')
         getElements()
-        expect(title.textContent).toBe('Articles')
-        expect(langSwitcherLink.href).toBe(pathRespectingTrailingSlash('/posts/my-post'))
-        expect(link.href).toBe('/fr/articles/')
+        expect(title?.textContent).toBe('Articles')
+        expect(langSwitcherLink?.href).toBe(pathRespectingTrailingSlash('/posts/my-post'))
+        expect(link?.href).toBe('/fr/articles/')
       })
     })
 
@@ -274,29 +286,29 @@ for (const trailingSlash of TRAILING_SLASHES) {
     test('/dynamicNested/1/2/3 contains link to /fr/imbrication-dynamique/1/2/3', async () => {
       const html = await getRespectingTrailingSlash('/dynamicNested/1/2/3')
       const dom = getDom(html)
-      expect(dom.querySelector('h1').textContent).toBe('Category 1')
-      expect(dom.querySelector('h2').textContent).toBe('Subcategory 2')
-      expect(dom.querySelector('h3').textContent).toBe('Post 3')
+      expect(dom.querySelector('h1')?.textContent).toBe('Category 1')
+      expect(dom.querySelector('h2')?.textContent).toBe('Subcategory 2')
+      expect(dom.querySelector('h3')?.textContent).toBe('Post 3')
 
       const langSwitcher = dom.querySelector('#lang-switcher')
       expect(langSwitcher).not.toBeNull()
-      expect(langSwitcher.children.length).toBe(1)
-      expect(langSwitcher.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr/imbrication-dynamique/1/2/3'))
-      expect(langSwitcher.children[0].textContent).toBe('Français')
+      expect(langSwitcher?.children.length).toBe(1)
+      expect(langSwitcher?.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/fr/imbrication-dynamique/1/2/3'))
+      expect(langSwitcher?.children[0].textContent).toBe('Français')
     })
 
     test('/fr/imbrication-dynamique/1/2/3 contains link to /dynamicNested/1/2/3', async () => {
       const html = await getRespectingTrailingSlash('/fr/imbrication-dynamique/1/2/3')
       const dom = getDom(html)
-      expect(dom.querySelector('h1').textContent).toBe('Category 1')
-      expect(dom.querySelector('h2').textContent).toBe('Subcategory 2')
-      expect(dom.querySelector('h3').textContent).toBe('Post 3')
+      expect(dom.querySelector('h1')?.textContent).toBe('Category 1')
+      expect(dom.querySelector('h2')?.textContent).toBe('Subcategory 2')
+      expect(dom.querySelector('h3')?.textContent).toBe('Post 3')
 
       const langSwitcher = dom.querySelector('#lang-switcher')
       expect(langSwitcher).not.toBeNull()
-      expect(langSwitcher.children.length).toBe(1)
-      expect(langSwitcher.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/dynamicNested/1/2/3'))
-      expect(langSwitcher.children[0].textContent).toBe('English')
+      expect(langSwitcher?.children.length).toBe(1)
+      expect(langSwitcher?.children[0].getAttribute('href')).toBe(pathRespectingTrailingSlash('/dynamicNested/1/2/3'))
+      expect(langSwitcher?.children[0].textContent).toBe('English')
     })
 
     test('localePath returns correct path', async () => {
@@ -320,9 +332,11 @@ for (const trailingSlash of TRAILING_SLASHES) {
 
     test('getRouteBaseName returns name of passed in route', async () => {
       const window = await nuxt.renderAndGetWindow(url('/'))
-      const aboutRoute = window.$nuxt.$router.options.routes.find(route => route.path === pathRespectingTrailingSlash('/about-us'))
+      /** @type {import('vue-router').RouterOptions} */
+      const routerOptions = window.$nuxt.$router.options
+      const aboutRoute = routerOptions.routes?.find(route => route.path === pathRespectingTrailingSlash('/about-us'))
       expect(aboutRoute).toBeDefined()
-      expect(aboutRoute.name).toBeDefined()
+      expect(aboutRoute?.name).toBeDefined()
       expect(window.$nuxt.getRouteBaseName(aboutRoute)).toBe('about')
     })
 
@@ -348,11 +362,12 @@ for (const trailingSlash of TRAILING_SLASHES) {
     test('localePath, switchLocalePath, getRouteBaseName, localeRoute works from a middleware', async () => {
       const html = await getRespectingTrailingSlash('/middleware')
       const dom = getDom(html)
-      expect(dom.querySelector('#paths').textContent).toBe(
+      expect(dom.querySelector('#paths')?.textContent).toBe(
         [pathRespectingTrailingSlash('/middleware'), pathRespectingTrailingSlash('/fr/middleware-fr')].join(',')
       )
-      expect(dom.querySelector('#name').textContent).toBe('middleware')
-      expect(JSON.parse(dom.querySelector('#localizedRoute').textContent)).toMatchObject({
+      expect(dom.querySelector('#name')?.textContent).toBe('middleware')
+      const routeObject = dom.querySelector('#localizedRoute')?.textContent || '{}'
+      expect(JSON.parse(routeObject)).toMatchObject({
         name: 'middleware___fr',
         fullPath: pathRespectingTrailingSlash('/fr/middleware-fr')
       })
@@ -372,34 +387,35 @@ for (const trailingSlash of TRAILING_SLASHES) {
       }
       const html = await getRespectingTrailingSlash('/', requestOptions)
       const dom = getDom(html)
-      expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
+      expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
     })
 
     test('registers message using vueI18nLoader', async () => {
       const html = await getRespectingTrailingSlash('/loader')
       const dom = getDom(html)
-      expect(dom.querySelector('#container').textContent).toBe('string from loader EN')
+      expect(dom.querySelector('#container')?.textContent).toBe('string from loader EN')
     })
 
     test('registers message using vueI18nLoader from yaml block', async () => {
       let html = await getRespectingTrailingSlash('/loader-yaml')
       let dom = getDom(html)
       let title = dom.querySelector('p')
-      expect(title.textContent).toBe('hello world!')
+      expect(title?.textContent).toBe('hello world!')
 
       html = await getRespectingTrailingSlash('/fr/loader-yaml')
       dom = getDom(html)
       title = dom.querySelector('p')
-      expect(title.textContent).toBe('Bonjour le monde!')
+      expect(title?.textContent).toBe('Bonjour le monde!')
     })
 
     test('can use nuxt-i18n extensions from component local i18n instance', async () => {
       const html = await getRespectingTrailingSlash('/loader-yaml')
       const dom = getDom(html)
       const title = dom.querySelector('p#title')
-      expect(title.textContent).toBe('hello world!')
+      expect(title?.textContent).toBe('hello world!')
       const locales = dom.querySelector('p#locales')
-      expect(JSON.parse(locales.textContent)).toMatchObject([
+      const localesContent = locales?.textContent || '{}'
+      expect(JSON.parse(localesContent)).toMatchObject([
         {
           code: 'en',
           iso: 'en',
@@ -416,6 +432,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
 }
 
 describe('hreflang', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -522,6 +539,7 @@ describe('hreflang', () => {
 })
 
 describe('lazy loading', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -565,25 +583,26 @@ describe('lazy loading', () => {
     const html = await get('/fr/fallback')
     const dom = getDom(html)
     const title = dom.querySelector('h1')
-    expect(title.textContent).toBe('in english')
+    expect(title?.textContent).toBe('in english')
   })
 
   test('loads strings from file exporting a function', async () => {
     const html = await get('/fr/simple')
     const dom = getDom(html)
     const container = dom.querySelector('#container')
-    expect(container.textContent).toBe('Accueil')
+    expect(container?.textContent).toBe('Accueil')
   })
 
   test('exported function gets passed locale to load', async () => {
     const html = await get('/fr/locale')
     const dom = getDom(html)
     const container = dom.querySelector('#t')
-    expect(container.textContent).toBe('fr')
+    expect(container?.textContent).toBe('fr')
   })
 })
 
 describe('with empty configuration', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -600,6 +619,7 @@ describe('with empty configuration', () => {
 })
 
 describe('with rootRedirect (string)', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -640,6 +660,7 @@ describe('with rootRedirect (string)', () => {
 })
 
 describe('with rootRedirect (object)', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -669,6 +690,7 @@ describe('with rootRedirect (object)', () => {
 })
 
 describe('prefix_and_default strategy', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -719,6 +741,7 @@ describe('prefix_and_default strategy', () => {
 })
 
 describe('no_prefix strategy', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -757,27 +780,27 @@ describe('no_prefix strategy', () => {
   test('/ contains EN text & link /about', async () => {
     const html = await get('/')
     const dom = getDom(html)
-    expect(dom.querySelector('#current-page').textContent).toBe('page: Homepage')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: Homepage')
 
     const currentLocale = dom.querySelector('#current-locale')
     expect(currentLocale).not.toBeNull()
-    expect(currentLocale.textContent).toBe('locale: en')
+    expect(currentLocale?.textContent).toBe('locale: en')
 
     const aboutLink = dom.querySelector('#link-about')
     expect(aboutLink).not.toBeNull()
-    expect(aboutLink.getAttribute('href')).toBe('/about')
-    expect(aboutLink.textContent).toBe('About us')
+    expect(aboutLink?.getAttribute('href')).toBe('/about')
+    expect(aboutLink?.textContent).toBe('About us')
   })
 
   test('/about contains EN text & link /', async () => {
     const html = await get('/about')
     const dom = getDom(html)
-    expect(dom.querySelector('#current-page').textContent).toBe('page: About us')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
 
     const homeLink = dom.querySelector('#link-home')
     expect(homeLink).not.toBeNull()
-    expect(homeLink.getAttribute('href')).toBe('/')
-    expect(homeLink.textContent).toBe('Homepage')
+    expect(homeLink?.getAttribute('href')).toBe('/')
+    expect(homeLink?.textContent).toBe('Homepage')
   })
 
   test('/fr/ returns 404', async () => {
@@ -816,12 +839,14 @@ describe('no_prefix strategy', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
   })
 })
 
 describe('no_prefix strategy + differentDomains', () => {
+  /** @type {Nuxt} */
   let nuxt
+  /** @type {jest.SpyInstance} */
   let spy
 
   beforeAll(() => {
@@ -849,7 +874,9 @@ describe('no_prefix strategy + differentDomains', () => {
 })
 
 describe('invalid strategy', () => {
+  /** @type {Nuxt} */
   let nuxt
+  /** @type {jest.SpyInstance} */
   let spy
 
   beforeAll(() => {
@@ -876,6 +903,7 @@ describe('invalid strategy', () => {
 })
 
 describe('dynamic route', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -889,15 +917,16 @@ describe('dynamic route', () => {
   test('can access catch-all route for every locale', async () => {
     let html = await get('/aaa')
     let dom = getDom(html)
-    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
 
     html = await get('/fr/aaa')
     dom = getDom(html)
-    expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
   })
 })
 
 describe('hash mode', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -922,6 +951,7 @@ describe('hash mode', () => {
 })
 
 describe('with router base', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -946,16 +976,23 @@ describe('with router base', () => {
 })
 
 describe('baseUrl', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
+    /** @type {import('@nuxt/types').NuxtConfig} */
     const override = {
       i18n: {
         strategy: 'prefix_and_default',
         baseUrl: (context) => {
           if (process.server) {
-            return context.req.headers['x-override-base-url']
+            const xOverrideBaseUrl = context.req.headers['x-override-base-url']
+            if (Array.isArray(xOverrideBaseUrl)) {
+              return xOverrideBaseUrl[0]
+            }
+            return xOverrideBaseUrl || ''
           }
+          return ''
         }
       }
     }
@@ -1018,6 +1055,7 @@ describe('baseUrl', () => {
 })
 
 describe('differentDomains enabled', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1061,7 +1099,7 @@ describe('differentDomains enabled', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
     expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
   })
 
@@ -1073,7 +1111,7 @@ describe('differentDomains enabled', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    expect(dom.querySelector('body').textContent).toContain('page: Accueil')
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
   })
 
   test('x-forwarded-host does not match locale\'s domain', async () => {
@@ -1085,7 +1123,7 @@ describe('differentDomains enabled', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     // Falls back to english.
-    expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
   })
 
   test('x-forwarded-host does match locale\'s domain (fr)', async () => {
@@ -1096,13 +1134,14 @@ describe('differentDomains enabled', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    expect(dom.querySelector('body').textContent).toContain('page: Accueil')
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
   })
 })
 
 // This is a special case due to vue-i18n defaulting to en-US for `defaultLocale`
 // and `fallbackLocale` which can prevent us from applying locale initially.
 describe('en-US locale with no explicit default locale (issue #628)', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1140,11 +1179,12 @@ describe('en-US locale with no explicit default locale (issue #628)', () => {
   test('prefix is present and locale is applied', async () => {
     const html = await get('/en-US')
     const dom = getDom(html)
-    await expect(dom.querySelector('body').textContent).toContain('page: Homepage')
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
   })
 })
 
 describe('external vue-i18n configuration', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1164,11 +1204,12 @@ describe('external vue-i18n configuration', () => {
   test('uses custom message formatter', async () => {
     const html = await get('/')
     const dom = getDom(html)
-    expect(dom.querySelector('#current-page').textContent).toBe('page: HOMEPAGE')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: HOMEPAGE')
   })
 })
 
 describe('parsePages disabled', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1207,6 +1248,7 @@ describe('parsePages disabled', () => {
 })
 
 describe('vuex disabled', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1224,12 +1266,13 @@ describe('vuex disabled', () => {
   })
 
   test('navigates to route with correct locale', async () => {
-    expect(getDom(await get('/')).querySelector('#current-locale').textContent).toBe('locale: en')
-    expect(getDom(await get('/fr')).querySelector('#current-locale').textContent).toBe('locale: fr')
+    expect(getDom(await get('/')).querySelector('#current-locale')?.textContent).toBe('locale: en')
+    expect(getDom(await get('/fr')).querySelector('#current-locale')?.textContent).toBe('locale: fr')
   })
 })
 
 describe('no_prefix + detectBrowserLanguage + alwaysRedirect', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1257,11 +1300,12 @@ describe('no_prefix + detectBrowserLanguage + alwaysRedirect', () => {
     }
     const html = await get('/', requestOptions)
     const dom = getDom(html)
-    expect(dom.querySelector('#current-locale').textContent).toBe('locale: en')
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
   })
 })
 
 describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   beforeAll(async () => {
@@ -1286,7 +1330,7 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
   test('redirects to defaultLocale on navigating to root (non-existant) route', async () => {
     const html = await get('/')
     const dom = getDom(html)
-    expect(dom.querySelector('#current-locale').textContent).toBe('locale: fr')
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
   })
 })
 
@@ -1294,6 +1338,7 @@ describe('generate with detectBrowserLanguage.fallbackLocale', () => {
   const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
 
   beforeAll(async () => {
+    /** @type {import('@nuxt/types').NuxtConfig} */
     const overrides = {
       generate: { dir: distDir },
       i18n: {
@@ -1313,11 +1358,11 @@ describe('generate with detectBrowserLanguage.fallbackLocale', () => {
     contents = readFileSync(resolve(distDir, 'index.html'), 'utf-8')
     dom = getDom(contents)
     expect(dom.querySelector('#current-page')).toBeDefined()
-    expect(dom.querySelector('#current-page').textContent).toBe('page: Homepage')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: Homepage')
 
     contents = readFileSync(resolve(distDir, 'fr/index.html'), 'utf-8')
     dom = getDom(contents)
     expect(dom.querySelector('#current-page')).toBeDefined()
-    expect(dom.querySelector('#current-page').textContent).toBe('page: Accueil')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: Accueil')
   })
 })

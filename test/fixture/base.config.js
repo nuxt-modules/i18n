@@ -1,6 +1,7 @@
-const { resolve } = require('path')
+import { resolve } from 'path'
 
-module.exports = {
+/** @type {import('@nuxt/types').NuxtConfig} */
+const config = {
   rootDir: resolve(__dirname, '../..'),
   dev: false,
   telemetry: false,
@@ -24,7 +25,7 @@ module.exports = {
     resourceHints: false
   },
   modules: [
-    { handler: require('../..') }
+    resolve(__dirname, '../..')
   ],
   i18n: {
     seo: true,
@@ -67,3 +68,5 @@ module.exports = {
     }
   }
 }
+
+export default config

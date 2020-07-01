@@ -25,7 +25,7 @@ function startServer (path, port, noTrailingSlashRedirect, verbose) {
         // When requesting /fr and both /fr/ (without index.html) and /fr.html exist, fallback to fr.html.
         fs.readFile(`${resolve(path)}${req.url}.html`, function (error, buffer) {
           if (error) {
-            done()
+            done(false)
             return
           }
 
@@ -33,10 +33,11 @@ function startServer (path, port, noTrailingSlashRedirect, verbose) {
           res.end(buffer)
         })
       } else {
-        done()
+        done(false)
       }
     }
 
+    // @ts-ignore
     serve(req, res, next)
   })
 
@@ -79,9 +80,12 @@ parser.addArgument(['-v', '--verbose'], {
 
 const args = parser.parseArgs()
 
+/** @type {import('http').Server | null} */
 let server = startServer(args.path, args.port, args.no_trailing_slash_redirect, args.verbose)
 
 process.on('SIGTERM', () => {
-  server.close()
-  server = null
+  if (server) {
+    server.close()
+    server = null
+  }
 })

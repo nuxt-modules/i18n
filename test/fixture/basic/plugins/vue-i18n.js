@@ -1,24 +1,33 @@
 import MessageFormat from 'messageformat'
 
-class CustomFormatter {
-  constructor (context) {
-    this._context = context
-    this._formatter = new MessageFormat(['en', 'fr'])
-    this._caches = Object.create(null)
-  }
+/**
+ * @param {import('@nuxt/types').Context} context
+ *
+ * @return {import('vue-i18n').Formatter}
+ */
+function createCustomFormatter (context) {
+  const formatter = new MessageFormat(['en', 'fr'])
+  const caches = Object.create(null)
 
-  interpolate (message, values) {
-    let fn = this._caches[message]
-    if (!fn) {
-      fn = this._formatter.compile(message.toUpperCase(), this._context.app.i18n.locale)
-      this._caches[message] = fn
+  return {
+    interpolate (message, values) {
+      let fn = caches[message]
+      if (!fn) {
+        fn = formatter.compile(message.toUpperCase(), context.app.i18n.locale)
+        caches[message] = fn
+      }
+      return [fn(values)]
     }
-    return [fn(values)]
   }
 }
 
+/**
+ * @param {import('@nuxt/types').Context} context
+ *
+ * @return {import('vue-i18n').I18nOptions}
+ */
 export default context => {
-  const formatter = new CustomFormatter(context)
+  const formatter = createCustomFormatter(context)
 
   return {
     formatter,

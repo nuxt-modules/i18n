@@ -1,8 +1,10 @@
+/** @param {Document} dom */
 export default function getSeoTags (dom) {
   const head = dom.querySelector('head')
   expect(head).not.toBeNull()
   // Convert children meta elements to an array.
   const metas = []
+  // @ts-ignore
   for (const element of head.children) {
     const tagName = element.tagName.toLowerCase()
 
@@ -10,6 +12,7 @@ export default function getSeoTags (dom) {
       continue
     }
 
+    /** @type {Record<string, string>} */
     const meta = { tagName }
 
     for (const attr of ['property', 'content', 'rel', 'rel', 'href', 'hreflang']) {

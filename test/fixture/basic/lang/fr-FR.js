@@ -1,4 +1,9 @@
-export default (_context, locale) => {
+/**
+ * @param {import('@nuxt/types').Context} _
+ * @param {string} locale
+ * @return {object}
+ */
+export default (_, locale) => {
   return {
     home: 'Accueil',
     about: 'À propos',
