@@ -44,6 +44,10 @@ declare module '@nuxt/types' {
   interface NuxtAppOptions extends NuxtVueI18n.Options.NuxtI18nInterface {
     readonly i18n: VueI18n & IVueI18n
   }
+
+  interface NuxtOptions {
+    i18n?: NuxtVueI18n.Options.AllOptionsInterface
+  }
 }
 
 declare module 'vuex/types/index' {

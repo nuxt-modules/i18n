@@ -7,6 +7,7 @@ import { Context as NuxtContext } from '@nuxt/types'
  */
 declare namespace NuxtVueI18n {
   type Locale = VueI18n.Locale
+  type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
 
   namespace Options {
     // e.g.:
@@ -50,6 +51,7 @@ declare namespace NuxtVueI18n {
     interface NuxtI18nInterface {
       beforeLanguageSwitch?: (oldLocale: string, newLocale: string) => void
       defaultLocale?: Locale
+      defaultLocaleRouteNameSuffix?: string
       locales?: Array<Locale | LocaleObject>
       differentDomains?: boolean
       forwardedHost?: boolean
@@ -72,7 +74,7 @@ declare namespace NuxtVueI18n {
       rootRedirect?: string | null | RootRedirectInterface
       routesNameSeparator?: string
       seo?: boolean
-      strategy?: 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
+      strategy?: Strategies
       vueI18n?: VueI18n.I18nOptions | string
       vueI18nLoader?: boolean
       vuex?: VuexInterface | false
