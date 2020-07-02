@@ -1,3 +1,18 @@
+## [6.13.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.2...v6.13.0) (2020-07-02)
+
+
+### Features
+
+* pass to-be-loaded locale when lazy-loading from exported function ([#752](https://github.com/nuxt-community/nuxt-i18n/issues/752)) ([145f3b2](https://github.com/nuxt-community/nuxt-i18n/commit/145f3b2a080a91028fd5ef59f9c8bd88755d3b4b)), closes [#742](https://github.com/nuxt-community/nuxt-i18n/issues/742)
+
+
+### Bug Fixes
+
+* handling of trailing slash in localePath ([#756](https://github.com/nuxt-community/nuxt-i18n/issues/756)) ([1a69387](https://github.com/nuxt-community/nuxt-i18n/commit/1a6938784581789465b41035aadc181782c9d68e)), closes [#717](https://github.com/nuxt-community/nuxt-i18n/issues/717)
+* initial redirect breaks reactivity in static mode ([54b8186](https://github.com/nuxt-community/nuxt-i18n/commit/54b8186c711389ce051b8ffbd4f30e201332e5f8)), closes [#737](https://github.com/nuxt-community/nuxt-i18n/issues/737)
+* preserve query when handling rootRedirect ([#771](https://github.com/nuxt-community/nuxt-i18n/issues/771)) ([b201609](https://github.com/nuxt-community/nuxt-i18n/commit/b201609de36c11b7dd6c369bf08a7e43c9cc6b59))
+* **types:** extend NuxtOptions with "i18n" (when using i18n in the root of Nuxt config) ([7c5241b](https://github.com/nuxt-community/nuxt-i18n/commit/7c5241bd17f6b5f8053b0c3b1e197be211677683))
+
 ## [6.13.0-beta.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.2...v6.13.0-beta.0) (2020-06-03)
 
 
