@@ -428,6 +428,45 @@ for (const trailingSlash of TRAILING_SLASHES) {
         }
       ])
     })
+
+    test('baseUrl is set correctly in component local i18n instance', async () => {
+      const html = await getRespectingTrailingSlash('/loader-yaml')
+      const dom = getDom(html)
+      const seoTags = getSeoTags(dom)
+
+      const expectedSeoTags = [
+        {
+          tagName: 'meta',
+          property: 'og:locale',
+          content: 'en'
+        },
+        {
+          tagName: 'meta',
+          property: 'og:locale:alternate',
+          content: 'fr_FR'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: pathRespectingTrailingSlash('nuxt-app.localhost/loader-yaml'),
+          hreflang: 'en'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: pathRespectingTrailingSlash('nuxt-app.localhost/fr/loader-yaml'),
+          hreflang: 'fr'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: pathRespectingTrailingSlash('nuxt-app.localhost/fr/loader-yaml'),
+          hreflang: 'fr-FR'
+        }
+      ]
+
+      expect(seoTags).toEqual(expectedSeoTags)
+    })
   })
 }
 

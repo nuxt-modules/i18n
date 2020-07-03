@@ -200,6 +200,7 @@ export default async (context) => {
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey })
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
+    i18n.__baseUrl = app.i18n.__baseUrl
   }
 
   // Set instance options
