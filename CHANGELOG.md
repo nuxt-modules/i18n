@@ -1,3 +1,10 @@
+### [6.13.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.13.0...v6.13.1) (2020-07-03)
+
+
+### Bug Fixes
+
+* incorrect SEO links when vue-loader forces local i18n instance ([#786](https://github.com/nuxt-community/nuxt-i18n/issues/786)) ([8cf173d](https://github.com/nuxt-community/nuxt-i18n/commit/8cf173d202869c9999e0b7cbc8a2f31b0ebedd17)), closes [#785](https://github.com/nuxt-community/nuxt-i18n/issues/785)
+
 ## [6.13.0](https://github.com/nuxt-community/nuxt-i18n/compare/v6.12.2...v6.13.0) (2020-07-02)
 
 
