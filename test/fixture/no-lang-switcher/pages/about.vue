@@ -1,6 +1,6 @@
 <template>
   <div>
     <div id="current-page">page: {{ $t('about') }}</div>
-    <nuxt-link id="link-home" exact :to="localePath('index')">{{ $t('home') }}</nuxt-link>
+    <a id="link-home" :href="localePath('index')">{{ $t('home') }}</a>
   </div>
 </template>
