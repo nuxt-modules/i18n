@@ -1405,3 +1405,42 @@ describe('generate with detectBrowserLanguage.fallbackLocale', () => {
     expect(dom.querySelector('#current-page')?.textContent).toBe('page: Accueil')
   })
 })
+
+describe('generate with differentDomains enabled', () => {
+  const distDir = resolve(__dirname, 'fixture', 'no-lang-switcher', '.nuxt-generate')
+
+  beforeAll(async () => {
+    /** @type {import('@nuxt/types').NuxtConfig} */
+    const overrides = {
+      generate: { dir: distDir },
+      i18n: {
+        differentDomains: true
+      }
+    }
+
+    const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
+    // Override those after merging to overwrite original values.
+    testConfig.i18n.locales = [
+      {
+        code: 'en',
+        domain: 'en-domain',
+        iso: 'en',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        domain: 'fr-domain',
+        iso: 'fr-FR',
+        name: 'Français'
+      }
+    ]
+    await generate(testConfig)
+  })
+
+  test('does not crash on generating', () => {
+    const contents = readFileSync(resolve(distDir, 'about', 'index.html'), 'utf-8')
+    const dom = getDom(contents)
+    expect(dom.querySelector('#current-page')).toBeDefined()
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
+  })
+})

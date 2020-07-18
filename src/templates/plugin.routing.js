@@ -121,7 +121,7 @@ function switchLocalePath (locale) {
       let protocol
       if (process.server) {
         const isHTTPS = require('is-https')
-        protocol = isHTTPS(this.req) ? 'https' : 'http'
+        protocol = (this.req && isHTTPS(this.req)) ? 'https' : 'http'
       } else {
         protocol = window.location.protocol.split(':')[0]
       }

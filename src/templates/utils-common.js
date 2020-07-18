@@ -85,7 +85,13 @@ export const resolveBaseUrl = (baseUrl, context) => {
  * @return {string | null} Locade code found if any
  */
 export const getLocaleDomain = (locales, req, { localDomainKey, localeCodeKey }) => {
-  const hostname = process.client ? window.location.hostname : (req.headers['x-forwarded-host'] || req.headers.host)
+  let hostname = null
+
+  if (process.client) {
+    hostname = window.location.hostname
+  } else if (req) {
+    hostname = req.headers['x-forwarded-host'] || req.headers.host
+  }
 
   if (hostname) {
     const localeDomain = locales.find(l => l[localDomainKey] === hostname)
