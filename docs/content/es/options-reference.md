@@ -10,6 +10,19 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
 ```js
 {
   // vue-i18n configuration
+  // See documentation: http://kazupon.github.io/vue-i18n/api/#constructor-options
+  // To be able to pass more complex configuration options that can't be stringified, it's also
+  // supported to set this property to a path to a local configuration file. File needs to export
+  // a function (that will be passed a Nuxt context as a parameter) or plain object.
+  // Example path: '~/plugins/vue-i18n.js'
+  // Example file content:
+  // export default context => {
+  //   return {
+  //     modifiers: {
+  //       snakeCase: (str) => str.split(' ').join('-')
+  //     }
+  //   }
+  // }
   vueI18n: {},
 
   // If true, vue-i18n-loader is added to Nuxt's Webpack config
@@ -49,7 +62,7 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
   // - 'prefix_and_default': add locale prefix for every locale and default
   strategy: 'prefix_except_default',
 
-  // Wether or not the translations should be lazy-loaded, if this is enabled,
+  // Whether or not the translations should be lazy-loaded, if this is enabled,
   // you MUST configure langDir option, and locales must be an array of objects,
   // each containing a file key
   lazy: false,
@@ -66,9 +79,10 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
   // }
   rootRedirect: null,
 
-  // Enable browser language detection to automatically redirect user
-  // to their preferred language as they visit your app for the first time
-  // Set to false to disable
+  // Enable browser language detection to automatically redirect visitors to their
+  // preferred language as they visit your site for the first time.
+  // Note that for better SEO it's recommended to set 'onlyOnRoot' to true.
+  // Set to false to disable.
   detectBrowserLanguage: {
     // If enabled, a cookie is set once a user has been redirected to his
     // preferred language to prevent subsequent redirections
@@ -86,7 +100,10 @@ Aquí están todas las opciones disponibles al configurar el módulo y sus valor
     // Set to always redirect to value stored in the cookie, not just once
     alwaysRedirect: false,
     // If no locale for the browsers locale is a match, use this one as a fallback
-    fallbackLocale: null
+    fallbackLocale: null,
+    // Set to true (recommended for improved SEO) to only attempt to detect browser locale
+    // on the root path ("/") of the site. Only effective when using strategy other than 'no_prefix'.
+    onlyOnRoot: false,
   },
 
   // Set this to true if you're using different domains for each language

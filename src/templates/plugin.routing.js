@@ -148,11 +148,10 @@ function getRouteBaseName (givenRoute) {
 }
 
 function getLocaleRouteName (routeName, locale) {
-  const name = routeName + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+  let name = routeName + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
 
-  // Match route without prefix for default locale
   if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-    return name + routesNameSeparator + defaultLocaleRouteNameSuffix
+    name += routesNameSeparator + defaultLocaleRouteNameSuffix
   }
 
   return name

@@ -1135,6 +1135,34 @@ describe('with router base', () => {
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
   })
+
+  test('detectBrowserLanguage redirects on base path', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/app/', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/app/fr')
+  })
+
+  test('detectBrowserLanguage redirects on non-base path', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/app/simple', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/app/fr/simple')
+  })
 })
 
 describe('baseUrl', () => {
@@ -1432,6 +1460,17 @@ describe('no_prefix + detectBrowserLanguage + alwaysRedirect', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
+  })
+
+  test('applies detected locale on non-root path', async () => {
+    const requestOptions = {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const html = await get('/about', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
   })
 })
 

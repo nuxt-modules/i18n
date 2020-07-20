@@ -38,6 +38,7 @@ import {
 
 Vue.use(VueI18n)
 
+const { alwaysRedirect, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
 const getLocaleFromRoute = createLocaleFromRouteGetter(localeCodes, { routesNameSeparator, defaultLocaleRouteNameSuffix })
 
 /** @type {import('@nuxt/types').Plugin} */
@@ -79,10 +80,10 @@ export default async (context) => {
 
     if (!initialSetup) {
       app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
+    }
 
-      if (useCookie) {
-        app.i18n.setLocaleCookie(newLocale)
-      }
+    if (useCookie) {
+      app.i18n.setLocaleCookie(newLocale)
     }
 
     // Lazy-loading enabled
@@ -124,7 +125,11 @@ export default async (context) => {
     }
 
     if (getLocaleFromRoute(route) === locale) {
-      return ''
+      // If "onlyOnRoot" is set and strategy is "prefix_and_default", prefer unprefixed route for
+      // default locale.
+      if (!onlyOnRoot || locale !== defaultLocale || strategy !== STRATEGIES.PREFIX_AND_DEFAULT) {
+        return ''
+      }
     }
 
     // At this point we are left with route that either has no or different locale.
@@ -166,7 +171,7 @@ export default async (context) => {
     app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
 
     const finalLocale =
-      (detectBrowserLanguage && doDetectBrowserLanguage()) ||
+      (detectBrowserLanguage && doDetectBrowserLanguage(route)) ||
       getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
 
     await app.i18n.setLocale(finalLocale)
@@ -174,13 +179,15 @@ export default async (context) => {
     return [null, null]
   }
 
-  const doDetectBrowserLanguage = () => {
+  const doDetectBrowserLanguage = route => {
     // Browser detection is ignored if it is a nuxt generate.
     if (process.static && process.server) {
       return false
     }
 
-    const { alwaysRedirect, fallbackLocale } = detectBrowserLanguage
+    if (onlyOnRoot && strategy !== STRATEGIES.NO_PREFIX && route.path !== '/') {
+      return false
+    }
 
     let matchedLocale
 
@@ -199,8 +206,6 @@ export default async (context) => {
     if (finalLocale && (!useCookie || alwaysRedirect || !app.i18n.getLocaleCookie())) {
       if (finalLocale !== app.i18n.locale) {
         return finalLocale
-      } else if (useCookie && !app.i18n.getLocaleCookie()) {
-        app.i18n.setLocaleCookie(finalLocale)
       }
     }
 
@@ -244,7 +249,7 @@ export default async (context) => {
     }
   }
 
-  let finalLocale = detectBrowserLanguage && doDetectBrowserLanguage()
+  let finalLocale = detectBrowserLanguage && doDetectBrowserLanguage(route)
 
   if (!finalLocale) {
     if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
