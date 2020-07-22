@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-i18n",
+  "name": "@nuxtjs/i18n",
   "version": "6.13.1",
   "description": "i18n for Nuxt",
   "license": "MIT",
@@ -13,10 +13,10 @@
   ],
   "main": "src/index.js",
   "types": "types/index.d.ts",
-  "repository": "https://github.com/nuxt-community/nuxt-i18n",
-  "homepage": "https://nuxt-community.github.io/nuxt-i18n/",
+  "repository": "https://github.com/nuxt-community/i18n-module",
+  "homepage": "https://i18n.nuxtjs.org",
   "bugs": {
-    "url": "https://nuxtjs.cmty.io/nuxt-community/nuxt-i18n/issues"
+    "url": "https://github.com/nuxt-community/i18n-module/issues"
   },
   "publishConfig": {
     "access": "public"

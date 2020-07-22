@@ -58,7 +58,7 @@ declare namespace NuxtVueI18n {
       onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
     }
 
-    // see options reference: https://github.com/nuxt-community/nuxt-i18n/blob/master/docs/options-reference.md
+    // see options reference: https://github.com/nuxt-community/i18n-module/blob/master/docs/options-reference.md
     interface AllOptionsInterface extends NuxtI18nInterface {
       baseUrl?: string | ((context: NuxtContext) => string)
       detectBrowserLanguage?: DetectBrowserLanguageInterface | false

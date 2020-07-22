@@ -163,7 +163,7 @@ describe(`${browserString} (generate)`, () => {
     }
   })
 
-  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/378
+  // Issue https://github.com/nuxt-community/i18n-module/issues/378
   test('navigate to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
@@ -176,7 +176,7 @@ describe(`${browserString} (generate)`, () => {
     expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
   })
 
-  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/737
+  // Issue https://github.com/nuxt-community/i18n-module/issues/737
   test('reactivity works after redirecting to detected browser locale (root path)', async () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
@@ -326,7 +326,7 @@ describe(`${browserString} (generate, prefix strategy)`, () => {
     }
   })
 
-  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/700
+  // Issue https://github.com/nuxt-community/i18n-module/issues/700
   test('non-prefixed routes are generated for redirect purposes', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
@@ -445,7 +445,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
   })
 
   // Browser language is 'en' and so doesn't match supported ones.
-  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/643
+  // Issue https://github.com/nuxt-community/i18n-module/issues/643
   test('updates language after navigating to another locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
@@ -533,7 +533,7 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
     await nuxt.close()
   })
 
-  // Issue https://github.com/nuxt-community/nuxt-i18n/issues/490
+  // Issue https://github.com/nuxt-community/i18n-module/issues/490
   test('navigates directly to page with trailing slash', async () => {
     page = await browser.newPage()
     await page.goto(url('/#/fr/'))
