@@ -85,7 +85,7 @@ module.exports = function (userOptions) {
 
   if ('forwardedHost' in options) {
     // eslint-disable-next-line no-console
-    console.warn('[' + options.MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/nuxt-i18n/pull/630.')
+    console.warn('[' + options.MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.')
   }
 
   const templatesPath = join(__dirname, '/templates')

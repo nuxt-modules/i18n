@@ -9,7 +9,7 @@ Follow this guide to upgrade from one major version to the other.
 
 In some cases, having SEO enabled globally caused performance issues and/or conflicted with other plugins. To mitigate these issues, SEO features are now disabled by default.
 
-If you were affected by one of the issues above, we recommend that you read the [Improve performances](https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance) section to enable SEO only where you need it.
+If you were affected by one of the issues above, we recommend that you read the [Improve performances](/seo.html#improving-performance) section to enable SEO only where you need it.
 
 If you'd like to restore the old behaviour, you can reenable SEO features globally by setting the `seo` option to `true`:
 
@@ -21,7 +21,7 @@ If you'd like to restore the old behaviour, you can reenable SEO features global
 
 ### preserveState can't be set anymore
 
-It was previously possible to manually set `preserveState` on **nuxt-i18n**'s store module, which would actually result in unexpected behaviours when using server-side rendering. This option has been removed altogether and the module's `preserveState` option is now [set automatically](https://github.com/nuxt-community/nuxt-i18n/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
+It was previously possible to manually set `preserveState` on **nuxt-i18n**'s store module, which would actually result in unexpected behaviours when using server-side rendering. This option has been removed altogether and the module's `preserveState` option is now [set automatically](https://github.com/nuxt-community/i18n-module/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
 
 If you were using the `preserveState` configuration option before, it can be safely removed:
 

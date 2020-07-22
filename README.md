@@ -1,17 +1,17 @@
 # nuxt-i18n
 
-[![](https://david-dm.org/nuxt-community/nuxt-i18n/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/nuxt-i18n)
+[![](https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/i18n-module)
 [![](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
-[![](https://img.shields.io/circleci/project/github/nuxt-community/nuxt-i18n.svg?style=flat-square)](https://circleci.com/gh/nuxt-community/nuxt-i18n)
-[![](https://img.shields.io/codecov/c/github/nuxt-community/nuxt-i18n.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/nuxt-i18n)
-[![](https://snyk.io/test/github/nuxt-community/nuxt-i18n/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-community/nuxt-i18n)
+[![](https://img.shields.io/circleci/project/github/nuxt-community/i18n-module.svg?style=flat-square)](https://circleci.com/gh/nuxt-community/i18n-module)
+[![](https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/i18n-module)
+[![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-community/i18n-module)
 [![](https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
 [![](https://img.shields.io/npm/dt/nuxt-i18n.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
 
 > i18n for your Nuxt project
 
 ## Links
-- [Documentation](https://nuxt-community.github.io/nuxt-i18n/)
+- [Documentation](https://i18n.nuxtjs.org/)
 - [Release notes](./CHANGELOG.md)
 - [Community](https://discord.nuxtjs.org/)
 
@@ -85,7 +85,7 @@ Then you can start using `nuxt-i18n` in your Vue components!
 </template>
 ```
 
-If you would like to find out more about how to use `nuxt-i18n`, [check out the docs](https://nuxt-community.github.io/nuxt-i18n/)!
+If you would like to find out more about how to use `nuxt-i18n`, [check out the docs](https://i18n.nuxtjs.org/)!
 
 ## Contributing
 
@@ -96,8 +96,8 @@ All contributions are welcome! If you would like to make some changes, follow th
 ```sh
 cd my-nuxt-project
 mkdir modules
-git clone git@github.com:<username>/nuxt-i18n.git modules/nuxt-i18n # ssh
-git clone https://github.com/<username>/nuxt-i18n.git modules/nuxt-i18n # https
+git clone git@github.com:<username>/i18n-module.git modules/i18n-module # ssh
+git clone https://github.com/<username>/i18n-module.git modules/i18n-module # https
 ```
 
 - Edit your Nuxt config to use the local module:
@@ -107,7 +107,7 @@ git clone https://github.com/<username>/nuxt-i18n.git modules/nuxt-i18n # https
 
 {
   modules: [
-    ['./modules/nuxt-i18n', {
+    ['./modules/i18n-module', {
       // options...
     }]
   ]
@@ -117,7 +117,7 @@ git clone https://github.com/<username>/nuxt-i18n.git modules/nuxt-i18n # https
 - Install the module's dependencies:
 
 ```sh
-cd modules/nuxt-i18n/
+cd modules/i18n-module/
 yarn # yarn
 npm i # npm
 ```
@@ -144,14 +144,14 @@ npm run lint && npm test # npm
 - Fork and clone the project:
 
 ```sh
-git clone git@github.com:<username>/nuxt-i18n.git # ssh
-git clone https://github.com/<username>/nuxt-i18n.git # https
+git clone git@github.com:<username>/i18n-module.git # ssh
+git clone https://github.com/<username>/i18n-module.git # https
 ```
 
 - Install the dependencies:
 
 ```sh
-cd nuxt-i18n
+cd i18n-module
 yarn # yarn
 npm i # npm
 ```

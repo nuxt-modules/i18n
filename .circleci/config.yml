@@ -9,7 +9,7 @@ executors:
         default: false
     docker:
       - image: circleci/node:12<<# parameters.browsers >>-browsers<</ parameters.browsers >>
-    working_directory: ~/nuxt-i18n
+    working_directory: ~/i18n-module
     environment:
       NODE_ENV: test
 
@@ -18,7 +18,7 @@ commands:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/nuxt-i18n
+          at: ~/i18n-module
 
 jobs:
   setup:
@@ -39,7 +39,7 @@ jobs:
             - "node_modules"
 
       - persist_to_workspace:
-          root: ~/nuxt-i18n
+          root: ~/i18n-module
           paths:
             - node_modules
 

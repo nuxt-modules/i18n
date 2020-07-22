@@ -101,7 +101,7 @@ Here are all the options available when configuring the module and their default
   // If true, SEO metadata is generated for routes that have i18n enabled.
   // Note that performance can suffer with this enabled and there might be compatibility
   // issues with some plugins. Recommended way is to set up SEO as described in:
-  // https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance
+  // https://i18n.nuxtjs.org/seo.html#improving-performance
   seo: false,
 
   // Fallback base URL to use as prefix for alternate URLs in hreflang tags.

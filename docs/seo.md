@@ -13,7 +13,7 @@ When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to
   Generates `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. The language's ISO codes are used as `hreflang` values.
 
 
-  Since version [v6.6.0](https://github.com/nuxt-community/nuxt-i18n/releases/tag/v6.6.0), a catchall locale hreflang link is provided for each language group (e.g. `en-*`) as well. By default, it is the first language provided but another language can be selected by setting `isCatchallLocale` to `true` on that specific language object in your `nuxt.config.js`. [More on hreflang](https://support.google.com/webmasters/answer/189077)
+  Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a catchall locale hreflang link is provided for each language group (e.g. `en-*`) as well. By default, it is the first language provided but another language can be selected by setting `isCatchallLocale` to `true` on that specific language object in your `nuxt.config.js`. [More on hreflang](https://support.google.com/webmasters/answer/189077)
 
 An example without selected catchall locale:
 
@@ -141,7 +141,7 @@ export default {
 }
 ```
 
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/seo-head.js](https://github.com/nuxt-community/nuxt-i18n/blob/master/src/templates/seo-head.js) if you want to copy some of **nuxt-i18n**'s logic.
+To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/seo-head.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/seo-head.js) if you want to copy some of **nuxt-i18n**'s logic.
 
 ## Improving performance
 

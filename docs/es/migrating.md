@@ -9,7 +9,7 @@ Siga esta guía para actualizar de una versión principal a otra.
 
 En algunos casos, tener SEO habilitado globalmente causó problemas de rendimiento y / o entró en conflicto con otros complementos. Para mitigar estos problemas, las características de SEO ahora están deshabilitadas de forma predeterminada.
 
-Si se vio afectado por uno de los problemas anteriores, le recomendamos que lea la sección [Mejorar el rendimiento](https://nuxt-community.github.io/nuxt-i18n/seo.html#improving-performance) para habilitar el SEO solo donde lo necesites.
+Si se vio afectado por uno de los problemas anteriores, le recomendamos que lea la sección [Mejorar el rendimiento](/seo.html#improving-performance) para habilitar el SEO solo donde lo necesites.
 
 Si desea restaurar el comportamiento anterior, puede habilitar las funciones de SEO a nivel mundial estableciendo la opción `seo` en `true`:
 
@@ -21,7 +21,7 @@ Si desea restaurar el comportamiento anterior, puede habilitar las funciones de 
 
 ### Ya no se puede configurar preserveState
 
-Anteriormente era posible configurar manualmente `preserveState` en el módulo de tienda de **nuxt-i18n**, lo que en realidad daría lugar a comportamientos inesperados al usar la representación del lado del servidor. Esta opción se ha eliminado por completo y la opción `preserveState` del módulo ahora está [establecida automáticamente](https://github.com/nuxt-community/nuxt-i18n/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
+Anteriormente era posible configurar manualmente `preserveState` en el módulo de tienda de **nuxt-i18n**, lo que en realidad daría lugar a comportamientos inesperados al usar la representación del lado del servidor. Esta opción se ha eliminado por completo y la opción `preserveState` del módulo ahora está [establecida automáticamente](https://github.com/nuxt-community/i18n-module/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
 
 Si estaba utilizando la opción de configuración `preserveState` anteriormente, puede eliminarse de manera segura:
 

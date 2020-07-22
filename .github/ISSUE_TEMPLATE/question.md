@@ -16,7 +16,7 @@ If relevant to your question, provide nuxt-i18n configuration.
 
 If you have a general question regarding nuxt-i18n use Discord `modules` channel. Thanks!
 
-Documentation: https://nuxt-community.github.io/nuxt-i18n/
+Documentation: https://i18n.nuxtjs.org/
 Nuxt Discord: https://discord.nuxtjs.org/
 
 -->
