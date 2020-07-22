@@ -1,7 +1,6 @@
 module.exports = {
   title: 'nuxt-i18n',
-  description: 'i18n for Nuxt',
-  base: '/nuxt-i18n/',
+  description: 'i18n module for Nuxt.js',
   locales: {
     '/': {
       lang: 'en-US',
