@@ -1,4 +1,7 @@
-# nuxt-i18n
+<p align="center">
+  <img width="300" height="270" src="./assets/nuxt-i18n-logo.png" alt="nuxt-i18n logo">
+  <h2 align="center">nuxt-i18n</h2>
+</p>
 
 [![](https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/i18n-module)
 [![](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
@@ -10,9 +13,9 @@
 > i18n for your Nuxt project
 
 ## Links
-- [Documentation](https://i18n.nuxtjs.org/)
-- [Release notes](./CHANGELOG.md)
-- [Community](https://discord.nuxtjs.org/)
+- 📘 [Documentation](https://i18n.nuxtjs.org/)
+- 🔖 [Release notes](./CHANGELOG.md)
+- 👥 [Community](https://discord.nuxtjs.org/)
 
 
 ## Features

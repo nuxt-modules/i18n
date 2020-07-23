@@ -1,4 +1,6 @@
-# nuxt-i18n
+<div align="center">
+  <img width="300" height="270" src="../assets/nuxt-i18n-logo.png" alt="nuxt-i18n logo">
+</div>
 
 **nuxt-i18n** provides i18n features for your Nuxt project:
 
