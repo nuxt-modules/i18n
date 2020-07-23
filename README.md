@@ -2,7 +2,6 @@
 
 [![](https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/i18n-module)
 [![](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
-[![](https://img.shields.io/circleci/project/github/nuxt-community/i18n-module.svg?style=flat-square)](https://circleci.com/gh/nuxt-community/i18n-module)
 [![](https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/i18n-module)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-community/i18n-module)
 [![](https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
