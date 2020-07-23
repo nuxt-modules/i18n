@@ -11,7 +11,7 @@
 > i18n for your Nuxt project
 
 ## Links
-- [Documentation](https://nuxt-community.github.io/nuxt-i18n/)
+- [Documentation](https://nuxt-i18n.netlify.app/)
 - [Release notes](./CHANGELOG.md)
 - [Community](https://discord.nuxtjs.org/)
 
