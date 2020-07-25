@@ -48,7 +48,7 @@ Add the plugin to Nuxt's config:
 
 module.exports = {
   plugins: [
-    { src: '~plugins/i18n.js' }
+    { src: '~/plugins/i18n.js' }
   ]
 }
 ```
