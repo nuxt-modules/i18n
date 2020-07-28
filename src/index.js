@@ -56,7 +56,10 @@ module.exports = function (userOptions) {
 
   if (options.strategy !== STRATEGIES.NO_PREFIX) {
     if (localeCodes.length) {
-      let isNuxtGenerate = false
+      let includeUprefixedFallback = this.options.target === 'static'
+      // Doesn't seem like we can tell whether we are in nuxt generate from the module so we'll
+      // take advantage of the 'generate:before' hook to store variable.
+      this.nuxt.hook('generate:before', () => { includeUprefixedFallback = true })
       const extendRoutes = routes => {
         // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
         // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
@@ -66,16 +69,13 @@ module.exports = function (userOptions) {
         const localizedRoutes = makeRoutes(routes, {
           ...options,
           pagesDir,
-          isNuxtGenerate,
+          includeUprefixedFallback,
           trailingSlash
         })
         routes.splice(0, routes.length)
         routes.unshift(...localizedRoutes)
       }
 
-      // Doesn't seem like we can tell whether we are in nuxt generate from the module so we'll
-      // take advantage of the 'generate:before' hook to store variable.
-      this.nuxt.hook('generate:before', () => { isNuxtGenerate = true })
       this.extendRoutes(extendRoutes)
     }
   } else if (options.differentDomains) {
