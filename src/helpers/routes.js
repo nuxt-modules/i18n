@@ -6,7 +6,7 @@ exports.makeRoutes = (baseRoutes, {
   defaultLocale,
   defaultLocaleRouteNameSuffix,
   differentDomains,
-  isNuxtGenerate,
+  includeUprefixedFallback,
   locales,
   pages,
   pagesDir,
@@ -130,7 +130,7 @@ exports.makeRoutes = (baseRoutes, {
         path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
       }
 
-      if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && isNuxtGenerate) {
+      if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUprefixedFallback) {
         routes.push({
           path: route.path,
           redirect: path

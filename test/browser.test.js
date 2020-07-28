@@ -337,6 +337,51 @@ describe(`${browserString} (generate, prefix strategy)`, () => {
   })
 })
 
+describe(`${browserString} (generate, prefix strategy, static target)`, () => {
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+  /** @type {import('playwright-chromium').Page} */
+  let page
+  /** @type {import('./utils').StaticServer} */
+  let server
+
+  beforeAll(async () => {
+    const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+    const overrides = {
+      target: 'static',
+      generate: { dir: distDir },
+      i18n: {
+        strategy: 'prefix',
+        detectBrowserLanguage: {
+          fallbackLocale: 'en'
+        }
+      }
+    }
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+    server = await startHttpServer({ path: distDir, verbose: true })
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (server) {
+      await server.destroy()
+    }
+    if (browser) {
+      await browser.close()
+    }
+  })
+
+  // Issue https://github.com/nuxt-community/i18n-module/issues/700
+  test('non-prefixed routes are generated for redirect purposes', async () => {
+    page = await browser.newPage()
+    await page.goto(server.getUrl('/'))
+    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+
+    await navigate(page, '/about')
+    expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
+  })
+})
+
 describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
