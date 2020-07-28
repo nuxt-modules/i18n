@@ -95,7 +95,7 @@
     "@babel/preset-env": "7.10.4",
     "@babel/runtime": "7.10.5",
     "@nuxt/types": "2.13.3",
-    "@nuxtjs/eslint-config-typescript": "2.0.0",
+    "@nuxtjs/eslint-config-typescript": "3.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "1.1.4",
     "@types/argparse": "1.0.38",
