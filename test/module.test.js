@@ -1265,7 +1265,7 @@ describe('parsePages disabled', () => {
       i18n: {
         parsePages: false,
         pages: {
-          about: false,
+          'about-no-locale': false,
           simple: {
             en: '/simple-en',
             fr: '/simple-fr'
@@ -1290,8 +1290,18 @@ describe('parsePages disabled', () => {
   })
 
   test('navigates to route with paths disabled in pages option', async () => {
-    await expect(get('/about')).resolves.toBeDefined()
-    await expect(get('/fr/about')).rejects.toBeDefined()
+    await expect(get('/about-no-locale')).resolves.toBeDefined()
+    await expect(get('/fr/about-no-locale')).rejects.toBeDefined()
+  })
+
+  test('does not trigger redirect loop on route with disabled locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/about-no-locale', requestOptions)
+    expect(response.statusCode).toBe(200)
   })
 })
 

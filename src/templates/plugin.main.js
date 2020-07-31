@@ -118,9 +118,10 @@ export default async (context) => {
     if (!redirectPath) {
       // Current route could be 404 in which case attempt to find matching route for given locale.
       redirectPath = app.localePath(route.fullPath, locale)
-      if (redirectPath === route.fullPath) {
-        return ''
-      }
+    }
+
+    if (redirectPath === route.fullPath) {
+      return ''
     }
 
     return redirectPath
