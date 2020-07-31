@@ -1,3 +1,12 @@
+### [6.13.2](https://github.com/nuxt-community/i18n-module/compare/v6.13.1...v6.13.2) (2020-07-31)
+
+
+### Bug Fixes
+
+* generate fallback routes for static build ([#808](https://github.com/nuxt-community/i18n-module/issues/808)) ([c2106f7](https://github.com/nuxt-community/i18n-module/commit/c2106f7185df2329d2068582b5e5a59c371c0192)), closes [#805](https://github.com/nuxt-community/i18n-module/issues/805)
+* redirect loop on initial load (static mode & route with no locale) ([4c9bc13](https://github.com/nuxt-community/i18n-module/commit/4c9bc13968c96f3abd544f3b24ef90882ea10d96)), closes [#798](https://github.com/nuxt-community/i18n-module/issues/798)
+* **types:** fix type of detectBrowserLanguage to allow false ([#793](https://github.com/nuxt-community/i18n-module/issues/793)) ([c62f19b](https://github.com/nuxt-community/i18n-module/commit/c62f19b527d91658b036c15a9f86399a2deded34))
+
 ### [6.13.1](https://github.com/nuxt-community/nuxt-i18n/compare/v6.13.0...v6.13.1) (2020-07-03)
 
 
