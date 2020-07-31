@@ -136,6 +136,48 @@ describe(browserString, () => {
   })
 })
 
+describe(`${browserString}, target: static, trailingSlash: true`, () => {
+  /** @type {Nuxt} */
+  let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+  /** @type {import('playwright-chromium').Page} */
+  let page
+
+  beforeAll(async () => {
+    const overrides = {
+      target: 'static',
+      router: {
+        trailingSlash: true
+      },
+      i18n: {
+        parsePages: false,
+        pages: {
+          'about-no-locale': false
+        }
+      }
+    }
+    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+
+    await nuxt.close()
+  })
+
+  // Issue https://github.com/nuxt-community/i18n-module/issues/798
+  // Not specific to trailingSlash === true
+  test('does not trigger redirect loop on route with disabled locale', async () => {
+    page = await browser.newPage()
+    await page.goto(url('/about-no-locale/'), { waitUntil: 'load', timeout: 2000 })
+    expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
+  })
+})
+
 describe(`${browserString} (generate)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
@@ -208,9 +250,9 @@ describe(`${browserString} (generate)`, () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
     /**
-       * @param {string} route
-       * @param {string | undefined} [locale]
-       */
+     * @param {string} route
+     * @param {string | undefined} [locale]
+     */
     const localePath = async (route, locale) => {
       // @ts-ignore
       return await page.evaluate(args => window.$nuxt.localePath(...args), [route, locale])
@@ -221,7 +263,7 @@ describe(`${browserString} (generate)`, () => {
   })
 })
 
-describe(`${browserString} (generate, no subFolders, no trailingSlash)`, () => {
+describe(`${browserString} (generate, no subFolders, trailingSlash === false)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   /** @type {import('playwright-chromium').Page} */
