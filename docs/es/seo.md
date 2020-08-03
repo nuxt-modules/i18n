@@ -1,5 +1,9 @@
 # Optimización para motores de búsqueda
 
+::: tip NOTE
+Using `seo` option (or alternatively the `$nuxtI18nSeo`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
+:::
+
 Con la opción `seo`  habilitada, **nuxt-i18n** intenta agregar algunos metadatos para mejorar sus páginas SEO. Esto es lo que hace:
 
 * Agregue un atributo _lang_ que contenga el código ISO del entorno local actual a la etiqueta  `<html>`.
@@ -7,7 +11,6 @@ Con la opción `seo`  habilitada, **nuxt-i18n** intenta agregar algunos metadato
 * Genere metaetiquetas `og:locale` y `og:locale:alternate` como se define en el [protocolo Open Graph](http://ogp.me/#optional)
 * Cuando utilice la estrategia `prefix_and_default`, genere el enlace `rel="canonical"` en las rutas de idioma predeterminadas que contienen
 prefijo para evitar la indexación duplicada. [Más sobre canonical](https://support.google.com/webmasters/answer/182192#dup-content)
-
 
 Para que esta característica funcione, debe configurar la opción `locales` como una matriz de objetos, donde cada objeto tiene una opción `iso` establecida en el código ISO del idioma:
 

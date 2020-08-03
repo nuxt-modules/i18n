@@ -479,6 +479,31 @@ for (const trailingSlash of TRAILING_SLASHES) {
   })
 }
 
+describe('locales as string array', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const testConfig = loadConfig(__dirname, 'basic')
+
+    // Override those after merging to overwrite original values.
+    testConfig.i18n.seo = false
+    testConfig.i18n.locales = ['en', 'fr']
+
+    nuxt = (await setup(testConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('shows fallback string', async () => {
+    const html = await get('/fr/fallback')
+    const dom = getDom(html)
+    expect(dom.querySelector('h2')?.textContent).toBe('Accueil')
+  })
+})
+
 describe('hreflang', () => {
   /** @type {Nuxt} */
   let nuxt

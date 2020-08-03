@@ -49,12 +49,12 @@ export default async (context) => {
 
   if (process.server) {
     context.beforeNuxtRender(({ nuxtState }) => {
-      // Add current locale if it's not the default one (that one is included in the main bundle).
       const { locale, locales, defaultLocale } = app.i18n
-      if (locale && locale !== defaultLocale) {
-        const langFile = locales.find(l => l[LOCALE_CODE_KEY] === locale).file
-        if (langFile) {
-          nuxtState.__i18n = { langs: { [langFile]: app.i18n.getLocaleMessage(app.i18n.locale) } }
+      // Add current locale if it's not the default one (that one is included in the main bundle).
+      if (lazy && locale && locale !== defaultLocale) {
+        const localeObject = locales.find(l => l[LOCALE_CODE_KEY] === locale)
+        if (localeObject && localeObject.file) {
+          nuxtState.__i18n = { langs: { [localeObject.file]: app.i18n.getLocaleMessage(app.i18n.locale) } }
         }
       }
     })
