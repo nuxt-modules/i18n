@@ -1,6 +1,6 @@
 # Basic Usage
 
-The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translations messages to **vue-i18n** via the `vueI18n` option:
+The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:
 
 ```js
 {

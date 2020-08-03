@@ -39,7 +39,18 @@ computed: {
 }]
 ```
 
-Si las opciones  `detectBrowserLanguage.useCookie` y `detectBrowserLanguage.alwaysRedirect` están habilitadas, es posible que desee conservar el cambio a la configuración local llamando a `this.$i18n.setLocaleCookie(locale)` o (`app.i18n.setLocaleCookie(locale)`) método. De lo contrario, la configuración regional volverá a la guardada durante la navegación.
+::: tip NOTE
+When using `detectBrowserLanguage` and wanting to persist locale on a route change, you must call one of the functions that update the stored locale cookie. Call either [`setLocaleCookie(locale)`](/api/#setlocalecookie) to persist just the cookie locale or [`setLocale(locale)`](/api/#setlocale) to both persist the cookie locale and switch the route to the specified locale. Otherwise, locale might switch back to the saved one during navigation.
+
+The template code might look like this, for example:
+```vue
+<a
+  href="#"
+  v-for="locale in availableLocales"
+  :key="locale.code"
+  @click.prevent.stop="setLocale(locale.code)">{{ locale.name }}</a>
+```
+:::
 
 ## Parámetros de ruta dinámica
 

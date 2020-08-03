@@ -40,7 +40,18 @@ computed: {
 }]
 ```
 
-If `detectBrowserLanguage.useCookie` and `detectBrowserLanguage.alwaysRedirect` options are enabled, you have to update locale cookie to be able to switch locale. Either call [`setLocaleCookie(locale)`](/api/#setlocalecookie) to persist just the cookie locale or [`setLocale(locale)`](/api/#setlocale) to both persist the cookie locale and switch route to specified locale. Otherwise locale will switch back to saved one during navigation.
+::: tip NOTE
+When using `detectBrowserLanguage` and wanting to persist locale on a route change, you must call one of the functions that update the stored locale cookie. Call either [`setLocaleCookie(locale)`](/api/#setlocalecookie) to persist just the cookie locale or [`setLocale(locale)`](/api/#setlocale) to both persist the cookie locale and switch the route to the specified locale. Otherwise, locale might switch back to the saved one during navigation.
+
+The template code might look like this, for example:
+```vue
+<a
+  href="#"
+  v-for="locale in availableLocales"
+  :key="locale.code"
+  @click.prevent.stop="setLocale(locale.code)">{{ locale.name }}</a>
+```
+:::
 
 ## Dynamic route parameters
 

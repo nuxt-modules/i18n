@@ -22,7 +22,7 @@
 - Integration with [vue-i18n](https://kazupon.github.io/vue-i18n/)
 - Automatic routes generation and custom paths
 - Search Engine Optimization
-- Lazy-loading of translations messages
+- Lazy-loading of translation messages
 - Redirection based on auto-detected language
 - Different domain names for different languages
 - Storing current locale and messages with [Vuex](https://vuex.vuejs.org/)
