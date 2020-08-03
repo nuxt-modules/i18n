@@ -47,6 +47,19 @@ export default async (context) => {
     registerStore(store, vuex, localeCodes, MODULE_NAME)
   }
 
+  if (process.server) {
+    context.beforeNuxtRender(({ nuxtState }) => {
+      // Add current locale if it's not the default one (that one is included in the main bundle).
+      const { locale, locales, defaultLocale } = app.i18n
+      if (locale && locale !== defaultLocale) {
+        const langFile = locales.find(l => l[LOCALE_CODE_KEY] === locale).file
+        if (langFile) {
+          nuxtState.__i18n = { langs: { [langFile]: app.i18n.getLocaleMessage(app.i18n.locale) } }
+        }
+      }
+    })
+  }
+
   const { useCookie, cookieKey, cookieDomain } = detectBrowserLanguage
 
   const loadAndSetLocale = async (newLocale, { initialSetup = false } = {}) => {
