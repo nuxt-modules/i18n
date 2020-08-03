@@ -35,6 +35,29 @@ module.exports = function (userOptions) {
     return
   }
 
+  let defaultLangFile
+
+  // Copy lang files to the build directory.
+  if (options.langDir) {
+    if (!options.locales.length || typeof options.locales[0] === 'string') {
+      console.warn('[' + options.MODULE_NAME + '] When using "langDir" option, the "locales" option must be a list of objects')
+    }
+
+    const uniqueFiles = new Set(options.locales.map(locale => locale.file))
+
+    if (options.defaultLocale) {
+      defaultLangFile = options.locales.find(locale => locale.code === options.defaultLocale).file
+    }
+
+    for (const file of uniqueFiles) {
+      const isUsingDefaultLangFile = file === defaultLangFile
+      this.addTemplate({
+        src: resolve(this.options.srcDir, options.langDir, file),
+        fileName: join(ROOT_DIR, (isUsingDefaultLangFile ? 'default-lang' : 'langs'), file)
+      })
+    }
+  }
+
   const localeCodes = getLocaleCodes(options.locales)
   const { trailingSlash } = this.options.router
 
@@ -48,6 +71,7 @@ module.exports = function (userOptions) {
     LOCALE_FILE_KEY,
     STRATEGIES,
     COMPONENT_OPTIONS_KEY,
+    defaultLangFile,
     localeCodes,
     trailingSlash
   }
