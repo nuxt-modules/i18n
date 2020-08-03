@@ -9,6 +9,121 @@ import { getSeoTags } from './utils'
 /** @param {string} html */
 const getDom = html => (new JSDOM(html)).window.document
 
+describe('locales as string array', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const overrides = { i18n: { seo: false } }
+    const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
+    // Override those after merging to overwrite original values.
+    testConfig.i18n.locales = ['en', 'fr']
+
+    console.info({ testConfig })
+    nuxt = (await setup(testConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('renders default locale', async () => {
+    const html = await get('/about')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
+  })
+
+  test('renders non-default locale', async () => {
+    const html = await get('/fr/about')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
+  })
+})
+
+describe('differentDomains enabled', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        differentDomains: true,
+        seo: false
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        domain: 'en.nuxt-app.localhost'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français',
+        domain: 'fr.nuxt-app.localhost'
+      }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('host matches locale\'s domain (en)', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
+    expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
+  })
+
+  test('host matches locale\'s domain (fr)', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'fr.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+  })
+
+  test('x-forwarded-host does not match locale\'s domain', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'xx.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    // Falls back to english.
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
+  })
+
+  test('x-forwarded-host does match locale\'s domain (fr)', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+  })
+})
+
 const TRAILING_SLASHES = [undefined, false, true]
 
 for (const trailingSlash of TRAILING_SLASHES) {
@@ -478,37 +593,6 @@ for (const trailingSlash of TRAILING_SLASHES) {
     })
   })
 }
-
-describe('locales as string array', () => {
-  /** @type {Nuxt} */
-  let nuxt
-
-  beforeAll(async () => {
-    const overrides = { i18n: { seo: false } }
-    const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
-    // Override those after merging to overwrite original values.
-    testConfig.i18n.locales = ['en', 'fr']
-
-    console.info({ testConfig })
-    nuxt = (await setup(testConfig)).nuxt
-  })
-
-  afterAll(async () => {
-    await nuxt.close()
-  })
-
-  test('renders default locale', async () => {
-    const html = await get('/about')
-    const dom = getDom(html)
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
-  })
-
-  test('renders non-default locale', async () => {
-    const html = await get('/fr/about')
-    const dom = getDom(html)
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
-  })
-})
 
 describe('hreflang', () => {
   /** @type {Nuxt} */
@@ -1130,90 +1214,6 @@ describe('baseUrl', () => {
     ]
 
     expect(seoTags).toEqual(expectedSeoTags)
-  })
-})
-
-describe('differentDomains enabled', () => {
-  /** @type {Nuxt} */
-  let nuxt
-
-  beforeAll(async () => {
-    const override = {
-      i18n: {
-        differentDomains: true,
-        seo: false
-      }
-    }
-
-    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
-
-    // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
-      {
-        code: 'en',
-        iso: 'en-US',
-        name: 'English',
-        domain: 'en.nuxt-app.localhost'
-      },
-      {
-        code: 'fr',
-        iso: 'fr-FR',
-        name: 'Français',
-        domain: 'fr.nuxt-app.localhost'
-      }
-    ]
-
-    nuxt = (await setup(localConfig)).nuxt
-  })
-
-  afterAll(async () => {
-    await nuxt.close()
-  })
-
-  test('host matches locale\'s domain (en)', async () => {
-    const requestOptions = {
-      headers: {
-        Host: 'en.nuxt-app.localhost'
-      }
-    }
-    const html = await get('/', requestOptions)
-    const dom = getDom(html)
-    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
-    expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
-  })
-
-  test('host matches locale\'s domain (fr)', async () => {
-    const requestOptions = {
-      headers: {
-        Host: 'fr.nuxt-app.localhost'
-      }
-    }
-    const html = await get('/', requestOptions)
-    const dom = getDom(html)
-    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
-  })
-
-  test('x-forwarded-host does not match locale\'s domain', async () => {
-    const requestOptions = {
-      headers: {
-        'X-Forwarded-Host': 'xx.nuxt-app.localhost'
-      }
-    }
-    const html = await get('/', requestOptions)
-    const dom = getDom(html)
-    // Falls back to english.
-    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
-  })
-
-  test('x-forwarded-host does match locale\'s domain (fr)', async () => {
-    const requestOptions = {
-      headers: {
-        'X-Forwarded-Host': 'fr.nuxt-app.localhost'
-      }
-    }
-    const html = await get('/', requestOptions)
-    const dom = getDom(html)
-    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
   })
 })
 
