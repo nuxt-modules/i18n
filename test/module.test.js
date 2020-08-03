@@ -484,10 +484,9 @@ describe('locales as string array', () => {
   let nuxt
 
   beforeAll(async () => {
-    const testConfig = loadConfig(__dirname, 'basic')
-
+    const overrides = { i18n: { seo: true } }
+    const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
     // Override those after merging to overwrite original values.
-    testConfig.i18n.seo = false
     testConfig.i18n.locales = ['en', 'fr']
 
     nuxt = (await setup(testConfig)).nuxt
@@ -498,15 +497,15 @@ describe('locales as string array', () => {
   })
 
   test('renders default locale', async () => {
-    const html = await get('/fallback')
+    const html = await get('/about')
     const dom = getDom(html)
-    expect(dom.querySelector('h2')?.textContent).toBe('Homepage')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
   })
 
   test('renders non-default locale', async () => {
-    const html = await get('/fr/fallback')
+    const html = await get('/fr/about')
     const dom = getDom(html)
-    expect(dom.querySelector('h2')?.textContent).toBe('Accueil')
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
   })
 })
 
