@@ -497,7 +497,13 @@ describe('locales as string array', () => {
     await nuxt.close()
   })
 
-  test('shows fallback string', async () => {
+  test('renders default locale', async () => {
+    const html = await get('/fallback')
+    const dom = getDom(html)
+    expect(dom.querySelector('h2')?.textContent).toBe('Homepage')
+  })
+
+  test('renders non-default locale', async () => {
     const html = await get('/fr/fallback')
     const dom = getDom(html)
     expect(dom.querySelector('h2')?.textContent).toBe('Accueil')
