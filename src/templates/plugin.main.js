@@ -47,11 +47,11 @@ export default async (context) => {
     registerStore(store, vuex, localeCodes, MODULE_NAME)
   }
 
-  if (process.server) {
+  if (process.server && lazy) {
     context.beforeNuxtRender(({ nuxtState }) => {
       const { locale, locales, defaultLocale } = app.i18n
       // Add current locale if it's not the default one (that one is included in the main bundle).
-      if (lazy && locale && locale !== defaultLocale) {
+      if (locale && locale !== defaultLocale) {
         const localeObject = locales.find(l => l[LOCALE_CODE_KEY] === locale)
         if (localeObject && localeObject.file) {
           nuxtState.__i18n = { langs: { [localeObject.file]: app.i18n.getLocaleMessage(app.i18n.locale) } }
