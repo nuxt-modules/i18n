@@ -484,11 +484,12 @@ describe('locales as string array', () => {
   let nuxt
 
   beforeAll(async () => {
-    const overrides = { i18n: { seo: true } }
+    const overrides = { i18n: { seo: false } }
     const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
     // Override those after merging to overwrite original values.
     testConfig.i18n.locales = ['en', 'fr']
 
+    console.info({ testConfig })
     nuxt = (await setup(testConfig)).nuxt
   })
 
