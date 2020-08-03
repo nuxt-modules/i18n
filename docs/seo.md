@@ -2,6 +2,10 @@
 
 ## Benefits
 
+::: tip NOTE
+Using `seo` option (or alternatively the `$nuxtI18nSeo`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
+:::
+
 When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
 
 - ### `lang` attribute for `<html>` tag
@@ -11,7 +15,6 @@ When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to
 - ### Automatic hreflang generation
 
   Generates `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. The language's ISO codes are used as `hreflang` values.
-
 
   Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a catchall locale hreflang link is provided for each language group (e.g. `en-*`) as well. By default, it is the first language provided but another language can be selected by setting `isCatchallLocale` to `true` on that specific language object in your `nuxt.config.js`. [More on hreflang](https://support.google.com/webmasters/answer/189077)
 

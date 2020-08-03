@@ -27,20 +27,31 @@ export async function loadLanguageAsync (context, locale) {
       if (file) {
         // Hiding template directives from eslint so that parsing doesn't break.
         /* <% if (options.langDir) { %> */
-        try {
-          let langFileModule
-          if (file === defaultLangFile) {
-            langFileModule = defaultLangModule
-          } else {
-            langFileModule = await import(/* webpackChunkName: "lang-[request]" */ `./langs/${file}`)
+        let messages
+        if (process.client) {
+          const { nuxtState } = context
+          if (nuxtState.__i18n && nuxtState.__i18n.langs[file]) {
+            messages = nuxtState.__i18n.langs[file]
           }
-          const messages = langFileModule.default || langFileModule
-          const result = typeof messages === 'function' ? await Promise.resolve(messages(context, locale)) : messages
-          app.i18n.setLocaleMessage(locale, result)
+        }
+        if (!messages) {
+          try {
+            let langFileModule
+            if (file === defaultLangFile) {
+              langFileModule = defaultLangModule
+            } else {
+              langFileModule = await import(/* webpackChunkName: "lang-[request]" */ `./langs/${file}`)
+            }
+            const getter = langFileModule.default || langFileModule
+            messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error(error)
+          }
+        }
+        if (messages) {
+          app.i18n.setLocaleMessage(locale, messages)
           app.i18n.loadedLanguages.push(locale)
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error(error)
         }
         /* <% } %> */
       } else {
