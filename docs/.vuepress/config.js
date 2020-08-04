@@ -19,7 +19,7 @@ module.exports = {
       apiKey: '3e37c242d902c4d6c469abc8573b7533',
       indexName: 'nuxt-i18n'
     },
-    repo: 'nuxt-community/nuxt-i18n',
+    repo: 'nuxt-community/i18n-module',
     editLinks: true,
     docsDir: 'docs',
     locales: {
@@ -30,7 +30,7 @@ module.exports = {
         nav: [
           { text: 'Guide', link: '/' },
           { text: 'API Reference', link: '/api/' },
-          { text: 'Release Notes', link: 'https://github.com/nuxt-community/nuxt-i18n/blob/master/CHANGELOG.md' }
+          { text: 'Release Notes', link: 'https://github.com/nuxt-community/i18n-module/blob/master/CHANGELOG.md' }
         ],
         sidebar: {
           '/': sidebarLinks('en')
@@ -43,7 +43,7 @@ module.exports = {
         nav: [
           { text: 'Guía', link: '/es/' },
           { text: 'Referencias API', link: '/es/api/' },
-          { text: 'Notas de la versión', link: 'https://github.com/nuxt-community/nuxt-i18n/blob/master/CHANGELOG.md' }
+          { text: 'Notas de la versión', link: 'https://github.com/nuxt-community/i18n-module/blob/master/CHANGELOG.md' }
         ],
         sidebar: {
           '/es/': sidebarLinks('es')
