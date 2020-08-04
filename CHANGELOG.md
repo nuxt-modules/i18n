@@ -1,3 +1,10 @@
+### [6.13.4](https://github.com/nuxt-community/i18n-module/compare/v6.13.3...v6.13.4) (2020-08-04)
+
+
+### Bug Fixes
+
+* **lazy:** webpack error when only default locale exists ([#825](https://github.com/nuxt-community/i18n-module/issues/825)) ([97f1dd8](https://github.com/nuxt-community/i18n-module/commit/97f1dd8e101a69282acb509ec0d9a3202f99a1d1)), closes [#824](https://github.com/nuxt-community/i18n-module/issues/824)
+
 ### [6.13.3](https://github.com/nuxt-community/i18n-module/compare/v6.13.2...v6.13.3) (2020-08-04)
 
 
