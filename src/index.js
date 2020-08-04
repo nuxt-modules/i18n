@@ -31,22 +31,32 @@ module.exports = function (userOptions) {
 
   if (!Object.values(STRATEGIES).includes(options.strategy)) {
     // eslint-disable-next-line no-console
-    console.error('[' + options.MODULE_NAME + '] Invalid "strategy" option "' + options.strategy + '" (must be one of: ' + Object.values(STRATEGIES).join(', ') + ').')
+    console.error('[' + MODULE_NAME + '] Invalid "strategy" option "' + options.strategy + '" (must be one of: ' + Object.values(STRATEGIES).join(', ') + ').')
     return
   }
 
   let defaultLangFile
+  let hasNonDefaultLangFiles = false
 
   // Copy lang files to the build directory.
   if (options.langDir) {
     if (!options.locales.length || typeof options.locales[0] === 'string') {
-      console.warn('[' + options.MODULE_NAME + '] When using "langDir" option, the "locales" option must be a list of objects')
+      console.error('[' + MODULE_NAME + '] When using "langDir" option, the "locales" option must be a list of objects')
     }
 
     const uniqueFiles = new Set(options.locales.map(locale => locale.file))
 
     if (options.defaultLocale) {
-      defaultLangFile = options.locales.find(locale => locale.code === options.defaultLocale).file
+      const defaultLocaleObject = options.locales.find(locale => locale.code === options.defaultLocale)
+      if (defaultLocaleObject) {
+        if (defaultLocaleObject.file) {
+          defaultLangFile = defaultLocaleObject.file
+        } else {
+          console.error(`[${MODULE_NAME}] Default locale is missing the "file" property (required when using "langDir" option)`)
+        }
+      } else {
+        console.error(`[${MODULE_NAME}] Default locale is set to "${options.defaultLocale}" but no locale with that "code" was found`)
+      }
     }
 
     for (const file of uniqueFiles) {
@@ -55,6 +65,9 @@ module.exports = function (userOptions) {
         src: resolve(this.options.srcDir, options.langDir, file),
         fileName: join(ROOT_DIR, (isUsingDefaultLangFile ? 'default-lang' : 'langs'), file)
       })
+      if (!isUsingDefaultLangFile) {
+        hasNonDefaultLangFiles = true
+      }
     }
   }
 
@@ -72,6 +85,7 @@ module.exports = function (userOptions) {
     STRATEGIES,
     COMPONENT_OPTIONS_KEY,
     defaultLangFile,
+    hasNonDefaultLangFiles,
     localeCodes,
     trailingSlash
   }
@@ -104,12 +118,12 @@ module.exports = function (userOptions) {
     }
   } else if (options.differentDomains) {
     // eslint-disable-next-line no-console
-    console.warn('[' + options.MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
+    console.warn('[' + MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
   }
 
   if ('forwardedHost' in options) {
     // eslint-disable-next-line no-console
-    console.warn('[' + options.MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.')
+    console.warn('[' + MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.')
   }
 
   const templatesPath = join(__dirname, '/templates')
