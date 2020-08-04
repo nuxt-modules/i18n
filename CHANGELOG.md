@@ -1,3 +1,11 @@
+### [6.13.3](https://github.com/nuxt-community/i18n-module/compare/v6.13.2...v6.13.3) (2020-08-04)
+
+
+### Bug Fixes
+
+* **lazy:** include default locale in the main bundle ([#819](https://github.com/nuxt-community/i18n-module/issues/819)) ([6ed4ae6](https://github.com/nuxt-community/i18n-module/commit/6ed4ae616a0c9b555e3966c169886d3650427e07)), closes [#818](https://github.com/nuxt-community/i18n-module/issues/818)
+* **lazy:** make client use translations loaded on the server ([#823](https://github.com/nuxt-community/i18n-module/issues/823)) ([06bc5f1](https://github.com/nuxt-community/i18n-module/commit/06bc5f1fce1c1349a7b035a40fd698f5ae7ac7f1)), closes [#486](https://github.com/nuxt-community/i18n-module/issues/486) [#663](https://github.com/nuxt-community/i18n-module/issues/663)
+
 ### [6.13.2](https://github.com/nuxt-community/i18n-module/compare/v6.13.1...v6.13.2) (2020-07-31)
 
 
