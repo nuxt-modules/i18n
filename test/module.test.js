@@ -1262,6 +1262,49 @@ describe('en-US locale with no explicit default locale (issue #628)', () => {
   })
 })
 
+describe('lazy with single (default) locale', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        defaultLocale: 'en-US',
+        vueI18n: {
+          messages: null
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      {
+        code: 'en-US',
+        iso: 'en-US',
+        name: 'English',
+        file: 'en-US.js'
+      }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  // Issue https://github.com/nuxt-community/i18n-module/issues/824
+  test('page loads without errors (issue #824)', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
+  })
+})
+
 describe('external vue-i18n configuration', () => {
   /** @type {Nuxt} */
   let nuxt

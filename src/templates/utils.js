@@ -40,7 +40,9 @@ export async function loadLanguageAsync (context, locale) {
             if (file === defaultLangFile) {
               langFileModule = defaultLangModule
             } else {
+              /* <% if (options.hasNonDefaultLangFiles) { %> */
               langFileModule = await import(/* webpackChunkName: "lang-[request]" */ `./langs/${file}`)
+              /* <% } %> */
             }
             const getter = langFileModule.default || langFileModule
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
