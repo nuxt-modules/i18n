@@ -1,3 +1,10 @@
+### [6.13.5](https://github.com/nuxt-community/i18n-module/compare/v6.13.4...v6.13.5) (2020-08-04)
+
+
+### Bug Fixes
+
+* **lazy:** don't try to copy locales to build dir at run-time ([#827](https://github.com/nuxt-community/i18n-module/issues/827)) ([55dac74](https://github.com/nuxt-community/i18n-module/commit/55dac7459c3f5f50517af3009c27a2c5a46c7c82)), closes [#826](https://github.com/nuxt-community/i18n-module/issues/826)
+
 ### [6.13.4](https://github.com/nuxt-community/i18n-module/compare/v6.13.3...v6.13.4) (2020-08-04)
 
 
