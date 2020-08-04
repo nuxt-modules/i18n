@@ -1,3 +1,10 @@
+### [6.13.6](https://github.com/nuxt-community/i18n-module/compare/v6.13.5...v6.13.6) (2020-08-04)
+
+
+### Bug Fixes
+
+* restore compatibility with Nuxt <2.14 ([#830](https://github.com/nuxt-community/i18n-module/issues/830)) ([02f6b99](https://github.com/nuxt-community/i18n-module/commit/02f6b997e95dce50bf3d45c90f59686461c7f82e)), closes [#829](https://github.com/nuxt-community/i18n-module/issues/829)
+
 ### [6.13.5](https://github.com/nuxt-community/i18n-module/compare/v6.13.4...v6.13.5) (2020-08-04)
 
 
