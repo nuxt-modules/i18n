@@ -111,6 +111,7 @@ exports.makeRoutes = (baseRoutes, {
 
       // Add route prefix if needed
       const shouldAddPrefix = (
+        strategy !== STRATEGIES.NO_PREFIX &&
         // No prefix if app uses different locale domains
         !differentDomains &&
         // No need to add prefix if child's path is relative
@@ -139,7 +140,18 @@ exports.makeRoutes = (baseRoutes, {
 
       localizedRoute.path = path
 
-      routes.push(localizedRoute)
+      if (strategy === STRATEGIES.NO_PREFIX && localizedRoute.path === route.path) {
+        // skip
+      } else {
+        routes.push(localizedRoute)
+      }
+    }
+
+    if (strategy === STRATEGIES.NO_PREFIX) {
+      // To avoid duplicate paths, only add original route if there is no route with that path already.
+      if (!routes.find(r => r.path === route.path)) {
+        routes.push(route)
+      }
     }
 
     return routes

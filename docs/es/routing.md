@@ -47,10 +47,6 @@ Existen cuatro estrategias compatibles para generar las rutas de la aplicación:
 
 Con esta estrategia, sus rutas no tendrán un prefijo de configuración local agregado. La configuración local se detectará y cambiará sin cambiar la URL. Esto implica que debe confiar en la detección del navegador y las cookies, e implementar interruptores locales llamando a la API i18n.
 
-::: warning ADVERTENCIA
-Esta estrategia no es compatible con las  [Rutas personalizadas](#custom-paths) y las funciones [Ignorar rutas](#ignore-routes).
-:::
-
 ### prefix_except_default
 
 Con esta estrategia, todas sus rutas tendrán un prefijo de configuración local agregado, excepto el idioma predeterminado.

@@ -31,11 +31,6 @@ function localeRoute (route, locale) {
 
   const { i18n } = this
 
-  if (strategy === STRATEGIES.NO_PREFIX && locale && locale !== i18n.locale) {
-    // eslint-disable-next-line no-console
-    console.warn(`[${MODULE_NAME}] Passing non-current locale to localePath is unsupported when using no_prefix strategy`)
-  }
-
   locale = locale || i18n.locale
 
   if (!locale) {
@@ -62,7 +57,7 @@ function localeRoute (route, locale) {
         // don't prefix default locale
         !(isDefaultLocale && [STRATEGIES.PREFIX_EXCEPT_DEFAULT, STRATEGIES.PREFIX_AND_DEFAULT].includes(strategy)) &&
         // no prefix for any language
-        !(strategy === STRATEGIES.NO_PREFIX) &&
+        strategy !== STRATEGIES.NO_PREFIX &&
         // no prefix for different domains
         !i18n.differentDomains
 
@@ -87,11 +82,6 @@ function localeRoute (route, locale) {
 
 function switchLocalePath (locale) {
   const i18n = this.i18n
-
-  if (strategy === STRATEGIES.NO_PREFIX && locale && locale !== i18n.locale) {
-    // eslint-disable-next-line no-console
-    console.warn(`[${MODULE_NAME}] Passing non-current locale to switchLocalePath is unsupported when using no_prefix strategy`)
-  }
 
   const name = this.getRouteBaseName()
   if (!name) {

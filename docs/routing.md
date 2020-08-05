@@ -48,10 +48,6 @@ There are four supported strategies for generating the app's routes:
 
 With this strategy, your routes won't have a locale prefix added. The locale will be detected & changed without changing the URL. This implies that you have to rely on browser & cookie detection, and implement locale switches by calling the i18n API.
 
-::: warning
-This strategy doesn't support [Custom paths](#custom-paths) and [Ignore routes](#ignore-routes) features.
-:::
-
  - ### prefix_except_default
 
 Using this strategy, all of your routes will have a locale prefix added except for the default language.
