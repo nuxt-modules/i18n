@@ -1,12 +1,4 @@
-import {
-  LOCALE_CODE_KEY,
-  LOCALE_FILE_KEY,
-  MODULE_NAME,
-  defaultLangFile
-} from './options'
-/* <% if (options.defaultLangFile) { %> */
-import defaultLangModule from './default-lang/<%= options.defaultLangFile %>'
-/* <% } %> */
+import { LOCALE_CODE_KEY, LOCALE_FILE_KEY, MODULE_NAME } from './options'
 
 /**
  * Asynchronously load messages from translation files
@@ -30,20 +22,13 @@ export async function loadLanguageAsync (context, locale) {
         let messages
         if (process.client) {
           const { nuxtState } = context
-          if (nuxtState.__i18n && nuxtState.__i18n.langs[file]) {
-            messages = nuxtState.__i18n.langs[file]
+          if (nuxtState.__i18n && nuxtState.__i18n.langs[locale]) {
+            messages = nuxtState.__i18n.langs[locale]
           }
         }
         if (!messages) {
           try {
-            let langFileModule
-            if (file === defaultLangFile) {
-              langFileModule = defaultLangModule
-            } else {
-              /* <% if (options.hasNonDefaultLangFiles) { %> */
-              langFileModule = await import(/* webpackChunkName: "lang-[request]" */ `./langs/${file}`)
-              /* <% } %> */
-            }
+            const langFileModule = await import(/* webpackChunkName: "lang-[request]" */ `~/<%= options.langDir %>${file}`)
             const getter = langFileModule.default || langFileModule
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
