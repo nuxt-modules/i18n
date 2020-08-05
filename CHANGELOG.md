@@ -1,3 +1,10 @@
+### [6.13.7](https://github.com/nuxt-community/i18n-module/compare/v6.13.6...v6.13.7) (2020-08-05)
+
+
+### Bug Fixes
+
+* **lazy:** error importing file when having imports within "locale.file" ([3cb1d2a](https://github.com/nuxt-community/i18n-module/commit/3cb1d2af38cf3f14e5b2b942d9b0ef528af00b09)), closes [#835](https://github.com/nuxt-community/i18n-module/issues/835)
+
 ### [6.13.6](https://github.com/nuxt-community/i18n-module/compare/v6.13.5...v6.13.6) (2020-08-04)
 
 
