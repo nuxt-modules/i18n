@@ -14,32 +14,6 @@ export async function buildHook (moduleContainer, options) {
     if (!options.locales.length || typeof options.locales[0] === 'string') {
       console.error('[' + MODULE_NAME + '] When using "langDir" option, the "locales" option must be a list of objects')
     }
-
-    const uniqueFiles = new Set(options.locales.map(locale => locale.file))
-
-    if (options.defaultLocale) {
-      const defaultLocaleObject = options.locales.find(locale => locale.code === options.defaultLocale)
-      if (defaultLocaleObject) {
-        if (defaultLocaleObject.file) {
-          defaultLangFile = defaultLocaleObject.file
-        } else {
-          console.error(`[${MODULE_NAME}] Default locale is missing the "file" property (required when using "langDir" option)`)
-        }
-      } else {
-        console.error(`[${MODULE_NAME}] Default locale is set to "${options.defaultLocale}" but no locale with that "code" was found`)
-      }
-    }
-
-    for (const file of uniqueFiles) {
-      const isUsingDefaultLangFile = file === defaultLangFile
-      moduleContainer.addTemplate({
-        src: resolve(nuxtOptions.srcDir, options.langDir, file),
-        fileName: join(ROOT_DIR, (isUsingDefaultLangFile ? 'default-lang' : 'langs'), file)
-      })
-      if (!isUsingDefaultLangFile) {
-        hasNonDefaultLangFiles = true
-      }
-    }
   }
 
   const localeCodes = getLocaleCodes(options.locales)
@@ -55,8 +29,6 @@ export async function buildHook (moduleContainer, options) {
     LOCALE_FILE_KEY,
     STRATEGIES,
     COMPONENT_OPTIONS_KEY,
-    defaultLangFile,
-    hasNonDefaultLangFiles,
     localeCodes,
     trailingSlash
   }

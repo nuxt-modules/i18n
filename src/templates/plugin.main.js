@@ -12,6 +12,7 @@ import {
   lazy,
   LOCALE_CODE_KEY,
   LOCALE_DOMAIN_KEY,
+  LOCALE_FILE_KEY,
   localeCodes,
   locales,
   MODULE_NAME,
@@ -49,14 +50,15 @@ export default async (context) => {
 
   if (process.server && lazy) {
     context.beforeNuxtRender(({ nuxtState }) => {
-      const { locale, locales, defaultLocale } = app.i18n
-      // Add current locale if it's not the default one (that one is included in the main bundle).
-      if (locale && locale !== defaultLocale) {
-        const localeObject = locales.find(l => l[LOCALE_CODE_KEY] === locale)
-        if (localeObject && localeObject.file) {
-          nuxtState.__i18n = { langs: { [localeObject.file]: app.i18n.getLocaleMessage(app.i18n.locale) } }
-        }
+      const langs = {}
+      const { locale } = app.i18n
+      if (locale) {
+        langs[locale] = app.i18n.getLocaleMessage(locale)
       }
+      if (defaultLocale && locale !== defaultLocale) {
+        langs[defaultLocale] = app.i18n.getLocaleMessage(defaultLocale)
+      }
+      nuxtState.__i18n = { langs }
     })
   }
 
