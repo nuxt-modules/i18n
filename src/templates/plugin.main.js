@@ -12,7 +12,6 @@ import {
   lazy,
   LOCALE_CODE_KEY,
   LOCALE_DOMAIN_KEY,
-  LOCALE_FILE_KEY,
   localeCodes,
   locales,
   MODULE_NAME,
