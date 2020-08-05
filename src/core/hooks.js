@@ -6,9 +6,6 @@ import { MODULE_NAME, ROOT_DIR, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DOMAIN_K
 export async function buildHook (moduleContainer, options) {
   const nuxtOptions = moduleContainer.options
 
-  let defaultLangFile
-  let hasNonDefaultLangFiles = false
-
   // Copy lang files to the build directory.
   if (options.langDir) {
     if (!options.locales.length || typeof options.locales[0] === 'string') {

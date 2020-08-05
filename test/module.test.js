@@ -19,7 +19,6 @@ describe('locales as string array', () => {
     // Override those after merging to overwrite original values.
     testConfig.i18n.locales = ['en', 'fr']
 
-    console.info({ testConfig })
     nuxt = (await setup(testConfig)).nuxt
   })
 
