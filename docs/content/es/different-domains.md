@@ -8,7 +8,11 @@ category: Guía
 Es posible que desee utilizar un nombre de dominio diferente para cada idioma que admita su aplicación. Debe lograr esto:
 
 * Establezca la opción `differentDomains` en `true`
-* Configure la opción `locales` como una matriz de objetos, donde cada objeto tiene una clave `domain` cuyo valor es el nombre de dominio que desea usar para la configuración local
+* Configure `locales` option as an array of objects, where each object has a `domain` key which value is the domain name you'd like to use for that locale (including port if non-default)
+
+:::tip
+You might want to set `detectBrowserLanguage` to `false`. When enabled (it is by default), user can get redirected to a different domain on first visit. Set to `false` if you want to ensure that visiting given domain always shows page in the corresponding locale.
+:::
 
 ```js{}[nuxt.config.js]
 

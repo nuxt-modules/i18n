@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { generate, setup, loadConfig, url } from '@nuxtjs/module-test-utils'
+import { generate, setup, loadConfig, url, generatePort } from '@nuxtjs/module-test-utils'
 import { chromium } from 'playwright-chromium'
 import { startHttpServer } from './utils'
 
@@ -783,5 +783,60 @@ describe(`${browserString} (vuex disabled)`, () => {
     const page2 = await browser.newPage()
     await page2.goto(url('/fr'))
     expect(await (await page2.$('body'))?.textContent()).toContain('locale: fr')
+  })
+})
+
+describe('differentDomains', () => {
+  /** @type {Nuxt} */
+  let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+  let port
+
+  beforeAll(async () => {
+    port = await generatePort()
+    const overrides = {
+      i18n: {
+        detectBrowserLanguage: false,
+        differentDomains: true,
+        seo: false,
+        vuex: false
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        domain: 'en.nuxt-app.localhost'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français',
+        // Since we can't use custom domain in browser test, we'll make FR locale match the used one.
+        domain: `localhost:${port}`
+      }
+    ]
+
+    nuxt = (await setup(localConfig, { port })).nuxt
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+    await nuxt.close()
+  })
+
+  test('navigates to route with correct locale', async () => {
+    const page = await browser.newPage()
+    await page.goto(url('/'))
+    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
   })
 })
