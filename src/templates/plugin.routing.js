@@ -99,6 +99,11 @@ function switchLocalePath (locale) {
   }
 
   const { route, store } = this
+
+  if (!route) {
+    return ''
+  }
+
   const { params, ...routeCopy } = route
   let langSwitchParams = {}
   if (vuex && vuex.syncRouteParams && store) {
@@ -136,7 +141,7 @@ function switchLocalePath (locale) {
 
 function getRouteBaseName (givenRoute) {
   const route = givenRoute !== undefined ? givenRoute : this.route
-  if (!route.name) {
+  if (!route || !route.name) {
     return null
   }
   return route.name.split(routesNameSeparator)[0]
