@@ -1,3 +1,11 @@
+### [6.13.8](https://github.com/nuxt-community/i18n-module/compare/v6.13.7...v6.13.8) (2020-08-11)
+
+
+### Bug Fixes
+
+* don't crash on missing route when parsing page component options ([#841](https://github.com/nuxt-community/i18n-module/issues/841)) ([46bbdc5](https://github.com/nuxt-community/i18n-module/commit/46bbdc5e0a7403f2527dfde2c178e4da83140bdf)), closes [#838](https://github.com/nuxt-community/i18n-module/issues/838)
+* null-check route to avoid rare crashes ([fc02a65](https://github.com/nuxt-community/i18n-module/commit/fc02a657578f2556277af6cee67aefd0ca1e5dc6))
+
 ### [6.13.7](https://github.com/nuxt-community/i18n-module/compare/v6.13.6...v6.13.7) (2020-08-05)
 
 
