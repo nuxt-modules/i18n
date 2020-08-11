@@ -14,7 +14,19 @@ const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
  */
 exports.extractComponentOptions = path => {
   let componentOptions = {}
-  const Component = compiler.parseComponent(readFileSync(path).toString())
+  let contents
+  try {
+    contents = readFileSync(path).toString()
+  } catch (error) {
+    console.warn(`[${MODULE_NAME}] Couldn't read page component file (${error.message})`)
+  }
+
+  if (!contents) {
+    return componentOptions
+  }
+
+  const Component = compiler.parseComponent(contents)
+
   if (!Component.script || Component.script.content.length < 1) {
     return componentOptions
   }
