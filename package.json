@@ -105,7 +105,7 @@
     "@types/jest-dev-server": "4.2.0",
     "@types/jsdom": "16.2.3",
     "@types/request-promise-native": "1.0.17",
-    "argparse": "1.0.10",
+    "argparse": "2.0.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "codecov": "3.7.2",
