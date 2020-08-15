@@ -55,30 +55,30 @@ function startServer (path, port, noTrailingSlashRedirect, verbose) {
 
 const parser = new ArgumentParser()
 
-parser.addArgument('path', {
-  type: 'string',
+parser.add_argument('path', {
+  type: 'str',
   help: 'The path to start server in'
 })
 
-parser.addArgument(['-p', '--port'], {
+parser.add_argument('-p', '--port', {
   type: 'int',
-  defaultValue: 3000,
+  default: 3000,
   help: 'Port to run on (default: 3000)'
 })
 
-parser.addArgument('--no-trailing-slash-redirect', {
-  action: 'storeTrue',
-  defaultValue: false,
+parser.add_argument('--no-trailing-slash-redirect', {
+  action: 'store_true',
+  default: false,
   help: 'Disables redirection to path with trailing slash for directory requests'
 })
 
-parser.addArgument(['-v', '--verbose'], {
-  action: 'storeTrue',
-  defaultValue: false,
+parser.add_argument('-v', '--verbose', {
+  action: 'store_true',
+  default: false,
   help: 'Enable verbose logging'
 })
 
-const args = parser.parseArgs()
+const args = parser.parse_args()
 
 /** @type {import('http').Server | null} */
 let server = startServer(args.path, args.port, args.no_trailing_slash_redirect, args.verbose)
