@@ -1,3 +1,10 @@
+### [6.13.9](https://github.com/nuxt-community/i18n-module/compare/v6.13.8...v6.13.9) (2020-08-15)
+
+
+### Bug Fixes
+
+* **lazy:** failure to load locales on SPA navigation to default locale ([#846](https://github.com/nuxt-community/i18n-module/issues/846)) ([c2aafd6](https://github.com/nuxt-community/i18n-module/commit/c2aafd63601675a2745e2fe2c052ccb1cc6e2802)), closes [#843](https://github.com/nuxt-community/i18n-module/issues/843)
+
 ### [6.13.8](https://github.com/nuxt-community/i18n-module/compare/v6.13.7...v6.13.8) (2020-08-11)
 
 
