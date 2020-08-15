@@ -1,3 +1,4 @@
+import deepcopy from 'deepcopy'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
@@ -50,12 +51,12 @@ export default async (context) => {
   if (process.server && lazy) {
     context.beforeNuxtRender(({ nuxtState }) => {
       const langs = {}
-      const { locale } = app.i18n
+      const { fallbackLocale, locale } = app.i18n
       if (locale) {
         langs[locale] = app.i18n.getLocaleMessage(locale)
       }
-      if (defaultLocale && locale !== defaultLocale) {
-        langs[defaultLocale] = app.i18n.getLocaleMessage(defaultLocale)
+      if (fallbackLocale && locale !== fallbackLocale) {
+        langs[fallbackLocale] = app.i18n.getLocaleMessage(fallbackLocale)
       }
       nuxtState.__i18n = { langs }
     })
@@ -219,7 +220,7 @@ export default async (context) => {
   }
 
   // Set instance options
-  const vueI18nOptions = typeof vueI18n === 'function' ? vueI18n(context) : vueI18n
+  const vueI18nOptions = typeof vueI18n === 'function' ? vueI18n(context) : deepcopy(vueI18n)
   vueI18nOptions.componentInstanceCreatedListener = extendVueI18nInstance
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
