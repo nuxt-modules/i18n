@@ -21,13 +21,12 @@ declare module 'vue-i18n' {
  */
 declare module 'vue/types/vue' {
   interface Vue {
+    readonly $i18n: VueI18n & IVueI18n
+    $nuxtI18nSeo(): NuxtI18nSeo
+    getRouteBaseName(route?: Route): string
     localePath(route: RawLocation, locale?: string): string
     localeRoute(route: RawLocation, locale?: string): Location | undefined
     switchLocalePath(locale: string): string
-    getRouteBaseName(route?: Route): string
-    $nuxtI18nSeo(): NuxtI18nSeo
-    // PHPStorm without this indicates that "$i18n" was not found.
-    readonly $i18n: VueI18n & IVueI18n
   }
 }
 
@@ -43,6 +42,10 @@ declare module 'vue/types/options' {
 declare module '@nuxt/types' {
   interface NuxtAppOptions extends NuxtVueI18n.Options.NuxtI18nInterface {
     readonly i18n: VueI18n & IVueI18n
+    getRouteBaseName(route?: Route): string
+    localePath(route: RawLocation, locale?: string): string
+    localeRoute(route: RawLocation, locale?: string): Location | undefined
+    switchLocalePath(locale: string): string
   }
 
   interface NuxtOptions {
