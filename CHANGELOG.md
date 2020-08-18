@@ -1,3 +1,11 @@
+### [6.13.10](https://github.com/nuxt-community/i18n-module/compare/v6.13.9...v6.13.10) (2020-08-18)
+
+
+### Bug Fixes
+
+* **routes:** fix routes being generated after other modules ([#851](https://github.com/nuxt-community/i18n-module/issues/851)) ([b453191](https://github.com/nuxt-community/i18n-module/commit/b45319182d07c471ef871d0a59cdb952ccff5803)), closes [#850](https://github.com/nuxt-community/i18n-module/issues/850)
+* **types:** add types for app.localePath and co. ([#849](https://github.com/nuxt-community/i18n-module/issues/849)) ([dfd6d76](https://github.com/nuxt-community/i18n-module/commit/dfd6d76d3082e28ed42040df218e0b71b93eb590))
+
 ### [6.13.9](https://github.com/nuxt-community/i18n-module/compare/v6.13.8...v6.13.9) (2020-08-15)
 
 
