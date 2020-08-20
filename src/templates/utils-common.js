@@ -180,7 +180,8 @@ export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKe
   const cookieOptions = {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
-    sameSite: 'none'
+    sameSite: 'none',
+    secure: true
   }
 
   if (cookieDomain) {
