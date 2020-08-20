@@ -38,11 +38,20 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
   for (const [index, browserCode] of browserLocales.entries()) {
     if (browserCode.includes('-')) {
       // For backwards-compatibility, this is lower-cased before comparing.
-      const languageCode = browserCode.split('-')[0].toLowerCase()
+      const languageCodeBrowser = browserCode.split('-')[0].toLowerCase()
 
-      if (appLocales.includes(languageCode)) {
+      const matchedCode = appLocales.find(appCode => {
+        let languageCodeLocale
+        if (appCode.includes('-')) {
+          languageCodeLocale = appCode.split('-')[0]
+        } else {
+          languageCodeLocale = appCode
+        }
+        return languageCodeLocale.toLowerCase() === languageCodeBrowser
+      })
+      if (matchedCode) {
         // Deduct a thousandth for being non-exact match.
-        matchedLocales.push({ code: languageCode, score: 0.999 - index / browserLocales.length })
+        matchedLocales.push({ code: matchedCode, score: 0.999 - index / browserLocales.length })
         break
       }
     }

@@ -94,4 +94,11 @@ describe('matchBrowserLocale', () => {
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en-gb')
   })
+
+  test('matches locale when only languages match', () => {
+    const appLocales = ['en-GB', 'en-US']
+    const browserLocales = ['en-IN', 'en']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en-GB')
+  })
 })
