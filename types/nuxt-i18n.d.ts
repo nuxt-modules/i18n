@@ -29,6 +29,7 @@ declare namespace NuxtVueI18n {
 
     interface DetectBrowserLanguageInterface {
       useCookie?: boolean
+      crossOriginCookie?: boolean
       cookieDomain?: string | null
       cookieKey?: string
       alwaysRedirect?: boolean
