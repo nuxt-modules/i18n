@@ -170,9 +170,9 @@ export const getLocaleCookie = (req, { useCookie, cookieKey, localeCodes }) => {
 /**
  * @param {string} locale
  * @param {object} [res]
- * @param {{ useCookie: boolean, cookieDomain: string, cookieKey: string}} options
+ * @param {{ useCookie: boolean, cookieDomain: string, cookieKey: string, crossOriginCookie: boolean}} options
  */
-export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKey }) => {
+export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKey, crossOriginCookie }) => {
   if (!useCookie) {
     return
   }
@@ -180,8 +180,8 @@ export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKe
   const cookieOptions = {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
-    sameSite: 'none',
-    secure: true
+    sameSite: crossOriginCookie ? 'none' : 'lax',
+    secure: !!crossOriginCookie
   }
 
   if (cookieDomain) {
