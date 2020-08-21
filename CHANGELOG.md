@@ -1,3 +1,10 @@
+### [6.13.11](https://github.com/nuxt-community/i18n-module/compare/v6.13.10...v6.13.11) (2020-08-21)
+
+
+### Bug Fixes
+
+* **lazy:** null-check nuxtState as it might not exist in SPA ([#859](https://github.com/nuxt-community/i18n-module/issues/859)) ([6763390](https://github.com/nuxt-community/i18n-module/commit/676339076c3dad802dbf966863c52bae75f3c63b)), closes [#858](https://github.com/nuxt-community/i18n-module/issues/858)
+
 ### [6.13.10](https://github.com/nuxt-community/i18n-module/compare/v6.13.9...v6.13.10) (2020-08-18)
 
 
