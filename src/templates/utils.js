@@ -22,7 +22,7 @@ export async function loadLanguageAsync (context, locale) {
         let messages
         if (process.client) {
           const { nuxtState } = context
-          if (nuxtState.__i18n && nuxtState.__i18n.langs[locale]) {
+          if (nuxtState && nuxtState.__i18n && nuxtState.__i18n.langs[locale]) {
             messages = nuxtState.__i18n.langs[locale]
           }
         }
