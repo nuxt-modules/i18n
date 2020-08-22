@@ -34,6 +34,9 @@ export async function createExtendRoutesHook (moduleContainer, options) {
 export function buildHook (moduleContainer, options) {
   const nuxtOptions = moduleContainer.options
 
+  // Transpile deepcopy dependency that is not sufficiently transpiled for IE11.
+  nuxtOptions.build.transpile.push(({ isServer, isModern }) => isServer || isModern ? false : 'deepcopy')
+
   // Copy lang files to the build directory.
   if (options.langDir) {
     if (!options.locales.length || typeof options.locales[0] === 'string') {
