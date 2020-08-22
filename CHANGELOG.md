@@ -1,3 +1,10 @@
+### [6.13.12](https://github.com/nuxt-community/i18n-module/compare/v6.13.11...v6.13.12) (2020-08-22)
+
+
+### Bug Fixes
+
+* force-transpile deepcopy dependency to fix IE11 ([#861](https://github.com/nuxt-community/i18n-module/issues/861)) ([9b9fec5](https://github.com/nuxt-community/i18n-module/commit/9b9fec5f6e47392a8cf0b80cf3b635d2c5d9aa0a)), closes [#860](https://github.com/nuxt-community/i18n-module/issues/860)
+
 ### [6.13.11](https://github.com/nuxt-community/i18n-module/compare/v6.13.10...v6.13.11) (2020-08-21)
 
 
