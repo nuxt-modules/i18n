@@ -61,3 +61,16 @@ Para redirigir al usuario cada vez que visita la aplicación y mantener su elecc
   }
 }]
 ```
+
+To use the cookie within a cross-origin environment (e.g. in an iFrame), you can set `crossOriginCookie: true`. This will change the cookie settings from `SameSite=Lax` to `SameSite=None; Secure`.
+
+```js
+// nuxt.config.js
+['nuxt-i18n', {
+  // ...
+  detectBrowserLanguage: {
+    useCookie: true,
+    crossOriginCookie: true
+  }
+}]
+```

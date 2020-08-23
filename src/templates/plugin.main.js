@@ -62,7 +62,7 @@ export default async (context) => {
     })
   }
 
-  const { useCookie, cookieKey, cookieDomain } = detectBrowserLanguage
+  const { useCookie, cookieKey, cookieDomain, crossOriginCookie } = detectBrowserLanguage
 
   const loadAndSetLocale = async (newLocale, { initialSetup = false } = {}) => {
     // Abort if different domains option enabled
@@ -213,7 +213,7 @@ export default async (context) => {
     i18n.differentDomains = differentDomains
     i18n.beforeLanguageSwitch = beforeLanguageSwitch
     i18n.onLanguageSwitched = onLanguageSwitched
-    i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey })
+    i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, crossOriginCookie })
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
     i18n.__baseUrl = app.i18n.__baseUrl
