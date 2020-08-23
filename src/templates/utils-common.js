@@ -181,7 +181,7 @@ export const setLocaleCookie = (locale, res, { useCookie, cookieDomain, cookieKe
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
     sameSite: crossOriginCookie ? 'none' : 'lax',
-    secure: !!crossOriginCookie
+    secure: crossOriginCookie
   }
 
   if (cookieDomain) {
