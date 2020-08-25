@@ -82,9 +82,7 @@ npm run docs:dev # npm
 
 - Write some doc by editing files in `docs/` directory
 
-> If you're adding new pages, make sure you add them to the table of contents in `docs/.vuepress/config`
-
-> Please make sure all languages are in sync. If you don't speak a particular language, put an english text in place of changed or added text.
+> Please make sure all languages are in sync. If you don't speak a particular language, insert english text in place.
 
 - Commit and push your changes
 - Once you're done, submit that shiny PR!
