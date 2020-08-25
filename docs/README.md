@@ -1,13 +1,27 @@
-<div align="center">
-  <img width="300" height="270" src="../assets/nuxt-i18n-logo.png" alt="nuxt-i18n logo">
-</div>
+# i18n
 
-**nuxt-i18n** provides i18n features for your Nuxt project:
+## Setup
 
-* [vue-i18n](https://github.com/kazupon/vue-i18n) integration
-* Automatic routes generation prefixed with locale code
-* SEO
-* Translations messages lazy-loading
-* Redirection based on browser language
-* Different domain names for each language
-* Vuex store module with current locale & messages
+Install dependencies:
+
+```bash
+yarn install
+```
+
+## Development
+
+```bash
+yarn dev
+```
+
+## Static Generation
+
+This will create the `dist/` directory for publishing to static hosting:
+
+```bash
+yarn generate
+```
+
+To preview the static generated app, run `yarn start`
+
+For detailed explanation on how things work, checkout [nuxt/content](https://content.nuxtjs.org) and [@nuxt/content theme docs](https://content.nuxtjs.org/themes-docs).
