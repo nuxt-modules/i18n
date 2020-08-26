@@ -24,7 +24,7 @@ Todos los [Vue I18n propiedades y métodos](http://kazupon.github.io/vue-i18n/ap
 
   Returns localized path for passed in `route`. If `locale` is not specified, uses current locale.
 
-  See also [Basic usage - nuxt-link](../basic-usage.html#nuxt-link).
+  See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
 <alert type="warning">
 In `no_prefix` strategy, passing `locale` other than the current one is not supported.
@@ -38,7 +38,7 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 
   Returns path of the current route for specified `locale`.
 
-  See also [Basic usage - nuxt-link](../basic-usage.html#nuxt-link).
+  See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
   See type definition for [Location](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125).
 
@@ -60,7 +60,7 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
     - no arguments
   - **Returns**: `NuxtI18nSeo`
 
-  SEO object provided mostly for use with [SEO - Improving Performance](../seo.html#improving-performance).
+  SEO object provided mostly for use with [SEO - Improving Performance](../seo#improving-performance).
 
 ## Extension of VueI18n
 
@@ -118,13 +118,13 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   - **Type**: `Function`
 
-  See [callbacks](../callbacks.html)
+  See [callbacks](../callbacks)
 
 #### onLanguageSwitched
 
   - **Type**: `Function`
 
-  See [callbacks](../callbacks.html)
+  See [callbacks](../callbacks)
 
 ## Extension of Nuxt Context
 

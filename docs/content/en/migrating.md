@@ -14,7 +14,7 @@ Follow this guide to upgrade from one major version to the other.
 
 In some cases, having SEO enabled globally caused performance issues and/or conflicted with other plugins. To mitigate these issues, SEO features are now disabled by default.
 
-If you were affected by one of the issues above, we recommend that you read the [Improve performances](/seo.html#improving-performance) section to enable SEO only where you need it.
+If you were affected by one of the issues above, we recommend that you read the [Improve performances](./seo#improving-performance) section to enable SEO only where you need it.
 
 If you'd like to restore the old behaviour, you can reenable SEO features globally by setting the `seo` option to `true`:
 
