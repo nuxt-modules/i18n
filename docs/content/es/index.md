@@ -1,5 +1,5 @@
 ---
-title: Introduccíon
+title: Introducción
 description: 'i18n (Internacionalización) para tu proyecto de Nuxt'
 position: 1
 category: ''
