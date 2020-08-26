@@ -12,7 +12,7 @@ nuxt-i18n: <!-- ex: 5.9.0 -->
 nuxt: <!-- ex: 2.0.0 -->
 
 ### Nuxt configuration
-#### [mode](https://nuxtjs.org/api/configuration-mode): <!--universal is the default, please insert X where appropriate -->
+#### [mode](https://nuxtjs.org/guides/configuration-glossary/configuration-mode): <!--universal is the default, please insert X where appropriate -->
  - [] universal
  - [] spa
 

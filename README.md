@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" height="270" src="./assets/nuxt-i18n-logo.png" alt="nuxt-i18n logo">
+  <img src="./docs/static/preview.png" alt="nuxt-i18n logo">
 </p>
 
 [![](https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/i18n-module)

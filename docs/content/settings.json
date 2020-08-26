@@ -1,0 +1,11 @@
+{
+  "title": "i18n-module",
+  "url": "https://i18n.nuxtjs.org/",
+  "logo": {
+    "light": "/logo-light.svg",
+    "dark": "/logo-dark.svg"
+  },
+  "defaultBranch": "master",
+  "github": "nuxt-community/i18n-module",
+  "twitter": "@nuxt_js"
+}
