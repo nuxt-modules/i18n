@@ -1016,7 +1016,7 @@
     rc9 "^1.0.0"
     std-env "^2.2.1"
 
-"@nuxt/content-theme-docs@^0.5.2":
+"@nuxt/content-theme-docs@0.5.3":
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/@nuxt/content-theme-docs/-/content-theme-docs-0.5.3.tgz#bdbc80bf8cb60869e61f5de79e6bd1a6a27f2c87"
   integrity sha512-Qvhhje+bz+Ra0ARZQVTue+ZdgXFbkby4cNTQNjgeuak0QizHBnKBKeUDfkjh+BtHbqeF5F2biG5VGgHLSfc8wg==
@@ -6123,7 +6123,7 @@ nuxt-i18n@^6.13.12:
     js-cookie "^2.2.1"
     vue-i18n "^8.18.1"
 
-nuxt@^2.14.3:
+nuxt@2.14.3:
   version "2.14.3"
   resolved "https://registry.yarnpkg.com/nuxt/-/nuxt-2.14.3.tgz#1e1fb762d407dc275253360b87f3257c609b4dfd"
   integrity sha512-7f5adPiIkZvv5Fu7tKhHuKdMv4IvSbBC1sbuBcgjtRedu4rP/tQPL4/8PZcEUieolcfwaN+WGPNz3sMGyPTLzg==
