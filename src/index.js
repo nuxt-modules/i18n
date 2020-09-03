@@ -3,7 +3,7 @@ import { MODULE_NAME, DEFAULT_OPTIONS, NESTED_OPTIONS, STRATEGIES } from './help
 import { getLocaleCodes } from './helpers/utils'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
 
-export default async function (userOptions) {
+export default function (userOptions) {
   const options = { ...DEFAULT_OPTIONS, ...userOptions, ...this.options.i18n }
   // Options that have nested config options must be merged
   // individually with defaults to prevent missing options
@@ -21,7 +21,7 @@ export default async function (userOptions) {
 
   const localeCodes = getLocaleCodes(options.locales)
   if (options.strategy !== STRATEGIES.NO_PREFIX && localeCodes.length) {
-    this.extendRoutes(await createExtendRoutesHook(this, options))
+    this.extendRoutes(createExtendRoutesHook(this, options))
   }
 
   this.nuxt.hook('build:before', () => buildHook(this, options))

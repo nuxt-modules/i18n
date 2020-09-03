@@ -3,7 +3,7 @@ import { readdirSync } from 'fs'
 import { getLocaleCodes } from '../helpers/utils'
 import { MODULE_NAME, ROOT_DIR, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, STRATEGIES, COMPONENT_OPTIONS_KEY } from '../helpers/constants'
 
-export async function createExtendRoutesHook (moduleContainer, options) {
+export function createExtendRoutesHook (moduleContainer, options) {
   const nuxtOptions = moduleContainer.options
 
   let includeUprefixedFallback = nuxtOptions.target === 'static'
@@ -14,12 +14,12 @@ export async function createExtendRoutesHook (moduleContainer, options) {
   const pagesDir = nuxtOptions.dir && nuxtOptions.dir.pages ? nuxtOptions.dir.pages : 'pages'
   const { trailingSlash } = nuxtOptions.router
 
-  // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
-  // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
-  // not available (at runtime, when using nuxt-start).
-  const { makeRoutes } = await import('../helpers/routes')
+  return async routes => {
+    // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
+    // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
+    // not available (at runtime, when using nuxt-start).
+    const { makeRoutes } = await import('../helpers/routes')
 
-  return routes => {
     const localizedRoutes = makeRoutes(routes, {
       ...options,
       pagesDir,
