@@ -34,8 +34,7 @@
     "test:types": "tsc -p types/test",
     "release": "release-it",
     "docs:dev": "cd ./docs && yarn dev && cd ..",
-    "docs:build": "cd ./docs && yarn generate && cd ..",
-    "postinstall": "cd docs && yarn && cd .."
+    "docs:build": "cd ./docs && yarn generate && cd .."
   },
   "eslintIgnore": [
     "src/templates/options.js",
