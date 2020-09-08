@@ -1,3 +1,10 @@
+### [6.14.1](https://github.com/nuxt-community/i18n-module/compare/v6.14.0...v6.14.1) (2020-09-08)
+
+
+### Bug Fixes
+
+* remove postinstall script that breaks production ([56f8084](https://github.com/nuxt-community/i18n-module/commit/56f8084f44c80eb30c43684a0adf474162679245))
+
 ## [6.14.0](https://github.com/nuxt-community/i18n-module/compare/v6.13.12...v6.14.0) (2020-09-08)
 
 
