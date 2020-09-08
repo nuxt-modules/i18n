@@ -1,3 +1,20 @@
+## [6.14.0](https://github.com/nuxt-community/i18n-module/compare/v6.13.12...v6.14.0) (2020-09-08)
+
+
+### Features
+
+* add "cookieSecure" setting to set the Secure flag on the cookie ([#869](https://github.com/nuxt-community/i18n-module/issues/869)) ([0f2d762](https://github.com/nuxt-community/i18n-module/commit/0f2d7629d456400ef3d9a25e4bc9d871b6b1d128))
+* **docs:** migrate docs to Nuxt Content ([#864](https://github.com/nuxt-community/i18n-module/issues/864)) ([affb845](https://github.com/nuxt-community/i18n-module/commit/affb8450bacee2a58c6cd716dd3934b296ba60a5))
+* add setting to use cross-origin cookie for "detectBrowserLocale" ([#853](https://github.com/nuxt-community/i18n-module/issues/853)) ([e446676](https://github.com/nuxt-community/i18n-module/commit/e4466767d30d9b4ef2078a97f11354fbac5f2b03))
+
+
+### Bug Fixes
+
+* only import build-time dependency at build time ([#875](https://github.com/nuxt-community/i18n-module/issues/875)) ([095cc78](https://github.com/nuxt-community/i18n-module/commit/095cc78ca46a075b979fd9f35a518b1d8a613969))
+* **deps:** pin dependencies ([#865](https://github.com/nuxt-community/i18n-module/issues/865)) ([d66545f](https://github.com/nuxt-community/i18n-module/commit/d66545f73b198f12095a852c02c3639d10629b53))
+* **docs:** fix various documentation links after migration ([19c516c](https://github.com/nuxt-community/i18n-module/commit/19c516c66b3e3f9a39af51b11591d965b945dc84))
+* **docs:** typo in Spanish accent mark ([#867](https://github.com/nuxt-community/i18n-module/issues/867)) ([4fadb8b](https://github.com/nuxt-community/i18n-module/commit/4fadb8b9f7bb03c954640038b03b32e355b732a6))
+
 ### [6.13.12](https://github.com/nuxt-community/i18n-module/compare/v6.13.11...v6.13.12) (2020-08-22)
 
 
