@@ -14,11 +14,11 @@ export function createExtendRoutesHook (moduleContainer, options) {
   const pagesDir = nuxtOptions.dir && nuxtOptions.dir.pages ? nuxtOptions.dir.pages : 'pages'
   const { trailingSlash } = nuxtOptions.router
 
-  return async routes => {
+  return routes => {
     // This import (or more specifically 'vue-template-compiler' in helpers/components.js) needs to
     // be required only at build time to avoid problems when 'vue-template-compiler' dependency is
     // not available (at runtime, when using nuxt-start).
-    const { makeRoutes } = await import('../helpers/routes')
+    const { makeRoutes } = require('../helpers/routes')
 
     const localizedRoutes = makeRoutes(routes, {
       ...options,
