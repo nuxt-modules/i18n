@@ -99,7 +99,7 @@
     "@nuxt/types": "2.14.0",
     "@nuxtjs/eslint-config-typescript": "3.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
-    "@release-it/conventional-changelog": "1.1.4",
+    "@release-it/conventional-changelog": "2.0.0",
     "@types/argparse": "1.0.38",
     "@types/finalhandler": "1.1.0",
     "@types/jest": "26.0.8",
