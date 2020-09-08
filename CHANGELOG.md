@@ -1,3 +1,10 @@
+### [6.14.2](https://github.com/nuxt-community/i18n-module/compare/v6.14.1...v6.14.2) (2020-09-08)
+
+
+### Bug Fixes
+
+* fails at extending routes when followed by another module ([#884](https://github.com/nuxt-community/i18n-module/issues/884)) ([c0d136b](https://github.com/nuxt-community/i18n-module/commit/c0d136b83a4998926500ed90e34c4223f98034b9)), closes [#157](https://github.com/nuxt-community/i18n-module/issues/157)
+
 ### [6.14.1](https://github.com/nuxt-community/i18n-module/compare/v6.14.0...v6.14.1) (2020-09-08)
 
 
