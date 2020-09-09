@@ -62,7 +62,7 @@ Here are all the options available when configuring the module and their default
   // - 'prefix_and_default': add locale prefix for every locale and default
   strategy: 'prefix_except_default',
 
-  // Wether or not the translations should be lazy-loaded, if this is enabled,
+  // Whether or not the translations should be lazy-loaded, if this is enabled,
   // you MUST configure langDir option, and locales must be an array of objects,
   // each containing a file key
   lazy: false,
@@ -79,9 +79,10 @@ Here are all the options available when configuring the module and their default
   // }
   rootRedirect: null,
 
-  // Enable browser language detection to automatically redirect user
-  // to their preferred language as they visit your app for the first time
-  // Set to false to disable
+  // Enable browser language detection to automatically redirect visitors to their
+  // preferred language as they visit your site for the first time.
+  // Note that for better SEO it's recommended to set 'onlyOnRoot' to true.
+  // Set to false to disable.
   detectBrowserLanguage: {
     // If enabled, a cookie is set once a user has been redirected to his
     // preferred language to prevent subsequent redirections
@@ -99,7 +100,10 @@ Here are all the options available when configuring the module and their default
     // Set to always redirect to value stored in the cookie, not just once
     alwaysRedirect: false,
     // If no locale for the browsers locale is a match, use this one as a fallback
-    fallbackLocale: null
+    fallbackLocale: null,
+    // Set to true (recommended for improved SEO) to only attempt to detect browser locale
+    // on the root path ("/") of the site. Only effective when using strategy other than 'no_prefix'.
+    onlyOnRoot: false,
   },
 
   // Set this to true if you're using different domains for each language

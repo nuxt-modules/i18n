@@ -34,6 +34,7 @@ declare namespace NuxtVueI18n {
       cookieKey?: string
       alwaysRedirect?: boolean
       fallbackLocale?: Locale | null
+      onlyOnRoot?: boolean
     }
 
     interface RootRedirectInterface {
