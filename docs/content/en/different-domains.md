@@ -9,10 +9,7 @@ You might want to use a different domain name for each language your app support
 
 * Set `differentDomains` option to `true`
 * Configure `locales` option as an array of objects, where each object has a `domain` key which value is the domain name you'd like to use for that locale (including port if non-default)
-
-<alert type="info">
-
-You might want to set `detectBrowserLanguage` to `false`. When enabled (it is by default), user can get redirected to a different domain on first visit. Set to `false` if you want to ensure that visiting given domain always shows page in the corresponding locale.
+* Optionally set `detectBrowserLanguage` to `false`. When enabled (which it is by default), user can get redirected to a different domain on first visit. Set to `false` if you want to ensure that visiting given domain always shows page in the corresponding locale.
 
 </alert>
 
