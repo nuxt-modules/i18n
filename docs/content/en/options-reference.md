@@ -62,7 +62,7 @@ Here are all the options available when configuring the module and their default
   // - 'prefix_and_default': add locale prefix for every locale and default
   strategy: 'prefix_except_default',
 
-  // Wether or not the translations should be lazy-loaded, if this is enabled,
+  // Whether or not the translations should be lazy-loaded, if this is enabled,
   // you MUST configure langDir option, and locales must be an array of objects,
   // each containing a file key
   lazy: false,
