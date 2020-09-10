@@ -1,3 +1,15 @@
+## [6.15.0](https://github.com/nuxt-community/i18n-module/compare/v6.14.2...v6.15.0) (2020-09-10)
+
+
+### Features
+
+* add option to only detect browser locale on root path ([#799](https://github.com/nuxt-community/i18n-module/issues/799)) ([7bdb227](https://github.com/nuxt-community/i18n-module/commit/7bdb227dfb6c2c4ee1474f09add28dd8afc99764)), closes [#455](https://github.com/nuxt-community/i18n-module/issues/455) [#761](https://github.com/nuxt-community/i18n-module/issues/761)
+
+
+### Bug Fixes
+
+* **differentDomains:** Match domain properly on client if port provided ([#832](https://github.com/nuxt-community/i18n-module/issues/832)) ([3a0bc88](https://github.com/nuxt-community/i18n-module/commit/3a0bc88e6acb5c08d1d0f5567bc9f9ce12db56d4))
+
 ### [6.14.2](https://github.com/nuxt-community/i18n-module/compare/v6.14.1...v6.14.2) (2020-09-08)
 
 
