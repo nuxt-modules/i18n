@@ -5,9 +5,11 @@ position: 2
 category: Guide
 ---
 
+<alert type="info">
+
 Check the [Nuxt.js documentation](https://nuxtjs.org/guides/configuration-glossary/configuration-modules) for more information about installing and using modules in Nuxt.js.
 
-## Installation
+</alert>
 
 Add `nuxt-i18n` dependency to your project:
 
@@ -41,13 +43,17 @@ Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`:
 }
 ```
 
+## Typescript
+
 If using typescript or running typescript language server to check the code (for example through Vetur), add types to `types` array in your `tsconfig.json`:
 
 ```js{}[tsconfig.json]
 {
   "compilerOptions": {
     "types": [
-      "nuxt-i18n"
+      "@nuxt/types",
+      "nuxt-i18n",
     ]
   }
 }
+```
