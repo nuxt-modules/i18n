@@ -5,13 +5,13 @@ position: 8
 category: Guide
 ---
 
-## Benefits
-
 <alert type="info">
 
 Using `seo` option (or alternatively the `$nuxtI18nSeo`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
 
 </alert>
+
+## Benefits
 
 When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
 
