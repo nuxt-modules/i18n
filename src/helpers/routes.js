@@ -48,9 +48,8 @@ exports.makeRoutes = (baseRoutes, {
     // Double check locales to remove any locales not found in pageOptions
     // This is there to prevent children routes being localized even though
     // they are disabled in the configuration
-    if (
-      typeof componentOptions.locales !== 'undefined' && componentOptions.locales.length > 0 &&
-      typeof pageOptions.locales !== 'undefined' && pageOptions.locales.length > 0) {
+    if (typeof componentOptions.locales !== 'undefined' && componentOptions.locales.length > 0 &&
+        typeof pageOptions.locales !== 'undefined' && pageOptions.locales.length > 0) {
       componentOptions.locales = componentOptions.locales.filter((locale) => pageOptions.locales.includes(locale))
     }
 
@@ -132,8 +131,7 @@ exports.makeRoutes = (baseRoutes, {
 
       if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUprefixedFallback) {
         routes.push({
-          path: route.path,
-          redirect: path
+          ...route
         })
       }
 
