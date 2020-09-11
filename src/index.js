@@ -1,5 +1,7 @@
+import { resolve, join } from 'path'
+import { readdirSync } from 'fs'
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
-import { MODULE_NAME, DEFAULT_OPTIONS, NESTED_OPTIONS, STRATEGIES } from './helpers/constants'
+import { MODULE_NAME, COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, NESTED_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
 import { getLocaleCodes } from './helpers/utils'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
 
@@ -19,7 +21,48 @@ export default function (userOptions) {
     return
   }
 
+  // Templates (including plugins).
+  // This is done here rather than in the build hook to ensure the order the plugins are added
+  // is predictable between different modules.
   const localeCodes = getLocaleCodes(options.locales)
+  const nuxtOptions = this.options
+  const { trailingSlash } = nuxtOptions.router
+
+  const templatesOptions = {
+    ...options,
+    IS_UNIVERSAL_MODE: nuxtOptions.mode === 'universal',
+    MODULE_NAME,
+    LOCALE_CODE_KEY,
+    LOCALE_ISO_KEY,
+    LOCALE_DOMAIN_KEY,
+    LOCALE_FILE_KEY,
+    STRATEGIES,
+    COMPONENT_OPTIONS_KEY,
+    localeCodes,
+    trailingSlash
+  }
+
+  const templatesPath = join(__dirname, '/templates')
+  for (const file of readdirSync(templatesPath)) {
+    if (file.startsWith('plugin.')) {
+      if (file === 'plugin.seo.js' && !options.seo) {
+        continue
+      }
+
+      this.addPlugin({
+        src: resolve(templatesPath, file),
+        fileName: join(ROOT_DIR, file),
+        options: templatesOptions
+      })
+    } else {
+      this.addTemplate({
+        src: resolve(templatesPath, file),
+        fileName: join(ROOT_DIR, file),
+        options: templatesOptions
+      })
+    }
+  }
+
   if (options.strategy !== STRATEGIES.NO_PREFIX && localeCodes.length) {
     this.extendRoutes(createExtendRoutesHook(this, options))
   }

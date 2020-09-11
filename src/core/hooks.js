@@ -1,7 +1,4 @@
-import { resolve, join } from 'path'
-import { readdirSync } from 'fs'
-import { getLocaleCodes } from '../helpers/utils'
-import { MODULE_NAME, ROOT_DIR, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, STRATEGIES, COMPONENT_OPTIONS_KEY } from '../helpers/constants'
+import { MODULE_NAME, STRATEGIES } from '../helpers/constants'
 
 export function createExtendRoutesHook (moduleContainer, options) {
   const nuxtOptions = moduleContainer.options
@@ -37,28 +34,10 @@ export function buildHook (moduleContainer, options) {
   // Transpile deepcopy dependency that is not sufficiently transpiled for IE11.
   nuxtOptions.build.transpile.push(({ isServer, isModern }) => isServer || isModern ? false : 'deepcopy')
 
-  // Copy lang files to the build directory.
   if (options.langDir) {
     if (!options.locales.length || typeof options.locales[0] === 'string') {
       console.error('[' + MODULE_NAME + '] When using "langDir" option, the "locales" option must be a list of objects')
     }
-  }
-
-  const localeCodes = getLocaleCodes(options.locales)
-  const { trailingSlash } = nuxtOptions.router
-
-  const templatesOptions = {
-    ...options,
-    IS_UNIVERSAL_MODE: nuxtOptions.mode === 'universal',
-    MODULE_NAME,
-    LOCALE_CODE_KEY,
-    LOCALE_ISO_KEY,
-    LOCALE_DOMAIN_KEY,
-    LOCALE_FILE_KEY,
-    STRATEGIES,
-    COMPONENT_OPTIONS_KEY,
-    localeCodes,
-    trailingSlash
   }
 
   if (options.strategy === STRATEGIES.NO_PREFIX && options.differentDomains) {
@@ -69,29 +48,6 @@ export function buildHook (moduleContainer, options) {
   if ('forwardedHost' in options) {
     // eslint-disable-next-line no-console
     console.warn('[' + MODULE_NAME + '] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.')
-  }
-
-  const templatesPath = join(__dirname, '..', '/templates')
-
-  // Templates (including plugins)
-  for (const file of readdirSync(templatesPath)) {
-    if (file.startsWith('plugin.')) {
-      if (file === 'plugin.seo.js' && !options.seo) {
-        continue
-      }
-
-      moduleContainer.addPlugin({
-        src: resolve(templatesPath, file),
-        fileName: join(ROOT_DIR, file),
-        options: templatesOptions
-      })
-    } else {
-      moduleContainer.addTemplate({
-        src: resolve(templatesPath, file),
-        fileName: join(ROOT_DIR, file),
-        options: templatesOptions
-      })
-    }
   }
 
   // Add vue-i18n-loader if applicable
