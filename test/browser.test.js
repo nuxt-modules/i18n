@@ -335,94 +335,66 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false)`, 
   })
 })
 
-describe(`${browserString} (generate, prefix strategy)`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
+for (const target of ['server', 'static']) {
+  describe(`${browserString} (target ${target}, generate, prefix strategy, alwaysRedirect, onlyOnRoot)`, () => {
+    /** @type {import('playwright-chromium').ChromiumBrowser} */
+    let browser
+    /** @type {import('playwright-chromium').Page} */
+    let page
+    /** @type {import('./utils').StaticServer} */
+    let server
 
-  beforeAll(async () => {
-    const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
-      generate: { dir: distDir },
-      i18n: {
-        strategy: 'prefix',
-        detectBrowserLanguage: {
-          fallbackLocale: 'en'
+    beforeAll(async () => {
+      const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+      const overrides = {
+        target,
+        generate: { dir: distDir },
+        i18n: {
+          strategy: 'prefix',
+          detectBrowserLanguage: {
+            alwaysRedirect: true,
+            fallbackLocale: 'en',
+            onlyOnRoot: true
+          }
         }
       }
-    }
-    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
-    server = await startHttpServer({ path: distDir, verbose: true })
-    browser = await createBrowser()
-  })
+      await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+      server = await startHttpServer({ path: distDir, verbose: true })
+      browser = await createBrowser()
+    })
 
-  afterAll(async () => {
-    if (server) {
-      await server.destroy()
-    }
-    if (browser) {
-      await browser.close()
-    }
-  })
-
-  // Issue https://github.com/nuxt-community/i18n-module/issues/700
-  test('non-prefixed routes are generated for redirect purposes', async () => {
-    page = await browser.newPage()
-    await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
-
-    await navigate(page, '/about')
-    expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
-  })
-})
-
-describe(`${browserString} (generate, prefix strategy, static target)`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
-
-  beforeAll(async () => {
-    const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
-      target: 'static',
-      generate: { dir: distDir },
-      i18n: {
-        strategy: 'prefix',
-        detectBrowserLanguage: {
-          fallbackLocale: 'en'
-        }
+    afterAll(async () => {
+      if (server) {
+        await server.destroy()
       }
-    }
-    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
-    server = await startHttpServer({ path: distDir, verbose: true })
-    browser = await createBrowser()
-  })
+      if (browser) {
+        await browser.close()
+      }
+    })
 
-  afterAll(async () => {
-    if (server) {
-      await server.destroy()
-    }
-    if (browser) {
-      await browser.close()
-    }
-  })
+    // Issue https://github.com/nuxt-community/i18n-module/issues/700
+    test('non-prefixed routes are generated for redirect purposes', async () => {
+      page = await browser.newPage()
+      await page.goto(server.getUrl('/'))
+      expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
 
-  // Issue https://github.com/nuxt-community/i18n-module/issues/700
-  test('non-prefixed routes are generated for redirect purposes', async () => {
-    page = await browser.newPage()
-    await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+      await navigate(page, '/about')
+      expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
+    })
 
-    await navigate(page, '/about')
-    expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
+    // Issue https://github.com/nuxt-community/i18n-module/issues/887
+    test('redirects to saved locale on re-visiting the root path', async () => {
+      page = await browser.newPage()
+      await page.goto(server.getUrl('/fr'))
+      expect(page.url()).toBe(server.getUrl('/fr/'))
+      expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+
+      await page.goto(server.getUrl('/'))
+      expect(page.url()).toBe(server.getUrl('/fr/'))
+      expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    })
   })
-})
+}
 
 describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
