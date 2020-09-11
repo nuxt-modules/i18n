@@ -1,3 +1,12 @@
+### [6.15.1](https://github.com/nuxt-community/i18n-module/compare/v6.15.0...v6.15.1) (2020-09-11)
+
+
+### Bug Fixes
+
+* ("prefix" strategy) redirect from root doesn't respect cookie locale ([#890](https://github.com/nuxt-community/i18n-module/issues/890)) ([d3b09f5](https://github.com/nuxt-community/i18n-module/commit/d3b09f55252e6a436842500d0f04e8360c711291)), closes [#887](https://github.com/nuxt-community/i18n-module/issues/887)
+* add plugins from the main context to have consistent loading order ([#889](https://github.com/nuxt-community/i18n-module/issues/889)) ([1ec8814](https://github.com/nuxt-community/i18n-module/commit/1ec8814e5aaf5849153ac640eea3891caf9b5214)), closes [#874](https://github.com/nuxt-community/i18n-module/issues/874)
+* **docs:** refactor options documentation ([#888](https://github.com/nuxt-community/i18n-module/issues/888)) ([5f295be](https://github.com/nuxt-community/i18n-module/commit/5f295befc35156ca1c7d08ba3d737810b354e66b))
+
 ## [6.15.0](https://github.com/nuxt-community/i18n-module/compare/v6.14.2...v6.15.0) (2020-09-10)
 
 
