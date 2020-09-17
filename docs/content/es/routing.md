@@ -86,6 +86,12 @@ Make sure that you have a `defaultLocale` defined, especially if using **prefix_
 
 En algunos casos, es posible que desee traducir las URL además de tener el prefijo con el código de configuración regional. Hay 2 formas de configurar rutas personalizadas para sus páginas: opciones `in-component` o mediante la configuración del módulo.
 
+<alert type="warning">
+
+Custom paths are not supported with the `no-prefix` [strategy](#strategy).
+
+</alert>
+
 ### Opciones in-component
 
 Agregue una propiedad `nuxtI18n.paths` a su página y configure sus rutas personalizadas allí:
@@ -233,6 +239,11 @@ Si falta una ruta personalizada para una de las configuraciones locales, se usa 
 
 ## Ignorar rutas
 
+<alert type="warning">
+
+This feature is not supported with the `no-prefix` [strategy](#strategy).
+
+</alert>
 
 ### Opciones in-component
 
