@@ -106,6 +106,12 @@ If on `Nuxt` version lower than 2.10.2, and using strategy `prefix_except_defaul
 
 In some cases, you might want to translate URLs in addition to having them prefixed with the locale code. There are 2 ways of configuring custom paths for your pages: in-component options or via the module's configuration.
 
+<alert type="warning">
+
+Custom paths are not supported with the `no-prefix` [strategy](#strategy).
+
+</alert>
+
 ### In-component options
 
 Add a `nuxtI18n.paths` property to your page and set your custom paths there:
@@ -253,6 +259,11 @@ If a custom path is missing for one of the locales, the `defaultLocale` custom p
 
 ## Ignore routes
 
+<alert type="warning">
+
+This feature is not supported with the `no-prefix` [strategy](#strategy).
+
+</alert>
 
 ### In-component options
 
