@@ -185,6 +185,11 @@ export default async (context) => {
       return false
     }
 
+    const routeLocale = getLocaleFromRoute(route)
+    if (routeLocale !== null) {
+      return routeLocale
+    }
+
     if (onlyOnRoot && strategy !== STRATEGIES.NO_PREFIX && route.path !== '/') {
       return false
     }
@@ -258,9 +263,6 @@ export default async (context) => {
       const options = { localDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY }
       const domainLocale = getLocaleDomain(locales, req, options)
       finalLocale = domainLocale
-    } else if (strategy !== STRATEGIES.NO_PREFIX) {
-      const routeLocale = getLocaleFromRoute(route)
-      finalLocale = routeLocale
     } else if (useCookie) {
       finalLocale = app.i18n.getLocaleCookie()
     }
