@@ -104,6 +104,14 @@ export const getLocaleDomain = (locales, req, { localDomainKey, localeCodeKey })
 }
 
 /**
+ * Creates a RegExp for route paths
+ * @param  {string[]} localeCodes
+ * @return {RegExp}
+ */
+export const getRegexpPath = localeCodes =>
+  new RegExp(`^/(${localeCodes.join('|')})(/|\$)`, 'i')
+
+/**
  * Creates getter for getLocaleFromRoute
  * @param  {string[]} localeCodes
  * @param  {{ routesNameSeparator: string, defaultLocaleRouteNameSuffix: string }} options
@@ -113,8 +121,7 @@ export const createLocaleFromRouteGetter = (localeCodes, { routesNameSeparator, 
   const localesPattern = `(${localeCodes.join('|')})`
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
   const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
-  const regexpPath = new RegExp(`^/${localesPattern}/`, 'i')
-
+  const regexpPath = getRegexpPath(localeCodes)
   /**
    * Extract locale code from given route:
    * - If route has a name, try to extract locale from it

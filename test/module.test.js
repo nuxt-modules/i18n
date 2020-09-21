@@ -1502,6 +1502,32 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
   })
+
+  test('does not redirect root if the route already has a locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/en', requestOptions)
+    expect(response.statusCode).toBe(200)
+  })
+
+  test('does not redirect subroute if the route already has a locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/en/simple', requestOptions)
+    expect(response.statusCode).toBe(200)
+  })
 })
 
 describe('generate with detectBrowserLanguage.fallbackLocale', () => {
