@@ -109,7 +109,7 @@ export const getLocaleDomain = (locales, req, { localDomainKey, localeCodeKey })
  * @return {RegExp}
  */
 export const getRegexpPath = localeCodes =>
-  new RegExp(`^/(${localeCodes.join('|')})(/|\$)`, 'i')
+  new RegExp(`^/(${localeCodes.join('|')})(/|$)`, 'i')
 
 /**
  * Creates getter for getLocaleFromRoute
