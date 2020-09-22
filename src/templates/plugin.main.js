@@ -186,7 +186,7 @@ export default async (context) => {
       return false
     }
 
-    if (route.path.match(getLocalesRegex(localeCodes))) {
+    if (route.path.match(getLocalesRegex(localeCodes)) && !alwaysRedirect) {
       return false
     }
 
