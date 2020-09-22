@@ -186,10 +186,8 @@ export default async (context) => {
       return false
     }
 
-    const regexpPath = getRegexpPath(localeCodes)
-    const localeMatch = route.path.match(regexpPath)
-    if (localeMatch) {
-      return localeMatch[1]
+    if (route.path.match(getRegexpPath(localeCodes))) {
+      return false
     }
 
     if (onlyOnRoot && strategy !== STRATEGIES.NO_PREFIX && route.path !== '/') {
