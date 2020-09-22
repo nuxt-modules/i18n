@@ -34,7 +34,7 @@ import {
   registerStore,
   setLocaleCookie,
   syncVuex,
-  getRegexpPath
+  getLocalesRegex
 } from './utils-common'
 
 Vue.use(VueI18n)
@@ -186,7 +186,7 @@ export default async (context) => {
       return false
     }
 
-    if (route.path.match(getRegexpPath(localeCodes))) {
+    if (route.path.match(getLocalesRegex(localeCodes))) {
       return false
     }
 
