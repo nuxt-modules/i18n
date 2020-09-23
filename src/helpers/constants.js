@@ -51,6 +51,7 @@ exports.DEFAULT_OPTIONS = {
   },
   parsePages: true,
   pages: {},
+  useSortRoutes: true,
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }

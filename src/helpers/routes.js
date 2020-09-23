@@ -13,7 +13,8 @@ exports.makeRoutes = (baseRoutes, {
   parsePages,
   routesNameSeparator,
   strategy,
-  trailingSlash
+  trailingSlash,
+  useSortRoutes
 }) => {
   locales = getLocaleCodes(locales)
   let localizedRoutes = []
@@ -148,11 +149,13 @@ exports.makeRoutes = (baseRoutes, {
     localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, { locales }))
   }
 
-  try {
-    const { sortRoutes } = require('@nuxt/utils')
-    localizedRoutes = sortRoutes(localizedRoutes)
-  } catch (error) {
-    // Ignore
+  if (useSortRoutes) {
+    try {
+      const { sortRoutes } = require('@nuxt/utils')
+      localizedRoutes = sortRoutes(localizedRoutes)
+    } catch (error) {
+      // Ignore
+    }
   }
 
   return localizedRoutes
