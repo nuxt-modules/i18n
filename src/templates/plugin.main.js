@@ -1,4 +1,4 @@
-import deepcopy from 'deepcopy'
+import { deepcopy } from 'deepcopy'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
