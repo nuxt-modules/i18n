@@ -52,7 +52,7 @@ Configuration example:
 
 Language file example:
 
-```js{}[lang/en.js]
+```js{}[lang/en-US.js]
 
 export default async (context, locale) => {
   await resolve({
