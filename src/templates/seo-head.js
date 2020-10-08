@@ -1,5 +1,6 @@
 import VueMeta from 'vue-meta'
 import {
+  defaultLocale,
   COMPONENT_OPTIONS_KEY,
   LOCALE_CODE_KEY,
   LOCALE_ISO_KEY,
@@ -72,6 +73,15 @@ function addHreflangLinks (locales, baseUrl, link) {
       rel: 'alternate',
       href: baseUrl + this.switchLocalePath(mapLocale.code),
       hreflang: iso
+    })
+  }
+
+  if (defaultLocale) {
+    link.push({
+      hid: 'alternate-x-default',
+      rel: 'alternate',
+      href: baseUrl + this.switchLocalePath(defaultLocale),
+      hreflang: 'x-default'
     })
   }
 }

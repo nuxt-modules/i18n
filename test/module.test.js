@@ -191,6 +191,12 @@ for (const trailingSlash of TRAILING_SLASHES) {
           rel: 'alternate',
           href: pathRespectingTrailingSlash('nuxt-app.localhost/fr'),
           hreflang: 'fr-FR'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: 'nuxt-app.localhost/',
+          hreflang: 'x-default'
         }
       ]
 
@@ -585,6 +591,12 @@ for (const trailingSlash of TRAILING_SLASHES) {
           rel: 'alternate',
           href: pathRespectingTrailingSlash('nuxt-app.localhost/fr/loader-yaml'),
           hreflang: 'fr-FR'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: pathRespectingTrailingSlash('nuxt-app.localhost/loader-yaml'),
+          hreflang: 'x-default'
         }
       ]
 
@@ -687,6 +699,12 @@ describe('hreflang', () => {
       {
         href: 'nuxt-app.localhost/esVe',
         hreflang: 'es-VE',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/',
+        hreflang: 'x-default',
         rel: 'alternate',
         tagName: 'link'
       }
@@ -1232,6 +1250,12 @@ describe('baseUrl', () => {
         rel: 'alternate',
         href: 'CUSTOM/fr?noncanonical',
         hreflang: 'fr-FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'CUSTOM/?noncanonical',
+        hreflang: 'x-default'
       },
       {
         tagName: 'link',
