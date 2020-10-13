@@ -11,13 +11,88 @@ Using `seo` option (or alternatively the `$nuxtI18nSeo`-based solution - see [Im
 
 </alert>
 
-Con la opción `seo`  habilitada, **nuxt-i18n** intenta agregar algunos metadatos para mejorar sus páginas SEO. Esto es lo que hace:
+## Benefits
 
-* Agregue un atributo _lang_ que contenga el código ISO del entorno local actual a la etiqueta  `<html>`.
-* Genere etiquetas `<link rel="alternate" hreflang="x">` para cada idioma configurado en `nuxt.config.js`. Para cada idioma, el código ISO se usa como valor del atributo `hreflang`. [Más sobre hreflang](https://support.google.com/webmasters/answer/189077)
-* Genere metaetiquetas `og:locale` y `og:locale:alternate` como se define en el [protocolo Open Graph](http://ogp.me/#optional)
-* Cuando utilice la estrategia `prefix_and_default`, genere el enlace `rel="canonical"` en las rutas de idioma predeterminadas que contienen
-prefijo para evitar la indexación duplicada. [Más sobre canonical](https://support.google.com/webmasters/answer/182192#dup-content)
+When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
+
+### `lang` attribute for `<html>` tag
+
+  Sets the correct `lang` attribute, equivalent to the current locale's ISO code, in the `<html>` tag.
+
+### Automatic hreflang generation
+
+  Generates `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. The language's ISO codes are used as `hreflang` values.
+
+  Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a catchall locale hreflang link is provided for each language group (e.g. `en-*`) as well. By default, it is the first language provided but another language can be selected by setting `isCatchallLocale` to `true` on that specific language object in your `nuxt.config.js`. [More on hreflang](https://support.google.com/webmasters/answer/189077)
+
+An example without selected catchall locale:
+
+```js{}[nuxt.config.js]
+
+['nuxt-i18n', {
+  locales: [
+    {
+      code: 'en',
+      iso: 'en-US' // Will be used as catchall locale by default
+    },
+    {
+      code: 'gb',
+      iso: 'en-GB'
+    }
+  ]
+}]
+```
+
+Here is how you'd use `isCatchallLocale` to selected another language:
+
+```js{}[nuxt.config.js]
+
+['nuxt-i18n', {
+  locales: [
+    {
+      code: 'en',
+      iso: 'en-US'
+    },
+    {
+      code: 'gb',
+      iso: 'en-GB',
+      isCatchallLocale: true // This one will be used as catchall locale
+    }
+  ]
+}]
+```
+
+  In case you already have an `en` language iso set, it'll be used as the catchall without doing anything
+
+```js{}[nuxt.config.js]
+
+['nuxt-i18n', {
+  locales: [
+    {
+      code: 'gb',
+      iso: 'en-GB'
+    },
+    {
+      code: 'en',
+      iso: 'en' // will be used as catchall locale
+    }
+  ]
+}]
+```
+
+### OpenGraph Locale tag generation
+
+Generates `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
+
+### Canonical link generation
+
+Generates `rel="canonical"` link on all pages to specify the "main" version of the page that should be indexed by search engines. This is beneficial in various situations:
+  - When using the `prefix_and_default` strategy there are technically two sets of pages generated for the default locale -- one prefixed and one unprefixed. The canonical link will be set to the unprefixed version of the page to avoid duplicate indexation.
+  - When the page contains the query parameters, the canonical link will **not include** query params. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. Note that there is currently no way to override that in case that including a specific query params would be desired.
+
+[More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
+
+## Requirements
 
 Para que esta característica funcione, debe configurar la opción `locales` como una matriz de objetos, donde cada objeto tiene una opción `iso` establecida en el código ISO del idioma:
 

@@ -88,7 +88,11 @@ function addHreflangLinks (locales, baseUrl, link) {
 
 function addCanonicalLinks (currentLocale, baseUrl, link) {
   const currentLocaleCode = codeFromLocale(currentLocale)
-  const canonicalPath = this.switchLocalePath(currentLocaleCode)
+  const currentRoute = {
+    ...this.$route,
+    name: this.getRouteBaseName()
+  }
+  const canonicalPath = this.localeRoute(currentRoute)?.path
 
   if (!canonicalPath) {
     return
