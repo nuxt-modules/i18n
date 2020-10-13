@@ -52,7 +52,7 @@ Ejemplo de configuración:
 
 Ejemplo de archivo de idioma:
 
-```js{}[lang/en.js]
+```js{}[lang/en-US.js]
 
 export default async (context, locale) => {
   await resolve({
