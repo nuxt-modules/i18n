@@ -82,11 +82,15 @@ Here is how you'd use `isCatchallLocale` to selected another language:
 
 ### OpenGraph Locale tag generation
 
-  Generates `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
+Generates `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
 
-### Canonical links for `prefix_and_default`
+### Canonical link generation
 
-  When using the `prefix_and_default` strategy, `rel="canonical"` links on the default language routes will be generated and contain the prefix to avoid duplicate indexation. [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
+Generates `rel="canonical"` link on all pages to specify the "main" version of the page that should be indexed by search engines. This is beneficial in various situations:
+  - When using the `prefix_and_default` strategy there are technically two sets of pages generated for the default locale -- one prefixed and one unprefixed. The canonical link will be set to the unprefixed version of the page to avoid duplicate indexation.
+  - When the page contains the query parameters, the canonical link will **not include** query params. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. Note that there is currently no way to override that in case that including a specific query params would be desired.
+
+[More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
 
 ## Requirements
 

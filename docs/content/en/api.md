@@ -26,12 +26,6 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-<alert type="warning">
-
-In `no_prefix` strategy, passing `locale` other than the current one is not supported.
-
-</alert>
-
 #### switchLocalePath
 
   - **Arguments**:
@@ -43,12 +37,6 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
   See type definition for [Location](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125).
-
-<alert type="warning">
-
-In `no_prefix` strategy, passing `locale` other than the current one is not supported.
-
-</alert>
 
 #### getRouteBaseName
 
@@ -68,12 +56,6 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
   Returns localized location for passed in `route`. If `locale` is not specified, uses current locale.
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
-
-<alert type="warning">
-
-In `no_prefix` strategy, passing `locale` other than the current one is not supported.
-
-</alert>
 
 #### $nuxtI18nSeo
 
