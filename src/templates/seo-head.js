@@ -35,7 +35,7 @@ export const nuxtI18nSeo = function () {
   }
 
   addHreflangLinks.bind(this)(this.$i18n.locales, this.$i18n.__baseUrl, metaObject.link)
-  addCanonicalLinks.bind(this)(currentLocale, this.$i18n.__baseUrl, metaObject.link)
+  addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link)
   addCurrentOgLocale.bind(this)(currentLocale, currentLocaleIso, metaObject.meta)
   addAlternateOgLocales.bind(this)(this.$i18n.locales, currentLocaleIso, metaObject.meta)
 
@@ -69,7 +69,7 @@ function addHreflangLinks (locales, baseUrl, link) {
 
   for (const [iso, mapLocale] of localeMap.entries()) {
     link.push({
-      hid: `alternate-hreflang-${iso}`,
+      hid: `i18n-alt-${iso}`,
       rel: 'alternate',
       href: baseUrl + this.switchLocalePath(mapLocale.code),
       hreflang: iso
@@ -78,7 +78,7 @@ function addHreflangLinks (locales, baseUrl, link) {
 
   if (defaultLocale) {
     link.push({
-      hid: 'alternate-x-default',
+      hid: 'i18n-xd',
       rel: 'alternate',
       href: baseUrl + this.switchLocalePath(defaultLocale),
       hreflang: 'x-default'
@@ -86,8 +86,7 @@ function addHreflangLinks (locales, baseUrl, link) {
   }
 }
 
-function addCanonicalLinks (currentLocale, baseUrl, link) {
-  const currentLocaleCode = codeFromLocale(currentLocale)
+function addCanonicalLinks (baseUrl, link) {
   const currentRoute = {
     ...this.$route,
     name: this.getRouteBaseName()
@@ -99,7 +98,7 @@ function addCanonicalLinks (currentLocale, baseUrl, link) {
   }
 
   link.push({
-    hid: `canonical-lang-${currentLocaleCode}`,
+    hid: 'i18n-can',
     rel: 'canonical',
     href: baseUrl + canonicalPath
   })
@@ -113,7 +112,7 @@ function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
   }
 
   meta.push({
-    hid: 'og:locale',
+    hid: 'i18n-og',
     property: 'og:locale',
     // Replace dash with underscore as defined in spec: language_TERRITORY
     content: underscoreIsoFromLocale(currentLocale)
@@ -127,7 +126,7 @@ function addAlternateOgLocales (locales, currentLocaleIso, meta) {
   })
 
   const alternateLocales = localesWithoutCurrent.map(locale => ({
-    hid: `og:locale:alternate-${isoFromLocale(locale)}`,
+    hid: `i18n-og-alt-${isoFromLocale(locale)}`,
     property: 'og:locale:alternate',
     content: underscoreIsoFromLocale(locale)
   }))
