@@ -1,3 +1,10 @@
+### [6.15.3](https://github.com/nuxt-community/i18n-module/compare/v6.15.2...v6.15.3) (2020-10-14)
+
+
+### Bug Fixes
+
+* don't use optional chaining for compatibility reasons ([#930](https://github.com/nuxt-community/i18n-module/issues/930)) ([2d96629](https://github.com/nuxt-community/i18n-module/commit/2d96629e71d36a0901ce0ef255d6e730338e0ede)), closes [#929](https://github.com/nuxt-community/i18n-module/issues/929)
+
 ### [6.15.2](https://github.com/nuxt-community/i18n-module/compare/v6.15.1...v6.15.2) (2020-10-13)
 
 
