@@ -1,4 +1,4 @@
-import deepcopy from 'deepcopy'
+import cloneDeep from 'lodash.clonedeep'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
@@ -225,7 +225,7 @@ export default async (context) => {
   }
 
   // Set instance options
-  const vueI18nOptions = typeof vueI18n === 'function' ? vueI18n(context) : deepcopy(vueI18n)
+  const vueI18nOptions = typeof vueI18n === 'function' ? vueI18n(context) : cloneDeep(vueI18n)
   vueI18nOptions.componentInstanceCreatedListener = extendVueI18nInstance
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
