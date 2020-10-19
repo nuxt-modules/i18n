@@ -1,3 +1,10 @@
+### [6.15.4](https://github.com/nuxt-community/i18n-module/compare/v6.15.3...v6.15.4) (2020-10-19)
+
+
+### Bug Fixes
+
+* node-libs-browser being imported on the client ([#936](https://github.com/nuxt-community/i18n-module/issues/936)) ([7490ae9](https://github.com/nuxt-community/i18n-module/commit/7490ae9b742bd60d4f9f8f81f5b540491380c84f)), closes [#907](https://github.com/nuxt-community/i18n-module/issues/907) [#935](https://github.com/nuxt-community/i18n-module/issues/935)
+
 ### [6.15.3](https://github.com/nuxt-community/i18n-module/compare/v6.15.2...v6.15.3) (2020-10-14)
 
 
