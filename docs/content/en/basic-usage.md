@@ -85,5 +85,5 @@ export default ({ app }) => {
   @click="$router.push(localeRoute({
     name: 'index',
     params: { foo: '1' }
-  })">Navigate</a>
+  }))">Navigate</a>
 ```
