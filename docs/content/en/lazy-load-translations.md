@@ -29,25 +29,25 @@ nuxt-project/
 Configuration example:
 
 ```js{}[nuxt.config.js]
-i18n: {
+['nuxt-i18n', {
   locales: [
     {
       code: 'en',
-      file: 'en-US.js',
+      file: 'en-US.js'
     },
     {
       code: 'es',
-      file: 'es-ES.js',
+      file: 'es-ES.js'
     },
     {
       code: 'fr',
-      file: 'fr-FR.js',
-    },
+      file: 'fr-FR.js'
+    }
   ],
   lazy: true,
   langDir: 'lang/',
-  defaultLocale: 'en',
-},
+  defaultLocale: 'en'
+}]
 ```
 
 Language file example:
