@@ -46,7 +46,8 @@ Configuration example:
     }
   ],
   lazy: true,
-  langDir: 'lang/'
+  langDir: 'lang/',
+  defaultLocale: 'en'
 }]
 ```
 
