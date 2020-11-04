@@ -23,6 +23,7 @@ nuxt-project/
 │   ├── en-US.js
 │   ├── es-ES.js
 │   ├── fr-FR.js
+│   ├── ko-KR.js
 ├── nuxt.config.js
 ```
 
@@ -43,7 +44,11 @@ Ejemplo de configuración:
     {
       code: 'fr',
       file: 'fr-FR.js'
-    }
+    },
+    {
+      code: 'ko',
+      file: 'ko-KR.js'
+    }    
   ],
   lazy: true,
   langDir: 'lang/',
