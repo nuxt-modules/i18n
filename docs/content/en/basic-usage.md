@@ -14,7 +14,7 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
   ],
 
   i18n: {
-    locales: ['en', 'fr', 'es', 'ko'],
+    locales: ['en', 'fr', 'es'],
     defaultLocale: 'en',
     vueI18n: {
       fallbackLocale: 'en',
@@ -27,10 +27,7 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
         },
         es: {
           welcome: 'Bienvenido'
-        },
-        ko: {
-          welcome: '환영합니다'
-        }        
+        }
       }
     }
   }

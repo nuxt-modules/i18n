@@ -38,11 +38,7 @@ An example without selected catchall locale:
     {
       code: 'gb',
       iso: 'en-GB'
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR'
-    }    
+    }
   ]
 }]
 ```
@@ -61,11 +57,7 @@ Here is how you'd use `isCatchallLocale` to selected another language:
       code: 'gb',
       iso: 'en-GB',
       isCatchallLocale: true // This one will be used as catchall locale
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR',
-    }    
+    }
   ]
 }]
 ```
@@ -83,11 +75,7 @@ Here is how you'd use `isCatchallLocale` to selected another language:
     {
       code: 'en',
       iso: 'en' // will be used as catchall locale
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR'
-    }    
+    }
   ]
 }]
 ```
@@ -123,11 +111,7 @@ Para que esta característica funcione, debe configurar la opción `locales` com
     {
       code: 'fr',
       iso: 'fr-FR'
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR'
-    }    
+    }
   ]
 }]
 ```

@@ -38,11 +38,7 @@ An example without selected catchall locale:
     {
       code: 'gb',
       iso: 'en-GB'
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR'
-    }    
+    }
   ]
 }]
 ```
@@ -61,11 +57,7 @@ Here is how you'd use `isCatchallLocale` to selected another language:
       code: 'gb',
       iso: 'en-GB',
       isCatchallLocale: true // This one will be used as catchall locale
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR',
-    }    
+    }
   ]
 }]
 ```
@@ -83,11 +75,7 @@ Here is how you'd use `isCatchallLocale` to selected another language:
     {
       code: 'en',
       iso: 'en' // will be used as catchall locale
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR'
-    }    
+    }
   ]
 }]
 ```
@@ -123,11 +111,7 @@ To leverage the SEO benefits, you must configure the `locales` option as an arra
     {
       code: 'fr',
       iso: 'fr-FR'
-    },
-    {
-      code: 'ko',
-      iso: 'ko-KR'
-    }    
+    }
   ]
 }]
 ```
@@ -143,7 +127,7 @@ You must also set the `baseUrl` option to your production domain in order to mak
 
 `baseUrl` can also be set to a function (that will be passed a [Nuxt Context](https://nuxtjs.org/guides/concepts/context-helpers) as a parameter) that returns a string. It can be useful to make base URL dynamic based on request headers or `window.location`.
 
-To enable this feature everywhere in your app, set `seo` option to `true`.
+To enable this feature everywhere in your app, set `seo` option to `true`. 
 **This comes with a performance drawback though**. More information below.
 
 ```js{}[nuxt.config.js]

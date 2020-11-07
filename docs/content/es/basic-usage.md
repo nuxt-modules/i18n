@@ -7,14 +7,14 @@ category: Guía
 
 La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entornos `locales` admitidos y proporcionar algunos mensajes de traducción a **vue-i18n** a través de la opción `vueI18n`:
 
-```js{}[nuxt.config.js]
+```js
 {
   modules: [
     'nuxt-i18n'
   ],
 
   i18n: {
-    locales: ['en', 'fr', 'es', 'ko'],
+    locales: ['en', 'fr', 'es'],
     defaultLocale: 'en',
     vueI18n: {
       fallbackLocale: 'en',
@@ -27,10 +27,7 @@ La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entor
         },
         es: {
           welcome: 'Bienvenido'
-        },
-        ko: {
-          welcome: '환영합니다'
-        }        
+        }
       }
     }
   }
