@@ -187,7 +187,7 @@ Properties:
 
 ## `vueI18n`
 
-- type: `object`
+- type: `object` or `string`
 - default: `{}`
 
 Configuration for the `vue-i18n` library that is used internally but this module. See full documentation at http://kazupon.github.io/vue-i18n/api/#constructor-options
