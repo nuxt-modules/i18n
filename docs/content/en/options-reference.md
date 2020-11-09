@@ -128,7 +128,7 @@ Supported properties:
 - `cookieDomain` (default: `null`) - Set to override the default domain of the cookie. Defaults to the **host** of the site.
 - `cookieCrossOrigin` (default: `false`) - When `true`, sets the flags `SameSite=None; Secure` on the cookie to allow cross-domain use of the cookie (required when app is embedded in an iframe).
 - `cookieSecure` (default: `false`) - Sets the `Secure` flag for the cookie.
-},
+
 
 ## `rootRedirect`
 
