@@ -54,6 +54,7 @@ exports.DEFAULT_OPTIONS = {
   },
   parsePages: true,
   pages: {},
+  skipSettingLocaleOnNavigate: false,
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }
