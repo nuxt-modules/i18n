@@ -73,12 +73,11 @@ export default async (context) => {
       return
     }
 
-    // Abort if newLocale is falsy or did not change
-    if (!newLocale || newLocale === app.i18n.locale) {
+    // Abort if newLocale did not change
+    if (newLocale === app.i18n.locale) {
       return
     }
 
-    app.i18n.__pendingLocale = null
     const oldLocale = app.i18n.locale
 
     if (!initialSetup) {
@@ -200,11 +199,27 @@ export default async (context) => {
 
     if (skipSettingLocaleOnNavigate) {
       app.i18n.__pendingLocale = finalLocale
+      app.i18n.__pendingLocalePromise = new Promise(resolve => {
+        app.i18n.__resolvePendingLocalePromise = resolve
+      })
     } else {
       await app.i18n.setLocale(finalLocale)
     }
 
     return [null, null]
+  }
+
+  const setPendingLocale = async () => {
+    if (!app.i18n.__pendingLocale) {
+      return
+    }
+    await app.i18n.setLocale(app.i18n.__pendingLocale)
+    app.i18n.__resolvePendingLocalePromise()
+    app.i18n.__pendingLocale = null
+  }
+
+  const waitForPendingLocale = async () => {
+    return !app.i18n.__pendingLocale || (await app.i18n.__pendingLocalePromise)
   }
 
   const getBrowserLocale = () => {
@@ -267,7 +282,8 @@ export default async (context) => {
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
-    i18n.setPendingLocale = () => loadAndSetLocale(app.i18n.__pendingLocale)
+    i18n.setPendingLocale = setPendingLocale
+    i18n.waitForPendingLocale = waitForPendingLocale
     i18n.getBrowserLocale = () => getBrowserLocale()
     i18n.__baseUrl = app.i18n.__baseUrl
   }
