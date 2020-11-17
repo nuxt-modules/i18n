@@ -219,7 +219,9 @@ export default async (context) => {
   }
 
   const waitForPendingLocale = async () => {
-    return !app.i18n.__pendingLocale || (await app.i18n.__pendingLocalePromise)
+    if (app.i18n.__pendingLocale) {
+      await app.i18n.__pendingLocalePromise
+    }
   }
 
   const getBrowserLocale = () => {
@@ -286,6 +288,9 @@ export default async (context) => {
     i18n.waitForPendingLocale = waitForPendingLocale
     i18n.getBrowserLocale = () => getBrowserLocale()
     i18n.__baseUrl = app.i18n.__baseUrl
+    i18n.__pendingLocale = app.i18n.__pendingLocale
+    i18n.__pendingLocalePromise = app.i18n.__pendingLocalePromise
+    i18n.__resolvePendingLocalePromise = app.i18n.__resolvePendingLocalePromise
   }
 
   // Set instance options
