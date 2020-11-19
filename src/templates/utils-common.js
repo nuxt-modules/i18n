@@ -28,7 +28,7 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
   // Normalise appLocales input
   appLocales = appLocales.map(appLocale => ({
     code: typeof appLocale === 'string' ? appLocale : appLocale.code,
-    iso: typeof appLocale === 'string' ? appLocale : (appLocale.iso || appLocale.code),
+    iso: typeof appLocale === 'string' ? appLocale : (appLocale.iso || appLocale.code)
   }))
 
   // First pass: match exact locale.
