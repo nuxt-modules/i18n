@@ -68,19 +68,21 @@ Asegúrese de que Vuex [esté habilitado](https://nuxtjs.org/guides/directory-st
 
 </alert>
 
-Para proporcionar traducciones de parámetros dinámicos, envíe el `i18n/setRouteParams`  lo antes posible al cargar una página, por ejemplo:
+To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` mutation as early as possible when loading a page. The passed in object must contain the mappings from the locale `code` to an object with a mapping from slug name to expected slug value for given locale.
+
+An example:
 
 ```vue
 <template>
-  <!-- pages/_slug.vue -->
+  <!-- pages/post/_postId.vue -->
 </template>
 
 <script>
 export default {
   async asyncData ({ store }) {
     await store.dispatch('i18n/setRouteParams', {
-      en: { slug: 'my-post' },
-      fr: { slug: 'mon-article' }
+      en: { postId: 'my-post' },
+      fr: { postId: 'mon-article' }
     })
     return {
       // your data
@@ -90,8 +92,8 @@ export default {
 </script>
 ```
 
-<alert type="warning">
+<alert type="info">
 
- **nuxt-i18n** no restablecerá las traducciones de parámetros por usted, esto significa que si utiliza parámetros idénticos para diferentes rutas, navegar entre esas rutas podría generar parámetros conflictivos. Asegúrese de establecer siempre traducciones de parámetros en tales casos.
+**nuxt-i18n** no restablecerá las traducciones de parámetros por usted, esto significa que si utiliza parámetros idénticos para diferentes rutas, navegar entre esas rutas podría generar parámetros conflictivos. Asegúrese de establecer siempre traducciones de parámetros en tales casos.
 
- </alert>
+</alert>
