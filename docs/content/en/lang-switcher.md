@@ -81,7 +81,7 @@ To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` a
 export default {
   async asyncData ({ store }) {
     await store.dispatch('i18n/setRouteParams', {
-      en: { slug: 'my-post' },
+      en: { slug: 'my-post' }, // slug here is the dynamic parameter name, _slug here
       fr: { slug: 'mon-article' }
     })
     return {
