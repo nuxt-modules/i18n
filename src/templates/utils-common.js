@@ -17,7 +17,7 @@ export const parseAcceptLanguage = input => {
 
 /**
  * Find locale code that best matches provided list of browser locales.
- * @param {string[]} appLocales The user-configured locale codes that are to be matched.
+ * @param {(string[]|Object[])} appLocales The user-configured locale codes that are to be matched.
  * @param {string[]} browserLocales The locales to match against configured.
  * @return {string?}
  */

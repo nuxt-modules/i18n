@@ -94,4 +94,11 @@ describe('matchBrowserLocale', () => {
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en-gb')
   })
+
+  test('matches ISO locale code', () => {
+    const appLocales = [{ code: 'cn', iso: 'zh-CN' }, { code: 'en', iso: 'en-US' }]
+    const browserLocales = ['zh', 'zh-CN']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('cn')
+  })
 })
