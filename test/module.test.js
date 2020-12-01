@@ -411,7 +411,11 @@ for (const trailingSlash of TRAILING_SLASHES) {
 
       const body = window.document.querySelector('body')
       expect(body.textContent).toContain('Category')
-      expect(body.textContent).not.toContain('Subcategory')
+      if (trailingSlash === true) {
+        expect(body.textContent).toContain('Subcategory')
+      } else {
+        expect(body.textContent).not.toContain('Subcategory')
+      }
 
       // Will only work if navigated-to route has a name.
       expect(window.$nuxt.switchLocalePath('fr')).toBe(pathRespectingTrailingSlash('/fr/imbrication-dynamique/1'))
