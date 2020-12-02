@@ -108,7 +108,7 @@ export const getLocaleDomain = (locales, req, { localDomainKey, localeCodeKey })
  * @param  {string[]} localeCodes
  * @return {RegExp}
  */
-export const getLocalesRegex = localeCodes => new RegExp(`^/(${localeCodes.join('|')})(/|$)`, 'i')
+export const getLocalesRegex = localeCodes => new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`, 'i')
 
 /**
  * Creates getter for getLocaleFromRoute

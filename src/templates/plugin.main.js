@@ -28,18 +28,18 @@ import {
   createLocaleFromRouteGetter,
   getLocaleCookie,
   getLocaleDomain,
+  getLocalesRegex,
   resolveBaseUrl,
   matchBrowserLocale,
   parseAcceptLanguage,
   registerStore,
   setLocaleCookie,
-  syncVuex,
-  getLocalesRegex
+  syncVuex
 } from './utils-common'
 
 Vue.use(VueI18n)
 
-const { alwaysRedirect, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
+const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
 const getLocaleFromRoute = createLocaleFromRouteGetter(localeCodes, { routesNameSeparator, defaultLocaleRouteNameSuffix })
 
 /** @type {import('@nuxt/types').Plugin} */
@@ -126,9 +126,9 @@ export default async (context) => {
     }
 
     if (getLocaleFromRoute(route) === locale) {
-      // If "onlyOnRoot" is set and strategy is "prefix_and_default", prefer unprefixed route for
+      // If "onlyOnRoot" or "onlyOnNoPrefix" is set and strategy is "prefix_and_default", prefer unprefixed route for
       // default locale.
-      if (!onlyOnRoot || locale !== defaultLocale || strategy !== STRATEGIES.PREFIX_AND_DEFAULT) {
+      if (!(onlyOnRoot || onlyOnNoPrefix) || locale !== defaultLocale || strategy !== STRATEGIES.PREFIX_AND_DEFAULT) {
         return ''
       }
     }
@@ -186,12 +186,16 @@ export default async (context) => {
       return false
     }
 
-    if (route.path.match(getLocalesRegex(localeCodes)) && !alwaysRedirect) {
-      return false
-    }
-
-    if (onlyOnRoot && strategy !== STRATEGIES.NO_PREFIX && route.path !== '/') {
-      return false
+    if (strategy !== STRATEGIES.NO_PREFIX) {
+      if (onlyOnRoot) {
+        if (route.path !== '/') {
+          return false
+        }
+      } else if (onlyOnNoPrefix) {
+        if (!alwaysRedirect && route.path.match(getLocalesRegex(localeCodes))) {
+          return false
+        }
+      }
     }
 
     let matchedLocale

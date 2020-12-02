@@ -1034,6 +1034,17 @@ describe('no_prefix strategy', () => {
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
   })
+
+  test('does detect browser locale', async () => {
+    const requestOptions = {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
+  })
 })
 
 describe('no_prefix strategy + differentDomains', () => {
@@ -1533,6 +1544,58 @@ describe('prefix + detectBrowserLanguage', () => {
     await nuxt.close()
   })
 
+  test('redirects root even if the route already has a locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/en', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/fr')
+  })
+
+  test('redirects subroute even if the route already has a locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/en/simple', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/fr/simple')
+  })
+})
+
+describe('prefix + detectBrowserLanguage + onlyOnNoPrefix', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        defaultLocale: 'fr',
+        strategy: 'prefix',
+        detectBrowserLanguage: {
+          useCookie: true,
+          onlyOnNoPrefix: true
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
   test('does not redirect root if the route already has a locale', async () => {
     const requestOptions = {
       followRedirect: false,
@@ -1600,6 +1663,7 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
     }
     const response = await get('/en', requestOptions)
     expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/fr')
   })
 })
 
