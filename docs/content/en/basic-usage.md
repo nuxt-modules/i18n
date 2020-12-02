@@ -34,7 +34,7 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
 }
 ```
 
-With this setup, **nuxt-i18n** generates localized URLs for all your pages, using the codes provided in the `locales` option as the prefix, except for the `defaultLocale` (read more on [routing](./routing)).
+With this setup, **nuxt-i18n** generates localized URLs for all your pages, using the codes provided in the `locales` option as the prefix, except for the `defaultLocale` (read more on [routing](/routing/)).
 
 The `vueI18n` option is passed as is to **vue-i18n**, refer to the [doc](https://kazupon.github.io/vue-i18n/) for available options.
 
@@ -85,5 +85,5 @@ export default ({ app }) => {
   @click="$router.push(localeRoute({
     name: 'index',
     params: { foo: '1' }
-  })">Navigate</a>
+  }))">Navigate</a>
 ```

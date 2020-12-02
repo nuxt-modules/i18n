@@ -1,3 +1,28 @@
+### [6.15.4](https://github.com/nuxt-community/i18n-module/compare/v6.15.3...v6.15.4) (2020-10-19)
+
+
+### Bug Fixes
+
+* node-libs-browser being imported on the client ([#936](https://github.com/nuxt-community/i18n-module/issues/936)) ([7490ae9](https://github.com/nuxt-community/i18n-module/commit/7490ae9b742bd60d4f9f8f81f5b540491380c84f)), closes [#907](https://github.com/nuxt-community/i18n-module/issues/907) [#935](https://github.com/nuxt-community/i18n-module/issues/935)
+
+### [6.15.3](https://github.com/nuxt-community/i18n-module/compare/v6.15.2...v6.15.3) (2020-10-14)
+
+
+### Bug Fixes
+
+* don't use optional chaining for compatibility reasons ([#930](https://github.com/nuxt-community/i18n-module/issues/930)) ([2d96629](https://github.com/nuxt-community/i18n-module/commit/2d96629e71d36a0901ce0ef255d6e730338e0ede)), closes [#929](https://github.com/nuxt-community/i18n-module/issues/929)
+
+### [6.15.2](https://github.com/nuxt-community/i18n-module/compare/v6.15.1...v6.15.2) (2020-10-13)
+
+
+### Bug Fixes
+
+* **docs:** add warnings regarding no_prefix strategy ([#891](https://github.com/nuxt-community/i18n-module/issues/891)) ([bbcbad9](https://github.com/nuxt-community/i18n-module/commit/bbcbad96955b07d81168f61059cca7ebdb6995f6))
+* **seo:** don't include queries in canonical tag ([d09ad9e](https://github.com/nuxt-community/i18n-module/commit/d09ad9e6f521a1c193fdb05f1ed2f26289586847)), closes [#912](https://github.com/nuxt-community/i18n-module/issues/912)
+* **seo:** enable canonical tag for all strategies ([4ae4199](https://github.com/nuxt-community/i18n-module/commit/4ae41997017faa0e7900274f725eee010e523dae))
+* **seo:** enable self-referential canonical tags ([b62fd39](https://github.com/nuxt-community/i18n-module/commit/b62fd39718f1bde419897ca9348b058b637ca2a6))
+* add x-default hreflang tag for improved SEO ([#922](https://github.com/nuxt-community/i18n-module/issues/922)) ([b35bc57](https://github.com/nuxt-community/i18n-module/commit/b35bc579cb6431953e8473f4bd4fd5dbbed33426))
+
 ### [6.15.1](https://github.com/nuxt-community/i18n-module/compare/v6.15.0...v6.15.1) (2020-09-11)
 
 

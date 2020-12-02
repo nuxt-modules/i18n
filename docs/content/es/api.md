@@ -26,10 +26,6 @@ Todos los [Vue I18n propiedades y métodos](http://kazupon.github.io/vue-i18n/ap
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-<alert type="warning">
-In `no_prefix` strategy, passing `locale` other than the current one is not supported.
-</alert>
-
 #### switchLocalePath
 
   - **Arguments**:
@@ -42,10 +38,6 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 
   See type definition for [Location](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125).
 
-<alert type="warning">
-In `no_prefix` strategy, passing `locale` other than the current one is not supported.
-</alert>
-
 #### getRouteBaseName
 
   - **Arguments**:
@@ -53,6 +45,17 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
   - **Returns**: `string`
 
   Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
+
+#### localeRoute <Badge text="v6.12.0+" />
+
+  - **Arguments**:
+    - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
+    - locale (type: `string`, default: current locale)
+  - **Returns**: [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125) | `undefined`
+
+  Returns localized location for passed in `route`. If `locale` is not specified, uses current locale.
+
+  See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
 #### $nuxtI18nSeo
 
@@ -64,7 +67,11 @@ In `no_prefix` strategy, passing `locale` other than the current one is not supp
 
 ## Extension of VueI18n
 
+<alert type="info">
+
 Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class) (see its [properties and methods](http://kazupon.github.io/vue-i18n/api/#properties)) is exposed as `$i18n` on Vue instance and Vuex Store but as `i18n` on Nuxt `context.app`.
+
+</alert>
 
 ### Methods
 
@@ -84,9 +91,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Updates stored locale cookie with specified locale code. Consider using `setLocale` instead if you want to switch locale.
 
-#### setLocale
-
-  <badge>6.1.0+</badge>
+#### setLocale <Badge text="v6.1.0+" />
 
   - **Arguments**:
     - locale (type: `string`)

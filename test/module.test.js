@@ -191,6 +191,17 @@ for (const trailingSlash of TRAILING_SLASHES) {
           rel: 'alternate',
           href: pathRespectingTrailingSlash('nuxt-app.localhost/fr'),
           hreflang: 'fr-FR'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: 'nuxt-app.localhost/',
+          hreflang: 'x-default'
+        },
+        {
+          tagName: 'link',
+          rel: 'canonical',
+          href: 'nuxt-app.localhost/'
         }
       ]
 
@@ -400,7 +411,11 @@ for (const trailingSlash of TRAILING_SLASHES) {
 
       const body = window.document.querySelector('body')
       expect(body.textContent).toContain('Category')
-      expect(body.textContent).not.toContain('Subcategory')
+      if (trailingSlash === true) {
+        expect(body.textContent).toContain('Subcategory')
+      } else {
+        expect(body.textContent).not.toContain('Subcategory')
+      }
 
       // Will only work if navigated-to route has a name.
       expect(window.$nuxt.switchLocalePath('fr')).toBe(pathRespectingTrailingSlash('/fr/imbrication-dynamique/1'))
@@ -585,6 +600,17 @@ for (const trailingSlash of TRAILING_SLASHES) {
           rel: 'alternate',
           href: pathRespectingTrailingSlash('nuxt-app.localhost/fr/loader-yaml'),
           hreflang: 'fr-FR'
+        },
+        {
+          tagName: 'link',
+          rel: 'alternate',
+          href: pathRespectingTrailingSlash('nuxt-app.localhost/loader-yaml'),
+          hreflang: 'x-default'
+        },
+        {
+          tagName: 'link',
+          rel: 'canonical',
+          href: pathRespectingTrailingSlash('nuxt-app.localhost/loader-yaml')
         }
       ]
 
@@ -688,6 +714,17 @@ describe('hreflang', () => {
         href: 'nuxt-app.localhost/esVe',
         hreflang: 'es-VE',
         rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/',
+        hreflang: 'x-default',
+        rel: 'alternate',
+        tagName: 'link'
+      },
+      {
+        href: 'nuxt-app.localhost/',
+        rel: 'canonical',
         tagName: 'link'
       }
     ]
@@ -894,11 +931,12 @@ describe('prefix_and_default strategy', () => {
     expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
   })
 
-  test('canonical SEO link is not added to non-prefixed default locale', async () => {
+  test('canonical SEO link is added to non-prefixed default locale', async () => {
     const html = await get('/')
     const dom = getDom(html)
     const links = dom.querySelectorAll('head link[rel="canonical"]')
-    expect(links.length).toBe(0)
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
   })
 })
 
@@ -934,9 +972,14 @@ describe('no_prefix strategy', () => {
         tagName: 'meta',
         property: 'og:locale:alternate',
         content: 'fr_FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'canonical',
+        href: 'nuxt-app.localhost/'
       }
     ]))
-    expect(seoTags.filter(tag => tag.tagName === 'link')).toHaveLength(0)
+    expect(seoTags.filter(tag => tag.tagName === 'link')).toHaveLength(1)
   })
 
   test('/ contains EN text & link /about', async () => {
@@ -979,18 +1022,6 @@ describe('no_prefix strategy', () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localePath('about')).toBe('/about')
     expect(window.$nuxt.localePath({ path: '/about' })).toBe('/about')
-  })
-
-  test('localePath with non-current locale triggers warning', async () => {
-    const window = await nuxt.renderAndGetWindow(url('/'))
-    const spy = jest.spyOn(window.console, 'warn').mockImplementation(() => {})
-
-    const newRoute = window.$nuxt.localePath('about', 'fr')
-    expect(spy).toHaveBeenCalled()
-    expect(spy.mock.calls[0][0]).toContain('unsupported when using no_prefix')
-    expect(newRoute).toBe('/about')
-
-    spy.mockRestore()
   })
 
   test('fallbacks to default locale with invalid locale cookie', async () => {
@@ -1235,8 +1266,14 @@ describe('baseUrl', () => {
       },
       {
         tagName: 'link',
+        rel: 'alternate',
+        href: 'CUSTOM/?noncanonical',
+        hreflang: 'x-default'
+      },
+      {
+        tagName: 'link',
         rel: 'canonical',
-        href: 'CUSTOM/?noncanonical' // TODO: This seems broken. Should not include query.
+        href: 'CUSTOM/'
       }
     ]
 

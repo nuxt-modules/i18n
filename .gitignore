@@ -8,3 +8,4 @@ node_modules
 .DS_STORE
 coverage
 dist
+package-lock.json

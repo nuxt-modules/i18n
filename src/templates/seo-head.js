@@ -1,5 +1,6 @@
 import VueMeta from 'vue-meta'
 import {
+  defaultLocale,
   COMPONENT_OPTIONS_KEY,
   LOCALE_CODE_KEY,
   LOCALE_ISO_KEY,
@@ -34,7 +35,7 @@ export const nuxtI18nSeo = function () {
   }
 
   addHreflangLinks.bind(this)(this.$i18n.locales, this.$i18n.__baseUrl, metaObject.link)
-  addCanonicalLinks.bind(this)(currentLocale, this.$i18n.__baseUrl, metaObject.link)
+  addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link)
   addCurrentOgLocale.bind(this)(currentLocale, currentLocaleIso, metaObject.meta)
   addAlternateOgLocales.bind(this)(this.$i18n.locales, currentLocaleIso, metaObject.meta)
 
@@ -68,29 +69,36 @@ function addHreflangLinks (locales, baseUrl, link) {
 
   for (const [iso, mapLocale] of localeMap.entries()) {
     link.push({
-      hid: `alternate-hreflang-${iso}`,
+      hid: `i18n-alt-${iso}`,
       rel: 'alternate',
       href: baseUrl + this.switchLocalePath(mapLocale.code),
       hreflang: iso
     })
   }
+
+  if (defaultLocale) {
+    link.push({
+      hid: 'i18n-xd',
+      rel: 'alternate',
+      href: baseUrl + this.switchLocalePath(defaultLocale),
+      hreflang: 'x-default'
+    })
+  }
 }
 
-function addCanonicalLinks (currentLocale, baseUrl, link) {
-  if (strategy !== STRATEGIES.PREFIX_AND_DEFAULT) {
-    return
-  }
+function addCanonicalLinks (baseUrl, link) {
+  const currentRoute = this.localeRoute({
+    ...this.$route,
+    name: this.getRouteBaseName()
+  })
+  const canonicalPath = currentRoute ? currentRoute.path : null
 
-  const currentLocaleCode = codeFromLocale(currentLocale)
-  const canonicalPath = this.switchLocalePath(currentLocaleCode)
-  const canonicalPathIsDifferentFromCurrent = canonicalPath !== this.$route.path
-  const shouldAddCanonical = canonicalPath && canonicalPathIsDifferentFromCurrent
-  if (!shouldAddCanonical) {
+  if (!canonicalPath) {
     return
   }
 
   link.push({
-    hid: `canonical-lang-${currentLocaleCode}`,
+    hid: 'i18n-can',
     rel: 'canonical',
     href: baseUrl + canonicalPath
   })
@@ -104,7 +112,7 @@ function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
   }
 
   meta.push({
-    hid: 'og:locale',
+    hid: 'i18n-og',
     property: 'og:locale',
     // Replace dash with underscore as defined in spec: language_TERRITORY
     content: underscoreIsoFromLocale(currentLocale)
@@ -118,7 +126,7 @@ function addAlternateOgLocales (locales, currentLocaleIso, meta) {
   })
 
   const alternateLocales = localesWithoutCurrent.map(locale => ({
-    hid: `og:locale:alternate-${isoFromLocale(locale)}`,
+    hid: `i18n-og-alt-${isoFromLocale(locale)}`,
     property: 'og:locale:alternate',
     content: underscoreIsoFromLocale(locale)
   }))

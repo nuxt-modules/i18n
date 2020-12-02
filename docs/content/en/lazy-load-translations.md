@@ -46,13 +46,14 @@ Configuration example:
     }
   ],
   lazy: true,
-  langDir: 'lang/'
+  langDir: 'lang/',
+  defaultLocale: 'en'
 }]
 ```
 
 Language file example:
 
-```js{}[lang/en.js]
+```js{}[lang/en-US.js]
 
 export default async (context, locale) => {
   await resolve({

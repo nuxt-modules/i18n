@@ -7,7 +7,7 @@ category: Guía
 
 La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entornos `locales` admitidos y proporcionar algunos mensajes de traducción a **vue-i18n** a través de la opción `vueI18n`:
 
-```js
+```js{}[nuxt.config.js]
 {
   modules: [
     'nuxt-i18n'
@@ -34,7 +34,7 @@ La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entor
 }
 ```
 
-Con esta configuración, **nuxt-i18n** genera URL localizadas para todas sus páginas, utilizando los códigos proporcionados en la opción de configuración local `locales` como prefijo, excepto la configuración local predeterminada `defaultLocale` (lea más sobre el [enrutamiento](./routing)).
+Con esta configuración, **nuxt-i18n** genera URL localizadas para todas sus páginas, utilizando los códigos proporcionados en la opción de configuración local `locales` como prefijo, excepto la configuración local predeterminada `defaultLocale` (lea más sobre el [enrutamiento](/routing/)).
 
 La opción `vueI18n` ahora se pasa a **vue-i18n**, consulte el [documento](https://kazupon.github.io/vue-i18n/) para ver las opciones disponibles.
 

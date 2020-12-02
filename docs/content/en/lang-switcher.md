@@ -46,7 +46,7 @@ computed: {
 
 <alert type="info">
 
-When using `detectBrowserLanguage` and wanting to persist locale on a route change, you must call one of the functions that update the stored locale cookie. Call either [`setLocaleCookie(locale)`](./api/#setlocalecookie) to persist just the cookie locale or [`setLocale(locale)`](./api/#setlocale) to both persist the cookie locale and switch the route to the specified locale. Otherwise, locale might switch back to the saved one during navigation.
+When using `detectBrowserLanguage` and wanting to persist locale on a route change, you must call one of the functions that update the stored locale cookie. Call either [`setLocaleCookie(locale)`](/api/#setlocalecookie) to persist just the cookie locale or [`setLocale(locale)`](/api/#setlocale) to both persist the cookie locale and switch the route to the specified locale. Otherwise, locale might switch back to the saved one during navigation.
 
 </alert>
 
@@ -66,23 +66,25 @@ Dealing with dynamic route parameters requires a bit more work because you need 
 
 <alert type="warning">
 
- Make sure that Vuex [is enabled](https://nuxtjs.org/guides/directory-structure/store) in your app and that you did not set `vuex` option to `false` in **nuxt-i18n**'s options.
+Make sure that Vuex [is enabled](https://nuxtjs.org/guides/directory-structure/store) in your app and that you did not set `vuex` option to `false` in **nuxt-i18n**'s options.
 
- </alert>
+</alert>
 
-To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` as early as possible when loading a page, eg:
+To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` mutation as early as possible when loading a page. The passed in object must contain the mappings from the locale `code` to an object with a mapping from slug name to expected slug value for given locale.
+
+An example:
 
 ```vue
 <template>
-  <!-- pages/_slug.vue -->
+  <!-- pages/post/_postId.vue -->
 </template>
 
 <script>
 export default {
   async asyncData ({ store }) {
     await store.dispatch('i18n/setRouteParams', {
-      en: { slug: 'my-post' },
-      fr: { slug: 'mon-article' }
+      en: { postId: 'my-post' },
+      fr: { postId: 'mon-article' }
     })
     return {
       // your data
@@ -92,8 +94,8 @@ export default {
 </script>
 ```
 
-<alert type="warning">
+<alert type="info">
 
- **nuxt-i18n** won't reset parameters translations for you, this means that if you use identical parameters for different routes, navigating between those routes might result in conflicting parameters. Make sure you always set params translations in such cases.
+**nuxt-i18n** won't reset parameters translations for you, this means that if you use identical parameters for different routes, navigating between those routes might result in conflicting parameters. Make sure you always set params translations in such cases.
 
 </alert>
