@@ -9,19 +9,19 @@ module.exports = {
         'test/**/*'
       ],
       plugins: [
-        'jest',
-      ],
+        'jest'
+      ]
     }
   ],
   rules: {
-    '@typescript-eslint/no-unused-vars': ['error', {argsIgnorePattern: '^_', varsIgnorePattern: '^_'}],
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'arrow-parens': 'off',
     'no-console': [
-        'error', {
-            allow: ['assert', 'warn', 'error', 'info'],
-        },
+      'error', {
+        allow: ['assert', 'warn', 'error', 'info']
+      }
     ],
-    'no-unused-vars': ['error', {argsIgnorePattern: '^_', varsIgnorePattern: '^_'}],
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'vue/html-closing-bracket-newline': 'off',
     'vue/multiline-html-element-content-newline': 'off',
     'vue/singleline-html-element-content-newline': 'off'

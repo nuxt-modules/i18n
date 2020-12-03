@@ -38,6 +38,7 @@ exports.DEFAULT_OPTIONS = {
     cookieSecure: false,
     alwaysRedirect: false,
     fallbackLocale: '',
+    onlyOnNoPrefix: false,
     onlyOnRoot: false
   },
   differentDomains: false,

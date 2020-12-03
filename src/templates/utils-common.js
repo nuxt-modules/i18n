@@ -107,6 +107,13 @@ export const getLocaleDomain = (locales, req, { localDomainKey, localeCodeKey })
 }
 
 /**
+ * Creates a RegExp for route paths
+ * @param  {string[]} localeCodes
+ * @return {RegExp}
+ */
+export const getLocalesRegex = localeCodes => new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`, 'i')
+
+/**
  * Creates getter for getLocaleFromRoute
  * @param  {string[]} localeCodes
  * @param  {{ routesNameSeparator: string, defaultLocaleRouteNameSuffix: string }} options
@@ -116,8 +123,7 @@ export const createLocaleFromRouteGetter = (localeCodes, { routesNameSeparator, 
   const localesPattern = `(${localeCodes.join('|')})`
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
   const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
-  const regexpPath = new RegExp(`^/${localesPattern}/`, 'i')
-
+  const regexpPath = getLocalesRegex(localeCodes)
   /**
    * Extract locale code from given route:
    * - If route has a name, try to extract locale from it
@@ -215,46 +221,60 @@ export const registerStore = (store, vuex, localeCodes, moduleName) => {
       ...(vuex.syncRouteParams ? { routeParams: {} } : {})
     }),
     actions: {
-      ...(vuex.syncLocale ? {
-        setLocale ({ commit }, locale) {
-          commit('setLocale', locale)
-        }
-      } : {}),
-      ...(vuex.syncMessages ? {
-        setMessages ({ commit }, messages) {
-          commit('setMessages', messages)
-        }
-      } : {}),
-      ...(vuex.syncRouteParams ? {
-        setRouteParams ({ commit }, params) {
-          if (process.env.NODE_ENV === 'development') {
-            validateRouteParams(params, localeCodes, moduleName)
+      ...(vuex.syncLocale
+        ? {
+            setLocale ({ commit }, locale) {
+              commit('setLocale', locale)
+            }
           }
-          commit('setRouteParams', params)
-        }
-      } : {})
+        : {}),
+      ...(vuex.syncMessages
+        ? {
+            setMessages ({ commit }, messages) {
+              commit('setMessages', messages)
+            }
+          }
+        : {}),
+      ...(vuex.syncRouteParams
+        ? {
+            setRouteParams ({ commit }, params) {
+              if (process.env.NODE_ENV === 'development') {
+                validateRouteParams(params, localeCodes, moduleName)
+              }
+              commit('setRouteParams', params)
+            }
+          }
+        : {})
     },
     mutations: {
-      ...(vuex.syncLocale ? {
-        setLocale (state, locale) {
-          state.locale = locale
-        }
-      } : {}),
-      ...(vuex.syncMessages ? {
-        setMessages (state, messages) {
-          state.messages = messages
-        }
-      } : {}),
-      ...(vuex.syncRouteParams ? {
-        setRouteParams (state, params) {
-          state.routeParams = params
-        }
-      } : {})
+      ...(vuex.syncLocale
+        ? {
+            setLocale (state, locale) {
+              state.locale = locale
+            }
+          }
+        : {}),
+      ...(vuex.syncMessages
+        ? {
+            setMessages (state, messages) {
+              state.messages = messages
+            }
+          }
+        : {}),
+      ...(vuex.syncRouteParams
+        ? {
+            setRouteParams (state, params) {
+              state.routeParams = params
+            }
+          }
+        : {})
     },
     getters: {
-      ...(vuex.syncRouteParams ? {
-        localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
-      } : {})
+      ...(vuex.syncRouteParams
+        ? {
+            localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
+          }
+        : {})
     }
   }, { preserveState: !!store.state[vuex.moduleName] })
 }

@@ -28,7 +28,7 @@ export default {
 }
 ```
 
-The former approach has the benefit of having having type-checking enabled if you have followed the [Typscript setup](./setup#typescript).
+The former approach has the benefit of having having type-checking enabled if you have followed the [Typescript setup](/setup/#typescript).
 
 ## Properties
 
@@ -124,12 +124,12 @@ Supported properties:
 - `alwaysRedirect` (default: `false`) - Set to always redirect to the value stored in the cookie, not just on first visit.
 - `fallbackLocale` (default: `null`) - If none of the locales match the browser's locale, use this one as a fallback.
 - `onlyOnRoot` (default: `false`) - Set to `true` (recommended for improved SEO) to only attempt to detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
+- `onlyOnNoPrefix` (default: `false`) - This is a more permissive variant of `onlyOnRoot` that will allow attempt to detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when `onlyOnRoot` is not enabled and using strategy other than `'no_prefix'`.
 - `useCookie` (default: `true`) - If enabled, a cookie is set once the user has been redirected to browser's preferred locale, to prevent subsequent redirections. Set to `false` to redirect every time.
 - `cookieKey` (default: `'i18n_redirected'`) - Cookie name.
 - `cookieDomain` (default: `null`) - Set to override the default domain of the cookie. Defaults to the **host** of the site.
 - `cookieCrossOrigin` (default: `false`) - When `true`, sets the flags `SameSite=None; Secure` on the cookie to allow cross-domain use of the cookie (required when app is embedded in an iframe).
 - `cookieSecure` (default: `false`) - Sets the `Secure` flag for the cookie.
-},
 
 Set to false to disable.
 
@@ -152,28 +152,28 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
 - type: `boolean`
 - default: `false`
 
-If `true`, a SEO metadata will be generated for the routes. Note that performance can suffer with this option enabled and there might be compatibility issues with some plugins. The recommended way is to set up SEO as described in [Improving performance](./seo#improving-performance).
+If `true`, a SEO metadata will be generated for the routes. Note that performance can suffer with this option enabled and there might be compatibility issues with some plugins. The recommended way is to set up SEO as described in [Improving performance](/seo/#improving-performance).
 
 ## `differentDomains`
 
 - type: `boolean`
 - default: `false`
 
-Set this to `true` when using different domains for each locale. If enabled, no prefix is added to your routes and you MUST configure locales as an array of objects, each containing a `domain` key. Refer to the [Different domains](./different-domains) for more information.
+Set this to `true` when using different domains for each locale. If enabled, no prefix is added to your routes and you MUST configure locales as an array of objects, each containing a `domain` key. Refer to the [Different domains](/different-domains/) for more information.
 
 ## `parsePages`
 
 - type: `boolean`
 - default: `true`
 
-Whether [custom paths](./routing#custom-paths) are extracted from page files using babel parser.
+Whether [custom paths](/routing/#custom-paths) are extracted from page files using babel parser.
 
 ## `pages`
 
 - type: `object`
 - default: `{}`
 
-If `parsePages` option is disabled, the module will look for custom routes in the `pages` option. Refer to the [Routing](./routing)  for usage.
+If `parsePages` option is disabled, the module will look for custom routes in the `pages` option. Refer to the [Routing](/routing/)  for usage.
 
 ## `vuex`
 
@@ -186,7 +186,7 @@ Properties:
 - `moduleName` (default: `'i18n'`) - The module's namespace.
 - `syncLocale` (default: `false`) - If enabled, current app's locale is synced with **nuxt-i18n** store module.
 - `syncMessages` (default: `false`) - If enabled, current translation messages are synced with **nuxt-i18n** store module. **This will make the page response bigger so don't use unless necessary.**
-- `syncRouteParams` (default: `true`) - Enables a `setRouteParams` mutation for using custom route names with dynamic routes. See more information in [Dynamic route parameters](./lang-switcher#dynamic-route-parameters)
+- `syncRouteParams` (default: `true`) - Enables a `setRouteParams` mutation for using custom route names with dynamic routes. See more information in [Dynamic route parameters](/lang-switcher/#dynamic-route-parameters)
 
 ## `vueI18n`
 
