@@ -101,4 +101,18 @@ describe('matchBrowserLocale', () => {
 
     expect(matchBrowserLocale(appLocales, browserLocales)).toBe('cn')
   })
+
+  test('matches full ISO code', () => {
+    const appLocales = [{ code: 'us', iso: 'en-US' }, { code: 'gb', iso: 'en-GB' }]
+    const browserLocales = ['en-GB', 'en']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('gb')
+  })
+
+  test('matches locale when only languages match', () => {
+    const appLocales = ['en-GB', 'en-US']
+    const browserLocales = ['en-IN', 'en']
+
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe('en-GB')
+  })
 })
