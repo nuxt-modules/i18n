@@ -17,7 +17,7 @@ export const parseAcceptLanguage = input => {
 
 /**
  * Find locale code that best matches provided list of browser locales.
- * @param {string[]} appLocales The user-configured locale codes that are to be matched.
+ * @param {(string[]|Object[])} appLocales The user-configured locale codes that are to be matched.
  * @param {string[]} browserLocales The locales to match against configured.
  * @return {string?}
  */
@@ -25,26 +25,29 @@ export const matchBrowserLocale = (appLocales, browserLocales) => {
   /** @type {{ code: string, score: number }[]} */
   const matchedLocales = []
 
+  // Normalise appLocales input
+  appLocales = appLocales.map(appLocale => ({
+    code: typeof appLocale === 'string' ? appLocale : appLocale.code,
+    iso: typeof appLocale === 'string' ? appLocale : (appLocale.iso || appLocale.code)
+  }))
+
   // First pass: match exact locale.
   for (const [index, browserCode] of browserLocales.entries()) {
-    const matchedCode = appLocales.find(appCode => appCode.toLowerCase() === browserCode.toLowerCase())
-    if (matchedCode) {
-      matchedLocales.push({ code: matchedCode, score: 1 - index / browserLocales.length })
+    const matchedLocale = appLocales.find(appLocale => appLocale.iso.toLowerCase() === browserCode.toLowerCase())
+    if (matchedLocale) {
+      matchedLocales.push({ code: matchedLocale.code, score: 1 - index / browserLocales.length })
       break
     }
   }
 
   // Second pass: match only locale code part of the browser locale (not including country).
   for (const [index, browserCode] of browserLocales.entries()) {
-    if (browserCode.includes('-')) {
-      // For backwards-compatibility, this is lower-cased before comparing.
-      const languageCode = browserCode.split('-')[0].toLowerCase()
-
-      if (appLocales.includes(languageCode)) {
-        // Deduct a thousandth for being non-exact match.
-        matchedLocales.push({ code: languageCode, score: 0.999 - index / browserLocales.length })
-        break
-      }
+    const languageCode = browserCode.split('-')[0].toLowerCase()
+    const matchedLocale = appLocales.find(appLocale => appLocale.iso.split('-')[0].toLowerCase() === languageCode)
+    if (matchedLocale) {
+      // Deduct a thousandth for being non-exact match.
+      matchedLocales.push({ code: matchedLocale.code, score: 0.999 - index / browserLocales.length })
+      break
     }
   }
 

@@ -204,9 +204,9 @@ export default async (context) => {
       // Get preferred language from cookie if present and enabled
     } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
       // Get browser language either from navigator if running on client side, or from the headers
-      matchedLocale = matchBrowserLocale(localeCodes, navigator.languages)
+      matchedLocale = matchBrowserLocale(locales, navigator.languages)
     } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-      matchedLocale = matchBrowserLocale(localeCodes, parseAcceptLanguage(req.headers['accept-language']))
+      matchedLocale = matchBrowserLocale(locales, parseAcceptLanguage(req.headers['accept-language']))
     }
 
     const finalLocale = matchedLocale || fallbackLocale

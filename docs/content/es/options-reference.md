@@ -62,7 +62,7 @@ List of locales supported by your app. Can either be an array of codes (`['en', 
 
 When using an object form, the properties can be:
 - `code` (**required**) - unique identifier of the locale
-- `iso` (required when using SEO features) - The ISO code used for SEO features. Should be in one of those formats:
+- `iso` (required when using SEO features and) - The ISO code used for SEO features and for matching browser locales when using [detectBrowserLanguage](#detectBrowserLanguage) functionality. Should be in one of those formats:
   * ISO 639-1 code (e.g. `'en'`)
   * ISO 639-1 and ISO 3166-1 alpha-2 codes, separated by hyphen (e.g. `'en-US'`)
 - `file` (required when using `lazy`) - the name of the file. Will be resolved relative to `langDir` path when loading locale messages lazily
@@ -111,7 +111,8 @@ Directory that contains translation files when lazy-loading messages. This CAN N
 - default: `{ alwaysRedirect: false, fallbackLocale: '', onlyOnRoot: false, useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
 
 Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
-Set to false to disable.
+
+See also [Browser language detection](./browser-language-detection) for a guide.
 
 <alert type="info">
 
@@ -129,6 +130,8 @@ Supported properties:
 - `cookieDomain` (default: `null`) - Set to override the default domain of the cookie. Defaults to the **host** of the site.
 - `cookieCrossOrigin` (default: `false`) - When `true`, sets the flags `SameSite=None; Secure` on the cookie to allow cross-domain use of the cookie (required when app is embedded in an iframe).
 - `cookieSecure` (default: `false`) - Sets the `Secure` flag for the cookie.
+
+Set to false to disable.
 
 ## `rootRedirect`
 
