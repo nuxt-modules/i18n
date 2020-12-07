@@ -1738,3 +1738,27 @@ describe('generate with differentDomains enabled', () => {
     expect(dom.querySelector('#current-page')?.textContent).toBe('page: About us')
   })
 })
+
+describe('generate with prefix strategy', () => {
+  const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
+
+  beforeAll(async () => {
+    /** @type {import('@nuxt/types').NuxtConfig} */
+    const overrides = {
+      generate: { dir: distDir },
+      i18n: {
+        strategy: 'prefix',
+        seo: true
+      }
+    }
+
+    await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+  })
+
+  test('fallback route contains canonical link to actual route', () => {
+    const contents = readFileSync(resolve(distDir, 'index.html'), 'utf-8')
+    const dom = getDom(contents)
+    const canonicalLink = dom.querySelector('head link[rel="canonical"]')
+    expect(canonicalLink?.getAttribute('href')).toBe('nuxt-app.localhost/en')
+  })
+})
