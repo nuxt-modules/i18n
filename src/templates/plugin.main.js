@@ -121,6 +121,11 @@ export default async (context) => {
   }
 
   const getRedirectPathForLocale = (route, locale) => {
+    // Redirects are ignored if it is a nuxt generate.
+    if (process.static && process.server) {
+      return ''
+    }
+
     if (!locale || app.i18n.differentDomains || strategy === STRATEGIES.NO_PREFIX) {
       return ''
     }
