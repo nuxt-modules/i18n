@@ -1762,3 +1762,62 @@ describe('generate with prefix strategy', () => {
     expect(canonicalLink?.getAttribute('href')).toBe('nuxt-app.localhost/en')
   })
 })
+
+describe('Configuration with locale fallback decision map', () => {
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        locales: [
+          {
+            code: 'es',
+            iso: 'es',
+            name: 'Spanish',
+            file: 'es.js'
+          },
+          {
+            code: 'en-GB',
+            iso: 'en-GB',
+            name: 'Britain english',
+            file: 'en-GB.js'
+          },
+          {
+            code: 'fr-FR',
+            iso: 'fr-FR',
+            name: 'Français',
+            file: 'fr-FR.js'
+          },
+          {
+            code: 'de',
+            iso: 'de',
+            name: 'Deutsch',
+            file: 'de.js'
+          }
+        ],
+        vueI18n: {
+          fallbackLocale: {
+            'fr-FR': ['en-GB', 'es'],
+            default: ['de']
+          }
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
+
+    await setup(localConfig)
+  })
+
+  test('should be fallback translation by respecting the decision map', async done => {
+    const html = await get('/fr-FR/fallback')
+    const dom = getDom(html)
+
+    for (let level = 0; level <= 3; level++) {
+      const translationNode = dom.querySelector('[data-test="level' + level + '"]')
+      expect(translationNode).not.toBeNull()
+      expect(translationNode.textContent).toEqual('level ' + level)
+    }
+    done()
+  })
+})

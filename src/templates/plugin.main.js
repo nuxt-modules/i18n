@@ -90,10 +90,22 @@ export default async (context) => {
     // Lazy-loading enabled
     if (lazy) {
       const { loadLanguageAsync } = require('./utils')
+      const i18nFallbackLocale = app.i18n.fallbackLocale
 
-      // Load fallback locale.
-      if (app.i18n.fallbackLocale && newLocale !== app.i18n.fallbackLocale) {
-        await loadLanguageAsync(context, app.i18n.fallbackLocale)
+      // Load fallback locale(s).
+      if (i18nFallbackLocale) {
+        if (typeof i18nFallbackLocale === 'object' && i18nFallbackLocale[newLocale]) {
+          let localesToLoadPromises = []
+          if (i18nFallbackLocale[newLocale]) {
+            localesToLoadPromises = i18nFallbackLocale[newLocale].map(fbLocale => loadLanguageAsync(context, fbLocale))
+          }
+          if (i18nFallbackLocale.default) {
+            localesToLoadPromises.concat(i18nFallbackLocale.default.map(fbLocale => loadLanguageAsync(context, fbLocale)))
+          }
+          await Promise.all(localesToLoadPromises)
+        } else if (newLocale !== i18nFallbackLocale) {
+          await loadLanguageAsync(context, i18nFallbackLocale)
+        }
       }
 
       await loadLanguageAsync(context, newLocale)
