@@ -1764,6 +1764,8 @@ describe('generate with prefix strategy', () => {
 })
 
 describe('Configuration with locale fallback decision map', () => {
+  let nuxt
+
   beforeAll(async () => {
     const override = {
       i18n: {
@@ -1805,11 +1807,14 @@ describe('Configuration with locale fallback decision map', () => {
     }
 
     const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
-
-    await setup(localConfig)
+    nuxt = (await setup(localConfig)).nuxt
   })
 
-  test('should be fallback translation by respecting the decision map', async done => {
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('should be fallback translation by respecting the decision map', async () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
@@ -1818,6 +1823,5 @@ describe('Configuration with locale fallback decision map', () => {
       expect(translationNode).not.toBeNull()
       expect(translationNode.textContent).toEqual('level ' + level)
     }
-    done()
   })
 })
