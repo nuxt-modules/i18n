@@ -14,7 +14,7 @@ Siga esta guía para actualizar de una versión principal a otra.
 
 En algunos casos, tener SEO habilitado globalmente causó problemas de rendimiento y / o entró en conflicto con otros complementos. Para mitigar estos problemas, las características de SEO ahora están deshabilitadas de forma predeterminada.
 
-Si se vio afectado por uno de los problemas anteriores, le recomendamos que lea la sección [Mejorar el rendimiento](/seo/#improving-performance) para habilitar el SEO solo donde lo necesites.
+Si se vio afectado por uno de los problemas anteriores, le recomendamos que lea la sección [Mejorar el rendimiento](/seo#improving-performance) para habilitar el SEO solo donde lo necesites.
 
 Si desea restaurar el comportamiento anterior, puede habilitar las funciones de SEO a nivel mundial estableciendo la opción `seo` en `true`:
 

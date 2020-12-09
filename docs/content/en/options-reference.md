@@ -28,7 +28,7 @@ export default {
 }
 ```
 
-The former approach has the benefit of having having type-checking enabled if you have followed the [Typescript setup](/setup/#typescript).
+The former approach has the benefit of having having type-checking enabled if you have followed the [Typescript setup](/setup#typescript).
 
 ## Properties
 
@@ -152,7 +152,7 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
 - type: `boolean`
 - default: `false`
 
-If `true`, a SEO metadata will be generated for the routes. Note that performance can suffer with this option enabled and there might be compatibility issues with some plugins. The recommended way is to set up SEO as described in [Improving performance](/seo/#improving-performance).
+If `true`, a SEO metadata will be generated for the routes. Note that performance can suffer with this option enabled and there might be compatibility issues with some plugins. The recommended way is to set up SEO as described in [Improving performance](/seo#improving-performance).
 
 ## `differentDomains`
 
@@ -166,7 +166,7 @@ Set this to `true` when using different domains for each locale. If enabled, no 
 - type: `boolean`
 - default: `true`
 
-Whether [custom paths](/routing/#custom-paths) are extracted from page files using babel parser.
+Whether [custom paths](/routing#custom-paths) are extracted from page files using babel parser.
 
 ## `pages`
 
@@ -186,7 +186,7 @@ Properties:
 - `moduleName` (default: `'i18n'`) - The module's namespace.
 - `syncLocale` (default: `false`) - If enabled, current app's locale is synced with **nuxt-i18n** store module.
 - `syncMessages` (default: `false`) - If enabled, current translation messages are synced with **nuxt-i18n** store module. **This will make the page response bigger so don't use unless necessary.**
-- `syncRouteParams` (default: `true`) - Enables a `setRouteParams` mutation for using custom route names with dynamic routes. See more information in [Dynamic route parameters](/lang-switcher/#dynamic-route-parameters)
+- `syncRouteParams` (default: `true`) - Enables a `setRouteParams` mutation for using custom route names with dynamic routes. See more information in [Dynamic route parameters](/lang-switcher#dynamic-route-parameters)
 
 ## `vueI18n`
 
