@@ -159,7 +159,7 @@ If `true`, a SEO metadata will be generated for the routes. Note that performanc
 - type: `boolean`
 - default: `false`
 
-Set this to `true` when using different domains for each locale. If enabled, no prefix is added to your routes and you MUST configure locales as an array of objects, each containing a `domain` key. Refer to the [Different domains](/different-domains/) for more information.
+Set this to `true` when using different domains for each locale. If enabled, no prefix is added to your routes and you MUST configure locales as an array of objects, each containing a `domain` key. Refer to the [Different domains](/different-domains) for more information.
 
 ## `parsePages`
 
@@ -173,7 +173,7 @@ Whether [custom paths](/routing#custom-paths) are extracted from page files usin
 - type: `object`
 - default: `{}`
 
-If `parsePages` option is disabled, the module will look for custom routes in the `pages` option. Refer to the [Routing](/routing/)  for usage.
+If `parsePages` option is disabled, the module will look for custom routes in the `pages` option. Refer to the [Routing](/routing)  for usage.
 
 ## `vuex`
 
