@@ -1,3 +1,24 @@
+## [6.16.0](https://github.com/nuxt-community/i18n-module/compare/v6.15.4...v6.16.0) (2020-12-09)
+
+
+### Features
+
+* "onlyOnNoPrefix" - detect browser locale when no prefix ([#896](https://github.com/nuxt-community/i18n-module/issues/896)) ([15f0a44](https://github.com/nuxt-community/i18n-module/commit/15f0a4444b22ff99c5d07814e8d30a3e68a73720))
+
+
+### Bug Fixes
+
+* **detectBrowserLanguage:** use ISO code if available ([#965](https://github.com/nuxt-community/i18n-module/issues/965)) ([1e39a3b](https://github.com/nuxt-community/i18n-module/commit/1e39a3bf43010d05f5d52a3b046020ccfb23d7cc)), closes [#979](https://github.com/nuxt-community/i18n-module/issues/979) [#499](https://github.com/nuxt-community/i18n-module/issues/499)
+* **docs:** add defaultLocale to examples ([#955](https://github.com/nuxt-community/i18n-module/issues/955)) ([4b69c6c](https://github.com/nuxt-community/i18n-module/commit/4b69c6c72fe7217ede1d687fa7f4a0fbcc04285c))
+* **docs:** add missing parenthesis ([#941](https://github.com/nuxt-community/i18n-module/issues/941)) ([4ecdee1](https://github.com/nuxt-community/i18n-module/commit/4ecdee1cadd9c46a19bf932e1f7a933728b45282))
+* **docs:** clarify the type of the "vueI18n" option ([c9be559](https://github.com/nuxt-community/i18n-module/commit/c9be559b0e2560641d41fa0d3ca40e4f3b981cc7))
+* **docs:** fix some links in the documentation ([1249226](https://github.com/nuxt-community/i18n-module/commit/12492263ce923f3fb8aa97c7b8a8fdf9affef860))
+* **docs:** fix some more links in the documentation ([abbf212](https://github.com/nuxt-community/i18n-module/commit/abbf212f1694d1fb295a6386bd7001315e442232))
+* **docs:** include "defaultLocale" in the example configuration ([#951](https://github.com/nuxt-community/i18n-module/issues/951)) ([6bacb3b](https://github.com/nuxt-community/i18n-module/commit/6bacb3b18f9cd15a6f4e60139f8f23106b39f218))
+* **docs:** remove unwanted characters ([bc9f76e](https://github.com/nuxt-community/i18n-module/commit/bc9f76e4bbc69f1be895a60704448a0a6519bbfe)), closes [#960](https://github.com/nuxt-community/i18n-module/issues/960)
+* **generate:** don't try to redirect route when static generating ([#989](https://github.com/nuxt-community/i18n-module/issues/989)) ([d5957d0](https://github.com/nuxt-community/i18n-module/commit/d5957d057c819049c9d73a526fb6752c428a67c6)), closes [#911](https://github.com/nuxt-community/i18n-module/issues/911)
+* **test:** fix test expectation for trailingSlash=true ([c9f2ef5](https://github.com/nuxt-community/i18n-module/commit/c9f2ef52a844990e0ffa373c7eae83873814d34d))
+
 ### [6.15.4](https://github.com/nuxt-community/i18n-module/compare/v6.15.3...v6.15.4) (2020-10-19)
 
 
