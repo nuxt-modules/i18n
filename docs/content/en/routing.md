@@ -76,8 +76,7 @@ This strategy combines both previous strategies behaviours, meaning that you wil
 To configure the strategy, use the `strategy` option.
 Make sure that you have a `defaultLocale` defined, especially if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy. For other strategies it's also recommended to set it as it's gonna be used as a fallback when attempting to redirect from 404 page.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en'
@@ -90,8 +89,7 @@ If on `Nuxt` version lower than 2.10.2, and using strategy `prefix_except_defaul
 
 </alert>
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en',
@@ -116,8 +114,7 @@ Custom paths are not supported with the `no-prefix` [strategy](#strategy).
 
 Add a `nuxtI18n.paths` property to your page and set your custom paths there:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     paths: {
@@ -131,8 +128,7 @@ export default {
 
 To configure a custom path for a dynamic route, you need to put the params in the URI similarly to how you would do it in vue-router.
 
-```js{}[pages/articles/_name.vue]
-
+```js {}[pages/articles/_name.vue]
 export default {
   nuxtI18n: {
     paths: {
@@ -147,8 +143,7 @@ export default {
 
 Make sure you set the `parsePages` option to `false` to disable babel parsing and add your custom paths in the `pages` option:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,   // Disable babel parsing
   pages: {
@@ -185,8 +180,7 @@ pages/
 
 Here's how you would configure these particular pages in the configuration:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {
@@ -221,8 +215,7 @@ pages/
 
 You would need to set up your `pages` property as follows:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {
@@ -269,8 +262,7 @@ This feature is not supported with the `no-prefix` [strategy](#strategy).
 
 If you'd like some page to be available to some languages only, you can configure a list of supported languages to override global settings:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     locales: ['fr', 'es']
@@ -280,8 +272,7 @@ export default {
 
 To completely disable i18n on a given page:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: false
 }
@@ -291,8 +282,7 @@ export default {
 
 If you disabled `parsePages` option, localization can be disabled for specific pages and locales by setting the unwanted locale(s) to `false` in the module's configuration:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {
@@ -305,8 +295,7 @@ If you disabled `parsePages` option, localization can be disabled for specific p
 
 To completely disable routes localization on a given page:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {

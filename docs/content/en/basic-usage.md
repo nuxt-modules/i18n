@@ -7,7 +7,7 @@ category: Guide
 
 The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 {
   modules: [
     'nuxt-i18n'
@@ -68,7 +68,7 @@ Note that `localePath` can use the route's unprefixed path, which must start wit
 
 For convenience, these methods are also available in the app's context:
 
-```js{}[/plugins/myplugin.js]
+```js {}[/plugins/myplugin.js]
 export default ({ app }) => {
   // Get localized path for homepage
   const localePath = app.localePath('index')

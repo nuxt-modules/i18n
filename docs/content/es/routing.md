@@ -73,8 +73,7 @@ Esta estrategia combina los comportamientos de ambas estrategias anteriores, lo 
 Para configurar la estrategia, use la opción `strategy`.
 Make sure that you have a `defaultLocale` defined, especially if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy. For other strategies it's also recommended to set it as it's gonna be used as a fallback when attempting to redirect from 404 page.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en'
@@ -96,8 +95,7 @@ Custom paths are not supported with the `no-prefix` [strategy](#strategy).
 
 Agregue una propiedad `nuxtI18n.paths` a su página y configure sus rutas personalizadas allí:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     paths: {
@@ -111,8 +109,7 @@ export default {
 
 Para configurar una ruta personalizada para una ruta dinámica, debe colocar los parámetros en el URI de forma similar a como lo haría en vue-router.
 
-```js{}[pages/articles/_name.vue]
-
+```js {}[pages/articles/_name.vue]
 export default {
   nuxtI18n: {
     paths: {
@@ -127,8 +124,7 @@ export default {
 
 Asegúrese de establecer la opción  `parsePages` en `false` para deshabilitar el análisis de babel y agregar sus rutas personalizadas en la opción  `pages`:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,   // Disable babel parsing
   pages: {
@@ -165,8 +161,7 @@ pages/
 
 Así es como configuraría estas páginas en particular en la configuración:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {
@@ -201,8 +196,7 @@ pages/
 
 Debería configurar su propiedad `pages` de la siguiente manera:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {
@@ -249,8 +243,7 @@ This feature is not supported with the `no-prefix` [strategy](#strategy).
 
 Si desea que alguna página esté disponible solo para algunos idiomas, puede configurar una lista de idiomas compatibles para anular la configuración global:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     locales: ['fr', 'es']
@@ -260,8 +253,7 @@ export default {
 
 Para deshabilitar completamente i18n en una página determinada:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: false
 }
@@ -271,8 +263,7 @@ export default {
 
 Si deshabilitó la opción `parsePages`, la localización puede deshabilitarse para páginas y configuraciones locales específicas configurando las configuraciones locales no deseadas en `false` en la configuración del módulo:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {
@@ -285,8 +276,7 @@ Si deshabilitó la opción `parsePages`, la localización puede deshabilitarse p
 
 Para deshabilitar completamente la localización de rutas en una página determinada:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   parsePages: false,
   pages: {

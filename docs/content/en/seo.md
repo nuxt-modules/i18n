@@ -27,8 +27,7 @@ When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to
 
 An example without selected catchall locale:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -45,8 +44,7 @@ An example without selected catchall locale:
 
 Here is how you'd use `isCatchallLocale` to selected another language:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -64,8 +62,7 @@ Here is how you'd use `isCatchallLocale` to selected another language:
 
   In case you already have an `en` language iso set, it'll be used as the catchall without doing anything
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -96,8 +93,7 @@ Generates `rel="canonical"` link on all pages to specify the "main" version of t
 
 To leverage the SEO benefits, you must configure the `locales` option as an array of objects, where each object has an `iso` option set to the language's ISO code:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -118,8 +114,7 @@ To leverage the SEO benefits, you must configure the `locales` option as an arra
 
 You must also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   baseUrl: 'https://my-nuxt-app.com'
 }]
@@ -130,8 +125,7 @@ You must also set the `baseUrl` option to your production domain in order to mak
 To enable this feature everywhere in your app, set `seo` option to `true`. 
 **This comes with a performance drawback though**. More information below.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   seo: true
 }]
@@ -139,8 +133,7 @@ To enable this feature everywhere in your app, set `seo` option to `true`.
 
 If you'd like to disable SEO on specific pages, set `i18n.seo` to `false` right in the page:
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     seo: false
@@ -161,8 +154,7 @@ It will generate i18n SEO metadata for the current context.
 
 First make sure automatic SEO is disabled by setting `seo` to `false` in your configuration or removing that option completely:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   seo: false
 }]
@@ -170,8 +162,7 @@ First make sure automatic SEO is disabled by setting `seo` to `false` in your co
 
 Then in your app layout declare the [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) and use `$nuxtI18nSeo` inside to generate i18n SEO meta information:
 
-```js{}[layouts/default.vue]
-
+```js {}[layouts/default.vue]
 export default {
   head () {
     return this.$nuxtI18nSeo()
@@ -188,8 +179,7 @@ Now SEO metadata will only be computed for the layout instead of every component
 
 If you want to add your own meta in the layout you can easily merge the object returned by `$nuxtI18nSeo` with your own:
 
-```js{}[layouts/default.vue]
-
+```js {}[layouts/default.vue]
 export default {
   head () {
     const i18nSeo = this.$nuxtI18nSeo()

@@ -70,8 +70,7 @@ v4.x introduces a single change that requires you to rename the `i18n` key to `n
 
 **3.x:**
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   i18n: {
     paths: {
@@ -84,8 +83,7 @@ export default {
 
 **4.x:**
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     paths: {
@@ -104,8 +102,7 @@ The `routes` option has been dropped in favor of in-component configuration, any
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -122,8 +119,7 @@ The `routes` option has been dropped in favor of in-component configuration, any
 
 **3.x:**
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   i18n: {
     paths: {
@@ -141,8 +137,7 @@ The `ignorePaths` option has been dropped as well, its behaviour can be reproduc
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -156,8 +151,7 @@ The `ignorePaths` option has been dropped as well, its behaviour can be reproduc
 
 **3.x:**
 
-```js{}[pages/fr/notlocalized.vue]
-
+```js {}[pages/fr/notlocalized.vue]
 export default {
   i18n: false
 }
@@ -170,8 +164,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -183,7 +176,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 **3.x:**
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 
 {
   modules: [
@@ -204,8 +197,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -219,8 +211,7 @@ The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
 
 **3.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {

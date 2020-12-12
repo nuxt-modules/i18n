@@ -32,7 +32,7 @@ Agregar `nuxt-i18n` a tus dependencias:
 
 Luego añadir `nuxt-i18n` a la `modules` seccíon de `nuxt.config.js`:
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 {
   modules: [
     'nuxt-i18n',
@@ -47,7 +47,7 @@ Luego añadir `nuxt-i18n` a la `modules` seccíon de `nuxt.config.js`:
 
 Si está utilizando typescript o ejecuta un servidor de lenguaje de typescript para verificar el código (por ejemplo, a través de Vetur), agregue tipos a la matriz `types` en su `tsconfig.json`:
 
-```js{}[tsconfig.json]
+```js {}[tsconfig.json]
 {
   "compilerOptions": {
     "types": [

@@ -8,8 +8,7 @@ category: Guía
 Por defecto, **nuxt-i18n** intenta redirigir a los usuarios a su idioma preferido al detectar el idioma de su navegador.  Esto está controlado por la opción  `detectBrowserLanguage`:
 
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   // ...
   detectBrowserLanguage: {
@@ -30,8 +29,7 @@ Browser language is detected either from `navigator` when running on client-side
 
 Para evitar redirigir a los usuarios cada vez que visitan la aplicación, **nuxt-i18n** establece una cookie después de la primera redirección. Puede cambiar el nombre de la cookie configurando la opción `detectBrowserLanguage.cookieKey` a lo que desee, el valor predeterminado es _i18n_redirected_.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   detectBrowserLanguage: {
     useCookie: true,
@@ -42,8 +40,7 @@ Para evitar redirigir a los usuarios cada vez que visitan la aplicación, **nuxt
 
 Si prefiere que los usuarios sean redirigidos al idioma de su navegador cada vez que visitan la aplicación, deshabilite la cookie configurando `detectBrowserLanguage.useCookie` en `false`.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   detectBrowserLanguage: {
     useCookie: false
@@ -53,8 +50,7 @@ Si prefiere que los usuarios sean redirigidos al idioma de su navegador cada vez
 
 Para deshabilitar por completo la función de detección de idioma del navegador, configure `detectBrowserLanguage` en `false`.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   detectBrowserLanguage: false
 }]
@@ -62,8 +58,7 @@ Para deshabilitar por completo la función de detección de idioma del navegador
 
 Para redirigir al usuario cada vez que visita la aplicación y mantener su elección seleccionada, habilite alwaysRedirect:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   detectBrowserLanguage: {
     useCookie: true,
@@ -74,8 +69,7 @@ Para redirigir al usuario cada vez que visita la aplicación y mantener su elecc
 
 To use the cookie within a cross-origin environment (e.g. in an iFrame), you can set `cookieCrossOrigin: true`. This will change the cookie settings from `SameSite=Lax` to `SameSite=None; Secure`.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   // ...
   detectBrowserLanguage: {

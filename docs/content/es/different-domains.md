@@ -11,8 +11,7 @@ Es posible que desee utilizar un nombre de dominio diferente para cada idioma qu
 * Configure `locales` option as an array of objects, where each object has a `domain` key which value is the domain name you'd like to use for that locale (including port if non-default)
 * Optionally set `detectBrowserLanguage` to `false`. When enabled (which it is by default), user can get redirected to a different domain on first visit. Set to `false` if you want to ensure that visiting given domain always shows page in the corresponding locale.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -53,14 +52,14 @@ Como `nuxt.config.js` se usa en el momento de la compilación, sería necesario 
 La forma alternativa es mantener los dominios en la tienda Vuex bajo la propiedad `localeDomains`. Se puede acceder mediante el complemento
 durante la inicialización, ahorrando el problema de construir múltiples imágenes.
 
-```js{}[config/locale-domains.js]
+```js {}[config/locale-domains.js]
 module.exports = {
   uk: process.env.DOMAIN_UK,
   fr: process.env.DOMAIN_FR,
 };
 ```
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 const localeDomains = require('./config/locale-domains')
 //...
 [
@@ -81,7 +80,7 @@ const localeDomains = require('./config/locale-domains')
 ]
 ```
 
-```js{}[store/index.js]
+```js {}[store/index.js]
 const localeDomains = require('~~/config/locale-domains');
 
 export const state = () => ({

@@ -32,7 +32,7 @@ Add `nuxt-i18n` dependency to your project:
 
 Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`:
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 {
   modules: [
     'nuxt-i18n',
@@ -47,7 +47,7 @@ Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`:
 
 If using typescript or running typescript language server to check the code (for example through Vetur), add types to `types` array in your `tsconfig.json`:
 
-```js{}[tsconfig.json]
+```js {}[tsconfig.json]
 {
   "compilerOptions": {
     "types": [

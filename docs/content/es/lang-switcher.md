@@ -23,8 +23,7 @@ computed: {
 }
 ```
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {

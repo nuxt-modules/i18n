@@ -28,8 +28,7 @@ nuxt-project/
 
 Configuration example:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -53,8 +52,7 @@ Configuration example:
 
 Language file example:
 
-```js{}[lang/en-US.js]
-
+```js {}[lang/en-US.js]
 export default async (context, locale) => {
   await resolve({
     welcome: 'Welcome'

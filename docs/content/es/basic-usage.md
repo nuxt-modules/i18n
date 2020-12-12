@@ -7,7 +7,7 @@ category: Guía
 
 La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entornos `locales` admitidos y proporcionar algunos mensajes de traducción a **vue-i18n** a través de la opción `vueI18n`:
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 {
   modules: [
     'nuxt-i18n'
@@ -69,8 +69,7 @@ Tenga en cuenta que `localePath` utiliza el nombre base de la ruta para generar 
 
 Por conveniencia, estos métodos también están disponibles en el contexto de la aplicación:
 
-```js{}[/plugins/myplugin.js]
-
+```js {}[/plugins/myplugin.js]
 export default ({ app }) => {
   // Get localized path for homepage
   const localePath = app.localePath('index')

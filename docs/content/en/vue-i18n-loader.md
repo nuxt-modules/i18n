@@ -7,8 +7,7 @@ category: Guide
 
 If you'd like to enable [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader), simply set `vueI18nLoader` option to `true`.
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   vueI18nLoader: true
 }]

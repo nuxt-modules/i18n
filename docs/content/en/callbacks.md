@@ -30,8 +30,7 @@ Parameters:
 
 A typical usage would be to define those callbacks via a plugin where you can access the app's context \(useful if you need to change Axios' config when the language changes for example\).
 
-```js{}[/plugins/i18n.js]
-
+```js {}[/plugins/i18n.js]
 export default function ({ app }) {
   // beforeLanguageSwitch called right before setting a new locale
   app.i18n.beforeLanguageSwitch = (oldLocale, newLocale) => {
@@ -46,8 +45,7 @@ export default function ({ app }) {
 
 Add the plugin to Nuxt's config:
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 module.exports = {
   plugins: [
     { src: '~/plugins/i18n.js' }

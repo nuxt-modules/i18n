@@ -7,7 +7,7 @@ category: Guide
 
 You can configure **nuxt-i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 export default {
   modules: [
     'nuxt-i18n',
@@ -199,7 +199,7 @@ Configuration for the `vue-i18n` library that is used internally but this module
 
 It's also supported to set this property to a path to a local configuration file. The file needs to export a function or plain object. If a function, it will be passed a Nuxt Context as a parameter. It's necessary to use that approach when overriding more complex types (like functions) that can't be stringified correctly.
 
-```js{}[~/plugins/vue-i18n.js]
+```js {}[~/plugins/vue-i18n.js]
 export default context => {
   return {
     modifiers: {

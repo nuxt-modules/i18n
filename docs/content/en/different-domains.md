@@ -13,8 +13,7 @@ You might want to use a different domain name for each language your app support
 
 </alert>
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 ['nuxt-i18n', {
   locales: [
     {
@@ -55,14 +54,14 @@ As `nuxt.config.js` is used at build time it would be necessary to create differ
 The alternative way is to keep the domains in Vuex store under `localeDomains` property. It can be accessed by the plugin
 during the initialisation, saving the trouble building multiple images.
 
-```js{}[config/locale-domains.js]
+```js {}[config/locale-domains.js]
 module.exports = {
   uk: process.env.DOMAIN_UK,
   fr: process.env.DOMAIN_FR,
 };
 ```
 
-```js{}[nuxt.config.js]
+```js {}[nuxt.config.js]
 const localeDomains = require('./config/locale-domains')
 //...
 [
@@ -83,7 +82,7 @@ const localeDomains = require('./config/locale-domains')
 ]
 ```
 
-```js{}[store/index.js]
+```js {}[store/index.js]
 const localeDomains = require('~~/config/locale-domains');
 
 export const state = () => ({

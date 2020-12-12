@@ -70,8 +70,7 @@ v4.x introduce un solo cambio que requiere que cambie el nombre de la clave `i18
 
 **3.x:**
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   i18n: {
     paths: {
@@ -84,8 +83,7 @@ export default {
 
 **4.x:**
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   nuxtI18n: {
     paths: {
@@ -104,8 +102,7 @@ La opción `routes` se ha descartado a favor de la configuración en componentes
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -122,8 +119,7 @@ La opción `routes` se ha descartado a favor de la configuración en componentes
 
 **3.x:**
 
-```js{}[pages/about.vue]
-
+```js {}[pages/about.vue]
 export default {
   i18n: {
     paths: {
@@ -141,8 +137,7 @@ La opción `ignorePaths` también se ha eliminado, su comportamiento se puede re
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -156,8 +151,7 @@ La opción `ignorePaths` también se ha eliminado, su comportamiento se puede re
 
 **3.x:**
 
-```js{}[pages/fr/notlocalized.vue]
-
+```js {}[pages/fr/notlocalized.vue]
 export default {
   i18n: false
 }
@@ -170,8 +164,7 @@ El `noPrefixDefaultLocale` se ha descartado en favor de la opción `strategy`.
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -183,8 +176,7 @@ El `noPrefixDefaultLocale` se ha descartado en favor de la opción `strategy`.
 
 **3.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -204,8 +196,7 @@ La opción `loadLanguagesAsync` ha cambiado de nombre a `lazy`. La opción  `lan
 
 **2.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
@@ -219,8 +210,7 @@ La opción `loadLanguagesAsync` ha cambiado de nombre a `lazy`. La opción  `lan
 
 **3.x:**
 
-```js{}[nuxt.config.js]
-
+```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-i18n', {
