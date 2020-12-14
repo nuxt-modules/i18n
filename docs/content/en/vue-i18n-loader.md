@@ -1,7 +1,7 @@
 ---
 title: vue-i18n-loader
 description: "enable vue-i18n-loader"
-position: 12
+position: 13
 category: Guide
 ---
 

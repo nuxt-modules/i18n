@@ -1,7 +1,7 @@
 ---
 title: vue-i18n-loader
 description: 'vue-i18n-loader'
-position: 10
+position: 13
 category: Guía
 ---
 

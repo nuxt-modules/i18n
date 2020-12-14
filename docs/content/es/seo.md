@@ -1,7 +1,7 @@
 ---
 title: Optimización para motores de búsqueda
 description: 'Optimización para motores de búsqueda'
-position: 7
+position: 8
 category: Guía
 ---
 
