@@ -1,8 +1,8 @@
 <template>
   <div>
-    <p data-test="level0">{{ $t('frFRKey') }}</p>
-    <p data-test="level1">{{ $t('enGBKey') }}</p>
-    <p data-test="level2">{{ $t('esKey') }}</p>
-    <p data-test="level3">{{ $t('deKey') }}</p>
+    <p data-test="fr-key">{{ $t('frFRKey') }}</p>
+    <p data-test="en-gb-key">{{ $t('enGBKey') }}</p>
+    <p data-test="es-key">{{ $t('esKey') }}</p>
+    <p data-test="de-key">{{ $t('deKey') }}</p>
   </div>
 </template>
