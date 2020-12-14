@@ -1,3 +1,3 @@
 export default {
-  levelOne: 'level 1'
+  enGBKey: 'en-GB translation'
 }

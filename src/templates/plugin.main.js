@@ -97,8 +97,10 @@ export default async (context) => {
         let localesToLoadPromises = []
         if (Array.isArray(i18nFallbackLocale)) {
           localesToLoadPromises = i18nFallbackLocale.map(fbLocale => loadLanguageAsync(context, fbLocale))
-        } else if (typeof i18nFallbackLocale === 'object' && i18nFallbackLocale[newLocale]) {
-          localesToLoadPromises = i18nFallbackLocale[newLocale].map(fbLocale => loadLanguageAsync(context, fbLocale))
+        } else if (typeof i18nFallbackLocale === 'object') {
+          if (i18nFallbackLocale[newLocale]) {
+            localesToLoadPromises = localesToLoadPromises.concat(i18nFallbackLocale[newLocale].map(fbLocale => loadLanguageAsync(context, fbLocale)))
+          }
           if (i18nFallbackLocale.default) {
             localesToLoadPromises = localesToLoadPromises.concat(i18nFallbackLocale.default.map(fbLocale => loadLanguageAsync(context, fbLocale)))
           }

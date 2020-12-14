@@ -1,3 +1,3 @@
 export default {
-  levelTwo: 'level 2'
+  esKey: 'es translation'
 }

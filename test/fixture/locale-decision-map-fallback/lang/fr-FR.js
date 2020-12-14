@@ -1,3 +1,3 @@
 export default {
-  levelZero: 'level 0'
+  frFRKey: 'fr-FR translation'
 }

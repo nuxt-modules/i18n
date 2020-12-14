@@ -1,3 +1,3 @@
 export default {
-  levelThree: 'level 3'
+  deKey: 'de translation'
 }

@@ -1813,7 +1813,7 @@ describe('Configuration with locale fallback decision map', () => {
     nuxt = (await setup(localConfig)).nuxt
   })
 
-  afterEach(async () => {
+  afterAll(async () => {
     await nuxt.close()
   })
 
@@ -1821,10 +1821,78 @@ describe('Configuration with locale fallback decision map', () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
-    for (let level = 0; level <= 3; level++) {
-      const translationNode = dom.querySelector('[data-test="level' + level + '"]')
-      expect(translationNode?.textContent).toEqual('level ' + level)
+    expect(dom.querySelector('[data-test="level0"]')?.textContent).toEqual('fr-FR translation')
+    expect(dom.querySelector('[data-test="level1"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="level2"]')?.textContent).toEqual('es translation')
+    expect(dom.querySelector('[data-test="level3"]')?.textContent).toEqual('de translation')
+  })
+
+  test('should be able to skip if there is no fallback specified for the wanted locale', async () => {
+    const html = await get('/en-GB/fallback')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('[data-test="level0"]')?.textContent).toEqual('frFRKey')
+    expect(dom.querySelector('[data-test="level1"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="level2"]')?.textContent).toEqual('esKey')
+    expect(dom.querySelector('[data-test="level3"]')?.textContent).toEqual('de translation')
+  })
+})
+
+describe('Configuration with locale fallback decision map with no fallback', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const locales = [
+      {
+        code: 'es',
+        iso: 'es',
+        name: 'Spanish',
+        file: 'es.js'
+      },
+      {
+        code: 'en-GB',
+        iso: 'en-GB',
+        name: 'Britain english',
+        file: 'en-GB.js'
+      },
+      {
+        code: 'fr-FR',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      }
+    ]
+
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        locales,
+        vueI18n: {
+          fallbackLocale: {
+            'fr-FR': ['en-GB', 'es']
+          }
+        }
+      }
     }
+
+    const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('should be fallback translation by respecting the decision map and without using default fallback', async () => {
+    const html = await get('/fr-FR/fallback')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('[data-test="level0"]')?.textContent).toEqual('fr-FR translation')
+    expect(dom.querySelector('[data-test="level1"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="level2"]')?.textContent).toEqual('es translation')
+    expect(dom.querySelector('[data-test="level3"]')?.textContent).toEqual('deKey')
   })
 })
 
@@ -1869,7 +1937,7 @@ describe('Configuration with locale fallback array', () => {
     nuxt = (await setup(localConfig)).nuxt
   })
 
-  afterEach(async () => {
+  afterAll(async () => {
     await nuxt.close()
   })
 
@@ -1877,11 +1945,9 @@ describe('Configuration with locale fallback array', () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
-    for (let level = 0; level <= 2; level++) {
-      const translationNode = dom.querySelector('[data-test="level' + level + '"]')
-      expect(translationNode?.textContent).toEqual('level ' + level)
-    }
-    const translationNode = dom.querySelector('[data-test="level3"]')
-    expect(translationNode?.textContent).toEqual('levelThree')
+    expect(dom.querySelector('[data-test="level0"]')?.textContent).toEqual('fr-FR translation')
+    expect(dom.querySelector('[data-test="level1"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="level2"]')?.textContent).toEqual('es translation')
+    expect(dom.querySelector('[data-test="level3"]')?.textContent).toEqual('deKey')
   })
 })
