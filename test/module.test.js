@@ -1762,3 +1762,201 @@ describe('generate with prefix strategy', () => {
     expect(canonicalLink?.getAttribute('href')).toBe('nuxt-app.localhost/en')
   })
 })
+
+describe('Locale fallback decision map', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const locales = [
+      {
+        code: 'es',
+        iso: 'es',
+        name: 'Spanish',
+        file: 'es.js'
+      },
+      {
+        code: 'en-GB',
+        iso: 'en-GB',
+        name: 'Britain english',
+        file: 'en-GB.js'
+      },
+      {
+        code: 'fr-FR',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      },
+      {
+        code: 'de',
+        iso: 'de',
+        name: 'Deutsch',
+        file: 'de.js'
+      }
+    ]
+
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        vueI18n: {
+          fallbackLocale: {
+            'fr-FR': ['en-GB', 'es'],
+            default: ['de']
+          }
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = locales
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('should fallback translation by respecting the decision map', async () => {
+    const html = await get('/fr-FR/fallback')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('[data-test="fr-key"]')?.textContent).toEqual('fr-FR translation')
+    expect(dom.querySelector('[data-test="en-gb-key"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="es-key"]')?.textContent).toEqual('es translation')
+    expect(dom.querySelector('[data-test="de-key"]')?.textContent).toEqual('de translation')
+  })
+
+  test('should be able to skip if there is no fallback specified for the wanted locale', async () => {
+    const html = await get('/en-GB/fallback')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('[data-test="fr-key"]')?.textContent).toEqual('frFRKey')
+    expect(dom.querySelector('[data-test="en-gb-key"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="es-key"]')?.textContent).toEqual('esKey')
+    expect(dom.querySelector('[data-test="de-key"]')?.textContent).toEqual('de translation')
+  })
+})
+
+describe('Locale fallback decision map with no fallback', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const locales = [
+      {
+        code: 'es',
+        iso: 'es',
+        name: 'Spanish',
+        file: 'es.js'
+      },
+      {
+        code: 'en-GB',
+        iso: 'en-GB',
+        name: 'Britain english',
+        file: 'en-GB.js'
+      },
+      {
+        code: 'fr-FR',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      }
+    ]
+
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        vueI18n: {
+          fallbackLocale: {
+            'fr-FR': ['en-GB', 'es']
+          }
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = locales
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('should fallback translation by respecting the decision map and without using default fallback', async () => {
+    const html = await get('/fr-FR/fallback')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('[data-test="fr-key"]')?.textContent).toEqual('fr-FR translation')
+    expect(dom.querySelector('[data-test="en-gb-key"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="es-key"]')?.textContent).toEqual('es translation')
+    expect(dom.querySelector('[data-test="de-key"]')?.textContent).toEqual('deKey')
+  })
+})
+
+describe('Locale fallback array', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const locales = [
+      {
+        code: 'es',
+        iso: 'es',
+        name: 'Spanish',
+        file: 'es.js'
+      },
+      {
+        code: 'en-GB',
+        iso: 'en-GB',
+        name: 'Britain english',
+        file: 'en-GB.js'
+      },
+      {
+        code: 'fr-FR',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      }
+    ]
+
+    const override = {
+      i18n: {
+        lazy: true,
+        langDir: 'lang/',
+        vueI18n: {
+          fallbackLocale: ['en-GB', 'es']
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = locales
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('should fallback translation by respecting the decision array', async () => {
+    const html = await get('/fr-FR/fallback')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('[data-test="fr-key"]')?.textContent).toEqual('fr-FR translation')
+    expect(dom.querySelector('[data-test="en-gb-key"]')?.textContent).toEqual('en-GB translation')
+    expect(dom.querySelector('[data-test="es-key"]')?.textContent).toEqual('es translation')
+    expect(dom.querySelector('[data-test="de-key"]')?.textContent).toEqual('deKey')
+  })
+})

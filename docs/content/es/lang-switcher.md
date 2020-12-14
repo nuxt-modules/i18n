@@ -1,7 +1,7 @@
 ---
 title: Selector de  idiomas
 description: 'Cuando **nuxt-i18n** se carga en su aplicación, agrega su configuración `locales` a `this.$i18n` (o `app.i18n`), lo que hace que sea muy fácil mostrar un selector de  idiomas en cualquier lugar de su aplicación.'
-position: 9
+position: 10
 category: Guía
 ---
 

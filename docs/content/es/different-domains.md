@@ -1,7 +1,7 @@
 ---
 title: Diferentes dominios
 description: 'Es posible que desee utilizar un nombre de dominio diferente para cada idioma que admita su aplicación. Debe lograr esto:'
-position: 9
+position: 11
 category: Guía
 ---
 

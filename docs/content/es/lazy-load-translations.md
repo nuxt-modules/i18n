@@ -1,7 +1,7 @@
 ---
 title: Carga diferida de traducciones
 description: 'Carga diferida de traducciones'
-position: 8
+position: 9
 category: Guía
 ---
 
