@@ -1763,7 +1763,7 @@ describe('generate with prefix strategy', () => {
   })
 })
 
-describe('Configuration with locale fallback decision map', () => {
+describe('Locale fallback decision map', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1820,7 +1820,7 @@ describe('Configuration with locale fallback decision map', () => {
     await nuxt.close()
   })
 
-  test('should be fallback translation by respecting the decision map', async () => {
+  test('should fallback translation by respecting the decision map', async () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
@@ -1841,7 +1841,7 @@ describe('Configuration with locale fallback decision map', () => {
   })
 })
 
-describe('Configuration with locale fallback decision map with no fallback', () => {
+describe('Locale fallback decision map with no fallback', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1891,7 +1891,7 @@ describe('Configuration with locale fallback decision map with no fallback', () 
     await nuxt.close()
   })
 
-  test('should be fallback translation by respecting the decision map and without using default fallback', async () => {
+  test('should fallback translation by respecting the decision map and without using default fallback', async () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
@@ -1902,7 +1902,7 @@ describe('Configuration with locale fallback decision map with no fallback', () 
   })
 })
 
-describe('Configuration with locale fallback array', () => {
+describe('Locale fallback array', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1950,7 +1950,7 @@ describe('Configuration with locale fallback array', () => {
     await nuxt.close()
   })
 
-  test('should be fallback translation by respecting the decision array', async () => {
+  test('should fallback translation by respecting the decision array', async () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
