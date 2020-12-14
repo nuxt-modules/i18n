@@ -1764,6 +1764,7 @@ describe('generate with prefix strategy', () => {
 })
 
 describe('Configuration with locale fallback decision map', () => {
+  /** @type {Nuxt} */
   let nuxt
 
   const locales = [
