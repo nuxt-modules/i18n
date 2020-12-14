@@ -1767,38 +1767,34 @@ describe('Configuration with locale fallback decision map', () => {
   /** @type {Nuxt} */
   let nuxt
 
-  const locales = [
-    {
-      code: 'es',
-      iso: 'es',
-      name: 'Spanish',
-      file: 'es.js'
-    },
-    {
-      code: 'en-GB',
-      iso: 'en-GB',
-      name: 'Britain english',
-      file: 'en-GB.js'
-    },
-    {
-      code: 'fr-FR',
-      iso: 'fr-FR',
-      name: 'Français',
-      file: 'fr-FR.js'
-    },
-    {
-      code: 'de',
-      iso: 'de',
-      name: 'Deutsch',
-      file: 'de.js'
-    }
-  ]
+  beforeAll(async () => {
+    const locales = [
+      {
+        code: 'es',
+        iso: 'es',
+        name: 'Spanish',
+        file: 'es.js'
+      },
+      {
+        code: 'en-GB',
+        iso: 'en-GB',
+        name: 'Britain english',
+        file: 'en-GB.js'
+      },
+      {
+        code: 'fr-FR',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      },
+      {
+        code: 'de',
+        iso: 'de',
+        name: 'Deutsch',
+        file: 'de.js'
+      }
+    ]
 
-  afterEach(async () => {
-    await nuxt.close()
-  })
-
-  test('should be fallback translation by respecting the decision map', async () => {
     const override = {
       i18n: {
         lazy: true,
@@ -1815,7 +1811,13 @@ describe('Configuration with locale fallback decision map', () => {
 
     const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
     nuxt = (await setup(localConfig)).nuxt
+  })
 
+  afterEach(async () => {
+    await nuxt.close()
+  })
+
+  test('should be fallback translation by respecting the decision map', async () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
@@ -1824,8 +1826,34 @@ describe('Configuration with locale fallback decision map', () => {
       expect(translationNode?.textContent).toEqual('level ' + level)
     }
   })
+})
 
-  test('should be fallback translation by respecting the decision array', async () => {
+describe('Configuration with locale fallback array', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const locales = [
+      {
+        code: 'es',
+        iso: 'es',
+        name: 'Spanish',
+        file: 'es.js'
+      },
+      {
+        code: 'en-GB',
+        iso: 'en-GB',
+        name: 'Britain english',
+        file: 'en-GB.js'
+      },
+      {
+        code: 'fr-FR',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js'
+      }
+    ]
+
     const override = {
       i18n: {
         lazy: true,
@@ -1839,7 +1867,13 @@ describe('Configuration with locale fallback decision map', () => {
 
     const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
     nuxt = (await setup(localConfig)).nuxt
+  })
 
+  afterEach(async () => {
+    await nuxt.close()
+  })
+
+  test('should be fallback translation by respecting the decision array', async () => {
     const html = await get('/fr-FR/fallback')
     const dom = getDom(html)
 
