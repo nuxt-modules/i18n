@@ -32,4 +32,4 @@ i18n: {
 }
 ```
 
-More information in [vue-i18n documentation](https://kazupon.github.io/vue-i18n/guide/fallback.html#explicit-fallback-with-decision-maps).
+More information in [vue-i18n documentation](https://kazupon.github.io/vue-i18n/guide/fallback.html).
