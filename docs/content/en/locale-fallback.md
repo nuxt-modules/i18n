@@ -1,13 +1,15 @@
 ---
-title: Locale fallback description: "How a fallback gets selected when a translation is missing"
-position: 11 category: Guide
+title: Locale fallback
+description: "How a fallback gets selected when a translation is missing"
+position: 11
+category: Guide
 ---
 
 
-nuxt-i18n takes advantage of vue-i18n ability to handle localization fallback. It is possible to define a single fallback locale, an array of locales,
+**nuxt-i18n** takes advantage of **vue-i18n** ability to handle localization fallback. It is possible to define a single fallback locale, an array of locales,
 or a decision map for more specific needs.
 
-```js {}[nuxt.config.js]
+```js{}[nuxt.config.js]
 modules: [
   'nuxt-i18n'
 ],
