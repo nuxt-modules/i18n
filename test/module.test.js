@@ -1809,7 +1809,7 @@ describe('Configuration with locale fallback decision map', () => {
       }
     }
 
-    const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
+    const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
     nuxt = (await setup(localConfig)).nuxt
   })
 
@@ -1877,7 +1877,7 @@ describe('Configuration with locale fallback decision map with no fallback', () 
       }
     }
 
-    const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
+    const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
     nuxt = (await setup(localConfig)).nuxt
   })
 
@@ -1933,7 +1933,7 @@ describe('Configuration with locale fallback array', () => {
       }
     }
 
-    const localConfig = loadConfig(__dirname, 'locale-decision-map-fallback', override, { merge: true })
+    const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
     nuxt = (await setup(localConfig)).nuxt
   })
 
