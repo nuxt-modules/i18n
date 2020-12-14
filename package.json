@@ -92,16 +92,16 @@
     "vue-i18n": "^8.18.1"
   },
   "devDependencies": {
-    "@babel/core": "7.12.9",
-    "@babel/preset-env": "7.12.7",
+    "@babel/core": "7.12.10",
+    "@babel/preset-env": "7.12.10",
     "@babel/runtime": "7.12.5",
-    "@nuxt/types": "2.14.10",
+    "@nuxt/types": "2.14.11",
     "@nuxtjs/eslint-config-typescript": "5.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "2.0.0",
     "@types/argparse": "2.0.4",
     "@types/finalhandler": "1.1.0",
-    "@types/jest": "26.0.18",
+    "@types/jest": "26.0.19",
     "@types/jest-dev-server": "4.2.0",
     "@types/jsdom": "16.2.5",
     "@types/request-promise-native": "1.0.17",
@@ -117,10 +117,10 @@
     "jest-dev-server": "4.4.0",
     "jsdom": "16.4.0",
     "messageformat": "2.3.0",
-    "nuxt": "2.14.10",
+    "nuxt": "2.14.11",
     "playwright-chromium": "1.6.2",
     "release-it": "14.2.2",
     "serve-static": "1.14.1",
-    "typescript": "4.1.2"
+    "typescript": "4.1.3"
   }
 }
