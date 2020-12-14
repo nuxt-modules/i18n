@@ -5,27 +5,28 @@ position: 11
 category: Guide
 ---
 
-## Locale fallback
 
 **nuxt-i18n** takes advantage of **vue-i18n** ability. It is possible to define a single fallback locale, or a decision map for more specific needs.
 
-### One fallback
+## One fallback
 
 The simplest way is defining a single fallback, whatever the wanted locale was. In this example, **en** fallback will be chosen for any missing locale.
 
-```
-modules: [
-  'nuxt-i18n'
-],
-
-i18n: { 
-  vueI18n: {
-    fallbackLocale: 'en',
-  }
+```js {}[nuxt.config.js]
+{
+    modules: [
+      'nuxt-i18n'
+    ],
+    
+    i18n: { 
+      vueI18n: {
+        fallbackLocale: 'en'
+      }
+    }
 }
 ```
 
-### Decision map fallback
+## Decision map fallback
 
 For more specific news, it is possible to define a chain of fallback for each locale. Example:
 
