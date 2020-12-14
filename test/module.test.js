@@ -1799,7 +1799,6 @@ describe('Configuration with locale fallback decision map', () => {
       i18n: {
         lazy: true,
         langDir: 'lang/',
-        locales,
         vueI18n: {
           fallbackLocale: {
             'fr-FR': ['en-GB', 'es'],
@@ -1810,6 +1809,10 @@ describe('Configuration with locale fallback decision map', () => {
     }
 
     const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = locales
+
     nuxt = (await setup(localConfig)).nuxt
   })
 
@@ -1868,7 +1871,6 @@ describe('Configuration with locale fallback decision map with no fallback', () 
       i18n: {
         lazy: true,
         langDir: 'lang/',
-        locales,
         vueI18n: {
           fallbackLocale: {
             'fr-FR': ['en-GB', 'es']
@@ -1878,6 +1880,10 @@ describe('Configuration with locale fallback decision map with no fallback', () 
     }
 
     const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = locales
+
     nuxt = (await setup(localConfig)).nuxt
   })
 
@@ -1926,7 +1932,6 @@ describe('Configuration with locale fallback array', () => {
       i18n: {
         lazy: true,
         langDir: 'lang/',
-        locales,
         vueI18n: {
           fallbackLocale: ['en-GB', 'es']
         }
@@ -1934,6 +1939,10 @@ describe('Configuration with locale fallback array', () => {
     }
 
     const localConfig = loadConfig(__dirname, 'fallback-locale', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = locales
+
     nuxt = (await setup(localConfig)).nuxt
   })
 
