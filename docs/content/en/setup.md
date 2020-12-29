@@ -35,8 +35,10 @@ Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`:
 ```js {}[nuxt.config.js]
 {
   modules: [
-    'nuxt-i18n',
-    { /* module options */ }
+    [ 
+      'nuxt-i18n',
+      { /* module options */ }
+    ]
   ],
   // Or with global options
   i18n: {}
