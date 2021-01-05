@@ -30,7 +30,7 @@ Agregar `nuxt-i18n` a tus dependencias:
   </code-block>
 </code-group>
 
-Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`. You can use either of following ways to specify the module options:
+Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`. You can use either of the following ways to specify the module options:
 
 ```js {}[nuxt.config.js]
 {
