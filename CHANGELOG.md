@@ -1,3 +1,16 @@
+## [6.17.0](https://github.com/nuxt-community/i18n-module/compare/v6.16.0...v6.17.0) (2021-01-05)
+
+
+### Features
+
+* **fallbackLocale:** support vue-i18n decision map fallback ([#992](https://github.com/nuxt-community/i18n-module/issues/992)) ([b4c6cfd](https://github.com/nuxt-community/i18n-module/commit/b4c6cfd9968562c35c6e6a1b0e6805efb6945d47))
+
+
+### Bug Fixes
+
+* use local klona dependency from the plugin ([#1008](https://github.com/nuxt-community/i18n-module/issues/1008)) ([42c3cd5](https://github.com/nuxt-community/i18n-module/commit/42c3cd5595e4fcc06866c373a1a430e6f1b337c6)), closes [#1004](https://github.com/nuxt-community/i18n-module/issues/1004)
+* **deps:** update dependency is-https to v3 ([#997](https://github.com/nuxt-community/i18n-module/issues/997)) ([cd377b4](https://github.com/nuxt-community/i18n-module/commit/cd377b49441465de3283e68b253e984077d24ac3))
+
 ## [6.16.0](https://github.com/nuxt-community/i18n-module/compare/v6.15.4...v6.16.0) (2020-12-09)
 
 
