@@ -30,18 +30,27 @@ Add `nuxt-i18n` dependency to your project:
   </code-block>
 </code-group>
 
-Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`:
+Then, add `nuxt-i18n` to the `modules` section of `nuxt.config.js`. You can use either of following ways to specify the module options:
 
 ```js {}[nuxt.config.js]
 {
   modules: [
-    [ 
+    'nuxt-i18n',
+  ],
+  i18n: {},
+}
+```
+
+or
+
+```js {}[nuxt.config.js]
+{
+  modules: [
+    [
       'nuxt-i18n',
       { /* module options */ }
     ]
   ],
-  // Or with global options
-  i18n: {}
 }
 ```
 
