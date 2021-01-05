@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { klona } from 'klona/full'
 import { nuxtI18nSeo } from './seo-head'
 import {
   baseUrl,
@@ -36,6 +35,7 @@ import {
   setLocaleCookie,
   syncVuex
 } from './utils-common'
+import { klona } from '~i18n-klona'
 
 Vue.use(VueI18n)
 
