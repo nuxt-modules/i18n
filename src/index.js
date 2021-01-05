@@ -69,6 +69,7 @@ export default function (userOptions) {
 
   this.nuxt.hook('build:before', () => buildHook(this, options))
 
+  this.options.alias['~i18n-klona'] = require.resolve('klona/full')
   this.options.router.middleware.push('nuxti18n')
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensionsDirective
