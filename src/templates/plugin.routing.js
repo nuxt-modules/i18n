@@ -62,7 +62,9 @@ function localeRoute (route, locale) {
         !i18n.differentDomains
 
     let path = (isPrefixed ? `/${locale}${route.path}` : route.path)
-    path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+    if (trailingSlash !== undefined) {
+      path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+    }
     localizedRoute.path = path
   } else {
     if (!route.name && !route.path) {
