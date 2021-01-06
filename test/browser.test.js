@@ -965,7 +965,7 @@ describe(`${browserString} (onlyOnRoot + prefix)`, () => {
     const page = await browser.newPage()
     await page.goto(url('/'))
     expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
-    expect(await getRouteFullPath(page)).toBe('/en')
+    expect(await getRouteFullPath(page)).toBe('/en/')
   })
 })
 
