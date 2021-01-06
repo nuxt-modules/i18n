@@ -921,6 +921,7 @@ describe('prefix_and_default strategy', () => {
     // Prefer unprefixed path for default locale:
     expect(window.$nuxt.localeRoute('/simple', 'en')).toMatchObject({ name: 'simple___en___default', fullPath: '/simple' })
     expect(window.$nuxt.localeRoute('/simple', 'fr')).toMatchObject({ name: 'simple___fr', fullPath: '/fr/simple' })
+    expect(window.$nuxt.localeRoute('/simple/', 'fr')).toMatchObject({ name: 'simple___fr', fullPath: '/fr/simple/' })
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {
