@@ -115,6 +115,8 @@ export default async (context) => {
 
     app.i18n.locale = newLocale
 
+    app.i18n.localeProperties = locales.find(l => l[LOCALE_CODE_KEY] === newLocale)
+
     await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), { vuex })
 
     // Must retrieve from context as it might have changed since plugin initialization.
