@@ -827,7 +827,7 @@ describe('with empty configuration', () => {
 
   test('localeProperties object exists and is set to an empty object ', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
-    expect(window.$nuxt.$i18n.localeProperties).toEqual({})
+    expect(window.$nuxt.$i18n.localeProperties).toEqual({ code: '' })
   })
 })
 
