@@ -815,6 +815,11 @@ describe('with empty configuration', () => {
   test('does not remove all routes', async () => {
     await nuxt.renderAndGetWindow(url('/about'))
   })
+
+  test('localeProperties object exists and is set to an empty object ', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.localeProperties).toEqual({})
+  })
 })
 
 describe('with rootRedirect (string)', () => {
@@ -1958,5 +1963,27 @@ describe('Locale fallback array', () => {
     expect(dom.querySelector('[data-test="en-gb-key"]')?.textContent).toEqual('en-GB translation')
     expect(dom.querySelector('[data-test="es-key"]')?.textContent).toEqual('es translation')
     expect(dom.querySelector('[data-test="de-key"]')?.textContent).toEqual('deKey')
+  })
+})
+
+describe('localeProperties object', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    nuxt = (await setup(loadConfig(__dirname, 'basic'))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('localeProperties object exists and is set to the correct value', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.localeProperties).toEqual({
+      code: 'en',
+      iso: 'en',
+      name: 'English'
+    })
   })
 })
