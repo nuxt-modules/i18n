@@ -69,18 +69,11 @@ When using an object form, the properties can be:
 - `domain` (required when using `differentDomains`) - the domain name you'd like to use for that locale (including the port if used)
 - `...` - any custom property set on the object will be exposed at runtime. This can be used, for example, to define the language name for the purpose of using it in a language selector on the page.
 
-## `localeProperties`
-
-- type: `object`
-- default: `{}`
-
-Object contains the properties of the current `Locale` as defined in the `Locales` array.
-
-```js
-  { code: 'es', iso: 'es-ES', file: 'es.js' }
+When using an array of objects, you can access the current locale properties using the `localeProperties` property. 
+  ```js
+  { code: 'en', iso: 'en-US', file: 'en.js' }
 ```
-
-When using an array of codes, it will be set to an empty object.
+  - When using an array of codes, it will be set to an empty object.
 
 ## `defaultLocale`
 
