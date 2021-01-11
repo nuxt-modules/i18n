@@ -46,7 +46,9 @@ Configuration example:
   ],
   lazy: true,
   langDir: 'lang/',
-  defaultLocale: 'en'
+  vueI18n: {
+    defaultLocale: 'en'
+  }
 }]
 ```
 
@@ -54,7 +56,7 @@ Language file example:
 
 ```js {}[lang/en-US.js]
 export default async (context, locale) => {
-  await resolve({
+  return await Promise.resolve({
     welcome: 'Welcome'
   })
 }
