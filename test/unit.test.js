@@ -13,7 +13,7 @@ describe('parsePages', () => {
   test('triggers warning with invalid in-component options', async () => {
     const { extractComponentOptions } = await import('../src/helpers/components')
 
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => { })
     const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/invalidOptions.vue'))
     expect(spy.mock.calls[0][0]).toContain('Error parsing')
     spy.mockRestore()
@@ -64,7 +64,7 @@ describe('matchBrowserLocale', () => {
     const appLocales = ['pl', 'fr']
     const browserLocales = ['en-US', 'en']
 
-    expect(matchBrowserLocale(appLocales, browserLocales)).toBe(null)
+    expect(matchBrowserLocale(appLocales, browserLocales)).toBe(undefined)
   })
 
   test('matches full locale with mixed short and full, full having highest rank', () => {

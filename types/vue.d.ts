@@ -14,6 +14,7 @@ declare module 'vue-i18n' {
     getLocaleCookie() : string | undefined
     setLocaleCookie(locale: string) : undefined
     setLocale(locale: string) : Promise<undefined>
+    getBrowserLocale() : string | undefined
   }
 }
 

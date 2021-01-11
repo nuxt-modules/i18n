@@ -99,6 +99,14 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Switches locale of the app to specified locale code. If `useCookie` option is enabled, locale cookie will be updated with new value. If prefixes are enabled (`strategy` other than `no_prefix`), will navigate to new locale's route.
 
+  #### getBrowserLocale
+
+  - **Parámetros**:
+    - sin parámetros
+  - **Devuelve**: `string | undefined`
+
+  Devuelve el código del idioma que utiliza el navegador, filtrado según los códigos definidos en las opciones.
+
 ### Properties
 
 #### defaultLocale

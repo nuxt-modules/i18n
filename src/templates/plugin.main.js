@@ -200,6 +200,17 @@ export default async (context) => {
     return [null, null]
   }
 
+  const getBrowserLocale = () => {
+    if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
+      // Get browser language either from navigator if running on client side, or from the headers
+      return matchBrowserLocale(locales, navigator.languages)
+    } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
+      return matchBrowserLocale(locales, parseAcceptLanguage(req.headers['accept-language']))
+    } else {
+      return undefined
+    }
+  }
+
   const doDetectBrowserLanguage = route => {
     // Browser detection is ignored if it is a nuxt generate.
     if (process.static && process.server) {
@@ -222,11 +233,9 @@ export default async (context) => {
 
     if (useCookie && (matchedLocale = app.i18n.getLocaleCookie())) {
       // Get preferred language from cookie if present and enabled
-    } else if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
-      // Get browser language either from navigator if running on client side, or from the headers
-      matchedLocale = matchBrowserLocale(locales, navigator.languages)
-    } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-      matchedLocale = matchBrowserLocale(locales, parseAcceptLanguage(req.headers['accept-language']))
+    } else {
+      // Try to get locale from either navigator or header detection
+      matchedLocale = getBrowserLocale()
     }
 
     const finalLocale = matchedLocale || fallbackLocale
@@ -250,6 +259,7 @@ export default async (context) => {
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
+    i18n.getBrowserLocale = () => getBrowserLocale()
     i18n.__baseUrl = app.i18n.__baseUrl
   }
 
