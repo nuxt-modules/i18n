@@ -112,6 +112,12 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
   - **Type**: `Array<string | LocaleObject>`
 
   List of locales as defined in options.
+  
+#### localeProperties
+
+  - **Type**: `LocaleObject`
+
+  Object of the current locale properties.
 
 #### differentDomains
 

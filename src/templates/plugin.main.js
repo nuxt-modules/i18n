@@ -114,6 +114,7 @@ export default async (context) => {
     }
 
     app.i18n.locale = newLocale
+    app.i18n.localeProperties = klona(locales.find(l => l[LOCALE_CODE_KEY] === newLocale) || { code: newLocale })
 
     await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), { vuex })
 
@@ -258,6 +259,7 @@ export default async (context) => {
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
   app.i18n.locale = ''
+  app.i18n.localeProperties = { code: '' }
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
   extendVueI18nInstance(app.i18n)
   app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)

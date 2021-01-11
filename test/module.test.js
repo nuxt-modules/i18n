@@ -732,6 +732,15 @@ describe('hreflang', () => {
     expect(seoTags).toEqual(expectedSeoTags)
   })
 
+  test('localeProperties object exists and is set to the correct value', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.localeProperties).toEqual({
+      code: 'en',
+      iso: 'en',
+      name: 'English'
+    })
+  })
+
   afterAll(async () => {
     await nuxt.close()
   })
@@ -814,6 +823,11 @@ describe('with empty configuration', () => {
 
   test('does not remove all routes', async () => {
     await nuxt.renderAndGetWindow(url('/about'))
+  })
+
+  test('localeProperties object exists and is set to an empty object ', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.localeProperties).toEqual({ code: '' })
   })
 })
 

@@ -10,6 +10,7 @@ declare module 'vue-i18n' {
   // the VueI18n class expands here: https://goo.gl/Xtp9EG
   // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
   interface IVueI18n extends NuxtVueI18n.Options.NuxtI18nInterface {
+    localeProperties: NuxtVueI18n.Options.LocaleObject
     getLocaleCookie() : string | undefined
     setLocaleCookie(locale: string) : undefined
     setLocale(locale: string) : Promise<undefined>

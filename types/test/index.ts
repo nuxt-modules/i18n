@@ -34,6 +34,7 @@ if (localizedRoute) {
 
 // $i18n
 
+const code: string = vm.$i18n.localeProperties.code
 const cookieLocale: string | undefined = vm.$i18n.getLocaleCookie()
 vm.$i18n.setLocaleCookie(locale)
 vm.$i18n.setLocale(locale)
