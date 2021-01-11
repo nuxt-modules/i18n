@@ -46,6 +46,7 @@ Configuration example:
   ],
   lazy: true,
   langDir: 'lang/',
+  defaultLocale: 'en',
   vueI18n: {
     fallbackLocale: 'en'
   }
