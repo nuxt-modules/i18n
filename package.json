@@ -103,7 +103,7 @@
     "@types/finalhandler": "1.1.0",
     "@types/jest": "26.0.20",
     "@types/jest-dev-server": "4.2.0",
-    "@types/jsdom": "16.2.5",
+    "@types/jsdom": "16.2.6",
     "@types/request-promise-native": "1.0.17",
     "@types/serve-static": "1.13.8",
     "argparse": "2.0.1",
