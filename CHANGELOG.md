@@ -1,3 +1,11 @@
+## [6.18.0](https://github.com/nuxt-community/i18n-module/compare/v6.17.0...v6.18.0) (2021-01-13)
+
+
+### Features
+
+* expose API for detecting browser locale ([#1022](https://github.com/nuxt-community/i18n-module/issues/1022)) ([ac75635](https://github.com/nuxt-community/i18n-module/commit/ac75635d963104498e876040b111dd8d16fef6d3)), closes [#1018](https://github.com/nuxt-community/i18n-module/issues/1018)
+* expose localeProperties property ([#1016](https://github.com/nuxt-community/i18n-module/issues/1016)) ([a9457a0](https://github.com/nuxt-community/i18n-module/commit/a9457a02177e230ec4529a96b97b3aa2993b9ec2)), closes [#916](https://github.com/nuxt-community/i18n-module/issues/916)
+
 ## [6.17.0](https://github.com/nuxt-community/i18n-module/compare/v6.16.0...v6.17.0) (2021-01-05)
 
 
