@@ -23,4 +23,3 @@ features:
 
 <list :items="features"></list>
 
-<p class="flex items-center">Disfruta light y dark mode:&nbsp;<app-color-switcher class="inline-flex ml-2"></app-color-switcher></p>
