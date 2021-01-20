@@ -46,7 +46,7 @@ Todos los [Vue I18n propiedades y métodos](http://kazupon.github.io/vue-i18n/ap
 
   Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
 
-#### localeRoute <Badge text="v6.12.0+" />
+#### localeRoute <badge>v6.12.0+</badge>
 
   - **Arguments**:
     - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
@@ -91,7 +91,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Updates stored locale cookie with specified locale code. Consider using `setLocale` instead if you want to switch locale.
 
-#### setLocale <Badge text="v6.1.0+" />
+#### setLocale <badge>v6.1.0+</badge>
 
   - **Arguments**:
     - locale (type: `string`)

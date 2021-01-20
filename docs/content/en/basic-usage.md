@@ -77,7 +77,7 @@ export default ({ app }) => {
 }
 ```
 
-* `localeRoute` <badge>v6.12+</badge> – Returns the route object for a given page. It works like `localePath` but returns full route resolved by Vue Router rather than just its full path. This can be useful since full path returned from `localePath` might not carry all information from provided input (for example route params that the page doesn't specify).
+* `localeRoute` <badge>v6.12.0+</badge> – Returns the route object for a given page. It works like `localePath` but returns full route resolved by Vue Router rather than just its full path. This can be useful since full path returned from `localePath` might not carry all information from provided input (for example route params that the page doesn't specify).
 
 ```vue
 <a

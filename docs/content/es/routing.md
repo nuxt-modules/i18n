@@ -48,7 +48,7 @@ Existen cuatro estrategias compatibles para generar las rutas de la aplicación:
 
 ### no_prefix
 
-<badge>6.1.0</badge>
+<badge>v6.1.0+</badge>
 
 Con esta estrategia, sus rutas no tendrán un prefijo de configuración local agregado. La configuración local se detectará y cambiará sin cambiar la URL. Esto implica que debe confiar en la detección del navegador y las cookies, e implementar interruptores locales llamando a la API i18n.
 

@@ -49,7 +49,7 @@ There are four supported strategies for generating the app's routes:
 
 ### no_prefix
 
-<badge>6.1.0</badge>
+<badge>v6.1.0+</badge>
 
 With this strategy, your routes won't have a locale prefix added. The locale will be detected & changed without changing the URL. This implies that you have to rely on browser & cookie detection, and implement locale switches by calling the i18n API.
 
