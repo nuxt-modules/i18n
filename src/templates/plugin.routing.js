@@ -196,14 +196,17 @@ const NuxtContextProxy = function (context, targetFunction) {
 
 const plugin = {
   install (Vue) {
-    Vue.mixin({
-      methods: {
-        localePath: VueInstanceProxy(localePath),
-        localeRoute: VueInstanceProxy(localeRoute),
-        switchLocalePath: VueInstanceProxy(switchLocalePath),
-        getRouteBaseName: VueInstanceProxy(getRouteBaseName)
-      }
-    })
+    if (!Vue.__nuxtI18nRouting__) {
+      Vue.__nuxtI18nRouting__ = true
+      Vue.mixin({
+        methods: {
+          localePath: VueInstanceProxy(localePath),
+          localeRoute: VueInstanceProxy(localeRoute),
+          switchLocalePath: VueInstanceProxy(switchLocalePath),
+          getRouteBaseName: VueInstanceProxy(getRouteBaseName)
+        }
+      })
+    }
   }
 }
 
