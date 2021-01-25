@@ -733,12 +733,16 @@ describe('hreflang', () => {
   })
 
   test('localeProperties object exists and is set to the correct value', async () => {
-    const window = await nuxt.renderAndGetWindow(url('/'))
-    expect(window.$nuxt.$i18n.localeProperties).toEqual({
-      code: 'en',
-      iso: 'en',
-      name: 'English'
-    })
+    const html = await get('/loader-yaml')
+    const dom = getDom(html)
+    const localeProperties = dom.querySelector('p#localeProperties')
+    const localePropertiesContent = localeProperties?.textContent || '{}'
+    expect(JSON.parse(localePropertiesContent)).toMatchObject(
+      {
+        code: 'en',
+        iso: 'en',
+        name: 'English'
+      })
   })
 
   afterAll(async () => {
