@@ -252,6 +252,7 @@ export default async (context) => {
 
   const extendVueI18nInstance = i18n => {
     i18n.locales = locales
+    i18n.localeProperties = klona(locales.find(l => l[LOCALE_CODE_KEY] === i18n.locale) || { code: i18n.locale })
     i18n.defaultLocale = defaultLocale
     i18n.differentDomains = differentDomains
     i18n.beforeLanguageSwitch = beforeLanguageSwitch
