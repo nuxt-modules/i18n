@@ -732,7 +732,7 @@ describe('hreflang', () => {
     expect(seoTags).toEqual(expectedSeoTags)
   })
 
-  test('localeProperties object exists and is set to the correct value', async () => {
+  test('localeProperties object exists and is set to the correct object', async () => {
     const html = await get('/loader-yaml')
     const dom = getDom(html)
     const localeProperties = dom.querySelector('p#localeProperties')
@@ -829,7 +829,7 @@ describe('with empty configuration', () => {
     await nuxt.renderAndGetWindow(url('/about'))
   })
 
-  test('localeProperties object exists and is set to an empty object ', async () => {
+  test('localeProperties object exists and is set to an object with no code', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.$i18n.localeProperties).toEqual({ code: '' })
   })
