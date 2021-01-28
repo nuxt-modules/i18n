@@ -16,6 +16,7 @@ export default {
   },
   head () {
     return {
+      ...this.$nuxtI18nHead(false),
       title: this.$t('home')
     }
   }

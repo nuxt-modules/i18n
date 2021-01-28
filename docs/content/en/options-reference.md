@@ -54,22 +54,45 @@ List of locales supported by your app. Can either be an array of codes (`['en', 
 
 ```js
 [
-  { code: 'en', iso: 'en-US', file: 'en.js' },
-  { code: 'fr', iso: 'fr-FR', file: 'fr.js' },
-  { code: 'es', iso: 'es-ES', file: 'es.js' }
+  { code: 'en', iso: 'en-US', file: 'en.js', dir: 'ltr' },
+  { code: 'ar', iso: 'ar-EG', file: 'ar.js', dir: 'rtl' }
+  { code: 'fr', iso: 'fr-FR', file: 'fr.js', },
 ]
 ```
 
 When using an object form, the properties can be:
 - `code` (**required**) - unique identifier of the locale
-- `iso` (required when using SEO features and) - The ISO code used for SEO features and for matching browser locales when using [detectBrowserLanguage](#detectbrowserlanguage) functionality. Should be in one of those formats:
+- `iso` (required when using SEO features and) - The ISO code used for SEO features and for matching browser locales when using [detectBrowserLanguage](#detectbrowserlanguage) 
+functionality. Should be in one of those formats:
   * ISO 639-1 code (e.g. `'en'`)
   * ISO 639-1 and ISO 3166-1 alpha-2 codes, separated by hyphen (e.g. `'en-US'`)
 - `file` (required when using `lazy`) - the name of the file. Will be resolved relative to `langDir` path when loading locale messages lazily
+- `dir`  The dir property specifies the direction of the elements and content, value could be rtl, ltr or auto.
 - `domain` (required when using `differentDomains`) - the domain name you'd like to use for that locale (including the port if used)
 - `...` - any custom property set on the object will be exposed at runtime. This can be used, for example, to define the language name for the purpose of using it in a language selector on the page.
 
 You can access all the properties of the current locale through the `localeProperties` property. When using an array of codes, it will only include the `code` property.
+
+<alert type="info">
+
+For direction attribute to be set, you MUST use the $nuxtI18nHead method in your layout.
+
+```js {}[layouts/default.vue]
+export default {
+  head () {
+    return this.$nuxtI18nHead()
+  }
+}
+```
+
+</alert>
+
+## `defaultDirection`
+
+- type: `string`
+- default: `ltr`
+
+The app's default direction. Will only be used when `dir` is not specified. 
 
 ## `defaultLocale`
 

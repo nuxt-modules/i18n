@@ -37,6 +37,19 @@ describe('locales as string array', () => {
     const dom = getDom(html)
     expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
   })
+
+  test('dir attribute will not be added to the html element', async () => {
+    const html = await get('/about')
+    const dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toBeNull()
+  })
+
+  test('nuxtI18nHead does not set SEO Meta', async () => {
+    const html = await get('/about')
+    const dom = getDom(html)
+    const seoTags = getSeoTags(dom)
+    expect(seoTags).toEqual([])
+  })
 })
 
 describe('differentDomains enabled', () => {
@@ -47,7 +60,8 @@ describe('differentDomains enabled', () => {
     const override = {
       i18n: {
         differentDomains: true,
-        seo: false
+        seo: false,
+        defaultDirection: 'auto'
       }
     }
 
@@ -59,7 +73,8 @@ describe('differentDomains enabled', () => {
         code: 'en',
         iso: 'en-US',
         name: 'English',
-        domain: 'en.nuxt-app.localhost'
+        domain: 'en.nuxt-app.localhost',
+        dir: 'ltr'
       },
       {
         code: 'fr',
@@ -120,6 +135,17 @@ describe('differentDomains enabled', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+  })
+
+  test('dir attribute exists and is set to the default direction', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/locale', requestOptions)
+    const dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toEqual('auto')
   })
 })
 
@@ -204,7 +230,6 @@ for (const trailingSlash of TRAILING_SLASHES) {
           href: 'nuxt-app.localhost/'
         }
       ]
-
       expect(seoTags).toEqual(expectedSeoTags)
     })
 
@@ -631,7 +656,9 @@ describe('hreflang', () => {
       {
         code: 'en',
         iso: 'en',
-        name: 'English'
+        name: 'English',
+        dir: 'auto'
+
       },
       {
         code: 'fr',
@@ -654,8 +681,8 @@ describe('hreflang', () => {
     nuxt = (await setup(testConfig)).nuxt
   })
 
-  test('sets SEO metadata properly', async () => {
-    const html = await get('/')
+  test('sets SEO metadata and dir attribute properly', async () => {
+    const html = await get('/locale')
     const dom = getDom(html)
     const seoTags = getSeoTags(dom)
 
@@ -681,54 +708,54 @@ describe('hreflang', () => {
         tagName: 'meta'
       },
       {
-        href: 'nuxt-app.localhost/',
+        href: 'nuxt-app.localhost/locale',
         hreflang: 'en',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/fr',
+        href: 'nuxt-app.localhost/fr/locale',
         hreflang: 'fr',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/fr',
+        href: 'nuxt-app.localhost/fr/locale',
         hreflang: 'fr-FR',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/esVe',
+        href: 'nuxt-app.localhost/esVe/locale',
         hreflang: 'es',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/es',
+        href: 'nuxt-app.localhost/es/locale',
         hreflang: 'es-ES',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/esVe',
+        href: 'nuxt-app.localhost/esVe/locale',
         hreflang: 'es-VE',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/',
+        href: 'nuxt-app.localhost/locale',
         hreflang: 'x-default',
         rel: 'alternate',
         tagName: 'link'
       },
       {
-        href: 'nuxt-app.localhost/',
+        href: 'nuxt-app.localhost/locale',
         rel: 'canonical',
         tagName: 'link'
       }
     ]
-
+    expect(dom.documentElement.getAttribute('dir')).toEqual('auto')
     expect(seoTags).toEqual(expectedSeoTags)
   })
 
@@ -743,6 +770,12 @@ describe('hreflang', () => {
         iso: 'en',
         name: 'English'
       })
+  })
+
+  test('dir attribute will not be added to the html element', async () => {
+    const html = await get('/fr')
+    const dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toBeNull()
   })
 
   afterAll(async () => {

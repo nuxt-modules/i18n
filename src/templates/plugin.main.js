@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { nuxtI18nSeo } from './seo-head'
+import { nuxtI18nHead } from './head-meta'
 import {
   baseUrl,
   beforeLanguageSwitch,
@@ -276,8 +277,9 @@ export default async (context) => {
   app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
   app.i18n.__onNavigate = onNavigate
 
-  // Inject seo function
+  // Inject seo and head functions
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
+  Vue.prototype.$nuxtI18nHead = nuxtI18nHead
 
   if (store) {
     // Inject in store.
