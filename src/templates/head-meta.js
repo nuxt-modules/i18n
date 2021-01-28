@@ -26,7 +26,7 @@ export const nuxtI18nHead = function (addDirAttribute = true) {
      * Adding Direction Attribute:
      */
 
-  if (addDirAttribute) { // if addDirAttribute is false, don't add the dir property
+  if (addDirAttribute) { // if addDirAttribute is false, don't add the dir attribute
     metaObject.htmlAttrs.dir = currentLocaleDir
   }
 
