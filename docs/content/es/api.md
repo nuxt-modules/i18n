@@ -57,6 +57,14 @@ Todos los [Vue I18n propiedades y métodos](http://kazupon.github.io/vue-i18n/ap
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
+#### $nuxtI18nHead
+
+  - **Arguments**:
+    - addDirAttribute (type: boolean, default: true)
+  - **Returns**: `NuxtI18nHead`
+
+  If `addDirAttribute` is set to false, the dir attribute will not be added.
+
 #### $nuxtI18nSeo
 
   - **Arguments**:
@@ -108,6 +116,12 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
   Devuelve el código del idioma que utiliza el navegador, filtrado según los códigos definidos en las opciones.
 
 ### Properties
+
+#### defaultDirection
+
+  - **Type**: `Directions`
+
+  Default direction as specified in options.
 
 #### defaultLocale
 
