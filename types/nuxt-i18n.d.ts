@@ -94,12 +94,6 @@ export interface NuxtI18nSeo {
   meta?: MetaInfo['meta']
 }
 
-export interface NuxtI18nHead {
-  htmlAttrs?: MetaInfo['htmlAttrs']
-  link?: MetaInfo['link']
-  meta?: MetaInfo['meta']
-}
-
 export interface NuxtI18nComponentOptions {
   paths?: {
     [key: string]: string | false
