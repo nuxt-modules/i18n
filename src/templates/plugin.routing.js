@@ -12,6 +12,7 @@ import {
   trailingSlash,
   vuex
 } from './options'
+import { getDomainFromLocale } from './utils-common'
 
 function localePath (route, locale) {
   const localizedRoute = localeRoute.call(this, route, locale)
@@ -109,21 +110,19 @@ function switchLocalePath (locale) {
 
   // Handle different domains
   if (i18n.differentDomains) {
-    const lang = i18n.locales.find(l => l[LOCALE_CODE_KEY] === locale)
-    if (lang && lang[LOCALE_DOMAIN_KEY]) {
-      let protocol
-      if (process.server) {
-        const isHTTPS = require('is-https')
-        protocol = (this.req && isHTTPS(this.req)) ? 'https' : 'http'
-      } else {
-        protocol = window.location.protocol.split(':')[0]
-      }
-      path = protocol + '://' + lang[LOCALE_DOMAIN_KEY] + path
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn(`[${MODULE_NAME}] Could not find domain name for locale ${locale}`)
+    const options = {
+      differentDomains: i18n.differentDomains,
+      locales: i18n.locales,
+      localeDomainKey: LOCALE_DOMAIN_KEY,
+      localeCodeKey: LOCALE_CODE_KEY,
+      moduleName: MODULE_NAME
+    }
+    const domain = getDomainFromLocale(locale, this.req, options)
+    if (domain) {
+      path = domain + path
     }
   }
+
   return path
 }
 

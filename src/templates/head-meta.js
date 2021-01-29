@@ -85,7 +85,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
       link.push({
         hid: `i18n-alt-${iso}`,
         rel: 'alternate',
-        href: baseUrl + this.switchLocalePath(mapLocale.code),
+        href: toAbsoluteUrl(this.switchLocalePath(mapLocale.code), baseUrl),
         hreflang: iso
       })
     }
@@ -94,7 +94,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
       link.push({
         hid: 'i18n-xd',
         rel: 'alternate',
-        href: baseUrl + this.switchLocalePath(defaultLocale),
+        href: toAbsoluteUrl(this.switchLocalePath(defaultLocale), baseUrl),
         hreflang: 'x-default'
       })
     }
@@ -105,17 +105,16 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
       ...this.$route,
       name: this.getRouteBaseName()
     })
+
     const canonicalPath = currentRoute ? currentRoute.path : null
 
-    if (!canonicalPath) {
-      return
+    if (canonicalPath) {
+      link.push({
+        hid: 'i18n-can',
+        rel: 'canonical',
+        href: toAbsoluteUrl(canonicalPath, baseUrl)
+      })
     }
-
-    link.push({
-      hid: 'i18n-can',
-      rel: 'canonical',
-      href: baseUrl + canonicalPath
-    })
   }
 
   function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
@@ -154,6 +153,13 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
 
   function underscoreIsoFromLocale (locale) {
     return isoFromLocale(locale).replace(/-/g, '_')
+  }
+
+  function toAbsoluteUrl (urlOrPath, baseUrl) {
+    if (urlOrPath.match(/^https?:\/\//)) {
+      return urlOrPath
+    }
+    return baseUrl + urlOrPath
   }
 
   return metaObject
