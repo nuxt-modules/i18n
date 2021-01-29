@@ -60,16 +60,16 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 #### $nuxtI18nHead
 
   - **Arguments**:
-    - addDirAttribute (type: boolean, default: true)
-  - **Returns**: `NuxtI18nHead`
+    - addDirAttribute (type: `boolean`, default: `true`)
+  - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
-  If `addDirAttribute` is set to false, the dir attribute will not be added. 
+  If `addDirAttribute` is set to false, the `dir` attribute will not be added.
 
 #### $nuxtI18nSeo
 
   - **Arguments**:
     - no arguments
-  - **Returns**: `NuxtI18nSeo`
+  - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
   SEO object provided mostly for use with [SEO - Improving Performance](../seo#improving-performance).
 
