@@ -66,7 +66,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   If `options.addDirAttribute` is set to `false`, the `dir` attribute will not be added.
   If `options.addSeoAttributes` is set to `true`, the seo attributes will be added.
 
-#### $nuxtI18nSeo
+#### $nuxtI18nSeo <badge>deprecated (use `$nuxtI18nHead`)</badge>
 
   - **Arguments**:
     - no arguments

@@ -25,6 +25,7 @@ declare module 'vue-i18n' {
 declare module 'vue/types/vue' {
   interface Vue {
     readonly $i18n: VueI18n & IVueI18n
+    /** @deprecated */
     $nuxtI18nSeo(): NuxtI18nSeo
     $nuxtI18nHead(options?: NuxtI18nHeadOptions): MetaInfo
     getRouteBaseName(route?: Route): string
