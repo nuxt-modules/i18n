@@ -140,7 +140,7 @@ export default {
 }
 ```
 
-Para anular los metadatos de SEO para cualquier página, simplemente declare su propio método `head ()`. Echa un vistazo a [src/templates/meta-head.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/meta-head.js) si quieres copie parte de la lógica de  **nuxt-i18n**.
+Para anular los metadatos de SEO para cualquier página, simplemente declare su propio método `head ()`. Echa un vistazo a [src/templates/head-meta.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/head-meta.js) si quieres copie parte de la lógica de  **nuxt-i18n**.
 
 ## Mejora del rendimiento
 
