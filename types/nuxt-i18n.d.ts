@@ -8,6 +8,7 @@ import { Context as NuxtContext } from '@nuxt/types'
 declare namespace NuxtVueI18n {
   type Locale = VueI18n.Locale
   type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
+  type Directions = 'ltr' | 'rtl' | 'auto'
 
   namespace Options {
     // e.g.:
@@ -20,6 +21,7 @@ declare namespace NuxtVueI18n {
       code: Locale
       // can be undefined: https://goo.gl/cCGKUV
       iso?: string
+      dir?: Directions
       // can be undefined: https://goo.gl/ryc5pF
       file?: string
       isCatchallLocale?: boolean
@@ -54,6 +56,7 @@ declare namespace NuxtVueI18n {
     interface NuxtI18nInterface {
       beforeLanguageSwitch?: (oldLocale: string, newLocale: string) => void
       defaultLocale?: Locale
+      defaultDirection?: Directions
       defaultLocaleRouteNameSuffix?: string
       locales?: Array<Locale | LocaleObject>
       differentDomains?: boolean
@@ -89,6 +92,19 @@ export interface NuxtI18nSeo {
   htmlAttrs?: MetaInfo['htmlAttrs']
   link?: MetaInfo['link']
   meta?: MetaInfo['meta']
+}
+
+export interface NuxtI18nHeadOptions {
+  /**
+   * Adds a `dir` attribute to the HTML element.
+   * Default: `true`
+   */
+  addDirAttribute: boolean
+  /**
+   * Adds various SEO attributes.
+   * Default: `false`
+   */
+  addSeoAttributes: boolean
 }
 
 export interface NuxtI18nComponentOptions {

@@ -7,7 +7,7 @@ category: Guía
 
 <alert type="info">
 
-Using `seo` option (or alternatively the `$nuxtI18nSeo`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
+Using `seo` option (or preferably the `$nuxtI18nHead`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
 
 </alert>
 
@@ -140,7 +140,7 @@ export default {
 }
 ```
 
-Para anular los metadatos de SEO para cualquier página, simplemente declare su propio método `head ()`. Echa un vistazo a [src/templates/seo-head.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/seo-head.js) si quieres copie parte de la lógica de  **nuxt-i18n**.
+Para anular los metadatos de SEO para cualquier página, simplemente declare su propio método `head ()`. Echa un vistazo a [src/templates/head-meta.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/head-meta.js) si quieres copie parte de la lógica de  **nuxt-i18n**.
 
 ## Mejora del rendimiento
 
@@ -148,7 +148,7 @@ El método predeterminado para inyectar metadatos de SEO, aunque conveniente, ti
 El método `head` se registra para cada componente de su aplicación.
 Esto significa que cada vez que se crea un componente, los metadatos de SEO se vuelven a calcular para cada componente.
 
-Para mejorar el rendimiento, puede utilizar el método `$nuxtI18nSeo` en su diseño. Generará metadatos de SEO i18n para el contexto actual.
+Para mejorar el rendimiento, puede utilizar el método `$nuxtI18nHead` en su diseño. Generará metadatos de SEO i18n para el contexto actual.
 
 Primero, asegúrese de que el SEO automático esté desactivado estableciendo `seo` en `false` en su configuración o eliminando esa opción por completo:
 
@@ -158,12 +158,12 @@ Primero, asegúrese de que el SEO automático esté desactivado estableciendo `s
 }]
 ```
 
-Luego, en el diseño de su aplicación, declare el [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) y use `$nuxtI18nSeo` dentro para generar la metainformación i18n SEO:
+Luego, en el diseño de su aplicación, declare el [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) y use `$nuxtI18nHead` dentro para generar la metainformación i18n SEO:
 
 ```js {}[layouts/default.vue]
 export default {
   head () {
-    return this.$nuxtI18nSeo()
+    return this.$nuxtI18nHead({ addSeoAttributes: true })
   }
 }
 ```
@@ -174,16 +174,16 @@ Si tiene más diseños, no olvide agregarlo allí también.
 
 ### Combinando metadatos de SEO i18n con los tuyos
 
-Si desea agregar su propio meta en el diseño, puede combinar fácilmente el objeto devuelto por `$nuxtI18nSeo` con el suyo:
+Si desea agregar su propio meta en el diseño, puede combinar fácilmente el objeto devuelto por `$nuxtI18nHead` con el suyo:
 
 ```js {}[layouts/default.vue]
 export default {
   head () {
-    const i18nSeo = this.$nuxtI18nSeo()
+    const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true })
     return {
       htmlAttrs: {
         myAttribute: 'My Value',
-        ...i18nSeo.htmlAttrs
+        ...i18nHead.htmlAttrs
       },
       meta: [
         {
@@ -191,7 +191,7 @@ export default {
           name: 'description',
           content: 'My Custom Description'
         },
-        ...i18nSeo.meta
+        ...i18nHead.meta
       ],
       link: [
         {
@@ -200,7 +200,7 @@ export default {
           sizes: '180x180',
           href: '/apple-touch-icon.png'
         },
-        ...i18nSeo.link
+        ...i18nHead.link
      ]
     }
   }

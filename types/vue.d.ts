@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import { Location, RawLocation, Route } from 'vue-router'
 import VueI18n, { IVueI18n } from 'vue-i18n'
-import { NuxtI18nComponentOptions, NuxtVueI18n, NuxtI18nSeo } from './nuxt-i18n'
+import { MetaInfo } from 'vue-meta'
+import { NuxtI18nComponentOptions, NuxtVueI18n, NuxtI18nSeo, NuxtI18nHeadOptions } from './nuxt-i18n'
 
 /**
  * Extends types in vue-i18n
@@ -24,7 +25,9 @@ declare module 'vue-i18n' {
 declare module 'vue/types/vue' {
   interface Vue {
     readonly $i18n: VueI18n & IVueI18n
+    /** @deprecated */
     $nuxtI18nSeo(): NuxtI18nSeo
+    $nuxtI18nHead(options?: NuxtI18nHeadOptions): MetaInfo
     getRouteBaseName(route?: Route): string
     localePath(route: RawLocation, locale?: string): string
     localeRoute(route: RawLocation, locale?: string): Location | undefined

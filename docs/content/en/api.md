@@ -57,11 +57,20 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-#### $nuxtI18nSeo
+#### $nuxtI18nHead
+
+  - **Arguments**:
+    - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/nuxt-i18n.d.ts))
+  - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
+
+  If `options.addDirAttribute` is set to `false`, the `dir` attribute will not be added.
+  If `options.addSeoAttributes` is set to `true`, the seo attributes will be added.
+
+#### $nuxtI18nSeo <badge>deprecated (use `$nuxtI18nHead`)</badge>
 
   - **Arguments**:
     - no arguments
-  - **Returns**: `NuxtI18nSeo`
+  - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
   SEO object provided mostly for use with [SEO - Improving Performance](../seo#improving-performance).
 
@@ -108,6 +117,12 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
   Returns browser locale code filtered against the ones defined in options.
 
 ### Properties
+
+#### defaultDirection
+
+  - **Type**: `Directions`
+
+  Default direction as specified in options.
 
 #### defaultLocale
 

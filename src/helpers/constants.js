@@ -5,6 +5,7 @@ exports.MODULE_NAME = packageJson.name
 exports.ROOT_DIR = 'nuxt-i18n'
 exports.LOCALE_CODE_KEY = 'code'
 exports.LOCALE_ISO_KEY = 'iso'
+exports.LOCALE_DIR_KEY = 'dir'
 exports.LOCALE_DOMAIN_KEY = 'domain'
 exports.LOCALE_FILE_KEY = 'file'
 
@@ -24,6 +25,7 @@ exports.DEFAULT_OPTIONS = {
   vueI18nLoader: false,
   locales: [],
   defaultLocale: '',
+  defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
   strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,

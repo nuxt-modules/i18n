@@ -1,7 +1,7 @@
 import { resolve, join } from 'path'
 import { readdirSync } from 'fs'
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
-import { MODULE_NAME, COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, NESTED_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
+import { MODULE_NAME, COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DIR_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, NESTED_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
 import { getLocaleCodes } from './helpers/utils'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
 
@@ -34,6 +34,7 @@ export default function (userOptions) {
     MODULE_NAME,
     LOCALE_CODE_KEY,
     LOCALE_ISO_KEY,
+    LOCALE_DIR_KEY,
     LOCALE_DOMAIN_KEY,
     LOCALE_FILE_KEY,
     STRATEGIES,

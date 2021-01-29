@@ -7,7 +7,7 @@ category: Guide
 
 <alert type="info">
 
-Using `seo` option (or alternatively the `$nuxtI18nSeo`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
+Using `seo` option (or preferably the `$nuxtI18nHead`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
 
 </alert>
 
@@ -141,7 +141,7 @@ export default {
 }
 ```
 
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/seo-head.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/seo-head.js) if you want to copy some of **nuxt-i18n**'s logic.
+To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/head-meta.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/head-meta.js) if you want to copy some of **nuxt-i18n**'s logic.
 
 ## Improving performance
 
@@ -149,7 +149,7 @@ The default method to inject SEO metadata, while convenient, comes at a performa
 The `head` method is registered for every component in your app.
 This means each time a component is created, the SEO metadata is recomputed for every components.
 
-To improve performance you can use the `$nuxtI18nSeo` method in your layout instead.
+To improve performance you can use the `$nuxtI18nHead` method in your layout instead.
 It will generate i18n SEO metadata for the current context.
 
 First make sure automatic SEO is disabled by setting `seo` to `false` in your configuration or removing that option completely:
@@ -160,12 +160,12 @@ First make sure automatic SEO is disabled by setting `seo` to `false` in your co
 }]
 ```
 
-Then in your app layout declare the [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) and use `$nuxtI18nSeo` inside to generate i18n SEO meta information:
+Then in your app layout declare the [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) and use `$nuxtI18nHead` inside to generate i18n SEO meta information:
 
 ```js {}[layouts/default.vue]
 export default {
   head () {
-    return this.$nuxtI18nSeo()
+    return this.$nuxtI18nHead({ addSeoAttributes: true })
   }
 }
 ```
@@ -177,16 +177,16 @@ Now SEO metadata will only be computed for the layout instead of every component
 
 ### Merging i18n SEO metadata with your own
 
-If you want to add your own meta in the layout you can easily merge the object returned by `$nuxtI18nSeo` with your own:
+If you want to add your own meta in the layout you can easily merge the object returned by `$nuxtI18nHead` with your own:
 
 ```js {}[layouts/default.vue]
 export default {
   head () {
-    const i18nSeo = this.$nuxtI18nSeo()
+    const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true })
     return {
       htmlAttrs: {
         myAttribute: 'My Value',
-        ...i18nSeo.htmlAttrs
+        ...i18nHead.htmlAttrs
       },
       meta: [
         {
@@ -194,7 +194,7 @@ export default {
           name: 'description',
           content: 'My Custom Description'
         },
-        ...i18nSeo.meta
+        ...i18nHead.meta
       ],
       link: [
         {
@@ -203,7 +203,7 @@ export default {
           sizes: '180x180',
           href: '/apple-touch-icon.png'
         },
-        ...i18nSeo.link
+        ...i18nHead.link
      ]
     }
   }
