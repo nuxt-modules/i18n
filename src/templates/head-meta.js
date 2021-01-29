@@ -23,16 +23,15 @@ export const nuxtI18nHead = function (addDirAttribute = true) {
   const currentLocaleDir = currentLocale[LOCALE_DIR_KEY] || defaultDirection
 
   /**
-     * Adding Direction Attribute:
-     */
-
-  if (addDirAttribute) { // if addDirAttribute is false, don't add the dir attribute
+   * Adding Direction Attribute:
+   */
+  if (addDirAttribute) {
     metaObject.htmlAttrs.dir = currentLocaleDir
   }
 
   /**
-     * Adding SEO Meta:
-     */
+   * Adding SEO Meta:
+   */
   if (
     seo &&
     (VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) &&
@@ -53,8 +52,8 @@ export const nuxtI18nHead = function (addDirAttribute = true) {
   }
 
   /**
-     * Internals:
-     */
+   * Internals:
+   */
 
   function addHreflangLinks (locales, baseUrl, link) {
     if (strategy === STRATEGIES.NO_PREFIX) {

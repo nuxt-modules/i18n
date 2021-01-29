@@ -277,7 +277,6 @@ export default async (context) => {
   app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
   app.i18n.__onNavigate = onNavigate
 
-  // Inject seo and head functions
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
   Vue.prototype.$nuxtI18nHead = nuxtI18nHead
 
