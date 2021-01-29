@@ -65,3 +65,11 @@ export default {
   welcome: 'Welcome'
 }
 ```
+
+<alert type="info">
+
+Note that if you want to use the `$axios` instance from the `@nuxtjs/axios` module within the exported function, the `@nuxtjs/axios` module must be registered **after** the `nuxt-i18n` module.
+
+This rule in fact applies also to any other module that adds plugins and whose functionality you'd want to use from within that function.
+
+</alert>
