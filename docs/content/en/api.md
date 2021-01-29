@@ -60,10 +60,11 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 #### $nuxtI18nHead
 
   - **Arguments**:
-    - addDirAttribute (type: `boolean`, default: `true`)
+    - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/nuxt-i18n.d.ts))
   - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
-  If `addDirAttribute` is set to false, the `dir` attribute will not be added.
+  If `options.addDirAttribute` is set to `false`, the `dir` attribute will not be added.
+  If `options.addSeoAttributes` is set to `true`, the seo attributes will be added.
 
 #### $nuxtI18nSeo
 

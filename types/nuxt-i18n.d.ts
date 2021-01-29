@@ -94,6 +94,19 @@ export interface NuxtI18nSeo {
   meta?: MetaInfo['meta']
 }
 
+export interface NuxtI18nHeadOptions {
+  /**
+   * Adds a `dir` attribute to the HTML element.
+   * Default: `true`
+   */
+  addDirAttribute: boolean
+  /**
+   * Adds various SEO attributes.
+   * Default: `false`
+   */
+  addSeoAttributes: boolean
+}
+
 export interface NuxtI18nComponentOptions {
   paths?: {
     [key: string]: string | false

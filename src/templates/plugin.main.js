@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { nuxtI18nSeo } from './seo-head'
-import { nuxtI18nHead } from './head-meta'
+import { nuxtI18nHead, nuxtI18nSeo } from './head-meta'
 import {
   baseUrl,
   beforeLanguageSwitch,

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { nuxtI18nSeo } from './seo-head'
+import { nuxtI18nSeo } from './head-meta'
 
 const plugin = {
   install (Vue) {

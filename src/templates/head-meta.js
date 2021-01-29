@@ -1,6 +1,5 @@
 import VueMeta from 'vue-meta'
 import {
-  seo,
   defaultLocale,
   defaultDirection,
   COMPONENT_OPTIONS_KEY,
@@ -11,7 +10,12 @@ import {
   strategy
 } from './options'
 
-export const nuxtI18nHead = function (addDirAttribute = true) {
+export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false } = {}) {
+  // Can happen when using from a global mixin.
+  if (!this.$i18n) {
+    return {}
+  }
+
   const metaObject = {
     htmlAttrs: {},
     link: [],
@@ -33,9 +37,8 @@ export const nuxtI18nHead = function (addDirAttribute = true) {
    * Adding SEO Meta:
    */
   if (
-    seo &&
+    addSeoAttributes &&
     (VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) &&
-    this.$i18n &&
     this.$i18n.locale &&
     this.$i18n.locales &&
     this.$options[COMPONENT_OPTIONS_KEY] !== false &&
@@ -154,4 +157,9 @@ export const nuxtI18nHead = function (addDirAttribute = true) {
   }
 
   return metaObject
+}
+
+/** @deprecated */
+export function nuxtI18nSeo () {
+  return nuxtI18nHead.call(this, { addDirAttribute: false, addSeoAttributes: true })
 }
