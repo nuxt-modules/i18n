@@ -171,7 +171,7 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
 }
 ```
 
-## `seo` <badge>deprecated</badge>
+## `seo` (<badge>deprecated</badge>)
 
 <alert type="warning">
 
