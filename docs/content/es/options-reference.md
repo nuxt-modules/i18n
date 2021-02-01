@@ -2,7 +2,7 @@
 title: Opciones
 description: 'Aquí están todas las opciones disponibles al configurar el módulo y sus valores predeterminados:'
 position: 4
-category: Guía
+category: Getting started
 ---
 
 You can configure **nuxt-i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:

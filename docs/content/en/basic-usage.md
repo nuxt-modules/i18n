@@ -2,7 +2,7 @@
 title: Basic Usage
 description: 'The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:'
 position: 3
-category: Guide
+category: Getting started
 ---
 
 The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:

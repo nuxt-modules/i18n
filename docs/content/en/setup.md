@@ -2,7 +2,7 @@
 title: Setup
 description: ''
 position: 2
-category: Guide
+category: Getting started
 ---
 
 <alert type="info">

@@ -2,7 +2,7 @@
 title: Uso básico
 description: 'La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entornos `locales` admitidos y proporcionar algunos mensajes de traducción a **vue-i18n** a través de la opción `vueI18n`:'
 position: 3
-category: Guía
+category: Getting started
 ---
 
 La forma más rápida de comenzar con **nuxt-i18n** es definir la lista de entornos `locales` admitidos y proporcionar algunos mensajes de traducción a **vue-i18n** a través de la opción `vueI18n`:

@@ -2,7 +2,7 @@
 title: Configuración
 description: ''
 position: 2
-category: Guía
+category: Getting started
 ---
 
 <alert type="info">
