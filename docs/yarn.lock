@@ -1153,14 +1153,14 @@
     rc9 "^1.2.0"
     std-env "^2.2.1"
 
-"@nuxt/content-theme-docs@0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@nuxt/content-theme-docs/-/content-theme-docs-0.8.2.tgz#5a50a0a1b1b0a5a0e66ba7df6cccf9db64edcfd8"
-  integrity sha512-pU6mqvJfA8Rg8P57CSAaR83Irw7TolfQPjYofyBBN2BmA8RqAUx7S+iJg++nbq81VfNdtuYorTIY+JLGk9XWCw==
+"@nuxt/content-theme-docs@0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@nuxt/content-theme-docs/-/content-theme-docs-0.9.0.tgz#00b18e6ab81c4ceefd44063ddf9bad6a7aa01d7a"
+  integrity sha512-kcB/mtiNqaov3KZt2viaQNG8jAep2o9HFTKdDMcOzR4iLuIw51MpkTqSvYFXO4exv5V1WUWaNXeOlxzWrNPStw==
   dependencies:
     "@docsearch/css" "^1.0.0-alpha.28"
     "@docsearch/js" "^1.0.0-alpha.28"
-    "@nuxt/content" "^1.11.1"
+    "@nuxt/content" "^1.12.0"
     "@nuxt/types" "^2.14.7"
     "@nuxtjs/color-mode" "^2.0.0"
     "@nuxtjs/google-fonts" "1.2.0"
@@ -1177,7 +1177,7 @@
     theme-colors "^0.0.5"
     vue-scrollactive "^0.9.3"
 
-"@nuxt/content@^1.11.1":
+"@nuxt/content@^1.12.0":
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/@nuxt/content/-/content-1.12.0.tgz#2e37e31a2cc4c821a7ac350045ead56059cccb54"
   integrity sha512-UWVQ1NvUjUHP3dyFlNdrjTT6Nj5F098ChtlW0KrFQ2ObidK/+KKwq7t/nE+7YTsH0hOsuekSHihDIcTkWPR2QA==
