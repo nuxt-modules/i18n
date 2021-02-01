@@ -57,7 +57,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-#### $nuxtI18nHead
+#### $nuxtI18nHead <badge>v6.19.0+</badge>
 
   - **Arguments**:
     - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/nuxt-i18n.d.ts))
@@ -66,7 +66,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   If `options.addDirAttribute` is set to `false`, the `dir` attribute will not be added.
   If `options.addSeoAttributes` is set to `true`, the seo attributes will be added.
 
-#### $nuxtI18nSeo <badge>deprecated (use `$nuxtI18nHead`)</badge>
+#### $nuxtI18nSeo <badge>deprecated from v6.19.0 (use `$nuxtI18nHead`)</badge>
 
   - **Arguments**:
     - no arguments
@@ -118,7 +118,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ### Properties
 
-#### defaultDirection
+#### defaultDirection <badge>v6.19.0+</badge>
 
   - **Type**: `Directions`
 

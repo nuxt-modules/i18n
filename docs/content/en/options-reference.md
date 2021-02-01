@@ -66,7 +66,7 @@ When using an object form, the properties can be:
   * ISO 639-1 code (e.g. `'en'`)
   * ISO 639-1 and ISO 3166-1 alpha-2 codes, separated by hyphen (e.g. `'en-US'`)
 - `file` (required when using [`lazy`](#lazy)) - the name of the file. Will be resolved relative to `langDir` path when loading locale messages lazily
-- `dir`  The dir property specifies the direction of the elements and content, value could be `'rtl'`, `'ltr'` or `'auto'`.
+- `dir` (from `v6.19.0`)  The dir property specifies the direction of the elements and content, value could be `'rtl'`, `'ltr'` or `'auto'`.
 - `domain` (required when using [`differentDomains`](#differentdomains)) - the domain name you'd like to use for that locale (including the port if used)
 - `...` - any custom property set on the object will be exposed at runtime. This can be used, for example, to define the language name for the purpose of using it in a language selector on the page.
 
@@ -86,7 +86,7 @@ export default {
 
 </alert>
 
-## `defaultDirection`
+## `defaultDirection` <badge>v6.19.0+</badge>
 
 - type: `string`
 - default: `ltr`
