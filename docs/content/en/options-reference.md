@@ -86,7 +86,9 @@ export default {
 
 </alert>
 
-## `defaultDirection` <badge>v6.19.0+</badge>
+## `defaultDirection`
+
+<badge>v6.19.0+</badge>
 
 - type: `string`
 - default: `ltr`
@@ -173,7 +175,9 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
 }
 ```
 
-## `seo` (<badge>deprecated</badge>)
+## `seo`
+
+<badge>deprecated</badge>
 
 <alert type="warning">
 
