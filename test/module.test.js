@@ -147,6 +147,67 @@ describe('differentDomains enabled', () => {
     const dom = getDom(html)
     expect(dom.documentElement.getAttribute('dir')).toEqual('auto')
   })
+
+  test('dir and SEO attributes exists', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/locale', requestOptions)
+    const dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toEqual('ltr')
+
+    const seoTags = getSeoTags(dom)
+    const expectedSeoTags = [
+      {
+        tagName: 'meta',
+        property: 'og:locale',
+        content: 'en_US'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'fr_FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app.localhost/locale',
+        hreflang: 'en'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app.localhost/locale',
+        hreflang: 'en-US'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://fr.nuxt-app.localhost/locale',
+        hreflang: 'fr'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://fr.nuxt-app.localhost/locale',
+        hreflang: 'fr-FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app.localhost/locale',
+        hreflang: 'x-default'
+      },
+      {
+        tagName: 'link',
+        rel: 'canonical',
+        href: 'http://en.nuxt-app.localhost/locale'
+      }
+    ]
+    expect(seoTags).toEqual(expectedSeoTags)
+  })
 })
 
 const TRAILING_SLASHES = [undefined, false, true]

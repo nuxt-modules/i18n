@@ -189,7 +189,8 @@ export default async (context) => {
       return [302, storedRedirect]
     }
 
-    app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
+    const options = { differentDomains, locales, localeDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY, moduleName: MODULE_NAME }
+    app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context, app.i18n.locale, options)
 
     const finalLocale =
       (detectBrowserLanguage && doDetectBrowserLanguage(route)) ||
@@ -273,7 +274,8 @@ export default async (context) => {
   app.i18n.localeProperties = { code: '' }
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
   extendVueI18nInstance(app.i18n)
-  app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context)
+  const options = { differentDomains, locales, localeDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY, moduleName: MODULE_NAME }
+  app.i18n.__baseUrl = resolveBaseUrl(baseUrl, context, '', options)
   app.i18n.__onNavigate = onNavigate
 
   Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
@@ -296,7 +298,7 @@ export default async (context) => {
     if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
       finalLocale = store.state[vuex.moduleName].locale
     } else if (app.i18n.differentDomains) {
-      const options = { localDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY }
+      const options = { localeDomainKey: LOCALE_DOMAIN_KEY, localeCodeKey: LOCALE_CODE_KEY }
       const domainLocale = getLocaleDomain(locales, req, options)
       finalLocale = domainLocale
     } else if (strategy !== STRATEGIES.NO_PREFIX) {
