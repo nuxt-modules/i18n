@@ -1,3 +1,17 @@
+## [6.19.0](https://github.com/nuxt-community/i18n-module/compare/v6.18.0...v6.19.0) (2021-02-01)
+
+
+### Features
+
+* add dir property and defaultDirection option ([#1023](https://github.com/nuxt-community/i18n-module/issues/1023)) ([3b3dcc6](https://github.com/nuxt-community/i18n-module/commit/3b3dcc6ba418ce6250498225873da3a063c8321c))
+
+
+### Bug Fixes
+
+* invalid canonical SEO link with differentDomains ([#1049](https://github.com/nuxt-community/i18n-module/issues/1049)) ([d05317b](https://github.com/nuxt-community/i18n-module/commit/d05317be2eb26a211f1783c35a966b9d779feeb8))
+* **deps:** update all non-major dependencies ([#1048](https://github.com/nuxt-community/i18n-module/issues/1048)) ([8f4cef5](https://github.com/nuxt-community/i18n-module/commit/8f4cef5d5335138e638e2c58b75ab77602f25c65))
+* localeProperties undefined when <i18n> component used ([#1043](https://github.com/nuxt-community/i18n-module/issues/1043)) ([ff56a35](https://github.com/nuxt-community/i18n-module/commit/ff56a35a052487b17632e5ad6f08bf588f94f966))
+
 ## [6.18.0](https://github.com/nuxt-community/i18n-module/compare/v6.17.0...v6.18.0) (2021-01-13)
 
 
