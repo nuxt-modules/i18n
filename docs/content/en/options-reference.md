@@ -268,19 +268,19 @@ A listener called right before app's locale changes.
 
 A listener called after app's locale has changed.
 
+## `skipSettingLocaleOnNavigate` <badge>v6.20.0+</badge>
+
+- type: `boolean`
+- default: `false`
+
+If `true`, the locale will not be set when navigating to a new locale. This is useful if you want to wait for the page transition to end before setting the locale yourself using [`setPendingLocale`](./api#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
+
 ## `defaultLocaleRouteNameSuffix`
 
 - type: `string`
 - default: `'default'`
 
 Internal suffix added to generated route names for default locale, if strategy is `prefix_and_default`. You shouldn't need to change this.
-
-## `skipSettingLocaleOnNavigate`
-
-- type: `boolean`
-- default: `false`
-
-If true, the locale will not be set when navigating to a new locale. This is useful if you want to wait for the page transition to end before setting the locale yourself using [`setPendingLocale`](./api#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
 
 ## `routesNameSeparator`
 

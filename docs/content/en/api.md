@@ -108,22 +108,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Switches locale of the app to specified locale code. If `useCookie` option is enabled, locale cookie will be updated with new value. If prefixes are enabled (`strategy` other than `no_prefix`), will navigate to new locale's route.
 
-#### setPendingLocale
-
-  - **Arguments**:
-    - no arguments
-  - **Returns**: `Promise<undefined>`
-
-  Switches to the pending locale that would have been set on navigate, but was prevented by the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
-
-#### waitForPendingLocale
-
-  - **Arguments**:
-    - no arguments
-  - **Returns**: `Promise<undefined>`
-
-  Returns a promise that will be resolved once the pending locale is set.
-
 #### getBrowserLocale
 
   - **Arguments**:
@@ -131,6 +115,22 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
   - **Returns**: `string | undefined`
 
   Returns browser locale code filtered against the ones defined in options.
+
+#### setPendingLocale <badge>v6.20.0+</badge>
+
+  - **Arguments**:
+    - no arguments
+  - **Returns**: `Promise<undefined>`
+
+  Switches to the pending locale that would have been set on navigate, but was prevented by the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
+
+#### waitForPendingLocale <badge>v6.20.0+</badge>
+
+  - **Arguments**:
+    - no arguments
+  - **Returns**: `Promise<undefined>`
+
+  Returns a promise that will be resolved once the pending locale is set.
 
 ### Properties
 

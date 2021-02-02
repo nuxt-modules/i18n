@@ -80,6 +80,7 @@ declare namespace NuxtVueI18n {
       rootRedirect?: string | null | RootRedirectInterface
       routesNameSeparator?: string
       seo?: boolean
+      skipSettingLocaleOnNavigate?: boolean,
       strategy?: Strategies
       vueI18n?: VueI18n.I18nOptions | string
       vueI18nLoader?: boolean
