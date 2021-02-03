@@ -268,7 +268,7 @@ A listener called right before app's locale changes.
 
 A listener called after app's locale has changed.
 
-## `skipSettingLocaleOnNavigate` <badge>v6.20.0+</badge>
+## `skipSettingLocaleOnNavigate`
 
 <badge>v6.20.0+</badge>
 
