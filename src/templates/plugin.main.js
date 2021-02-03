@@ -18,6 +18,7 @@ import {
   onLanguageSwitched,
   rootRedirect,
   routesNameSeparator,
+  skipSettingLocaleOnNavigate,
   STRATEGIES,
   strategy,
   vueI18n,
@@ -196,9 +197,31 @@ export default async (context) => {
       (detectBrowserLanguage && doDetectBrowserLanguage(route)) ||
       getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
 
-    await app.i18n.setLocale(finalLocale)
+    if (skipSettingLocaleOnNavigate) {
+      app.i18n.__pendingLocale = finalLocale
+      app.i18n.__pendingLocalePromise = new Promise(resolve => {
+        app.i18n.__resolvePendingLocalePromise = resolve
+      })
+    } else {
+      await app.i18n.setLocale(finalLocale)
+    }
 
     return [null, null]
+  }
+
+  const finalizePendingLocaleChange = async () => {
+    if (!app.i18n.__pendingLocale) {
+      return
+    }
+    await app.i18n.setLocale(app.i18n.__pendingLocale)
+    app.i18n.__resolvePendingLocalePromise()
+    app.i18n.__pendingLocale = null
+  }
+
+  const waitForPendingLocaleChange = async () => {
+    if (app.i18n.__pendingLocale) {
+      await app.i18n.__pendingLocalePromise
+    }
   }
 
   const getBrowserLocale = () => {
@@ -262,7 +285,12 @@ export default async (context) => {
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
     i18n.getBrowserLocale = () => getBrowserLocale()
+    i18n.finalizePendingLocaleChange = finalizePendingLocaleChange
+    i18n.waitForPendingLocaleChange = waitForPendingLocaleChange
     i18n.__baseUrl = app.i18n.__baseUrl
+    i18n.__pendingLocale = app.i18n.__pendingLocale
+    i18n.__pendingLocalePromise = app.i18n.__pendingLocalePromise
+    i18n.__resolvePendingLocalePromise = app.i18n.__resolvePendingLocalePromise
   }
 
   // Set instance options

@@ -98,3 +98,49 @@ export default {
 **nuxt-i18n** won't reset parameters translations for you, this means that if you use identical parameters for different routes, navigating between those routes might result in conflicting parameters. Make sure you always set params translations in such cases.
 
 </alert>
+
+## Wait for page transition
+
+By default, the locale will be changed right away when navigating to a route with a different locale which means that if you have a page transition, it will fade out the page with the text already switched to the new language and fade back in with the same content.
+
+To work around the issue, you can set the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate) to `true` and handle setting the locale yourself from a `beforeEnter` transition hook defined in a plugin.
+
+```js {}[nuxt.config.js]
+export default {
+  plugins: ['~/plugins/router'],
+
+  i18n: {
+    // ... your other options
+    skipSettingLocaleOnNavigate: true,
+  }
+}
+```
+
+```js {}[~/plugins/router.js]
+export default ({ app }) => {
+  app.nuxt.defaultTransition.beforeEnter = () => {
+    app.i18n.finalizePendingLocaleChange()
+  }
+
+  // Optional: wait for locale before scrolling for a smoother transition
+  app.router.options.scrollBehavior = async (to, from, savedPosition) => {
+    // Make sure the route has changed
+    if (to.name !== from.name) {
+      await app.i18n.waitForPendingLocaleChange()
+    }
+    return savedPosition || { x: 0, y: 0 }
+  }
+}
+```
+
+If you have a specific transition defined in a page component, you would also need to call `finalizePendingLocaleChange` from there.
+
+```js {}[~/pages/foo.vue]
+export default {
+  transition: {
+    beforeEnter() {
+      this.$i18n.finalizePendingLocaleChange()
+    }
+  }
+}
+```

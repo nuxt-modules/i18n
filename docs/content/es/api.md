@@ -116,6 +116,22 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Devuelve el código del idioma que utiliza el navegador, filtrado según los códigos definidos en las opciones.
 
+#### finalizePendingLocaleChange <badge>v6.20.0+</badge>
+
+  - **Arguments**:
+    - no arguments
+  - **Returns**: `Promise<undefined>`
+
+  Switches to the pending locale that would have been set on navigate, but was prevented by the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
+
+#### waitForPendingLocaleChange <badge>v6.20.0+</badge>
+
+  - **Arguments**:
+    - no arguments
+  - **Returns**: `Promise<undefined>`
+
+  Returns a promise that will be resolved once the pending locale is set.
+
 ### Properties
 
 #### defaultDirection <badge>v6.19.0+</badge>
