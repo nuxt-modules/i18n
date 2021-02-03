@@ -119,27 +119,27 @@ export default {
 ```js {}[~/plugins/router.js]
 export default ({ app }) => {
   app.nuxt.defaultTransition.beforeEnter = () => {
-    app.i18n.setPendingLocale()
+    app.i18n.finalizePendingLocaleChange()
   }
 
   // Optional: wait for locale before scrolling for a smoother transition
   app.router.options.scrollBehavior = async (to, from, savedPosition) => {
     // Make sure the route has changed
     if (to.name !== from.name) {
-      await app.i18n.waitForPendingLocale()
+      await app.i18n.waitForPendingLocaleChange()
     }
     return savedPosition || { x: 0, y: 0 }
   }
 }
 ```
 
-If you have a specific transition defined in a page component, you would also need to call `setPendingLocale` from there.
+If you have a specific transition defined in a page component, you would also need to call `finalizePendingLocaleChange` from there.
 
 ```js {}[~/pages/foo.vue]
 export default {
   transition: {
     beforeEnter() {
-      this.$i18n.setPendingLocale()
+      this.$i18n.finalizePendingLocaleChange()
     }
   }
 }

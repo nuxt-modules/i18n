@@ -116,7 +116,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Returns browser locale code filtered against the ones defined in options.
 
-#### setPendingLocale <badge>v6.20.0+</badge>
+#### finalizePendingLocaleChange <badge>v6.20.0+</badge>
 
   - **Arguments**:
     - no arguments
@@ -124,7 +124,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Switches to the pending locale that would have been set on navigate, but was prevented by the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
 
-#### waitForPendingLocale <badge>v6.20.0+</badge>
+#### waitForPendingLocaleChange <badge>v6.20.0+</badge>
 
   - **Arguments**:
     - no arguments

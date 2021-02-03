@@ -16,8 +16,8 @@ declare module 'vue-i18n' {
     setLocaleCookie(locale: string): undefined
     setLocale(locale: string): Promise<undefined>
     getBrowserLocale(): string | undefined
-    setPendingLocale(): Promise<void>
-    waitForPendingLocale(): Promise<void>
+    finalizePendingLocaleChange(): Promise<void>
+    waitForPendingLocaleChange(): Promise<void>
   }
 }
 

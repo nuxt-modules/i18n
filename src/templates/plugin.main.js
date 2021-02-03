@@ -209,7 +209,7 @@ export default async (context) => {
     return [null, null]
   }
 
-  const setPendingLocale = async () => {
+  const finalizePendingLocaleChange = async () => {
     if (!app.i18n.__pendingLocale) {
       return
     }
@@ -218,7 +218,7 @@ export default async (context) => {
     app.i18n.__pendingLocale = null
   }
 
-  const waitForPendingLocale = async () => {
+  const waitForPendingLocaleChange = async () => {
     if (app.i18n.__pendingLocale) {
       await app.i18n.__pendingLocalePromise
     }
@@ -285,8 +285,8 @@ export default async (context) => {
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
     i18n.getBrowserLocale = () => getBrowserLocale()
-    i18n.setPendingLocale = setPendingLocale
-    i18n.waitForPendingLocale = waitForPendingLocale
+    i18n.finalizePendingLocaleChange = finalizePendingLocaleChange
+    i18n.waitForPendingLocaleChange = waitForPendingLocaleChange
     i18n.__baseUrl = app.i18n.__baseUrl
     i18n.__pendingLocale = app.i18n.__pendingLocale
     i18n.__pendingLocalePromise = app.i18n.__pendingLocalePromise
