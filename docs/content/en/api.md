@@ -46,7 +46,9 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
 
-#### localeRoute <badge>v6.12.0+</badge>
+#### localeRoute
+
+<badge>v6.12.0+</badge>
 
   - **Arguments**:
     - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
@@ -57,7 +59,9 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-#### $nuxtI18nHead <badge>v6.19.0+</badge>
+#### $nuxtI18nHead
+
+<badge>v6.19.0+</badge>
 
   - **Arguments**:
     - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/nuxt-i18n.d.ts))
@@ -66,7 +70,9 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   If `options.addDirAttribute` is set to `false`, the `dir` attribute will not be added.
   If `options.addSeoAttributes` is set to `true`, the seo attributes will be added.
 
-#### $nuxtI18nSeo <badge>deprecated from v6.19.0 (use `$nuxtI18nHead`)</badge>
+#### $nuxtI18nSeo
+
+<badge>deprecated from v6.19.0 (use `$nuxtI18nHead`)</badge>
 
   - **Arguments**:
     - no arguments
@@ -100,7 +106,9 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Updates stored locale cookie with specified locale code. Consider using `setLocale` instead if you want to switch locale.
 
-#### setLocale <badge>v6.1.0+</badge>
+#### setLocale
+
+<badge>v6.1.0+</badge>
 
   - **Arguments**:
     - locale (type: `string`)
@@ -116,7 +124,9 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Returns browser locale code filtered against the ones defined in options.
 
-#### finalizePendingLocaleChange <badge>v6.20.0+</badge>
+#### finalizePendingLocaleChange
+
+<badge>v6.20.0+</badge>
 
   - **Arguments**:
     - no arguments
@@ -124,7 +134,9 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Switches to the pending locale that would have been set on navigate, but was prevented by the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
 
-#### waitForPendingLocaleChange <badge>v6.20.0+</badge>
+#### waitForPendingLocaleChange
+
+<badge>v6.20.0+</badge>
 
   - **Arguments**:
     - no arguments
@@ -134,7 +146,9 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ### Properties
 
-#### defaultDirection <badge>v6.19.0+</badge>
+#### defaultDirection
+
+<badge>v6.19.0+</badge>
 
   - **Type**: `Directions`
 
