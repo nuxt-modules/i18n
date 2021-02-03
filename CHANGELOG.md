@@ -1,3 +1,10 @@
+## [6.20.0](https://github.com/nuxt-community/i18n-module/compare/v6.19.0...v6.20.0) (2021-02-03)
+
+
+### Features
+
+* API for handling locale change during page transitions ([#963](https://github.com/nuxt-community/i18n-module/issues/963)) ([23b9cc4](https://github.com/nuxt-community/i18n-module/commit/23b9cc4b9b831c91248f840ff1b9229824ed7268))
+
 ## [6.19.0](https://github.com/nuxt-community/i18n-module/compare/v6.18.0...v6.19.0) (2021-02-01)
 
 
