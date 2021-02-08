@@ -119,7 +119,7 @@
     "messageformat": "2.3.0",
     "nuxt": "2.14.12",
     "playwright-chromium": "1.8.0",
-    "release-it": "14.2.2",
+    "release-it": "14.3.0",
     "serve-static": "1.14.1",
     "typescript": "4.1.3"
   }
