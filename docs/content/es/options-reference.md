@@ -55,8 +55,8 @@ List of locales supported by your app. Can either be an array of codes (`['en', 
 ```js
 [
   { code: 'en', iso: 'en-US', file: 'en.js', dir: 'ltr' },
-  { code: 'ar', iso: 'ar-EG', file: 'ar.js', dir: 'rtl' }
-  { code: 'es', iso: 'es-ES', file: 'es.js' }
+  { code: 'ar', iso: 'ar-EG', file: 'ar.js', dir: 'rtl' },
+  { code: 'es', iso: 'es-ES', file: 'es.js' },
 ]
 ```
 
