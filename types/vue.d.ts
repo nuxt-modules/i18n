@@ -46,7 +46,7 @@ declare module 'vue/types/options' {
 /**
  * Extends types in Nuxt
  */
-declare module '@nuxt/types' {
+declare module '@nuxt/types-edge' {
   interface NuxtAppOptions extends NuxtVueI18n.Options.NuxtI18nInterface {
     readonly i18n: VueI18n & IVueI18n
     getRouteBaseName(route?: Route): string

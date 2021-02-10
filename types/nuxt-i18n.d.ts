@@ -1,6 +1,6 @@
 import VueI18n from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
-import { Context as NuxtContext } from '@nuxt/types'
+import { Context as NuxtContext } from '@nuxt/types-edge'
 
 /**
  * The nuxt-i18n types namespace

@@ -1,4 +1,4 @@
-import { Configuration as NuxtConfiguration } from '@nuxt/types'
+import { Configuration as NuxtConfiguration } from '@nuxt/types-edge'
 import { NuxtVueI18n } from '../../../types/vue';
 
 const nuxtI18nOptions: NuxtVueI18n.Options.AllOptionsInterface {
