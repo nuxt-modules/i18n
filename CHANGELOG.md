@@ -1,3 +1,11 @@
+### [6.20.1](https://github.com/nuxt-community/i18n-module/compare/v6.20.0...v6.20.1) (2021-02-15)
+
+
+### Bug Fixes
+
+* compatibility issue with Nuxt 2.15.0 ([9d276d7](https://github.com/nuxt-community/i18n-module/commit/9d276d7943ada9f96cf27d870b0072fae83e9c33)), closes [#1063](https://github.com/nuxt-community/i18n-module/issues/1063)
+* **docs:** missing semicolon in Locales option example ([#1056](https://github.com/nuxt-community/i18n-module/issues/1056)) ([e9f2a6a](https://github.com/nuxt-community/i18n-module/commit/e9f2a6a4e07d89bdb4212f43bf2062e0186c8041))
+
 ## [6.20.0](https://github.com/nuxt-community/i18n-module/compare/v6.19.0...v6.20.0) (2021-02-03)
 
 
