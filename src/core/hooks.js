@@ -48,17 +48,17 @@ export function buildHook (moduleContainer, options) {
   // Add vue-i18n-loader if applicable
   if (options.vueI18nLoader) {
     moduleContainer.extendBuild(config => {
-      const loaders = config.module.rules.find(el => el.loader === 'vue-loader').options.loaders
-      if (loaders) {
+      const vueLoader = config.module.rules.find(el => el.loader.includes('vue-loader'))
+      if (vueLoader && vueLoader.options && vueLoader.options.loaders) {
         // vue-loader under 15.0.0
         /* istanbul ignore next */
-        loaders.i18n = '@intlify/vue-i18n-loader'
+        vueLoader.options.loaders.i18n = require.resolve('@intlify/vue-i18n-loader')
       } else {
         // vue-loader after 15.0.0
         config.module.rules.push({
           resourceQuery: /blockType=i18n/,
           type: 'javascript/auto',
-          loader: '@intlify/vue-i18n-loader'
+          loader: require.resolve('@intlify/vue-i18n-loader')
         })
       }
     })
