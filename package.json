@@ -24,7 +24,7 @@
   "scripts": {
     "dev:basic": "nuxt -c ./test/fixture/basic/nuxt.config.js",
     "dev:basic:generate": "nuxt generate -c ./test/fixture/basic/nuxt.config.js",
-    "start:dist": "node -r esm ./test/utils/http-server-internal.js --port 8080 -v dist",
+    "start:dist": "jiti ./test/utils/http-server-internal.js --port 8080 -v dist",
     "coverage": "codecov",
     "lint": "eslint --ext .js,.vue,.ts src test types",
     "test": "yarn test:types && yarn test:unit && yarn test:e2e-ssr && yarn test:e2e-browser",

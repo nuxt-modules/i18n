@@ -36,7 +36,7 @@ export class StaticServer {
     this.url = `http://localhost:${this.port}`
 
     const serverPath = resolve(__dirname, 'http-server-internal.js')
-    const args = [`node -r esm ${serverPath}`, this.path, `--port ${this.port}`]
+    const args = [`jiti ${serverPath}`, this.path, `--port ${this.port}`]
 
     if (this.verbose) {
       args.push('--verbose')
