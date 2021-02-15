@@ -52,13 +52,13 @@ export function buildHook (moduleContainer, options) {
       if (vueLoader && vueLoader.options && vueLoader.options.loaders) {
         // vue-loader under 15.0.0
         /* istanbul ignore next */
-        vueLoader.options.loaders.i18n = '@intlify/vue-i18n-loader'
+        vueLoader.options.loaders.i18n = require.resolve('@intlify/vue-i18n-loader')
       } else {
         // vue-loader after 15.0.0
         config.module.rules.push({
           resourceQuery: /blockType=i18n/,
           type: 'javascript/auto',
-          loader: '@intlify/vue-i18n-loader'
+          loader: require.resolve('@intlify/vue-i18n-loader')
         })
       }
     })
