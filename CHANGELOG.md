@@ -1,3 +1,10 @@
+### [6.20.2](https://github.com/nuxt-community/i18n-module/compare/v6.20.1...v6.20.2) (2021-02-19)
+
+
+### Bug Fixes
+
+* **lazy:** only process lang files with js, ts and json extensions ([#1070](https://github.com/nuxt-community/i18n-module/issues/1070)) ([1cf1ac2](https://github.com/nuxt-community/i18n-module/commit/1cf1ac2d031b924b4d2b82113f7580cfa18f7efa)), closes [#1068](https://github.com/nuxt-community/i18n-module/issues/1068)
+
 ### [6.20.1](https://github.com/nuxt-community/i18n-module/compare/v6.20.0...v6.20.1) (2021-02-15)
 
 
