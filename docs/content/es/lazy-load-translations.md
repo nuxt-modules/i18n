@@ -10,7 +10,7 @@ Esto se puede lograr con **nuxt-i18n** al permitir que el módulo sepa dónde se
 Para habilitar la carga diferida de traducciones, siga estos 4 pasos cuando configure **nuxt-i18n**:
 
 * Establezca la opción `lazy` en `true`
-* Establezca la opción `langDir` en el directorio que contiene sus archivos de traducción (esto NO puede estar vacío)
+* Establezca la opción `langDir` en el directorio (esto NO puede estar vacío) que contiene sus archivos de traducción. Only `*.js`, `*.ts` and `*.json` files will be loaded.
 * Configure la opción `locales` como una matriz de objetos, donde cada objeto tiene una clave `file` cuyo valor es el archivo de traducción correspondiente a la configuración local
 * Opcionalmente, elimine todos los mensajes que haya pasado a vue-i18n mediante la opción `vueI18n`
 * Cada `file` puede devolver un `Object` o una `function` (admite `Promises`)
