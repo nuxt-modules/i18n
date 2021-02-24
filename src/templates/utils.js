@@ -30,7 +30,7 @@ export async function loadLanguageAsync (context, locale) {
           try {
             const langFileModule = await import(
               /* webpackChunkName: "lang-[request]" */
-              /* webpackInclude: /\.(js|ts|json)$/ */
+              /* webpackInclude: /\.(js|ts|json|ya?ml)$/ */
               `~/<%= options.langDir %>${file}`
             )
             const getter = langFileModule.default || langFileModule
