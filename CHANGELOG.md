@@ -1,3 +1,10 @@
+### [6.20.3](https://github.com/nuxt-community/i18n-module/compare/v6.20.2...v6.20.3) (2021-02-24)
+
+
+### Bug Fixes
+
+* **lazy:** allow extensions yml/yaml when loading lazy locales ([01f92ae](https://github.com/nuxt-community/i18n-module/commit/01f92ae72ba2a37cda2be119f618751ab7dbf20b))
+
 ### [6.20.2](https://github.com/nuxt-community/i18n-module/compare/v6.20.1...v6.20.2) (2021-02-19)
 
 
