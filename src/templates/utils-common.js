@@ -1,5 +1,6 @@
 import Cookie from 'cookie'
 import JsCookie from 'js-cookie'
+import isHTTPS from 'is-https'
 
 /**
  * Parses locales provided from browser through `accept-language` header.
@@ -104,7 +105,6 @@ export const getDomainFromLocale = (localeCode, req, { locales, localeDomainKey,
   if (lang && lang[localeDomainKey]) {
     let protocol
     if (process.server) {
-      const isHTTPS = require('is-https')
       protocol = (req && isHTTPS(req)) ? 'https' : 'http'
     } else {
       protocol = window.location.protocol.split(':')[0]

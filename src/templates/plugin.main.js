@@ -36,6 +36,7 @@ import {
   setLocaleCookie,
   syncVuex
 } from './utils-common'
+import { loadLanguageAsync } from './utils'
 import { klona } from '~i18n-klona'
 
 Vue.use(VueI18n)
@@ -90,7 +91,6 @@ export default async (context) => {
 
     // Lazy-loading enabled
     if (lazy) {
-      const { loadLanguageAsync } = require('./utils')
       const i18nFallbackLocale = app.i18n.fallbackLocale
 
       // Load fallback locale(s).
@@ -294,7 +294,7 @@ export default async (context) => {
   }
 
   // Set instance options
-  const vueI18nOptions = typeof vueI18n === 'function' ? vueI18n(context) : klona(vueI18n)
+  const vueI18nOptions = typeof vueI18n === 'function' ? await vueI18n(context) : klona(vueI18n)
   vueI18nOptions.componentInstanceCreatedListener = extendVueI18nInstance
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
