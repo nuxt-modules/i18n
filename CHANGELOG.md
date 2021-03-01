@@ -1,3 +1,11 @@
+### [6.20.4](https://github.com/nuxt-community/i18n-module/compare/v6.20.3...v6.20.4) (2021-03-01)
+
+
+### Bug Fixes
+
+* avoid using commonjs for runtime (vite support) ([3fc14ba](https://github.com/nuxt-community/i18n-module/commit/3fc14ba255f0791d5a8f13edd23a301e56665dca))
+* use mjs version of klona ([#1079](https://github.com/nuxt-community/i18n-module/issues/1079)) ([bb0445d](https://github.com/nuxt-community/i18n-module/commit/bb0445db55403cc6e13b60df87d05a242d2e5463))
+
 ### [6.20.3](https://github.com/nuxt-community/i18n-module/compare/v6.20.2...v6.20.3) (2021-02-24)
 
 
