@@ -11,7 +11,7 @@ function stringifyValue(value) {
 
 for (const [key, value] of Object.entries(options)) {
     if (key === 'vueI18n' && typeof value === 'string') {
-%>export const <%= key %> = require('<%= value %>').default
+%>export const <%= key %> = () => import('<%= value %>').then(m => m.default)
 <%
     } else {
 %>export const <%= key %> = <%= stringifyValue(value) %>
