@@ -95,7 +95,7 @@
     "@babel/core": "7.12.17",
     "@babel/preset-env": "7.12.17",
     "@babel/runtime": "7.12.18",
-    "@nuxt/types-edge": "latest",
+    "@nuxt/types-edge": "npm:@nuxt/types",
     "@nuxtjs/eslint-config-typescript": "5.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "2.0.0",
