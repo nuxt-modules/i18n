@@ -16,7 +16,7 @@
     "target": "es2018",
     "types": [
       "../types",
-      "@nuxt/types-edge",
+      "@nuxt/types",
       "@types/jest",
       "@types/jsdom",
     ],

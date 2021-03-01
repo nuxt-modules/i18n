@@ -1644,10 +1644,10 @@
     rc9 "^1.2.0"
     std-env "^2.2.1"
 
-"@nuxt/types-edge@latest":
-  version "2.15.3-26902116.756b16ae"
-  resolved "https://registry.yarnpkg.com/@nuxt/types-edge/-/types-edge-2.15.3-26902116.756b16ae.tgz#a4647cd0f1829403c74205d4ed4a87cf42efe139"
-  integrity sha512-aX6Ho7SNXksaaog458zPmxqwKexKLjgHx5OJjXT39SWRdIZThiGk9gljKYFGCDPQFhdlM/8jR5qxQC9uLtI4cA==
+"@nuxt/types@npm:@nuxt/types-edge":
+  version "2.16.0-26909318.59fa54ff"
+  resolved "https://registry.yarnpkg.com/@nuxt/types-edge/-/types-edge-2.16.0-26909318.59fa54ff.tgz#1317f98883ddf584b8b422fe95e732f9b25d1556"
+  integrity sha512-Ug6IY1O9e2H1ReYao3UTmPJQeQpRHpSEPK011p/z9K2IA9hMlYgu5/xWd/Wzg/+ZG0wAjL1w9TjWMIm/Tx299g==
   dependencies:
     "@types/autoprefixer" "^9.7.2"
     "@types/babel__core" "^7.1.12"
