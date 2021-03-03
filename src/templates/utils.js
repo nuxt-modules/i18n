@@ -11,7 +11,7 @@ async function loadFileModule (lang) {
       langFileModule = await import(
         /* webpackChunkName: "lang-[request]" */
         /* webpackInclude: /\.(js|ts|json|ya?ml)$/ */
-        '<%= _srcDir %>/<%= options.langDir %><%= locale.file %>'
+        '<%= _srcDir + "/" + options.langDir + locale.file %>'
       )
       break
     /* <% } %>} */
