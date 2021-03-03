@@ -22,6 +22,6 @@ for (const [key, value] of Object.entries(options)) {
 
 /* <% if (options.langDir) { %> */
 export const ASYNC_LOCALES = {
-  <%= options.locales.map(l => `'${l.code}': () => import('../${relativeToBuild(options.langDir, l.file || l.iso)}' /* webpackChunkName: "lang-${l.code}" */)`).join(',\n  ') %>
+  <%= options.locales.filter(l => l.file).map(l => `'${l.code}': () => import('../${relativeToBuild(options.langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`).join(',\n  ') %>
 }
 /* <% } %> */
