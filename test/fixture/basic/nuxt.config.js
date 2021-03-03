@@ -5,7 +5,12 @@ import BaseConfig from '../base.config'
 const config = {
   ...BaseConfig,
   buildDir: resolve(__dirname, '.nuxt'),
-  srcDir: __dirname
+  srcDir: __dirname,
+  i18n: {
+    ...BaseConfig.i18n,
+    lazy: true,
+    langDir: 'lang'
+  }
 }
 
 module.exports = config
