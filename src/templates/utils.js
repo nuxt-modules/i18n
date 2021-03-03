@@ -32,8 +32,8 @@ export async function loadLanguageAsync (context, locale) {
         }
         if (!messages) {
           try {
-            const getter = ASYNC_LOCALES[locale]().then(m => m.default || m)
-            messages = typeof getter === 'function' ? await getter(context, locale) : getter
+            const getter = await ASYNC_LOCALES[locale]().then(m => m.default || m)
+            messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
             console.error(error)
