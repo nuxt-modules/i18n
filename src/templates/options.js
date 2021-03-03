@@ -20,8 +20,8 @@ for (const [key, value] of Object.entries(options)) {
 }
 %>
 
-/* <% if (options.langDir) { %> */
+<% if (options.langDir) { %>
 export const ASYNC_LOCALES = {
   <%= options.locales.map(l => `'${l.code}': () => import('../${relativeToBuild(options.langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`).join(',\n  ') %>
 }
-/* <% } %> */
+<% } %>
