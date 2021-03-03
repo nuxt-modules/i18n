@@ -1,20 +1,25 @@
 import { LOCALE_CODE_KEY, LOCALE_FILE_KEY, MODULE_NAME } from './options'
 
-<% const _srcDir = (isDev && (nuxtOptions.buildModules || []).includes('nuxt-vite')) ? '/@fs' + srcDir : '~' %>
-async function loadFileModule(lang) {
+// Hiding template directives from eslint so that parsing doesn't break.
+/* <% if (options.langDir) { %> */
+/* <% const _srcDir = (isDev && (nuxtOptions.buildModules || []).includes('nuxt-vite')) ? '/@fs' + srcDir : '~' %> */
+async function loadFileModule (lang) {
   let langFileModule
   switch (lang) {
-    <% for (let locale of options.locales) { %>
-      case '<%= locale.code %>':
-        langFileModule = await import(
-          /* webpackChunkName: "lang-[request]" */
-          /* webpackInclude: /\.(js|ts|json|ya?ml)$/ */
-          `<%= _srcDir %>/<%= options.langDir %><%= locale.file %>`
-        );
-        break;
-    <% } %>}
+    /* <% for (let locale of options.locales) { %> */
+    case '<%= locale.code %>':
+      langFileModule = await import(
+        /* webpackChunkName: "lang-[request]" */
+        /* webpackInclude: /\.(js|ts|json|ya?ml)$/ */
+        '<%= _srcDir %>/<%= options.langDir %><%= locale.file %>'
+      )
+      break
+    /* <% } %>} */
+  }
   return langFileModule.default || langFileModule
 }
+/* <% } %> */
+
 /**
  * Asynchronously load messages from translation files
  * @param  {Context}  context  Nuxt context
@@ -32,7 +37,6 @@ export async function loadLanguageAsync (context, locale) {
     if (localeObject) {
       const file = localeObject[LOCALE_FILE_KEY]
       if (file) {
-        // Hiding template directives from eslint so that parsing doesn't break.
         /* <% if (options.langDir) { %> */
         let messages
         if (process.client) {
