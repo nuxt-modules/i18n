@@ -1,24 +1,9 @@
-import { LOCALE_CODE_KEY, LOCALE_FILE_KEY, MODULE_NAME } from './options'
-
-// Hiding template directives from eslint so that parsing doesn't break.
-/* <% if (options.langDir) { %> */
-/* <% const _srcDir = (isDev && (nuxtOptions.buildModules || []).includes('nuxt-vite')) ? '/@fs' + srcDir : '~' %> */
-async function loadFileModule (lang) {
-  let langFileModule
-  switch (lang) {
-    /* <% for (let locale of options.locales) { %> */
-    case '<%= locale.code %>':
-      langFileModule = await import(
-        /* webpackChunkName: "lang-[request]" */
-        /* webpackInclude: /\.(js|ts|json|ya?ml)$/ */
-        '<%= _srcDir + "/" + options.langDir + locale.file %>'
-      )
-      break
-    /* <% } %>} */
-  }
-  return langFileModule.default || langFileModule
-}
-/* <% } %> */
+import {
+  LOCALE_CODE_KEY,
+  LOCALE_FILE_KEY,
+  MODULE_NAME/* <% if (options.langDir) { %> */,
+  ASYNC_LOCALES/* <% } %> */
+} from './options'
 
 /**
  * Asynchronously load messages from translation files
@@ -47,8 +32,8 @@ export async function loadLanguageAsync (context, locale) {
         }
         if (!messages) {
           try {
-            const getter = await loadFileModule(locale)
-            messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
+            const getter = ASYNC_LOCALES[locale]().then(m => m.default || m)
+            messages = typeof getter === 'function' ? await getter(context, locale) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
             console.error(error)
