@@ -21,7 +21,11 @@ function localePath (route, locale) {
     return
   }
 
-  return localizedRoute.fullPath
+  if(typeof localizedRoute === 'string') {
+    return localizedRoute;
+  }
+
+  return localizedRoute.fullPath;
 }
 
 function localeRoute (route, locale) {
@@ -55,16 +59,28 @@ function localeRoute (route, locale) {
     const isDefaultLocale = locale === defaultLocale
     // if route has a path defined but no name, resolve full route using the path
     const isPrefixed =
-        // don't prefix default locale
-        !(isDefaultLocale && [STRATEGIES.PREFIX_EXCEPT_DEFAULT, STRATEGIES.PREFIX_AND_DEFAULT].includes(strategy)) &&
-        // no prefix for any language
-        !(strategy === STRATEGIES.NO_PREFIX) &&
-        // no prefix for different domains
-        !i18n.differentDomains
+      // don't prefix default locale
+      !(isDefaultLocale && [STRATEGIES.PREFIX_EXCEPT_DEFAULT, STRATEGIES.PREFIX_AND_DEFAULT].includes(strategy)) &&
+      // no prefix for any language
+      !(strategy === STRATEGIES.NO_PREFIX) &&
+      // no prefix for different domains
+      !i18n.differentDomains
+    let thisRoute = this.router.resolve(route.path).route;
+    let routeName = this.getRouteBaseName(thisRoute);
 
-    let path = (isPrefixed ? `/${locale}${route.path}` : route.path)
-    path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
-    localizedRoute.path = path
+    let path;
+    if(isPrefixed && !routeName) {
+      path = `/${locale}${route.path}`;
+      path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+      localizedRoute.path = path
+    }else {
+      return localePath.call(this,{
+        name: routeName,
+        params: thisRoute.params,
+        query:thisRoute.query
+      },locale);
+    }
+
   } else {
     if (!route.name && !route.path) {
       localizedRoute.name = this.getRouteBaseName()
