@@ -1,4 +1,9 @@
-import { LOCALE_CODE_KEY, LOCALE_FILE_KEY, MODULE_NAME } from './options'
+import {
+  LOCALE_CODE_KEY,
+  LOCALE_FILE_KEY,
+  MODULE_NAME/* <% if (options.langDir) { %> */,
+  ASYNC_LOCALES/* <% } %> */
+} from './options'
 
 /**
  * Asynchronously load messages from translation files
@@ -17,7 +22,6 @@ export async function loadLanguageAsync (context, locale) {
     if (localeObject) {
       const file = localeObject[LOCALE_FILE_KEY]
       if (file) {
-        // Hiding template directives from eslint so that parsing doesn't break.
         /* <% if (options.langDir) { %> */
         let messages
         if (process.client) {
@@ -28,12 +32,7 @@ export async function loadLanguageAsync (context, locale) {
         }
         if (!messages) {
           try {
-            const langFileModule = await import(
-              /* webpackChunkName: "lang-[request]" */
-              /* webpackInclude: /\.(js|ts|json|ya?ml)$/ */
-              `~/<%= options.langDir %>${file}`
-            )
-            const getter = langFileModule.default || langFileModule
+            const getter = await ASYNC_LOCALES[file]().then(m => m.default || m)
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
