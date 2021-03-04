@@ -74,6 +74,8 @@ function localeRoute (route, locale) {
       localizedRoute.path = path
     } else {
       localizedRoute.name = getLocaleRouteName(routeName, locale)
+      localizedRoute.params = thisRoute.params
+      localizedRoute.query = thisRoute.query
       return this.router.resolve(localizedRoute).route
     }
   } else {
