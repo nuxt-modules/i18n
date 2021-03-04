@@ -63,19 +63,20 @@ function localeRoute (route, locale) {
       !i18n.differentDomains
     const thisRoute = this.router.resolve(route.path).route
     const routeName = this.getRouteBaseName(thisRoute)
-
     if (isPrefixed && !routeName) {
       let path = `/${locale}${route.path}`
-      path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+      path = getReplacedPath(path)
       localizedRoute.path = path
     } else {
-      localizedRoute.path = route.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+      localizedRoute.path = getReplacedPath(route.path)
       if (routeName) {
-        localizedRoute.name = getLocaleRouteName(routeName, locale)
-        localizedRoute.params = thisRoute.params
-        localizedRoute.query = thisRoute.query
-        localizedRoute.hash = thisRoute.hash
-        return this.router.resolve(localizedRoute).route
+        return this.router.resolve({
+          name: getLocaleRouteName(routeName, locale),
+          params: thisRoute.params,
+          query: thisRoute.query,
+          hash: thisRoute.hash,
+          path: localizedRoute.path
+        }).route
       }
     }
   } else {
@@ -92,6 +93,10 @@ function localeRoute (route, locale) {
   }
 
   return this.router.resolve(localizedRoute).route
+}
+
+function getReplacedPath (path) {
+  return path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
 }
 
 function switchLocalePath (locale) {
