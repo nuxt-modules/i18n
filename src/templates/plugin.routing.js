@@ -21,10 +21,6 @@ function localePath (route, locale) {
     return
   }
 
-  if (typeof localizedRoute === 'string') {
-    return localizedRoute
-  }
-
   return localizedRoute.fullPath
 }
 
