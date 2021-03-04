@@ -56,7 +56,7 @@ The template code might look like this, for example:
   href="#"
   v-for="locale in availableLocales"
   :key="locale.code"
-  @click.prevent.stop="setLocale(locale.code)">{{ locale.name }}</a>
+  @click.prevent.stop="$i18n.setLocale(locale.code)">{{ locale.name }}</a>
 ```
 
 ## Dynamic route parameters
