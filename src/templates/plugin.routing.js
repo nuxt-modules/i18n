@@ -70,10 +70,13 @@ function localeRoute (route, locale) {
       localizedRoute.path = path
     } else {
       localizedRoute.path = route.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
-      localizedRoute.name = getLocaleRouteName(routeName, locale)
-      localizedRoute.params = thisRoute.params
-      localizedRoute.query = thisRoute.query
-      return this.router.resolve(localizedRoute).route
+      if(routeName) {
+        localizedRoute.name = getLocaleRouteName(routeName, locale)
+        localizedRoute.params = thisRoute.params
+        localizedRoute.query = thisRoute.query
+        localizedRoute.hash = thisRoute.hash
+        return this.router.resolve(localizedRoute).route
+      }
     }
   } else {
     if (!route.name && !route.path) {
