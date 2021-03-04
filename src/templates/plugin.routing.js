@@ -68,9 +68,9 @@ function localeRoute (route, locale) {
     let thisRoute = this.router.resolve(route.path).route;
     let routeName = this.getRouteBaseName(thisRoute);
 
-    let path;
+
     if(isPrefixed && !routeName) {
-      path = `/${locale}${route.path}`;
+      let path = `/${locale}${route.path}`;
       path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
       localizedRoute.path = path
     }else {
