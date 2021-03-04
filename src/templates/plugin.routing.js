@@ -21,11 +21,11 @@ function localePath (route, locale) {
     return
   }
 
-  if(typeof localizedRoute === 'string') {
-    return localizedRoute;
+  if (typeof localizedRoute === 'string') {
+    return localizedRoute
   }
 
-  return localizedRoute.fullPath;
+  return localizedRoute.fullPath
 }
 
 function localeRoute (route, locale) {
@@ -65,22 +65,17 @@ function localeRoute (route, locale) {
       !(strategy === STRATEGIES.NO_PREFIX) &&
       // no prefix for different domains
       !i18n.differentDomains
-    let thisRoute = this.router.resolve(route.path).route;
-    let routeName = this.getRouteBaseName(thisRoute);
+    const thisRoute = this.router.resolve(route.path).route
+    const routeName = this.getRouteBaseName(thisRoute)
 
-
-    if(isPrefixed && !routeName) {
-      let path = `/${locale}${route.path}`;
+    if (isPrefixed && !routeName) {
+      let path = `/${locale}${route.path}`
       path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
       localizedRoute.path = path
-    }else {
-      return localePath.call(this,{
-        name: routeName,
-        params: thisRoute.params,
-        query:thisRoute.query
-      },locale);
+    } else {
+      localizedRoute.name = getLocaleRouteName(routeName, locale)
+      return this.router.resolve(localizedRoute).route
     }
-
   } else {
     if (!route.name && !route.path) {
       localizedRoute.name = this.getRouteBaseName()
