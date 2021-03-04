@@ -70,7 +70,7 @@ function localeRoute (route, locale) {
       localizedRoute.path = path
     } else {
       localizedRoute.path = route.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
-      if(routeName) {
+      if (routeName) {
         localizedRoute.name = getLocaleRouteName(routeName, locale)
         localizedRoute.params = thisRoute.params
         localizedRoute.query = thisRoute.query
