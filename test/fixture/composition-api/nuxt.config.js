@@ -5,7 +5,9 @@ import BaseConfig from '../base.config'
 const config = {
   ...BaseConfig,
   buildDir: resolve(__dirname, '.nuxt'),
-  srcDir: __dirname
+  srcDir: __dirname,
+  buildModules: [
+    '@nuxtjs/composition-api'
+  ]
 }
-config.modules?.push('@nuxtjs/composition-api')
-module.exports = config
+export default config

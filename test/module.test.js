@@ -2077,13 +2077,8 @@ describe('Composition API', () => {
   /** @type {Nuxt} */
   let nuxt
 
-  const override = {
-    ssr: true,
-    target: 'server'
-  }
-
   beforeAll(async () => {
-    nuxt = (await setup(loadConfig(__dirname, 'composition-api', override, { merge: true }))).nuxt
+    nuxt = (await setup(loadConfig(__dirname, 'composition-api'))).nuxt
   })
 
   afterAll(async () => {
