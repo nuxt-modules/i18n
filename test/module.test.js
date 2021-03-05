@@ -2077,19 +2077,28 @@ describe('Composition API', () => {
   /** @type {Nuxt} */
   let nuxt
 
+  const override = {
+    ssr: true,
+    target: 'server'
+  }
+
   beforeAll(async () => {
-    nuxt = (await setup(loadConfig(__dirname, 'composition-api'))).nuxt
+    nuxt = (await setup(loadConfig(__dirname, 'composition-api', override, { merge: true }))).nuxt
   })
 
   afterAll(async () => {
     await nuxt.close()
   })
 
-  test('should not crash if composition API module is active', async () => {
+  test('should work with the composition API module', async () => {
     const html = await get('/')
     const dom = getDom(html)
 
-    expect(dom.querySelector('#content')?.textContent).toBe('untranslated')
     expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
+    expect(dom.querySelector('#unprocessed-url')?.textContent).toBe('Homepage')
+    expect(dom.querySelector('#processed-url')?.textContent).toBe('Homepage')
+
+    expect(dom.querySelector('#unprocessed-url')?.getAttribute('href')).toBe('/')
+    expect(dom.querySelector('#processed-url')?.getAttribute('href')).toBe('/')
   })
 })
