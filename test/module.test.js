@@ -2072,3 +2072,28 @@ describe('Locale fallback array', () => {
     expect(dom.querySelector('[data-test="de-key"]')?.textContent).toEqual('deKey')
   })
 })
+
+describe('Composition API', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    nuxt = (await setup(loadConfig(__dirname, 'composition-api'))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('should work with the composition API module', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
+    expect(dom.querySelector('#unprocessed-url')?.textContent).toBe('Homepage')
+    expect(dom.querySelector('#processed-url')?.textContent).toBe('Homepage')
+
+    expect(dom.querySelector('#unprocessed-url')?.getAttribute('href')).toBe('/')
+    expect(dom.querySelector('#processed-url')?.getAttribute('href')).toBe('/')
+  })
+})
