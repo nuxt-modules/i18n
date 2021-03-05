@@ -10,4 +10,5 @@ const config = {
     '@nuxtjs/composition-api'
   ]
 }
-export default config
+
+module.exports = config
