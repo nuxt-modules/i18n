@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import LangSwitcher from '../components/LangSwitcher'
 
 export default {
@@ -19,6 +20,11 @@ export default {
       ...this.$nuxtI18nHead({ addDirAttribute: false }),
       title: this.$t('home')
     }
+  },
+  created () {
+    // This tests the case where klona tries to clone reactive object instead of an original one.
+    // https://github.com/nuxt-community/i18n-module/issues/1075
+    Vue.observable(this.$i18n.locales)
   }
 }
 </script>

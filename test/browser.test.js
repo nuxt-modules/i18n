@@ -18,7 +18,7 @@ async function createBrowser () {
 async function navigate (page, path) {
   await page.evaluate(path => {
     return new Promise((resolve, reject) => {
-      window.$nuxt.$router.push(path, () => resolve(), reject)
+      window.$nuxt.$router.push(path, () => resolve(null), reject)
     })
   }, path)
   await new Promise(resolve => setTimeout(resolve, 50))
