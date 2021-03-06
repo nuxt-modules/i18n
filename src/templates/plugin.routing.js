@@ -68,8 +68,7 @@ function localeRoute (route, locale) {
         name: getLocaleRouteName(resolvedRouteName, locale),
         params: resolvedRoute.params,
         query: resolvedRoute.query,
-        hash: resolvedRoute.hash,
-        path: route.path
+        hash: resolvedRoute.hash
       }
     } else {
       if (isPrefixed) {
