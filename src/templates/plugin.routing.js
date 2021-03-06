@@ -90,9 +90,7 @@ function localeRoute (route, locale) {
     }
   }
 
-  const resolved = this.router.resolve(localizedRoute).route
-  // console.info({ resolved })
-  return resolved
+  return this.router.resolve(localizedRoute).route
 }
 
 function switchLocalePath (locale) {
