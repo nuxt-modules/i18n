@@ -162,7 +162,7 @@ export default async (context) => {
       redirectPath = app.localePath(route.fullPath, locale)
     }
 
-    if (redirectPath === route.fullPath) {
+    if (redirectPath === route.fullPath || redirectPath.startsWith('//')) {
       return ''
     }
 
