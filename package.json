@@ -97,7 +97,7 @@
     "@babel/runtime": "7.13.8",
     "@nuxt/types": "2.15.2",
     "@nuxtjs/composition-api": "0.21.0",
-    "@nuxtjs/eslint-config-typescript": "5.0.0",
+    "@nuxtjs/eslint-config-typescript": "6.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "2.0.1",
     "@types/argparse": "2.0.5",
