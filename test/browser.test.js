@@ -643,7 +643,7 @@ describe(`${browserString} (SPA)`, () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(url(path))
     expect(await (await page.$('body'))?.textContent()).toContain('page could not be found')
-    expect(await getRouteFullPath(page)).toBe(`/fr${path}`)
+    expect(await getRouteFullPath(page)).toBe(path)
   })
 })
 
