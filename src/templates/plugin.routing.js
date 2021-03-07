@@ -61,6 +61,20 @@ function localeRoute (route, locale) {
         query: resolvedRoute.query,
         hash: resolvedRoute.hash
       }
+    } else {
+      const isDefaultLocale = locale === defaultLocale
+      // if route has a path defined but no name, resolve full route using the path
+      const isPrefixed =
+          // don't prefix default locale
+          !(isDefaultLocale && [STRATEGIES.PREFIX_EXCEPT_DEFAULT, STRATEGIES.PREFIX_AND_DEFAULT].includes(strategy)) &&
+          // no prefix for any language
+          !(strategy === STRATEGIES.NO_PREFIX) &&
+          // no prefix for different domains
+          !i18n.differentDomains
+      if (isPrefixed) {
+        localizedRoute.path = `/${locale}${route.path}`
+      }
+      localizedRoute.path = localizedRoute.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
     }
   } else {
     if (!route.name && !route.path) {
@@ -75,7 +89,8 @@ function localeRoute (route, locale) {
     }
   }
 
-  return this.router.resolve(localizedRoute).route
+  const resolvedRoute = this.router.resolve(localizedRoute).route
+  return resolvedRoute.name ? resolvedRoute : null
 }
 
 function switchLocalePath (locale) {
