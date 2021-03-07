@@ -90,7 +90,11 @@ function localeRoute (route, locale) {
   }
 
   const resolvedRoute = this.router.resolve(localizedRoute).route
-  return resolvedRoute.name ? resolvedRoute : null
+  if (resolvedRoute.name) {
+    return resolvedRoute
+  }
+  // If didn't resolve to an existing route then just return resolved route based on original input.
+  return this.router.resolve(route).route
 }
 
 function switchLocalePath (locale) {
