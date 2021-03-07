@@ -49,7 +49,7 @@ function localeRoute (route, locale) {
     }
   }
 
-  const localizedRoute = Object.assign({}, route)
+  let localizedRoute = Object.assign({}, route)
 
   if (route.path && !route.name) {
     const isDefaultLocale = locale === defaultLocale
@@ -61,10 +61,21 @@ function localeRoute (route, locale) {
         !(strategy === STRATEGIES.NO_PREFIX) &&
         // no prefix for different domains
         !i18n.differentDomains
-
-    let path = (isPrefixed ? `/${locale}${route.path}` : route.path)
-    path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
-    localizedRoute.path = path
+    const resolvedRoute = this.router.resolve(route.path).route
+    const resolvedRouteName = this.getRouteBaseName(resolvedRoute)
+    if (resolvedRouteName) {
+      localizedRoute = {
+        name: getLocaleRouteName(resolvedRouteName, locale),
+        params: resolvedRoute.params,
+        query: resolvedRoute.query,
+        hash: resolvedRoute.hash
+      }
+    } else {
+      if (isPrefixed) {
+        localizedRoute.path = `/${locale}${route.path}`
+      }
+      localizedRoute.path = localizedRoute.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+    }
   } else {
     if (!route.name && !route.path) {
       localizedRoute.name = this.getRouteBaseName()

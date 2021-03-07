@@ -637,6 +637,14 @@ describe(`${browserString} (SPA)`, () => {
     expect(await (await page.$('body'))?.textContent()).toContain('page could not be found')
     expect(await getRouteFullPath(page)).toBe(path)
   })
+
+  test('preserves the URL on 404 page with non-default locale', async () => {
+    const path = '/nopage?a#h'
+    page = await browser.newPage({ locale: 'fr' })
+    await page.goto(url(path))
+    expect(await (await page.$('body'))?.textContent()).toContain('page could not be found')
+    expect(await getRouteFullPath(page)).toBe(`/fr${path}`)
+  })
 })
 
 describe(`${browserString} (SPA with router in hash mode)`, () => {
