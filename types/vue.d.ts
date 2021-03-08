@@ -1,4 +1,5 @@
-import Vue from 'vue'
+import 'vue'
+import 'vuex'
 import { Location, RawLocation, Route } from 'vue-router'
 import VueI18n, { IVueI18n } from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
@@ -63,5 +64,9 @@ declare module '@nuxt/types' {
 declare module 'vuex/types/index' {
   interface Store<S> {
     readonly $i18n: VueI18n & IVueI18n
+    getRouteBaseName(route?: Route): string
+    localePath(route: RawLocation, locale?: string): string
+    localeRoute(route: RawLocation, locale?: string): Location | undefined
+    switchLocalePath(locale: string): string
   }
 }
