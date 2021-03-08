@@ -2128,6 +2128,6 @@ describe('Store', () => {
     const html = await get('/about-us')
     const dom = getDom(html)
 
-    expect(dom.querySelector('#store-path-fr')?.textContent).toBe('/a-propos')
+    expect(dom.querySelector('#store-path-fr')?.textContent).toBe('/fr/a-propos')
   })
 })
