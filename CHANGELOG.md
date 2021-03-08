@@ -1,3 +1,13 @@
+### [6.20.5](https://github.com/nuxt-community/i18n-module/compare/v6.20.4...v6.20.5) (2021-03-08)
+
+
+### Bug Fixes
+
+* don't apply any locale-logic to non-existent routes ([#1093](https://github.com/nuxt-community/i18n-module/issues/1093)) ([7180412](https://github.com/nuxt-community/i18n-module/commit/71804129dcf1dd9882cfbddeee33b3253a107b4d)), closes [#1092](https://github.com/nuxt-community/i18n-module/issues/1092)
+* recursive clone triggered when "locales" object made reactive ([#1090](https://github.com/nuxt-community/i18n-module/issues/1090)) ([83c4398](https://github.com/nuxt-community/i18n-module/commit/83c4398e20d409ebf7ce5304452b9c6a22a6e1d1)), closes [#1075](https://github.com/nuxt-community/i18n-module/issues/1075)
+* support localePath with path input and customized routes ([#1088](https://github.com/nuxt-community/i18n-module/issues/1088)) ([4043968](https://github.com/nuxt-community/i18n-module/commit/4043968c1f57b7dd3e0bd3a9aaa24648f1060007))
+* **docs:** adjusted example code in documentation to call the right context ([#1087](https://github.com/nuxt-community/i18n-module/issues/1087)) ([7b8f77d](https://github.com/nuxt-community/i18n-module/commit/7b8f77dd556335d5bf9c6c5a82b432490a5dcf71))
+
 ### [6.20.4](https://github.com/nuxt-community/i18n-module/compare/v6.20.3...v6.20.4) (2021-03-01)
 
 
