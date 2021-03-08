@@ -13,7 +13,16 @@ const getLocaleCodes = (locales = []) => {
     }
     // Attempt to get codes from a list of objects
     if (typeof locales[0][LOCALE_CODE_KEY] === 'string') {
-      return locales.map(locale => locale[LOCALE_CODE_KEY])
+      return locales.reduce((previousValue, currentValue) => {
+        const newLocaleCode = currentValue[LOCALE_CODE_KEY]
+
+        // Check if duplicated code
+        if (!previousValue.includes(newLocaleCode)) {
+          previousValue.push(newLocaleCode)
+        }
+
+        return previousValue
+      }, [])
     }
   }
   return []
