@@ -231,3 +231,10 @@ export const actions = {
   }
 }
 ````
+
+### getRouteBaseName
+### localePath
+### localeRoute
+### switchLocalePath
+
+See [documentation](#methods).

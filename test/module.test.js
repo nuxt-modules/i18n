@@ -2111,3 +2111,23 @@ describe('Composition API', () => {
     expect(dom.querySelector('#processed-url')?.getAttribute('href')).toBe('/')
   })
 })
+
+describe('Store', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    nuxt = (await setup(loadConfig(__dirname, 'basic'))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('API is available in store instance', async () => {
+    const html = await get('/about-us')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('#store-path-fr')?.textContent).toBe('/fr/a-propos')
+  })
+})
