@@ -1,3 +1,10 @@
+### [6.20.6](https://github.com/nuxt-community/i18n-module/compare/v6.20.5...v6.20.6) (2021-03-08)
+
+
+### Bug Fixes
+
+* ensure langDir is escaped on Windows ([#1097](https://github.com/nuxt-community/i18n-module/issues/1097)) ([a0a3adc](https://github.com/nuxt-community/i18n-module/commit/a0a3adc13bb16d4ec4ffcdd94e24b318f8e9bbad))
+
 ### [6.20.5](https://github.com/nuxt-community/i18n-module/compare/v6.20.4...v6.20.5) (2021-03-08)
 
 
