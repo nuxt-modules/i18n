@@ -6,19 +6,7 @@ const config = {
   dev: false,
   telemetry: false,
   build: {
-    babel: {
-      presets ({ isServer }) {
-        return [
-          [
-            require.resolve('@nuxt/babel-preset-app'),
-            {
-              buildTarget: isServer ? 'server' : 'client',
-              corejs: { version: 3 }
-            }
-          ]
-        ]
-      }
-    },
+    corejs: 3,
     quiet: true
   },
   render: {
