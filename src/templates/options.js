@@ -1,6 +1,6 @@
 <%
 function stringifyValue(value) {
-  if (value === undefined || value === null || typeof value === 'boolean' || typeof value === 'function') {
+  if (value === undefined || typeof value === 'function') {
     return String(value);
   } else {
     return JSON.stringify(value)
