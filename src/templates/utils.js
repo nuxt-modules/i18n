@@ -1,7 +1,7 @@
 import {
   LOCALE_CODE_KEY,
   LOCALE_FILE_KEY,
-  MODULE_NAME/* <% if (options.langDir) { %> */,
+  MODULE_NAME/* <% if (options.lazy && options.langDir) { %> */,
   ASYNC_LOCALES/* <% } %> */
 } from './options'
 
@@ -22,7 +22,7 @@ export async function loadLanguageAsync (context, locale) {
     if (localeObject) {
       const file = localeObject[LOCALE_FILE_KEY]
       if (file) {
-        /* <% if (options.langDir) { %> */
+        /* <% if (options.lazy && options.langDir) { %> */
         let messages
         if (process.client) {
           const { nuxtState } = context

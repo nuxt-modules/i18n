@@ -29,12 +29,6 @@ export function createExtendRoutesHook (moduleContainer, options) {
 }
 
 export function buildHook (moduleContainer, options) {
-  if (options.langDir) {
-    if (!options.locales.length || typeof options.locales[0] === 'string') {
-      console.error('[' + MODULE_NAME + '] When using "langDir" option, the "locales" option must be a list of objects')
-    }
-  }
-
   if (options.strategy === STRATEGIES.NO_PREFIX && options.differentDomains) {
     // eslint-disable-next-line no-console
     console.warn('[' + MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
