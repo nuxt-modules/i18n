@@ -21,11 +21,6 @@ export default function (userOptions) {
     return
   }
 
-  // Resolve langDir
-  if (options.langDir) {
-    options.langDir = this.nuxt.resolver.resolveAlias(options.langDir)
-  }
-
   // Templates (including plugins).
   // This is done here rather than in the build hook to ensure the order the plugins are added
   // is predictable between different modules.
