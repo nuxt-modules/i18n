@@ -29,21 +29,6 @@ export function createExtendRoutesHook (moduleContainer, options) {
 }
 
 export function buildHook (moduleContainer, options) {
-  if (options.lazy) {
-    if (!options.langDir) {
-      throw new Error(`[${MODULE_NAME}] When using the "lazy" option you must also set the "langDir" option.`)
-    }
-    if (!options.locales.length || typeof options.locales[0] === 'string') {
-      throw new Error(`[${MODULE_NAME}] When using the "langDir" option the "locales" option must be a list of objects.`)
-    }
-    for (const locale of options.locales) {
-      if (!locale[LOCALE_FILE_KEY]) {
-        throw new Error(`[${MODULE_NAME}] All locale objects must have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`)
-      }
-    }
-    options.langDir = moduleContainer.nuxt.resolver.resolveAlias(options.langDir)
-  }
-
   if (options.strategy === STRATEGIES.NO_PREFIX && options.differentDomains) {
     // eslint-disable-next-line no-console
     console.warn('[' + MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')

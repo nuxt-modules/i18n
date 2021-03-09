@@ -21,6 +21,21 @@ export default function (userOptions) {
     return
   }
 
+  if (options.lazy) {
+    if (!options.langDir) {
+      throw new Error(`[${MODULE_NAME}] When using the "lazy" option you must also set the "langDir" option.`)
+    }
+    if (!options.locales.length || typeof options.locales[0] === 'string') {
+      throw new Error(`[${MODULE_NAME}] When using the "langDir" option the "locales" option must be a list of objects.`)
+    }
+    for (const locale of options.locales) {
+      if (!locale[LOCALE_FILE_KEY]) {
+        throw new Error(`[${MODULE_NAME}] All locale objects must have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`)
+      }
+    }
+    options.langDir = this.nuxt.resolver.resolveAlias(options.langDir)
+  }
+
   // Templates (including plugins).
   // This is done here rather than in the build hook to ensure the order the plugins are added
   // is predictable between different modules.
