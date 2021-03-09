@@ -1,4 +1,4 @@
-import { MODULE_NAME, STRATEGIES, LOCALE_FILE_KEY } from '../helpers/constants'
+import { MODULE_NAME, STRATEGIES } from '../helpers/constants'
 
 export function createExtendRoutesHook (moduleContainer, options) {
   const nuxtOptions = moduleContainer.options
