@@ -1028,6 +1028,21 @@ describe('prefix_and_default strategy', () => {
     expect(window.$nuxt.localeRoute('index', 'fr')).toMatchObject({ name: 'index___fr', fullPath: '/fr' })
   })
 
+  test('localeRoute returns localized route (by route object with name)', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    // Prefer unprefixed path for default locale:
+    expect(window.$nuxt.localeRoute({ name: 'simple', query: { a: '1' } }, 'en')).toMatchObject({
+      name: 'simple___en___default',
+      query: { a: '1' },
+      fullPath: '/simple?a=1'
+    })
+    expect(window.$nuxt.localeRoute({ name: 'simple', query: { a: '1' } }, 'fr')).toMatchObject({
+      name: 'simple___fr',
+      query: { a: '1' },
+      fullPath: '/fr/simple?a=1'
+    })
+  })
+
   test('localeRoute returns localized route (by route path)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     // Prefer unprefixed path for default locale:
@@ -1047,7 +1062,6 @@ describe('prefix_and_default strategy', () => {
       name: 'simple___fr',
       query: { a: '1' },
       fullPath: '/fr/simple?a=1'
-
     })
   })
 
