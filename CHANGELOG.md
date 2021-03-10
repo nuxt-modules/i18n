@@ -1,3 +1,15 @@
+## [6.21.0](https://github.com/nuxt-community/i18n-module/compare/v6.20.6...v6.21.0) (2021-03-10)
+
+
+### Features
+
+* **vuex:** expose nuxt-i18n API on store ([#1098](https://github.com/nuxt-community/i18n-module/issues/1098)) ([3ea3d4d](https://github.com/nuxt-community/i18n-module/commit/3ea3d4d4a539a1e60588d807a0be8990c7342892)), closes [#1031](https://github.com/nuxt-community/i18n-module/issues/1031)
+
+
+### Bug Fixes
+
+* localePath/localeRoute missing query params ([#1103](https://github.com/nuxt-community/i18n-module/issues/1103)) ([0a95790](https://github.com/nuxt-community/i18n-module/commit/0a957902059bab94f2b6747de3bf63e3ff4a6e10))
+
 ### [6.20.6](https://github.com/nuxt-community/i18n-module/compare/v6.20.5...v6.20.6) (2021-03-08)
 
 
