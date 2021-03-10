@@ -52,7 +52,7 @@ function localeRoute (route, locale) {
   let localizedRoute = Object.assign({}, route)
 
   if (route.path && !route.name) {
-    const resolvedRoute = this.router.resolve(route.path).route
+    const resolvedRoute = this.router.resolve(route).route
     const resolvedRouteName = this.getRouteBaseName(resolvedRoute)
     if (resolvedRouteName) {
       localizedRoute = {
