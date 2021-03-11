@@ -28,6 +28,10 @@ export async function loadLanguageAsync (context, locale) {
           const { nuxtState } = context
           if (nuxtState && nuxtState.__i18n && nuxtState.__i18n.langs[locale]) {
             messages = nuxtState.__i18n.langs[locale]
+            // Even if already cached in Nuxt state, trigger locale import so that HMR kicks-in on changes to that file.
+            if (context.isDev) {
+              ASYNC_LOCALES[file]()
+            }
           }
         }
         if (!messages) {
