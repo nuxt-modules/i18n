@@ -1,7 +1,8 @@
-import middleware from '../middleware'
+// @ts-ignore
+import nuxtMiddleware from '../middleware'
 
 /** @type {import('@nuxt/types').Middleware} */
-middleware.nuxti18n = async (context) => {
+const i18nMiddleware = async (context) => {
   const { app, isHMR } = context
 
   if (isHMR) {
@@ -14,3 +15,5 @@ middleware.nuxti18n = async (context) => {
     context.redirect(status, redirectPath, query)
   }
 }
+
+nuxtMiddleware.nuxti18n = i18nMiddleware

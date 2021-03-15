@@ -1,11 +1,14 @@
 import { resolve, join } from 'path'
 import { readdirSync } from 'fs'
+// @ts-ignore
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
 import { MODULE_NAME, COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DIR_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, NESTED_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
 import { getLocaleCodes } from './helpers/utils'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
 
+/** @type {import('@nuxt/types').Module<import('../types').Options>} */
 export default function (userOptions) {
+  /** @type {import('../types').ResolvedOptions} */
   const options = { ...DEFAULT_OPTIONS, ...userOptions, ...this.options.i18n }
   // Options that have nested config options must be merged
   // individually with defaults to prevent missing options
@@ -29,8 +32,8 @@ export default function (userOptions) {
       throw new Error(`[${MODULE_NAME}] When using the "langDir" option the "locales" option must be a list of objects.`)
     }
     for (const locale of options.locales) {
-      if (!locale[LOCALE_FILE_KEY]) {
-        throw new Error(`[${MODULE_NAME}] All locale objects must have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`)
+      if (typeof (locale) === 'string' || !locale[LOCALE_FILE_KEY]) {
+        throw new Error(`[${MODULE_NAME}] All locales must be objects and have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`)
       }
     }
     options.langDir = this.nuxt.resolver.resolveAlias(options.langDir)
@@ -41,25 +44,31 @@ export default function (userOptions) {
   // is predictable between different modules.
   const localeCodes = getLocaleCodes(options.locales)
   const nuxtOptions = this.options
-  const { trailingSlash } = nuxtOptions.router
 
   const templatesOptions = {
-    ...options,
-    IS_UNIVERSAL_MODE: nuxtOptions.mode === 'universal',
-    MODULE_NAME,
-    LOCALE_CODE_KEY,
-    LOCALE_ISO_KEY,
-    LOCALE_DIR_KEY,
-    LOCALE_DOMAIN_KEY,
-    LOCALE_FILE_KEY,
-    STRATEGIES,
-    COMPONENT_OPTIONS_KEY,
+    Constants: {
+      COMPONENT_OPTIONS_KEY,
+      LOCALE_CODE_KEY,
+      LOCALE_DIR_KEY,
+      LOCALE_DOMAIN_KEY,
+      LOCALE_FILE_KEY,
+      LOCALE_ISO_KEY,
+      MODULE_NAME,
+      STRATEGIES
+    },
     localeCodes,
-    trailingSlash
+    nuxtOptions: {
+      isUniversalMode: nuxtOptions.mode === 'universal',
+      trailingSlash: nuxtOptions.router.trailingSlash
+    },
+    options
   }
 
   const templatesPath = join(__dirname, '/templates')
   for (const file of readdirSync(templatesPath)) {
+    if (!file.endsWith('.js')) {
+      continue
+    }
     if (file.startsWith('plugin.')) {
       if (file === 'plugin.seo.js' && !options.seo) {
         continue
@@ -80,13 +89,21 @@ export default function (userOptions) {
   }
 
   if (options.strategy !== STRATEGIES.NO_PREFIX && localeCodes.length) {
-    this.extendRoutes(createExtendRoutesHook(this, options))
+    this.extendRoutes(createExtendRoutesHook.call(this, options))
   }
 
-  this.nuxt.hook('build:before', () => buildHook(this, options))
+  this.nuxt.hook('build:before', () => buildHook.call(this, options))
 
   this.options.alias['~i18n-klona'] = require.resolve('klona/full').replace(/\.js$/, '.mjs')
+
+  if (!Array.isArray(this.options.router.middleware)) {
+    throw new TypeError(`[${MODULE_NAME}] options.router.middleware is not an array.`)
+  }
   this.options.router.middleware.push('nuxti18n')
+
+  if (!this.options.render.bundleRenderer || typeof (this.options.render.bundleRenderer) !== 'object') {
+    throw new TypeError(`[${MODULE_NAME}] options.render.bundleRenderer is not an object.`)
+  }
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensionsDirective
 }

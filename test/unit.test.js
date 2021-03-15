@@ -6,8 +6,10 @@ describe('parsePages', () => {
     const { extractComponentOptions } = await import('../src/helpers/components')
     const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/index.vue'))
     expect(options).toHaveProperty('paths')
-    expect(options.paths).toHaveProperty('pl')
-    expect(options.paths.pl).toBe('/polish')
+    if (options) {
+      expect(options.paths).toHaveProperty('pl')
+      expect(options.paths.pl).toBe('/polish')
+    }
   })
 
   test('triggers warning with invalid in-component options', async () => {
@@ -18,7 +20,8 @@ describe('parsePages', () => {
     expect(spy.mock.calls[0][0]).toContain('Error parsing')
     spy.mockRestore()
 
-    expect(Object.keys(options).length).toBe(0)
+    expect(options).toHaveProperty('paths')
+    expect(options).toHaveProperty('locales')
   })
 })
 

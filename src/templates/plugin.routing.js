@@ -1,17 +1,6 @@
 import './middleware'
 import Vue from 'vue'
-import {
-  defaultLocale,
-  defaultLocaleRouteNameSuffix,
-  LOCALE_CODE_KEY,
-  LOCALE_DOMAIN_KEY,
-  MODULE_NAME,
-  routesNameSeparator,
-  STRATEGIES,
-  strategy,
-  trailingSlash,
-  vuex
-} from './options'
+import { Constants, nuxtOptions, options } from './options'
 import { getDomainFromLocale } from './utils-common'
 
 function localePath (route, locale) {
@@ -62,19 +51,19 @@ function localeRoute (route, locale) {
         hash: resolvedRoute.hash
       }
     } else {
-      const isDefaultLocale = locale === defaultLocale
+      const isDefaultLocale = locale === options.defaultLocale
       // if route has a path defined but no name, resolve full route using the path
       const isPrefixed =
           // don't prefix default locale
-          !(isDefaultLocale && [STRATEGIES.PREFIX_EXCEPT_DEFAULT, STRATEGIES.PREFIX_AND_DEFAULT].includes(strategy)) &&
+          !(isDefaultLocale && [Constants.STRATEGIES.PREFIX_EXCEPT_DEFAULT, Constants.STRATEGIES.PREFIX_AND_DEFAULT].includes(options.strategy)) &&
           // no prefix for any language
-          !(strategy === STRATEGIES.NO_PREFIX) &&
+          !(options.strategy === Constants.STRATEGIES.NO_PREFIX) &&
           // no prefix for different domains
           !i18n.differentDomains
       if (isPrefixed) {
         localizedRoute.path = `/${locale}${route.path}`
       }
-      localizedRoute.path = localizedRoute.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+      localizedRoute.path = localizedRoute.path.replace(/\/+$/, '') + (nuxtOptions.trailingSlash ? '/' : '') || '/'
     }
   } else {
     if (!route.name && !route.path) {
@@ -111,8 +100,8 @@ function switchLocalePath (locale) {
 
   const { params, ...routeCopy } = route
   let langSwitchParams = {}
-  if (vuex && vuex.syncRouteParams && store) {
-    langSwitchParams = store.getters[`${vuex.moduleName}/localeRouteParams`](locale)
+  if (options.vuex && options.vuex.syncRouteParams && store) {
+    langSwitchParams = store.getters[`${options.vuex.moduleName}/localeRouteParams`](locale)
   }
   const baseRoute = Object.assign({}, routeCopy, {
     name,
@@ -129,9 +118,9 @@ function switchLocalePath (locale) {
     const options = {
       differentDomains: i18n.differentDomains,
       locales: i18n.locales,
-      localeDomainKey: LOCALE_DOMAIN_KEY,
-      localeCodeKey: LOCALE_CODE_KEY,
-      moduleName: MODULE_NAME
+      localeDomainKey: Constants.LOCALE_DOMAIN_KEY,
+      localeCodeKey: Constants.LOCALE_CODE_KEY,
+      moduleName: Constants.MODULE_NAME
     }
     const domain = getDomainFromLocale(locale, this.req, options)
     if (domain) {
@@ -147,14 +136,14 @@ function getRouteBaseName (givenRoute) {
   if (!route || !route.name) {
     return null
   }
-  return route.name.split(routesNameSeparator)[0]
+  return route.name.split(options.routesNameSeparator)[0]
 }
 
 function getLocaleRouteName (routeName, locale) {
-  let name = routeName + (strategy === STRATEGIES.NO_PREFIX ? '' : routesNameSeparator + locale)
+  let name = routeName + (options.strategy === Constants.STRATEGIES.NO_PREFIX ? '' : options.routesNameSeparator + locale)
 
-  if (locale === defaultLocale && strategy === STRATEGIES.PREFIX_AND_DEFAULT) {
-    name += routesNameSeparator + defaultLocaleRouteNameSuffix
+  if (locale === options.defaultLocale && options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT) {
+    name += options.routesNameSeparator + options.defaultLocaleRouteNameSuffix
   }
 
   return name
@@ -194,6 +183,7 @@ const NuxtContextProxy = function (context, targetFunction) {
   }
 }
 
+/** @type {import('vue').PluginObject<void>} */
 const plugin = {
   install (Vue) {
     Vue.mixin({
@@ -207,6 +197,7 @@ const plugin = {
   }
 }
 
+/** @type {import('@nuxt/types').Plugin} */
 export default (context) => {
   Vue.use(plugin)
   const { app, store } = context

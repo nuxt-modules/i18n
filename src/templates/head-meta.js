@@ -1,30 +1,25 @@
 import VueMeta from 'vue-meta'
-import {
-  defaultLocale,
-  defaultDirection,
-  COMPONENT_OPTIONS_KEY,
-  LOCALE_DIR_KEY,
-  LOCALE_ISO_KEY,
-  MODULE_NAME,
-  STRATEGIES,
-  strategy
-} from './options'
+import { Constants, options } from './options'
 
+/**
+ * @this {import('vue/types/vue').Vue}
+ * @return {import('vue-meta').MetaInfo}
+ */
 export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}
   }
 
-  const metaObject = {
-    htmlAttrs: {},
-    link: [],
-    meta: []
-  }
+  /** @type {import('vue-meta').MetaInfo} */
+  const metaObject = {}
+  metaObject.htmlAttrs = {}
+  metaObject.link = []
+  metaObject.meta = []
 
   const currentLocale = this.$i18n.localeProperties
-  const currentLocaleIso = currentLocale[LOCALE_ISO_KEY]
-  const currentLocaleDir = currentLocale[LOCALE_DIR_KEY] || defaultDirection
+  const currentLocaleIso = currentLocale[Constants.LOCALE_ISO_KEY]
+  const currentLocaleDir = currentLocale[Constants.LOCALE_DIR_KEY] || options.defaultDirection
 
   /**
    * Adding Direction Attribute:
@@ -41,8 +36,8 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     (VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) &&
     this.$i18n.locale &&
     this.$i18n.locales &&
-    this.$options[COMPONENT_OPTIONS_KEY] !== false &&
-    !(this.$options[COMPONENT_OPTIONS_KEY] && this.$options[COMPONENT_OPTIONS_KEY].seo === false)
+    this.$options[Constants.COMPONENT_OPTIONS_KEY] !== false &&
+    !(this.$options[Constants.COMPONENT_OPTIONS_KEY] && this.$options[Constants.COMPONENT_OPTIONS_KEY].seo === false)
   ) {
     if (currentLocaleIso) {
       metaObject.htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
@@ -58,8 +53,12 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
    * Internals:
    */
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   * @return {import('vue-meta').MetaInfo['link']}
+   */
   function addHreflangLinks (locales, baseUrl, link) {
-    if (strategy === STRATEGIES.NO_PREFIX) {
+    if (options.strategy === Constants.STRATEGIES.NO_PREFIX) {
       return
     }
     const localeMap = new Map()
@@ -68,7 +67,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
 
       if (!localeIso) {
         // eslint-disable-next-line no-console
-        console.warn(`[${MODULE_NAME}] Locale ISO code is required to generate alternate link`)
+        console.warn(`[${Constants.MODULE_NAME}] Locale ISO code is required to generate alternate link`)
         continue
       }
 
@@ -90,16 +89,19 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
       })
     }
 
-    if (defaultLocale) {
+    if (options.defaultLocale) {
       link.push({
         hid: 'i18n-xd',
         rel: 'alternate',
-        href: toAbsoluteUrl(this.switchLocalePath(defaultLocale), baseUrl),
+        href: toAbsoluteUrl(this.switchLocalePath(options.defaultLocale), baseUrl),
         hreflang: 'x-default'
       })
     }
   }
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   */
   function addCanonicalLinks (baseUrl, link) {
     const currentRoute = this.localeRoute({
       ...this.$route,
@@ -117,6 +119,9 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     }
   }
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   */
   function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
     const hasCurrentLocaleAndIso = currentLocale && currentLocaleIso
 
@@ -132,6 +137,9 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     })
   }
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   */
   function addAlternateOgLocales (locales, currentLocaleIso, meta) {
     const localesWithoutCurrent = locales.filter(locale => {
       const localeIso = isoFromLocale(locale)
@@ -148,7 +156,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
   }
 
   function isoFromLocale (locale) {
-    return locale[LOCALE_ISO_KEY]
+    return locale[Constants.LOCALE_ISO_KEY]
   }
 
   function underscoreIsoFromLocale (locale) {
@@ -165,7 +173,10 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
   return metaObject
 }
 
-/** @deprecated */
+/**
+ * @deprecated
+ * @this {import('vue/types/vue').Vue}
+ */
 export function nuxtI18nSeo () {
   return nuxtI18nHead.call(this, { addDirAttribute: false, addSeoAttributes: true })
 }

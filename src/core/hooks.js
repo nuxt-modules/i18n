@@ -1,12 +1,18 @@
 import { MODULE_NAME, STRATEGIES } from '../helpers/constants'
 
-export function createExtendRoutesHook (moduleContainer, options) {
-  const nuxtOptions = moduleContainer.options
+/**
+ * @this {import('@nuxt/types/config/module').ModuleThis}
+ *
+ * @param {import('../../types').ResolvedOptions} options
+ * @return {import('@nuxt/types/config/router').NuxtOptionsRouter['extendRoutes']}
+ */
+export function createExtendRoutesHook (options) {
+  const nuxtOptions = this.options
 
   let includeUprefixedFallback = nuxtOptions.target === 'static'
   // Doesn't seem like we can tell whether we are in nuxt generate from the module so we'll
   // take advantage of the 'generate:before' hook to store variable.
-  moduleContainer.nuxt.hook('generate:before', () => { includeUprefixedFallback = true })
+  this.nuxt.hook('generate:before', () => { includeUprefixedFallback = true })
 
   const pagesDir = nuxtOptions.dir && nuxtOptions.dir.pages ? nuxtOptions.dir.pages : 'pages'
   const { trailingSlash } = nuxtOptions.router
@@ -28,7 +34,12 @@ export function createExtendRoutesHook (moduleContainer, options) {
   }
 }
 
-export function buildHook (moduleContainer, options) {
+/**
+ * @this {import('@nuxt/types/config/module').ModuleThis}
+ *
+ * @param {import('../../types').ResolvedOptions} options
+ */
+export function buildHook (options) {
   if (options.strategy === STRATEGIES.NO_PREFIX && options.differentDomains) {
     // eslint-disable-next-line no-console
     console.warn('[' + MODULE_NAME + '] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
@@ -41,20 +52,12 @@ export function buildHook (moduleContainer, options) {
 
   // Add vue-i18n-loader if applicable
   if (options.vueI18nLoader) {
-    moduleContainer.extendBuild(config => {
-      const vueLoader = config.module.rules.find(el => el.loader.includes('vue-loader'))
-      if (vueLoader && vueLoader.options && vueLoader.options.loaders) {
-        // vue-loader under 15.0.0
-        /* istanbul ignore next */
-        vueLoader.options.loaders.i18n = require.resolve('@intlify/vue-i18n-loader')
-      } else {
-        // vue-loader after 15.0.0
-        config.module.rules.push({
-          resourceQuery: /blockType=i18n/,
-          type: 'javascript/auto',
-          loader: require.resolve('@intlify/vue-i18n-loader')
-        })
-      }
+    this.extendBuild(config => {
+      config.module?.rules.push({
+        resourceQuery: /blockType=i18n/,
+        type: 'javascript/auto',
+        loader: require.resolve('@intlify/vue-i18n-loader')
+      })
     })
   }
 }

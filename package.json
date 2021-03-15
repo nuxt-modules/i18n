@@ -39,7 +39,7 @@
   "eslintIgnore": [
     "src/templates/options.js",
     "test/fixture/typescript/**/*",
-    "**/*.d.ts"
+    "types/vue.d.ts"
   ],
   "files": [
     "src",
@@ -75,7 +75,6 @@
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/templates/*.js",
-      "!src/plugins/*.js",
       "!src/helpers/utils.js",
       "!src/helpers/constants.js"
     ]
@@ -101,9 +100,11 @@
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "2.0.1",
     "@types/argparse": "2.0.5",
+    "@types/cookie": "^0.4.0",
     "@types/finalhandler": "1.1.0",
     "@types/jest": "26.0.20",
     "@types/jest-dev-server": "4.2.0",
+    "@types/js-cookie": "^2.2.6",
     "@types/jsdom": "16.2.6",
     "@types/request-promise-native": "1.0.17",
     "@types/serve-static": "1.13.9",

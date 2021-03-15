@@ -1,8 +1,24 @@
-const { STRATEGIES } = require('./constants')
-const { extractComponentOptions } = require('./components')
-const { getPageOptions, getLocaleCodes } = require('./utils')
+import { STRATEGIES } from './constants'
+import { extractComponentOptions } from './components'
+import { getPageOptions, getLocaleCodes } from './utils'
 
-exports.makeRoutes = (baseRoutes, {
+/**
+ * @typedef {import('../../types').ResolvedOptions} Options
+ */
+
+/**
+ * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
+ * @typedef {Options & {
+ *   pagesDir: string
+ *   includeUprefixedFallback: boolean
+ *   trailingSlash: import('@nuxt/types/config/router').NuxtOptionsRouter['trailingSlash']
+ * }} MakeRouteOptions
+ *
+ * @param {NuxtRouteConfig[]} baseRoutes
+ * @param {MakeRouteOptions} options
+ * @return {NuxtRouteConfig[]}
+ */
+export function makeRoutes (baseRoutes, {
   defaultLocale,
   defaultLocaleRouteNameSuffix,
   differentDomains,
@@ -14,43 +30,54 @@ exports.makeRoutes = (baseRoutes, {
   routesNameSeparator,
   strategy,
   trailingSlash
-}) => {
-  locales = getLocaleCodes(locales)
+}) {
+  const localeCodes = getLocaleCodes(locales)
+  /** @type {NuxtRouteConfig[]} */
   let localizedRoutes = []
 
-  const buildLocalizedRoutes = (route, routeOptions = {}, isChild = false, isExtraRouteTree = false) => {
+  /**
+   * @param {NuxtRouteConfig} route
+   * @param {import('../../types').Locale[]} allowedLocaleCodes
+   * @param {boolean} [isChild=false]
+   * @param {boolean} [isExtraRouteTree=false]
+   * @return {NuxtRouteConfig | NuxtRouteConfig[]}
+   */
+  const buildLocalizedRoutes = (route, allowedLocaleCodes, isChild = false, isExtraRouteTree = false) => {
+    /** @type {NuxtRouteConfig[]} */
     const routes = []
-    let pageOptions
 
     // Skip route if it is only a redirect without a component.
     if (route.redirect && !route.component) {
       return route
     }
 
-    // Extract i18n options from page
-    if (parsePages) {
-      pageOptions = extractComponentOptions(route.component)
-    } else {
-      pageOptions = getPageOptions(route, pages, locales, pagesDir, defaultLocale)
-    }
+    const pageOptions = parsePages
+      ? extractComponentOptions(route.component)
+      : getPageOptions(route, pages, allowedLocaleCodes, pagesDir, defaultLocale)
 
     // Skip route if i18n is disabled on page
     if (pageOptions === false) {
       return route
     }
 
-    // Component's specific options
+    // Component-specific options
     const componentOptions = {
-      locales,
+      // @ts-ignore
+      locales: localeCodes,
       ...pageOptions,
-      ...routeOptions
+      ...{ locales: allowedLocaleCodes }
     }
-    // Double check locales to remove any locales not found in pageOptions
-    // This is there to prevent children routes being localized even though
-    // they are disabled in the configuration
-    if (typeof componentOptions.locales !== 'undefined' && componentOptions.locales.length > 0 &&
-        typeof pageOptions.locales !== 'undefined' && pageOptions.locales.length > 0) {
-      componentOptions.locales = componentOptions.locales.filter((locale) => pageOptions.locales.includes(locale))
+
+    // Double check locales to remove any locales not found in pageOptions.
+    // This is there to prevent children routes being localized even though they are disabled in the configuration.
+    if (componentOptions.locales.length > 0 && pageOptions.locales !== undefined && pageOptions.locales.length > 0) {
+      const filteredLocales = []
+      for (const locale of componentOptions.locales) {
+        if (pageOptions.locales.includes(locale)) {
+          filteredLocales.push(locale)
+        }
+      }
+      componentOptions.locales = filteredLocales
     }
 
     // Generate routes for component's supported locales
@@ -69,7 +96,7 @@ exports.makeRoutes = (baseRoutes, {
       if (route.children) {
         localizedRoute.children = []
         for (let i = 0, length1 = route.children.length; i < length1; i++) {
-          localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], { locales: [locale] }, true, isExtraRouteTree))
+          localizedRoute.children = localizedRoute.children.concat(buildLocalizedRoutes(route.children[i], [locale], true, isExtraRouteTree))
         }
       }
 
@@ -96,7 +123,7 @@ exports.makeRoutes = (baseRoutes, {
             defaultRoute.children = []
             for (const childRoute of route.children) {
               // isExtraRouteTree argument is true to indicate that this is extra route added for PREFIX_AND_DEFAULT strategy
-              defaultRoute.children = defaultRoute.children.concat(buildLocalizedRoutes(childRoute, { locales: [locale] }, true, true))
+              defaultRoute.children = defaultRoute.children.concat(buildLocalizedRoutes(childRoute, [locale], true, true))
             }
           }
 
@@ -145,7 +172,7 @@ exports.makeRoutes = (baseRoutes, {
 
   for (let i = 0, length1 = baseRoutes.length; i < length1; i++) {
     const route = baseRoutes[i]
-    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, { locales }))
+    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, localeCodes))
   }
 
   try {

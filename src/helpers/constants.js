@@ -1,26 +1,40 @@
-const packageJson = require('../../package.json')
+import packageJson from '../../package.json'
+
+/**
+ * @typedef {import('../../types').ResolvedOptions} ResolvedOptions
+ * @typedef {import('../../types').LocaleObject} LocaleObject
+ */
 
 // Internals
-exports.MODULE_NAME = packageJson.name
-exports.ROOT_DIR = 'nuxt-i18n'
-exports.LOCALE_CODE_KEY = 'code'
-exports.LOCALE_ISO_KEY = 'iso'
-exports.LOCALE_DIR_KEY = 'dir'
-exports.LOCALE_DOMAIN_KEY = 'domain'
-exports.LOCALE_FILE_KEY = 'file'
+export const MODULE_NAME = packageJson.name
+export const ROOT_DIR = 'nuxt-i18n'
+/** @type {keyof Pick<LocaleObject, 'code'>} */
+export const LOCALE_CODE_KEY = 'code'
+/** @type {keyof Pick<LocaleObject, 'iso'>} */
+export const LOCALE_ISO_KEY = 'iso'
+/** @type {keyof Pick<LocaleObject, 'dir'>} */
+export const LOCALE_DIR_KEY = 'dir'
+/** @type {keyof Pick<LocaleObject, 'domain'>} */
+export const LOCALE_DOMAIN_KEY = 'domain'
+/** @type {keyof Pick<LocaleObject, 'file'>} */
+export const LOCALE_FILE_KEY = 'file'
 
 // Options
-const STRATEGIES = {
-  PREFIX: 'prefix',
-  PREFIX_EXCEPT_DEFAULT: 'prefix_except_default',
-  PREFIX_AND_DEFAULT: 'prefix_and_default',
-  NO_PREFIX: 'no_prefix'
+const STRATEGY_PREFIX = 'prefix'
+const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
+const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
+const STRATEGY_NO_PREFIX = 'no_prefix'
+export const STRATEGIES = {
+  PREFIX: STRATEGY_PREFIX,
+  PREFIX_EXCEPT_DEFAULT: STRATEGY_PREFIX_EXCEPT_DEFAULT,
+  PREFIX_AND_DEFAULT: STRATEGY_PREFIX_AND_DEFAULT,
+  NO_PREFIX: STRATEGY_NO_PREFIX
 }
 
-exports.STRATEGIES = STRATEGIES
+export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
-exports.COMPONENT_OPTIONS_KEY = 'nuxtI18n'
-exports.DEFAULT_OPTIONS = {
+/** @type {ResolvedOptions} */
+export const DEFAULT_OPTIONS = {
   vueI18n: {},
   vueI18nLoader: false,
   locales: [],
@@ -28,20 +42,20 @@ exports.DEFAULT_OPTIONS = {
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
-  strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,
+  strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
   rootRedirect: null,
   detectBrowserLanguage: {
-    useCookie: true,
+    alwaysRedirect: false,
     cookieCrossOrigin: false,
     cookieDomain: null,
     cookieKey: 'i18n_redirected',
     cookieSecure: false,
-    alwaysRedirect: false,
     fallbackLocale: '',
     onlyOnNoPrefix: false,
-    onlyOnRoot: false
+    onlyOnRoot: false,
+    useCookie: true
   },
   differentDomains: false,
   seo: false,
@@ -58,4 +72,6 @@ exports.DEFAULT_OPTIONS = {
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }
-exports.NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']
+
+/** @type {[keyof Pick<ResolvedOptions, 'detectBrowserLanguage'>, keyof Pick<ResolvedOptions, 'vuex'>]} */
+export const NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']

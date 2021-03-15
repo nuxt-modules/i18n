@@ -1,26 +1,24 @@
-import {
-  LOCALE_CODE_KEY,
-  LOCALE_FILE_KEY,
-  MODULE_NAME/* <% if (options.lazy && options.langDir) { %> */,
-  ASYNC_LOCALES/* <% } %> */
-} from './options'
+import { asyncLocales, Constants } from './options'
 
 /**
  * Asynchronously load messages from translation files
- * @param  {Context}  context  Nuxt context
- * @param  {String}   locale  Language code to load
+ *
+ * @param {import('@nuxt/types').Context} context
+ * @param {string} locale Language code to load
+ * @return {Promise<void>}
  */
 export async function loadLanguageAsync (context, locale) {
   const { app } = context
+  const { i18n } = app
 
-  if (!app.i18n.loadedLanguages) {
-    app.i18n.loadedLanguages = []
+  if (!i18n.loadedLanguages) {
+    i18n.loadedLanguages = []
   }
 
-  if (!app.i18n.loadedLanguages.includes(locale)) {
-    const localeObject = app.i18n.locales.find(l => l[LOCALE_CODE_KEY] === locale)
+  if (!i18n.loadedLanguages.includes(locale)) {
+    const localeObject = i18n.locales.find(l => l[Constants.LOCALE_CODE_KEY] === locale)
     if (localeObject) {
-      const file = localeObject[LOCALE_FILE_KEY]
+      const file = localeObject[Constants.LOCALE_FILE_KEY]
       if (file) {
         /* <% if (options.lazy && options.langDir) { %> */
         let messages
@@ -30,13 +28,13 @@ export async function loadLanguageAsync (context, locale) {
             messages = nuxtState.__i18n.langs[locale]
             // Even if already cached in Nuxt state, trigger locale import so that HMR kicks-in on changes to that file.
             if (context.isDev) {
-              ASYNC_LOCALES[file]()
+              asyncLocales[file]()
             }
           }
         }
         if (!messages) {
           try {
-            const getter = await ASYNC_LOCALES[file]().then(m => m.default || m)
+            const getter = await asyncLocales[file]().then(m => m.default || m)
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
@@ -44,13 +42,13 @@ export async function loadLanguageAsync (context, locale) {
           }
         }
         if (messages) {
-          app.i18n.setLocaleMessage(locale, messages)
-          app.i18n.loadedLanguages.push(locale)
+          i18n.setLocaleMessage(locale, messages)
+          i18n.loadedLanguages.push(locale)
         }
         /* <% } %> */
       } else {
         // eslint-disable-next-line no-console
-        console.warn(`[${MODULE_NAME}] Could not find lang file for locale ${locale}`)
+        console.warn(`[${Constants.MODULE_NAME}] Could not find lang file for locale ${locale}`)
       }
     }
   }
