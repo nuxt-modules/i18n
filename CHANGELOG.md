@@ -1,3 +1,11 @@
+### [6.21.1](https://github.com/nuxt-community/i18n-module/compare/v6.21.0...v6.21.1) (2021-03-15)
+
+
+### Bug Fixes
+
+* only replace ".js" at the end of the resolved klona path ([#1110](https://github.com/nuxt-community/i18n-module/issues/1110)) ([204d77d](https://github.com/nuxt-community/i18n-module/commit/204d77d4e8b07b007fd2bba2cda3914818ac53d2)), closes [#1109](https://github.com/nuxt-community/i18n-module/issues/1109)
+* page not updated on changing lazy locale files (dev mode) ([#1104](https://github.com/nuxt-community/i18n-module/issues/1104)) ([e1ff096](https://github.com/nuxt-community/i18n-module/commit/e1ff096846c7e7ad42e1ba503d9059a1b305a1da)), closes [#905](https://github.com/nuxt-community/i18n-module/issues/905)
+
 ## [6.21.0](https://github.com/nuxt-community/i18n-module/compare/v6.20.6...v6.21.0) (2021-03-10)
 
 
