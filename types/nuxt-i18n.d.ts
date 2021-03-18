@@ -34,6 +34,7 @@ declare namespace NuxtVueI18n {
       cookieCrossOrigin?: boolean
       cookieDomain?: string | null
       cookieKey?: string
+      cookieSecure: boolean
       alwaysRedirect?: boolean
       fallbackLocale?: Locale | null
       onlyOnNoPrefix?: boolean
