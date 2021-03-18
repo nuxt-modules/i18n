@@ -3,12 +3,8 @@ import { extractComponentOptions } from './components'
 import { getPageOptions, getLocaleCodes } from './utils'
 
 /**
- * @typedef {import('../../types').ResolvedOptions} Options
- */
-
-/**
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
- * @typedef {Options & {
+ * @typedef {import('../../types/internal').ResolvedOptions & {
  *   pagesDir: string
  *   includeUprefixedFallback: boolean
  *   trailingSlash: import('@nuxt/types/config/router').NuxtOptionsRouter['trailingSlash']
@@ -176,6 +172,7 @@ export function makeRoutes (baseRoutes, {
   }
 
   try {
+    // @ts-ignore
     const { sortRoutes } = require('@nuxt/utils')
     localizedRoutes = sortRoutes(localizedRoutes)
   } catch (error) {

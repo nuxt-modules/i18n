@@ -16,11 +16,12 @@ export async function loadLanguageAsync (context, locale) {
   }
 
   if (!i18n.loadedLanguages.includes(locale)) {
-    const localeObject = i18n.locales.find(l => l[Constants.LOCALE_CODE_KEY] === locale)
+    const localeObject = /** @type {import('../../types').LocaleObject[]} */(i18n.locales).find(l => l.code === locale)
     if (localeObject) {
-      const file = localeObject[Constants.LOCALE_FILE_KEY]
+      const { file } = localeObject
       if (file) {
-        /* <% if (options.lazy && options.langDir) { %> */
+        /* <% if (options.options.lazy && options.options.langDir) { %> */
+        /** @type {import('vue-i18n').LocaleMessageObject | undefined} */
         let messages
         if (process.client) {
           const { nuxtState } = context
@@ -34,11 +35,12 @@ export async function loadLanguageAsync (context, locale) {
         }
         if (!messages) {
           try {
+            // @ts-ignore
             const getter = await asyncLocales[file]().then(m => m.default || m)
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
-            console.error(error)
+            console.error(`[${Constants.MODULE_NAME}] Failed loading async locale export: ${error.message}`)
           }
         }
         if (messages) {

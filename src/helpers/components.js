@@ -61,8 +61,11 @@ export function extractComponentOptions (component) {
 
     traverse(parsed, {
       enter (path) {
+        // @ts-ignore
         if (path.node.type === 'Property') {
+          // @ts-ignore
           if (path.node.key.name === COMPONENT_OPTIONS_KEY) {
+            // @ts-ignore
             const data = script.substring(path.node.start, path.node.end)
             componentOptions = Function(`return ({${data}})`)()[COMPONENT_OPTIONS_KEY] // eslint-disable-line
           }

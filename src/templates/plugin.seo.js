@@ -1,11 +1,13 @@
 import Vue from 'vue'
-import { nuxtI18nSeo } from './head-meta'
+import { nuxtI18nHead } from './head-meta'
 
 /** @type {Vue.PluginObject<void>} */
 const plugin = {
   install (Vue) {
     Vue.mixin({
-      head: nuxtI18nSeo
+      head () {
+        return nuxtI18nHead.call(this, { addDirAttribute: false, addSeoAttributes: true })
+      }
     })
   }
 }

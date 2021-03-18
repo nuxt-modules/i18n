@@ -3,7 +3,7 @@ import { MODULE_NAME, STRATEGIES } from '../helpers/constants'
 /**
  * @this {import('@nuxt/types/config/module').ModuleThis}
  *
- * @param {import('../../types').ResolvedOptions} options
+ * @param {import('../../types/internal').ResolvedOptions} options
  * @return {import('@nuxt/types/config/router').NuxtOptionsRouter['extendRoutes']}
  */
 export function createExtendRoutesHook (options) {
@@ -37,7 +37,7 @@ export function createExtendRoutesHook (options) {
 /**
  * @this {import('@nuxt/types/config/module').ModuleThis}
  *
- * @param {import('../../types').ResolvedOptions} options
+ * @param {import('../../types/internal').ResolvedOptions} options
  */
 export function buildHook (options) {
   if (options.strategy === STRATEGIES.NO_PREFIX && options.differentDomains) {

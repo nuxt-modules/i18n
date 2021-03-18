@@ -29,4 +29,10 @@
       "@nuxt/types",
     ],
   },
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "src/templates/options.js",
+  ]
 }

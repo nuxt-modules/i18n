@@ -27,12 +27,14 @@ for (const [rootKey, rootValue] of Object.entries(options)) {
 <%
   }
 }
-%>
 
-<% if (options.lazy && options.langDir) { %>
+const { lazy, locales, langDir } = options.options
+if (lazy && langDir) { %>
 export const asyncLocales = {
   <%= Array.from(
-        new Set(options.locales.map(l => `'${l.file}': () => import('../${relativeToBuild(options.langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`))
+        new Set(locales.map(l => `'${l.file}': () => import('../${relativeToBuild(langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`))
       ).join(',\n  ') %>
 }
-<% } %>
+<%
+}
+%>

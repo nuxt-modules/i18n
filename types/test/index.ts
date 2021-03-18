@@ -2,13 +2,13 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { Location } from 'vue-router'
+import { Route } from 'vue-router'
 import '../index'
 
 const vm = new Vue()
 const locale = 'en'
 
-let path: string
+let path: string | undefined
 
 // localePath
 
@@ -23,13 +23,13 @@ path = vm.switchLocalePath(locale)
 
 // getRouteBaseName
 
-const routeBaseName: string = vm.getRouteBaseName(vm.$route)
+const routeBaseName: string | undefined = vm.getRouteBaseName(vm.$route)
 
 // localeRoute
 
-const localizedRoute: Location | undefined = vm.localeRoute('about', 'fr')
+const localizedRoute: Route | undefined = vm.localeRoute('about', 'fr')
 if (localizedRoute) {
-  vm.$router.push(localizedRoute)
+  vm.$router.push({ path: localizedRoute.path })
 }
 
 // $i18n

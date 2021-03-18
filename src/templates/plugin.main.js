@@ -20,7 +20,8 @@ import { klona } from '~i18n-klona'
 
 Vue.use(VueI18n)
 
-const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = options.detectBrowserLanguage
+const detectBrowserLanguage = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
+const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
 const getLocaleFromRoute = createLocaleFromRouteGetter(localeCodes, {
   routesNameSeparator: options.routesNameSeparator,
   defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
@@ -31,26 +32,36 @@ export default async (context) => {
   const { app, route, store, req, res, redirect } = context
 
   if (options.vuex && store) {
-    registerStore(store, options.vuex, localeCodes, Constants.MODULE_NAME)
+    const vuex = /** @type {Required<import('../../types').VuexOptions>} */(options.vuex)
+    registerStore(store, vuex, localeCodes)
   }
 
   if (process.server && options.lazy) {
     context.beforeNuxtRender(({ nuxtState }) => {
+      /** @type {Record<string, import('vue-i18n').LocaleMessageObject>} */
       const langs = {}
       const { fallbackLocale, locale } = app.i18n
       if (locale) {
         langs[locale] = app.i18n.getLocaleMessage(locale)
       }
-      if (fallbackLocale && locale !== fallbackLocale) {
+      if (typeof (fallbackLocale) === 'string' && locale !== fallbackLocale) {
         langs[fallbackLocale] = app.i18n.getLocaleMessage(fallbackLocale)
       }
       nuxtState.__i18n = { langs }
     })
   }
 
-  const { useCookie, cookieKey, cookieDomain, cookieSecure, cookieCrossOrigin } = options.detectBrowserLanguage
+  const { useCookie, cookieKey, cookieDomain, cookieSecure, cookieCrossOrigin } = detectBrowserLanguage
 
+  /**
+   * @param {string | undefined} newLocale
+   * @param {{ initialSetup?: boolean }} [options=false]
+   */
   const loadAndSetLocale = async (newLocale, { initialSetup = false } = {}) => {
+    if (!newLocale) {
+      return
+    }
+
     // Abort if different domains option enabled
     if (!initialSetup && app.i18n.differentDomains) {
       return
@@ -98,7 +109,8 @@ export default async (context) => {
     }
 
     app.i18n.locale = newLocale
-    app.i18n.localeProperties = klona(options.locales.find(l => l[Constants.LOCALE_CODE_KEY] === newLocale) || { code: newLocale })
+    // @ts-ignore
+    app.i18n.localeProperties = klona(options.locales.find(l => l.code === newLocale) || { code: newLocale })
 
     if (options.vuex) {
       await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), options.vuex)
@@ -121,6 +133,13 @@ export default async (context) => {
     }
   }
 
+  /**
+   * Gets the redirect path for locale.
+   *
+   * @param {import("vue-router").Route} route
+   * @param {string | undefined} locale
+   * @return {string} The redirect path for locale.
+   */
   const getRedirectPathForLocale = (route, locale) => {
     // Redirects are ignored if it is a nuxt generate.
     if (process.static && process.server) {
@@ -181,10 +200,7 @@ export default async (context) => {
 
     const resolveBaseUrlOptions = {
       differentDomains: options.differentDomains,
-      locales: options.locales,
-      localeDomainKey: Constants.LOCALE_DOMAIN_KEY,
-      localeCodeKey: Constants.LOCALE_CODE_KEY,
-      moduleName: Constants.MODULE_NAME
+      locales: options.locales
     }
     app.i18n.__baseUrl = resolveBaseUrl(options.baseUrl, context, app.i18n.locale, resolveBaseUrlOptions)
 
@@ -280,7 +296,7 @@ export default async (context) => {
    */
   const extendVueI18nInstance = i18n => {
     i18n.locales = klona(options.locales)
-    i18n.localeProperties = klona(options.locales.find(l => l[Constants.LOCALE_CODE_KEY] === i18n.locale) || { code: i18n.locale })
+    i18n.localeProperties = klona(options.locales.find(l => l.code === i18n.locale) || { code: i18n.locale })
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
     i18n.beforeLanguageSwitch = options.beforeLanguageSwitch
@@ -300,6 +316,7 @@ export default async (context) => {
   // Set instance options
   const vueI18nOptions = typeof options.vueI18n === 'function' ? await options.vueI18n(context) : klona(options.vueI18n)
   vueI18nOptions.componentInstanceCreatedListener = extendVueI18nInstance
+  // @ts-ignore
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
   app.i18n.locale = ''
@@ -308,10 +325,7 @@ export default async (context) => {
   extendVueI18nInstance(app.i18n)
   const resolveBaseUrlOptions = {
     differentDomains: options.differentDomains,
-    locales: options.locales,
-    localeDomainKey: Constants.LOCALE_DOMAIN_KEY,
-    localeCodeKey: Constants.LOCALE_CODE_KEY,
-    moduleName: Constants.MODULE_NAME
+    locales: options.locales
   }
   app.i18n.__baseUrl = resolveBaseUrl(options.baseUrl, context, '', resolveBaseUrlOptions)
   app.i18n.__onNavigate = onNavigate
@@ -334,11 +348,11 @@ export default async (context) => {
   let finalLocale = options.detectBrowserLanguage ? doDetectBrowserLanguage(route) : ''
 
   if (!finalLocale) {
-    if (options.vuex && options.vuex.syncLocale && store && store.state[options.vuex.moduleName].locale !== '') {
-      finalLocale = store.state[options.vuex.moduleName].locale
+    const vuex = options.vuex ? /** @type {Required<import('../../types').VuexOptions>} */(options.vuex) : false
+    if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
+      finalLocale = store.state[vuex.moduleName].locale
     } else if (app.i18n.differentDomains) {
-      const keys = { localeDomainKey: Constants.LOCALE_DOMAIN_KEY, localeCodeKey: Constants.LOCALE_CODE_KEY }
-      const domainLocale = getLocaleDomain(options.locales, req, keys)
+      const domainLocale = getLocaleDomain(/** @type {import('../../types').LocaleObject[]} */(options.locales), req)
       finalLocale = domainLocale
     } else if (options.strategy !== Constants.STRATEGIES.NO_PREFIX) {
       const routeLocale = getLocaleFromRoute(route)

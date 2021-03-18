@@ -2,8 +2,11 @@ import Cookie from 'cookie'
 import JsCookie from 'js-cookie'
 import isHTTPS from 'is-https'
 
+/** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
+
 /**
  * Parses locales provided from browser through `accept-language` header.
+ *
  * @param {string} input
  * @return {string[]} An array of locale codes. Priority determined by order in array.
  */
@@ -18,7 +21,8 @@ export function parseAcceptLanguage (input) {
 
 /**
  * Find locale code that best matches provided list of browser locales.
- * @param {import('../../types').ResolvedOptions['locales']} appLocales The user-configured locale codes that are to be matched.
+ *
+ * @param {ResolvedOptions['locales']} appLocales The user-configured locale codes that are to be matched.
  * @param {readonly string[]} browserLocales The locales to match against configured.
  * @return {string | undefined}
  */
@@ -79,20 +83,21 @@ export function matchBrowserLocale (appLocales, browserLocales) {
 
 /**
  * Resolves base URL value if provided as function. Otherwise just returns verbatim.
- * @param {string | function} baseUrl
+ *
+ * @param {string | ((context: import('@nuxt/types').Context) => string)} baseUrl
  * @param {import('@nuxt/types').Context} context
  * @param {import('../../types').Locale} localeCode
- * @param {object} options
+ * @param {Pick<ResolvedOptions, 'differentDomains' | 'locales'>} options
  * @return {string}
  */
-export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains, locales, localeDomainKey, localeCodeKey, moduleName }) {
+export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains, locales }) {
   if (typeof baseUrl === 'function') {
     return baseUrl(context)
   }
 
   if (differentDomains && localeCode) {
     // Lookup the `differentDomain` origin associated with given locale.
-    const domain = getDomainFromLocale(localeCode, context.req, { locales, localeDomainKey, localeCodeKey, moduleName })
+    const domain = getDomainFromLocale(localeCode, context.req, { locales })
     if (domain) {
       return domain
     }
@@ -104,36 +109,36 @@ export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains
 /**
  * Gets the `differentDomain` domain from locale.
  *
- * @param {string} localeCode The locale code
+ * @param {string} localeCode
  * @param {import('http').IncomingMessage | undefined} req
- * @param {object} options
+ * @param {Pick<ResolvedOptions, 'locales'>} options
  * @return {string | undefined}
  */
-export function getDomainFromLocale (localeCode, req, { locales, localeDomainKey, localeCodeKey, moduleName }) {
+export function getDomainFromLocale (localeCode, req, { locales }) {
 // Lookup the `differentDomain` origin associated with given locale.
-  const lang = locales.find(locale => locale[localeCodeKey] === localeCode)
-  if (lang && lang[localeDomainKey]) {
+  const lang = /** @type {import('../../types').LocaleObject[]} */(locales).find(locale => locale.code === localeCode)
+  if (lang && lang.domain) {
     let protocol
     if (process.server) {
       protocol = (req && isHTTPS(req)) ? 'https' : 'http'
     } else {
       protocol = window.location.protocol.split(':')[0]
     }
-    return `${protocol}://${lang[localeDomainKey]}`
+    return `${protocol}://${lang.domain}`
   }
 
   // eslint-disable-next-line no-console
-  console.warn(`[${moduleName}] Could not find domain name for locale ${localeCode}`)
+  console.warn(`[nuxt-i18n] Could not find domain name for locale ${localeCode}`)
 }
 
 /**
  * Get locale code that corresponds to current hostname
+ *
  * @param  {import('../../types').LocaleObject[]} locales
  * @param  {import('http').IncomingMessage | undefined} req
- * @param  {{ localeDomainKey: string, localeCodeKey: string }} options
- * @return {string} Locade code found if any
+ * @return {string} Locale code found if any
  */
-export function getLocaleDomain (locales, req, { localeDomainKey, localeCodeKey }) {
+export function getLocaleDomain (locales, req) {
   /** @type {string | undefined} */
   let host
 
@@ -145,9 +150,9 @@ export function getLocaleDomain (locales, req, { localeDomainKey, localeCodeKey 
   }
 
   if (host) {
-    const matchingLocale = locales.find(l => l[localeDomainKey] === host)
+    const matchingLocale = locales.find(l => l.domain === host)
     if (matchingLocale) {
-      return matchingLocale[localeCodeKey]
+      return matchingLocale.code
     }
   }
 
@@ -156,6 +161,7 @@ export function getLocaleDomain (locales, req, { localeDomainKey, localeCodeKey 
 
 /**
  * Creates a RegExp for route paths
+ *
  * @param  {readonly string[]} localeCodes
  * @return {RegExp}
  */
@@ -165,8 +171,9 @@ export function getLocalesRegex (localeCodes) {
 
 /**
  * Creates getter for getLocaleFromRoute
+ *
  * @param  {readonly string[]} localeCodes
- * @param  {{ routesNameSeparator: string, defaultLocaleRouteNameSuffix: string }} options
+ * @param  {Pick<ResolvedOptions, 'routesNameSeparator' | 'defaultLocaleRouteNameSuffix'>} options
  */
 export function createLocaleFromRouteGetter (localeCodes, { routesNameSeparator, defaultLocaleRouteNameSuffix }) {
   const localesPattern = `(${localeCodes.join('|')})`
@@ -203,7 +210,7 @@ export function createLocaleFromRouteGetter (localeCodes, { routesNameSeparator,
 
 /**
  * @param {import('http').IncomingMessage | undefined} req
- * @param {{ useCookie: boolean, localeCodes: readonly string[], cookieKey: string}} options
+ * @param {{ useCookie: boolean, cookieKey: string, localeCodes: readonly string[] }} options
  * @return {string | undefined}
  */
 export function getLocaleCookie (req, { useCookie, cookieKey, localeCodes }) {
@@ -226,7 +233,7 @@ export function getLocaleCookie (req, { useCookie, cookieKey, localeCodes }) {
 /**
  * @param {string} locale
  * @param {import('http').ServerResponse | undefined} res
- * @param {{ useCookie: boolean, cookieDomain: string, cookieKey: string, cookieSecure: boolean, cookieCrossOrigin: boolean}} options
+ * @param {{ useCookie: boolean, cookieDomain: string | null, cookieKey: string, cookieSecure: boolean, cookieCrossOrigin: boolean}} options
  */
 export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin }) {
   if (!useCookie) {
@@ -262,12 +269,11 @@ export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieK
 }
 
 /**
- * @param {import('vuex').Store<void>} store
+ * @param {import('vuex').Store<Record<string, boolean>>} store
  * @param {Required<import('../../types').VuexOptions>} vuex
- * @param {string[]} localeCodes
- * @param {string} moduleName
+ * @param {readonly string[]} localeCodes
  */
-export function registerStore (store, vuex, localeCodes, moduleName) {
+export function registerStore (store, vuex, localeCodes) {
   store.registerModule(vuex.moduleName, {
     namespaced: true,
     state: () => ({
@@ -294,7 +300,7 @@ export function registerStore (store, vuex, localeCodes, moduleName) {
         ? {
             setRouteParams ({ commit }, params) {
               if (process.env.NODE_ENV === 'development') {
-                validateRouteParams(params, localeCodes, moduleName)
+                validateRouteParams(params, localeCodes)
               }
               commit('setRouteParams', params)
             }
@@ -336,10 +342,11 @@ export function registerStore (store, vuex, localeCodes, moduleName) {
 
 /**
  * Dispatch store module actions to keep it in sync with app's locale data
+ *
  * @param  {import('vuex').Store<void>} store
  * @param  {string | null} locale The current locale
  * @param  {object | null} messages Current messages
- * @param  {import('../../types').ResolvedOptions['vuex']} vuex
+ * @param  {ResolvedOptions['vuex']} vuex
  * @return {Promise<void>}
  */
 export async function syncVuex (store, locale = null, messages = null, vuex) {
@@ -361,24 +368,24 @@ const isObject = value => value && !Array.isArray(value) && typeof value === 'ob
 
 /**
  * Validate setRouteParams action's payload
+ *
  * @param {object} routeParams The action's payload
- * @param {string[]} localeCodes
- * @param {string} moduleName
+ * @param {readonly string[]} localeCodes
  */
-export function validateRouteParams (routeParams, localeCodes, moduleName) {
+export function validateRouteParams (routeParams, localeCodes) {
   if (!isObject(routeParams)) {
     // eslint-disable-next-line no-console
-    console.warn(`[${moduleName}] Route params should be an object`)
+    console.warn('[nuxt-i18n] Route params should be an object')
     return
   }
 
   for (const [key, value] of Object.entries(routeParams)) {
     if (!localeCodes.includes(key)) {
     // eslint-disable-next-line no-console
-      console.warn(`[${moduleName}] Trying to set route params for key ${key} which is not a valid locale`)
+      console.warn(`[nuxt-i18n] Trying to set route params for key ${key} which is not a valid locale`)
     } else if (!isObject(value)) {
     // eslint-disable-next-line no-console
-      console.warn(`[${moduleName}] Trying to set route params for locale ${key} with a non-object value`)
+      console.warn(`[nuxt-i18n] Trying to set route params for locale ${key} with a non-object value`)
     }
   }
 }

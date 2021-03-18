@@ -3,16 +3,19 @@ import Vue from 'vue'
 import { Constants, nuxtOptions, options } from './options'
 import { getDomainFromLocale } from './utils-common'
 
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @type {Vue['localePath']}
+ */
 function localePath (route, locale) {
-  const localizedRoute = localeRoute.call(this, route, locale)
-
-  if (!localizedRoute) {
-    return
-  }
-
-  return localizedRoute.fullPath
+  const localizedRoute = this.localeRoute(route, locale)
+  return localizedRoute ? localizedRoute.fullPath : ''
 }
 
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @type {Vue['localeRoute']}
+ */
 function localeRoute (route, locale) {
   // Abort if no route or no locale
   if (!route) {
@@ -40,8 +43,8 @@ function localeRoute (route, locale) {
 
   let localizedRoute = Object.assign({}, route)
 
-  if (route.path && !route.name) {
-    const resolvedRoute = this.router.resolve(route).route
+  if (localizedRoute.path && !localizedRoute.name) {
+    const resolvedRoute = this.router.resolve(localizedRoute).route
     const resolvedRouteName = this.getRouteBaseName(resolvedRoute)
     if (resolvedRouteName) {
       localizedRoute = {
@@ -61,12 +64,12 @@ function localeRoute (route, locale) {
           // no prefix for different domains
           !i18n.differentDomains
       if (isPrefixed) {
-        localizedRoute.path = `/${locale}${route.path}`
+        localizedRoute.path = `/${locale}${localizedRoute.path}`
       }
       localizedRoute.path = localizedRoute.path.replace(/\/+$/, '') + (nuxtOptions.trailingSlash ? '/' : '') || '/'
     }
   } else {
-    if (!route.name && !route.path) {
+    if (!localizedRoute.name && !localizedRoute.path) {
       localizedRoute.name = this.getRouteBaseName()
     }
 
@@ -86,6 +89,10 @@ function localeRoute (route, locale) {
   return this.router.resolve(route).route
 }
 
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @type {Vue['switchLocalePath']}
+ */
 function switchLocalePath (locale) {
   const name = this.getRouteBaseName()
   if (!name) {
@@ -93,11 +100,6 @@ function switchLocalePath (locale) {
   }
 
   const { i18n, route, store } = this
-
-  if (!route) {
-    return ''
-  }
-
   const { params, ...routeCopy } = route
   let langSwitchParams = {}
   if (options.vuex && options.vuex.syncRouteParams && store) {
@@ -117,10 +119,7 @@ function switchLocalePath (locale) {
   if (i18n.differentDomains) {
     const options = {
       differentDomains: i18n.differentDomains,
-      locales: i18n.locales,
-      localeDomainKey: Constants.LOCALE_DOMAIN_KEY,
-      localeCodeKey: Constants.LOCALE_CODE_KEY,
-      moduleName: Constants.MODULE_NAME
+      locales: i18n.locales
     }
     const domain = getDomainFromLocale(locale, this.req, options)
     if (domain) {
@@ -131,14 +130,22 @@ function switchLocalePath (locale) {
   return path
 }
 
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @type {Vue['getRouteBaseName']}
+ */
 function getRouteBaseName (givenRoute) {
   const route = givenRoute !== undefined ? givenRoute : this.route
   if (!route || !route.name) {
-    return null
+    return
   }
   return route.name.split(options.routesNameSeparator)[0]
 }
 
+/**
+ * @param {string | undefined} routeName
+ * @param {string} locale
+ */
 function getLocaleRouteName (routeName, locale) {
   let name = routeName + (options.strategy === Constants.STRATEGIES.NO_PREFIX ? '' : options.routesNameSeparator + locale)
 
@@ -149,22 +156,34 @@ function getLocaleRouteName (routeName, locale) {
   return name
 }
 
+/**
+ * @template {(...args: any[]) => any} T
+ * @param {T} targetFunction
+ * @return {(this: Vue, ...args: Parameters<T>) => ReturnType<T>}
+ */
 const VueInstanceProxy = function (targetFunction) {
   return function () {
     const proxy = {
       getRouteBaseName: this.getRouteBaseName,
       i18n: this.$i18n,
       localePath: this.localePath,
+      localeRoute: this.localeRoute,
       req: process.server ? this.$ssrContext.req : null,
       route: this.$route,
       router: this.$router,
       store: this.$store
     }
 
-    return targetFunction.apply(proxy, arguments)
+    return targetFunction.call(proxy, ...arguments)
   }
 }
 
+/**
+ * @template {(...args: any[]) => any} T
+ * @param {import('@nuxt/types').Context} context
+ * @param {T} targetFunction
+ * @return {(...args: Parameters<T>) => ReturnType<T>}
+ */
 const NuxtContextProxy = function (context, targetFunction) {
   return function () {
     const { app, req, route, store } = context
@@ -173,13 +192,14 @@ const NuxtContextProxy = function (context, targetFunction) {
       getRouteBaseName: app.getRouteBaseName,
       i18n: app.i18n,
       localePath: app.localePath,
+      localeRoute: app.localeRoute,
       req: process.server ? req : null,
       route,
       router: app.router,
       store
     }
 
-    return targetFunction.apply(proxy, arguments)
+    return targetFunction.call(proxy, ...arguments)
   }
 }
 

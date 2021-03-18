@@ -2,13 +2,13 @@ import { resolve, join } from 'path'
 import { readdirSync } from 'fs'
 // @ts-ignore
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
-import { MODULE_NAME, COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, LOCALE_CODE_KEY, LOCALE_ISO_KEY, LOCALE_DIR_KEY, LOCALE_DOMAIN_KEY, LOCALE_FILE_KEY, NESTED_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
+import { MODULE_NAME, COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, NESTED_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
 import { getLocaleCodes } from './helpers/utils'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
 
 /** @type {import('@nuxt/types').Module<import('../types').Options>} */
 export default function (userOptions) {
-  /** @type {import('../types').ResolvedOptions} */
+  /** @type {import('../types/internal').ResolvedOptions} */
   const options = { ...DEFAULT_OPTIONS, ...userOptions, ...this.options.i18n }
   // Options that have nested config options must be merged
   // individually with defaults to prevent missing options
@@ -32,7 +32,7 @@ export default function (userOptions) {
       throw new Error(`[${MODULE_NAME}] When using the "langDir" option the "locales" option must be a list of objects.`)
     }
     for (const locale of options.locales) {
-      if (typeof (locale) === 'string' || !locale[LOCALE_FILE_KEY]) {
+      if (typeof (locale) === 'string' || !locale.file) {
         throw new Error(`[${MODULE_NAME}] All locales must be objects and have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`)
       }
     }
@@ -48,11 +48,6 @@ export default function (userOptions) {
   const templatesOptions = {
     Constants: {
       COMPONENT_OPTIONS_KEY,
-      LOCALE_CODE_KEY,
-      LOCALE_DIR_KEY,
-      LOCALE_DOMAIN_KEY,
-      LOCALE_FILE_KEY,
-      LOCALE_ISO_KEY,
       MODULE_NAME,
       STRATEGIES
     },

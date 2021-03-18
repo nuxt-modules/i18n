@@ -1,23 +1,13 @@
 import packageJson from '../../package.json'
 
 /**
- * @typedef {import('../../types').ResolvedOptions} ResolvedOptions
+ * @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions
  * @typedef {import('../../types').LocaleObject} LocaleObject
  */
 
 // Internals
 export const MODULE_NAME = packageJson.name
 export const ROOT_DIR = 'nuxt-i18n'
-/** @type {keyof Pick<LocaleObject, 'code'>} */
-export const LOCALE_CODE_KEY = 'code'
-/** @type {keyof Pick<LocaleObject, 'iso'>} */
-export const LOCALE_ISO_KEY = 'iso'
-/** @type {keyof Pick<LocaleObject, 'dir'>} */
-export const LOCALE_DIR_KEY = 'dir'
-/** @type {keyof Pick<LocaleObject, 'domain'>} */
-export const LOCALE_DOMAIN_KEY = 'domain'
-/** @type {keyof Pick<LocaleObject, 'file'>} */
-export const LOCALE_FILE_KEY = 'file'
 
 // Options
 const STRATEGY_PREFIX = 'prefix'
