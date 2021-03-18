@@ -174,7 +174,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
 }
 
 /**
- * @deprecated
+ * @deprecated Use `nuxtI18nHead()` instead.
  * @this {import('vue/types/vue').Vue}
  */
 export function nuxtI18nSeo () {

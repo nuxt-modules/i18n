@@ -3,7 +3,7 @@ import { Context as NuxtContext } from '@nuxt/types'
 
 /**
  * The nuxt-i18n types namespace
- * @deprecated Use individually exported types.
+ * @deprecated Use individually exported types instead of this namespace.
  */
 declare namespace NuxtVueI18n {
   type Locale = VueI18n.Locale
@@ -30,13 +30,15 @@ declare namespace NuxtVueI18n {
     }
 
     interface DetectBrowserLanguageInterface {
-      useCookie?: boolean
+      alwaysRedirect?: boolean
+      cookieCrossOrigin?: boolean
       cookieDomain?: string | null
       cookieKey?: string
-      alwaysRedirect?: boolean
+      cookieSecure?: boolean
       fallbackLocale?: Locale | null
       onlyOnNoPrefix?: boolean
       onlyOnRoot?: boolean
+      useCookie?: boolean
     }
 
     interface RootRedirectInterface {
