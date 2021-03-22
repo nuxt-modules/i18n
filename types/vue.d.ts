@@ -1,7 +1,7 @@
 import 'vue'
 import 'vuex'
 import '@nuxt/types'
-import { Location, RawLocation, Route } from 'vue-router'
+import { RawLocation, Route } from 'vue-router'
 import VueI18n, { IVueI18n } from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
 import { BaseOptions, LocaleObject, Options } from '.'
@@ -41,6 +41,7 @@ declare module 'vue-i18n' {
     getBrowserLocale(): string | undefined
     getLocaleCookie(): string | undefined
     loadedLanguages: string[] | undefined
+    localeCodes: readonly Locale[]
     localeProperties: LocaleObject
     setLocale(locale: string): Promise<void>
     setLocaleCookie(locale: string): void

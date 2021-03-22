@@ -1,12 +1,8 @@
-import packageJson from '../../package.json'
-
 /**
- * @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions
- * @typedef {import('../../types').LocaleObject} LocaleObject
+ * @typedef {import('../../types').Options} Options
  */
 
 // Internals
-export const MODULE_NAME = packageJson.name
 export const ROOT_DIR = 'nuxt-i18n'
 
 // Options
@@ -23,7 +19,7 @@ export const STRATEGIES = {
 
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
-/** @type {ResolvedOptions} */
+/** @type {Options} */
 export const DEFAULT_OPTIONS = {
   vueI18n: {},
   vueI18nLoader: false,
@@ -62,6 +58,3 @@ export const DEFAULT_OPTIONS = {
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }
-
-/** @type {[keyof Pick<ResolvedOptions, 'detectBrowserLanguage'>, keyof Pick<ResolvedOptions, 'vuex'>]} */
-export const NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']

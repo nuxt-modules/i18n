@@ -5,7 +5,6 @@ import { LocaleFileExport, ResolvedOptions } from '../../types/internal'
 
 interface ModuleConstants {
   COMPONENT_OPTIONS_KEY: keyof Pick<ComponentOptions<Vue>, 'nuxtI18n'>
-  MODULE_NAME: string
   STRATEGIES: typeof STRATEGIES
 }
 
@@ -16,6 +15,5 @@ interface ModuleNuxtOptions {
 
 export const asyncLocales: Record<string, () => Promise<LocaleFileExport>>
 export const Constants: ModuleConstants
-export const localeCodes: readonly string[]
 export const nuxtOptions: ModuleNuxtOptions
 export const options: ResolvedOptions

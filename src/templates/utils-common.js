@@ -274,7 +274,15 @@ export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieK
  * @param {readonly string[]} localeCodes
  */
 export function registerStore (store, vuex, localeCodes) {
-  store.registerModule(vuex.moduleName, {
+  /** @typedef {{
+   *    locale?: string
+   *    messages?: Record<string, string>
+   *    routeParams?: Record<string, Record<string, string>>
+   * }} ModuleStore
+   *
+   * @type {import('vuex').Module<ModuleStore, {}>}
+   */
+  const storeModule = {
     namespaced: true,
     state: () => ({
       ...(vuex.syncLocale ? { locale: '' } : {}),
@@ -333,11 +341,16 @@ export function registerStore (store, vuex, localeCodes) {
     getters: {
       ...(vuex.syncRouteParams
         ? {
-            localeRouteParams: ({ routeParams }) => locale => routeParams[locale] || {}
+            localeRouteParams: ({ routeParams }) => {
+              /** @type {(locale: string) => Record<string, string>} */
+              const paramsGetter = locale => (routeParams && routeParams[locale]) || {}
+              return paramsGetter
+            }
           }
         : {})
     }
-  }, { preserveState: !!store.state[vuex.moduleName] })
+  }
+  store.registerModule(vuex.moduleName, storeModule, { preserveState: !!store.state[vuex.moduleName] })
 }
 
 /**

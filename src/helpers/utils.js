@@ -5,31 +5,21 @@
 /**
  * Get an array of locale codes from a list of locales
  *
- * @param  {ResolvedOptions['locales']}  locales
+ * @param  {ResolvedOptions['normalizedLocales']}  normalizedLocales
  * @return {import('../../types').Locale[]} List of locale codes
  */
-export function getLocaleCodes (locales = []) {
-  if (locales.length) {
-    // If first item is a sting, assume locales is a list of codes already
-    if (typeof locales[0] === 'string') {
-      return /** @type {string[]} */(locales)
-    }
-    // Attempt to get codes from a list of objects
-    if (typeof locales[0].code === 'string') {
-      return /** @type {Required<import('../../types').LocaleObject[]>} */(locales).map(locale => locale.code)
-    }
-  }
-  return []
+export function getLocaleCodes (normalizedLocales) {
+  return normalizedLocales.map(locale => locale.code)
 }
 
 /**
  * Retrieve page's options from the module's configuration for a given route
  *
- * @typedef {{ locales: string[], paths: Record<string, string> }} ComputedPageOptions
+ * @typedef {{ locales: readonly string[], paths: Record<string, string> }} ComputedPageOptions
  *
  * @param  {import('@nuxt/types/config/router').NuxtRouteConfig} route
  * @param  {ResolvedOptions['pages']} pages Pages options from module's configuration
- * @param  {import('../../types').Locale[]} localeCodes
+ * @param  {ResolvedOptions['localeCodes']} localeCodes
  * @param  {string} pagesDir Pages dir from Nuxt's configuration
  * @param  {ResolvedOptions['defaultLocale']} defaultLocale Default locale from Nuxt's configuration
  * @return {ComputedPageOptions | false} Page options

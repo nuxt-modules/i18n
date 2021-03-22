@@ -1,4 +1,4 @@
-import { asyncLocales, Constants } from './options'
+import { asyncLocales } from './options'
 
 /**
  * Asynchronously load messages from translation files
@@ -40,7 +40,7 @@ export async function loadLanguageAsync (context, locale) {
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
-            console.error(`[${Constants.MODULE_NAME}] Failed loading async locale export: ${error.message}`)
+            console.error(`[nuxt-i18n] Failed loading async locale export: ${error.message}`)
           }
         }
         if (messages) {
@@ -50,7 +50,7 @@ export async function loadLanguageAsync (context, locale) {
         /* <% } %> */
       } else {
         // eslint-disable-next-line no-console
-        console.warn(`[${Constants.MODULE_NAME}] Could not find lang file for locale ${locale}`)
+        console.warn(`[nuxt-i18n] Could not find lang file for locale ${locale}`)
       }
     }
   }

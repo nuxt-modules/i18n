@@ -1,6 +1,6 @@
 import { STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
-import { getPageOptions, getLocaleCodes } from './utils'
+import { getPageOptions } from './utils'
 
 /**
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
@@ -19,7 +19,7 @@ export function makeRoutes (baseRoutes, {
   defaultLocaleRouteNameSuffix,
   differentDomains,
   includeUprefixedFallback,
-  locales,
+  localeCodes,
   pages,
   pagesDir,
   parsePages,
@@ -27,13 +27,12 @@ export function makeRoutes (baseRoutes, {
   strategy,
   trailingSlash
 }) {
-  const localeCodes = getLocaleCodes(locales)
   /** @type {NuxtRouteConfig[]} */
   let localizedRoutes = []
 
   /**
    * @param {NuxtRouteConfig} route
-   * @param {import('../../types').Locale[]} allowedLocaleCodes
+   * @param {readonly import('../../types').Locale[]} allowedLocaleCodes
    * @param {boolean} [isChild=false]
    * @param {boolean} [isExtraRouteTree=false]
    * @return {NuxtRouteConfig | NuxtRouteConfig[]}
@@ -98,6 +97,7 @@ export function makeRoutes (baseRoutes, {
 
       // Get custom path if any
       if (componentOptions.paths && componentOptions.paths[locale]) {
+        // @ts-ignore
         path = componentOptions.paths[locale]
       }
 
@@ -114,7 +114,7 @@ export function makeRoutes (baseRoutes, {
             defaultRoute.name = localizedRoute.name + routesNameSeparator + defaultLocaleRouteNameSuffix
           }
 
-          if (defaultRoute.children) {
+          if (route.children) {
             // Recreate child routes with default suffix added
             defaultRoute.children = []
             for (const childRoute of route.children) {

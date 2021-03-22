@@ -1,15 +1,17 @@
 import { IncomingMessage } from 'http'
 import { Context as NuxtContext } from '@nuxt/types'
 import { Route } from 'vue-router'
-import { LocaleMessageObject, I18nOptions } from 'vue-i18n'
+import { LocaleMessageObject, I18nOptions, Locale } from 'vue-i18n'
 import Vue from 'vue'
-import { DetectBrowserLanguageOptions, VuexOptions, Options } from '.'
+import { DetectBrowserLanguageOptions, VuexOptions, Options, LocaleObject } from '.'
 
 export type LocaleFileExport = ((context: NuxtContext) => LocaleMessageObject) | ({ default: (context: NuxtContext) => LocaleMessageObject }) | LocaleMessageObject
 export type onNavigateInternal = (route: Route) => Promise<[number | null, string | null] | [number | null, string | null, boolean | undefined]>
 
 export interface ResolvedOptions extends Omit<Required<Options>, 'detectBrowserLanguage' | 'vueI18n' | 'vuex'> {
   detectBrowserLanguage: Required<DetectBrowserLanguageOptions> | false
+  localeCodes: readonly Locale[]
+  normalizedLocales: readonly LocaleObject[]
   vueI18n: I18nOptions | ((context: NuxtContext) => Promise<I18nOptions>)
   vuex: Required<VuexOptions> | false
 }
