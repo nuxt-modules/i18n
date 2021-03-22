@@ -160,6 +160,12 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Default locale as specified in options.
 
+#### localeCodes
+
+  - **Type**: `Array<string>`
+
+  List of locale codes of registered locales.
+
 #### locales
 
   - **Type**: `Array<string | LocaleObject>`
