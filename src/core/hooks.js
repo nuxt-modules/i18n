@@ -1,4 +1,5 @@
 import { STRATEGIES } from '../helpers/constants'
+import { formatMessage } from '../templates/utils-common'
 
 /**
  * @this {import('@nuxt/types/config/module').ModuleThis}
@@ -42,12 +43,12 @@ export function createExtendRoutesHook (options) {
 export function buildHook (options) {
   if (options.strategy === STRATEGIES.NO_PREFIX && options.differentDomains) {
     // eslint-disable-next-line no-console
-    console.warn('[nuxt-i18n] The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.')
+    console.warn(formatMessage('The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.'))
   }
 
   if ('forwardedHost' in options) {
     // eslint-disable-next-line no-console
-    console.warn('[nuxt-i18n] The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.')
+    console.warn(formatMessage('The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.'))
   }
 
   // Add vue-i18n-loader if applicable

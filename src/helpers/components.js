@@ -4,6 +4,7 @@ import traverse from '@babel/traverse'
 // Must not be an explicit dependency to avoid version mismatch issue.
 // See https://github.com/nuxt-community/i18n-module/issues/297
 import { parseComponent } from 'vue-template-compiler'
+import { formatMessage } from '../templates/utils-common'
 import { COMPONENT_OPTIONS_KEY } from './constants'
 
 /**
@@ -29,7 +30,7 @@ export function extractComponentOptions (component) {
   try {
     contents = readFileSync(component).toString()
   } catch (error) {
-    console.warn(`[nuxt-i18n] Couldn't read page component file (${error.message})`)
+    console.warn(formatMessage(`Couldn't read page component file (${error.message})`))
   }
 
   if (!contents) {
@@ -74,7 +75,7 @@ export function extractComponentOptions (component) {
     })
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.warn(`[nuxt-i18n] Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${component}"`)
+    console.warn(formatMessage(`Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${component}"`))
   }
 
   return componentOptions

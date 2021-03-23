@@ -4,8 +4,8 @@ import merge from 'lodash.merge'
 // @ts-ignore
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
 import { COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
-import { getLocaleCodes } from './helpers/utils'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
+import { formatMessage } from './templates/utils-common'
 
 /** @type {import('@nuxt/types').Module<import('../types').Options>} */
 export default function (moduleOptions) {
@@ -14,20 +14,20 @@ export default function (moduleOptions) {
 
   if (!Object.values(STRATEGIES).includes(options.strategy)) {
     // eslint-disable-next-line no-console
-    console.error(`[nuxt-i18n] Invalid "strategy" option "${options.strategy}" (must be one of: ${Object.values(STRATEGIES).join(', ')}).`)
+    console.error(formatMessage(`Invalid "strategy" option "${options.strategy}" (must be one of: ${Object.values(STRATEGIES).join(', ')}).`))
     return
   }
 
   if (options.lazy) {
     if (!options.langDir) {
-      throw new Error('[nuxt-i18n] When using the "lazy" option you must also set the "langDir" option.')
+      throw new Error(formatMessage('When using the "lazy" option you must also set the "langDir" option.'))
     }
     if (!options.locales.length || typeof options.locales[0] === 'string') {
-      throw new Error('[nuxt-i18n] When using the "langDir" option the "locales" option must be a list of objects.')
+      throw new Error(formatMessage('When using the "langDir" option the "locales" option must be a list of objects.'))
     }
     for (const locale of options.locales) {
       if (typeof (locale) === 'string' || !locale.file) {
-        throw new Error(`[nuxt-i18n] All locales must be objects and have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`)
+        throw new Error(formatMessage(`All locales must be objects and have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`))
       }
     }
     options.langDir = this.nuxt.resolver.resolveAlias(options.langDir)
@@ -46,7 +46,8 @@ export default function (moduleOptions) {
     }
   }
   options.normalizedLocales = normalizedLocales
-  options.localeCodes = getLocaleCodes(options.normalizedLocales)
+  // Get an array of locale codes from the list of locales.
+  options.localeCodes = options.normalizedLocales.map(locale => locale.code)
 
   const templatesOptions = {
     Constants: {
@@ -93,12 +94,12 @@ export default function (moduleOptions) {
   this.options.alias['~i18n-klona'] = require.resolve('klona/full').replace(/\.js$/, '.mjs')
 
   if (!Array.isArray(this.options.router.middleware)) {
-    throw new TypeError('[nuxt-i18n] options.router.middleware is not an array.')
+    throw new TypeError(formatMessage('options.router.middleware is not an array.'))
   }
   this.options.router.middleware.push('nuxti18n')
 
   if (!this.options.render.bundleRenderer || typeof (this.options.render.bundleRenderer) !== 'object') {
-    throw new TypeError('[nuxt-i18n] options.render.bundleRenderer is not an object.')
+    throw new TypeError(formatMessage('options.render.bundleRenderer is not an object.'))
   }
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensionsDirective

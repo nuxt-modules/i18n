@@ -1,10 +1,7 @@
 import VueI18n from 'vue-i18n'
 import { Context as NuxtContext } from '@nuxt/types'
 
-/**
- * The nuxt-i18n types namespace
- * @deprecated Use individually exported types instead of this namespace.
- */
+/** @deprecated Use individually exported types instead of this namespace. */
 declare namespace NuxtVueI18n {
   type Locale = VueI18n.Locale
   type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'

@@ -237,9 +237,9 @@ export default async (context) => {
   const getBrowserLocale = () => {
     if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
       // Get browser language either from navigator if running on client side, or from the headers
-      return matchBrowserLocale(options.locales, navigator.languages)
+      return matchBrowserLocale(options.normalizedLocales, navigator.languages)
     } else if (req && typeof req.headers['accept-language'] !== 'undefined') {
-      return matchBrowserLocale(options.locales, parseAcceptLanguage(req.headers['accept-language']))
+      return matchBrowserLocale(options.normalizedLocales, parseAcceptLanguage(req.headers['accept-language']))
     } else {
       return undefined
     }
@@ -356,7 +356,7 @@ export default async (context) => {
     if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
       finalLocale = store.state[vuex.moduleName].locale
     } else if (app.i18n.differentDomains) {
-      const domainLocale = getLocaleDomain(/** @type {import('../../types').LocaleObject[]} */(options.locales), req)
+      const domainLocale = getLocaleDomain(options.normalizedLocales, req)
       finalLocale = domainLocale
     } else if (options.strategy !== Constants.STRATEGIES.NO_PREFIX) {
       const routeLocale = getLocaleFromRoute(route)

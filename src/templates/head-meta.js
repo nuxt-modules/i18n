@@ -1,5 +1,6 @@
 import VueMeta from 'vue-meta'
 import { Constants, options } from './options'
+import { formatMessage } from './utils-common'
 
 /** @typedef {Required<Pick<import('vue-meta').MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>} SeoMeta */
 
@@ -78,7 +79,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
 
       if (!localeIso) {
         // eslint-disable-next-line no-console
-        console.warn('[nuxt-i18n] Locale ISO code is required to generate alternate link')
+        console.warn(formatMessage('Locale ISO code is required to generate alternate link'))
         continue
       }
 

@@ -5,6 +5,16 @@ import isHTTPS from 'is-https'
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
 /**
+ * Formats a log message, prefixing module's name to it.
+ *
+ * @param {string} text
+ * @return {string}
+ */
+export function formatMessage (text) {
+  return `[nuxt-i18n] ${text}`
+}
+
+/**
  * Parses locales provided from browser through `accept-language` header.
  *
  * @param {string} input
@@ -22,7 +32,7 @@ export function parseAcceptLanguage (input) {
 /**
  * Find locale code that best matches provided list of browser locales.
  *
- * @param {ResolvedOptions['locales']} appLocales The user-configured locale codes that are to be matched.
+ * @param {ResolvedOptions['normalizedLocales']} appLocales The user-configured locales that are to be matched.
  * @param {readonly string[]} browserLocales The locales to match against configured.
  * @return {string | undefined}
  */
@@ -34,15 +44,8 @@ export function matchBrowserLocale (appLocales, browserLocales) {
   /** @type {{ code: string, iso: string }[]} */
   const normalizedAppLocales = []
   for (const appLocale of appLocales) {
-    let code
-    let iso
-    if (typeof appLocale === 'string') {
-      code = appLocale
-      iso = appLocale
-    } else {
-      code = appLocale.code
-      iso = appLocale.iso || appLocale.code
-    }
+    const { code } = appLocale
+    const iso = appLocale.iso || code
     normalizedAppLocales.push({ code, iso })
   }
 
@@ -87,17 +90,17 @@ export function matchBrowserLocale (appLocales, browserLocales) {
  * @param {string | ((context: import('@nuxt/types').Context) => string)} baseUrl
  * @param {import('@nuxt/types').Context} context
  * @param {import('../../types').Locale} localeCode
- * @param {Pick<ResolvedOptions, 'differentDomains' | 'locales'>} options
+ * @param {Pick<ResolvedOptions, 'differentDomains' | 'normalizedLocales'>} options
  * @return {string}
  */
-export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains, locales }) {
+export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains, normalizedLocales }) {
   if (typeof baseUrl === 'function') {
     return baseUrl(context)
   }
 
   if (differentDomains && localeCode) {
     // Lookup the `differentDomain` origin associated with given locale.
-    const domain = getDomainFromLocale(localeCode, context.req, { locales })
+    const domain = getDomainFromLocale(localeCode, context.req, { normalizedLocales })
     if (domain) {
       return domain
     }
@@ -111,12 +114,12 @@ export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains
  *
  * @param {string} localeCode
  * @param {import('http').IncomingMessage | undefined} req
- * @param {Pick<ResolvedOptions, 'locales'>} options
+ * @param {Pick<ResolvedOptions, 'normalizedLocales'>} options
  * @return {string | undefined}
  */
-export function getDomainFromLocale (localeCode, req, { locales }) {
+export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
 // Lookup the `differentDomain` origin associated with given locale.
-  const lang = /** @type {import('../../types').LocaleObject[]} */(locales).find(locale => locale.code === localeCode)
+  const lang = normalizedLocales.find(locale => locale.code === localeCode)
   if (lang && lang.domain) {
     let protocol
     if (process.server) {
@@ -128,13 +131,13 @@ export function getDomainFromLocale (localeCode, req, { locales }) {
   }
 
   // eslint-disable-next-line no-console
-  console.warn(`[nuxt-i18n] Could not find domain name for locale ${localeCode}`)
+  console.warn(formatMessage(`Could not find domain name for locale ${localeCode}`))
 }
 
 /**
  * Get locale code that corresponds to current hostname
  *
- * @param  {import('../../types').LocaleObject[]} locales
+ * @param  {ResolvedOptions['normalizedLocales']} locales
  * @param  {import('http').IncomingMessage | undefined} req
  * @return {string} Locale code found if any
  */
@@ -388,17 +391,17 @@ const isObject = value => value && !Array.isArray(value) && typeof value === 'ob
 export function validateRouteParams (routeParams, localeCodes) {
   if (!isObject(routeParams)) {
     // eslint-disable-next-line no-console
-    console.warn('[nuxt-i18n] Route params should be an object')
+    console.warn(formatMessage('Route params should be an object'))
     return
   }
 
   for (const [key, value] of Object.entries(routeParams)) {
     if (!localeCodes.includes(key)) {
     // eslint-disable-next-line no-console
-      console.warn(`[nuxt-i18n] Trying to set route params for key ${key} which is not a valid locale`)
+      console.warn(formatMessage(`Trying to set route params for key ${key} which is not a valid locale`))
     } else if (!isObject(value)) {
     // eslint-disable-next-line no-console
-      console.warn(`[nuxt-i18n] Trying to set route params for locale ${key} with a non-object value`)
+      console.warn(formatMessage(`Trying to set route params for locale ${key} with a non-object value`))
     }
   }
 }

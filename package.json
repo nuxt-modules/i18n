@@ -94,7 +94,7 @@
     "@babel/core": "7.13.8",
     "@babel/preset-env": "7.13.8",
     "@babel/runtime": "7.13.8",
-    "@nuxt/types": "2.15.2",
+    "@nuxt/types": "2.15.3",
     "@nuxtjs/composition-api": "0.21.0",
     "@nuxtjs/eslint-config-typescript": "6.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
