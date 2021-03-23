@@ -1,18 +1,16 @@
-import { Configuration as NuxtConfiguration } from '@nuxt/types'
-import { NuxtVueI18n } from '../../../types/vue';
+import { NuxtConfig } from '@nuxt/types'
 
-const nuxtI18nOptions: NuxtVueI18n.Options.AllOptionsInterface {
-  locales: [
-    { code: 'en', iso: 'en-US', name: 'English' },
-    { code: 'pl', iso: 'pl-PL', name: 'Polish' }
-  ],
-  defaultLocale: 'en',
-  parsePages: true
-}
-
-const config: NuxtConfiguration = {
+const config: NuxtConfig = {
   buildModules: ['@nuxt/typescript-build'],
-  modules: ['nuxt-i18n', nuxtI18nOptions],
+  modules: ['nuxt-i18n'],
+  i18n: {
+    locales: [
+      { code: 'en', iso: 'en-US', name: 'English' },
+      { code: 'pl', iso: 'pl-PL', name: 'Polish' }
+    ],
+    defaultLocale: 'en',
+    parsePages: true
+  }
 };
 
 export default config

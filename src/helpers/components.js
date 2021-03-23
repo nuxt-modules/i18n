@@ -1,31 +1,43 @@
-const { readFileSync } = require('fs')
-const parser = require('@babel/parser')
-const traverse = require('@babel/traverse').default
+import { readFileSync } from 'fs'
+import { parse } from '@babel/parser'
+import traverse from '@babel/traverse'
 // Must not be an explicit dependency to avoid version mismatch issue.
 // See https://github.com/nuxt-community/i18n-module/issues/297
-const compiler = require('vue-template-compiler')
-const { COMPONENT_OPTIONS_KEY, MODULE_NAME } = require('./constants')
+import { parseComponent } from 'vue-template-compiler'
+import { formatMessage } from '../templates/utils-common'
+import { COMPONENT_OPTIONS_KEY } from './constants'
 
 /**
  * Extracts nuxtI18n component options for given component file path.
  *
- * @param {string} path The path to the component file
- * @return {Record<string, any>}
+ * @typedef {Required<Pick<import('../../types/vue').NuxtI18nComponentOptions, 'locales' | 'paths'>>} ComputedPageOptions
+ *
+ * @param {import('@nuxt/types/config/router').NuxtRouteConfig['component']} component
+ * @return {ComputedPageOptions | false}
  */
-exports.extractComponentOptions = path => {
-  let componentOptions = {}
+export function extractComponentOptions (component) {
+  if (typeof (component) !== 'string') {
+    return false
+  }
+
+  /** @type {ComputedPageOptions | false} */
+  let componentOptions = {
+    locales: [],
+    paths: {}
+  }
+
   let contents
   try {
-    contents = readFileSync(path).toString()
+    contents = readFileSync(component).toString()
   } catch (error) {
-    console.warn(`[${MODULE_NAME}] Couldn't read page component file (${error.message})`)
+    console.warn(formatMessage(`Couldn't read page component file (${error.message})`))
   }
 
   if (!contents) {
     return componentOptions
   }
 
-  const Component = compiler.parseComponent(contents)
+  const Component = parseComponent(contents)
 
   if (!Component.script || Component.script.content.length < 1) {
     return componentOptions
@@ -34,7 +46,7 @@ exports.extractComponentOptions = path => {
   const script = Component.script.content
 
   try {
-    const parsed = parser.parse(script, {
+    const parsed = parse(script, {
       sourceType: 'module',
       plugins: [
         'nullishCoalescingOperator',
@@ -50,8 +62,11 @@ exports.extractComponentOptions = path => {
 
     traverse(parsed, {
       enter (path) {
+        // @ts-ignore
         if (path.node.type === 'Property') {
+          // @ts-ignore
           if (path.node.key.name === COMPONENT_OPTIONS_KEY) {
+            // @ts-ignore
             const data = script.substring(path.node.start, path.node.end)
             componentOptions = Function(`return ({${data}})`)()[COMPONENT_OPTIONS_KEY] // eslint-disable-line
           }
@@ -60,7 +75,7 @@ exports.extractComponentOptions = path => {
     })
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.warn('[' + MODULE_NAME + `] Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${path}".`)
+    console.warn(formatMessage(`Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${component}"`))
   }
 
   return componentOptions

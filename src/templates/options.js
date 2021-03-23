@@ -7,21 +7,34 @@ function stringifyValue(value) {
   }
 }
 
-for (const [key, value] of Object.entries(options)) {
-    if (key === 'vueI18n' && typeof value === 'string') {
-%>export const <%= key %> = (context) => import('<%= value %>').then(m => m.default(context))
+for (const [rootKey, rootValue] of Object.entries(options)) {
+  if (Array.isArray(rootValue)) {
+%>export const <%= rootKey %> = <%= stringifyValue(rootValue) %>
 <%
-    } else {
-%>export const <%= key %> = <%= stringifyValue(value) %>
+  } else {
+%>export const <%= rootKey %> = {
 <%
+    for (const [key, value] of Object.entries(rootValue)) {
+      if (key === 'vueI18n' && typeof value === 'string') {
+%>  <%= key %>: (context) => import('<%= value %>').then(m => m.default(context)),
+<%
+      } else {
+%>  <%= key %>: <%= stringifyValue(value) %>,
+<%
+      }
     }
+%>}
+<%
+  }
 }
-%>
 
-<% if (options.lazy && options.langDir) { %>
-export const ASYNC_LOCALES = {
+const { lazy, locales, langDir } = options.options
+if (lazy && langDir) { %>
+export const asyncLocales = {
   <%= Array.from(
-        new Set(options.locales.map(l => `'${l.file}': () => import('../${relativeToBuild(options.langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`))
+        new Set(locales.map(l => `'${l.file}': () => import('../${relativeToBuild(langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`))
       ).join(',\n  ') %>
 }
-<% } %>
+<%
+}
+%>

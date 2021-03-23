@@ -26,7 +26,7 @@
     "dev:basic:generate": "nuxt generate -c ./test/fixture/basic/nuxt.config.js",
     "start:dist": "jiti ./test/utils/http-server-internal.js --port 8080 -v dist",
     "coverage": "codecov",
-    "lint": "eslint --ext .js,.vue,.ts src test types",
+    "lint": "eslint --ext .js,.vue,.ts src test types && tsc",
     "test": "yarn test:types && yarn test:unit && yarn test:e2e-ssr && yarn test:e2e-browser",
     "test:e2e-ssr": "jest test/module.test",
     "test:e2e-browser": "jest test/browser.test",
@@ -36,10 +36,16 @@
     "docs:dev": "cd ./docs && yarn dev && cd ..",
     "docs:build": "cd ./docs && yarn generate && cd .."
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "post-merge": "yarn"
+    }
+  },
   "eslintIgnore": [
     "src/templates/options.js",
     "test/fixture/typescript/**/*",
-    "**/*.d.ts"
+    "types/vue.d.ts"
   ],
   "files": [
     "src",
@@ -75,7 +81,6 @@
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/templates/*.js",
-      "!src/plugins/*.js",
       "!src/helpers/utils.js",
       "!src/helpers/constants.js"
     ]
@@ -95,16 +100,19 @@
     "@babel/core": "7.13.8",
     "@babel/preset-env": "7.13.8",
     "@babel/runtime": "7.13.8",
-    "@nuxt/types": "2.15.2",
+    "@nuxt/types": "2.15.3",
     "@nuxtjs/composition-api": "0.21.0",
     "@nuxtjs/eslint-config-typescript": "6.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "2.0.1",
     "@types/argparse": "2.0.5",
+    "@types/cookie": "^0.4.0",
     "@types/finalhandler": "1.1.0",
     "@types/jest": "26.0.20",
     "@types/jest-dev-server": "4.2.0",
+    "@types/js-cookie": "^2.2.6",
     "@types/jsdom": "16.2.6",
+    "@types/lodash.merge": "^4.6.6",
     "@types/request-promise-native": "1.0.17",
     "@types/serve-static": "1.13.9",
     "argparse": "2.0.1",
@@ -114,9 +122,11 @@
     "core-js": "3.9.1",
     "eslint": "7.21.0",
     "finalhandler": "1.1.2",
+    "husky": "4.3.8",
     "jest": "26.6.3",
     "jest-dev-server": "4.4.0",
     "jsdom": "16.4.0",
+    "lodash.merge": "^4.6.2",
     "messageformat": "2.3.0",
     "nuxt": "2.15.2",
     "playwright-chromium": "1.9.1",

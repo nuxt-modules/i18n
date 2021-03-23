@@ -1,26 +1,26 @@
-const packageJson = require('../../package.json')
+/**
+ * @typedef {import('../../types').Options} Options
+ */
 
 // Internals
-exports.MODULE_NAME = packageJson.name
-exports.ROOT_DIR = 'nuxt-i18n'
-exports.LOCALE_CODE_KEY = 'code'
-exports.LOCALE_ISO_KEY = 'iso'
-exports.LOCALE_DIR_KEY = 'dir'
-exports.LOCALE_DOMAIN_KEY = 'domain'
-exports.LOCALE_FILE_KEY = 'file'
+export const ROOT_DIR = 'nuxt-i18n'
 
 // Options
-const STRATEGIES = {
-  PREFIX: 'prefix',
-  PREFIX_EXCEPT_DEFAULT: 'prefix_except_default',
-  PREFIX_AND_DEFAULT: 'prefix_and_default',
-  NO_PREFIX: 'no_prefix'
+const STRATEGY_PREFIX = 'prefix'
+const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
+const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
+const STRATEGY_NO_PREFIX = 'no_prefix'
+export const STRATEGIES = {
+  PREFIX: STRATEGY_PREFIX,
+  PREFIX_EXCEPT_DEFAULT: STRATEGY_PREFIX_EXCEPT_DEFAULT,
+  PREFIX_AND_DEFAULT: STRATEGY_PREFIX_AND_DEFAULT,
+  NO_PREFIX: STRATEGY_NO_PREFIX
 }
 
-exports.STRATEGIES = STRATEGIES
+export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
-exports.COMPONENT_OPTIONS_KEY = 'nuxtI18n'
-exports.DEFAULT_OPTIONS = {
+/** @type {Options} */
+export const DEFAULT_OPTIONS = {
   vueI18n: {},
   vueI18nLoader: false,
   locales: [],
@@ -28,20 +28,20 @@ exports.DEFAULT_OPTIONS = {
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
-  strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,
+  strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
   rootRedirect: null,
   detectBrowserLanguage: {
-    useCookie: true,
+    alwaysRedirect: false,
     cookieCrossOrigin: false,
     cookieDomain: null,
     cookieKey: 'i18n_redirected',
     cookieSecure: false,
-    alwaysRedirect: false,
     fallbackLocale: '',
     onlyOnNoPrefix: false,
-    onlyOnRoot: false
+    onlyOnRoot: false,
+    useCookie: true
   },
   differentDomains: false,
   seo: false,
@@ -58,4 +58,3 @@ exports.DEFAULT_OPTIONS = {
   beforeLanguageSwitch: () => null,
   onLanguageSwitched: () => null
 }
-exports.NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']

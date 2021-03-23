@@ -1,10 +1,7 @@
 import VueI18n from 'vue-i18n'
-import { MetaInfo } from 'vue-meta'
 import { Context as NuxtContext } from '@nuxt/types'
 
-/**
- * The nuxt-i18n types namespace
- */
+/** @deprecated Use individually exported types instead of this namespace. */
 declare namespace NuxtVueI18n {
   type Locale = VueI18n.Locale
   type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
@@ -30,14 +27,15 @@ declare namespace NuxtVueI18n {
     }
 
     interface DetectBrowserLanguageInterface {
-      useCookie?: boolean
-      crossOriginCookie?: boolean
+      alwaysRedirect?: boolean
+      cookieCrossOrigin?: boolean
       cookieDomain?: string | null
       cookieKey?: string
-      alwaysRedirect?: boolean
+      cookieSecure?: boolean
       fallbackLocale?: Locale | null
       onlyOnNoPrefix?: boolean
       onlyOnRoot?: boolean
+      useCookie?: boolean
     }
 
     interface RootRedirectInterface {
@@ -60,7 +58,6 @@ declare namespace NuxtVueI18n {
       defaultLocaleRouteNameSuffix?: string
       locales?: Array<Locale | LocaleObject>
       differentDomains?: boolean
-      forwardedHost?: boolean
       onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
     }
 
@@ -87,31 +84,4 @@ declare namespace NuxtVueI18n {
       vuex?: VuexInterface | false
     }
   }
-}
-
-export interface NuxtI18nSeo {
-  htmlAttrs?: MetaInfo['htmlAttrs']
-  link?: MetaInfo['link']
-  meta?: MetaInfo['meta']
-}
-
-export interface NuxtI18nHeadOptions {
-  /**
-   * Adds a `dir` attribute to the HTML element.
-   * Default: `true`
-   */
-  addDirAttribute: boolean
-  /**
-   * Adds various SEO attributes.
-   * Default: `false`
-   */
-  addSeoAttributes: boolean
-}
-
-export interface NuxtI18nComponentOptions {
-  paths?: {
-    [key: string]: string | false
-  }
-  locales?: Array<string>
-  seo?: false
 }

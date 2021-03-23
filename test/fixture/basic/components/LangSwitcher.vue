@@ -24,9 +24,9 @@
 export default {
   name: 'LangSwitcher',
   computed: {
-    /** @return {import('../../../../types').NuxtVueI18n.Options.LocaleObject[]} */
     localesExcludingCurrent () {
-      return this.$i18n.locales.filter(locale => locale.code !== this.$i18n.locale)
+      const locales = /** @type {import('../../../../types').LocaleObject[]} */(this.$i18n.locales)
+      return locales.filter(locale => locale.code !== this.$i18n.locale)
     }
   }
 }
