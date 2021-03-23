@@ -199,7 +199,7 @@ export default async (context) => {
 
     const resolveBaseUrlOptions = {
       differentDomains: options.differentDomains,
-      locales: options.locales
+      normalizedLocales: options.normalizedLocales
     }
     app.i18n.__baseUrl = resolveBaseUrl(options.baseUrl, context, app.i18n.locale, resolveBaseUrlOptions)
 
@@ -326,7 +326,7 @@ export default async (context) => {
   extendVueI18nInstance(app.i18n)
   const resolveBaseUrlOptions = {
     differentDomains: options.differentDomains,
-    locales: options.locales
+    normalizedLocales: options.normalizedLocales
   }
   app.i18n.__baseUrl = resolveBaseUrl(options.baseUrl, context, '', resolveBaseUrlOptions)
   app.i18n.__onNavigate = onNavigate

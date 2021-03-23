@@ -36,6 +36,12 @@
     "docs:dev": "cd ./docs && yarn dev && cd ..",
     "docs:build": "cd ./docs && yarn generate && cd .."
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "post-merge": "yarn"
+    }
+  },
   "eslintIgnore": [
     "src/templates/options.js",
     "test/fixture/typescript/**/*",
@@ -116,6 +122,7 @@
     "core-js": "3.9.1",
     "eslint": "7.21.0",
     "finalhandler": "1.1.2",
+    "husky": "4.3.8",
     "jest": "26.6.3",
     "jest-dev-server": "4.4.0",
     "jsdom": "16.4.0",

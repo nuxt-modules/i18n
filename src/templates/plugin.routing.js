@@ -117,11 +117,11 @@ function switchLocalePath (locale) {
 
   // Handle different domains
   if (i18n.differentDomains) {
-    const options = {
+    const getDomainOptions = {
       differentDomains: i18n.differentDomains,
-      locales: i18n.locales
+      normalizedLocales: options.normalizedLocales
     }
-    const domain = getDomainFromLocale(locale, this.req, options)
+    const domain = getDomainFromLocale(locale, this.req, getDomainOptions)
     if (domain) {
       path = domain + path
     }
