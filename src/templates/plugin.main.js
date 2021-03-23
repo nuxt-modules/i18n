@@ -320,8 +320,6 @@ export default async (context) => {
   app.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
   app.i18n.locale = ''
-  app.i18n.localeCodes = []
-  app.i18n.localeProperties = { code: '' }
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
   extendVueI18nInstance(app.i18n)
   const resolveBaseUrlOptions = {
