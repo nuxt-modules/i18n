@@ -1,3 +1,15 @@
+## [6.22.0](https://github.com/nuxt-community/i18n-module/compare/v6.21.1...v6.22.0) (2021-03-24)
+
+
+### Features
+
+* add i18n APIs to Nuxt Context ([#1120](https://github.com/nuxt-community/i18n-module/issues/1120)) ([394ec7d](https://github.com/nuxt-community/i18n-module/commit/394ec7d72d06a1d649d6b8d39868bc2d323580f2)), closes [#1112](https://github.com/nuxt-community/i18n-module/issues/1112)
+
+
+### Bug Fixes
+
+* router base not considered on redirecting in static mode ([#1119](https://github.com/nuxt-community/i18n-module/issues/1119)) ([75b7c6e](https://github.com/nuxt-community/i18n-module/commit/75b7c6ea4ca96e2d5935344871efc8166ad1d0f0)), closes [#1060](https://github.com/nuxt-community/i18n-module/issues/1060)
+
 ### [6.21.1](https://github.com/nuxt-community/i18n-module/compare/v6.21.0...v6.21.1) (2021-03-15)
 
 
