@@ -178,7 +178,7 @@ describe(`${browserString}, target: static, trailingSlash: true`, () => {
   })
 })
 
-describe(`${browserString} (generate)`, () => {
+describe(`${browserString} (generate, with router base)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
   let browser
   /** @type {import('playwright-chromium').Page} */
@@ -187,12 +187,14 @@ describe(`${browserString} (generate)`, () => {
   let server
 
   beforeAll(async () => {
+    const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
     const overrides = {
-      generate: { dir: distDir }
+      generate: { dir: distDir },
+      router: { base }
     }
     await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
-    server = await startHttpServer({ path: distDir, verbose: true })
+    server = await startHttpServer({ path: distDir, base, verbose: true })
     browser = await createBrowser()
   })
 

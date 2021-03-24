@@ -1,10 +1,12 @@
 import { resolve } from 'path'
 import getPort from 'get-port'
+import { joinURL } from 'ufo'
 import { setup as setupDevServer, teardown as teardownDevServer } from 'jest-dev-server'
 
 /** @typedef {{
  *   path: string
  *   port?: number
+ *   base?: string
  *   noTrailingSlashRedirect?: boolean
  *   verbose?: boolean
  * }} ServerOptions
@@ -16,6 +18,7 @@ import { setup as setupDevServer, teardown as teardownDevServer } from 'jest-dev
 export class StaticServer {
   /** @param {ServerOptions} options */
   constructor (options) {
+    this.base = options.base || '/'
     this.path = options.path
     this.url = ''
     this.port = options.port || null
@@ -25,7 +28,7 @@ export class StaticServer {
 
   /** @param {string} path */
   getUrl (path) {
-    return `${this.url}${path}`
+    return joinURL(this.url, path)
   }
 
   async start () {
@@ -33,10 +36,10 @@ export class StaticServer {
       this.port = await getPort()
     }
 
-    this.url = `http://localhost:${this.port}`
+    this.url = `http://localhost:${this.port}${this.base}`
 
     const serverPath = resolve(__dirname, 'http-server-internal.js')
-    const args = [`jiti ${serverPath}`, this.path, `--port ${this.port}`]
+    const args = [`jiti ${serverPath}`, this.path, `--port ${this.port}`, `--base ${this.base}`]
 
     if (this.verbose) {
       args.push('--verbose')
