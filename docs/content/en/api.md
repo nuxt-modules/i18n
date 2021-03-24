@@ -198,7 +198,9 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ## Extension of Nuxt Context
 
-### context.i18n, context.app.i18n
+The following APIs are exposed both on `context` and `context.app`.
+
+### i18n
 
   - **Type**: [`VueI18n`](#extension-of-vuei18n)
 
@@ -218,13 +220,12 @@ export default Vue.extend({
     }
   }
 })
-````
+```
 
-Those APIs are also exposed both on `context` and `context.app`:
- - getRouteBaseName
- - localePath
- - localeRoute
- - switchLocalePath
+### getRouteBaseName
+### localePath
+### localeRoute
+### switchLocalePath
 
 See more info about those in [methods documentation](#methods).
 
