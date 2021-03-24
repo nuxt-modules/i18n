@@ -19,12 +19,12 @@ interface NuxtI18nHeadOptions {
    * Adds a `dir` attribute to the HTML element.
    * Default: `true`
    */
-  addDirAttribute: boolean
+  addDirAttribute?: boolean
   /**
    * Adds various SEO attributes.
    * Default: `false`
    */
-  addSeoAttributes: boolean
+  addSeoAttributes?: boolean
 }
 
 interface NuxtI18nSeo {
@@ -72,6 +72,10 @@ declare module 'vue/types/options' {
 }
 
 declare module '@nuxt/types' {
+  interface Context extends NuxtI18nApi {
+    i18n: VueI18n & IVueI18n
+  }
+
   interface NuxtAppOptions extends NuxtI18nApi {
     i18n: VueI18n & IVueI18n
   }

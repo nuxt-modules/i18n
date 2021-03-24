@@ -2,7 +2,7 @@
   <div>
     <LangSwitcher />
     <div id="current-page">page: {{ $t('home') }}</div>
-    <nuxt-link id="link-about" exact :to="localePath('about')">{{ $t('about') }}</nuxt-link>
+    <nuxt-link id="link-about" exact :to="aboutPath">{{ aboutTranslation }}</nuxt-link>
     <div id="current-locale">locale: {{ $i18n.locale }}</div>
   </div>
 </template>
@@ -15,10 +15,23 @@ export default {
   components: {
     LangSwitcher
   },
+  asyncData ({ localePath, i18n }) {
+    return {
+      aboutPath: localePath('about'),
+      aboutTranslation: i18n.t('about')
+    }
+  },
+  data () {
+    return {
+      aboutPath: '',
+      aboutTranslation: ''
+    }
+  },
+  /** @return {import('vue-meta').MetaInfo} */
   head () {
     return {
       ...this.$nuxtI18nHead({ addDirAttribute: false }),
-      title: this.$t('home')
+      title: String(this.$t('home'))
     }
   },
   created () {

@@ -318,7 +318,7 @@ export default async (context) => {
   const vueI18nOptions = typeof options.vueI18n === 'function' ? await options.vueI18n(context) : klona(options.vueI18n)
   vueI18nOptions.componentInstanceCreatedListener = extendVueI18nInstance
   // @ts-ignore
-  app.i18n = new VueI18n(vueI18nOptions)
+  app.i18n = context.i18n = new VueI18n(vueI18nOptions)
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
   app.i18n.locale = ''
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''

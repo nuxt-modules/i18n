@@ -198,7 +198,9 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ## Extension of Nuxt Context
 
-### context.app.i18n
+The following APIs are exposed both on `context` and `context.app`.
+
+### i18n
 
   - **Type**: [`VueI18n`](#extension-of-vuei18n)
 
@@ -210,8 +212,8 @@ Example use:
 
 ```js
 export default Vue.extend({
-  asyncData({ app }) {
-    const locale = app.i18n.locale
+  asyncData({ i18n }) {
+    const locale = i18n.locale
 
     return {
       locale
@@ -219,6 +221,13 @@ export default Vue.extend({
   }
 })
 ````
+
+### getRouteBaseName
+### localePath
+### localeRoute
+### switchLocalePath
+
+See more info about those in [methods documentation](#methods).
 
 ## Extension of Vuex
 
@@ -243,4 +252,4 @@ export const actions = {
 ### localeRoute
 ### switchLocalePath
 
-See [documentation](#methods).
+See more info about those in [methods documentation](#methods).

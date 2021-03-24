@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { Route } from 'vue-router'
+import { Plugin } from '@nuxt/types'
 import '../index'
 
 const vm = new Vue()
@@ -44,3 +45,8 @@ vm.$i18n.setLocale(locale)
 const store = new Vuex.Store({})
 
 store.$i18n.setLocale(locale)
+
+const nuxtPlugin: Plugin = function (context) {
+  const { i18n, getRouteBaseName, localePath, localeRoute, switchLocalePath } = context
+  const { locale } = i18n
+}
