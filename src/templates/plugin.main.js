@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import { joinURL } from 'ufo'
 import { nuxtI18nHead, nuxtI18nSeo } from './head-meta'
 import { Constants, nuxtOptions, options } from './options'
 import {
@@ -373,7 +374,7 @@ export default async (context) => {
   if (process.client && process.static && nuxtOptions.isUniversalMode) {
     const [_, redirectTo] = await onNavigate(context.route)
     if (redirectTo) {
-      location.assign(redirectTo)
+      location.assign(joinURL(context.base, redirectTo))
     }
   }
 }
