@@ -222,10 +222,10 @@ export default (context) => {
   Vue.use(plugin)
   const { app, store } = context
 
-  app.localePath = NuxtContextProxy(context, localePath)
-  app.localeRoute = NuxtContextProxy(context, localeRoute)
-  app.switchLocalePath = NuxtContextProxy(context, switchLocalePath)
-  app.getRouteBaseName = NuxtContextProxy(context, getRouteBaseName)
+  app.localePath = context.localePath = NuxtContextProxy(context, localePath)
+  app.localeRoute = context.localeRoute = NuxtContextProxy(context, localeRoute)
+  app.switchLocalePath = context.switchLocalePath = NuxtContextProxy(context, switchLocalePath)
+  app.getRouteBaseName = context.getRouteBaseName = NuxtContextProxy(context, getRouteBaseName)
 
   if (store) {
     store.localePath = app.localePath
