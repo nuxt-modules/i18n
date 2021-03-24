@@ -65,7 +65,7 @@ When using an object form, the properties can be:
 - `iso` (required when using SEO features) - The ISO code used for SEO features and for matching browser locales when using [`detectBrowserLanguage`](#detectbrowserlanguage) functionality. Should be in one of those formats:
   * ISO 639-1 code (e.g. `'en'`)
   * ISO 639-1 and ISO 3166-1 alpha-2 codes, separated by hyphen (e.g. `'en-US'`)
-- `file` (required when using [`lazy`](#lazy)) - the name of the file. Will be resolved relative to `langDir` path when loading locale messages lazily
+- `file` (requires [`lazy`](#lazy) to be enabled) - the name of the file. Will be resolved relative to `langDir` path when loading locale messages lazily
 - `dir` (from `v6.19.0`)  The dir property specifies the direction of the elements and content, value could be `'rtl'`, `'ltr'` or `'auto'`.
 - `domain` (required when using [`differentDomains`](#differentdomains)) - the domain name you'd like to use for that locale (including the port if used)
 - `...` - any custom property set on the object will be exposed at runtime. This can be used, for example, to define the language name for the purpose of using it in a language selector on the page.
@@ -131,7 +131,13 @@ See also [Lazy-load translations](/lazy-load-translations).
 - type: `string` or `null`
 - default: `null`
 
-Directory that contains translation files when lazy-loading messages. This CAN NOT be empty if lazy-loading is enabled. Use Webpack paths like `~/locales/` (with trailing slash).
+<alert type="warning">
+
+This option only works and is required when `lazy` is enabled.
+
+</alert>
+
+Directory that contains translation files when lazy-loading messages. Use Webpack paths like `~/locales/` (with trailing slash).
 
 ## `detectBrowserLanguage`
 
