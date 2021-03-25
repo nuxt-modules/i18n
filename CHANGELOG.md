@@ -1,3 +1,10 @@
+### [6.22.1](https://github.com/nuxt-community/i18n-module/compare/v6.22.0...v6.22.1) (2021-03-25)
+
+
+### Bug Fixes
+
+* move lodash.merge to dependencies ([b3f3f43](https://github.com/nuxt-community/i18n-module/commit/b3f3f436e46d59f928c80d479be83e5c68e7d7dc))
+
 ## [6.22.0](https://github.com/nuxt-community/i18n-module/compare/v6.21.1...v6.22.0) (2021-03-24)
 
 
