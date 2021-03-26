@@ -1,3 +1,10 @@
+### [6.22.2](https://github.com/nuxt-community/i18n-module/compare/v6.22.1...v6.22.2) (2021-03-26)
+
+
+### Bug Fixes
+
+* crash registering the vue-i18n-loader in old Node versions ([43022c4](https://github.com/nuxt-community/i18n-module/commit/43022c46a107c71d5ddc1bb3f0b93c63ac47853e))
+
 ### [6.22.1](https://github.com/nuxt-community/i18n-module/compare/v6.22.0...v6.22.1) (2021-03-25)
 
 
