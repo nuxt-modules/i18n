@@ -54,7 +54,11 @@ export function buildHook (options) {
   // Add vue-i18n-loader if applicable
   if (options.vueI18nLoader) {
     this.extendBuild(config => {
-      config.module?.rules.push({
+      if (!config.module) {
+        console.warn(formatMessage('Failed to register the vue-i18n-loader.'))
+        return
+      }
+      config.module.rules.push({
         resourceQuery: /blockType=i18n/,
         type: 'javascript/auto',
         loader: require.resolve('@intlify/vue-i18n-loader')
