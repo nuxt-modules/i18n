@@ -45,21 +45,25 @@ export default async (context) => {
       if (locale) {
         // @ts-ignore Using internal API to avoid unnecessary cloning.
         const messages = app.i18n._getMessages()[locale]
-        try {
-          devalue(messages)
-          langs[locale] = messages
-        } catch {
-          // Ignore - client-side will load the chunk asynchronously.
+        if (messages) {
+          try {
+            devalue(messages)
+            langs[locale] = messages
+          } catch {
+            // Ignore - client-side will load the chunk asynchronously.
+          }
         }
       }
       if (fallbackLocale && typeof (fallbackLocale) === 'string' && locale !== fallbackLocale) {
         // @ts-ignore Using internal API to avoid unnecessary cloning.
         const messages = app.i18n._getMessages()[fallbackLocale]
-        try {
-          devalue(messages)
-          langs[fallbackLocale] = messages
-        } catch {
-          // Ignore - client-side will load the chunk asynchronously.
+        if (messages) {
+          try {
+            devalue(messages)
+            langs[fallbackLocale] = messages
+          } catch {
+            // Ignore - client-side will load the chunk asynchronously.
+          }
         }
       }
       nuxtState.__i18n = { langs }
