@@ -13,7 +13,7 @@ interface ModuleNuxtOptions {
   trailingSlash: boolean | undefined
 }
 
-export const asyncLocales: Record<string, () => Promise<LocaleFileExport>>
+export const localeMessages: Record<string, () => Promise<LocaleFileExport>>
 export const Constants: ModuleConstants
 export const nuxtOptions: ModuleNuxtOptions
 export const options: ResolvedOptions
