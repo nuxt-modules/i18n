@@ -37,15 +37,34 @@ export default async (context) => {
   }
 
   if (process.server && options.lazy) {
+    const devalue = (await import('devalue')).default
     context.beforeNuxtRender(({ nuxtState }) => {
       /** @type {Record<string, import('vue-i18n').LocaleMessageObject>} */
       const langs = {}
       const { fallbackLocale, locale } = app.i18n
       if (locale) {
-        langs[locale] = app.i18n.getLocaleMessage(locale)
+        // @ts-ignore Using internal API to avoid unnecessary cloning.
+        const messages = app.i18n._getMessages()[locale]
+        if (messages) {
+          try {
+            devalue(messages)
+            langs[locale] = messages
+          } catch {
+            // Ignore - client-side will load the chunk asynchronously.
+          }
+        }
       }
-      if (typeof (fallbackLocale) === 'string' && locale !== fallbackLocale) {
-        langs[fallbackLocale] = app.i18n.getLocaleMessage(fallbackLocale)
+      if (fallbackLocale && typeof (fallbackLocale) === 'string' && locale !== fallbackLocale) {
+        // @ts-ignore Using internal API to avoid unnecessary cloning.
+        const messages = app.i18n._getMessages()[fallbackLocale]
+        if (messages) {
+          try {
+            devalue(messages)
+            langs[fallbackLocale] = messages
+          } catch {
+            // Ignore - client-side will load the chunk asynchronously.
+          }
+        }
       }
       nuxtState.__i18n = { langs }
     })
@@ -82,7 +101,6 @@ export default async (context) => {
       app.i18n.setLocaleCookie(newLocale)
     }
 
-    // Lazy-loading enabled
     if (options.lazy) {
       const i18nFallbackLocale = app.i18n.fallbackLocale
 
