@@ -50,9 +50,10 @@ export async function loadLanguageAsync (context, locale) {
         }
         /* <% } %> */
       } else {
-        // eslint-disable-next-line no-console
         console.warn(formatMessage(`Could not find lang file for locale ${locale}`))
       }
+    } else {
+      console.warn(formatMessage(`Attempted to load messages for non-existant locale code "${locale}"`))
     }
   }
 }

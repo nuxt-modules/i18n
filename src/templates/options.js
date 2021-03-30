@@ -7,7 +7,9 @@ const asyncLocaleFiles = new Set()
 if (langDir) {
   if (fallbackLocale && typeof (fallbackLocale) === 'string') {
     const localeObject = locales.find(l => l.code === fallbackLocale)
-    syncLocaleFiles.add(localeObject.file)
+    if (localeObject) {
+      syncLocaleFiles.add(localeObject.file)
+    }
   }
   for (const locale of locales) {
     if (!syncLocaleFiles.has(locale.file) && !asyncLocaleFiles.has(locale.file)) {
