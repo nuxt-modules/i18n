@@ -667,20 +667,20 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
     expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
   })
 
-  test('current locale messages have been passed through Nuxt state', async () => {
+  test('fallbackLocale messages have not been passed through Nuxt state', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
     // @ts-ignore
     const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
-    expect(Object.keys(i18nState.langs)).toEqual(['pl'])
+    expect(Object.keys(i18nState.langs)).toEqual([])
   })
 
-  test('current and fallback locale messages have been passed through Nuxt state', async () => {
+  test('current (non-fallback) locale messages have been passed through Nuxt state', async () => {
     page = await browser.newPage()
     await page.goto(url('/no'))
     // @ts-ignore
     const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
-    expect(Object.keys(i18nState.langs).sort()).toEqual(['no', 'pl'])
+    expect(Object.keys(i18nState.langs).sort()).toEqual(['no'])
   })
 
   test('message function results in failing to set Nuxt state for locale', async () => {
@@ -688,7 +688,7 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
     await page.goto(url('/en'))
     // @ts-ignore
     const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
-    expect(Object.keys(i18nState.langs)).toEqual(['pl'])
+    expect(Object.keys(i18nState.langs)).toEqual([])
     // The message function should work when loaded directly through client-side.
     expect(await (await page.$('#message-function'))?.textContent()).toBe('Demo string')
   })

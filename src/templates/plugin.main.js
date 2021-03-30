@@ -42,25 +42,13 @@ export default async (context) => {
       /** @type {Record<string, import('vue-i18n').LocaleMessageObject>} */
       const langs = {}
       const { fallbackLocale, locale } = app.i18n
-      if (locale) {
+      if (locale && locale !== fallbackLocale) {
         // @ts-ignore Using internal API to avoid unnecessary cloning.
         const messages = app.i18n._getMessages()[locale]
         if (messages) {
           try {
             devalue(messages)
             langs[locale] = messages
-          } catch {
-            // Ignore - client-side will load the chunk asynchronously.
-          }
-        }
-      }
-      if (fallbackLocale && typeof (fallbackLocale) === 'string' && locale !== fallbackLocale) {
-        // @ts-ignore Using internal API to avoid unnecessary cloning.
-        const messages = app.i18n._getMessages()[fallbackLocale]
-        if (messages) {
-          try {
-            devalue(messages)
-            langs[fallbackLocale] = messages
           } catch {
             // Ignore - client-side will load the chunk asynchronously.
           }

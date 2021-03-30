@@ -1,4 +1,17 @@
 <%
+const { lazy, locales, langDir, vueI18n } = options.options
+const { fallbackLocale } = vueI18n || {}
+let fallbackLocaleFile = ''
+if (lazy && langDir && vueI18n && fallbackLocale && typeof (fallbackLocale) === 'string') {
+  const l = locales.find(l => l.code === fallbackLocale)
+  if (l) {
+    fallbackLocaleFile = l.file
+%>import fallbackMessages from '<%= `../${relativeToBuild(langDir, l.file)}` %>'
+
+<%
+  }
+}
+
 function stringifyValue(value) {
   if (value === undefined || typeof value === 'function') {
     return String(value);
@@ -28,12 +41,20 @@ for (const [rootKey, rootValue] of Object.entries(options)) {
   }
 }
 
-const { lazy, locales, langDir } = options.options
 if (lazy && langDir) { %>
-export const asyncLocales = {
-  <%= Array.from(
-        new Set(locales.map(l => `'${l.file}': () => import('../${relativeToBuild(langDir, l.file)}' /* webpackChunkName: "lang-${l.file}" */)`))
-      ).join(',\n  ') %>
+export const localeMessages = {
+<%
+  const files = new Set(locales.map(l => l.file))
+  // The messages for the fallback locale are imported synchronously and available from the main bundle as then
+  // it doesn't need to be included in every server-side response and can take better advantage of browser caching.
+  for (const file of files) {
+    if (file === fallbackLocaleFile) {%>
+  <%= `'${file}': () => Promise.resolve(fallbackMessages),` %><%
+    } else {%>
+  <%= `'${file}': () => import('../${relativeToBuild(langDir, file)}' /* webpackChunkName: "lang-${file}" */),` %><%
+    }
+  }
+%>
 }
 <%
 }

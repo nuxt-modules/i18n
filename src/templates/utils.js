@@ -1,4 +1,4 @@
-import { asyncLocales } from './options'
+import { localeMessages } from './options'
 import { formatMessage } from './utils-common'
 
 /**
@@ -30,14 +30,14 @@ export async function loadLanguageAsync (context, locale) {
             messages = nuxtState.__i18n.langs[locale]
             // Even if already cached in Nuxt state, trigger locale import so that HMR kicks-in on changes to that file.
             if (context.isDev) {
-              asyncLocales[file]()
+              localeMessages[file]()
             }
           }
         }
         if (!messages) {
           try {
             // @ts-ignore
-            const getter = await asyncLocales[file]().then(m => m.default || m)
+            const getter = await localeMessages[file]().then(m => m.default || m)
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
             // eslint-disable-next-line no-console
