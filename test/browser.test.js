@@ -688,7 +688,7 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
     await page.goto(url('/en'))
     // @ts-ignore
     const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
-    expect(Object.keys(i18nState.langs)).toEqual(['pl'])
+    expect(Object.keys(i18nState.langs)).toEqual([])
     // The message function should work when loaded directly through client-side.
     expect(await (await page.$('#message-function'))?.textContent()).toBe('Demo string')
   })
