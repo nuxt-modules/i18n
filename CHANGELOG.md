@@ -1,3 +1,10 @@
+### [6.22.3](https://github.com/nuxt-community/i18n-module/compare/v6.22.2...v6.22.3) (2021-03-30)
+
+
+### Bug Fixes
+
+* **lazy:** message function not working when using lazy loading ([#1125](https://github.com/nuxt-community/i18n-module/issues/1125)) ([68b580e](https://github.com/nuxt-community/i18n-module/commit/68b580e2690d07c5b4383ea8ca53acab24304e14)), closes [#1124](https://github.com/nuxt-community/i18n-module/issues/1124)
+
 ### [6.22.2](https://github.com/nuxt-community/i18n-module/compare/v6.22.1...v6.22.2) (2021-03-26)
 
 
