@@ -694,6 +694,85 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
   })
 })
 
+describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
+  /** @type {Nuxt} */
+  let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+  /** @type {import('playwright-chromium').Page} */
+  let page
+
+  beforeAll(async () => {
+    const overrides = {
+      i18n: {
+        defaultLocale: 'pl',
+        lazy: false,
+        langDir: 'lang/',
+        vueI18n: {
+          fallbackLocale: 'pl'
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      { code: 'en', iso: 'en-US', file: 'en-US.js' },
+      { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
+      { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+
+    await nuxt.close()
+  })
+
+  // Browser language is 'en' and so doesn't match supported ones.
+  // Issue https://github.com/nuxt-community/i18n-module/issues/643
+  test('updates language after navigating from default to non-default locale', async () => {
+    page = await browser.newPage()
+    await page.goto(url('/'))
+    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
+    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    await navigate(page, '/no')
+    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
+    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+  })
+
+  // Issue https://github.com/nuxt-community/i18n-module/issues/843
+  test('updates language after navigating from non-default to default locale', async () => {
+    page = await browser.newPage()
+    await page.goto(url('/no'))
+    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
+    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    await navigate(page, '/')
+    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
+    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+  })
+
+  test('messages have not been passed through Nuxt state', async () => {
+    page = await browser.newPage()
+    await page.goto(url('/'))
+    // @ts-ignore
+    const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
+    expect(i18nState).toBeUndefined()
+  })
+
+  test('can resolve translation for non-current locale', async () => {
+    page = await browser.newPage()
+    await page.goto(url('/'))
+    expect(await (await page.$('#english-translation'))?.textContent()).toBe('Homepage')
+  })
+})
+
 describe(`${browserString} (SPA)`, () => {
   /** @type {Nuxt} */
   let nuxt

@@ -1,4 +1,4 @@
-import { localeMessages } from './options'
+import { localeMessages, options } from './options'
 import { formatMessage } from './utils-common'
 
 /**
@@ -17,11 +17,11 @@ export async function loadLanguageAsync (context, locale) {
   }
 
   if (!i18n.loadedLanguages.includes(locale)) {
-    const localeObject = /** @type {import('../../types').LocaleObject[]} */(i18n.locales).find(l => l.code === locale)
+    const localeObject = options.normalizedLocales.find(l => l.code === locale)
     if (localeObject) {
       const { file } = localeObject
       if (file) {
-        /* <% if (options.options.lazy && options.options.langDir) { %> */
+        /* <% if (options.options.langDir) { %> */
         /** @type {import('vue-i18n').LocaleMessageObject | undefined} */
         let messages
         if (process.client) {

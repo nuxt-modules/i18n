@@ -5,6 +5,7 @@
     <nuxt-link id="link-about" exact :to="aboutPath">{{ aboutTranslation }}</nuxt-link>
     <div id="current-locale">locale: {{ $i18n.locale }}</div>
     <div id="message-function">{{ $t('fn') }}</div>
+    <div id="english-translation">{{ $t('home', 'en') }}</div>
   </div>
 </template>
 
