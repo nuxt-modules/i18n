@@ -1,17 +1,29 @@
 <%
 const { lazy, locales, langDir, vueI18n } = options.options
 const { fallbackLocale } = vueI18n || {}
-let fallbackLocaleFile = ''
-if (lazy && langDir && vueI18n && fallbackLocale && typeof (fallbackLocale) === 'string') {
-  const l = locales.find(l => l.code === fallbackLocale)
-  if (l) {
-    fallbackLocaleFile = l.file
-%>import fallbackMessages from '<%= `../${relativeToBuild(langDir, l.file)}` %>'
+const syncLocaleFiles = new Set()
+const asyncLocaleFiles = new Set()
 
+if (langDir) {
+  if (fallbackLocale && typeof (fallbackLocale) === 'string') {
+    const localeObject = locales.find(l => l.code === fallbackLocale)
+    if (localeObject) {
+      syncLocaleFiles.add(localeObject.file)
+    }
+  }
+  for (const locale of locales) {
+    if (!syncLocaleFiles.has(locale.file) && !asyncLocaleFiles.has(locale.file)) {
+      (lazy ? asyncLocaleFiles : syncLocaleFiles).add(locale.file)
+    }
+  }
+  for (const file of syncLocaleFiles) {
+%>import locale<%= hash(file) %> from '<%= `../${relativeToBuild(langDir, file)}` %>'
 <%
   }
 }
+%>
 
+<%
 function stringifyValue(value) {
   if (value === undefined || typeof value === 'function') {
     return String(value);
@@ -41,18 +53,16 @@ for (const [rootKey, rootValue] of Object.entries(options)) {
   }
 }
 
-if (lazy && langDir) { %>
+if (langDir) { %>
 export const localeMessages = {
 <%
-  const files = new Set(locales.map(l => l.file))
   // The messages for the fallback locale are imported synchronously and available from the main bundle as then
   // it doesn't need to be included in every server-side response and can take better advantage of browser caching.
-  for (const file of files) {
-    if (file === fallbackLocaleFile) {%>
-  <%= `'${file}': () => Promise.resolve(fallbackMessages),` %><%
-    } else {%>
+  for (const file of syncLocaleFiles) {%>
+  <%= `'${file}': () => Promise.resolve(locale${hash(file)}),` %><%
+  }
+  for (const file of asyncLocaleFiles) {%>
   <%= `'${file}': () => import('../${relativeToBuild(langDir, file)}' /* webpackChunkName: "lang-${file}" */),` %><%
-    }
   }
 %>
 }

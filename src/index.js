@@ -18,16 +18,17 @@ export default function (moduleOptions) {
     return
   }
 
-  if (options.lazy) {
-    if (!options.langDir) {
-      throw new Error(formatMessage('When using the "lazy" option you must also set the "langDir" option.'))
-    }
+  if (options.lazy && !options.langDir) {
+    throw new Error(formatMessage('When using the "lazy" option you must also set the "langDir" option.'))
+  }
+
+  if (options.langDir) {
     if (!options.locales.length || typeof options.locales[0] === 'string') {
-      throw new Error(formatMessage('When using the "langDir" option the "locales" option must be a list of objects.'))
+      throw new Error(formatMessage('When using the "langDir" option the "locales" must be a list of objects.'))
     }
     for (const locale of options.locales) {
       if (typeof (locale) === 'string' || !locale.file) {
-        throw new Error(formatMessage(`All locales must be objects and have the "file" property set when using "lazy".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`))
+        throw new Error(formatMessage(`All locales must be objects and have the "file" property set when using "langDir".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`))
       }
     }
     options.langDir = this.nuxt.resolver.resolveAlias(options.langDir)
