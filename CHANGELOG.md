@@ -1,3 +1,16 @@
+## [6.23.0](https://github.com/nuxt-community/i18n-module/compare/v6.22.3...v6.23.0) (2021-04-07)
+
+
+### Features
+
+* support loading messages from file without lazy-loading ([#1130](https://github.com/nuxt-community/i18n-module/issues/1130)) ([03618fb](https://github.com/nuxt-community/i18n-module/commit/03618fbe7fcddd7033a5f3ebcba3b68eb936da8d)), closes [#412](https://github.com/nuxt-community/i18n-module/issues/412)
+
+
+### Bug Fixes
+
+* IE11 compatibility issue due to is-https package ([#1138](https://github.com/nuxt-community/i18n-module/issues/1138)) ([dcf43de](https://github.com/nuxt-community/i18n-module/commit/dcf43de88640dacb7823a84eba9f055cd03ddabf)), closes [#1137](https://github.com/nuxt-community/i18n-module/issues/1137)
+* **types:** misplaced jsdoc deprecated wrong API ([9736bf1](https://github.com/nuxt-community/i18n-module/commit/9736bf1a68aeb7bb275f3b092c0911b69627ea04))
+
 ### [6.22.3](https://github.com/nuxt-community/i18n-module/compare/v6.22.2...v6.22.3) (2021-03-30)
 
 
