@@ -1,6 +1,5 @@
 import Cookie from 'cookie'
 import JsCookie from 'js-cookie'
-import isHTTPS from 'is-https'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
@@ -132,6 +131,35 @@ export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
 
   // eslint-disable-next-line no-console
   console.warn(formatMessage(`Could not find domain name for locale ${localeCode}`))
+}
+
+/**
+ * Determines if a server-side request is using HTTPS.
+ *
+ * @param {import('http').IncomingMessage} req
+ * @param {Boolean} [trustProxy=true]
+ * @return {Boolean | undefined}.
+ */
+function isHTTPS (req, trustProxy = true) {
+  // Check x-forwarded-proto header
+  const _xForwardedProto = (trustProxy && req.headers) ? req.headers['x-forwarded-proto'] : undefined
+  const protoCheck = typeof _xForwardedProto === 'string' ? _xForwardedProto.includes('https') : undefined
+  if (protoCheck) {
+    return true
+  }
+
+  const socket = /** @type {import('tls').TLSSocket} */(req.socket)
+  const _encrypted = socket ? socket.encrypted : undefined
+  const encryptedCheck = _encrypted !== undefined ? _encrypted === true : undefined
+  if (encryptedCheck) {
+    return true
+  }
+
+  if (protoCheck === undefined && encryptedCheck === undefined) {
+    return undefined
+  }
+
+  return false
 }
 
 /**
