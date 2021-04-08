@@ -27,11 +27,7 @@ interface NuxtI18nHeadOptions {
   addSeoAttributes?: boolean
 }
 
-interface NuxtI18nSeo {
-  htmlAttrs?: MetaInfo['htmlAttrs']
-  link?: MetaInfo['link']
-  meta?: MetaInfo['meta']
-}
+type NuxtI18nMeta = Required<Pick<MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>
 
 declare module 'vue-i18n' {
   // the VueI18n class expands here: https://goo.gl/Xtp9EG
@@ -59,9 +55,9 @@ interface NuxtI18nApi {
 declare module 'vue/types/vue' {
   interface Vue extends NuxtI18nApi {
     // $i18n is already added by vue-i18n.
-    $nuxtI18nHead(options?: NuxtI18nHeadOptions): MetaInfo
+    $nuxtI18nHead(options?: NuxtI18nHeadOptions): NuxtI18nMeta
     /** @deprecated Use `$nuxtI18nHead({ addDirAttribute: true, addSeoAttributes: true })` instead. */
-    $nuxtI18nSeo(): NuxtI18nSeo
+    $nuxtI18nSeo(): NuxtI18nMeta
   }
 }
 
