@@ -567,8 +567,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
     test('localeRoute returns localized route', async () => {
       const window = await nuxt.renderAndGetWindow(url('/'))
       expect(window.$nuxt.localeRoute('about', 'en')).toMatchObject({
-        name: 'about___en',
-        fullPath: pathRespectingTrailingSlash('/about-us')
+        name: 'about___en'
       })
     })
 
@@ -576,7 +575,6 @@ for (const trailingSlash of TRAILING_SLASHES) {
       const window = await nuxt.renderAndGetWindow(url('/'))
       expect(window.$nuxt.localeRoute({ name: 'about', params: { foo: '1' } }, 'en')).toMatchObject({
         name: 'about___en',
-        fullPath: pathRespectingTrailingSlash('/about-us'),
         params: {
           foo: '1'
         }
@@ -592,8 +590,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
       expect(dom.querySelector('#name')?.textContent).toBe('middleware')
       const routeObject = dom.querySelector('#localizedRoute')?.textContent || '{}'
       expect(JSON.parse(routeObject)).toMatchObject({
-        name: 'middleware___fr',
-        fullPath: pathRespectingTrailingSlash('/fr/middleware-fr')
+        name: 'middleware___fr'
       })
     })
 
@@ -1024,8 +1021,8 @@ describe('prefix_and_default strategy', () => {
 
   test('localeRoute returns localized route (by route name)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
-    expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default', fullPath: '/' })
-    expect(window.$nuxt.localeRoute('index', 'fr')).toMatchObject({ name: 'index___fr', fullPath: '/fr' })
+    expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default' })
+    expect(window.$nuxt.localeRoute('index', 'fr')).toMatchObject({ name: 'index___fr' })
   })
 
   test('localeRoute returns localized route (by route object with name)', async () => {
@@ -1033,21 +1030,19 @@ describe('prefix_and_default strategy', () => {
     // Prefer unprefixed path for default locale:
     expect(window.$nuxt.localeRoute({ name: 'simple', query: { a: '1' } }, 'en')).toMatchObject({
       name: 'simple___en___default',
-      query: { a: '1' },
-      fullPath: '/simple?a=1'
+      query: { a: '1' }
     })
     expect(window.$nuxt.localeRoute({ name: 'simple', query: { a: '1' } }, 'fr')).toMatchObject({
       name: 'simple___fr',
-      query: { a: '1' },
-      fullPath: '/fr/simple?a=1'
+      query: { a: '1' }
     })
   })
 
   test('localeRoute returns localized route (by route path)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     // Prefer unprefixed path for default locale:
-    expect(window.$nuxt.localeRoute('/simple', 'en')).toMatchObject({ name: 'simple___en___default', fullPath: '/simple' })
-    expect(window.$nuxt.localeRoute('/simple', 'fr')).toMatchObject({ name: 'simple___fr', fullPath: '/fr/simple' })
+    expect(window.$nuxt.localeRoute('/simple', 'en')).toMatchObject({ name: 'simple___en___default' })
+    expect(window.$nuxt.localeRoute('/simple', 'fr')).toMatchObject({ name: 'simple___fr' })
   })
 
   test('localeRoute returns localized route (by route object with path)', async () => {
@@ -1055,28 +1050,30 @@ describe('prefix_and_default strategy', () => {
     // Prefer unprefixed path for default locale:
     expect(window.$nuxt.localeRoute({ path: '/simple', query: { a: '1' } }, 'en')).toMatchObject({
       name: 'simple___en___default',
-      query: { a: '1' },
-      fullPath: '/simple?a=1'
+      query: { a: '1' }
     })
     expect(window.$nuxt.localeRoute({ path: '/simple', query: { a: '1' } }, 'fr')).toMatchObject({
       name: 'simple___fr',
-      query: { a: '1' },
-      fullPath: '/fr/simple?a=1'
+      query: { a: '1' }
     })
   })
 
   test('localeRoute returns customized localized route (by route path)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     // Prefer unprefixed path for default locale:
-    expect(window.$nuxt.localeRoute('/about-us', 'en')).toMatchObject({ name: 'about___en___default', fullPath: '/about-us' })
-    expect(window.$nuxt.localeRoute('/en/about-us', 'en')).toMatchObject({ name: 'about___en___default', fullPath: '/about-us' })
-    expect(window.$nuxt.localeRoute('/about-us', 'fr')).toMatchObject({ name: 'about___fr', fullPath: '/fr/a-propos' })
+    expect(window.$nuxt.localeRoute('/about-us', 'en')).toMatchObject({ name: 'about___en___default' })
+    expect(window.$nuxt.localeRoute('/en/about-us', 'en')).toMatchObject({ name: 'about___en___default' })
+    expect(window.$nuxt.localeRoute('/about-us', 'fr')).toMatchObject({ name: 'about___fr' })
     expect(window.$nuxt.localeRoute('/about-us?q=1#hash', 'en')).toMatchObject({
       name: 'about___en___default',
-      fullPath: '/about-us?q=1#hash',
       query: { q: '1' },
       hash: '#hash'
     })
+  })
+
+  test('localeRoute returns route path for non-existing route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.localeRoute('/abc', 'en')).toMatchObject({ path: '/abc' })
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {
