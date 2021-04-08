@@ -2,8 +2,6 @@ import VueMeta from 'vue-meta'
 import { Constants, options } from './options'
 import { formatMessage } from './utils-common'
 
-/** @typedef {Required<Pick<import('vue-meta').MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>} SeoMeta */
-
 /**
  * @this {import('vue/types/vue').Vue}
  * @return {import('vue-meta').MetaInfo}
@@ -14,7 +12,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     return {}
   }
 
-  /** @type {SeoMeta} */
+  /** @type {import('../../types/vue').NuxtI18nMeta} */
   const metaObject = {
     htmlAttrs: {},
     link: [],
@@ -66,7 +64,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
    *
    * @param {import('../../types').LocaleObject[]} locales
    * @param {string} baseUrl
-   * @param {SeoMeta['link']} link
+   * @param {import('../../types/vue').NuxtI18nMeta['link']} link
    */
   function addHreflangLinks (locales, baseUrl, link) {
     if (options.strategy === Constants.STRATEGIES.NO_PREFIX) {
@@ -121,7 +119,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
    * @this {import('vue/types/vue').Vue}
    *
    * @param {string} baseUrl
-   * @param {SeoMeta['link']} link
+   * @param {import('../../types/vue').NuxtI18nMeta['link']} link
    */
   function addCanonicalLinks (baseUrl, link) {
     const currentRoute = this.localeRoute({
@@ -145,7 +143,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
    *
    * @param {import('../../types').LocaleObject} currentLocale
    * @param {string | undefined} currentLocaleIso
-   * @param {SeoMeta['meta']} meta
+   * @param {import('../../types/vue').NuxtI18nMeta['meta']} meta
    */
   function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
     const hasCurrentLocaleAndIso = currentLocale && currentLocaleIso
@@ -167,7 +165,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
    *
    * @param {import('../../types').LocaleObject[]} locales
    * @param {string | undefined} currentLocaleIso
-   * @param {SeoMeta['meta']} meta
+   * @param {import('../../types/vue').NuxtI18nMeta['meta']} meta
    */
   function addAlternateOgLocales (locales, currentLocaleIso, meta) {
     const localesWithoutCurrent = locales.filter(locale => {
