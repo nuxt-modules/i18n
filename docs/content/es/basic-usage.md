@@ -77,3 +77,14 @@ export default ({ app }) => {
   const switchLocalePath = app.switchLocalePath('fr')
 }
 ```
+
+* `localeRoute` <badge>v6.12.0+</badge> – Returns the location object for a given page. It works like `localePath` but returns `Location` resolved by Vue Router rather than just a full route path. This can be useful since full path returned from `localePath` might not carry all information from provided input (for example route params that the page doesn't specify).
+
+```vue
+<a
+  href="#"
+  @click="$router.push(localeRoute({
+    name: 'index',
+    params: { foo: '1' }
+  }))">Navigate</a>
+```

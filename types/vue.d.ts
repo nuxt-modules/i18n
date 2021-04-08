@@ -1,7 +1,7 @@
 import 'vue'
 import 'vuex'
 import '@nuxt/types'
-import { RawLocation, Route } from 'vue-router'
+import { Location, RawLocation, Route } from 'vue-router'
 import VueI18n, { IVueI18n } from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
 import { BaseOptions, LocaleObject, Options } from '.'
@@ -48,7 +48,7 @@ declare module 'vue-i18n' {
 interface NuxtI18nApi {
     getRouteBaseName(route?: Route): string | undefined
     localePath(route: RawLocation, locale?: string): string
-    localeRoute(route: RawLocation, locale?: string): Route | undefined
+    localeRoute(route: RawLocation, locale?: string): Location | undefined
     switchLocalePath(locale: string): string
 }
 

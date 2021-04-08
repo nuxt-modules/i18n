@@ -8,8 +8,8 @@ import { getDomainFromLocale } from './utils-common'
  * @type {Vue['localePath']}
  */
 function localePath (route, locale) {
-  const localizedRoute = this.localeRoute(route, locale)
-  return localizedRoute ? localizedRoute.fullPath : ''
+  const localizedRoute = resolveRoute.call(this, route, locale)
+  return localizedRoute ? localizedRoute.route.fullPath : ''
 }
 
 /**
@@ -17,6 +17,17 @@ function localePath (route, locale) {
  * @type {Vue['localeRoute']}
  */
 function localeRoute (route, locale) {
+  const resolved = resolveRoute.call(this, route, locale)
+  return resolved ? resolved.location : undefined
+}
+
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @param {import('vue-router').RawLocation} route
+ * @param {string} [locale]
+ * @return {ReturnType<import('vue-router').default['resolve']> | undefined}
+ */
+function resolveRoute (route, locale) {
   // Abort if no route or no locale
   if (!route) {
     return
@@ -81,12 +92,12 @@ function localeRoute (route, locale) {
     }
   }
 
-  const resolvedRoute = this.router.resolve(localizedRoute).route
-  if (resolvedRoute.name) {
+  const resolvedRoute = this.router.resolve(localizedRoute)
+  if (resolvedRoute.route.name) {
     return resolvedRoute
   }
   // If didn't resolve to an existing route then just return resolved route based on original input.
-  return this.router.resolve(route).route
+  return this.router.resolve(route)
 }
 
 /**
