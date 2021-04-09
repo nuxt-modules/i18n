@@ -8,6 +8,7 @@ const middleware = ({ app }) => {
   app.allLocalePaths = app.i18n.localeCodes.map(locale => app.switchLocalePath(locale))
   app.routeBaseName = app.getRouteBaseName()
   app.localizedRoute = app.localeRoute(app.routeBaseName, 'fr')
+  app.localizedLocation = app.localeLocation(app.routeBaseName, 'fr')
 }
 
 export default middleware

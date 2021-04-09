@@ -48,7 +48,8 @@ declare module 'vue-i18n' {
 interface NuxtI18nApi {
     getRouteBaseName(route?: Route): string | undefined
     localePath(route: RawLocation, locale?: string): string
-    localeRoute(route: RawLocation, locale?: string): Location | undefined
+    localeRoute(route: RawLocation, locale?: string): Route | undefined
+    localeLocation(route: RawLocation, locale?: string): Location | undefined
     switchLocalePath(locale: string): string
 }
 

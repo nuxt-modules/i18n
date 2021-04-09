@@ -21,6 +21,7 @@ export interface PluginProxy {
   i18n: Vue['$i18n'],
   localePath: Vue['localePath'],
   localeRoute: Vue['localeRoute'],
+  localeLocation: Vue['localeLocation'],
   req?: IncomingMessage,
   route: Vue['$route'],
   router: Vue['$router'],

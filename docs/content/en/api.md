@@ -51,11 +51,24 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 <badge>v6.12.0+</badge>
 
   - **Arguments**:
-    - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
+    - route (type: `RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
     - locale (type: `string`, default: current locale)
-  - **Returns**: [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125) | `undefined`
+  - **Returns**: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135-L145) | `undefined`
 
-  Returns localized location for passed in `route`. If `locale` is not specified, uses current locale.
+  Returns localized route for passed in `route` parameters. If `locale` is not specified, uses current locale.
+
+  See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
+
+#### localeLocation
+
+<badge>v6.24.0+</badge>
+
+  - **Arguments**:
+    - route (type: `RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
+    - locale (type: `string`, default: current locale)
+  - **Returns**: [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125-L133) | `undefined`
+
+  Returns localized location for passed in `route` parameters. If `locale` is not specified, uses current locale.
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
@@ -225,6 +238,7 @@ export default Vue.extend({
 ### getRouteBaseName
 ### localePath
 ### localeRoute
+### localeLocation
 ### switchLocalePath
 
 See more info about those in [methods documentation](#methods).
@@ -250,6 +264,7 @@ export const actions = {
 ### getRouteBaseName
 ### localePath
 ### localeRoute
+### localeLocation
 ### switchLocalePath
 
 See more info about those in [methods documentation](#methods).
