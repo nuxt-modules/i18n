@@ -592,8 +592,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
       expect(dom.querySelector('#name')?.textContent).toBe('middleware')
       const routeObject = dom.querySelector('#localizedRoute')?.textContent || '{}'
       expect(JSON.parse(routeObject)).toMatchObject({
-        name: 'middleware___fr',
-        fullPath: pathRespectingTrailingSlash('/fr/middleware-fr')
+        name: 'middleware___fr'
       })
     })
 
@@ -1077,6 +1076,16 @@ describe('prefix_and_default strategy', () => {
       query: { q: '1' },
       hash: '#hash'
     })
+  })
+
+  test('localeLocation returns route name for existing route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.localeLocation('/about-us', 'en')).toMatchObject({ name: 'about___en___default' })
+  })
+
+  test('localeLocation returns route path for non-existing route', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.localeLocation('/abc', 'en')).toMatchObject({ path: '/abc' })
   })
 
   test('canonical SEO link is added to prefixed default locale', async () => {

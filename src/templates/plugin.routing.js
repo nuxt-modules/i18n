@@ -8,8 +8,8 @@ import { getDomainFromLocale } from './utils-common'
  * @type {Vue['localePath']}
  */
 function localePath (route, locale) {
-  const localizedRoute = this.localeRoute(route, locale)
-  return localizedRoute ? localizedRoute.fullPath : ''
+  const localizedRoute = resolveRoute.call(this, route, locale)
+  return localizedRoute ? localizedRoute.route.fullPath : ''
 }
 
 /**
@@ -17,6 +17,26 @@ function localePath (route, locale) {
  * @type {Vue['localeRoute']}
  */
 function localeRoute (route, locale) {
+  const resolved = resolveRoute.call(this, route, locale)
+  return resolved ? resolved.route : undefined
+}
+
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @type {Vue['localeLocation']}
+ */
+function localeLocation (route, locale) {
+  const resolved = resolveRoute.call(this, route, locale)
+  return resolved ? resolved.location : undefined
+}
+
+/**
+ * @this {import('../../types/internal').PluginProxy}
+ * @param {import('vue-router').RawLocation} route
+ * @param {string} [locale]
+ * @return {ReturnType<import('vue-router').default['resolve']> | undefined}
+ */
+function resolveRoute (route, locale) {
   // Abort if no route or no locale
   if (!route) {
     return
@@ -81,12 +101,12 @@ function localeRoute (route, locale) {
     }
   }
 
-  const resolvedRoute = this.router.resolve(localizedRoute).route
-  if (resolvedRoute.name) {
+  const resolvedRoute = this.router.resolve(localizedRoute)
+  if (resolvedRoute.route.name) {
     return resolvedRoute
   }
   // If didn't resolve to an existing route then just return resolved route based on original input.
-  return this.router.resolve(route).route
+  return this.router.resolve(route)
 }
 
 /**
@@ -168,6 +188,7 @@ const VueInstanceProxy = function (targetFunction) {
       i18n: this.$i18n,
       localePath: this.localePath,
       localeRoute: this.localeRoute,
+      localeLocation: this.localeLocation,
       req: process.server ? this.$ssrContext.req : null,
       route: this.$route,
       router: this.$router,
@@ -192,6 +213,7 @@ const NuxtContextProxy = function (context, targetFunction) {
       getRouteBaseName: app.getRouteBaseName,
       i18n: app.i18n,
       localePath: app.localePath,
+      localeLocation: app.localeLocation,
       localeRoute: app.localeRoute,
       req: process.server ? req : null,
       route,
@@ -210,6 +232,7 @@ const plugin = {
       methods: {
         localePath: VueInstanceProxy(localePath),
         localeRoute: VueInstanceProxy(localeRoute),
+        localeLocation: VueInstanceProxy(localeLocation),
         switchLocalePath: VueInstanceProxy(switchLocalePath),
         getRouteBaseName: VueInstanceProxy(getRouteBaseName)
       }
@@ -224,12 +247,14 @@ export default (context) => {
 
   app.localePath = context.localePath = NuxtContextProxy(context, localePath)
   app.localeRoute = context.localeRoute = NuxtContextProxy(context, localeRoute)
+  app.localeLocation = context.localeLocation = NuxtContextProxy(context, localeLocation)
   app.switchLocalePath = context.switchLocalePath = NuxtContextProxy(context, switchLocalePath)
   app.getRouteBaseName = context.getRouteBaseName = NuxtContextProxy(context, getRouteBaseName)
 
   if (store) {
     store.localePath = app.localePath
     store.localeRoute = app.localeRoute
+    store.localeLocation = app.localeLocation
     store.switchLocalePath = app.switchLocalePath
     store.getRouteBaseName = app.getRouteBaseName
   }

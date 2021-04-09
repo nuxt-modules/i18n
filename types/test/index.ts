@@ -2,14 +2,14 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { Route } from 'vue-router'
+import { Location, Route } from 'vue-router'
 import { Plugin } from '@nuxt/types'
 import '../index'
 
 const vm = new Vue()
 const locale = 'en'
 
-let path: string | undefined
+let path: string
 
 // localePath
 
@@ -30,7 +30,14 @@ const routeBaseName: string | undefined = vm.getRouteBaseName(vm.$route)
 
 const localizedRoute: Route | undefined = vm.localeRoute('about', 'fr')
 if (localizedRoute) {
-  vm.$router.push({ path: localizedRoute.path })
+  const { fullPath } = localizedRoute
+}
+
+// localeLocation
+
+const localizedLocation: Location | undefined = vm.localeLocation('about', 'fr')
+if (localizedLocation) {
+  vm.$router.push(localizedLocation)
 }
 
 // $i18n
