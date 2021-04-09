@@ -1,3 +1,15 @@
+## [6.24.0](https://github.com/nuxt-community/i18n-module/compare/v6.23.0...v6.24.0) (2021-04-09)
+
+
+### Features
+
+* add localeLocation API ([#1142](https://github.com/nuxt-community/i18n-module/issues/1142)) ([c587d23](https://github.com/nuxt-community/i18n-module/commit/c587d230b866fb2937a8c63dda2efdee12f21a02)), closes [#776](https://github.com/nuxt-community/i18n-module/issues/776)
+
+
+### Bug Fixes
+
+* **types:** more specific types for $nuxtI18nHead/$nuxtI18nSeo ([02cc072](https://github.com/nuxt-community/i18n-module/commit/02cc072b4bd7c6fe2ca4a745c7a28238f0a48f45)), closes [#1133](https://github.com/nuxt-community/i18n-module/issues/1133)
+
 ## [6.23.0](https://github.com/nuxt-community/i18n-module/compare/v6.22.3...v6.23.0) (2021-04-07)
 
 
