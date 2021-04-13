@@ -1,7 +1,8 @@
-import './vue'
-import { Locale, I18nOptions } from 'vue-i18n'
+import VueI18n, { Locale, I18nOptions, IVueI18n } from 'vue-i18n'
 import { Context as NuxtContext } from '@nuxt/types'
+import './vue'
 
+// Deprecated
 export { NuxtVueI18n } from './nuxt-i18n'
 
 export { Locale }
@@ -71,3 +72,17 @@ export interface Options extends BaseOptions {
   vueI18nLoader?: boolean
   vuex?: VuexOptions | false
 }
+
+export interface IVueI18nNuxt extends Required<BaseOptions> {
+  finalizePendingLocaleChange(): Promise<void>
+  getBrowserLocale(): string | undefined
+  getLocaleCookie(): string | undefined
+  loadedLanguages: string[] | undefined
+  localeCodes: readonly Locale[]
+  localeProperties: LocaleObject
+  setLocale(locale: string): Promise<void>
+  setLocaleCookie(locale: string): void
+  waitForPendingLocaleChange(): Promise<void>
+}
+
+export type NuxtI18nInstance = VueI18n & IVueI18n
