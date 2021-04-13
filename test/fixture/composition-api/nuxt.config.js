@@ -7,7 +7,7 @@ const config = {
   buildDir: resolve(__dirname, '.nuxt'),
   srcDir: __dirname,
   buildModules: [
-    '@nuxtjs/composition-api'
+    '@nuxtjs/composition-api/module'
   ]
 }
 
