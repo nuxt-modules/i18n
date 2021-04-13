@@ -1,3 +1,10 @@
+## [6.25.0](https://github.com/nuxt-community/i18n-module/compare/v6.24.0...v6.25.0) (2021-04-13)
+
+
+### Features
+
+* **types:** add NuxtI18nInstance type for use with custom accessors ([#1147](https://github.com/nuxt-community/i18n-module/issues/1147)) ([aa4f4d8](https://github.com/nuxt-community/i18n-module/commit/aa4f4d8e9fe620f809444e3ba77954f965f92459)), closes [#1146](https://github.com/nuxt-community/i18n-module/issues/1146)
+
 ## [6.24.0](https://github.com/nuxt-community/i18n-module/compare/v6.23.0...v6.24.0) (2021-04-09)
 
 
