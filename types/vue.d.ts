@@ -1,10 +1,10 @@
 import 'vue'
 import 'vuex'
+import 'vue-i18n'
 import '@nuxt/types'
 import { Location, RawLocation, Route } from 'vue-router'
-import VueI18n, { IVueI18n } from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
-import { BaseOptions, LocaleObject, Options } from '.'
+import { Options, NuxtI18nInstance, IVueI18nNuxt } from '.'
 
 interface NuxtI18nComponentOptions {
   paths?: {
@@ -29,28 +29,16 @@ interface NuxtI18nHeadOptions {
 
 type NuxtI18nMeta = Required<Pick<MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>
 
-declare module 'vue-i18n' {
-  // the VueI18n class expands here: https://goo.gl/Xtp9EG
-  // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
-  interface IVueI18n extends Required<BaseOptions> {
-    finalizePendingLocaleChange(): Promise<void>
-    getBrowserLocale(): string | undefined
-    getLocaleCookie(): string | undefined
-    loadedLanguages: string[] | undefined
-    localeCodes: readonly Locale[]
-    localeProperties: LocaleObject
-    setLocale(locale: string): Promise<void>
-    setLocaleCookie(locale: string): void
-    waitForPendingLocaleChange(): Promise<void>
-  }
-}
-
 interface NuxtI18nApi {
     getRouteBaseName(route?: Route): string | undefined
     localePath(route: RawLocation, locale?: string): string
     localeRoute(route: RawLocation, locale?: string): Route | undefined
     localeLocation(route: RawLocation, locale?: string): Location | undefined
     switchLocalePath(locale: string): string
+}
+
+declare module 'vue-i18n' {
+  interface IVueI18n extends IVueI18nNuxt {}
 }
 
 declare module 'vue/types/vue' {
@@ -70,11 +58,11 @@ declare module 'vue/types/options' {
 
 declare module '@nuxt/types' {
   interface Context extends NuxtI18nApi {
-    i18n: VueI18n & IVueI18n
+    i18n: NuxtI18nInstance
   }
 
   interface NuxtAppOptions extends NuxtI18nApi {
-    i18n: VueI18n & IVueI18n
+    i18n: NuxtI18nInstance
   }
 
   interface NuxtConfig {
@@ -84,6 +72,6 @@ declare module '@nuxt/types' {
 
 declare module 'vuex/types/index' {
   interface Store<S> extends NuxtI18nApi {
-    $i18n: VueI18n & IVueI18n
+    $i18n: NuxtI18nInstance
   }
 }
