@@ -90,7 +90,7 @@
     "@babel/parser": "^7.13.15",
     "@babel/traverse": "^7.13.15",
     "@intlify/vue-i18n-extensions": "^1.0.2",
-    "@intlify/vue-i18n-loader": "^1.1.0",
+    "@intlify/vue-i18n-loader": "^2.1.0",
     "cookie": "^0.4.1",
     "devalue": "^2.0.1",
     "js-cookie": "^2.2.1",
