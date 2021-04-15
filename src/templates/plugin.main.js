@@ -21,16 +21,16 @@ import { klona } from '~i18n-klona'
 
 Vue.use(VueI18n)
 
-const detectBrowserLanguage = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
-const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
-const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
-  routesNameSeparator: options.routesNameSeparator,
-  defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
-})
-
 /** @type {import('@nuxt/types').Plugin} */
 export default async (context) => {
   const { app, route, store, req, res, redirect } = context
+
+  const detectBrowserLanguage = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
+  const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
+  const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
+    routesNameSeparator: options.routesNameSeparator,
+    defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
+  })
 
   if (options.vuex && store) {
     registerStore(store, options.vuex, options.localeCodes)
