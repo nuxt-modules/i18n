@@ -25,13 +25,6 @@ Vue.use(VueI18n)
 export default async (context) => {
   const { app, route, store, req, res, redirect } = context
 
-  const detectBrowserLanguage = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
-  const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
-  const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
-    routesNameSeparator: options.routesNameSeparator,
-    defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
-  })
-
   if (options.vuex && store) {
     registerStore(store, options.vuex, options.localeCodes)
   }
@@ -58,7 +51,17 @@ export default async (context) => {
     })
   }
 
-  const { useCookie, cookieKey, cookieDomain, cookieSecure, cookieCrossOrigin } = detectBrowserLanguage
+  const {
+    alwaysRedirect,
+    fallbackLocale,
+    onlyOnNoPrefix,
+    onlyOnRoot,
+    useCookie,
+    cookieKey,
+    cookieDomain,
+    cookieSecure,
+    cookieCrossOrigin
+  } = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
 
   /**
    * @param {string | undefined} newLocale
@@ -142,6 +145,11 @@ export default async (context) => {
       }
     }
   }
+
+  const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
+    routesNameSeparator: options.routesNameSeparator,
+    defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
+  })
 
   /**
    * Gets the redirect path for locale.
