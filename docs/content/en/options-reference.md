@@ -124,7 +124,7 @@ Whether the translations should be lazy-loaded. If this is enabled, you MUST con
 
 Loading locale messages lazily means that only messages for currently used locale (and for the fallback locale, if different from current locale) will be loaded on page loading.
 
-The value can also be set to an object (supported from version 6.3.0) that can be used instead of the `true` value to override some configuration options related to lazy loading. This has the following optional properties:
+The value can also be set to an object (supported from version 6.3.0) instead of the `true` value to override some configuration options related to lazy loading. Supports the following optional properties:
 
 ```js
 {

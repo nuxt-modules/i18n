@@ -78,12 +78,12 @@ This rule in fact applies also to any other module that adds plugins and whose f
 
 <badge>v6.3.0+</badge>
 
-You can assign a configuration object to the `lazy` option to customize some of its behavior.
+The `lazy` option can be assigned a configuration object to customize the lazy-loading behavior.
 
-Supported configuration options are:
+The supported configuration options are:
 
 ### `skipNuxtState`
 
-By default, the locale messages for the currently selected locale (unless it's also a `fallbackLocale`) are injected into the Nuxt "state" on the server-side and re-used on the client-side. The benefit of that is that the messages are available synchronously on the client-side and an extra network request is avoided. The downside is that it makes the server payload bigger (especially if there is a lot of messages). This applies both to the server-side-rendered and statically-generated sites.
+By default, the locale messages for the currently selected locale (unless it happens to be the `fallbackLocale`) are injected into the Nuxt "state" on the server-side and re-used on the client-side. The benefit of that is that the messages are available synchronously on the client-side and an extra network request is avoided. The downside is that it makes each page server response bigger (especially if there is a lot of messages). This applies both to the server-side rendered and statically-generated sites.
 
 With `skipNuxtState` enabled, the locale messages are loaded from respective javascript bundles (for fallback locale from the main bundle and for other locales from their own bundles). This allows the payload to be smaller, but means that the page load might be slower due to an extra request (although browser-side caching will help as much as possible).
