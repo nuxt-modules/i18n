@@ -126,7 +126,7 @@ Loading locale messages lazily means that only messages for currently used local
 
 The value can also be set to an object (supported from version 6.3.0) that can be used instead of the `true` value to override some configuration options related to lazy loading. This has the following optional properties:
 
-```jsonc
+```js
 {
   // Whether the translation messages for the current locale should be injected into Nuxt state
   // and re-used on the client-side. See more information in the link below.
