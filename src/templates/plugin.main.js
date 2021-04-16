@@ -21,13 +21,6 @@ import { klona } from '~i18n-klona'
 
 Vue.use(VueI18n)
 
-const detectBrowserLanguage = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
-const { alwaysRedirect, onlyOnNoPrefix, onlyOnRoot, fallbackLocale } = detectBrowserLanguage
-const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
-  routesNameSeparator: options.routesNameSeparator,
-  defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
-})
-
 /** @type {import('@nuxt/types').Plugin} */
 export default async (context) => {
   const { app, route, store, req, res, redirect } = context
@@ -58,7 +51,17 @@ export default async (context) => {
     })
   }
 
-  const { useCookie, cookieKey, cookieDomain, cookieSecure, cookieCrossOrigin } = detectBrowserLanguage
+  const {
+    alwaysRedirect,
+    fallbackLocale,
+    onlyOnNoPrefix,
+    onlyOnRoot,
+    useCookie,
+    cookieKey,
+    cookieDomain,
+    cookieSecure,
+    cookieCrossOrigin
+  } = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
 
   /**
    * @param {string | undefined} newLocale
@@ -142,6 +145,11 @@ export default async (context) => {
       }
     }
   }
+
+  const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
+    routesNameSeparator: options.routesNameSeparator,
+    defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
+  })
 
   /**
    * Gets the redirect path for locale.
