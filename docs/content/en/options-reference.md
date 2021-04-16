@@ -117,7 +117,7 @@ Routes generation strategy. Can be set to one of the following:
 
 ## `lazy`
 
-- type: `boolean`
+- type: `boolean` or `{ skipNuxtState: true }`
 - default: `false`
 
 Whether the translations should be lazy-loaded. If this is enabled, you MUST configure `langDir` option, and locales must be an array of objects, each containing a `file` key.

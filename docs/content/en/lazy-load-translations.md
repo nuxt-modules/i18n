@@ -9,7 +9,7 @@ For apps that contain a lot of translated content, it is preferable not to bundl
 This can be achieved with **nuxt-i18n** by letting the module know where your translation files are located so it can dynamically import them when the app loads or when the user switches to another language.
 To enable translations lazy-loading, follow these steps when configuring **nuxt-i18n**:
 
-* Set `lazy` option to `true`.
+* Set `lazy` option to `true` or `{ skipNuxtState: true }`. [Read more](#skipnuxtstate).
 * Set `langDir` option to the directory (can not be empty) that contains your translation files.
 * Configure `locales` option as an array of object, where each object has a `file` key whose value is the translation file corresponding to the locale.
 * Optionally, remove all messages that you might have passed to vue-i18n via `vueI18n` option.
@@ -73,3 +73,10 @@ Note that if you want to use the `$axios` instance from the `@nuxtjs/axios` modu
 This rule in fact applies also to any other module that adds plugins and whose functionality you'd want to use from within that function.
 
 </alert>
+
+## `skipNuxtState`
+<badge>v6.3.0+</badge>
+
+In the case of statically generated sites if the option `lazy` is set to `true` the translation messages for the `fallbackLocale` (or `defaultLocale` if no fallback is present) are injected into the Nuxt state. This results in them being included and repeated in the HTML of each generated page. Since each page is unique the same translations are loaded over and over again.
+
+With `{ skipNuxtState: true }` enabled the fallback locale messages are loaded from the main bundle, which is unique per application. This allows to take advantage of browser side caching.
