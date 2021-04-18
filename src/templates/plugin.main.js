@@ -29,7 +29,10 @@ export default async (context) => {
     registerStore(store, options.vuex, options.localeCodes)
   }
 
-  if (process.server && options.lazy) {
+  const { lazy } = options
+  const injectInNuxtState = lazy && (lazy === true || lazy.skipNuxtState !== true)
+
+  if (process.server && injectInNuxtState) {
     const devalue = (await import('devalue')).default
     context.beforeNuxtRender(({ nuxtState }) => {
       /** @type {Record<string, import('vue-i18n').LocaleMessageObject>} */

@@ -41,6 +41,10 @@ export interface VuexOptions {
   syncRouteParams?: boolean
 }
 
+export interface LazyOptions {
+  skipNuxtState?: boolean
+}
+
 // Options that are also exposed on the VueI18n instance.
 export interface BaseOptions {
   beforeLanguageSwitch?: (oldLocale: string, newLocale: string) => void
@@ -56,7 +60,7 @@ export interface Options extends BaseOptions {
   baseUrl?: string | ((context: NuxtContext) => string)
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
-  lazy?: boolean
+  lazy?: boolean | LazyOptions
   pages?: {
     [key: string]: false | {
       [key: string]: false | string

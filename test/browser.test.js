@@ -694,6 +694,56 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
   })
 })
 
+describe(`${browserString} (lazy with { skipNuxtState: true} )`, () => {
+  /** @type {Nuxt} */
+  let nuxt
+  /** @type {import('playwright-chromium').ChromiumBrowser} */
+  let browser
+  /** @type {import('playwright-chromium').Page} */
+  let page
+
+  beforeAll(async () => {
+    const overrides = {
+      i18n: {
+        defaultLocale: 'pl',
+        lazy: { skipNuxtState: true },
+        langDir: 'lang/',
+        vueI18n: {
+          fallbackLocale: 'pl'
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      { code: 'en', iso: 'en-US', file: 'en-US.js' },
+      { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
+      { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+    browser = await createBrowser()
+  })
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close()
+    }
+
+    await nuxt.close()
+  })
+
+  test('current locale messages have not been passed through Nuxt state', async () => {
+    page = await browser.newPage()
+    await page.goto(url('/no'))
+    // @ts-ignore
+    const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
+    expect(i18nState).toBeUndefined()
+  })
+})
+
 describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
   /** @type {Nuxt} */
   let nuxt
