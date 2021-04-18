@@ -9,7 +9,7 @@ Para las aplicaciones que contienen una gran cantidad de contenido traducido, es
 Esto se puede lograr con **nuxt-i18n** al permitir que el módulo sepa dónde se encuentran sus archivos de traducción para que pueda importarlos dinámicamente cuando se carga la aplicación o cuando el usuario cambia a otro idioma.
 Para habilitar la carga diferida de traducciones, siga estos pasos cuando configure **nuxt-i18n**:
 
-* Set `lazy` option to `true` (or to an object if you want to customize some options). [Read more](#lazy-configuration-options).
+* Set `lazy` option to `true` (or to [configuration object](#lazy-configuration-options) if you want to customize some options).
 * Establezca la opción `langDir` en el directorio (esto NO puede estar vacío) que contiene sus archivos de traducción.
 * Configure la opción `locales` como una matriz de objetos, donde cada objeto tiene una clave `file` cuyo valor es el archivo de traducción correspondiente a la configuración local
 * Opcionalmente, elimine todos los mensajes que haya pasado a vue-i18n mediante la opción `vueI18n`

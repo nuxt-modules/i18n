@@ -9,7 +9,7 @@ For apps that contain a lot of translated content, it is preferable not to bundl
 This can be achieved with **nuxt-i18n** by letting the module know where your translation files are located so it can dynamically import them when the app loads or when the user switches to another language.
 To enable translations lazy-loading, follow these steps when configuring **nuxt-i18n**:
 
-* Set `lazy` option to `true` (or to an object if you want to customize some options). [Read more](#lazy-configuration-options).
+* Set `lazy` option to `true` (or to [configuration object](#lazy-configuration-options) if you want to customize some options).
 * Set `langDir` option to the directory (can not be empty) that contains your translation files.
 * Configure `locales` option as an array of object, where each object has a `file` key whose value is the translation file corresponding to the locale.
 * Optionally, remove all messages that you might have passed to vue-i18n via `vueI18n` option.
