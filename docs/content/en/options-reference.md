@@ -120,22 +120,22 @@ Routes generation strategy. Can be set to one of the following:
 - type: `boolean` or `LazyOptions`
 - default: `false`
 
-Whether the translations should be lazy-loaded. If this is enabled, you MUST configure `langDir` option, and locales must be an array of objects, each containing a `file` key.
+See also [Lazy-load translations](/lazy-load-translations).
+
+Whether the translations should be lazy-loaded. If this is enabled, you MUST configure the `langDir` option, and locales must be an array of objects, each containing a `file` key.
 
 Loading locale messages lazily means that only messages for currently used locale (and for the fallback locale, if different from current locale) will be loaded on page loading.
 
-The value can also be set to an object (supported from version 6.3.0) instead of the `true` value to override some configuration options related to lazy loading. Supports the following optional properties:
+#### LazyOptions <badge>v6.3.0+</badge>
 
-```js
-{
-  // Whether the translation messages for the current locale should be injected into Nuxt state
-  // and re-used on the client-side. See more information in the link below.
-  // Default: false
-  "skipNuxtState": false
-}
-```
+The value can also be set to an object instead of the value `true` to override configuration options related to lazy loading. Supports the following optional properties:
 
-See also [Lazy-load translations](/lazy-load-translations).
+**skipNuxtState**
+
+- type: `boolean`
+- default: `true`
+
+Whether the translation messages for the current locale should be injected into Nuxt state and re-used on the client-side. [Read more](/lazy-load-translations#lazy-configuration-options).
 
 ## `langDir`
 
