@@ -1,3 +1,10 @@
+## [6.26.0](https://github.com/nuxt-community/i18n-module/compare/v6.25.0...v6.26.0) (2021-04-20)
+
+
+### Features
+
+* **lazy:** option for not injecting messages to Nuxt state ([#1153](https://github.com/nuxt-community/i18n-module/issues/1153)) ([2231f3b](https://github.com/nuxt-community/i18n-module/commit/2231f3b400535c4fefff6f0ae3d3e81aae349e6e)), closes [#1149](https://github.com/nuxt-community/i18n-module/issues/1149)
+
 ## [6.25.0](https://github.com/nuxt-community/i18n-module/compare/v6.24.0...v6.25.0) (2021-04-13)
 
 
