@@ -203,6 +203,14 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   See [callbacks](../callbacks)
 
+#### onBeforeLanguageSwitch
+
+<badge>v6.30.0+</badge>
+
+  - **Type**: `Function`
+
+  See [callbacks](../callbacks)
+
 #### onLanguageSwitched
 
   - **Type**: `Function`

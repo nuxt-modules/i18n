@@ -7,14 +7,20 @@ category: Guide
 
 **nuxt-i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language.
 
-### `beforeLanguageSwitch(oldLocale, newLocale)`
+### `onBeforeLanguageSwitch(oldLocale, newLocale, isInitialSetup, context)`
 
-Called right before setting the app's new locale.
+<badge>v6.30.0+</badge>
+
+Called before the app's locale is switched. Can be used to override the new locale by returning a new locale code.
 
 Parameters:
 
 * **oldLocale**: the app's locale before the switch
 * **newLocale**: the app's locale after the switch
+* **isInitialSetup**: set to `true` if it's the initial locale switch that triggers on app load. It's a special case since the locale is not technically set yet so we're switching from no locale to locale.
+* **context**: the Nuxt Context
+
+Returns: `string` or nothing
 
 ### `onLanguageSwitched(oldLocale, newLocale)`
 
@@ -25,6 +31,16 @@ Parameters:
 * **oldLocale**: the app's locale before the switch
 * **newLocale**: the app's locale after the switch
 
+### `beforeLanguageSwitch(oldLocale, newLocale)`
+
+<badge>deprecated</badge>
+
+Called right before setting the app's new locale.
+
+Parameters:
+
+* **oldLocale**: the app's locale before the switch
+* **newLocale**: the app's locale after the switch
 
 ## Usage
 
@@ -33,8 +49,8 @@ A typical usage would be to define those callbacks via a plugin where you can ac
 ```js {}[/plugins/i18n.js]
 export default function ({ app }) {
   // beforeLanguageSwitch called right before setting a new locale
-  app.i18n.beforeLanguageSwitch = (oldLocale, newLocale) => {
-    console.log(oldLocale, newLocale)
+  app.i18n.onBeforeLanguageSwitch = (oldLocale, newLocale, isInitialSetup, context) => {
+    console.log(oldLocale, newLocale, isInitialSetup)
   }
   // onLanguageSwitched called right after a new locale has been set
   app.i18n.onLanguageSwitched = (oldLocale, newLocale) => {

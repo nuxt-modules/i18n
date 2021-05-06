@@ -80,12 +80,19 @@ export default async (context) => {
       return
     }
 
-    // Abort if newLocale did not change
-    if (newLocale === app.i18n.locale) {
+    const oldLocale = app.i18n.locale
+
+    if (newLocale === oldLocale) {
       return
     }
 
-    const oldLocale = app.i18n.locale
+    const localeOverride = app.i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initialSetup, context)
+    if (localeOverride && app.i18n.localeCodes.includes(localeOverride)) {
+      if (localeOverride === oldLocale) {
+        return
+      }
+      newLocale = localeOverride
+    }
 
     if (!initialSetup) {
       app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
@@ -269,7 +276,7 @@ export default async (context) => {
 
   /**
    * @param {import('vue-router').Route} route
-   * @return {string} Returns true if the browser language was detected.
+   * @return {string} Returns the browser locale that was detected or an empty string otherwise.
    */
   const doDetectBrowserLanguage = route => {
     // Browser detection is ignored if it is a nuxt generate.
@@ -322,6 +329,7 @@ export default async (context) => {
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
     i18n.beforeLanguageSwitch = options.beforeLanguageSwitch
+    i18n.onBeforeLanguageSwitch = options.onBeforeLanguageSwitch
     i18n.onLanguageSwitched = options.onLanguageSwitched
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes: options.localeCodes })
