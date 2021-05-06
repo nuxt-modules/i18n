@@ -281,7 +281,7 @@ See [callbacks](./callbacks)
 <badge>v6.30.0+</badge>
 
 - type: `function`
-- default: `(oldLocale, newLocale, isInitialSetup, context) => string | void`
+- default: `(oldLocale, newLocale, isInitialSetup, context) => {}`
 
 A listener called before the app's locale is changed. Can override the locale that is about to be set.
 
