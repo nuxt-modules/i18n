@@ -52,12 +52,14 @@ declare namespace NuxtVueI18n {
 
     // options that are also exposed on VueI18n instance: https://goo.gl/UwNfZo
     interface NuxtI18nInterface {
+      /** @deprecated Use `onBeforeLanguageSwitch` instead */
       beforeLanguageSwitch?: (oldLocale: string, newLocale: string) => void
       defaultLocale?: Locale
       defaultDirection?: Directions
       defaultLocaleRouteNameSuffix?: string
       locales?: Array<Locale | LocaleObject>
       differentDomains?: boolean
+      onBeforeLanguageSwitch?: (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtContext) => string | void
       onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
     }
 

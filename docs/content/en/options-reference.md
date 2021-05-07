@@ -267,10 +267,25 @@ If true, [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader) is added 
 
 ## `beforeLanguageSwitch`
 
+<badge>deprecated</badge>
+
 - type: `function`
 - default: `(oldLocale, newLocale) => {}`
 
 A listener called right before app's locale changes.
+
+See [callbacks](./callbacks)
+
+## `onBeforeLanguageSwitch`
+
+<badge>v6.30.0+</badge>
+
+- type: `function`
+- default: `(oldLocale, newLocale, isInitialSetup, context) => {}`
+
+A listener called before the app's locale is changed. Can override the locale that is about to be set.
+
+See [callbacks](./callbacks)
 
 ## `onLanguageSwitched`
 
@@ -278,6 +293,8 @@ A listener called right before app's locale changes.
 - default: `(oldLocale, newLocale) => {}`
 
 A listener called after app's locale has changed.
+
+See [callbacks](./callbacks)
 
 ## `skipSettingLocaleOnNavigate`
 

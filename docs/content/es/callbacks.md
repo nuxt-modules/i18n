@@ -7,14 +7,20 @@ category: Guía
 
 **nuxt-i18n** expone algunas devoluciones de llamada que puede usar para realizar tareas específicas que dependen del idioma de la aplicación.
 
-### `beforeLanguageSwitch(oldLocale, newLocale)`
+### `onBeforeLanguageSwitch(oldLocale, newLocale, isInitialSetup, context)`
 
-Llamado justo antes de configurar la nueva configuración local de la aplicación.
+<badge>v6.30.0+</badge>
 
-Parámetros:
+Called before the app's locale is switched. Can be used to override the new locale by returning a new locale code.
 
-* **oldLocale**: la configuración local de la aplicación antes del cambio
-* **newLocale**: la configuración local de la aplicación después del cambio
+Parameters:
+
+* **oldLocale**: the app's locale before the switch
+* **newLocale**: the app's locale after the switch
+* **isInitialSetup**: set to `true` if it's the initial locale switch that triggers on app load. It's a special case since the locale is not technically set yet so we're switching from no locale to locale.
+* **context**: the Nuxt Context
+
+Returns: `string` or nothing
 
 ### `onLanguageSwitched(oldLocale, newLocale)`
 
@@ -25,7 +31,16 @@ Parámetros:
 * **oldLocale**: la configuración local de la aplicación antes del cambio
 * **newLocale**: la configuración local de la aplicación después del cambio
 
+### `beforeLanguageSwitch(oldLocale, newLocale)`
 
+<badge>deprecated</badge>
+
+Llamado justo antes de configurar la nueva configuración local de la aplicación.
+
+Parámetros:
+
+* **oldLocale**: la configuración local de la aplicación antes del cambio
+* **newLocale**: la configuración local de la aplicación después del cambio
 
 ## Uso
 
@@ -34,8 +49,8 @@ Parámetros:
 ```js {}[/plugins/i18n.js]
 export default function ({ app }) {
   // beforeLanguageSwitch called right before setting a new locale
-  app.i18n.beforeLanguageSwitch = (oldLocale, newLocale) => {
-    console.log(oldLocale, newLocale)
+  app.i18n.onBeforeLanguageSwitch = (oldLocale, newLocale, isInitialSetup, context) => {
+    console.log(oldLocale, newLocale, isInitialSetup)
   }
   // onLanguageSwitched called right after a new locale has been set
   app.i18n.onLanguageSwitched = (oldLocale, newLocale) => {

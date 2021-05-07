@@ -4,7 +4,10 @@ import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils
 import { JSDOM } from 'jsdom'
 import { getSeoTags } from './utils'
 
-/** @typedef {any} Nuxt */
+/**
+ * @typedef {any} Nuxt
+ * @typedef {import('@nuxt/types').NuxtConfig} NuxtConfig
+ */
 
 /** @param {string} html */
 const getDom = html => (new JSDOM(html)).window.document
@@ -1829,6 +1832,83 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
     const response = await get('/en', requestOptions)
     expect(response.statusCode).toBe(302)
     expect(response.headers.location).toBe('/fr')
+  })
+})
+
+describe('locale change hooks', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    /** @type {NuxtConfig} */
+    const override = {
+      i18n: {
+        onBeforeLanguageSwitch: (oldLocale, newLocale) => {
+          if (newLocale === 'fr') {
+            return 'en'
+          }
+        }
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Set manually to avoid merging array items.
+    localConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
+      },
+      {
+        code: 'pl',
+        iso: 'pl-PL',
+        name: 'Polish'
+      }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('does not override the default locale', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
+  })
+
+  test('does not override polish locale', async () => {
+    const html = await get('/pl')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: pl')
+  })
+
+  test('overrides french locale', async () => {
+    const html = await get('/fr')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: en')
+  })
+
+  test('redirects to correct URL when overridden', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/fr', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/')
   })
 })
 
