@@ -9,7 +9,7 @@ category: Guide
 
 ### `onBeforeLanguageSwitch(oldLocale, newLocale, isInitialSetup, context)`
 
-<badge>v6.30.0+</badge>
+<badge>v6.27.0+</badge>
 
 Called before the app's locale is switched. Can be used to override the new locale by returning a new locale code.
 

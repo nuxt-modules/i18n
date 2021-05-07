@@ -205,7 +205,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 #### onBeforeLanguageSwitch
 
-<badge>v6.30.0+</badge>
+<badge>v6.27.0+</badge>
 
   - **Type**: `Function`
 

@@ -276,7 +276,7 @@ See [callbacks](./callbacks)
 
 ## `onBeforeLanguageSwitch`
 
-<badge>v6.30.0+</badge>
+<badge>v6.27.0+</badge>
 
 - type: `function`
 - default: `(oldLocale, newLocale, isInitialSetup, context) => {}`
