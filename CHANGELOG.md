@@ -1,3 +1,10 @@
+## [6.27.0](https://github.com/nuxt-community/i18n-module/compare/v6.26.0...v6.27.0) (2021-05-07)
+
+
+### Features
+
+* add onBeforeLanguageSwitch API ([#1164](https://github.com/nuxt-community/i18n-module/issues/1164)) ([5f5d748](https://github.com/nuxt-community/i18n-module/commit/5f5d748f04e3518002b1b28dfc17170072be4924))
+
 ## [6.26.0](https://github.com/nuxt-community/i18n-module/compare/v6.25.0...v6.26.0) (2021-04-20)
 
 
