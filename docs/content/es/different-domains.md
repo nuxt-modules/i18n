@@ -8,7 +8,7 @@ category: Guía
 Es posible que desee utilizar un nombre de dominio diferente para cada idioma que admita su aplicación. Debe lograr esto:
 
 * Establezca la opción `differentDomains` en `true`
-* Configure `locales` option as an array of objects, where each object has a `domain` key which value is the domain name you'd like to use for that locale (including port if non-default and protocol as well).
+* Configure the `locales` option as an array of objects, where each object has a `domain` key whose value is the domain name you'd like to use for that locale. Optionally include a port (if non-standard) and/or a protocol. If the protocol is not provided then an attempt will be made to auto-detect it but that might not work correctly in some cases like when the pages are statically generated.
 * Optionally set `detectBrowserLanguage` to `false`. When enabled (which it is by default), user can get redirected to a different domain on first visit. Set to `false` if you want to ensure that visiting given domain always shows page in the corresponding locale.
 
 ```js {}[nuxt.config.js]
@@ -54,7 +54,7 @@ Cuando use diferentes nombres de dominio, su selector de idioma debe usar etique
 
 ## Variables de entorno de tiempo de ejecución
 
-A veces es necesario cambiar dominios en diferentes entornos, por ejemplo: puesta en escena y producción. 
+A veces es necesario cambiar dominios en diferentes entornos, por ejemplo: puesta en escena y producción.
 Como `nuxt.config.js` se usa en el momento de la compilación, sería necesario crear diferentes compilaciones para diferentes entornos.
 
 La forma alternativa es mantener los dominios en la tienda Vuex bajo la propiedad `localeDomains`. Se puede acceder mediante el complemento

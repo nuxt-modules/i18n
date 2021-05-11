@@ -8,7 +8,7 @@ category: Guide
 You might want to use a different domain name for each language your app supports. To achieve this:
 
 * Set `differentDomains` option to `true`
-* Configure `locales` option as an array of objects, where each object has a `domain` key which value is the domain name you'd like to use for that locale (including port if non-default and protocol as well).
+* Configure the `locales` option as an array of objects, where each object has a `domain` key whose value is the domain name you'd like to use for that locale. Optionally include a port (if non-standard) and/or a protocol. If the protocol is not provided then an attempt will be made to auto-detect it but that might not work correctly in some cases like when the pages are statically generated.
 * Optionally set `detectBrowserLanguage` to `false`. When enabled (which it is by default), user can get redirected to a different domain on first visit. Set to `false` if you want to ensure that visiting given domain always shows page in the corresponding locale.
 
 </alert>
