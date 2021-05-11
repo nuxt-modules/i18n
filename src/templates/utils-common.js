@@ -1,5 +1,6 @@
 import Cookie from 'cookie'
 import JsCookie from 'js-cookie'
+import { hasProtocol } from 'ufo'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
@@ -120,6 +121,9 @@ export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
 // Lookup the `differentDomain` origin associated with given locale.
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
   if (lang && lang.domain) {
+    if (hasProtocol(lang.domain, true)) {
+      return lang.domain
+    }
     let protocol
     if (process.server) {
       protocol = (req && isHTTPS(req)) ? 'https' : 'http'
