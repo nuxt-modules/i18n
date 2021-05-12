@@ -84,6 +84,18 @@ describe('differentDomains enabled', () => {
         iso: 'fr-FR',
         name: 'Français',
         domain: 'fr.nuxt-app.localhost'
+      },
+      {
+        code: 'ru',
+        iso: 'ru-RU',
+        name: 'Русский',
+        domain: 'https://ru.nuxt-app.localhost'
+      },
+      {
+        code: 'ua',
+        iso: 'uk-UA',
+        name: 'Українська',
+        domain: 'http://ua.nuxt-app.localhost'
       }
     ]
 
@@ -174,6 +186,16 @@ describe('differentDomains enabled', () => {
         content: 'fr_FR'
       },
       {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'ru_RU'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'uk_UA'
+      },
+      {
         tagName: 'link',
         rel: 'alternate',
         href: 'http://en.nuxt-app.localhost/locale',
@@ -196,6 +218,30 @@ describe('differentDomains enabled', () => {
         rel: 'alternate',
         href: 'http://fr.nuxt-app.localhost/locale',
         hreflang: 'fr-FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'https://ru.nuxt-app.localhost/locale',
+        hreflang: 'ru'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'https://ru.nuxt-app.localhost/locale',
+        hreflang: 'ru-RU'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://ua.nuxt-app.localhost/locale',
+        hreflang: 'uk'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://ua.nuxt-app.localhost/locale',
+        hreflang: 'uk-UA'
       },
       {
         tagName: 'link',
