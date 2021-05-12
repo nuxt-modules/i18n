@@ -121,7 +121,7 @@ export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
 // Lookup the `differentDomain` origin associated with given locale.
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
   if (lang && lang.domain) {
-    if (hasProtocol(lang.domain, true)) {
+    if (hasProtocol(lang.domain)) {
       return lang.domain
     }
     let protocol
