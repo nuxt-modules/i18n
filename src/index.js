@@ -104,4 +104,7 @@ export default function (moduleOptions) {
   }
   this.options.render.bundleRenderer.directives = this.options.render.bundleRenderer.directives || {}
   this.options.render.bundleRenderer.directives.t = i18nExtensionsDirective
+
+  // Transpile is-https for IE11 support
+  this.nuxt.options.build.transpile.push('is-https')
 }
