@@ -43,7 +43,7 @@ You might want to use a different domain name for each language your app support
 }]
 ```
 
-When using different domain names, your lang swicher should use regular `<a>` tags:
+When using different domain names, your lang switcher should use regular `<a>` tags:
 
 ```vue
 <a
