@@ -68,7 +68,7 @@ declare namespace NuxtVueI18n {
       baseUrl?: string | ((context: NuxtContext) => string)
       detectBrowserLanguage?: DetectBrowserLanguageInterface | false
       langDir?: string | null
-      lazy?: boolean
+      lazy?: boolean | {skipNuxtState: boolean}
       // see https://goo.gl/NbzX3f
       pages?: {
         [key: string]: boolean | {
