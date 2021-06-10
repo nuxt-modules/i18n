@@ -95,5 +95,5 @@ If you have any questions or issues, check out [Discord server](https://discord.
 ## License
 
 [MIT License](./LICENSE)  
-Copyright (c) 2021 Nuxt.js Community  
+Copyright (c) Nuxt Community
 Copyright (c) Paul Gascou-Vaillancourt (@paulgv)
