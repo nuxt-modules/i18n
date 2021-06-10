@@ -96,4 +96,3 @@ If you have any questions or issues, check out [Discord server](https://discord.
 
 [MIT License](./LICENSE)  
 Copyright (c) Nuxt Community
-Copyright (c) Paul Gascou-Vaillancourt (@paulgv)
