@@ -1,3 +1,11 @@
+### [6.27.1](https://github.com/nuxt-community/i18n-module/compare/v6.27.0...v6.27.1) (2021-06-15)
+
+
+### Bug Fixes
+
+* **types:** fix "lazy" type in deprecated types ([#1190](https://github.com/nuxt-community/i18n-module/issues/1190)) ([482317b](https://github.com/nuxt-community/i18n-module/commit/482317b4576b42204560ad0efd9cf9ac92940f90))
+* handle protocol in the domain key for different domains ([#1169](https://github.com/nuxt-community/i18n-module/issues/1169)) ([45b2b82](https://github.com/nuxt-community/i18n-module/commit/45b2b82f64152c8173e6b63ab0b4154e097a34c4))
+
 ## [6.27.0](https://github.com/nuxt-community/i18n-module/compare/v6.26.0...v6.27.0) (2021-05-07)
 
 
