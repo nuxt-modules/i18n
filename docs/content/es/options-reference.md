@@ -263,17 +263,6 @@ export default context => {
 
 If true, [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader) is added to Nuxt's Webpack config, allowing to define locale messages per-page using a custom `i18n` block.
 
-## `beforeLanguageSwitch`
-
-<badge>deprecated</badge>
-
-- type: `function`
-- default: `(oldLocale, newLocale) => {}`
-
-A listener called right before app's locale changes.
-
-See [callbacks](./callbacks)
-
 ## `onBeforeLanguageSwitch`
 
 <badge>v6.27.0+</badge>

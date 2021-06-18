@@ -47,8 +47,6 @@ export interface LazyOptions {
 
 // Options that are also exposed on the VueI18n instance.
 export interface BaseOptions {
-  /** @deprecated Use `onBeforeLanguageSwitch` instead */
-  beforeLanguageSwitch?: (oldLocale: string, newLocale: string) => void
   defaultDirection?: Directions
   defaultLocale?: Locale
   defaultLocaleRouteNameSuffix?: string

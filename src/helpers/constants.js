@@ -55,7 +55,6 @@ export const DEFAULT_OPTIONS = {
   parsePages: true,
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  beforeLanguageSwitch: () => null,
   onBeforeLanguageSwitch: () => {},
   onLanguageSwitched: () => null
 }
