@@ -7,6 +7,9 @@ category: Guide
 
 Follow this guide to upgrade from one major version to the other.
 
+## Upgrading from 6.x to 7.x
+
+### `beforeLanguageSwitch` has been replaced by `onBeforeLanguageSwitch`
 
 ## Upgrading from 5.x to 6.x
 

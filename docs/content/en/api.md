@@ -197,12 +197,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Whether `differentDomains` option is enabled.
 
-#### beforeLanguageSwitch
-
-  - **Type**: `Function`
-
-  See [callbacks](../callbacks)
-
 #### onBeforeLanguageSwitch
 
 <badge>v6.27.0+</badge>

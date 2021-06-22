@@ -92,10 +92,6 @@ export default async (context) => {
       newLocale = localeOverride
     }
 
-    if (!initialSetup) {
-      app.i18n.beforeLanguageSwitch(oldLocale, newLocale)
-    }
-
     if (useCookie) {
       app.i18n.setLocaleCookie(newLocale)
     }
@@ -334,7 +330,6 @@ export default async (context) => {
     i18n.localeProperties = Vue.observable(klona(options.normalizedLocales.find(l => l.code === i18n.locale) || { code: i18n.locale }))
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
-    i18n.beforeLanguageSwitch = options.beforeLanguageSwitch
     i18n.onBeforeLanguageSwitch = options.onBeforeLanguageSwitch
     i18n.onLanguageSwitched = options.onLanguageSwitched
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })
