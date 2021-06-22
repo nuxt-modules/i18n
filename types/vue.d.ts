@@ -45,8 +45,6 @@ declare module 'vue/types/vue' {
   interface Vue extends NuxtI18nApi {
     // $i18n is already added by vue-i18n.
     $nuxtI18nHead(options?: NuxtI18nHeadOptions): NuxtI18nMeta
-    /** @deprecated Use `$nuxtI18nHead({ addDirAttribute: true, addSeoAttributes: true })` instead. */
-    $nuxtI18nSeo(): NuxtI18nMeta
   }
 }
 
