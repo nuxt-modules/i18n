@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { joinURL } from 'ufo'
-import { nuxtI18nHead, nuxtI18nSeo } from './head-meta'
+import { nuxtI18nHead } from './head-meta'
 import { Constants, nuxtOptions, options } from './options'
 import {
   createLocaleFromRouteGetter,
@@ -354,7 +354,6 @@ export default async (context) => {
   app.i18n.__baseUrl = resolveBaseUrl(options.baseUrl, context, '', resolveBaseUrlOptions)
   app.i18n.__onNavigate = onNavigate
 
-  Vue.prototype.$nuxtI18nSeo = nuxtI18nSeo
   Vue.prototype.$nuxtI18nHead = nuxtI18nHead
 
   if (store) {

@@ -205,11 +205,3 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
 
   return metaObject
 }
-
-/**
- * @deprecated Use `nuxtI18nHead()` instead.
- * @this {import('vue/types/vue').Vue}
- */
-export function nuxtI18nSeo () {
-  return nuxtI18nHead.call(this, { addDirAttribute: false, addSeoAttributes: true })
-}
