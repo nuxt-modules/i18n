@@ -140,7 +140,7 @@ export default async (context) => {
     }
     // Copy properties of the new locale
     for (const [key, value] of Object.entries(newLocaleProperties)) {
-      app.i18n.localeProperties[key] = value
+      Vue.set(app.i18n.localeProperties, key, value)
     }
 
     if (options.vuex) {
@@ -333,7 +333,7 @@ export default async (context) => {
   const extendVueI18nInstance = i18n => {
     i18n.locales = klona(options.locales)
     i18n.localeCodes = klona(options.localeCodes)
-    i18n.localeProperties = Vue.observable(klona(options.normalizedLocales.find(l => l.code === i18n.locale)))
+    i18n.localeProperties = Vue.observable(klona(options.normalizedLocales.find(l => l.code === i18n.locale) || { code: i18n.locale }))
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
     i18n.beforeLanguageSwitch = options.beforeLanguageSwitch
