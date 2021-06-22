@@ -11,6 +11,8 @@ Follow this guide to upgrade from one major version to the other.
 
 ### `beforeLanguageSwitch` has been replaced by `onBeforeLanguageSwitch`
 
+### `NuxtVueI18n` has been removed. Use individually exported types instead.
+
 ## Upgrading from 5.x to 6.x
 
 ### Global SEO features are now disabled by default
