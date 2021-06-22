@@ -31,24 +31,13 @@ Parámetros:
 * **oldLocale**: la configuración local de la aplicación antes del cambio
 * **newLocale**: la configuración local de la aplicación después del cambio
 
-### `beforeLanguageSwitch(oldLocale, newLocale)`
-
-<badge>deprecated</badge>
-
-Llamado justo antes de configurar la nueva configuración local de la aplicación.
-
-Parámetros:
-
-* **oldLocale**: la configuración local de la aplicación antes del cambio
-* **newLocale**: la configuración local de la aplicación después del cambio
-
 ## Uso
 
  Un uso típico sería definir esas devoluciones de llamada a través de un complemento donde puede acceder al contexto de la aplicación \(útil si necesita cambiar la configuración de Axios cuando el idioma cambia, por ejemplo\).
 
 ```js {}[/plugins/i18n.js]
 export default function ({ app }) {
-  // beforeLanguageSwitch called right before setting a new locale
+  // onBeforeLanguageSwitch called right before setting a new locale
   app.i18n.onBeforeLanguageSwitch = (oldLocale, newLocale, isInitialSetup, context) => {
     console.log(oldLocale, newLocale, isInitialSetup)
   }

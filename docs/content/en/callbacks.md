@@ -31,24 +31,13 @@ Parameters:
 * **oldLocale**: the app's locale before the switch
 * **newLocale**: the app's locale after the switch
 
-### `beforeLanguageSwitch(oldLocale, newLocale)`
-
-<badge>deprecated</badge>
-
-Called right before setting the app's new locale.
-
-Parameters:
-
-* **oldLocale**: the app's locale before the switch
-* **newLocale**: the app's locale after the switch
-
 ## Usage
 
 A typical usage would be to define those callbacks via a plugin where you can access the app's context \(useful if you need to change Axios' config when the language changes for example\).
 
 ```js {}[/plugins/i18n.js]
 export default function ({ app }) {
-  // beforeLanguageSwitch called right before setting a new locale
+  // onBeforeLanguageSwitch called right before setting a new locale
   app.i18n.onBeforeLanguageSwitch = (oldLocale, newLocale, isInitialSetup, context) => {
     console.log(oldLocale, newLocale, isInitialSetup)
   }
