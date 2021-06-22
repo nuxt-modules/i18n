@@ -2,9 +2,6 @@ import VueI18n, { Locale, I18nOptions, IVueI18n } from 'vue-i18n'
 import { Context as NuxtContext } from '@nuxt/types'
 import './vue'
 
-// Deprecated
-export { NuxtVueI18n } from './nuxt-i18n'
-
 export { Locale }
 export type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
 export type Directions = 'ltr' | 'rtl' | 'auto'
