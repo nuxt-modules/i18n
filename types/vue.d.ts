@@ -1,4 +1,4 @@
-import 'vue'
+import Vue from 'vue'
 import 'vuex'
 import 'vue-i18n'
 import '@nuxt/types'
