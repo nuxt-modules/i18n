@@ -1,3 +1,11 @@
+### [6.27.2](https://github.com/nuxt-community/i18n-module/compare/v6.27.1...v6.27.2) (2021-06-23)
+
+
+### Bug Fixes
+
+* ensure localeProperties is reactive (on locale change) ([#1208](https://github.com/nuxt-community/i18n-module/issues/1208)) ([d2dd400](https://github.com/nuxt-community/i18n-module/commit/d2dd4006e82734bc037cf19ef28d6e91bf1c0c83))
+* **types:** fix compatibility issue with typescript 4.3.x+ ([#1205](https://github.com/nuxt-community/i18n-module/issues/1205)) ([acc1145](https://github.com/nuxt-community/i18n-module/commit/acc11452141287f5b3b84fb06ee92678fcb1279d))
+
 ### [6.27.1](https://github.com/nuxt-community/i18n-module/compare/v6.27.0...v6.27.1) (2021-06-15)
 
 
