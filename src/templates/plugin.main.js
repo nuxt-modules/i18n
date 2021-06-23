@@ -132,8 +132,16 @@ export default async (context) => {
     }
 
     app.i18n.locale = newLocale
-    // @ts-ignore
-    app.i18n.localeProperties = klona(options.locales.find(l => l.code === newLocale) || { code: newLocale })
+    /** @type {import('../../types').LocaleObject} */
+    const newLocaleProperties = options.normalizedLocales.find(l => l.code === newLocale) || { code: newLocale }
+    // In case certain locale has more properties than another, reset all the properties.
+    for (const key of Object.keys(app.i18n.localeProperties)) {
+      app.i18n.localeProperties[key] = undefined
+    }
+    // Copy properties of the new locale
+    for (const [key, value] of Object.entries(newLocaleProperties)) {
+      Vue.set(app.i18n.localeProperties, key, klona(value))
+    }
 
     if (options.vuex) {
       await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), options.vuex)
@@ -325,7 +333,7 @@ export default async (context) => {
   const extendVueI18nInstance = i18n => {
     i18n.locales = klona(options.locales)
     i18n.localeCodes = klona(options.localeCodes)
-    i18n.localeProperties = klona(options.normalizedLocales.find(l => l.code === i18n.locale) || { code: i18n.locale })
+    i18n.localeProperties = Vue.observable(klona(options.normalizedLocales.find(l => l.code === i18n.locale) || { code: i18n.locale }))
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
     i18n.beforeLanguageSwitch = options.beforeLanguageSwitch

@@ -965,6 +965,14 @@ describe(`${browserString} (onlyOnRoot + alwaysRedirect + no_prefix)`, () => {
     // Custom paths are not supported in "no_prefix" strategy.
     // expect(await getRouteFullPath(page)).toBe('/a-propos')
   })
+
+  test('localeProperties is reactive', async () => {
+    const page = await browser.newPage()
+    await page.goto(url('/about'))
+    expect(await (await page.$('#locale-properties-code'))?.textContent()).toBe('code: en')
+    await page.click('#set-locale-link-fr')
+    expect(await (await page.$('#locale-properties-code'))?.textContent()).toBe('code: fr')
+  })
 })
 
 describe(`${browserString} (alwaysRedirect, prefix)`, () => {
