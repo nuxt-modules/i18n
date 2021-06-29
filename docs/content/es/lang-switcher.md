@@ -69,7 +69,7 @@ Asegúrese de que Vuex [esté habilitado](https://nuxtjs.org/guides/directory-st
 
 To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` mutation as early as possible when loading a page. The passed in object must contain the mappings from the locale `code` to an object with a mapping from slug name to expected slug value for given locale.
 
-An example:
+An example (replace `postId` with the appropriate route parameter):
 
 ```vue
 <template>
