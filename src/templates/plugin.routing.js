@@ -1,6 +1,6 @@
 import './middleware'
 import Vue from 'vue'
-import { parsePath, withoutTrailingSlash, withTrailingSlash } from 'ufo'
+import { parsePath, stringifyParsedURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { Constants, nuxtOptions, options } from './options'
 import { getDomainFromLocale } from './utils-common'
 
@@ -88,7 +88,8 @@ function resolveRoute (route, locale) {
         localizedRoute.path = `/${locale}${localizedRoute.path}`
       }
       const parsedPath = parsePath(localizedRoute.path)
-      localizedRoute.path = (nuxtOptions.trailingSlash ? withTrailingSlash(parsedPath.pathname) : withoutTrailingSlash(parsedPath.pathname)) + parsedPath.search + parsedPath.hash
+      parsedPath.pathname = nuxtOptions.trailingSlash ? withTrailingSlash(parsedPath.pathname) : withoutTrailingSlash(parsedPath.pathname)
+      localizedRoute.path = stringifyParsedURL(parsedPath)
     }
   } else {
     if (!localizedRoute.name && !localizedRoute.path) {
