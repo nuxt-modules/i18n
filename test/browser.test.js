@@ -178,50 +178,52 @@ describe(`${browserString}, target: static, trailingSlash: true`, () => {
   })
 })
 
-describe(`${browserString}, target: static, trailingSlash: true and strategy prefix`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+for (const target of ['server', 'static']) {
+  describe(`${browserString}, target ${target}, trailingSlash: true and strategy prefix`, () => {
+    /** @type {Nuxt} */
+    let nuxt
+    /** @type {import('playwright-chromium').ChromiumBrowser} */
+    let browser
 
-  beforeAll(async () => {
-    const overrides = {
-      target: 'static',
-      router: {
-        trailingSlash: true
-      },
-      i18n: {
-        defaultLocale: 'en',
-        strategy: 'prefix'
+    beforeAll(async () => {
+      const overrides = {
+        target,
+        router: {
+          trailingSlash: true
+        },
+        i18n: {
+          defaultLocale: 'en',
+          strategy: 'prefix'
+        }
       }
-    }
-    nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
-    browser = await createBrowser()
-  })
+      nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+      browser = await createBrowser()
+    })
 
-  afterAll(async () => {
-    if (browser) {
-      await browser.close()
-    }
+    afterAll(async () => {
+      if (browser) {
+        await browser.close()
+      }
 
-    await nuxt.close()
-  })
+      await nuxt.close()
+    })
 
-  // Issue https://github.com/nuxt-community/i18n-module/issues/1204
-  test('redirects from root (404) path to default locale while preserving query', async () => {
-    const page = await browser.newPage()
-    await page.goto(url('/?key=value'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
-    expect(await getRouteFullPath(page)).toBe('/en/?key=value')
-  })
+    // Issue https://github.com/nuxt-community/i18n-module/issues/1204
+    test('redirects from root (404) path to default locale while preserving query', async () => {
+      const page = await browser.newPage()
+      await page.goto(url('/?key=value'))
+      expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+      expect(await getRouteFullPath(page)).toBe('/en/?key=value')
+    })
 
-  test('redirects from root (404) path to default locale while preserving query and hash', async () => {
-    const page = await browser.newPage()
-    await page.goto(url('/?key=value#hash'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
-    expect(await getRouteFullPath(page)).toBe('/en/?key=value#hash')
+    test('redirects from root (404) path to default locale while preserving query and hash', async () => {
+      const page = await browser.newPage()
+      await page.goto(url('/?key=value#hash'))
+      expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+      expect(await getRouteFullPath(page)).toBe('/en/?key=value#hash')
+    })
   })
-})
+}
 
 describe(`${browserString} (generate, with router base)`, () => {
   /** @type {import('playwright-chromium').ChromiumBrowser} */
