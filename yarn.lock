@@ -12216,9 +12216,9 @@ ufo@^0.7.4:
   integrity sha512-FGG+EgguC1oz5dTE1JptPWCyj6Z9mYpwvZY8PTu9Vh/Aoy+Mj9cpeQ3gg4kyEMDbMrH+lTYiw7bomG58B8X7Kg==
 
 ufo@^0.7.5:
-  version "0.7.6"
-  resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.7.6.tgz#d10f3707afff9e140d1a097c8b26ad75c1651ccc"
-  integrity sha512-T017b40nyN5EKKakegyjXBxWI2nFJxcQQifTN1LeQjL2wck7pa/Q7JEdkvrVsciHd5fsl1jiLidY+LScZiY0PA==
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/ufo/-/ufo-0.7.7.tgz#0062f9e5e790819b0fb23ca24d7c63a4011c036a"
+  integrity sha512-N25aY3HBkJBnahm+2l4JRBBrX5I+JPakF/tDHYDTjd3wUR7iFLdyiPhj8mBwBz21v728BKwM9L9tgBfCntgdlw==
 
 uglify-js@^3.1.4, uglify-js@^3.5.1:
   version "3.13.9"
