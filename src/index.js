@@ -94,6 +94,8 @@ export default function (moduleOptions) {
 
   this.options.alias['~i18n-klona'] = require.resolve('klona/full').replace(/\.js$/, '.mjs')
 
+  this.options.alias['~i18n-ufo'] = require.resolve('ufo')
+
   if (!Array.isArray(this.options.router.middleware)) {
     throw new TypeError(formatMessage('options.router.middleware is not an array.'))
   }

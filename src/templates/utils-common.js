@@ -1,7 +1,8 @@
 import Cookie from 'cookie'
 import JsCookie from 'js-cookie'
 import isHTTPS from 'is-https'
-import { hasProtocol } from 'ufo'
+// @ts-ignore
+import { hasProtocol } from '~i18n-ufo'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 

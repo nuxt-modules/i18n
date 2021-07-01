@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { joinURL } from 'ufo'
 import { nuxtI18nHead, nuxtI18nSeo } from './head-meta'
 import { Constants, nuxtOptions, options } from './options'
 import {
@@ -16,6 +15,8 @@ import {
   syncVuex
 } from './utils-common'
 import { loadLanguageAsync } from './utils'
+// @ts-ignore
+import { joinURL } from '~i18n-ufo'
 // @ts-ignore
 import { klona } from '~i18n-klona'
 
