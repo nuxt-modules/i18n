@@ -2,6 +2,7 @@ import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
+import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { getSeoTags } from './utils'
 
 /**
@@ -268,7 +269,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
 
     /** @param {string} path */
     const pathRespectingTrailingSlash = path => {
-      return path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+      return (trailingSlash ? withTrailingSlash(path, true) : withoutTrailingSlash(path, true) || withTrailingSlash(path, true))
     }
 
     /** @type {get} */

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { joinURL } from 'ufo'
 import { nuxtI18nHead, nuxtI18nSeo } from './head-meta'
 import { Constants, nuxtOptions, options } from './options'
 import {
@@ -8,14 +7,13 @@ import {
   getLocaleCookie,
   getLocaleDomain,
   getLocalesRegex,
-  resolveBaseUrl,
   matchBrowserLocale,
   parseAcceptLanguage,
-  registerStore,
-  setLocaleCookie,
-  syncVuex
+  setLocaleCookie
 } from './utils-common'
-import { loadLanguageAsync } from './utils'
+import { loadLanguageAsync, resolveBaseUrl, registerStore, syncVuex } from './plugin.utils'
+// @ts-ignore
+import { joinURL } from '~i18n-ufo'
 // @ts-ignore
 import { klona } from '~i18n-klona'
 
