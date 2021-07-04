@@ -93,7 +93,6 @@ export default function (moduleOptions) {
   this.nuxt.hook('build:before', () => buildHook.call(this, options))
 
   this.options.alias['~i18n-klona'] = require.resolve('klona/full').replace(/\.js$/, '.mjs')
-
   this.options.alias['~i18n-ufo'] = require.resolve('ufo').replace(/\.js$/, '.mjs')
 
   if (!Array.isArray(this.options.router.middleware)) {

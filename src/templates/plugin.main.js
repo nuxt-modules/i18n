@@ -7,14 +7,11 @@ import {
   getLocaleCookie,
   getLocaleDomain,
   getLocalesRegex,
-  resolveBaseUrl,
   matchBrowserLocale,
   parseAcceptLanguage,
-  registerStore,
-  setLocaleCookie,
-  syncVuex
+  setLocaleCookie
 } from './utils-common'
-import { loadLanguageAsync } from './utils'
+import { loadLanguageAsync, resolveBaseUrl, registerStore, syncVuex } from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
 // @ts-ignore

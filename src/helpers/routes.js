@@ -1,8 +1,7 @@
+import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
 import { getPageOptions } from './utils'
-// @ts-ignore
-import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
 
 /**
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
