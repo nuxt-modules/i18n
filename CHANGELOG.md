@@ -1,3 +1,10 @@
+### [6.27.3](https://github.com/nuxt-community/i18n-module/compare/v6.27.2...v6.27.3) (2021-07-09)
+
+
+### Bug Fixes
+
+* redirect without appending extra chars ([#1214](https://github.com/nuxt-community/i18n-module/issues/1214)) ([0527d63](https://github.com/nuxt-community/i18n-module/commit/0527d63b99cf30fbe71bd62ded731de3a86798fc))
+
 ### [6.27.2](https://github.com/nuxt-community/i18n-module/compare/v6.27.1...v6.27.2) (2021-06-23)
 
 
