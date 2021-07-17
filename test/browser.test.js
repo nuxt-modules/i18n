@@ -1311,7 +1311,6 @@ describe('differentDomains', () => {
       i18n: {
         detectBrowserLanguage: false,
         differentDomains: true,
-        seo: false,
         vuex: false
       }
     }

@@ -38,10 +38,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     // @ts-ignore
     (VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) &&
     this.$i18n.locale &&
-    this.$i18n.locales &&
-    this.$options[Constants.COMPONENT_OPTIONS_KEY] !== false &&
-    // @ts-ignore
-    !(this.$options[Constants.COMPONENT_OPTIONS_KEY] && this.$options[Constants.COMPONENT_OPTIONS_KEY].seo === false)
+    this.$i18n.locales
   ) {
     if (currentLocaleIso) {
       metaObject.htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
