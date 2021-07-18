@@ -66,7 +66,6 @@ export interface Options extends BaseOptions {
   parsePages?: boolean
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
-  seo?: boolean
   skipSettingLocaleOnNavigate?: boolean,
   strategy?: Strategies
   vueI18n?: I18nOptions | string
