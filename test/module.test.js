@@ -19,8 +19,7 @@ describe('locales as string array', () => {
   let nuxt
 
   beforeAll(async () => {
-    const overrides = { i18n: { seo: false } }
-    const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
+    const testConfig = loadConfig(__dirname, 'no-lang-switcher')
     // Override those after merging to overwrite original values.
     testConfig.i18n.locales = ['en', 'fr']
 
@@ -65,7 +64,6 @@ describe('differentDomains enabled', () => {
     const override = {
       i18n: {
         differentDomains: true,
-        seo: false,
         defaultDirection: 'auto'
       }
     }
@@ -1187,7 +1185,7 @@ describe('no_prefix strategy', () => {
   })
 
   test('sets SEO metadata properly', async () => {
-    const html = await get('/')
+    const html = await get('/seo')
     const dom = getDom(html)
     const seoTags = getSeoTags(dom)
     expect(seoTags).toEqual(expect.arrayContaining([
@@ -1204,7 +1202,7 @@ describe('no_prefix strategy', () => {
       {
         tagName: 'link',
         rel: 'canonical',
-        href: 'nuxt-app.localhost/'
+        href: 'nuxt-app.localhost/seo'
       }
     ]))
     expect(seoTags.filter(tag => tag.tagName === 'link')).toHaveLength(1)

@@ -66,7 +66,6 @@ export interface Options extends BaseOptions {
   parsePages?: boolean
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
-  seo?: boolean
   skipSettingLocaleOnNavigate?: boolean,
   sortRoutes?: boolean,
   strategy?: Strategies

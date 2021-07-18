@@ -68,10 +68,6 @@ export default function (moduleOptions) {
       continue
     }
     if (file.startsWith('plugin.')) {
-      if (file === 'plugin.seo.js' && !options.seo) {
-        continue
-      }
-
       this.addPlugin({
         src: resolve(templatesPath, file),
         fileName: join(ROOT_DIR, file),

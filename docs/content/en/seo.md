@@ -1,19 +1,39 @@
 ---
 title: SEO
-description: "When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does"
+description: "When the `$nuxtI18nHead` added to the head, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does"
 position: 8
 category: Guide
 ---
 
 <alert type="info">
 
-Using `seo` option (or preferably the `$nuxtI18nHead`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
+Using the `$nuxtI18nHead` requires that locales are configured as an array of objects and not strings.
 
 </alert>
 
+You can use the `$nuxtI18nHead` method in your layout.
+
+It will generate i18n SEO metadata for the current context.
+
+Then in your app layout declare the [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) and use `$nuxtI18nHead` inside to generate i18n SEO meta information:
+
+```js {}[layouts/default.vue]
+export default {
+  head () {
+    return this.$nuxtI18nHead({ addSeoAttributes: true })
+  }
+}
+```
+
+If you have more layouts, don't forget to add it there too.
+
+That's it!
+Now SEO metadata will only be computed for the layout instead of every component in your app.
+
+
 ## Benefits
 
-When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
+When the `nuxtI18nHead` added to the `head` method, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
 
 ### `lang` attribute for `<html>` tag
 
@@ -122,58 +142,7 @@ You must also set the `baseUrl` option to your production domain in order to mak
 
 `baseUrl` can also be set to a function (that will be passed a [Nuxt Context](https://nuxtjs.org/guides/concepts/context-helpers) as a parameter) that returns a string. It can be useful to make base URL dynamic based on request headers or `window.location`.
 
-To enable this feature everywhere in your app, set `seo` option to `true`. 
-**This comes with a performance drawback though**. More information below.
-
-```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  seo: true
-}]
-```
-
-If you'd like to disable SEO on specific pages, set `i18n.seo` to `false` right in the page:
-
-```js {}[pages/about.vue]
-export default {
-  nuxtI18n: {
-    seo: false
-  }
-}
-```
-
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/head-meta.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/head-meta.js) if you want to copy some of **nuxt-i18n**'s logic.
-
-## Improving performance
-
-The default method to inject SEO metadata, while convenient, comes at a performance costs.
-The `head` method is registered for every component in your app.
-This means each time a component is created, the SEO metadata is recomputed for every components.
-
-To improve performance you can use the `$nuxtI18nHead` method in your layout instead.
-It will generate i18n SEO metadata for the current context.
-
-First make sure automatic SEO is disabled by setting `seo` to `false` in your configuration or removing that option completely:
-
-```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  seo: false
-}]
-```
-
-Then in your app layout declare the [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) and use `$nuxtI18nHead` inside to generate i18n SEO meta information:
-
-```js {}[layouts/default.vue]
-export default {
-  head () {
-    return this.$nuxtI18nHead({ addSeoAttributes: true })
-  }
-}
-```
-
-If you have more layouts, don't forget to add it there too.
-
-That's it!
-Now SEO metadata will only be computed for the layout instead of every component in your app.
+If you'd like to enable/disable SEO for any page, simply declare your own `head ()` method. Have a look at [src/templates/head-meta.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/head-meta.js) if you want to copy some of **nuxt-i18n**'s logic.
 
 ### Merging i18n SEO metadata with your own
 
