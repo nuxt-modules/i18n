@@ -197,21 +197,6 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
 }
 ```
 
-## `seo`
-
-<badge>deprecated</badge>
-
-<alert type="warning">
-
-This option is deprecated from v6.19.0. The recommended way is to set up SEO as described in [Improving performance](/seo#improving-performance).
-
-</alert>
-
-- type: `boolean`
-- default: `false`
-
-If `true`, a SEO metadata will be generated for the routes. Note that performance can suffer with this option enabled and there might be compatibility issues with some plugins.
-
 ## `differentDomains`
 
 - type: `boolean`

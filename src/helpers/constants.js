@@ -45,7 +45,6 @@ export const DEFAULT_OPTIONS = {
     useCookie: true
   },
   differentDomains: false,
-  seo: false,
   baseUrl: '',
   vuex: {
     moduleName: 'i18n',
