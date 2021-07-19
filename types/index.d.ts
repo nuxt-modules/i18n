@@ -5,6 +5,7 @@ import './vue'
 export { Locale }
 export type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
 export type Directions = 'ltr' | 'rtl' | 'auto'
+export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
 export interface LocaleObject extends Record<string, any> {
   code: Locale
@@ -21,8 +22,7 @@ export interface DetectBrowserLanguageOptions {
   cookieKey?: string
   cookieSecure?: boolean
   fallbackLocale?: Locale | null
-  onlyOnNoPrefix?: boolean
-  onlyOnRoot?: boolean
+  redirectOn?: RedirectOnOptions
   useCookie?: boolean
 }
 
