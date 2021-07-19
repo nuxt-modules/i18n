@@ -34,10 +34,12 @@ The former approach has the benefit of having having type-checking enabled if yo
 
 ## `baseUrl`
 
-- type: `string`
+- type: `string` or `function`
 - default: `''`
 
-The fallback base URL to use as a prefix for alternate URLs in `hreflang` tags. By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used. Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string. Useful to make base URL dynamic based on request headers.
+The fallback base URL to use as a prefix for alternate URLs in `hreflang` tags. By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used.
+
+Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string. Useful to make base URL dynamic based on request headers.
 
 <alert type="info">
 
