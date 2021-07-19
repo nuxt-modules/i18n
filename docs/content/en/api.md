@@ -13,9 +13,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
 </alert>
 
-### Methods
-
-#### localePath
+### localePath()
 
   - **Arguments**:
     - route (type: `string` | [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125))
@@ -26,7 +24,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-#### switchLocalePath
+### switchLocalePath()
 
   - **Arguments**:
     - locale: (type: `string`)
@@ -38,7 +36,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See type definition for [Location](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125).
 
-#### getRouteBaseName
+### getRouteBaseName()
 
   - **Arguments**:
     - route (type: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135), default: current route)
@@ -46,7 +44,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
 
-#### localeRoute
+### localeRoute()
 
 <badge>v6.12.0+</badge>
 
@@ -59,12 +57,12 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-#### localeLocation
+### localeLocation()
 
 <badge>v6.24.0+</badge>
 
   - **Arguments**:
-    - route (type: `RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
+    - route (type: [`RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
     - locale (type: `string`, default: current locale)
   - **Returns**: [`Location`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125-L133) | `undefined`
 
@@ -72,7 +70,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
-#### $nuxtI18nHead
+### $nuxtI18nHead()
 
 <badge>v6.19.0+</badge>
 
@@ -80,8 +78,9 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
     - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/nuxt-i18n.d.ts))
   - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
-  If `options.addDirAttribute` is set to `false`, the `dir` attribute will not be added.
-  If `options.addSeoAttributes` is set to `true`, the seo attributes will be added.
+  The `options` object accepts these optional properties:
+  - `addDirAttribute` - Adds a `dir` attribute to the HTML element. Default: `true`
+  - `addSeoAttributes` - Adds various SEO attributes. Default: `false`
 
 ## Extension of VueI18n
 
@@ -91,9 +90,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 </alert>
 
-### Methods
-
-#### getLocaleCookie
+### getLocaleCookie()
 
   - **Arguments**:
     - no arguments
@@ -101,7 +98,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Returns locale code from stored locale cookie.
 
-#### setLocaleCookie
+### setLocaleCookie()
 
   - **Arguments**:
     - locale (type: `string`)
@@ -109,7 +106,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Updates stored locale cookie with specified locale code. Consider using `setLocale` instead if you want to switch locale.
 
-#### setLocale
+### setLocale()
 
 <badge>v6.1.0+</badge>
 
@@ -119,7 +116,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Switches locale of the app to specified locale code. If `useCookie` option is enabled, locale cookie will be updated with new value. If prefixes are enabled (`strategy` other than `no_prefix`), will navigate to new locale's route.
 
-#### getBrowserLocale
+### getBrowserLocale()
 
   - **Arguments**:
     - no arguments
@@ -127,7 +124,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Returns browser locale code filtered against the ones defined in options.
 
-#### finalizePendingLocaleChange
+### finalizePendingLocaleChange()
 
 <badge>v6.20.0+</badge>
 
@@ -137,7 +134,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Switches to the pending locale that would have been set on navigate, but was prevented by the option [`skipSettingLocaleOnNavigate`](./options-reference#skipsettinglocaleonnavigate). See more information in [Wait for page transition](./lang-switcher#wait-for-page-transition).
 
-#### waitForPendingLocaleChange
+### waitForPendingLocaleChange()
 
 <badge>v6.20.0+</badge>
 
@@ -147,9 +144,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Returns a promise that will be resolved once the pending locale is set.
 
-### Properties
-
-#### defaultDirection
+### defaultDirection
 
 <badge>v6.19.0+</badge>
 
@@ -157,37 +152,37 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   Default direction as specified in options.
 
-#### defaultLocale
+### defaultLocale
 
   - **Type**: `string`
 
   Default locale as specified in options.
 
-#### localeCodes
+### localeCodes
 
   - **Type**: `Array<string>`
 
   List of locale codes of registered locales.
 
-#### locales
+### locales
 
   - **Type**: `Array<string | LocaleObject>`
 
   List of locales as defined in options.
 
-#### localeProperties
+### localeProperties
 
   - **Type**: `LocaleObject`
 
   Object of the current locale properties.
 
-#### differentDomains
+### differentDomains
 
   - **Type**: `boolean`
 
   Whether `differentDomains` option is enabled.
 
-#### onBeforeLanguageSwitch
+### onBeforeLanguageSwitch
 
 <badge>v6.27.0+</badge>
 
@@ -195,7 +190,7 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
   See [callbacks](../callbacks)
 
-#### onLanguageSwitched
+### onLanguageSwitched
 
   - **Type**: `Function`
 
@@ -227,11 +222,11 @@ export default Vue.extend({
 })
 ```
 
-### getRouteBaseName
-### localePath
-### localeRoute
-### localeLocation
-### switchLocalePath
+### getRouteBaseName()
+### localePath()
+### localeRoute()
+### localeLocation()
+### switchLocalePath()
 
 See more info about those in [methods documentation](#methods).
 
@@ -253,10 +248,10 @@ export const actions = {
 }
 ````
 
-### getRouteBaseName
-### localePath
-### localeRoute
-### localeLocation
-### switchLocalePath
+### getRouteBaseName()
+### localePath()
+### localeRoute()
+### localeLocation()
+### switchLocalePath()
 
 See more info about those in [methods documentation](#methods).
