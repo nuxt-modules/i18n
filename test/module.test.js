@@ -1786,7 +1786,7 @@ describe('prefix + detectBrowserLanguage', () => {
   })
 })
 
-describe('prefix + detectBrowserLanguage + onlyOnNoPrefix', () => {
+describe('prefix + detectBrowserLanguage + redirectOn is no_prefix', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1797,7 +1797,7 @@ describe('prefix + detectBrowserLanguage + onlyOnNoPrefix', () => {
         strategy: 'prefix',
         detectBrowserLanguage: {
           useCookie: true,
-          onlyOnNoPrefix: true
+          redirectOn: 'no prefix'
         }
       }
     }
