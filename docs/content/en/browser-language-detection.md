@@ -13,14 +13,14 @@ By default, **nuxt-i18n** attempts to redirect users to their preferred language
   detectBrowserLanguage: {
     useCookie: true,
     cookieKey: 'i18n_redirected',
-    onlyOnRoot: true,  // recommended
+    redirectOn: 'root',  // recommended
   }
 }]
 ```
 
 <alert type="info">
 
-For better SEO, it's recommended to set `onlyOnRoot` to `true`. With it set, the language detection is only attempted when the user visits the root path (`/`) of the site. This allows crawlers to access the requested page rather than being redirected away based on detected locale. It also allows linking to pages in specific locales.
+For better SEO, it's recommended to set `redirectOn` to `root`. With it set, the language detection is only attempted when the user visits the root path (`/`) of the site. This allows crawlers to access the requested page rather than being redirected away based on detected locale. It also allows linking to pages in specific locales.
 
 </alert>
 
