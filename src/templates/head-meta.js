@@ -6,7 +6,7 @@ import { formatMessage } from './utils-common'
  * @this {import('vue/types/vue').Vue}
  * @return {import('vue-meta').MetaInfo}
  */
-export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false } = {}) {
+export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}

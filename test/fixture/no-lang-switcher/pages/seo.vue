@@ -8,7 +8,7 @@
 <script>
 export default {
   head () {
-    return this.$nuxtI18nHead({ addDirAttribute: false, addSeoAttributes: true })
+    return this.$nuxtI18nHead({ addSeoAttributes: true })
   }
 }
 </script>
