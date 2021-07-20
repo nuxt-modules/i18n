@@ -3,7 +3,7 @@ import { readdirSync } from 'fs'
 import merge from 'lodash.merge'
 // @ts-ignore
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
-import { COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, ROOT_DIR, STRATEGIES } from './helpers/constants'
+import { COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, ROOT_DIR, STRATEGIES, REDIRECT_ON_OPTIONS } from './helpers/constants'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
 import { formatMessage } from './templates/utils-common'
 
@@ -53,7 +53,8 @@ export default function (moduleOptions) {
   const templatesOptions = {
     Constants: {
       COMPONENT_OPTIONS_KEY,
-      STRATEGIES
+      STRATEGIES,
+      REDIRECT_ON_OPTIONS
     },
     nuxtOptions: {
       isUniversalMode: nuxtOptions.mode === 'universal',

@@ -160,7 +160,7 @@ Directory that contains translation files to load. Can be used with or without l
 ## `detectBrowserLanguage`
 
 - type: `object`
-- default: `{ alwaysRedirect: false, fallbackLocale: '', onlyOnRoot: false, useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
+- default: `{ alwaysRedirect: false, fallbackLocale: '', redirectOn: 'all', useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
 
 Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
 
@@ -168,15 +168,17 @@ See also [Browser language detection](/browser-language-detection) for a guide.
 
 <alert type="info">
 
-Note that for better SEO it's recommended to set `onlyOnRoot` to true.
+Note that for better SEO it's recommended to set `redirectOn` to `root`.
 
 </alert>
 
 Supported properties:
 - `alwaysRedirect` (default: `false`) - Set to always redirect to the value stored in the cookie, not just on first visit.
 - `fallbackLocale` (default: `null`) - If none of the locales match the browser's locale, use this one as a fallback.
-- `onlyOnRoot` (default: `false`) - Set to `true` (recommended for improved SEO) to only attempt to detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
-- `onlyOnNoPrefix` (default: `false`) - This is a more permissive variant of `onlyOnRoot` that will attempt to detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when `onlyOnRoot` is not enabled and using strategy other than `'no_prefix'`.
+- `redirectOn` (default: `all`) - Supported options:
+  - `all` - detect browser locale on all paths.
+  - `root` (recommended for improved SEO) - only detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
+  - `no prefix` - a more permissive variant of `root` that will detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when using strategy other than `'no_prefix'`.
 - `useCookie` (default: `true`) - If enabled, a cookie is set once the user has been redirected to browser's preferred locale, to prevent subsequent redirections. Set to `false` to redirect every time.
 - `cookieKey` (default: `'i18n_redirected'`) - Cookie name.
 - `cookieDomain` (default: `null`) - Set to override the default domain of the cookie. Defaults to the **host** of the site.

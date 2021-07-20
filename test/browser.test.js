@@ -385,7 +385,7 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false)`, 
 })
 
 for (const target of ['server', 'static']) {
-  describe(`${browserString} (target ${target}, generate, prefix strategy, alwaysRedirect, onlyOnRoot)`, () => {
+  describe(`${browserString} (target ${target}, generate, prefix strategy, alwaysRedirect, redirectOn is root)`, () => {
     /** @type {import('playwright-chromium').ChromiumBrowser} */
     let browser
     /** @type {import('playwright-chromium').Page} */
@@ -403,7 +403,7 @@ for (const target of ['server', 'static']) {
           detectBrowserLanguage: {
             alwaysRedirect: true,
             fallbackLocale: 'en',
-            onlyOnRoot: true
+            redirectOn: 'root'
           }
         }
       }
@@ -968,7 +968,7 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
   })
 })
 
-describe(`${browserString} (onlyOnRoot + alwaysRedirect + no_prefix)`, () => {
+describe(`${browserString} (redirectOn is root + alwaysRedirect + no_prefix)`, () => {
   /** @type {Nuxt} */
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
@@ -982,7 +982,7 @@ describe(`${browserString} (onlyOnRoot + alwaysRedirect + no_prefix)`, () => {
         detectBrowserLanguage: {
           useCookie: false,
           alwaysRedirect: true,
-          onlyOnRoot: true
+          redirectOn: 'root'
         }
       }
     }
@@ -998,13 +998,13 @@ describe(`${browserString} (onlyOnRoot + alwaysRedirect + no_prefix)`, () => {
     await nuxt.close()
   })
 
-  test('onlyOnRoot does not affect locale detection on root path', async () => {
+  test('redirectOn is root does not affect locale detection on root path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/'))
     expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
   })
 
-  test('onlyOnRoot does not affect locale detection on sub-path', async () => {
+  test('redirectOn is root does not affect locale detection on sub-path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/about'))
     expect(await (await page.$('#current-page'))?.textContent()).toContain('page: À propos')
@@ -1059,7 +1059,7 @@ describe(`${browserString} (alwaysRedirect, prefix)`, () => {
   })
 })
 
-describe(`${browserString} (onlyOnRoot + prefix_except_default)`, () => {
+describe(`${browserString} (redirectOn is root + prefix_except_default)`, () => {
   /** @type {Nuxt} */
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
@@ -1071,7 +1071,7 @@ describe(`${browserString} (onlyOnRoot + prefix_except_default)`, () => {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
         detectBrowserLanguage: {
-          onlyOnRoot: true
+          redirectOn: 'root'
         }
       }
     }
@@ -1131,7 +1131,7 @@ describe(`${browserString} (onlyOnRoot + prefix_except_default)`, () => {
   })
 })
 
-describe(`${browserString} (onlyOnRoot + alwaysRedirect + prefix_except_default)`, () => {
+describe(`${browserString} (redirectOn is root + alwaysRedirect + prefix_except_default)`, () => {
   /** @type {Nuxt} */
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
@@ -1144,7 +1144,7 @@ describe(`${browserString} (onlyOnRoot + alwaysRedirect + prefix_except_default)
         strategy: 'prefix_except_default',
         detectBrowserLanguage: {
           alwaysRedirect: true,
-          onlyOnRoot: true
+          redirectOn: 'root'
         }
       }
     }
@@ -1176,7 +1176,7 @@ describe(`${browserString} (onlyOnRoot + alwaysRedirect + prefix_except_default)
   })
 })
 
-describe(`${browserString} (onlyOnRoot + prefix_and_default)`, () => {
+describe(`${browserString} (redirectOn is root + prefix_and_default)`, () => {
   /** @type {Nuxt} */
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
@@ -1188,7 +1188,7 @@ describe(`${browserString} (onlyOnRoot + prefix_and_default)`, () => {
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
         detectBrowserLanguage: {
-          onlyOnRoot: true
+          redirectOn: 'root'
         }
       }
     }
@@ -1219,7 +1219,7 @@ describe(`${browserString} (onlyOnRoot + prefix_and_default)`, () => {
   })
 })
 
-describe(`${browserString} (onlyOnRoot + prefix)`, () => {
+describe(`${browserString} (redirectOn is root + prefix)`, () => {
   /** @type {Nuxt} */
   let nuxt
   /** @type {import('playwright-chromium').ChromiumBrowser} */
@@ -1231,7 +1231,7 @@ describe(`${browserString} (onlyOnRoot + prefix)`, () => {
         defaultLocale: 'en',
         strategy: 'prefix',
         detectBrowserLanguage: {
-          onlyOnRoot: true
+          redirectOn: 'root'
         }
       }
     }

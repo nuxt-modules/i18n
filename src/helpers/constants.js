@@ -17,6 +17,15 @@ export const STRATEGIES = {
   NO_PREFIX: STRATEGY_NO_PREFIX
 }
 
+const REDIRECT_ON_ALL = 'all'
+const REDIRECT_ON_ROOT = 'root'
+const REDIRECT_ON_NO_PREFIX = 'no prefix'
+export const REDIRECT_ON_OPTIONS = {
+  ALL: REDIRECT_ON_ALL,
+  ROOT: REDIRECT_ON_ROOT,
+  NO_PREFIX: REDIRECT_ON_NO_PREFIX
+}
+
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 /** @type {Options} */
@@ -40,8 +49,7 @@ export const DEFAULT_OPTIONS = {
     cookieKey: 'i18n_redirected',
     cookieSecure: false,
     fallbackLocale: '',
-    onlyOnNoPrefix: false,
-    onlyOnRoot: false,
+    redirectOn: 'all',
     useCookie: true
   },
   differentDomains: false,
