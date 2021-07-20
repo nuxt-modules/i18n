@@ -79,7 +79,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
   The `options` object accepts these optional properties:
-  - `addDirAttribute` - Adds a `dir` attribute to the HTML element. Default: `true`
+  - `addDirAttribute` - Adds a `dir` attribute to the HTML element. Default: `false`
   - `addSeoAttributes` - Adds various SEO attributes. Default: `false`
 
 ## Extension of VueI18n
