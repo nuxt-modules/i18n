@@ -16,12 +16,12 @@ interface NuxtI18nComponentOptions {
 interface NuxtI18nHeadOptions {
   /**
    * Adds a `dir` attribute to the HTML element.
-   * Default: `true`
+   * @default false
    */
   addDirAttribute?: boolean
   /**
    * Adds various SEO attributes.
-   * Default: `false`
+   * @default false
    */
   addSeoAttributes?: boolean
 }
