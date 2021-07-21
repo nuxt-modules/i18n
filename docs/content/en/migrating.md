@@ -21,6 +21,8 @@ Follow this guide to upgrade from one major version to the other.
 
 ### `addDirAttribute` default value has been changed from `true` to `false`. Use `$nuxtI18nHead({ addDirAttribute: true })` to set it `true`.
 
+### Vuex `syncLocale` and `syncMessages` properties has been removed. Use `this.$i18n` context instead.
+
 ## Upgrading from 5.x to 6.x
 
 ### Global SEO features are now disabled by default

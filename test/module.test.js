@@ -510,17 +510,6 @@ for (const trailingSlash of TRAILING_SLASHES) {
         const window = await nuxt.renderAndGetWindow(url('/'))
         expect(window.$nuxt.$store.$i18n).toBeDefined()
       })
-
-      test('syncs i18n locale and messages', async () => {
-        const window = await nuxt.renderAndGetWindow(url('/'))
-        expect(window.$nuxt.$store.state.i18n).toBeDefined()
-        expect(window.$nuxt.$store.state.i18n.locale).toBe('en')
-        expect(window.$nuxt.$store.state.i18n.messages).toEqual(expect.objectContaining({
-          about: 'About us',
-          home: 'Homepage',
-          posts: 'Posts'
-        }))
-      })
     })
 
     // TODO: Broken in Nuxt +2.14.0

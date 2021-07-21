@@ -224,15 +224,13 @@ If `parsePages` option is disabled, the module will look for custom routes in th
 
 ## `vuex`
 
-- type: `object`
-- default: `{ moduleName: 'i18n', syncLocale: false, syncMessages: false, syncRouteParams: true }`
+- type: `object` or `false`
+- default: `{ moduleName: 'i18n', syncRouteParams: true }`
 
 Registers a store module used for syncing app's i18n state. Set to `false` to disable.
 
 Properties:
 - `moduleName` (default: `'i18n'`) - The module's namespace.
-- `syncLocale` (default: `false`) - If enabled, current app's locale is synced with **nuxt-i18n** store module.
-- `syncMessages` (default: `false`) - If enabled, current translation messages are synced with **nuxt-i18n** store module. **This will make the page response bigger so don't use unless necessary.**
 - `syncRouteParams` (default: `true`) - Enables a `setRouteParams` mutation for using custom route names with dynamic routes. See more information in [Dynamic route parameters](/lang-switcher#dynamic-route-parameters)
 
 ## `vueI18n`
