@@ -93,7 +93,6 @@ describe(browserString, () => {
     testData = await getTestData()
     expect(testData.languageSwitchedListeners).toEqual([
       {
-        storeLocale: 'fr',
         newLocale: 'fr',
         oldLocale: 'en'
       }
@@ -113,7 +112,6 @@ describe(browserString, () => {
     testData = await getTestData()
     expect(testData.languageSwitchedListeners).toEqual([
       {
-        storeLocale: 'fr',
         newLocale: 'fr',
         oldLocale: 'en'
       }
