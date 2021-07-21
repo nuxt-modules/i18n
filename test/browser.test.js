@@ -1260,6 +1260,20 @@ describe(`${browserString} (onlyOnRoot + prefix)`, () => {
     expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
     expect(await getRouteFullPath(page)).toBe('/en')
   })
+
+  test('uses saved locale cookie when redirecting from root', async () => {
+    const page = await browser.newPage({ locale: 'fr' })
+
+    // Ensure the detected locale cookie is saved
+    await page.goto(url('/fr'))
+    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await getRouteFullPath(page)).toBe('/fr')
+
+    // Verify that we navigate to saved locale
+    await page.goto(url('/'))
+    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await getRouteFullPath(page)).toBe('/fr')
+  })
 })
 
 describe(`${browserString} (vuex disabled)`, () => {
