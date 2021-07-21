@@ -213,7 +213,7 @@ If `parsePages` option is disabled, the module will look for custom routes in th
 
 ## `vuex`
 
-- type: `object`
+- type: `object` or `false`
 - default: `{ moduleName: 'i18n', syncRouteParams: true }`
 
 Registers a store module used for syncing app's i18n state. Set to `false` to disable.
