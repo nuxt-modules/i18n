@@ -33,8 +33,6 @@ export interface RootRedirectOptions {
 
 export interface VuexOptions {
   moduleName?: string
-  syncLocale?: boolean
-  syncMessages?: boolean
   syncRouteParams?: boolean
 }
 

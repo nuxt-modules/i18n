@@ -48,10 +48,6 @@ const config = {
         }
       },
       fallbackLocale: 'en'
-    },
-    vuex: {
-      syncLocale: true,
-      syncMessages: true
     }
   }
 }
