@@ -133,25 +133,9 @@ export function registerStore (store, vuex, localeCodes) {
   const storeModule = {
     namespaced: true,
     state: () => ({
-      ...(vuex.syncLocale ? { locale: '' } : {}),
-      ...(vuex.syncMessages ? { messages: {} } : {}),
       ...(vuex.syncRouteParams ? { routeParams: {} } : {})
     }),
     actions: {
-      ...(vuex.syncLocale
-        ? {
-            setLocale ({ commit }, locale) {
-              commit('setLocale', locale)
-            }
-          }
-        : {}),
-      ...(vuex.syncMessages
-        ? {
-            setMessages ({ commit }, messages) {
-              commit('setMessages', messages)
-            }
-          }
-        : {}),
       ...(vuex.syncRouteParams
         ? {
             setRouteParams ({ commit }, params) {
@@ -164,20 +148,6 @@ export function registerStore (store, vuex, localeCodes) {
         : {})
     },
     mutations: {
-      ...(vuex.syncLocale
-        ? {
-            setLocale (state, locale) {
-              state.locale = locale
-            }
-          }
-        : {}),
-      ...(vuex.syncMessages
-        ? {
-            setMessages (state, messages) {
-              state.messages = messages
-            }
-          }
-        : {}),
       ...(vuex.syncRouteParams
         ? {
             setRouteParams (state, params) {
@@ -199,26 +169,6 @@ export function registerStore (store, vuex, localeCodes) {
     }
   }
   store.registerModule(vuex.moduleName, storeModule, { preserveState: !!store.state[vuex.moduleName] })
-}
-
-/**
- * Dispatch store module actions to keep it in sync with app's locale data
- *
- * @param  {import('vuex').Store<void>} store
- * @param  {string | null} locale The current locale
- * @param  {object | null} messages Current messages
- * @param  {ResolvedOptions['vuex']} vuex
- * @return {Promise<void>}
- */
-export async function syncVuex (store, locale = null, messages = null, vuex) {
-  if (vuex && store) {
-    if (locale !== null && vuex.syncLocale) {
-      await store.dispatch(vuex.moduleName + '/setLocale', locale)
-    }
-    if (messages !== null && vuex.syncMessages) {
-      await store.dispatch(vuex.moduleName + '/setMessages', messages)
-    }
-  }
 }
 
 /**

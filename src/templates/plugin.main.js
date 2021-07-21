@@ -11,7 +11,7 @@ import {
   parseAcceptLanguage,
   setLocaleCookie
 } from './utils-common'
-import { loadLanguageAsync, resolveBaseUrl, registerStore, syncVuex } from './plugin.utils'
+import { loadLanguageAsync, resolveBaseUrl, registerStore } from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
 // @ts-ignore
@@ -134,10 +134,6 @@ export default async (context) => {
     // Copy properties of the new locale
     for (const [key, value] of Object.entries(newLocaleProperties)) {
       Vue.set(app.i18n.localeProperties, key, klona(value))
-    }
-
-    if (options.vuex) {
-      await syncVuex(store, newLocale, app.i18n.getLocaleMessage(newLocale), options.vuex)
     }
 
     // Must retrieve from context as it might have changed since plugin initialization.
@@ -379,10 +375,7 @@ export default async (context) => {
   let finalLocale = options.detectBrowserLanguage ? doDetectBrowserLanguage(route) : ''
 
   if (!finalLocale) {
-    const { vuex } = options
-    if (vuex && vuex.syncLocale && store && store.state[vuex.moduleName].locale !== '') {
-      finalLocale = store.state[vuex.moduleName].locale
-    } else if (app.i18n.differentDomains) {
+    if (app.i18n.differentDomains) {
       const domainLocale = getLocaleDomain(options.normalizedLocales, req)
       finalLocale = domainLocale
     } else if (options.strategy !== Constants.STRATEGIES.NO_PREFIX) {

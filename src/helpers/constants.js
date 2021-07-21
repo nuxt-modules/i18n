@@ -56,8 +56,6 @@ export const DEFAULT_OPTIONS = {
   baseUrl: '',
   vuex: {
     moduleName: 'i18n',
-    syncLocale: false,
-    syncMessages: false,
     syncRouteParams: true
   },
   parsePages: true,
