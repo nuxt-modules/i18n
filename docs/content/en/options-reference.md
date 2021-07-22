@@ -106,7 +106,7 @@ When using `prefix_except_default` strategy, URLs for locale specified here won'
 
 ## `sortRoutes`
 
-<badge>v6.27.4+</badge>
+<badge>v6.28.0+</badge>
 
 - type: `boolean`
 - default: `true`
