@@ -1,8 +1,9 @@
-import { resolve } from 'path'
+import { join, resolve } from 'path'
 import { readFileSync } from 'fs'
 import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
+import { adjustRouteForTrailingSlash } from '../src/helpers/utils'
 import { getSeoTags } from './utils'
 
 /**
@@ -280,15 +281,23 @@ for (const trailingSlash of TRAILING_SLASHES) {
       const overrides = {
         router: {
           trailingSlash,
+          // Routes added through extendRoutes are not processed by nuxt-i18n
           extendRoutes (routes) {
             routes.push({
-              path: pathRespectingTrailingSlash('/about'),
-              redirect: pathRespectingTrailingSlash('/about-us')
+              path: adjustRouteForTrailingSlash('/about', trailingSlash),
+              redirect: adjustRouteForTrailingSlash('/about-us', trailingSlash)
             })
           }
         }
       }
-      nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+
+      /** @type {import('@nuxt/types').NuxtConfig} */
+      const testConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
+
+      // Extend routes before the nuxt-i18n module so that the module processes them.
+      testConfig.modules?.unshift(join(__dirname, 'fixture', 'basic', 'extend-routes'))
+
+      nuxt = (await setup(testConfig)).nuxt
     })
 
     afterAll(async () => {
@@ -428,6 +437,10 @@ for (const trailingSlash of TRAILING_SLASHES) {
       await expect(getRespectingTrailingSlash('/simple')).resolves.toBeDefined()
       await expect(getRespectingTrailingSlash('/fr/simple')).resolves.toBeDefined()
       await expect(getRespectingTrailingSlash('/es/simple')).rejects.toBeDefined()
+    })
+
+    test('navigates to route with optional param without the param specified', async () => {
+      await expect(getRespectingTrailingSlash('/custom-route/')).resolves.toBeDefined()
     })
 
     describe('posts', () => {
