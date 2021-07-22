@@ -1,3 +1,16 @@
+## [6.28.0](https://github.com/nuxt-community/i18n-module/compare/v6.27.3...v6.28.0) (2021-07-22)
+
+
+### Features
+
+* allow disabling route sorting ([#1241](https://github.com/nuxt-community/i18n-module/issues/1241)) ([8a6a056](https://github.com/nuxt-community/i18n-module/commit/8a6a05642819ece16ca9e38211449313254cd500))
+
+
+### Bug Fixes
+
+* custom routes with optional params adjusted incorrectly ([#1243](https://github.com/nuxt-community/i18n-module/issues/1243)) ([203f3db](https://github.com/nuxt-community/i18n-module/commit/203f3dbee2618ba1c598d53db00564f73e848def))
+* don't skip the cookie if no locale is detected in the route ([#1235](https://github.com/nuxt-community/i18n-module/issues/1235)) ([6c9b48f](https://github.com/nuxt-community/i18n-module/commit/6c9b48fcd4a4421c118574e68e4b67a13180d502))
+
 ### [6.27.3](https://github.com/nuxt-community/i18n-module/compare/v6.27.2...v6.27.3) (2021-07-09)
 
 
