@@ -104,6 +104,17 @@ The app's default locale. Should match code of one of defined `locales`.
 
 When using `prefix_except_default` strategy, URLs for locale specified here won't have a prefix. **It's recommended to set this to some locale** regardless of chosen strategy, as it will be used as a fallback locale when navigating to a non-existent route.
 
+## `sortRoutes`
+
+<badge>v6.28.0+</badge>
+
+- type: `boolean`
+- default: `true`
+
+Whether to sort routes by using the `sortRoutes` function from the `@nuxt/utils` package.
+
+While Nuxt sorts the routes itself, it does that before **nuxt-i18n** has added its own generated routes so the module has to re-sort them again. This is necessary as otherwise some routes might become inaccessible due to being shadowed by more generic routes. If you are adding custom routes programmatically, the sorting might change the order of your custom routes in unexpected ways so in that case you might want to disable sorting and handle that yourself. In that case you have to ensure the correct order yourself so that, for example, a more generic route like `/en/*` doesn't shadow a more specific `/en/foo/*` route (the latter should be registered first to work properly).
+
 ## `strategy`
 
 - type: `string`

@@ -24,6 +24,7 @@ export function makeRoutes (baseRoutes, {
   pagesDir,
   parsePages,
   routesNameSeparator,
+  sortRoutes,
   strategy,
   trailingSlash
 }) {
@@ -171,12 +172,14 @@ export function makeRoutes (baseRoutes, {
     localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, localeCodes))
   }
 
-  try {
-    // @ts-ignore
-    const { sortRoutes } = require('@nuxt/utils')
-    localizedRoutes = sortRoutes(localizedRoutes)
-  } catch (error) {
-    // Ignore
+  if (sortRoutes) {
+    try {
+      // @ts-ignore
+      const { sortRoutes: sortRoutesFn } = require('@nuxt/utils')
+      localizedRoutes = sortRoutesFn(localizedRoutes)
+    } catch (error) {
+      // Ignore
+    }
   }
 
   return localizedRoutes
