@@ -175,8 +175,8 @@ export function makeRoutes (baseRoutes, {
   if (sortRoutes) {
     try {
       // @ts-ignore
-      const { sortRoutes: sortRoutesUtils } = require('@nuxt/utils')
-      localizedRoutes = sortRoutesUtils(localizedRoutes)
+      const { sortRoutes: sortRoutesFn } = require('@nuxt/utils')
+      localizedRoutes = sortRoutesFn(localizedRoutes)
     } catch (error) {
       // Ignore
     }
