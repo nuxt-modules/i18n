@@ -1,6 +1,6 @@
 import { STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
-import { adjustRouteForTrailingSlash, getPageOptions } from './utils'
+import { adjustRouteDefinitionForTrailingSlash, getPageOptions } from './utils'
 
 /**
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
@@ -149,7 +149,7 @@ export function makeRoutes (baseRoutes, {
       // - If "router.trailingSlash" is not specified then default to no trailing slash (like Nuxt)
       // - Children with relative paths must not start with slash so don't append if path is empty.
       if (path.length) { // Don't replace empty (child) path with a slash!
-        path = adjustRouteForTrailingSlash(path, trailingSlash, isChildWithRelativePath)
+        path = adjustRouteDefinitionForTrailingSlash(path, trailingSlash, isChildWithRelativePath)
       }
 
       if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUprefixedFallback) {

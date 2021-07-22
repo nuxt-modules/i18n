@@ -60,6 +60,6 @@ export function getPageOptions (route, pages, localeCodes, pagesDir, defaultLoca
  * @param {boolean} [isChildWithRelativePath] Indicates if it is a child route that has relative path
  * @return {string}
  */
-export function adjustRouteForTrailingSlash (routePath, trailingSlash, isChildWithRelativePath) {
+export function adjustRouteDefinitionForTrailingSlash (routePath, trailingSlash, isChildWithRelativePath) {
   return routePath.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
 }

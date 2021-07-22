@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
-import { adjustRouteForTrailingSlash } from '../src/helpers/utils'
+import { adjustRouteDefinitionForTrailingSlash } from '../src/helpers/utils'
 import { getSeoTags } from './utils'
 
 /**
@@ -284,8 +284,8 @@ for (const trailingSlash of TRAILING_SLASHES) {
           // Routes added through extendRoutes are not processed by nuxt-i18n
           extendRoutes (routes) {
             routes.push({
-              path: adjustRouteForTrailingSlash('/about', trailingSlash),
-              redirect: adjustRouteForTrailingSlash('/about-us', trailingSlash)
+              path: adjustRouteDefinitionForTrailingSlash('/about', trailingSlash),
+              redirect: adjustRouteDefinitionForTrailingSlash('/about-us', trailingSlash)
             })
           }
         }
