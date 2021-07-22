@@ -73,6 +73,7 @@ export interface Options extends BaseOptions {
   routesNameSeparator?: string
   seo?: boolean
   skipSettingLocaleOnNavigate?: boolean,
+  sortRoutes?: boolean,
   strategy?: Strategies
   vueI18n?: I18nOptions | string
   vueI18nLoader?: boolean
