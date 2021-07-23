@@ -1435,7 +1435,7 @@ describe('with router base + redirectOn is all', () => {
       }
     }
 
-    nuxt = (await setup(loadConfig(__dirname, 'basic', override))).nuxt
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
   })
 
   afterAll(async () => {
