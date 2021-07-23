@@ -160,7 +160,7 @@ Directory that contains translation files to load. Can be used with or without l
 ## `detectBrowserLanguage`
 
 - type: `object`
-- default: `{ alwaysRedirect: false, fallbackLocale: '', redirectOn: 'all', useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
+- default: `{ alwaysRedirect: false, fallbackLocale: '', redirectOn: 'root', useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
 
 Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
 
@@ -175,7 +175,7 @@ Note that for better SEO it's recommended to set `redirectOn` to `root`.
 Supported properties:
 - `alwaysRedirect` (default: `false`) - Set to always redirect to the value stored in the cookie, not just on first visit.
 - `fallbackLocale` (default: `null`) - If none of the locales match the browser's locale, use this one as a fallback.
-- `redirectOn` (default: `all`) - Supported options:
+- `redirectOn` (default: `root`) - Supported options:
   - `all` - detect browser locale on all paths.
   - `root` (recommended for improved SEO) - only detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
   - `no prefix` - a more permissive variant of `root` that will detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when using strategy other than `'no_prefix'`.
