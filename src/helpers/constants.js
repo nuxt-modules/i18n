@@ -49,7 +49,7 @@ export const DEFAULT_OPTIONS = {
     cookieKey: 'i18n_redirected',
     cookieSecure: false,
     fallbackLocale: '',
-    redirectOn: 'all',
+    redirectOn: 'root',
     useCookie: true
   },
   differentDomains: false,

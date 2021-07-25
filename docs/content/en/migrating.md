@@ -23,6 +23,8 @@ Follow this guide to upgrade from one major version to the other.
 
 ### Vuex `syncLocale` and `syncMessages` properties has been removed. Use `this.$i18n` context instead.
 
+### `redirectOn` default value has been changed from `all` to `root`. Use `redirectOn: 'all'`  to set it `all`.
+
 ## Upgrading from 5.x to 6.x
 
 ### Global SEO features are now disabled by default
