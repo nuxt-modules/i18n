@@ -20,7 +20,7 @@ By default, **nuxt-i18n** attempts to redirect users to their preferred language
 
 <alert type="info">
 
-For better SEO, it's recommended to set `redirectOn` to `root`. With it set, the language detection is only attempted when the user visits the root path (`/`) of the site. This allows crawlers to access the requested page rather than being redirected away based on detected locale. It also allows linking to pages in specific locales.
+For better SEO, it's recommended to set `redirectOn` to `root` (which is the default value). With it set, the language detection is only attempted when the user visits the root path (`/`) of the site. This allows crawlers to access the requested page rather than being redirected away based on detected locale. It also allows linking to pages in specific locales.
 
 </alert>
 

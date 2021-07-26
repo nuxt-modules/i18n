@@ -90,8 +90,6 @@ export default {
 
 ## `defaultDirection`
 
-<badge>v6.19.0+</badge>
-
 - type: `string`
 - default: `ltr`
 
@@ -107,8 +105,6 @@ The app's default locale. Should match code of one of defined `locales`.
 When using `prefix_except_default` strategy, URLs for locale specified here won't have a prefix. **It's recommended to set this to some locale** regardless of chosen strategy, as it will be used as a fallback locale when navigating to a non-existent route.
 
 ## `sortRoutes`
-
-<badge>v6.28.0+</badge>
 
 - type: `boolean`
 - default: `true`
@@ -139,7 +135,7 @@ Whether the translations should be lazy-loaded. If this is enabled, you MUST con
 
 Loading locale messages lazily means that only messages for currently used locale (and for the fallback locale, if different from current locale) will be loaded on page loading.
 
-#### LazyOptions <badge>v6.3.0+</badge>
+#### LazyOptions
 
 The value can also be set to an object instead of the value `true` to override configuration options related to lazy loading. Supports the following optional properties:
 
@@ -265,8 +261,6 @@ If true, [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader) is added 
 
 ## `onBeforeLanguageSwitch`
 
-<badge>v6.27.0+</badge>
-
 - type: `function`
 - default: `(oldLocale, newLocale, isInitialSetup, context) => {}`
 
@@ -284,8 +278,6 @@ A listener called after app's locale has changed.
 See [callbacks](./callbacks)
 
 ## `skipSettingLocaleOnNavigate`
-
-<badge>v6.20.0+</badge>
 
 - type: `boolean`
 - default: `false`

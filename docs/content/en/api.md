@@ -46,8 +46,6 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
 ### localeRoute()
 
-<badge>v6.12.0+</badge>
-
   - **Arguments**:
     - route (type: `RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
     - locale (type: `string`, default: current locale)
@@ -58,8 +56,6 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 
 ### localeLocation()
-
-<badge>v6.24.0+</badge>
 
   - **Arguments**:
     - route (type: [`RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
@@ -72,10 +68,8 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
 ### $nuxtI18nHead()
 
-<badge>v6.19.0+</badge>
-
   - **Arguments**:
-    - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/nuxt-i18n.d.ts))
+    - options: (type: [`NuxtI18nHeadOptions`](https://github.com/nuxt-community/i18n-module/blob/master/types/vue.d.ts))
   - **Returns**: [`MetaInfo`](https://github.com/nuxt/vue-meta/blob/74182e388ad1b1977cb7217b0ade729321761403/types/vue-meta.d.ts#L173)
 
   The `options` object accepts these optional properties:
@@ -108,8 +102,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ### setLocale()
 
-<badge>v6.1.0+</badge>
-
   - **Arguments**:
     - locale (type: `string`)
   - **Returns**: `Promise<undefined>`
@@ -126,8 +118,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ### finalizePendingLocaleChange()
 
-<badge>v6.20.0+</badge>
-
   - **Arguments**:
     - no arguments
   - **Returns**: `Promise<undefined>`
@@ -136,8 +126,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
 
 ### waitForPendingLocaleChange()
 
-<badge>v6.20.0+</badge>
-
   - **Arguments**:
     - no arguments
   - **Returns**: `Promise<undefined>`
@@ -145,8 +133,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
   Returns a promise that will be resolved once the pending locale is set.
 
 ### defaultDirection
-
-<badge>v6.19.0+</badge>
 
   - **Type**: `Directions`
 
@@ -183,8 +169,6 @@ Instance of [VueI18n class](http://kazupon.github.io/vue-i18n/api/#vuei18n-class
   Whether `differentDomains` option is enabled.
 
 ### onBeforeLanguageSwitch
-
-<badge>v6.27.0+</badge>
 
   - **Type**: `Function`
 
