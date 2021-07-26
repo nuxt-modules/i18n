@@ -7,9 +7,7 @@ category: Guide
 
 **nuxt-i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language.
 
-### `onBeforeLanguageSwitch(oldLocale, newLocale, isInitialSetup, context)`
-
-<badge>v6.27.0+</badge>
+### onBeforeLanguageSwitch
 
 Called before the app's locale is switched. Can be used to override the new locale by returning a new locale code.
 
@@ -22,7 +20,7 @@ Parameters:
 
 Returns: `string` or nothing
 
-### `onLanguageSwitched(oldLocale, newLocale)`
+### onLanguageSwitched
 
 Called right after the app's locale has been switched.
 

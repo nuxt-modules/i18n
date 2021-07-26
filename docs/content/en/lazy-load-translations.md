@@ -76,8 +76,6 @@ This rule in fact applies also to any other module that adds plugins and whose f
 
 ## Lazy configuration options
 
-<badge>v6.3.0+</badge>
-
 The `lazy` option can be assigned a configuration object to customize the lazy-loading behavior.
 
 The supported configuration options are:
