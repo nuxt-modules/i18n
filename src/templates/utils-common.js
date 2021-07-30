@@ -10,7 +10,7 @@ import JsCookie from 'js-cookie'
  * @return {string}
  */
 export function formatMessage (text) {
-  return `[nuxt-i18n] ${text}`
+  return `[@nuxtjs/i18n] ${text}`
 }
 
 /**

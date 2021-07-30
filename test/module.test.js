@@ -279,7 +279,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
       const overrides = {
         router: {
           trailingSlash,
-          // Routes added through extendRoutes are not processed by nuxt-i18n
+          // Routes added through extendRoutes are not processed by the module
           extendRoutes (routes) {
             routes.push({
               path: adjustRouteDefinitionForTrailingSlash('/about', trailingSlash),
@@ -292,7 +292,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
       /** @type {import('@nuxt/types').NuxtConfig} */
       const testConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
-      // Extend routes before the nuxt-i18n module so that the module processes them.
+      // Extend routes before the module so that the module processes them.
       testConfig.modules?.unshift(join(__dirname, 'fixture', 'basic', 'extend-routes'))
 
       nuxt = (await setup(testConfig)).nuxt
@@ -681,7 +681,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
       expect(title?.textContent).toBe('Bonjour le monde!')
     })
 
-    test('can use nuxt-i18n extensions from component local i18n instance', async () => {
+    test('can use @nuxtjs/i18n extensions from component local i18n instance', async () => {
       const html = await getRespectingTrailingSlash('/loader-yaml')
       const dom = getDom(html)
       const title = dom.querySelector('p#title')

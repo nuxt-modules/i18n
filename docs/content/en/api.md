@@ -9,7 +9,7 @@ category: Api
 
 <alert type="info">
 
-All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue-injected-methods) (like `$t`, `$i18n`, `v-t` directive and others) are also available even though they are not listed here. Below are only the ones that are added by `nuxt-i18n`.
+All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue-injected-methods) (like `$t`, `$i18n`, `v-t` directive and others) are also available even though they are not listed here. Below are only the ones that are added by `@nuxtjs/i18n`.
 
 </alert>
 
@@ -42,7 +42,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
     - route (type: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135), default: current route)
   - **Returns**: `string`
 
-  Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `nuxt-i18n`.
+  Returns base name of current (if argument not provided) or passed in `route`. Base name is name of the route without locale suffix and other metadata added by `@nuxtjs/i18n`.
 
 ### localeRoute()
 

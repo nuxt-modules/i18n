@@ -5,12 +5,12 @@ position: 12
 category: Guide
 ---
 
-**nuxt-i18n** takes advantage of **vue-i18n** ability to handle localization fallback. It is possible to define a single fallback locale, an array of locales,
+**@nuxtjs/i18n** takes advantage of **vue-i18n** ability to handle localization fallback. It is possible to define a single fallback locale, an array of locales,
 or a decision map for more specific needs.
 
 ```js [nuxt.config.js]
 modules: [
-  'nuxt-i18n'
+  '@nuxtjs/i18n'
 ],
 
 i18n: {

@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 ### Version
-nuxt-i18n: <!-- ex: 5.9.0 -->
+@nuxtjs/i18n: <!-- ex: 1.0.0 -->
 nuxt: <!-- ex: 2.0.0 -->
 
 ### Nuxt configuration
@@ -16,7 +16,7 @@ nuxt: <!-- ex: 2.0.0 -->
  - [] universal
  - [] spa
 
-### Nuxt-i18n configuration
+### @nuxtjs/i18n configuration
 <!--
     If relevant, please include the configuration you are using for this module.
     For example:

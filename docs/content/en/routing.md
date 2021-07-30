@@ -1,11 +1,11 @@
 ---
 title: Routing
-description: "**nuxt-i18n** overrides Nuxt default routes to add locale prefixes to every URL (except in no_prefix strategy)."
+description: "**@nuxtjs/i18n** overrides Nuxt default routes to add locale prefixes to every URL (except in no_prefix strategy)."
 position: 6
 category: Guide
 ---
 
-**nuxt-i18n** overrides Nuxt default routes to add locale prefixes to every URL (except in no_prefix strategy).
+**@nuxtjs/i18n** overrides Nuxt default routes to add locale prefixes to every URL (except in no_prefix strategy).
 Say your app supports two languages: French and English as the default language, and you have the following pages in your project:
 
 ```asciidoc
@@ -75,7 +75,7 @@ To configure the strategy, use the `strategy` option.
 Make sure that you have a `defaultLocale` defined, especially if using **prefix_except_default**, **prefix_and_default** or **no_prefix** strategy. For other strategies it's also recommended to set it as it's gonna be used as a fallback when attempting to redirect from 404 page.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en'
 }]
@@ -88,7 +88,7 @@ If on `Nuxt` version lower than 2.10.2, and using strategy `prefix_except_defaul
 </alert>
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   strategy: 'prefix_except_default',
   defaultLocale: 'en',
   locales: [
@@ -142,7 +142,7 @@ export default {
 Make sure you set the `parsePages` option to `false` to disable babel parsing and add your custom paths in the `pages` option:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   parsePages: false,   // Disable babel parsing
   pages: {
     about: {
@@ -179,7 +179,7 @@ pages/
 Here's how you would configure these particular pages in the configuration:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   parsePages: false,
   pages: {
     '_nested/_route/index': {
@@ -214,7 +214,7 @@ pages/
 You would need to set up your `pages` property as follows:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   parsePages: false,
   pages: {
     about: {
@@ -281,7 +281,7 @@ export default {
 If you disabled `parsePages` option, localization can be disabled for specific pages and locales by setting the unwanted locale(s) to `false` in the module's configuration:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   parsePages: false,
   pages: {
     about: {
@@ -294,7 +294,7 @@ If you disabled `parsePages` option, localization can be disabled for specific p
 To completely disable routes localization on a given page:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   parsePages: false,
   pages: {
     about: false
