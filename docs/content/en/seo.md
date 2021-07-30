@@ -1,13 +1,13 @@
 ---
 title: SEO
-description: "When the `$nuxtI18nHead` is added to the head, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does"
+description: "When the `$nuxtI18nHead` is added to the head, **@nuxtjs/i18n** attempts to add some metadata to improve your pages SEO. Here's what it does"
 position: 8
 category: Guide
 ---
 
 ## Introduction
 
-**nuxt-i18n** provides the `$nuxtI18nHead` function which you can use to generate SEO metadata to optimize locale-related aspects of the app for the search engines.
+**@nuxtjs/i18n** provides the `$nuxtI18nHead` function which you can use to generate SEO metadata to optimize locale-related aspects of the app for the search engines.
 
 Here are the specific optimizations and features that it enables:
 - `lang` attribute for the `<html>` tag
@@ -22,7 +22,7 @@ Here are the specific optimizations and features that it enables:
 To leverage the SEO benefits, you must configure the `locales` option as an array of objects, where each object has an `iso` option set to the language's ISO code:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -43,7 +43,7 @@ To leverage the SEO benefits, you must configure the `locales` option as an arra
 You must also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   baseUrl: 'https://my-nuxt-app.com'
 }]
 ```
@@ -111,12 +111,12 @@ export default {
 
   Generates `<link rel="alternate" hreflang="x">` tags for every configured locale. The locales' ISO codes are used as `hreflang` values.
 
-  Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a "catchall" locale hreflang link is provided for each locale group (e.g. `en-*`) as well. By default, it is the first locale provided, but another locale can be selected by setting `isCatchallLocale` to `true` on that specific locale object in your **nuxt-i18n** configuration. [More on hreflang](https://support.google.com/webmasters/answer/189077)
+  Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a "catchall" locale hreflang link is provided for each locale group (e.g. `en-*`) as well. By default, it is the first locale provided, but another locale can be selected by setting `isCatchallLocale` to `true` on that specific locale object in your **@nuxtjs/i18n** configuration. [More on hreflang](https://support.google.com/webmasters/answer/189077)
 
 An example without selected "catchall" locale:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -133,7 +133,7 @@ An example without selected "catchall" locale:
 Here is how you'd use `isCatchallLocale` to selected another locale:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -151,7 +151,7 @@ Here is how you'd use `isCatchallLocale` to selected another locale:
   In case you already have an `en` locale `iso` set, it'll be used as the "catchall" without doing anything
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'gb',

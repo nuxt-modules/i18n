@@ -14,7 +14,7 @@ You might want to use a different domain name for each language your app support
 </alert>
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -73,7 +73,7 @@ module.exports = {
 const localeDomains = require('./config/locale-domains')
 //...
 [
-  'nuxt-i18n',
+  '@nuxtjs/i18n',
   {
     differentDomains: process.env.NODE_ENV === 'production',
     locales: [

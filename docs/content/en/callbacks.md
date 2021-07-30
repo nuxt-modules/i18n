@@ -1,11 +1,11 @@
 ---
 title: Callbacks
-description: "**nuxt-i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language."
+description: "**@nuxtjs/i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language."
 position: 5
 category: Guide
 ---
 
-**nuxt-i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language.
+**@nuxtjs/i18n** exposes some callbacks that you can use to perform specific tasks that depend on the app's language.
 
 ### onBeforeLanguageSwitch
 

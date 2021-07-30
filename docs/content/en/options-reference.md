@@ -5,12 +5,12 @@ position: 4
 category: Getting started
 ---
 
-You can configure **nuxt-i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:
+You can configure **@nuxtjs/i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:
 
 ```js {}[nuxt.config.js]
 export default {
   modules: [
-    'nuxt-i18n',
+    '@nuxtjs/i18n',
   ],
   i18n: {
     // Options
@@ -21,7 +21,7 @@ export default {
 
 export default {
   modules: [
-    ['nuxt-i18n', {
+    ['@nuxtjs/i18n', {
       // Options
     }],
   ],
@@ -111,7 +111,7 @@ When using `prefix_except_default` strategy, URLs for locale specified here won'
 
 Whether to sort routes by using the `sortRoutes` function from the `@nuxt/utils` package.
 
-While Nuxt sorts the routes itself, it does that before **nuxt-i18n** has added its own generated routes so the module has to re-sort them again. This is necessary as otherwise some routes might become inaccessible due to being shadowed by more generic routes. If you are adding custom routes programmatically, the sorting might change the order of your custom routes in unexpected ways so in that case you might want to disable sorting and handle that yourself. In that case you have to ensure the correct order yourself so that, for example, a more generic route like `/en/*` doesn't shadow a more specific `/en/foo/*` route (the latter should be registered first to work properly).
+While Nuxt sorts the routes itself, it does that before **@nuxtjs/i18n** has added its own generated routes so the module has to re-sort them again. This is necessary as otherwise some routes might become inaccessible due to being shadowed by more generic routes. If you are adding custom routes programmatically, the sorting might change the order of your custom routes in unexpected ways so in that case you might want to disable sorting and handle that yourself. In that case you have to ensure the correct order yourself so that, for example, a more generic route like `/en/*` doesn't shadow a more specific `/en/foo/*` route (the latter should be registered first to work properly).
 
 ## `strategy`
 

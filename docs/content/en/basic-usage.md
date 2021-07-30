@@ -1,16 +1,16 @@
 ---
 title: Basic Usage
-description: 'The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:'
+description: 'The fastest way to get started with **@nuxtjs/i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:'
 position: 3
 category: Getting started
 ---
 
-The fastest way to get started with **nuxt-i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:
+The fastest way to get started with **@nuxtjs/i18n** is to define the supported `locales` list and to provide some translation messages to **vue-i18n** via the `vueI18n` option:
 
 ```js {}[nuxt.config.js]
 {
   modules: [
-    'nuxt-i18n'
+    '@nuxtjs/i18n'
   ],
 
   i18n: {
@@ -34,13 +34,13 @@ The fastest way to get started with **nuxt-i18n** is to define the supported `lo
 }
 ```
 
-With this setup, **nuxt-i18n** generates localized URLs for all your pages, using the codes provided in the `locales` option as the prefix, except for the `defaultLocale` (read more on [routing](/routing)).
+With this setup, **@nuxtjs/i18n** generates localized URLs for all your pages, using the codes provided in the `locales` option as the prefix, except for the `defaultLocale` (read more on [routing](/routing)).
 
 The `vueI18n` option is passed as is to **vue-i18n**, refer to the [doc](https://kazupon.github.io/vue-i18n/) for available options.
 
 ## nuxt-link
 
-When rendering internal links in your app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **nuxt-i18n** registers a global mixin that provides some helper functions:
+When rendering internal links in your app using `<nuxt-link>`, you need to get proper URLs for the current locale. To do this, **@nuxtjs/i18n** registers a global mixin that provides some helper functions:
 
 * `localePath` – Returns the localized URL for a given page. The first parameter can be either the path or name of the route or an object for more complex routes. A locale code can be passed as the second parameter to generate a link for a specific language:
 

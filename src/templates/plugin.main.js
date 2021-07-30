@@ -315,7 +315,7 @@ export default async (context) => {
   }
 
   /**
-   * Extends the newly created vue-i18n instance with nuxt-i18n properties.
+   * Extends the newly created vue-i18n instance with @nuxtjs/i18n properties.
    *
    * @param {import('vue-i18n').IVueI18n} i18n
    */

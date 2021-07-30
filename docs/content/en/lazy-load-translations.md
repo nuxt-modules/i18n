@@ -6,8 +6,8 @@ category: Guide
 ---
 
 For apps that contain a lot of translated content, it is preferable not to bundle all the messages in the main bundle but rather lazy-load only the language that the users selected.
-This can be achieved with **nuxt-i18n** by letting the module know where your translation files are located so it can dynamically import them when the app loads or when the user switches to another language.
-To enable translations lazy-loading, follow these steps when configuring **nuxt-i18n**:
+This can be achieved with **@nuxtjs/i18n** by letting the module know where your translation files are located so it can dynamically import them when the app loads or when the user switches to another language.
+To enable translations lazy-loading, follow these steps when configuring **@nuxtjs/i18n**:
 
 * Set `lazy` option to `true` (or to [configuration object](#lazy-configuration-options) if you want to customize some options).
 * Set `langDir` option to the directory (can not be empty) that contains your translation files.
@@ -29,7 +29,7 @@ nuxt-project/
 Configuration example:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -68,7 +68,7 @@ export default {
 
 <alert type="info">
 
-Note that if you want to use the `$axios` instance from the `@nuxtjs/axios` module within the exported function, the `@nuxtjs/axios` module must be registered **after** the `nuxt-i18n` module.
+Note that if you want to use the `$axios` instance from the `@nuxtjs/axios` module within the exported function, the `@nuxtjs/axios` module must be registered **after** the `@nuxtjs/i18n` module.
 
 This rule in fact applies also to any other module that adds plugins and whose functionality you'd want to use from within that function.
 

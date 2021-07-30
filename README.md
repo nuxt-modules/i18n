@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="./docs/static/preview.png" alt="nuxt-i18n logo">
+  <img src="./docs/static/preview.png" alt="@nuxtjs/i18n logo">
 </p>
 
 [![](https://david-dm.org/nuxt-community/i18n-module/status.svg?style=flat-square)](https://david-dm.org/nuxt-community/i18n-module)
 [![](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 [![](https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/i18n-module)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-community/i18n-module)
-[![](https://img.shields.io/npm/v/nuxt-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
-[![](https://img.shields.io/npm/dt/nuxt-i18n.svg?style=flat-square)](https://npmjs.com/package/nuxt-i18n)
+[![](https://img.shields.io/npm/v/%40nuxtjs-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs-i18n)
+[![](https://img.shields.io/npm/dt/%40nuxtjs-i18n.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs-i18n)
 
 > i18n for your Nuxt project
 
@@ -28,12 +28,12 @@
 
 ## Setup
 ```sh
-yarn add nuxt-i18n # yarn
-npm i nuxt-i18n # npm
+yarn add @nuxtjs/i18n # yarn
+npm i @nuxtjs/i18n # npm
 ```
 
 ## Basic usage
-Firstly, you need to add `nuxt-i18n` to your Nuxt config.
+Firstly, you need to add `@nuxtjs/i18n` to your Nuxt config.
 
 ```javascript
 // nuxt.config.js
@@ -41,7 +41,7 @@ Firstly, you need to add `nuxt-i18n` to your Nuxt config.
 {
   modules: [
     [
-      'nuxt-i18n',
+      '@nuxtjs/i18n',
       {
         locales: ['en', 'es'],
         defaultLocale: 'en',
@@ -62,7 +62,7 @@ Firstly, you need to add `nuxt-i18n` to your Nuxt config.
 }
 ```
 
-Then you can start using `nuxt-i18n` in your Vue components!
+Then you can start using `@nuxtjs/i18n` in your Vue components!
 
 ```html
 <template>
@@ -86,7 +86,7 @@ Then you can start using `nuxt-i18n` in your Vue components!
 </template>
 ```
 
-If you would like to find out more about how to use `nuxt-i18n`, [check out the docs](https://i18n.nuxtjs.org/)!
+If you would like to find out more about how to use `@nuxtjs/i18n`, [check out the docs](https://i18n.nuxtjs.org/)!
 
 ## Issues, questions & requests
 

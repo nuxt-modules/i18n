@@ -2,7 +2,7 @@ import { NuxtConfig } from '@nuxt/types'
 
 const config: NuxtConfig = {
   buildModules: ['@nuxt/typescript-build'],
-  modules: ['nuxt-i18n'],
+  modules: ['@nuxtjs/i18n'],
   i18n: {
     locales: [
       { code: 'en', iso: 'en-US', name: 'English' },

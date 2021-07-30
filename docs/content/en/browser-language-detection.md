@@ -1,14 +1,14 @@
 ---
 title: Browser language detection
-description: "By default, **nuxt-i18n** attempts to redirect users to their preferred language by detecting their browser's language. This is controlled by the `detectBrowserLanguage` option:"
+description: "By default, **@nuxtjs/i18n** attempts to redirect users to their preferred language by detecting their browser's language. This is controlled by the `detectBrowserLanguage` option:"
 position: 7
 category: Guide
 ---
 
-By default, **nuxt-i18n** attempts to redirect users to their preferred language by detecting their browser's language. This is controlled by the `detectBrowserLanguage` option:
+By default, **@nuxtjs/i18n** attempts to redirect users to their preferred language by detecting their browser's language. This is controlled by the `detectBrowserLanguage` option:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   // ...
   detectBrowserLanguage: {
     useCookie: true,
@@ -26,10 +26,10 @@ For better SEO, it's recommended to set `redirectOn` to `root` (which is the def
 
 Browser language is detected either from `navigator` when running on client-side, or from the `accept-language` HTTP header. Configured `locales` (or locales `iso` and/or `code` when locales are specified in object form) are matched against locales reported by the browser (for example `en-US,en;q=0.9,no;q=0.8`). If there is no exact match for the full locale, the language code (letters before `-`) are matched against configured locales.
 
-To prevent redirecting users every time they visit the app, **nuxt-i18n** sets a cookie after the first redirection. You can change the cookie's name by setting `detectBrowserLanguage.cookieKey` option to whatever you'd like, the default is _i18n_redirected_.
+To prevent redirecting users every time they visit the app, **@nuxtjs/i18n** sets a cookie after the first redirection. You can change the cookie's name by setting `detectBrowserLanguage.cookieKey` option to whatever you'd like, the default is _i18n_redirected_.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   // ...
   detectBrowserLanguage: {
     useCookie: true,
@@ -41,7 +41,7 @@ To prevent redirecting users every time they visit the app, **nuxt-i18n** sets a
 If you'd rather have users be redirected to their browser's language every time they visit the app, disable the cookie by setting `detectBrowserLanguage.useCookie` to `false`.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   // ...
   detectBrowserLanguage: {
     useCookie: false
@@ -52,7 +52,7 @@ If you'd rather have users be redirected to their browser's language every time 
 To completely disable the browser's language detection feature, set `detectBrowserLanguage` to `false`.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   // ...
   detectBrowserLanguage: false
 }]
@@ -61,7 +61,7 @@ To completely disable the browser's language detection feature, set `detectBrows
 To redirect the user every time they visit the app and keep their selected choice, enable alwaysRedirect:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   // ...
   detectBrowserLanguage: {
     useCookie: true,
@@ -73,7 +73,7 @@ To redirect the user every time they visit the app and keep their selected choic
 To use the cookie within a cross-origin environment (e.g. in an iFrame), you can set `cookieCrossOrigin: true`. This will change the cookie settings from `SameSite=Lax` to `SameSite=None; Secure`.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   // ...
   detectBrowserLanguage: {
     useCookie: true,
