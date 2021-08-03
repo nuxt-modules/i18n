@@ -13,6 +13,12 @@ features:
   - Storing current locale and messages with Vuex
 ---
 
+<alert type="info">
+
+You are looking at the documentation for the new `@nuxtjs/i18n` package. If you are instead looking for the documentation for the legacy `nuxt-i18n` (v6) package then go to [i18n-legacy.nuxtjs.org](https://i18n-legacy.nuxtjs.org/) instead.
+
+</alert>
+
 <img src="/preview.png" class="light-img" />
 <img src="/preview-dark.png" class="dark-img" />
 
