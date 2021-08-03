@@ -14,7 +14,7 @@
 ## Links
 - 📘 [Documentation](https://i18n.nuxtjs.org/)
 - 🔖 [Release notes](./CHANGELOG.md)
-- 👥 [Community](https://discord.nuxtjs.org/)
+- 👥 [Community](https://discord.nuxtjs.org/) (`#i18n` channel)
 
 
 ## Features
@@ -90,7 +90,7 @@ If you would like to find out more about how to use `@nuxtjs/i18n`, [check out t
 
 ## Issues, questions & requests
 
-If you have any questions or issues, check out [Discord server](https://discord.nuxtjs.org).
+If you have any questions or issues, check out the `#i18n` channel on [Discord server](https://discord.nuxtjs.org).
 
 ## License
 
