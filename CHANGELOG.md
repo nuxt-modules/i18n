@@ -1,3 +1,30 @@
+## [7.0.0](https://github.com/nuxt-community/i18n-module/compare/v6.28.1...v7.0.0) (2021-08-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename package to @nuxtjs/i18n
+* set redirectOn to root by default (#1244)
+* remove vuex syncLocale & vuex syncMessages (#1240)
+* disable addDirAttribute by default (#1239)
+* replace onlyOnNoPrefix and onlyOnRoot with redirectOn (#1210)
+* remove deprecated seo option (#1232)
+* remove deprecated $nuxtI18nSeo (#1207)
+* **types:** remove deprecated NuxtVueI18n (#1206)
+* remove deprecated beforeLanguageSwitch (#1200)
+
+### Code Refactoring
+
+* disable addDirAttribute by default ([#1239](https://github.com/nuxt-community/i18n-module/issues/1239)) ([eac6130](https://github.com/nuxt-community/i18n-module/commit/eac613061c7889766221524ef8a9c5772d4e915f))
+* remove deprecated $nuxtI18nSeo ([#1207](https://github.com/nuxt-community/i18n-module/issues/1207)) ([d8134a3](https://github.com/nuxt-community/i18n-module/commit/d8134a31272ba564ae57988db0221780044b475d))
+* remove deprecated beforeLanguageSwitch ([#1200](https://github.com/nuxt-community/i18n-module/issues/1200)) ([d591662](https://github.com/nuxt-community/i18n-module/commit/d5916624285254f1247a835626f9a5d21b4acd79))
+* remove deprecated seo option ([#1232](https://github.com/nuxt-community/i18n-module/issues/1232)) ([bedf2b8](https://github.com/nuxt-community/i18n-module/commit/bedf2b8d649828aaea8a78e064a55a7977113314))
+* remove vuex syncLocale & vuex syncMessages ([#1240](https://github.com/nuxt-community/i18n-module/issues/1240)) ([399f1a3](https://github.com/nuxt-community/i18n-module/commit/399f1a3f15c0298c53ca2a02256eb71cfd6c3031))
+* rename package to @nuxtjs/i18n ([b3ef21c](https://github.com/nuxt-community/i18n-module/commit/b3ef21c9947acc8e73d2b971fdccd77b9765a96f))
+* replace onlyOnNoPrefix and onlyOnRoot with redirectOn ([#1210](https://github.com/nuxt-community/i18n-module/issues/1210)) ([2eb955a](https://github.com/nuxt-community/i18n-module/commit/2eb955ac57362bba72bd2171a4d37fda2be840d5))
+* set redirectOn to root by default ([#1244](https://github.com/nuxt-community/i18n-module/issues/1244)) ([956df98](https://github.com/nuxt-community/i18n-module/commit/956df98275e7dfc3388787794502c0c25aaa10a8))
+* **types:** remove deprecated NuxtVueI18n ([#1206](https://github.com/nuxt-community/i18n-module/issues/1206)) ([e96688c](https://github.com/nuxt-community/i18n-module/commit/e96688c2aba87bbc2318cc348264ac63febe4d53))
+
 ### [6.28.1](https://github.com/nuxt-community/i18n-module/compare/v6.28.0...v6.28.1) (2021-08-03)
 
 
