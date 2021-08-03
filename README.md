@@ -6,8 +6,8 @@
 [![](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](https://standardjs.com)
 [![](https://img.shields.io/codecov/c/github/nuxt-community/i18n-module.svg?style=flat-square)](https://codecov.io/gh/nuxt-community/i18n-module)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-community/i18n-module)
-[![](https://img.shields.io/npm/v/%40nuxtjs-i18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs-i18n)
-[![](https://img.shields.io/npm/dt/%40nuxtjs-i18n.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs-i18n)
+[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
+[![](https://img.shields.io/npm/dt/%40nuxtjs%2Fi18n.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 
 > i18n for your Nuxt project
 
