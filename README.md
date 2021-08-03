@@ -24,7 +24,6 @@
 - Lazy-loading of translation messages
 - Redirection based on auto-detected language
 - Different domain names for different languages
-- Storing current locale and messages with [Vuex](https://vuex.vuejs.org/)
 
 ## Setup
 ```sh
