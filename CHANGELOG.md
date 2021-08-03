@@ -1,3 +1,10 @@
+### [6.28.1](https://github.com/nuxt-community/i18n-module/compare/v6.28.0...v6.28.1) (2021-08-03)
+
+
+### Bug Fixes
+
+* error on loading when using nuxt-vite ([#1251](https://github.com/nuxt-community/i18n-module/issues/1251)) ([cb67e05](https://github.com/nuxt-community/i18n-module/commit/cb67e05c80963752e515893e8bf28466a43ee69d))
+
 ## [6.28.0](https://github.com/nuxt-community/i18n-module/compare/v6.27.3...v6.28.0) (2021-07-22)
 
 
