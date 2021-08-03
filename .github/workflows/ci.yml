@@ -4,12 +4,10 @@ name: CI
 on:
   push:
     branches:
-    - master
-    - next
+    - main
   pull_request:
     branches:
-    - master
-    - next
+    - main
 
 jobs:
   build:
