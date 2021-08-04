@@ -12,9 +12,11 @@ assignees: ''
 nuxt: <!-- ex: 2.0.0 -->
 
 ### Nuxt configuration
-#### [mode](https://nuxtjs.org/guides/configuration-glossary/configuration-mode): <!--universal is the default, please insert X where appropriate -->
- - [] universal
- - [] spa
+
+Please change to `[x]` if relevant for this issue:
+
+ - [] Applies to a site deployed to a static server (site generated with `nuxt generate`)
+ - [] Applies to a site deployed to a server with a Node backend
 
 ### @nuxtjs/i18n configuration
 <!--
@@ -32,7 +34,7 @@ i18n: {
 <!--
     A minimal test case on codesandbox or in a repository that can be used to reproduce the bug.
     An example codesandbox that can be forked and used as a base can be found at:
-    https://codesandbox.io/s/nuxt-nuxt-i18n-base-template-sty4f
+    https://codesandbox.io/s/nuxt-nuxtjsi18n-base-template-2szv3
 -->
 
 ### Steps to reproduce
