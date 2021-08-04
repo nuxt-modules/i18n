@@ -11,7 +11,7 @@ import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
  */
 function localePath (route, locale) {
   const localizedRoute = resolveRoute.call(this, route, locale)
-  return localizedRoute ? localizedRoute.route.fullPath : ''
+  return localizedRoute ? localizedRoute.route.redirectedFrom || localizedRoute.route.fullPath : ''
 }
 
 /**

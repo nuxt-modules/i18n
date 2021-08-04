@@ -279,11 +279,12 @@ for (const trailingSlash of TRAILING_SLASHES) {
       const overrides = {
         router: {
           trailingSlash,
-          // Routes added through extendRoutes are not processed by the module
+          // Redirects are not processed by the module.
           extendRoutes (routes) {
             routes.push({
-              path: adjustRouteDefinitionForTrailingSlash('/about', trailingSlash),
-              redirect: adjustRouteDefinitionForTrailingSlash('/about-us', trailingSlash)
+              path: adjustRouteDefinitionForTrailingSlash('/about-redirect', trailingSlash),
+              name: 'about-redirect___en',
+              redirect: { name: 'about___en' }
             })
           }
         }
@@ -585,13 +586,22 @@ for (const trailingSlash of TRAILING_SLASHES) {
       expect(langSwitcher?.children[0].textContent).toBe('English')
     })
 
-    test('localePath returns correct path', async () => {
+    test('localePath resolves correct path', async () => {
       const window = await nuxt.renderAndGetWindow(url('/'))
       expect(window.$nuxt.localePath('about')).toBe(pathRespectingTrailingSlash('/about-us'))
       expect(window.$nuxt.localePath('about', 'fr')).toBe(pathRespectingTrailingSlash('/fr/a-propos'))
       expect(window.$nuxt.localePath('/about-us')).toBe(pathRespectingTrailingSlash('/about-us'))
-      expect(window.$nuxt.localePath({ path: '/about' })).toBe(pathRespectingTrailingSlash('/about-us'))
-      expect(window.$nuxt.localePath({ path: '/about/' })).toBe(pathRespectingTrailingSlash('/about-us'))
+    })
+
+    test('localePath resolves route name to non-redirected path', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/'))
+      expect(window.$nuxt.localePath('about-redirect')).toBe('/about-redirect')
+    })
+
+    test('localePath resolves route path to redirected path', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/'))
+      expect(window.$nuxt.localePath('/about-redirect')).toBe(pathRespectingTrailingSlash('/about-us'))
+      expect(window.$nuxt.localePath({ path: '/about-redirect' })).toBe(pathRespectingTrailingSlash('/about-us'))
     })
 
     test('switchLocalePath returns correct path', async () => {
@@ -1233,7 +1243,7 @@ describe('no_prefix strategy', () => {
     expect(response.statusCode).toBe(404)
   })
 
-  test('localePath returns correct path', async () => {
+  test('localePath resolves correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localePath('about')).toBe('/about')
     expect(window.$nuxt.localePath({ path: '/about' })).toBe('/about')
@@ -1362,7 +1372,7 @@ describe('hash mode', () => {
     await nuxt.close()
   })
 
-  test('localePath returns correct path (without hash)', async () => {
+  test('localePath resolves correct path (without hash)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
@@ -1387,7 +1397,7 @@ describe('with router base + redirectOn is root', () => {
     await nuxt.close()
   })
 
-  test('localePath returns correct path', async () => {
+  test('localePath resolves correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/app/'))
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
@@ -1442,7 +1452,7 @@ describe('with router base + redirectOn is all', () => {
     await nuxt.close()
   })
 
-  test('localePath returns correct path', async () => {
+  test('localePath resolves correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/app/'))
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
