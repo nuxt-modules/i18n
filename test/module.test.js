@@ -657,7 +657,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
     })
 
     test('redirects to existing route', async () => {
-      const window = await nuxt.renderAndGetWindow(url(pathRespectingTrailingSlash('/about')))
+      const window = await nuxt.renderAndGetWindow(url(pathRespectingTrailingSlash('/about-redirect')))
       const newRoute = window.$nuxt.switchLocalePath()
       expect(newRoute).toBe(pathRespectingTrailingSlash('/about-us'))
     })
