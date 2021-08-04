@@ -2191,8 +2191,7 @@ describe('generate with prefix strategy', () => {
     const overrides = {
       generate: { dir: distDir },
       i18n: {
-        strategy: 'prefix',
-        seo: true
+        strategy: 'prefix'
       }
     }
 
