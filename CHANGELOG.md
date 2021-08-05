@@ -1,3 +1,10 @@
+### [7.0.1](https://github.com/nuxt-community/i18n-module/compare/v7.0.0...v7.0.1) (2021-08-05)
+
+
+### Bug Fixes
+
+* return the redirect path when resolving redirects with localePath ([#1253](https://github.com/nuxt-community/i18n-module/issues/1253)) ([3538f77](https://github.com/nuxt-community/i18n-module/commit/3538f77303e52e4f7aa710c24b9a371421c34deb)), closes [#1248](https://github.com/nuxt-community/i18n-module/issues/1248)
+
 ## [7.0.0](https://github.com/nuxt-community/i18n-module/compare/v6.28.1...v7.0.0) (2021-08-03)
 
 
