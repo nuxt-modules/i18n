@@ -15,8 +15,8 @@ nuxt: <!-- ex: 2.0.0 -->
 
 Please change to `[x]` if relevant for this issue:
 
- - [] Applies to a site deployed to a static server (site generated with `nuxt generate`)
- - [] Applies to a site deployed to a server with a Node backend
+ - [ ] Applies to a site deployed to a static server (site generated with `nuxt generate`)
+ - [ ] Applies to a site deployed to a server with a Node backend
 
 ### @nuxtjs/i18n configuration
 <!--
