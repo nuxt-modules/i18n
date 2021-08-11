@@ -94,8 +94,7 @@ describe('differentDomains enabled', () => {
       {
         code: 'ua',
         iso: 'uk-UA',
-        name: 'Українська',
-        domain: 'http://ua.nuxt-app.localhost'
+        name: 'Українська'
       }
     ]
 
@@ -127,6 +126,17 @@ describe('differentDomains enabled', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+  })
+
+  test('host matches locale\'s runtime-set domain (ua)', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'ua-runtime.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('locale: ua')
   })
 
   test('x-forwarded-host does not match locale\'s domain', async () => {
@@ -234,13 +244,13 @@ describe('differentDomains enabled', () => {
       {
         tagName: 'link',
         rel: 'alternate',
-        href: 'http://ua.nuxt-app.localhost/locale',
+        href: 'http://ua-runtime.nuxt-app.localhost/locale',
         hreflang: 'uk'
       },
       {
         tagName: 'link',
         rel: 'alternate',
-        href: 'http://ua.nuxt-app.localhost/locale',
+        href: 'http://ua-runtime.nuxt-app.localhost/locale',
         hreflang: 'uk-UA'
       },
       {

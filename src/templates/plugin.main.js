@@ -356,10 +356,12 @@ export default async (context) => {
     if (store.state.localeDomains) {
       for (const [index, locale] of options.normalizedLocales.entries()) {
         const domain = store.state.localeDomains[locale.code]
-        locale.domain = domain
-        const optionsLocale = options.locales[index]
-        if (typeof (optionsLocale) !== 'string') {
-          optionsLocale.domain = domain
+        if (domain) {
+          locale.domain = domain
+          const optionsLocale = options.locales[index]
+          if (typeof (optionsLocale) !== 'string') {
+            optionsLocale.domain = domain
+          }
         }
       }
     }
