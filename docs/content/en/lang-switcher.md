@@ -1,11 +1,11 @@
 ---
 title: Lang Switcher
-description: "When **nuxt-i18n** loads in your app, it adds your `locales` configuration to `this.$i18n` (or `app.i18n`), which makes it really easy to display a lang switcher anywhere in your app."
+description: "When **@nuxtjs/i18n** loads in your app, it adds your `locales` configuration to `this.$i18n` (or `app.i18n`), which makes it really easy to display a lang switcher anywhere in your app."
 position: 10
 category: Guide
 ---
 
-When **nuxt-i18n** loads in your app, it adds your `locales` configuration to `this.$i18n` (or `app.i18n`), which makes it really easy to display a lang switcher anywhere in your app.
+When **@nuxtjs/i18n** loads in your app, it adds your `locales` configuration to `this.$i18n` (or `app.i18n`), which makes it really easy to display a lang switcher anywhere in your app.
 
 Here's an example lang switcher where a `name` key has been added to each locale object in order to display friendlier titles for each link:
 
@@ -25,7 +25,7 @@ computed: {
 ```
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -61,17 +61,17 @@ The template code might look like this, for example:
 
 ## Dynamic route parameters
 
-Dealing with dynamic route parameters requires a bit more work because you need to provide parameters translations to **nuxt-i18n**. For this purpose, **nuxt-i18n**'s store module exposes a `routeParams` state property that will be merged with route params when generating lang switch routes with `switchLocalePath()`.
+Dealing with dynamic route parameters requires a bit more work because you need to provide parameters translations to **@nuxtjs/i18n**. For this purpose, **@nuxtjs/i18n**'s store module exposes a `routeParams` state property that will be merged with route params when generating lang switch routes with `switchLocalePath()`.
 
 <alert type="warning">
 
-Make sure that Vuex [is enabled](https://nuxtjs.org/guides/directory-structure/store) in your app and that you did not set `vuex` option to `false` in **nuxt-i18n**'s options.
+Make sure that Vuex [is enabled](https://nuxtjs.org/guides/directory-structure/store) in your app and that you did not set `vuex` option to `false` in **@nuxtjs/i18n**'s options.
 
 </alert>
 
 To provide dynamic parameters translations, dispatch the `i18n/setRouteParams` mutation as early as possible when loading a page. The passed in object must contain the mappings from the locale `code` to an object with a mapping from slug name to expected slug value for given locale.
 
-An example:
+An example (replace `postId` with the appropriate route parameter):
 
 ```vue
 <template>
@@ -95,7 +95,7 @@ export default {
 
 <alert type="info">
 
-**nuxt-i18n** won't reset parameters translations for you, this means that if you use identical parameters for different routes, navigating between those routes might result in conflicting parameters. Make sure you always set params translations in such cases.
+**@nuxtjs/i18n** won't reset parameters translations for you, this means that if you use identical parameters for different routes, navigating between those routes might result in conflicting parameters. Make sure you always set params translations in such cases.
 
 </alert>
 

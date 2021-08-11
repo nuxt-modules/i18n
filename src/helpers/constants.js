@@ -17,6 +17,15 @@ export const STRATEGIES = {
   NO_PREFIX: STRATEGY_NO_PREFIX
 }
 
+const REDIRECT_ON_ALL = 'all'
+const REDIRECT_ON_ROOT = 'root'
+const REDIRECT_ON_NO_PREFIX = 'no prefix'
+export const REDIRECT_ON_OPTIONS = {
+  ALL: REDIRECT_ON_ALL,
+  ROOT: REDIRECT_ON_ROOT,
+  NO_PREFIX: REDIRECT_ON_NO_PREFIX
+}
+
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 /** @type {Options} */
@@ -28,6 +37,7 @@ export const DEFAULT_OPTIONS = {
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
+  sortRoutes: true,
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
@@ -39,23 +49,18 @@ export const DEFAULT_OPTIONS = {
     cookieKey: 'i18n_redirected',
     cookieSecure: false,
     fallbackLocale: '',
-    onlyOnNoPrefix: false,
-    onlyOnRoot: false,
+    redirectOn: 'root',
     useCookie: true
   },
   differentDomains: false,
-  seo: false,
   baseUrl: '',
   vuex: {
     moduleName: 'i18n',
-    syncLocale: false,
-    syncMessages: false,
     syncRouteParams: true
   },
   parsePages: true,
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  beforeLanguageSwitch: () => null,
   onBeforeLanguageSwitch: () => {},
   onLanguageSwitched: () => null
 }

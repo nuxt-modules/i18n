@@ -67,5 +67,9 @@ export const localeMessages = {
 %>
 }
 <%
+} else {
+%>
+export const localeMessages = {}
+<%
 }
 %>

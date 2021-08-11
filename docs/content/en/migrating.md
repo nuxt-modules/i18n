@@ -7,219 +7,141 @@ category: Guide
 
 Follow this guide to upgrade from one major version to the other.
 
+## Upgrading from `nuxt-i18n` to `nuxtjs/i18n`
 
-## Upgrading from 5.x to 6.x
+Summary:
 
-### Global SEO features are now disabled by default
+- [The name of the module changed from `nuxt-i18n` to `@nuxtjs/i18n`]()
+- [`beforeLanguageSwitch` replaced by `onBeforeLanguageSwitch`](#beforelanguageswitch-replaced-by-onbeforelanguageswitch)
+- [`NuxtVueI18n` typescript namespace has been removed](#nuxtvuei18n-typescript-namespace-has-been-removed)
+- [`seo` option has been removed](#seo-option-has-been-removed)
+- [`$nuxtI18nSeo` has been removed](#nuxti18nseo-has-been-removed)
+- [`$nuxtI18nHead`'s `addDirAttribute` option default value has been changed from `true` to `false`](#nuxti18nheads-adddirattribute-option-default-value-has-been-changed-from-true-to-false)
+- [`onlyOnRoot` and `onlyOnNoPrefix` options has been removed](#onlyonroot-and-onlyonnoprefix-options-has-been-removed)
+- [`detectBrowserLanguage` changed to only trigger from the root path by default](#detectbrowserlanguage-changed-to-only-trigger-from-the-root-path-by-default)
+- [Vuex `syncLocale` and `syncMessages` properties has been removed](#vuex-synclocale-and-syncmessages-properties-has-been-removed)
 
-In some cases, having SEO enabled globally caused performance issues and/or conflicted with other plugins. To mitigate these issues, SEO features are now disabled by default.
+### The name of the module changed from `nuxt-i18n` to `@nuxtjs/i18n`
 
-If you were affected by one of the issues above, we recommend that you read the [Improve performances](/seo#improving-performance) section to enable SEO only where you need it.
+Uninstall the old module and install the new one:
 
-If you'd like to restore the old behaviour, you can reenable SEO features globally by setting the `seo` option to `true`:
+<code-group>
+  <code-block label="Yarn" active>
+
+  ```bash
+  yarn remove nuxt-i18n
+  yarn add @nuxtjs/i18n
+  ```
+
+  </code-block>
+  <code-block label="NPM">
+
+  ```bash
+  npm uninstall nuxt-i18n
+  npm install @nuxtjs/i18n
+  ```
+
+  </code-block>
+</code-group>
+
+Change the module name in `nuxt.config.js`:
+
+```diff
+  modules: [
+-    'nuxt-i18n'
++    '@nuxtjs/i18n'
+  ]
+```
+
+- Update all other references to the old name that you might have in your code.
+
+### `beforeLanguageSwitch` replaced by `onBeforeLanguageSwitch`
+
+If you have defined the `beforeLanguageSwitch` option within your module configuration or using it through the API then you need to switch to `onBeforeLanguageSwitch`.
+
+Example change:
+
+```diff
+-  app.i18n.beforeLanguageSwitch = (oldLocale, newLocale) => {
+-    // ...
+-  }
++  app.i18n.onBeforeLanguageSwitch = (oldLocale, newLocale, isInitialSetup, context) => {
++    if (!isInitialSetup) {
++      // ...
++    }
++  }
+```
+
+Note that the old hook was not called in the "initial setup" case so to preserve the old behavior, you might want to skip running the code of your hook when `isInitialSetup` is `true`.
+
+Also check out the [onBeforeLanguageSwitch documentation](/callbacks#onbeforelanguageswitch).
+
+### `NuxtVueI18n` typescript namespace has been removed
+
+The module no longer defines nor exports a global `NuxtVueI18n` typescript namespace. Now all module types are exported directly and are not made available through a global namespace.
+
+If you are using the types from the global namespace in your typescript code or in JSDoc annotations in your javascript code, you have to instead import the type explicitly from the `@nuxtjs/i18n` module.
+
+For example, instead of:
 
 ```js
-{
-  seo: true
-}
+/** @type {NuxtVueI18n.LocaleObject} */
+const locale = { code: 'en' }
 ```
 
-### preserveState can't be set anymore
+do:
 
-It was previously possible to manually set `preserveState` on **nuxt-i18n**'s store module, which would actually result in unexpected behaviours when using server-side rendering. This option has been removed altogether and the module's `preserveState` option is now [set automatically](https://github.com/nuxt-community/i18n-module/blob/05e9d1f80715cc23a545adf4303e49af3ee40ac3/src/plugins/main.js#L77).
-
-If you were using the `preserveState` configuration option before, it can be safely removed:
-
-```diff
- {
-   vuex: {
--    preserveState: true,
-     // other configuration options
-   }
- }
+```js
+/** @type {import('@nuxtjs/i18n').LocaleObject} */
+const locale = { code: 'en' }
 ```
 
-### Store module options have been flattened and renamed
+The names of the exported types have also changed in some cases so refer to the [/types/index.d.ts](https://github.com/nuxt-community/i18n-module/blob/master/types/index.d.ts) file to see the exported types.
 
-The `vuex` configuration option used to expose a `mutations` property where each mutation could be disabled or renamed. For the sake of simplicity, it isn't possible to rename these mutations anymore, the `mutations` property has been dropped to flatten the configuration and each option has been renamed to better reflect what it does.
+### `seo` option has been removed
 
-```diff
- {
-   vuex: {
--    mutations: {
--      setLocale: 'SET_LOCALE_MUTATION',
--      setMessages: 'SET_MESSAGE_MUTATION',
--      setRouteParams: 'SET_ROUTE_PARAMS_MUTATION'
--    }
-+    syncLocale: true,
-+    syncMessages: true,
-+    syncRouteParams: true
-   },
- }
- ```
+For performance reasons the module option `seo` has been removed.
 
-## Upgrading from 4.x to 5.x
+The alternative is to return `$nuxtI18nHead({ addDirAttribute: true, addSeoAttributes: true })` from the `head` component option within the layout file.
 
-Please refer to [**vue-i18n**'s changelog](https://github.com/kazupon/vue-i18n/blob/dev/CHANGELOG.md#800-2018-06-23) for more information on breaking changes in **nuxt-i18n 5.x**.
+See also [SEO Guide](/seo) for more details.
 
-## Upgrading from 3.x to 4.x
+### `$nuxtI18nSeo` has been removed
 
-### In-component options key
+The `$nuxtI18nSeo()` function that was used to generate meta information to be used wihtin the Nuxt's `head` component option has been removed.
 
-v4.x introduces a single change that requires you to rename the `i18n` key to `nuxtI18n` in your pages that use in-component configuration, this should prevent conflicts with vue-i18n.
+If you have been using `$nuxtI18nSeo` in your code, replace it with `$nuxtI18nHead({ addSeoAttributes: true })`.
 
-**3.x:**
+See also the [SEO Guide](/seo) and the [`$nuxtI18nHead` API documentation](/api#nuxti18nhead).
 
-```js {}[pages/about.vue]
-export default {
-  i18n: {
-    paths: {
-      fr: '/a-propos',
-      en: '/about-us'
-    }
-  }
-}
-```
+### `$nuxtI18nHead`'s `addDirAttribute` option default value has been changed from `true` to `false`
 
-**4.x:**
+The default value of the `addDirAttribute` option that the `$nuxtI18nHead` accepts has been changed from `true` to `false`.
 
-```js {}[pages/about.vue]
-export default {
-  nuxtI18n: {
-    paths: {
-      fr: '/a-propos',
-      en: '/about-us'
-    }
-  }
-}
-```
+If you don't have the `defaultDirection` module option set nor have defined the `dir` property on your locales then you don't have to do anything. Otherwise, if you are using `$nuxtI18nHead`, then explicitly enable `addDirAttribute` with `$nuxtI18nHead({ addDirAttribute: true })`.
 
-## Upgrading from 2.x to 3.x
+### `onlyOnRoot` and `onlyOnNoPrefix` options has been removed
 
-### Custom routes
+The removed `detectBrowserLanguage.onlyOnRoot` and `detectBrowserLanguage.onlyOnNoPrefix` options are now combined into a single `detectBrowserLanguage.redirectOn` option that accepts values `'all'`, `'root'`, or `'no prefix'`.
 
-The `routes` option has been dropped in favor of in-component configuration, any custom path configuration should be placed in their corresponding page file.
+If you have explicitly enabled the `onlyOnRoot` or the `onlyOnNoPrefix` option, switch to `redirectOn: 'root'` or `redirectOn: 'no prefix'` respectively.
 
-**2.x:**
+Note that the default value has also changed from `all` to`root`.
 
-```js {}[nuxt.config.js]
-{
-  modules: [
-    ['nuxt-i18n', {
-      routes: {
-        about: {
-          fr: '/a-propos',
-          en: '/about-us'
-        }
-      }
-    }]
-  ]
-}
-```
+See also [`detectBrowserLanguage` documentation](/options-reference#detectbrowserlanguage).
 
-**3.x:**
+### `detectBrowserLanguage` changed to only trigger from the root path by default
 
-```js {}[pages/about.vue]
-export default {
-  i18n: {
-    paths: {
-      fr: '/a-propos',
-      en: '/about-us'
-    }
-  }
-}
-```
+Previously, with `detectBrowserLanguage` enabled, the module would attempt to detect the browser's locale regardless of the path that was visited. This is no longer the case by default - the module will only attempt to redirect when visiting the root path.
 
-### Ignored paths
+For better SEO it's recommended to keep the new behavior enabled but if you want to revert to the previous behavior then set `redirectOn: 'all'`.
 
+See also the [Browser language detection Guide](/browser-language-detection).
 
-The `ignorePaths` option has been dropped as well, its behaviour can be reproduces by setting `i18n` to `false` right in your pages.
+### Vuex `syncLocale` and `syncMessages` properties has been removed
 
-**2.x:**
+The `vuex` module options `syncLocale` and `syncMessages` has been removed.
 
-```js {}[nuxt.config.js]
-{
-  modules: [
-    ['nuxt-i18n', {
-      ignorePaths: [
-        '/fr/notlocalized'
-      ]
-    }]
-  ]
-}
-```
-
-**3.x:**
-
-```js {}[pages/fr/notlocalized.vue]
-export default {
-  i18n: false
-}
-```
-
-### noPrefixDefaultLocale
-
-The `noPrefixDefaultLocale` has been dropped in favor of `strategy` option.
-
-
-**2.x:**
-
-```js {}[nuxt.config.js]
-{
-  modules: [
-    ['nuxt-i18n', {
-      noPrefixDefaultLocale: false
-    }]
-  ]
-}
-```
-
-**3.x:**
-
-```js {}[nuxt.config.js]
-
-{
-  modules: [
-    ['nuxt-i18n', {
-      strategy: 'prefix'
-    }]
-  ]
-}
-```
-
-### loadLanguagesAsync
-
-`loadLanguagesAsync` option has been renamed to `lazy`. `langFile` option in `locales` has been renamed to `file`.
-
-### redirectCookieKey & useRedirectCookie
-
-`redirectCookieKey` and `useRedirectCookie` have been merged into `detectBrowserLanguage` option and renamed to `cookieKey` and `useCookie` respectively.
-
-**2.x:**
-
-```js {}[nuxt.config.js]
-{
-  modules: [
-    ['nuxt-i18n', {
-      detectBrowserLanguage: true,
-      redirectCookieKey: 'redirected',
-      useRedirectCookie: true
-    }]
-  ]
-}
-```
-
-**3.x:**
-
-```js {}[nuxt.config.js]
-{
-  modules: [
-    ['nuxt-i18n', {
-      detectBrowserLanguage: {
-        cookieKey: 'redirected',
-        useCookie: true
-      }
-    }]
-  ]
-}
-```
+It was decided that those are redundant as there is an alternative way to access them through the API:
+ - the currently used locale is accessible through `$i18n.locale`
+ - the currently loaded messages can be accessed through `$i18n.messages`

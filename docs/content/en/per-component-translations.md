@@ -5,10 +5,10 @@ position: 13
 category: Guide
 ---
 
-If you'd like to define translations per-page or per-component you can take advantage of the [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader). Simply set `vueI18nLoader` option to `true` and `nuxt-i18n` will configure and enable the loader for you, including support for Yaml syntax in the `i18n` blocks.
+If you'd like to define translations per-page or per-component you can take advantage of the [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader). Simply set `vueI18nLoader` option to `true` and `@nuxtjs/i18n` will configure and enable the loader for you, including support for Yaml syntax in the `i18n` blocks.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   vueI18nLoader: true
 }]
 

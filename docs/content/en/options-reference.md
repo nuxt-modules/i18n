@@ -5,12 +5,12 @@ position: 4
 category: Getting started
 ---
 
-You can configure **nuxt-i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:
+You can configure **@nuxtjs/i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:
 
 ```js {}[nuxt.config.js]
 export default {
   modules: [
-    'nuxt-i18n',
+    '@nuxtjs/i18n',
   ],
   i18n: {
     // Options
@@ -21,7 +21,7 @@ export default {
 
 export default {
   modules: [
-    ['nuxt-i18n', {
+    ['@nuxtjs/i18n', {
       // Options
     }],
   ],
@@ -34,10 +34,12 @@ The former approach has the benefit of having having type-checking enabled if yo
 
 ## `baseUrl`
 
-- type: `string`
+- type: `string` or `function`
 - default: `''`
 
-The fallback base URL to use as a prefix for alternate URLs in `hreflang` tags. By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used. Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string. Useful to make base URL dynamic based on request headers.
+The fallback base URL to use as a prefix for alternate URLs in `hreflang` tags. By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used.
+
+Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string. Useful to make base URL dynamic based on request headers.
 
 <alert type="info">
 
@@ -88,8 +90,6 @@ export default {
 
 ## `defaultDirection`
 
-<badge>v6.19.0+</badge>
-
 - type: `string`
 - default: `ltr`
 
@@ -103,6 +103,15 @@ The app's default direction. Will only be used when `dir` is not specified.
 The app's default locale. Should match code of one of defined `locales`.
 
 When using `prefix_except_default` strategy, URLs for locale specified here won't have a prefix. **It's recommended to set this to some locale** regardless of chosen strategy, as it will be used as a fallback locale when navigating to a non-existent route.
+
+## `sortRoutes`
+
+- type: `boolean`
+- default: `true`
+
+Whether to sort routes by using the `sortRoutes` function from the `@nuxt/utils` package.
+
+While Nuxt sorts the routes itself, it does that before **@nuxtjs/i18n** has added its own generated routes so the module has to re-sort them again. This is necessary as otherwise some routes might become inaccessible due to being shadowed by more generic routes. If you are adding custom routes programmatically, the sorting might change the order of your custom routes in unexpected ways so in that case you might want to disable sorting and handle that yourself. In that case you have to ensure the correct order yourself so that, for example, a more generic route like `/en/*` doesn't shadow a more specific `/en/foo/*` route (the latter should be registered first to work properly).
 
 ## `strategy`
 
@@ -126,7 +135,7 @@ Whether the translations should be lazy-loaded. If this is enabled, you MUST con
 
 Loading locale messages lazily means that only messages for currently used locale (and for the fallback locale, if different from current locale) will be loaded on page loading.
 
-#### LazyOptions <badge>v6.3.0+</badge>
+#### LazyOptions
 
 The value can also be set to an object instead of the value `true` to override configuration options related to lazy loading. Supports the following optional properties:
 
@@ -147,7 +156,7 @@ Directory that contains translation files to load. Can be used with or without l
 ## `detectBrowserLanguage`
 
 - type: `object`
-- default: `{ alwaysRedirect: false, fallbackLocale: '', onlyOnRoot: false, useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
+- default: `{ alwaysRedirect: false, fallbackLocale: '', redirectOn: 'root', useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
 
 Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
 
@@ -155,15 +164,17 @@ See also [Browser language detection](/browser-language-detection) for a guide.
 
 <alert type="info">
 
-Note that for better SEO it's recommended to set `onlyOnRoot` to true.
+Note that for better SEO it's recommended to set `redirectOn` to `root`.
 
 </alert>
 
 Supported properties:
 - `alwaysRedirect` (default: `false`) - Set to always redirect to the value stored in the cookie, not just on first visit.
 - `fallbackLocale` (default: `null`) - If none of the locales match the browser's locale, use this one as a fallback.
-- `onlyOnRoot` (default: `false`) - Set to `true` (recommended for improved SEO) to only attempt to detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
-- `onlyOnNoPrefix` (default: `false`) - This is a more permissive variant of `onlyOnRoot` that will allow attempt to detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when `onlyOnRoot` is not enabled and using strategy other than `'no_prefix'`.
+- `redirectOn` (default: `root`) - Supported options:
+  - `all` - detect browser locale on all paths.
+  - `root` (recommended for improved SEO) - only detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
+  - `no prefix` - a more permissive variant of `root` that will detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when using strategy other than `'no_prefix'`.
 - `useCookie` (default: `true`) - If enabled, a cookie is set once the user has been redirected to browser's preferred locale, to prevent subsequent redirections. Set to `false` to redirect every time.
 - `cookieKey` (default: `'i18n_redirected'`) - Cookie name.
 - `cookieDomain` (default: `null`) - Set to override the default domain of the cookie. Defaults to the **host** of the site.
@@ -185,21 +196,6 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
   path: 'about-us'
 }
 ```
-
-## `seo`
-
-<badge>deprecated</badge>
-
-<alert type="warning">
-
-This option is deprecated from v6.19.0. The recommended way is to set up SEO as described in [Improving performance](/seo#improving-performance).
-
-</alert>
-
-- type: `boolean`
-- default: `false`
-
-If `true`, a SEO metadata will be generated for the routes. Note that performance can suffer with this option enabled and there might be compatibility issues with some plugins.
 
 ## `differentDomains`
 
@@ -224,15 +220,13 @@ If `parsePages` option is disabled, the module will look for custom routes in th
 
 ## `vuex`
 
-- type: `object`
-- default: `{ moduleName: 'i18n', syncLocale: false, syncMessages: false, syncRouteParams: true }`
+- type: `object` or `false`
+- default: `{ moduleName: 'i18n', syncRouteParams: true }`
 
 Registers a store module used for syncing app's i18n state. Set to `false` to disable.
 
 Properties:
 - `moduleName` (default: `'i18n'`) - The module's namespace.
-- `syncLocale` (default: `false`) - If enabled, current app's locale is synced with **nuxt-i18n** store module.
-- `syncMessages` (default: `false`) - If enabled, current translation messages are synced with **nuxt-i18n** store module. **This will make the page response bigger so don't use unless necessary.**
 - `syncRouteParams` (default: `true`) - Enables a `setRouteParams` mutation for using custom route names with dynamic routes. See more information in [Dynamic route parameters](/lang-switcher#dynamic-route-parameters)
 
 ## `vueI18n`
@@ -265,20 +259,7 @@ export default context => {
 
 If true, [vue-i18n-loader](https://github.com/intlify/vue-i18n-loader) is added to Nuxt's Webpack config, allowing to define locale messages per-page using a custom `i18n` block.
 
-## `beforeLanguageSwitch`
-
-<badge>deprecated</badge>
-
-- type: `function`
-- default: `(oldLocale, newLocale) => {}`
-
-A listener called right before app's locale changes.
-
-See [callbacks](./callbacks)
-
 ## `onBeforeLanguageSwitch`
-
-<badge>v6.27.0+</badge>
 
 - type: `function`
 - default: `(oldLocale, newLocale, isInitialSetup, context) => {}`
@@ -297,8 +278,6 @@ A listener called after app's locale has changed.
 See [callbacks](./callbacks)
 
 ## `skipSettingLocaleOnNavigate`
-
-<badge>v6.20.0+</badge>
 
 - type: `boolean`
 - default: `false`

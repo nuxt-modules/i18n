@@ -16,7 +16,6 @@ const config = {
     resolve(__dirname, '../..')
   ],
   i18n: {
-    seo: true,
     baseUrl: 'nuxt-app.localhost',
     locales: [
       {
@@ -49,10 +48,6 @@ const config = {
         }
       },
       fallbackLocale: 'en'
-    },
-    vuex: {
-      syncLocale: true,
-      syncMessages: true
     }
   }
 }

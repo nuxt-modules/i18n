@@ -1,6 +1,6 @@
 import { STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
-import { getPageOptions } from './utils'
+import { adjustRouteDefinitionForTrailingSlash, getPageOptions } from './utils'
 
 /**
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
@@ -24,6 +24,7 @@ export function makeRoutes (baseRoutes, {
   pagesDir,
   parsePages,
   routesNameSeparator,
+  sortRoutes,
   strategy,
   trailingSlash
 }) {
@@ -149,7 +150,7 @@ export function makeRoutes (baseRoutes, {
       // - If "router.trailingSlash" is not specified then default to no trailing slash (like Nuxt)
       // - Children with relative paths must not start with slash so don't append if path is empty.
       if (path.length) { // Don't replace empty (child) path with a slash!
-        path = path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
+        path = adjustRouteDefinitionForTrailingSlash(path, trailingSlash, isChildWithRelativePath)
       }
 
       if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUprefixedFallback) {
@@ -171,12 +172,14 @@ export function makeRoutes (baseRoutes, {
     localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, localeCodes))
   }
 
-  try {
-    // @ts-ignore
-    const { sortRoutes } = require('@nuxt/utils')
-    localizedRoutes = sortRoutes(localizedRoutes)
-  } catch (error) {
-    // Ignore
+  if (sortRoutes) {
+    try {
+      // @ts-ignore
+      const { sortRoutes: sortRoutesFn } = require('@nuxt/utils')
+      localizedRoutes = sortRoutesFn(localizedRoutes)
+    } catch (error) {
+      // Ignore
+    }
   }
 
   return localizedRoutes

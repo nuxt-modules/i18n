@@ -1,4 +1,4 @@
-import 'vue'
+import Vue from 'vue'
 import 'vuex'
 import 'vue-i18n'
 import '@nuxt/types'
@@ -11,18 +11,17 @@ interface NuxtI18nComponentOptions {
     [key: string]: string | false
   }
   locales?: Array<string>
-  seo?: false
 }
 
 interface NuxtI18nHeadOptions {
   /**
    * Adds a `dir` attribute to the HTML element.
-   * Default: `true`
+   * @default false
    */
   addDirAttribute?: boolean
   /**
    * Adds various SEO attributes.
-   * Default: `false`
+   * @default false
    */
   addSeoAttributes?: boolean
 }
@@ -45,8 +44,6 @@ declare module 'vue/types/vue' {
   interface Vue extends NuxtI18nApi {
     // $i18n is already added by vue-i18n.
     $nuxtI18nHead(options?: NuxtI18nHeadOptions): NuxtI18nMeta
-    /** @deprecated Use `$nuxtI18nHead({ addDirAttribute: true, addSeoAttributes: true })` instead. */
-    $nuxtI18nSeo(): NuxtI18nMeta
   }
 }
 

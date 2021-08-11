@@ -3,6 +3,6 @@ contact_links:
   - name: Nuxt Community Discord
     url: https://discord.nuxtjs.org/
     about: Consider asking questions about the module here.
-  - name: nuxt-i18n Documentation
+  - name: '@nuxtjs/i18n Documentation'
     url: https://i18n.nuxtjs.org/
     about: Check our documentation before reporting issues or questions.

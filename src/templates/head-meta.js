@@ -6,7 +6,7 @@ import { formatMessage } from './utils-common'
  * @this {import('vue/types/vue').Vue}
  * @return {import('vue-meta').MetaInfo}
  */
-export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false } = {}) {
+export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}
@@ -38,10 +38,7 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     // @ts-ignore
     (VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) &&
     this.$i18n.locale &&
-    this.$i18n.locales &&
-    this.$options[Constants.COMPONENT_OPTIONS_KEY] !== false &&
-    // @ts-ignore
-    !(this.$options[Constants.COMPONENT_OPTIONS_KEY] && this.$options[Constants.COMPONENT_OPTIONS_KEY].seo === false)
+    this.$i18n.locales
   ) {
     if (currentLocaleIso) {
       metaObject.htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
@@ -204,12 +201,4 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
   }
 
   return metaObject
-}
-
-/**
- * @deprecated Use `nuxtI18nHead()` instead.
- * @this {import('vue/types/vue').Vue}
- */
-export function nuxtI18nSeo () {
-  return nuxtI18nHead.call(this, { addDirAttribute: false, addSeoAttributes: true })
 }

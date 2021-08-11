@@ -1,7 +1,9 @@
-import { resolve } from 'path'
+import { join, resolve } from 'path'
 import { readFileSync } from 'fs'
 import { generate, setup, loadConfig, get, url } from '@nuxtjs/module-test-utils'
 import { JSDOM } from 'jsdom'
+import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
+import { adjustRouteDefinitionForTrailingSlash } from '../src/helpers/utils'
 import { getSeoTags } from './utils'
 
 /**
@@ -17,8 +19,7 @@ describe('locales as string array', () => {
   let nuxt
 
   beforeAll(async () => {
-    const overrides = { i18n: { seo: false } }
-    const testConfig = loadConfig(__dirname, 'no-lang-switcher', overrides, { merge: true })
+    const testConfig = loadConfig(__dirname, 'no-lang-switcher')
     // Override those after merging to overwrite original values.
     testConfig.i18n.locales = ['en', 'fr']
 
@@ -63,7 +64,6 @@ describe('differentDomains enabled', () => {
     const override = {
       i18n: {
         differentDomains: true,
-        seo: false,
         defaultDirection: 'auto'
       }
     }
@@ -268,7 +268,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
 
     /** @param {string} path */
     const pathRespectingTrailingSlash = path => {
-      return path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || '/'
+      return (trailingSlash ? withTrailingSlash(path, true) : withoutTrailingSlash(path, true) || withTrailingSlash(path, true))
     }
 
     /** @type {get} */
@@ -279,15 +279,24 @@ for (const trailingSlash of TRAILING_SLASHES) {
       const overrides = {
         router: {
           trailingSlash,
+          // Redirects are not processed by the module.
           extendRoutes (routes) {
             routes.push({
-              path: pathRespectingTrailingSlash('/about'),
-              redirect: pathRespectingTrailingSlash('/about-us')
+              path: adjustRouteDefinitionForTrailingSlash('/about-redirect', trailingSlash),
+              name: 'about-redirect___en',
+              redirect: { name: 'about___en' }
             })
           }
         }
       }
-      nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
+
+      /** @type {import('@nuxt/types').NuxtConfig} */
+      const testConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
+
+      // Extend routes before the module so that the module processes them.
+      testConfig.modules?.unshift(join(__dirname, 'fixture', 'basic', 'extend-routes'))
+
+      nuxt = (await setup(testConfig)).nuxt
     })
 
     afterAll(async () => {
@@ -429,6 +438,10 @@ for (const trailingSlash of TRAILING_SLASHES) {
       await expect(getRespectingTrailingSlash('/es/simple')).rejects.toBeDefined()
     })
 
+    test('navigates to route with optional param without the param specified', async () => {
+      await expect(getRespectingTrailingSlash('/custom-route/')).resolves.toBeDefined()
+    })
+
     describe('posts', () => {
       /** @type {string} */
       let html
@@ -497,17 +510,6 @@ for (const trailingSlash of TRAILING_SLASHES) {
       test('injects $i18n in store', async () => {
         const window = await nuxt.renderAndGetWindow(url('/'))
         expect(window.$nuxt.$store.$i18n).toBeDefined()
-      })
-
-      test('syncs i18n locale and messages', async () => {
-        const window = await nuxt.renderAndGetWindow(url('/'))
-        expect(window.$nuxt.$store.state.i18n).toBeDefined()
-        expect(window.$nuxt.$store.state.i18n.locale).toBe('en')
-        expect(window.$nuxt.$store.state.i18n.messages).toEqual(expect.objectContaining({
-          about: 'About us',
-          home: 'Homepage',
-          posts: 'Posts'
-        }))
       })
     })
 
@@ -584,13 +586,22 @@ for (const trailingSlash of TRAILING_SLASHES) {
       expect(langSwitcher?.children[0].textContent).toBe('English')
     })
 
-    test('localePath returns correct path', async () => {
+    test('localePath resolves correct path', async () => {
       const window = await nuxt.renderAndGetWindow(url('/'))
       expect(window.$nuxt.localePath('about')).toBe(pathRespectingTrailingSlash('/about-us'))
       expect(window.$nuxt.localePath('about', 'fr')).toBe(pathRespectingTrailingSlash('/fr/a-propos'))
       expect(window.$nuxt.localePath('/about-us')).toBe(pathRespectingTrailingSlash('/about-us'))
-      expect(window.$nuxt.localePath({ path: '/about' })).toBe(pathRespectingTrailingSlash('/about-us'))
-      expect(window.$nuxt.localePath({ path: '/about/' })).toBe(pathRespectingTrailingSlash('/about-us'))
+    })
+
+    test('localePath resolves route name to non-redirected path', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/'))
+      expect(window.$nuxt.localePath('about-redirect')).toBe('/about-redirect')
+    })
+
+    test('localePath resolves route path to redirected path', async () => {
+      const window = await nuxt.renderAndGetWindow(url('/'))
+      expect(window.$nuxt.localePath('/about-redirect')).toBe(pathRespectingTrailingSlash('/about-us'))
+      expect(window.$nuxt.localePath({ path: '/about-redirect' })).toBe(pathRespectingTrailingSlash('/about-us'))
     })
 
     test('switchLocalePath returns correct path', async () => {
@@ -646,7 +657,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
     })
 
     test('redirects to existing route', async () => {
-      const window = await nuxt.renderAndGetWindow(url(pathRespectingTrailingSlash('/about')))
+      const window = await nuxt.renderAndGetWindow(url(pathRespectingTrailingSlash('/about-redirect')))
       const newRoute = window.$nuxt.switchLocalePath()
       expect(newRoute).toBe(pathRespectingTrailingSlash('/about-us'))
     })
@@ -680,7 +691,7 @@ for (const trailingSlash of TRAILING_SLASHES) {
       expect(title?.textContent).toBe('Bonjour le monde!')
     })
 
-    test('can use nuxt-i18n extensions from component local i18n instance', async () => {
+    test('can use @nuxtjs/i18n extensions from component local i18n instance', async () => {
       const html = await getRespectingTrailingSlash('/loader-yaml')
       const dom = getDom(html)
       const title = dom.querySelector('p#title')
@@ -1173,7 +1184,7 @@ describe('no_prefix strategy', () => {
   })
 
   test('sets SEO metadata properly', async () => {
-    const html = await get('/')
+    const html = await get('/seo')
     const dom = getDom(html)
     const seoTags = getSeoTags(dom)
     expect(seoTags).toEqual(expect.arrayContaining([
@@ -1190,7 +1201,7 @@ describe('no_prefix strategy', () => {
       {
         tagName: 'link',
         rel: 'canonical',
-        href: 'nuxt-app.localhost/'
+        href: 'nuxt-app.localhost/seo'
       }
     ]))
     expect(seoTags.filter(tag => tag.tagName === 'link')).toHaveLength(1)
@@ -1232,7 +1243,7 @@ describe('no_prefix strategy', () => {
     expect(response.statusCode).toBe(404)
   })
 
-  test('localePath returns correct path', async () => {
+  test('localePath resolves correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localePath('about')).toBe('/about')
     expect(window.$nuxt.localePath({ path: '/about' })).toBe('/about')
@@ -1361,14 +1372,14 @@ describe('hash mode', () => {
     await nuxt.close()
   })
 
-  test('localePath returns correct path (without hash)', async () => {
+  test('localePath resolves correct path (without hash)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
   })
 })
 
-describe('with router base', () => {
+describe('with router base + redirectOn is root', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1386,7 +1397,62 @@ describe('with router base', () => {
     await nuxt.close()
   })
 
-  test('localePath returns correct path', async () => {
+  test('localePath resolves correct path', async () => {
+    const window = await nuxt.renderAndGetWindow(url('/app/'))
+    const newRoute = window.$nuxt.localePath('about')
+    expect(newRoute).toBe('/about-us')
+  })
+
+  test('detectBrowserLanguage redirects on base path', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false, // Don't reject on non-2xx response
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const response = await get('/app/', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/app/fr')
+  })
+
+  test('detectBrowserLanguage redirects on non-base path', async () => {
+    const requestOptions = {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const html = await get('/app/simple', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#container')?.textContent).toBe('Homepage')
+  })
+})
+
+describe('with router base + redirectOn is all', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      router: {
+        base: '/app/'
+      },
+      i18n: {
+        detectBrowserLanguage: {
+          redirectOn: 'all'
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('localePath resolves correct path', async () => {
     const window = await nuxt.renderAndGetWindow(url('/app/'))
     const newRoute = window.$nuxt.localePath('about')
     expect(newRoute).toBe('/about-us')
@@ -1758,6 +1824,61 @@ describe('prefix + detectBrowserLanguage', () => {
     await nuxt.close()
   })
 
+  test('does not redirect root if the route already has a locale', async () => {
+    const requestOptions = {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const html = await get('/en', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: Homepage')
+
+    const currentLocale = dom.querySelector('#current-locale')
+    expect(currentLocale).not.toBeNull()
+    expect(currentLocale?.textContent).toBe('locale: en')
+
+    const aboutLink = dom.querySelector('#link-about')
+    expect(aboutLink).not.toBeNull()
+    expect(aboutLink?.getAttribute('href')).toBe('/en/about-us')
+    expect(aboutLink?.textContent).toBe('About us')
+  })
+
+  test('does not redirect subroute if the route already has a locale', async () => {
+    const requestOptions = {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const html = await get('/en/simple', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#container')?.textContent).toBe('Homepage')
+  })
+})
+
+describe('prefix + detectBrowserLanguage + redirectOn is all', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        defaultLocale: 'fr',
+        strategy: 'prefix',
+        detectBrowserLanguage: {
+          useCookie: true,
+          redirectOn: 'all'
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
   test('redirects root even if the route already has a locale', async () => {
     const requestOptions = {
       followRedirect: false,
@@ -1787,7 +1908,7 @@ describe('prefix + detectBrowserLanguage', () => {
   })
 })
 
-describe('prefix + detectBrowserLanguage + onlyOnNoPrefix', () => {
+describe('prefix + detectBrowserLanguage + alwaysRedirect + redirectOn is root', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1798,7 +1919,48 @@ describe('prefix + detectBrowserLanguage + onlyOnNoPrefix', () => {
         strategy: 'prefix',
         detectBrowserLanguage: {
           useCookie: true,
-          onlyOnNoPrefix: true
+          alwaysRedirect: true
+        }
+      }
+    }
+
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('redirects to defaultLocale on navigating to root (non-existant) route', async () => {
+    const html = await get('/')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
+  })
+
+  test('does not redirects although the route already has a locale', async () => {
+    const requestOptions = {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
+  })
+})
+
+describe('prefix + detectBrowserLanguage + redirectOn is no prefix', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        defaultLocale: 'fr',
+        strategy: 'prefix',
+        detectBrowserLanguage: {
+          useCookie: true,
+          redirectOn: 'no prefix'
         }
       }
     }
@@ -1837,7 +1999,7 @@ describe('prefix + detectBrowserLanguage + onlyOnNoPrefix', () => {
   })
 })
 
-describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
+describe('prefix + detectBrowserLanguage + alwaysRedirect + redirectOn is all', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -1848,7 +2010,8 @@ describe('prefix + detectBrowserLanguage + alwaysRedirect', () => {
         strategy: 'prefix',
         detectBrowserLanguage: {
           useCookie: true,
-          alwaysRedirect: true
+          alwaysRedirect: true,
+          redirectOn: 'all'
         }
       }
     }
@@ -2038,8 +2201,7 @@ describe('generate with prefix strategy', () => {
     const overrides = {
       generate: { dir: distDir },
       i18n: {
-        strategy: 'prefix',
-        seo: true
+        strategy: 'prefix'
       }
     }
 
