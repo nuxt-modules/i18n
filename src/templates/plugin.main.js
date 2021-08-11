@@ -231,7 +231,8 @@ export default async (context) => {
 
     const finalLocale =
       (options.detectBrowserLanguage && doDetectBrowserLanguage(route)) ||
-      (!options.differentDomains && getLocaleFromRoute(route)) || app.i18n.locale || app.i18n.defaultLocale || ''
+      (!options.differentDomains && getLocaleFromRoute(route)) ||
+      app.i18n.locale || app.i18n.defaultLocale || ''
 
     if (options.skipSettingLocaleOnNavigate) {
       app.i18n.__pendingLocale = finalLocale
