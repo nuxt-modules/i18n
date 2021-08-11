@@ -354,16 +354,13 @@ export default async (context) => {
     store.$i18n = app.i18n
 
     if (store.state.localeDomains) {
-      let index = 0
-      for (const locale of options.normalizedLocales) {
-        if (typeof (locale) === 'string') {
-          continue
-        }
+      for (const [index, locale] of options.normalizedLocales.entries()) {
         const domain = store.state.localeDomains[locale.code]
         locale.domain = domain
-        // @ts-ignore
-        options.locales[index].domain = domain
-        index++
+        const optionsLocale = options.locales[index]
+        if (typeof (optionsLocale) !== 'string') {
+          optionsLocale.domain = domain
+        }
       }
     }
   }
