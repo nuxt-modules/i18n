@@ -1,5 +1,6 @@
 /**
  * @typedef {{
+ *   localeDomains: Record<string, string>
  *   routePathFr: string
  * }} State
  *
@@ -8,6 +9,9 @@
 
 /** @return {TestStore['state']} */
 export const state = () => ({
+  localeDomains: {
+    ua: 'ua-runtime.nuxt-app.localhost'
+  },
   routePathFr: ''
 })
 

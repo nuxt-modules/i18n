@@ -231,7 +231,8 @@ export default async (context) => {
 
     const finalLocale =
       (options.detectBrowserLanguage && doDetectBrowserLanguage(route)) ||
-      getLocaleFromRoute(route) || app.i18n.locale || app.i18n.defaultLocale || ''
+      (!options.differentDomains && getLocaleFromRoute(route)) ||
+      app.i18n.locale || app.i18n.defaultLocale || ''
 
     if (options.skipSettingLocaleOnNavigate) {
       app.i18n.__pendingLocale = finalLocale
@@ -347,6 +348,25 @@ export default async (context) => {
   // Initialize locale and fallbackLocale as vue-i18n defaults those to 'en-US' if falsey
   app.i18n.locale = ''
   app.i18n.fallbackLocale = vueI18nOptions.fallbackLocale || ''
+
+  if (store) {
+    // Inject in store.
+    store.$i18n = app.i18n
+
+    if (store.state.localeDomains) {
+      for (const [index, locale] of options.normalizedLocales.entries()) {
+        const domain = store.state.localeDomains[locale.code]
+        if (domain) {
+          locale.domain = domain
+          const optionsLocale = options.locales[index]
+          if (typeof (optionsLocale) !== 'string') {
+            optionsLocale.domain = domain
+          }
+        }
+      }
+    }
+  }
+
   extendVueI18nInstance(app.i18n)
   const resolveBaseUrlOptions = {
     differentDomains: options.differentDomains,
@@ -356,20 +376,6 @@ export default async (context) => {
   app.i18n.__onNavigate = onNavigate
 
   Vue.prototype.$nuxtI18nHead = nuxtI18nHead
-
-  if (store) {
-    // Inject in store.
-    store.$i18n = app.i18n
-
-    if (store.state.localeDomains) {
-      for (const locale of app.i18n.locales) {
-        if (typeof (locale) === 'string') {
-          continue
-        }
-        locale.domain = store.state.localeDomains[locale.code]
-      }
-    }
-  }
 
   /** @type {string | undefined} */
   let finalLocale = options.detectBrowserLanguage ? doDetectBrowserLanguage(route) : ''
