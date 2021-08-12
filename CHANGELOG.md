@@ -1,3 +1,10 @@
+### [7.0.2](https://github.com/nuxt-community/i18n-module/compare/v7.0.1...v7.0.2) (2021-08-12)
+
+
+### Bug Fixes
+
+* **differentDomains:** handling of runtime domains from store ([#1183](https://github.com/nuxt-community/i18n-module/issues/1183)) ([4d77019](https://github.com/nuxt-community/i18n-module/commit/4d77019f786086b9e496661f8c8d55893556e31d))
+
 ### [7.0.1](https://github.com/nuxt-community/i18n-module/compare/v7.0.0...v7.0.1) (2021-08-05)
 
 
