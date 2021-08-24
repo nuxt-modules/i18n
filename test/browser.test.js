@@ -362,7 +362,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is all`, ()
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
     // Trailing slash added by the server.
-    expect(page.url()).toBe(server.getUrl('/fr'))
+    expect(page.url()).toBe(server.getUrl('/fr/'))
     // Need to delay a bit due to vue-meta batching with 10ms timeout.
     await page.waitForTimeout(20)
     expect(await page.title()).toBe('Accueil')
