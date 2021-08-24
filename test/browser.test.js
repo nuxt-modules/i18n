@@ -270,7 +270,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
     // Trailing slash added by the server.
-    expect(page.url()).toBe(server.getUrl('/fr'))
+    expect(page.url()).toBe(server.getUrl('/fr/'))
     // Need to delay a bit due to vue-meta batching with 10ms timeout.
     await page.waitForTimeout(20)
     expect(await page.title()).toBe('Accueil')
@@ -362,7 +362,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is all`, ()
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
     // Trailing slash added by the server.
-    expect(page.url()).toBe(server.getUrl('/fr'))
+    expect(page.url()).toBe(server.getUrl('/fr/'))
     // Need to delay a bit due to vue-meta batching with 10ms timeout.
     await page.waitForTimeout(20)
     expect(await page.title()).toBe('Accueil')
@@ -602,11 +602,11 @@ for (const target of ['server', 'static']) {
     test('redirects to saved locale on re-visiting the root path', async () => {
       page = await browser.newPage()
       await page.goto(server.getUrl('/fr'))
-      expect(page.url()).toBe(server.getUrl('/fr'))
+      expect(page.url()).toBe(server.getUrl('/fr/'))
       expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
 
       await page.goto(server.getUrl('/'))
-      expect(page.url()).toBe(server.getUrl('/fr'))
+      expect(page.url()).toBe(server.getUrl('/fr/'))
       expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
     })
   })
@@ -659,7 +659,7 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
   test('redirects to browser locale', async () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
-    expect(page.url()).toBe(server.getUrl('/fr'))
+    expect(page.url()).toBe(server.getUrl('/fr/'))
     expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
   })
 })
@@ -1271,8 +1271,7 @@ describe(`${browserString} (redirectOn is root + prefix_except_default)`, () => 
     const page = await browser.newPage({ locale: 'en' })
     await page.goto(url('/fr/'))
     expect(await (await page.$('#current-page'))?.textContent()).toContain('page: Accueil')
-    // Nuxt implicitly normalizes the trailing slash on initial reloading by calling router.replace(route).
-    expect(await getRouteFullPath(page)).toBe('/fr')
+    expect(await getRouteFullPath(page)).toBe('/fr/')
   })
 
   test('does not detect locale and redirect on prefixed, non-root path', async () => {
