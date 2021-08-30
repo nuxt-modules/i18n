@@ -191,7 +191,8 @@ const VueInstanceProxy = function (targetFunction) {
       localePath: this.localePath,
       localeRoute: this.localeRoute,
       localeLocation: this.localeLocation,
-      req: process.server ? this.$ssrContext.req : null,
+      // @ts-ignore
+      req: process.server ? this.$root.context?.req || this.$ssrContext?.req : null,
       route: this.$route,
       router: this.$router,
       store: this.$store
