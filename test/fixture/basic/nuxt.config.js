@@ -8,7 +8,12 @@ const config = {
   srcDir: __dirname,
   // Verifies that there is no SSR crash when used that way.
   head () {
-    return this.$nuxtI18nHead({ addSeoAttributes: true })
+    // SPARenderer calls this function without having `this` as the root Vue Component
+    // so null-check before calling.
+    if (this.$nuxtI18nHead) {
+      return this.$nuxtI18nHead({ addSeoAttributes: true })
+    }
+    return {}
   }
 }
 

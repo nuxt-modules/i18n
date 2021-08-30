@@ -52,12 +52,17 @@ You must also set the `baseUrl` option to your production domain in order to mak
 
 ## Setup
 
-The `$nuxtI18nHead` function returns metadata expected by the [Vue Meta](https://github.com/nuxt/vue-meta) plugin which in Nuxt is supported through a `head()` function within your **page** components or the Nuxt layout file.
+The `$nuxtI18nHead` function returns metadata that is handled by the [Vue Meta](https://github.com/nuxt/vue-meta) plugin that is integrated within Nuxt. That metadata can be specified in various places within Nuxt:
+ - the `head()` option within the Nuxt configuration file (`nuxt.config.js`)
+ - the `head()` component option in your **page** components or layout files
 
-To enable SEO metadata, declare a [`head`](https://nuxtjs.org/guides/features/meta-tags-seo) function in your app's layout file or **page** component and return the result of a `$nuxtI18nHead` function call from it. It's recommended to add that code within your layout file rather than in individual **page** components since this way a lot of duplication can be avoided. If you have more layouts, don't forget to add the same code in all of them.
+To enable SEO metadata, declare a [`head`](https://nuxtjs.org/guides/features/meta-tags-seo) function in one of the places specified above and make it return the result of a `$nuxtI18nHead` function call.
 
-```js {}[layouts/default.vue]
+To avoid duplicating the code, it's recommended to set that option globally in your `nuxt.config.js` file and potentially override some values per-layout or per-page component, if necessary.
+
+```js {}[nuxt.config.js]
 export default {
+  // ...other Nuxt options...
   head () {
     return this.$nuxtI18nHead({ addSeoAttributes: true })
   }
@@ -70,8 +75,9 @@ That's it!
 
 If you also want to add your own metadata, you have to merge your data with the object returned by `$nuxtI18nHead`. Either as in the example below or using some library like `deepmerge` to perform a deep merge of two objects.
 
-```js {}[layouts/default.vue]
+```js {}[nuxt.config.js]
 export default {
+  // ...other Nuxt options...
   head () {
     const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true })
     return {
@@ -103,76 +109,76 @@ export default {
 
 ## Feature details
 
-### `lang` attribute for the `<html>` tag
+- `lang` attribute for the `<html>` tag
 
   Sets the correct `lang` attribute, equivalent to the current locale's ISO code, in the `<html>` tag.
 
-### `hreflang` alternate link
+- `hreflang` alternate link
 
   Generates `<link rel="alternate" hreflang="x">` tags for every configured locale. The locales' ISO codes are used as `hreflang` values.
 
   Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a "catchall" locale hreflang link is provided for each locale group (e.g. `en-*`) as well. By default, it is the first locale provided, but another locale can be selected by setting `isCatchallLocale` to `true` on that specific locale object in your **@nuxtjs/i18n** configuration. [More on hreflang](https://support.google.com/webmasters/answer/189077)
 
-An example without selected "catchall" locale:
+  An example without selected "catchall" locale:
 
-```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
-  locales: [
-    {
-      code: 'en',
-      iso: 'en-US' // Will be used as "catchall" locale by default
-    },
-    {
-      code: 'gb',
-      iso: 'en-GB'
-    }
-  ]
-}]
-```
+  ```js {}[nuxt.config.js]
+  ['@nuxtjs/i18n', {
+    locales: [
+      {
+        code: 'en',
+        iso: 'en-US' // Will be used as "catchall" locale by default
+      },
+      {
+        code: 'gb',
+        iso: 'en-GB'
+      }
+    ]
+  }]
+  ```
 
-Here is how you'd use `isCatchallLocale` to selected another locale:
+  Here is how you'd use `isCatchallLocale` to selected another locale:
 
-```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
-  locales: [
-    {
-      code: 'en',
-      iso: 'en-US'
-    },
-    {
-      code: 'gb',
-      iso: 'en-GB',
-      isCatchallLocale: true // This one will be used as catchall locale
-    }
-  ]
-}]
-```
+  ```js {}[nuxt.config.js]
+  ['@nuxtjs/i18n', {
+    locales: [
+      {
+        code: 'en',
+        iso: 'en-US'
+      },
+      {
+        code: 'gb',
+        iso: 'en-GB',
+        isCatchallLocale: true // This one will be used as catchall locale
+      }
+    ]
+  }]
+  ```
 
   In case you already have an `en` locale `iso` set, it'll be used as the "catchall" without doing anything
 
-```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
-  locales: [
-    {
-      code: 'gb',
-      iso: 'en-GB'
-    },
-    {
-      code: 'en',
-      iso: 'en' // will be used as "catchall" locale
-    }
-  ]
-}]
-```
+  ```js {}[nuxt.config.js]
+  ['@nuxtjs/i18n', {
+    locales: [
+      {
+        code: 'gb',
+        iso: 'en-GB'
+      },
+      {
+        code: 'en',
+        iso: 'en' // will be used as "catchall" locale
+      }
+    ]
+  }]
+  ```
 
-### OpenGraph Locale tag generation
+- OpenGraph Locale tag generation
 
   Generates `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
 
-### Canonical link
+- Canonical link
 
   Generates `rel="canonical"` link on all pages to specify the "main" version of the page that should be indexed by search engines. This is beneficial in various situations:
   - When using the `prefix_and_default` strategy there are technically two sets of pages generated for the default locale -- one prefixed and one unprefixed. The canonical link will be set to the unprefixed version of the page to avoid duplicate indexation.
   - When the page contains the query parameters, the canonical link will **not include** query params. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. Note that there is currently no way to override that in case that including a specific query param would be desired.
 
-[More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
+  [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
