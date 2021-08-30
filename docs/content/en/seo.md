@@ -69,6 +69,12 @@ export default {
 }
 ```
 
+<alert type="warning">
+
+Unfortunately such `head()` definition can crash during static generation (`nuxt generate`) due to Nuxt executing that function in a non-Vue Component context during generation of the `fallback` file. If this issue affects you then null-check `this.$nuxtI18nHead` before calling it.
+
+</alert>
+
 Check out the options you can pass to the `$nuxtI18nHead` in the [API documentation](/api#nuxti18nhead).
 
 That's it!
