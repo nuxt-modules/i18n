@@ -1,3 +1,10 @@
+### [7.0.3](https://github.com/nuxt-community/i18n-module/compare/v7.0.2...v7.0.3) (2021-08-31)
+
+
+### Bug Fixes
+
+* crash on using $nuxtI18nHead from nuxt.config's head ([#1273](https://github.com/nuxt-community/i18n-module/issues/1273)) ([b4aae9d](https://github.com/nuxt-community/i18n-module/commit/b4aae9dc748c2cee4d4c0b4ff9bb67b61a01969f)), closes [#1266](https://github.com/nuxt-community/i18n-module/issues/1266)
+
 ### [7.0.2](https://github.com/nuxt-community/i18n-module/compare/v7.0.1...v7.0.2) (2021-08-12)
 
 
