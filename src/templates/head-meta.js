@@ -127,10 +127,25 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
     const canonicalPath = currentRoute ? currentRoute.path : null
 
     if (canonicalPath) {
+      let href = toAbsoluteUrl(canonicalPath, baseUrl)
+
+      if (currentRoute && options.canonicalQueries) {
+        const currentRouteQueryParams = currentRoute.query
+        const url = new URL(href)
+        const params = new URLSearchParams(url.search.slice(1))
+        for (const queryParamName of options.canonicalQueries) {
+          const queryParamValue = currentRouteQueryParams[queryParamName]
+          if (typeof queryParamValue === 'string') {
+            params.append(queryParamName, queryParamValue)
+          }
+        }
+        href = `${href}?${params.toString()}`
+      }
+
       link.push({
         hid: 'i18n-can',
         rel: 'canonical',
-        href: toAbsoluteUrl(canonicalPath, baseUrl)
+        href
       })
     }
   }

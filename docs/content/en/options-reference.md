@@ -88,6 +88,13 @@ export default {
 
 </alert>
 
+## `canonicalQueries`
+
+- type: `string[]`
+- default: `undefined`
+
+An array of strings corresponding to query params you would like to include in your canonical ref url.
+
 ## `defaultDirection`
 
 - type: `string`

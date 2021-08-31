@@ -9,6 +9,7 @@ export type LocaleFileExport = ((context: NuxtContext) => LocaleMessageObject) |
 export type onNavigateInternal = (route: Route) => Promise<[number | null, string | null] | [number | null, string | null, boolean | undefined]>
 
 export interface ResolvedOptions extends Omit<Required<Options>, 'detectBrowserLanguage' | 'vueI18n' | 'vuex'> {
+  canonicalQueries: string[],
   detectBrowserLanguage: Required<DetectBrowserLanguageOptions> | false
   localeCodes: readonly Locale[]
   normalizedLocales: readonly LocaleObject[]
