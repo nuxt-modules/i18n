@@ -30,7 +30,7 @@ export function extractComponentOptions (component) {
   try {
     contents = readFileSync(component).toString()
   } catch (error) {
-    console.warn(formatMessage(`Couldn't read page component file (${error.message})`))
+    console.warn(formatMessage(`Couldn't read page component file (${/** @type {Error} */(error).message})`))
   }
 
   if (!contents) {
