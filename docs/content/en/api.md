@@ -212,7 +212,7 @@ export default Vue.extend({
 ### localeLocation()
 ### switchLocalePath()
 
-See more info about those in [methods documentation](#methods).
+See more info about those in [Extension of Vue](#extension-of-vue) section.
 
 ## Extension of Vuex
 
@@ -238,4 +238,4 @@ export const actions = {
 ### localeLocation()
 ### switchLocalePath()
 
-See more info about those in [methods documentation](#methods).
+See more info about those in [Extension of Vue](#extension-of-vue) section.
