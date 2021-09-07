@@ -56,7 +56,7 @@ describe('locales as string array', () => {
   })
 })
 
-describe('differentDomains enabled', () => {
+describe('differentDomains enabled with `domain` prop set', () => {
   /** @type {Nuxt} */
   let nuxt
 
@@ -265,6 +265,359 @@ describe('differentDomains enabled', () => {
         href: 'http://en.nuxt-app.localhost/locale'
       }
     ]
+    expect(seoTags).toEqual(expectedSeoTags)
+  })
+})
+
+describe('differentDomains enabled with `domains` prop set', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        differentDomains: true,
+        defaultDirection: 'auto'
+      }
+    }
+
+    const localConfig = loadConfig(__dirname, 'basic', override, { merge: true })
+
+    // Override after merging options to avoid arrays being merged.
+    localConfig.i18n.locales = [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        domains: ['en.nuxt-app.localhost', 'en.nuxt-app-other.localhost'],
+        dir: 'ltr'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français',
+        domains: ['fr.nuxt-app.localhost', 'fr.nuxt-app-other.localhost']
+      },
+      {
+        code: 'ru',
+        iso: 'ru-RU',
+        name: 'Русский',
+        domains: ['https://ru.nuxt-app.localhost', 'https://ru.nuxt-app-other.localhost']
+      },
+      {
+        code: 'ua',
+        iso: 'uk-UA',
+        name: 'Українська'
+      }
+    ]
+
+    nuxt = (await setup(localConfig)).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('host matches locale\'s domain (en)', async () => {
+    // Domain: en.nuxt-app-other.localhost
+    let requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app.localhost'
+      }
+    }
+    let html = await get('/', requestOptions)
+    let dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
+    expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
+    // Domain: en.nuxt-app-other.localhost
+    requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app-other.localhost'
+      }
+    }
+    html = await get('/', requestOptions)
+    dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
+    expect(dom.querySelector('head meta[property="og-locale"]')).toBe(null)
+  })
+
+  test('host matches locale\'s domain (fr)', async () => {
+    // Domain: fr.nuxt-app.localhost
+    let requestOptions = {
+      headers: {
+        Host: 'fr.nuxt-app.localhost'
+      }
+    }
+    let html = await get('/', requestOptions)
+    let dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+    // Domain: fr.nuxt-app-other.localhost
+    requestOptions = {
+      headers: {
+        Host: 'fr.nuxt-app-other.localhost'
+      }
+    }
+    html = await get('/', requestOptions)
+    dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+  })
+
+  test('host matches locale\'s runtime-set domain (ua)', async () => {
+    const requestOptions = {
+      headers: {
+        Host: 'ua-runtime.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('locale: ua')
+  })
+
+  test('x-forwarded-host does not match locale\'s domain', async () => {
+    const requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'xx.nuxt-app.localhost'
+      }
+    }
+    const html = await get('/', requestOptions)
+    const dom = getDom(html)
+    // Falls back to english.
+    expect(dom.querySelector('body')?.textContent).toContain('page: Homepage')
+  })
+
+  test('x-forwarded-host does match locale\'s domain (fr)', async () => {
+    // Domain fr.nuxt-app.localhost
+    let requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app.localhost'
+      }
+    }
+    let html = await get('/', requestOptions)
+    let dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+
+    // Domain fr.nuxt-app-other.localhost
+    requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app-other.localhost'
+      }
+    }
+    html = await get('/', requestOptions)
+    dom = getDom(html)
+    expect(dom.querySelector('body')?.textContent).toContain('page: Accueil')
+  })
+
+  test('dir attribute exists and is set to the default direction', async () => {
+    // Domain fr.nuxt-app.localhost
+    let requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app.localhost'
+      }
+    }
+    let html = await get('/locale', requestOptions)
+    let dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toEqual('auto')
+
+    // Domain fr.nuxt-app-other.localhost
+    requestOptions = {
+      headers: {
+        'X-Forwarded-Host': 'fr.nuxt-app-other.localhost'
+      }
+    }
+    html = await get('/locale', requestOptions)
+    dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toEqual('auto')
+  })
+
+  test('dir and SEO attributes exists', async () => {
+    let expectedSeoTags = [
+      {
+        tagName: 'meta',
+        property: 'og:locale',
+        content: 'en_US'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'fr_FR'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'ru_RU'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'uk_UA'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app.localhost/locale',
+        hreflang: 'en'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app.localhost/locale',
+        hreflang: 'en-US'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://fr.nuxt-app.localhost/locale',
+        hreflang: 'fr'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://fr.nuxt-app.localhost/locale',
+        hreflang: 'fr-FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'https://ru.nuxt-app.localhost/locale',
+        hreflang: 'ru'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'https://ru.nuxt-app.localhost/locale',
+        hreflang: 'ru-RU'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://ua-runtime.nuxt-app.localhost/locale',
+        hreflang: 'uk'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://ua-runtime.nuxt-app.localhost/locale',
+        hreflang: 'uk-UA'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app.localhost/locale',
+        hreflang: 'x-default'
+      },
+      {
+        tagName: 'link',
+        rel: 'canonical',
+        href: 'http://en.nuxt-app.localhost/locale'
+      }
+    ]
+
+    // Domain en.nuxt-app.localhost
+    let requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app.localhost'
+      }
+    }
+    let html = await get('/locale', requestOptions)
+    let dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toEqual('ltr')
+
+    let seoTags = getSeoTags(dom)
+    expect(seoTags).toEqual(expectedSeoTags)
+
+    expectedSeoTags = [
+      {
+        tagName: 'meta',
+        property: 'og:locale',
+        content: 'en_US'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'fr_FR'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'ru_RU'
+      },
+      {
+        tagName: 'meta',
+        property: 'og:locale:alternate',
+        content: 'uk_UA'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app-other.localhost/locale',
+        hreflang: 'en'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app-other.localhost/locale',
+        hreflang: 'en-US'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://fr.nuxt-app-other.localhost/locale',
+        hreflang: 'fr'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://fr.nuxt-app-other.localhost/locale',
+        hreflang: 'fr-FR'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'https://ru.nuxt-app-other.localhost/locale',
+        hreflang: 'ru'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'https://ru.nuxt-app-other.localhost/locale',
+        hreflang: 'ru-RU'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://ua-runtime.nuxt-app.localhost/locale',
+        hreflang: 'uk'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://ua-runtime.nuxt-app.localhost/locale',
+        hreflang: 'uk-UA'
+      },
+      {
+        tagName: 'link',
+        rel: 'alternate',
+        href: 'http://en.nuxt-app-other.localhost/locale',
+        hreflang: 'x-default'
+      },
+      {
+        tagName: 'link',
+        rel: 'canonical',
+        href: 'http://en.nuxt-app-other.localhost/locale'
+      }
+    ]
+
+    // Domain en.nuxt-app-other.localhost
+    requestOptions = {
+      headers: {
+        Host: 'en.nuxt-app-other.localhost'
+      }
+    }
+    html = await get('/locale', requestOptions)
+    dom = getDom(html)
+    expect(dom.documentElement.getAttribute('dir')).toEqual('ltr')
+
+    seoTags = getSeoTags(dom)
     expect(seoTags).toEqual(expectedSeoTags)
   })
 })
