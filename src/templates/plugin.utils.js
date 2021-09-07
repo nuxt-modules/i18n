@@ -1,6 +1,6 @@
 import isHTTPS from 'is-https'
 import { localeMessages, options } from './options'
-import { formatMessage } from './utils-common'
+import { formatMessage, getHost } from './utils-common'
 // @ts-ignore
 import { hasProtocol } from '~i18n-ufo'
 
@@ -99,17 +99,29 @@ export function resolveBaseUrl (baseUrl, context, localeCode, { differentDomains
 export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
 // Lookup the `differentDomain` origin associated with given locale.
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
-  if (lang && lang.domain) {
-    if (hasProtocol(lang.domain)) {
-      return lang.domain
-    }
-    let protocol
-    if (process.server) {
-      protocol = (req && isHTTPS(req)) ? 'https' : 'http'
+  if (lang && (lang.domain || lang.domains)) {
+    let domain
+    if (lang.domains) {
+      const host = getHost(req)
+      if (host) {
+        domain = lang.domains.find(domain => domain === host)
+      }
     } else {
-      protocol = window.location.protocol.split(':')[0]
+      domain = lang.domain
     }
-    return `${protocol}://${lang.domain}`
+
+    if (domain) {
+      if (hasProtocol(domain)) {
+        return domain
+      }
+      let protocol
+      if (process.server) {
+        protocol = (req && isHTTPS(req)) ? 'https' : 'http'
+      } else {
+        protocol = window.location.protocol.split(':')[0]
+      }
+      return `${protocol}://${domain}`
+    }
   }
 
   // eslint-disable-next-line no-console

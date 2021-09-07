@@ -11,6 +11,7 @@ export interface LocaleObject extends Record<string, any> {
   code: Locale
   dir?: Directions
   domain?: string
+  domains?: Array<string>
   file?: string
   isCatchallLocale?: boolean
   iso?: string

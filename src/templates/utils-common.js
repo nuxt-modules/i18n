@@ -84,6 +84,24 @@ export function matchBrowserLocale (appLocales, browserLocales) {
 }
 
 /**
+ * Get the current host based on either window.location on client side or request header on server side.
+ *
+ * @param  {import('http').IncomingMessage | undefined} req
+ * @return {string | undefined} Host if found any
+ */
+export function getHost (req) {
+  /** @type {string | undefined} */
+  let host
+  if (process.client) {
+    host = window.location.host
+  } else if (req) {
+    const detectedHost = req.headers['x-forwarded-host'] || req.headers.host
+    host = Array.isArray(detectedHost) ? detectedHost[0] : detectedHost
+  }
+  return host
+}
+
+/**
  * Get locale code that corresponds to current hostname
  *
  * @param  {ResolvedOptions['normalizedLocales']} locales
@@ -92,17 +110,17 @@ export function matchBrowserLocale (appLocales, browserLocales) {
  */
 export function getLocaleDomain (locales, req) {
   /** @type {string | undefined} */
-  let host
-
-  if (process.client) {
-    host = window.location.host
-  } else if (req) {
-    const detectedHost = req.headers['x-forwarded-host'] || req.headers.host
-    host = Array.isArray(detectedHost) ? detectedHost[0] : detectedHost
-  }
+  const host = getHost(req)
 
   if (host) {
-    const matchingLocale = locales.find(l => l.domain === host)
+    const matchingLocale = locales.find(l => {
+      if (l.domain) {
+        return l.domain === host
+      } else if (l.domains) {
+        return l.domains.find(domain => domain === host) !== undefined
+      }
+      return false
+    })
     if (matchingLocale) {
       return matchingLocale.code
     }

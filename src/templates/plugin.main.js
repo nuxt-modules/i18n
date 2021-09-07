@@ -357,10 +357,20 @@ export default async (context) => {
       for (const [index, locale] of options.normalizedLocales.entries()) {
         const domain = store.state.localeDomains[locale.code]
         if (domain) {
-          locale.domain = domain
+          if (Array.isArray(domain)) {
+            // Map over the Array to avoid issue with Klona using a reactive Array.
+            locale.domains = domain.map(dom => dom)
+          } else {
+            locale.domain = domain
+          }
           const optionsLocale = options.locales[index]
           if (typeof (optionsLocale) !== 'string') {
-            optionsLocale.domain = domain
+            if (Array.isArray(domain)) {
+              // Map over the Array to avoid issue with Klona using a reactive Array.
+              optionsLocale.domains = domain.map(dom => dom)
+            } else {
+              optionsLocale.domain = domain
+            }
           }
         }
       }
