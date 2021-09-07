@@ -1,4 +1,7 @@
+// @ts-ignore
 import isHTTPS from 'is-https'
+// @ts-ignore
+import { findBestMatch } from 'string-similarity'
 import { localeMessages, options } from './options'
 import { formatMessage, getHost } from './utils-common'
 // @ts-ignore
@@ -105,6 +108,16 @@ export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
       const host = getHost(req)
       if (host) {
         domain = lang.domains.find(domain => domain === host)
+        if (!domain) {
+          if (lang.domains.length === 1) {
+            domain = lang.domains[0]
+          } else {
+            const stringMatch = findBestMatch(host, lang.domains)
+            if (stringMatch && stringMatch.bestMatch && stringMatch.bestMatch.target) {
+              domain = stringMatch.bestMatch.target
+            }
+          }
+        }
       }
     } else {
       domain = lang.domain
