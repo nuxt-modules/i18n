@@ -84,7 +84,7 @@ export function makeRoutes (baseRoutes, {
       const localizedRoute = { ...route }
 
       // Make localized route name. Name might not exist on parent route if child has same path.
-      if (name) {
+      if (name && !name.includes(routesNameSeparator)) {
         localizedRoute.name = name + routesNameSeparator + locale
       }
 
@@ -140,6 +140,8 @@ export function makeRoutes (baseRoutes, {
         !isChildWithRelativePath &&
         // Skip default locale if strategy is PREFIX_EXCEPT_DEFAULT
         !(isDefaultLocale && strategy === STRATEGIES.PREFIX_EXCEPT_DEFAULT)
+        // Route name already comes with prefix
+        && (name && !name.includes(routesNameSeparator))
       )
 
       if (shouldAddPrefix) {
@@ -161,7 +163,11 @@ export function makeRoutes (baseRoutes, {
 
       localizedRoute.path = path
 
-      routes.push(localizedRoute)
+      const matchingRoute = routes.find(({ name }) => name === localizedRoute.name)
+
+      if (!matchingRoute || matchingRoute.children) {
+        routes.push(localizedRoute)
+      }
     }
 
     return routes
