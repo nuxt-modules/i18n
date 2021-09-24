@@ -176,9 +176,9 @@ export default async (context) => {
     }
 
     if (getLocaleFromRoute(route) === locale) {
-      // If "redirectOn" is "all" and strategy is "prefix_and_default", prefer unprefixed route for
-      // default locale.
-      if (redirectOn === Constants.REDIRECT_ON_OPTIONS.ALL || locale !== options.defaultLocale || options.strategy !== Constants.STRATEGIES.PREFIX_AND_DEFAULT) {
+      // For "prefix_and_default" strategy prefer the unprefixed route for the default locale.
+      const attemptRedirect = options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT && locale === options.defaultLocale
+      if (!attemptRedirect) {
         return ''
       }
     }
