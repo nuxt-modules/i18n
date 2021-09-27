@@ -131,8 +131,7 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
 
       if (currentRoute && canonicalQueries?.length) {
         const currentRouteQueryParams = currentRoute.query
-        const url = new URL(href)
-        const params = new URLSearchParams(url.search.slice(1))
+        const params = new URLSearchParams(href.split('?')[1])
         for (const queryParamName of canonicalQueries) {
           const queryParamValue = currentRouteQueryParams[queryParamName]
           if (typeof queryParamValue === 'string') {
