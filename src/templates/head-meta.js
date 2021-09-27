@@ -6,7 +6,7 @@ import { formatMessage } from './utils-common'
  * @this {import('vue/types/vue').Vue}
  * @return {import('vue-meta').MetaInfo}
  */
-export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false } = {}) {
+export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false, canonicalQueries = [] } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}
@@ -129,11 +129,11 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
     if (canonicalPath) {
       let href = toAbsoluteUrl(canonicalPath, baseUrl)
 
-      if (currentRoute && options.canonicalQueries) {
+      if (currentRoute && canonicalQueries?.length) {
         const currentRouteQueryParams = currentRoute.query
         const url = new URL(href)
         const params = new URLSearchParams(url.search.slice(1))
-        for (const queryParamName of options.canonicalQueries) {
+        for (const queryParamName of canonicalQueries) {
           const queryParamValue = currentRouteQueryParams[queryParamName]
           if (typeof queryParamValue === 'string') {
             params.append(queryParamName, queryParamValue)

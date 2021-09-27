@@ -1173,6 +1173,22 @@ describe('prefix_and_default strategy', () => {
     expect(links.length).toBe(1)
     expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
   })
+
+  test('canonical SEO link includes query params in canonicalQueries', async () => {
+    const html = await get('/?foo="bar"')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo="bar"')
+  })
+
+  test('canonical SEO link does not include query params not in canonicalQueries', async () => {
+    const html = await get('/?bar="baz"')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
+  })
 })
 
 describe('no_prefix strategy', () => {

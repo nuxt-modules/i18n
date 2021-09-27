@@ -24,6 +24,7 @@ interface NuxtI18nHeadOptions {
    * @default false
    */
   addSeoAttributes?: boolean
+  canonicalQueries?: string[]
 }
 
 type NuxtI18nMeta = Required<Pick<MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>
