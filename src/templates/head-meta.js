@@ -131,14 +131,20 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
 
       if (currentRoute && canonicalQueries?.length) {
         const currentRouteQueryParams = currentRoute.query
-        const params = new URLSearchParams(href.split('?')[1])
+        const params = new URLSearchParams()
         for (const queryParamName of canonicalQueries) {
           const queryParamValue = currentRouteQueryParams[queryParamName]
-          if (typeof queryParamValue === 'string') {
+          if (queryParamValue && Array.isArray(queryParamValue)) {
+            queryParamValue.forEach(v => params.append(queryParamName, v))
+          }
+          if (queryParamValue && typeof queryParamValue === 'string') {
             params.append(queryParamName, queryParamValue)
           }
         }
-        href = `${href}?${params.toString()}`
+        const queryString = params.toString()
+        if (queryString) {
+          href = `${href}?${params.toString()}`
+        }
       }
 
       link.push({
