@@ -143,7 +143,7 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
         }
         const queryString = params.toString()
         if (queryString) {
-          href = `${href}?${params.toString()}`
+          href = `${href}?${queryString}`
         }
       }
 
