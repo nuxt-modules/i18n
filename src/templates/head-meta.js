@@ -133,15 +133,23 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
         const currentRouteQueryParams = currentRoute.query
         const params = new URLSearchParams()
         for (const queryParamName of canonicalQueries) {
-          const queryParamValue = currentRouteQueryParams[queryParamName]
-          if (Array.isArray(queryParamValue)) {
-            queryParamValue.forEach(v => params.append(queryParamName, v || ''))
-          } else {
-            params.append(queryParamName, queryParamValue)
+          if (queryParamName in currentRouteQueryParams) {
+            const queryParamValue = currentRouteQueryParams[queryParamName]
+
+            if (Array.isArray(queryParamValue)) {
+              queryParamValue.forEach(v => params.append(queryParamName, v || ''))
+            } else {
+              params.append(queryParamName, queryParamValue)
+            }
           }
         }
-        const queryString = params.toString()
+        let queryString = params.toString()
+
         if (queryString) {
+          // URLSearchParams.append won't let us append just a key, so remove null and undefined values
+          queryString = queryString.replace('=undefined', '')
+          queryString = queryString.replace('=null', '')
+
           href = `${href}?${queryString}`
         }
       }
