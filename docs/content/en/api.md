@@ -75,7 +75,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
   The `options` object accepts these optional properties:
   - `addDirAttribute` - Adds a `dir` attribute to the HTML element. Default: `false`
   - `addSeoAttributes` - Adds various SEO attributes. Default: `false`
-  - `canonicalQueries` - An array of strings corresponding to query params you would like to include in your canonical ref url. Default: `[]`
+  - `canonicalQueries` - An array of strings corresponding to query params you would like to include in your canonical URL. Default: `[]`
 
 ## Extension of VueI18n
 
