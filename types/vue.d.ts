@@ -25,7 +25,7 @@ interface NuxtI18nHeadOptions {
    */
   addSeoAttributes?: boolean
   /**
-   * An array of strings corresponding to query params you would like to include in your canonical ref url.
+   * An array of strings corresponding to query params you would like to include in your canonical URL.
    * @default false
    */
   canonicalQueries?: string[] | boolean
