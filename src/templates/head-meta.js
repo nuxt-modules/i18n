@@ -134,10 +134,9 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
         const params = new URLSearchParams()
         for (const queryParamName of canonicalQueries) {
           const queryParamValue = currentRouteQueryParams[queryParamName]
-          if (queryParamValue && Array.isArray(queryParamValue)) {
+          if (Array.isArray(queryParamValue)) {
             queryParamValue.forEach(v => params.append(queryParamName, v || ''))
-          }
-          if (queryParamValue && typeof queryParamValue === 'string') {
+          } else {
             params.append(queryParamName, queryParamValue)
           }
         }
