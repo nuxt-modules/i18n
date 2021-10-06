@@ -1091,6 +1091,17 @@ describe('prefix_and_default strategy', () => {
     await expect(get('/fr')).resolves.toContain('page: Accueil')
   })
 
+  test('prefers unprefixed route for default locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/en/', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/')
+  })
+
   test('localeRoute returns localized route (by route name)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default', fullPath: '/' })
