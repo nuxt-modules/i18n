@@ -1187,7 +1187,7 @@ describe('prefix_and_default strategy', () => {
     const dom = getDom(html)
     const links = dom.querySelectorAll('head link[rel="canonical"]')
     expect(links.length).toBe(1)
-    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo')
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo=')
   })
 
   test('canonical SEO link does not include query params not in canonicalQueries', async () => {

@@ -26,9 +26,9 @@ interface NuxtI18nHeadOptions {
   addSeoAttributes?: boolean
   /**
    * An array of strings corresponding to query params you would like to include in your canonical URL.
-   * @default false
+   * @default []
    */
-  canonicalQueries?: string[] | boolean
+  canonicalQueries?: string[]
 }
 
 type NuxtI18nMeta = Required<Pick<MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>

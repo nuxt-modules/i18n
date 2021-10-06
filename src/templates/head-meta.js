@@ -4,9 +4,10 @@ import { formatMessage } from './utils-common'
 
 /**
  * @this {import('vue/types/vue').Vue}
+ * @param {import('../../types/vue').NuxtI18nHeadOptions} options
  * @return {import('vue-meta').MetaInfo}
  */
-export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false, canonicalQueries = false } = {}) {
+export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false, canonicalQueries = [] } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}
@@ -124,12 +125,10 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
       name: this.getRouteBaseName()
     })
 
-    const canonicalPath = currentRoute ? currentRoute.path : null
+    if (currentRoute) {
+      let href = toAbsoluteUrl(currentRoute.path, baseUrl)
 
-    if (canonicalPath) {
-      let href = toAbsoluteUrl(canonicalPath, baseUrl)
-
-      if (currentRoute && Array.isArray(canonicalQueries) && canonicalQueries.length) {
+      if (canonicalQueries.length) {
         const currentRouteQueryParams = currentRoute.query
         const params = new URLSearchParams()
         for (const queryParamName of canonicalQueries) {
@@ -139,17 +138,14 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
             if (Array.isArray(queryParamValue)) {
               queryParamValue.forEach(v => params.append(queryParamName, v || ''))
             } else {
-              params.append(queryParamName, queryParamValue)
+              params.append(queryParamName, queryParamValue || '')
             }
           }
         }
-        let queryString = params.toString()
+
+        const queryString = params.toString()
 
         if (queryString) {
-          // URLSearchParams.append won't let us append just a key, so remove null and undefined values
-          queryString = queryString.replace('=undefined', '')
-          queryString = queryString.replace('=null', '')
-
           href = `${href}?${queryString}`
         }
       }
