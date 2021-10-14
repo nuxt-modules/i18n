@@ -51,7 +51,7 @@ export async function buildHook (options) {
     console.warn(formatMessage('The `forwardedHost` option is deprecated. You can safely remove it. See: https://github.com/nuxt-community/i18n-module/pull/630.'))
   }
 
-  await this.nuxt.callHook('i18n:extend-locales', options)
+  await this.nuxt.callHook('i18n:extend-locales', options.additionalMessages)
 
   // Add vue-i18n-loader if applicable
   if (options.vueI18nLoader) {

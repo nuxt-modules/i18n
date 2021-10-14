@@ -15,7 +15,7 @@ import {
   loadLanguageAsync,
   resolveBaseUrl,
   registerStore,
-  mergeAdditionnalMessages
+  mergeAdditionalMessages
 } from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
@@ -129,7 +129,7 @@ export default async (context) => {
       }
     }
 
-    mergeAdditionnalMessages(context, options)
+    mergeAdditionalMessages(context, options)
 
     app.i18n.locale = newLocale
     /** @type {import('../../types').LocaleObject} */

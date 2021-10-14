@@ -202,7 +202,7 @@ export function validateRouteParams (routeParams, localeCodes) {
  * @param {Pick<ResolvedOptions, 'additionalMessages'>} options
  * @return {void}
  */
-export function mergeAdditionnalMessages (context, { additionalMessages }) {
+export function mergeAdditionalMessages (context, { additionalMessages }) {
   const {
     i18n
   } = context.app
