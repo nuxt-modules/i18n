@@ -119,6 +119,7 @@ export default async (context) => {
             }
           } else if (newLocale !== i18nFallbackLocale) {
             localesToLoadPromises.push(loadLanguageAsync(context, i18nFallbackLocale))
+            mergeAdditionalMessages(context, options, i18nFallbackLocale)
           }
           await Promise.all(localesToLoadPromises)
         }
@@ -127,9 +128,9 @@ export default async (context) => {
         // Load all locales.
         await Promise.all(options.localeCodes.map(locale => loadLanguageAsync(context, locale)))
       }
+    } else {
+      mergeAdditionalMessages(context, options)
     }
-
-    mergeAdditionalMessages(context, options)
 
     app.i18n.locale = newLocale
     /** @type {import('../../types').LocaleObject} */

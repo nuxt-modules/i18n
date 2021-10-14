@@ -51,6 +51,7 @@ export async function loadLanguageAsync (context, locale) {
         }
         if (messages) {
           i18n.setLocaleMessage(locale, messages)
+          mergeAdditionalMessages(context, options, locale)
           i18n.loadedLanguages.push(locale)
         }
         /* <% } %> */
@@ -199,17 +200,19 @@ export function validateRouteParams (routeParams, localeCodes) {
  * Merge external additional messages
  *
  * @param {import('@nuxt/types').Context} context
- * @param {Pick<ResolvedOptions, 'additionalMessages'>} options
+ * @param {Pick<ResolvedOptions, 'additionalMessages' | 'localeCodes'>} options
+ * @param {Array<string> | string | null} onlyLocales?
  * @return {void}
  */
-export function mergeAdditionalMessages (context, { additionalMessages }) {
+export function mergeAdditionalMessages (context, { additionalMessages, localeCodes }, onlyLocales = null) {
+  const locales = onlyLocales ? (Array.isArray(onlyLocales) ? onlyLocales : [onlyLocales]) : localeCodes
   const {
     i18n
   } = context.app
-  additionalMessages.forEach(additionalEntry => {
-    for (const [locale, messages] of Object.entries(additionalEntry)) {
-      i18n.mergeLocaleMessage(locale, messages)
-    }
+  additionalMessages.forEach(/** @type {Array<import('vue-i18n').LocaleMessages>} */ additionalEntry => {
+    locales.forEach(locale => {
+      i18n.mergeLocaleMessage(locale, additionalEntry[locale])
+    })
   })
 }
 
