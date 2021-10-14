@@ -11,7 +11,12 @@ import {
   parseAcceptLanguage,
   setLocaleCookie
 } from './utils-common'
-import { loadLanguageAsync, resolveBaseUrl, registerStore } from './plugin.utils'
+import {
+  loadLanguageAsync,
+  resolveBaseUrl,
+  registerStore,
+  mergeAdditionnalMessages
+} from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
 // @ts-ignore
@@ -123,6 +128,8 @@ export default async (context) => {
         await Promise.all(options.localeCodes.map(locale => loadLanguageAsync(context, locale)))
       }
     }
+
+    mergeAdditionnalMessages(context, options)
 
     app.i18n.locale = newLocale
     /** @type {import('../../types').LocaleObject} */
@@ -326,6 +333,7 @@ export default async (context) => {
     i18n.localeProperties = Vue.observable(klona(options.normalizedLocales.find(l => l.code === i18n.locale) || { code: i18n.locale }))
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
+    i18n.additionalMessages = options.additionalMessages
     i18n.onBeforeLanguageSwitch = options.onBeforeLanguageSwitch
     i18n.onLanguageSwitched = options.onLanguageSwitched
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })

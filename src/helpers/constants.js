@@ -33,6 +33,7 @@ export const DEFAULT_OPTIONS = {
   vueI18n: {},
   vueI18nLoader: false,
   locales: [],
+  additionalMessages: [],
   defaultLocale: '',
   defaultDirection: 'ltr',
   routesNameSeparator: '___',

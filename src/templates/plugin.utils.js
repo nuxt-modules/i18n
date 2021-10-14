@@ -196,6 +196,24 @@ export function validateRouteParams (routeParams, localeCodes) {
 }
 
 /**
+ * Merge external additional messages
+ *
+ * @param {import('@nuxt/types').Context} context
+ * @param {Pick<ResolvedOptions, 'additionalMessages'>} options
+ * @return {void}
+ */
+export function mergeAdditionnalMessages (context, { additionalMessages }) {
+  const {
+    i18n
+  } = context.app
+  additionalMessages.forEach(additionalEntry => {
+    for (const [locale, messages] of Object.entries(additionalEntry)) {
+      i18n.mergeLocaleMessage(locale, messages)
+    }
+  })
+}
+
+/**
  * @param {any} value
  * @return {boolean}
  */
