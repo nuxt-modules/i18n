@@ -11,7 +11,7 @@ const config = {
     // SPARenderer calls this function without having `this` as the root Vue Component
     // so null-check before calling.
     if (this.$nuxtI18nHead) {
-      return this.$nuxtI18nHead({ addSeoAttributes: true, canonicalQueries: ['foo'] })
+      return this.$nuxtI18nHead({ addSeoAttributes: { canonicalQueries: ['foo'] } })
     }
     return {}
   }

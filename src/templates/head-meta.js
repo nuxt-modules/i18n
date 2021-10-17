@@ -7,7 +7,7 @@ import { formatMessage } from './utils-common'
  * @param {import('../../types/vue').NuxtI18nHeadOptions} options
  * @return {import('vue-meta').MetaInfo}
  */
-export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false, canonicalQueries = [] } = {}) {
+export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}
@@ -48,7 +48,7 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
     const locales = /** @type {import('../../types').LocaleObject[]} */(this.$i18n.locales)
 
     addHreflangLinks.bind(this)(locales, this.$i18n.__baseUrl, metaObject.link)
-    addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link)
+    addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link, addSeoAttributes)
     addCurrentOgLocale.bind(this)(currentLocale, currentLocaleIso, metaObject.meta)
     addAlternateOgLocales.bind(this)(locales, currentLocaleIso, metaObject.meta)
   }
@@ -118,8 +118,9 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
    *
    * @param {string} baseUrl
    * @param {import('../../types/vue').NuxtI18nMeta['link']} link
+   * @param {NonNullable<import('../../types/vue').NuxtI18nHeadOptions['addSeoAttributes']>} seoAttributesOptions
    */
-  function addCanonicalLinks (baseUrl, link) {
+  function addCanonicalLinks (baseUrl, link, seoAttributesOptions) {
     const currentRoute = this.localeRoute({
       ...this.$route,
       name: this.getRouteBaseName()
@@ -127,6 +128,8 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
 
     if (currentRoute) {
       let href = toAbsoluteUrl(currentRoute.path, baseUrl)
+
+      const canonicalQueries = (typeof (seoAttributesOptions) !== 'boolean' && seoAttributesOptions.canonicalQueries) || []
 
       if (canonicalQueries.length) {
         const currentRouteQueryParams = currentRoute.query
