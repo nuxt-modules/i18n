@@ -129,7 +129,7 @@
     "husky": "4.3.8",
     "jest": "27.1.0",
     "jest-dev-server": "5.0.3",
-    "jsdom": "17.0.0",
+    "jsdom": "18.0.0",
     "messageformat": "2.3.0",
     "nuxt": "2.15.8",
     "playwright-chromium": "1.14.1",
