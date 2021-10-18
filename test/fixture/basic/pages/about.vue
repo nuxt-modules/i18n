@@ -17,7 +17,7 @@ export default {
   },
   /** @return {import('../../../../types/vue').NuxtI18nMeta} */
   head () {
-    return this.$nuxtI18nHead()
+    return this.$nuxtI18nHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
   },
   computed: {
     /** @return {string} */
