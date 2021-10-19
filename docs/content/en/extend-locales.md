@@ -19,12 +19,12 @@ export default function () {
   nuxt.hook('i18n:extend-locales', function (additionalMessages) {
     additionalMessages.push({
       en: {
-        'external-module': {
+        'my-module-exemple': {
           hello: 'Hello from external module'
         }
       },
       fr: {
-        'external-module': {
+        'my-module-exemple': {
           hello: 'Bonjour depuis le module externe'
         }
       }
@@ -32,8 +32,10 @@ export default function () {
   })
 }
 ```
-Now the project has access to new messages and can use them through `$t('external-module.hello')`.
+Now the project has access to new messages and can use them through `$t('my-module-exemple.hello')`.
 
-<alert type="warning">
-Because your translation will be merged with the project's ones, it's safer to prefix them.
+<alert>
+Because module's translation are merged with the project's ones, it's safer to prefix them.
+
+**Main project translations will always override** the module's ones.
 </alert>

@@ -2494,11 +2494,6 @@ describe('Extend Locale with additionalMessages', () => {
         'my-module': {
           hello: 'Hello'
         }
-      },
-      aa: {
-        'my-module': {
-          hello: 'should not be injected'
-        }
       }
     }
   ]
@@ -2510,7 +2505,12 @@ describe('Extend Locale with additionalMessages', () => {
   test('should merge additionalMessages with plain messages declaration', async () => {
     const override = {
       i18n: {
-        additionalMessages
+        additionalMessages,
+        aa: {
+          'my-module': {
+            hello: 'should not be injected'
+          }
+        }
       }
     }
     nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
@@ -2632,5 +2632,30 @@ describe('Extend Locale with additionalMessages', () => {
     nuxt = (await setup(localConfig)).nuxt
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
+  })
+
+  test('Module translations should be overridable', async () => {
+    const override = {
+      i18n: {
+        additionalMessages: [
+          {
+            en: {
+              home: 'from module'
+            }
+          }
+        ],
+        vueI18n: {
+          messages: {
+            en: {
+              home: 'from project'
+            }
+          }
+        }
+      }
+    }
+    nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    const dom = window.document
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: from project')
   })
 })

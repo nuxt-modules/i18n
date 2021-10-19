@@ -212,7 +212,9 @@ export function mergeAdditionalMessages ({ app }, { additionalMessages, localeCo
   const locales = onlyLocales ? (Array.isArray(onlyLocales) ? onlyLocales : [onlyLocales]) : localeCodes
   for (const additionalEntry of additionalMessages) {
     for (const locale of locales) {
+      const existingMessages = app.i18n.getLocaleMessage(locale)
       app.i18n.mergeLocaleMessage(locale, additionalEntry[locale])
+      app.i18n.mergeLocaleMessage(locale, existingMessages)
     }
   }
 }
