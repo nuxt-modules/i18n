@@ -2491,10 +2491,10 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest-dev-server@4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@types/jest-dev-server/-/jest-dev-server-4.2.1.tgz#0fd8923c400abfad48144fa5b5b74f17447bf357"
-  integrity sha512-hZYqCfhk9o9zOrTGeaFUaG4WTZsyoEzO4wd0U4/D8uz/gCRQNptHwRRw14hSksn0wFCgC1ZpzCQTagNwqdV5bg==
+"@types/jest-dev-server@5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@types/jest-dev-server/-/jest-dev-server-5.0.0.tgz#1c89fb8b2c6ceae75b73d7bb9bab6207c07ac101"
+  integrity sha512-2o5mY2c/WTXO0j+FrtWMxDt0NBi0o6R6aNx4xaym/OfVP8owAeZa582eFxQEqZ7KzHDqvkEEJ9YZ9O3Zw/MpPw==
   dependencies:
     "@types/node" "*"
     "@types/wait-on" "*"
