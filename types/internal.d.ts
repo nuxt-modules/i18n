@@ -11,7 +11,7 @@ export type onNavigateInternal = (route: Route) => Promise<[number | null, strin
 export interface ResolvedOptions extends Omit<Required<Options>, 'detectBrowserLanguage' | 'vueI18n' | 'vuex'> {
   detectBrowserLanguage: Required<DetectBrowserLanguageOptions> | false
   localeCodes: readonly Locale[]
-  normalizedLocales: readonly LocaleObject[],
+  normalizedLocales: readonly LocaleObject[]
   additionalMessages?: Array<LocaleMessages>
   vueI18n: I18nOptions | ((context: NuxtContext) => Promise<I18nOptions>)
   vuex: Required<VuexOptions> | false
