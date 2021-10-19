@@ -1,4 +1,4 @@
-import VueI18n, { Locale, I18nOptions, IVueI18n, LocaleMessages } from 'vue-i18n'
+import VueI18n, { Locale, I18nOptions, IVueI18n } from 'vue-i18n'
 import { Context as NuxtContext } from '@nuxt/types'
 import './vue'
 
@@ -48,7 +48,6 @@ export interface BaseOptions {
   defaultLocaleRouteNameSuffix?: string
   differentDomains?: boolean
   locales?: Locale[] | LocaleObject[]
-  additionalMessages?: Array<LocaleMessages>
   onBeforeLanguageSwitch?: (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtContext) => string | void
   onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
 }

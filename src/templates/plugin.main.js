@@ -119,7 +119,6 @@ export default async (context) => {
             }
           } else if (newLocale !== i18nFallbackLocale) {
             localesToLoadPromises.push(loadLanguageAsync(context, i18nFallbackLocale))
-            mergeAdditionalMessages(context, options, i18nFallbackLocale)
           }
           await Promise.all(localesToLoadPromises)
         }
@@ -334,7 +333,6 @@ export default async (context) => {
     i18n.localeProperties = Vue.observable(klona(options.normalizedLocales.find(l => l.code === i18n.locale) || { code: i18n.locale }))
     i18n.defaultLocale = options.defaultLocale
     i18n.differentDomains = options.differentDomains
-    i18n.additionalMessages = options.additionalMessages
     i18n.onBeforeLanguageSwitch = options.onBeforeLanguageSwitch
     i18n.onLanguageSwitched = options.onLanguageSwitched
     i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })

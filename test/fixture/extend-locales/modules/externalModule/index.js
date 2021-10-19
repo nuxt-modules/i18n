@@ -1,9 +1,19 @@
-import lang from './lang'
-
+/** @type {import('@nuxt/types').Module} */
 export default function () {
   const { nuxt } = this
 
   nuxt.hook('i18n:extend-locales', function (additionalMessages) {
-    additionalMessages.push(lang)
+    additionalMessages.push({
+      en: {
+        'external-module': {
+          hello: 'Hello external module'
+        }
+      },
+      fr: {
+        'external-module': {
+          hello: 'Bonjour module externe'
+        }
+      }
+    })
   })
 }

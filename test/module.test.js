@@ -2480,7 +2480,7 @@ describe('Store', () => {
   })
 })
 
-describe.only('Extend Locale with additionalMessages', () => {
+describe('Extend Locale with additionalMessages', () => {
   /** @type {Nuxt} */
   let nuxt
   const additionalMessages = [

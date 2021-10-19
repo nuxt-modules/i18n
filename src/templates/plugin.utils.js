@@ -199,21 +199,22 @@ export function validateRouteParams (routeParams, localeCodes) {
 /**
  * Merge external additional messages
  *
- * @param {import('@nuxt/types').Context} context
+ * @param {import('@nuxt/types').Context} app
  * @param {Pick<ResolvedOptions, 'additionalMessages' | 'localeCodes'>} options
  * @param {Array<string> | string | null} onlyLocales?
  * @return {void}
  */
-export function mergeAdditionalMessages (context, { additionalMessages, localeCodes }, onlyLocales = null) {
+export function mergeAdditionalMessages ({ app }, { additionalMessages, localeCodes }, onlyLocales = null) {
+  if (!additionalMessages) {
+    return
+  }
+
   const locales = onlyLocales ? (Array.isArray(onlyLocales) ? onlyLocales : [onlyLocales]) : localeCodes
-  const {
-    i18n
-  } = context.app
-  additionalMessages.forEach(/** @type {Array<import('vue-i18n').LocaleMessages>} */ additionalEntry => {
-    locales.forEach(locale => {
-      i18n.mergeLocaleMessage(locale, additionalEntry[locale])
-    })
-  })
+  for (const additionalEntry of additionalMessages) {
+    for (const locale of locales) {
+      app.i18n.mergeLocaleMessage(locale, additionalEntry[locale])
+    }
+  }
 }
 
 /**
