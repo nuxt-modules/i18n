@@ -1,9 +1,39 @@
 {
   "extends": [
     "config:base",
-    "group:allNonMajor"
+    ":prHourlyLimit4",
+    ":semanticCommitTypeAll(chore)"
   ],
-  "lockFileMaintenance": {
-    "enabled": true
-  }
+  "meteor": {
+    "enabled": false
+  },
+  "rangeStrategy": "bump",
+  "npm": {
+    "commitMessageTopic": "{{prettyDepType}} {{depName}}"
+  },
+  "packageRules": [
+    {
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "matchFiles": ["package.json"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "lockFileMaintenance": {
+        "enabled": true,
+        "extends": [
+          "schedule:weekly"
+        ]
+      }
+    },
+    {
+      "groupName": "Docs dependencies",
+      "matchFiles": ["docs/package.json"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    }
+  ]
 }

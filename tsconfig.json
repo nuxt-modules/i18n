@@ -10,6 +10,7 @@
     ],
     "esModuleInterop": true,
     "allowJs": true,
+    "checkJs": true,
     "sourceMap": true,
     "strict": true,
     "noEmit": true,
@@ -22,9 +23,16 @@
         "./*",
       ],
     },
+    "resolveJsonModule": true,
     "types": [
       "@types/node",
       "@nuxt/types",
     ],
   },
+  "include": [
+    "src",
+  ],
+  "exclude": [
+    "src/templates/options.js",
+  ]
 }

@@ -1,26 +1,35 @@
-const packageJson = require('../../package.json')
+/**
+ * @typedef {import('../../types').Options} Options
+ */
 
 // Internals
-exports.MODULE_NAME = packageJson.name
-exports.ROOT_DIR = 'nuxt-i18n'
-exports.LOCALE_CODE_KEY = 'code'
-exports.LOCALE_ISO_KEY = 'iso'
-exports.LOCALE_DIR_KEY = 'dir'
-exports.LOCALE_DOMAIN_KEY = 'domain'
-exports.LOCALE_FILE_KEY = 'file'
+export const ROOT_DIR = 'nuxt-i18n'
 
 // Options
-const STRATEGIES = {
-  PREFIX: 'prefix',
-  PREFIX_EXCEPT_DEFAULT: 'prefix_except_default',
-  PREFIX_AND_DEFAULT: 'prefix_and_default',
-  NO_PREFIX: 'no_prefix'
+const STRATEGY_PREFIX = 'prefix'
+const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
+const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
+const STRATEGY_NO_PREFIX = 'no_prefix'
+export const STRATEGIES = {
+  PREFIX: STRATEGY_PREFIX,
+  PREFIX_EXCEPT_DEFAULT: STRATEGY_PREFIX_EXCEPT_DEFAULT,
+  PREFIX_AND_DEFAULT: STRATEGY_PREFIX_AND_DEFAULT,
+  NO_PREFIX: STRATEGY_NO_PREFIX
 }
 
-exports.STRATEGIES = STRATEGIES
+const REDIRECT_ON_ALL = 'all'
+const REDIRECT_ON_ROOT = 'root'
+const REDIRECT_ON_NO_PREFIX = 'no prefix'
+export const REDIRECT_ON_OPTIONS = {
+  ALL: REDIRECT_ON_ALL,
+  ROOT: REDIRECT_ON_ROOT,
+  NO_PREFIX: REDIRECT_ON_NO_PREFIX
+}
 
-exports.COMPONENT_OPTIONS_KEY = 'nuxtI18n'
-exports.DEFAULT_OPTIONS = {
+export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
+
+/** @type {Options} */
+export const DEFAULT_OPTIONS = {
   vueI18n: {},
   vueI18nLoader: false,
   locales: [],
@@ -28,34 +37,30 @@ exports.DEFAULT_OPTIONS = {
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
-  strategy: STRATEGIES.PREFIX_EXCEPT_DEFAULT,
+  sortRoutes: true,
+  strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
   rootRedirect: null,
   detectBrowserLanguage: {
-    useCookie: true,
+    alwaysRedirect: false,
     cookieCrossOrigin: false,
     cookieDomain: null,
     cookieKey: 'i18n_redirected',
     cookieSecure: false,
-    alwaysRedirect: false,
     fallbackLocale: '',
-    onlyOnNoPrefix: false,
-    onlyOnRoot: false
+    redirectOn: 'root',
+    useCookie: true
   },
   differentDomains: false,
-  seo: false,
   baseUrl: '',
   vuex: {
     moduleName: 'i18n',
-    syncLocale: false,
-    syncMessages: false,
     syncRouteParams: true
   },
   parsePages: true,
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  beforeLanguageSwitch: () => null,
+  onBeforeLanguageSwitch: () => {},
   onLanguageSwitched: () => null
 }
-exports.NESTED_OPTIONS = ['detectBrowserLanguage', 'vuex']

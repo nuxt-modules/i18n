@@ -6,19 +6,7 @@ const config = {
   dev: false,
   telemetry: false,
   build: {
-    babel: {
-      presets ({ isServer }) {
-        return [
-          [
-            require.resolve('@nuxt/babel-preset-app-edge'),
-            {
-              buildTarget: isServer ? 'server' : 'client',
-              corejs: { version: 3 }
-            }
-          ]
-        ]
-      }
-    },
+    corejs: 3,
     quiet: true
   },
   render: {
@@ -28,7 +16,6 @@ const config = {
     resolve(__dirname, '../..')
   ],
   i18n: {
-    seo: true,
     baseUrl: 'nuxt-app.localhost',
     locales: [
       {
@@ -61,10 +48,6 @@ const config = {
         }
       },
       fallbackLocale: 'en'
-    },
-    vuex: {
-      syncLocale: true,
-      syncMessages: true
     }
   }
 }

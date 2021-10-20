@@ -4,12 +4,11 @@ const middleware = ({ app }) => {
     return
   }
 
-  const localeCodes = app.i18n.locales.map(locale => typeof (locale) === 'string' ? locale : locale.code)
-
   // Tests localePath, switchLocalePath and getRouteBaseName from app context.
-  app.allLocalePaths = localeCodes.map(locale => app.switchLocalePath(locale))
+  app.allLocalePaths = app.i18n.localeCodes.map(locale => app.switchLocalePath(locale))
   app.routeBaseName = app.getRouteBaseName()
   app.localizedRoute = app.localeRoute(app.routeBaseName, 'fr')
+  app.localizedLocation = app.localeLocation(app.routeBaseName, 'fr')
 }
 
 export default middleware

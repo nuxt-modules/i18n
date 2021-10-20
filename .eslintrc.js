@@ -16,6 +16,8 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'arrow-parens': 'off',
+    'import/named': 'off',
+    'import/namespace': 'off',
     'no-console': [
       'error', {
         allow: ['assert', 'warn', 'error', 'info']

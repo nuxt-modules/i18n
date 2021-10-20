@@ -1,100 +1,28 @@
 ---
 title: SEO
-description: "When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does"
+description: "When the `$nuxtI18nHead` is added to the head, **@nuxtjs/i18n** attempts to add some metadata to improve your pages SEO. Here's what it does"
 position: 8
 category: Guide
 ---
 
-<alert type="info">
+## Introduction
 
-Using `seo` option (or preferably the `$nuxtI18nHead`-based solution - see [Improving Performance](#improving-performance)) requires that locales are configured as an array of objects and not strings.
+**@nuxtjs/i18n** provides the `$nuxtI18nHead` function which you can use to generate SEO metadata to optimize locale-related aspects of the app for the search engines.
 
-</alert>
+Here are the specific optimizations and features that it enables:
+- `lang` attribute for the `<html>` tag
+- `hreflang` alternate link generation
+- OpenGraph locale tag generation
+- canonical link generation
 
-## Benefits
-
-When the `seo` option is enabled, **nuxt-i18n** attempts to add some metadata to improve your pages SEO. Here's what it does.
-
-### `lang` attribute for `<html>` tag
-
-  Sets the correct `lang` attribute, equivalent to the current locale's ISO code, in the `<html>` tag.
-
-### Automatic hreflang generation
-
-  Generates `<link rel="alternate" hreflang="x">` tags for every language configured in `nuxt.config.js`. The language's ISO codes are used as `hreflang` values.
-
-  Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a catchall locale hreflang link is provided for each language group (e.g. `en-*`) as well. By default, it is the first language provided but another language can be selected by setting `isCatchallLocale` to `true` on that specific language object in your `nuxt.config.js`. [More on hreflang](https://support.google.com/webmasters/answer/189077)
-
-An example without selected catchall locale:
-
-```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  locales: [
-    {
-      code: 'en',
-      iso: 'en-US' // Will be used as catchall locale by default
-    },
-    {
-      code: 'gb',
-      iso: 'en-GB'
-    }
-  ]
-}]
-```
-
-Here is how you'd use `isCatchallLocale` to selected another language:
-
-```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  locales: [
-    {
-      code: 'en',
-      iso: 'en-US'
-    },
-    {
-      code: 'gb',
-      iso: 'en-GB',
-      isCatchallLocale: true // This one will be used as catchall locale
-    }
-  ]
-}]
-```
-
-  In case you already have an `en` language iso set, it'll be used as the catchall without doing anything
-
-```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  locales: [
-    {
-      code: 'gb',
-      iso: 'en-GB'
-    },
-    {
-      code: 'en',
-      iso: 'en' // will be used as catchall locale
-    }
-  ]
-}]
-```
-
-### OpenGraph Locale tag generation
-
-Generates `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
-
-### Canonical link generation
-
-Generates `rel="canonical"` link on all pages to specify the "main" version of the page that should be indexed by search engines. This is beneficial in various situations:
-  - When using the `prefix_and_default` strategy there are technically two sets of pages generated for the default locale -- one prefixed and one unprefixed. The canonical link will be set to the unprefixed version of the page to avoid duplicate indexation.
-  - When the page contains the query parameters, the canonical link will **not include** query params. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. Note that there is currently no way to override that in case that including a specific query params would be desired.
-
-[More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)
+[Read more about those features below](#feature-details)
 
 ## Requirements
 
 To leverage the SEO benefits, you must configure the `locales` option as an array of objects, where each object has an `iso` option set to the language's ISO code:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   locales: [
     {
       code: 'en',
@@ -115,72 +43,47 @@ To leverage the SEO benefits, you must configure the `locales` option as an arra
 You must also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
+['@nuxtjs/i18n', {
   baseUrl: 'https://my-nuxt-app.com'
 }]
 ```
 
-`baseUrl` can also be set to a function (that will be passed a [Nuxt Context](https://nuxtjs.org/guides/concepts/context-helpers) as a parameter) that returns a string. It can be useful to make base URL dynamic based on request headers or `window.location`.
+(Note that `baseUrl` can also be set to a function. Check [`baseUrl` documentation](/options-reference#baseurl).)
 
-To enable this feature everywhere in your app, set `seo` option to `true`. 
-**This comes with a performance drawback though**. More information below.
+## Setup
 
-```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  seo: true
-}]
-```
+The `$nuxtI18nHead` function returns metadata that is handled by the [Vue Meta](https://github.com/nuxt/vue-meta) plugin that is integrated within Nuxt. That metadata can be specified in various places within Nuxt:
+ - the `head()` option within the Nuxt configuration file (`nuxt.config.js`)
+ - the `head()` component option in your **page** components or layout files
 
-If you'd like to disable SEO on specific pages, set `i18n.seo` to `false` right in the page:
+To enable SEO metadata, declare a [`head`](https://nuxtjs.org/guides/features/meta-tags-seo) function in one of the places specified above and make it return the result of a `$nuxtI18nHead` function call.
 
-```js {}[pages/about.vue]
-export default {
-  nuxtI18n: {
-    seo: false
-  }
-}
-```
-
-To override SEO metadata for any page, simply declare your own `head ()` method. Have a look at [src/templates/head-meta.js](https://github.com/nuxt-community/i18n-module/blob/master/src/templates/head-meta.js) if you want to copy some of **nuxt-i18n**'s logic.
-
-## Improving performance
-
-The default method to inject SEO metadata, while convenient, comes at a performance costs.
-The `head` method is registered for every component in your app.
-This means each time a component is created, the SEO metadata is recomputed for every components.
-
-To improve performance you can use the `$nuxtI18nHead` method in your layout instead.
-It will generate i18n SEO metadata for the current context.
-
-First make sure automatic SEO is disabled by setting `seo` to `false` in your configuration or removing that option completely:
+To avoid duplicating the code, it's recommended to set that option globally in your `nuxt.config.js` file and potentially override some values per-layout or per-page component, if necessary.
 
 ```js {}[nuxt.config.js]
-['nuxt-i18n', {
-  seo: false
-}]
-```
-
-Then in your app layout declare the [`head` hook](https://nuxtjs.org/guides/features/meta-tags-seo) and use `$nuxtI18nHead` inside to generate i18n SEO meta information:
-
-```js {}[layouts/default.vue]
 export default {
+  // ...other Nuxt options...
   head () {
     return this.$nuxtI18nHead({ addSeoAttributes: true })
   }
 }
 ```
 
-If you have more layouts, don't forget to add it there too.
+<alert type="warning">
+
+Unfortunately such `head()` definition can crash during static generation (`nuxt generate`) due to Nuxt executing that function in a non-Vue Component context during generation of the `fallback` file. If this issue affects you then null-check `this.$nuxtI18nHead` before calling it.
+
+</alert>
+
+Check out the options you can pass to the `$nuxtI18nHead` in the [API documentation](/api#nuxti18nhead).
 
 That's it!
-Now SEO metadata will only be computed for the layout instead of every component in your app.
 
-### Merging i18n SEO metadata with your own
+If you also want to add your own metadata, you have to merge your data with the object returned by `$nuxtI18nHead`. Either as in the example below or using some library like `deepmerge` to perform a deep merge of two objects.
 
-If you want to add your own meta in the layout you can easily merge the object returned by `$nuxtI18nHead` with your own:
-
-```js {}[layouts/default.vue]
+```js {}[nuxt.config.js]
 export default {
+  // ...other Nuxt options...
   head () {
     const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true })
     return {
@@ -209,3 +112,90 @@ export default {
   }
 }
 ```
+
+## Feature details
+
+- `lang` attribute for the `<html>` tag
+
+  Sets the correct `lang` attribute, equivalent to the current locale's ISO code, in the `<html>` tag.
+
+- `hreflang` alternate link
+
+  Generates `<link rel="alternate" hreflang="x">` tags for every configured locale. The locales' ISO codes are used as `hreflang` values.
+
+  Since version [v6.6.0](https://github.com/nuxt-community/i18n-module/releases/tag/v6.6.0), a "catchall" locale hreflang link is provided for each locale group (e.g. `en-*`) as well. By default, it is the first locale provided, but another locale can be selected by setting `isCatchallLocale` to `true` on that specific locale object in your **@nuxtjs/i18n** configuration. [More on hreflang](https://support.google.com/webmasters/answer/189077)
+
+  An example without selected "catchall" locale:
+
+  ```js {}[nuxt.config.js]
+  ['@nuxtjs/i18n', {
+    locales: [
+      {
+        code: 'en',
+        iso: 'en-US' // Will be used as "catchall" locale by default
+      },
+      {
+        code: 'gb',
+        iso: 'en-GB'
+      }
+    ]
+  }]
+  ```
+
+  Here is how you'd use `isCatchallLocale` to selected another locale:
+
+  ```js {}[nuxt.config.js]
+  ['@nuxtjs/i18n', {
+    locales: [
+      {
+        code: 'en',
+        iso: 'en-US'
+      },
+      {
+        code: 'gb',
+        iso: 'en-GB',
+        isCatchallLocale: true // This one will be used as catchall locale
+      }
+    ]
+  }]
+  ```
+
+  In case you already have an `en` locale `iso` set, it'll be used as the "catchall" without doing anything
+
+  ```js {}[nuxt.config.js]
+  ['@nuxtjs/i18n', {
+    locales: [
+      {
+        code: 'gb',
+        iso: 'en-GB'
+      },
+      {
+        code: 'en',
+        iso: 'en' // will be used as "catchall" locale
+      }
+    ]
+  }]
+  ```
+
+- OpenGraph Locale tag generation
+
+  Generates `og:locale` and `og:locale:alternate` meta tags as defined in the [Open Graph protocol](http://ogp.me/#optional).
+
+- Canonical link
+
+  Generates `rel="canonical"` link on all pages to specify the "main" version of the page that should be indexed by search engines. This is beneficial in various situations:
+  - When using the `prefix_and_default` strategy there are technically two sets of pages generated for the default locale -- one prefixed and one unprefixed. The canonical link will be set to the unprefixed version of the page to avoid duplicate indexation.
+  - When the page contains query parameters, the canonical link will **not include** the query params by default. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. This can be overriden by using the `canonicalQueries` option. For example:
+
+    ```js
+    export default {
+      head() {
+        return this.$nuxtI18nHead({
+          addSeoAttributes: {
+            canonicalQueries: ['foo']
+          }
+        })
+      }
+    ```
+
+  [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)

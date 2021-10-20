@@ -1,5 +1,5 @@
 /** @type {import('@nuxt/types').Plugin} */
-export default ({ app, store }) => {
+export default ({ app }) => {
   app.i18n.onLanguageSwitched = (oldLocale, newLocale) => {
     if (!window.testData) {
       window.testData = {
@@ -8,7 +8,6 @@ export default ({ app, store }) => {
     }
 
     window.testData.languageSwitchedListeners.push({
-      storeLocale: store.state.i18n.locale,
       newLocale,
       oldLocale
     })

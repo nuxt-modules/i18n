@@ -5,7 +5,7 @@
 <script>
 export default {
   head () {
-    return this.$nuxtI18nHead({ addSeoAttributes: true })
+    return this.$nuxtI18nHead({ addDirAttribute: true, addSeoAttributes: { canonicalQueries: ['foo'] } })
   }
 }
 </script>

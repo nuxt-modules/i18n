@@ -2,7 +2,8 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { Location } from 'vue-router'
+import { Location, Route } from 'vue-router'
+import { Plugin } from '@nuxt/types'
 import '../index'
 
 const vm = new Vue()
@@ -23,13 +24,20 @@ path = vm.switchLocalePath(locale)
 
 // getRouteBaseName
 
-const routeBaseName: string = vm.getRouteBaseName(vm.$route)
+const routeBaseName: string | undefined = vm.getRouteBaseName(vm.$route)
 
 // localeRoute
 
-const localizedRoute: Location | undefined = vm.localeRoute('about', 'fr')
+const localizedRoute: Route | undefined = vm.localeRoute('about', 'fr')
 if (localizedRoute) {
-  vm.$router.push(localizedRoute)
+  const { fullPath } = localizedRoute
+}
+
+// localeLocation
+
+const localizedLocation: Location | undefined = vm.localeLocation('about', 'fr')
+if (localizedLocation) {
+  vm.$router.push(localizedLocation)
 }
 
 // $i18n
@@ -44,3 +52,8 @@ vm.$i18n.setLocale(locale)
 const store = new Vuex.Store({})
 
 store.$i18n.setLocale(locale)
+
+const nuxtPlugin: Plugin = function (context) {
+  const { i18n, getRouteBaseName, localePath, localeRoute, switchLocalePath } = context
+  const { locale } = i18n
+}

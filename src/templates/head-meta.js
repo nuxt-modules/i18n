@@ -1,21 +1,19 @@
 import VueMeta from 'vue-meta'
-import {
-  defaultLocale,
-  defaultDirection,
-  COMPONENT_OPTIONS_KEY,
-  LOCALE_DIR_KEY,
-  LOCALE_ISO_KEY,
-  MODULE_NAME,
-  STRATEGIES,
-  strategy
-} from './options'
+import { Constants, options } from './options'
+import { formatMessage } from './utils-common'
 
-export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false } = {}) {
+/**
+ * @this {import('vue/types/vue').Vue}
+ * @param {import('../../types/vue').NuxtI18nHeadOptions} options
+ * @return {import('vue-meta').MetaInfo}
+ */
+export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false } = {}) {
   // Can happen when using from a global mixin.
   if (!this.$i18n) {
     return {}
   }
 
+  /** @type {import('../../types/vue').NuxtI18nMeta} */
   const metaObject = {
     htmlAttrs: {},
     link: [],
@@ -23,8 +21,8 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
   }
 
   const currentLocale = this.$i18n.localeProperties
-  const currentLocaleIso = currentLocale[LOCALE_ISO_KEY]
-  const currentLocaleDir = currentLocale[LOCALE_DIR_KEY] || defaultDirection
+  const currentLocaleIso = currentLocale.iso
+  const currentLocaleDir = currentLocale.dir || options.defaultDirection
 
   /**
    * Adding Direction Attribute:
@@ -38,37 +36,46 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
    */
   if (
     addSeoAttributes &&
+    // @ts-ignore
     (VueMeta.hasMetaInfo ? VueMeta.hasMetaInfo(this) : this._hasMetaInfo) &&
     this.$i18n.locale &&
-    this.$i18n.locales &&
-    this.$options[COMPONENT_OPTIONS_KEY] !== false &&
-    !(this.$options[COMPONENT_OPTIONS_KEY] && this.$options[COMPONENT_OPTIONS_KEY].seo === false)
+    this.$i18n.locales
   ) {
     if (currentLocaleIso) {
       metaObject.htmlAttrs.lang = currentLocaleIso // TODO: simple lang or "specific" lang with territory?
     }
 
-    addHreflangLinks.bind(this)(this.$i18n.locales, this.$i18n.__baseUrl, metaObject.link)
-    addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link)
+    const locales = /** @type {import('../../types').LocaleObject[]} */(this.$i18n.locales)
+
+    addHreflangLinks.bind(this)(locales, this.$i18n.__baseUrl, metaObject.link)
+    addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link, addSeoAttributes)
     addCurrentOgLocale.bind(this)(currentLocale, currentLocaleIso, metaObject.meta)
-    addAlternateOgLocales.bind(this)(this.$i18n.locales, currentLocaleIso, metaObject.meta)
+    addAlternateOgLocales.bind(this)(locales, currentLocaleIso, metaObject.meta)
   }
 
   /**
    * Internals:
    */
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   *
+   * @param {import('../../types').LocaleObject[]} locales
+   * @param {string} baseUrl
+   * @param {import('../../types/vue').NuxtI18nMeta['link']} link
+   */
   function addHreflangLinks (locales, baseUrl, link) {
-    if (strategy === STRATEGIES.NO_PREFIX) {
+    if (options.strategy === Constants.STRATEGIES.NO_PREFIX) {
       return
     }
+    /** @type {Map<string, import('../../types').LocaleObject>} */
     const localeMap = new Map()
     for (const locale of locales) {
-      const localeIso = isoFromLocale(locale)
+      const localeIso = locale.iso
 
       if (!localeIso) {
         // eslint-disable-next-line no-console
-        console.warn(`[${MODULE_NAME}] Locale ISO code is required to generate alternate link`)
+        console.warn(formatMessage('Locale ISO code is required to generate alternate link'))
         continue
       }
 
@@ -82,41 +89,85 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
     }
 
     for (const [iso, mapLocale] of localeMap.entries()) {
-      link.push({
-        hid: `i18n-alt-${iso}`,
-        rel: 'alternate',
-        href: toAbsoluteUrl(this.switchLocalePath(mapLocale.code), baseUrl),
-        hreflang: iso
-      })
+      const localePath = this.switchLocalePath(mapLocale.code)
+      if (localePath) {
+        link.push({
+          hid: `i18n-alt-${iso}`,
+          rel: 'alternate',
+          href: toAbsoluteUrl(localePath, baseUrl),
+          hreflang: iso
+        })
+      }
     }
 
-    if (defaultLocale) {
-      link.push({
-        hid: 'i18n-xd',
-        rel: 'alternate',
-        href: toAbsoluteUrl(this.switchLocalePath(defaultLocale), baseUrl),
-        hreflang: 'x-default'
-      })
+    if (options.defaultLocale) {
+      const localePath = this.switchLocalePath(options.defaultLocale)
+      if (localePath) {
+        link.push({
+          hid: 'i18n-xd',
+          rel: 'alternate',
+          href: toAbsoluteUrl(localePath, baseUrl),
+          hreflang: 'x-default'
+        })
+      }
     }
   }
 
-  function addCanonicalLinks (baseUrl, link) {
+  /**
+   * @this {import('vue/types/vue').Vue}
+   *
+   * @param {string} baseUrl
+   * @param {import('../../types/vue').NuxtI18nMeta['link']} link
+   * @param {NonNullable<import('../../types/vue').NuxtI18nHeadOptions['addSeoAttributes']>} seoAttributesOptions
+   */
+  function addCanonicalLinks (baseUrl, link, seoAttributesOptions) {
     const currentRoute = this.localeRoute({
       ...this.$route,
       name: this.getRouteBaseName()
     })
 
-    const canonicalPath = currentRoute ? currentRoute.path : null
+    if (currentRoute) {
+      let href = toAbsoluteUrl(currentRoute.path, baseUrl)
 
-    if (canonicalPath) {
+      const canonicalQueries = (typeof (seoAttributesOptions) !== 'boolean' && seoAttributesOptions.canonicalQueries) || []
+
+      if (canonicalQueries.length) {
+        const currentRouteQueryParams = currentRoute.query
+        const params = new URLSearchParams()
+        for (const queryParamName of canonicalQueries) {
+          if (queryParamName in currentRouteQueryParams) {
+            const queryParamValue = currentRouteQueryParams[queryParamName]
+
+            if (Array.isArray(queryParamValue)) {
+              queryParamValue.forEach(v => params.append(queryParamName, v || ''))
+            } else {
+              params.append(queryParamName, queryParamValue || '')
+            }
+          }
+        }
+
+        const queryString = params.toString()
+
+        if (queryString) {
+          href = `${href}?${queryString}`
+        }
+      }
+
       link.push({
         hid: 'i18n-can',
         rel: 'canonical',
-        href: toAbsoluteUrl(canonicalPath, baseUrl)
+        href
       })
     }
   }
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   *
+   * @param {import('../../types').LocaleObject} currentLocale
+   * @param {string | undefined} currentLocaleIso
+   * @param {import('../../types/vue').NuxtI18nMeta['meta']} meta
+   */
   function addCurrentOgLocale (currentLocale, currentLocaleIso, meta) {
     const hasCurrentLocaleAndIso = currentLocale && currentLocaleIso
 
@@ -128,33 +179,46 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
       hid: 'i18n-og',
       property: 'og:locale',
       // Replace dash with underscore as defined in spec: language_TERRITORY
-      content: underscoreIsoFromLocale(currentLocale)
+      content: hypenToUnderscore(currentLocaleIso)
     })
   }
 
+  /**
+   * @this {import('vue/types/vue').Vue}
+   *
+   * @param {import('../../types').LocaleObject[]} locales
+   * @param {string | undefined} currentLocaleIso
+   * @param {import('../../types/vue').NuxtI18nMeta['meta']} meta
+   */
   function addAlternateOgLocales (locales, currentLocaleIso, meta) {
     const localesWithoutCurrent = locales.filter(locale => {
-      const localeIso = isoFromLocale(locale)
+      const localeIso = locale.iso
       return localeIso && localeIso !== currentLocaleIso
     })
 
-    const alternateLocales = localesWithoutCurrent.map(locale => ({
-      hid: `i18n-og-alt-${isoFromLocale(locale)}`,
-      property: 'og:locale:alternate',
-      content: underscoreIsoFromLocale(locale)
-    }))
+    if (localesWithoutCurrent.length) {
+      const alternateLocales = localesWithoutCurrent.map(locale => ({
+        hid: `i18n-og-alt-${locale.iso}`,
+        property: 'og:locale:alternate',
+        content: hypenToUnderscore(locale.iso)
+      }))
 
-    meta.push(...alternateLocales)
+      meta.push(...alternateLocales)
+    }
   }
 
-  function isoFromLocale (locale) {
-    return locale[LOCALE_ISO_KEY]
+  /**
+   * @param {string | undefined} str
+   * @return {string}
+   */
+  function hypenToUnderscore (str) {
+    return (str || '').replace(/-/g, '_')
   }
 
-  function underscoreIsoFromLocale (locale) {
-    return isoFromLocale(locale).replace(/-/g, '_')
-  }
-
+  /**
+   * @param {string} urlOrPath
+   * @param {string} baseUrl
+   */
   function toAbsoluteUrl (urlOrPath, baseUrl) {
     if (urlOrPath.match(/^https?:\/\//)) {
       return urlOrPath
@@ -163,9 +227,4 @@ export function nuxtI18nHead ({ addDirAttribute = true, addSeoAttributes = false
   }
 
   return metaObject
-}
-
-/** @deprecated */
-export function nuxtI18nSeo () {
-  return nuxtI18nHead.call(this, { addDirAttribute: false, addSeoAttributes: true })
 }

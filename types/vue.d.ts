@@ -1,39 +1,57 @@
 import Vue from 'vue'
+import 'vuex'
+import 'vue-i18n'
+import '@nuxt/types'
 import { Location, RawLocation, Route } from 'vue-router'
-import VueI18n, { IVueI18n } from 'vue-i18n'
 import { MetaInfo } from 'vue-meta'
-import { NuxtI18nComponentOptions, NuxtVueI18n, NuxtI18nSeo, NuxtI18nHeadOptions } from './nuxt-i18n'
+import { Options, NuxtI18nInstance, IVueI18nNuxt } from '.'
 
-/**
- * Extends types in vue-i18n
- */
-declare module 'vue-i18n' {
-  // the VueI18n class expands here: https://goo.gl/Xtp9EG
-  // it is necessary for the $i18n property in Vue interface: "readonly $i18n: VueI18n & IVueI18n"
-  interface IVueI18n extends NuxtVueI18n.Options.NuxtI18nInterface {
-    localeProperties: NuxtVueI18n.Options.LocaleObject
-    getLocaleCookie(): string | undefined
-    setLocaleCookie(locale: string): undefined
-    setLocale(locale: string): Promise<undefined>
-    getBrowserLocale(): string | undefined
-    finalizePendingLocaleChange(): Promise<void>
-    waitForPendingLocaleChange(): Promise<void>
+interface NuxtI18nComponentOptions {
+  paths?: {
+    [key: string]: string | false
   }
+  locales?: Array<string>
 }
 
-/**
- * Extends types in vue
- */
-declare module 'vue/types/vue' {
-  interface Vue {
-    readonly $i18n: VueI18n & IVueI18n
-    /** @deprecated */
-    $nuxtI18nSeo(): NuxtI18nSeo
-    $nuxtI18nHead(options?: NuxtI18nHeadOptions): MetaInfo
-    getRouteBaseName(route?: Route): string
+interface NuxtI18nHeadOptions {
+  /**
+   * Adds a `dir` attribute to the HTML element.
+   * @default false
+   */
+  addDirAttribute?: boolean
+  /**
+   * Adds various SEO attributes.
+   * @default false
+   */
+  addSeoAttributes?: boolean | SeoAttributesOptions
+}
+
+interface SeoAttributesOptions {
+  /**
+   * An array of strings corresponding to query params you would like to include in your canonical URL.
+   * @default []
+   */
+  canonicalQueries?: string[]
+}
+
+type NuxtI18nMeta = Required<Pick<MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>
+
+interface NuxtI18nApi {
+    getRouteBaseName(route?: Route): string | undefined
     localePath(route: RawLocation, locale?: string): string
-    localeRoute(route: RawLocation, locale?: string): Location | undefined
+    localeRoute(route: RawLocation, locale?: string): Route | undefined
+    localeLocation(route: RawLocation, locale?: string): Location | undefined
     switchLocalePath(locale: string): string
+}
+
+declare module 'vue-i18n' {
+  interface IVueI18n extends IVueI18nNuxt {}
+}
+
+declare module 'vue/types/vue' {
+  interface Vue extends NuxtI18nApi {
+    // $i18n is already added by vue-i18n.
+    $nuxtI18nHead(options?: NuxtI18nHeadOptions): NuxtI18nMeta
   }
 }
 
@@ -43,25 +61,22 @@ declare module 'vue/types/options' {
   }
 }
 
-/**
- * Extends types in Nuxt
- */
 declare module '@nuxt/types' {
-  interface NuxtAppOptions extends NuxtVueI18n.Options.NuxtI18nInterface {
-    readonly i18n: VueI18n & IVueI18n
-    getRouteBaseName(route?: Route): string
-    localePath(route: RawLocation, locale?: string): string
-    localeRoute(route: RawLocation, locale?: string): Location | undefined
-    switchLocalePath(locale: string): string
+  interface Context extends NuxtI18nApi {
+    i18n: NuxtI18nInstance
   }
 
-  interface NuxtOptions {
-    i18n?: NuxtVueI18n.Options.AllOptionsInterface
+  interface NuxtAppOptions extends NuxtI18nApi {
+    i18n: NuxtI18nInstance
+  }
+
+  interface NuxtConfig {
+    i18n?: Options
   }
 }
 
 declare module 'vuex/types/index' {
-  interface Store<S> {
-    readonly $i18n: VueI18n & IVueI18n
+  interface Store<S> extends NuxtI18nApi {
+    $i18n: NuxtI18nInstance
   }
 }
