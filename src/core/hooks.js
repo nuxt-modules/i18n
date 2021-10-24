@@ -1,5 +1,6 @@
 import { STRATEGIES } from '../helpers/constants'
 import { formatMessage } from '../templates/utils-common'
+import { makeRoutes } from '../helpers/routes'
 
 /**
  * @this {import('@nuxt/types/config/module').ModuleThis}
@@ -22,7 +23,6 @@ export function createExtendRoutesHook (options) {
     // Load 'vue-template-compiler' module with Resolver dynamically
     // See https://github.com/nuxt-community/i18n-module/issues/297#issuecomment-491755323
     const { parseComponent } = this.nuxt.resolver.requireModule('vue-template-compiler')
-    const { makeRoutes } = require('../helpers/routes')
 
     const localizedRoutes = makeRoutes(routes, {
       ...options,
