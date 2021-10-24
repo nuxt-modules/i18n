@@ -132,7 +132,7 @@
     "jsdom": "18.0.0",
     "messageformat": "2.3.0",
     "nuxt": "2.15.8",
-    "playwright-chromium": "1.15.2",
+    "playwright-chromium": "1.16.1",
     "release-it": "14.11.6",
     "serve-static": "1.14.1",
     "typescript": "^4.4.4"
