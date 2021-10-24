@@ -8,6 +8,7 @@ import { adjustRouteDefinitionForTrailingSlash, getPageOptions } from './utils'
  *   pagesDir: string
  *   includeUprefixedFallback: boolean
  *   trailingSlash: import('@nuxt/types/config/router').NuxtOptionsRouter['trailingSlash']
+ *   parseComponent: import('vue-template-compiler')['parseComponent']
  * }} MakeRouteOptions
  *
  * @param {NuxtRouteConfig[]} baseRoutes
@@ -26,7 +27,8 @@ export function makeRoutes (baseRoutes, {
   routesNameSeparator,
   sortRoutes,
   strategy,
-  trailingSlash
+  trailingSlash,
+  parseComponent
 }) {
   /** @type {NuxtRouteConfig[]} */
   let localizedRoutes = []
@@ -48,7 +50,7 @@ export function makeRoutes (baseRoutes, {
     }
 
     const pageOptions = parsePages
-      ? extractComponentOptions(route.component)
+      ? extractComponentOptions(route.component, parseComponent)
       : getPageOptions(route, pages, allowedLocaleCodes, pagesDir, defaultLocale)
 
     // Skip route if i18n is disabled on page

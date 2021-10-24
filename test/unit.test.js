@@ -1,10 +1,11 @@
 import path from 'path'
+import { parseComponent } from 'vue-template-compiler'
 import { matchBrowserLocale, parseAcceptLanguage } from '../src/templates/utils-common'
 
 describe('parsePages', () => {
   test('parses in-component options', async () => {
     const { extractComponentOptions } = await import('../src/helpers/components')
-    const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/index.vue'))
+    const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/index.vue'), parseComponent)
     expect(options).toHaveProperty('paths')
     if (options) {
       expect(options.paths).toHaveProperty('pl')
@@ -16,7 +17,7 @@ describe('parsePages', () => {
     const { extractComponentOptions } = await import('../src/helpers/components')
 
     const spy = jest.spyOn(console, 'warn').mockImplementation(() => { })
-    const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/invalidOptions.vue'))
+    const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/invalidOptions.vue'), parseComponent)
     expect(spy.mock.calls[0][0]).toContain('Error parsing')
     spy.mockRestore()
 
