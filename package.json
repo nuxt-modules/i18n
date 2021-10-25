@@ -123,7 +123,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "codecov": "3.8.3",
-    "core-js": "3.18.3",
+    "core-js": "3.19.0",
     "eslint": "8.1.0",
     "express": "4.17.1",
     "husky": "4.3.8",
