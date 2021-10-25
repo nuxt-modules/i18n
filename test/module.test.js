@@ -2503,14 +2503,15 @@ describe('Extend Locale with additionalMessages', () => {
   })
 
   test('should merge additionalMessages with plain messages declaration', async () => {
+    const original = additionalMessages[0]
+    original.aa = {
+      'my-module': {
+        hello: 'should not be injected'
+      }
+    }
     const override = {
       i18n: {
-        additionalMessages,
-        aa: {
-          'my-module': {
-            hello: 'should not be injected'
-          }
-        }
+        additionalMessages: [original]
       }
     }
     nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
@@ -2622,7 +2623,7 @@ describe('Extend Locale with additionalMessages', () => {
     expect(window.$nuxt.$i18n.messages.en['my-module-2'].hello).toEqual('Hello module 2')
   })
 
-  test('should define additionalMessages from i18n:extend-locales hook', async () => {
+  test('should define additionalMessages from i18n:extend-messages hook', async () => {
     const override = {
       buildModules: [
         '~/modules/externalModule'

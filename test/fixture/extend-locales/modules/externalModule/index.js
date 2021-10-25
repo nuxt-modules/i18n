@@ -2,7 +2,7 @@
 export default function () {
   const { nuxt } = this
 
-  nuxt.hook('i18n:extend-locales', function (additionalMessages) {
+  nuxt.hook('i18n:extend-messages', function (additionalMessages) {
     additionalMessages.push({
       en: {
         'external-module': {

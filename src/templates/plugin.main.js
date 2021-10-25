@@ -128,7 +128,7 @@ export default async (context) => {
         await Promise.all(options.localeCodes.map(locale => loadLanguageAsync(context, locale)))
       }
     } else {
-      mergeAdditionalMessages(context, options)
+      mergeAdditionalMessages(app.i18n, options.additionalMessages, options.localeCodes)
     }
 
     app.i18n.locale = newLocale

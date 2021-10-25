@@ -12,7 +12,7 @@ export interface ResolvedOptions extends Omit<Required<Options>, 'detectBrowserL
   detectBrowserLanguage: Required<DetectBrowserLanguageOptions> | false
   localeCodes: readonly Locale[]
   normalizedLocales: readonly LocaleObject[]
-  additionalMessages?: Array<LocaleMessages>
+  additionalMessages: LocaleMessages[]
   vueI18n: I18nOptions | ((context: NuxtContext) => Promise<I18nOptions>)
   vuex: Required<VuexOptions> | false
 }
