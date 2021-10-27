@@ -5,32 +5,7 @@ position: 4
 category: Getting started
 ---
 
-You can configure **@nuxtjs/i18n** with the `i18n` property in your `nuxt.config.js` or by passing options inline with the module declaration:
-
-```js {}[nuxt.config.js]
-export default {
-  modules: [
-    '@nuxtjs/i18n',
-  ],
-  i18n: {
-    // Options
-  },
-}
-
-// or
-
-export default {
-  modules: [
-    ['@nuxtjs/i18n', {
-      // Options
-    }],
-  ],
-}
-```
-
-The former approach has the benefit of having having type-checking enabled if you have followed the [Typescript setup](/setup#typescript).
-
-## Properties
+See the [Setup](/setup) section on where to set the module options.
 
 ## `baseUrl`
 

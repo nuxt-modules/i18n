@@ -22,7 +22,7 @@ Here are the specific optimizations and features that it enables:
 To leverage the SEO benefits, you must configure the `locales` option as an array of objects, where each object has an `iso` option set to the language's ISO code:
 
 ```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
+i18n: {
   locales: [
     {
       code: 'en',
@@ -37,15 +37,15 @@ To leverage the SEO benefits, you must configure the `locales` option as an arra
       iso: 'fr-FR'
     }
   ]
-}]
+}
 ```
 
 You must also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
 
 ```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
+i18n: {
   baseUrl: 'https://my-nuxt-app.com'
-}]
+}
 ```
 
 (Note that `baseUrl` can also be set to a function. Check [`baseUrl` documentation](/options-reference#baseurl).)
@@ -128,7 +128,7 @@ export default {
   An example without selected "catchall" locale:
 
   ```js {}[nuxt.config.js]
-  ['@nuxtjs/i18n', {
+  i18n: {
     locales: [
       {
         code: 'en',
@@ -139,13 +139,13 @@ export default {
         iso: 'en-GB'
       }
     ]
-  }]
+  }
   ```
 
   Here is how you'd use `isCatchallLocale` to selected another locale:
 
   ```js {}[nuxt.config.js]
-  ['@nuxtjs/i18n', {
+  i18n: {
     locales: [
       {
         code: 'en',
@@ -157,13 +157,13 @@ export default {
         isCatchallLocale: true // This one will be used as catchall locale
       }
     ]
-  }]
+  }
   ```
 
   In case you already have an `en` locale `iso` set, it'll be used as the "catchall" without doing anything
 
   ```js {}[nuxt.config.js]
-  ['@nuxtjs/i18n', {
+  i18n: {
     locales: [
       {
         code: 'gb',
@@ -174,7 +174,7 @@ export default {
         iso: 'en' // will be used as "catchall" locale
       }
     ]
-  }]
+  }
   ```
 
 - OpenGraph Locale tag generation

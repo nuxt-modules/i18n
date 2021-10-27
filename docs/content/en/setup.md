@@ -30,14 +30,16 @@ Add `@nuxtjs/i18n` dependency to your project:
   </code-block>
 </code-group>
 
-Then, add `@nuxtjs/i18n` to the `modules` section of your `nuxt.config.js`. You can use either of the following ways to specify the module options:
+Then, add `@nuxtjs/i18n` to the `modules` section in your `nuxt.config.js`. You can use either of the following ways to specify the module options:
 
 ```js {}[nuxt.config.js]
 {
   modules: [
     '@nuxtjs/i18n',
   ],
-  i18n: {},
+  i18n: {
+    /* module options */
+  },
 }
 ```
 
@@ -53,6 +55,8 @@ or
   ],
 }
 ```
+
+The former approach has the benefit of having having type-checking enabled if you have followed the [Typescript setup](#typescript).
 
 ## Typescript
 
