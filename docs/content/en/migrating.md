@@ -1,7 +1,7 @@
 ---
 title: Migration guide
 description: Follow this guide to upgrade from one major version to the other.
-position: 14
+position: 30
 category: Guide
 ---
 
