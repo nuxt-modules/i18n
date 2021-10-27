@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 import Vue from 'vue'
-import Vuex from 'vuex'
+import { Store } from 'vuex'
 import { Location, Route } from 'vue-router'
 import { Plugin } from '@nuxt/types'
 import '../index'
@@ -49,7 +49,7 @@ vm.$i18n.setLocale(locale)
 
 // Store
 
-const store = new Vuex.Store({})
+const store = new Store({})
 
 store.$i18n.setLocale(locale)
 
