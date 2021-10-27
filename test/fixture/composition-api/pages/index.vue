@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="current-locale">locale: {{ $i18n.locale }}</div>
+    <div id="current-locale">locale: {{ locale }}</div>
     <nuxt-link
       id="unprocessed-url"
       :to="localePath(unprocessedUrl.to)"
@@ -14,14 +14,20 @@
     <div id="route-base-name">
       {{ getRouteBaseName() }}
     </div>
+    <div>Other locales:
+      <button v-for="l in $i18n.localeCodes" :key="l" @click="locale = l">{{ l }}</button>
+    </div>
   </div>
 </template>
 
 <script>
 import { defineComponent, useContext } from '@nuxtjs/composition-api'
+import { useI18n } from '../../../../composition-api'
+
 export default defineComponent({
   setup () {
-    const { app: { i18n, localePath } } = useContext()
+    const { app: { localePath } } = useContext()
+    const i18n = useI18n()
 
     const unprocessedUrl = {
       text: 'home',
@@ -33,7 +39,7 @@ export default defineComponent({
       to: localePath('index')
     }
 
-    return { unprocessedUrl, processedUrl }
+    return { unprocessedUrl, processedUrl, locale: i18n.locale }
   }
 })
 </script>
