@@ -2483,144 +2483,8 @@ describe('Store', () => {
 describe('Extend Locale with additionalMessages', () => {
   /** @type {Nuxt} */
   let nuxt
-  const additionalMessages = [
-    {
-      fr: {
-        'my-module': {
-          hello: 'Bonjour'
-        }
-      },
-      en: {
-        'my-module': {
-          hello: 'Hello'
-        }
-      }
-    }
-  ]
-
   afterEach(async () => {
     await nuxt.close()
-  })
-
-  test('should merge additionalMessages with plain messages declaration', async () => {
-    const original = additionalMessages[0]
-    original.aa = {
-      'my-module': {
-        hello: 'should not be injected'
-      }
-    }
-    const override = {
-      i18n: {
-        additionalMessages: [original]
-      }
-    }
-    nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
-    const window = await nuxt.renderAndGetWindow(url('/'))
-    const dom = window.document
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: Homepage')
-    expect(dom.querySelector('#additional-message')?.textContent).toEqual('Hello')
-    expect(window.$nuxt.$i18n.messages.aa).not.toBeDefined()
-  })
-
-  test('should merge additionalMessages with langDir option', async () => {
-    const override = {
-      i18n: {
-        langDir: 'lang/',
-        defaultLocale: 'en',
-        additionalMessages,
-        vueI18n: {
-          messages: null,
-          fallbackLocale: 'en'
-        }
-      }
-    }
-    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
-    localConfig.i18n.locales = [
-      {
-        code: 'en',
-        iso: 'en',
-        name: 'English',
-        file: 'en.js'
-      },
-      {
-        code: 'fr',
-        iso: 'fr',
-        name: 'Français',
-        file: 'fr.js'
-      }
-    ]
-    nuxt = (await setup(localConfig)).nuxt
-    const window = await nuxt.renderAndGetWindow(url('/'))
-    const dom = window.document
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: langDir Homepage')
-    expect(dom.querySelector('#additional-message')?.textContent).toEqual('Hello')
-    expect(window.$nuxt.$i18n.messages.aa).not.toBeDefined()
-  })
-
-  test('should merge optimized additionalMessages with lazy option', async () => {
-    const override = {
-      i18n: {
-        langDir: 'lang/',
-        lazy: true,
-        defaultLocale: 'en',
-        additionalMessages,
-        vueI18n: {
-          messages: null,
-          fallbackLocale: 'en'
-        }
-      }
-    }
-    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
-    localConfig.i18n.locales = [
-      {
-        code: 'en',
-        iso: 'en',
-        name: 'English',
-        file: 'en.js'
-      },
-      {
-        code: 'fr',
-        iso: 'fr',
-        name: 'Français',
-        file: 'fr.js'
-      }
-    ]
-    nuxt = (await setup(localConfig)).nuxt
-    const window = await nuxt.renderAndGetWindow(url('/'))
-    const dom = window.document
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: langDir Homepage')
-    expect(dom.querySelector('#additional-message')?.textContent).toEqual('Hello')
-    expect(window.$nuxt.$i18n.messages.aa).not.toBeDefined()
-    expect(window.$nuxt.$i18n.messages.fr).not.toBeDefined()
-  })
-
-  test('should merge multiple additionalMessages', async () => {
-    const override = {
-      i18n: {
-        additionalMessages: [
-          ...additionalMessages,
-          {
-            fr: {
-              'my-module-2': {
-                hello: 'Bonjour module 2'
-              }
-            },
-            en: {
-              'my-module-2': {
-                hello: 'Hello module 2'
-              }
-            }
-          }
-        ]
-      }
-    }
-    nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
-    const window = await nuxt.renderAndGetWindow(url('/'))
-    const dom = window.document
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: Homepage')
-    expect(dom.querySelector('#additional-message')?.textContent).toEqual('Hello')
-    expect(window.$nuxt.$i18n.messages.en['my-module'].hello).toEqual('Hello')
-    expect(window.$nuxt.$i18n.messages.en['my-module-2'].hello).toEqual('Hello module 2')
   })
 
   test('should define additionalMessages from i18n:extend-messages hook', async () => {
@@ -2635,28 +2499,51 @@ describe('Extend Locale with additionalMessages', () => {
     expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
   })
 
-  test('Module translations should be overridable', async () => {
+  test('should merge multiple additionalMessages', async () => {
+    const override = {
+      buildModules: [
+        '~/modules/externalModule'
+      ]
+    }
+    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
+  })
+
+  test('should define additionalMessages from i18n:extend-messages hook', async () => {
+    const override = {
+      buildModules: [
+        '~/modules/externalModule',
+        '~/modules/externalModuleBis'
+      ]
+    }
+    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
+    expect(window.$nuxt.$i18n.messages.en['external-module-bis'].hello).toEqual('Hello external module bis')
+  })
+
+  test('should override translations from additionalMessages', async () => {
     const override = {
       i18n: {
-        additionalMessages: [
-          {
-            en: {
-              home: 'from module'
-            }
-          }
-        ],
         vueI18n: {
           messages: {
             en: {
-              home: 'from project'
+              'external-module': {
+                hello: 'Hello from project'
+              }
             }
           }
         }
-      }
+      },
+      buildModules: [
+        '~/modules/externalModule'
+      ]
     }
     nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
     const window = await nuxt.renderAndGetWindow(url('/'))
-    const dom = window.document
-    expect(dom.querySelector('#current-page')?.textContent).toBe('page: from project')
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello from project')
   })
 })
