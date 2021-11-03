@@ -1,3 +1,15 @@
+## [7.1.0](https://github.com/nuxt-community/i18n-module/compare/v7.0.3...v7.1.0) (2021-10-19)
+
+
+### Features
+
+* add support for query params in canonical url ([#1274](https://github.com/nuxt-community/i18n-module/issues/1274)) ([d5dea9c](https://github.com/nuxt-community/i18n-module/commit/d5dea9c6a047e5e25a13904c3a2cb8ffa4fdf089))
+
+
+### Bug Fixes
+
+* adjust strange redirection logic for prefix_and_default ([#1304](https://github.com/nuxt-community/i18n-module/issues/1304)) ([578acd8](https://github.com/nuxt-community/i18n-module/commit/578acd8ce506991aa02f8b7b1b81e364df1d7063))
+
 ### [7.0.3](https://github.com/nuxt-community/i18n-module/compare/v7.0.2...v7.0.3) (2021-08-31)
 
 

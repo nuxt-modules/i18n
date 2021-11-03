@@ -9,7 +9,7 @@
 <script>
 export default {
   head () {
-    return this.$nuxtI18nHead({ addSeoAttributes: true })
+    return this.$nuxtI18nHead({ addSeoAttributes: { canonicalQueries: ['foo'] } })
   }
 }
 </script>

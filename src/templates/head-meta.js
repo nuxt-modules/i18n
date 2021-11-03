@@ -4,6 +4,7 @@ import { formatMessage } from './utils-common'
 
 /**
  * @this {import('vue/types/vue').Vue}
+ * @param {import('../../types/vue').NuxtI18nHeadOptions} options
  * @return {import('vue-meta').MetaInfo}
  */
 export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = false } = {}) {
@@ -47,7 +48,7 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
     const locales = /** @type {import('../../types').LocaleObject[]} */(this.$i18n.locales)
 
     addHreflangLinks.bind(this)(locales, this.$i18n.__baseUrl, metaObject.link)
-    addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link)
+    addCanonicalLinks.bind(this)(this.$i18n.__baseUrl, metaObject.link, addSeoAttributes)
     addCurrentOgLocale.bind(this)(currentLocale, currentLocaleIso, metaObject.meta)
     addAlternateOgLocales.bind(this)(locales, currentLocaleIso, metaObject.meta)
   }
@@ -117,20 +118,45 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
    *
    * @param {string} baseUrl
    * @param {import('../../types/vue').NuxtI18nMeta['link']} link
+   * @param {NonNullable<import('../../types/vue').NuxtI18nHeadOptions['addSeoAttributes']>} seoAttributesOptions
    */
-  function addCanonicalLinks (baseUrl, link) {
+  function addCanonicalLinks (baseUrl, link, seoAttributesOptions) {
     const currentRoute = this.localeRoute({
       ...this.$route,
       name: this.getRouteBaseName()
     })
 
-    const canonicalPath = currentRoute ? currentRoute.path : null
+    if (currentRoute) {
+      let href = toAbsoluteUrl(currentRoute.path, baseUrl)
 
-    if (canonicalPath) {
+      const canonicalQueries = (typeof (seoAttributesOptions) !== 'boolean' && seoAttributesOptions.canonicalQueries) || []
+
+      if (canonicalQueries.length) {
+        const currentRouteQueryParams = currentRoute.query
+        const params = new URLSearchParams()
+        for (const queryParamName of canonicalQueries) {
+          if (queryParamName in currentRouteQueryParams) {
+            const queryParamValue = currentRouteQueryParams[queryParamName]
+
+            if (Array.isArray(queryParamValue)) {
+              queryParamValue.forEach(v => params.append(queryParamName, v || ''))
+            } else {
+              params.append(queryParamName, queryParamValue || '')
+            }
+          }
+        }
+
+        const queryString = params.toString()
+
+        if (queryString) {
+          href = `${href}?${queryString}`
+        }
+      }
+
       link.push({
         hid: 'i18n-can',
         rel: 'canonical',
-        href: toAbsoluteUrl(canonicalPath, baseUrl)
+        href
       })
     }
   }

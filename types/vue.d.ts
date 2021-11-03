@@ -23,7 +23,15 @@ interface NuxtI18nHeadOptions {
    * Adds various SEO attributes.
    * @default false
    */
-  addSeoAttributes?: boolean
+  addSeoAttributes?: boolean | SeoAttributesOptions
+}
+
+interface SeoAttributesOptions {
+  /**
+   * An array of strings corresponding to query params you would like to include in your canonical URL.
+   * @default []
+   */
+  canonicalQueries?: string[]
 }
 
 type NuxtI18nMeta = Required<Pick<MetaInfo, 'htmlAttrs' | 'link' | 'meta'>>

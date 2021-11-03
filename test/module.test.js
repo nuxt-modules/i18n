@@ -1184,6 +1184,38 @@ describe('prefix_and_default strategy', () => {
     expect(links.length).toBe(1)
     expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
   })
+
+  test('canonical SEO link includes query params in canonicalQueries', async () => {
+    const html = await get('/?foo="bar"')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo=%22bar%22')
+  })
+
+  test('canonical SEO link includes query params without values in canonicalQueries', async () => {
+    const html = await get('/?foo')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo=')
+  })
+
+  test('canonical SEO link does not include query params not in canonicalQueries', async () => {
+    const html = await get('/?bar="baz"')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
+  })
+
+  test('canonical SEO link includes query params in canonicalQueries on page level', async () => {
+    const html = await get('/about-us?foo=baz&page=1')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/about-us?page=1')
+  })
 })
 
 describe('no_prefix strategy', () => {

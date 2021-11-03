@@ -14,7 +14,7 @@ You might want to use a different domain name for each language your app support
 </alert>
 
 ```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
+i18n: {
   locales: [
     {
       code: 'en',
@@ -40,7 +40,7 @@ You might want to use a different domain name for each language your app support
   differentDomains: true
   // Or enable the option in production only
   // differentDomains: (process.env.NODE_ENV === 'production')
-}]
+}
 ```
 
 When using different domain names, your lang switcher should use regular `<a>` tags:
