@@ -2511,7 +2511,7 @@ describe('Extend Locale with additionalMessages', () => {
     expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
   })
 
-  test('should define additionalMessages from i18n:extend-messages hook', async () => {
+  test('should merge additionalMessages from different modules through i18n:extend-messages hook', async () => {
     const override = {
       buildModules: [
         '~/modules/externalModule',
