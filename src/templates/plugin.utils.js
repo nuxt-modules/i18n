@@ -51,6 +51,7 @@ export async function loadLanguageAsync (context, locale) {
         }
         if (messages) {
           i18n.setLocaleMessage(locale, messages)
+          mergeAdditionalMessages(i18n, options.additionalMessages, options.localeCodes, [locale])
           i18n.loadedLanguages.push(locale)
         }
         /* <% } %> */
@@ -191,6 +192,26 @@ export function validateRouteParams (routeParams, localeCodes) {
     } else if (!isObject(value)) {
     // eslint-disable-next-line no-console
       console.warn(formatMessage(`Trying to set route params for locale ${key} with a non-object value`))
+    }
+  }
+}
+
+/**
+ * Merge external additional messages
+ *
+ * @param {import('../../types').NuxtI18nInstance} i18n
+ * @param {ResolvedOptions['additionalMessages']} additionalMessages
+ * @param {ResolvedOptions['localeCodes']} localeCodes
+ * @param {string[] | null} [onlyLocales=null]
+ * @return {void}
+ */
+export function mergeAdditionalMessages (i18n, additionalMessages, localeCodes, onlyLocales) {
+  const locales = onlyLocales || localeCodes
+  for (const additionalEntry of additionalMessages) {
+    for (const locale of locales) {
+      const existingMessages = i18n.getLocaleMessage(locale)
+      i18n.mergeLocaleMessage(locale, additionalEntry[locale])
+      i18n.mergeLocaleMessage(locale, existingMessages)
     }
   }
 }

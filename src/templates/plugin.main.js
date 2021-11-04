@@ -11,7 +11,12 @@ import {
   parseAcceptLanguage,
   setLocaleCookie
 } from './utils-common'
-import { loadLanguageAsync, resolveBaseUrl, registerStore } from './plugin.utils'
+import {
+  loadLanguageAsync,
+  resolveBaseUrl,
+  registerStore,
+  mergeAdditionalMessages
+} from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
 // @ts-ignore
@@ -127,6 +132,8 @@ export default async (context) => {
         // Load all locales.
         await Promise.all(options.localeCodes.map(locale => loadLanguageAsync(context, locale)))
       }
+    } else {
+      mergeAdditionalMessages(app.i18n, options.additionalMessages, options.localeCodes)
     }
 
     app.i18n.locale = newLocale
