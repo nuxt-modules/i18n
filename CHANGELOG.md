@@ -1,3 +1,16 @@
+## [7.2.0](https://github.com/nuxt-community/i18n-module/compare/v7.1.0...v7.2.0) (2021-11-04)
+
+
+### Features
+
+* expose hook for extending messages ([#1319](https://github.com/nuxt-community/i18n-module/issues/1319)) ([696bd12](https://github.com/nuxt-community/i18n-module/commit/696bd1260d731feade80eaa0ad8ff0febe53f3a7))
+
+
+### Bug Fixes
+
+* **docs:** refactor and separate some pages related to routing ([89eb12f](https://github.com/nuxt-community/i18n-module/commit/89eb12f54dd44088d0718c30756774c24fcb25d9))
+* load vue-template-compiler with nuxt.resolver.requireModule ([#1327](https://github.com/nuxt-community/i18n-module/issues/1327)) ([c5a3ca8](https://github.com/nuxt-community/i18n-module/commit/c5a3ca861e36ff9602d34c20321667676025af8b))
+
 ## [7.1.0](https://github.com/nuxt-community/i18n-module/compare/v7.0.3...v7.1.0) (2021-10-19)
 
 
