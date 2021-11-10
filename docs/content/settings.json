@@ -5,7 +5,7 @@
     "light": "/logo-light.svg",
     "dark": "/logo-dark.svg"
   },
-  "defaultBranch": "master",
+  "defaultBranch": "main",
   "github": "nuxt-community/i18n-module",
   "twitter": "@nuxt_js"
 }
