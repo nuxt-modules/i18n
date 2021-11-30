@@ -2411,18 +2411,18 @@
     webpack-node-externals "^3.0.0"
     webpackbar "^4.0.0"
 
-"@nuxtjs/composition-api@0.30.0":
-  version "0.30.0"
-  resolved "https://registry.yarnpkg.com/@nuxtjs/composition-api/-/composition-api-0.30.0.tgz#ea123798b8a9b2e74f80e22ccb38a3879b931e38"
-  integrity sha512-IEuzCY5oUmXOTYkMNwdYQMagAxtlJRzQSDJ1o7LYt5KulOawfOm+wyyNfQxQMIPz/p5Df1UQ14ORDdQ+ZjWXIw==
+"@nuxtjs/composition-api@0.31.0":
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/composition-api/-/composition-api-0.31.0.tgz#4baa645ee45e306a49b72de6257fdb9438eb2b07"
+  integrity sha512-xplH/EJ17W/EjNP7M11URTOrQcjMYqQn1wXUkMOdMiSLKM58VWuCyt0uT9jNCHMUspeQ+SPzr9dxQkNBGvwfiA==
   dependencies:
-    "@vue/composition-api" "^1.3.3"
+    "@vue/composition-api" "^1.4.1"
     defu "^5.0.0"
     estree-walker "^2.0.2"
     fs-extra "^9.1.0"
     magic-string "^0.25.7"
     ufo "^0.7.9"
-    unplugin-vue2-script-setup "^0.6.13"
+    unplugin-vue2-script-setup "^0.7.3"
     upath "^2.0.1"
 
 "@nuxtjs/eslint-config-typescript@7.0.2":
@@ -3344,7 +3344,7 @@
     "@vue/babel-plugin-transform-vue-jsx" "^1.2.1"
     camelcase "^5.0.0"
 
-"@vue/compiler-core@3.2.23":
+"@vue/compiler-core@3.2.23", "@vue/compiler-core@^3.2.23":
   version "3.2.23"
   resolved "https://registry.yarnpkg.com/@vue/compiler-core/-/compiler-core-3.2.23.tgz#ef1769fbf313306b47c858735a9300aa2a20f104"
   integrity sha512-4ZhiI/orx+7EJ1B+0zjgvXMV2uRN+XBfG06UN2sJfND9rH5gtEQT3QmO4erum1o6Irl7y754W8/KSaDJh4EUQg==
@@ -3370,14 +3370,14 @@
   optionalDependencies:
     prettier "^1.18.2"
 
-"@vue/composition-api@^1.3.3":
+"@vue/composition-api@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.4.1.tgz#2b4a6bfabc5e8277c4b890e0c9ca55d1252ca5b8"
   integrity sha512-ZTat9ru/rwecveRnFzlO2mduOBpGfnBdXn+WtBcFLV9UsL/D+6nX47RWuLiVdNxNDX0qphGZRC+JDjwt+YTnRA==
   dependencies:
     tslib "^2.3.1"
 
-"@vue/ref-transform@^3.2.21":
+"@vue/ref-transform@^3.2.23":
   version "3.2.23"
   resolved "https://registry.yarnpkg.com/@vue/ref-transform/-/ref-transform-3.2.23.tgz#5c8b0c0638db27094ddd689020c60cf1aa33d873"
   integrity sha512-gW0GD2PSAs/th7mC7tPB/UwpIQxclbApVtsDtscDmOJXb2+cdu60ny+SuHNgfrlUT/JqWKQHq7jFKO4woxLNaA==
@@ -3388,7 +3388,7 @@
     estree-walker "^2.0.2"
     magic-string "^0.25.7"
 
-"@vue/shared@3.2.23", "@vue/shared@^3.2.21":
+"@vue/shared@3.2.23", "@vue/shared@^3.2.23":
   version "3.2.23"
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.23.tgz#e885a2ba099d40b69d5461157f3ade31e46a09a9"
   integrity sha512-U+/Jefa0QfXUF2qVy9Dqlrb6HKJSr9/wJcM66wXmWcTOoqg7hOWzF4qruDle51pyF4x3wMn6TSH54UdjKjCKMA==
@@ -13737,10 +13737,10 @@ unpipe@1.0.0, unpipe@~1.0.0:
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
   integrity sha1-sr9O6FFKrmFltIF4KdIbLvSZBOw=
 
-unplugin-vue2-script-setup@^0.6.13:
-  version "0.6.17"
-  resolved "https://registry.yarnpkg.com/unplugin-vue2-script-setup/-/unplugin-vue2-script-setup-0.6.17.tgz#0c4eb0341d1192d219a6d9be51762586d6773d38"
-  integrity sha512-8B5UyVKH1ZatMQ8ENDueOMSzPYA82JbCMZkiwTxS1AFilzN6mKiwOFQRGNuSqoeMGpNqHpmDEw/mUSKWLzF1EQ==
+unplugin-vue2-script-setup@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/unplugin-vue2-script-setup/-/unplugin-vue2-script-setup-0.7.3.tgz#edf63f7f183d8f50d2991d12f120f78faeb78a5a"
+  integrity sha512-3C32JkCS7BsNsgUkVnCEIJynHy+N/xwqiaUiMkeTm3Rk+HfHMhEPQ5Gysg3tejWY7KJyk8CohUKswTChurI1ng==
   dependencies:
     "@antfu/utils" "^0.3.0"
     "@babel/core" "^7.16.0"
@@ -13749,8 +13749,9 @@ unplugin-vue2-script-setup@^0.6.13:
     "@babel/traverse" "^7.16.3"
     "@babel/types" "^7.16.0"
     "@rollup/pluginutils" "^4.1.1"
-    "@vue/ref-transform" "^3.2.21"
-    "@vue/shared" "^3.2.21"
+    "@vue/compiler-core" "^3.2.23"
+    "@vue/ref-transform" "^3.2.23"
+    "@vue/shared" "^3.2.23"
     defu "^5.0.0"
     htmlparser2 "5.0.1"
     magic-string "^0.25.7"
