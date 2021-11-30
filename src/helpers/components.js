@@ -54,7 +54,8 @@ export function extractComponentOptions (component, parseComponent) {
         'dynamicImport',
         'estree',
         'exportDefaultFrom',
-        'typescript'
+        'typescript',
+        'jsx'
       ]
     })
 
