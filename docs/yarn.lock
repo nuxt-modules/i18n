@@ -1241,14 +1241,14 @@
     std-env "^2.3.0"
     ufo "^0.7.4"
 
-"@nuxt/content-theme-docs@0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/content-theme-docs/-/content-theme-docs-0.11.0.tgz#15ed9f8d87309ec7ad0ba10336d99356a0d9fde1"
-  integrity sha512-1zMumM/rZZgdowTikcR4ud4F4zdGtEX5PDLeX1DV6KFKLzurHtOPI5L5FqJIxB2ogVbZiQgB9hVO98bSKyICIQ==
+"@nuxt/content-theme-docs@0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@nuxt/content-theme-docs/-/content-theme-docs-0.11.1.tgz#99b2e2c9739c379842f83267441c616b2d33dc2e"
+  integrity sha512-JQNeWqa5mNtVtnf/n3RGsKr9EoZ6Nw8zcCn232jMNmVqrkbNGAB6dOjCAh26NGlxNgLwcZ0DxsPSXbTTCTeEXw==
   dependencies:
     "@docsearch/css" "^1.0.0-alpha.28"
     "@docsearch/js" "^1.0.0-alpha.28"
-    "@nuxt/content" "^1.15.0"
+    "@nuxt/content" "^1.15.1"
     "@nuxt/types" "^2.15.2"
     "@nuxtjs/color-mode" "^2.0.3"
     "@nuxtjs/google-fonts" "1.2.0"
@@ -1265,10 +1265,10 @@
     theme-colors "^0.0.5"
     vue-scrollactive "^0.9.3"
 
-"@nuxt/content@^1.15.0":
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@nuxt/content/-/content-1.15.0.tgz#5e15d5d0012e95be60e1904f25cbe909b29404f6"
-  integrity sha512-F3znlZUOSKPse6G+qR6eGEIU3vzfXzfc5WnWwA94kfM5+dz7IkP6Hwyj8FTUyW7HfmvQIf6Nc2sNm5obKgNgtA==
+"@nuxt/content@^1.15.1":
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/@nuxt/content/-/content-1.15.1.tgz#bd2c7ff9e9523b6a6a3f4edaec78495acc72a41e"
+  integrity sha512-nCTKwNcs59KgwwGQkSW8Z/otoiYX+OKDBjdOLn7tty3WdEfPQYcEkTX6WKP5IVYI976FihZExppRiezkm2N0mQ==
   dependencies:
     "@lokidb/full-text-search" "^2.1.0"
     "@lokidb/loki" "^2.1.0"
