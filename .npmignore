@@ -1,0 +1,9 @@
+*.log
+*.swp
+coverage
+test
+tests
+temp
+docs
+types
+scripts

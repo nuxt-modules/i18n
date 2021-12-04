@@ -1,0 +1,55 @@
+{
+  "name": "@nuxt/i18n",
+  "description": "i18n for Nuxt",
+  "version": "8.0.0-alpha.0",
+  "homepage": "https://i18n.nuxtjs.org",
+  "bugs": {
+    "url": "https://github.com/nuxt-community/i18n-module/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuxt-community/i18n-module.git",
+    "directory": "packages/nuxt-i18n"
+  },
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Paul Gascou-Vaillancourt (@paulgv)"
+    },
+    {
+      "name": "Rafal Chlodnicki (@rchl)"
+    },
+    {
+      "name": "Kazuya Kawaguchi (@kazupon)"
+    }
+  ],
+  "type": "module",
+  "main": "./module.cjs",
+  "types": "./dist/module.d.ts",
+  "files": [
+    "module.cjs",
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild"
+  },
+  "dependencies": {
+    "@nuxt/kit": "npm:@nuxt/kit-edge@latest"
+  },
+  "devDependencies": {
+    "@nuxt/schema": "npm:@nuxt/schema-edge@latest",
+    "@nuxt/types": "^2.15.8",
+    "@nuxtjs/i18n": "^7.2.0",
+    "nuxt3": "latest",
+    "unbuild": "^0.5.13"
+  },
+  "engines": {
+    "node": "^14.16.0 || ^16.11.0 || ^17.0.0"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

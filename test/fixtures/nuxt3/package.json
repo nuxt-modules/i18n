@@ -1,0 +1,16 @@
+{
+  "name": "nuxt3-test",
+  "private": true,
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "start": "node .output/server/index.mjs"
+  },
+  "devDependencies": {
+    "@nuxt/i18n": "latest",
+    "nuxt3": "latest"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
+}

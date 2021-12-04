@@ -1,0 +1,22 @@
+{
+  "name": "nuxt-bridge-test",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "core-js": "^3.15.1",
+    "nuxt-edge": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27249044.7d918e1",
+    "@nuxt/i18n": "latest",
+    "@nuxt/types": "^2.15.7",
+    "@nuxt/typescript-build": "^2.1.0"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
+}

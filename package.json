@@ -1,0 +1,87 @@
+{
+  "name": "@nuxt/i18n-monorepo",
+  "description": "The monorepo for @nuxtjs/i18n",
+  "license": "MIT",
+  "private": true,
+  "contributors": [
+    {
+      "name": "Paul Gascou-Vaillancourt (@paulgv)"
+    },
+    {
+      "name": "Rafal Chlodnicki (@rchl)"
+    },
+    {
+      "name": "Kazuya Kawaguchi (@kazupon)"
+    }
+  ],
+  "repository": "https://github.com/nuxt-community/i18n-module",
+  "homepage": "https://i18n.nuxtjs.org",
+  "bugs": {
+    "url": "https://github.com/nuxt-community/i18n-module/issues"
+  },
+  "workspaces": [
+    "packages/*",
+    "playground/*",
+    "test/fixtures/*"
+  ],
+  "scripts": {
+    "fix": "run-p lint:fix format:fix",
+    "format": "prettier --config .prettierrc --ignore-path .prettierignore '**/*.{js,json,html}'",
+    "format:fix": "yarn format --write",
+    "lint": "eslint --ext .js,.ts,.vue,.json .",
+    "lint:fix": "yarn lint --fix",
+    "test": "run-s test:unit",
+    "test:unit": "mocha -r jiti/register -r ./test/hooks/build.ts -r ./test/hooks/browser.ts test/*.test.ts"
+  },
+  "packageManager": "yarn@3.1.0",
+  "resolutions": {
+    "@nuxt/i18n": "workspace:./packages/nuxt-i18n"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.22",
+    "@types/debug": "^4.1.7",
+    "@types/mocha": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "chai": "^4.3.4",
+    "debug": "^4.3.3",
+    "eslint": "^8.4.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jiti": "^1.12.9",
+    "lint-staged": "^12.1.2",
+    "listhen": "^0.2.5",
+    "mlly": "^0.3.15",
+    "mocha": "^9.1.3",
+    "npm-run-all": "^4.1.5",
+    "ohmyfetch": "^0.4.8",
+    "pathe": "^0.2.0",
+    "playwright-chromium": "^1.17.1",
+    "prettier": "^2.5.0",
+    "typescript": "^4.5.2",
+    "yorkie": "^2.0.0"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ],
+    "*.{js,vue}": [
+      "prettier --write",
+      "eslint --fix --ext .js,.vue"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write",
+      "eslint --fix --ext .ts"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": "^14.16.0 || ^16.11.0 || ^17.0.0"
+  }
+}
