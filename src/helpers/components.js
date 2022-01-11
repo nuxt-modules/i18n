@@ -1,9 +1,6 @@
 import { readFileSync } from 'fs'
 import { parse } from '@babel/parser'
 import traverse from '@babel/traverse'
-// Must not be an explicit dependency to avoid version mismatch issue.
-// See https://github.com/nuxt-community/i18n-module/issues/297
-import { parseComponent } from 'vue-template-compiler'
 import { formatMessage } from '../templates/utils-common'
 import { COMPONENT_OPTIONS_KEY } from './constants'
 
@@ -13,9 +10,10 @@ import { COMPONENT_OPTIONS_KEY } from './constants'
  * @typedef {Required<Pick<import('../../types/vue').NuxtI18nComponentOptions, 'locales' | 'paths'>>} ComputedPageOptions
  *
  * @param {import('@nuxt/types/config/router').NuxtRouteConfig['component']} component
+ * @param {import('vue-template-compiler')['parseComponent']} parseComponent
  * @return {ComputedPageOptions | false}
  */
-export function extractComponentOptions (component) {
+export function extractComponentOptions (component, parseComponent) {
   if (typeof (component) !== 'string') {
     return false
   }
@@ -56,7 +54,8 @@ export function extractComponentOptions (component) {
         'dynamicImport',
         'estree',
         'exportDefaultFrom',
-        'typescript'
+        'typescript',
+        'jsx'
       ]
     })
 

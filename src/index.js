@@ -8,7 +8,7 @@ import { buildHook, createExtendRoutesHook } from './core/hooks'
 import { formatMessage } from './templates/utils-common'
 
 /** @type {import('@nuxt/types').Module<import('../types').Options>} */
-export default function (moduleOptions) {
+export default async function (moduleOptions) {
   /** @type {import('../types/internal').ResolvedOptions} */
   const options = merge({}, DEFAULT_OPTIONS, moduleOptions, this.options.i18n)
 
@@ -87,7 +87,7 @@ export default function (moduleOptions) {
     this.extendRoutes(createExtendRoutesHook.call(this, options))
   }
 
-  this.nuxt.hook('build:before', () => buildHook.call(this, options))
+  await this.nuxt.hook('build:before', () => buildHook.call(this, options))
 
   this.options.alias['~i18n-klona'] = require.resolve('klona/full').replace(/\.js$/, '.mjs')
   this.options.alias['~i18n-ufo'] = require.resolve('ufo').replace(/\.js$/, '.mjs')

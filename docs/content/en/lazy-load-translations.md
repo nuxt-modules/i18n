@@ -29,7 +29,7 @@ nuxt-project/
 Configuration example:
 
 ```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
+i18n: {
   locales: [
     {
       code: 'en',
@@ -47,7 +47,7 @@ Configuration example:
   lazy: true,
   langDir: 'lang/',
   defaultLocale: 'en'
-}]
+}
 ```
 
 Language file example:

@@ -1091,6 +1091,17 @@ describe('prefix_and_default strategy', () => {
     await expect(get('/fr')).resolves.toContain('page: Accueil')
   })
 
+  test('prefers unprefixed route for default locale', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/en/', requestOptions)
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/')
+  })
+
   test('localeRoute returns localized route (by route name)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default', fullPath: '/' })
@@ -1172,6 +1183,38 @@ describe('prefix_and_default strategy', () => {
     const links = dom.querySelectorAll('head link[rel="canonical"]')
     expect(links.length).toBe(1)
     expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
+  })
+
+  test('canonical SEO link includes query params in canonicalQueries', async () => {
+    const html = await get('/?foo="bar"')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo=%22bar%22')
+  })
+
+  test('canonical SEO link includes query params without values in canonicalQueries', async () => {
+    const html = await get('/?foo')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/?foo=')
+  })
+
+  test('canonical SEO link does not include query params not in canonicalQueries', async () => {
+    const html = await get('/?bar="baz"')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/')
+  })
+
+  test('canonical SEO link includes query params in canonicalQueries on page level', async () => {
+    const html = await get('/about-us?foo=baz&page=1')
+    const dom = getDom(html)
+    const links = dom.querySelectorAll('head link[rel="canonical"]')
+    expect(links.length).toBe(1)
+    expect(links[0].getAttribute('href')).toBe('nuxt-app.localhost/about-us?page=1')
   })
 })
 
@@ -2466,5 +2509,73 @@ describe('Store', () => {
     const dom = getDom(html)
 
     expect(dom.querySelector('#store-path-fr')?.textContent).toBe('/fr/a-propos')
+  })
+})
+
+describe('Extend Locale with additionalMessages', () => {
+  /** @type {Nuxt} */
+  let nuxt
+  afterEach(async () => {
+    await nuxt.close()
+  })
+
+  test('should define additionalMessages from i18n:extend-messages hook', async () => {
+    const override = {
+      buildModules: [
+        '~/modules/externalModule'
+      ]
+    }
+    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
+  })
+
+  test('should merge multiple additionalMessages', async () => {
+    const override = {
+      buildModules: [
+        '~/modules/externalModule'
+      ]
+    }
+    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
+  })
+
+  test('should merge additionalMessages from different modules through i18n:extend-messages hook', async () => {
+    const override = {
+      buildModules: [
+        '~/modules/externalModule',
+        '~/modules/externalModuleBis'
+      ]
+    }
+    const localConfig = loadConfig(__dirname, 'extend-locales', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello external module')
+    expect(window.$nuxt.$i18n.messages.en['external-module-bis'].hello).toEqual('Hello external module bis')
+  })
+
+  test('should override translations from additionalMessages', async () => {
+    const override = {
+      i18n: {
+        vueI18n: {
+          messages: {
+            en: {
+              'external-module': {
+                hello: 'Hello from project'
+              }
+            }
+          }
+        }
+      },
+      buildModules: [
+        '~/modules/externalModule'
+      ]
+    }
+    nuxt = (await setup(loadConfig(__dirname, 'extend-locales', override, { merge: true }))).nuxt
+    const window = await nuxt.renderAndGetWindow(url('/'))
+    expect(window.$nuxt.$i18n.messages.en['external-module'].hello).toEqual('Hello from project')
   })
 })

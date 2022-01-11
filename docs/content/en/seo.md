@@ -22,7 +22,7 @@ Here are the specific optimizations and features that it enables:
 To leverage the SEO benefits, you must configure the `locales` option as an array of objects, where each object has an `iso` option set to the language's ISO code:
 
 ```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
+i18n: {
   locales: [
     {
       code: 'en',
@@ -37,15 +37,15 @@ To leverage the SEO benefits, you must configure the `locales` option as an arra
       iso: 'fr-FR'
     }
   ]
-}]
+}
 ```
 
 You must also set the `baseUrl` option to your production domain in order to make alternate URLs fully-qualified:
 
 ```js {}[nuxt.config.js]
-['@nuxtjs/i18n', {
+i18n: {
   baseUrl: 'https://my-nuxt-app.com'
-}]
+}
 ```
 
 (Note that `baseUrl` can also be set to a function. Check [`baseUrl` documentation](/options-reference#baseurl).)
@@ -128,7 +128,7 @@ export default {
   An example without selected "catchall" locale:
 
   ```js {}[nuxt.config.js]
-  ['@nuxtjs/i18n', {
+  i18n: {
     locales: [
       {
         code: 'en',
@@ -139,13 +139,13 @@ export default {
         iso: 'en-GB'
       }
     ]
-  }]
+  }
   ```
 
   Here is how you'd use `isCatchallLocale` to selected another locale:
 
   ```js {}[nuxt.config.js]
-  ['@nuxtjs/i18n', {
+  i18n: {
     locales: [
       {
         code: 'en',
@@ -157,13 +157,13 @@ export default {
         isCatchallLocale: true // This one will be used as catchall locale
       }
     ]
-  }]
+  }
   ```
 
   In case you already have an `en` locale `iso` set, it'll be used as the "catchall" without doing anything
 
   ```js {}[nuxt.config.js]
-  ['@nuxtjs/i18n', {
+  i18n: {
     locales: [
       {
         code: 'gb',
@@ -174,7 +174,7 @@ export default {
         iso: 'en' // will be used as "catchall" locale
       }
     ]
-  }]
+  }
   ```
 
 - OpenGraph Locale tag generation
@@ -185,6 +185,17 @@ export default {
 
   Generates `rel="canonical"` link on all pages to specify the "main" version of the page that should be indexed by search engines. This is beneficial in various situations:
   - When using the `prefix_and_default` strategy there are technically two sets of pages generated for the default locale -- one prefixed and one unprefixed. The canonical link will be set to the unprefixed version of the page to avoid duplicate indexation.
-  - When the page contains the query parameters, the canonical link will **not include** query params. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. Note that there is currently no way to override that in case that including a specific query param would be desired.
+  - When the page contains query parameters, the canonical link will **not include** the query params by default. This is typically the right thing to do as various query params can be inserted by trackers and should not be part of the canonical link. This can be overriden by using the `canonicalQueries` option. For example:
+
+    ```js
+    export default {
+      head() {
+        return this.$nuxtI18nHead({
+          addSeoAttributes: {
+            canonicalQueries: ['foo']
+          }
+        })
+      }
+    ```
 
   [More on canonical](https://support.google.com/webmasters/answer/182192#dup-content)

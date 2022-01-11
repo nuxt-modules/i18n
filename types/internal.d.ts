@@ -1,7 +1,7 @@
 import { IncomingMessage } from 'http'
 import { Context as NuxtContext } from '@nuxt/types'
 import { Route } from 'vue-router'
-import { LocaleMessageObject, I18nOptions, Locale } from 'vue-i18n'
+import { LocaleMessageObject, I18nOptions, Locale, LocaleMessages } from 'vue-i18n'
 import Vue from 'vue'
 import { DetectBrowserLanguageOptions, VuexOptions, Options, LocaleObject } from '.'
 
@@ -12,6 +12,7 @@ export interface ResolvedOptions extends Omit<Required<Options>, 'detectBrowserL
   detectBrowserLanguage: Required<DetectBrowserLanguageOptions> | false
   localeCodes: readonly Locale[]
   normalizedLocales: readonly LocaleObject[]
+  additionalMessages: LocaleMessages[]
   vueI18n: I18nOptions | ((context: NuxtContext) => Promise<I18nOptions>)
   vuex: Required<VuexOptions> | false
 }

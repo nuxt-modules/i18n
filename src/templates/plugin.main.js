@@ -11,7 +11,12 @@ import {
   parseAcceptLanguage,
   setLocaleCookie
 } from './utils-common'
-import { loadLanguageAsync, resolveBaseUrl, registerStore } from './plugin.utils'
+import {
+  loadLanguageAsync,
+  resolveBaseUrl,
+  registerStore,
+  mergeAdditionalMessages
+} from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
 // @ts-ignore
@@ -62,6 +67,11 @@ export default async (context) => {
     cookieSecure,
     cookieCrossOrigin
   } = /** @type {Required<import('../../types').DetectBrowserLanguageOptions>} */(options.detectBrowserLanguage)
+
+  const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
+    routesNameSeparator: options.routesNameSeparator,
+    defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
+  })
 
   /**
    * @param {string | undefined} newLocale
@@ -122,6 +132,8 @@ export default async (context) => {
         // Load all locales.
         await Promise.all(options.localeCodes.map(locale => loadLanguageAsync(context, locale)))
       }
+    } else {
+      mergeAdditionalMessages(app.i18n, options.additionalMessages, options.localeCodes)
     }
 
     app.i18n.locale = newLocale
@@ -138,7 +150,25 @@ export default async (context) => {
 
     // Must retrieve from context as it might have changed since plugin initialization.
     const { route } = context
-    const redirectPath = getRedirectPathForLocale(route, newLocale)
+    let redirectPath = ''
+
+    const isStaticGenerate = process.static && process.server
+    // Decide whether we should redirect to a different route.
+    if (
+      !isStaticGenerate &&
+      !app.i18n.differentDomains &&
+      options.strategy !== Constants.STRATEGIES.NO_PREFIX &&
+      // Skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
+      // locale, in which case we might still redirect as we prefer unprefixed route in this case.
+      (getLocaleFromRoute(route) !== newLocale || (options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT && newLocale === options.defaultLocale))
+    ) {
+      // The current route could be 404 in which case attempt to find matching route using the full path since
+      // "switchLocalePath" can only find routes if the current route exists.
+      const routePath = app.switchLocalePath(newLocale) || app.localePath(route.fullPath, newLocale)
+      if (routePath && routePath !== route.fullPath && !routePath.startsWith('//')) {
+        redirectPath = routePath
+      }
+    }
 
     if (initialSetup) {
       // Redirect will be delayed until middleware runs as redirecting from plugin does not
@@ -151,51 +181,6 @@ export default async (context) => {
         redirect(redirectPath)
       }
     }
-  }
-
-  const getLocaleFromRoute = createLocaleFromRouteGetter(options.localeCodes, {
-    routesNameSeparator: options.routesNameSeparator,
-    defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix
-  })
-
-  /**
-   * Gets the redirect path for locale.
-   *
-   * @param {import("vue-router").Route} route
-   * @param {string | undefined} locale
-   * @return {string} The redirect path for locale.
-   */
-  const getRedirectPathForLocale = (route, locale) => {
-    // Redirects are ignored if it is a nuxt generate.
-    if (process.static && process.server) {
-      return ''
-    }
-
-    if (!locale || app.i18n.differentDomains || options.strategy === Constants.STRATEGIES.NO_PREFIX) {
-      return ''
-    }
-
-    if (getLocaleFromRoute(route) === locale) {
-      // If "redirectOn" is "all" and strategy is "prefix_and_default", prefer unprefixed route for
-      // default locale.
-      if (redirectOn === Constants.REDIRECT_ON_OPTIONS.ALL || locale !== options.defaultLocale || options.strategy !== Constants.STRATEGIES.PREFIX_AND_DEFAULT) {
-        return ''
-      }
-    }
-
-    // At this point we are left with route that either has no or different locale.
-    let redirectPath = app.switchLocalePath(locale)
-
-    if (!redirectPath) {
-      // Current route could be 404 in which case attempt to find matching route for given locale.
-      redirectPath = app.localePath(route.fullPath, locale)
-    }
-
-    if (!redirectPath || redirectPath === route.fullPath || redirectPath.startsWith('//')) {
-      return ''
-    }
-
-    return redirectPath
   }
 
   /**

@@ -29,4 +29,6 @@ jobs:
       - name: Unittesting
         run: yarn test
       - name: Linting
+        # Only test on one version to avoid duplicate linter annotations.
+        if: ${{ matrix.node-version == '14.x' }}
         run: yarn lint

@@ -1,3 +1,28 @@
+## [7.2.0](https://github.com/nuxt-community/i18n-module/compare/v7.1.0...v7.2.0) (2021-11-04)
+
+
+### Features
+
+* expose hook for extending messages ([#1319](https://github.com/nuxt-community/i18n-module/issues/1319)) ([696bd12](https://github.com/nuxt-community/i18n-module/commit/696bd1260d731feade80eaa0ad8ff0febe53f3a7))
+
+
+### Bug Fixes
+
+* **docs:** refactor and separate some pages related to routing ([89eb12f](https://github.com/nuxt-community/i18n-module/commit/89eb12f54dd44088d0718c30756774c24fcb25d9))
+* load vue-template-compiler with nuxt.resolver.requireModule ([#1327](https://github.com/nuxt-community/i18n-module/issues/1327)) ([c5a3ca8](https://github.com/nuxt-community/i18n-module/commit/c5a3ca861e36ff9602d34c20321667676025af8b))
+
+## [7.1.0](https://github.com/nuxt-community/i18n-module/compare/v7.0.3...v7.1.0) (2021-10-19)
+
+
+### Features
+
+* add support for query params in canonical url ([#1274](https://github.com/nuxt-community/i18n-module/issues/1274)) ([d5dea9c](https://github.com/nuxt-community/i18n-module/commit/d5dea9c6a047e5e25a13904c3a2cb8ffa4fdf089))
+
+
+### Bug Fixes
+
+* adjust strange redirection logic for prefix_and_default ([#1304](https://github.com/nuxt-community/i18n-module/issues/1304)) ([578acd8](https://github.com/nuxt-community/i18n-module/commit/578acd8ce506991aa02f8b7b1b81e364df1d7063))
+
 ### [7.0.3](https://github.com/nuxt-community/i18n-module/compare/v7.0.2...v7.0.3) (2021-08-31)
 
 

@@ -1,4 +1,4 @@
-import Cookie from 'cookie'
+import { parse as cookieParse, serialize as cookieSerialize } from 'cookie'
 import JsCookie from 'js-cookie'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
@@ -172,7 +172,7 @@ export function getLocaleCookie (req, { useCookie, cookieKey, localeCodes }) {
     if (process.client) {
       localeCode = JsCookie.get(cookieKey)
     } else if (req && typeof req.headers.cookie !== 'undefined') {
-      const cookies = req.headers && req.headers.cookie ? Cookie.parse(req.headers.cookie) : {}
+      const cookies = req.headers && req.headers.cookie ? cookieParse(req.headers.cookie) : {}
       localeCode = cookies[cookieKey]
     }
 
@@ -213,7 +213,7 @@ export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieK
       headers = [String(headers)]
     }
 
-    const redirectCookie = Cookie.serialize(cookieKey, locale, cookieOptions)
+    const redirectCookie = cookieSerialize(cookieKey, locale, cookieOptions)
     headers.push(redirectCookie)
 
     res.setHeader('Set-Cookie', headers)
