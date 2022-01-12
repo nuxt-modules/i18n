@@ -6,7 +6,7 @@ import { adjustRouteDefinitionForTrailingSlash, getPageOptions } from './utils'
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
  * @typedef {import('../../types/internal').ResolvedOptions & {
  *   pagesDir: string
- *   includeUprefixedFallback: boolean
+ *   includeUnprefixedFallback: boolean
  *   trailingSlash: import('@nuxt/types/config/router').NuxtOptionsRouter['trailingSlash']
  *   parseComponent: import('vue-template-compiler')['parseComponent']
  * }} MakeRouteOptions
@@ -19,7 +19,7 @@ export function makeRoutes (baseRoutes, {
   defaultLocale,
   defaultLocaleRouteNameSuffix,
   differentDomains,
-  includeUprefixedFallback,
+  includeUnprefixedFallback,
   localeCodes,
   pages,
   pagesDir,
@@ -155,7 +155,8 @@ export function makeRoutes (baseRoutes, {
         path = adjustRouteDefinitionForTrailingSlash(path, trailingSlash, isChildWithRelativePath)
       }
 
-      if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUprefixedFallback) {
+      //add a route without prefix as fallback
+      if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUnprefixedFallback) {
         routes.push({
           ...route
         })
