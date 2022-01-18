@@ -155,7 +155,6 @@ export function makeRoutes (baseRoutes, {
         path = adjustRouteDefinitionForTrailingSlash(path, trailingSlash, isChildWithRelativePath)
       }
 
-      //add a route without prefix as fallback
       if (shouldAddPrefix && isDefaultLocale && strategy === STRATEGIES.PREFIX && includeUnprefixedFallback) {
         routes.push({
           ...route
