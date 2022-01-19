@@ -11,10 +11,10 @@ import { makeRoutes } from '../helpers/routes'
 export function createExtendRoutesHook (options) {
   const nuxtOptions = this.options
 
-  let includeUprefixedFallback = nuxtOptions.target === 'static'
+  let includeUnprefixedFallback = nuxtOptions.target === 'static'
   // Doesn't seem like we can tell whether we are in nuxt generate from the module so we'll
   // take advantage of the 'generate:before' hook to store variable.
-  this.nuxt.hook('generate:before', () => { includeUprefixedFallback = true })
+  this.nuxt.hook('generate:before', () => { includeUnprefixedFallback = true })
 
   const pagesDir = nuxtOptions.dir && nuxtOptions.dir.pages ? nuxtOptions.dir.pages : 'pages'
   const { trailingSlash } = nuxtOptions.router
@@ -27,7 +27,7 @@ export function createExtendRoutesHook (options) {
     const localizedRoutes = makeRoutes(routes, {
       ...options,
       pagesDir,
-      includeUprefixedFallback,
+      includeUnprefixedFallback,
       trailingSlash,
       parseComponent
     })
