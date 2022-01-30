@@ -2,7 +2,6 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
   declaration: true,
-  emitCJS: false,
   entries: [
     './src/module',
     {
@@ -12,12 +11,22 @@ export default defineBuildConfig({
       declaration: true
     }
   ],
+  // TODO: when this mobulde will be built with unbuild on workspace, so the building is failed ...
   externals: [
     '@nuxt/schema',
+    '@nuxtjs/i18n',
     'defu',
     'std-env',
+    'pathe',
     'create-require',
     'scule',
-    'jiti'
+    'lodash.merge',
+    'jiti',
+    '@babel/parse',
+    '@babel/traverse',
+    'cookie',
+    'js-cookie',
+    'ufo',
+    '@intlify/vue-i18n-extensions'
   ]
 })

@@ -3,6 +3,9 @@
 coverage
 test
 tests
+__test__
+__tests__
+__snapshots__
 temp
 docs
 types

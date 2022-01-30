@@ -11,13 +11,12 @@ module.exports = {
     'plugin:prettier/recommended',
     'prettier'
   ],
-  plugins: ['@typescript-eslint', 'mocha'],
+  plugins: ['@typescript-eslint'],
   parserOptions: {
     parser: '@typescript-eslint/parser',
     sourceType: 'module'
   },
   rules: {
-    '@typescript-eslint/ban-ts-comment': 'off',
-    'mocha/no-mocha-arrows': 'error'
+    '@typescript-eslint/ban-ts-comment': 'off'
   }
 }
