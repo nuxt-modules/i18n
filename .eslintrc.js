@@ -1,8 +1,6 @@
 module.exports = {
   root: true,
-  extends: [
-    '@nuxtjs/eslint-config-typescript'
-  ],
+  extends: ['@nuxtjs/eslint-config-typescript'],
   overrides: [
     {
       files: [
@@ -14,18 +12,31 @@ module.exports = {
     }
   ],
   rules: {
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-    'arrow-parens': 'off',
-    'import/named': 'off',
-    'import/namespace': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      2,
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
+      }
+    ],
+    'arrow-parens': 0,
+    'import/named': 0,
+    'import/namespace': 0,
     'no-console': [
-      'error', {
+      2,
+      {
         allow: ['assert', 'warn', 'error', 'info']
       }
     ],
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-    'vue/html-closing-bracket-newline': 'off',
-    'vue/multiline-html-element-content-newline': 'off',
-    'vue/singleline-html-element-content-newline': 'off'
+    'no-unused-vars': [
+      2,
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_'
+      }
+    ],
+    'vue/html-closing-bracket-newline': 0,
+    'vue/multiline-html-element-content-newline': 0,
+    'vue/singleline-html-element-content-newline': 0
   }
 }
