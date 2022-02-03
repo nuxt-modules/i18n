@@ -37,6 +37,12 @@ module.exports = {
     ],
     'vue/html-closing-bracket-newline': 0,
     'vue/multiline-html-element-content-newline': 0,
-    'vue/singleline-html-element-content-newline': 0
+    'vue/singleline-html-element-content-newline': 0,
+    'no-mixed-operators': [
+      0,
+      {
+        groups: [['&&'], ['?:']],
+      },
+    ],
   }
 }
