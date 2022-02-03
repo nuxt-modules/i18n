@@ -200,7 +200,7 @@ const VueInstanceProxy = function (targetFunction) {
         : () => {
             const { req } = Object(this.$root).context ?? this.$ssrContext
             return req
-          },
+          },      
       route: this.$route,
       router: this.$router,
       store: this.$store
