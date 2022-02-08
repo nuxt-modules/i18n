@@ -41,6 +41,7 @@ export default async function (nuxt, inject) {
   // NOTE: inject
   //  workaround for cannot extend to Vue.prototype on client-side ...
   //  We need to find out why we can't do that on the client-side.
+  //  related issue: https://github.com/nuxt/framework/issues/2000
   if (i18n.mode === 'composition' && process.client) {
     const composer = i18n.global
     inject('t', (...args: unknown[]) => Reflect.apply(composer.t, composer, [...args]))
