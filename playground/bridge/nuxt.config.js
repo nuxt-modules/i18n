@@ -36,7 +36,9 @@ export default {
     vite: false
   },
 
-  i18n: {},
+  i18n: {
+    foo: 1
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [],

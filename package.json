@@ -21,17 +21,25 @@
   },
   "workspaces": [
     "packages/*",
-    "playground/*",
     "test/fixtures/*"
   ],
   "scripts": {
+    "build": "yarn workspace @nuxt/i18n build",
+    "stub": "yarn workspace @nuxt/i18n stub",
+    "prepack": "yarn workspace @nuxt/i18n pack",
     "fix": "run-p lint:fix format:fix",
     "format": "prettier --config .prettierrc --ignore-path .prettierignore '**/*.{js,json,html}'",
     "format:fix": "yarn format --write",
     "lint": "eslint --ext .js,.ts,.vue,.json .",
     "lint:fix": "yarn lint --fix",
     "test": "run-s test:unit",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "switch2": "npx vue-router-switch 3 && npx vue-i18n-switch 8",
+    "switch3": "npx vue-demi-switch 3 && npx vue-router-switch 4 && npx vue-i18n-switch 9",
+    "setup:bridge": "cd playground/bridge && rm -rf node_modules package-lock.json && npm i",
+    "setup:nuxt3": "cd playground/nuxt3 && rm -rf node_modules package-lock.json && npm i",
+    "play:bridge": "cd playground/bridge && npm run dev",
+    "play:nuxt3": "cd playground/nuxt3 && npm run dev"
   },
   "packageManager": "yarn@3.1.1",
   "resolutions": {

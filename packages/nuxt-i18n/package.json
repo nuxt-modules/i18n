@@ -23,31 +23,42 @@
       "name": "Kazuya Kawaguchi (@kazupon)"
     }
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
   "type": "module",
-  "main": "./module.cjs",
-  "types": "./dist/module.d.ts",
   "files": [
-    "module.cjs",
-    "dist"
+    "dist",
+    "scripts"
   ],
   "scripts": {
-    "build": "unbuild"
+    "build": "nuxt-module-build",
+    "stub": "nuxt-module-build --stub",
+    "postinstall": "node ./scripts/postinstall.mjs"
   },
   "dependencies": {
-    "@nuxt/kit": "npm:@nuxt/kit-edge@latest"
+    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27398533.8edd481",
+    "debug": "^4.3.2",
+    "mlly": "^0.3.19",
+    "pathe": "^0.2.0",
+    "vue-i18n": "beta",
+    "vue-i18n-bridge": "beta",
+    "vue-i18n-legacy": "npm:vue-i18n@8",
+    "vue-i18n-routing": "edge"
   },
   "devDependencies": {
-    "@nuxt/schema": "npm:@nuxt/schema-edge@latest",
-    "@nuxt/types": "^2.15.8",
-    "@nuxtjs/i18n": "^7.2.0",
-    "nuxt3": "latest",
-    "unbuild": "^0.6.7"
+    "@nuxt/module-builder": "latest",
+    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-27398533.8edd481",
+    "@types/debug": "^4.1.7",
+    "nuxt3": "latest"
   },
   "engines": {
     "node": "^14.16.0 || ^16.11.0 || ^17.0.0"
-  },
-  "installConfig": {
-    "hoistingLimits": "workspaces"
   },
   "publishConfig": {
     "access": "public"

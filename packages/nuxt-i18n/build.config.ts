@@ -1,16 +1,6 @@
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
-  declaration: true,
-  entries: [
-    './src/module',
-    {
-      input: 'src/runtime/',
-      outDir: 'dist/runtime',
-      format: 'esm',
-      declaration: true
-    }
-  ],
   // TODO: when this mobulde will be built with unbuild on workspace, so the building is failed ...
   externals: [
     '@nuxt/schema',
@@ -27,6 +17,7 @@ export default defineBuildConfig({
     'cookie',
     'js-cookie',
     'ufo',
-    '@intlify/vue-i18n-extensions'
+    '@intlify/vue-i18n-extensions',
+    'webpack'
   ]
 })

@@ -1,5 +1,5 @@
 <template>
-  <Tutorial />
+  <h1>{{ $t('hello') }}</h1>
 </template>
 
 <script lang="ts">
