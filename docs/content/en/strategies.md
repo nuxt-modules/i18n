@@ -13,7 +13,7 @@ With this strategy, your routes won't have a locale prefix added. The locale wil
 
 <alert type="warning">
 
-This strategy doesn't support [Custom paths](#custom-paths) and [Ignore routes](#ignore-routes) features.
+This strategy doesn't support [Custom paths](/custom-paths) and [Ignore routes](/ignoring-localized-routes) features.
 
 </alert>
 
