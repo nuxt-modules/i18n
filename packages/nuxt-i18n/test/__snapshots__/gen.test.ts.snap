@@ -1,0 +1,8 @@
+// Vitest Snapshot v1
+
+exports[`generateLoaderOptions 1`] = `
+"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+import localeEn_564a1578 from \\"./locales/en.json\\";
+export const messages = () => Promise.resolve(Object({\\"en\\":localeEn_564a1578}))
+export const nuxtI18nOptions = Object({defaultLocale: \\"en\\",vueI18n: Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\":Object({\\"en\\":Object({\\"hello\\":\\"Hello!\\"})})})})"
+`;

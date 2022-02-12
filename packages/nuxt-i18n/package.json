@@ -42,8 +42,13 @@
     "postinstall": "node ./scripts/postinstall.mjs"
   },
   "dependencies": {
+    "@intlify/shared": "next",
+    "@intlify/vite-plugin-vue-i18n": "next",
+    "@intlify/vue-i18n-loader": "next",
     "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27398533.8edd481",
     "debug": "^4.3.2",
+    "defu": "latest",
+    "knitwork": "^0.1.0",
     "mlly": "^0.3.19",
     "pathe": "^0.2.0",
     "vue-i18n": "beta",

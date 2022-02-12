@@ -1,48 +1,36 @@
-export default {
-  // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+import { defineNuxtConfig } from '@nuxt/bridge'
 
-  // Global page headers: https://go.nuxtjs.dev/config-head
-  head: {
-    title: 'nuxt-bridge',
-    htmlAttrs: {
-      lang: 'en'
-    },
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
-    ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
-  },
-
-  // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
-
-  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
-
-  // Auto import components: https://go.nuxtjs.dev/config-components
-  components: true,
-
-  // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-  buildModules: [
-    // https://go.nuxtjs.dev/typescript
-    '@nuxt/i18n'
-  ],
+export default defineNuxtConfig({
+  buildModules: ['@nuxt/i18n'],
 
   bridge: {
+    meta: true,
     vite: false
   },
 
   i18n: {
-    foo: 1
-  },
-
-  // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
-
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
-}
+    langDir: 'locales',
+    locales: [
+      {
+        code: 'en',
+        file: 'en.json',
+        name: 'English'
+      },
+      {
+        code: 'ja',
+        file: 'ja.json',
+        name: 'Japanses'
+      },
+      {
+        code: 'fr',
+        file: 'fr.json',
+        name: 'Français'
+      }
+    ],
+    defaultLocale: 'en',
+    vueI18n: {
+      legacy: false,
+      fallbackLocale: 'en'
+    }
+  }
+})

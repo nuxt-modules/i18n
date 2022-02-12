@@ -1,5 +1,5 @@
 import type { Directions, Strategies, LocaleObject, VueI18nRoutingOptions } from 'vue-i18n-routing'
-import type { Locale } from '@intlify/vue-i18n-bridge'
+import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
 
 // TODO: bring up from @nuxtjs/i18n type definition
 
@@ -20,9 +20,21 @@ export interface DetectBrowserLanguageOptions {
   useCookie?: boolean
 }
 
+export type LocaleInfo = {
+  path: string
+} & LocaleObject
+
 export interface RootRedirectOptions {
   path: string
   statusCode: number
+}
+
+export type CustomRoutePages = {
+  [key: string]:
+    | false
+    | {
+        [key: string]: false | string
+      }
 }
 
 export type NuxtI18nOptions = {
@@ -37,25 +49,20 @@ export type NuxtI18nOptions = {
   // detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
   lazy?: boolean | LazyOptions
-  pages?: {
-    [key: string]:
-      | false
-      | {
-          [key: string]: false | string
-        }
-  }
+  pages?: CustomRoutePages
   // parsePages?: boolean
   // rootRedirect?: string | null | RootRedirectOptions
   // routesNameSeparator?: string
   // skipSettingLocaleOnNavigate?: boolean
   // sortRoutes?: boolean
   // strategy?: Strategies
-  // vueI18n?: I18nOptions | string
+  vueI18n?: I18nOptions | string
   // vueI18nLoader?: boolean
   // vuex?: VuexOptions | false
 } & Pick<
   VueI18nRoutingOptions,
   | 'baseUrl'
+  | 'strategy'
   | 'defaultDirection'
   | 'defaultLocale'
   | 'defaultLocaleRouteNameSuffix'
