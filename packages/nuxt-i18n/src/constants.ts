@@ -34,9 +34,9 @@ export const DEFAULT_OPTIONS = {
   defaultLocaleRouteNameSuffix: 'default',
   // sortRoutes: true,
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
-  lazy: false,
+  // lazy: false,
   langDir: null,
-  rootRedirect: null,
+  // rootRedirect: null,
   // detectBrowserLanguage: {
   //   alwaysRedirect: false,
   //   cookieCrossOrigin: false,
