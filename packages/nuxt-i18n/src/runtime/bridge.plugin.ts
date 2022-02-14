@@ -2,7 +2,7 @@ import Vue from 'vue'
 import { install, ref, computed } from 'vue-demi'
 import VueI18n from 'vue-i18n'
 import { createI18n } from 'vue-i18n-bridge'
-import { createLocaleFromRouteGetter } from 'vue-i18n-routing'
+import { createLocaleFromRouteGetter, resolveBaseUrl } from 'vue-i18n-routing'
 import { isEmptyObject } from '@intlify/shared'
 import {
   messages as loadMessages,
@@ -59,6 +59,7 @@ export default async function (context, inject) {
   const _localeCodes = ref<string[]>(localeCodes)
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
+  global.__baseUrl = resolveBaseUrl(nuxtI18nOptions.baseUrl, {})
 
   // inject i18n global to nuxt
   inject('i18n', global)

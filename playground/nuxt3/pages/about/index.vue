@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { localePath, useI18nHead } from 'vue-i18n-routing'
-const i18nHead = useI18nHead({ addSeoAttributes: true })
 
+const i18nHead = useI18nHead({ addSeoAttributes: true })
 useMeta({
   htmlAttrs: computed(() => ({
     lang: i18nHead.value.htmlAttrs!.lang

@@ -1,4 +1,10 @@
-import type { Directions, Strategies, LocaleObject, VueI18nRoutingOptions } from 'vue-i18n-routing'
+import type {
+  Directions,
+  Strategies,
+  LocaleObject,
+  VueI18nRoutingOptions,
+  BaseUrlResolveHandler
+} from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
 
 // TODO: bring up from @nuxtjs/i18n type definition
@@ -37,7 +43,7 @@ export type CustomRoutePages = {
       }
 }
 
-export type NuxtI18nOptions = {
+export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResolveHandler> = {
   // differentDomains?: boolean
   // onBeforeLanguageSwitch?: (
   //   oldLocale: string,
@@ -60,7 +66,7 @@ export type NuxtI18nOptions = {
   // vueI18nLoader?: boolean
   // vuex?: VuexOptions | false
 } & Pick<
-  VueI18nRoutingOptions,
+  VueI18nRoutingOptions<BaseUrl>,
   | 'baseUrl'
   | 'strategy'
   | 'defaultDirection'

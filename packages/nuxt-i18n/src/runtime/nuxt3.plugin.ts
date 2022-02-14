@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue-demi'
 import { createI18n } from 'vue-i18n'
 import { isEmptyObject } from '@intlify/shared'
-import { createLocaleFromRouteGetter } from 'vue-i18n-routing'
+import { createLocaleFromRouteGetter, resolveBaseUrl } from 'vue-i18n-routing'
 import { defineNuxtPlugin } from '#app'
 import {
   messages as loadMessages,
@@ -51,6 +51,7 @@ export default defineNuxtPlugin(async nuxt => {
   const _localeCodes = ref<string[]>(localeCodes)
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
+  global.__baseUrl = resolveBaseUrl(nuxtI18nOptions.baseUrl, {})
 
   // install vue-i18n
   app.use(i18n)

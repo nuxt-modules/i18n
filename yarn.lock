@@ -5204,9 +5204,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001275, caniuse-lite@npm:^1.0.30001286, caniuse-lite@npm:^1.0.30001297":
-  version: 1.0.30001311
-  resolution: "caniuse-lite@npm:1.0.30001311"
-  checksum: a96a2724db91f7d820d7c83d98d6d80f71f4ef5542fd9af49478e6f5057a92d61fbb6c2a2c151e13323c760c7d9f046f422a9b1ac77ab08dc2cacc62bd22f941
+  version: 1.0.30001312
+  resolution: "caniuse-lite@npm:1.0.30001312"
+  checksum: 753fb9ea1e02e999430b323a71b5acab5120f3b5fc0161b01669f54a3ef5c5296240b6ae9b79b12a3742e3aed216aa9ee3d5398a23c16d08625ccd376b79545d
   languageName: node
   linkType: hard
 
@@ -6259,10 +6259,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cssdb@npm:^6.2.1":
-  version: 6.2.1
-  resolution: "cssdb@npm:6.2.1"
-  checksum: cf8507ec058d87547ca817885aea6b20b990e1b0d1008fa74dd47d6550e50c7d51aee5c7837a95ee894116bcd94259c47572e84238fb1bbf2dee22b4830c9632
+"cssdb@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "cssdb@npm:6.3.0"
+  checksum: 8c76e4c63ce0399b3a2ce0620c6d23e63cf08429f71a8371214b423030bc0c8654043aa220d90beefc90fa4bdc83c461a96ff4a8831f706549cbfa87f7481a0a
   languageName: node
   linkType: hard
 
@@ -10184,8 +10184,8 @@ __metadata:
   linkType: hard
 
 "lint-staged@npm:^12.1.2":
-  version: 12.3.3
-  resolution: "lint-staged@npm:12.3.3"
+  version: 12.3.4
+  resolution: "lint-staged@npm:12.3.4"
   dependencies:
     cli-truncate: ^3.1.0
     colorette: ^2.0.16
@@ -10202,7 +10202,7 @@ __metadata:
     yaml: ^1.10.2
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: a9147eb5def6345622d1b772d5920b1282808738abf53e6034d8da2d21d6baf80135ea22f799bf4092867a3dba13cd875493b8e32e47f3b4574e4e8871a0aa8e
+  checksum: 4e0b4b9da4183a0daeab35d41e4d243fb1270a39db997efa0c3745fa148a7a4b8b723a51cb757595fc8bb118796ca1465e67aede72f25e9ea48165aec36cec3b
   languageName: node
   linkType: hard
 
@@ -10803,12 +10803,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^3.0.4, minimatch@npm:~3.0.4":
-  version: 3.0.5
-  resolution: "minimatch@npm:3.0.5"
+"minimatch@npm:^3.0.4":
+  version: 3.1.1
+  resolution: "minimatch@npm:3.1.1"
   dependencies:
     brace-expansion: ^1.1.7
-  checksum: a3b84b426eafca947741b864502cee02860c4e7b145de11ad98775cfcf3066fef422583bc0ffce0952ddf4750c1ccf4220b1556430d4ce10139f66247d87d69e
+  checksum: e9e3772e4ea06ea3a888d39bc7690d3c812ee7e5a70c2d2f568ccadac0249a027f865589d19ad03ed937e6ca3b4ad35f85411db9670f7877d8fc2ed452f1cd37
+  languageName: node
+  linkType: hard
+
+"minimatch@npm:~3.0.4":
+  version: 3.0.7
+  resolution: "minimatch@npm:3.0.7"
+  dependencies:
+    brace-expansion: ^1.1.7
+  checksum: 904b52bbe9a4c12a11c3ea9b503b8f64e0f822997a8fed8e8f2eaa4cb8805e2a03468a4940a63c198aac9c036f2388dfbfb9cd3b63667077ed7cb2e761bff2a4
   languageName: node
   linkType: hard
 
@@ -13622,8 +13631,8 @@ __metadata:
   linkType: hard
 
 "postcss-preset-env@npm:^6.7.0":
-  version: 6.7.0
-  resolution: "postcss-preset-env@npm:6.7.0"
+  version: 6.7.1
+  resolution: "postcss-preset-env@npm:6.7.1"
   dependencies:
     autoprefixer: ^9.6.1
     browserslist: ^4.6.4
@@ -13662,13 +13671,13 @@ __metadata:
     postcss-replace-overflow-wrap: ^3.0.0
     postcss-selector-matches: ^4.0.0
     postcss-selector-not: ^4.0.0
-  checksum: 209cbb63443a1631aa97ccfc3b95b1ff519ddaeb672f84d6af501bd9e9ad6727680b5b1bffb8209322e47d93029a69df6064f75cd0b7633b6df943cbef33f22e
+  checksum: 8021910aae20f78b3d940b92fafe7e001a6ea57cc2fa9fdd9b0d32a2d43c7dac12b529abc26fe40047e507de5e914af302ebf652d94037207aafd60e78063114
   languageName: node
   linkType: hard
 
 "postcss-preset-env@npm:^7.3.0":
-  version: 7.3.2
-  resolution: "postcss-preset-env@npm:7.3.2"
+  version: 7.3.3
+  resolution: "postcss-preset-env@npm:7.3.3"
   dependencies:
     "@csstools/postcss-font-format-keywords": ^1.0.0
     "@csstools/postcss-hwb-function": ^1.0.0
@@ -13680,7 +13689,7 @@ __metadata:
     css-blank-pseudo: ^3.0.3
     css-has-pseudo: ^3.0.4
     css-prefers-color-scheme: ^6.0.3
-    cssdb: ^6.2.1
+    cssdb: ^6.3.0
     postcss-attribute-case-insensitive: ^5.0.0
     postcss-clamp: ^3.0.0
     postcss-color-functional-notation: ^4.2.2
@@ -13711,7 +13720,7 @@ __metadata:
     postcss-selector-not: ^5.0.0
   peerDependencies:
     postcss: ^8.4
-  checksum: 38c9aba679f38e3c297ff670c48624051a3270f4942c7571099ae302bcd8129607024230aeee2b6ffba51ee1031f62346f0bf7feed4dc093422d3d1df6fba486
+  checksum: c93da81f8b78ddcfcfb2787be537272dd1beba37b0ce44da0e14e38efb2ac5b1e2e80377aa0da7107fac30544e79b337e11951ebc7960499db261e3d4e4cc35d
   languageName: node
   linkType: hard
 
@@ -15509,9 +15518,9 @@ __metadata:
   linkType: hard
 
 "stackframe@npm:^1.1.1":
-  version: 1.2.0
-  resolution: "stackframe@npm:1.2.0"
-  checksum: 37d659bdd574e118a48c445a9a054a2b8dee6d6ad54eb16c51c7dae622c0f4994b9ff4e47d744aa6cfd14c00b477e145f34db3df78771f3e783ce8f357616d00
+  version: 1.2.1
+  resolution: "stackframe@npm:1.2.1"
+  checksum: 1a3f281014bb1d2178b7c2ab26d657fb0f83c21d7d34ab33d858fd0b652a035254619fce8601278a2cf22ddb3382af21c4ea29b429806da75f3077fbd5e5bf17
   languageName: node
   linkType: hard
 
@@ -17016,8 +17025,8 @@ __metadata:
   linkType: hard
 
 "vue-i18n-routing@npm:edge":
-  version: 0.0.0-8fbb24d
-  resolution: "vue-i18n-routing@npm:0.0.0-8fbb24d"
+  version: 0.0.0-5735bda
+  resolution: "vue-i18n-routing@npm:0.0.0-5735bda"
   dependencies:
     "@intlify/shared": beta
     "@intlify/vue-i18n-bridge": ^0.3.5
@@ -17033,7 +17042,7 @@ __metadata:
   peerDependenciesMeta:
     "@vue/composition-api":
       optional: true
-  checksum: 1445e241d2b87f0d13777151df0422efa54b60dacb9e54b156675196dfd01213cb286765bcc9a9f166bbe10a90eaf6fbcd803e8fe721ccd7c0ee481f17686bde
+  checksum: 03291100e3e15bdfb3c83b82c9f6f38870740004db711d48e656d083a2dcc80a7e5b7454f42f0866c3d292001603ca403f0eeb0bbde1879722b0f9df4dfee634
   languageName: node
   linkType: hard
 
