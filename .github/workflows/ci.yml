@@ -28,6 +28,8 @@ jobs:
       - name: yarn install
         run: yarn --immutable
       - name: Linting
+        # Only test on one version to avoid duplicate linter annotations.
+        if: ${{ matrix.node-version == '16.11' }}
         run: yarn lint
       - name: Building
         run: yarn workspace @nuxt/i18n build
