@@ -1,0 +1,37 @@
+name: Release New Version
+on:
+  push:
+    branches:
+      - next
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+          package-name: nuxt-neo
+          monorepo-tags: true
+      - uses: actions/checkout@v2
+        if: ${{ steps.release.outputs.releases_created }}
+      - uses: actions/setup-node@v2
+        if: ${{ steps.release.outputs.releases_created }}
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org
+          cache: yarn
+      - name: Lint and Test
+        if: ${{ steps.release.outputs.releases_created }}
+        run: yarn --immutable && yarn lint && yarn test
+      - name: Publish to NPM
+        if: ${{ steps.release.outputs.releases_created }}
+        run: |
+          cd packages/nuxt-i18n
+          npm publish --tag edge
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Deploys Github Pages Docs
+      #   if: ${{ steps.release.outputs.releases_created }}
+      #   run: yarn deploy:docs
