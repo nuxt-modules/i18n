@@ -43,7 +43,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('langDir path', langPath)
 
     // resolve localeInfo
-    const normalizedLocales = (options.locales = getNormalizedLocales(options.locales))
+    const normalizedLocales = (options.__normalizedLocales = getNormalizedLocales(options.locales))
     const hasLocaleFiles = normalizedLocales.length > 0
     const localeCodes = normalizedLocales.map(locale => locale.code)
     const localeInfo = await resolveLocales(langPath, normalizedLocales)
