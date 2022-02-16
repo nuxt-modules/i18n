@@ -49,8 +49,14 @@ export default defineNuxtPlugin(async nuxt => {
   // extends properties & methods
   const _locales = ref<string[] | LocaleObject[]>(nuxtI18nOptions.locales)
   const _localeCodes = ref<string[]>(localeCodes)
+  const _localeProperties = ref<LocaleObject>(
+    nuxtI18nOptions.__normalizedLocales.find((l: LocaleObject) => l.code === global.locale.value) || {
+      code: global.locale.value
+    }
+  )
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
+  global.localeProperties = computed(() => _localeProperties.value)
   global.__baseUrl = resolveBaseUrl(nuxtI18nOptions.baseUrl, {})
 
   // install vue-i18n

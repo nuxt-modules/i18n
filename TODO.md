@@ -57,7 +57,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] defaultLocale
 - [x] localeCodes
 - [x] locales
-- [ ] localeProperties
+- [x] localeProperties
 - [ ] differentDomains
 - [ ] onBeforeLanguageSwitch
 - [ ] onLanguageSwitched

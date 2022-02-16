@@ -65,6 +65,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   vueI18n?: I18nOptions | string
   // vueI18nLoader?: boolean
   // vuex?: VuexOptions | false
+  __normalizedLocales?: LocaleObject[]
 } & Pick<
   VueI18nRoutingOptions<BaseUrl>,
   | 'baseUrl'
