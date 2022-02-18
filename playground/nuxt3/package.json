@@ -7,7 +7,7 @@
     "start": "nuxi preview"
   },
   "devDependencies": {
-    "@nuxt/i18n": "file:../../packages/nuxt-i18n/package.tgz",
+    "@nuxtjs/i18n": "file:../../packages/nuxt-i18n/package.tgz",
     "nuxt3": "latest"
   },
   "installConfig": {
