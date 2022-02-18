@@ -32,6 +32,6 @@ jobs:
         if: ${{ matrix.node-version == '16.11' }}
         run: yarn lint
       - name: Building
-        run: yarn workspace @nuxt/i18n build
+        run: yarn workspace @nuxtjs/i18n build
       - name: Testing
         run: yarn test

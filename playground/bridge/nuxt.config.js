@@ -1,7 +1,7 @@
 import { defineNuxtConfig } from '@nuxt/bridge'
 
 export default defineNuxtConfig({
-  buildModules: ['@nuxt/i18n'],
+  buildModules: ['@nuxtjs/i18n'],
 
   bridge: {
     meta: true,
