@@ -12,9 +12,9 @@
   },
   "devDependencies": {
     "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27394404.1672148",
-    "@nuxt/i18n": "latest",
     "@nuxt/types": "^2.15.7",
-    "@nuxt/typescript-build": "^2.1.0"
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/i18n": "latest"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"

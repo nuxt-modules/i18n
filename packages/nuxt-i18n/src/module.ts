@@ -17,11 +17,11 @@ import type { NuxtI18nOptions } from './types'
 
 export * from './types'
 
-const debug = createDebug('@nuxt/i18n:module')
+const debug = createDebug('@nuxtjs/i18n:module')
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
-    name: '@nuxt/i18n',
+    name: '@nuxtjs/i18n',
     configKey: 'i18n'
   },
   defaults: {},
