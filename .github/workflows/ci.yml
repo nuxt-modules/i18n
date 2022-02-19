@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - next
+      - chore/release-edge
   pull_request:
     branches:
       - next
