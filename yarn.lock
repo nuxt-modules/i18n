@@ -2550,7 +2550,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@nuxtjs/i18n@workspace:./packages/nuxt-i18n, @nuxtjs/i18n@workspace:packages/nuxt-i18n":
+"@nuxtjs/i18n@npm:@nuxtjs/i18n-edge@latest":
+  version: 8.0.0-alpha.0-27419678.39bcf0f
+  resolution: "@nuxtjs/i18n-edge@npm:8.0.0-alpha.0-27419678.39bcf0f"
+  dependencies:
+    "@intlify/shared": next
+    "@intlify/vite-plugin-vue-i18n": next
+    "@intlify/vue-i18n-loader": next
+    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27398533.8edd481"
+    debug: ^4.3.2
+    defu: latest
+    knitwork: ^0.1.0
+    mlly: ^0.3.19
+    pathe: ^0.2.0
+    vue-i18n: beta
+    vue-i18n-bridge: beta
+    vue-i18n-legacy: "npm:vue-i18n@8"
+    vue-i18n-routing: edge
+  checksum: 6b94310310f2e7b783448f3f3f6800bfba0f1a27917b385e3457f64cbe4becd8922df7cc2223b5761ceced3559b1ef558d6b4fae88b04a3c3c1beeb4eefd779f
+  languageName: node
+  linkType: hard
+
+"@nuxtjs/i18n@workspace:packages/nuxt-i18n":
   version: 0.0.0-use.local
   resolution: "@nuxtjs/i18n@workspace:packages/nuxt-i18n"
   dependencies:
