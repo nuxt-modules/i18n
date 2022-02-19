@@ -44,7 +44,7 @@
   },
   "packageManager": "yarn@3.1.1",
   "resolutions": {
-    "@nuxtjs/i18n": "workspace:./packages/nuxt-i18n"
+    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge@latest"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
