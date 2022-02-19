@@ -85,9 +85,25 @@ export default {
       en: { postId: 'my-post' },
       fr: { postId: 'mon-article' }
     })
-    return {
-      // your data
-    }
+  }
+}
+</script>
+```
+
+Note that for the special case of the catch-all route named `_.vue`, the key of the object needs to say `pathMatch`. For example:
+
+```vue
+<template>
+  <!-- pages/_.vue -->
+</template>
+
+<script>
+export default {
+  async asyncData ({ store }) {
+    await store.dispatch('i18n/setRouteParams', {
+      en: { pathMatch: 'my-post/abc' },
+      fr: { pathMatch: 'mon-article/xyz' }
+    })
   }
 }
 </script>
