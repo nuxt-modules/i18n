@@ -2593,7 +2593,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@nuxtjs/i18n@workspace:./packages/nuxt-i18n, @nuxtjs/i18n@workspace:packages/nuxt-i18n":
+"@nuxtjs/i18n@workspace:packages/nuxt-i18n":
   version: 0.0.0-use.local
   resolution: "@nuxtjs/i18n@workspace:packages/nuxt-i18n"
   dependencies:
