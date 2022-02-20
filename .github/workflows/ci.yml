@@ -33,7 +33,7 @@ jobs:
         if: ${{ matrix.node-version == '16.11' }}
         run: yarn lint
       - name: Building
-        run: yarn workspace @nuxtjs/i18n build
+        run: yarn build
       - name: Testing
         run: yarn test
   edge-release:
@@ -54,7 +54,7 @@ jobs:
       - name: yarn install
         run: yarn --immutable
       - name: Building
-        run: yarn workspace @nuxtjs/i18n build
+        run: yarn build
       - name: Release Edge
         if: |
           github.event_name == 'push' &&
