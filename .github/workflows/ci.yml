@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - next
-      - chore/release-edge
   pull_request:
     branches:
       - next
@@ -39,17 +38,13 @@ jobs:
   edge-release:
     needs:
       - build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [14]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 14
           cache: 'yarn'
       - name: yarn install
         run: yarn --immutable
@@ -63,4 +58,4 @@ jobs:
           !contains(github.event.head_commit.message, 'docs')
         run: ./scripts/release-edge.sh
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
