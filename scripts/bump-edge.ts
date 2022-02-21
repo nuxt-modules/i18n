@@ -67,6 +67,11 @@ async function loadWorkspace(dir: string) {
         }
       })
     }
+    // Update resolutions field in the root package.json.
+    if (workspacePkg.data.resolutions?.hasOwnProperty(from)) {
+      workspacePkg.data.resolutions[to] = workspacePkg.data.resolutions[from]
+      delete workspacePkg.data.resolutions[from]
+    }
   }
 
   const setVersion = (name: string, newVersion: string) => {
@@ -80,7 +85,7 @@ async function loadWorkspace(dir: string) {
     }
   }
 
-  const save = () => Promise.all(packages.map(pkg => pkg.save()))
+  const save = () => Promise.all([...packages.map(pkg => pkg.save()), workspacePkg.save()])
 
   return {
     dir,
