@@ -1,5 +1,5 @@
 {
-  "name": "@nuxt/i18n",
+  "name": "@nuxtjs/i18n",
   "description": "i18n for Nuxt",
   "version": "8.0.0-alpha.0",
   "homepage": "https://i18n.nuxtjs.org",

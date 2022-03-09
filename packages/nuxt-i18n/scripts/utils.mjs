@@ -1,7 +1,7 @@
 // import { pathToFileURL } from 'url'
 import { createCommonJS } from 'mlly'
 
-const NUXT_I18N_ID = '@nuxt/i18n'
+const NUXT_I18N_ID = '@nuxtjs/i18n'
 
 const cjs = createCommonJS(import.meta.url)
 

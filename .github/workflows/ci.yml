@@ -32,6 +32,30 @@ jobs:
         if: ${{ matrix.node-version == '16.11' }}
         run: yarn lint
       - name: Building
-        run: yarn workspace @nuxt/i18n build
+        run: yarn build
       - name: Testing
         run: yarn test
+  edge-release:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: 'yarn'
+      - name: yarn install
+        run: yarn --immutable
+      - name: Building
+        run: yarn build
+      - name: Release Edge
+        if: |
+          github.event_name == 'push' &&
+          !contains(github.event.head_commit.message, '[skip-release]') &&
+          !contains(github.event.head_commit.message, 'chore') &&
+          !contains(github.event.head_commit.message, 'docs')
+        run: ./scripts/release-edge.sh
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}

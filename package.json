@@ -1,5 +1,5 @@
 {
-  "name": "@nuxt/i18n-monorepo",
+  "name": "@nuxtjs/i18n-monorepo",
   "description": "The monorepo for @nuxtjs/i18n",
   "license": "MIT",
   "private": true,
@@ -24,9 +24,9 @@
     "test/fixtures/*"
   ],
   "scripts": {
-    "build": "yarn workspace @nuxt/i18n build",
-    "stub": "yarn workspace @nuxt/i18n stub",
-    "prepack": "yarn workspace @nuxt/i18n pack",
+    "build": "yarn workspace @nuxtjs/i18n build",
+    "stub": "yarn workspace @nuxtjs/i18n stub",
+    "prepack": "yarn workspace @nuxtjs/i18n pack",
     "fix": "run-p lint:fix format:fix",
     "format": "prettier --config .prettierrc --ignore-path .prettierignore '**/*.{js,json,html}'",
     "format:fix": "yarn format --write",
@@ -44,7 +44,7 @@
   },
   "packageManager": "yarn@3.1.1",
   "resolutions": {
-    "@nuxt/i18n": "workspace:./packages/nuxt-i18n"
+    "@nuxtjs/i18n": "workspace:packages/nuxt-i18n"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

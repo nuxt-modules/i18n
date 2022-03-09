@@ -1926,58 +1926,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/i18n-monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@nuxt/i18n-monorepo@workspace:."
-  dependencies:
-    "@types/debug": ^4.1.7
-    "@typescript-eslint/eslint-plugin": ^5.8.0
-    "@typescript-eslint/parser": ^5.8.0
-    cross-env: ^7.0.3
-    debug: ^4.3.3
-    eslint: ^8.7.0
-    eslint-config-prettier: ^8.3.0
-    eslint-plugin-prettier: ^4.0.0
-    jiti: ^1.12.9
-    lint-staged: ^12.1.2
-    listhen: ^0.2.6
-    mlly: ^0.3.19
-    npm-run-all: ^4.1.5
-    ohmyfetch: ^0.4.8
-    pathe: ^0.2.0
-    playwright-chromium: ^1.17.1
-    prettier: ^2.5.1
-    typescript: ^4.5.4
-    vite: ^2.7.13
-    vitest: ^0.2.5
-    yorkie: ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@nuxt/i18n@workspace:./packages/nuxt-i18n, @nuxt/i18n@workspace:packages/nuxt-i18n":
-  version: 0.0.0-use.local
-  resolution: "@nuxt/i18n@workspace:packages/nuxt-i18n"
-  dependencies:
-    "@intlify/shared": next
-    "@intlify/vite-plugin-vue-i18n": next
-    "@intlify/vue-i18n-loader": next
-    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27398533.8edd481"
-    "@nuxt/module-builder": latest
-    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-27398533.8edd481"
-    "@types/debug": ^4.1.7
-    debug: ^4.3.2
-    defu: latest
-    knitwork: ^0.1.0
-    mlly: ^0.3.19
-    nuxt3: latest
-    pathe: ^0.2.0
-    vue-i18n: beta
-    vue-i18n-bridge: beta
-    vue-i18n-legacy: "npm:vue-i18n@8"
-    vue-i18n-routing: edge
-  languageName: unknown
-  linkType: soft
-
 "@nuxt/kit@npm:@nuxt/kit-edge@3.0.0-27394404.1672148":
   version: 3.0.0-27394404.1672148
   resolution: "@nuxt/kit-edge@npm:3.0.0-27394404.1672148"
@@ -2573,6 +2521,58 @@ __metadata:
   checksum: e5b67c3fc3575eba15b71d79b563a5eb221b799448d44b9dd5e936e38e7c50cc86dc1f612553529cafdfe053fbac91aa84706124fc91d1247cc5aa808b75f23b
   languageName: node
   linkType: hard
+
+"@nuxtjs/i18n-monorepo@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@nuxtjs/i18n-monorepo@workspace:."
+  dependencies:
+    "@types/debug": ^4.1.7
+    "@typescript-eslint/eslint-plugin": ^5.8.0
+    "@typescript-eslint/parser": ^5.8.0
+    cross-env: ^7.0.3
+    debug: ^4.3.3
+    eslint: ^8.7.0
+    eslint-config-prettier: ^8.3.0
+    eslint-plugin-prettier: ^4.0.0
+    jiti: ^1.12.9
+    lint-staged: ^12.1.2
+    listhen: ^0.2.6
+    mlly: ^0.3.19
+    npm-run-all: ^4.1.5
+    ohmyfetch: ^0.4.8
+    pathe: ^0.2.0
+    playwright-chromium: ^1.17.1
+    prettier: ^2.5.1
+    typescript: ^4.5.4
+    vite: ^2.7.13
+    vitest: ^0.2.5
+    yorkie: ^2.0.0
+  languageName: unknown
+  linkType: soft
+
+"@nuxtjs/i18n@workspace:packages/nuxt-i18n":
+  version: 0.0.0-use.local
+  resolution: "@nuxtjs/i18n@workspace:packages/nuxt-i18n"
+  dependencies:
+    "@intlify/shared": next
+    "@intlify/vite-plugin-vue-i18n": next
+    "@intlify/vue-i18n-loader": next
+    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27398533.8edd481"
+    "@nuxt/module-builder": latest
+    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-27398533.8edd481"
+    "@types/debug": ^4.1.7
+    debug: ^4.3.2
+    defu: latest
+    knitwork: ^0.1.0
+    mlly: ^0.3.19
+    nuxt3: latest
+    pathe: ^0.2.0
+    vue-i18n: beta
+    vue-i18n-bridge: beta
+    vue-i18n-legacy: "npm:vue-i18n@8"
+    vue-i18n-routing: edge
+  languageName: unknown
+  linkType: soft
 
 "@nuxtjs/youch@npm:^4.2.3":
   version: 4.2.3
@@ -11654,9 +11654,9 @@ __metadata:
   resolution: "nuxt-bridge-test@workspace:test/fixtures/bridge"
   dependencies:
     "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27394404.1672148"
-    "@nuxt/i18n": latest
     "@nuxt/types": ^2.15.7
     "@nuxt/typescript-build": ^2.1.0
+    "@nuxtjs/i18n": latest
     core-js: ^3.15.1
     nuxt-edge: latest
   languageName: unknown
@@ -11691,7 +11691,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nuxt3-test@workspace:test/fixtures/nuxt3"
   dependencies:
-    "@nuxt/i18n": latest
+    "@nuxtjs/i18n": latest
     nuxt3: latest
   languageName: unknown
   linkType: soft
