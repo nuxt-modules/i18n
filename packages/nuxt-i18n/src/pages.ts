@@ -6,7 +6,7 @@ import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { RouteOptionsResolver, ComputedRouteOptions } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
 
-const debug = createDebug('@nuxt/i18n:pages')
+const debug = createDebug('@nuxtjs/i18n:pages')
 
 export function setupPages(
   options: Required<NuxtI18nOptions>,

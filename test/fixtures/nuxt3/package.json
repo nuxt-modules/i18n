@@ -7,7 +7,7 @@
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
-    "@nuxt/i18n": "latest",
+    "@nuxtjs/i18n": "latest",
     "nuxt3": "latest"
   },
   "installConfig": {
