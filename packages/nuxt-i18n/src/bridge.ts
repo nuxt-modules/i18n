@@ -1,6 +1,5 @@
 import { resolve } from 'pathe'
-import { resolveModule, addPluginTemplate, extendWebpackConfig } from '@nuxt/kit'
-import webpack from 'webpack'
+import { resolveModule, addPluginTemplate } from '@nuxt/kit'
 import { distDir } from './dirs'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -24,16 +23,5 @@ export async function setupNuxtBridge(nuxt: Nuxt) {
   addPluginTemplate({
     filename: 'runtime/bridge.plugin.mjs',
     src: resolve(distDir, 'runtime/bridge.plugin.mjs')
-  })
-
-  extendWebpackConfig(config => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
-    config.plugins!.push(
-      new webpack.DefinePlugin({
-        __VUE_I18N_FULL_INSTALL__: 'true',
-        __VUE_I18N_LEGACY_API__: 'true',
-        __INTLIFY_PROD_DEVTOOLS__: 'false'
-      })
-    )
   })
 }
