@@ -18,6 +18,7 @@ export default defineBuildConfig({
     'js-cookie',
     'ufo',
     '@intlify/vue-i18n-extensions',
+    '@intlify/vue-i18n-bridge',
     'webpack'
   ]
 })

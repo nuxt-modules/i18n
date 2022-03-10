@@ -11,7 +11,7 @@
     "nuxt-edge": "latest"
   },
   "devDependencies": {
-    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27394404.1672148",
+    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27447229.20f3171",
     "@nuxt/types": "^2.15.7",
     "@nuxtjs/i18n": "file:../../packages/nuxt-i18n/package.tgz"
   },

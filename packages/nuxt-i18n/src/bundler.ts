@@ -1,10 +1,21 @@
 import { resolve } from 'pathe'
 import { vueI18n } from '@intlify/vite-plugin-vue-i18n'
+import webpack from 'webpack'
 import { extendViteConfig, extendWebpackConfig } from '@nuxt/kit'
 
 type VitePluginOptions = Parameters<typeof vueI18n>[0]
 
 export async function extendBundler(hasLocaleFiles: boolean, langPath: string) {
+  extendWebpackConfig(config => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
+    config.plugins!.push(
+      new webpack.DefinePlugin({
+        __VUE_I18N_FULL_INSTALL__: 'true',
+        __VUE_I18N_LEGACY_API__: 'true',
+        __INTLIFY_PROD_DEVTOOLS__: 'false'
+      })
+    )
+  })
   // TODO: extend webpack loader
   /*
   // install @intlify/vue-i18n-loader
