@@ -84,11 +84,10 @@ export default async function (context, inject) {
   }
 
   if (process.client) {
-    // TODO: if `addRouteMiddleware` is supported, switch to it!
-    //   https://github.com/nuxt/framework/pull/3193
-    /*
+    // @ts-ignore TODO: should resolve missing
     addRouteMiddleware(
       'locale-changing',
+      // @ts-ignore
       (to, from) => {
         const currentLocale = global.locale.value
         const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
@@ -98,16 +97,6 @@ export default async function (context, inject) {
       },
       { global: true }
     )
-    */
-    // @ts-ignore
-    context.app.router.beforeEach(async (to, from, next) => {
-      const currentLocale = global.locale.value
-      const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
-      if (currentLocale !== finalLocale) {
-        global.locale.value = finalLocale
-      }
-      next()
-    })
   } else {
     // @ts-ignore
     // TODO: query or http status
