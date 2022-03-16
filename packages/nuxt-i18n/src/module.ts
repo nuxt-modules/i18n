@@ -13,7 +13,7 @@ import { setupPages } from './pages'
 import { generateLoaderOptions } from './gen'
 
 import type { Composer } from 'vue-i18n'
-import type { NuxtI18nOptions } from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions } from './types'
 
 export * from './types'
 
@@ -43,7 +43,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('langDir path', langPath)
 
     // resolve localeInfo
-    const normalizedLocales = (options.__normalizedLocales = getNormalizedLocales(options.locales))
+    const normalizedLocales = ((options as NuxtI18nInternalOptions).__normalizedLocales = getNormalizedLocales(
+      options.locales
+    ))
     const hasLocaleFiles = normalizedLocales.length > 0
     const localeCodes = normalizedLocales.map(locale => locale.code)
     const localeInfo = await resolveLocales(langPath, normalizedLocales)
