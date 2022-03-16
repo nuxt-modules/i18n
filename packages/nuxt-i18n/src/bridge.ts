@@ -1,5 +1,5 @@
 import { resolve } from 'pathe'
-import { resolveModule, addPluginTemplate } from '@nuxt/kit'
+import { resolveModule, addPluginTemplate, addTemplate } from '@nuxt/kit'
 import { distDir } from './dirs'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -23,5 +23,10 @@ export async function setupNuxtBridge(nuxt: Nuxt) {
   addPluginTemplate({
     filename: 'runtime/bridge.plugin.mjs',
     src: resolve(distDir, 'runtime/bridge.plugin.mjs')
+  })
+
+  addTemplate({
+    filename: 'i18n.utils.mjs',
+    src: resolve(distDir, 'runtime/utils.mjs')
   })
 }
