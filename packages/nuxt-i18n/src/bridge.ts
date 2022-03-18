@@ -1,10 +1,16 @@
 import { resolve } from 'pathe'
-import { resolveModule, addPluginTemplate, addTemplate } from '@nuxt/kit'
+import { resolveModule, addPluginTemplate } from '@nuxt/kit'
 import { distDir } from './dirs'
 
 import type { Nuxt } from '@nuxt/schema'
 
 export async function setupNuxtBridge(nuxt: Nuxt) {
+  // resolve @intlify/shared
+  // nuxt.options.alias['@intlify/shared'] = resolveModule('@intlify/shared/dist/shared.esm-bundler.js', {
+  //   paths: nuxt.options.modulesDir
+  // })
+  // nuxt.options.build.transpile.push('@intlify/shared')
+
   // resolve vue-i18n as vue-i18n-legacy
   nuxt.options.alias['vue-i18n'] = resolveModule('vue-i18n-legacy/dist/vue-i18n.esm.js', {
     paths: nuxt.options.modulesDir
@@ -23,10 +29,5 @@ export async function setupNuxtBridge(nuxt: Nuxt) {
   addPluginTemplate({
     filename: 'runtime/bridge.plugin.mjs',
     src: resolve(distDir, 'runtime/bridge.plugin.mjs')
-  })
-
-  addTemplate({
-    filename: 'i18n.utils.mjs',
-    src: resolve(distDir, 'runtime/utils.mjs')
   })
 }

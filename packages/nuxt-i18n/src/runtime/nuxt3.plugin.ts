@@ -1,14 +1,16 @@
 import { ref, computed } from 'vue-demi'
 import { createI18n } from 'vue-i18n'
-import { isEmptyObject } from '@intlify/shared'
-import { createLocaleFromRouteGetter, resolveBaseUrl } from 'vue-i18n-routing'
-import { defineNuxtPlugin } from '#app'
+// import { isEmptyObject } from '@intlify/shared'
+import { createLocaleFromRouteGetter, resolveBaseUrl, findBrowserLocale } from 'vue-i18n-routing'
+import { defineNuxtPlugin, addRouteMiddleware } from '#app'
 import {
   messages as loadMessages,
   localeCodes,
   nuxtI18nOptions
-  // @ts-ignore
+  // @ts-ignore TODO: should resolve import error
 } from '#build/i18n.options.mjs'
+// @ts-ignore TODO: should resolve import error
+import { parseAcceptLanguage, isEmptyObject } from '#build/i18n.utils.mjs'
 
 import type { Composer } from 'vue-i18n'
 import type { RouteLocationNormalized } from 'vue-router'
@@ -26,7 +28,8 @@ export default defineNuxtPlugin(async nuxt => {
 
   // console.log('load options', loadMessages(), localeCodes, nuxtI18nOptions, Vue.version)
   // @ts-ignore
-  console.log('nuxt.plugin setup', nuxt)
+  // console.log('nuxt.plugin setup', nuxt)
+  // console.log('accept-lang', useRequestHeaders(['accept-language']))
 
   // TODO: lazy load
   // load messages
@@ -54,6 +57,7 @@ export default defineNuxtPlugin(async nuxt => {
       code: global.locale.value
     }
   )
+
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
   global.localeProperties = computed(() => _localeProperties.value)
@@ -66,8 +70,6 @@ export default defineNuxtPlugin(async nuxt => {
   nuxt.provide('i18n', global)
 
   if (process.client) {
-    // TODO: resolve `addRouteMiddleware`
-    // @ts-ignore
     addRouteMiddleware(
       'locale-changing',
       (to: RouteLocationNormalized, from: RouteLocationNormalized) => {

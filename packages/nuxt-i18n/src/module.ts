@@ -11,6 +11,7 @@ import { DEFAULT_OPTIONS, STRATEGIES } from './constants'
 import { getNormalizedLocales, resolveLocales } from './utils'
 import { setupPages } from './pages'
 import { generateLoaderOptions } from './gen'
+import { distDir } from './dirs'
 
 import type { Composer } from 'vue-i18n'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from './types'
@@ -75,6 +76,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
       paths: nuxt.options.modulesDir
     })
     nuxt.options.build.transpile.push('vue-i18n-routing')
+
+    addTemplate({
+      filename: 'i18n.utils.mjs',
+      src: resolve(distDir, 'runtime/utils.mjs')
+    })
 
     // loading options template
     addTemplate({

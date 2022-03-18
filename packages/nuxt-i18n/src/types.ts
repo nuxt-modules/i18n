@@ -43,6 +43,17 @@ export type CustomRoutePages = {
       }
 }
 
+export interface DetectBrowserLanguageOptions {
+  alwaysRedirect?: boolean
+  cookieCrossOrigin?: boolean
+  cookieDomain?: string | null
+  cookieKey?: string
+  cookieSecure?: boolean
+  fallbackLocale?: Locale | null
+  redirectOn?: RedirectOnOptions
+  useCookie?: boolean
+}
+
 export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResolveHandler> = {
   // differentDomains?: boolean
   // onBeforeLanguageSwitch?: (
@@ -52,7 +63,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   //   context: NuxtContext
   // ) => string | void
   // onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
-  // detectBrowserLanguage?: DetectBrowserLanguageOptions | false
+  detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
   lazy?: boolean | LazyOptions
   pages?: CustomRoutePages

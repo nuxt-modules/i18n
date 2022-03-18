@@ -3,7 +3,7 @@ import { install, ref, computed } from 'vue-demi'
 import VueI18n from 'vue-i18n'
 import { createI18n } from 'vue-i18n-bridge'
 import { createLocaleFromRouteGetter, resolveBaseUrl, findBrowserLocale } from 'vue-i18n-routing'
-import { isEmptyObject } from '@intlify/shared'
+// import { isEmptyObject } from '@intlify/shared'
 import {
   messages as loadMessages,
   localeCodes,
@@ -11,7 +11,7 @@ import {
   // @ts-ignore TODO: should resolve import error
 } from '#build/i18n.options.mjs'
 // @ts-ignore TODO: should resolve import error
-import { parseAcceptLanguage } from '#build/i18n.utils.mjs'
+import { parseAcceptLanguage, isEmptyObject } from '#build/i18n.utils.mjs'
 
 import type { Composer } from 'vue-i18n-bridge'
 import type { LocaleObject } from 'vue-i18n-routing'
