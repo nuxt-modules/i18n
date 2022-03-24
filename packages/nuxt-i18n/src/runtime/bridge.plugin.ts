@@ -7,8 +7,7 @@ import { createLocaleFromRouteGetter, resolveBaseUrl, findBrowserLocale } from '
 import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
 import { parseAcceptLanguage, isEmptyObject } from '#build/i18n.utils.mjs'
 
-import type { I18nOptions } from '@intlify/vue-i18n-bridge'
-import type { Composer } from 'vue-i18n-bridge'
+import type { I18nOptions, Composer } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 
@@ -31,7 +30,8 @@ export default async function (context, inject) {
   const nuxtI18nOptionsInternal = nuxtI18nOptions as unknown as Required<NuxtI18nInternalOptions>
 
   // vue-i18n install to vue
-  Vue.use(VueI18n, { bridge: true })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Vue.use(VueI18n as any, { bridge: true }) // TODO: should resolve type errors
 
   // TODO: lazy load
 
@@ -52,7 +52,8 @@ export default async function (context, inject) {
     },
     VueI18n
   )
-  Vue.use(i18n)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Vue.use(i18n as any) // TODO: should resolve type errors
 
   const global = i18n.global as Composer
 
