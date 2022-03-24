@@ -69,7 +69,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   pages?: CustomRoutePages
   // parsePages?: boolean
   // rootRedirect?: string | null | RootRedirectOptions
-  // routesNameSeparator?: string
+  routesNameSeparator?: string
   // skipSettingLocaleOnNavigate?: boolean
   // sortRoutes?: boolean
   // strategy?: Strategies

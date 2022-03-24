@@ -1,20 +1,16 @@
 import Vue from 'vue'
 import { install, ref, computed } from 'vue-demi'
 import VueI18n from 'vue-i18n'
-import { createI18n } from 'vue-i18n-bridge'
+import { createI18n } from '@intlify/vue-i18n-bridge'
 import { createLocaleFromRouteGetter, resolveBaseUrl, findBrowserLocale } from 'vue-i18n-routing'
 // import { isEmptyObject } from '@intlify/shared'
-import {
-  messages as loadMessages,
-  localeCodes,
-  nuxtI18nOptions
-  // @ts-ignore TODO: should resolve import error
-} from '#build/i18n.options.mjs'
-// @ts-ignore TODO: should resolve import error
+import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
 import { parseAcceptLanguage, isEmptyObject } from '#build/i18n.utils.mjs'
 
+import type { I18nOptions } from '@intlify/vue-i18n-bridge'
 import type { Composer } from 'vue-i18n-bridge'
 import type { LocaleObject } from 'vue-i18n-routing'
+import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 
 // FIXME: why do we install the below ?
 install()
@@ -31,6 +27,9 @@ export default async function (context, inject) {
   // console.log('load options', loadMessages(), localeCodes, nuxtI18nOptions)
   // console.log('bridge.plugin setup', context)
 
+  const vueI18nOptions = nuxtI18nOptions.vueI18n as I18nOptions
+  const nuxtI18nOptionsInternal = nuxtI18nOptions as unknown as Required<NuxtI18nInternalOptions>
+
   // vue-i18n install to vue
   Vue.use(VueI18n, { bridge: true })
 
@@ -39,16 +38,16 @@ export default async function (context, inject) {
   // load messages
   const messages = await loadMessages()
   if (!isEmptyObject(messages)) {
-    nuxtI18nOptions.vueI18n.messages = messages
+    vueI18nOptions.messages = messages
   }
-  const initialLocale = nuxtI18nOptions.vueI18n.locale
+  const initialLocale = vueI18nOptions.locale || 'en-US'
 
   // create i18n instance with vue-i18n-bridge
-  const i18n = createI18n(
+  const i18n = createI18n<false>(
     {
       legacy: false,
       globalInjection: true,
-      ...nuxtI18nOptions.vueI18n,
+      ...vueI18nOptions,
       locale: nuxtI18nOptions.defaultLocale
     },
     VueI18n
@@ -61,17 +60,17 @@ export default async function (context, inject) {
   const _locales = ref<string[] | LocaleObject[]>(nuxtI18nOptions.locales)
   const _localeCodes = ref<string[]>(localeCodes)
   const _localeProperties = ref<LocaleObject>(
-    nuxtI18nOptions.__normalizedLocales.find((l: LocaleObject) => l.code === global.locale.value) || {
+    nuxtI18nOptionsInternal.__normalizedLocales.find((l: LocaleObject) => l.code === global.locale.value) || {
       code: global.locale.value
     }
   )
   const _getBrowserLocale = (): string | undefined => {
     if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
-      return findBrowserLocale(nuxtI18nOptions.__normalizedLocales, navigator.languages as string[])
+      return findBrowserLocale(nuxtI18nOptionsInternal.__normalizedLocales, navigator.languages as string[])
     } else if (context.req && typeof context.req.headers['accept-language'] !== 'undefined') {
       return findBrowserLocale(
-        nuxtI18nOptions.__normalizedLocales,
+        nuxtI18nOptionsInternal.__normalizedLocales,
         parseAcceptLanguage(context.req.headers['accept-language'])
       )
     } else {
