@@ -12,7 +12,3 @@ export function parseAcceptLanguage(input: string): string[] {
   // so it's not explicitly used.
   return input.split(',').map(tag => tag.split(';')[0])
 }
-
-export function isEmptyObject(obj: any): boolean {
-  return obj != null && Object.keys(obj).length === 0
-}
