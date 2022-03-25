@@ -2,10 +2,10 @@ import Vue from 'vue'
 import { install, ref, computed } from 'vue-demi'
 import VueI18n from 'vue-i18n'
 import { createI18n } from '@intlify/vue-i18n-bridge'
-import { createLocaleFromRouteGetter, resolveBaseUrl, findBrowserLocale } from 'vue-i18n-routing'
+import { createLocaleFromRouteGetter, resolveBaseUrl } from 'vue-i18n-routing'
 import { isEmptyObject } from '@intlify/shared'
 import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
-import { parseAcceptLanguage } from '#build/i18n.utils.mjs'
+import { getBrowserLocale } from '#build/i18n.utils.mjs'
 
 import type { I18nOptions, Composer } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject } from 'vue-i18n-routing'
@@ -65,24 +65,10 @@ export default async function (context, inject) {
       code: global.locale.value
     }
   )
-  const _getBrowserLocale = (): string | undefined => {
-    if (process.client && typeof navigator !== 'undefined' && navigator.languages) {
-      // get browser language either from navigator if running on client side, or from the headers
-      return findBrowserLocale(nuxtI18nOptionsInternal.__normalizedLocales, navigator.languages as string[])
-    } else if (context.req && typeof context.req.headers['accept-language'] !== 'undefined') {
-      return findBrowserLocale(
-        nuxtI18nOptionsInternal.__normalizedLocales,
-        parseAcceptLanguage(context.req.headers['accept-language'])
-      )
-    } else {
-      return undefined
-    }
-  }
-
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
   global.localeProperties = computed(() => _localeProperties.value)
-  global.getBrowserLocale = _getBrowserLocale
+  global.getBrowserLocale = () => getBrowserLocale(nuxtI18nOptionsInternal, context)
   global.__baseUrl = resolveBaseUrl(nuxtI18nOptions.baseUrl, {})
 
   // inject i18n global to nuxt
@@ -99,7 +85,6 @@ export default async function (context, inject) {
       inject(key, (...args: unknown[]) => Reflect.apply(composer[key], composer, [...args]))
     )
   }
-  console.log('getBrowserLocale', global.getBrowserLocale())
 
   if (process.client) {
     // @ts-ignore TODO: should resolve missing
