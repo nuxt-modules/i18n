@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue-demi'
 import { createI18n } from '@intlify/vue-i18n-bridge'
-// import { isEmptyObject } from '@intlify/shared'
+import { isEmptyObject } from '@intlify/shared'
 import { createLocaleFromRouteGetter, resolveBaseUrl, findBrowserLocale } from 'vue-i18n-routing'
 import { defineNuxtPlugin, addRouteMiddleware } from '#app'
 import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
-import { parseAcceptLanguage, isEmptyObject } from '#build/i18n.utils.mjs'
+import { parseAcceptLanguage } from '#build/i18n.utils.mjs'
 
 import type { Composer, I18nOptions } from '@intlify/vue-i18n-bridge'
 import type { RouteLocationNormalized } from 'vue-router'
@@ -64,7 +64,7 @@ export default defineNuxtPlugin(async nuxt => {
   app.use(i18n as any) // TODO: should resolve type
 
   // inject i18n global to nuxt
-  nuxt.provide('i18n', global)
+  // nuxt.provide('i18n', global)
 
   if (process.client) {
     addRouteMiddleware(
