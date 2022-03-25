@@ -50,7 +50,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [ ] getLocaleCookie
 - [ ] setLocaleCookie
 - [ ] ~~setLocale~~ -> deprecated (locale setter)
-- [ ] getBrowserLocale
+- [x] getBrowserLocale
 - [ ] finalizePendingLocaleChange
 - [ ] waitForPendingLocaleChange
 - [ ] defaultDirection

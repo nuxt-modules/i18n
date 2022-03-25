@@ -1,3 +1,9 @@
+import { isVue3 } from 'vue-demi'
+import { useRequestHeaders } from '#app'
+import { findBrowserLocale } from 'vue-i18n-routing'
+
+import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
+
 /**
  * Parses locales provided from browser through `accept-language` header.
  *
@@ -11,4 +17,31 @@ export function parseAcceptLanguage(input: string): string[] {
   // after dash. Tag can also contain score after semicolon, that is assumed to match order
   // so it's not explicitly used.
   return input.split(',').map(tag => tag.split(';')[0])
+}
+
+export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, context?: any): string | undefined {
+  let ret: string | undefined
+
+  if (process.client) {
+    if (navigator.languages) {
+      // get browser language either from navigator if running on client side, or from the headers
+      ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
+    }
+  } else if (process.server) {
+    if (!isVue3) {
+      if (context.req && typeof context.req.headers['accept-language'] !== 'undefined') {
+        ret = findBrowserLocale(
+          options.__normalizedLocales,
+          parseAcceptLanguage(context.req.headers['accept-language'])
+        )
+      }
+    } else {
+      const headers = useRequestHeaders(['accept-language'])
+      if (headers['accept-language']) {
+        ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(headers['accept-language']))
+      }
+    }
+  }
+
+  return ret
 }
