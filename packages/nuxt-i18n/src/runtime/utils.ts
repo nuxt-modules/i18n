@@ -2,6 +2,7 @@ import { isVue3 } from 'vue-demi'
 import { useRequestHeaders } from '#app'
 import { findBrowserLocale } from 'vue-i18n-routing'
 
+import type { Composer } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 
 /**
@@ -17,6 +18,25 @@ export function parseAcceptLanguage(input: string): string[] {
   // after dash. Tag can also contain score after semicolon, that is assumed to match order
   // so it's not explicitly used.
   return input.split(',').map(tag => tag.split(';')[0])
+}
+
+export async function loadAndSetLocale(newLocale: string, i18n: Composer /*, { initialSetup = false } = {}*/) {
+  if (!newLocale) {
+    return
+  }
+
+  // abort if different domains option enabled
+  // if (!initialSetup && i18n.differentDomains) {
+  //   return
+  // }
+
+  const oldLocale = i18n.locale.value as string
+  if (newLocale === oldLocale) {
+    return
+  }
+
+  i18n.locale.value = newLocale
+  console.log('loadAndSetLocale', newLocale, oldLocale, i18n)
 }
 
 export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, context?: any): string | undefined {
