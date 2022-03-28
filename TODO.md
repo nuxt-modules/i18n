@@ -83,3 +83,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 ### Extension of Pinia?
 
 TBD
+
+### Composition APIs (NEW)
+
+- [ ] useBrowserLocale (same getBrowserLocale)

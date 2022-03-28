@@ -77,6 +77,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
     nuxt.options.build.transpile.push('vue-i18n-routing')
 
+    const i18nPath = addTemplate({
+      filename: 'i18n.mjs',
+      src: resolve(distDir, 'runtime/composables.mjs')
+    })
+    nuxt.options.alias['#i18n'] = i18nPath.dst!
+
+    // TODO: we should provide bridge only?
+    addTemplate({
+      filename: 'i18n.legacy.mjs',
+      src: resolve(distDir, 'runtime/legacy.mjs')
+    })
+
     addTemplate({
       filename: 'i18n.utils.mjs',
       src: resolve(distDir, 'runtime/utils.mjs')

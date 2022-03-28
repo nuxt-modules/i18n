@@ -2,8 +2,10 @@
 import { useI18n } from 'vue-i18n-bridge'
 import { localePath, switchLocalePath, useI18nHead } from 'vue-i18n-routing'
 
-const { t, locale, locales } = useI18n()
+const { t, locale, locales, getBrowserLocale } = useI18n()
 const i18nHead = useI18nHead({ addSeoAttributes: true })
+
+console.log('getBrowserLocale', getBrowserLocale())
 
 useMeta({
   title: computed(() => t('hello', { name: 'nuxt bridge' })),
