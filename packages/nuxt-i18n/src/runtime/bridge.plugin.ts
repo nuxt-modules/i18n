@@ -5,7 +5,7 @@ import { createI18n } from '@intlify/vue-i18n-bridge'
 import { createLocaleFromRouteGetter, resolveBaseUrl } from 'vue-i18n-routing'
 import { isEmptyObject } from '@intlify/shared'
 import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
-import { getBrowserLocale } from '#build/i18n.utils.mjs'
+import { getBrowserLocale, loadAndSetLocale } from '#build/i18n.utils.mjs'
 
 import type { I18nOptions, Composer } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject } from 'vue-i18n-routing'
@@ -68,6 +68,7 @@ export default async function (context, inject) {
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
   global.localeProperties = computed(() => _localeProperties.value)
+  global.setLocale = (locale: string) => loadAndSetLocale(locale, global)
   global.getBrowserLocale = () => getBrowserLocale(nuxtI18nOptionsInternal, context)
   global.__baseUrl = resolveBaseUrl(nuxtI18nOptions.baseUrl, {})
 
@@ -87,23 +88,27 @@ export default async function (context, inject) {
   }
 
   if (process.client) {
-    // @ts-ignore TODO: should resolve missing
-    addRouteMiddleware(
-      'locale-changing',
-      // @ts-ignore
-      (to, from) => {
-        const currentLocale = global.locale.value
-        const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
-        if (currentLocale !== finalLocale) {
-          global.locale.value = finalLocale
-        }
-      },
-      { global: true }
-    )
+    // FIXME: not work auto-import ...
+    // @ts-ignore
+    // addRouteMiddleware(
+    //   'locale-changing',
+    //   // @ts-ignore
+    //   (to, from) => {
+    //     const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
+    //     loadAndSetLocale(finalLocale, global)
+    //   },
+    //   { global: true }
+    // )
+    // @ts-ignore
+    context.app.router.beforeEach(async (to, from, next) => {
+      const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
+      await loadAndSetLocale(finalLocale, global)
+      next()
+    })
   } else {
     // @ts-ignore
     // TODO: query or http status
     const finalLocale = getLocaleFromRoute(context.route) || nuxtI18nOptions.defaultLocale || initialLocale
-    global.locale.value = finalLocale
+    await loadAndSetLocale(finalLocale, global)
   }
 }

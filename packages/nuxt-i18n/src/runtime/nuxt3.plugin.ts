@@ -4,7 +4,7 @@ import { isEmptyObject } from '@intlify/shared'
 import { createLocaleFromRouteGetter, resolveBaseUrl } from 'vue-i18n-routing'
 import { defineNuxtPlugin, addRouteMiddleware } from '#app'
 import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
-import { getBrowserLocale } from '#build/i18n.utils.mjs'
+import { getBrowserLocale, loadAndSetLocale } from '#build/i18n.utils.mjs'
 
 import type { Composer, I18nOptions } from '@intlify/vue-i18n-bridge'
 import type { RouteLocationNormalized } from 'vue-router'
@@ -58,6 +58,7 @@ export default defineNuxtPlugin(async nuxt => {
   global.locales = computed(() => _locales.value)
   global.localeCodes = computed(() => _localeCodes.value)
   global.localeProperties = computed(() => _localeProperties.value)
+  global.setLocale = (locale: string) => loadAndSetLocale(locale, global)
   global.getBrowserLocale = () => getBrowserLocale(nuxtI18nOptionsInternal)
   global.__baseUrl = resolveBaseUrl(nuxtI18nOptions.baseUrl, {})
 
@@ -71,17 +72,14 @@ export default defineNuxtPlugin(async nuxt => {
     addRouteMiddleware(
       'locale-changing',
       (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-        const currentLocale = global.locale.value
         const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
-        if (currentLocale !== finalLocale) {
-          global.locale.value = finalLocale
-        }
+        loadAndSetLocale(finalLocale, global)
       },
       { global: true }
     )
   } else {
     // TODO: query or http status
     const finalLocale = getLocaleFromRoute(nuxt.ssrContext!.url) || nuxtI18nOptions.defaultLocale || initialLocale
-    global.locale.value = finalLocale
+    await loadAndSetLocale(finalLocale, global)
   }
 })
