@@ -5,6 +5,15 @@ import { nuxtI18nOptions } from '#build/i18n.options.mjs'
 
 import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 
+export {
+  localePath,
+  localeRoute,
+  localeLocation,
+  switchLocalePath,
+  getRouteBaseName,
+  useI18nHead
+} from 'vue-i18n-routing'
+
 const nuxtI18nOptionsInternal = nuxtI18nOptions as unknown as Required<NuxtI18nInternalOptions>
 
 export function useBrowserLocale(normalizedLocales = nuxtI18nOptionsInternal.__normalizedLocales): string | null {

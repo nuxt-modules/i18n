@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { localePath, switchLocalePath, useI18nHead } from 'vue-i18n-routing'
-import { useBrowserLocale } from '#i18n'
+import { localePath, switchLocalePath, useI18nHead, useBrowserLocale } from '#i18n'
 
 const { t, locale, locales } = useI18n()
 
