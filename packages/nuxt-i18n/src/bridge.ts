@@ -14,7 +14,7 @@ export async function setupNuxtBridge(nuxt: Nuxt) {
   // resolve vue-i18n-bridge as vue-i18n
   const vueI18nBridgePath = nuxt.options.dev
     ? 'vue-i18n-bridge/dist/vue-i18n-bridge.esm-bundler.js'
-    : 'vue-i18n-bridge/dist/vue-i18n-bridge-runtime.esm-bundler.js'
+    : 'vue-i18n-bridge/dist/vue-i18n-bridge.runtime.esm-bundler.js'
   nuxt.options.alias['vue-i18n-bridge'] = resolveModule(vueI18nBridgePath, {
     paths: nuxt.options.modulesDir
   })
