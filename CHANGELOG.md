@@ -1,4 +1,14 @@
-## [7.2.0](https://github.com/nuxt-community/i18n-module/compare/v7.1.0...v7.2.0) (2021-11-04)
+
+
+### [7.2.1](https://github.com/nuxt-community/i18n-module/compare/v7.2.0...v7.2.1) (2022-04-01)
+
+
+### Bug Fixes
+
+* don't detect locale from route when using no_prefix ([#1421](https://github.com/nuxt-community/i18n-module/issues/1421)) ([609782f](https://github.com/nuxt-community/i18n-module/commit/609782f49c93b889b4f2494f5d21a16f96fc5ac9))
+* **docs:** add info on using dynamic translations with _.vue ([b6039d2](https://github.com/nuxt-community/i18n-module/commit/b6039d2215945319fdbd1acf8dc981cc55c3bc8d)), closes [#1400](https://github.com/nuxt-community/i18n-module/issues/1400)
+* **docs:** correct links to [Custom paths] and [Ignore routes] ([#1392](https://github.com/nuxt-community/i18n-module/issues/1392)) ([091944c](https://github.com/nuxt-community/i18n-module/commit/091944cec97c13a7192dcd5b6650cc8ecd348a1e))
+* **parse-pages:** add jsx plugin for .vue files using jsx syntax ([#1356](https://github.com/nuxt-community/i18n-module/issues/1356)) ([8cdb999](https://github.com/nuxt-community/i18n-module/commit/8cdb99917c021492ec8208eeecec7b01dd1b4ce5))## [7.2.0](https://github.com/nuxt-community/i18n-module/compare/v7.1.0...v7.2.0) (2021-11-04)
 
 
 ### Features
