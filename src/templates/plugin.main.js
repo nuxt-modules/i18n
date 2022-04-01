@@ -216,7 +216,7 @@ export default async (context) => {
 
     const finalLocale =
       (options.detectBrowserLanguage && doDetectBrowserLanguage(route)) ||
-      (!options.differentDomains && getLocaleFromRoute(route)) ||
+      (!options.differentDomains && options.strategy !== Constants.STRATEGIES.NO_PREFIX && getLocaleFromRoute(route)) ||
       app.i18n.locale || app.i18n.defaultLocale || ''
 
     if (options.skipSettingLocaleOnNavigate) {
