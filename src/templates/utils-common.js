@@ -118,7 +118,7 @@ export function getLocaleDomain (locales, req) {
  * @return {RegExp}
  */
 export function getLocalesRegex (localeCodes) {
-  return new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`, 'i')
+  return new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`)
 }
 
 /**
@@ -130,7 +130,7 @@ export function getLocalesRegex (localeCodes) {
 export function createLocaleFromRouteGetter (localeCodes, { routesNameSeparator, defaultLocaleRouteNameSuffix }) {
   const localesPattern = `(${localeCodes.join('|')})`
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
-  const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
+  const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`)
   const regexpPath = getLocalesRegex(localeCodes)
   /**
    * Extract locale code from given route:

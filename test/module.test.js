@@ -42,6 +42,12 @@ describe('locales as string array', () => {
     expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
   })
 
+  test('detects locale from route when locale case does not match', async () => {
+    const html = await get('/FR/about')
+    const dom = getDom(html)
+    expect(dom.querySelector('#current-page')?.textContent).toBe('page: À propos')
+  })
+
   test('dir attribute will not be added to the html element', async () => {
     const html = await get('/about')
     const dom = getDom(html)
@@ -1221,6 +1227,8 @@ describe('prefix_and_default strategy', () => {
 describe('no_prefix strategy', () => {
   /** @type {Nuxt} */
   let nuxt
+  /** @type {NuxtConfig} */
+  let localConfig
 
   beforeAll(async () => {
     const override = {
@@ -1229,7 +1237,8 @@ describe('no_prefix strategy', () => {
       }
     }
 
-    nuxt = (await setup(loadConfig(__dirname, 'no-lang-switcher', override, { merge: true }))).nuxt
+    localConfig = loadConfig(__dirname, 'no-lang-switcher', override, { merge: true })
+    nuxt = (await setup(localConfig)).nuxt
   })
 
   afterAll(async () => {
@@ -1322,6 +1331,23 @@ describe('no_prefix strategy', () => {
     const html = await get('/', requestOptions)
     const dom = getDom(html)
     expect(dom.querySelector('#current-locale')?.textContent).toBe('locale: fr')
+  })
+
+  test('does not detect locale from route when locale case does not match', async () => {
+    /** @type {any} */
+    let resonseError
+    try {
+      await get('/FR/about')
+    } catch (error) {
+      resonseError = error
+    }
+    expect(resonseError).toBeDefined()
+    expect(resonseError.statusCode).toBe(404)
+    // Verify localeProperties is set to default locale.
+    const dom = getDom(resonseError.response.body)
+    const localeProperties = JSON.parse(dom.querySelector('#locale-properties')?.textContent || '{}')
+    const configLocales = /** @type {any[]} */(localConfig?.i18n?.locales)
+    expect(localeProperties).toMatchObject(configLocales.find(localeObject => localeObject.code === localConfig?.i18n?.defaultLocale))
   })
 })
 
