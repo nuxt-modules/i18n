@@ -23,7 +23,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
       }
     } else {
       // TODO: should implement compability for options API style
-      throw new Error('Not implement for nuxt3 option3 API style')
+      throw new Error('Not implement for nuxt3 options API style')
     }
   }
 

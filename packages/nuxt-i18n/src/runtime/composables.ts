@@ -5,13 +5,21 @@ import { nuxtI18nOptions } from '#build/i18n.options.mjs'
 
 import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 
+export * from '@intlify/vue-i18n-bridge'
+
 export {
   localePath,
-  localeRoute,
   localeLocation,
+  localeRoute,
+  localeHead,
   switchLocalePath,
   getRouteBaseName,
-  useI18nHead
+  useLocalePath,
+  useLocaleLocation,
+  useLocaleRoute,
+  useLocaleHead,
+  useSwitchLocalePath,
+  useRouteBaseName
 } from 'vue-i18n-routing'
 
 const nuxtI18nOptionsInternal = nuxtI18nOptions as unknown as Required<NuxtI18nInternalOptions>

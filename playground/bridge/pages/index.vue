@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n-bridge'
-import { localePath, switchLocalePath, useI18nHead, useBrowserLocale } from '#i18n'
+import { useI18n, useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
 
-const { t, locale, locales, getBrowserLocale } = useI18n()
-const i18nHead = useI18nHead({ addSeoAttributes: true })
+const { t, locale, locales, localeProperties } = useI18n()
+const localePath = useLocalePath()
+const switchLocalePath = useSwitchLocalePath()
+const i18nHead = useLocaleHead({ addSeoAttributes: true })
 
-console.log('getBrowserLocale', getBrowserLocale(), useBrowserLocale())
+console.log('useBrowserLocale', useBrowserLocale())
+console.log('localeProperties', localeProperties)
 
-useMeta({
+useHead({
   title: computed(() => t('hello', { name: 'nuxt bridge' })),
   htmlAttrs: computed(() => ({
     lang: i18nHead.value.htmlAttrs!.lang

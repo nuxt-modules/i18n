@@ -5,7 +5,7 @@ import { distDir } from './dirs'
 import type { Nuxt } from '@nuxt/schema'
 
 export async function setupNuxtBridge(nuxt: Nuxt) {
-  // resolve vue-i18n as vue-i18n-legacy
+  // resolve vue-i18n@v8 as vue-i18n-legacy
   nuxt.options.alias['vue-i18n'] = resolveModule('vue-i18n-legacy/dist/vue-i18n.esm.js', {
     paths: nuxt.options.modulesDir
   })

@@ -13,7 +13,7 @@ import { setupPages } from './pages'
 import { generateLoaderOptions } from './gen'
 import { distDir } from './dirs'
 
-import type { Composer } from 'vue-i18n'
+import type { I18n, Composer, VueI18n } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from './types'
 
 export * from './types'
@@ -71,6 +71,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
     nuxt.options.build.transpile.push('@intlify/shared')
 
+    // resolve @intlify/vue-router-bridge
+    nuxt.options.alias['@intlify/vue-router-bridge'] = resolveModule('@intlify/vue-router-bridge/lib/index.mjs', {
+      paths: nuxt.options.modulesDir
+    })
+    nuxt.options.build.transpile.push('@intlify/vue-router-bridge')
+
+    // resolve @intlify/vue-i18n-bridge
+    nuxt.options.alias['@intlify/vue-i18n-bridge'] = resolveModule('@intlify/vue-i18n-bridge/lib/index.mjs', {
+      paths: nuxt.options.modulesDir
+    })
+    nuxt.options.build.transpile.push('@intlify/vue-i18n-bridge')
+
     // resolve vue-i18n-routing
     nuxt.options.alias['vue-i18n-routing'] = resolveModule('vue-i18n-routing/dist/vue-i18n-routing.es.js', {
       paths: nuxt.options.modulesDir
@@ -110,11 +122,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
   }
 })
 
-declare module '@nuxt/kit' {
-  export interface NuxtApp {
-    $i18n: Composer
-  }
-}
+// declare module 'nuxt3' {
+//   export interface LegacyContext {
+//     i18n: Composer | VueI18n
+//   }
+// }
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {

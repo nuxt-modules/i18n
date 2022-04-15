@@ -36,16 +36,16 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 
 ## API Reference
 
-### Extension of Vue (Composable)
+### Extension of Vue
 
 - [x] localePath
 - [x] switchLocalePath
 - [x] getRouteBaseName
 - [x] localeRoute
 - [x] localeLocation
-- [x] ~~$nuxtI18nHead~~ -> useI18nHead
+- [x] $nuxtI18nHead
 
-### Extension of VueI18n (Composer)
+### Extension of VueI18n / Composer
 
 - [ ] getLocaleCookie
 - [ ] setLocaleCookie
@@ -71,6 +71,16 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [ ] localeLocation
 - [ ] switchLocalePath
 
+### Composition APIs (NEW!)
+
+- [x] useLocalePath (same `localePath`)
+- [x] useSwitchLocalePath (same `switchLocalePath`)
+- [x] useRouteBaseName (same `getRouteBaseName`)
+- [x] useLocaleRoute (same `localeRoute`)
+- [x] useLocaleLocation (same `localeLocation`)
+- [x] useLocaleHead (same `$nuxtI18nHead` )
+- [-] useBrowserLocale (same `getBrowserLocale`, TODO: should be renamed)
+
 ### Extension of Vuex
 
 - [ ] $i18n
@@ -83,7 +93,3 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 ### Extension of Pinia?
 
 TBD
-
-### Composition APIs (NEW)
-
-- [ ] useBrowserLocale (same getBrowserLocale)
