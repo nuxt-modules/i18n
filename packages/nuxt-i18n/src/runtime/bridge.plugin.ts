@@ -119,9 +119,17 @@ export default defineNuxtPlugin(async nuxt => {
     const { app, store } = legacyNuxtContext
     legacyNuxtContext.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
     app.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
-    // TODO: support for nuxt context injection
+    app.getRouteBaseName = legacyNuxtContext.getRouteBaseName = proxyNuxtLegacy(legacyNuxtContext, getRouteBaseName)
+    app.localePath = legacyNuxtContext.localePath = proxyNuxtLegacy(legacyNuxtContext, localePath)
+    app.localeRoute = legacyNuxtContext.localeRoute = proxyNuxtLegacy(legacyNuxtContext, localeRoute)
+    app.localeLocation = legacyNuxtContext.localeLocation = proxyNuxtLegacy(legacyNuxtContext, localeLocation)
+    app.switchLocalePath = legacyNuxtContext.switchLocalePath = proxyNuxtLegacy(legacyNuxtContext, switchLocalePath)
+    app.localeHead = legacyNuxtContext.localeHead = proxyNuxtLegacy(legacyNuxtContext, localeHead)
+    if (store) {
+      // TODO: should implement for vuex and pinia
+    }
   }
-  // console.log('nuxt legacy context', legacyNuxtContext)
+  console.log('nuxt legacy context', legacyNuxtContext)
 
   // support compatible legacy nuxt/i18n API
   // TODO: `this` should annotate with `Vue`
