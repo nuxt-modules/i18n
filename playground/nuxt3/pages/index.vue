@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-import { localePath, switchLocalePath, useI18nHead, useBrowserLocale } from '#i18n'
+import { useI18n, useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
 
-const { t, locale, locales } = useI18n()
+const { t, locale, locales, localeProperties } = useI18n()
+const localePath = useLocalePath()
+const switchLocalePath = useSwitchLocalePath()
 
 console.log('useBrowserLocale', useBrowserLocale())
+console.log('localeProperties', localeProperties)
 
-const i18nHead = useI18nHead({ addSeoAttributes: true })
-useMeta({
-  title: computed(() => t('hello', { name: 'nuxt bridge' })),
-  htmlAttrs: computed(() => ({
+const i18nHead = useLocaleHead({ addSeoAttributes: true })
+useHead({
+  titleTemplate: t('hello', { name: 'nuxt bridge' }),
+  htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang
-  })),
-  link: computed(() => [...(i18nHead.value.link || [])]),
-  meta: computed(() => [...(i18nHead.value.meta || [])])
+  },
+  link: [...(i18nHead.value.link || [])],
+  meta: [...(i18nHead.value.meta || [])]
 })
 
 function getLocaleName(code) {

@@ -1,9 +1,21 @@
 import { isVue3 } from 'vue-demi'
 import { useRequestHeaders } from '#app'
-import { findBrowserLocale } from 'vue-i18n-routing'
+import { findBrowserLocale, getLocale, setLocale } from 'vue-i18n-routing'
 
-import type { Composer } from '@intlify/vue-i18n-bridge'
+import type { Composer, I18n } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
+export function runOnceWith(obj: any, fn: Function) {
+  if (!obj || !['function', 'object'].includes(typeof obj)) {
+    return fn()
+  }
+  if (obj.__nuxt_i18n_installed) {
+    return
+  }
+  obj.__nuxt_i18n_installed = true
+  return fn()
+}
 
 /**
  * Parses locales provided from browser through `accept-language` header.
@@ -20,7 +32,7 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-export async function loadAndSetLocale(newLocale: string, i18n: Composer /*, { initialSetup = false } = {}*/) {
+export async function loadAndSetLocale(newLocale: string, i18n: I18n /*, { initialSetup = false } = {}*/) {
   if (!newLocale) {
     return
   }
@@ -30,12 +42,14 @@ export async function loadAndSetLocale(newLocale: string, i18n: Composer /*, { i
   //   return
   // }
 
-  const oldLocale = i18n.locale.value as string
+  // const oldLocale = i18n.locale.value as string
+  const oldLocale = getLocale(i18n)
   if (newLocale === oldLocale) {
     return
   }
 
-  i18n.locale.value = newLocale
+  // i18n.locale.value = newLocale
+  setLocale(i18n, newLocale)
   console.log('loadAndSetLocale', newLocale, oldLocale, i18n)
 }
 

@@ -4,7 +4,6 @@ import { defineNuxtConfig } from 'nuxt3'
 export default defineNuxtConfig({
   buildModules: ['@nuxtjs/i18n'],
 
-  // FIXME: type errors ...
   i18n: {
     langDir: 'locales',
     baseUrl: 'http://localhost:3000',
@@ -31,6 +30,7 @@ export default defineNuxtConfig({
     defaultLocale: 'en',
     vueI18n: {
       legacy: false,
+      locale: 'en',
       fallbackLocale: 'en'
     }
   }

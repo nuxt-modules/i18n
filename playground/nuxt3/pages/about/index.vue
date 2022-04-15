@@ -1,19 +1,29 @@
-<script setup lang="ts">
-import { localePath, useI18nHead } from 'vue-i18n-routing'
+<script lang="ts">
+import type { ExportedGlobalComposer, LocaleObject } from '#i18n'
 
-const i18nHead = useI18nHead({ addSeoAttributes: true })
-useMeta({
-  htmlAttrs: computed(() => ({
-    lang: i18nHead.value.htmlAttrs!.lang
-  })),
-  link: computed(() => [...(i18nHead.value.link || [])]),
-  meta: computed(() => [...(i18nHead.value.meta || [])])
+export default defineComponent({
+  mounted() {
+    console.log('mounted')
+    console.log('$i18n.getBrowserLocale', this.$i18n.getBrowserLocale())
+    console.log('$i18n.localeProperties', this.$i18n.localeProperties)
+  },
+  computed: {
+    switchableLocale() {
+      const i18n = this.$i18n as ExportedGlobalComposer
+      const _locales = (i18n.locales as LocaleObject[]).filter(i => i.code !== this.$i18n.locale)
+      return _locales.length !== 0 ? _locales[0] : { code: 'ja', name: '日本語' }
+    }
+  }
 })
 </script>
 
 <template>
   <div>
-    <NuxtLink :to="localePath('/')">Back to Home</NuxtLink>
+    <nav>
+      <NuxtLink :to="localePath('/')">Back to Home</NuxtLink>
+    </nav>
     <p>hello</p>
+    <p>{{ switchableLocale }}</p>
+    <p>{{ localeHead({ addSeoAttributes: true }) }}</p>
   </div>
 </template>

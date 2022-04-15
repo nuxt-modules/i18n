@@ -46,7 +46,7 @@
     "@intlify/shared": "next",
     "@intlify/vite-plugin-vue-i18n": "next",
     "@intlify/vue-i18n-loader": "next",
-    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27398533.8edd481",
+    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-27489614.315e5b5",
     "debug": "^4.3.2",
     "defu": "latest",
     "knitwork": "^0.1.0",
@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
-    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-27398533.8edd481",
+    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-27489614.315e5b5",
     "@types/debug": "^4.1.7",
     "nuxt3": "latest"
   },
