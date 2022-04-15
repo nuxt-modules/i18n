@@ -43,7 +43,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] getRouteBaseName
 - [x] localeRoute
 - [x] localeLocation
-- [x] $nuxtI18nHead
+- [x] localeHead (nuxt 3 only)
+- [x] $nuxtI18nHead (nuxt bridge only)
 
 ### Extension of VueI18n / Composer
 
@@ -64,12 +65,14 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 
 ### Extension of Nuxt Context
 
+Note that the following is supported for **nuxt bridge only**:
+
 - [x] i18n
-- [ ] getRouteBaseName
-- [ ] localePath
-- [ ] localeRoute
-- [ ] localeLocation
-- [ ] switchLocalePath
+- [x] getRouteBaseName
+- [x] localePath
+- [x] localeRoute
+- [x] localeLocation
+- [x] switchLocalePath
 
 ### Composition APIs (NEW!)
 
