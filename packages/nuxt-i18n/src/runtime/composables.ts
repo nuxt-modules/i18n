@@ -25,17 +25,11 @@ export {
 const nuxtI18nOptionsInternal = nuxtI18nOptions as unknown as Required<NuxtI18nInternalOptions>
 
 export function useBrowserLocale(normalizedLocales = nuxtI18nOptionsInternal.__normalizedLocales): string | null {
-  let ret: string | null = null
-
-  if (process.client) {
-    // get browser language either from navigator if running on client side, or from the headers
-    ret = findBrowserLocale(normalizedLocales, navigator.languages as string[])
-  } else {
-    const headers = useRequestHeaders(['accept-language'])
-    if (headers['accept-language']) {
-      ret = findBrowserLocale(normalizedLocales, parseAcceptLanguage(headers['accept-language']))
-    }
-  }
-
-  return ret
+  const headers = useRequestHeaders(['accept-language'])
+  return (
+    findBrowserLocale(
+      normalizedLocales,
+      process.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'])
+    ) || null
+  )
 }
