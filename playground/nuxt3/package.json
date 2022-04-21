@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "file:../../packages/nuxt-i18n/package.tgz",
-    "nuxt3": "latest"
+    "nuxt": "^3.0.0-rc.1"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
