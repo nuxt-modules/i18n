@@ -11,7 +11,7 @@ import { DEFAULT_OPTIONS, STRATEGIES } from './constants'
 import { getNormalizedLocales, resolveLocales } from './utils'
 import { setupPages } from './pages'
 import { generateLoaderOptions } from './gen'
-import { distDir } from './dirs'
+import { distDir, pkgModulesDir } from './dirs'
 
 import type { I18n, Composer, VueI18n } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from './types'
@@ -73,19 +73,19 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // resolve @intlify/vue-router-bridge
     nuxt.options.alias['@intlify/vue-router-bridge'] = resolveModule('@intlify/vue-router-bridge/lib/index.mjs', {
-      paths: nuxt.options.modulesDir
+      paths: [pkgModulesDir, ...nuxt.options.modulesDir]
     })
     nuxt.options.build.transpile.push('@intlify/vue-router-bridge')
 
     // resolve @intlify/vue-i18n-bridge
     nuxt.options.alias['@intlify/vue-i18n-bridge'] = resolveModule('@intlify/vue-i18n-bridge/lib/index.mjs', {
-      paths: nuxt.options.modulesDir
+      paths: [pkgModulesDir, ...nuxt.options.modulesDir]
     })
     nuxt.options.build.transpile.push('@intlify/vue-i18n-bridge')
 
     // resolve vue-i18n-routing
     nuxt.options.alias['vue-i18n-routing'] = resolveModule('vue-i18n-routing/dist/vue-i18n-routing.es.js', {
-      paths: nuxt.options.modulesDir
+      paths: [pkgModulesDir, ...nuxt.options.modulesDir]
     })
     nuxt.options.build.transpile.push('vue-i18n-routing')
 
