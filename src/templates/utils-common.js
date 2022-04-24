@@ -214,21 +214,12 @@ export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieK
     }
 
     const redirectCookie = cookieSerialize(cookieKey, locale, cookieOptions)
-    let foundRedirectCookie = false
-    const cookies = headers.map(header => {
+    headers = headers.filter(header => {
       const cookie = cookieParse(header)
-      if (cookie[cookieKey]) {
-        cookie[cookieKey] = locale
-        foundRedirectCookie = true
-        return redirectCookie
-      }
-      return header
+      return !(cookieKey in cookie)
     })
+    headers.push(redirectCookie)
 
-    if (!foundRedirectCookie) {
-      cookies.push(redirectCookie)
-    }
-
-    res.setHeader('Set-Cookie', cookies)
+    res.setHeader('Set-Cookie', headers)
   }
 }
