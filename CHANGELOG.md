@@ -1,5 +1,12 @@
 
 
+### [7.2.2](https://github.com/nuxt-community/i18n-module/compare/v7.2.1...v7.2.2) (2022-04-25)
+
+
+### Bug Fixes
+
+* fixed locale changing issue in server side middleware ([#1429](https://github.com/nuxt-community/i18n-module/issues/1429)) ([c10231d](https://github.com/nuxt-community/i18n-module/commit/c10231df0aab40ce8f72aca45730ab1d61464f7c))
+
 ### [7.2.1](https://github.com/nuxt-community/i18n-module/compare/v7.2.0...v7.2.1) (2022-04-01)
 
 
