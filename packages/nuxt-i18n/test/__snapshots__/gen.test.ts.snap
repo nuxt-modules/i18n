@@ -1,8 +1,71 @@
 // Vitest Snapshot v1
 
-exports[`generateLoaderOptions 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-import localeEn_564a1578 from \\"./locales/en.json\\";
-export const messages = () => Promise.resolve(Object({\\"en\\":localeEn_564a1578}))
-export const nuxtI18nOptions = Object({defaultLocale: \\"en\\",vueI18n: Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\":Object({\\"en\\":Object({\\"hello\\":\\"Hello!\\"})})})})"
+exports[`basic 1`] = `
+"import localeEn_564a1578 from \\"./locales/en.json\\";
+import localeJa_564a1606 from \\"./locales/ja.json\\";
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+
+export const loadMessages = async () => {
+  const messages = Object({})
+  messages[\\"en\\"] = localeEn_564a1578
+  messages[\\"ja\\"] = localeJa_564a1606
+  return Promise.resolve(messages)
+}
+
+export const resolveNuxtI18nOptions = async (context) => {
+  const nuxtI18nOptions = Object({})
+  nuxtI18nOptions.defaultLocale = \\"en\\"
+  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\":Object({\\"en\\":Object({\\"hello\\":\\"Hello!\\"})})})
+  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  return nuxtI18nOptions
+}
+
+export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+"
+`;
+
+exports[`lazy 1`] = `
+"import localeEn_564a1578 from \\"./locales/en.json\\";
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+
+export const loadMessages = async () => {
+  const messages = Object({})
+  messages[\\"en\\"] = localeEn_564a1578
+  messages[\\"ja\\"] = await import(\\"./locales/ja.json\\" /* webpackChunkName: \\"./locales/ja.json\\" */).then(r => r.default || r)
+  return Promise.resolve(messages)
+}
+
+export const resolveNuxtI18nOptions = async (context) => {
+  const nuxtI18nOptions = Object({})
+  nuxtI18nOptions.defaultLocale = \\"en\\"
+  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\":Object({\\"en\\":Object({\\"hello\\":\\"Hello!\\"})})})
+  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  return nuxtI18nOptions
+}
+
+export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+"
+`;
+
+exports[`vueI18n: path 1`] = `
+"import localeEn_564a1578 from \\"./locales/en.json\\";
+import localeJa_564a1606 from \\"./locales/ja.json\\";
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+
+export const loadMessages = async () => {
+  const messages = Object({})
+  messages[\\"en\\"] = localeEn_564a1578
+  messages[\\"ja\\"] = localeJa_564a1606
+  return Promise.resolve(messages)
+}
+
+export const resolveNuxtI18nOptions = async (context) => {
+  const nuxtI18nOptions = Object({})
+  const vueI18nOptionsLoader = async (context) => import(\\"~/plugins/vue-i18n.js\\").then(r => (r.default || r)(context))
+  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  return nuxtI18nOptions
+}
+
+export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+"
 `;

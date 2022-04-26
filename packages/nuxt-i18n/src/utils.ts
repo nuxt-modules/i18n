@@ -1,10 +1,15 @@
 import { resolveFiles } from '@nuxt/kit'
 import { parse } from 'pathe'
 import { isObject, isString, isBoolean } from '@intlify/shared'
+import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
 import type { NuxtOptions } from '@nuxt/schema'
+
+export function formatMessage(message: string) {
+  return `${NUXT_I18N_MODULE_ID} ${message}`
+}
 
 export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleObject[] {
   locales = locales || []

@@ -3,6 +3,8 @@ import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
 
 // TODO: bring up from @nuxtjs/i18n type definition
 
+export type NoNullable<T> = Exclude<T, null | undefined>
+
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
 export interface LazyOptions {

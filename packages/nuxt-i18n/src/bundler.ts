@@ -7,7 +7,7 @@ type VitePluginOptions = Parameters<typeof vueI18n>[0]
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
-export async function extendBundler(hasLocaleFiles: boolean, langPath: string) {
+export async function extendBundler(hasLocaleFiles: boolean, langPath: string | null) {
   try {
     // @ts-ignore NOTE: use webpack whichi is installed by nuxt
     const webpack = await import('webpack').then(m => m.default || m)
@@ -58,7 +58,7 @@ export async function extendBundler(hasLocaleFiles: boolean, langPath: string) {
     const viteOptions: VitePluginOptions = {
       compositionOnly: false
     }
-    if (hasLocaleFiles) {
+    if (hasLocaleFiles && langPath) {
       viteOptions['include'] = resolve(langPath, './**')
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
