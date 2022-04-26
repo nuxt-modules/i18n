@@ -3,44 +3,92 @@ import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shar
 import { templateUtils } from '@nuxt/kit'
 import { genImport } from 'knitwork'
 
-import type { NuxtI18nOptions, LocaleInfo } from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, NoNullable } from './types'
 
 export type LoaderOptions = {
   localeCodes?: string[]
   localeInfo?: LocaleInfo[]
   nuxtI18nOptions?: NuxtI18nOptions
+  nuxtI18nInternalOptions?: NuxtI18nInternalOptions
 }
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
-export function generateLoaderOptions(options: LoaderOptions = {}) {
+export function generateLoaderOptions(
+  lazy: NoNullable<NuxtI18nOptions['lazy']>,
+  langDir: NuxtI18nOptions['langDir'],
+  options: LoaderOptions = {}
+) {
   // TODO: lazy loading local info
+  let genCode = ''
+  const localeInfo = options.localeInfo || []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { fallbackLocale } = (isObject(options.nuxtI18nOptions?.vueI18n) ? options.nuxtI18nOptions?.vueI18n : {}) as any
+  const syncLocaleFiles = new Set<LocaleInfo>()
+  const asyncLocaleFiles = new Set<LocaleInfo>()
+
+  if (langDir) {
+    if (fallbackLocale && isString(fallbackLocale)) {
+      const localeObject = localeInfo.find(l => l.code === fallbackLocale)
+      if (localeObject) {
+        syncLocaleFiles.add(localeObject)
+      }
+    }
+    for (const locale of localeInfo) {
+      if (!syncLocaleFiles.has(locale) && !asyncLocaleFiles.has(locale)) {
+        ;(lazy ? asyncLocaleFiles : syncLocaleFiles).add(locale)
+      }
+    }
+  }
+
+  const importMapper = new Map<string, string>()
+  for (const { code, path } of syncLocaleFiles) {
+    importMapper.set(code, templateUtils.importName(`locale_${code}`))
+    genCode += `${genImport(path, templateUtils.importName(`locale_${code}`))}\n`
+  }
 
   // prettier-ignore
-  const genCode = `${Object.entries(options).map(([rootKey, rootValue]) => {
+  genCode += `${Object.entries(options).map(([rootKey, rootValue]) => {
     if (rootKey === 'nuxtI18nOptions') {
-      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
+      let genCodes = `export const resolveNuxtI18nOptions = async (context) => {\n`
+      genCodes += `  const ${rootKey} = Object({})\n`
+      for (const [key, value] of Object.entries(rootValue)) {
         if (key === 'vueI18n') {
-          return `${key}: ${isObject(value)
-            ? toCode(value)
+          const optionLoaderVariable = `${key}OptionsLoader`
+          genCodes += `  const ${optionLoaderVariable} = ${isObject(value)
+            ? `async (context) => ${toCode(value)}\n`
             : isString(value)
-              ? `(context) => import(${toCode(value)}).then(r => (r.default || r)(context))`
-              : `${toCode({})}`
+              ? `async (context) => import(${toCode(value)}).then(r => (r.default || r)(context))\n`
+              : `async (context) => ${toCode({})}\n`
           }`
+          genCodes += `  ${rootKey}.${key} = await ${optionLoaderVariable}(context)\n`
         } else {
-          return `${key}: ${toCode(value)}`
+          genCodes += `  ${rootKey}.${key} = ${toCode(value)}\n`
         }
-      }).join(`,`)}})`
+      }
+      genCodes += `  return nuxtI18nOptions\n`
+      genCodes += `}\n`
+      return genCodes
+    } else if (rootKey === 'nuxtI18nInternalOptions') {
+      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
+        return `${key}: ${toCode(value)}`
+      }).join(`,`)}})\n`
     } else if (rootKey === 'localeInfo') {
-      const localeInfo = options.localeInfo || []
-      const importMapper = new Map<string, string>()
-      localeInfo.forEach(({ code }) => {
-        importMapper.set(code, templateUtils.importName(`locale_${code}`))
-      })
-      return `${localeInfo.map(l => genImport(l.path, importMapper.get(l.code))).join(`\n`)}
-export const messages = () => Promise.resolve(Object({${[...importMapper].map(i => `${templateUtils.serialize(i[0])}:${i[1]}`).join(`,`)}}))`
+      let codes = `export const loadMessages = async () => {\n`
+      codes += `  const messages = Object({})\n`
+      if (langDir) {
+        for (const { code } of syncLocaleFiles) {
+          codes += `  messages[${toCode(code)}] = ${importMapper.get(code)}\n`
+        }
+        for (const { code, path } of asyncLocaleFiles) {
+          codes += `  messages[${toCode(code)}] = await import(${toCode(path)} /* webpackChunkName: ${toCode(path)} */).then(r => r.default || r)\n`
+        }
+      }
+      codes += `  return Promise.resolve(messages)\n`
+      codes += `}\n`
+      return codes
 	  } else {
-	    return `export const ${rootKey} = ${toCode(rootValue)}`
+	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
 	  }
   }).join('\n')}`
 

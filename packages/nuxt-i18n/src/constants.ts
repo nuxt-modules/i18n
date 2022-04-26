@@ -1,3 +1,5 @@
+export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n'
+
 // Options
 const STRATEGY_PREFIX = 'prefix'
 const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
@@ -34,7 +36,7 @@ export const DEFAULT_OPTIONS = {
   defaultLocaleRouteNameSuffix: 'default',
   // sortRoutes: true,
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
-  // lazy: false,
+  lazy: false,
   langDir: null,
   // rootRedirect: null,
   // detectBrowserLanguage: {

@@ -25,7 +25,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - [x] Requirements
   - [ ] Setup
   - [x] Feature details
-- [ ] Lazy-load translations
+- [-] Lazy-load translations (`skipNuxtState` is not supported yet)
 - [ ] Lang Switcher
   - [ ] Dynamic route parameters
   - [ ] Wait for page transition

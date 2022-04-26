@@ -58,6 +58,7 @@
     "vue-i18n-routing": "edge"
   },
   "devDependencies": {
+    "@babel/parser": "^7.17.9",
     "@nuxt/module-builder": "latest",
     "@nuxt/schema": "^3.0.0-rc.1",
     "@types/debug": "^4.1.7",

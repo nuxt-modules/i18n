@@ -5,18 +5,6 @@ import { findBrowserLocale, getLocale, setLocale } from 'vue-i18n-routing'
 import type { Composer, I18n } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-export function runOnceWith(obj: any, fn: Function) {
-  if (!obj || !['function', 'object'].includes(typeof obj)) {
-    return fn()
-  }
-  if (obj.__nuxt_i18n_installed) {
-    return
-  }
-  obj.__nuxt_i18n_installed = true
-  return fn()
-}
-
 /**
  * Parses locales provided from browser through `accept-language` header.
  *

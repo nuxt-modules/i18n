@@ -16,25 +16,24 @@ import {
 import { isEmptyObject } from '@intlify/shared'
 import { castToVueI18n } from '@intlify/vue-i18n-bridge'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#app'
-import { messages as loadMessages, localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
+import { loadMessages, localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 import { loadAndSetLocale } from '#build/i18n.utils.mjs'
 import { getBrowserLocale } from '#build/i18n.legacy.mjs'
 
 import type { I18nOptions, Composer } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject, ExtendProperyDescripters } from 'vue-i18n-routing'
-import type { NuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-
-const getLocaleFromRoute = createLocaleFromRouteGetter(
-  localeCodes,
-  nuxtI18nOptions.routesNameSeparator,
-  nuxtI18nOptions.defaultLocaleRouteNameSuffix
-)
 
 export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
 
+  const nuxtI18nOptions = await resolveNuxtI18nOptions(nuxt)
+  const getLocaleFromRoute = createLocaleFromRouteGetter(
+    localeCodes,
+    nuxtI18nOptions.routesNameSeparator,
+    nuxtI18nOptions.defaultLocaleRouteNameSuffix
+  )
+
   const vueI18nOptions = nuxtI18nOptions.vueI18n as I18nOptions
-  const nuxtI18nOptionsInternal = nuxtI18nOptions as unknown as Required<NuxtI18nInternalOptions>
 
   // register nuxt/i18n options as global
   // so global options is reffered by `vue-i18n-routing`
@@ -70,13 +69,13 @@ export default defineNuxtPlugin(async nuxt => {
     hooks: {
       onExtendComposer(composer: Composer) {
         const _localeProperties = ref<LocaleObject>(
-          nuxtI18nOptionsInternal.__normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
+          nuxtI18nInternalOptions.__normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
             code: composer.locale.value
           }
         )
         composer.localeProperties = computed(() => _localeProperties.value)
         composer.setLocale = (locale: string) => loadAndSetLocale(locale, i18n)
-        composer.getBrowserLocale = () => getBrowserLocale(nuxtI18nOptionsInternal, nuxt.ssrContext)
+        composer.getBrowserLocale = () => getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
       },
       onExtendExportedGlobal(global: Composer): ExtendProperyDescripters {
         return {

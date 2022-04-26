@@ -2627,6 +2627,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@nuxtjs/i18n@workspace:packages/nuxt-i18n"
   dependencies:
+    "@babel/parser": ^7.17.9
     "@intlify/shared": next
     "@intlify/vite-plugin-vue-i18n": next
     "@intlify/vue-i18n-loader": next
