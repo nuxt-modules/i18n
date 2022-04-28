@@ -6,6 +6,7 @@ daysUntilClose: 7
 exemptLabels:
   - pinned 📌
   - security
+  - feature request
 exemptAssignees: true
 # Label to use when marking an issue as stale
 staleLabel: stale
