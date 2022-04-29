@@ -223,3 +223,22 @@ export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieK
     res.setHeader('Set-Cookie', headers)
   }
 }
+
+/**
+ * @param  {string} pathString
+ * @param  {readonly string[]} localeCodes
+ * @return {string}
+ */
+export function clearPathFromLocale (pathString, localeCodes) {
+  const regexp = new RegExp(`^(\\/${localeCodes.join('|\\/')})(?=\\/|$)`)
+
+  return pathString.replace(regexp, '') || '/'
+}
+
+/**
+ * @param  {string} pathString
+ * @return {string}
+ */
+export function addSlashToPath (pathString) {
+  return pathString.endsWith('/') ? pathString : `${pathString}/`
+}

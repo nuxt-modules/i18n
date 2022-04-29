@@ -1,6 +1,6 @@
 import isHTTPS from 'is-https'
 import { localeMessages, options } from './options'
-import { formatMessage } from './utils-common'
+import { addSlashToPath, clearPathFromLocale, formatMessage } from './utils-common'
 // @ts-ignore
 import { hasProtocol } from '~i18n-ufo'
 
@@ -214,6 +214,40 @@ export function mergeAdditionalMessages (i18n, additionalMessages, localeCodes, 
       i18n.mergeLocaleMessage(locale, existingMessages)
     }
   }
+}
+
+/**
+ * @param {string} pathString
+ * @param {readonly string[]} localeCodes
+ * @param {import('../../types').DisableDefaultRedirect} disableDefaultRedirect
+ * @return {boolean}
+ */
+export function isEnabledRedirectForPath (pathString, localeCodes, disableDefaultRedirect) {
+  if (!disableDefaultRedirect) {
+    return true
+  }
+
+  if (typeof disableDefaultRedirect === 'boolean') {
+    return false
+  }
+
+  const clearPath = clearPathFromLocale(pathString, localeCodes)
+  const clearPathWithSlash = addSlashToPath(clearPath)
+
+  return !disableDefaultRedirect
+    .map((patternString) => {
+      const isPattern = patternString.includes('*')
+      const pathPattern = patternString.replace('*', '')
+      const normalizedPathPattern = addSlashToPath(pathPattern)
+
+      return {
+        isPattern,
+        path: normalizedPathPattern
+      }
+    })
+    .some(({ isPattern, path }) => {
+      return isPattern ? clearPathWithSlash.startsWith(path) : clearPathWithSlash === path
+    })
 }
 
 /**

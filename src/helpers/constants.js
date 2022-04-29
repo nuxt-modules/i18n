@@ -34,6 +34,7 @@ export const DEFAULT_OPTIONS = {
   vueI18nLoader: false,
   locales: [],
   defaultLocale: '',
+  disableDefaultRedirect: false,
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',

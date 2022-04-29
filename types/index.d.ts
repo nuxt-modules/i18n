@@ -52,9 +52,12 @@ export interface BaseOptions {
   onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
 }
 
+export type DisableDefaultRedirect = boolean | string[]
+
 export interface Options extends BaseOptions {
   baseUrl?: string | ((context: NuxtContext) => string)
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
+  disableDefaultRedirect?: DisableDefaultRedirect;
   langDir?: string | null
   lazy?: boolean | LazyOptions
   pages?: {
