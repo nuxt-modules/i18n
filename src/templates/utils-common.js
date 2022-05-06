@@ -229,16 +229,8 @@ export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieK
  * @param  {readonly string[]} localeCodes
  * @return {string}
  */
-export function clearPathFromLocale (pathString, localeCodes) {
+export function removeLocaleFromPath (pathString, localeCodes) {
   const regexp = new RegExp(`^(\\/${localeCodes.join('|\\/')})(?=\\/|$)`)
 
   return pathString.replace(regexp, '') || '/'
-}
-
-/**
- * @param  {string} pathString
- * @return {string}
- */
-export function addSlashToPath (pathString) {
-  return pathString.endsWith('/') ? pathString : `${pathString}/`
 }

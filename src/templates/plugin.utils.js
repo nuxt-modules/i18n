@@ -1,8 +1,8 @@
 import isHTTPS from 'is-https'
 import { localeMessages, options } from './options'
-import { addSlashToPath, clearPathFromLocale, formatMessage } from './utils-common'
+import { removeLocaleFromPath, formatMessage } from './utils-common'
 // @ts-ignore
-import { hasProtocol } from '~i18n-ufo'
+import { hasProtocol, withTrailingSlash } from '~i18n-ufo'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
@@ -231,14 +231,14 @@ export function isEnabledRedirectForPath (pathString, localeCodes, disableDefaul
     return false
   }
 
-  const clearPath = clearPathFromLocale(pathString, localeCodes)
-  const clearPathWithSlash = addSlashToPath(clearPath)
+  const cleanPath = removeLocaleFromPath(pathString, localeCodes)
+  const cleanPathWithSlash = withTrailingSlash(cleanPath)
 
   return !disableDefaultRedirect
     .map((patternString) => {
-      const isPattern = patternString.includes('*')
+      const isPattern = patternString.endsWith('*')
       const pathPattern = patternString.replace('*', '')
-      const normalizedPathPattern = addSlashToPath(pathPattern)
+      const normalizedPathPattern = withTrailingSlash(pathPattern)
 
       return {
         isPattern,
@@ -246,7 +246,7 @@ export function isEnabledRedirectForPath (pathString, localeCodes, disableDefaul
       }
     })
     .some(({ isPattern, path }) => {
-      return isPattern ? clearPathWithSlash.startsWith(path) : clearPathWithSlash === path
+      return isPattern ? cleanPathWithSlash.startsWith(path) : cleanPathWithSlash === path
     })
 }
 

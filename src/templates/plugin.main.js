@@ -153,7 +153,7 @@ export default async (context) => {
     let redirectPath = ''
 
     const isStaticGenerate = process.static && process.server
-    const isSameLocale = getLocaleFromRoute(route) !== newLocale
+    const isDifferentLocale = getLocaleFromRoute(route) !== newLocale
     const isPrefixAndDefaultStrategy = options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT
     const isDefaultLocale = newLocale === options.defaultLocale
     const isEnabledRedirectForRoute = isEnabledRedirectForPath(route.fullPath, app.i18n.localeCodes, options.disableDefaultRedirect)
@@ -166,7 +166,7 @@ export default async (context) => {
       // Skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
       // locale, in which case we might still redirect as we prefer unprefixed route in this case, but let user a
       // possibility to disable this behavior by switching disableDefaultRedirect option to true.
-      (isSameLocale || (isPrefixAndDefaultStrategy && isDefaultLocale && isEnabledRedirectForRoute))
+      (isDifferentLocale || (isPrefixAndDefaultStrategy && isDefaultLocale && isEnabledRedirectForRoute))
     ) {
       // The current route could be 404 in which case attempt to find matching route using the full path since
       // "switchLocalePath" can only find routes if the current route exists.
