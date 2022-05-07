@@ -44,8 +44,7 @@
   },
   "dependencies": {
     "@intlify/shared": "next",
-    "@intlify/vite-plugin-vue-i18n": "next",
-    "@intlify/vue-i18n-loader": "next",
+    "@intlify/unplugin-vue-i18n": "latest",
     "@nuxt/kit": "^3.0.0-rc.1",
     "debug": "^4.3.2",
     "defu": "latest",
