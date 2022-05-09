@@ -126,7 +126,7 @@
     "core-js": "3.22.2",
     "eslint": "8.14.0",
     "express": "4.17.3",
-    "husky": "4.3.8",
+    "husky": "8.0.1",
     "jest": "27.5.1",
     "jest-dev-server": "6.0.3",
     "jsdom": "19.0.0",
