@@ -156,7 +156,7 @@ export default async (context) => {
     const isDifferentLocale = getLocaleFromRoute(route) !== newLocale
     const isPrefixAndDefaultStrategy = options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT
     const isDefaultLocale = newLocale === options.defaultLocale
-    const isEnabledRedirectForRoute = isEnabledRedirectForPath(route.fullPath, app.i18n.localeCodes, options.disableDefaultRedirect)
+    const isEnabledRedirectForRoute = isEnabledRedirectForPath(route.fullPath, app.i18n.localeCodes, options.prefixAndDefaultRedirect)
 
     // Decide whether we should redirect to a different route.
     if (

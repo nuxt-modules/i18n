@@ -219,22 +219,22 @@ export function mergeAdditionalMessages (i18n, additionalMessages, localeCodes, 
 /**
  * @param {string} pathString
  * @param {readonly string[]} localeCodes
- * @param {import('../../types').DisableDefaultRedirect} disableDefaultRedirect
+ * @param {import('../../types').PrefixAndDefaultRedirect} prefixAndDefaultRedirect
  * @return {boolean}
  */
-export function isEnabledRedirectForPath (pathString, localeCodes, disableDefaultRedirect) {
-  if (!disableDefaultRedirect) {
+export function isEnabledRedirectForPath (pathString, localeCodes, prefixAndDefaultRedirect) {
+  if (!prefixAndDefaultRedirect) {
     return true
   }
 
-  if (typeof disableDefaultRedirect === 'boolean') {
+  if (!prefixAndDefaultRedirect?.pages?.length) {
     return false
   }
 
   const cleanPath = removeLocaleFromPath(pathString, localeCodes)
   const cleanPathWithSlash = withTrailingSlash(cleanPath)
 
-  return !disableDefaultRedirect
+  return !prefixAndDefaultRedirect.pages
     .map((patternString) => {
       const isPattern = patternString.endsWith('*')
       const pathPattern = patternString.replace('*', '')

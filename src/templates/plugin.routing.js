@@ -1,7 +1,8 @@
 import './middleware'
 import Vue from 'vue'
 import { Constants, nuxtOptions, options } from './options'
-import { getDomainFromLocale } from './plugin.utils'
+import { getDomainFromLocale, isEnabledRedirectForPath } from './plugin.utils'
+import { removeLocaleFromPath } from './utils-common'
 // @ts-ignore
 import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
 
@@ -44,7 +45,7 @@ function resolveRoute (route, locale) {
     return
   }
 
-  const { i18n } = this
+  const { i18n, route: currentRoute } = this
 
   locale = locale || i18n.locale
 
@@ -68,19 +69,23 @@ function resolveRoute (route, locale) {
   if (localizedRoute.path && !localizedRoute.name) {
     const resolvedRoute = this.router.resolve(localizedRoute).route
     const resolvedRouteName = this.getRouteBaseName(resolvedRoute)
+    const forceDefaultRoute = shouldForceDefaultRoute(currentRoute.fullPath, localizedRoute.path)
+
     if (resolvedRouteName) {
       localizedRoute = {
-        name: getLocaleRouteName(resolvedRouteName, locale),
+        name: getLocaleRouteName(resolvedRouteName, locale, forceDefaultRoute),
         params: resolvedRoute.params,
         query: resolvedRoute.query,
         hash: resolvedRoute.hash
       }
     } else {
-      const isDefaultLocale = locale === options.defaultLocale
+      const { isDefaultLocale } = getHelpersByLocale(locale)
       // if route has a path defined but no name, resolve full route using the path
       const isPrefixed =
           // don't prefix default locale
-          !(isDefaultLocale && [Constants.STRATEGIES.PREFIX_EXCEPT_DEFAULT, Constants.STRATEGIES.PREFIX_AND_DEFAULT].includes(options.strategy)) &&
+          !(isDefaultLocale && Constants.STRATEGIES.PREFIX_EXCEPT_DEFAULT === options.strategy) &&
+          // prefix default locale if option enabled
+          !(Constants.STRATEGIES.PREFIX_AND_DEFAULT === options.strategy && !forceDefaultRoute) &&
           // no prefix for any language
           !(options.strategy === Constants.STRATEGIES.NO_PREFIX) &&
           // no prefix for different domains
@@ -95,7 +100,10 @@ function resolveRoute (route, locale) {
       localizedRoute.name = this.getRouteBaseName()
     }
 
-    localizedRoute.name = getLocaleRouteName(localizedRoute.name, locale)
+    const resolvedRoute = this.router.resolve(localizedRoute).route
+    const forceDefaultRoute = shouldForceDefaultRoute(currentRoute.fullPath, resolvedRoute.fullPath)
+
+    localizedRoute.name = getLocaleRouteName(localizedRoute.name, locale, forceDefaultRoute)
 
     const { params } = localizedRoute
     if (params && params['0'] === undefined && params.pathMatch) {
@@ -123,6 +131,7 @@ function switchLocalePath (locale) {
 
   const { i18n, route, store } = this
   const { params, ...routeCopy } = route
+
   let langSwitchParams = {}
   if (options.vuex && options.vuex.syncRouteParams && store) {
     langSwitchParams = store.getters[`${options.vuex.moduleName}/localeRouteParams`](locale)
@@ -136,6 +145,16 @@ function switchLocalePath (locale) {
     }
   })
   let path = this.localePath(baseRoute, locale)
+
+  const { prefixAndDefaultRedirect } = options
+  const { isPrefixAndDefault, isDefaultLocale } = getHelpersByLocale(locale)
+  const localeSwitcher = prefixAndDefaultRedirect?.localeSwitcher
+  const shouldSwitchToPrefix = Boolean(localeSwitcher && localeSwitcher === 'prefix')
+
+  if (isPrefixAndDefault && isDefaultLocale && shouldSwitchToPrefix) {
+    const cleanPath = removeLocaleFromPath(path, [locale])
+    path = `/${locale}${cleanPath}`
+  }
 
   // Handle different domains
   if (i18n.differentDomains) {
@@ -165,17 +184,45 @@ function getRouteBaseName (givenRoute) {
 }
 
 /**
- * @param {string | undefined} routeName
  * @param {string} locale
  */
-function getLocaleRouteName (routeName, locale) {
+function getHelpersByLocale (locale) {
+  const isDefaultLocale = locale === options.defaultLocale
+  const isPrefixAndDefault = options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT
+
+  return {
+    isDefaultLocale,
+    isPrefixAndDefault
+  }
+}
+
+/**
+ * @param {string | undefined} routeName
+ * @param {string} locale
+ * @param {boolean} forceDefaultName
+ */
+function getLocaleRouteName (routeName, locale, forceDefaultName = true) {
+  const { isDefaultLocale, isPrefixAndDefault } = getHelpersByLocale(locale)
   let name = routeName + (options.strategy === Constants.STRATEGIES.NO_PREFIX ? '' : options.routesNameSeparator + locale)
 
-  if (locale === options.defaultLocale && options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT) {
+  if (isDefaultLocale && isPrefixAndDefault && forceDefaultName) {
     name += options.routesNameSeparator + options.defaultLocaleRouteNameSuffix
   }
 
   return name
+}
+
+/**
+ * @param {string} currentPath
+ * @param {string} nextPath
+ * @return {boolean}
+ */
+function shouldForceDefaultRoute (currentPath, nextPath) {
+  const { defaultLocale, localeCodes } = options
+  const isPrefixedPath = new RegExp(`^/${defaultLocale}(/|$)`).test(currentPath)
+  const enabledRedirectForPath = isEnabledRedirectForPath(nextPath, localeCodes, options.prefixAndDefaultRedirect)
+
+  return !isPrefixedPath || enabledRedirectForPath
 }
 
 /**
