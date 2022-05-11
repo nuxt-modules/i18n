@@ -28,11 +28,17 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 
   - **Arguments**:
     - locale: (type: `string`)
+    - forcePrefix: (type: `boolean`)
   - **Returns**: `string`
 
-  Returns path of the current route for specified `locale`.
+  Returns path of the current route for specified `locale`. 
+
+  If `forcePrefix` is set to `true`, it returns the path with the prefix. Useful for `prefix_and_default` strategy. 
+  You can also set global behavior through option prefixAndDefaultRules.
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
+
+  See more details about [prefixAndDefaultRules](../options-reference#prefixanddefaultrules).
 
   See type definition for [Location](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L125).
 
