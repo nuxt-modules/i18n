@@ -1,5 +1,8 @@
 <template>
   <div class="navbar">
+    <nuxt-link to="/">
+      Home Default
+    </nuxt-link>
     <nuxt-link v-for="link in links" :key="link.label" tag="a" :to="localePath(link.path)">
       {{ link.label }}
     </nuxt-link>

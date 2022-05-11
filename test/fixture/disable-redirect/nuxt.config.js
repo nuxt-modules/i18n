@@ -4,13 +4,28 @@ import BaseConfig from '../base.config'
 /** @type {import('@nuxt/types').NuxtConfig} */
 const config = {
   ...BaseConfig,
-  disableDefaultRedirect: true,
-  strategy: 'prefix_and_default',
+  i18n: {
+    prefixAndDefaultRedirect: {
+      localeSwitcher: 'prefix',
+      pages: ['/foo/*']
+    },
+    strategy: 'prefix_and_default',
+    locales: [
+      {
+        code: 'en',
+        iso: 'en',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
+      }
+    ],
+    defaultLocale: 'en'
+  },
   buildDir: resolve(__dirname, '.nuxt'),
-  srcDir: __dirname,
-  buildModules: [
-    '@nuxtjs/composition-api/module'
-  ]
+  srcDir: __dirname
 }
 
 module.exports = config
