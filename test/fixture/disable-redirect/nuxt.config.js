@@ -6,7 +6,7 @@ const config = {
   ...BaseConfig,
   i18n: {
     prefixAndDefaultRules: {
-      switchLocal: 'default',
+      switchLocale: 'default',
       routing: 'prefix'
     },
     strategy: 'prefix_and_default',

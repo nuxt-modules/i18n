@@ -54,7 +54,7 @@ export interface BaseOptions {
 }
 
 export interface PrefixAndDefaultRules {
-  switchLocal: PrefixAndDefaultRule
+  switchLocale: PrefixAndDefaultRule
   routing: PrefixAndDefaultRule
 }
 

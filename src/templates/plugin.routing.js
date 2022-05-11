@@ -143,9 +143,9 @@ function switchLocalePath (locale, forcePrefix = false) {
   })
   let path = this.localePath(baseRoute, locale)
 
-  const { prefixAndDefaultRules: { switchLocal } } = options
+  const { prefixAndDefaultRules: { switchLocale } } = options
   const { isPrefixAndDefault, isDefaultLocale } = getHelpers(locale)
-  const shouldSwitchToPrefix = switchLocal === 'prefix'
+  const shouldSwitchToPrefix = switchLocale === 'prefix'
 
   if (isPrefixAndDefault && isDefaultLocale && (shouldSwitchToPrefix || forcePrefix)) {
     const cleanPath = removeLocaleFromPath(path, [locale])
