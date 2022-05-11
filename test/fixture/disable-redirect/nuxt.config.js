@@ -5,9 +5,9 @@ import BaseConfig from '../base.config'
 const config = {
   ...BaseConfig,
   i18n: {
-    prefixAndDefaultRedirect: {
-      localeSwitcher: 'prefix',
-      pages: ['/foo/*']
+    prefixAndDefaultRules: {
+      switchLocal: 'default',
+      routing: 'prefix'
     },
     strategy: 'prefix_and_default',
     locales: [

@@ -6,6 +6,10 @@
 
     <LangSwitcher />
 
+    <hr>
+
+    <LangSwitcher force-prefix />
+
     <Nuxt />
   </div>
 </template>

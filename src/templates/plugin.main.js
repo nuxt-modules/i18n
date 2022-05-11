@@ -15,7 +15,7 @@ import {
   loadLanguageAsync,
   resolveBaseUrl,
   registerStore,
-  mergeAdditionalMessages, isEnabledRedirectForPath
+  mergeAdditionalMessages
 } from './plugin.utils'
 // @ts-ignore
 import { joinURL } from '~i18n-ufo'
@@ -156,7 +156,6 @@ export default async (context) => {
     const isDifferentLocale = getLocaleFromRoute(route) !== newLocale
     const isPrefixAndDefaultStrategy = options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT
     const isDefaultLocale = newLocale === options.defaultLocale
-    const isEnabledRedirectForRoute = isEnabledRedirectForPath(route.fullPath, app.i18n.localeCodes, options.prefixAndDefaultRedirect)
 
     // Decide whether we should redirect to a different route.
     if (
@@ -166,11 +165,10 @@ export default async (context) => {
       // Skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
       // locale, in which case we might still redirect as we prefer unprefixed route in this case, but let user a
       // possibility to disable this behavior by switching disableDefaultRedirect option to true.
-      (isDifferentLocale || (isPrefixAndDefaultStrategy && isDefaultLocale && isEnabledRedirectForRoute))
+      (isDifferentLocale || (isPrefixAndDefaultStrategy && isDefaultLocale))
     ) {
-      // The current route could be 404 in which case attempt to find matching route using the full path since
-      // "switchLocalePath" can only find routes if the current route exists.
-      const routePath = app.switchLocalePath(newLocale) || app.localePath(route.fullPath, newLocale)
+      const routePath = app.localePath(route.fullPath, newLocale)
+
       if (routePath && routePath !== route.fullPath && !routePath.startsWith('//')) {
         redirectPath = routePath
       }

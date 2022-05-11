@@ -1,8 +1,8 @@
 import isHTTPS from 'is-https'
 import { localeMessages, options } from './options'
-import { removeLocaleFromPath, formatMessage } from './utils-common'
+import { formatMessage } from './utils-common'
 // @ts-ignore
-import { hasProtocol, withTrailingSlash } from '~i18n-ufo'
+import { hasProtocol } from '~i18n-ufo'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
@@ -214,40 +214,6 @@ export function mergeAdditionalMessages (i18n, additionalMessages, localeCodes, 
       i18n.mergeLocaleMessage(locale, existingMessages)
     }
   }
-}
-
-/**
- * @param {string} pathString
- * @param {readonly string[]} localeCodes
- * @param {import('../../types').PrefixAndDefaultRedirect} prefixAndDefaultRedirect
- * @return {boolean}
- */
-export function isEnabledRedirectForPath (pathString, localeCodes, prefixAndDefaultRedirect) {
-  if (!prefixAndDefaultRedirect) {
-    return true
-  }
-
-  if (!prefixAndDefaultRedirect?.pages?.length) {
-    return false
-  }
-
-  const cleanPath = removeLocaleFromPath(pathString, localeCodes)
-  const cleanPathWithSlash = withTrailingSlash(cleanPath)
-
-  return !prefixAndDefaultRedirect.pages
-    .map((patternString) => {
-      const isPattern = patternString.endsWith('*')
-      const pathPattern = patternString.replace('*', '')
-      const normalizedPathPattern = withTrailingSlash(pathPattern)
-
-      return {
-        isPattern,
-        path: normalizedPathPattern
-      }
-    })
-    .some(({ isPattern, path }) => {
-      return isPattern ? cleanPathWithSlash.startsWith(path) : cleanPathWithSlash === path
-    })
 }
 
 /**

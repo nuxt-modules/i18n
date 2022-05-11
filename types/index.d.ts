@@ -6,7 +6,7 @@ export { Locale }
 export type Strategies = 'no_prefix' | 'prefix_except_default' | 'prefix' | 'prefix_and_default'
 export type Directions = 'ltr' | 'rtl' | 'auto'
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
-export type LocaleSwitcher = 'default' | 'prefix'
+export type PrefixAndDefaultRule = 'default' | 'prefix'
 
 export interface LocaleObject extends Record<string, any> {
   code: Locale
@@ -53,9 +53,9 @@ export interface BaseOptions {
   onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
 }
 
-export interface PrefixAndDefaultRedirect {
-  pages?: string[]
-  localeSwitcher: LocaleSwitcher
+export interface PrefixAndDefaultRules {
+  switchLocal: PrefixAndDefaultRule
+  routing: PrefixAndDefaultRule
 }
 
 export interface Options extends BaseOptions {
@@ -69,7 +69,7 @@ export interface Options extends BaseOptions {
     }
   }
   parsePages?: boolean
-  prefixAndDefaultRedirect?: PrefixAndDefaultRedirect
+  prefixAndDefaultRules?: PrefixAndDefaultRules
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean,
