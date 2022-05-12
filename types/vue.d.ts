@@ -41,7 +41,7 @@ interface NuxtI18nApi {
     localePath(route: RawLocation, locale?: string): string
     localeRoute(route: RawLocation, locale?: string): Route | undefined
     localeLocation(route: RawLocation, locale?: string): Location | undefined
-    switchLocalePath(locale: string, forcePrefix?: boolean): string
+    switchLocalePath(locale: string): string
 }
 
 declare module 'vue-i18n' {

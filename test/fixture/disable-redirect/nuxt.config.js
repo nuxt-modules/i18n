@@ -4,11 +4,11 @@ import BaseConfig from '../base.config'
 /** @type {import('@nuxt/types').NuxtConfig} */
 const config = {
   ...BaseConfig,
+  router: {
+    trailingSlash: true
+  },
   i18n: {
-    prefixAndDefaultRules: {
-      switchLocale: 'default',
-      routing: 'prefix'
-    },
+    prefixAndDefaultRule: 'default',
     strategy: 'prefix_and_default',
     locales: [
       {

@@ -186,17 +186,15 @@ Set this to `true` when using different domains for each locale. If enabled, no 
 
 Whether [custom paths](/routing#custom-paths) are extracted from page files using babel parser.
 
-## `prefixAndDefaultRules`
+## `prefixAndDefaultRule`
 
 - type: `object`
-- default: `{ routing: 'default', switchLocale: 'default' }`
+- default: `'default'`
 
 Modification of the standard behavior of the `prefix_and_default` strategy.
 
-By setting the value `routing = 'prefix'` we are no longer being redirected from prefixed path.
+By setting the value `prefixAndDefaultRule = 'prefix'` we are no longer being redirected from prefixed path.
 If there is no prefix then the other routers will also have no prefix.
-
-By setting the value `switchLocale = 'prefix'` the `switchLocalePath()` method adds a prefix to the current route.
 
 ## `pages`
 

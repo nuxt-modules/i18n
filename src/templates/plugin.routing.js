@@ -1,7 +1,7 @@
 import './middleware'
 import Vue from 'vue'
 import { Constants, nuxtOptions, options } from './options'
-import { getDomainFromLocale } from './plugin.utils'
+import { getDomainFromLocale, getHelpers } from './plugin.utils'
 import { removeLocaleFromPath } from './utils-common'
 // @ts-ignore
 import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
@@ -79,11 +79,11 @@ function resolveRoute (route, locale) {
         hash: resolvedRoute.hash
       }
     } else {
-      const { isDefaultLocale, isPrefixAndDefault } = getHelpers(locale)
+      const { isDefaultLocale, isPrefixAndDefault, isPrefixExceptDefault } = getHelpers(locale)
       // if route has a path defined but no name, resolve full route using the path
       const isPrefixed =
           // don't prefix default locale, if not forced
-          !(isDefaultLocale && isPrefixAndDefault && forceDefaultRoute) &&
+          !(isDefaultLocale && (isPrefixExceptDefault || (isPrefixAndDefault && forceDefaultRoute))) &&
           // no prefix for any language
           !(options.strategy === Constants.STRATEGIES.NO_PREFIX) &&
           // no prefix for different domains
@@ -120,7 +120,7 @@ function resolveRoute (route, locale) {
  * @this {import('../../types/internal').PluginProxy}
  * @type {Vue['switchLocalePath']}
  */
-function switchLocalePath (locale, forcePrefix = false) {
+function switchLocalePath (locale) {
   const name = this.getRouteBaseName()
   if (!name) {
     return ''
@@ -143,11 +143,11 @@ function switchLocalePath (locale, forcePrefix = false) {
   })
   let path = this.localePath(baseRoute, locale)
 
-  const { prefixAndDefaultRules: { switchLocale } } = options
+  const { prefixAndDefaultRules } = options
   const { isPrefixAndDefault, isDefaultLocale } = getHelpers(locale)
-  const shouldSwitchToPrefix = switchLocale === 'prefix'
+  const shouldSwitchToPrefix = prefixAndDefaultRules.routing === 'prefix'
 
-  if (isPrefixAndDefault && isDefaultLocale && (shouldSwitchToPrefix || forcePrefix)) {
+  if (isPrefixAndDefault && isDefaultLocale && shouldSwitchToPrefix) {
     const cleanPath = removeLocaleFromPath(path, [locale])
     const localizedPath = `/${locale}${cleanPath}`
     path = nuxtOptions.trailingSlash ? withTrailingSlash(localizedPath) : withoutTrailingSlash(localizedPath)
@@ -181,19 +181,6 @@ function getRouteBaseName (givenRoute) {
 }
 
 /**
- * @param {string} locale
- */
-function getHelpers (locale = '') {
-  const isDefaultLocale = locale === options.defaultLocale
-  const isPrefixAndDefault = options.strategy === Constants.STRATEGIES.PREFIX_AND_DEFAULT
-
-  return {
-    isDefaultLocale,
-    isPrefixAndDefault
-  }
-}
-
-/**
  * @param {string | undefined} routeName
  * @param {string} locale
  * @param {boolean} forceDefaultName
@@ -215,10 +202,10 @@ function getLocaleRouteName (routeName, locale, forceDefaultName = true) {
  */
 function shouldForceDefaultRoute (currentPath) {
   const { isPrefixAndDefault } = getHelpers()
-  const { defaultLocale, prefixAndDefaultRules: { routing } } = options
+  const { defaultLocale, prefixAndDefaultRules } = options
   const isPrefixedPath = new RegExp(`^/${defaultLocale}(/|$)`).test(currentPath)
 
-  if (!isPrefixAndDefault || routing === 'default') {
+  if (!isPrefixAndDefault || prefixAndDefaultRules.routing === 'default') {
     return true
   }
 

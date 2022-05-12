@@ -29,7 +29,7 @@ With this strategy, all routes will have a locale prefix.
 
 This strategy combines both previous strategies behaviours, meaning that you will get URLs with prefixes for every language, but URLs for the default language will also have a non-prefixed version (though the prefixed version will be preferred when `detectBrowserLanguage` is enabled.)
 
-The behavior of the strategy can be modified, more - [prefixAndDefaultRules](../options-reference#prefixanddefaultrules)
+The behavior of the strategy can be modified, more - [prefixAndDefaultRule](../options-reference#prefixanddefaultrule)
 
 ### Configuration
 

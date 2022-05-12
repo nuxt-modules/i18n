@@ -23,6 +23,7 @@
   },
   "scripts": {
     "dev:basic": "nuxt -c ./test/fixture/basic/nuxt.config.js",
+    "dev:redirect": "nuxt -c ./test/fixture/disable-redirect/nuxt.config.js",
     "dev:basic:generate": "nuxt generate -c ./test/fixture/basic/nuxt.config.js",
     "dev:basic:start": "nuxt start -c ./test/fixture/basic/nuxt.config.js",
     "start:dist": "jiti ./test/utils/http-server-internal.js --port 8080 -v dist",

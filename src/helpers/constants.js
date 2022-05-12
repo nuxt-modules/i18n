@@ -38,7 +38,6 @@ export const DEFAULT_OPTIONS = {
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
   prefixAndDefaultRules: {
-    switchLocale: 'default',
     routing: 'default'
   },
   sortRoutes: true,
