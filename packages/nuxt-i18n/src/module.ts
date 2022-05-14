@@ -93,10 +93,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
     nuxt.options.alias['#i18n'] = i18nPath.dst!
 
+    // TODO: We don't want to resolve the following as a template,
+    //  but in the runtime dir we want to use as an ESM (e.g. internal and utils)
+
     // TODO: we should provide bridge only?
     addTemplate({
-      filename: 'i18n.legacy.mjs',
-      src: resolve(distDir, 'runtime/legacy.mjs')
+      filename: 'i18n.internal.mjs',
+      src: resolve(distDir, 'runtime/internal.mjs')
     })
 
     addTemplate({
@@ -112,6 +115,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
           localeCodes,
           localeInfo,
           nuxtI18nOptions: options,
+          nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
           nuxtI18nInternalOptions: {
             __normalizedLocales: normalizedLocales
           }

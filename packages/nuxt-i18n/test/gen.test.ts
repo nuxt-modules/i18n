@@ -1,6 +1,7 @@
 import { it, expect } from 'vitest'
 import { parse } from '@babel/parser'
 import { generateLoaderOptions } from '../src/gen'
+import { DEFAULT_OPTIONS } from '../src/constants'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from '../src/types'
 
@@ -53,6 +54,7 @@ it('basic', () => {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
     nuxtI18nOptions: NUXT_I18N_OPTIONS,
+    nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
     nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
   })
   expect(validateSyntax(code)).toBe(true)

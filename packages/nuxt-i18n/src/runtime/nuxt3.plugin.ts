@@ -4,12 +4,16 @@ import { isEmptyObject } from '@intlify/shared'
 import { createLocaleFromRouteGetter, extendI18n, registerGlobalOptions } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#app'
 import { loadMessages, localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { loadAndSetLocale } from '#build/i18n.utils.mjs'
-import { getBrowserLocale } from '#build/i18n.legacy.mjs'
+import { loadAndSetLocale, detectLocale } from '#build/i18n.utils.mjs'
+import {
+  getInitialLocale,
+  getBrowserLocale as _getBrowserLocale,
+  getLocaleCookie as _getLocaleCookie,
+  setLocaleCookie as _setLocaleCookie
+} from '#build/i18n.internal.mjs'
 
 import type { Composer, I18nOptions } from '@intlify/vue-i18n-bridge'
-import type { RouteLocationNormalized } from 'vue-router'
-import type { LocaleObject, ExtendProperyDescripters } from 'vue-i18n-routing'
+import type { LocaleObject, RouteLocationNormalized, ExtendProperyDescripters } from 'vue-i18n-routing'
 
 export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
@@ -29,18 +33,27 @@ export default defineNuxtPlugin(async nuxt => {
   // so global options is reffered by `vue-i18n-routing`
   registerGlobalOptions(router, nuxtI18nOptions)
 
-  // TODO: lazy load
   // load messages
   const messages = await loadMessages()
   if (!isEmptyObject(messages)) {
     vueI18nOptions.messages = messages
   }
-  const initialLocale = vueI18nOptions.locale || 'en-US'
+
+  // detect initial locale
+  // const initialLocale = vueI18nOptions.locale || 'en-US'
+  const initialLocale = getInitialLocale(
+    nuxt.ssrContext,
+    process.client ? router.currentRoute : nuxt.ssrContext!.url,
+    nuxtI18nOptions,
+    localeCodes,
+    getLocaleFromRoute
+  )
+  console.log('initial locale', initialLocale)
 
   // create i18n instance
   const i18n = createI18n({
     ...vueI18nOptions,
-    locale: nuxtI18nOptions.defaultLocale
+    locale: initialLocale
   })
 
   // extend i18n instance
@@ -56,8 +69,13 @@ export default defineNuxtPlugin(async nuxt => {
           }
         )
         composer.localeProperties = computed(() => _localeProperties.value)
-        composer.setLocale = (locale: string) => loadAndSetLocale(locale, i18n)
-        composer.getBrowserLocale = () => getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
+        composer.setLocale = (locale: string) =>
+          loadAndSetLocale(router.currentRoute, locale, app, i18n, getLocaleFromRoute, nuxtI18nOptions)
+        composer.getBrowserLocale = () => _getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
+        composer.getLocaleCookie = () =>
+          _getLocaleCookie(nuxt.ssrContext, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
+        composer.setLocaleCookie = (locale: string) =>
+          _setLocaleCookie(locale, nuxt.ssrContext, nuxtI18nOptions.detectBrowserLanguage)
       },
       onExtendExportedGlobal(global: Composer): ExtendProperyDescripters {
         return {
@@ -69,6 +87,16 @@ export default defineNuxtPlugin(async nuxt => {
           getBrowserLocale: {
             get() {
               return () => Reflect.apply(global.getBrowserLocale, global, [])
+            }
+          },
+          getLocaleCookie: {
+            get() {
+              return () => Reflect.apply(global.getLocaleCookie, global, [])
+            }
+          },
+          setLocaleCookie: {
+            get() {
+              return (locale: string) => Reflect.apply(global.setLocaleCookie, global, [locale])
             }
           }
         }
@@ -84,6 +112,16 @@ export default defineNuxtPlugin(async nuxt => {
             get() {
               return () => Reflect.apply(composer.getBrowserLocale, composer, [])
             }
+          },
+          getLocaleCookie: {
+            get() {
+              return () => Reflect.apply(composer.getLocaleCookie, composer, [])
+            }
+          },
+          setLocaleCookie: {
+            get() {
+              return (locale: string) => Reflect.apply(composer.setLocaleCookie, composer, [locale])
+            }
           }
         }
       }
@@ -97,15 +135,26 @@ export default defineNuxtPlugin(async nuxt => {
   if (process.client) {
     addRouteMiddleware(
       'locale-changing',
-      (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-        const finalLocale = getLocaleFromRoute(to) || nuxtI18nOptions.defaultLocale || initialLocale
-        loadAndSetLocale(finalLocale, i18n)
+      async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+        const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
+        // TODO: remove console log!
+        console.log('detectlocale client return', locale)
+        const redirectPath = await loadAndSetLocale(to, locale, app, i18n, getLocaleFromRoute, nuxtI18nOptions)
       },
       { global: true }
     )
   } else {
-    // TODO: query or http status
-    const finalLocale = getLocaleFromRoute(nuxt.ssrContext!.url) || nuxtI18nOptions.defaultLocale || initialLocale
-    await loadAndSetLocale(finalLocale, i18n)
+    const routeURL = nuxt.ssrContext!.url
+    const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
+    // TODO: remove console log!
+    console.log('detectlocale server return', locale)
+    const redirectPath = await loadAndSetLocale(
+      routeURL,
+      locale || nuxtI18nOptions.defaultLocale,
+      app,
+      i18n,
+      getLocaleFromRoute,
+      nuxtI18nOptions
+    )
   }
 })

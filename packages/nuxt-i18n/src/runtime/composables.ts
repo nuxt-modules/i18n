@@ -1,7 +1,11 @@
-import { useRequestHeaders } from '#app'
+import { ref } from 'vue-demi'
+import { useRequestHeaders, useCookie as _useCookie } from '#app'
 import { findBrowserLocale } from 'vue-i18n-routing'
-import { parseAcceptLanguage } from '#build/i18n.utils.mjs'
-import { nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
+import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
+import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
+
+import type { Ref } from 'vue-demi'
+import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export * from '@intlify/vue-i18n-bridge'
 
@@ -28,4 +32,32 @@ export function useBrowserLocale(normalizedLocales = nuxtI18nInternalOptions.__n
       process.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'])
     ) || null
   )
+}
+
+export function useCookieLocale({
+  useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
+  cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
+  localeCodes = _localeCodes
+}: Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieKey'> & {
+  localeCodes: readonly string[]
+}): Ref<string> {
+  const locale: Ref<string> = ref('')
+
+  if (useCookie) {
+    let code: string | null = null
+    if (process.client) {
+      const cookie = _useCookie<string>(cookieKey) as Ref<string>
+      code = cookie.value
+    } else if (process.server) {
+      const cookie = useRequestHeaders(['cookie'])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      code = (cookie as any)[cookieKey]
+    }
+
+    if (code && localeCodes.includes(code)) {
+      locale.value = code
+    }
+  }
+
+  return locale
 }

@@ -3,8 +3,9 @@ import type { ExportedGlobalComposer, LocaleObject } from '#i18n'
 
 export default defineComponent({
   mounted() {
-    console.log('mounted')
+    console.log('mounted', this.$i18n)
     console.log('$i18n.getBrowserLocale', this.$i18n.getBrowserLocale())
+    console.log('$i18n.getLocaleCookie', this.$i18n.getLocaleCookie())
     console.log('$i18n.localeProperties', this.$i18n.localeProperties)
   },
   computed: {
