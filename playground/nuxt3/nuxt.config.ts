@@ -29,6 +29,11 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
+    // detectBrowserLanguage: {
+    //   useCookie: true,
+    //   cookieKey: 'i18n_redirected',
+    //   redirectOn: 'all'
+    // },
     vueI18n: {
       legacy: false,
       locale: 'en',

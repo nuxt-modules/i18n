@@ -48,7 +48,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   //   context: NuxtContext
   // ) => string | void
   // onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
-  detectBrowserLanguage?: DetectBrowserLanguageOptions | false
+  detectBrowserLanguage?: DetectBrowserLanguageOptions
   langDir?: string | null
   lazy?: boolean | LazyOptions
   pages?: CustomRoutePages

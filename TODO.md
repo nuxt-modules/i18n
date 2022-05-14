@@ -20,7 +20,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [ ] Ignoring localized routes
   - [ ] Pick localized routes
   - [ ] Disable localized routes
-- [ ] Browser language detection
+- [x] Browser language detection
 - [ ] SEO
   - [x] Requirements
   - [ ] Setup
@@ -48,8 +48,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 
 ### Extension of VueI18n / Composer
 
-- [ ] getLocaleCookie
-- [ ] setLocaleCookie
+- [x] getLocaleCookie
+- [x] setLocaleCookie
 - [-] setLocale
 - [x] getBrowserLocale
 - [ ] finalizePendingLocaleChange

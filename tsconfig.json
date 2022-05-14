@@ -33,7 +33,7 @@
       "#app": ["./node_modules/nuxt/dist/app/index"],
       "#i18n": ["./packages/nuxt-i18n/src/runtime/composables.ts"],
       "#build/i18n.options.mjs": ["./packages/nuxt-i18n/src/options.d.ts"],
-      "#build/i18n.legacy.mjs": ["./packages/nuxt-i18n/src/runtime/legacy.ts"],
+      "#build/i18n.internal.mjs": ["./packages/nuxt-i18n/src/runtime/internal.ts"],
       "#build/i18n.utils.mjs": ["./packages/nuxt-i18n/src/runtime/utils.ts"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

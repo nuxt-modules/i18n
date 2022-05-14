@@ -1,14 +1,14 @@
 // Vitest Snapshot v1
 
 exports[`basic 1`] = `
-"import localeEn_564a1578 from \\"./locales/en.json\\";
-import localeJa_564a1606 from \\"./locales/ja.json\\";
+"import _564a1578 from \\"./locales/en.json\\";
+import _564a1606 from \\"./locales/ja.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const loadMessages = async () => {
   const messages = Object({})
-  messages[\\"en\\"] = localeEn_564a1578
-  messages[\\"ja\\"] = localeJa_564a1606
+  messages[\\"en\\"] = _564a1578
+  messages[\\"ja\\"] = _564a1606
   return Promise.resolve(messages)
 }
 
@@ -20,17 +20,19 @@ export const resolveNuxtI18nOptions = async (context) => {
   return nuxtI18nOptions
 }
 
+export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),baseUrl: \\"\\",pages: Object({})})
+
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 "
 `;
 
 exports[`lazy 1`] = `
-"import localeEn_564a1578 from \\"./locales/en.json\\";
+"import _564a1578 from \\"./locales/en.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const loadMessages = async () => {
   const messages = Object({})
-  messages[\\"en\\"] = localeEn_564a1578
+  messages[\\"en\\"] = _564a1578
   messages[\\"ja\\"] = await import(\\"./locales/ja.json\\" /* webpackChunkName: \\"./locales/ja.json\\" */).then(r => r.default || r)
   return Promise.resolve(messages)
 }
@@ -48,14 +50,14 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 `;
 
 exports[`vueI18n: path 1`] = `
-"import localeEn_564a1578 from \\"./locales/en.json\\";
-import localeJa_564a1606 from \\"./locales/ja.json\\";
+"import _564a1578 from \\"./locales/en.json\\";
+import _564a1606 from \\"./locales/ja.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const loadMessages = async () => {
   const messages = Object({})
-  messages[\\"en\\"] = localeEn_564a1578
-  messages[\\"ja\\"] = localeJa_564a1606
+  messages[\\"en\\"] = _564a1578
+  messages[\\"ja\\"] = _564a1606
   return Promise.resolve(messages)
 }
 

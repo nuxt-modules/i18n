@@ -7,6 +7,7 @@ const switchLocalePath = useSwitchLocalePath()
 const i18nHead = useLocaleHead({ addSeoAttributes: true })
 
 console.log('useBrowserLocale', useBrowserLocale())
+// console.log('useCookieLocale', useCookieLocale())
 console.log('localeProperties', localeProperties)
 
 useHead({

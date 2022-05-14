@@ -4,11 +4,13 @@ import { templateUtils } from '@nuxt/kit'
 import { genImport } from 'knitwork'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, NoNullable } from './types'
+import type { NuxtI18nOptionsDefault } from './constants'
 
 export type LoaderOptions = {
   localeCodes?: string[]
   localeInfo?: LocaleInfo[]
   nuxtI18nOptions?: NuxtI18nOptions
+  nuxtI18nOptionsDefault?: NuxtI18nOptionsDefault
   nuxtI18nInternalOptions?: NuxtI18nInternalOptions
 }
 
@@ -69,6 +71,11 @@ export function generateLoaderOptions(
       genCodes += `  return nuxtI18nOptions\n`
       genCodes += `}\n`
       return genCodes
+    } else if (rootKey === 'nuxtI18nOptionsDefault') {
+      // generate default nuxtI18n options
+      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
+        return `${key}: ${toCode(value)}`
+      }).join(`,`)}})\n`
     } else if (rootKey === 'nuxtI18nInternalOptions') {
       return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
         return `${key}: ${toCode(value)}`
