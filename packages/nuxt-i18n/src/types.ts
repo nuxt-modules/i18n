@@ -1,4 +1,4 @@
-import type { Directions, Strategies, LocaleObject, I18nRoutingOptions, BaseUrlResolveHandler } from 'vue-i18n-routing'
+import type { LocaleObject, I18nRoutingOptions, BaseUrlResolveHandler } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
 
 // TODO: bring up from @nuxtjs/i18n type definition
