@@ -65,8 +65,6 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 
 ### Extension of Nuxt Context
 
-Note that the following is supported for **nuxt bridge only**:
-
 - [x] i18n
 - [x] getRouteBaseName
 - [x] localePath
