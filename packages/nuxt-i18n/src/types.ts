@@ -1,4 +1,4 @@
-import type { LocaleObject, I18nRoutingOptions, BaseUrlResolveHandler } from 'vue-i18n-routing'
+import type { Strategies, LocaleObject, I18nRoutingOptions, BaseUrlResolveHandler } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
 
 // TODO: bring up from @nuxtjs/i18n type definition
@@ -57,7 +57,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   routesNameSeparator?: string
   // skipSettingLocaleOnNavigate?: boolean
   // sortRoutes?: boolean
-  // strategy?: Strategies
+  strategy?: Strategies
   vueI18n?: I18nOptions | string
   // vueI18nLoader?: boolean
   // vuex?: VuexOptions | false
