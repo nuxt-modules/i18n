@@ -13,11 +13,11 @@ import {
   switchLocalePath,
   localeHead
 } from 'vue-i18n-routing'
-import { isEmptyObject, isString } from '@intlify/shared'
+import { isEmptyObject } from '@intlify/shared'
 import { castToVueI18n } from '@intlify/vue-i18n-bridge'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo } from '#app'
 import { loadMessages, localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, detectLocale } from '#build/i18n.utils.mjs'
+import { loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
   getBrowserLocale as _getBrowserLocale,
@@ -26,13 +26,7 @@ import {
 } from '#build/i18n.internal.mjs'
 
 import type { I18nOptions, Composer } from '@intlify/vue-i18n-bridge'
-import type {
-  LocaleObject,
-  Route,
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
-  ExtendProperyDescripters
-} from 'vue-i18n-routing'
+import type { LocaleObject, RouteLocationNormalized, ExtendProperyDescripters } from 'vue-i18n-routing'
 
 export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
@@ -40,6 +34,7 @@ export default defineNuxtPlugin(async nuxt => {
   const { app } = legacyNuxtContext
 
   const nuxtI18nOptions = await resolveNuxtI18nOptions(nuxt)
+  const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
   const getLocaleFromRoute = createLocaleFromRouteGetter(
     localeCodes,
     nuxtI18nOptions.routesNameSeparator,
@@ -96,8 +91,7 @@ export default defineNuxtPlugin(async nuxt => {
           }
         )
         composer.localeProperties = computed(() => _localeProperties.value)
-        composer.setLocale = (locale: string) =>
-          loadAndSetLocale(router.currentRoute, locale, app, i18n, getLocaleFromRoute, nuxtI18nOptions)
+        composer.setLocale = (locale: string) => loadAndSetLocale(locale, i18n, useCookie)
         composer.getBrowserLocale = () => _getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
         composer.getLocaleCookie = () =>
           _getLocaleCookie(nuxt.ssrContext, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
@@ -164,12 +158,12 @@ export default defineNuxtPlugin(async nuxt => {
     const { store } = legacyNuxtContext
     legacyNuxtContext.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
     app.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
-    app.getRouteBaseName = legacyNuxtContext.getRouteBaseName = proxyNuxtLegacy(legacyNuxtContext, getRouteBaseName)
-    app.localePath = legacyNuxtContext.localePath = proxyNuxtLegacy(legacyNuxtContext, localePath)
-    app.localeRoute = legacyNuxtContext.localeRoute = proxyNuxtLegacy(legacyNuxtContext, localeRoute)
-    app.localeLocation = legacyNuxtContext.localeLocation = proxyNuxtLegacy(legacyNuxtContext, localeLocation)
-    app.switchLocalePath = legacyNuxtContext.switchLocalePath = proxyNuxtLegacy(legacyNuxtContext, switchLocalePath)
-    app.localeHead = legacyNuxtContext.localeHead = proxyNuxtLegacy(legacyNuxtContext, localeHead)
+    app.getRouteBaseName = legacyNuxtContext.getRouteBaseName = proxyNuxt(legacyNuxtContext, getRouteBaseName)
+    app.localePath = legacyNuxtContext.localePath = proxyNuxt(legacyNuxtContext, localePath)
+    app.localeRoute = legacyNuxtContext.localeRoute = proxyNuxt(legacyNuxtContext, localeRoute)
+    app.localeLocation = legacyNuxtContext.localeLocation = proxyNuxt(legacyNuxtContext, localeLocation)
+    app.switchLocalePath = legacyNuxtContext.switchLocalePath = proxyNuxt(legacyNuxtContext, switchLocalePath)
+    app.localeHead = legacyNuxtContext.localeHead = proxyNuxt(legacyNuxtContext, localeHead)
     if (store) {
       // TODO: should implement for vuex and pinia
     }
@@ -206,7 +200,11 @@ export default defineNuxtPlugin(async nuxt => {
         const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
         // TODO: remove console log!
         console.log('detectlocale client return', locale)
-        const redirectPath = await loadAndSetLocale(to, locale, app, i18n, getLocaleFromRoute, nuxtI18nOptions)
+        await loadAndSetLocale(locale, i18n, useCookie)
+        const redirectPath = detectRedirect(to, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+        if (redirectPath) {
+          navigate(nuxt.ssrContext, redirectPath)
+        }
       },
       { global: true }
     )
@@ -215,52 +213,23 @@ export default defineNuxtPlugin(async nuxt => {
     const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
     // TODO: remove console log!
     console.log('detectlocale server return', locale)
-    const redirectPath = await loadAndSetLocale(
-      routeURL,
-      locale || nuxtI18nOptions.defaultLocale,
-      app,
-      i18n,
-      getLocaleFromRoute,
-      nuxtI18nOptions
-    )
+    await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, i18n, useCookie)
+    const redirectPath = detectRedirect(routeURL, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+    if (redirectPath) {
+      navigate(nuxt.ssrContext, redirectPath)
+    }
   }
 })
 
-async function navigate(route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded, context: any) {
-  const routePaht = isString(route) ? route : route.path
-  console.log('navigate routePath', routePaht)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function navigate(context: any, redirectPath: string, status = 302) {
   if (process.client) {
-    console.log('sss', navigateTo('/'))
+    await navigateTo(redirectPath)
   } else {
     // TODO: should change to `navigateTo`, if we can use it as universal
-    context.res.writeHead(302, {
-      Location: '/'
+    context.res.writeHead(status, {
+      Location: redirectPath
     })
     context.res.end()
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
-function proxyNuxtLegacy(context: any, target: Function) {
-  return function () {
-    const { app, req, route, store } = context
-    return Reflect.apply(
-      target,
-      {
-        getRouteBaseName: app.getRouteBaseName,
-        i18n: app.i18n,
-        localePath: app.localePath,
-        localeLocation: app.localeLocation,
-        localeRoute: app.localeRoute,
-        localeHead: app.localeHead,
-        req: process.server ? req : null,
-        route,
-        router: app.router
-        // TODO: should implement for vuex and pinia
-        // store
-      },
-      // eslint-disable-next-line prefer-rest-params
-      arguments
-    )
   }
 }

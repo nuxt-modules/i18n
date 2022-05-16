@@ -1,5 +1,5 @@
 import { isVue3 } from 'vue-demi'
-import { isArray, isObject, isString } from '@intlify/shared'
+import { isArray, isString } from '@intlify/shared'
 import { findBrowserLocale, createLocaleFromRouteGetter, getLocalesRegex } from 'vue-i18n-routing'
 import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
@@ -157,6 +157,7 @@ export function getInitialLocale(
   // TODO: remove console log!
   console.log('getInitialLocale strategy:', strategy)
   console.log('getInitialLocale routeLocale:', routeLocale)
+  console.log('getInitialLocale browserLocale:', browserLocale)
   console.log('getInitialLocale initialLocale:', initialLocale)
 
   // TODO: should be refacotred with ternary operator
@@ -182,7 +183,7 @@ export function detectBrowserLanguage(
 ): string {
   const {
     strategy,
-    detectBrowserLanguage: { redirectOn, alwaysRedirect, useCookie }
+    detectBrowserLanguage: { redirectOn, alwaysRedirect, useCookie, fallbackLocale }
   } = nuxtI18nOptions
   // TODO: remove console log!
   console.log('detectBrowserLanguage', route, localeCodes, locale, strategy, redirectOn, alwaysRedirect, useCookie)
@@ -217,17 +218,15 @@ export function detectBrowserLanguage(
     console.log('detectBrowserLanguage: getBrowserLocale', matchedLocale)
   }
 
-  const vueI18nOptions = nuxtI18nOptions.vueI18n as I18nOptions
-  const finalLocale = matchedLocale || vueI18nOptions.fallbackLocale
-  const vueI18nLocale = locale || vueI18nOptions.locale
+  const finalLocale = matchedLocale || fallbackLocale
+  const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
 
-  return (matchedLocale ?? vueI18nLocale) as string
-  // // handle cookie option to prevent multiple redirections
-  // if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {
-  //   if (finalLocale !== vueI18nLocale) {
-  //     return finalLocale as string // TODO: should resolve type!
-  //   }
-  // }
+  // handle cookie option to prevent multiple redirections
+  if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {
+    if (finalLocale !== vueI18nLocale) {
+      return finalLocale
+    }
+  }
 
-  // return ''
+  return ''
 }

@@ -1,10 +1,20 @@
 import { ref, computed } from 'vue-demi'
 import { createI18n } from '@intlify/vue-i18n-bridge'
 import { isEmptyObject } from '@intlify/shared'
-import { createLocaleFromRouteGetter, extendI18n, registerGlobalOptions } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#app'
+import {
+  createLocaleFromRouteGetter,
+  extendI18n,
+  registerGlobalOptions,
+  getRouteBaseName,
+  localePath,
+  localeLocation,
+  localeRoute,
+  switchLocalePath,
+  localeHead
+} from 'vue-i18n-routing'
+import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo } from '#app'
 import { loadMessages, localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, detectLocale } from '#build/i18n.utils.mjs'
+import { loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
   getBrowserLocale as _getBrowserLocale,
@@ -20,6 +30,7 @@ export default defineNuxtPlugin(async nuxt => {
   const { vueApp: app } = nuxt
 
   const nuxtI18nOptions = await resolveNuxtI18nOptions(nuxt)
+  const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
   const getLocaleFromRoute = createLocaleFromRouteGetter(
     localeCodes,
     nuxtI18nOptions.routesNameSeparator,
@@ -69,8 +80,7 @@ export default defineNuxtPlugin(async nuxt => {
           }
         )
         composer.localeProperties = computed(() => _localeProperties.value)
-        composer.setLocale = (locale: string) =>
-          loadAndSetLocale(router.currentRoute, locale, app, i18n, getLocaleFromRoute, nuxtI18nOptions)
+        composer.setLocale = (locale: string) => loadAndSetLocale(locale, i18n, useCookie)
         composer.getBrowserLocale = () => _getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
         composer.getLocaleCookie = () =>
           _getLocaleCookie(nuxt.ssrContext, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
@@ -132,6 +142,14 @@ export default defineNuxtPlugin(async nuxt => {
   // TODO: should implement `{ inject: boolean }
   app.use(i18n)
 
+  app.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
+  app.getRouteBaseName = proxyNuxt(nuxt, getRouteBaseName)
+  app.localePath = proxyNuxt(nuxt, localePath)
+  app.localeRoute = proxyNuxt(nuxt, localeRoute)
+  app.localeLocation = proxyNuxt(nuxt, localeLocation)
+  app.switchLocalePath = proxyNuxt(nuxt, switchLocalePath)
+  app.localeHead = proxyNuxt(nuxt, localeHead)
+
   if (process.client) {
     addRouteMiddleware(
       'locale-changing',
@@ -139,7 +157,11 @@ export default defineNuxtPlugin(async nuxt => {
         const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
         // TODO: remove console log!
         console.log('detectlocale client return', locale)
-        const redirectPath = await loadAndSetLocale(to, locale, app, i18n, getLocaleFromRoute, nuxtI18nOptions)
+        await loadAndSetLocale(locale, i18n, useCookie)
+        const redirectPath = detectRedirect(to, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+        if (redirectPath) {
+          navigate(nuxt.ssrContext, redirectPath)
+        }
       },
       { global: true }
     )
@@ -148,13 +170,15 @@ export default defineNuxtPlugin(async nuxt => {
     const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
     // TODO: remove console log!
     console.log('detectlocale server return', locale)
-    const redirectPath = await loadAndSetLocale(
-      routeURL,
-      locale || nuxtI18nOptions.defaultLocale,
-      app,
-      i18n,
-      getLocaleFromRoute,
-      nuxtI18nOptions
-    )
+    await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, i18n, useCookie)
+    const redirectPath = detectRedirect(routeURL, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+    if (redirectPath) {
+      navigate(nuxt.ssrContext, redirectPath)
+    }
   }
 })
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function navigate(context: any, redirectPath: string, status = 302) {
+  await navigateTo(redirectPath)
+}
