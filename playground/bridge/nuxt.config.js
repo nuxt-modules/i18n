@@ -33,6 +33,11 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
+    pages: {
+      about: {
+        ja: '/about-ja'
+      }
+    },
     // detectBrowserLanguage: {
     //   useCookie: true,
     //   cookieKey: 'i18n_redirected',
