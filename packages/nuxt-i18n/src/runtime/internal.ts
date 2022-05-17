@@ -143,34 +143,36 @@ export function getInitialLocale(
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   locale = ''
 ): string {
-  const {
-    strategy,
-    defaultLocale,
-    vueI18n,
-    detectBrowserLanguage: { useCookie }
-  } = nuxtI18nOptions
+  const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
   const initialLocale = locale || (vueI18n as I18nOptions).locale || 'en-US'
-  const routeLocale = strategy !== 'no_prefix' ? routeLocaleGetter(route) : ''
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
   // TODO: remove console log!
   console.log('getInitialLocale strategy:', strategy)
-  console.log('getInitialLocale routeLocale:', routeLocale)
   console.log('getInitialLocale browserLocale:', browserLocale)
   console.log('getInitialLocale initialLocale:', initialLocale)
 
-  // TODO: should be refacotred with ternary operator
-  if (strategy === 'no_prefix') {
-    return browserLocale
-  } else if (strategy === 'prefix_except_default') {
-    return routeLocale || defaultLocale
-  } else if (strategy === 'prefix_and_default') {
-    return useCookie ? browserLocale : routeLocale || defaultLocale
-  } else {
-    // 'prefix'
-    return routeLocale
+  let finalLocale: string | undefined = browserLocale
+  if (!finalLocale) {
+    if (strategy !== 'no_prefix') {
+      finalLocale = routeLocaleGetter(route)
+      // TODO: remove console log!
+      console.log('getInitialLocale routeLocale:', finalLocale)
+    }
   }
+
+  if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
+    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
+    // TODO: remove console log!
+    console.log('getInitialLocale cookieLocale:', finalLocale)
+  }
+
+  if (!finalLocale) {
+    finalLocale = defaultLocale || ''
+  }
+
+  return finalLocale
 }
 
 export function detectBrowserLanguage(
@@ -181,17 +183,26 @@ export function detectBrowserLanguage(
   localeCodes: string[] = [],
   locale: Locale = ''
 ): string {
-  const {
-    strategy,
-    detectBrowserLanguage: { redirectOn, alwaysRedirect, useCookie, fallbackLocale }
-  } = nuxtI18nOptions
-  // TODO: remove console log!
-  console.log('detectBrowserLanguage', route, localeCodes, locale, strategy, redirectOn, alwaysRedirect, useCookie)
-
   // browser detection is ignored if it is a nuxt generate.
   if (process.static) {
     return ''
   }
+
+  const { strategy } = nuxtI18nOptions
+  const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
+    nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
+  // TODO: remove console log!
+  console.log(
+    'detectBrowserLanguage',
+    route,
+    localeCodes,
+    locale,
+    strategy,
+    redirectOn,
+    alwaysRedirect,
+    useCookie,
+    fallbackLocale
+  )
 
   const path = isString(route) ? route : route.path
   if (strategy !== 'no_prefix') {

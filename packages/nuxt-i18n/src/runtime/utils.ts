@@ -10,7 +10,7 @@ import {
 } from 'vue-i18n-routing'
 import { isString } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
-import { detectBrowserLanguage } from '#build/i18n.internal.mjs'
+import { detectBrowserLanguage, getLocaleCookie } from '#build/i18n.internal.mjs'
 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
 import type { I18n, VueI18n, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
@@ -69,30 +69,36 @@ export function detectLocale(
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
   localeCodes: string[] = []
 ) {
-  const {
-    strategy,
-    defaultLocale,
-    vueI18n,
-    detectBrowserLanguage: { useCookie }
-  } = nuxtI18nOptions
+  const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
   const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
-  const routeLocale = strategy !== 'no_prefix' ? routeLocaleGetter(route) : ''
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
   // TODO: remove console log!
   console.log('detectLocale strategy:', strategy)
-  console.log('detectLocale routeLocale:', routeLocale)
   console.log('detectLocale browserLocale:', browserLocale)
   console.log('detectLocale initialLocale:', initialLocale)
 
-  if (strategy === 'no_prefix') {
-    return browserLocale
-  } else if (strategy === 'prefix_and_default') {
-    return useCookie ? browserLocale : routeLocale
-  } else {
-    return routeLocale
+  let finalLocale: string | undefined = browserLocale
+  if (!finalLocale) {
+    if (strategy !== 'no_prefix') {
+      finalLocale = routeLocaleGetter(route)
+      // TODO: remove console log!
+      console.log('detectLocale routeLocale:', finalLocale)
+    }
   }
+
+  if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
+    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
+    // TODO: remove console log!
+    console.log('detectLocale cookieLocale:', finalLocale)
+  }
+
+  if (!finalLocale) {
+    finalLocale = defaultLocale || ''
+  }
+
+  return finalLocale
 }
 
 export function detectRedirect(
