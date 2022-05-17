@@ -28,18 +28,15 @@ export function setupPages(
   debug(`pagesDir: ${pagesDir}, tailingSlash: ${trailingSlash}`)
 
   extendPages(pages => {
+    debug('pages making ...', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback,
       optionsResolver: getRouteOptionsResolver(options.pages, pagesDir, options.defaultLocale)
     })
-    if (isBridge) {
-      pages.splice(0, pages.length)
-      pages.unshift(...(localizedPages as NuxtPage[]))
-    } else {
-      localizedPages.forEach(page => pages.push(page as NuxtPage))
-    }
-    debug('made pages ...', pages)
+    pages.splice(0, pages.length)
+    pages.unshift(...(localizedPages as NuxtPage[]))
+    debug('... made pages', pages)
   })
 }
 
