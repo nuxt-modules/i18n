@@ -29,11 +29,13 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
+    // strategy: 'prefix_and_default',
     pages: {
       about: {
         ja: '/about-ja'
       }
     },
+    // detectBrowserLanguage: false,
     // detectBrowserLanguage: {
     //   useCookie: true,
     //   cookieKey: 'i18n_redirected',

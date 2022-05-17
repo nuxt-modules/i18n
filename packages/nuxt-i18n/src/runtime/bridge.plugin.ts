@@ -96,7 +96,7 @@ export default defineNuxtPlugin(async nuxt => {
         composer.getLocaleCookie = () =>
           _getLocaleCookie(nuxt.ssrContext, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
         composer.setLocaleCookie = (locale: string) =>
-          _setLocaleCookie(locale, nuxt.ssrContext, nuxtI18nOptions.detectBrowserLanguage)
+          _setLocaleCookie(locale, nuxt.ssrContext, nuxtI18nOptions.detectBrowserLanguage || undefined)
       },
       onExtendExportedGlobal(global: Composer): ExtendProperyDescripters {
         return {
