@@ -5,7 +5,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 ## Guide
 
 - [ ] Callbacks
-  - [ ] onBeforeLanguageSwitch
+  - [x] onBeforeLanguageSwitch
   - [ ] onLanguageSwitched
 - [x] Routing
 - [x] Strategies

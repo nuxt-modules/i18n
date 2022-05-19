@@ -1,7 +1,8 @@
 import type { Strategies, LocaleObject, I18nRoutingOptions, BaseUrlResolveHandler } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
+// import type { LegacyPlugin, NuxtApp } from '#app'
 
-// TODO: bring up from @nuxtjs/i18n type definition
+// export type LegacyContext = Parameters<LegacyPlugin>[0] // nuxt2 context type
 
 export type NoNullable<T> = Exclude<T, null | undefined>
 
@@ -39,15 +40,19 @@ export type CustomRoutePages = {
       }
 }
 
+export type BeforeLanguageSwitchHandler = <Context = any>(
+  oldLocale: string,
+  newLocale: string,
+  initialSetup: boolean,
+  context: Context
+) => string | void
+
+export type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => void
+
 export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResolveHandler> = {
-  // differentDomains?: boolean
-  // onBeforeLanguageSwitch?: (
-  //   oldLocale: string,
-  //   newLocale: string,
-  //   initialSetup: boolean,
-  //   context: NuxtContext
-  // ) => string | void
-  // onLanguageSwitched?: (oldLocale: string, newLocale: string) => void
+  differentDomains?: boolean
+  onBeforeLanguageSwitch?: BeforeLanguageSwitchHandler
+  onLanguageSwitched?: LanguageSwitchedHandler
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
   lazy?: boolean | LazyOptions

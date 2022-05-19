@@ -58,10 +58,10 @@ export const DEFAULT_OPTIONS = {
   //   syncRouteParams: true
   // },
   // parsePages: true,
-  pages: {}
+  pages: {},
   // skipSettingLocaleOnNavigate: false,
-  // onBeforeLanguageSwitch: () => ({}),
-  // onLanguageSwitched: () => null,
+  onBeforeLanguageSwitch: () => ({}),
+  onLanguageSwitched: () => null
   // bridge: false
 } as const
 
