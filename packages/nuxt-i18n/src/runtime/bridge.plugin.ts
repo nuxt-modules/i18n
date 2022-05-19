@@ -113,6 +113,7 @@ export default defineNuxtPlugin(async nuxt => {
         composer.setLocaleCookie = (locale: string) =>
           _setLocaleCookie(locale, nuxt.ssrContext, nuxtI18nOptions.detectBrowserLanguage || undefined)
         composer.onBeforeLanguageSwitch = nuxtI18nOptions.onBeforeLanguageSwitch
+        composer.onLanguageSwitched = nuxtI18nOptions.onLanguageSwitched
       },
       onExtendExportedGlobal(global: Composer): ExtendProperyDescripters {
         return {
@@ -141,6 +142,12 @@ export default defineNuxtPlugin(async nuxt => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               return (oldLocale: string, newLocale: string, initialSetup: boolean, context: any) =>
                 Reflect.apply(global.onBeforeLanguageSwitch, global, [oldLocale, newLocale, initialSetup, context])
+            }
+          },
+          onLanguageSwitched: {
+            get() {
+              return (oldLocale: string, newLocale: string) =>
+                Reflect.apply(global.onLanguageSwitched, global, [oldLocale, newLocale])
             }
           }
         }
@@ -172,6 +179,12 @@ export default defineNuxtPlugin(async nuxt => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               return (oldLocale: string, newLocale: string, initialSetup: boolean, context: any) =>
                 Reflect.apply(composer.onBeforeLanguageSwitch, composer, [oldLocale, newLocale, initialSetup, context])
+            }
+          },
+          onLanguageSwitched: {
+            get() {
+              return (oldLocale: string, newLocale: string) =>
+                Reflect.apply(composer.onLanguageSwitched, composer, [oldLocale, newLocale])
             }
           }
         }

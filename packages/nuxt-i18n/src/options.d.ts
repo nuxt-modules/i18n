@@ -22,5 +22,6 @@ export {
   NuxtI18nInternalOptions,
   DetectBrowserLanguageOptions,
   LanguageSwitchedHandler,
-  BeforeLanguageSwitchHandler
+  BeforeLanguageSwitchHandler,
+  LanguageSwitchedHandler
 } from './types'

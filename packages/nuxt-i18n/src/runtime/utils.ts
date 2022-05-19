@@ -59,6 +59,20 @@ function onBeforeLanguageSwitch(
       : (target as any).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
 }
 
+function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string): void {
+  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
+  // prettier-ignore
+  return isComposer(target)
+    ? isVue2 && isLegacyVueI18n(i18n)
+      ? i18n.onLanguageSwitched(oldLocale, newLocale)
+      : target.onLanguageSwitched(oldLocale, newLocale)
+    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ? (target as any).onLanguageSwitched(oldLocale, newLocale)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      : (target as any).onLanguageSwitched(oldLocale, newLocale)
+}
+
 export function loadAndSetLocale(
   newLocale: string,
   context: any, // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -84,7 +98,7 @@ export function loadAndSetLocale(
     return ret
   }
 
-  // TODO: context
+  // call onBeforeLanguageSwitch
   const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, context)
   if (localeOverride && (i18n as any).localeCodes.includes(localeOverride)) {
     if (localeOverride === oldLocale) {
@@ -98,6 +112,10 @@ export function loadAndSetLocale(
     setCookieLocale(i18n, newLocale)
   }
   setLocale(i18n, newLocale)
+
+  // call onLanguageSwitched
+  onLanguageSwitched(i18n, oldLocale, newLocale)
+
   ret = true
   return ret
 }
