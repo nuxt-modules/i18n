@@ -16,4 +16,11 @@ export const nuxtI18nOptions: DeepRequired<NuxtI18nOptions> = {}
 export const nuxtI18nOptionsDefault: NuxtI18nOptionsDefault = {}
 export const nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions> = {}
 
-export { NuxtI18nOptions, NuxtI18nOptionsDefault, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from './types'
+export {
+  NuxtI18nOptions,
+  NuxtI18nOptionsDefault,
+  NuxtI18nInternalOptions,
+  DetectBrowserLanguageOptions,
+  LanguageSwitchedHandler,
+  BeforeLanguageSwitchHandler
+} from './types'

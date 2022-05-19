@@ -45,6 +45,9 @@ export default defineNuxtConfig({
     //   cookieKey: 'i18n_redirected',
     //   redirectOn: 'all'
     // },
+    onBeforeLanguageSwitch: (oldLocale, newLocale, initial, context) => {
+      console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
+    },
     vueI18n: {
       legacy: false,
       fallbackLocale: 'en'

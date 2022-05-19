@@ -16,6 +16,7 @@ import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } fr
 import type { I18n, VueI18n, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
+import { DetectBrowserLanguageOptions } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isLegacyVueI18n(target: any): target is VueI18n {
@@ -23,6 +24,7 @@ export function isLegacyVueI18n(target: any): target is VueI18n {
 }
 
 export function setCookieLocale(i18n: I18n, locale: Locale) {
+  // TODO: remove console log!
   console.log('setCookieLocale', locale)
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
@@ -37,13 +39,40 @@ export function setCookieLocale(i18n: I18n, locale: Locale) {
       : (target as any).setLocaleCookie(locale)
 }
 
+function onBeforeLanguageSwitch(
+  i18n: I18n,
+  oldLocale: string,
+  newLocale: string,
+  initial: boolean,
+  context: any // eslint-disable-line @typescript-eslint/no-explicit-any
+): string | void {
+  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
+  // prettier-ignore
+  return isComposer(target)
+    ? isVue2 && isLegacyVueI18n(i18n)
+      ? i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
+      : target.onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
+    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ? (target as any).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      : (target as any).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
+}
+
 export function loadAndSetLocale(
   newLocale: string,
   i18n: I18n,
-  useCookie: boolean = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie
-): void {
+  {
+    useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
+    initial = false
+  }: Pick<DetectBrowserLanguageOptions, 'useCookie'> & { initial?: boolean } = {}
+): boolean {
+  // TODO: remove console log!
+  console.log('loadAndSetLocale: useCookie', useCookie)
+  console.log('loadAndSetLocale: initial', initial)
+  let ret = false
   if (!newLocale) {
-    return
+    return ret
   }
 
   const oldLocale = getLocale(i18n)
@@ -51,7 +80,16 @@ export function loadAndSetLocale(
   console.log('loadAndSetLocale: oldLocale', oldLocale)
   console.log('loadAndSetLocale: newLoacal', newLocale)
   if (oldLocale === newLocale) {
-    return
+    return ret
+  }
+
+  // TODO: context
+  const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, {})
+  if (localeOverride && (i18n as any).localeCodes.includes(localeOverride)) {
+    if (localeOverride === oldLocale) {
+      return ret
+    }
+    newLocale = localeOverride
   }
 
   // set the locale
@@ -59,6 +97,8 @@ export function loadAndSetLocale(
     setCookieLocale(i18n, newLocale)
   }
   setLocale(i18n, newLocale)
+  ret = true
+  return ret
 }
 
 export function detectLocale(

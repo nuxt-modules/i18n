@@ -16,7 +16,6 @@ export function setupPages(
     localeCodes: []
   }
 ) {
-  const { isBridge } = additionalOptions
   let includeUprefixedFallback = nuxt.options.target === 'static'
   nuxt.hook('generate:before', () => {
     debug('called generate:before hook')
