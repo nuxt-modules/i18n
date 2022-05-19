@@ -1,6 +1,6 @@
 import type { ComputedRef } from 'vue-demi'
 import type { LocaleObject } from 'vue-i18n-routing'
-import type { BeforeLanguageSwitchHandler } from '#build/i18n.options.mjs'
+import type { BeforeLanguageSwitchHandler, LanguageSwitchedHandler } from '#build/i18n.options.mjs'
 
 export interface ComposerCustomProperties {
   localeProperties: ComputedRef<LocaleObject>
@@ -9,6 +9,7 @@ export interface ComposerCustomProperties {
   getLocaleCookie: () => string | undefined
   setLocaleCookie: (locale: string) => void
   onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
+  onLanguageSwitched: LanguageSwitchedHandler
 }
 declare module 'vue-i18n' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -20,6 +21,7 @@ declare module 'vue-i18n' {
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => void
     onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
+    onLanguageSwitched: LanguageSwitchedHandler
   }
 }
 
@@ -33,6 +35,7 @@ declare module 'vue-i18n-bridge' {
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => void
     onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
+    onLanguageSwitched: LanguageSwitchedHandler
   }
 }
 declare module '@intlify/vue-i18n-bridge' {
@@ -45,6 +48,7 @@ declare module '@intlify/vue-i18n-bridge' {
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => void
     onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
+    onLanguageSwitched: LanguageSwitchedHandler
   }
 }
 

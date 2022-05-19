@@ -44,6 +44,9 @@ export default defineNuxtConfig({
     onBeforeLanguageSwitch: (oldLocale, newLocale, initial, context) => {
       console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
     },
+    onLanguageSwitched: (oldLocale, newLocale) => {
+      console.log('onLanguageSwitched', oldLocale, newLocale)
+    },
     vueI18n: {
       legacy: false,
       locale: 'en',
