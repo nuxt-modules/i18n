@@ -61,6 +61,7 @@ function onBeforeLanguageSwitch(
 
 export function loadAndSetLocale(
   newLocale: string,
+  context: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   i18n: I18n,
   {
     useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
@@ -84,7 +85,7 @@ export function loadAndSetLocale(
   }
 
   // TODO: context
-  const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, {})
+  const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, context)
   if (localeOverride && (i18n as any).localeCodes.includes(localeOverride)) {
     if (localeOverride === oldLocale) {
       return ret

@@ -87,7 +87,7 @@ export default defineNuxtPlugin(async nuxt => {
         composer.localeProperties = computed(() => _localeProperties.value)
         composer.setLocale = (locale: string) => {
           const localeSetup = isInitialLocaleSetup(locale)
-          const modified = loadAndSetLocale(locale, i18n, { useCookie, initial: localeSetup })
+          const modified = loadAndSetLocale(locale, nuxt, i18n, { useCookie, initial: localeSetup })
           if (modified && localeSetup) {
             notInitialSetup = false
           }
@@ -188,7 +188,7 @@ export default defineNuxtPlugin(async nuxt => {
         // TODO: remove console log!
         console.log('detectlocale client return', locale)
         const localeSetup = isInitialLocaleSetup(locale)
-        const modified = loadAndSetLocale(locale, i18n, { useCookie, initial: localeSetup })
+        const modified = loadAndSetLocale(locale, nuxt, i18n, { useCookie, initial: localeSetup })
         if (modified && localeSetup) {
           notInitialSetup = false
         }
@@ -204,7 +204,7 @@ export default defineNuxtPlugin(async nuxt => {
     const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
     // TODO: remove console log!
     console.log('detectlocale server return', locale)
-    loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, i18n, { useCookie })
+    loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, nuxt, i18n, { useCookie })
     const redirectPath = detectRedirect(routeURL, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
     if (redirectPath) {
       navigate(nuxt.ssrContext, redirectPath)
