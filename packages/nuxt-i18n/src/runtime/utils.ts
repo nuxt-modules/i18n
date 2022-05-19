@@ -23,20 +23,25 @@ export function isLegacyVueI18n(target: any): target is VueI18n {
   return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): any {
+  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
+  // prettier-ignore
+  const [obj, method] = isComposer(target)
+    ? isVue2 && isLegacyVueI18n(i18n)
+      ? [i18n, (i18n as any)[name]]
+      : [target, (target as any)[name]]
+    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+      ? [target, (target as any)[name]]
+      : [target, (target as any)[name]]
+  return Reflect.apply(method, obj, [...args])
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 export function setCookieLocale(i18n: I18n, locale: Locale) {
   // TODO: remove console log!
   console.log('setCookieLocale', locale)
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  return isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? i18n.setLocaleCookie(locale)
-      : target.setLocaleCookie(locale)
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ? (target as any).setLocaleCookie(locale)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      : (target as any).setLocaleCookie(locale)
+  return callVueI18nInterfaces(i18n, 'setLocaleCookie', locale)
 }
 
 function onBeforeLanguageSwitch(
@@ -46,31 +51,11 @@ function onBeforeLanguageSwitch(
   initial: boolean,
   context: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ): string | void {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  return isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
-      : target.onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ? (target as any).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      : (target as any).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
+  return callVueI18nInterfaces(i18n, 'onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
 }
 
 function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string): void {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  return isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? i18n.onLanguageSwitched(oldLocale, newLocale)
-      : target.onLanguageSwitched(oldLocale, newLocale)
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ? (target as any).onLanguageSwitched(oldLocale, newLocale)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      : (target as any).onLanguageSwitched(oldLocale, newLocale)
+  return callVueI18nInterfaces(i18n, 'onLanguageSwitched', oldLocale, newLocale)
 }
 
 export function loadAndSetLocale(
