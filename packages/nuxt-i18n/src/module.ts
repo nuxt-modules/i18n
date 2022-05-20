@@ -110,6 +110,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // loading options template
     addTemplate({
       filename: 'i18n.options.mjs',
+      write: true,
       getContents: () => {
         return generateLoaderOptions(options.lazy, langPath, {
           localeCodes,
