@@ -4,6 +4,7 @@ import { findBrowserLocale, createLocaleFromRouteGetter, getLocalesRegex } from 
 import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
+import { isClient, isServer, isStatic } from '#build/i18n.utils.mjs'
 
 import type { I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
@@ -29,12 +30,12 @@ export function parseAcceptLanguage(input: string): string[] {
 export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, context?: any): string | undefined {
   let ret: string | undefined
 
-  if (process.client) {
+  if (isClient()) {
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
     }
-  } else if (process.server) {
+  } else if (isServer()) {
     if (!isVue3) {
       if (context.req && typeof context.req.headers['accept-language'] !== 'undefined') {
         ret = findBrowserLocale(
@@ -64,9 +65,9 @@ export function getLocaleCookie(
   if (useCookie) {
     let localeCode: string | undefined
 
-    if (process.client) {
+    if (isClient()) {
       localeCode = JsCookie.get(cookieKey)
-    } else if (process.server) {
+    } else if (isServer()) {
       if (context.req && typeof context.req.headers.cookie !== 'undefined') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cookies: Record<string, any> =
@@ -114,9 +115,9 @@ export function setLocaleCookie(
     cookieOptions.domain = cookieDomain
   }
 
-  if (process.client) {
+  if (isClient()) {
     JsCookie.set(cookieKey, locale, cookieOptions)
-  } else if (process.server) {
+  } else if (isServer()) {
     if (!isVue3 && context.res) {
       const { res } = context
       let headers = res.getHeader('Set-Cookie') || []
@@ -184,7 +185,7 @@ export function detectBrowserLanguage(
   locale: Locale = ''
 ): string {
   // browser detection is ignored if it is a nuxt generate.
-  if (process.static) {
+  if (isStatic()) {
     return ''
   }
 

@@ -18,6 +18,18 @@ import type { NuxtI18nOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 import { DetectBrowserLanguageOptions } from '../types'
 
+export function isServer(): boolean {
+  return typeof process !== 'undefined' && process.server
+}
+
+export function isClient(): boolean {
+  return typeof process !== 'undefined' && process.client
+}
+
+export function isStatic(): boolean {
+  return typeof process !== 'undefined' && process.static
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isLegacyVueI18n(target: any): target is VueI18n {
   return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
@@ -163,7 +175,7 @@ export function detectRedirect(
   let redirectPath = ''
   // decide whether we should redirect to a different route.
   if (
-    !process.static &&
+    !isStatic() &&
     // !app.i18n.differentDomains &&
     strategy !== 'no_prefix' &&
     // skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
@@ -199,7 +211,7 @@ export function proxyNuxt(context: any, target: Function) {
         localeLocation: app.localeLocation,
         localeRoute: app.localeRoute,
         localeHead: app.localeHead,
-        req: process.server && isVue2 ? context.req : null,
+        req: isServer() && isVue2 ? context.req : null,
         route: isVue2 ? context.route : context.$router.currentRoute.value,
         router: isVue2 ? app.router : context.$router,
         store: isVue2 ? context.store : undefined
