@@ -17,7 +17,7 @@ import { isEmptyObject } from '@intlify/shared'
 import { castToVueI18n } from '@intlify/vue-i18n-bridge'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo } from '#app'
 import { loadMessages, localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt } from '#build/i18n.utils.mjs'
+import { loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt, isClient } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
   getBrowserLocale as _getBrowserLocale,
@@ -57,7 +57,7 @@ export default defineNuxtPlugin(async nuxt => {
   // const initialLocale = vueI18nOptions.locale || 'en-US'
   const initialLocale = getInitialLocale(
     nuxt.ssrContext,
-    process.client ? router.currentRoute : nuxt.ssrContext!.url,
+    isClient() ? router.currentRoute : nuxt.ssrContext!.url,
     nuxtI18nOptions,
     localeCodes,
     getLocaleFromRoute
@@ -236,7 +236,7 @@ export default defineNuxtPlugin(async nuxt => {
     )
   })
 
-  if (process.client) {
+  if (isClient()) {
     addRouteMiddleware(
       'locale-changing',
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
@@ -270,7 +270,7 @@ export default defineNuxtPlugin(async nuxt => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function navigate(context: any, redirectPath: string, status = 302) {
-  if (process.client) {
+  if (isClient()) {
     await navigateTo(redirectPath)
   } else {
     // TODO: should change to `navigateTo`, if we can use it as universal
