@@ -50,7 +50,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 
 - [x] getLocaleCookie
 - [x] setLocaleCookie
-- [-] setLocale
+- [x] setLocale
 - [x] getBrowserLocale
 - [ ] finalizePendingLocaleChange
 - [ ] waitForPendingLocaleChange
@@ -60,8 +60,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] locales
 - [x] localeProperties
 - [ ] differentDomains
-- [ ] onBeforeLanguageSwitch
-- [ ] onLanguageSwitched
+- [x] onBeforeLanguageSwitch
+- [x] onLanguageSwitched
 
 ### Extension of Nuxt Context
 
