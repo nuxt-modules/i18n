@@ -4,6 +4,7 @@
   "scripts": {
     "build": "nuxi build",
     "dev": "nuxi dev",
+    "generate": "nuxt generate",
     "start": "node .output/server/index.mjs"
   },
   "devDependencies": {

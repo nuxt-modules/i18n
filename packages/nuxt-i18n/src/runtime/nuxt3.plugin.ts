@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue-demi'
 import { createI18n } from '@intlify/vue-i18n-bridge'
-import { isEmptyObject } from '@intlify/shared'
 import {
   createLocaleFromRouteGetter,
   extendI18n,
@@ -13,8 +12,15 @@ import {
   localeHead
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo } from '#app'
-import { loadMessages, localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt, isClient } from '#build/i18n.utils.mjs'
+import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
+import {
+  loadInitialMessages,
+  loadAndSetLocale,
+  detectLocale,
+  detectRedirect,
+  proxyNuxt,
+  isClient
+} from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
   getBrowserLocale as _getBrowserLocale,
@@ -38,20 +44,14 @@ export default defineNuxtPlugin(async nuxt => {
   )
 
   const vueI18nOptions = nuxtI18nOptions.vueI18n as I18nOptions
-  // console.log('nuxtI18nOptions', nuxtI18nOptions, router.currentRoute)
+  vueI18nOptions.messages = vueI18nOptions.messages || {}
+  vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
 
   // register nuxt/i18n options as global
   // so global options is reffered by `vue-i18n-routing`
   registerGlobalOptions(router, nuxtI18nOptions)
 
-  // load messages
-  const messages = await loadMessages()
-  if (!isEmptyObject(messages)) {
-    vueI18nOptions.messages = messages
-  }
-
   // detect initial locale
-  // const initialLocale = vueI18nOptions.locale || 'en-US'
   const initialLocale = getInitialLocale(
     nuxt.ssrContext,
     isClient() ? router.currentRoute : nuxt.ssrContext!.url,
@@ -59,7 +59,18 @@ export default defineNuxtPlugin(async nuxt => {
     localeCodes,
     getLocaleFromRoute
   )
+  // TODO: remove console log!
   console.log('initial locale', initialLocale)
+
+  // load initial vue-i18n locale messages
+  await loadInitialMessages(nuxt.ssrContext, vueI18nOptions.messages, {
+    ...nuxtI18nOptions,
+    initialLocale,
+    fallbackLocale: vueI18nOptions.fallbackLocale,
+    localeCodes
+  })
+  // TODO: remove console log!
+  console.log('loaded messages', vueI18nOptions.messages)
 
   // create i18n instance
   const i18n = createI18n({
@@ -85,9 +96,14 @@ export default defineNuxtPlugin(async nuxt => {
           }
         )
         composer.localeProperties = computed(() => _localeProperties.value)
-        composer.setLocale = (locale: string) => {
+        composer.setLocale = async (locale: string) => {
           const localeSetup = isInitialLocaleSetup(locale)
-          const modified = loadAndSetLocale(locale, nuxt, i18n, { useCookie, initial: localeSetup })
+          const modified = await loadAndSetLocale(locale, nuxt, i18n, {
+            useCookie,
+            initial: localeSetup,
+            lazy: nuxtI18nOptions.lazy,
+            langDir: nuxtI18nOptions.langDir
+          })
           if (modified && localeSetup) {
             notInitialSetup = false
           }
@@ -201,7 +217,12 @@ export default defineNuxtPlugin(async nuxt => {
         // TODO: remove console log!
         console.log('detectlocale client return', locale)
         const localeSetup = isInitialLocaleSetup(locale)
-        const modified = loadAndSetLocale(locale, nuxt, i18n, { useCookie, initial: localeSetup })
+        const modified = await loadAndSetLocale(locale, nuxt, i18n, {
+          useCookie,
+          initial: localeSetup,
+          lazy: nuxtI18nOptions.lazy,
+          langDir: nuxtI18nOptions.langDir
+        })
         if (modified && localeSetup) {
           notInitialSetup = false
         }
@@ -217,7 +238,11 @@ export default defineNuxtPlugin(async nuxt => {
     const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
     // TODO: remove console log!
     console.log('detectlocale server return', locale)
-    loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, nuxt, i18n, { useCookie })
+    await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, nuxt, i18n, {
+      useCookie,
+      lazy: nuxtI18nOptions.lazy,
+      langDir: nuxtI18nOptions.langDir
+    })
     const redirectPath = detectRedirect(routeURL, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
     if (redirectPath) {
       navigate(nuxt.ssrContext, redirectPath)

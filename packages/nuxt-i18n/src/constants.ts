@@ -1,6 +1,6 @@
 import { NuxtI18nOptionsDefault } from './options'
 
-export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n'
+export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n' as const
 
 // Options
 const STRATEGY_PREFIX = 'prefix'
