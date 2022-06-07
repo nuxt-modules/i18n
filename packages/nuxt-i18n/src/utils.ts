@@ -8,7 +8,7 @@ import type { NuxtI18nOptions, LocaleInfo } from './types'
 import type { NuxtOptions } from '@nuxt/schema'
 
 export function formatMessage(message: string) {
-  return `${NUXT_I18N_MODULE_ID} ${message}`
+  return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
 export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleObject[] {

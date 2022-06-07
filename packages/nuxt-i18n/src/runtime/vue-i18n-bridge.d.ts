@@ -4,7 +4,7 @@ import type { BeforeLanguageSwitchHandler, LanguageSwitchedHandler } from '#buil
 
 export interface ComposerCustomProperties {
   localeProperties: ComputedRef<LocaleObject>
-  setLocale: (locale: string) => void
+  setLocale: (locale: string) => Promise<void>
   getBrowserLocale: () => string | undefined
   getLocaleCookie: () => string | undefined
   setLocaleCookie: (locale: string) => void
@@ -16,7 +16,7 @@ declare module 'vue-i18n' {
   export interface ComposerCustom extends ComposerCustomProperties {}
   export interface VueI18n {
     localeProperties: LocaleObject
-    setLocale: (locale: string) => void
+    setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => void
@@ -30,7 +30,7 @@ declare module 'vue-i18n-bridge' {
   export interface ComposerCustom extends ComposerCustomProperties {}
   export interface VueI18n {
     localeProperties: LocaleObject
-    setLocale: (locale: string) => void
+    setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => void
@@ -43,7 +43,7 @@ declare module '@intlify/vue-i18n-bridge' {
   export interface ComposerCustom extends ComposerCustomProperties {}
   export interface VueI18n {
     localeProperties: LocaleObject
-    setLocale: (locale: string) => void
+    setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
     setLocaleCookie: (locale: string) => void

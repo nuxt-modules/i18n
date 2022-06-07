@@ -21,7 +21,6 @@ export function generateLoaderOptions(
   langDir: NuxtI18nOptions['langDir'],
   options: LoaderOptions = {}
 ) {
-  // TODO: lazy loading local info
   let genCode = ''
   const localeInfo = options.localeInfo || []
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,17 +80,15 @@ export function generateLoaderOptions(
         return `${key}: ${toCode(value)}`
       }).join(`,`)}})\n`
     } else if (rootKey === 'localeInfo') {
-      let codes = `export const loadMessages = async () => {\n`
-      codes += `  const messages = Object({})\n`
+      let codes = `export const localeMessages = {\n`
       if (langDir) {
         for (const { code } of syncLocaleFiles) {
-          codes += `  messages[${toCode(code)}] = ${importMapper.get(code)}\n`
+          codes += `  ${toCode(code)}: () => Promise.resolve(${importMapper.get(code)}),\n`
         }
         for (const { code, path } of asyncLocaleFiles) {
-          codes += `  messages[${toCode(code)}] = await import(${toCode(path)} /* webpackChunkName: ${toCode(path)} */).then(r => r.default || r)\n`
+          codes += `  ${toCode(code)}: () => import(${toCode(path)} /* webpackChunkName: "lang-${code}" */),\n`
         }
       }
-      codes += `  return Promise.resolve(messages)\n`
       codes += `}\n`
       return codes
 	  } else {
