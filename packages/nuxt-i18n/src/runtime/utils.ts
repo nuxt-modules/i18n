@@ -24,22 +24,13 @@ export function formatMessage(message: string) {
   return '[@nuxtjs/i18n]: ' + message
 }
 
-// TODO: should refactor to constant!
-export function isServer(): boolean {
-  return typeof process !== 'undefined' && process.server
-}
+export const SERVER: boolean = typeof process !== 'undefined' && process.server
 
-// TODO: should refactor to constant!
-export function isClient(): boolean {
-  return typeof process !== 'undefined' && process.client
-}
+export const CLIENT: boolean = typeof process !== 'undefined' && process.client
 
-// TODO: should refactor to constant!
-export function isStatic(): boolean {
-  return typeof process !== 'undefined' && process.static
-}
+export const STATIC: boolean = typeof process !== 'undefined' && process.static
 
-export const isDev: boolean = typeof process !== 'undefined' && process.dev
+export const DEV: boolean = typeof process !== 'undefined' && process.dev
 
 export function isLegacyVueI18n(target: any): target is VueI18n {
   return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
@@ -143,7 +134,7 @@ async function loadLocale(
   locale: Locale,
   setter: (locale: Locale, message: Record<string, any>) => void // TODO: should define the message type
 ) {
-  if (isServer() || isDev || !loadedLocales.includes(locale)) {
+  if (SERVER || DEV || !loadedLocales.includes(locale)) {
     const message = await loadMessage(context, locale)
     if (message != null) {
       setter(locale, message)
@@ -300,7 +291,7 @@ export function detectRedirect(
   let redirectPath = ''
   // decide whether we should redirect to a different route.
   if (
-    !isStatic() &&
+    !STATIC &&
     // !app.i18n.differentDomains &&
     strategy !== 'no_prefix' &&
     // skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
@@ -336,7 +327,7 @@ export function proxyNuxt(context: any, target: Function) {
         localeLocation: app.localeLocation,
         localeRoute: app.localeRoute,
         localeHead: app.localeHead,
-        req: isServer() && isVue2 ? context.req : null,
+        req: SERVER && isVue2 ? context.req : null,
         route: isVue2 ? context.route : context.$router.currentRoute.value,
         router: isVue2 ? app.router : context.$router,
         store: isVue2 ? context.store : undefined

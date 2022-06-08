@@ -19,7 +19,7 @@ import {
   detectLocale,
   detectRedirect,
   proxyNuxt,
-  isClient
+  CLIENT
 } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
@@ -54,7 +54,7 @@ export default defineNuxtPlugin(async nuxt => {
   // detect initial locale
   const initialLocale = getInitialLocale(
     nuxt.ssrContext,
-    isClient() ? router.currentRoute : nuxt.ssrContext!.url,
+    CLIENT ? router.currentRoute : nuxt.ssrContext!.url,
     nuxtI18nOptions,
     localeCodes,
     getLocaleFromRoute
@@ -209,7 +209,7 @@ export default defineNuxtPlugin(async nuxt => {
   app.switchLocalePath = proxyNuxt(nuxt, switchLocalePath)
   app.localeHead = proxyNuxt(nuxt, localeHead)
 
-  if (isClient()) {
+  if (CLIENT) {
     addRouteMiddleware(
       'locale-changing',
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
