@@ -22,7 +22,7 @@ import {
   detectLocale,
   detectRedirect,
   proxyNuxt,
-  isClient
+  CLIENT
 } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
@@ -58,7 +58,7 @@ export default defineNuxtPlugin(async nuxt => {
   // detect initial locale
   const initialLocale = getInitialLocale(
     nuxt.ssrContext,
-    isClient() ? router.currentRoute : nuxt.ssrContext!.url,
+    CLIENT ? router.currentRoute : nuxt.ssrContext!.url,
     nuxtI18nOptions,
     localeCodes,
     getLocaleFromRoute
@@ -252,7 +252,7 @@ export default defineNuxtPlugin(async nuxt => {
     )
   })
 
-  if (isClient()) {
+  if (CLIENT) {
     addRouteMiddleware(
       'locale-changing',
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
@@ -295,7 +295,7 @@ export default defineNuxtPlugin(async nuxt => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function navigate(context: any, redirectPath: string, status = 302) {
-  if (isClient()) {
+  if (CLIENT) {
     await navigateTo(redirectPath)
   } else {
     // TODO: should change to `navigateTo`, if we can use it as universal
