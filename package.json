@@ -42,7 +42,9 @@
     "play:bridge": "cd playground/bridge && npm run dev",
     "play:nuxt3": "cd playground/nuxt3 && npm run dev",
     "build:bridge": "cd playground/bridge && npm run build",
-    "build:nuxt3": "cd playground/nuxt3 && npm run build"
+    "build:nuxt3": "cd playground/nuxt3 && npm run build",
+    "generate:bridge": "cd playground/bridge && npm run generate",
+    "generate:nuxt3": "cd playground/nuxt3 && npm run generate"
   },
   "packageManager": "yarn@3.1.1",
   "resolutions": {
