@@ -4,16 +4,15 @@
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
-    "start": "node .output/server/index.mjs"
+    "start": "nuxi preview"
   },
   "dependencies": {
     "core-js": "^3.15.1",
     "nuxt-edge": "latest"
   },
   "devDependencies": {
-    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27394404.1672148",
+    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27566698.2b0045e",
     "@nuxt/types": "^2.15.7",
-    "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/i18n": "latest"
   },
   "installConfig": {
