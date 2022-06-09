@@ -154,8 +154,6 @@ export function getLocaleCookie(
         const cookies: Record<string, any> =
           context.req.headers && context.req.headers.cookie ? parse(context.req.headers.cookie) : {}
         localeCode = cookies[cookieKey]
-      } else {
-        throw new Error('server request unexpected error')
       }
     }
 
@@ -198,7 +196,7 @@ export function setLocaleCookie(
   if (CLIENT) {
     JsCookie.set(cookieKey, locale, cookieOptions)
   } else if (SERVER) {
-    if (!isVue3 && context.res) {
+    if (context.res) {
       const { res } = context
       let headers = res.getHeader('Set-Cookie') || []
       if (!isArray(headers)) {
@@ -209,9 +207,6 @@ export function setLocaleCookie(
       headers.push(redirectCookie)
 
       res.setHeader('Set-Cookie', headers)
-    } else {
-      // TODO: should implement compability for options API style
-      throw new Error('Not implement for nuxt3 options API style')
     }
   }
 }
