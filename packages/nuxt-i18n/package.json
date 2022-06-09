@@ -68,7 +68,7 @@
     "ts-essentials": "^9.1.2"
   },
   "engines": {
-    "node": "^14.16.0 || ^16.11.0 || ^17.0.0"
+    "node": "^14.16.0 || ^16.11.0 || ^17.0.0 || ^18.0.0"
   },
   "publishConfig": {
     "access": "public"
