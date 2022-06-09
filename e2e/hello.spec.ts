@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, $fetch } from '@nuxt/test-utils-edge'
-;[/*'bridge'*/ 'nuxt3', 'bridge'].forEach(pattern => {
+;[/*'bridge'*/ 'nuxt3'].forEach(pattern => {
   describe(pattern, async () => {
     await setup({
       rootDir: fileURLToPath(new URL(`./fixtures/${pattern}`, import.meta.url)),
