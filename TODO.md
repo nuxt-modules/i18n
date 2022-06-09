@@ -25,8 +25,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - [x] Requirements
   - [ ] Setup
   - [x] Feature details
-- [-] Lazy-load translations
-  - `skipNuxtState` and executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
+- [x] Lazy-load translations
+  - LIMTATION: `skipNuxtState` and executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
 - [ ] Lang Switcher
   - [ ] Dynamic route parameters
   - [ ] Wait for page transition
@@ -81,7 +81,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] useLocaleRoute (same `localeRoute`)
 - [x] useLocaleLocation (same `localeLocation`)
 - [x] useLocaleHead (same `$nuxtI18nHead` )
-- [-] useBrowserLocale (same `getBrowserLocale`, TODO: should be renamed)
+- [x] useBrowserLocale (same `getBrowserLocale`)
 
 ### Extension of Vuex
 
