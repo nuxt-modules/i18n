@@ -2,8 +2,8 @@ import { ref } from 'vue-demi'
 import { useRequestHeaders, useCookie as _useCookie } from '#app'
 import { findBrowserLocale } from 'vue-i18n-routing'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
+import { CLIENT, SERVER } from '#build/i18n.frags.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
-import { CLIENT, SERVER } from '#build/i18n.utils.mjs'
 
 import type { Ref } from 'vue-demi'
 import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
@@ -46,7 +46,7 @@ export function useCookieLocale({
 
   if (useCookie) {
     let code: string | null = null
-    if (isClient()) {
+    if (CLIENT) {
       const cookie = _useCookie<string>(cookieKey) as Ref<string>
       code = cookie.value
     } else if (SERVER) {
