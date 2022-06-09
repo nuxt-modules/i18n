@@ -13,14 +13,8 @@ import {
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo } from '#app'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import {
-  loadInitialMessages,
-  loadAndSetLocale,
-  detectLocale,
-  detectRedirect,
-  proxyNuxt,
-  CLIENT
-} from '#build/i18n.utils.mjs'
+import { CLIENT } from '#build/i18n.frags.mjs'
+import { loadInitialMessages, loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
   getBrowserLocale as _getBrowserLocale,

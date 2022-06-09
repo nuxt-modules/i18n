@@ -1,9 +1,6 @@
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { DeepRequired } from 'ts-essentials'
-// TODO: export LocaleMessage
-// import type { LocaleMessage } from '@intlify/vue-i18n-bridge'
-type LocaleMessage = any
 
 /**
  * stub type definition for nuxt plugin
@@ -12,7 +9,7 @@ type LocaleMessage = any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loadMessages: () => Promise<any> = () => Promise.resolve({})
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const localeMessages: Record<string, () => Promise<LocaleMessage>> = {}
+export const localeMessages: Record<string, () => Promise<any>> = {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const resolveNuxtI18nOptions: (context: any) => Promise<DeepRequired<NuxtI18nOptions>> = () =>
   Promise.resolve({})

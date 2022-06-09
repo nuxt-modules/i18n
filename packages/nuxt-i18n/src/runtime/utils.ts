@@ -1,66 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isVue2 } from 'vue-demi'
+import { getLocale, setLocale, createLocaleFromRouteGetter } from 'vue-i18n-routing'
+import { isString, isArray, isObject } from '@intlify/shared'
+import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
+import { SERVER, STATIC } from '#build/i18n.frags.mjs'
 import {
-  getLocale,
-  setLocale,
-  isI18nInstance,
-  isComposer,
-  isExportedGlobalComposer,
-  isVueI18n,
-  createLocaleFromRouteGetter
-} from 'vue-i18n-routing'
-import { isString, isFunction, isArray, isObject } from '@intlify/shared'
-import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeMessages } from '#build/i18n.options.mjs'
-import { detectBrowserLanguage, getLocaleCookie } from '#build/i18n.internal.mjs'
+  detectBrowserLanguage,
+  getLocaleCookie,
+  callVueI18nInterfaces,
+  getVueI18nPropertyValue,
+  loadLocale
+} from '#build/i18n.internal.mjs'
 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
-import type { I18n, VueI18n, I18nOptions, Locale, FallbackLocale } from '@intlify/vue-i18n-bridge'
+import type {
+  I18n,
+  I18nOptions,
+  Locale,
+  FallbackLocale,
+  LocaleMessages,
+  DefineLocaleMessage
+} from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
-
-export function formatMessage(message: string) {
-  // TODO: should be shared via constants
-  return '[@nuxtjs/i18n]: ' + message
-}
-
-export const SERVER: boolean = typeof process !== 'undefined' && process.server
-
-export const CLIENT: boolean = typeof process !== 'undefined' && process.client
-
-export const STATIC: boolean = typeof process !== 'undefined' && process.static
-
-export const DEV: boolean = typeof process !== 'undefined' && process.dev
-
-export function isLegacyVueI18n(target: any): target is VueI18n {
-  return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
-}
-
-function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): any {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  const [obj, method] = isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? [i18n, (i18n as any)[name]]
-      : [target, (target as any)[name]]
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? [target, (target as any)[name]]
-      : [target, (target as any)[name]]
-  return Reflect.apply(method, obj, [...args])
-}
-
-function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): Return {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  const ret = isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? (i18n as any)[name]
-      : (target as any)[name].value
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? (target as any)[name]
-      : (target as any)[name]
-  return ret as Return
-}
 
 export function setCookieLocale(i18n: I18n, locale: Locale) {
   // TODO: remove console log!
@@ -88,28 +51,6 @@ function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string): v
   return callVueI18nInterfaces(i18n, 'onLanguageSwitched', oldLocale, newLocale)
 }
 
-async function loadMessage(context: any, locale: Locale) {
-  let message: Record<string, any> | null = null
-  const loader = localeMessages[locale]
-  if (loader) {
-    try {
-      const getter = await loader().then(r => r.default || r)
-      // TODO: support for js, cjs, mjs
-      if (isFunction(getter)) {
-        console.error(formatMessage('Not support executable file (e.g. js, cjs, mjs)'))
-      } else {
-        message = getter
-      }
-    } catch (e: any) {
-      // eslint-disable-next-line no-console
-      console.error(formatMessage('Failed locale loading: ' + e.message))
-    }
-  } else {
-    console.warn(formatMessage('Could not find ' + locale + ' locale'))
-  }
-  return message
-}
-
 function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): Locale[] {
   let fallbackLocales: string[] = []
   if (isArray(fallback)) {
@@ -127,26 +68,9 @@ function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): L
   return fallbackLocales
 }
 
-const loadedLocales: Locale[] = []
-
-async function loadLocale(
-  context: any,
-  locale: Locale,
-  setter: (locale: Locale, message: Record<string, any>) => void // TODO: should define the message type
-) {
-  if (SERVER || DEV || !loadedLocales.includes(locale)) {
-    const message = await loadMessage(context, locale)
-    if (message != null) {
-      setter(locale, message)
-      loadedLocales.push(locale)
-    }
-  }
-}
-
-// TODO: should be changed `LocaleMessages` via `@intlify/vue-i18n-bridge`
 export async function loadInitialMessages(
   context: any,
-  messages: Record<string, any>,
+  messages: LocaleMessages<DefineLocaleMessage>,
   options: DeepRequired<NuxtI18nOptions> & {
     initialLocale: Locale
     fallbackLocale: FallbackLocale

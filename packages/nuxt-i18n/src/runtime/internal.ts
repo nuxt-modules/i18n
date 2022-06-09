@@ -1,15 +1,60 @@
-import { isVue3 } from 'vue-demi'
-import { isArray, isString } from '@intlify/shared'
-import { findBrowserLocale, createLocaleFromRouteGetter, getLocalesRegex } from 'vue-i18n-routing'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { isVue3, isVue2 } from 'vue-demi'
+import { isArray, isString, isFunction } from '@intlify/shared'
+import {
+  findBrowserLocale,
+  createLocaleFromRouteGetter,
+  getLocalesRegex,
+  isI18nInstance,
+  isComposer,
+  isExportedGlobalComposer,
+  isVueI18n
+} from 'vue-i18n-routing'
 import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
-import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { CLIENT, SERVER, STATIC } from '#build/i18n.utils.mjs'
+import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions, localeMessages } from '#build/i18n.options.mjs'
+import { CLIENT, SERVER, STATIC, DEV } from '#build/i18n.frags.mjs'
 
-import type { I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
+import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
+
+export function formatMessage(message: string) {
+  // TODO: should be shared via constants
+  return '[@nuxtjs/i18n] ' + message
+}
+
+function isLegacyVueI18n(target: any): target is VueI18n {
+  return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
+}
+
+export function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): any {
+  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
+  // prettier-ignore
+  const [obj, method] = isComposer(target)
+    ? isVue2 && isLegacyVueI18n(i18n)
+      ? [i18n, (i18n as any)[name]]
+      : [target, (target as any)[name]]
+    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+      ? [target, (target as any)[name]]
+      : [target, (target as any)[name]]
+  return Reflect.apply(method, obj, [...args])
+}
+
+export function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): Return {
+  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
+  // prettier-ignore
+  const ret = isComposer(target)
+    ? isVue2 && isLegacyVueI18n(i18n)
+      ? (i18n as any)[name]
+      : (target as any)[name].value
+    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+      ? (target as any)[name]
+      : (target as any)[name]
+  return ret as Return
+}
 
 /**
  * Parses locales provided from browser through `accept-language` header.
@@ -26,7 +71,44 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function loadMessage(context: any, locale: Locale) {
+  let message: LocaleMessages<DefineLocaleMessage> | null = null
+  const loader = localeMessages[locale]
+  if (loader) {
+    try {
+      const getter = await loader().then(r => r.default || r)
+      // TODO: support for js, cjs, mjs
+      if (isFunction(getter)) {
+        console.error(formatMessage('Not support executable file (e.g. js, cjs, mjs)'))
+      } else {
+        message = getter
+      }
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error(formatMessage('Failed locale loading: ' + e.message))
+    }
+  } else {
+    console.warn(formatMessage('Could not find ' + locale + ' locale'))
+  }
+  return message
+}
+
+const loadedLocales: Locale[] = []
+
+export async function loadLocale(
+  context: any,
+  locale: Locale,
+  setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
+) {
+  if (SERVER || DEV || !loadedLocales.includes(locale)) {
+    const message = await loadMessage(context, locale)
+    if (message != null) {
+      setter(locale, message)
+      loadedLocales.push(locale)
+    }
+  }
+}
+
 export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, context?: any): string | undefined {
   let ret: string | undefined
 
@@ -53,7 +135,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
 }
 
 export function getLocaleCookie(
-  context: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  context: any,
   {
     useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
     cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
@@ -69,7 +151,6 @@ export function getLocaleCookie(
       localeCode = JsCookie.get(cookieKey)
     } else if (SERVER) {
       if (context.req && typeof context.req.headers.cookie !== 'undefined') {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cookies: Record<string, any> =
           context.req.headers && context.req.headers.cookie ? parse(context.req.headers.cookie) : {}
         localeCode = cookies[cookieKey]
@@ -86,7 +167,7 @@ export function getLocaleCookie(
 
 export function setLocaleCookie(
   locale: string,
-  context: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  context: any,
   {
     useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
     cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
@@ -103,7 +184,6 @@ export function setLocaleCookie(
   }
 
   const date = new Date()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cookieOptions: Record<string, any> = {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
@@ -137,7 +217,7 @@ export function setLocaleCookie(
 }
 
 export function getInitialLocale(
-  context: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  context: any,
   route: string | Route | RouteLocationNormalized,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
   localeCodes: string[],
@@ -178,7 +258,7 @@ export function getInitialLocale(
 
 export function detectBrowserLanguage(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  context: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  context: any,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   localeCodes: string[] = [],
@@ -242,3 +322,5 @@ export function detectBrowserLanguage(
 
   return ''
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
