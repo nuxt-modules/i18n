@@ -1,4 +1,4 @@
 dist
 playground
-test/fixtures
+e2e/fixtures
 coverage

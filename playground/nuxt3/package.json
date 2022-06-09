@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "file:../../packages/nuxt-i18n/package.tgz",
-    "nuxt": "^3.0.0-rc.1"
+    "nuxt": "^3.0.0-rc.3"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
