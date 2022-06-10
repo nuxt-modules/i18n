@@ -7,7 +7,7 @@
     "generate": "nuxt generate",
     "start": "node .output/server/index.mjs"
   },
-  "devDependencies": {
+  "dependencies": {
     "@nuxtjs/i18n": "file:../../packages/nuxt-i18n/package.tgz",
     "nuxt": "^3.0.0-rc.3"
   },

@@ -46,7 +46,6 @@
     "@intlify/shared": "next",
     "@intlify/unplugin-vue-i18n": "latest",
     "@nuxt/kit": "^3.0.0-rc.1",
-    "@types/js-cookie": "^3.0.1",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.2",
     "defu": "latest",
@@ -64,6 +63,7 @@
     "@nuxt/module-builder": "latest",
     "@nuxt/schema": "^3.0.0-rc.1",
     "@types/debug": "^4.1.7",
+    "@types/js-cookie": "^3.0.1",
     "nuxt": "^3.0.0-rc.1",
     "ts-essentials": "^9.1.2"
   },
