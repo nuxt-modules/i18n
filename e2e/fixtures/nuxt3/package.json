@@ -6,7 +6,7 @@
     "build": "nuxt build",
     "start": "node .output/server/index.mjs"
   },
-  "devDependencies": {
+  "dependencies": {
     "@nuxtjs/i18n": "latest",
     "nuxt": "^3.0.0-rc.3"
   },

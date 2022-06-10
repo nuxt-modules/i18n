@@ -6,14 +6,12 @@
     "build": "nuxt build",
     "start": "nuxi preview"
   },
-  "dependencies": {
-    "core-js": "^3.15.1",
-    "nuxt-edge": "latest"
-  },
   "devDependencies": {
     "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27566698.2b0045e",
     "@nuxt/types": "^2.15.7",
-    "@nuxtjs/i18n": "latest"
+    "@nuxtjs/i18n": "latest",
+    "core-js": "^3.15.1",
+    "nuxt-edge": "latest"
   },
   "installConfig": {
     "hoistingLimits": "workspaces"
