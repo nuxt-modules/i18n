@@ -126,7 +126,7 @@ export async function loadAndSetLocale(
 
   // call onBeforeLanguageSwitch
   const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, context)
-  if (localeOverride && (i18n as any).localeCodes.includes(localeOverride)) {
+  if (localeOverride && (i18n as any).localeCodes && (i18n as any).localeCodes.includes(localeOverride)) {
     if (localeOverride === oldLocale) {
       return ret
     }
