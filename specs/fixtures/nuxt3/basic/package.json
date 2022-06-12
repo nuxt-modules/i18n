@@ -2,12 +2,12 @@
   "name": "nuxt3-test",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "nuxi dev",
     "build": "nuxt build",
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@nuxtjs/i18n": "latest",
+    "@nuxtjs/i18n": "file:../../../../packages/nuxt-i18n/package.tgz",
     "nuxt": "^3.0.0-rc.3"
   },
   "installConfig": {
