@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue-demi'
+import { computed } from 'vue-demi'
 import { createI18n } from '@intlify/vue-i18n-bridge'
 import {
   createLocaleFromRouteGetter,
@@ -84,12 +84,13 @@ export default defineNuxtPlugin(async nuxt => {
     baseUrl: nuxtI18nOptions.baseUrl,
     hooks: {
       onExtendComposer(composer: Composer) {
-        const _localeProperties = ref<LocaleObject>(
-          nuxtI18nInternalOptions.__normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
-            code: composer.locale.value
-          }
-        )
-        composer.localeProperties = computed(() => _localeProperties.value)
+        composer.localeProperties = computed(() => {
+          return (
+            nuxtI18nInternalOptions.__normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
+              code: composer.locale.value
+            }
+          )
+        })
         composer.setLocale = async (locale: string) => {
           const localeSetup = isInitialLocaleSetup(locale)
           const modified = await loadAndSetLocale(locale, nuxt, i18n, {
