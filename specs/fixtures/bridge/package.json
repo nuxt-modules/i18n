@@ -2,7 +2,7 @@
   "name": "nuxt-bridge-test",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "nuxi dev",
     "build": "nuxt build",
     "start": "nuxi preview"
   },

@@ -1498,12 +1498,12 @@ __metadata:
   linkType: hard
 
 "@csstools/selector-specificity@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@csstools/selector-specificity@npm:2.0.0"
+  version: 2.0.1
+  resolution: "@csstools/selector-specificity@npm:2.0.1"
   peerDependencies:
     postcss: ^8.3
     postcss-selector-parser: ^6.0.10
-  checksum: 46bc5a941334393ed596d493fc66c57e0839150ca86692b269f230641d0f073f258eb32fce289b8ab8a12e73b3329d266d4626b08a8705429f8a12929a8f64ae
+  checksum: 08ec92e6746c6c23a8baca12805619e8fec9e41c33376272d6fcc4705fe9e35307d1577c2624e71f6fb3ec2d3188de25806b0e3127efd53e41641c3bf297926d
   languageName: node
   linkType: hard
 
@@ -2092,7 +2092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/kit@npm:@nuxt/kit-edge@3.0.0-rc.3-27578655.a802b87, @nuxt/kit@npm:@nuxt/kit-edge@latest":
+"@nuxt/kit@npm:@nuxt/kit-edge@3.0.0-rc.3-27578655.a802b87":
   version: 3.0.0-rc.3-27578655.a802b87
   resolution: "@nuxt/kit-edge@npm:3.0.0-rc.3-27578655.a802b87"
   dependencies:
@@ -2115,6 +2115,32 @@ __metadata:
     unimport: ^0.2.6
     untyped: ^0.4.4
   checksum: df96cc80f5de1297728ca68fa64a31408582c96db92b3b6c1cf5d35da32b48f1486efdd1f12ad83580f0af8bf9951687a65d920f1b55129d07fc4d27ca40983c
+  languageName: node
+  linkType: hard
+
+"@nuxt/kit@npm:@nuxt/kit-edge@latest":
+  version: 3.0.0-rc.3-27581242.8831e4a
+  resolution: "@nuxt/kit-edge@npm:3.0.0-rc.3-27581242.8831e4a"
+  dependencies:
+    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-rc.3-27581242.8831e4a"
+    c12: ^0.2.7
+    consola: ^2.15.3
+    defu: ^6.0.0
+    globby: ^13.1.1
+    hash-sum: ^2.0.0
+    ignore: ^5.2.0
+    jiti: ^1.13.0
+    knitwork: ^0.1.2
+    lodash.template: ^4.5.0
+    mlly: ^0.5.2
+    pathe: ^0.3.0
+    pkg-types: ^0.3.2
+    scule: ^0.2.1
+    semver: ^7.3.7
+    unctx: ^1.1.4
+    unimport: ^0.2.6
+    untyped: ^0.4.4
+  checksum: 005466071e42342534cadeafac9dbbe9c4e24e9d321322d99046d1c6ba6bbdd97294b21c3b173cf34503d5e7c4010716011ba91bac4fc6def6c27107733d0bb1
   languageName: node
   linkType: hard
 
@@ -2202,7 +2228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/schema@npm:@nuxt/schema-edge@3.0.0-rc.3-27578655.a802b87, @nuxt/schema@npm:@nuxt/schema-edge@latest":
+"@nuxt/schema@npm:@nuxt/schema-edge@3.0.0-rc.3-27578655.a802b87":
   version: 3.0.0-rc.3-27578655.a802b87
   resolution: "@nuxt/schema-edge@npm:3.0.0-rc.3-27578655.a802b87"
   dependencies:
@@ -2217,6 +2243,24 @@ __metadata:
     ufo: ^0.8.4
     unimport: ^0.2.6
   checksum: b174b1c2ff5adf79b7e3367d7a8fc2a8bfe62697df979e85ac4053e85a912e3eb4dcdf25cab9b6fc98053f0213995b781a81fef1485c4eff791bed2240f78fbf
+  languageName: node
+  linkType: hard
+
+"@nuxt/schema@npm:@nuxt/schema-edge@3.0.0-rc.3-27581242.8831e4a, @nuxt/schema@npm:@nuxt/schema-edge@latest":
+  version: 3.0.0-rc.3-27581242.8831e4a
+  resolution: "@nuxt/schema-edge@npm:3.0.0-rc.3-27581242.8831e4a"
+  dependencies:
+    c12: ^0.2.7
+    create-require: ^1.1.1
+    defu: ^6.0.0
+    jiti: ^1.13.0
+    pathe: ^0.3.0
+    postcss-import-resolver: ^2.0.0
+    scule: ^0.2.1
+    std-env: ^3.1.1
+    ufo: ^0.8.4
+    unimport: ^0.2.6
+  checksum: a13e210386e7304bc15a3217481844a0c46da53900be07b42281e3a82e34203e0b03622bf33c176f81d9454e2387687a628fcffafa59dae5b732ad90a3792218
   languageName: node
   linkType: hard
 
@@ -3194,11 +3238,11 @@ __metadata:
   linkType: hard
 
 "@types/uglify-js@npm:*":
-  version: 3.13.3
-  resolution: "@types/uglify-js@npm:3.13.3"
+  version: 3.16.0
+  resolution: "@types/uglify-js@npm:3.16.0"
   dependencies:
     source-map: ^0.6.1
-  checksum: f8d5e59e9c2356ffe9d5f92f29149d00dbd382c133ed9d38d38e346f06c9a2eab292f84ad32a6d8273b3618977b07ee6c6ef976d389def889ad2d6f7954e1c8a
+  checksum: 10b0c4a5f361b1389cdef0b705747586ff7ddd37894e55921b8ed02718bc64ee608f4f5493c571f95ce29a3fe8d3538b7236185974dad93c750d8c05b7bceab4
   languageName: node
   linkType: hard
 
@@ -6839,9 +6883,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.147":
-  version: 1.4.150
-  resolution: "electron-to-chromium@npm:1.4.150"
-  checksum: d89c4db96c7d8d23c619772b787b7c036ccf48289c36c9e0d0938c137b7d3934234825161e9cc9e918ad83b9a23145e605181544a80034df4d2c0fc880881304
+  version: 1.4.152
+  resolution: "electron-to-chromium@npm:1.4.152"
+  checksum: d1e3405adc8a8ddbcf5a91f33739f2f3f5fa7612a4e2b6cc6a85d9ebccc87f59cf9e99d2de93c7959b34aa7c633c6c162d912bf895a0e4b79d0c2ce35594948f
   languageName: node
   linkType: hard
 
@@ -8871,7 +8915,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"h3@npm:^0.7.3, h3@npm:^0.7.4, h3@npm:^0.7.6, h3@npm:^0.7.8":
+"h3@npm:^0.7.3, h3@npm:^0.7.4":
+  version: 0.7.9
+  resolution: "h3@npm:0.7.9"
+  dependencies:
+    cookie-es: ^0.5.0
+    destr: ^1.1.1
+    radix3: ^0.1.2
+    ufo: ^0.8.4
+  checksum: 0b73231e23f95583c17cfb3ef5e66ca451c1eda903cfaf5b2f7ab0c3ec0a69d2fe209a8bd97e85f2df38a663550f489d4de3debf0f43d197517fb0a23a50c481
+  languageName: node
+  linkType: hard
+
+"h3@npm:^0.7.6, h3@npm:^0.7.8":
   version: 0.7.8
   resolution: "h3@npm:0.7.8"
   dependencies:
@@ -10380,6 +10436,13 @@ __metadata:
   version: 0.1.1
   resolution: "knitwork@npm:0.1.1"
   checksum: 63b6dbb858d220ee288465f9702bf58e01588fb1469e3664158ab63b32bbe439d9c089165c4cc00d5773416eb5682ca219c34e258e81e91cacc20f940496ed97
+  languageName: node
+  linkType: hard
+
+"knitwork@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "knitwork@npm:0.1.2"
+  checksum: aadc6f150ff2b93c509553bf9e7a5884e67fd193eda12b265ea7f90742d6d461cc90b14059310f91f009dacd03103cea7ef4f5afaaf895a85007e3983b307ea7
   languageName: node
   linkType: hard
 
@@ -12104,8 +12167,8 @@ __metadata:
   linkType: hard
 
 "nuxi-edge@npm:latest":
-  version: 3.0.0-rc.3-27578655.a802b87
-  resolution: "nuxi-edge@npm:3.0.0-rc.3-27578655.a802b87"
+  version: 3.0.0-rc.3-27581242.8831e4a
+  resolution: "nuxi-edge@npm:3.0.0-rc.3-27581242.8831e4a"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -12113,7 +12176,7 @@ __metadata:
       optional: true
   bin:
     nuxi-edge: ./bin/nuxi.mjs
-  checksum: 13a0bd4517004f4c5dcc9e9af10b4eaf47f974c4716dce8ed59d6d2f09afb97b6b462be2358843d5e70b1fda590d2953e77e851c5d23d69543278239842cbc9d
+  checksum: a446e3329cde6886acd02ff7d18610e2b15495b1fb1db5c9c3a6581eee58f55e04f9679dbc9bb1d3079268de80a459e119a68e6c12cc1cfb0d38db632dee13e5
   languageName: node
   linkType: hard
 
@@ -12142,9 +12205,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt-bridge-test@workspace:e2e/fixtures/bridge":
+"nuxt-bridge-test@workspace:specs/fixtures/bridge":
   version: 0.0.0-use.local
-  resolution: "nuxt-bridge-test@workspace:e2e/fixtures/bridge"
+  resolution: "nuxt-bridge-test@workspace:specs/fixtures/bridge"
   dependencies:
     "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27566698.2b0045e"
     "@nuxt/types": ^2.15.7
@@ -12179,9 +12242,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt3-test@workspace:e2e/fixtures/nuxt3":
+"nuxt3-test@workspace:specs/fixtures/nuxt3/basic":
   version: 0.0.0-use.local
-  resolution: "nuxt3-test@workspace:e2e/fixtures/nuxt3"
+  resolution: "nuxt3-test@workspace:specs/fixtures/nuxt3/basic"
   dependencies:
     "@nuxtjs/i18n": latest
     nuxt: ^3.0.0-rc.3
@@ -13068,13 +13131,13 @@ __metadata:
   linkType: hard
 
 "postcss-color-hex-alpha@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "postcss-color-hex-alpha@npm:8.0.3"
+  version: 8.0.4
+  resolution: "postcss-color-hex-alpha@npm:8.0.4"
   dependencies:
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.4
-  checksum: 3b5c1d12f86fc2b4b5b618e3842d03754eeae8c25cf252201a9bf67d2ef2845b50c23bd2854e631d8133418c13700be93a2a8689cccdfee446f25436adff9e46
+  checksum: a2f3173a60176cf0aea3b7ebbc799b2cb08229127f0fff708fa31efa14e4ded47ca49aff549d8ed92e74ffe24adee32d5b9d557dbde0524fde5fe389bc520b4e
   languageName: node
   linkType: hard
 
@@ -13100,13 +13163,13 @@ __metadata:
   linkType: hard
 
 "postcss-color-rebeccapurple@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "postcss-color-rebeccapurple@npm:7.0.2"
+  version: 7.1.0
+  resolution: "postcss-color-rebeccapurple@npm:7.1.0"
   dependencies:
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.3
-  checksum: 7d734ac50769f2cf42ac1e58247e45dffa3cc5fb663e67fa5b8ca1a71e1e950603263aad2e98d1629db6058b173ade0c5b5de0390d51d240da8c8674c036c8c7
+  checksum: 48a3bb51d49ffeff964cfd049ba594c08ee045bad6d9d8eb49bc6c31be17526c3b968af3794965d0bfb3b8d4a0994db590aa8ff3d9c138859a7e6baff8d98478
   languageName: node
   linkType: hard
 
@@ -13180,13 +13243,13 @@ __metadata:
   linkType: hard
 
 "postcss-custom-properties@npm:^12.1.7":
-  version: 12.1.7
-  resolution: "postcss-custom-properties@npm:12.1.7"
+  version: 12.1.8
+  resolution: "postcss-custom-properties@npm:12.1.8"
   dependencies:
     postcss-value-parser: ^4.2.0
   peerDependencies:
     postcss: ^8.4
-  checksum: 98c313c2318679b727080297a12fb6674e5ea5a3343f693167e985793afd9c7d71ce25a17139864ccfe76d32d7474bb89a2ad02830c8e40fa57ccb0a699b528d
+  checksum: 4615b8181fe61c2df9f3a739b3257a9d76d00088c8fc3c502a59de52b25ab90be3d65ece8d372bcd1f9f8ba6bb99da5075707f9f11cb3522826a5d3553265ee5
   languageName: node
   linkType: hard
 
@@ -16641,7 +16704,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.0.0, terser@npm:^5.3.4":
+"terser@npm:^5.0.0":
   version: 5.14.0
   resolution: "terser@npm:5.14.0"
   dependencies:
@@ -16652,6 +16715,20 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: 9bce919c17cf028b1b41a3aca9f7e05354ff46701de39e733d6d7a43ebd9c6042d33cfa3e7ef84e5f4c17f1c429c7f40381a38c6e6d6ab1cdc46a1bf8f4e8985
+  languageName: node
+  linkType: hard
+
+"terser@npm:^5.3.4":
+  version: 5.14.1
+  resolution: "terser@npm:5.14.1"
+  dependencies:
+    "@jridgewell/source-map": ^0.3.2
+    acorn: ^8.5.0
+    commander: ^2.20.0
+    source-map-support: ~0.5.20
+  bin:
+    terser: bin/terser
+  checksum: 7b0e51f3d193a11cad82f07e3b0c1d62122eec786f809bdf2a54b865aaa1450872c3a7b6c33b5a40e264834060ffc1d4e197f971a76da5b0137997d756eb7548
   languageName: node
   linkType: hard
 
@@ -17611,8 +17688,8 @@ __metadata:
   linkType: hard
 
 "vite@npm:^2.9.4":
-  version: 2.9.10
-  resolution: "vite@npm:2.9.10"
+  version: 2.9.12
+  resolution: "vite@npm:2.9.12"
   dependencies:
     esbuild: ^0.14.27
     fsevents: ~2.3.2
@@ -17635,7 +17712,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 37a4eafdb0990e496a27903b0722f1a5d13c622338a885f66d9b4da955ac40cb567e7e8bc97aac50c3f2a385f10a2e03bc9d5c14bf8a8bd0a1fbf6321c0d3562
+  checksum: 33cf8b6bfbbcae4b7f856d739ae519bed6b1ce23fc652ca98db1d4878bf35424885951c13e0d2536248423a0836d91ef7cae744ff40cbcbd6e7ffe495bd15ea5
   languageName: node
   linkType: hard
 
@@ -17767,7 +17844,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-bundle-renderer@npm:^0.3.5, vue-bundle-renderer@npm:^0.3.8":
+"vue-bundle-renderer@npm:^0.3.5":
+  version: 0.3.9
+  resolution: "vue-bundle-renderer@npm:0.3.9"
+  dependencies:
+    bundle-runner: ^0.0.1
+  checksum: 647ade1068533bd11c791608da9571f6125de9cd2c31cc26c6d7eb579b695558e7574979057d2a9ebbbcd600686516b6f9d222a99afc604936202d87bc4dbaa6
+  languageName: node
+  linkType: hard
+
+"vue-bundle-renderer@npm:^0.3.8":
   version: 0.3.8
   resolution: "vue-bundle-renderer@npm:0.3.8"
   dependencies:
@@ -18351,7 +18437,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.2.1, ws@npm:^8.6.0":
+"ws@npm:^8.2.1":
+  version: 8.8.0
+  resolution: "ws@npm:8.8.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 6ceed1ca1cb800ef60c7fc8346c7d5d73d73be754228eb958765abf5d714519338efa20ffe674167039486eb3a813aae5a497f8d319e16b4d96216a31df5bd95
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.6.0":
   version: 8.7.0
   resolution: "ws@npm:8.7.0"
   peerDependencies:

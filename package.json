@@ -21,7 +21,7 @@
   },
   "workspaces": [
     "packages/*",
-    "e2e/fixtures/*"
+    "specs/fixtures/**"
   ],
   "scripts": {
     "build": "yarn workspace @nuxtjs/i18n build",
@@ -34,7 +34,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "run-s test:unit",
     "test:unit": "vitest run test",
-    "test:e2e": "yarn build && vitest run e2e",
+    "test:spec": "yarn build && vitest run specs",
     "switch2": "npx vue-router-switch 3 && npx vue-i18n-switch 8",
     "switch3": "npx vue-demi-switch 3 && npx vue-router-switch 4 && npx vue-i18n-switch 9",
     "setup:bridge": "cd playground/bridge && rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",
