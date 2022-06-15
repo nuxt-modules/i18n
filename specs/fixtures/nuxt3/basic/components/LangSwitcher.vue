@@ -11,8 +11,9 @@ const localesExcludingCurrent = computed(() => {
 
 <template>
   <div>
-    <strong>Using nuxt-link</strong>:
-    <div id="lang-switcher">
+    <section id="lang-switcher-with-nuxt-link">
+      <strong>Using <code>NuxtLink</code></strong
+      >:
       <NuxtLink
         v-for="(locale, index) in localesExcludingCurrent"
         :key="index"
@@ -20,9 +21,10 @@ const localesExcludingCurrent = computed(() => {
         :to="switchLocalePath(locale.code)"
         >{{ locale.name }}</NuxtLink
       >
-    </div>
-    <strong>Using setLocale()</strong>:
-    <div>
+    </section>
+    <section id="lang-switcher-with-set-locale">
+      <strong>Using <code>setLocale()</code></strong
+      >:
       <a
         v-for="(locale, index) in localesExcludingCurrent"
         :id="`set-locale-link-${locale.code}`"
@@ -31,6 +33,11 @@ const localesExcludingCurrent = computed(() => {
         @click.prevent="setLocale(locale.code)"
         >{{ locale.name }}</a
       >
-    </div>
+    </section>
+    <section id="lang-switcher-current-locale">
+      <strong
+        >Current Locale: <code>{{ locale }}</code></strong
+      >:
+    </section>
   </div>
 </template>

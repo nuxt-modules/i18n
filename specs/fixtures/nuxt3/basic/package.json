@@ -1,5 +1,5 @@
 {
-  "name": "nuxt3-test",
+  "name": "nuxt3-test-basic",
   "private": true,
   "scripts": {
     "dev": "nuxi dev",
@@ -7,10 +7,7 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@nuxtjs/i18n": "file:../../../../packages/nuxt-i18n/package.tgz",
+    "@nuxtjs/i18n": "latest",
     "nuxt": "^3.0.0-rc.3"
-  },
-  "installConfig": {
-    "hoistingLimits": "workspaces"
   }
 }
