@@ -5,8 +5,8 @@ export default defineNuxtConfig({
   buildModules: ['@nuxtjs/i18n'],
 
   i18n: {
-    // baseUrl: 'nuxt-app.localhost',
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'nuxt-app.localhost',
+    // baseUrl: 'http://localhost:3000',
     locales: [
       {
         code: 'en',

@@ -12242,9 +12242,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nuxt3-test@workspace:specs/fixtures/nuxt3/basic":
+"nuxt3-test-basic@workspace:specs/fixtures/nuxt3/basic":
   version: 0.0.0-use.local
-  resolution: "nuxt3-test@workspace:specs/fixtures/nuxt3/basic"
+  resolution: "nuxt3-test-basic@workspace:specs/fixtures/nuxt3/basic"
   dependencies:
     "@nuxtjs/i18n": latest
     nuxt: ^3.0.0-rc.3
