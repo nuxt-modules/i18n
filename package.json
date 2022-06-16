@@ -21,7 +21,7 @@
   },
   "workspaces": [
     "packages/*",
-    "specs/fixtures/**"
+    "specs/fixtures/**/*"
   ],
   "scripts": {
     "build": "yarn workspace @nuxtjs/i18n build",
