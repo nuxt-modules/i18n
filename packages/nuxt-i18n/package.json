@@ -45,7 +45,7 @@
   "dependencies": {
     "@intlify/shared": "next",
     "@intlify/unplugin-vue-i18n": "latest",
-    "@nuxt/kit": "^3.0.0-rc.1",
+    "@nuxt/kit": "^3.0.0-rc.4",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.2",
     "defu": "latest",
@@ -61,10 +61,10 @@
   "devDependencies": {
     "@babel/parser": "^7.17.9",
     "@nuxt/module-builder": "latest",
-    "@nuxt/schema": "^3.0.0-rc.1",
+    "@nuxt/schema": "^3.0.0-rc.4",
     "@types/debug": "^4.1.7",
     "@types/js-cookie": "^3.0.1",
-    "nuxt": "^3.0.0-rc.1",
+    "nuxt": "^3.0.0-rc.4",
     "ts-essentials": "^9.1.2"
   },
   "engines": {

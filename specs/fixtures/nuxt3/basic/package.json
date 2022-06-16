@@ -8,6 +8,6 @@
   },
   "dependencies": {
     "@nuxtjs/i18n": "latest",
-    "nuxt": "^3.0.0-rc.3"
+    "nuxt": "^3.0.0-rc.4"
   }
 }

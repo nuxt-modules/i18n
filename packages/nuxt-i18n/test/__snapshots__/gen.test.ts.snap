@@ -1,13 +1,13 @@
 // Vitest Snapshot v1
 
 exports[`basic 1`] = `
-"import _564a1578 from \\"./locales/en.json\\";
-import _564a1606 from \\"./locales/ja.json\\";
+"import locale_en from \\"./locales/en.json\\";
+import locale_ja from \\"./locales/ja.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": () => Promise.resolve(_564a1578),
-  \\"ja\\": () => Promise.resolve(_564a1606),
+  \\"en\\": () => Promise.resolve(locale_en),
+  \\"ja\\": () => Promise.resolve(locale_ja),
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -25,11 +25,11 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 `;
 
 exports[`lazy 1`] = `
-"import _564a1578 from \\"./locales/en.json\\";
+"import locale_en from \\"./locales/en.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": () => Promise.resolve(_564a1578),
+  \\"en\\": () => Promise.resolve(locale_en),
   \\"ja\\": () => import(\\"./locales/ja.json\\" /* webpackChunkName: \\"lang-ja\\" */),
 }
 
@@ -46,13 +46,13 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 `;
 
 exports[`vueI18n: path 1`] = `
-"import _564a1578 from \\"./locales/en.json\\";
-import _564a1606 from \\"./locales/ja.json\\";
+"import locale_en from \\"./locales/en.json\\";
+import locale_ja from \\"./locales/ja.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": () => Promise.resolve(_564a1578),
-  \\"ja\\": () => Promise.resolve(_564a1606),
+  \\"en\\": () => Promise.resolve(locale_en),
+  \\"ja\\": () => Promise.resolve(locale_ja),
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
