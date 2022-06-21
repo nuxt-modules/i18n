@@ -57,8 +57,6 @@ export default defineNuxtPlugin(async nuxt => {
     localeCodes,
     getLocaleFromRoute
   )
-  // TODO: remove console log!
-  console.log('initial locale', initialLocale)
 
   // load initial vue-i18n locale messages
   await loadInitialMessages(legacyNuxtContext, vueI18nOptions.messages, {
@@ -67,8 +65,6 @@ export default defineNuxtPlugin(async nuxt => {
     fallbackLocale: vueI18nOptions.fallbackLocale,
     localeCodes
   })
-  // TODO: remove console log!
-  console.log('loaded messages', vueI18nOptions.messages)
 
   // install legacy vue-i18n to vue
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -252,8 +248,6 @@ export default defineNuxtPlugin(async nuxt => {
       'locale-changing',
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
         const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
-        // TODO: remove console log!
-        console.log('detectlocale client return', locale)
         const localeSetup = isInitialLocaleSetup(locale)
         const modified = await loadAndSetLocale(locale, legacyNuxtContext, i18n, {
           useCookie,
@@ -274,8 +268,6 @@ export default defineNuxtPlugin(async nuxt => {
   } else {
     const routeURL = nuxt.ssrContext!.url
     const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
-    // TODO: remove console log!
-    console.log('detectlocale server return', locale)
     await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, legacyNuxtContext, i18n, {
       useCookie,
       lazy: nuxtI18nOptions.lazy,

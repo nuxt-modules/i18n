@@ -224,24 +224,16 @@ export function getInitialLocale(
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
-  // TODO: remove console log!
-  console.log('getInitialLocale strategy:', strategy)
-  console.log('getInitialLocale browserLocale:', browserLocale)
-  console.log('getInitialLocale initialLocale:', initialLocale)
 
   let finalLocale: string | undefined = browserLocale
   if (!finalLocale) {
     if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
-      // TODO: remove console log!
-      console.log('getInitialLocale routeLocale:', finalLocale)
     }
   }
 
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
     finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
-    // TODO: remove console log!
-    console.log('getInitialLocale cookieLocale:', finalLocale)
   }
 
   if (!finalLocale) {
@@ -267,18 +259,6 @@ export function detectBrowserLanguage(
   const { strategy } = nuxtI18nOptions
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
     nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
-  // TODO: remove console log!
-  console.log(
-    'detectBrowserLanguage',
-    route,
-    localeCodes,
-    locale,
-    strategy,
-    redirectOn,
-    alwaysRedirect,
-    useCookie,
-    fallbackLocale
-  )
 
   const path = isString(route) ? route : route.path
   if (strategy !== 'no_prefix') {
@@ -295,14 +275,10 @@ export function detectBrowserLanguage(
 
   // get preferred language from cookie if present and enabled
   const cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
-  // TODO: remove console log!
-  console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
   let matchedLocale = cookieLocale
   // try to get locale from either navigator or header detection
   if (!useCookie) {
     matchedLocale = getBrowserLocale(nuxtI18nInternalOptions, context)
-    // TODO: remove console log!
-    console.log('detectBrowserLanguage: getBrowserLocale', matchedLocale)
   }
 
   const finalLocale = matchedLocale || fallbackLocale

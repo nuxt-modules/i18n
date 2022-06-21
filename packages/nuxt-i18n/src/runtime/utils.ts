@@ -26,14 +26,10 @@ import type { NuxtI18nOptions, DetectBrowserLanguageOptions } from '#build/i18n.
 import type { DeepRequired } from 'ts-essentials'
 
 export function setCookieLocale(i18n: I18n, locale: Locale) {
-  // TODO: remove console log!
-  console.log('setCookieLocale', locale)
   return callVueI18nInterfaces(i18n, 'setLocaleCookie', locale)
 }
 
 export function setLocaleMessage(i18n: I18n, locale: Locale, messages: Record<string, any>) {
-  // TODO: remove console log!
-  console.log('setLocaleMessage', locale, messages)
   return callVueI18nInterfaces(i18n, 'setLocaleMessage', locale, messages)
 }
 
@@ -106,20 +102,12 @@ export async function loadAndSetLocale(
   }: Pick<DetectBrowserLanguageOptions, 'useCookie'> &
     Pick<NuxtI18nOptions, 'lazy' | 'langDir'> & { initial?: boolean } = {}
 ): Promise<boolean> {
-  // TODO: remove console log!
-  console.log('loadAndSetLocale: useCookie', useCookie)
-  console.log('loadAndSetLocale: initial', initial)
-  console.log('loadAndSetLocale: lazy', lazy)
-  console.log('loadAndSetLocale: langDir', langDir)
   let ret = false
   if (!newLocale) {
     return ret
   }
 
   const oldLocale = getLocale(i18n)
-  // TODO: remove console log!
-  console.log('loadAndSetLocale: oldLocale', oldLocale)
-  console.log('loadAndSetLocale: newLoacal', newLocale)
   if (oldLocale === newLocale) {
     return ret
   }
@@ -171,24 +159,16 @@ export function detectLocale(
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
-  // TODO: remove console log!
-  console.log('detectLocale strategy:', strategy)
-  console.log('detectLocale browserLocale:', browserLocale)
-  console.log('detectLocale initialLocale:', initialLocale)
 
   let finalLocale: string | undefined = browserLocale
   if (!finalLocale) {
     if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
-      // TODO: remove console log!
-      console.log('detectLocale routeLocale:', finalLocale)
     }
   }
 
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
     finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
-    // TODO: remove console log!
-    console.log('detectLocale cookieLocale:', finalLocale)
   }
 
   if (!finalLocale) {
@@ -206,11 +186,6 @@ export function detectRedirect(
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>
 ): string {
   const { strategy, defaultLocale } = nuxtI18nOptions
-  // TODO: remove console log!
-  console.log('detectRedirect route:', route)
-  console.log('detectRedirect strategy:', strategy)
-  console.log('detectRedirect targetLocale:', targetLocale)
-  console.log('detectRedirect defaultLocale:', defaultLocale)
 
   let redirectPath = ''
   // decide whether we should redirect to a different route.
@@ -226,15 +201,11 @@ export function detectRedirect(
     // "switchLocalePath" can only find routes if the current route exists.
     const fullPath = isString(route) ? route : route.fullPath
     const routePath = app.switchLocalePath(targetLocale) || app.localePath(fullPath, targetLocale)
-    // TODO: remove console log!
-    console.log('detectRedirect: fullpath -> ', fullPath, ', routePath -> ', routePath)
     if (isString(routePath) && routePath !== fullPath && !routePath.startsWith('//')) {
       redirectPath = routePath
     }
   }
 
-  // TODO: remove console log!
-  console.log('detectRedirect: redirectPath -> ', redirectPath)
   return redirectPath
 }
 
