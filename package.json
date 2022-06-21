@@ -36,7 +36,7 @@
     "test": "run-s test:unit test:spec",
     "test:unit": "vitest run test",
     "test:spec": "yarn build && vitest run specs",
-    "switch2": "npx vue-router-switch 3 && npx vue-i18n-switch 8",
+    "switch2": "npx vue-demi-switch 2 vue2 && npx vue-router-switch 3 vue-router3 && npx vue-i18n-switch 8 vue-i18n-legacy",
     "switch3": "npx vue-demi-switch 3 && npx vue-router-switch 4 && npx vue-i18n-switch 9",
     "setup:bridge": "cd playground/bridge && rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",
     "setup:nuxt3": "cd playground/nuxt3 && rm -rf node_modules package-lock.json && npm i",
@@ -68,7 +68,7 @@
     "prettier": "^2.7.0",
     "typescript": "^4.5.4",
     "vitest": "^0.15.1",
-    "vue2": "npm:vue@2.6.14",
+    "vue2": "npm:vue@^2.6.14",
     "yorkie": "^2.0.0"
   },
   "gitHooks": {
@@ -91,6 +91,6 @@
     "access": "public"
   },
   "engines": {
-    "node": "^14.16.0 || ^16.11.0 || ^17.0.0"
+    "node": "^14.16.0 || ^16.11.0 || ^17.0.0 || ^18.0.0"
   }
 }

@@ -2610,7 +2610,7 @@ __metadata:
     prettier: ^2.7.0
     typescript: ^4.5.4
     vitest: ^0.15.1
-    vue2: "npm:vue@2.6.14"
+    vue2: "npm:vue@^2.6.14"
     yorkie: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -18398,7 +18398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue2@npm:vue@2.6.14, vue@npm:^2.6.14":
+"vue2@npm:vue@^2.6.14, vue@npm:^2.6.14":
   version: 2.6.14
   resolution: "vue@npm:2.6.14"
   checksum: 23524a1bdca094d62cb3491a46317eed75184b5d61d28fa846ea5d2b241c1cc7084fc67ee259d47a50a6d0bbc33ecaceb7bb52bff81312fe7da07263f3419942
