@@ -49,13 +49,13 @@ export default defineNuxtConfig({
     },
     vueI18n: {
       legacy: false,
-      locale: 'en',
+      locale: 'en'
       // fallbackLocale: 'en',
-      fallbackLocale: {
-        en: ['ja', 'fr', 'en-US'],
-        ja: ['en', 'fr', 'ja-JP'],
-        fr: ['en', 'ja', 'fr-FR']
-      }
+      // fallbackLocale: {
+      //   en: ['ja', 'fr', 'en-US'],
+      //   ja: ['en', 'fr', 'ja-JP'],
+      //   fr: ['en', 'ja', 'fr-FR']
+      // }
     }
   }
 })
