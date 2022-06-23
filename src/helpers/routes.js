@@ -20,7 +20,7 @@ export function makeRoutes (baseRoutes, {
   defaultLocaleRouteNameSuffix,
   differentDomains,
   includeUnprefixedFallback,
-  localeCodes,
+  locales,
   pages,
   pagesDir,
   parsePages,
@@ -33,14 +33,19 @@ export function makeRoutes (baseRoutes, {
   /** @type {NuxtRouteConfig[]} */
   let localizedRoutes = []
 
+  // TODO: Update locales type
   /**
    * @param {NuxtRouteConfig} route
-   * @param {readonly import('../../types').Locale[]} allowedLocaleCodes
+   * @param {any} locales
    * @param {boolean} [isChild=false]
    * @param {boolean} [isExtraRouteTree=false]
    * @return {NuxtRouteConfig | NuxtRouteConfig[]}
    */
-  const buildLocalizedRoutes = (route, allowedLocaleCodes, isChild = false, isExtraRouteTree = false) => {
+  const buildLocalizedRoutes = (route, locales, isChild = false, isExtraRouteTree = false) => {
+    // TODO: Update types
+    // @ts-ignore
+    const allowedLocaleCodes = locales.map(l => l.code)
+
     /** @type {NuxtRouteConfig[]} */
     const routes = []
 
@@ -60,8 +65,9 @@ export function makeRoutes (baseRoutes, {
 
     // Component-specific options
     const componentOptions = {
+      // TODO: Update types
       // @ts-ignore
-      locales: localeCodes,
+      locales,
       ...pageOptions,
       ...{ locales: allowedLocaleCodes }
     }
@@ -80,14 +86,20 @@ export function makeRoutes (baseRoutes, {
 
     // Generate routes for component's supported locales
     for (let i = 0, length1 = componentOptions.locales.length; i < length1; i++) {
-      const locale = componentOptions.locales[i]
+      // TODO: Update types
+      // @ts-ignore
+      const locale = locales.find(l => componentOptions.locales[i] === l.code)
+      // TODO: Update types
+      // @ts-ignore
+      const specialPath = locales.find(l => l.code === locale.code).path
+
       const { name } = route
       let { path } = route
       const localizedRoute = { ...route }
 
       // Make localized route name. Name might not exist on parent route if child has same path.
       if (name) {
-        localizedRoute.name = name + routesNameSeparator + locale
+        localizedRoute.name = name + routesNameSeparator + locale.code
       }
 
       // Generate localized children routes if any
@@ -104,7 +116,7 @@ export function makeRoutes (baseRoutes, {
         path = componentOptions.paths[locale]
       }
 
-      const isDefaultLocale = locale === defaultLocale
+      const isDefaultLocale = locale.code === defaultLocale
 
       // For PREFIX_AND_DEFAULT strategy and default locale:
       // - if it's a parent route, add it with default locale suffix added (no suffix if route has children)
@@ -145,7 +157,11 @@ export function makeRoutes (baseRoutes, {
       )
 
       if (shouldAddPrefix) {
-        path = `/${locale}${path}`
+        path = `/${locale.code}${path}`
+      }
+
+      if (specialPath) {
+        path = `${specialPath}${path}`
       }
 
       // - Follow Nuxt and add or remove trailing slashes depending on "router.trailingSlash`
@@ -171,7 +187,7 @@ export function makeRoutes (baseRoutes, {
 
   for (let i = 0, length1 = baseRoutes.length; i < length1; i++) {
     const route = baseRoutes[i]
-    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, localeCodes))
+    localizedRoutes = localizedRoutes.concat(buildLocalizedRoutes(route, locales))
   }
 
   if (sortRoutes) {
