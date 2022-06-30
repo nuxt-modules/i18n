@@ -56,7 +56,7 @@ or
 }
 ```
 
-The former approach has the benefit of having having type-checking enabled if you have followed the [Typescript setup](#typescript).
+The former approach has the benefit of having type-checking enabled if you have followed the [Typescript setup](#typescript).
 
 ## Typescript
 
