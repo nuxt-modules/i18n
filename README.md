@@ -1,3 +1,6 @@
+### Check the [next](https://github.com/nuxt-community/i18n-module/tree/next) branch for Nuxt 3 support
+--------------
+
 <p align="center">
   <img src="./docs/static/preview.png" alt="@nuxtjs/i18n logo">
 </p>
