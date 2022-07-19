@@ -3,7 +3,7 @@
 set -xe
 
 # Restore all git changes
-git restore --source=HEAD --staged --worktree -- package.json yarn.lock packages
+git restore --source=HEAD --staged --worktree -- package.json yarn.lock
 
 # Bump versions to edge
 yarn jiti ./scripts/bump-edge
@@ -20,9 +20,12 @@ if [[ ! -z ${NPM_TOKEN} ]] ; then
 fi
 
 # Release packages
-for p in packages/* ; do
-  pushd $p
-  echo "Publishing $p"
-  # npm publish --access public
-  popd
-done
+echo "Publishing"
+npm publish --access public
+
+# for p in packages/* ; do
+#   pushd $p
+#   echo "Publishing $p"
+#   npm publish --access public
+#   popd
+# done
