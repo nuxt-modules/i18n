@@ -23,6 +23,6 @@ fi
 for p in packages/* ; do
   pushd $p
   echo "Publishing $p"
-  npm publish --access public
+  # npm publish --access public
   popd
 done

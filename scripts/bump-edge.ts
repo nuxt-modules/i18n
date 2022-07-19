@@ -8,7 +8,8 @@ type Dep = { name: string; range: string; type: string }
 async function loadPackage(dir: string) {
   const pkgPath = resolve(dir, 'package.json')
   const data = JSON.parse(await fsp.readFile(pkgPath, 'utf-8').catch(() => '{}'))
-  const save = () => fsp.writeFile(pkgPath, JSON.stringify(data, null, 2) + '\n')
+  // const save = () => fsp.writeFile(pkgPath, JSON.stringify(data, null, 2) + '\n')
+  const save = () => console.log(JSON.stringify(data, null, 2))
 
   const updateDeps = (reviver: (dep: Dep) => Dep | void) => {
     for (const type of ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']) {
@@ -102,17 +103,23 @@ async function loadWorkspace(dir: string) {
 }
 
 async function main() {
-  const workspace = await loadWorkspace(process.cwd())
+  // const workspace = await loadWorkspace(process.cwd())
 
   const commit = execSync('git rev-parse --short HEAD').toString('utf-8').trim()
   const date = Math.round(Date.now() / (1000 * 60))
 
-  for (const pkg of workspace.packages.filter(p => !p.data.private)) {
-    workspace.setVersion(pkg.data.name, `${pkg.data.version}-${date}.${commit}`)
-    workspace.rename(pkg.data.name, pkg.data.name + '-edge')
-  }
+  // for (const pkg of workspace.packages.filter(p => !p.data.private)) {
+  //   workspace.setVersion(pkg.data.name, `${pkg.data.version}-${date}.${commit}`)
+  //   workspace.rename(pkg.data.name, pkg.data.name + '-edge')
+  // }
 
-  await workspace.save()
+  // await workspace.save()
+
+  const pkgPath = resolve(process.cwd(), 'package.json')
+  const pkg = JSON.parse(await fsp.readFile(pkgPath, 'utf-8').catch(() => '{}'))
+  pkg.version = `${pkg.version}-${date}.${commit}`
+  pkg.name = pkg.name + '-edge'
+  await fsp.writeFile(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
 }
 
 main().catch(err => {
