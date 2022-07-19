@@ -1,8 +1,17 @@
 {
-  "name": "@nuxtjs/i18n-monorepo",
-  "description": "The monorepo for @nuxtjs/i18n",
+  "name": "@nuxtjs/i18n",
+  "description": "i18n for Nuxt",
+  "version": "8.0.0-alpha.0",
+  "homepage": "https://i18n.nuxtjs.org",
+  "packageManager": "yarn@3.1.1",
+  "bugs": {
+    "url": "https://github.com/nuxt-community/i18n-module/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuxt-community/i18n-module.git"
+  },
   "license": "MIT",
-  "private": true,
   "contributors": [
     {
       "name": "Paul Gascou-Vaillancourt (@paulgv)"
@@ -14,20 +23,27 @@
       "name": "Kazuya Kawaguchi (@kazupon)"
     }
   ],
-  "repository": "https://github.com/nuxt-community/i18n-module",
-  "homepage": "https://i18n.nuxtjs.org",
-  "bugs": {
-    "url": "https://github.com/nuxt-community/i18n-module/issues"
+  "exports": {
+    ".": {
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
   },
-  "workspaces": [
-    "packages/*",
-    "specs/fixtures/bridge",
-    "specs/fixtures/nuxt3/*"
+  "main": "./dist/module.cjs",
+  "module": "./dist/module.mjs",
+  "types": "./dist/types.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "scripts"
   ],
   "scripts": {
-    "build": "yarn workspace @nuxtjs/i18n build",
-    "stub": "yarn workspace @nuxtjs/i18n stub",
-    "prepack": "yarn workspace @nuxtjs/i18n pack",
+    "build": "nuxt-module-build",
+    "build:dev": "nuxi build playground",
+    "preview:dev": "node playground/.output/server/index.mjs",
+    "stub": "nuxt-module-build --stub",
+    "dev": "nuxi dev playground",
+    "prepare": "yarn stub && nuxi prepare playground",
     "fix": "run-p lint:fix format:fix",
     "format": "prettier --config .prettierrc --ignore-path .prettierignore '**/*.{js,json,html}'",
     "format:fix": "yarn format --write",
@@ -35,40 +51,47 @@
     "lint:fix": "yarn lint --fix",
     "test": "run-s test:unit test:spec",
     "test:unit": "vitest run test",
-    "test:spec": "yarn build && vitest run specs",
-    "switch2": "npx vue-demi-switch 2 vue2 && npx vue-router-switch 3 vue-router3 && npx vue-i18n-switch 8 vue-i18n-legacy",
-    "switch3": "npx vue-demi-switch 3 && npx vue-router-switch 4 && npx vue-i18n-switch 9",
-    "setup:bridge": "cd playground/bridge && rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",
-    "setup:nuxt3": "cd playground/nuxt3 && rm -rf node_modules package-lock.json && npm i",
-    "play:bridge": "cd playground/bridge && npm run dev",
-    "play:nuxt3": "cd playground/nuxt3 && npm run dev",
-    "play:nuxt3:test:basic": "yarn workspace nuxt3-test-basic run dev",
-    "build:bridge": "cd playground/bridge && npm run build",
-    "build:nuxt3": "cd playground/nuxt3 && npm run build",
-    "generate:bridge": "cd playground/bridge && npm run generate",
-    "generate:nuxt3": "cd playground/nuxt3 && npm run generate"
+    "test:spec": "yarn build && vitest run specs"
   },
-  "packageManager": "yarn@3.1.1",
-  "resolutions": {
-    "@nuxtjs/i18n": "workspace:packages/nuxt-i18n"
+  "dependencies": {
+    "@intlify/shared": "next",
+    "@intlify/unplugin-vue-i18n": "latest",
+    "@nuxt/kit": "^3.0.0-rc.4",
+    "cookie-es": "^0.5.0",
+    "debug": "^4.3.2",
+    "defu": "^6.0.0",
+    "js-cookie": "^3.0.1",
+    "knitwork": "^0.1.2",
+    "mlly": "^0.5.4",
+    "pathe": "^0.3.2",
+    "vue-i18n": "beta",
+    "vue-i18n-bridge": "beta",
+    "vue-i18n-routing": "edge"
   },
   "devDependencies": {
-    "@nuxt/test-utils-edge": "^3.0.0-rc.3-27578655.a802b87",
+    "@babel/parser": "^7.17.9",
+    "@nuxt/module-builder": "latest",
+    "@nuxt/schema": "^3.0.0-rc.4",
+    "@nuxt/test-utils-edge": "3.0.0-rc.4-27600153.ad42023",
     "@types/debug": "^4.1.7",
+    "@types/js-cookie": "^3.0.1",
+    "@types/rimraf": "^3",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "debug": "^4.3.3",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jiti": "^1.13.0",
+    "jiti": "^1.14.0",
     "lint-staged": "^12.1.2",
     "npm-run-all": "^4.1.5",
+    "nuxt": "^3.0.0-rc.4",
     "playwright": "^1.22.2",
     "prettier": "^2.7.0",
-    "typescript": "^4.5.4",
+    "rimraf": "^3.0.2",
+    "ts-essentials": "^9.1.2",
+    "typescript": "^4.7.4",
     "vitest": "^0.15.1",
-    "vue2": "npm:vue@^2.6.14",
     "yorkie": "^2.0.0"
   },
   "gitHooks": {

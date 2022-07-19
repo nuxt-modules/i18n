@@ -29,19 +29,20 @@
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
     "paths": {
-      "vue": ["./node_modules/vue2/types/index.d.ts"],
-      "#app": ["./node_modules/nuxt/dist/app/index"],
-      "#i18n": ["./packages/nuxt-i18n/src/runtime/composables.ts"],
-      "#build/i18n.options.mjs": ["./packages/nuxt-i18n/src/options.d.ts"],
-      "#build/i18n.frags.mjs": ["./packages/nuxt-i18n/src/runtime/frags.ts"],
-      "#build/i18n.internal.mjs": ["./packages/nuxt-i18n/src/runtime/internal.ts"],
-      "#build/i18n.utils.mjs": ["./packages/nuxt-i18n/src/runtime/utils.ts"]
+      "vue": ["./node_modules/vue/dist/vue.d.ts"],
+      "#app": ["./node_modules/nuxt/app.d.ts"],
+      "#head": ["./node_modules/nuxt/dist/index.d.ts"],
+      "#i18n": ["./src/runtime/composables.ts"],
+      "#build/i18n.options.mjs": ["./src/options.d.ts"],
+      "#build/i18n.frags.mjs": ["./src/runtime/frags.ts"],
+      "#build/i18n.internal.mjs": ["./src/runtime/internal.ts"],
+      "#build/i18n.utils.mjs": ["./src/runtime/utils.ts"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like `./node_modules/@types`. */
-    // "types": [
-    //   "vitest/global"
-    // ] /* Specify type package names to be included without being referenced in a source file. */,
+    "types": [
+      "vue-i18n-routing/types"
+    ] /* Specify type package names to be included without being referenced in a source file. */,
     // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
     // "resolveJsonModule": true,                        /* Enable importing .json files */
     // "noResolve": true,                                /* Disallow `import`s, `require`s or `<reference>`s from expanding the number of files TypeScript should add to a project. */
