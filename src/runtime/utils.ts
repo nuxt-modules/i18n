@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isVue2 } from 'vue-demi'
-import { getLocale, setLocale, createLocaleFromRouteGetter } from 'vue-i18n-routing'
+import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } from 'vue-i18n-routing'
 import { isString, isArray, isObject } from '@intlify/shared'
-import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
+import { localeCodes, nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import { SERVER } from '#build/i18n.frags.mjs'
 import {
   detectBrowserLanguage,
@@ -114,7 +114,8 @@ export async function loadAndSetLocale(
 
   // call onBeforeLanguageSwitch
   const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, context)
-  if (localeOverride && (i18n as any).localeCodes && (i18n as any).localeCodes.includes(localeOverride)) {
+  const localeCodes = getLocaleCodes(i18n)
+  if (localeOverride && localeCodes && localeCodes.includes(localeOverride)) {
     if (localeOverride === oldLocale) {
       return ret
     }
