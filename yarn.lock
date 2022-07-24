@@ -1494,11 +1494,11 @@ __metadata:
   linkType: hard
 
 "@vueuse/head@npm:^0.7.6":
-  version: 0.7.6
-  resolution: "@vueuse/head@npm:0.7.6"
+  version: 0.7.7
+  resolution: "@vueuse/head@npm:0.7.7"
   peerDependencies:
     vue: ">=3"
-  checksum: d8f49f5c2894b0d517231424a73e0efc42c6887cf2cc9e9dce7190229ac736a1864bc60d952080be3fa620e1309dd120b34595ae7a02800f29c44949f1590a21
+  checksum: aa1df0955b5b71fb7c485773d7b7116f068553acefd5c19c2b9c4b29d1e3a37b2fced81f426dbcd688bebc29d68fff1b30be2850b190f6326c094024361f2e14
   languageName: node
   linkType: hard
 
@@ -8357,8 +8357,8 @@ __metadata:
   linkType: hard
 
 "vue-i18n-routing@npm:edge":
-  version: 0.0.0-9c91503
-  resolution: "vue-i18n-routing@npm:0.0.0-9c91503"
+  version: 0.0.0-071fc4e
+  resolution: "vue-i18n-routing@npm:0.0.0-071fc4e"
   dependencies:
     "@intlify/shared": next
     "@intlify/vue-i18n-bridge": ^0.4.0
@@ -8382,7 +8382,7 @@ __metadata:
       optional: true
     vue-router:
       optional: true
-  checksum: 86ce4d6827e2ac32229f6495e4cd9b8c8e4ea8a0cdf1436fdf50cc5baee709ba1023993a775284faf5398596bfbb4592c444efd370be40d404e4d393160abec3
+  checksum: 840a6911c91a7b46c7c3f6184ddcb345a4a965be4a8a3c3323f0f8088631aea72d43289e1d164773f9d16652ce22030b20f0e7684cc4e23164440a5ca192ea8e
   languageName: node
   linkType: hard
 
