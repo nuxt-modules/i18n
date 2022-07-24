@@ -3,7 +3,7 @@
 import { isVue2 } from 'vue-demi'
 import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } from 'vue-i18n-routing'
 import { isString, isArray, isObject } from '@intlify/shared'
-import { localeCodes, nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
+import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import { SERVER } from '#build/i18n.frags.mjs'
 import {
   detectBrowserLanguage,

@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n, useLocalePath } from '#i18n'
+// import { definePageMeta } from '#pages'
 import LangSwitcher from '../../components/LangSwitcher.vue'
 
-const { localeProperties } = useI18n()
+const { t, localeProperties } = useI18n()
 const localePath = useLocalePath()
 const code = computed(() => {
   return localeProperties.value.code
 })
 
+// @ts-ignore
+definePageMeta({
+  title: 'about'
+})
 /*
 // TODO: defineNuxtI18n macro
 defineNuxtI18n({
