@@ -11,7 +11,7 @@ import {
   switchLocalePath,
   localeHead
 } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo } from '#app'
+import { defineNuxtPlugin, useRouter, addRouteMiddleware, navigateTo, abortNavigation } from '#app'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 import { CLIENT } from '#build/i18n.frags.mjs'
 import { loadInitialMessages, loadAndSetLocale, detectLocale, detectRedirect, proxyNuxt } from '#build/i18n.utils.mjs'
@@ -100,7 +100,7 @@ export default defineNuxtPlugin(async nuxt => {
           }
           const redirectPath = detectRedirect(locale, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
           if (redirectPath) {
-            navigate(nuxt.ssrContext, redirectPath)
+            navigate(redirectPath)
           }
         }
         composer.getBrowserLocale = () => _getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
@@ -218,12 +218,14 @@ export default defineNuxtPlugin(async nuxt => {
         }
         const redirectPath = detectRedirect(to, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
         if (redirectPath) {
-          navigate(nuxt.ssrContext, redirectPath)
+          navigate(redirectPath)
         }
       },
       { global: true }
     )
   } else {
+    // TODO: we should use `addRouteMiddleware` in server-side
+    //       `addRouteMiddleware` does not work on server...
     const routeURL = nuxt.ssrContext!.url
     const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
     await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, nuxt, i18n, {
@@ -233,12 +235,11 @@ export default defineNuxtPlugin(async nuxt => {
     })
     const redirectPath = detectRedirect(routeURL, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
     if (redirectPath) {
-      navigate(nuxt.ssrContext, redirectPath)
+      navigate(redirectPath)
     }
   }
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function navigate(context: any, redirectPath: string, status = 302) {
-  await navigateTo(redirectPath)
+async function navigate(redirectPath: string, status = 302) {
+  return navigateTo(redirectPath, { redirectCode: status })
 }

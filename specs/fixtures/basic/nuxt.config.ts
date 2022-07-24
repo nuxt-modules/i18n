@@ -21,8 +21,9 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: false,
     lazy: false,
-    // vueI18nLoader: true,
     vueI18n: {
       legacy: false,
       messages: {
