@@ -1,11 +1,10 @@
 import { resolveFiles } from '@nuxt/kit'
 import { parse } from 'pathe'
-import { isObject, isString, isBoolean } from '@intlify/shared'
+import { isObject, isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
-import type { NuxtOptions } from '@nuxt/schema'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -43,13 +42,4 @@ function findLocales(locales: NonNullable<NuxtI18nOptions['locales']>, filename:
   // @ts-ignore
   const ret = locales.find((locale: string | LocaleObject) => isObject(locale) && locale.file === filename)
   return ret != null ? (ret as LocaleObject) : null
-}
-
-export function isViteMode(options: NuxtOptions): boolean {
-  // prettier-ignore
-  return options.vite != null
-    ? (isBoolean(options.vite)
-      ? options.vite
-      : isObject(options.vite))
-    : true
 }

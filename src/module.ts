@@ -22,7 +22,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     name: NUXT_I18N_MODULE_ID,
     configKey: 'i18n'
   },
-  defaults: {},
+  defaults: {}, // TODO: should implement from `constants.ts`
   async setup(i18nOptions, nuxt) {
     const options = defu(i18nOptions, DEFAULT_OPTIONS) as Required<NuxtI18nOptions>
     debug('options', options)
