@@ -100,6 +100,3 @@ describe('default strategy: prefix_except_default', async () => {
     expect(await getText(page, '#lang-switcher-current-locale')).toMatch('fr')
   })
 })
-
-// describe.todo('strategy: prefix_and_default')
-// describe.todo('strategy: no_prefix')
