@@ -3,8 +3,6 @@ import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from '@nuxt/test-utils'
 import { getText, getData } from './helper'
 
-import type { Response } from 'playwright'
-
 describe('lazy load', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`./fixtures/lazy`, import.meta.url)),
@@ -62,34 +60,6 @@ describe('lazy load', async () => {
     const home = url('/fr')
     const page = await createPage()
     await page.goto(home)
-
-    // `fr` rendering
-    expect(await getText(page, '#home-header')).toMatch('Accueil')
-    expect(await getText(page, 'title')).toMatch('Accueil')
-    expect(await getText(page, '#link-about')).toMatch('À propos')
-
-    // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('English')
-    expect(await getText(page, '#set-locale-link-en')).toMatch('English')
-
-    // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/')
-
-    // current locale
-    expect(await getText(page, '#lang-switcher-current-locale')).toMatch('fr')
-
-    // html tag `lang` attriute with iso code
-    expect(await page.getAttribute('html', 'lang')).toMatch('fr-FR')
-  })
-
-  test('reactivity', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
-
-    // click `fr` lang switch link
-    await page.locator('#lang-switcher-with-nuxt-link a').click()
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toMatch('Accueil')
