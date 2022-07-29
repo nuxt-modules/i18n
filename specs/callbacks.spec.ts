@@ -41,5 +41,5 @@ test('onBeforeLanguageSwitch / onLanguageSwitched', async () => {
   expect(messages[2]).include('onBeforeLanguageSwitch fr en false')
 
   // current locale
-  expect(await getText(page, '#lang-switcher-current-locale')).toMatch('fr')
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })
