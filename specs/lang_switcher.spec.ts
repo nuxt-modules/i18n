@@ -4,7 +4,7 @@ import { setup, url, createPage } from '@nuxt/test-utils'
 import { getText, getData } from './helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`./fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`./fixtures/switcher`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
@@ -21,6 +21,7 @@ test('<NuxtLink>', async () => {
 
   // click `fr` lang switch with `<NuxtLink>`
   await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForTimeout(2000)
 
   // `fr` rendering
   expect(await getText(page, '#home-header')).toMatch('Accueil')
@@ -35,7 +36,7 @@ test('<NuxtLink>', async () => {
   expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/')
 
   // current locale
-  expect(await getText(page, '#lang-switcher-current-locale')).toMatch('fr')
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })
 
 test('setLocale', async () => {
@@ -45,6 +46,7 @@ test('setLocale', async () => {
 
   // click `en` lang switch with `setLocale`
   await page.locator('#lang-switcher-with-set-locale a').click()
+  await page.waitForTimeout(2000)
 
   // `en` rendering
   expect(await getText(page, '#home-header')).toMatch('Homepage')
@@ -59,9 +61,25 @@ test('setLocale', async () => {
   expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/fr')
 
   // current locale
-  expect(await getText(page, '#lang-switcher-current-locale')).toMatch('en')
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+})
+
+test.todo('wait for page transition', async () => {
+  const home = url('/')
+  const page = await createPage()
+  await page.goto(home)
+
+  // click `fr` lang switch with `<NuxtLink>`
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  await page.waitForTimeout(2000)
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+
+  // click `en` lang switch with `setLocale`
+  await page.locator('#lang-switcher-with-set-locale a').click()
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  await page.waitForTimeout(2000)
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 })
 
 test.todo('dynamic route parameter')
-
-test.todo('wait for page transition')
