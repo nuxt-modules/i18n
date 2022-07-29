@@ -37,20 +37,20 @@ describe('strategy: prefix', async () => {
     await page.goto(home)
 
     // `en` rendering
-    expect(await getText(page, '#home-header')).toMatch('Homepage')
-    expect(await getText(page, 'title')).toMatch('Homepage')
-    expect(await getText(page, '#link-about')).toMatch('About us')
+    expect(await getText(page, '#home-header')).toEqual('Homepage')
+    expect(await getText(page, 'title')).toEqual('Homepage')
+    expect(await getText(page, '#link-about')).toEqual('About us')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('Français')
-    expect(await getText(page, '#set-locale-link-fr')).toMatch('Français')
+    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('Français')
+    expect(await getText(page, '#set-locale-link-fr')).toEqual('Français')
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/en/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/fr')
+    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/fr')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale')).toMatch('en')
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
   })
 
   test('can access to prefix locale: /fr', async () => {
@@ -59,20 +59,20 @@ describe('strategy: prefix', async () => {
     await page.goto(home)
 
     // `fr` rendering
-    expect(await getText(page, '#home-header')).toMatch('Accueil')
-    expect(await getText(page, 'title')).toMatch('Accueil')
-    expect(await getText(page, '#link-about')).toMatch('À propos')
+    expect(await getText(page, '#home-header')).toEqual('Accueil')
+    expect(await getText(page, 'title')).toEqual('Accueil')
+    expect(await getText(page, '#link-about')).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('English')
-    expect(await getText(page, '#set-locale-link-en')).toMatch('English')
+    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('English')
+    expect(await getText(page, '#set-locale-link-en')).toEqual('English')
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/en')
+    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/en')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale')).toMatch('fr')
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
   })
 
   test('cannot access to not defined locale: /ja', async () => {
@@ -97,19 +97,19 @@ describe('strategy: prefix', async () => {
     await page.locator('#lang-switcher-with-nuxt-link a').click()
 
     // `fr` rendering
-    expect(await getText(page, '#home-header')).toMatch('Accueil')
-    expect(await getText(page, 'title')).toMatch('Accueil')
-    expect(await getText(page, '#link-about')).toMatch('À propos')
+    expect(await getText(page, '#home-header')).toEqual('Accueil')
+    expect(await getText(page, 'title')).toEqual('Accueil')
+    expect(await getText(page, '#link-about')).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('English')
-    expect(await getText(page, '#set-locale-link-en')).toMatch('English')
+    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('English')
+    expect(await getText(page, '#set-locale-link-en')).toEqual('English')
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/en')
+    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/en')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale')).toMatch('fr')
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
   })
 })
