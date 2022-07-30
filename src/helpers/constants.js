@@ -42,6 +42,7 @@ export const DEFAULT_OPTIONS = {
   lazy: false,
   langDir: null,
   rootRedirect: null,
+  redirectStatusCode: 302,
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,

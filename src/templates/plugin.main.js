@@ -205,7 +205,7 @@ export default async (context) => {
     const storedRedirect = app.i18n.__redirect
     if (storedRedirect) {
       app.i18n.__redirect = null
-      return [302, storedRedirect]
+      return [options.redirectStatusCode, storedRedirect]
     }
 
     const resolveBaseUrlOptions = {

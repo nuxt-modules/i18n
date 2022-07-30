@@ -64,6 +64,7 @@ export interface Options extends BaseOptions {
   }
   parsePages?: boolean
   rootRedirect?: string | null | RootRedirectOptions
+  redirectStatusCode?: number
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean,
   sortRoutes?: boolean,

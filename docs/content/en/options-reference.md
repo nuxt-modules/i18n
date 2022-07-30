@@ -172,6 +172,13 @@ Set to a path to which you want to redirect users accessing the root URL (`/`). 
 }
 ```
 
+## `redirectStatusCode`
+
+- type: `number`
+- default: `302`
+
+Customize the status code to redirect unprefixed route to the default locale.
+
 ## `differentDomains`
 
 - type: `boolean`
