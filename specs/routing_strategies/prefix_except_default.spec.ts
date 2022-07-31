@@ -72,7 +72,7 @@ describe('default strategy: prefix_except_default', async () => {
       res = error as Error & { status: () => number }
     }
     // 404
-    expect(res!.status()).toBe(404)
+    expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
   })
 
   test('reactivity', async () => {
