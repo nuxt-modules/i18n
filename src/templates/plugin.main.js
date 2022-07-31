@@ -17,9 +17,7 @@ import {
   registerStore,
   mergeAdditionalMessages
 } from './plugin.utils'
-// @ts-ignore
 import { joinURL } from '~i18n-ufo'
-// @ts-ignore
 import { klona } from '~i18n-klona'
 
 Vue.use(VueI18n)

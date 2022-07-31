@@ -16,6 +16,12 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "~i18n-klona": [
+        "node_modules/klona"
+      ],
+      "~i18n-ufo": [
+        "node_modules/ufo"
+      ],
       "~/*": [
         "./*",
       ],
