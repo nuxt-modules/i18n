@@ -29,7 +29,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - LIMITATIONS: `skipNuxtState` and executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
 - [ ] Lang Switcher
   - [ ] Dynamic route parameters
-  - [ ] Wait for page transition
+  - [x] Wait for page transition
 - [ ] Different domains
 - [x] Locale fallback
 - [ ] Per-component translations
