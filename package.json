@@ -12,7 +12,7 @@
     }
   ],
   "engines": {
-    "node": ">=14.16"
+    "node": ">=v16.16.0"
   },
   "main": "src/index.js",
   "types": "types/index.d.ts",
