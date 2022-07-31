@@ -2,6 +2,7 @@
 
 import { isVue2 } from 'vue-demi'
 import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } from 'vue-i18n-routing'
+import { navigateTo } from '#app'
 import { isString, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import { SERVER } from '#build/i18n.frags.mjs'
@@ -43,7 +44,7 @@ function onBeforeLanguageSwitch(
   return callVueI18nInterfaces(i18n, 'onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
 }
 
-function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string): void {
+export function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string): void {
   return callVueI18nInterfaces(i18n, 'onLanguageSwitched', oldLocale, newLocale)
 }
 
@@ -96,20 +97,21 @@ export async function loadAndSetLocale(
   i18n: I18n,
   {
     useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
+    skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate,
     initial = false,
     lazy = false,
     langDir = null
   }: Pick<DetectBrowserLanguageOptions, 'useCookie'> &
-    Pick<NuxtI18nOptions, 'lazy' | 'langDir'> & { initial?: boolean } = {}
-): Promise<boolean> {
+    Pick<NuxtI18nOptions, 'lazy' | 'langDir' | 'skipSettingLocaleOnNavigate'> & { initial?: boolean } = {}
+): Promise<[boolean, string]> {
   let ret = false
+  const oldLocale = getLocale(i18n)
   if (!newLocale) {
-    return ret
+    return [ret, oldLocale]
   }
 
-  const oldLocale = getLocale(i18n)
   if (oldLocale === newLocale) {
-    return ret
+    return [ret, oldLocale]
   }
 
   // call onBeforeLanguageSwitch
@@ -117,7 +119,7 @@ export async function loadAndSetLocale(
   const localeCodes = getLocaleCodes(i18n)
   if (localeOverride && localeCodes && localeCodes.includes(localeOverride)) {
     if (localeOverride === oldLocale) {
-      return ret
+      return [ret, oldLocale]
     }
     newLocale = localeOverride
   }
@@ -134,17 +136,18 @@ export async function loadAndSetLocale(
     }
   }
 
+  if (skipSettingLocaleOnNavigate) {
+    return [ret, oldLocale]
+  }
+
   // set the locale
   if (useCookie) {
     setCookieLocale(i18n, newLocale)
   }
   setLocale(i18n, newLocale)
 
-  // call onLanguageSwitched
-  onLanguageSwitched(i18n, oldLocale, newLocale)
-
   ret = true
-  return ret
+  return [ret, oldLocale]
 }
 
 export function detectLocale(
@@ -207,6 +210,28 @@ export function detectRedirect(
   }
 
   return redirectPath
+}
+
+export async function navigate(
+  i18n: I18n,
+  redirectPath: string,
+  locale: string,
+  {
+    status = 302,
+    skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
+  }: { status?: number } & Pick<NuxtI18nOptions, 'skipSettingLocaleOnNavigate'> = {}
+) {
+  if (skipSettingLocaleOnNavigate) {
+    i18n.__pendingLocale = locale
+    i18n.__pendingLocalePromise = new Promise(resolve => {
+      i18n.__resolvePendingLocalePromise = resolve
+    })
+    return
+  }
+
+  if (redirectPath) {
+    return navigateTo(redirectPath, { redirectCode: status })
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types

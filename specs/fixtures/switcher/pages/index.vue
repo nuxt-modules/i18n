@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { watchEffect } from 'vue'
-import { useAsyncData, useHead } from '#app'
+import { watch } from 'vue'
+import { useAsyncData, useHead, useRoute } from '#app'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
 import LangSwitcher from '../components/LangSwitcher.vue'
 
-const { t } = useI18n()
+const { t, locale, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
 const { data, refresh } = useAsyncData('home', () =>
@@ -14,7 +14,16 @@ const { data, refresh } = useAsyncData('home', () =>
   })
 )
 
-watchEffect(() => {
+const route = useRoute()
+route.meta.pageTransition = {
+  name: 'my',
+  mode: 'out-in',
+  onBeforeEnter: async () => {
+    await finalizePendingLocaleChange()
+  }
+}
+
+watch(locale, () => {
   refresh()
 })
 

@@ -5,6 +5,10 @@ import I18nModule from '../../..'
 export default defineNuxtConfig({
   modules: [I18nModule],
 
+  experimental: {
+    reactivityTransform: true
+  },
+
   i18n: {
     baseUrl: 'http://localhost:3000',
     locales: [
@@ -20,6 +24,7 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
+    skipSettingLocaleOnNavigate: true,
     detectBrowserLanguage: false,
     vueI18n: {
       legacy: false,

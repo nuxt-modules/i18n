@@ -10,7 +10,10 @@ export interface ComposerCustomProperties {
   setLocaleCookie: (locale: string) => void
   onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
   onLanguageSwitched: LanguageSwitchedHandler
+  finalizePendingLocaleChange: () => Promise<void>
+  waitForPendingLocaleChange: () => Promise<void>
 }
+
 declare module 'vue-i18n' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface ComposerCustom extends ComposerCustomProperties {}
@@ -22,6 +25,14 @@ declare module 'vue-i18n' {
     setLocaleCookie: (locale: string) => void
     onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
     onLanguageSwitched: LanguageSwitchedHandler
+    finalizePendingLocaleChange: () => Promise<void>
+    waitForPendingLocaleChange: () => Promise<void>
+  }
+
+  export interface I18n {
+    __pendingLocale?: string
+    __pendingLocalePromise?: Promise
+    __resolvePendingLocalePromise?: (value: unknown) => void
   }
 }
 
@@ -36,6 +47,14 @@ declare module 'vue-i18n-bridge' {
     setLocaleCookie: (locale: string) => void
     onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
     onLanguageSwitched: LanguageSwitchedHandler
+    finalizePendingLocaleChange: () => Promise<void>
+    waitForPendingLocaleChange: () => Promise<void>
+  }
+
+  export interface I18n {
+    __pendingLocale?: string
+    __pendingLocalePromise?: Promise
+    __resolvePendingLocalePromise?: (value: unknown) => void
   }
 }
 declare module '@intlify/vue-i18n-bridge' {
@@ -49,6 +68,13 @@ declare module '@intlify/vue-i18n-bridge' {
     setLocaleCookie: (locale: string) => void
     onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
     onLanguageSwitched: LanguageSwitchedHandler
+    finalizePendingLocaleChange: () => Promise<void>
+    waitForPendingLocaleChange: () => Promise<void>
+  }
+  export interface I18n {
+    __pendingLocale?: string
+    __pendingLocalePromise?: Promise
+    __resolvePendingLocalePromise?: (value: unknown) => void
   }
 }
 

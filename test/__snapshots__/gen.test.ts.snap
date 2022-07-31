@@ -18,7 +18,7 @@ export const resolveNuxtI18nOptions = async (context) => {
   return nuxtI18nOptions
 }
 
-export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),baseUrl: \\"\\",parsePages: true,pages: Object({}),onBeforeLanguageSwitch: (() => ({})),onLanguageSwitched: (() => null)})
+export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),baseUrl: \\"\\",parsePages: true,pages: Object({}),skipSettingLocaleOnNavigate: false,onBeforeLanguageSwitch: (() => ({})),onLanguageSwitched: (() => null)})
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 "

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <NuxtPage id="foo" />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
 
@@ -8,12 +10,12 @@
 section {
   margin: 1rem 0;
 }
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 1s;
+.my-enter-active,
+.my-leave-active {
+  transition: opacity 0.3s;
 }
-.page-enter,
-.page-leave-active {
+.my-enter,
+.my-leave-active {
   opacity: 0;
 }
 </style>
