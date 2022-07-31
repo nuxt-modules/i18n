@@ -59,7 +59,7 @@ export const DEFAULT_OPTIONS = {
   // },
   parsePages: true,
   pages: {},
-  // skipSettingLocaleOnNavigate: false,
+  skipSettingLocaleOnNavigate: false,
   onBeforeLanguageSwitch: () => ({}),
   onLanguageSwitched: () => null
   // bridge: false

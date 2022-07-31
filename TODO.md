@@ -53,8 +53,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] setLocaleCookie
 - [x] setLocale
 - [x] getBrowserLocale
-- [ ] finalizePendingLocaleChange
-- [ ] waitForPendingLocaleChange
+- [x] finalizePendingLocaleChange
+- [x] waitForPendingLocaleChange
 - [ ] defaultDirection
 - [x] defaultLocale
 - [x] localeCodes
