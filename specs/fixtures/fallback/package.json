@@ -1,0 +1,9 @@
+{
+  "name": "nuxt3-test-fallback",
+  "private": true,
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs"
+  }
+}
