@@ -14,7 +14,6 @@ import {
 import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions, localeMessages } from '#build/i18n.options.mjs'
-import { CLIENT, SERVER, DEV } from '#build/i18n.frags.mjs'
 
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
@@ -100,7 +99,7 @@ export async function loadLocale(
   locale: Locale,
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
-  if (SERVER || DEV || !loadedLocales.includes(locale)) {
+  if (process.server || process.dev || !loadedLocales.includes(locale)) {
     const message = await loadMessage(context, locale)
     if (message != null) {
       setter(locale, message)
@@ -112,12 +111,12 @@ export async function loadLocale(
 export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, context?: any): string | undefined {
   let ret: string | undefined
 
-  if (CLIENT) {
+  if (process.client) {
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
     }
-  } else if (SERVER) {
+  } else if (process.server) {
     if (!isVue3) {
       if (context.req && typeof context.req.headers['accept-language'] !== 'undefined') {
         ret = findBrowserLocale(
@@ -147,9 +146,9 @@ export function getLocaleCookie(
   if (useCookie) {
     let localeCode: string | undefined
 
-    if (CLIENT) {
+    if (process.client) {
       localeCode = JsCookie.get(cookieKey)
-    } else if (SERVER) {
+    } else if (process.server) {
       if (context.req && typeof context.req.headers.cookie !== 'undefined') {
         const cookies: Record<string, any> =
           context.req.headers && context.req.headers.cookie ? parse(context.req.headers.cookie) : {}
@@ -193,9 +192,9 @@ export function setLocaleCookie(
     cookieOptions.domain = cookieDomain
   }
 
-  if (CLIENT) {
+  if (process.client) {
     JsCookie.set(cookieKey, locale, cookieOptions)
-  } else if (SERVER) {
+  } else if (process.server) {
     if (context.res) {
       const { res } = context
       let headers = res.getHeader('Set-Cookie') || []

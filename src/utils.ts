@@ -15,7 +15,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   const normalized: LocaleObject[] = []
   for (const locale of locales) {
     if (isString(locale)) {
-      normalized.push({ code: locale })
+      normalized.push({ code: locale, iso: locale })
     } else {
       normalized.push(locale)
     }

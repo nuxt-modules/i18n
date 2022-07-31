@@ -5,7 +5,6 @@ import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } fro
 import { navigateTo } from '#app'
 import { isString, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
-import { SERVER } from '#build/i18n.frags.mjs'
 import {
   detectBrowserLanguage,
   getLocaleCookie,
@@ -247,7 +246,7 @@ export function proxyNuxt(context: any, target: Function) {
         localeLocation: app.localeLocation,
         localeRoute: app.localeRoute,
         localeHead: app.localeHead,
-        req: SERVER && isVue2 ? context.req : null,
+        req: process.server && isVue2 ? context.req : null,
         route: isVue2 ? context.route : context.$router.currentRoute.value,
         router: isVue2 ? app.router : context.$router,
         store: isVue2 ? context.store : undefined

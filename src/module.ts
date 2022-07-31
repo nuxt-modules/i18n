@@ -81,11 +81,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // TODO: We don't want to resolve the following as a template,
     //  but in the runtime dir we want to use as an ESM (e.g. internal and utils)
 
-    addTemplate({
-      filename: 'i18n.frags.mjs',
-      src: resolve(distDir, 'runtime/frags.mjs')
-    })
-
     // TODO: we should provide bridge only?
     addTemplate({
       filename: 'i18n.internal.mjs',

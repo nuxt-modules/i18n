@@ -14,7 +14,6 @@ import {
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#app'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
-import { CLIENT } from '#build/i18n.frags.mjs'
 import {
   loadInitialMessages,
   loadAndSetLocale,
@@ -57,7 +56,7 @@ export default defineNuxtPlugin(async nuxt => {
   // detect initial locale
   const initialLocale = getInitialLocale(
     nuxt.ssrContext,
-    CLIENT ? router.currentRoute.value : nuxt.ssrContext!.url,
+    process.client ? router.currentRoute.value : nuxt.ssrContext!.url,
     nuxtI18nOptions,
     localeCodes,
     getLocaleFromRoute
@@ -252,7 +251,7 @@ export default defineNuxtPlugin(async nuxt => {
   app.switchLocalePath = proxyNuxt(nuxt, switchLocalePath)
   app.localeHead = proxyNuxt(nuxt, localeHead)
 
-  if (CLIENT) {
+  if (process.client) {
     addRouteMiddleware(
       'locale-changing',
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
