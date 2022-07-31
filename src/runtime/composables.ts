@@ -2,7 +2,6 @@ import { ref } from 'vue-demi'
 import { findBrowserLocale } from 'vue-i18n-routing'
 import { useRequestHeaders, useCookie as _useCookie } from '#app'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
-import { CLIENT, SERVER } from '#build/i18n.frags.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 
 import type { Ref } from 'vue-demi'
@@ -31,7 +30,7 @@ export function useBrowserLocale(normalizedLocales = nuxtI18nInternalOptions.__n
   return (
     findBrowserLocale(
       normalizedLocales,
-      CLIENT ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
+      process.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
     ) || null
   )
 }
@@ -47,10 +46,10 @@ export function useCookieLocale({
 
   if (useCookie) {
     let code: string | null = null
-    if (CLIENT) {
+    if (process.client) {
       const cookie = _useCookie<string>(cookieKey) as Ref<string>
       code = cookie.value
-    } else if (SERVER) {
+    } else if (process.server) {
       const cookie = useRequestHeaders(['cookie'])
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       code = (cookie as any)[cookieKey]
