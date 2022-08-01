@@ -1,5 +1,12 @@
 
 
+### [7.2.3](https://github.com/nuxt-community/i18n-module/compare/v7.2.2...v7.2.3) (2022-08-01)
+
+
+### Bug Fixes
+
+* infinite redirect on URL with special characters ([#1472](https://github.com/nuxt-community/i18n-module/issues/1472)) ([426af76](https://github.com/nuxt-community/i18n-module/commit/426af769d5f55d9eeaa3078a8c244caa2d0a7b68))
+
 ### [7.2.2](https://github.com/nuxt-community/i18n-module/compare/v7.2.1...v7.2.2) (2022-04-25)
 
 
