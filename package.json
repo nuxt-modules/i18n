@@ -80,6 +80,14 @@
     "setupFilesAfterEnv": [
       "./test/setup"
     ],
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest",
+      "\\.mjs$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!@nuxtjs/composition-api)",
+      "\\.pnp\\.[^\\\/]+$"
+    ],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "collectCoverageFrom": [
@@ -90,8 +98,8 @@
     ]
   },
   "dependencies": {
-    "@babel/parser": "^7.18.9",
-    "@babel/traverse": "^7.18.9",
+    "@babel/parser": "^7.18.10",
+    "@babel/traverse": "^7.18.10",
     "@intlify/vue-i18n-extensions": "^1.0.2",
     "@intlify/vue-i18n-loader": "^1.1.0",
     "cookie": "^0.5.0",
@@ -104,11 +112,11 @@
     "vue-i18n": "^8.27.2"
   },
   "devDependencies": {
-    "@babel/core": "7.18.9",
-    "@babel/preset-env": "7.18.9",
+    "@babel/core": "7.18.10",
+    "@babel/preset-env": "7.18.10",
     "@babel/runtime": "7.18.9",
     "@nuxt/types": "2.15.8",
-    "@nuxtjs/composition-api": "0.32.0",
+    "@nuxtjs/composition-api": "0.33.1",
     "@nuxtjs/eslint-config-typescript": "10.0.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "5.0.0",
@@ -125,6 +133,7 @@
     "argparse": "2.0.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
+    "babel-jest": "^28.1.3",
     "codecov": "3.8.3",
     "core-js": "3.24.1",
     "eslint": "8.21.0",
@@ -139,10 +148,6 @@
     "playwright-chromium": "1.24.2",
     "release-it": "15.2.0",
     "serve-static": "1.15.0",
-    "typescript": "4.7.4",
-    "vue": "2.6",
-    "vue-server-renderer": "2.6",
-    "vue-template-compiler": "2.6",
-    "vuex": "3.x"
+    "typescript": "4.7.4"
   }
 }
