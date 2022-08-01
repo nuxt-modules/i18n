@@ -1,24 +1,11 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { nuxtI18nHead } from './head-meta'
-import { Constants, nuxtOptions, options } from './options'
-import {
-  createLocaleFromRouteGetter,
-  getLocaleCookie,
-  getLocaleDomain,
-  getLocalesRegex,
-  matchBrowserLocale,
-  parseAcceptLanguage,
-  setLocaleCookie
-} from './utils-common'
-import {
-  loadLanguageAsync,
-  resolveBaseUrl,
-  registerStore,
-  mergeAdditionalMessages
-} from './plugin.utils'
 import { isEqual as isURLEqual, joinURL } from '~i18n-ufo'
 import { klona } from '~i18n-klona'
+import { nuxtI18nHead } from './head-meta'
+import { Constants, nuxtOptions, options } from './options'
+import { createLocaleFromRouteGetter, getLocaleCookie, getLocaleDomain, getLocalesRegex, matchBrowserLocale, parseAcceptLanguage, setLocaleCookie } from './utils-common'
+import { loadLanguageAsync, resolveBaseUrl, registerStore, mergeAdditionalMessages } from './plugin.utils'
 
 Vue.use(VueI18n)
 
