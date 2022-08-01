@@ -2,7 +2,7 @@ import './middleware'
 import Vue from 'vue'
 import { Constants, nuxtOptions, options } from './options'
 import { getDomainFromLocale } from './plugin.utils'
-import { normalizeURL, withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
+import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
 
 /**
  * @this {import('../../types/internal').PluginProxy}
@@ -10,7 +10,7 @@ import { normalizeURL, withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo
  */
 function localePath (route, locale) {
   const localizedRoute = resolveRoute.call(this, route, locale)
-  return localizedRoute ? normalizeURL(localizedRoute.route.redirectedFrom || localizedRoute.route.fullPath) : ''
+  return localizedRoute ? localizedRoute.route.redirectedFrom || localizedRoute.route.fullPath : ''
 }
 
 /**
