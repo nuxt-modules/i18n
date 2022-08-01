@@ -37,6 +37,9 @@ export const DEFAULT_OPTIONS = {
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
+  prefixAndDefaultRules: {
+    routing: 'default'
+  },
   sortRoutes: true,
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,

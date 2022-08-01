@@ -30,7 +30,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
     - locale: (type: `string`)
   - **Returns**: `string`
 
-  Returns path of the current route for specified `locale`.
+  Returns path of the current route for specified `locale`. 
 
   See also [Basic usage - nuxt-link](../basic-usage#nuxt-link).
 

@@ -186,6 +186,16 @@ Set this to `true` when using different domains for each locale. If enabled, no 
 
 Whether [custom paths](/routing#custom-paths) are extracted from page files using babel parser.
 
+## `prefixAndDefaultRule`
+
+- type: `object`
+- default: `'default'`
+
+Modification of the standard behavior of the `prefix_and_default` strategy.
+
+By setting the value `prefixAndDefaultRule = 'prefix'` we are no longer being redirected from prefixed path.
+If there is no prefix then the other routers will also have no prefix.
+
 ## `pages`
 
 - type: `object`
