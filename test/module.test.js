@@ -1108,6 +1108,16 @@ describe('prefix_and_default strategy', () => {
     expect(response.headers.location).toBe('/')
   })
 
+  test('does not redirect when only path encoding differs', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/posts/a-&', requestOptions)
+    expect(response.statusCode).toBe(200)
+  })
+
   test('localeRoute returns localized route (by route name)', async () => {
     const window = await nuxt.renderAndGetWindow(url('/'))
     expect(window.$nuxt.localeRoute('index', 'en')).toMatchObject({ name: 'index___en___default', fullPath: '/' })

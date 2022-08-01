@@ -1,9 +1,8 @@
 import './middleware'
 import Vue from 'vue'
+import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
 import { Constants, nuxtOptions, options } from './options'
 import { getDomainFromLocale } from './plugin.utils'
-// @ts-ignore
-import { withoutTrailingSlash, withTrailingSlash } from '~i18n-ufo'
 
 /**
  * @this {import('../../types/internal').PluginProxy}

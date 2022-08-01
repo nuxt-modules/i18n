@@ -1,26 +1,11 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import { isEqual as isURLEqual, joinURL } from '~i18n-ufo'
+import { klona } from '~i18n-klona'
 import { nuxtI18nHead } from './head-meta'
 import { Constants, nuxtOptions, options } from './options'
-import {
-  createLocaleFromRouteGetter,
-  getLocaleCookie,
-  getLocaleDomain,
-  getLocalesRegex,
-  matchBrowserLocale,
-  parseAcceptLanguage,
-  setLocaleCookie
-} from './utils-common'
-import {
-  loadLanguageAsync,
-  resolveBaseUrl,
-  registerStore,
-  mergeAdditionalMessages
-} from './plugin.utils'
-// @ts-ignore
-import { joinURL } from '~i18n-ufo'
-// @ts-ignore
-import { klona } from '~i18n-klona'
+import { createLocaleFromRouteGetter, getLocaleCookie, getLocaleDomain, getLocalesRegex, matchBrowserLocale, parseAcceptLanguage, setLocaleCookie } from './utils-common'
+import { loadLanguageAsync, resolveBaseUrl, registerStore, mergeAdditionalMessages } from './plugin.utils'
 
 Vue.use(VueI18n)
 
@@ -165,7 +150,7 @@ export default async (context) => {
       // The current route could be 404 in which case attempt to find matching route using the full path since
       // "switchLocalePath" can only find routes if the current route exists.
       const routePath = app.switchLocalePath(newLocale) || app.localePath(route.fullPath, newLocale)
-      if (routePath && routePath !== route.fullPath && !routePath.startsWith('//')) {
+      if (routePath && !isURLEqual(routePath, route.fullPath) && !routePath.startsWith('//')) {
         redirectPath = routePath
       }
     }

@@ -1,8 +1,7 @@
 import isHTTPS from 'is-https'
+import { hasProtocol } from '~i18n-ufo'
 import { localeMessages, options } from './options'
 import { formatMessage } from './utils-common'
-// @ts-ignore
-import { hasProtocol } from '~i18n-ufo'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
