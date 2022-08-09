@@ -1,0 +1,15 @@
+name: 'Check for Vulnerabilities'
+
+on:
+  schedule:
+    - cron: '0 10 * * 1' # every monday at 11:00 (10:00 UTC)
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: indiecampers/action-cve@main
+       with:
+          token: ${{ secrets.DEPENDABOT_ACCESS_TOKEN }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          count: 20
