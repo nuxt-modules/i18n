@@ -2,4 +2,5 @@ dist
 coverage
 .nuxt
 .output
+docs/content
 .vscode/settings.json
