@@ -1,0 +1,15 @@
+{
+  "name": "@nuxtjs/i18n-docs",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "@docus/docs-theme": "npm:@docus/docs-theme-edge@latest",
+    "@docus/github": "npm:@docus/github-edge@latest",
+    "nuxt": "^3.0.0-rc.4"
+  }
+}

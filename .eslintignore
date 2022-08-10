@@ -2,3 +2,4 @@ dist
 playground
 specs/fixtures
 coverage
+docs/components/content/Logo.vue
