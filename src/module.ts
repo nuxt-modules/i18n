@@ -21,6 +21,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
     name: NUXT_I18N_MODULE_ID,
     configKey: 'i18n'
+    // TODO:
+    // compatibility: {
+    //   nuxt: '^3.0.0',
+    //   bridge: false
+    // }
   },
   defaults: {}, // TODO: should implement from `constants.ts`
   async setup(i18nOptions, nuxt) {
