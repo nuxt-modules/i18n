@@ -61,7 +61,7 @@
     "test:spec": "yarn build && vitest run specs"
   },
   "dependencies": {
-    "@intlify/shared": "next",
+    "@intlify/shared": "latest",
     "@intlify/unplugin-vue-i18n": "latest",
     "@nuxt/kit": "^3.0.0-rc.4",
     "cookie-es": "^0.5.0",
@@ -71,8 +71,8 @@
     "knitwork": "^0.1.2",
     "mlly": "^0.5.4",
     "pathe": "^0.3.2",
-    "vue-i18n": "beta",
-    "vue-i18n-bridge": "beta",
+    "vue-i18n": "^9.2.0",
+    "vue-i18n-bridge": "^9.2.0",
     "vue-i18n-routing": "edge"
   },
   "devDependencies": {
@@ -98,7 +98,7 @@
     "rimraf": "^3.0.2",
     "ts-essentials": "^9.1.2",
     "typescript": "^4.7.4",
-    "vitest": "^0.18.0",
+    "vitest": "^0.21.0",
     "yorkie": "^2.0.0"
   },
   "gitHooks": {
