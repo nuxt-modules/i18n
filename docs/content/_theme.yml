@@ -15,6 +15,8 @@ cover:
 header:
   title: false
   logo: true
+colors:
+  primary: "#41B38A"
 footer:
   credits:
     icon: IconDocus
