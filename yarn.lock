@@ -1086,7 +1086,7 @@ __metadata:
     vitest: ^0.21.0
     vue-i18n: ^9.2.0
     vue-i18n-bridge: ^9.2.0
-    vue-i18n-routing: edge
+    vue-i18n-routing: 0.0.0-4684814
     yorkie: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -11145,9 +11145,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-i18n-routing@npm:edge":
-  version: 0.0.0-605840
-  resolution: "vue-i18n-routing@npm:0.0.0-605840"
+"vue-i18n-routing@npm:0.0.0-4684814":
+  version: 0.0.0-4684814
+  resolution: "vue-i18n-routing@npm:0.0.0-4684814"
   dependencies:
     "@intlify/shared": next
     "@intlify/vue-i18n-bridge": ^0.4.0
@@ -11171,7 +11171,7 @@ __metadata:
       optional: true
     vue-router:
       optional: true
-  checksum: 529aa2ba9edb9fe0f05eda1f246137698efc122eb7e614fcaa67ba7a2742a21b4d8989a6b803fee53f14a6369507740ab909b8fd7cee6f0f113ff1e08700d7be
+  checksum: b7dfb4334c3e244bff299824e691931215340fc2c5ba76a60ecc6484fe76277861c19c1b2d45fd9a12809b92d0dd260aa2e2f7bd91445c756576b17081fdf33c
   languageName: node
   linkType: hard
 

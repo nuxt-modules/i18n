@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   modules: [I18nModule],
 
   i18n: {
-    // baseUrl: 'nuxt-app.localhost',
+    lazy: false,
     baseUrl: 'http://localhost:3000',
     locales: [
       {
@@ -22,18 +22,19 @@ export default defineNuxtConfig({
     ],
     defaultLocale: 'en',
     detectBrowserLanguage: false,
-    lazy: false,
     vueI18n: {
       legacy: false,
       messages: {
         fr: {
           home: 'Accueil',
+          profile: 'Profil',
           about: 'À propos',
           posts: 'Articles',
           dynamic: 'Dynamique'
         },
         en: {
           home: 'Homepage',
+          profile: 'Profile',
           about: 'About us',
           posts: 'Posts',
           dynamic: 'Dynamic'
