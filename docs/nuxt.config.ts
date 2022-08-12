@@ -13,23 +13,39 @@ export default defineNuxtConfig({
   },
 
   tailwindcss: {
+    // @ts-ignore
     config: {
       theme: {
         extend: {
           colors: {
             primary: {
-              DEFAULT: '#5468FF',
-              50: '#FFFFFF',
-              100: '#F7F8FF',
-              200: '#CED4FF',
-              300: '#A6B0FF',
-              400: '#7D8CFF',
-              500: '#5468FF',
-              600: '#1C36FF',
-              700: '#001BE3',
-              800: '#0014AB',
-              900: '#000D73'
+              50: '#d6ffee',
+              100: '#acffdd',
+              200: '#83ffcc',
+              300: '#30ffaa',
+              400: '#00dc82',
+              500: '#00bd6f',
+              600: '#009d5d',
+              700: '#007e4a',
+              800: '#005e38',
+              900: '#003f25'
             }
+            /*
+            primary: {
+              // DEFUALT: '#41B38A'
+              DEFAULT: '#5468FF',
+              50: '#d6ffee',
+              100: '#acffdd',
+              200: '#83ffcc',
+              300: '#30ffaa',
+              400: '#00dc82',
+              500: '#00bd6f',
+              600: '#009d5d',
+              700: '#007e4a',
+              800: '#005e38',
+              900: '#003f25'
+            }
+            */
           }
         }
       }

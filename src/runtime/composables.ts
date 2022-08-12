@@ -10,12 +10,6 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 export * from '@intlify/vue-i18n-bridge'
 
 export {
-  localePath,
-  localeLocation,
-  localeRoute,
-  localeHead,
-  switchLocalePath,
-  getRouteBaseName,
   useLocalePath,
   useLocaleLocation,
   useLocaleRoute,
