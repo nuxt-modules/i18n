@@ -203,7 +203,7 @@ export function detectRedirect(
     // "switchLocalePath" can only find routes if the current route exists.
     const fullPath = isString(route) ? route : route.fullPath
     const routePath = app.switchLocalePath(targetLocale) || app.localePath(fullPath, targetLocale)
-    if (isString(routePath) && routePath !== fullPath && !routePath.startsWith('//')) {
+    if (isString(routePath) && routePath && routePath !== fullPath && !routePath.startsWith('//')) {
       redirectPath = routePath
     }
   }

@@ -54,9 +54,9 @@ export default defineNuxtPlugin(async nuxt => {
   registerGlobalOptions(router, nuxtI18nOptions)
 
   // detect initial locale
-  const initialLocale = getInitialLocale(
+  let initialLocale = getInitialLocale(
     nuxt.ssrContext,
-    process.client ? router.currentRoute.value : nuxt.ssrContext!.url,
+    router.currentRoute.value,
     nuxtI18nOptions,
     localeCodes,
     getLocaleFromRoute
@@ -69,6 +69,13 @@ export default defineNuxtPlugin(async nuxt => {
     fallbackLocale: vueI18nOptions.fallbackLocale,
     localeCodes
   })
+
+  /**
+   * NOTE:
+   *  If `initLocale` is not set, then the `vueI18n` option `locale` is respect!
+   *  It means a mode that works only with simple vue-i18n, without nuxtjs/i18n routing, browser detection, SEO, and other features.
+   */
+  initialLocale ||= vueI18nOptions.locale || 'en-US'
 
   // create i18n instance
   const i18n = createI18n({
@@ -283,8 +290,8 @@ export default defineNuxtPlugin(async nuxt => {
   } else {
     // TODO: we should use `addRouteMiddleware` in server-side
     //       `addRouteMiddleware` does not work on server...
-    const routeURL = nuxt.ssrContext!.url
-    const locale = detectLocale(routeURL, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
+    const route = router.currentRoute.value
+    const locale = detectLocale(route, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
 
     const [modified, oldLocale] = await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, nuxt, i18n, {
       useCookie,
@@ -297,7 +304,7 @@ export default defineNuxtPlugin(async nuxt => {
       onLanguageSwitched(i18n, oldLocale, locale)
     }
 
-    const redirectPath = detectRedirect(routeURL, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+    const redirectPath = detectRedirect(route, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
     navigate(i18n, redirectPath, locale, { skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate })
   }
 })
