@@ -1,7 +1,6 @@
 import { ref } from 'vue-demi'
 import { findBrowserLocale } from 'vue-i18n-routing'
-import { useRequestHeaders, useCookie as _useCookie } from '#app'
-import { useRoute, useRouter } from '#app'
+import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie } from '#app'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import { useI18n } from '@intlify/vue-i18n-bridge'
@@ -19,8 +18,9 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 export * from '@intlify/vue-i18n-bridge'
 export type { LocaleObject } from 'vue-i18n-routing'
 
-export function useRouteBaseName(): ReturnType<typeof _useRouteBaseName> {
-  const route = useRoute()
+export function useRouteBaseName(
+  route: NonNullable<Parameters<typeof _useRouteBaseName>[0]> = useRoute()
+): ReturnType<typeof _useRouteBaseName> {
   const router = useRouter()
   return _useRouteBaseName(route, { router })
 }
