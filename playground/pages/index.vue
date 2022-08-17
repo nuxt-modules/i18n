@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useHead } from '#app'
 
-import { useI18n, useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
+// import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
 import type { LocaleObject } from '#i18n'
 
 const { t, locale, locales, localeProperties } = useI18n()

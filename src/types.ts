@@ -40,6 +40,8 @@ export type CustomRoutePages = {
       }
 }
 
+// TODO: `Context` should be strictly typed!
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BeforeLanguageSwitchHandler = <Context = any>(
   oldLocale: string,
   newLocale: string,
