@@ -1,6 +1,6 @@
 import createDebug from 'debug'
 import { isObject, isString } from '@intlify/shared'
-import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate } from '@nuxt/kit'
+import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addAutoImport } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import defu from 'defu'
 import { extendBundler } from './bundler'
@@ -81,6 +81,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filename: 'i18n.mjs',
       src: resolve(distDir, 'runtime/composables.mjs')
     })
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     nuxt.options.alias['#i18n'] = i18nPath.dst!
 
     // TODO: We don't want to resolve the following as a template,
@@ -116,6 +117,24 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // extend bundler
     await extendBundler(hasLocaleFiles, langPath)
+
+    // auto imports
+    await addAutoImport([
+      { name: 'useI18n', from: '@intlify/vue-i18n-bridge' },
+      ...[
+        'useRouteBaseName',
+        'useLocalePath',
+        'useLocaleRoute',
+        'useSwitchLocalePath',
+        'useLocaleHead',
+        'useBrowserLocale',
+        'useCookieLocale'
+      ].map(key => ({
+        name: key,
+        as: key,
+        from: resolve(distDir, 'runtime/composables')
+      }))
+    ])
   }
 })
 
