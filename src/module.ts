@@ -103,15 +103,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filename: 'i18n.options.mjs',
       write: true,
       getContents: () => {
-        return generateLoaderOptions(options.lazy, langPath, {
-          localeCodes,
-          localeInfo,
-          nuxtI18nOptions: options,
-          nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-          nuxtI18nInternalOptions: {
-            __normalizedLocales: normalizedLocales
-          }
-        })
+        return generateLoaderOptions(
+          options.lazy,
+          langPath,
+          {
+            localeCodes,
+            localeInfo,
+            nuxtI18nOptions: options,
+            nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+            nuxtI18nInternalOptions: {
+              __normalizedLocales: normalizedLocales
+            }
+          },
+          nuxt.options.dev
+        )
       }
     })
 
