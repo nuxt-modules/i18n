@@ -1,6 +1,7 @@
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { templateUtils } from '@nuxt/kit'
+import { generateJSON } from '@intlify/bundle-utils'
 import { genImport } from 'knitwork'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, NoNullable } from './types'
@@ -19,7 +20,8 @@ const debug = createDebug('@nuxtjs/i18n:gen')
 export function generateLoaderOptions(
   lazy: NoNullable<NuxtI18nOptions['lazy']>,
   langDir: NuxtI18nOptions['langDir'],
-  options: LoaderOptions = {}
+  options: LoaderOptions = {},
+  dev = true
 ) {
   let genCode = ''
   const localeInfo = options.localeInfo || []
@@ -57,7 +59,8 @@ export function generateLoaderOptions(
         if (key === 'vueI18n') {
           const optionLoaderVariable = `${key}OptionsLoader`
           genCodes += `  const ${optionLoaderVariable} = ${isObject(value)
-            ? `async (context) => ${toCode(value)}\n`
+            // ? `async (context) => ${toCode(value)}\n`
+            ? `async (context) => ${generateVueI18nOptions(value, dev)}\n`
             : isString(value)
               ? `async (context) => import(${toCode(value)}).then(r => (r.default || r)(context))\n`
               : `async (context) => ${toCode({})}\n`
@@ -97,6 +100,26 @@ export function generateLoaderOptions(
   }).join('\n')}`
 
   debug('generate code', genCode)
+  return genCode
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function generateVueI18nOptions(options: Record<string, any>, dev: boolean): string {
+  let genCode = 'Object({'
+  for (const [key, value] of Object.entries(options)) {
+    if (key === 'messages') {
+      genCode += `${JSON.stringify(key)}: Object({`
+      for (const [locale, localeMessages] of Object.entries(value)) {
+        genCode += `${JSON.stringify(locale)}:${
+          generateJSON(JSON.stringify(localeMessages), { type: 'bare', env: dev ? 'development' : 'production' }).code
+        },`
+      }
+      genCode += '}),'
+    } else {
+      genCode += `${JSON.stringify(key)}:${toCode(value)},`
+    }
+  }
+  genCode += '})'
   return genCode
 }
 

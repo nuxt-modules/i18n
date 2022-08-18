@@ -18,7 +18,7 @@ describe('strategy: prefix', async () => {
     }
   })
 
-  test('cannot access to no prefix url: /', async () => {
+  test.todo('cannot access to no prefix url: /', async () => {
     const home = url('/')
     const page = await createPage()
     let res: Response | (Error & { status: () => number }) | null = null

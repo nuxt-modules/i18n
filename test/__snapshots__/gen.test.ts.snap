@@ -13,7 +13,9 @@ export const localeMessages = {
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\":Object({\\"en\\":Object({\\"hello\\":\\"Hello!\\"})})})
+  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\": Object({\\"en\\":{
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
+},}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   return nuxtI18nOptions
 }
@@ -36,7 +38,9 @@ export const localeMessages = {
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\":Object({\\"en\\":Object({\\"hello\\":\\"Hello!\\"})})})
+  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"en\\",\\"messages\\": Object({\\"en\\":{
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
+},}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   return nuxtI18nOptions
 }

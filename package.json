@@ -61,9 +61,10 @@
     "test:spec": "yarn build && vitest run specs"
   },
   "dependencies": {
+    "@intlify/bundle-utils": "next",
     "@intlify/shared": "latest",
     "@intlify/unplugin-vue-i18n": "latest",
-    "@nuxt/kit": "^3.0.0-rc.4",
+    "@nuxt/kit": "^3.0.0-rc.8",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.2",
     "defu": "^6.0.0",
@@ -78,8 +79,8 @@
   "devDependencies": {
     "@babel/parser": "^7.17.9",
     "@nuxt/module-builder": "latest",
-    "@nuxt/schema": "^3.0.0-rc.4",
-    "@nuxt/test-utils": "^3.0.0-rc.4",
+    "@nuxt/schema": "^3.0.0-rc.8",
+    "@nuxt/test-utils": "^3.0.0-rc.8",
     "@types/debug": "^4.1.7",
     "@types/js-cookie": "^3.0.1",
     "@types/rimraf": "^3",
@@ -92,7 +93,7 @@
     "jiti": "^1.14.0",
     "lint-staged": "^12.1.2",
     "npm-run-all": "^4.1.5",
-    "nuxt": "^3.0.0-rc.4",
+    "nuxt": "^3.0.0-rc.8",
     "playwright": "^1.22.2",
     "prettier": "^2.7.0",
     "rimraf": "^3.0.2",
