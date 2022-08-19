@@ -1,26 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useHead } from '#app'
 
 // import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
-import type { LocaleObject } from '#i18n'
+import { LocaleObject, useI18n } from '#i18n'
 
-const { t, locale, locales, localeProperties } = useI18n()
+const { t, locale, locales, localeProperties, setLocale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 
+definePageMeta({
+  title: 'pages.title.top'
+})
+
 console.log('useBrowserLocale', useBrowserLocale())
 console.log('localeProperties', localeProperties)
-
-const i18nHead = useLocaleHead({ addSeoAttributes: true })
-useHead({
-  titleTemplate: t('hello', { name: 'nuxt bridge' }),
-  htmlAttrs: {
-    lang: i18nHead.value.htmlAttrs!.lang
-  },
-  link: [...(i18nHead.value.link || [])],
-  meta: [...(i18nHead.value.meta || [])]
-})
 
 function getLocaleName(code: string) {
   const locale = (locales.value as LocaleObject[]).find(i => i.code === code)
@@ -48,9 +41,5 @@ const availableLocales = computed(() => {
         <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
       </span>
     </nav>
-    <h2>I18n Head</h2>
-    <div>
-      <p>{{ i18nHead }}</p>
-    </div>
   </div>
 </template>

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { navigateTo } from '#app'
-import { useLocalePath, useSwitchLocalePath, useLocaleRoute } from '#i18n'
+import { useLocalePath, useSwitchLocalePath, useLocaleRoute, useI18n } from '#i18n'
+
+const { locale } = useI18n()
+const localePath = useLocalePath()
+const switchLocalePath = useSwitchLocalePath()
+const localeRoute = useLocaleRoute()
 
 const category = ref({
   title: 'Kirby',
   slug: 'nintendo'
 })
-
-const localePath = useLocalePath()
-const switchLocalePath = useSwitchLocalePath()
-const localeRoute = useLocaleRoute()
 
 function onClick() {
   const route = localeRoute({ name: 'user-profile', params: { foo: '1' } })
@@ -22,6 +23,18 @@ function onClick() {
 <template>
   <div id="basic-usage-section">
     <h2>Docs Basic usages</h2>
+    <section id="vue-i18n-usage">
+      <h3>vue-i18n</h3>
+      <div class="vue-i18n">
+        <form>
+          <select v-model="locale">
+            <option value="en">en</option>
+            <option value="fr">fr</option>
+          </select>
+          <p>{{ $t('welcome') }}</p>
+        </form>
+      </div>
+    </section>
     <section id="locale-path-usages">
       <h3>localePath</h3>
       <ul>

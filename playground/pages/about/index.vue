@@ -15,6 +15,12 @@ export default defineComponent({
       const _locales = (i18n.locales as LocaleObject[]).filter(i => i.code !== this.$i18n.locale)
       return _locales.length !== 0 ? _locales[0] : { code: 'ja', name: '日本語' }
     }
+  },
+  setup() {
+    useHead({
+      meta: [{ property: 'og:title', content: 'this is og title' }]
+    })
+    return {}
   }
 })
 </script>

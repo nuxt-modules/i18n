@@ -21,11 +21,13 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
-    detectBrowserLanguage: false,
+    // detectBrowserLanguage: false,
     vueI18n: {
       legacy: false,
+      locale: 'en',
       messages: {
         fr: {
+          welcome: 'Bienvenue',
           home: 'Accueil',
           profile: 'Profil',
           about: 'À propos',
@@ -33,6 +35,7 @@ export default defineNuxtConfig({
           dynamic: 'Dynamique'
         },
         en: {
+          welcome: 'Welcome',
           home: 'Homepage',
           profile: 'Profile',
           about: 'About us',
