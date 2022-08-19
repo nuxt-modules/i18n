@@ -15,6 +15,7 @@ import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions, localeMessages } from '#build/i18n.options.mjs'
 
+import type { NuxtApp } from '#app'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
@@ -70,7 +71,7 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-async function loadMessage(context: any, locale: Locale) {
+async function loadMessage(context: NuxtApp, locale: Locale) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   const loader = localeMessages[locale]
   if (loader) {
@@ -95,7 +96,7 @@ async function loadMessage(context: any, locale: Locale) {
 const loadedLocales: Locale[] = []
 
 export async function loadLocale(
-  context: any,
+  context: NuxtApp,
   locale: Locale,
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {

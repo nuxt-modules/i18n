@@ -2,7 +2,7 @@
 
 import { isVue2 } from 'vue-demi'
 import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } from 'vue-i18n-routing'
-import { navigateTo } from '#app'
+import { navigateTo, NuxtApp } from '#app'
 import { isString, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import {
@@ -38,7 +38,7 @@ function onBeforeLanguageSwitch(
   oldLocale: string,
   newLocale: string,
   initial: boolean,
-  context: any
+  context: NuxtApp
 ): string | void {
   return callVueI18nInterfaces(i18n, 'onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
 }
@@ -65,7 +65,7 @@ function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): L
 }
 
 export async function loadInitialMessages(
-  context: any,
+  context: NuxtApp,
   messages: LocaleMessages<DefineLocaleMessage>,
   options: DeepRequired<NuxtI18nOptions> & {
     initialLocale: Locale
@@ -92,7 +92,7 @@ export async function loadInitialMessages(
 
 export async function loadAndSetLocale(
   newLocale: string,
-  context: any,
+  context: NuxtApp,
   i18n: I18n,
   {
     useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
@@ -231,6 +231,10 @@ export async function navigate(
   if (redirectPath) {
     return navigateTo(redirectPath, { redirectCode: status })
   }
+}
+
+export function defineGetter<K extends string | number | symbol, V>(obj: Record<K, V>, key: K, val: V) {
+  Object.defineProperty(obj, key, { get: () => val })
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
