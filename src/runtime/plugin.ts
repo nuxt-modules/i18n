@@ -21,6 +21,7 @@ import {
   detectRedirect,
   onLanguageSwitched,
   navigate,
+  defineGetter,
   proxyNuxt
 } from '#build/i18n.utils.mjs'
 import {
@@ -32,6 +33,7 @@ import {
 
 import type { Composer, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject, RouteLocationNormalized, ExtendProperyDescripters } from 'vue-i18n-routing'
+import type { NuxtApp } from '#app'
 
 export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
@@ -63,7 +65,7 @@ export default defineNuxtPlugin(async nuxt => {
   )
 
   // load initial vue-i18n locale messages
-  await loadInitialMessages(nuxt.ssrContext, vueI18nOptions.messages, {
+  await loadInitialMessages(nuxt as unknown as NuxtApp, vueI18nOptions.messages, {
     ...nuxtI18nOptions,
     initialLocale,
     fallbackLocale: vueI18nOptions.fallbackLocale,
@@ -104,7 +106,7 @@ export default defineNuxtPlugin(async nuxt => {
         })
         composer.setLocale = async (locale: string) => {
           const localeSetup = isInitialLocaleSetup(locale)
-          const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt, i18n, {
+          const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
             useCookie,
             initial: localeSetup,
             skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
@@ -173,7 +175,7 @@ export default defineNuxtPlugin(async nuxt => {
           onBeforeLanguageSwitch: {
             get() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              return (oldLocale: string, newLocale: string, initialSetup: boolean, context: any) =>
+              return (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
                 Reflect.apply(g.onBeforeLanguageSwitch, g, [oldLocale, newLocale, initialSetup, context])
             }
           },
@@ -220,7 +222,7 @@ export default defineNuxtPlugin(async nuxt => {
           onBeforeLanguageSwitch: {
             get() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              return (oldLocale: string, newLocale: string, initialSetup: boolean, context: any) =>
+              return (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
                 Reflect.apply(composer.onBeforeLanguageSwitch, composer, [oldLocale, newLocale, initialSetup, context])
             }
           },
@@ -249,6 +251,14 @@ export default defineNuxtPlugin(async nuxt => {
   // TODO: should implement `{ inject: boolean }
   app.use(i18n)
 
+  /**
+   * NOTE:
+   *  we will inject `i18n.global` to **nuxt app instance only**
+   *  because vue-i18n has already injected into vue,
+   *  it's not necessary to do so, so we borrow from nuxt inject implementation.
+   */
+  defineGetter(nuxt as unknown as NuxtApp, `$i18n`, i18n.global as unknown)
+
   // TODO: should resolve type errors
   app.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
   app.getRouteBaseName = proxyNuxt(nuxt, getRouteBaseName)
@@ -264,7 +274,7 @@ export default defineNuxtPlugin(async nuxt => {
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
         const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
         const localeSetup = isInitialLocaleSetup(locale)
-        const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt, i18n, {
+        const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
           useCookie,
           initial: localeSetup,
           skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
@@ -293,12 +303,17 @@ export default defineNuxtPlugin(async nuxt => {
     const route = router.currentRoute.value
     const locale = detectLocale(route, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
 
-    const [modified, oldLocale] = await loadAndSetLocale(locale || nuxtI18nOptions.defaultLocale, nuxt, i18n, {
-      useCookie,
-      skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
-      lazy: nuxtI18nOptions.lazy,
-      langDir: nuxtI18nOptions.langDir
-    })
+    const [modified, oldLocale] = await loadAndSetLocale(
+      locale || nuxtI18nOptions.defaultLocale,
+      nuxt as unknown as NuxtApp,
+      i18n,
+      {
+        useCookie,
+        skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
+        lazy: nuxtI18nOptions.lazy,
+        langDir: nuxtI18nOptions.langDir
+      }
+    )
 
     if (!notInitialSetup) {
       onLanguageSwitched(i18n, oldLocale, locale)
@@ -308,3 +323,9 @@ export default defineNuxtPlugin(async nuxt => {
     navigate(i18n, redirectPath, locale, { skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate })
   }
 })
+
+declare module '#app' {
+  interface NuxtApp {
+    $i18n: Composer
+  }
+}
