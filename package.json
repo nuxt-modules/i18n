@@ -39,8 +39,7 @@
   "types": "./dist/types.d.ts",
   "type": "module",
   "files": [
-    "dist",
-    "scripts"
+    "dist"
   ],
   "scripts": {
     "build": "nuxt-module-build",
