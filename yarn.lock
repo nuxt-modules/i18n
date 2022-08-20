@@ -1195,12 +1195,11 @@ __metadata:
   linkType: soft
 
 "@nuxtjs/tailwindcss@npm:^5.1.3":
-  version: 5.3.1
-  resolution: "@nuxtjs/tailwindcss@npm:5.3.1"
+  version: 5.3.2
+  resolution: "@nuxtjs/tailwindcss@npm:5.3.2"
   dependencies:
     "@nuxt/kit": ^3.0.0-rc.5
     "@nuxt/postcss8": ^1.1.3
-    "@types/tailwindcss": ^3.0.11
     autoprefixer: ^10.4.7
     chalk: ^5.0.1
     clear-module: ^4.1.2
@@ -1212,7 +1211,7 @@ __metadata:
     tailwind-config-viewer: ^1.7.1
     tailwindcss: ^3.1.6
     ufo: ^0.8.5
-  checksum: c134f73688374081d126ae9f8c264883146f77cfd0e8293b598498a94bf22bdb053d1fc118fb84cadb2439b0f43b5058febd181b100364dd62a3a92cc7847b1d
+  checksum: cc47fa60518951c7083e99aed94cf21d25b284679f05464cc214cb7ea93d679c9d91b0eefdc0ca55b64bc2afffda31e199505e89eb6e39e0d893209d867029c4
   languageName: node
   linkType: hard
 
@@ -1701,13 +1700,6 @@ __metadata:
     "@types/glob": "*"
     "@types/node": "*"
   checksum: b47fa302f46434cba704d20465861ad250df79467d3d289f9d6490d3aeeb41e8cb32dd80bd1a8fd833d1e185ac719fbf9be12e05ad9ce9be094d8ee8f1405347
-  languageName: node
-  linkType: hard
-
-"@types/tailwindcss@npm:^3.0.11":
-  version: 3.0.11
-  resolution: "@types/tailwindcss@npm:3.0.11"
-  checksum: 837017795192aebb83232f6670bd180e0cfb55b82cc4a9c6ff5de934ed00ff6fbcc3576f3067c3194e0f471326b282f7d838d6e0f3e11c99e7611d552928a05e
   languageName: node
   linkType: hard
 
