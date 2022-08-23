@@ -34,16 +34,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     checkOptions(options)
 
-    if (isNuxt2(nuxt)) {
-      throw new Error(
-        formatMessage(
-          `We will release >=7.3 <8, See about GitHub Discussions https://github.com/nuxt-community/i18n-module/discussions/1287#discussioncomment-3042457: ${getNuxtVersion(
-            nuxt
-          )}`
-        )
-      )
-    }
-
     if (!isNuxt3(nuxt)) {
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
