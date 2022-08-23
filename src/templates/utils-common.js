@@ -1,7 +1,10 @@
 import { parse as cookieParse, serialize as cookieSerialize } from 'cookie'
 import JsCookie from 'js-cookie'
 
-/** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
+/**
+ * @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions
+ * @typedef {Required<import('../../types/').DetectBrowserLanguageOptions>} DetectBrowserLanguageOptions
+ */
 
 /**
  * Formats a log message, prefixing module's name to it.
@@ -185,16 +188,15 @@ export function getLocaleCookie (req, { useCookie, cookieKey, localeCodes }) {
 /**
  * @param {string} locale
  * @param {import('http').ServerResponse | undefined} res
- * @param {{ useCookie: boolean, cookieDomain: string | null, cookieKey: string, cookieSecure: boolean, cookieCrossOrigin: boolean}} options
+ * @param {Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieAge' | 'cookieDomain' | 'cookieKey' | 'cookieSecure' | 'cookieCrossOrigin'>} options
  */
-export function setLocaleCookie (locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin }) {
+export function setLocaleCookie (locale, res, { useCookie, cookieAge, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin }) {
   if (!useCookie) {
     return
   }
-  const date = new Date()
   /** @type {import('cookie').CookieSerializeOptions} */
   const cookieOptions = {
-    expires: new Date(date.setDate(date.getDate() + 365)),
+    maxAge: cookieAge,
     path: '/',
     sameSite: cookieCrossOrigin ? 'none' : 'lax',
     secure: cookieCrossOrigin || cookieSecure

@@ -47,6 +47,7 @@ export default async (context) => {
     fallbackLocale,
     redirectOn,
     useCookie,
+    cookieAge,
     cookieKey,
     cookieDomain,
     cookieSecure,
@@ -298,7 +299,7 @@ export default async (context) => {
     i18n.differentDomains = options.differentDomains
     i18n.onBeforeLanguageSwitch = options.onBeforeLanguageSwitch
     i18n.onLanguageSwitched = options.onLanguageSwitched
-    i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })
+    i18n.setLocaleCookie = locale => setLocaleCookie(locale, res, { useCookie, cookieAge, cookieDomain, cookieKey, cookieSecure, cookieCrossOrigin })
     i18n.getLocaleCookie = () => getLocaleCookie(req, { useCookie, cookieKey, localeCodes: options.localeCodes })
     i18n.setLocale = (locale) => loadAndSetLocale(locale)
     i18n.getBrowserLocale = () => getBrowserLocale()
