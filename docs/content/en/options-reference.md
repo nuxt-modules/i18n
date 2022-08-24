@@ -138,7 +138,7 @@ Directory that contains translation files to load. Can be used with or without l
     fallbackLocale: '',
     redirectOn: 'root',
     useCookie: true,
-    cookieAge: 31536000, // 365 days
+    cookieAge: 365,
     cookieCrossOrigin: false,
     cookieDomain: null,
     cookieKey: 'i18n_redirected',
@@ -164,7 +164,7 @@ Supported properties:
   - `root` (recommended for improved SEO) - only detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
   - `no prefix` - a more permissive variant of `root` that will detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when using strategy other than `'no_prefix'`.
 - `useCookie` (default: `true`) - If enabled, a cookie is set once the user has been redirected to browser's preferred locale, to prevent subsequent redirections. Set to `false` to redirect every time.
-- `cookieAge` (default: `31536000`) - Sets the max age of the cookie in seconds (defaults to 365 days).
+- `cookieAge` (default: `365`) - Sets the max age of the cookie in days.
 - `cookieKey` (default: `'i18n_redirected'`) - Cookie name.
 - `cookieDomain` (default: `null`) - Set to override the default domain of the cookie. Defaults to the **host** of the site.
 - `cookieCrossOrigin` (default: `false`) - When `true`, sets the flags `SameSite=None; Secure` on the cookie to allow cross-domain use of the cookie (required when app is embedded in an iframe).

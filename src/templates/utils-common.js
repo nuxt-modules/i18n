@@ -194,20 +194,15 @@ export function setLocaleCookie (locale, res, { useCookie, cookieAge, cookieDoma
   if (!useCookie) {
     return
   }
-  /** @type {import('cookie').CookieSerializeOptions} */
-  const cookieOptions = {
-    maxAge: cookieAge,
-    path: '/',
-    sameSite: cookieCrossOrigin ? 'none' : 'lax',
-    secure: cookieCrossOrigin || cookieSecure
-  }
-
-  if (cookieDomain) {
-    cookieOptions.domain = cookieDomain
-  }
-
   if (process.client) {
-    // @ts-ignore
+    /** @type {import('js-cookie').CookieAttributes} */
+    const cookieOptions = {
+      expires: cookieAge,
+      path: '/',
+      sameSite: cookieCrossOrigin ? 'none' : 'lax',
+      secure: cookieCrossOrigin || cookieSecure,
+      ...cookieDomain ? { domain: cookieDomain } : {}
+    }
     JsCookie.set(cookieKey, locale, cookieOptions)
   } else if (res) {
     let headers = res.getHeader('Set-Cookie') || []
@@ -215,6 +210,14 @@ export function setLocaleCookie (locale, res, { useCookie, cookieAge, cookieDoma
       headers = [String(headers)]
     }
 
+    /** @type {import('cookie').CookieSerializeOptions} */
+    const cookieOptions = {
+      maxAge: cookieAge * 60 * 60 * 24, // in seconds
+      path: '/',
+      sameSite: cookieCrossOrigin ? 'none' : 'lax',
+      secure: cookieCrossOrigin || cookieSecure,
+      ...cookieDomain ? { domain: cookieDomain } : {}
+    }
     const redirectCookie = cookieSerialize(cookieKey, locale, cookieOptions)
     headers = headers.filter(header => {
       const cookie = cookieParse(header)
