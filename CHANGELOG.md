@@ -1,5 +1,12 @@
 
 
+## [7.3.0](https://github.com/nuxt-community/i18n-module/compare/v7.2.3...v7.3.0) (2022-08-24)
+
+
+### Features
+
+* add setting for setting expiration of the cookie that stores locale ([#1492](https://github.com/nuxt-community/i18n-module/issues/1492)) ([dd764d7](https://github.com/nuxt-community/i18n-module/commit/dd764d74f3e21640904889c981eb8eb8b4874e4a))
+
 ### [7.2.3](https://github.com/nuxt-community/i18n-module/compare/v7.2.2...v7.2.3) (2022-08-01)
 
 
