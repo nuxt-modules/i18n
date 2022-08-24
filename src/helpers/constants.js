@@ -44,6 +44,7 @@ export const DEFAULT_OPTIONS = {
   rootRedirect: null,
   detectBrowserLanguage: {
     alwaysRedirect: false,
+    cookieAge: 365,
     cookieCrossOrigin: false,
     cookieDomain: null,
     cookieKey: 'i18n_redirected',
