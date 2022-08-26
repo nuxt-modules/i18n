@@ -2,10 +2,10 @@
   "name": "@nuxtjs/i18n-docs",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "build": "nuxi build",
+    "dev": "nuxi dev",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview"
   },
   "devDependencies": {
     "@docus/docs-theme": "npm:@docus/docs-theme-edge@latest",
