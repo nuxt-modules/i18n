@@ -53,7 +53,7 @@
     "docs:dev": "yarn workspace @nuxtjs/i18n-docs dev",
     "docs:build": "yarn workspace @nuxtjs/i18n-docs build",
     "docs:generate": "yarn workspace @nuxtjs/i18n-docs generate",
-    "docs:preview": "yarn workspace @nuxtjs/i18n-docs preview",
+    "docs:preview": "npx serve -s docs/.output/public",
     "fix": "run-p lint:fix format:fix",
     "format": "prettier --config .prettierrc --ignore-path .prettierignore --list-different '**/*.{js,json,html}'",
     "format:fix": "yarn format --write",
