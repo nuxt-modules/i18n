@@ -46,7 +46,7 @@ jobs:
       - name: commit changelog
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          branch: main
+          branch: next
           file_pattern: '*.md'
           commit_message: 'chore: generate changelog'
       - name: publish
