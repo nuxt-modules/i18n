@@ -712,6 +712,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jsdevtools/ez-spawn@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "@jsdevtools/ez-spawn@npm:3.0.4"
+  dependencies:
+    call-me-maybe: ^1.0.1
+    cross-spawn: ^7.0.3
+    string-argv: ^0.3.1
+    type-detect: ^4.0.8
+  checksum: 3f105f4dfb2d809ab058c7b71ae950a90211b17827c83d674f616e1a4d99c10707d9bf15eeba5ac3e3121cc0b309768b72f0088e48b42c779b005511544933dd
+  languageName: node
+  linkType: hard
+
 "@koa/router@npm:^9.0.1":
   version: 9.4.0
   resolution: "@koa/router@npm:9.4.0"
@@ -1167,6 +1179,7 @@ __metadata:
     "@types/rimraf": ^3
     "@typescript-eslint/eslint-plugin": ^5.33.1
     "@typescript-eslint/parser": ^5.33.1
+    bumpp: ^8.2.1
     cookie-es: ^0.5.0
     debug: ^4.3.3
     defu: ^6.0.0
@@ -2640,6 +2653,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bumpp@npm:^8.2.1":
+  version: 8.2.1
+  resolution: "bumpp@npm:8.2.1"
+  dependencies:
+    "@jsdevtools/ez-spawn": ^3.0.4
+    cac: ^6.7.12
+    fast-glob: ^3.2.11
+    kleur: ^4.1.4
+    prompts: ^2.4.1
+    semver: ^7.3.5
+  bin:
+    bumpp: bin/bumpp.js
+  checksum: 1107c4e9519e86de49bc3fff48b249ad0e2758acdd3fe50a6a49c14d884606e5f6228e6fb238fc236bc7aaa6bea4450cfb3038875aef7b2df67a6300fb82aa6a
+  languageName: node
+  linkType: hard
+
 "bundle-runner@npm:^0.0.1":
   version: 0.0.1
   resolution: "bundle-runner@npm:0.0.1"
@@ -2661,6 +2690,13 @@ __metadata:
     pathe: ^0.3.3
     rc9: ^1.2.2
   checksum: c58caa19638ba2f539ef6004cb83a3bc6ef947b4857ffc2d0a318b82d377c12a39feceb63acbf6809fe50c4948a5b9a08904856f5e742b8496fe8c94cf1fa8a6
+  languageName: node
+  linkType: hard
+
+"cac@npm:^6.7.12":
+  version: 6.7.12
+  resolution: "cac@npm:6.7.12"
+  checksum: c0d4129eb30fc43449e9078ac37bb3b837aab6261236a6642a6fb9d839bb6a41e191e1f2776f87569535db07dcbf4937680419126215b4c17c9dba4351d1bd5e
   languageName: node
   linkType: hard
 
@@ -2707,6 +2743,13 @@ __metadata:
     function-bind: ^1.1.1
     get-intrinsic: ^1.0.2
   checksum: f8e31de9d19988a4b80f3e704788c4a2d6b6f3d17cfec4f57dc29ced450c53a49270dc66bf0fbd693329ee948dd33e6c90a329519aef17474a4d961e8d6426b0
+  languageName: node
+  linkType: hard
+
+"call-me-maybe@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "call-me-maybe@npm:1.0.1"
+  checksum: d19e9d6ac2c6a83fb1215718b64c5e233f688ebebb603bdfe4af59cde952df1f2b648530fab555bf290ea910d69d7d9665ebc916e871e0e194f47c2e48e4886b
   languageName: node
   linkType: hard
 
@@ -6309,7 +6352,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kleur@npm:^4.0.3":
+"kleur@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "kleur@npm:3.0.3"
+  checksum: df82cd1e172f957bae9c536286265a5cdbd5eeca487cb0a3b2a7b41ef959fc61f8e7c0e9aeea9c114ccf2c166b6a8dd45a46fd619c1c569d210ecd2765ad5169
+  languageName: node
+  linkType: hard
+
+"kleur@npm:^4.0.3, kleur@npm:^4.1.4":
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
   checksum: 1dc476e32741acf0b1b5b0627ffd0d722e342c1b0da14de3e8ae97821327ca08f9fb944542fb3c126d90ac5f27f9d804edbe7c585bf7d12ef495d115e0f22c12
@@ -9264,6 +9314,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prompts@npm:^2.4.1":
+  version: 2.4.2
+  resolution: "prompts@npm:2.4.2"
+  dependencies:
+    kleur: ^3.0.3
+    sisteransi: ^1.0.5
+  checksum: d8fd1fe63820be2412c13bfc5d0a01909acc1f0367e32396962e737cb2fc52d004f3302475d5ce7d18a1e8a79985f93ff04ee03007d091029c3f9104bffc007d
+  languageName: node
+  linkType: hard
+
 "property-information@npm:^6.0.0, property-information@npm:^6.1.1":
   version: 6.1.1
   resolution: "property-information@npm:6.1.1"
@@ -10096,6 +10156,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sisteransi@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "sisteransi@npm:1.0.5"
+  checksum: aba6438f46d2bfcef94cf112c835ab395172c75f67453fe05c340c770d3c402363018ae1ab4172a1026a90c47eaccf3af7b6ff6fa749a680c2929bd7fa2b37a4
+  languageName: node
+  linkType: hard
+
 "slash@npm:^3.0.0":
   version: 3.0.0
   resolution: "slash@npm:3.0.0"
@@ -10841,7 +10908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-detect@npm:^4.0.0, type-detect@npm:^4.0.5":
+"type-detect@npm:^4.0.0, type-detect@npm:^4.0.5, type-detect@npm:^4.0.8":
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
   checksum: 62b5628bff67c0eb0b66afa371bd73e230399a8d2ad30d852716efcc4656a7516904570cd8631a49a3ce57c10225adf5d0cbdcb47f6b0255fe6557c453925a15
