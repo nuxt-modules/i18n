@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { isVue2 } from 'vue-demi'
 import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } from 'vue-i18n-routing'
 import { navigateTo, NuxtApp } from '#app'
 import { isString, isArray, isObject } from '@intlify/shared'
@@ -234,6 +235,30 @@ export async function navigate(
 
 export function defineGetter<K extends string | number | symbol, V>(obj: Record<K, V>, key: K, val: V) {
   Object.defineProperty(obj, key, { get: () => val })
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function proxyNuxt(context: any, target: Function) {
+  return function () {
+    const app = isVue2 ? context.app : context.vueApp
+    return Reflect.apply(
+      target,
+      {
+        getRouteBaseName: app.getRouteBaseName,
+        i18n: app.i18n,
+        localePath: app.localePath,
+        localeLocation: app.localeLocation,
+        localeRoute: app.localeRoute,
+        localeHead: app.localeHead,
+        req: process.server && isVue2 ? context.req : null,
+        route: isVue2 ? context.route : context.$router.currentRoute.value,
+        router: isVue2 ? app.router : context.$router,
+        store: isVue2 ? context.store : undefined
+      },
+      // eslint-disable-next-line prefer-rest-params
+      arguments
+    )
+  }
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
