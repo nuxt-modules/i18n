@@ -25,6 +25,12 @@ export default defineComponent({
 })
 </script>
 
+<script setup lang="ts">
+definePageMeta({
+  title: 'pages.title.about'
+})
+</script>
+
 <template>
   <div>
     <nav>
