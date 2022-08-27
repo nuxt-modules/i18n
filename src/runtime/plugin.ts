@@ -1,17 +1,6 @@
 import { computed } from 'vue-demi'
 import { createI18n } from '@intlify/vue-i18n-bridge'
-import {
-  createLocaleFromRouteGetter,
-  extendI18n,
-  registerGlobalOptions,
-  getRouteBaseName,
-  localePath,
-  localeLocation,
-  localeRoute,
-  switchLocalePath,
-  localeHead,
-  setLocale
-} from 'vue-i18n-routing'
+import { createLocaleFromRouteGetter, extendI18n, registerGlobalOptions, setLocale } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#app'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 import {
@@ -21,8 +10,7 @@ import {
   detectRedirect,
   onLanguageSwitched,
   navigate,
-  defineGetter,
-  proxyNuxt
+  defineGetter
 } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
@@ -258,15 +246,6 @@ export default defineNuxtPlugin(async nuxt => {
    *  it's not necessary to do so, so we borrow from nuxt inject implementation.
    */
   defineGetter(nuxt as unknown as NuxtApp, `$i18n`, i18n.global as unknown)
-
-  // TODO: should resolve type errors
-  app.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
-  app.getRouteBaseName = proxyNuxt(nuxt, getRouteBaseName)
-  app.localePath = proxyNuxt(nuxt, localePath)
-  app.localeRoute = proxyNuxt(nuxt, localeRoute)
-  app.localeLocation = proxyNuxt(nuxt, localeLocation)
-  app.switchLocalePath = proxyNuxt(nuxt, switchLocalePath)
-  app.localeHead = proxyNuxt(nuxt, localeHead)
 
   if (process.client) {
     addRouteMiddleware(
