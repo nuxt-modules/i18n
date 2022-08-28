@@ -6,7 +6,6 @@ import {
   registerGlobalOptions,
   getRouteBaseName,
   localePath,
-  localeLocation,
   localeRoute,
   switchLocalePath,
   localeHead,
@@ -21,8 +20,7 @@ import {
   detectRedirect,
   onLanguageSwitched,
   navigate,
-  defineGetter,
-  proxyNuxt
+  inejctNuxtHelpers
 } from '#build/i18n.utils.mjs'
 import {
   getInitialLocale,
@@ -34,6 +32,12 @@ import {
 import type { Composer, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject, RouteLocationNormalized, ExtendProperyDescripters } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
+
+type GetRouteBaseName = typeof getRouteBaseName
+type LocalePath = typeof localePath
+type LocaleRoute = typeof localeRoute
+type LocaleHead = typeof localeHead
+type SwitchLocalePath = typeof switchLocalePath
 
 export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
@@ -122,7 +126,13 @@ export default defineNuxtPlugin(async nuxt => {
             onLanguageSwitched(i18n, oldLocale, locale)
           }
 
-          const redirectPath = detectRedirect(locale, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+          const redirectPath = detectRedirect(
+            locale,
+            nuxt as unknown as NuxtApp,
+            initialLocale,
+            getLocaleFromRoute,
+            nuxtI18nOptions
+          )
           navigate(i18n, redirectPath, locale, {
             skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate
           })
@@ -251,22 +261,8 @@ export default defineNuxtPlugin(async nuxt => {
   // TODO: should implement `{ inject: boolean }
   app.use(i18n)
 
-  /**
-   * NOTE:
-   *  we will inject `i18n.global` to **nuxt app instance only**
-   *  because vue-i18n has already injected into vue,
-   *  it's not necessary to do so, so we borrow from nuxt inject implementation.
-   */
-  defineGetter(nuxt as unknown as NuxtApp, `$i18n`, i18n.global as unknown)
-
-  // TODO: should resolve type errors
-  app.i18n = i18n.global as unknown as Composer // TODO: should resolve type!
-  app.getRouteBaseName = proxyNuxt(nuxt, getRouteBaseName)
-  app.localePath = proxyNuxt(nuxt, localePath)
-  app.localeRoute = proxyNuxt(nuxt, localeRoute)
-  app.localeLocation = proxyNuxt(nuxt, localeLocation)
-  app.switchLocalePath = proxyNuxt(nuxt, switchLocalePath)
-  app.localeHead = proxyNuxt(nuxt, localeHead)
+  // inject for nuxt helpers
+  inejctNuxtHelpers(nuxt as unknown as NuxtApp, i18n)
 
   if (process.client) {
     addRouteMiddleware(
@@ -290,7 +286,13 @@ export default defineNuxtPlugin(async nuxt => {
           onLanguageSwitched(i18n, oldLocale, locale)
         }
 
-        const redirectPath = detectRedirect(to, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+        const redirectPath = detectRedirect(
+          to,
+          nuxt as unknown as NuxtApp,
+          initialLocale,
+          getLocaleFromRoute,
+          nuxtI18nOptions
+        )
         navigate(i18n, redirectPath, locale, {
           skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate
         })
@@ -319,13 +321,34 @@ export default defineNuxtPlugin(async nuxt => {
       onLanguageSwitched(i18n, oldLocale, locale)
     }
 
-    const redirectPath = detectRedirect(route, app, initialLocale, getLocaleFromRoute, nuxtI18nOptions)
+    const redirectPath = detectRedirect(
+      route,
+      nuxt as unknown as NuxtApp,
+      initialLocale,
+      getLocaleFromRoute,
+      nuxtI18nOptions
+    )
     navigate(i18n, redirectPath, locale, { skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate })
   }
 })
 
+/**
+ * TODO:
+ *  We should provide with using conditional exports,
+ *  because, vue-i18n has legacy API (options API) and composition API.
+ *
+ *  The type returned by `i18n.global` dynamically depending on its options.
+ *  `NuxtApp` cannot be type extended without using ambient modules,
+ *  but I don't know of anything that changes this dynamically on nuxt.
+ *
+ */
 declare module '#app' {
   interface NuxtApp {
     $i18n: Composer
+    $getRouteBaseName: (this: NuxtApp, ...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
+    $localePath: (this: NuxtApp, ...args: Parameters<LocalePath>) => ReturnType<LocalePath>
+    $localeRoute: (this: NuxtApp, ...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
+    $localeHead: (this: NuxtApp, ...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
+    $switchLocalePath: (this: NuxtApp, ...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
   }
 }
