@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isVue2 } from 'vue-demi'
-import { getLocale, setLocale, getLocaleCodes, createLocaleFromRouteGetter } from 'vue-i18n-routing'
+import {
+  getLocale,
+  setLocale,
+  getLocaleCodes,
+  createLocaleFromRouteGetter,
+  getRouteBaseName,
+  localePath,
+  localeRoute,
+  switchLocalePath,
+  localeHead
+} from 'vue-i18n-routing'
 import { navigateTo, NuxtApp } from '#app'
 import { isString, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
@@ -10,7 +19,9 @@ import {
   getLocaleCookie,
   callVueI18nInterfaces,
   getVueI18nPropertyValue,
-  loadLocale
+  loadLocale,
+  defineGetter,
+  proxyNuxt
 } from '#build/i18n.internal.mjs'
 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
@@ -183,7 +194,7 @@ export function detectLocale(
 
 export function detectRedirect(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  app: any, // TODO: should resolve type!
+  nuxt: NuxtApp,
   targetLocale: Locale,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>
@@ -202,7 +213,7 @@ export function detectRedirect(
     // the current route could be 404 in which case attempt to find matching route using the full path since
     // "switchLocalePath" can only find routes if the current route exists.
     const fullPath = isString(route) ? route : route.fullPath
-    const routePath = app.switchLocalePath(targetLocale) || app.localePath(fullPath, targetLocale)
+    const routePath = nuxt.$switchLocalePath(targetLocale) || nuxt.$localePath(fullPath, targetLocale)
     if (isString(routePath) && routePath && routePath !== fullPath && !routePath.startsWith('//')) {
       redirectPath = routePath
     }
@@ -233,31 +244,23 @@ export async function navigate(
   }
 }
 
-export function defineGetter<K extends string | number | symbol, V>(obj: Record<K, V>, key: K, val: V) {
-  Object.defineProperty(obj, key, { get: () => val })
-}
+export function inejctNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
+  /**
+   * NOTE:
+   *  we will inject `i18n.global` to **nuxt app instance only**
+   *  because vue-i18n has already injected into vue,
+   *  it's not necessary to do, so we borrow from nuxt inject implementation.
+   */
+  defineGetter(nuxt as any, '$i18n', i18n.global)
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function proxyNuxt(context: any, target: Function) {
-  return function () {
-    const app = isVue2 ? context.app : context.vueApp
-    return Reflect.apply(
-      target,
-      {
-        getRouteBaseName: app.getRouteBaseName,
-        i18n: app.i18n,
-        localePath: app.localePath,
-        localeLocation: app.localeLocation,
-        localeRoute: app.localeRoute,
-        localeHead: app.localeHead,
-        req: process.server && isVue2 ? context.req : null,
-        route: isVue2 ? context.route : context.$router.currentRoute.value,
-        router: isVue2 ? app.router : context.$router,
-        store: isVue2 ? context.store : undefined
-      },
-      // eslint-disable-next-line prefer-rest-params
-      arguments
-    )
+  for (const pair of [
+    ['getRouteBaseName', getRouteBaseName],
+    ['localePath', localePath],
+    ['localeRoute', localeRoute],
+    ['switchLocalePath', switchLocalePath],
+    ['localeHead', localeHead]
+  ]) {
+    defineGetter(nuxt as any, '$' + pair[0], proxyNuxt(nuxt, pair[1] as (...args: any) => any))
   }
 }
 
