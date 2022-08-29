@@ -14,7 +14,7 @@ export async function setupAlias(nuxt: Nuxt) {
   nuxt.options.build.transpile.push('vue-i18n')
 
   // resolve @intlify/shared
-  nuxt.options.alias['@intlify/shared'] = resolveModule('@intlify/shared/dist/shared.esm-bundler.js', {
+  nuxt.options.alias['@intlify/shared'] = resolveModule('@intlify/shared/dist/shared.esm-bundler.mjs', {
     paths: nuxt.options.modulesDir
   })
   nuxt.options.build.transpile.push('@intlify/shared')
