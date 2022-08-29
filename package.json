@@ -77,7 +77,7 @@
     "pathe": "^0.3.2",
     "vue-i18n": "^9.2.0",
     "vue-i18n-bridge": "^9.2.0",
-    "vue-i18n-routing": "0.0.0-174de1f"
+    "vue-i18n-routing": "0.0.0-7caf061"
   },
   "devDependencies": {
     "@babel/parser": "^7.17.9",
