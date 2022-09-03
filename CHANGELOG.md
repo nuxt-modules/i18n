@@ -1,3 +1,17 @@
+## 8.0.0-alpha.1 (2022-09-03)
+
+This release is for Nuxt3.
+
+This version is sitll **alpha**, the API might subject to breaking changes. We will make every effort to have the same I/F as v7.x, but Nuxt 3 is a major release, it might not be the same I/F.
+
+About details, please check the [v8 docs](https://v8.i18n.nuxtjs.org/).
+
+v8 alpha or later does not support Nuxt Bridge.
+
+We will support Nuxt Bridge for v7.4 or v7.x later version. please see [the Github Discussions](https://github.com/nuxt-community/i18n-module/discussions/1287#discussioncomment-3042457) for a detailed discussion of Nuxt Bridge supporting.
+
+Thank you for your understanding 💚
+
 ## [7.3.0](https://github.com/nuxt-community/i18n-module/compare/v7.2.3...v7.3.0) (2022-08-24)
 
 ### Features
