@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#app'
+import { useRoute } from '#imports'
 import { useI18n, useLocaleHead } from '#i18n'
 
 const route = useRoute()

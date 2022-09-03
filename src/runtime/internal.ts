@@ -15,7 +15,7 @@ import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions, localeMessages } from '#build/i18n.options.mjs'
 
-import type { NuxtApp } from '#app'
+import type { NuxtApp } from '#imports'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
