@@ -47,6 +47,7 @@
     "preview:dev": "node playground/.output/server/index.mjs",
     "stub": "nuxt-module-build --stub",
     "dev": "nuxi dev playground",
+    "dev:generate": "nuxi generate playground",
     "prepare": "yarn build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
     "prepare:dev": "yarn stub && nuxi prepare playground",
