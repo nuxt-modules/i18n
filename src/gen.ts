@@ -1,7 +1,7 @@
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
-import { genImport, genSafeVariableName } from 'knitwork'
+import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, NoNullable } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -88,7 +88,7 @@ export function generateLoaderOptions(
           codes += `  ${toCode(code)}: () => Promise.resolve(${importMapper.get(code)}),\n`
         }
         for (const { code, path } of asyncLocaleFiles) {
-          codes += `  ${toCode(code)}: () => import(${toCode(path)} /* webpackChunkName: "lang-${code}" */),\n`
+          codes += `  ${toCode(code)}: ${genDynamicImport(path, { comment: `webpackChunkName: "lang-${code}"` })},\n`
         }
       }
       codes += `}\n`
