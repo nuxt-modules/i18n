@@ -1,6 +1,6 @@
 import createDebug from 'debug'
 import { isObject, isString } from '@intlify/shared'
-import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addAutoImport } from '@nuxt/kit'
+import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import defu from 'defu'
 import { extendBundler } from './bundler'
@@ -124,7 +124,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     await extendBundler(hasLocaleFiles, langPath)
 
     // auto imports
-    await addAutoImport([
+    await addImports([
       { name: 'useI18n', from: '@intlify/vue-i18n-bridge' },
       ...[
         'useRouteBaseName',
