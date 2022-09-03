@@ -14,6 +14,7 @@ const debug = createDebug('@nuxtjs/i18n:pages')
 export function setupPages(
   options: Required<NuxtI18nOptions>,
   nuxt: Nuxt,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   additionalOptions: { isBridge?: boolean; localeCodes: string[] } = {
     isBridge: false,
     localeCodes: []

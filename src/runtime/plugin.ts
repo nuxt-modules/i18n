@@ -267,6 +267,7 @@ export default defineNuxtPlugin(async nuxt => {
   if (process.client) {
     addRouteMiddleware(
       'locale-changing',
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
         const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
         const localeSetup = isInitialLocaleSetup(locale)
@@ -305,6 +306,7 @@ export default defineNuxtPlugin(async nuxt => {
     const route = router.currentRoute.value
     const locale = detectLocale(route, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [modified, oldLocale] = await loadAndSetLocale(
       locale || nuxtI18nOptions.defaultLocale,
       nuxt as unknown as NuxtApp,
