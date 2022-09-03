@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { useAsyncData, useHead } from '#app'
+import { useAsyncData, useHead } from '#imports'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
 import LangSwitcher from '../components/LangSwitcher.vue'
 

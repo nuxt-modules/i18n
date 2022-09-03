@@ -11,7 +11,7 @@ import {
   switchLocalePath,
   localeHead
 } from 'vue-i18n-routing'
-import { navigateTo, NuxtApp } from '#app'
+import { navigateTo, NuxtApp } from '#imports'
 import { isString, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import {

@@ -1,6 +1,6 @@
 import { ref } from 'vue-demi'
 import { findBrowserLocale } from 'vue-i18n-routing'
-import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie } from '#app'
+import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie } from '#imports'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import { useI18n } from '@intlify/vue-i18n-bridge'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { navigateTo } from '#app'
+import { navigateTo } from '#imports'
 
 const { locale } = useI18n()
 const localePath = useLocalePath()

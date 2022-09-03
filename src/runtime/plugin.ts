@@ -11,7 +11,7 @@ import {
   localeHead,
   setLocale
 } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#app'
+import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#imports'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
@@ -31,7 +31,7 @@ import {
 
 import type { Composer, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
 import type { LocaleObject, RouteLocationNormalized, ExtendProperyDescripters } from 'vue-i18n-routing'
-import type { NuxtApp } from '#app'
+import type { NuxtApp } from '#imports'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
@@ -342,7 +342,7 @@ export default defineNuxtPlugin(async nuxt => {
  *  but I don't know of anything that changes this dynamically on nuxt.
  *
  */
-declare module '#app' {
+declare module '#imports' {
   interface NuxtApp {
     $i18n: Composer
     $getRouteBaseName: (this: NuxtApp, ...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
