@@ -83,6 +83,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     nuxt.options.alias['#i18n'] = i18nPath.dst!
+    nuxt.options.build.transpile.push('#i18n')
 
     // TODO: We don't want to resolve the following as a template,
     //  but in the runtime dir we want to use as an ESM (e.g. internal and utils)
@@ -140,6 +141,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
         from: resolve(distDir, 'runtime/composables')
       }))
     ])
+
+    // transpile @nuxtjs/i18n
+    // https://github.com/nuxt/framework/issues/5257
+    nuxt.options.build.transpile.push('@nuxtjs/i18n')
   }
 })
 
