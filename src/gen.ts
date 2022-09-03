@@ -1,8 +1,7 @@
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
-import { templateUtils } from '@nuxt/kit'
 import { generateJSON } from '@intlify/bundle-utils'
-import { genImport } from 'knitwork'
+import { genImport, genSafeVariableName } from 'knitwork'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, NoNullable } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -46,8 +45,8 @@ export function generateLoaderOptions(
 
   const importMapper = new Map<string, string>()
   for (const { code, path } of syncLocaleFiles) {
-    importMapper.set(code, templateUtils.importName(`locale_${code}`))
-    genCode += `${genImport(path, templateUtils.importName(`locale_${code}`))}\n`
+    importMapper.set(code, genSafeVariableName(`locale_${code}`))
+    genCode += `${genImport(path, genSafeVariableName(`locale_${code}`))}\n`
   }
 
   // prettier-ignore
