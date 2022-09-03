@@ -37,6 +37,7 @@ async function loadPackage(dir: string) {
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T
 type Package = ThenArg<ReturnType<typeof loadPackage>>
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function loadWorkspace(dir: string) {
   const workspacePkg = await loadPackage(dir)
   let pkgDirs = await globby(workspacePkg.data.workspaces || [], { onlyDirectories: true })
