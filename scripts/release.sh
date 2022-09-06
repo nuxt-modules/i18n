@@ -5,9 +5,6 @@ set -xe
 # Restore all git changes
 git restore --source=HEAD --staged --worktree -- package.json yarn.lock
 
-# Bump versions to edge
-yarn jiti ./scripts/bump-edge
-
 # Resolve yarn
 YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
 
@@ -21,5 +18,5 @@ if [[ ! -z ${NPM_TOKEN} ]] ; then
 fi
 
 # Release package
-echo "⚡ Publishing edge version"
-npx npm@8.17.0 publish --access public --tolerate-republish
+echo "⚡ Publishing with tag next"
+npx npm@8.17.0 publish --tag next --access public --tolerate-republish
