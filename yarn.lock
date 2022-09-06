@@ -15,6 +15,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@antfu/utils@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@antfu/utils@npm:0.5.2"
+  checksum: 9b91446b2dbb823abeeba1cc33d6ebf701a462923408ad4751fbe162da46ae0669c774c2b5435fc77691dc207ce5de5945e693d5163e07d6ef42e376b04c7af4
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.16.7, @babel/code-frame@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/code-frame@npm:7.18.6"
@@ -1268,12 +1275,14 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.33.1
     "@typescript-eslint/parser": ^5.33.1
     bumpp: ^8.2.1
+    changelogithub: ^0.12.4
     cookie-es: ^0.5.0
     debug: ^4.3.3
     defu: ^6.0.0
     eslint: ^8.22.0
     eslint-config-prettier: ^8.5.0
     eslint-plugin-prettier: ^4.0.0
+    gh-changelogen: ^0.2.6
     jiti: ^1.14.0
     js-cookie: ^3.0.1
     knitwork: ^0.1.2
@@ -2899,7 +2908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"c12@npm:^0.2.10":
+"c12@npm:^0.2.10, c12@npm:^0.2.7":
   version: 0.2.10
   resolution: "c12@npm:0.2.10"
   dependencies:
@@ -3076,6 +3085,38 @@ __metadata:
   version: 5.0.1
   resolution: "chalk@npm:5.0.1"
   checksum: 7b45300372b908f0471fbf7389ce2f5de8d85bb949026fd51a1b95b10d0ed32c7ed5aab36dd5e9d2bf3191867909b4404cef75c5f4d2d1daeeacd301dd280b76
+  languageName: node
+  linkType: hard
+
+"changelogen@npm:0.1.1":
+  version: 0.1.1
+  resolution: "changelogen@npm:0.1.1"
+  dependencies:
+    c12: ^0.2.7
+    consola: ^2.15.3
+    execa: ^6.1.0
+    mri: ^1.2.0
+    scule: ^0.2.1
+  bin:
+    changelogen: dist/cli.mjs
+  checksum: d5e04d7ccf51ac12cb12807bcfec055a839496e8f23faad337ee5c58511c65cebc74b355963c3217fd8d3a122023c048036ed9a35330cda84f6dfda4ba724a31
+  languageName: node
+  linkType: hard
+
+"changelogithub@npm:^0.12.4":
+  version: 0.12.4
+  resolution: "changelogithub@npm:0.12.4"
+  dependencies:
+    "@antfu/utils": ^0.5.2
+    c12: ^0.2.8
+    cac: ^6.7.12
+    changelogen: 0.1.1
+    execa: ^6.1.0
+    kolorist: ^1.5.1
+    ohmyfetch: ^0.4.18
+  bin:
+    changelogithub: cli.mjs
+  checksum: 29db27fad72e3b2c85548f77004443efedf67dcb4cdfb13aa6b5de5a572ec5bbdf66acc828f4fea52755b0ba6ed1d6e6ab84c802694f9d405b1f6192becd00a3
   languageName: node
   linkType: hard
 
@@ -5413,6 +5454,20 @@ __metadata:
     call-bind: ^1.0.2
     get-intrinsic: ^1.1.1
   checksum: 9ceff8fe968f9270a37a1f73bf3f1f7bda69ca80f4f80850670e0e7b9444ff99323f7ac52f96567f8b5f5fbe7ac717a0d81d3407c7313e82810c6199446a5247
+  languageName: node
+  linkType: hard
+
+"gh-changelogen@npm:^0.2.6":
+  version: 0.2.7
+  resolution: "gh-changelogen@npm:0.2.7"
+  dependencies:
+    ohmyfetch: ^0.4.18
+    semver: ^7.3.7
+    zod: ^3.18.0
+    zodiarg: ^0.2.1
+  bin:
+    gh-changelogen: cli.mjs
+  checksum: b2d382054d2777bd6ac94b576966a057b8f2de2db899c5fed281f53f58a08abf741ddf0fc60745802514a5344e47685dd0f1b0277e1b4a9fd33a8110116f5cd3
   languageName: node
   linkType: hard
 
@@ -12640,6 +12695,22 @@ __metadata:
     compress-commons: ^4.1.0
     readable-stream: ^3.6.0
   checksum: 4a73da856738b0634700b52f4ab3fe0bf0a532bea6820ad962d0bda0163d2d5525df4859f89a7238e204a378384e12551985049790c1894c3ac191866e85887f
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.18.0":
+  version: 3.19.0
+  resolution: "zod@npm:3.19.0"
+  checksum: 35b9270ba73ff15e1cc3e529cdd49b78ceb5f9204770b974ffa5d1728ad1be8429315aa25263d088edecaa99ecc3631339fe79313435154060951706294f47e5
+  languageName: node
+  linkType: hard
+
+"zodiarg@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "zodiarg@npm:0.2.1"
+  peerDependencies:
+    zod: 3.*
+  checksum: 6e1ffc25d748aaeb6c7d2b219d7778371f44fd2a32f1d2f0d82f11b909b21f886fb306fb7817e224c956a16137955d0850380a715abc29e907c23a5b469524f1
   languageName: node
   linkType: hard
 
