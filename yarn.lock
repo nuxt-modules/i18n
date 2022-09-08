@@ -691,41 +691,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intlify/vue-i18n-bridge@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@intlify/vue-i18n-bridge@npm:0.4.0"
+"@intlify/vue-i18n-bridge@npm:0.3.6":
+  version: 0.3.6
+  resolution: "@intlify/vue-i18n-bridge@npm:0.3.6"
   peerDependencies:
     "@vue/composition-api": ^1.0.0-rc.1
     vue-i18n: ^8.26.1 || ^9.2.0-beta.25
   peerDependenciesMeta:
     "@vue/composition-api":
       optional: true
-    vue-i18n:
-      optional: true
   bin:
     vue-i18n-fix: bin/fix.js
     vue-i18n-switch: bin/switch.js
-  checksum: 03e621fe7844c27752c3bc9adee123dfc4154d647ae51f57550963a854806250abb0fff662ce22a66efb82a4d5a9fdf3a126923d674edd5aac2588e007a6eab4
+  checksum: 6989529247b81d9d965aff24ed2101f6c3eb9f580da408a165b82edefaa999f32d6d6e790e34dd4c4080865c3ec2c904ba7c123ecc1b14c27bf0b7d8ca121446
   languageName: node
   linkType: hard
 
-"@intlify/vue-router-bridge@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@intlify/vue-router-bridge@npm:0.4.0"
-  dependencies:
-    vue-demi: ^0.13.5
+"@intlify/vue-router-bridge@npm:0.3.6":
+  version: 0.3.6
+  resolution: "@intlify/vue-router-bridge@npm:0.3.6"
   peerDependencies:
     "@vue/composition-api": ^1.0.0-rc.1
     vue-router: ^4.0.0-0 || ^3.0.0
   peerDependenciesMeta:
     "@vue/composition-api":
       optional: true
-    vue-router:
-      optional: true
   bin:
     vue-router-fix: bin/fix.js
     vue-router-switch: bin/switch.js
-  checksum: 850b28909b2da41bc396360f9e29151a6ac8afe97344638c2f3e4b211a36168bf906baf1d2b77d8cb2489fc4d8b4dcedd282832f6cf7331f018f563b04bc3b71
+  checksum: b5a72fa3f42f87754f9e7c18f6ddd7133c260f3ed716df990e5804038349d56fa8b6d0e514ebf4e3a71dc5dc618e447e6b6b2de9832fa7fc2bd93daa1d2f3862
   languageName: node
   linkType: hard
 
@@ -1299,7 +1293,7 @@ __metadata:
     vitest: ^0.21.0
     vue-i18n: ^9.2.0
     vue-i18n-bridge: ^9.2.0
-    vue-i18n-routing: 0.0.0-7caf061
+    vue-i18n-routing: 0.1.0
     yorkie: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -12253,7 +12247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-demi@npm:*, vue-demi@npm:^0.13.4, vue-demi@npm:^0.13.5":
+"vue-demi@npm:*, vue-demi@npm:^0.13.4":
   version: 0.13.7
   resolution: "vue-demi@npm:0.13.7"
   peerDependencies:
@@ -12266,6 +12260,22 @@ __metadata:
     vue-demi-fix: bin/vue-demi-fix.js
     vue-demi-switch: bin/vue-demi-switch.js
   checksum: b5e348d2e9e83207a69fe1362fcfbf99dab34db9591202f2a2f394b9693860c506d865440b7ee8f0277d67e5e7a4b0ff5326a1b8b955a4b98261b1e1df13e189
+  languageName: node
+  linkType: hard
+
+"vue-demi@npm:0.13.5":
+  version: 0.13.5
+  resolution: "vue-demi@npm:0.13.5"
+  peerDependencies:
+    "@vue/composition-api": ^1.0.0-rc.1
+    vue: ^3.0.0-0 || ^2.6.0
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+  bin:
+    vue-demi-fix: bin/vue-demi-fix.js
+    vue-demi-switch: bin/vue-demi-switch.js
+  checksum: f4d0af46972698664af35fb2697311e83a388f768d7ebfc945540be5ffa808cb6d1be6f8d17fd2def0f13df40f151baf4edaec2c6e9e520b26cbd62a849a63e6
   languageName: node
   linkType: hard
 
@@ -12294,15 +12304,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-i18n-routing@npm:0.0.0-7caf061":
-  version: 0.0.0-7caf061
-  resolution: "vue-i18n-routing@npm:0.0.0-7caf061"
+"vue-i18n-routing@npm:0.1.0":
+  version: 0.1.0
+  resolution: "vue-i18n-routing@npm:0.1.0"
   dependencies:
     "@intlify/shared": latest
-    "@intlify/vue-i18n-bridge": ^0.4.0
-    "@intlify/vue-router-bridge": ^0.4.0
+    "@intlify/vue-i18n-bridge": 0.3.6
+    "@intlify/vue-router-bridge": 0.3.6
     ufo: ^0.8.5
-    vue-demi: ^0.13.5
+    vue-demi: 0.13.5
   peerDependencies:
     "@vue/composition-api": ^1.4.0
     vue: ^2.6.14 || ^3.2.0
@@ -12320,7 +12330,7 @@ __metadata:
       optional: true
     vue-router:
       optional: true
-  checksum: 79d61c20fb776d7e02018e20acf8ac974ec786932803accb170cad70d6af82717cdd7ed3c2a18b19f6bf569865ec2c13c55fafc5ed9fd9bebe24cbb0bfd5eacd
+  checksum: 54a27904435d96358383861b1cf3897fa4cdc46dc269ad3e4d4d79ad97e4d06cd5cd32a9dcd3c4406bf6b1022ababb1200b8ec7c07fc6250217a0753452a9420
   languageName: node
   linkType: hard
 
