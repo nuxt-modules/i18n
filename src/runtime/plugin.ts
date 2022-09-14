@@ -81,8 +81,7 @@ export default defineNuxtPlugin(async nuxt => {
    *  If `initLocale` is not set, then the `vueI18n` option `locale` is respect!
    *  It means a mode that works only with simple vue-i18n, without nuxtjs/i18n routing, browser detection, SEO, and other features.
    */
-  initialLocale ||= vueI18nOptions.locale || 'en-US'
-
+  initialLocale = initialLocale || vueI18nOptions.locale || 'en-US'
   // create i18n instance
   const i18n = createI18n({
     ...vueI18nOptions,
