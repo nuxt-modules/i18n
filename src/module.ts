@@ -37,9 +37,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (isNuxt2(nuxt)) {
       throw new Error(
         formatMessage(
-          `We will release >=7.3 <8, See about GitHub Discussions https://github.com/nuxt-community/i18n-module/discussions/1287#discussioncomment-3042457: ${getNuxtVersion(
+          `v8 does not support Nuxt 2 and you're using ${getNuxtVersion(
             nuxt
-          )}`
+          )} (see https://github.com/nuxt-community/i18n-module/discussions/1287#discussioncomment-3042457). You might want to check out https://github.com/intlify/vue-i18n-next/tree/master/packages/vue-i18n-bridge for migration to vue-i18n@v9 or https://github.com/intlify/vue-i18n-composable/ to make use of the composition api with vue-i18n@v8.`
         )
       )
     }
