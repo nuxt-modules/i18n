@@ -580,9 +580,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intlify/bundle-utils@npm:next":
-  version: 3.1.0
-  resolution: "@intlify/bundle-utils@npm:3.1.0"
+"@intlify/bundle-utils@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@intlify/bundle-utils@npm:3.1.2"
   dependencies:
     "@intlify/message-compiler": next
     "@intlify/shared": next
@@ -594,7 +594,7 @@ __metadata:
       optional: true
     vue-i18n:
       optional: true
-  checksum: 708f071736e5ae2f55929b9561b5488c4bb087a46e7e75208e181ef3e6fea66c283a2cd47027df7bb2b2d7dbcc9792bdbe9bd94753400b8f18ea86c057f2bdd2
+  checksum: 7334d568a2f763a79c50d20030c4f1705fa9febee07dc64ca6304dbcf845ae0c853c7afe0f937431dae5846372e6de6bd1c93eef561b8a4e22c29c3baeca246b
   languageName: node
   linkType: hard
 
@@ -653,11 +653,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intlify/unplugin-vue-i18n@npm:latest":
-  version: 0.5.0
-  resolution: "@intlify/unplugin-vue-i18n@npm:0.5.0"
+"@intlify/unplugin-vue-i18n@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "@intlify/unplugin-vue-i18n@npm:0.6.0"
   dependencies:
-    "@intlify/bundle-utils": next
+    "@intlify/bundle-utils": ^3.1.2
     "@intlify/shared": next
     "@rollup/pluginutils": ^4.2.0
     "@vue/compiler-sfc": ^3.2.23
@@ -677,7 +677,7 @@ __metadata:
       optional: true
     vue-i18n:
       optional: true
-  checksum: c4287e012e03a6dc94134508c0b57eaab4c401496d9b3a1ff78fc6facd36c08be855e088ac4ace54a569609943d727a593170b271b9a864b8d4f58dad7ba0456
+  checksum: e98c2302aa9410cafc413148d7b02ed5e3f09f65786a1de199d06311c00c92ab9cd28b83b227c0f1dc2c4d585c784b133c8bba3be1f8373b024f128cfa09b0b3
   languageName: node
   linkType: hard
 
@@ -1256,9 +1256,9 @@ __metadata:
   resolution: "@nuxtjs/i18n@workspace:."
   dependencies:
     "@babel/parser": ^7.17.9
-    "@intlify/bundle-utils": next
+    "@intlify/bundle-utils": ^3.1.2
     "@intlify/shared": latest
-    "@intlify/unplugin-vue-i18n": latest
+    "@intlify/unplugin-vue-i18n": ^0.6.0
     "@nuxt/kit": ^3.0.0-rc.9
     "@nuxt/module-builder": latest
     "@nuxt/schema": ^3.0.0-rc.9
