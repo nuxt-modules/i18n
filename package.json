@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.1.2",
-    "@intlify/shared": "latest",
+    "@intlify/shared": "9.3.0-beta.3",
     "@intlify/unplugin-vue-i18n": "^0.6.0",
     "@nuxt/kit": "^3.0.0-rc.9",
     "cookie-es": "^0.5.0",
@@ -77,9 +77,9 @@
     "knitwork": "^0.1.2",
     "mlly": "^0.5.4",
     "pathe": "^0.3.2",
-    "vue-i18n": "^9.2.0",
-    "vue-i18n-bridge": "^9.2.0",
-    "vue-i18n-routing": "0.1.0"
+    "vue-i18n": "^9.3.0-beta.3",
+    "vue-i18n-bridge": "^9.3.0-beta.3",
+    "vue-i18n-routing": "^0.1.6"
   },
   "devDependencies": {
     "@babel/parser": "^7.17.9",
