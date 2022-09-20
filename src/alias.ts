@@ -5,16 +5,14 @@ import type { Nuxt } from '@nuxt/schema'
 
 export async function setupAlias(nuxt: Nuxt) {
   // resolve vue-i18@v9
-  const vueI18nPath = nuxt.options.dev
-    ? 'vue-i18n/dist/vue-i18n.esm-bundler.js'
-    : 'vue-i18n/dist/vue-i18n.runtime.esm-bundler.js'
+  const vueI18nPath = nuxt.options.dev ? 'vue-i18n/dist/vue-i18n.mjs' : 'vue-i18n/dist/vue-i18n.runtime.mjs'
   nuxt.options.alias['vue-i18n'] = resolveModule(vueI18nPath, {
     paths: nuxt.options.modulesDir
   })
   nuxt.options.build.transpile.push('vue-i18n')
 
   // resolve @intlify/shared
-  nuxt.options.alias['@intlify/shared'] = resolveModule('@intlify/shared/dist/shared.esm-bundler.js', {
+  nuxt.options.alias['@intlify/shared'] = resolveModule('@intlify/shared/dist/shared.mjs', {
     paths: nuxt.options.modulesDir
   })
   nuxt.options.build.transpile.push('@intlify/shared')
