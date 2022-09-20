@@ -66,9 +66,9 @@
     "test:spec": "yarn build && vitest run specs"
   },
   "dependencies": {
-    "@intlify/bundle-utils": "next",
+    "@intlify/bundle-utils": "^3.1.2",
     "@intlify/shared": "latest",
-    "@intlify/unplugin-vue-i18n": "latest",
+    "@intlify/unplugin-vue-i18n": "^0.6.0",
     "@nuxt/kit": "^3.0.0-rc.9",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.2",
