@@ -66,16 +66,18 @@ export function useSwitchLocalePath({
 export function useLocaleHead({
   addDirAttribute = false,
   addSeoAttributes = false,
+  identifierAttribute = 'hid',
   i18n = useI18n()
 }: Pick<
   NonNullable<Parameters<typeof _useLocaleHead>[0]>,
-  'i18n' | 'addDirAttribute' | 'addSeoAttributes'
+  'i18n' | 'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
 > = {}): ReturnType<typeof _useLocaleHead> {
   const route = useRoute()
   const router = useRouter()
   return _useLocaleHead({
     addDirAttribute,
     addSeoAttributes,
+    identifierAttribute,
     router,
     route,
     i18n
