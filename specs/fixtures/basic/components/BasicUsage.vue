@@ -13,9 +13,9 @@ const category = ref({
 })
 
 function onClick() {
-  const route = localeRoute({ name: 'user-profile', params: { foo: '1' } })
+  const route = localeRoute({ name: 'user-profile', query: { foo: '1' } })
   if (route) {
-    return navigateTo(`${route.fullPath}?foo=${route.params.foo}`)
+    return navigateTo(route.fullPath)
   }
 }
 </script>
@@ -57,9 +57,6 @@ function onClick() {
           <NuxtLink :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
             {{ category.title }}
           </NuxtLink>
-        </li>
-        <li class="omit-named-in-object">
-          <NuxtLink :to="localePath({ params: { slug: 'ball' } })">{{ category.title }}</NuxtLink>
         </li>
       </ul>
     </section>
