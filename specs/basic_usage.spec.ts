@@ -32,7 +32,6 @@ test('basic usage', async () => {
   expect(await page.locator('#locale-path-usages .object-with-named a').getAttribute('href')).toEqual(
     '/category/nintendo'
   )
-  expect(await page.locator('#locale-path-usages .omit-named-in-object a').getAttribute('href')).toEqual('/')
 
   // Language switching path localizing with `useSwitchLocalePath`
   expect(await page.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual('/')
@@ -43,4 +42,5 @@ test('basic usage', async () => {
   await button.click()
   await page.waitForTimeout(100)
   expect(await getText(page, '#profile-page')).toEqual('This is profile page')
+  expect(await page.url()).include('/user/profile?foo=1')
 })
