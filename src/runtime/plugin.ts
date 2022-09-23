@@ -121,7 +121,7 @@ export default defineNuxtPlugin(async nuxt => {
             notInitialSetup = false
           }
 
-          if (!notInitialSetup) {
+          if (modified) {
             onLanguageSwitched(i18n, oldLocale, locale)
           }
 
@@ -282,7 +282,7 @@ export default defineNuxtPlugin(async nuxt => {
           notInitialSetup = false
         }
 
-        if (!notInitialSetup) {
+        if (modified) {
           onLanguageSwitched(i18n, oldLocale, locale)
         }
 
@@ -318,7 +318,7 @@ export default defineNuxtPlugin(async nuxt => {
       }
     )
 
-    if (!notInitialSetup) {
+    if (modified) {
       onLanguageSwitched(i18n, oldLocale, locale)
     }
 
