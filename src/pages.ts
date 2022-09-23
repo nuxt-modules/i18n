@@ -43,7 +43,7 @@ export function setupPages(
   })
 }
 
-function getRouteOptionsResolver(
+export function getRouteOptionsResolver(
   pagesDir: string,
   options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'parsePages'>
 ): RouteOptionsResolver {
@@ -69,9 +69,13 @@ function getRouteOptionsFromPages(
     paths: {}
   }
   const pattern = new RegExp(`${pagesDir}/`, 'i')
-  // TODO: we might be needed support for vite, this is for webpack
-  const chunkName = route.chunkName ? route.chunkName.replace(pattern, '') : route.name
-  const pageOptions = chunkName ? pages[chunkName] : undefined
+  // prettier-ignore
+  const path = route.chunkName
+    ? route.chunkName.replace(pattern, '') // for webpack
+    : route.path  // vite and webpack
+      ? route.path.substring(1) // extract `/`
+      : route.name
+  const pageOptions = path ? pages[path] : undefined
   // routing disabled
   if (pageOptions === false) {
     return null

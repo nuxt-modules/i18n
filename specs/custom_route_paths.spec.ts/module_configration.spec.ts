@@ -13,6 +13,12 @@ await setup({
       pages: {
         about: {
           fr: '/about-fr'
+        },
+        blog: {
+          en: '/news'
+        },
+        'blog/article': {
+          en: '/news/article'
         }
       }
     }
@@ -30,9 +36,28 @@ test('can access to custom route path', async () => {
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about-fr' })
 
-  // goto /about-fr
+  // navigate to about page for `fr`
   await page.locator('#link-about').click()
 
   expect(await getText(page, '#about-header')).toEqual('À propos')
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.url()).include('/fr/about-fr')
+})
+
+test('can access to custom nested route path', async () => {
+  const home = url('/')
+  const page = await createPage()
+  await page.goto(home)
+
+  // navigate to blog index page
+  await page.locator('#link-blog').click()
+  await page.waitForTimeout(1000)
+
+  expect(await page.url()).include('/news')
+
+  // navigate to blog article page
+  await page.locator('#link-blog-article').click()
+  await page.waitForTimeout(1000)
+
+  expect(await page.url()).include('/news/article')
 })
