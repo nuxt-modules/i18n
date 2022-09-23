@@ -42,4 +42,15 @@ test('onBeforeLanguageSwitch / onLanguageSwitched', async () => {
 
   // current locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+
+  // navigate to about page
+  await page.locator('#link-about').click()
+  await page.waitForTimeout(1000)
+
+  // navigate to home page
+  await page.locator('#link-home').click()
+  await page.waitForTimeout(1000)
+
+  // check onLanguageSwitched call duplication
+  expect(messages.length).toEqual(3)
 })
