@@ -263,74 +263,41 @@ export default defineNuxtPlugin(async nuxt => {
   // inject for nuxt helpers
   inejctNuxtHelpers(nuxt as unknown as NuxtApp, i18n)
 
-  if (process.client) {
-    addRouteMiddleware(
-      'locale-changing',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-        const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
-        const localeSetup = isInitialLocaleSetup(locale)
-        const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
-          useCookie,
-          initial: localeSetup,
-          skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
-          lazy: nuxtI18nOptions.lazy,
-          langDir: nuxtI18nOptions.langDir
-        })
-
-        if (modified && localeSetup) {
-          notInitialSetup = false
-        }
-
-        if (modified) {
-          onLanguageSwitched(i18n, oldLocale, locale)
-        }
-
-        const redirectPath = detectRedirect(
-          to,
-          nuxt as unknown as NuxtApp,
-          initialLocale,
-          getLocaleFromRoute,
-          nuxtI18nOptions
-        )
-        navigate(i18n, redirectPath, locale, {
-          skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate
-        })
-      },
-      { global: true }
-    )
-  } else {
-    // TODO: we should use `addRouteMiddleware` in server-side
-    //       `addRouteMiddleware` does not work on server...
-    const route = router.currentRoute.value
-    const locale = detectLocale(route, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
-
+  addRouteMiddleware(
+    'locale-changing',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [modified, oldLocale] = await loadAndSetLocale(
-      locale || nuxtI18nOptions.defaultLocale,
-      nuxt as unknown as NuxtApp,
-      i18n,
-      {
+    async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+      const locale = detectLocale(to, nuxt.ssrContext, i18n, getLocaleFromRoute, nuxtI18nOptions, localeCodes)
+      const localeSetup = isInitialLocaleSetup(locale)
+      const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
         useCookie,
+        initial: localeSetup,
         skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
         lazy: nuxtI18nOptions.lazy,
         langDir: nuxtI18nOptions.langDir
+      })
+
+      if (modified && localeSetup) {
+        notInitialSetup = false
       }
-    )
 
-    if (modified) {
-      onLanguageSwitched(i18n, oldLocale, locale)
-    }
+      if (modified) {
+        onLanguageSwitched(i18n, oldLocale, locale)
+      }
 
-    const redirectPath = detectRedirect(
-      route,
-      nuxt as unknown as NuxtApp,
-      initialLocale,
-      getLocaleFromRoute,
-      nuxtI18nOptions
-    )
-    navigate(i18n, redirectPath, locale, { skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate })
-  }
+      const redirectPath = detectRedirect(
+        to,
+        nuxt as unknown as NuxtApp,
+        initialLocale,
+        getLocaleFromRoute,
+        nuxtI18nOptions
+      )
+      navigate(i18n, redirectPath, locale, {
+        skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate
+      })
+    },
+    { global: true }
+  )
 })
 
 /**
