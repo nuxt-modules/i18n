@@ -100,6 +100,7 @@ export default defineNuxtPlugin(async nuxt => {
     baseUrl: nuxtI18nOptions.baseUrl,
     hooks: {
       onExtendComposer(composer: Composer) {
+        composer.strategy = nuxtI18nOptions.strategy
         composer.localeProperties = computed(() => {
           return (
             nuxtI18nInternalOptions.__normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
@@ -161,6 +162,11 @@ export default defineNuxtPlugin(async nuxt => {
       },
       onExtendExportedGlobal(g: Composer): ExtendProperyDescripters {
         return {
+          strategy: {
+            get() {
+              return g.strategy
+            }
+          },
           localeProperties: {
             get() {
               return g.localeProperties.value
@@ -208,6 +214,11 @@ export default defineNuxtPlugin(async nuxt => {
       },
       onExtendVueI18n(composer: Composer): ExtendProperyDescripters {
         return {
+          strategy: {
+            get() {
+              return composer.strategy
+            }
+          },
           localeProperties: {
             get() {
               return composer.localeProperties.value
