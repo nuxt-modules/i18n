@@ -4,8 +4,6 @@ import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
 
 // export type LegacyContext = Parameters<LegacyPlugin>[0] // nuxt2 context type
 
-export type NoNullable<T> = Exclude<T, null | undefined>
-
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
 export interface LazyOptions {
