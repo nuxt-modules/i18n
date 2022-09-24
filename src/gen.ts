@@ -3,7 +3,7 @@ import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shar
 import { generateJSON } from '@intlify/bundle-utils'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, NoNullable } from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 
 export type LoaderOptions = {
@@ -17,7 +17,7 @@ export type LoaderOptions = {
 const debug = createDebug('@nuxtjs/i18n:gen')
 
 export function generateLoaderOptions(
-  lazy: NoNullable<NuxtI18nOptions['lazy']>,
+  lazy: NonNullable<NuxtI18nOptions['lazy']>,
   langDir: NuxtI18nOptions['langDir'],
   options: LoaderOptions = {},
   dev = true
