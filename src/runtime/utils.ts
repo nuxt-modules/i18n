@@ -178,22 +178,31 @@ export function detectLocale(
 
   // const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
+  __DEBUG__ && console.log('detectLocale: initialLocale -> ', initialLocale)
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
-  __DEBUG__ && console.log('detectLocale: browserLocale -> ', browserLocale, ' initialLocale -> ', initialLocale)
+  __DEBUG__ && console.log('detectLocale: browserLocale -> ', browserLocale)
 
   let finalLocale: string | undefined = browserLocale
+  __DEBUG__ && console.log('detectLocale: first check finaleLocale on stragety', strategy, finalLocale)
   if (!finalLocale) {
     if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
     }
   }
 
+  __DEBUG__ &&
+    console.log(
+      'detectLocale: finaleLocale on detectBrowserLanguage',
+      nuxtI18nOptions.detectBrowserLanguage,
+      finalLocale
+    )
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
     finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
   }
 
+  __DEBUG__ && console.log('detectLocale: finaleLocale on defailtLocale', defaultLocale, finalLocale)
   if (!finalLocale) {
     finalLocale = defaultLocale || ''
   }

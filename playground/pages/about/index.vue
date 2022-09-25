@@ -10,6 +10,9 @@ export default defineComponent({
     console.log('$i18n.localeProperties', this.$i18n.localeProperties)
   },
   computed: {
+    availableLocales() {
+      return (this.$i18n.locales as LocaleObject[]).filter(i => i.code !== this.$i18n.locale)
+    },
     switchableLocale() {
       const i18n = this.$i18n as ExportedGlobalComposer
       const _locales = (i18n.locales as LocaleObject[]).filter(i => i.code !== this.$i18n.locale)
@@ -37,6 +40,11 @@ definePageMeta({
       <NuxtLink :to="localePath('/')">Back to Home</NuxtLink>
     </nav>
     <p>hello</p>
+    <nav>
+      <span v-for="locale in availableLocales" :key="locale.code">
+        <a href="javascript:void(0)" @click="$i18n.setLocale(locale.code)">{{ locale.name }}</a> |
+      </span>
+    </nav>
     <p>{{ switchableLocale }}</p>
     <p>{{ localeHead({ addSeoAttributes: true }) }}</p>
   </div>

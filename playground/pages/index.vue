@@ -45,7 +45,7 @@ const availableLocales = computed(() => {
     <h2>Select Languages with setLocale</h2>
     <nav>
       <span v-for="locale in availableLocales" :key="locale.code">
-        <a href="#" @click="setLocale(locale.code)">{{ locale.name }}</a> |
+        <a href="javascript:void(0)" @click="setLocale(locale.code)">{{ locale.name }}</a> |
       </span>
     </nav>
   </div>
