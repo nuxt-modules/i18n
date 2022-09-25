@@ -169,7 +169,6 @@ export function detectLocale(
 ) {
   const { strategy, defaultLocale } = nuxtI18nOptions
 
-  // const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && console.log('detectLocale: initialLocale -> ', initialLocale)
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
