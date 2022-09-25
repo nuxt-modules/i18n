@@ -19,12 +19,10 @@ import {
   loadAndSetLocale,
   detectLocale,
   detectRedirect,
-  onLanguageSwitched,
   navigate,
   inejctNuxtHelpers
 } from '#build/i18n.utils.mjs'
 import {
-  getInitialLocale,
   getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
   setLocaleCookie as _setLocaleCookie
@@ -64,15 +62,6 @@ export default defineNuxtPlugin(async nuxt => {
   registerGlobalOptions(router, nuxtI18nOptions)
 
   // detect initial locale
-  /*
-  let initialLocale = getInitialLocale(
-    router.currentRoute.value,
-    nuxt.ssrContext,
-    getLocaleFromRoute,
-    nuxtI18nOptions,
-    localeCodes
-  )
-  */
   let initialLocale = detectLocale(
     router.currentRoute.value,
     nuxt.ssrContext,
@@ -98,6 +87,7 @@ export default defineNuxtPlugin(async nuxt => {
    */
   initialLocale = initialLocale || vueI18nOptions.locale || 'en-US'
   __DEBUG__ && console.log('final initial locale:', initialLocale)
+
   // create i18n instance
   const i18n = createI18n({
     ...vueI18nOptions,
@@ -126,7 +116,7 @@ export default defineNuxtPlugin(async nuxt => {
         })
         composer.setLocale = async (locale: string) => {
           const localeSetup = isInitialLocaleSetup(locale)
-          const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
+          const [modified] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
             useCookie,
             initial: localeSetup,
             skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
@@ -146,6 +136,7 @@ export default defineNuxtPlugin(async nuxt => {
             nuxtI18nOptions
           )
           __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
+
           navigate(i18n, redirectPath, locale, {
             skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate
           })
@@ -302,10 +293,10 @@ export default defineNuxtPlugin(async nuxt => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
       __DEBUG__ && console.log('locale-changing middleware')
+
       const locale = detectLocale(
         to,
         nuxt.ssrContext,
-        // i18n,
         getLocaleFromRoute,
         nuxtI18nOptions,
         () => {
@@ -314,9 +305,11 @@ export default defineNuxtPlugin(async nuxt => {
         localeCodes
       )
       __DEBUG__ && console.log('detect locale', locale)
+
       const localeSetup = isInitialLocaleSetup(locale)
       __DEBUG__ && console.log('localeSetup', localeSetup)
-      const [modified, oldLocale] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
+
+      const [modified] = await loadAndSetLocale(locale, nuxt as unknown as NuxtApp, i18n, {
         useCookie,
         initial: localeSetup,
         skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate,
@@ -336,6 +329,7 @@ export default defineNuxtPlugin(async nuxt => {
         nuxtI18nOptions
       )
       __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
+
       navigate(i18n, redirectPath, locale, {
         skipSettingLocaleOnNavigate: nuxtI18nOptions.skipSettingLocaleOnNavigate
       })
