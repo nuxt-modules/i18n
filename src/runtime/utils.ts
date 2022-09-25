@@ -25,14 +25,7 @@ import {
 } from '#build/i18n.internal.mjs'
 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
-import type {
-  I18n,
-  I18nOptions,
-  Locale,
-  FallbackLocale,
-  LocaleMessages,
-  DefineLocaleMessage
-} from '@intlify/vue-i18n-bridge'
+import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 
@@ -174,7 +167,7 @@ export function detectLocale(
   initialLocaleLoader: Locale | LocaleLoader,
   localeCodes: string[] = []
 ) {
-  const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
+  const { strategy, defaultLocale } = nuxtI18nOptions
 
   // const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
