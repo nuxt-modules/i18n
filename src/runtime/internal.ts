@@ -13,6 +13,7 @@ import {
 } from 'vue-i18n-routing'
 import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
+import { useRequestHeaders } from '#imports'
 import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions, localeMessages } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#imports'
@@ -151,8 +152,11 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
         )
       }
     } else {
-      // TODO: should implement compability for options API style
-      throw new Error('Not implement for nuxt3 options API style')
+      const header = useRequestHeaders(['accept-language'])
+      const accept = header['accept-language']
+      if (accept) {
+        ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
+      }
     }
   }
 
@@ -169,16 +173,18 @@ export function getLocaleCookie(
     localeCodes?: readonly string[]
   } = {}
 ): string | undefined {
+  __DEBUG__ && console.log('getLocaleCookie', { useCookie, cookieKey, localeCodes })
   if (useCookie) {
     let localeCode: string | undefined
-
     if (process.client) {
       localeCode = JsCookie.get(cookieKey)
     } else if (process.server) {
-      if (context.req && typeof context.req.headers.cookie !== 'undefined') {
-        const cookies: Record<string, any> =
-          context.req.headers && context.req.headers.cookie ? parse(context.req.headers.cookie) : {}
-        localeCode = cookies[cookieKey]
+      const cookie = useRequestHeaders(['cookie'])
+      __DEBUG__ && console.log('cookie from request headers', cookie)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ('cookie' in cookie) {
+        const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
+        localeCode = parsedCookie[cookieKey]
       }
     }
 
@@ -237,11 +243,11 @@ export function setLocaleCookie(
 }
 
 export function getInitialLocale(
-  context: any,
   route: string | Route | RouteLocationNormalized,
+  context: any,
+  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
   localeCodes: string[],
-  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   locale = ''
 ): string {
   const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
@@ -251,6 +257,7 @@ export function getInitialLocale(
     : ''
 
   let finalLocale: string | undefined = browserLocale
+  __DEBUG__ && console.log('getInitialLocale first finale locale', finalLocale)
   if (!finalLocale) {
     if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
@@ -258,7 +265,7 @@ export function getInitialLocale(
   }
 
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
-    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
+    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
   }
 
   if (!finalLocale) {
@@ -294,15 +301,21 @@ export function detectBrowserLanguage(
   }
 
   // get preferred language from cookie if present and enabled
-  const cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
+  const cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
+  __DEBUG__ && console.log('detectBrowserLanguage cookieLocale', cookieLocale)
+  __DEBUG__ && console.log('detectBrowserLanguage browserLocale', getBrowserLocale(nuxtI18nInternalOptions, context))
+
   let matchedLocale = cookieLocale
   // try to get locale from either navigator or header detection
   if (!useCookie) {
     matchedLocale = getBrowserLocale(nuxtI18nInternalOptions, context)
   }
+  __DEBUG__ && console.log('detectBrowserLanguage matchedLocale', matchedLocale)
 
   const finalLocale = matchedLocale || fallbackLocale
   const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
+  __DEBUG__ && console.log('detectBrowserLanguage finaleLocale', finalLocale)
+  __DEBUG__ && console.log('detectBrowserLanguage vueI18nLocale', vueI18nLocale)
 
   // handle cookie option to prevent multiple redirections
   if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {

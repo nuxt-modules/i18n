@@ -64,6 +64,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   // sortRoutes?: boolean
   strategy?: Strategies
   vueI18n?: I18nOptions | string
+  debug?: boolean
   // vueI18nLoader?: boolean
   // vuex?: VuexOptions | false
 } & Pick<

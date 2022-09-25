@@ -12,7 +12,7 @@ import {
   localeHead
 } from 'vue-i18n-routing'
 import { navigateTo, NuxtApp } from '#imports'
-import { isString, isArray, isObject } from '@intlify/shared'
+import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -116,6 +116,7 @@ export async function loadAndSetLocale(
 ): Promise<[boolean, string]> {
   let ret = false
   const oldLocale = getLocale(i18n)
+  __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
   if (!newLocale) {
     return [ret, oldLocale]
   }
@@ -156,23 +157,31 @@ export async function loadAndSetLocale(
   }
   setLocale(i18n, newLocale)
 
+  onLanguageSwitched(i18n, oldLocale, newLocale)
+
   ret = true
   return [ret, oldLocale]
 }
 
+type LocaleLoader = () => Locale
+
 export function detectLocale(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   context: any,
-  i18n: I18n,
+  // i18n: I18n,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
+  initialLocaleLoader: Locale | LocaleLoader,
   localeCodes: string[] = []
 ) {
   const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
-  const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
+
+  // const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
+  const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
+  __DEBUG__ && console.log('detectLocale: browserLocale -> ', browserLocale, ' initialLocale -> ', initialLocale)
 
   let finalLocale: string | undefined = browserLocale
   if (!finalLocale) {
@@ -182,7 +191,7 @@ export function detectLocale(
   }
 
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
-    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
+    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
   }
 
   if (!finalLocale) {

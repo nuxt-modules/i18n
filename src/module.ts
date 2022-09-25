@@ -122,7 +122,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     // extend bundler
-    await extendBundler(hasLocaleFiles, langPath)
+    await extendBundler(options, nuxt, hasLocaleFiles, langPath)
 
     // auto imports
     await addImports([

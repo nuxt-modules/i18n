@@ -36,8 +36,9 @@ export default defineNuxtConfig({
         name: 'Français'
       }
     ],
+    debug: true,
     defaultLocale: 'en',
-    // strategy: 'prefix_and_default',
+    // strategy: 'no_prefix',
     pages: {
       about: {
         ja: '/about-ja'
@@ -45,9 +46,10 @@ export default defineNuxtConfig({
     },
     detectBrowserLanguage: false,
     // detectBrowserLanguage: {
-    //   useCookie: true,
+    //   useCookie: false,
     //   cookieKey: 'i18n_redirected',
-    //   redirectOn: 'all'
+    //   // cookieKey: 'my_custom_cookie_name',
+    //   redirectOn: 'root'
     // },
     onBeforeLanguageSwitch: (oldLocale, newLocale, initial, context) => {
       console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
