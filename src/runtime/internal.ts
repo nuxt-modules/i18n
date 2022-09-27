@@ -142,6 +142,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
+      __DEBUG__ && console.log('getBrowserLocale navigator.languages', navigator.languages)
     }
   } else if (process.server) {
     if (!isVue3) {
@@ -153,6 +154,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
       }
     } else {
       const header = useRequestHeaders(['accept-language'])
+      __DEBUG__ && console.log('getBrowserLocale accept-language', header)
       const accept = header['accept-language']
       if (accept) {
         ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
@@ -184,6 +186,7 @@ export function getLocaleCookie(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
         localeCode = parsedCookie[cookieKey]
+        __DEBUG__ && console.log('getLocaleCookie cookie', parsedCookie[cookieKey])
       }
     }
 
@@ -292,10 +295,12 @@ export function detectBrowserLanguage(
   if (strategy !== 'no_prefix') {
     if (redirectOn === 'root') {
       if (path !== '/') {
+        __DEBUG__ && console.log('detectBrowserLanguage: not root')
         return ''
       }
     } else if (redirectOn === 'no prefix') {
       if (!alwaysRedirect && path.match(getLocalesRegex(localeCodes as string[]))) {
+        __DEBUG__ && console.log('detectBrowserLanguage: no prefix')
         return ''
       }
     }
