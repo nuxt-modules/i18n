@@ -47,15 +47,15 @@ export default defineNuxtConfig({
       }
     },
     // detectBrowserLanguage: false,
-    detectBrowserLanguage: {
-      // alwaysRedirect: true,
-      // useCookie: false
-      // cookieKey: 'i18n_redirected',
-      // cookieKey: 'my_custom_cookie_name',
-      // redirectOn: 'root'
-    },
+    // detectBrowserLanguage: {
+    //   // alwaysRedirect: true,
+    //   // useCookie: false
+    //   // cookieKey: 'i18n_redirected',
+    //   // cookieKey: 'my_custom_cookie_name',
+    //   // redirectOn: 'root'
+    // },
     onBeforeLanguageSwitch: (oldLocale, newLocale, initial, context) => {
-      console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
+      console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial)
     },
     onLanguageSwitched: (oldLocale, newLocale) => {
       console.log('onLanguageSwitched', oldLocale, newLocale)

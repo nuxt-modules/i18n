@@ -24,33 +24,55 @@ await setup({
   }
 })
 
-test('onBeforeLanguageSwitch / onLanguageSwitched', async () => {
-  const home = url('/')
-  const page = await createPage()
-  const messages: string[] = []
-  page.on('console', msg => messages.push(msg.text()))
-  await page.goto(home)
+describe('onBeforeLanguageSwitch / onLanguageSwitched', () => {
+  test('<NuxtLink>', async () => {
+    const home = url('/')
+    const page = await createPage()
+    const messages: string[] = []
+    page.on('console', msg => messages.push(msg.text()))
+    await page.goto(home)
 
-  // click `fr` lang switch link
-  await page.locator('#lang-switcher-with-nuxt-link a').click()
-  // click `en` lang switch link
-  await page.locator('#lang-switcher-with-nuxt-link a').click()
+    // click `fr` lang switch link
+    await page.locator('#lang-switcher-with-nuxt-link a').click()
+    // click `en` lang switch link
+    await page.locator('#lang-switcher-with-nuxt-link a').click()
 
-  expect(messages[0]).include('onBeforeLanguageSwitch en fr true')
-  expect(messages[1]).include('onLanguageSwitched en fr')
-  expect(messages[2]).include('onBeforeLanguageSwitch fr en false')
+    expect(messages[0]).include('onBeforeLanguageSwitch en fr true')
+    expect(messages[1]).include('onLanguageSwitched en fr')
+    expect(messages[2]).include('onBeforeLanguageSwitch fr en false')
 
-  // current locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    // current locale
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
-  // navigate to about page
-  await page.locator('#link-about').click()
-  await page.waitForTimeout(1000)
+    // navigate to about page
+    await page.locator('#link-about').click()
+    await page.waitForTimeout(1000)
 
-  // navigate to home page
-  await page.locator('#link-home').click()
-  await page.waitForTimeout(1000)
+    // navigate to home page
+    await page.locator('#link-home').click()
+    await page.waitForTimeout(1000)
 
-  // check onLanguageSwitched call duplication
-  expect(messages.length).toEqual(3)
+    // check onLanguageSwitched call duplication
+    expect(messages.length).toEqual(3)
+  })
+
+  test('setLocale', async () => {
+    const home = url('/')
+    const page = await createPage()
+    const messages: string[] = []
+    page.on('console', msg => messages.push(msg.text()))
+    await page.goto(home)
+
+    // click `fr` lang switch link
+    await page.locator('#set-locale-link-fr').click()
+    // click `en` lang switch link
+    await page.locator('#set-locale-link-en').click()
+
+    expect(messages[0]).include('onBeforeLanguageSwitch en fr true')
+    expect(messages[1]).include('onLanguageSwitched en fr')
+    expect(messages[2]).include('onBeforeLanguageSwitch fr en false')
+
+    // current locale
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  })
 })

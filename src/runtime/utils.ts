@@ -161,7 +161,6 @@ type LocaleLoader = () => Locale
 export function detectLocale(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   context: any,
-  // i18n: I18n,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
   initialLocaleLoader: Locale | LocaleLoader,
@@ -203,13 +202,15 @@ export function detectLocale(
 }
 
 export function detectRedirect(
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   nuxt: NuxtApp,
   targetLocale: Locale,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>
 ): string {
   const { strategy, defaultLocale } = nuxtI18nOptions
+  __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
+  __DEBUG__ && console.log('detectRedirect: route -> ', route)
 
   let redirectPath = ''
   // decide whether we should redirect to a different route.
@@ -222,8 +223,9 @@ export function detectRedirect(
   ) {
     // the current route could be 404 in which case attempt to find matching route using the full path since
     // "switchLocalePath" can only find routes if the current route exists.
-    const fullPath = isString(route) ? route : route.fullPath
+    const { fullPath } = route
     const routePath = nuxt.$switchLocalePath(targetLocale) || nuxt.$localePath(fullPath, targetLocale)
+    __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, fullPath)
     if (isString(routePath) && routePath && routePath !== fullPath && !routePath.startsWith('//')) {
       redirectPath = routePath
     }
