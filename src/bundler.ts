@@ -1,12 +1,30 @@
 import createDebug from 'debug'
 import { resolve } from 'pathe'
-import { extendWebpackConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
+import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 
+import type { Nuxt } from '@nuxt/schema'
+import type { NuxtI18nOptions } from './types'
+
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
-export async function extendBundler(hasLocaleFiles: boolean, langPath: string | null) {
+export async function extendBundler(
+  options: Required<NuxtI18nOptions>,
+  nuxt: Nuxt,
+  hasLocaleFiles: boolean,
+  langPath: string | null
+) {
+  // setup nitro
+  if (nuxt.options.nitro.replace) {
+    nuxt.options.nitro.replace['__DEBUG__'] = options.debug
+  } else {
+    nuxt.options.nitro.replace = {
+      __DEBUG__: options.debug
+    }
+  }
+  debug('nitro.replace', nuxt.options.nitro.replace)
+
   try {
     // @ts-ignore NOTE: use webpack which is installed by nuxt
     const webpack = await import('webpack').then(m => m.default || m)
@@ -27,7 +45,8 @@ export async function extendBundler(hasLocaleFiles: boolean, langPath: string | 
         new webpack.DefinePlugin({
           __VUE_I18N_FULL_INSTALL__: 'true',
           __VUE_I18N_LEGACY_API__: 'true',
-          __INTLIFY_PROD_DEVTOOLS__: 'false'
+          __INTLIFY_PROD_DEVTOOLS__: 'false',
+          __DEBUG__: JSON.stringify(options.debug)
         })
       )
     })
@@ -44,4 +63,15 @@ export async function extendBundler(hasLocaleFiles: boolean, langPath: string | 
       })
     )
   }
+
+  extendViteConfig(config => {
+    if (config.define) {
+      config.define['__DEBUG__'] = JSON.stringify(options.debug)
+    } else {
+      config.define = {
+        __DEBUG__: JSON.stringify(options.debug)
+      }
+    }
+    debug('vite.config.define', config.define)
+  })
 }

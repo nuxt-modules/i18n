@@ -12,7 +12,7 @@ import {
   localeHead
 } from 'vue-i18n-routing'
 import { navigateTo, NuxtApp } from '#imports'
-import { isString, isArray, isObject } from '@intlify/shared'
+import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -25,14 +25,7 @@ import {
 } from '#build/i18n.internal.mjs'
 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
-import type {
-  I18n,
-  I18nOptions,
-  Locale,
-  FallbackLocale,
-  LocaleMessages,
-  DefineLocaleMessage
-} from '@intlify/vue-i18n-bridge'
+import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 
@@ -116,6 +109,7 @@ export async function loadAndSetLocale(
 ): Promise<[boolean, string]> {
   let ret = false
   const oldLocale = getLocale(i18n)
+  __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
   if (!newLocale) {
     return [ret, oldLocale]
   }
@@ -156,35 +150,50 @@ export async function loadAndSetLocale(
   }
   setLocale(i18n, newLocale)
 
+  onLanguageSwitched(i18n, oldLocale, newLocale)
+
   ret = true
   return [ret, oldLocale]
 }
 
+type LocaleLoader = () => Locale
+
 export function detectLocale(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   context: any,
-  i18n: I18n,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
+  initialLocaleLoader: Locale | LocaleLoader,
   localeCodes: string[] = []
 ) {
-  const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
-  const initialLocale = getLocale(i18n) || defaultLocale || (vueI18n as I18nOptions).locale || 'en-US'
+  const { strategy, defaultLocale } = nuxtI18nOptions
+
+  const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
+  __DEBUG__ && console.log('detectLocale: initialLocale -> ', initialLocale)
   const browserLocale = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
     : ''
+  __DEBUG__ && console.log('detectLocale: browserLocale -> ', browserLocale)
 
   let finalLocale: string | undefined = browserLocale
+  __DEBUG__ && console.log('detectLocale: first check finaleLocale on stragety', strategy, finalLocale)
   if (!finalLocale) {
     if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
     }
   }
 
+  __DEBUG__ &&
+    console.log(
+      'detectLocale: finaleLocale on detectBrowserLanguage',
+      nuxtI18nOptions.detectBrowserLanguage,
+      finalLocale
+    )
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
-    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions, localeCodes })
+    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
   }
 
+  __DEBUG__ && console.log('detectLocale: finaleLocale on defailtLocale', defaultLocale, finalLocale)
   if (!finalLocale) {
     finalLocale = defaultLocale || ''
   }
@@ -193,13 +202,15 @@ export function detectLocale(
 }
 
 export function detectRedirect(
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   nuxt: NuxtApp,
   targetLocale: Locale,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions>
 ): string {
   const { strategy, defaultLocale } = nuxtI18nOptions
+  __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
+  __DEBUG__ && console.log('detectRedirect: route -> ', route)
 
   let redirectPath = ''
   // decide whether we should redirect to a different route.
@@ -212,8 +223,9 @@ export function detectRedirect(
   ) {
     // the current route could be 404 in which case attempt to find matching route using the full path since
     // "switchLocalePath" can only find routes if the current route exists.
-    const fullPath = isString(route) ? route : route.fullPath
+    const { fullPath } = route
     const routePath = nuxt.$switchLocalePath(targetLocale) || nuxt.$localePath(fullPath, targetLocale)
+    __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, fullPath)
     if (isString(routePath) && routePath && routePath !== fullPath && !routePath.startsWith('//')) {
       redirectPath = routePath
     }

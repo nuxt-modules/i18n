@@ -21,7 +21,7 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
-    // detectBrowserLanguage: false,
+    detectBrowserLanguage: false,
     vueI18n: {
       legacy: false,
       locale: 'en',
@@ -32,7 +32,12 @@ export default defineNuxtConfig({
           profile: 'Profil',
           about: 'À propos',
           posts: 'Articles',
-          dynamic: 'Dynamique'
+          dynamic: 'Dynamique',
+          pages: {
+            blog: {
+              article: "Cette page d'article de blog"
+            }
+          }
         },
         en: {
           welcome: 'Welcome',
@@ -40,7 +45,12 @@ export default defineNuxtConfig({
           profile: 'Profile',
           about: 'About us',
           posts: 'Posts',
-          dynamic: 'Dynamic'
+          dynamic: 'Dynamic',
+          pages: {
+            blog: {
+              article: 'This is blog article page'
+            }
+          }
         }
       },
       fallbackLocale: 'en'
