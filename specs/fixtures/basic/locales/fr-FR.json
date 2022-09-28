@@ -3,5 +3,10 @@
   "about": "À propos",
   "blog": "Blog",
   "posts": "Articles",
-  "dynamic": "Dynamique"
+  "dynamic": "Dynamique",
+  "pages": {
+    "blog": {
+      "article": "Cette page d'article de blog"
+    }
+  }
 }

@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   modules: [I18nModule],
 
   i18n: {
+    // debug: true,
     vueI18n: {
       legacy: false,
       locale: 'en',

@@ -29,7 +29,7 @@ const localesExcludingCurrent = computed(() => {
         v-for="(locale, index) in localesExcludingCurrent"
         :id="`set-locale-link-${locale.code}`"
         :key="`b-${index}`"
-        href="#"
+        href="javascript:void(0)"
         @click.prevent="setLocale(locale.code)"
         >{{ locale.name }}</a
       >
