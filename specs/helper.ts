@@ -1,3 +1,5 @@
+import { Window } from 'happy-dom'
+
 import type { Page } from 'playwright'
 
 export async function getText(page: Page, selector: string, options?: Parameters<Page['locator']>[1]) {
@@ -30,4 +32,10 @@ export async function assetLocaleHead(page: Page, headSelector: string) {
     [headHandle, localeHeadValue]
   )
   headHandle?.dispose()
+}
+
+export function getDom(html: string) {
+  const window = new Window()
+  window.document.body.innerHTML = html
+  return window.document
 }

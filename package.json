@@ -99,6 +99,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "gh-changelogen": "^0.2.6",
+    "happy-dom": "^6.0.4",
     "jiti": "^1.14.0",
     "lint-staged": "^12.1.2",
     "npm-run-all": "^4.1.5",
