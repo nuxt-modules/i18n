@@ -30,7 +30,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [ ] Lang Switcher
   - [ ] Dynamic route parameters
   - [x] Wait for page transition
-- [ ] Different domains
+- [x] Different domains
 - [x] Locale fallback
 - [ ] Per-component translations
 - [ ] Extending messages hook
@@ -60,7 +60,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] localeCodes
 - [x] locales
 - [x] localeProperties
-- [ ] differentDomains
+- [x] differentDomains
 - [x] onBeforeLanguageSwitch
 - [x] onLanguageSwitched
 

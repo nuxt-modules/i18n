@@ -1,12 +1,12 @@
 import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
-import { I18nRoute, localizeRoutes } from 'vue-i18n-routing'
+import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString } from '@intlify/shared'
 import fs from 'node:fs'
 import { formatMessage } from './utils'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
-import type { RouteOptionsResolver, ComputedRouteOptions } from 'vue-i18n-routing'
+import type { RouteOptionsResolver, ComputedRouteOptions, LocalizeRoutesPrefixableOptions } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
@@ -20,6 +20,12 @@ export function setupPages(
     localeCodes: []
   }
 ) {
+  // override prefixable path for localized target routes
+  function localizeRoutesPrefixable(opts: LocalizeRoutesPrefixableOptions): boolean {
+    // no prefix if app uses different locale domains
+    return !options.differentDomains && DefaultLocalizeRoutesPrefixable(opts)
+  }
+
   let includeUprefixedFallback = nuxt.options.target === 'static'
   nuxt.hook('generate:before', () => {
     debug('called generate:before hook')
@@ -35,6 +41,7 @@ export function setupPages(
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback,
+      localizeRoutesPrefixable,
       optionsResolver: getRouteOptionsResolver(pagesDir, options)
     })
     pages.splice(0, pages.length)
