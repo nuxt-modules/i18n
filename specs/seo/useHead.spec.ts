@@ -9,7 +9,8 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      defaultLocale: 'en'
+      defaultLocale: 'en',
+      defaultDirection: 'auto'
     }
   }
 })
@@ -30,6 +31,9 @@ test('render with useHead', async () => {
 
   // html tag `lang` attriute
   expect(await page.getAttribute('html', 'lang')).toMatch('en')
+
+  // html tag `dir` attriute
+  expect(await page.getAttribute('html', 'dir')).toMatch('auto')
 
   // rendering link tag and meta tag in head tag
   await assetLocaleHead(page, '#home-use-locale-head')

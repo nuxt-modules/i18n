@@ -1,4 +1,4 @@
-import { Window } from 'happy-dom'
+import { JSDOM } from 'jsdom'
 
 import type { Page } from 'playwright'
 
@@ -35,7 +35,28 @@ export async function assetLocaleHead(page: Page, headSelector: string) {
 }
 
 export function getDom(html: string) {
-  const window = new Window()
-  window.document.body.innerHTML = html
-  return window.document
+  return new JSDOM(html).window.document
+}
+
+export function getDataFromDom(dom: Document, selector: string) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return JSON.parse(dom.querySelector(selector)!.textContent!.replace('&quot;', '"'))
+}
+
+export async function assertLocaleHeadWithDom(dom: Document, headSelector: string) {
+  const localeHead = getDataFromDom(dom, headSelector)
+  const headData = [...localeHead.link, ...localeHead.meta]
+  for (const head of headData) {
+    const tag = dom.querySelector(`[hid="${head.hid}"]`)
+    for (const [key, value] of Object.entries(head)) {
+      if (key === 'hid') {
+        continue
+      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const v = tag!.getAttribute(key)
+      if (v !== value) {
+        throw new Error(`${key} ${v} !== ${value}`)
+      }
+    }
+  }
 }

@@ -1,11 +1,12 @@
 import type { ComputedRef } from 'vue-demi'
-import type { LocaleObject, Strategies } from 'vue-i18n-routing'
+import type { LocaleObject, Strategies, Directions } from 'vue-i18n-routing'
 import type { BeforeLanguageSwitchHandler, LanguageSwitchedHandler } from '#build/i18n.options.mjs'
 
 export interface ComposerCustomProperties {
   strategy: Strategies
   localeProperties: ComputedRef<LocaleObject>
   differentDomains: boolean
+  defaultDirection: Directions
   setLocale: (locale: string) => Promise<void>
   getBrowserLocale: () => string | undefined
   getLocaleCookie: () => string | undefined
@@ -23,6 +24,7 @@ declare module 'vue-i18n' {
     readonly strategy: Strategies
     localeProperties: LocaleObject
     readonly differentDomains: boolean
+    readonly defaultDirection: Directions
     setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
@@ -47,6 +49,7 @@ declare module 'vue-i18n-bridge' {
     readonly strategy: Strategies
     localeProperties: LocaleObject
     readonly differentDomains: boolean
+    readonly defaultDirection: Directions
     setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
@@ -70,6 +73,7 @@ declare module '@intlify/vue-i18n-bridge' {
     readonly strategy: Strategies
     localeProperties: LocaleObject
     readonly differentDomains: boolean
+    readonly defaultDirection: Directions
     setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
