@@ -5,7 +5,7 @@ import { resolve } from 'pathe'
 import defu from 'defu'
 import { extendBundler } from './bundler'
 import { setupAlias } from './alias'
-import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS, STRATEGIES } from './constants'
+import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
 import { setupPages } from './pages'
 import { generateLoaderOptions } from './gen'
@@ -48,6 +48,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
 
+    if (options.strategy === 'no_prefix' && options.differentDomains) {
+      console.warn(
+        formatMessage(
+          'The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.'
+        )
+      )
+    }
+
     // resolve langDir
     const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null
     debug('langDir path', langPath)
@@ -68,7 +76,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         : {}
 
     // setup nuxt/pages
-    if (options.strategy !== STRATEGIES.NO_PREFIX && localeCodes.length) {
+    if (options.strategy !== 'no_prefix' && localeCodes.length) {
       await setupPages(options, nuxt, { isBridge: isNuxt2(nuxt), localeCodes })
     }
 

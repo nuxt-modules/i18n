@@ -21,24 +21,28 @@ export default defineNuxtConfig({
         code: 'en',
         iso: 'en-US',
         file: 'en.json',
+        domain: 'localhost:3000',
         name: 'English'
       },
       {
         code: 'ja',
         iso: 'ja-JP',
         file: 'ja.json',
+        domain: 'github.com',
         name: 'Japanses'
       },
       {
         code: 'fr',
         iso: 'fr-FR',
         file: 'fr.json',
+        domain: 'google.com',
         name: 'Français'
       }
     ],
+    // trailingSlash: true,
     debug: true,
     defaultLocale: 'en',
-    strategy: 'no_prefix',
+    // strategy: 'no_prefix',
     // strategy: 'prefix',
     // strategy: 'prefix_and_default',
     pages: {
@@ -46,6 +50,7 @@ export default defineNuxtConfig({
         ja: '/about-ja'
       }
     },
+    differentDomains: true,
     // detectBrowserLanguage: false,
     detectBrowserLanguage: {
       // alwaysRedirect: true,

@@ -1,8 +1,5 @@
-import type { Strategies, LocaleObject, I18nRoutingOptions, BaseUrlResolveHandler } from 'vue-i18n-routing'
+import type { Strategies, LocaleObject, I18nRoutingOptions } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
-// import type { LegacyPlugin, NuxtApp } from '#app'
-
-// export type LegacyContext = Parameters<LegacyPlugin>[0] // nuxt2 context type
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
@@ -38,9 +35,7 @@ export type CustomRoutePages = {
       }
 }
 
-// TODO: `Context` should be strictly typed!
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BeforeLanguageSwitchHandler = <Context = any>(
+export type BeforeLanguageSwitchHandler = <Context = unknown>(
   oldLocale: string,
   newLocale: string,
   initialSetup: boolean,
@@ -49,7 +44,7 @@ export type BeforeLanguageSwitchHandler = <Context = any>(
 
 export type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => void
 
-export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResolveHandler> = {
+export type NuxtI18nOptions<Context = unknown> = {
   differentDomains?: boolean
   onBeforeLanguageSwitch?: BeforeLanguageSwitchHandler
   onLanguageSwitched?: LanguageSwitchedHandler
@@ -68,7 +63,7 @@ export type NuxtI18nOptions<BaseUrl extends BaseUrlResolveHandler = BaseUrlResol
   // vueI18nLoader?: boolean
   // vuex?: VuexOptions | false
 } & Pick<
-  I18nRoutingOptions<BaseUrl>,
+  I18nRoutingOptions<Context>,
   | 'baseUrl'
   | 'strategy'
   | 'defaultDirection'

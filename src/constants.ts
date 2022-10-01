@@ -51,7 +51,7 @@ export const DEFAULT_OPTIONS = {
     redirectOn: 'root',
     useCookie: true
   },
-  // differentDomains: false,
+  differentDomains: false,
   baseUrl: '',
   // vuex: {
   //   moduleName: 'i18n',

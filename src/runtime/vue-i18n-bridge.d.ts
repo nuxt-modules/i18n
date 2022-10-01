@@ -5,6 +5,7 @@ import type { BeforeLanguageSwitchHandler, LanguageSwitchedHandler } from '#buil
 export interface ComposerCustomProperties {
   strategy: Strategies
   localeProperties: ComputedRef<LocaleObject>
+  differentDomains: boolean
   setLocale: (locale: string) => Promise<void>
   getBrowserLocale: () => string | undefined
   getLocaleCookie: () => string | undefined
@@ -21,6 +22,7 @@ declare module 'vue-i18n' {
   export interface VueI18n {
     readonly strategy: Strategies
     localeProperties: LocaleObject
+    readonly differentDomains: boolean
     setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
@@ -44,6 +46,7 @@ declare module 'vue-i18n-bridge' {
   export interface VueI18n {
     readonly strategy: Strategies
     localeProperties: LocaleObject
+    readonly differentDomains: boolean
     setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
@@ -66,6 +69,7 @@ declare module '@intlify/vue-i18n-bridge' {
   export interface VueI18n {
     readonly strategy: Strategies
     localeProperties: LocaleObject
+    readonly differentDomains: boolean
     setLocale: (locale: string) => Promise<void>
     getBrowserLocale: () => string | undefined
     getLocaleCookie: () => string | undefined
