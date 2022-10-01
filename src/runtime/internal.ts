@@ -4,7 +4,6 @@ import { isVue3, isVue2 } from 'vue-demi'
 import { isArray, isString, isFunction } from '@intlify/shared'
 import {
   findBrowserLocale,
-  createLocaleFromRouteGetter,
   getLocalesRegex,
   isI18nInstance,
   isComposer,
@@ -13,12 +12,14 @@ import {
 } from 'vue-i18n-routing'
 import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
-import { useRequestHeaders } from '#imports'
-import { nuxtI18nOptionsDefault, nuxtI18nInternalOptions, localeMessages } from '#build/i18n.options.mjs'
+import { hasProtocol } from 'ufo'
+import isHTTPS from 'is-https'
+import { useRequestHeaders, useRequestEvent } from '#imports'
+import { nuxtI18nOptionsDefault, localeMessages } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#imports'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
-import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
+import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
@@ -244,43 +245,10 @@ export function setLocaleCookie(
   }
 }
 
-export function getInitialLocale(
-  route: string | Route | RouteLocationNormalized,
-  context: any,
-  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
-  nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
-  localeCodes: string[],
-  locale = ''
-): string {
-  const { strategy, defaultLocale, vueI18n } = nuxtI18nOptions
-  const initialLocale = locale || (vueI18n as I18nOptions).locale || 'en-US'
-  const browserLocale = nuxtI18nOptions.detectBrowserLanguage
-    ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
-    : ''
-
-  let finalLocale: string | undefined = browserLocale
-  __DEBUG__ && console.log('getInitialLocale first finale locale', finalLocale)
-  if (!finalLocale) {
-    if (strategy !== 'no_prefix') {
-      finalLocale = routeLocaleGetter(route)
-    }
-  }
-
-  if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
-    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
-  }
-
-  if (!finalLocale) {
-    finalLocale = defaultLocale || ''
-  }
-
-  return finalLocale
-}
-
-export function detectBrowserLanguage(
+export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   context: any,
-  nuxtI18nOptions: DeepRequired<NuxtI18nOptions>,
+  nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   localeCodes: string[] = [],
   locale: Locale = ''
@@ -336,6 +304,56 @@ export function detectBrowserLanguage(
   }
 
   return ''
+}
+
+export function getHost() {
+  let host: string | undefined
+  if (process.client) {
+    host = window.location.host
+  } else if (process.server) {
+    const header = useRequestHeaders(['x-forwarded-host', 'host'])
+
+    let detectedHost: string | undefined
+    if ('x-forwarded-host' in header) {
+      detectedHost = header['x-forwarded-host']
+    } else if ('host' in header) {
+      detectedHost = header['host']
+    }
+
+    host = isArray(detectedHost) ? detectedHost[0] : detectedHost
+  }
+  return host
+}
+
+export function getLocaleDomain(locales: LocaleObject[]): string {
+  const host = getHost() || ''
+  if (host) {
+    const matchingLocale = locales.find(locale => locale.domain === host)
+    if (matchingLocale) {
+      return matchingLocale.code
+    }
+  }
+  return host
+}
+
+export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[], nuxt?: NuxtApp): string | undefined {
+  // lookup the `differentDomain` origin associated with given locale.
+  const lang = locales.find(locale => locale.code === localeCode)
+  if (lang && lang.domain) {
+    if (hasProtocol(lang.domain)) {
+      return lang.domain
+    }
+    let protocol
+    if (process.server) {
+      const { req } = useRequestEvent(nuxt)
+      protocol = req && isHTTPS(req) ? 'https' : 'http'
+    } else {
+      protocol = window.location.protocol.split(':')[0]
+    }
+    return protocol + '://' + lang.domain
+  }
+
+  console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
