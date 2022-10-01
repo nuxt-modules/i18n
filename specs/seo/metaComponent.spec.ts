@@ -29,6 +29,9 @@ test('render with meta components', async () => {
   // html tag `lang` attriute
   expect(await page.getAttribute('html', 'lang')).toMatch('en')
 
+  // html tag `dir` attriute
+  expect(await page.getAttribute('html', 'dir')).toMatch('ltr')
+
   // rendering link tag and meta tag in head tag
   await assetLocaleHead(page, '#home-use-locale-head')
 
