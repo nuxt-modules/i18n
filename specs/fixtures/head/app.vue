@@ -5,12 +5,12 @@ import { useI18n, useLocaleHead } from '#i18n'
 
 const route = useRoute()
 const { t } = useI18n()
-const head = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
+const head = useLocaleHead({ addDirAttribute: true, addSeoAttributes: { canonicalQueries: ['page'] } })
 const title = computed(() => `Page - ${t(route.meta.title as string)}`)
 </script>
 
 <template>
-  <Html :lang="head.htmlAttrs.lang">
+  <Html :lang="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir">
     <Head>
       <Title>{{ title }}</Title>
       <template v-for="(link, index) in head.link" :key="index">

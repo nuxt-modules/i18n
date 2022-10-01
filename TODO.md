@@ -55,7 +55,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] getBrowserLocale
 - [x] finalizePendingLocaleChange
 - [x] waitForPendingLocaleChange
-- [ ] defaultDirection
+- [x] defaultDirection
 - [x] defaultLocale
 - [x] localeCodes
 - [x] locales

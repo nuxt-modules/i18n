@@ -7,7 +7,11 @@ import LangSwitcher from '../components/LangSwitcher.vue'
 
 const { t } = useI18n()
 const localePath = useLocalePath()
-const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] }, router: useRouter() })
+const i18nHead = useLocaleHead({
+  addDirAttribute: true,
+  addSeoAttributes: { canonicalQueries: ['page'] },
+  router: useRouter()
+})
 const { data, refresh } = useAsyncData('home', () =>
   Promise.resolve({
     aboutPath: localePath('about'),
@@ -22,7 +26,8 @@ watchEffect(() => {
 useHead({
   title: t('home'),
   htmlAttrs: {
-    lang: i18nHead.value.htmlAttrs!.lang
+    lang: i18nHead.value.htmlAttrs!.lang,
+    dir: i18nHead.value.htmlAttrs!.dir
   },
   link: [...(i18nHead.value.link || [])],
   meta: [...(i18nHead.value.meta || [])]
