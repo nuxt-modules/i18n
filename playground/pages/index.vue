@@ -31,8 +31,8 @@ const availableLocales = computed(() => {
     <h2>{{ $t('hello', { name: 'nuxt3' }) }}</h2>
     <h2>Pages</h2>
     <nav>
-      <NuxtLink :to="localePath('/')">Home</NuxtLink> |
-      <NuxtLink :to="localePath('/about')">About</NuxtLink>
+      <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
+      <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink>
     </nav>
     <h2>Current Language: {{ getLocaleName(locale) }}</h2>
     <h2>Current Strategy: {{ strategy }}</h2>

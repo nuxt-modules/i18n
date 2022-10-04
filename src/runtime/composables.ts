@@ -17,6 +17,7 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export * from '@intlify/vue-i18n-bridge'
 export type { LocaleObject } from 'vue-i18n-routing'
+import type { Locale } from '@intlify/vue-i18n-bridge'
 
 export function useRouteBaseName(
   route: NonNullable<Parameters<typeof _useRouteBaseName>[0]> = useRoute()
@@ -120,4 +121,36 @@ export function useCookieLocale({
   }
 
   return locale
+}
+
+const warnRuntimeUsage = (method: string) =>
+  console.warn(
+    method +
+      '() is a compiler-hint helper that is only usable inside ' +
+      'the script block of a single file component. Its arguments should be ' +
+      'compiled away and passing it at runtime has no effect.'
+  )
+
+/**
+ * The i18n custom route for page components
+ */
+export interface I18nRoute {
+  /**
+   * Customize page component routes per locale.
+   *
+   * @description You can specify static and dynamic paths for vue-router.
+   */
+  paths?: Record<Locale, string>
+}
+
+/**
+ * Deinfe custom route for page component
+ *
+ * @param route - The custou route
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function defineI18nRoute(route: I18nRoute): void {
+  if (process.dev) {
+    warnRuntimeUsage('defineI18nRoute')
+  }
 }

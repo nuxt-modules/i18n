@@ -23,14 +23,18 @@ export default defineComponent({
     useHead({
       meta: [{ property: 'og:title', content: 'this is og title' }]
     })
+    defineI18nRoute({
+      paths: {
+        en: '/about-us',
+        fr: '/a-propos',
+        ja: '/about-ja'
+      }
+    })
+    definePageMeta({
+      title: 'pages.title.about'
+    })
     return {}
   }
-})
-</script>
-
-<script setup lang="ts">
-definePageMeta({
-  title: 'pages.title.about'
 })
 </script>
 

@@ -142,7 +142,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useSwitchLocalePath',
         'useLocaleHead',
         'useBrowserLocale',
-        'useCookieLocale'
+        'useCookieLocale',
+        'defineI18nRoute'
       ].map(key => ({
         name: key,
         as: key,

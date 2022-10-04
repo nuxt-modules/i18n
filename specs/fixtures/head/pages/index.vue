@@ -34,5 +34,9 @@ definePageMeta({
       <code id="home-use-async-data">{{ data }}</code>
     </section>
     <NuxtLink id="link-about" exact :to="localePath('about')">{{ $t('about') }}</NuxtLink>
+    <NuxtLink id="link-blog" :to="localePath({ name: 'blog' })">{{ $t('posts') }}</NuxtLink>
+    <NuxtLink id="link-category" :to="localePath({ name: 'categories', params: { id: 'foo' } })">{{
+      $t('categories')
+    }}</NuxtLink>
   </div>
 </template>
