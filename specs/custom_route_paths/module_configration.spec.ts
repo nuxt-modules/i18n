@@ -10,6 +10,7 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'en',
+      parsePages: false,
       pages: {
         about: {
           fr: '/about-fr'

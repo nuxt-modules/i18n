@@ -3,6 +3,7 @@ import { resolve } from 'pathe'
 import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
+import { TransformMacroPlugin, TransformMacroPluginOptions } from './macros'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions } from './types'
@@ -25,6 +26,15 @@ export async function extendBundler(
   }
   debug('nitro.replace', nuxt.options.nitro.replace)
 
+  // extract macros from components
+  const macroOptions: TransformMacroPluginOptions = {
+    dev: nuxt.options.dev,
+    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client,
+    macros: {
+      defineI18nRoute: 'i18n'
+    }
+  }
+
   try {
     // @ts-ignore NOTE: use webpack which is installed by nuxt
     const webpack = await import('webpack').then(m => m.default || m)
@@ -38,6 +48,8 @@ export async function extendBundler(
         })
       )
     }
+
+    addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
 
     extendWebpackConfig(config => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
@@ -63,6 +75,8 @@ export async function extendBundler(
       })
     )
   }
+
+  addVitePlugin(TransformMacroPlugin.vite(macroOptions))
 
   extendViteConfig(config => {
     if (config.define) {

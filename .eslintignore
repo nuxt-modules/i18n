@@ -1,5 +1,6 @@
 dist
 playground
 specs/fixtures
+test/fixtures
 coverage
 docs/components/content/Logo.vue

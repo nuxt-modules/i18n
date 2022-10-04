@@ -1305,6 +1305,7 @@ __metadata:
     jsdom: ^20.0.0
     knitwork: ^0.1.2
     lint-staged: ^12.1.2
+    magic-string: ^0.26.5
     mlly: ^0.5.4
     npm-run-all: ^4.1.5
     nuxt: ^3.0.0-rc.9
@@ -1315,6 +1316,7 @@ __metadata:
     ts-essentials: ^9.1.2
     typescript: ^4.8.4
     ufo: ^0.8.5
+    unplugin: ^0.9.6
     vitest: ^0.23.4
     vue-i18n: ^9.3.0-beta.6
     vue-i18n-routing: ^0.6.0
@@ -7377,6 +7379,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"magic-string@npm:^0.26.5":
+  version: 0.26.5
+  resolution: "magic-string@npm:0.26.5"
+  dependencies:
+    sourcemap-codec: ^1.4.8
+  checksum: b09d989586b3f16924559bda75a2b12253c9874a0f2969749a672755d84e3cce13276bc3e6c6e5e9e740973caf446725a4cb102ed5c9a8f012497974c15f6d65
+  languageName: node
+  linkType: hard
+
 "make-dir@npm:^3.1.0, make-dir@npm:~3.1.0":
   version: 3.1.0
   resolution: "make-dir@npm:3.1.0"
@@ -12150,6 +12161,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unplugin@npm:^0.9.6":
+  version: 0.9.6
+  resolution: "unplugin@npm:0.9.6"
+  dependencies:
+    acorn: ^8.8.0
+    chokidar: ^3.5.3
+    webpack-sources: ^3.2.3
+    webpack-virtual-modules: ^0.4.5
+  checksum: 6f544f7c53511e0b9064112353562159efd6fc0f38a78ff7e9ac5d3c09b298b59ea565165bbfab0eec08b016d50c5e453673581712bfcf875924d06e04bd77cd
+  languageName: node
+  linkType: hard
+
 "unstorage@npm:^0.4.1":
   version: 0.4.2
   resolution: "unstorage@npm:0.4.2"
@@ -12830,6 +12853,13 @@ __metadata:
   version: 0.4.4
   resolution: "webpack-virtual-modules@npm:0.4.4"
   checksum: 6720b4c47d76dc9cbaff557562506c192da7560a90395e9918a418e257a0c0cda9f5e3ac92107ec0789f8f23ad942313bd8cdebc95031d0adef1032bf6142bc7
+  languageName: node
+  linkType: hard
+
+"webpack-virtual-modules@npm:^0.4.5":
+  version: 0.4.5
+  resolution: "webpack-virtual-modules@npm:0.4.5"
+  checksum: 0ae9a8b50d0cb1e43da5ff8acaa7b99c34a42f0d6cc83a82908fb6e131e574a949d19948df4fdd3de0dbfdbadb2b93ceb4a740c55727a4236eb3b2bbc8f785a6
   languageName: node
   linkType: hard
 

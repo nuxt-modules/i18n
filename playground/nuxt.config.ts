@@ -45,20 +45,21 @@ export default defineNuxtConfig({
     // strategy: 'no_prefix',
     // strategy: 'prefix',
     // strategy: 'prefix_and_default',
+    parsePages: true,
     pages: {
       about: {
         ja: '/about-ja'
       }
     },
-    differentDomains: true,
-    // detectBrowserLanguage: false,
-    detectBrowserLanguage: {
-      // alwaysRedirect: true,
-      useCookie: false
-      // cookieKey: 'i18n_redirected',
-      // cookieKey: 'my_custom_cookie_name',
-      // redirectOn: 'root'
-    },
+    // differentDomains: true,
+    detectBrowserLanguage: false,
+    // detectBrowserLanguage: {
+    //   // alwaysRedirect: true,
+    //   useCookie: false
+    //   // cookieKey: 'i18n_redirected',
+    //   // cookieKey: 'my_custom_cookie_name',
+    //   // redirectOn: 'root'
+    // },
     onBeforeLanguageSwitch: (oldLocale, newLocale, initial, context) => {
       console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial)
     },
