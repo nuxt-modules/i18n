@@ -59,6 +59,60 @@ exports[`basic 1`] = `
 ]
 `;
 
+exports[`custom route > component > dynami route 1`] = `
+[
+  {
+    "children": [],
+    "name": "articles-name___en",
+    "path": "/articles/:name",
+  },
+  {
+    "children": [],
+    "name": "articles-name___ja",
+    "path": "/ja/記事/:name",
+  },
+  {
+    "children": [],
+    "name": "articles-name___fr",
+    "path": "/fr/articles/:name",
+  },
+]
+`;
+
+exports[`custom route > component > script-setup 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "path": "/ja/about-ja",
+  },
+  {
+    "children": [],
+    "path": "/fr/a-propos",
+  },
+]
+`;
+
+exports[`custom route > component > simple 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "path": "/ja/about-ja",
+  },
+  {
+    "children": [],
+    "path": "/fr/a-propos",
+  },
+]
+`;
+
 exports[`custom route > configuration > nested complex route 1`] = `
 [
   {

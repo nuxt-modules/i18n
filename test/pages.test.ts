@@ -2,12 +2,17 @@ import { vi, describe, test, expect } from 'vitest'
 import { localizeRoutes } from 'vue-i18n-routing'
 import { getRouteOptionsResolver } from '../src/pages'
 import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 
 import type { NuxtI18nOptions } from '../src/types'
+import { I18nRoute } from 'vue-i18n-routing'
 import type { NuxtHooks } from '@nuxt/schema'
 
 type ExtractArrayType<T> = T extends (infer U)[] ? U : never
 type NuxtPage = ExtractArrayType<Parameters<NuxtHooks['pages:extend']>[0]>
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 function getNuxtOptions(pages: Required<NuxtI18nOptions>['pages'], parsePages = false): NuxtI18nOptions {
   return {
@@ -24,6 +29,16 @@ function getNuxtOptions(pages: Required<NuxtI18nOptions>['pages'], parsePages = 
       { code: 'fr', iso: 'fr-FR', file: 'fr.json', name: 'Français' }
     ]
   }
+}
+
+function stripFilePropertyFromPages(routes: I18nRoute[]) {
+  return routes.map(route => {
+    delete route.file
+    if (route.children) {
+      route.children = stripFilePropertyFromPages(route.children)
+    }
+    return route
+  })
 }
 
 test('basic', async () => {
@@ -217,7 +232,57 @@ describe('custom route', () => {
     })
   })
 
-  describe.todo('component', () => {
-    // TODO:
+  describe('component', () => {
+    test('simple', async () => {
+      const options = getNuxtOptions({}, true)
+      const pages: NuxtPage[] = [
+        {
+          path: '/about',
+          file: resolve(__dirname, './fixtures/simple/pages/about.vue'),
+          children: []
+        }
+      ]
+      const localizedPages = localizeRoutes(pages, {
+        ...options,
+        includeUprefixedFallback: false,
+        optionsResolver: getRouteOptionsResolver('pages', options as Required<NuxtI18nOptions>)
+      })
+      expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
+    })
+
+    test('script-setup', async () => {
+      const options = getNuxtOptions({}, true)
+      const pages: NuxtPage[] = [
+        {
+          path: '/about',
+          file: resolve(__dirname, './fixtures/script-setup/pages/about.vue'),
+          children: []
+        }
+      ]
+      const localizedPages = localizeRoutes(pages, {
+        ...options,
+        includeUprefixedFallback: false,
+        optionsResolver: getRouteOptionsResolver('pages', options as Required<NuxtI18nOptions>)
+      })
+      expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
+    })
+
+    test('dynami route', async () => {
+      const options = getNuxtOptions({}, true)
+      const pages: NuxtPage[] = [
+        {
+          name: 'articles-name',
+          path: '/articles/:name',
+          file: resolve(__dirname, './fixtures/dynamic/pages/articles/[name].vue'),
+          children: []
+        }
+      ]
+      const localizedPages = localizeRoutes(pages, {
+        ...options,
+        includeUprefixedFallback: false,
+        optionsResolver: getRouteOptionsResolver('pages', options as Required<NuxtI18nOptions>)
+      })
+      expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
+    })
   })
 })

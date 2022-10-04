@@ -14,8 +14,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - [x] prefix
   - [x] prefix_and_default
   - [x] Configurations
-- [ ] Custom route paths
-  - [ ] In-component options
+- [x] Custom route paths
+  - [x] In-component options
   - [x] Module's configuration
 - [ ] Ignoring localized routes
   - [ ] Pick localized routes
@@ -82,6 +82,10 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] useLocaleLocation (same `localeLocation`)
 - [x] useLocaleHead (same `$nuxtI18nHead` )
 - [x] useBrowserLocale (same `getBrowserLocale`)
+
+### Compiler Macros (NWE!)
+
+- [x] defineI18nRoute (same `nuxtI18n` component options)
 
 ### Extension of Vuex
 

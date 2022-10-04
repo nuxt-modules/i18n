@@ -57,9 +57,10 @@ export function getRouteOptionsResolver(
   const { pages, defaultLocale, parsePages } = options
   debug('parsePages on getRouteOptionsResolver', parsePages)
   return (route, localeCodes): ComputedRouteOptions | null => {
-    const ret = getRouteOptionsFromPages(pagesDir, route, localeCodes, pages, defaultLocale)
-    const com = getRouteOptionsFromComponent(route)
-    debug('getRouteOptionsFromComponent', com)
+    const ret = !parsePages
+      ? getRouteOptionsFromPages(pagesDir, route, localeCodes, pages, defaultLocale)
+      : getRouteOptionsFromComponent(route, localeCodes)
+    debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
     return ret
   }
 }
@@ -114,9 +115,10 @@ function getRouteOptionsFromPages(
   return options
 }
 
-function getRouteOptionsFromComponent(route: I18nRoute) {
+function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
+  debug('getRouteOptionsFromComponent', route)
   const options: ComputedRouteOptions = {
-    locales: [],
+    locales: localeCodes,
     paths: {}
   }
 
@@ -125,20 +127,52 @@ function getRouteOptionsFromComponent(route: I18nRoute) {
     return null
   }
 
-  const contents = readComponent(file)
-  if (contents == null) {
-    return null
+  const componentOptions = readComponent(file)
+  if (componentOptions != null) {
+    options.paths = componentOptions.paths
   }
 
   return options
 }
 
 function readComponent(target: string) {
-  let contents: string | null = null
+  let options: ComputedRouteOptions | null = null
   try {
-    contents = fs.readFileSync(target, 'utf8').toString()
+    const content = fs.readFileSync(target, 'utf8').toString()
+    const { 0: match, index = 0 } =
+      content.match(new RegExp(`\\b${'defineI18nRoute'}\\s*\\(\\s*`)) || ({} as RegExpMatchArray)
+    const macroContent = match ? extractObject(content.slice(index + match.length)) : 'undefined'
+    options = new Function(`return (${macroContent})`)()
   } catch (e: unknown) {
     console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
   }
-  return contents
+  return options
+}
+
+const starts = {
+  '{': '}',
+  '[': ']',
+  '(': ')',
+  '<': '>',
+  '"': '"',
+  "'": "'"
+}
+const QUOTE_RE = /["']/
+
+function extractObject(code: string) {
+  // Strip comments
+  code = code.replace(/^\s*\/\/.*$/gm, '')
+
+  const stack: string[] = []
+  let result = ''
+  do {
+    if (stack[0] === code[0] && result.slice(-1) !== '\\') {
+      stack.shift()
+    } else if (code[0] in starts && !QUOTE_RE.test(stack[0])) {
+      stack.unshift(starts[code[0] as keyof typeof starts])
+    }
+    result += code[0]
+    code = code.slice(1)
+  } while (stack.length && code.length)
+  return result
 }
