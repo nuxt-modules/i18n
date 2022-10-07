@@ -59,7 +59,7 @@ export function getRouteOptionsResolver(
   return (route, localeCodes): ComputedRouteOptions | null => {
     const ret = !parsePages
       ? getRouteOptionsFromPages(pagesDir, route, localeCodes, pages, defaultLocale)
-      : getRouteOptionsFromComponent(route)
+      : getRouteOptionsFromComponent(route, localeCodes)
     debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
     return ret
   }
@@ -115,7 +115,7 @@ function getRouteOptionsFromPages(
   return options
 }
 
-function getRouteOptionsFromComponent(route: I18nRoute) {
+function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
   debug('getRouteOptionsFromComponent', route)
   const file = route.component || route.file
   if (!isString(file)) {
@@ -123,7 +123,12 @@ function getRouteOptionsFromComponent(route: I18nRoute) {
   }
 
   const componentOptions = readComponent(file)
-  if (componentOptions === false) {
+  if (componentOptions == null) {
+    return {
+      locales: localeCodes,
+      paths: {}
+    }
+  } else if (componentOptions === false) {
     return null
   } else {
     return componentOptions
@@ -131,12 +136,12 @@ function getRouteOptionsFromComponent(route: I18nRoute) {
 }
 
 function readComponent(target: string) {
-  let options: ComputedRouteOptions | false = false
+  let options: ComputedRouteOptions | false | undefined = undefined
   try {
     const content = fs.readFileSync(target, 'utf8').toString()
     const { 0: match, index = 0 } =
       content.match(new RegExp(`\\b${'defineI18nRoute'}\\s*\\(\\s*`)) || ({} as RegExpMatchArray)
-    const macroContent = match ? extractValue(content.slice(index + match.length)) : 'false'
+    const macroContent = match ? extractValue(content.slice(index + match.length)) : 'undefined'
     options = new Function(`return (${macroContent})`)()
   } catch (e: unknown) {
     console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
