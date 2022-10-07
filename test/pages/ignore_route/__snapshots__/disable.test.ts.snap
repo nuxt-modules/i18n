@@ -1,0 +1,126 @@
+// Vitest Snapshot v1
+
+exports[`component > basic 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
+  },
+]
+`;
+
+exports[`configuration > nested complex route 1`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about/index.vue",
+    "name": "about",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app/index.vue",
+    "name": "services-development-app",
+    "path": "/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/coaching/index.vue",
+    "name": "services-development-coaching___en",
+    "path": "/services/development/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/coaching/index.vue",
+    "name": "services-development-coaching___ja",
+    "path": "/ja/services/development/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/coaching/index.vue",
+    "name": "services-development-coaching___fr",
+    "path": "/fr/services/development/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development",
+    "path": "/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website/index.vue",
+    "name": "services-development-website",
+    "path": "/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services",
+    "path": "/services",
+  },
+]
+`;
+
+exports[`configuration > nested dynamic route 1`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/[nested]/[route]/[...slug].vue",
+    "name": "nested-route-slug",
+    "path": "/:nested/:route/:slug(.*)*",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
+    "name": "nested-route",
+    "path": "/:nested/:route",
+  },
+]
+`;
+
+exports[`configuration > nested static route 1`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
+    "name": "nested-route",
+    "path": "/nested/route",
+  },
+]
+`;
+
+exports[`configuration > simple 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___en",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___ja",
+    "path": "/ja",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___fr",
+    "path": "/fr",
+  },
+]
+`;
