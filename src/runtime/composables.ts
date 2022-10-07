@@ -132,6 +132,12 @@ const warnRuntimeUsage = (method: string) =>
   )
 
 /**
+ * TODO:
+ *  `paths`, `locales` completions like `unplugin-vue-router`
+ *  ref: https://github.com/posva/unplugin-vue-router
+ */
+
+/**
  * The i18n custom route for page components
  */
 export interface I18nRoute {
@@ -141,15 +147,19 @@ export interface I18nRoute {
    * @description You can specify static and dynamic paths for vue-router.
    */
   paths?: Record<Locale, string>
+  /**
+   * Some locales to which the page component should be localized.
+   */
+  locales?: string[]
 }
 
 /**
- * Deinfe custom route for page component
+ * Define custom route for page component
  *
  * @param route - The custou route
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function defineI18nRoute(route: I18nRoute): void {
+export function defineI18nRoute(route: I18nRoute | false): void {
   if (process.dev) {
     warnRuntimeUsage('defineI18nRoute')
   }
