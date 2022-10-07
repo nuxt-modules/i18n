@@ -45,9 +45,10 @@ export default defineNuxtConfig({
     // strategy: 'no_prefix',
     // strategy: 'prefix',
     // strategy: 'prefix_and_default',
+    parsePages: false,
     pages: {
       about: {
-        ja: '/about-ja'
+        ja: false
       }
     },
     // differentDomains: true,

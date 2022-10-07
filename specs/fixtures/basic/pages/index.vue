@@ -50,6 +50,12 @@ useHead({
       <code id="home-use-locale-head">{{ i18nHead }}</code>
     </section>
     <NuxtLink id="link-about" exact :to="localePath('about')">{{ $t('about') }}</NuxtLink>
-    <NuxtLink id="link-blog" exact :to="localePath('blog')">{{ $t('blog') }}</NuxtLink>
+    <NuxtLink id="link-blog" :to="localePath('blog')">{{ $t('blog') }}</NuxtLink>
+    <NuxtLink id="link-ignore-disable" :to="localePath('/ignore-routes/disable')"
+      >go to ignoring localized disable route</NuxtLink
+    >
+    <NuxtLink id="link-ignore-pick" :to="localePath('/ignore-routes/pick')"
+      >go to ignoring localized pick route</NuxtLink
+    >
   </div>
 </template>
