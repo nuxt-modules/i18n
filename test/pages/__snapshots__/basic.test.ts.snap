@@ -1,0 +1,60 @@
+// Vitest Snapshot v1
+
+exports[`localized 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about___en",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about___ja",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/ja/about",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about___fr",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/fr/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___en",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___ja",
+    "path": "/ja",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___fr",
+    "path": "/fr",
+  },
+]
+`;

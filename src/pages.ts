@@ -59,7 +59,7 @@ export function getRouteOptionsResolver(
   return (route, localeCodes): ComputedRouteOptions | null => {
     const ret = !parsePages
       ? getRouteOptionsFromPages(pagesDir, route, localeCodes, pages, defaultLocale)
-      : getRouteOptionsFromComponent(route, localeCodes)
+      : getRouteOptionsFromComponent(route)
     debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
     return ret
   }
@@ -115,33 +115,28 @@ function getRouteOptionsFromPages(
   return options
 }
 
-function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
+function getRouteOptionsFromComponent(route: I18nRoute) {
   debug('getRouteOptionsFromComponent', route)
-  const options: ComputedRouteOptions = {
-    locales: localeCodes,
-    paths: {}
-  }
-
   const file = route.component || route.file
   if (!isString(file)) {
     return null
   }
 
   const componentOptions = readComponent(file)
-  if (componentOptions != null) {
-    options.paths = componentOptions.paths
+  if (componentOptions === false) {
+    return null
+  } else {
+    return componentOptions
   }
-
-  return options
 }
 
 function readComponent(target: string) {
-  let options: ComputedRouteOptions | null = null
+  let options: ComputedRouteOptions | false = false
   try {
     const content = fs.readFileSync(target, 'utf8').toString()
     const { 0: match, index = 0 } =
       content.match(new RegExp(`\\b${'defineI18nRoute'}\\s*\\(\\s*`)) || ({} as RegExpMatchArray)
-    const macroContent = match ? extractObject(content.slice(index + match.length)) : 'undefined'
+    const macroContent = match ? extractValue(content.slice(index + match.length)) : 'false'
     options = new Function(`return (${macroContent})`)()
   } catch (e: unknown) {
     console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
@@ -157,18 +152,23 @@ const starts = {
   '"': '"',
   "'": "'"
 }
-const QUOTE_RE = /["']/
+const REGEX_QUOTE = /["']/
+const REGEX_FALSE = /false/
 
-function extractObject(code: string) {
+function extractValue(code: string) {
   // Strip comments
   code = code.replace(/^\s*\/\/.*$/gm, '')
+
+  if (REGEX_FALSE.test(code)) {
+    return 'false'
+  }
 
   const stack: string[] = []
   let result = ''
   do {
     if (stack[0] === code[0] && result.slice(-1) !== '\\') {
       stack.shift()
-    } else if (code[0] in starts && !QUOTE_RE.test(stack[0])) {
+    } else if (code[0] in starts && !REGEX_QUOTE.test(stack[0])) {
       stack.unshift(starts[code[0] as keyof typeof starts])
     }
     result += code[0]

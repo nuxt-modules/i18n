@@ -19,6 +19,12 @@ export interface TransformMacroPluginOptions {
 
 const debug = createDebug('@nuxtjs/i18n:macros')
 
+/**
+ * TODO:
+ *  `paths`, `locales` completions like `unplugin-vue-router`
+ *  ref: https://github.com/posva/unplugin-vue-router
+ */
+
 export const TransformMacroPlugin = createUnplugin((options: TransformMacroPluginOptions) => {
   return {
     name: 'nuxtjs:i18n-macros-transform',

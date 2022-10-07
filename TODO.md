@@ -17,9 +17,9 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 - [x] Custom route paths
   - [x] In-component options
   - [x] Module's configuration
-- [ ] Ignoring localized routes
-  - [ ] Pick localized routes
-  - [ ] Disable localized routes
+- [x] Ignoring localized routes
+  - [x] Pick localized routes
+  - [x] Disable localized routes
 - [x] Browser language detection
 - [ ] SEO
   - [x] Requirements

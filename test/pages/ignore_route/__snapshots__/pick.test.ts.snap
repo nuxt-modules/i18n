@@ -1,76 +1,7 @@
 // Vitest Snapshot v1
 
-exports[`basic 1`] = `
+exports[`component > dynamic route 1`] = `
 [
-  {
-    "children": [
-      {
-        "children": [],
-        "file": "/path/to/nuxt-app/pages/about/index.vue",
-        "name": "about___en",
-        "path": "",
-      },
-    ],
-    "file": "/path/to/nuxt-app/pages/about.vue",
-    "path": "/about",
-  },
-  {
-    "children": [
-      {
-        "children": [],
-        "file": "/path/to/nuxt-app/pages/about/index.vue",
-        "name": "about___ja",
-        "path": "",
-      },
-    ],
-    "file": "/path/to/nuxt-app/pages/about.vue",
-    "path": "/ja/about",
-  },
-  {
-    "children": [
-      {
-        "children": [],
-        "file": "/path/to/nuxt-app/pages/about/index.vue",
-        "name": "about___fr",
-        "path": "",
-      },
-    ],
-    "file": "/path/to/nuxt-app/pages/about.vue",
-    "path": "/fr/about",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___en",
-    "path": "/",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___ja",
-    "path": "/ja",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___fr",
-    "path": "/fr",
-  },
-]
-`;
-
-exports[`custom route > component > dynami route 1`] = `
-[
-  {
-    "children": [],
-    "name": "articles-name___en",
-    "path": "/articles/:name",
-  },
-  {
-    "children": [],
-    "name": "articles-name___ja",
-    "path": "/ja/記事/:name",
-  },
   {
     "children": [],
     "name": "articles-name___fr",
@@ -79,41 +10,20 @@ exports[`custom route > component > dynami route 1`] = `
 ]
 `;
 
-exports[`custom route > component > script-setup 1`] = `
+exports[`component > simple 1`] = `
 [
   {
     "children": [],
-    "path": "/about-us",
+    "path": "/ja/about",
   },
   {
     "children": [],
-    "path": "/ja/about-ja",
-  },
-  {
-    "children": [],
-    "path": "/fr/a-propos",
+    "path": "/fr/about",
   },
 ]
 `;
 
-exports[`custom route > component > simple 1`] = `
-[
-  {
-    "children": [],
-    "path": "/about-us",
-  },
-  {
-    "children": [],
-    "path": "/ja/about-ja",
-  },
-  {
-    "children": [],
-    "path": "/fr/a-propos",
-  },
-]
-`;
-
-exports[`custom route > configuration > nested complex route 1`] = `
+exports[`configuration > nested complex route 1`] = `
 [
   {
     "children": [],
@@ -129,12 +39,6 @@ exports[`custom route > configuration > nested complex route 1`] = `
   },
   {
     "children": [],
-    "file": "/path/to/nuxt-app/pages/about/index.vue",
-    "name": "about___fr",
-    "path": "/fr/a-propos",
-  },
-  {
-    "children": [],
     "file": "/path/to/nuxt-app/pages/services/development/app/index.vue",
     "name": "services-development-app___en",
     "path": "/services/development/app",
@@ -144,12 +48,6 @@ exports[`custom route > configuration > nested complex route 1`] = `
     "file": "/path/to/nuxt-app/pages/services/development/app/index.vue",
     "name": "services-development-app___ja",
     "path": "/ja/services/development/app",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/app/index.vue",
-    "name": "services-development-app___fr",
-    "path": "/fr/offres/developement/app",
   },
   {
     "children": [],
@@ -183,12 +81,6 @@ exports[`custom route > configuration > nested complex route 1`] = `
   },
   {
     "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
-    "name": "services-development___fr",
-    "path": "/fr/offres/developement",
-  },
-  {
-    "children": [],
     "file": "/path/to/nuxt-app/pages/services/development/website/index.vue",
     "name": "services-development-website___en",
     "path": "/services/development/website",
@@ -198,12 +90,6 @@ exports[`custom route > configuration > nested complex route 1`] = `
     "file": "/path/to/nuxt-app/pages/services/development/website/index.vue",
     "name": "services-development-website___ja",
     "path": "/ja/services/development/website",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/website/index.vue",
-    "name": "services-development-website___fr",
-    "path": "/fr/offres/developement/site-web",
   },
   {
     "children": [],
@@ -217,80 +103,56 @@ exports[`custom route > configuration > nested complex route 1`] = `
     "name": "services___ja",
     "path": "/ja/services",
   },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/services/index.vue",
-    "name": "services___fr",
-    "path": "/fr/offres",
-  },
 ]
 `;
 
-exports[`custom route > configuration > nested dynamic route 1`] = `
+exports[`configuration > nested dynamic route 1`] = `
 [
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/[nested]/[route]/[...slug].vue",
-    "name": "nested-route-slug___en",
-    "path": "/mycustompath/:nested/:slug(.*)*",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/[nested]/[route]/[...slug].vue",
     "name": "nested-route-slug___ja",
-    "path": "/ja/mycustompath/:nested/:slug(.*)*",
+    "path": "/ja/:nested/:route/:slug(.*)*",
   },
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/[nested]/[route]/[...slug].vue",
     "name": "nested-route-slug___fr",
-    "path": "/fr/mycustompath/:nested/:slug(.*)*",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
-    "name": "nested-route___en",
-    "path": "/mycustompath/:nested/:route",
+    "path": "/fr/:nested/:route/:slug(.*)*",
   },
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
     "name": "nested-route___ja",
-    "path": "/ja/mycustompath/:nested/:route",
+    "path": "/ja/:nested/:route",
   },
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
     "name": "nested-route___fr",
-    "path": "/fr/mycustompath/:nested/:route",
+    "path": "/fr/:nested/:route",
   },
 ]
 `;
 
-exports[`custom route > configuration > nested static route 1`] = `
+exports[`configuration > nested static route 1`] = `
 [
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
-    "name": "nested-route___en",
-    "path": "/mycustompath/nested/route",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
     "name": "nested-route___ja",
-    "path": "/ja/mycustompath/nested/route",
+    "path": "/ja/nested/route",
   },
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
     "name": "nested-route___fr",
-    "path": "/fr/mycustompath/nested/route",
+    "path": "/fr/nested/route",
   },
 ]
 `;
 
-exports[`custom route > configuration > simple 1`] = `
+exports[`configuration > simple 1`] = `
 [
   {
     "children": [
@@ -303,18 +165,6 @@ exports[`custom route > configuration > simple 1`] = `
     ],
     "file": "/path/to/nuxt-app/pages/about.vue",
     "path": "/about",
-  },
-  {
-    "children": [
-      {
-        "children": [],
-        "file": "/path/to/nuxt-app/pages/about/index.vue",
-        "name": "about___ja",
-        "path": "/ja/about-ja",
-      },
-    ],
-    "file": "/path/to/nuxt-app/pages/about.vue",
-    "path": "/ja/about-ja",
   },
   {
     "children": [
