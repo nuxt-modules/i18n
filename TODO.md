@@ -21,9 +21,9 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - [x] Pick localized routes
   - [x] Disable localized routes
 - [x] Browser language detection
-- [ ] SEO
+- [x] SEO
   - [x] Requirements
-  - [ ] Setup
+  - [x] Setup
   - [x] Feature details
 - [x] Lazy-load translations
   - LIMITATIONS: `skipNuxtState` and executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
