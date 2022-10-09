@@ -17,6 +17,7 @@ import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#b
 import {
   loadInitialMessages,
   loadAndSetLocale,
+  mergeAddtionalMessages,
   detectLocale,
   detectRedirect,
   navigate,
@@ -103,7 +104,7 @@ export default defineNuxtPlugin(async nuxt => {
 
   /**
    * NOTE:
-   *  If `initLocale` is not set, then the `vueI18n` option `locale` is respect!
+   *  If `initialLocale` is not set, then the `vueI18n` option `locale` is respect!
    *  It means a mode that works only with simple vue-i18n, without nuxtjs/i18n routing, browser detection, SEO, and other features.
    */
   initialLocale = initialLocale || vueI18nOptions.locale || 'en-US'
@@ -322,6 +323,9 @@ export default defineNuxtPlugin(async nuxt => {
 
   // inject for nuxt helpers
   inejctNuxtHelpers(nuxtContext, i18n)
+
+  // merge addtional locale messages
+  await mergeAddtionalMessages(nuxtContext, i18n, initialLocale)
 
   addRouteMiddleware(
     'locale-changing',

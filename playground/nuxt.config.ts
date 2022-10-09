@@ -1,10 +1,11 @@
 import { defineNuxtConfig } from 'nuxt'
 // @ts-ignore
 import I18nModule from '../dist/module.mjs'
+import Module1 from './module1'
 
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: [I18nModule],
+  modules: [Module1, I18nModule],
 
   vite: {
     build: {
@@ -45,10 +46,10 @@ export default defineNuxtConfig({
     // strategy: 'no_prefix',
     // strategy: 'prefix',
     // strategy: 'prefix_and_default',
-    parsePages: false,
+    // parsePages: false,
     pages: {
       about: {
-        ja: false
+        ja: '/about-ja'
       }
     },
     // differentDomains: true,

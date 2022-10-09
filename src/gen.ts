@@ -5,6 +5,7 @@ import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
+import type { AdditionalMessages } from './messages'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -12,6 +13,7 @@ export type LoaderOptions = {
   nuxtI18nOptions?: NuxtI18nOptions
   nuxtI18nOptionsDefault?: NuxtI18nOptionsDefault
   nuxtI18nInternalOptions?: NuxtI18nInternalOptions
+  additionalMessages?: AdditionalMessages
 }
 
 const debug = createDebug('@nuxtjs/i18n:gen')
@@ -93,6 +95,8 @@ export function generateLoaderOptions(
       }
       codes += `}\n`
       return codes
+    } else if (rootKey === 'additionalMessages') {
+      return `export const ${rootKey} = ${generaeteAdditionalMessages(rootValue, dev)}\n`
 	  } else {
 	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
 	  }
@@ -117,6 +121,22 @@ function generateVueI18nOptions(options: Record<string, any>, dev: boolean): str
     } else {
       genCode += `${JSON.stringify(key)}:${toCode(value)},`
     }
+  }
+  genCode += '})'
+  return genCode
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function generaeteAdditionalMessages(value: Record<string, any>, dev: boolean): string {
+  let genCode = 'Object({'
+  for (const [locale, messages] of Object.entries(value)) {
+    genCode += `${JSON.stringify(locale)}:[`
+    for (const [, p] of Object.entries(messages)) {
+      genCode += `() => Promise.resolve(${
+        generateJSON(JSON.stringify(p), { type: 'bare', env: dev ? 'development' : 'production' }).code
+      }),`
+    }
+    genCode += `],`
   }
   genCode += '})'
   return genCode

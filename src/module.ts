@@ -3,15 +3,17 @@ import { isObject, isString } from '@intlify/shared'
 import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import defu from 'defu'
-import { extendBundler } from './bundler'
 import { setupAlias } from './alias'
+import { setupPages } from './pages'
+import { extendMessages } from './messages'
+import { extendBundler } from './bundler'
+import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { setupPages } from './pages'
-import { generateLoaderOptions } from './gen'
 import { distDir, runtimeDir } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
+import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
 
 export * from './types'
 
@@ -21,7 +23,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
     name: NUXT_I18N_MODULE_ID,
     configKey: 'i18n'
-    // TODO:
     // compatibility: {
     //   nuxt: '^3.0.0',
     //   bridge: false
@@ -75,6 +76,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
         ? resolve(nuxt.options.rootDir, options.vueI18n)
         : {}
 
+    // extend messages via 3rd party nuxt modules
+    const additionalMessages = await extendMessages(nuxt, localeCodes)
+
     // setup nuxt/pages
     if (options.strategy !== 'no_prefix' && localeCodes.length) {
       await setupPages(options, nuxt, { isBridge: isNuxt2(nuxt), localeCodes })
@@ -118,6 +122,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
           {
             localeCodes,
             localeInfo,
+            additionalMessages,
             nuxtI18nOptions: options,
             nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
             nuxtI18nInternalOptions: {
@@ -130,7 +135,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     // extend bundler
-    await extendBundler(options, nuxt, hasLocaleFiles, langPath)
+    await extendBundler(nuxt, {
+      nuxtOptions: options as Required<NuxtI18nOptions>,
+      hasLocaleFiles,
+      langPath
+    })
 
     // auto imports
     await addImports([
@@ -189,5 +198,9 @@ function checkOptions(options: NuxtI18nOptions) {
 declare module '@nuxt/schema' {
   interface NuxtConfig {
     i18n?: NuxtI18nOptions
+  }
+
+  interface NuxtHooks {
+    'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
   }
 }

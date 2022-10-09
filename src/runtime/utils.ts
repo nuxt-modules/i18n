@@ -23,6 +23,7 @@ import {
   callVueI18nInterfaces,
   getVueI18nPropertyValue,
   loadLocale,
+  loadAdditionalLocale,
   defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
@@ -48,6 +49,10 @@ export function setCookieLocale(i18n: I18n, locale: Locale) {
 
 export function setLocaleMessage(i18n: I18n, locale: Locale, messages: Record<string, any>) {
   return callVueI18nInterfaces(i18n, 'setLocaleMessage', locale, messages)
+}
+
+export function mergeLocaleMessage(i18n: I18n, locale: Locale, messages: Record<string, any>) {
+  return callVueI18nInterfaces(i18n, 'mergeLocaleMessage', locale, messages)
 }
 
 function onBeforeLanguageSwitch(
@@ -107,6 +112,16 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   return messages
 }
 
+export async function mergeAddtionalMessages<Context extends NuxtApp = NuxtApp>(
+  context: Context,
+  i18n: I18n,
+  locale: Locale
+) {
+  await loadAdditionalLocale(context, locale, (locale: Locale, message: Record<string, any>) =>
+    mergeLocaleMessage(i18n, locale, message)
+  )
+}
+
 export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
   newLocale: string,
   context: Context,
@@ -160,6 +175,9 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
       await loadLocale(context, newLocale, setter)
     }
   }
+
+  // merge additional locale messages
+  await mergeAddtionalMessages(context, i18n, newLocale)
 
   if (skipSettingLocaleOnNavigate) {
     return [ret, oldLocale]
