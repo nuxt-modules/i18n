@@ -15,7 +15,7 @@ import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent } from '#imports'
-import { nuxtI18nOptionsDefault, localeMessages } from '#build/i18n.options.mjs'
+import { nuxtI18nOptionsDefault, localeMessages, additionalMessages } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#imports'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
@@ -98,24 +98,19 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-async function loadMessage(context: NuxtApp, locale: Locale) {
+async function loadMessage(context: NuxtApp, loader: () => Promise<any>) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
-  const loader = localeMessages[locale]
-  if (loader) {
-    try {
-      const getter = await loader().then(r => r.default || r)
-      // TODO: support for js, cjs, mjs
-      if (isFunction(getter)) {
-        console.error(formatMessage('Not support executable file (e.g. js, cjs, mjs)'))
-      } else {
-        message = getter
-      }
-    } catch (e: any) {
-      // eslint-disable-next-line no-console
-      console.error(formatMessage('Failed locale loading: ' + e.message))
+  try {
+    const getter = await loader().then(r => r.default || r)
+    // TODO: support for js, cjs, mjs
+    if (isFunction(getter)) {
+      console.error(formatMessage('Not support executable file (e.g. js, cjs, mjs)'))
+    } else {
+      message = getter
     }
-  } else {
-    console.warn(formatMessage('Could not find ' + locale + ' locale'))
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error(formatMessage('Failed locale loading: ' + e.message))
   }
   return message
 }
@@ -128,10 +123,34 @@ export async function loadLocale(
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
   if (process.server || process.dev || !loadedLocales.includes(locale)) {
-    const message = await loadMessage(context, locale)
-    if (message != null) {
-      setter(locale, message)
-      loadedLocales.push(locale)
+    const loader = localeMessages[locale]
+    if (loader != null) {
+      const message = await loadMessage(context, loader)
+      if (message != null) {
+        setter(locale, message)
+        loadedLocales.push(locale)
+      }
+    } else {
+      console.warn(formatMessage('Could not find ' + locale + ' locale in localeMessages'))
+    }
+  }
+}
+
+const loadedAdditionalLocales: Locale[] = []
+
+export async function loadAdditionalLocale(
+  context: NuxtApp,
+  locale: Locale,
+  merger: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
+) {
+  if (process.server || process.dev || !loadedAdditionalLocales.includes(locale)) {
+    const additionalLoaders = additionalMessages[locale] || []
+    for (const additionalLoader of additionalLoaders) {
+      const message = await loadMessage(context, additionalLoader)
+      if (message != null) {
+        merger(locale, message)
+        loadedAdditionalLocales.push(locale)
+      }
     }
   }
 }

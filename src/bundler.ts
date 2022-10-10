@@ -11,17 +11,21 @@ import type { NuxtI18nOptions } from './types'
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
 export async function extendBundler(
-  options: Required<NuxtI18nOptions>,
   nuxt: Nuxt,
-  hasLocaleFiles: boolean,
-  langPath: string | null
+  options: {
+    nuxtOptions: Required<NuxtI18nOptions>
+    hasLocaleFiles: boolean
+    langPath: string | null
+  }
 ) {
+  const { nuxtOptions, hasLocaleFiles, langPath } = options
+
   // setup nitro
   if (nuxt.options.nitro.replace) {
-    nuxt.options.nitro.replace['__DEBUG__'] = options.debug
+    nuxt.options.nitro.replace['__DEBUG__'] = nuxtOptions.debug
   } else {
     nuxt.options.nitro.replace = {
-      __DEBUG__: options.debug
+      __DEBUG__: nuxtOptions.debug
     }
   }
   debug('nitro.replace', nuxt.options.nitro.replace)
@@ -29,10 +33,7 @@ export async function extendBundler(
   // extract macros from components
   const macroOptions: TransformMacroPluginOptions = {
     dev: nuxt.options.dev,
-    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client,
-    macros: {
-      defineI18nRoute: 'i18n'
-    }
+    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
   }
 
   try {
@@ -58,7 +59,7 @@ export async function extendBundler(
           __VUE_I18N_FULL_INSTALL__: 'true',
           __VUE_I18N_LEGACY_API__: 'true',
           __INTLIFY_PROD_DEVTOOLS__: 'false',
-          __DEBUG__: JSON.stringify(options.debug)
+          __DEBUG__: JSON.stringify(nuxtOptions.debug)
         })
       )
     })
@@ -80,10 +81,10 @@ export async function extendBundler(
 
   extendViteConfig(config => {
     if (config.define) {
-      config.define['__DEBUG__'] = JSON.stringify(options.debug)
+      config.define['__DEBUG__'] = JSON.stringify(nuxtOptions.debug)
     } else {
       config.define = {
-        __DEBUG__: JSON.stringify(options.debug)
+        __DEBUG__: JSON.stringify(nuxtOptions.debug)
       }
     }
     debug('vite.config.define', config.define)

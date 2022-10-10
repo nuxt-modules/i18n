@@ -10,6 +10,8 @@ export const localeMessages = {
   \\"ja\\": () => Promise.resolve(locale_ja),
 }
 
+export const additionalMessages = Object({})
+
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
@@ -35,6 +37,8 @@ export const localeMessages = {
   \\"ja\\": () => import(\\"./locales/ja.json\\" /* webpackChunkName: \\"lang-ja\\" */),
 }
 
+export const additionalMessages = Object({})
+
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
@@ -58,6 +62,20 @@ export const localeMessages = {
   \\"en\\": () => Promise.resolve(locale_en),
   \\"ja\\": () => Promise.resolve(locale_ja),
 }
+
+export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
+  \\"foo\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"foo\\"])};fn.source=\\"foo\\";return fn;})(),
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello1\\"])};fn.source=\\"hello1\\";return fn;})()
+}),() => Promise.resolve({
+  \\"bar\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"bar\\"])};fn.source=\\"bar\\";return fn;})(),
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello2\\"])};fn.source=\\"hello2\\";return fn;})()
+}),],\\"ja\\":[() => Promise.resolve({
+  \\"buz\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"buz\\"])};fn.source=\\"buz\\";return fn;})(),
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello3\\"])};fn.source=\\"hello3\\";return fn;})()
+}),() => Promise.resolve({
+  \\"baz\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"baz\\"])};fn.source=\\"baz\\";return fn;})(),
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello4\\"])};fn.source=\\"hello4\\";return fn;})()
+}),],})
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
