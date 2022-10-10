@@ -1,9 +1,10 @@
 import { defineNuxtConfig } from 'nuxt'
 import I18nModule from '../../..'
+import CustomModule from './module'
 
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: [I18nModule],
+  modules: [CustomModule, I18nModule],
 
   i18n: {
     lazy: false,

@@ -11,6 +11,8 @@ export const loadMessages: () => Promise<any> = () => Promise.resolve({})
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const localeMessages: Record<string, () => Promise<any>> = {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const additionalMessages: Record<string, Array<() => Promise<any>>> = {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const resolveNuxtI18nOptions: <Context = unknown>(
   context: Context
 ) => Promise<DeepRequired<NuxtI18nOptions<Context>>> = () => Promise.resolve({})

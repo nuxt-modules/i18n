@@ -14,6 +14,7 @@ definePageMeta({
 
 console.log('useBrowserLocale', useBrowserLocale())
 console.log('localeProperties', localeProperties)
+console.log('foo', t('foo'))
 
 function getLocaleName(code: string) {
   const locale = (locales.value as LocaleObject[]).find(i => i.code === code)

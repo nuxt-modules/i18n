@@ -16,6 +16,16 @@ const LOCALE_INFO = [
     path: './locales/ja.json'
   }
 ]
+const ADDITIONAL_MESSAGES = {
+  en: [
+    { foo: 'foo', hello: 'hello1' },
+    { bar: 'bar', hello: 'hello2' }
+  ],
+  ja: [
+    { buz: 'buz', hello: 'hello3' },
+    { baz: 'baz', hello: 'hello4' }
+  ]
+}
 const NUXT_I18N_OPTIONS = {
   defaultLocale: 'en',
   vueI18n: {
@@ -53,6 +63,7 @@ it('basic', () => {
   const code = generateLoaderOptions(false, '/path/to/locales', {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
+    additionalMessages: {},
     nuxtI18nOptions: NUXT_I18N_OPTIONS,
     nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
     nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
@@ -65,6 +76,7 @@ it('lazy', () => {
   const code = generateLoaderOptions(true, '/path/to/locales', {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
+    additionalMessages: {},
     nuxtI18nOptions: NUXT_I18N_OPTIONS,
     nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
   })
@@ -76,6 +88,7 @@ it('vueI18n: path', () => {
   const code = generateLoaderOptions(false, '/path/to/locales', {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
+    additionalMessages: ADDITIONAL_MESSAGES,
     nuxtI18nOptions: {
       vueI18n: '~/plugins/vue-i18n.js'
     },
