@@ -64,6 +64,6 @@ export const DEFAULT_OPTIONS = {
   onLanguageSwitched: () => null,
   debug: false
   // bridge: false
-} as const
+}
 
 export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS
