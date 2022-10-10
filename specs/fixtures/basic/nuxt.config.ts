@@ -1,4 +1,3 @@
-import { defineNuxtConfig } from 'nuxt'
 import I18nModule from '../../..'
 import CustomModule from './module'
 

@@ -1,4 +1,3 @@
-import { defineNuxtConfig } from 'nuxt'
 // @ts-ignore
 import I18nModule from '../dist/module.mjs'
 import Module1 from './module1'
@@ -41,7 +40,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    debug: true,
+    // debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
