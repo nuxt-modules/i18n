@@ -2,7 +2,6 @@ import createDebug from 'debug'
 import { isObject, isString } from '@intlify/shared'
 import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
 import { resolve } from 'pathe'
-import defu from 'defu'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
@@ -28,9 +27,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
       bridge: false
     }
   },
-  defaults: {}, // TODO: should implement from `constants.ts`
+  defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
-    const options = defu(i18nOptions, DEFAULT_OPTIONS) as Required<NuxtI18nOptions>
+    const options = i18nOptions as Required<NuxtI18nOptions>
     debug('options', options)
 
     checkOptions(options)
