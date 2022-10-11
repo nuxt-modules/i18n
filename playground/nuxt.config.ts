@@ -2,6 +2,8 @@
 import I18nModule from '../dist/module.mjs'
 import Module1 from './module1'
 
+import type { NuxtApp } from 'nuxt/dist/app/index'
+
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
   modules: [Module1, I18nModule],
@@ -60,10 +62,10 @@ export default defineNuxtConfig({
     //   // cookieKey: 'my_custom_cookie_name',
     //   // redirectOn: 'root'
     // },
-    onBeforeLanguageSwitch: (oldLocale, newLocale, initial, context) => {
+    onBeforeLanguageSwitch: (oldLocale: string, newLocale: string, initial: boolean, context: NuxtApp) => {
       console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial)
     },
-    onLanguageSwitched: (oldLocale, newLocale) => {
+    onLanguageSwitched: (oldLocale: string, newLocale: string) => {
       console.log('onLanguageSwitched', oldLocale, newLocale)
     },
     vueI18n: {

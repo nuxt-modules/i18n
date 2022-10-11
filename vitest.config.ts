@@ -5,6 +5,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     restoreMocks: true,
+    threads: false,
     testTimeout: 300000,
     deps: {
       inline: [/@nuxt\/test-utils-edge/]
