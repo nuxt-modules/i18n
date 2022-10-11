@@ -25,12 +25,10 @@ export const REDIRECT_ON_OPTIONS = {
 
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
-// TODO: implement comment out options
-
 export const DEFAULT_OPTIONS = {
   vueI18n: undefined,
   // vueI18nLoader: false,
-  locales: [],
+  locales: [] as string[],
   defaultLocale: '',
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
@@ -60,10 +58,9 @@ export const DEFAULT_OPTIONS = {
   parsePages: true,
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  onBeforeLanguageSwitch: () => ({}),
+  onBeforeLanguageSwitch: () => '',
   onLanguageSwitched: () => null,
   debug: false
-  // bridge: false
 } as const
 
 export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS
