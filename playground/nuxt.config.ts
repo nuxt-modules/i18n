@@ -23,7 +23,7 @@ export default defineNuxtConfig({
         code: 'en',
         iso: 'en-US',
         file: 'en.json',
-        domain: 'localhost:3000',
+        domain: 'foo.localhost',
         name: 'English'
       },
       {
@@ -42,7 +42,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    // debug: true,
+    debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
@@ -53,7 +53,7 @@ export default defineNuxtConfig({
         ja: '/about-ja'
       }
     },
-    // differentDomains: true,
+    differentDomains: true,
     detectBrowserLanguage: false,
     // detectBrowserLanguage: {
     //   // alwaysRedirect: true,
