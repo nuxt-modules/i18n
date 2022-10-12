@@ -1,4 +1,5 @@
-import type { NuxtI18nOptions, NuxtI18nInternalOptions } from './types'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, RootRedirectOptions } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { DeepRequired } from 'ts-essentials'
 
@@ -26,6 +27,7 @@ export {
   NuxtI18nOptionsDefault,
   NuxtI18nInternalOptions,
   DetectBrowserLanguageOptions,
+  RootRedirectOptions,
   LanguageSwitchedHandler,
   BeforeLanguageSwitchHandler,
   LanguageSwitchedHandler

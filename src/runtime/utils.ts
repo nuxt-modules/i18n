@@ -40,7 +40,7 @@ import type {
   SwitchLocalePathIntercepter
 } from 'vue-i18n-routing'
 import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
-import type { NuxtI18nOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
+import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 
 export function setCookieLocale(i18n: I18n, locale: Locale) {
@@ -284,16 +284,36 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
   return redirectPath
 }
 
+function isRootRedirectOptions(rootRedirect: unknown): rootRedirect is RootRedirectOptions {
+  return isObject(rootRedirect) && 'path' in rootRedirect && 'statusCode' in rootRedirect
+}
+
 export async function navigate<Context extends NuxtApp = NuxtApp>(
   i18n: I18n,
   redirectPath: string,
   locale: string,
+  route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   {
     status = 302,
+    rootRedirect = nuxtI18nOptionsDefault.rootRedirect,
     differentDomains = nuxtI18nOptionsDefault.differentDomains,
     skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
-  }: { status?: number } & Pick<NuxtI18nOptions<Context>, 'skipSettingLocaleOnNavigate' | 'differentDomains'> = {}
+  }: { status?: number } & Pick<
+    NuxtI18nOptions<Context>,
+    'skipSettingLocaleOnNavigate' | 'differentDomains' | 'rootRedirect'
+  > = {}
 ) {
+  if (route.path === '/' && rootRedirect) {
+    if (isString(rootRedirect)) {
+      redirectPath = rootRedirect
+    } else if (isRootRedirectOptions(rootRedirect)) {
+      redirectPath = '/' + rootRedirect.path
+      status = rootRedirect.statusCode
+    }
+    __DEBUG__ && console.log('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
+    return navigateTo(redirectPath, { redirectCode: status })
+  }
+
   if (skipSettingLocaleOnNavigate) {
     i18n.__pendingLocale = locale
     i18n.__pendingLocalePromise = new Promise(resolve => {

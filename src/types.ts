@@ -53,7 +53,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   lazy?: boolean | LazyOptions
   pages?: CustomRoutePages
   parsePages?: boolean
-  // rootRedirect?: string | null | RootRedirectOptions
+  rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
   // sortRoutes?: boolean
