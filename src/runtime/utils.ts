@@ -310,7 +310,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     if (process.client) {
       window.location.assign(redirectPath)
     } else if (process.server) {
-      // TODO:
+      __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
     }
   }
 }
@@ -351,6 +351,7 @@ export function extendSwitchLocalePathIntercepter(
   return (path: string, locale: Locale): string => {
     if (differentDomains) {
       const domain = getDomainFromLocale(locale, normalizedLocales, nuxt)
+      __DEBUG__ && console.log('extendSwitchLocalePathIntercepter: domain -> ', domain, ' path -> ', path)
       if (domain) {
         return joinURL(domain, path)
       } else {
