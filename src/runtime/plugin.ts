@@ -12,7 +12,7 @@ import {
   setLocale,
   getLocale
 } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, addRouteMiddleware } from '#imports'
+import { defineNuxtPlugin, useRouter, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
@@ -330,7 +330,7 @@ export default defineNuxtPlugin(async nuxt => {
   addRouteMiddleware(
     'locale-changing',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
+    defineNuxtRouteMiddleware(async (to, from) => {
       __DEBUG__ && console.log('locale-changing middleware')
 
       const locale = detectLocale(
@@ -369,7 +369,7 @@ export default defineNuxtPlugin(async nuxt => {
         differentDomains,
         skipSettingLocaleOnNavigate
       })
-    },
+    }),
     { global: true }
   )
 })
