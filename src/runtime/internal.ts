@@ -345,11 +345,13 @@ export function getHost() {
 }
 
 export function getLocaleDomain(locales: LocaleObject[]): string {
-  const host = getHost() || ''
+  let host = getHost() || ''
   if (host) {
     const matchingLocale = locales.find(locale => locale.domain === host)
     if (matchingLocale) {
       return matchingLocale.code
+    } else {
+      host = ''
     }
   }
   return host

@@ -33,7 +33,7 @@ import {
 } from '#build/i18n.internal.mjs'
 
 import type { Composer, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
-import type { LocaleObject, RouteLocationNormalized, ExtendProperyDescripters } from 'vue-i18n-routing'
+import type { LocaleObject, ExtendProperyDescripters } from 'vue-i18n-routing'
 import type { NuxtApp } from '#imports'
 
 type GetRouteBaseName = typeof getRouteBaseName
