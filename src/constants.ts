@@ -38,7 +38,7 @@ export const DEFAULT_OPTIONS = {
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
-  // rootRedirect: null,
+  rootRedirect: null,
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,

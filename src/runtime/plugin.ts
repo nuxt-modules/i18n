@@ -57,7 +57,8 @@ export default defineNuxtPlugin(async nuxt => {
     lazy,
     langDir,
     routesNameSeparator,
-    defaultLocaleRouteNameSuffix
+    defaultLocaleRouteNameSuffix,
+    rootRedirect
   } = nuxtI18nOptions
   __DEBUG__ && console.log('useCookie on setup', useCookie)
   __DEBUG__ && console.log('defautlLocale on setup', defaultLocale)
@@ -161,9 +162,10 @@ export default defineNuxtPlugin(async nuxt => {
           )
           __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
 
-          navigate(i18n, redirectPath, locale, {
+          navigate(i18n, redirectPath, locale, router.currentRoute.value, {
             differentDomains,
-            skipSettingLocaleOnNavigate
+            skipSettingLocaleOnNavigate,
+            rootRedirect
           })
         }
         composer.differentDomains = differentDomains
@@ -365,9 +367,10 @@ export default defineNuxtPlugin(async nuxt => {
       const redirectPath = detectRedirect(to, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
       __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
 
-      navigate(i18n, redirectPath, locale, {
+      navigate(i18n, redirectPath, locale, to, {
         differentDomains,
-        skipSettingLocaleOnNavigate
+        skipSettingLocaleOnNavigate,
+        rootRedirect
       })
     }),
     { global: true }

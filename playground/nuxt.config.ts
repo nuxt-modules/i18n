@@ -45,7 +45,8 @@ export default defineNuxtConfig({
     debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
-    // strategy: 'prefix',
+    strategy: 'prefix',
+    rootRedirect: '/ja/about-ja',
     // strategy: 'prefix_and_default',
     // parsePages: false,
     pages: {
@@ -53,7 +54,7 @@ export default defineNuxtConfig({
         ja: '/about-ja'
       }
     },
-    differentDomains: true,
+    // differentDomains: true,
     detectBrowserLanguage: false,
     // detectBrowserLanguage: {
     //   // alwaysRedirect: true,
