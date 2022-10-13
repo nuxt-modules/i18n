@@ -9,7 +9,8 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      defaultLocale: 'en'
+      defaultLocale: 'en',
+      dynamicRouteParams: true
     }
   }
 })
@@ -39,6 +40,36 @@ test('switching', async () => {
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })
 
+describe('dynamic route parameter', () => {
+  test('basic', async () => {
+    const home = url('/')
+    const page = await createPage()
+    await page.goto(home)
+
+    // go to dynamic route page
+    await page.locator('#link-post').click()
+    await page.waitForTimeout(1000)
+
+    // click `fr` lang switch with `<NuxtLink>`
+    await page.locator('#lang-switcher-with-nuxt-link a').click()
+    await page.waitForTimeout(1000)
+    expect(await getText(page, '#post-id')).toMatch('mon-article')
+    expect(await page.url()).include('mon-article')
+  })
+
+  test('catch all', async () => {
+    const notFound = url('/foo/bar')
+    const page = await createPage()
+    await page.goto(notFound)
+
+    // click `fr` lang switch with `<NuxtLink>`
+    await page.locator('#lang-switcher-with-nuxt-link a').click()
+    await page.waitForTimeout(1000)
+    expect(await getText(page, '#catch-all-id')).toMatch('mon-article/xyz')
+    expect(await page.url()).include('mon-article/xyz')
+  })
+})
+
 describe('wait for page transition', () => {
   test('finalizePendingLocaleChange', async () => {
     const home = url('/')
@@ -60,5 +91,3 @@ describe('wait for page transition', () => {
 
   test.todo('waitForPendingLocaleChange')
 })
-
-test.todo('dynamic route parameter')

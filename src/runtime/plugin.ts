@@ -1,4 +1,5 @@
 import { computed } from 'vue-demi'
+import { isBoolean } from '@intlify/shared'
 import { createI18n } from '@intlify/vue-i18n-bridge'
 import {
   createLocaleFromRouteGetter,
@@ -79,6 +80,9 @@ export default defineNuxtPlugin(async nuxt => {
   // so global options is reffered by `vue-i18n-routing`
   registerGlobalOptions(router, {
     ...nuxtI18nOptions,
+    dynamicRouteParamsKey: isBoolean(nuxtI18nOptions.dynamicRouteParams)
+      ? 'nuxtI18n'
+      : nuxtI18nOptions.dynamicRouteParams,
     switchLocalePathIntercepter: extendSwitchLocalePathIntercepter(differentDomains, normalizedLocales, nuxtContext),
     prefixable: extendPrefixable(differentDomains)
   })
