@@ -27,8 +27,8 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - [x] Feature details
 - [x] Lazy-load translations
   - LIMITATIONS: `skipNuxtState` and executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
-- [ ] Lang Switcher
-  - [ ] Dynamic route parameters
+- [x] Lang Switcher
+  - [x] Dynamic route parameters
   - [x] Wait for page transition
 - [x] Different domains
 - [x] Locale fallback
@@ -89,13 +89,4 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
 
 ### Extension of Vuex
 
-- [ ] $i18n
-- [ ] getRouteBaseName
-- [ ] localePath
-- [ ] localeRoute
-- [ ] localeLocation
-- [ ] switchLocalePath
-
-### Extension of Pinia?
-
-TBD
+Deprecated

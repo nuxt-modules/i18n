@@ -1,5 +1,5 @@
 import createDebug from 'debug'
-import { isObject, isString } from '@intlify/shared'
+import { isBoolean, isObject, isString } from '@intlify/shared'
 import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { setupAlias } from './alias'
@@ -132,6 +132,28 @@ export default defineNuxtModule<NuxtI18nOptions>({
         )
       }
     })
+
+    // generate type definition for page meta
+    if (!!options.dynamicRouteParams) {
+      const metaKey = isBoolean(options.dynamicRouteParams) ? 'nuxtI18n' : options.dynamicRouteParams
+      const typeMetaFilename = 'types/i18n-page-meta.d.ts'
+      addTemplate({
+        filename: typeMetaFilename,
+        getContents: () => {
+          return [
+            `declare module '#app' {`,
+            '  interface PageMeta {',
+            `    ${metaKey}?: Record<string, any>`,
+            '  }',
+            '}'
+          ].join('\n')
+        }
+      })
+      // add declarations for page meta
+      nuxt.hook('prepare:types', ({ references }) => {
+        references.push({ path: resolve(nuxt.options.buildDir, typeMetaFilename) })
+      })
+    }
 
     // extend bundler
     await extendBundler(nuxt, {

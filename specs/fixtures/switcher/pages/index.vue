@@ -51,6 +51,7 @@ useHead({
       >:
       <code id="home-use-locale-head">{{ i18nHead }}</code>
     </section>
-    <NuxtLink id="link-about" exact :to="localePath('about')">{{ $t('about') }}</NuxtLink>
+    <NuxtLink id="link-about" exact :to="localePath('about')">{{ $t('about') }}</NuxtLink> |
+    <NuxtLink id="link-post" exact :to="localePath({ name: 'post-id', params: { id: 'id' } })">Post</NuxtLink>
   </div>
 </template>

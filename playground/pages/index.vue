@@ -33,7 +33,8 @@ const availableLocales = computed(() => {
     <h2>Pages</h2>
     <nav>
       <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
-      <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink>
+      <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink> |
+      <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink>
     </nav>
     <h2>Current Language: {{ getLocaleName(locale) }}</h2>
     <h2>Current Strategy: {{ strategy }}</h2>

@@ -51,10 +51,7 @@ export const DEFAULT_OPTIONS = {
   },
   differentDomains: false,
   baseUrl: '',
-  // vuex: {
-  //   moduleName: 'i18n',
-  //   syncRouteParams: true
-  // },
+  dynamicRouteParams: false,
   parsePages: true,
   pages: {},
   skipSettingLocaleOnNavigate: false,
