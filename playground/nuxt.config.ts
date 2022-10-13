@@ -45,10 +45,11 @@ export default defineNuxtConfig({
     debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
-    strategy: 'prefix',
-    rootRedirect: '/ja/about-ja',
+    // strategy: 'prefix',
+    // rootRedirect: '/ja/about-ja',
     // strategy: 'prefix_and_default',
     // parsePages: false,
+    dynamicRouteParams: true,
     pages: {
       about: {
         ja: '/about-ja'
