@@ -14,6 +14,15 @@ export default defineNuxtConfig({
     }
   },
 
+  // app: {
+  //   pageTransition: {
+  //     name: 'foo',
+  //     onBeforeEnter: async (...args: unknown[]) => {
+  //       console.log('global onBeforeEnter', ...args)
+  //     }
+  //   }
+  // },
+
   i18n: {
     langDir: 'locales',
     lazy: true,
@@ -57,6 +66,7 @@ export default defineNuxtConfig({
     },
     // differentDomains: true,
     detectBrowserLanguage: false,
+    skipSettingLocaleOnNavigate: true,
     // detectBrowserLanguage: {
     //   // alwaysRedirect: true,
     //   useCookie: false

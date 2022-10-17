@@ -4,13 +4,22 @@ import { computed } from 'vue'
 // import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
 import { LocaleObject, useI18n } from '#i18n'
 
-const { t, strategy, locale, locales, localeProperties, setLocale } = useI18n()
+definePageMeta({
+  title: 'pages.title.top',
+  pageTransition: {
+    name: 'page',
+    mode: 'out-in'
+  }
+})
+
+const route = useRoute()
+const { t, strategy, locale, locales, localeProperties, setLocale, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 
-definePageMeta({
-  title: 'pages.title.top'
-})
+route.meta.pageTransition.onBeforeEnter = async () => {
+  await finalizePendingLocaleChange()
+}
 
 console.log('useBrowserLocale', useBrowserLocale())
 console.log('localeProperties', localeProperties)
@@ -52,3 +61,14 @@ const availableLocales = computed(() => {
     </nav>
   </div>
 </template>
+
+<style scoped>
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 1s;
+}
+.page-enter,
+.page-leave-active {
+  opacity: 0;
+}
+</style>

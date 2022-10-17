@@ -337,7 +337,7 @@ export default defineNuxtPlugin(async nuxt => {
     'locale-changing',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     defineNuxtRouteMiddleware(async (to, from) => {
-      __DEBUG__ && console.log('locale-changing middleware')
+      __DEBUG__ && console.log('locale-changing middleware', to, from)
 
       const locale = detectLocale(
         to,
