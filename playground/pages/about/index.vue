@@ -43,6 +43,11 @@ export default defineComponent({
     <nav>
       <NuxtLink :to="localePath('/')">Back to Home</NuxtLink>
     </nav>
+    <nav>
+      <span v-for="locale in availableLocales" :key="locale.code">
+        <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
+      </span>
+    </nav>
     <p>hello</p>
     <nav>
       <span v-for="locale in availableLocales" :key="locale.code">

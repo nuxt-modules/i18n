@@ -69,6 +69,10 @@ export function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: str
   return callVueI18nInterfaces(i18n, 'onLanguageSwitched', oldLocale, newLocale)
 }
 
+export async function finalizePendingLocaleChange(i18n: I18n) {
+  return callVueI18nInterfaces(i18n, 'finalizePendingLocaleChange')
+}
+
 function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): Locale[] {
   let fallbackLocales: string[] = []
   if (isArray(fallback)) {

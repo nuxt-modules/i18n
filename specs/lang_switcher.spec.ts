@@ -70,24 +70,20 @@ describe('dynamic route parameter', () => {
   })
 })
 
-describe('wait for page transition', () => {
-  test('finalizePendingLocaleChange', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+test('wait for page transition', async () => {
+  const home = url('/')
+  const page = await createPage()
+  await page.goto(home)
 
-    // click `fr` lang switching
-    await page.locator('#lang-switcher-with-nuxt-link a').click()
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
-    await page.waitForTimeout(3000)
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  // click `fr` lang switching
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  await page.waitForTimeout(3000)
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
-    // click `en` lang switching
-    await page.locator('#lang-switcher-with-nuxt-link a').click()
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
-    await page.waitForTimeout(3000)
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
-  })
-
-  test.todo('waitForPendingLocaleChange')
+  // click `en` lang switching
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  await page.waitForTimeout(3000)
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 })
