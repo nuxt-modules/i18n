@@ -32,7 +32,7 @@ This todo is based on [nuxt/i18n](https://i18n.nuxtjs.org/) docs.
   - [x] Wait for page transition
 - [x] Different domains
 - [x] Locale fallback
-- [ ] Per-component translations
+- [x] Per-component translations
 - [x] Extending messages hook
 
 ## API Reference

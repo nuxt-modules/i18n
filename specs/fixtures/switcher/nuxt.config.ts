@@ -4,6 +4,12 @@ import I18nModule from '../../..'
 export default defineNuxtConfig({
   modules: [I18nModule],
 
+  vite: {
+    build: {
+      minify: false
+    }
+  },
+
   experimental: {
     reactivityTransform: true
   },
