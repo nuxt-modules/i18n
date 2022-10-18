@@ -60,9 +60,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   strategy?: Strategies
   vueI18n?: I18nOptions | string
   debug?: boolean
-  // vueI18nLoader?: boolean
   dynamicRouteParams?: boolean | string
-  // vuex?: VuexOptions | false
 } & Pick<
   I18nRoutingOptions<Context>,
   | 'baseUrl'
