@@ -27,7 +27,6 @@ export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
   vueI18n: undefined,
-  // vueI18nLoader: false,
   locales: [] as string[],
   defaultLocale: '',
   defaultDirection: 'ltr',
