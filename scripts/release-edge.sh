@@ -3,20 +3,19 @@
 set -xe
 
 # Restore all git changes
-git restore --source=HEAD --staged --worktree -- package.json yarn.lock
+git restore --source=HEAD --staged --worktree -- package.json pnpm-lock.yaml
 
 # Bump versions to edge
-yarn jiti ./scripts/bump-edge
+pnpm jiti ./scripts/bump-edge
 
-# Resolve yarn
-YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
+# Resolve pnpm
+pnpm i --frozen-lockfile=false
 
 # Update token
 if [[ ! -z ${NPM_TOKEN} ]] ; then
   echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
   echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
   echo "always-auth=true" >> ~/.npmrc
-  echo "npmAuthToken: ${NPM_TOKEN}" >> ~/.yarnrc.yml
   npm whoami
 fi
 

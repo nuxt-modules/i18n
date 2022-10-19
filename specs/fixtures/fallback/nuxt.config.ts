@@ -1,8 +1,6 @@
-import I18nModule from '../../..'
-
 // https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: [I18nModule],
+  modules: ['@nuxtjs/i18n'],
 
   i18n: {
     lazy: false,

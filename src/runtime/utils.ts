@@ -39,7 +39,7 @@ import type {
   PrefixableOptions,
   SwitchLocalePathIntercepter
 } from 'vue-i18n-routing'
-import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
+import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 

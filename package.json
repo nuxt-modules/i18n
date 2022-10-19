@@ -3,7 +3,7 @@
   "description": "i18n for Nuxt",
   "version": "8.0.0-alpha.3",
   "homepage": "https://i18n.nuxtjs.org",
-  "packageManager": "yarn@3.1.1",
+  "packageManager": "pnpm@7.13.5",
   "bugs": {
     "url": "https://github.com/nuxt-community/i18n-module/issues"
   },
@@ -23,11 +23,6 @@
       "name": "Kazuya Kawaguchi (@kazupon)"
     }
   ],
-  "workspaces": {
-    "packages": [
-      "docs"
-    ]
-  },
   "exports": {
     ".": {
       "import": "./dist/module.mjs",
@@ -42,34 +37,38 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build",
-    "build:dev": "nuxi build playground",
-    "preview:dev": "node playground/.output/server/index.mjs",
-    "stub": "nuxt-module-build --stub",
-    "dev": "nuxi dev playground",
-    "dev:generate": "nuxi generate playground",
-    "prepare": "yarn build",
+    "build": "nuxi build-module .",
+    "prepare": "pnpm stub",
+    "stub": "nuxi build-module --stub .",
+    "prepack": "pnpm build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
     "changelog": "gh-changelogen --repo=nuxt-community/i18n-module",
-    "prepare:dev": "yarn stub && nuxi prepare playground",
-    "docs:dev": "yarn workspace @nuxtjs/i18n-docs dev",
-    "docs:build": "yarn workspace @nuxtjs/i18n-docs build",
-    "docs:generate": "yarn workspace @nuxtjs/i18n-docs generate",
+    "dev": "pnpm build && nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:generate": "nuxi generate playground",
+    "dev:preview": "nuxi preview playground",
+    "docs:dev": "pnpm workspace @nuxtjs/i18n-docs dev",
+    "docs:build": "pnpm workspace @nuxtjs/i18n-docs build",
+    "docs:generate": "pnpm workspace @nuxtjs/i18n-docs generate",
     "docs:preview": "npx serve -s docs/.output/public",
     "fix": "run-p lint:fix format:fix",
-    "format": "prettier --config .prettierrc --ignore-path .prettierignore --list-different '**/*.{js,json,html}'",
-    "format:fix": "yarn format --write",
+    "format": "prettier --config .prettierrc.cjs --ignore-path .prettierignore --list-different '**/*.{js,json,html}'",
+    "format:fix": "pnpm format --write",
     "lint": "eslint --ext .js,.ts,.vue,.json .",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "pnpm lint --fix",
     "test": "run-s test:unit test:spec",
     "test:unit": "vitest run test",
-    "test:spec": "yarn build && vitest run specs"
+    "test:spec": "pnpm build && vitest run specs"
+  },
+  "resolutions": {
+    "@nuxtjs/i18n": "link:.",
+    "nuxt": "^3.0.0-rc.12"
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.2.1",
     "@intlify/shared": "9.3.0-beta.6",
     "@intlify/unplugin-vue-i18n": "^0.7.0",
-    "@nuxt/kit": "npm:@nuxt/kit-edge@3.0.0-rc.12-27755545.c905a23",
+    "@nuxt/kit": "^3.0.0-rc.12",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.2",
     "is-https": "^4.0.0",
@@ -86,8 +85,8 @@
   "devDependencies": {
     "@babel/parser": "^7.17.9",
     "@nuxt/module-builder": "latest",
-    "@nuxt/schema": "npm:@nuxt/schema-edge@3.0.0-rc.12-27755545.c905a23",
-    "@nuxt/test-utils": "npm:@nuxt/test-utils-edge@3.0.0-rc.12-27755545.c905a23",
+    "@nuxt/schema": "^3.0.0-rc.12",
+    "@nuxt/test-utils": "^3.0.0-rc.12",
     "@types/debug": "^4.1.7",
     "@types/js-cookie": "^3.0.1",
     "@types/rimraf": "^3",
@@ -104,13 +103,14 @@
     "jsdom": "^20.0.0",
     "lint-staged": "^12.1.2",
     "npm-run-all": "^4.1.5",
-    "nuxt": "npm:nuxt3@3.0.0-rc.12-27755545.c905a23",
+    "nuxt": "^3.0.0-rc.12",
     "playwright": "^1.22.2",
     "prettier": "^2.7.0",
     "rimraf": "^3.0.2",
     "ts-essentials": "^9.1.2",
     "typescript": "^4.8.4",
     "vitest": "^0.23.4",
+    "vue": "^3.2.41",
     "yorkie": "^2.0.0"
   },
   "gitHooks": {
@@ -133,6 +133,6 @@
     "access": "public"
   },
   "engines": {
-    "node": "^14.16.0 || ^16.11.0 || ^17.0.0 || ^18.0.0"
+    "node": "^14.16.0 || ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
   }
 }

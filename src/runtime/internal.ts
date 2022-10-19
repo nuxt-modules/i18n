@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isVue3, isVue2 } from 'vue-demi'
+// import { isVue3, isVue2 } from 'vue-demi'
 import { isArray, isString, isFunction } from '@intlify/shared'
 import {
   findBrowserLocale,
@@ -18,13 +18,12 @@ import { useRequestHeaders, useRequestEvent } from '#imports'
 import { nuxtI18nOptionsDefault, localeMessages, additionalMessages } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#imports'
-import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from '@intlify/vue-i18n-bridge'
+import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export function formatMessage(message: string) {
-  // TODO: should be shared via constants
   return '[@nuxtjs/i18n] ' + message
 }
 
@@ -35,23 +34,31 @@ function isLegacyVueI18n(target: any): target is VueI18n {
 export function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): any {
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
-  const [obj, method] = isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? [i18n, (i18n as any)[name]]
-      : [target, (target as any)[name]]
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? [target, (target as any)[name]]
-      : [target, (target as any)[name]]
+  // TODO: should be removed
+  // const [obj, method] = isComposer(target)
+  //   ? isVue2 && isLegacyVueI18n(i18n)
+  //     ? [i18n, (i18n as any)[name]]
+  //     : [target, (target as any)[name]]
+  //   : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+  //     ? [target, (target as any)[name]]
+  //     : [target, (target as any)[name]]
+  const [obj, method] = [target, (target as any)[name]]
   return Reflect.apply(method, obj, [...args])
 }
 
 export function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): Return {
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
+  // TODO: should be removed
+  // const ret = isComposer(target)
+  //   ? isVue2 && isLegacyVueI18n(i18n)
+  //     ? (i18n as any)[name]
+  //     : (target as any)[name].value
+  //   : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
+  //     ? (target as any)[name]
+  //     : (target as any)[name]
   const ret = isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? (i18n as any)[name]
-      : (target as any)[name].value
+    ? (target as any)[name].value
     : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
       ? (target as any)[name]
       : (target as any)[name]
@@ -155,6 +162,7 @@ export async function loadAdditionalLocale(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, context?: any): string | undefined {
   let ret: string | undefined
 
@@ -165,20 +173,11 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
       __DEBUG__ && console.log('getBrowserLocale navigator.languages', navigator.languages)
     }
   } else if (process.server) {
-    if (!isVue3) {
-      if (context.req && typeof context.req.headers['accept-language'] !== 'undefined') {
-        ret = findBrowserLocale(
-          options.__normalizedLocales,
-          parseAcceptLanguage(context.req.headers['accept-language'])
-        )
-      }
-    } else {
-      const header = useRequestHeaders(['accept-language'])
-      __DEBUG__ && console.log('getBrowserLocale accept-language', header)
-      const accept = header['accept-language']
-      if (accept) {
-        ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
-      }
+    const header = useRequestHeaders(['accept-language'])
+    __DEBUG__ && console.log('getBrowserLocale accept-language', header)
+    const accept = header['accept-language']
+    if (accept) {
+      ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
     }
   }
 
@@ -366,6 +365,7 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
     }
     let protocol
     if (process.server) {
+      // @ts-ignore TODO: fix type error
       const { req } = useRequestEvent(nuxt)
       protocol = req && isHTTPS(req) ? 'https' : 'http'
     } else {
