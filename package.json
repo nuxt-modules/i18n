@@ -38,7 +38,6 @@
   ],
   "scripts": {
     "build": "nuxi build-module .",
-    "prepare": "pnpm stub",
     "stub": "nuxi build-module --stub .",
     "prepack": "pnpm build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
