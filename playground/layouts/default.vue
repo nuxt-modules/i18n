@@ -10,11 +10,11 @@ const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? '
     <Html :lang="head.htmlAttrs.lang">
       <Head>
         <Title>{{ title }}</Title>
-        <template v-for="(link, index) in head.link" :key="index">
-          <Link :hid="link.hid" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
+        <template v-for="link in head.link" :key="link.hid">
+          <Link :id="link.hid" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
         </template>
-        <template v-for="(meta, index) in head.meta" :key="index">
-          <Meta :hid="meta.hid" :property="meta.property" :content="meta.content" />
+        <template v-for="meta in head.meta" :key="meta.hid">
+          <Meta :id="meta.hid" :property="meta.property" :content="meta.content" />
         </template>
       </Head>
       <Body>

@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue-demi'
+import type { ComputedRef } from 'vue'
 import type { LocaleObject, Strategies, Directions } from 'vue-i18n-routing'
 import type { BeforeLanguageSwitchHandler, LanguageSwitchedHandler } from '#build/i18n.options.mjs'
 

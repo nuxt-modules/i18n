@@ -1,9 +1,8 @@
-import { ref } from 'vue-demi'
 import { findBrowserLocale } from 'vue-i18n-routing'
 import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie } from '#imports'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
-import { useI18n } from '@intlify/vue-i18n-bridge'
+import { useI18n } from 'vue-i18n'
 import {
   useRouteBaseName as _useRouteBaseName,
   useLocalePath as _useLocalePath,
@@ -12,12 +11,12 @@ import {
   useLocaleHead as _useLocaleHead
 } from 'vue-i18n-routing'
 
-import type { Ref } from 'vue-demi'
+import type { Ref } from 'vue'
 import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
-export * from '@intlify/vue-i18n-bridge'
+export * from 'vue-i18n'
 export type { LocaleObject } from 'vue-i18n-routing'
-import type { Locale } from '@intlify/vue-i18n-bridge'
+import type { Locale } from 'vue-i18n'
 
 export function useRouteBaseName(
   route: NonNullable<Parameters<typeof _useRouteBaseName>[0]> = useRoute()
@@ -102,6 +101,7 @@ export function useCookieLocale({
 }: Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieKey'> & {
   localeCodes: readonly string[]
 }): Ref<string> {
+  // @ts-ignore NOTE: `ref` is auto-imported from `nuxt`
   const locale: Ref<string> = ref('')
 
   if (useCookie) {

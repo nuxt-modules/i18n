@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
 import { useAsyncData } from '#imports'
-// import { definePageMeta } from '#pages'
 import { useI18n, useLocalePath } from '#i18n'
 import LangSwitcher from '../components/LangSwitcher.vue'
 

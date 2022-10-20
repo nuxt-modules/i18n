@@ -1,5 +1,5 @@
 import type { Strategies, LocaleObject, I18nRoutingOptions } from 'vue-i18n-routing'
-import type { Locale, I18nOptions } from '@intlify/vue-i18n-bridge'
+import type { Locale, I18nOptions } from 'vue-i18n'
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 

@@ -16,41 +16,56 @@ jobs:
       CI: true
     strategy:
       matrix:
-        node-version: [14.16, 16.11, 17, 18]
+        node-version: [14, 16, 17, 18, 19]
     name: Use Node.js ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout codes
+        uses: actions/checkout@v3
+
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-      - name: yarn install
-        run: yarn --immutable
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Linting
-        # Only test on one version to avoid duplicate linter annotations.
-        if: ${{ matrix.node-version == '16.11' }}
-        run: yarn lint
+        run: pnpm lint
+
       - name: Building
-        run: yarn build
+        run: pnpm build
+
       - name: Testing
-        run: yarn test
+        run: pnpm test
 
   edge-release:
     needs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout codes
+        uses: actions/checkout@v3
+
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
-          cache: 'yarn'
-      - name: yarn install
-        run: yarn --immutable
+          node-version: 16
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Building
-        run: yarn build
+        run: pnpm build
+
       - name: Release Edge
         if: |
           github.event_name == 'push' &&
