@@ -4,6 +4,7 @@ import { generateLoaderOptions } from '../src/gen'
 import { DEFAULT_OPTIONS } from '../src/constants'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from '../src/types'
+import type { AdditionalMessages } from '../src/messages'
 
 const LOCALE_CODES = ['en', 'ja', 'fr']
 const LOCALE_INFO = [
@@ -25,7 +26,7 @@ const ADDITIONAL_MESSAGES = {
     { buz: 'buz', hello: 'hello3' },
     { baz: 'baz', hello: 'hello4' }
   ]
-}
+} as AdditionalMessages
 const NUXT_I18N_OPTIONS = {
   defaultLocale: 'en',
   vueI18n: {

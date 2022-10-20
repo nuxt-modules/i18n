@@ -37,8 +37,8 @@ declare module 'vue-i18n' {
 
   export interface I18n {
     __pendingLocale?: string
-    __pendingLocalePromise?: Promise
-    __resolvePendingLocalePromise?: (value: unknown) => void
+    __pendingLocalePromise?: Promise<void>
+    __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
   }
 }
 
@@ -62,8 +62,8 @@ declare module 'vue-i18n-bridge' {
 
   export interface I18n {
     __pendingLocale?: string
-    __pendingLocalePromise?: Promise
-    __resolvePendingLocalePromise?: (value: unknown) => void
+    __pendingLocalePromise?: Promise<void>
+    __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
   }
 }
 declare module '@intlify/vue-i18n-bridge' {
@@ -85,8 +85,8 @@ declare module '@intlify/vue-i18n-bridge' {
   }
   export interface I18n {
     __pendingLocale?: string
-    __pendingLocalePromise?: Promise
-    __resolvePendingLocalePromise?: (value: unknown) => void
+    __pendingLocalePromise?: Promise<void>
+    __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
   }
 }
 
