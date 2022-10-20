@@ -16,7 +16,7 @@ jobs:
       CI: true
     strategy:
       matrix:
-        node-version: [14, 16, 17, 18, 19]
+        node-version: [14, 16, 17, 18]
     name: Use Node.js ${{ matrix.node-version }}
     steps:
       - name: Checkout codes
