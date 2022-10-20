@@ -101,6 +101,7 @@ export function useCookieLocale({
 }: Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieKey'> & {
   localeCodes: readonly string[]
 }): Ref<string> {
+  // @ts-ignore NOTE: `ref` is auto-imported from `nuxt`
   const locale: Ref<string> = ref('')
 
   if (useCookie) {

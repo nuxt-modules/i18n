@@ -35,7 +35,6 @@ test('render with useHead', async () => {
   // html tag `dir` attriute
   expect(await page.getAttribute('html', 'dir')).toMatch('auto')
 
-  console.log('ss', await page.content())
   // rendering link tag and meta tag in head tag
   await assetLocaleHead(page, '#home-use-locale-head')
 

@@ -1,5 +1,5 @@
 import { isBoolean } from '@intlify/shared'
-import { createI18n } from '@intlify/vue-i18n-bridge'
+import { createI18n } from 'vue-i18n'
 import {
   createLocaleFromRouteGetter,
   extendI18n,

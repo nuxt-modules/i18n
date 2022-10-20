@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// import { isVue3, isVue2 } from 'vue-demi'
 import { isArray, isString, isFunction } from '@intlify/shared'
 import {
   findBrowserLocale,
@@ -34,14 +33,6 @@ function isLegacyVueI18n(target: any): target is VueI18n {
 export function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): any {
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
-  // TODO: should be removed
-  // const [obj, method] = isComposer(target)
-  //   ? isVue2 && isLegacyVueI18n(i18n)
-  //     ? [i18n, (i18n as any)[name]]
-  //     : [target, (target as any)[name]]
-  //   : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-  //     ? [target, (target as any)[name]]
-  //     : [target, (target as any)[name]]
   const [obj, method] = [target, (target as any)[name]]
   return Reflect.apply(method, obj, [...args])
 }
@@ -49,14 +40,6 @@ export function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): 
 export function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): Return {
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
-  // TODO: should be removed
-  // const ret = isComposer(target)
-  //   ? isVue2 && isLegacyVueI18n(i18n)
-  //     ? (i18n as any)[name]
-  //     : (target as any)[name].value
-  //   : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-  //     ? (target as any)[name]
-  //     : (target as any)[name]
   const ret = isComposer(target)
     ? (target as any)[name].value
     : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)

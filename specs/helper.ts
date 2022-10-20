@@ -17,9 +17,9 @@ export async function assetLocaleHead(page: Page, headSelector: string) {
     ([headTag, localeHead]) => {
       const headData = [...localeHead.link, ...localeHead.meta]
       for (const head of headData) {
-        const tag = headTag.querySelector(`[hid="${head.hid}"]`)
+        const tag = headTag.querySelector(`[id="${head.id}"]`)
         for (const [key, value] of Object.entries(head)) {
-          if (key === 'hid') {
+          if (key === 'id') {
             continue
           }
           const v = tag.getAttribute(key)
@@ -47,9 +47,9 @@ export async function assertLocaleHeadWithDom(dom: Document, headSelector: strin
   const localeHead = getDataFromDom(dom, headSelector)
   const headData = [...localeHead.link, ...localeHead.meta]
   for (const head of headData) {
-    const tag = dom.querySelector(`[hid="${head.hid}"]`)
+    const tag = dom.querySelector(`[id="${head.id}"]`)
     for (const [key, value] of Object.entries(head)) {
-      if (key === 'hid') {
+      if (key === 'id') {
         continue
       }
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
