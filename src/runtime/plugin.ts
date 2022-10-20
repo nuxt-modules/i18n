@@ -186,7 +186,7 @@ export default defineNuxtPlugin(async nuxt => {
           }
           setLocale(i18n, i18n.__pendingLocale)
           if (i18n.__resolvePendingLocalePromise) {
-            await i18n.__resolvePendingLocalePromise('')
+            await i18n.__resolvePendingLocalePromise()
           }
           i18n.__pendingLocale = undefined
         }
