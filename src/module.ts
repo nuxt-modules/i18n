@@ -164,7 +164,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // auto imports
     await addImports([
-      { name: 'useI18n', from: '@intlify/vue-i18n-bridge' },
+      { name: 'useI18n', from: 'vue-i18n' },
       ...[
         'useRouteBaseName',
         'useLocalePath',
