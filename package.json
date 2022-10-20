@@ -57,6 +57,7 @@
     "lint": "eslint --ext .js,.ts,.vue,.json .",
     "lint:fix": "pnpm lint --fix",
     "test": "run-s test:unit test:spec",
+    "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
     "test:spec": "pnpm build && vitest run specs"
   },
