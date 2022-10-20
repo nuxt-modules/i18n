@@ -10,10 +10,11 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'en',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      baseUrl: (nuxt: any) => {
+      baseUrl: () => {
         if (process.server) {
-          const xOverrideBaseUrl = nuxt.ssrContext.req.headers['x-override-base-url']
+          // @ts-ignore
+          const headers = useRequestHeaders(['x-override-base-url'])
+          const xOverrideBaseUrl = headers['x-override-base-url']
           console.log('xOverrideBaseUrl', xOverrideBaseUrl)
           if (Array.isArray(xOverrideBaseUrl)) {
             return xOverrideBaseUrl[0]

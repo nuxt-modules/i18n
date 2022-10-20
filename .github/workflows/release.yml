@@ -17,13 +17,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 16
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Create github releases
         run: |
@@ -41,7 +45,7 @@ jobs:
 
       - name: Sync changelog from github releases
         run: |
-          yarn changelog --tag=${{ steps.split.outputs._2 }}
+          pnpm changelog --tag=${{ steps.split.outputs._2 }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

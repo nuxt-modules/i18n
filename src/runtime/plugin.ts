@@ -1,6 +1,5 @@
-import { computed } from 'vue-demi'
 import { isBoolean } from '@intlify/shared'
-import { createI18n } from '@intlify/vue-i18n-bridge'
+import { createI18n } from 'vue-i18n'
 import {
   createLocaleFromRouteGetter,
   extendI18n,
@@ -33,7 +32,7 @@ import {
   setLocaleCookie as _setLocaleCookie
 } from '#build/i18n.internal.mjs'
 
-import type { Composer, I18nOptions, Locale } from '@intlify/vue-i18n-bridge'
+import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters } from 'vue-i18n-routing'
 import type { NuxtApp } from '#imports'
 
@@ -135,6 +134,7 @@ export default defineNuxtPlugin(async nuxt => {
     hooks: {
       onExtendComposer(composer: Composer) {
         composer.strategy = nuxtI18nOptions.strategy
+        // @ts-ignore NOTE: `computed` is auto-impoted by nuxt
         composer.localeProperties = computed(() => {
           return (
             normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
