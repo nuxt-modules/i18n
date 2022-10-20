@@ -1,4 +1,5 @@
 import { isBoolean } from '@intlify/shared'
+import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
 import {
   createLocaleFromRouteGetter,
@@ -134,7 +135,6 @@ export default defineNuxtPlugin(async nuxt => {
     hooks: {
       onExtendComposer(composer: Composer) {
         composer.strategy = nuxtI18nOptions.strategy
-        // @ts-ignore NOTE: `computed` is auto-impoted by nuxt
         composer.localeProperties = computed(() => {
           return (
             normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
