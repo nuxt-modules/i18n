@@ -24,7 +24,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
 }
 
 export async function resolveLocales(path: string, locales: LocaleObject[]): Promise<LocaleInfo[]> {
-  const files = await resolveFiles(path, '**/*{json,json5,yaml,yml}')
+  const files = await resolveFiles(path, '**/*{json,json5,yaml,yml,js,ts}')
   return files.map(file => {
     const parsed = parse(file)
     const locale = findLocales(locales, parsed.base)
