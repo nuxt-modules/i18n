@@ -9,7 +9,7 @@ import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { distDir, runtimeDir } from './dirs'
+import { distDir, runtimeDir, resolveVueI18nPkgPath, resolveVueI18nRoutingPkgPath } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -31,6 +31,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
   async setup(i18nOptions, nuxt) {
     const options = i18nOptions as Required<NuxtI18nOptions>
     debug('options', options)
+
+    /**
+     * Check vertions
+     */
 
     checkOptions(options)
 
@@ -56,18 +60,27 @@ export default defineNuxtModule<NuxtI18nOptions>({
       )
     }
 
-    // resolve langDir
+    /**
+     * resolve lang directory
+     */
+
     const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null
     debug('langDir path', langPath)
 
-    // resolve localeInfo
+    /**
+     * resolve locale info
+     */
+
     const normalizedLocales = getNormalizedLocales(options.locales)
     const hasLocaleFiles = normalizedLocales.length > 0
     const localeCodes = normalizedLocales.map(locale => locale.code)
     const localeInfo = langPath != null ? await resolveLocales(langPath, normalizedLocales) : []
     debug('localeInfo', localeInfo)
 
-    // resolve vueI18n options
+    /**
+     * resolve vue-i18n options
+     */
+
     // prettier-ignore
     options.vueI18n = isObject(options.vueI18n)
       ? options.vueI18n
@@ -75,19 +88,34 @@ export default defineNuxtModule<NuxtI18nOptions>({
         ? resolve(nuxt.options.rootDir, options.vueI18n)
         : {}
 
-    // extend messages via 3rd party nuxt modules
+    /**
+     * extend messages via 3rd party nuxt modules
+     */
+
     const additionalMessages = await extendMessages(nuxt, localeCodes)
 
-    // setup nuxt/pages
+    /**
+     * setup nuxt/pages
+     */
+
     if (options.strategy !== 'no_prefix' && localeCodes.length) {
       await setupPages(options, nuxt, { isBridge: isNuxt2(nuxt), localeCodes })
     }
 
-    // setup module alias
+    /**
+     * setup module alias
+     */
+
     await setupAlias(nuxt)
 
+    /**
+     * add plugin and templates
+     */
+
+    // plugin
     addPlugin(resolve(runtimeDir, 'plugin'))
 
+    // for compoables
     const i18nPath = addTemplate({
       filename: 'i18n.mjs',
       src: resolve(distDir, 'runtime/composables.mjs')
@@ -99,18 +127,19 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // TODO: We don't want to resolve the following as a template,
     //  but in the runtime dir we want to use as an ESM (e.g. internal and utils)
 
-    // TODO: we should provide bridge only?
+    // for internal
     addTemplate({
       filename: 'i18n.internal.mjs',
       src: resolve(distDir, 'runtime/internal.mjs')
     })
 
+    // for utils
     addTemplate({
       filename: 'i18n.utils.mjs',
       src: resolve(distDir, 'runtime/utils.mjs')
     })
 
-    // loading options template
+    // for loading options
     addTemplate({
       filename: 'i18n.options.mjs',
       write: true,
@@ -133,7 +162,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
       }
     })
 
-    // generate type definition for page meta
+    /**
+     * generate type definition for page meta
+     */
+
     if (!!options.dynamicRouteParams) {
       const metaKey = isBoolean(options.dynamicRouteParams) ? 'nuxtI18n' : options.dynamicRouteParams
       const typeMetaFilename = 'types/i18n-page-meta.d.ts'
@@ -155,16 +187,61 @@ export default defineNuxtModule<NuxtI18nOptions>({
       })
     }
 
-    // extend bundler
+    /**
+     * add extend type definition
+     */
+
+    // prettier-ignore
+    const isLegacyMode = () => {
+      return isString(options.types)
+        ? options.types === 'legacy'
+        : isObject(options.vueI18n)
+          ? options.vueI18n.legacy
+          : false
+    }
+    const nuxtAppExtendFilename = 'types/i18n-nuxt-app.d.ts'
+    const vueI18nDir = await resolveVueI18nPkgPath()
+    const vueI18nRoutingDir = await resolveVueI18nRoutingPkgPath()
+    addTemplate({
+      filename: nuxtAppExtendFilename,
+      getContents: () => {
+        return [
+          `import type { ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} } from 'vue-i18n'`,
+          // prettier-ignore
+          `import type { NuxtI18nRoutingCustomProperties } from '${resolve(runtimeDir, 'types')}'`,
+          `import type { I18nRoutingCustomProperties } from 'vue-i18n-routing/dist/vue-i18n'`,
+          isLegacyMode() ? `import '${resolve(vueI18nRoutingDir, 'dist/vue')}'` : '',
+          `declare module '#app' {`,
+          '  interface NuxtApp {',
+          // prettier-ignore
+          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
+          '  }',
+          '}'
+        ].join('\n')
+      }
+    })
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ path: resolve(nuxt.options.buildDir, nuxtAppExtendFilename) })
+      const vueI18nTypeFilename = resolve(runtimeDir, 'types')
+      references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
+    })
+
+    /**
+     * extend bundler
+     */
+
     await extendBundler(nuxt, {
       nuxtOptions: options as Required<NuxtI18nOptions>,
       hasLocaleFiles,
       langPath
     })
 
-    // auto imports
+    /**
+     * auto imports
+     */
+
     await addImports([
-      { name: 'useI18n', from: 'vue-i18n' },
+      { name: 'useI18n', from: resolve(vueI18nDir, 'dist/vue-i18n') },
       ...[
         'useRouteBaseName',
         'useLocalePath',
@@ -177,11 +254,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
       ].map(key => ({
         name: key,
         as: key,
-        from: resolve(distDir, 'runtime/composables')
+        from: resolve(runtimeDir, 'composables')
       }))
     ])
 
-    // transpile @nuxtjs/i18n
+    /**
+     * transpile @nuxtjs/i18n
+     */
+
     // https://github.com/nuxt/framework/issues/5257
     nuxt.options.build.transpile.push('@nuxtjs/i18n')
     nuxt.options.build.transpile.push('@nuxtjs/i18n-edge')

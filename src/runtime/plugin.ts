@@ -381,19 +381,8 @@ export default defineNuxtPlugin(async nuxt => {
   )
 })
 
-/**
- * TODO:
- *  We should provide with using conditional exports,
- *  because, vue-i18n has legacy API (options API) and composition API.
- *
- *  The type returned by `i18n.global` dynamically depending on its options.
- *  `NuxtApp` cannot be type extended without using ambient modules,
- *  but I don't know of anything that changes this dynamically on nuxt.
- *
- */
-declare module '#imports' {
+declare module '#app' {
   interface NuxtApp {
-    $i18n: Composer
     $getRouteBaseName: (this: NuxtApp, ...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
     $localePath: (this: NuxtApp, ...args: Parameters<LocalePath>) => ReturnType<LocalePath>
     $localeRoute: (this: NuxtApp, ...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>

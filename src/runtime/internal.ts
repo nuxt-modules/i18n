@@ -57,7 +57,7 @@ export function proxyNuxt<T extends (...args: any) => any>(nuxt: NuxtApp, target
     return Reflect.apply(
       target,
       {
-        i18n: nuxt.$i18n,
+        i18n: (nuxt as any).$i18n,
         getRouteBaseName: nuxt.$getRouteBaseName,
         localePath: nuxt.$localePath,
         localeRoute: nuxt.$localeRoute,
