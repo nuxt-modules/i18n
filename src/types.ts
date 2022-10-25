@@ -59,6 +59,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   // sortRoutes?: boolean
   strategy?: Strategies
   vueI18n?: I18nOptions | string
+  types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean | string
 } & Pick<

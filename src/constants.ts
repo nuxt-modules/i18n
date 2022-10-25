@@ -56,6 +56,7 @@ export const DEFAULT_OPTIONS = {
   skipSettingLocaleOnNavigate: false,
   onBeforeLanguageSwitch: () => '',
   onLanguageSwitched: () => null,
+  types: undefined,
   debug: false
 } as const
 
