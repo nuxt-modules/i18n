@@ -13,7 +13,7 @@ import {
   setLocale,
   getLocale
 } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
+import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
@@ -45,6 +45,7 @@ type SwitchLocalePath = typeof switchLocalePath
 
 export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
+  const route = useRoute()
   const { vueApp: app } = nuxt
   const nuxtContext = nuxt as unknown as NuxtApp
 
@@ -89,7 +90,7 @@ export default defineNuxtPlugin(async nuxt => {
 
   // detect initial locale
   let initialLocale = detectLocale(
-    router.currentRoute.value,
+    route,
     nuxt.ssrContext,
     getLocaleFromRoute,
     nuxtI18nOptions,
@@ -157,16 +158,10 @@ export default defineNuxtPlugin(async nuxt => {
             notInitialSetup = false
           }
 
-          const redirectPath = detectRedirect(
-            router.currentRoute.value,
-            nuxtContext,
-            locale,
-            getLocaleFromRoute,
-            nuxtI18nOptions
-          )
+          const redirectPath = detectRedirect(route, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
           __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
 
-          navigate(i18n, redirectPath, locale, router.currentRoute.value, {
+          navigate(i18n, redirectPath, locale, route, {
             differentDomains,
             skipSettingLocaleOnNavigate,
             rootRedirect
