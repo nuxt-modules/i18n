@@ -14,12 +14,7 @@ await setup({
   }
 })
 
-/**
- * NOTE:
- *  i18n custom block does not build correctly on nuxt/test-utils,
- *  so I disable it once. playground confirms that it works for me.
- */
-test.skip('i18n custom block', async () => {
+test('i18n custom block', async () => {
   const home = url('/')
   const page = await createPage()
   await page.goto(home)
@@ -32,8 +27,6 @@ test.skip('i18n custom block', async () => {
   await page.locator('#link-category').click()
   await page.waitForTimeout(1000)
 
-  console.log(await page.content())
-  console.log(await page.url())
   expect(await getText(page, '#per-component-hello')).toMatch('Bonjour!')
 
   // click `en` lang switch with `<NuxtLink>`
