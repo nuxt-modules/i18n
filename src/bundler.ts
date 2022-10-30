@@ -7,6 +7,7 @@ import { TransformMacroPlugin, TransformMacroPluginOptions } from './macros'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions } from './types'
+import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -20,7 +21,10 @@ export async function extendBundler(
 ) {
   const { nuxtOptions, hasLocaleFiles, langPath } = options
 
-  // setup nitro
+  /**
+   * setup nitro
+   */
+
   if (nuxt.options.nitro.replace) {
     nuxt.options.nitro.replace['__DEBUG__'] = nuxtOptions.debug
   } else {
@@ -36,19 +40,21 @@ export async function extendBundler(
     sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
   }
 
+  /**
+   * webpack plugin
+   */
+
   try {
     // @ts-ignore NOTE: use webpack which is installed by nuxt
     const webpack = await import('webpack').then(m => m.default || m)
 
-    // install webpack plugin
-    if (hasLocaleFiles && langPath) {
-      addWebpackPlugin(
-        VueI18nWebpackPlugin({
-          include: [resolve(langPath, './**')],
-          runtimeOnly: true
-        })
-      )
+    const webpackPluginOptions: PluginOptions = {
+      runtimeOnly: true
     }
+    if (hasLocaleFiles && langPath) {
+      webpackPluginOptions.include = [resolve(langPath, './**')]
+    }
+    addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
 
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
 
@@ -67,15 +73,17 @@ export async function extendBundler(
     debug((e as Error).message)
   }
 
-  // install vite plugin
-  if (hasLocaleFiles && langPath) {
-    addVitePlugin(
-      VueI18nVitePlugin({
-        include: [resolve(langPath, './**')],
-        runtimeOnly: true
-      })
-    )
+  /**
+   * vite plugin
+   */
+
+  const vitePluginOptions: PluginOptions = {
+    runtimeOnly: true
   }
+  if (hasLocaleFiles && langPath) {
+    vitePluginOptions.include = [resolve(langPath, './**')]
+  }
+  addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
 
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
 
