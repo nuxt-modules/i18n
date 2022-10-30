@@ -3,6 +3,7 @@ import LangSwitcher from '../components/LangSwitcher.vue'
 import { useI18n } from '#i18n'
 
 const { t } = useI18n({
+  inheritLocale: true,
   useScope: 'local'
 })
 </script>
