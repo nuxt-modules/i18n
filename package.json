@@ -55,10 +55,10 @@
     "format:fix": "pnpm format --write",
     "lint": "eslint --ext .js,.ts,.vue,.json .",
     "lint:fix": "pnpm lint --fix",
-    "test": "run-s test:unit test:spec",
+    "test": "run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
-    "test:spec": "pnpm build && vitest run specs"
+    "test:spec": "vitest run specs"
   },
   "resolutions": {
     "@nuxtjs/i18n": "link:.",

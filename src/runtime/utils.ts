@@ -307,6 +307,8 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     'skipSettingLocaleOnNavigate' | 'differentDomains' | 'rootRedirect'
   > = {}
 ) {
+  __DEBUG__ && console.log('navigate options ', status, rootRedirect, differentDomains, skipSettingLocaleOnNavigate)
+
   if (route.path === '/' && rootRedirect) {
     if (isString(rootRedirect)) {
       redirectPath = rootRedirect
@@ -318,7 +320,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     return navigateTo(redirectPath, { redirectCode: status })
   }
 
-  if (skipSettingLocaleOnNavigate) {
+  if (process.client && skipSettingLocaleOnNavigate) {
     i18n.__pendingLocale = locale
     i18n.__pendingLocalePromise = new Promise(resolve => {
       i18n.__resolvePendingLocalePromise = resolve

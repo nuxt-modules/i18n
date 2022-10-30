@@ -1,6 +1,9 @@
 ---
 name: CI
 
+env:
+  CI: true
+
 on:
   push:
     branches:
@@ -10,13 +13,14 @@ on:
       - next
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      CI: true
+  lint:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [14, 16, 17, 18]
+        node-version: [16]
+        os: [ubuntu-latest]
+    timeout-minutes: 10
+
     name: Use Node.js ${{ matrix.node-version }}
     steps:
       - name: Checkout codes
@@ -37,16 +41,15 @@ jobs:
       - name: Linting
         run: pnpm lint
 
-      - name: Building
-        run: pnpm build
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [16]
+        os: [ubuntu-latest]
+    timeout-minutes: 10
 
-      - name: Testing
-        run: pnpm test
-
-  edge-release:
-    needs:
-      - build
-    runs-on: ubuntu-latest
+    name: Use Node.js ${{ matrix.node-version }}
     steps:
       - name: Checkout codes
         uses: actions/checkout@v3
@@ -57,7 +60,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -65,6 +68,101 @@ jobs:
 
       - name: Building
         run: pnpm build
+
+      - name: Cache dist
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node-version }}-${{ github.sha }}
+
+  test:
+    needs:
+      - build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [16]
+        os: [ubuntu-latest]
+    timeout-minutes: 15
+
+    name: Use Node.js ${{ matrix.node-version }}
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # https://github.com/vitejs/vite/blob/main/.github/workflows/ci.yml#L62
+      # Install playwright's binary under custom directory to cache
+      - name: Set Playwright path (non-windows)
+        if: runner.os != 'Windows'
+        run: echo "PLAYWRIGHT_BROWSERS_PATH=$HOME/.cache/playwright-bin" >> $GITHUB_ENV
+      - name: Set Playwright path (windows)
+        if: runner.os == 'Windows'
+        run: echo "PLAYWRIGHT_BROWSERS_PATH=$HOME\.cache\playwright-bin" >> $env:GITHUB_ENV
+
+      - name: Cache Playwright's binary
+        uses: actions/cache@v3
+        with:
+          # Playwright removes unused browsers automatically
+          # So does not need to add playwright version to key
+          key: ${{ runner.os }}-playwright-bin-v1
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+
+      - name: Install Playwright
+        # does not need to explicitly set chromium after https://github.com/microsoft/playwright/issues/14862 is solved
+        run: pnpm playwright install chromium
+
+      - name: Restore dist cache
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node-version }}-${{ github.sha }}
+
+      - name: Testing
+        run: pnpm test
+
+  edge-release:
+    needs:
+      - lint
+      - build
+      - test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [16]
+        os: [ubuntu-latest]
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Restore dist cache
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: ${{ matrix.os }}-node-v${{ matrix.node-version }}-${{ github.sha }}
 
       - name: Release Edge
         if: |
