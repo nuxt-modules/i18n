@@ -14,6 +14,10 @@
 
 > i18n for your Nuxt project
 
+## For Nuxt 3?
+- 👷 working on [`next`](https://github.com/nuxt-community/i18n-module/tree/next) branch as v8
+- 📘 [Documentation](https://v8.i18n.nuxtjs.org/)
+
 ## Links
 - 📘 [Documentation](https://i18n.nuxtjs.org/)
 - 🔖 [Release notes](./CHANGELOG.md)
