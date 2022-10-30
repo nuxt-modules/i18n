@@ -275,14 +275,15 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
     }
   }
 
-  // get preferred language from cookie if present and enabled
   const cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
   __DEBUG__ && console.log('detectBrowserLanguage cookieLocale', cookieLocale)
   __DEBUG__ && console.log('detectBrowserLanguage browserLocale', getBrowserLocale(nuxtI18nInternalOptions, context))
 
-  let matchedLocale = cookieLocale
-  // try to get locale from either navigator or header detection
-  if (!useCookie) {
+  let matchedLocale
+  if (useCookie && (matchedLocale = cookieLocale)) {
+    // get preferred language from cookie if present and enabled
+  } else {
+    // try to get locale from either navigator or header detection
     matchedLocale = getBrowserLocale(nuxtI18nInternalOptions, context)
   }
   __DEBUG__ && console.log('detectBrowserLanguage matchedLocale', matchedLocale)
