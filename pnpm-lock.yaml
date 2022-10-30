@@ -476,7 +476,7 @@ packages:
   /@docus/base-edge/3.0.0-1138f93:
     resolution: {integrity: sha512-4x9/ump1+5Ig5S0xm7zjSPZJUr9BTI4DvhNtLZCJwLFqn2rdK1kz/x8w9QX44Q+ns6GT7Is9FCwij55hywOPbw==}
     dependencies:
-      '@nuxt/content': /@nuxt/content-edge/2.2.0-27777064.6463e46
+      '@nuxt/content': /@nuxt/content-edge/2.2.1-27781144.409f03f
       '@nuxthq/admin': /@nuxthq/admin-edge/0.0.1-27627055.9933660
       '@vueuse/core': 8.9.4
       '@vueuse/nuxt': 8.9.4
@@ -859,8 +859,8 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@nuxt/content-edge/2.2.0-27777064.6463e46:
-    resolution: {integrity: sha512-JQ4MJk6Uut18KC9wxvRXrg4OVTr55GwsqT5Kq3Efrz7WI7VaJgzdI8SSKxj7P37SmvkuBKKqLb3Iihgj+q0thw==}
+  /@nuxt/content-edge/2.2.1-27781144.409f03f:
+    resolution: {integrity: sha512-JDXywgz1QO0GEReQJ3v/YGTw7tmDRI0muHvhJPyNivnC4+DcRR8pd1mwTBFHMr7VMBViLWuMfn2hzDTNhF7URw==}
     dependencies:
       '@nuxt/kit': 3.0.0-rc.12
       consola: 2.15.3
@@ -883,7 +883,7 @@ packages:
       rehype-sort-attributes: 4.0.0
       remark-emoji: 3.0.2
       remark-gfm: 3.0.1
-      remark-mdc: 1.0.8
+      remark-mdc: 1.1.0
       remark-parse: 10.0.1
       remark-rehype: 10.1.0
       remark-squeeze-paragraphs: 5.0.1
@@ -897,7 +897,7 @@ packages:
       unist-util-position: 4.0.3
       unist-util-visit: 4.1.1
       unstorage: 0.6.0
-      ws: 8.9.0
+      ws: 8.10.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -7750,8 +7750,8 @@ packages:
       unist-util-visit: 4.1.1
     dev: true
 
-  /remark-mdc/1.0.8:
-    resolution: {integrity: sha512-pg2KtOem9cZd0PHyPvlamDdk+eXeKAOGq5UzPIa0I7Mqi74lqqprAksjgtrKQpEaDULiLh6Yh48HPcAxdeL5Uw==}
+  /remark-mdc/1.1.0:
+    resolution: {integrity: sha512-mUGNjzOqT6bBk4MyQjGHQzLWMmjEaxnomB5ZM8FFL7uSlPzUlQsVnwv9NpG4+usU6BA6YJoGNnSAws840+oq9A==}
     dependencies:
       flat: 5.0.2
       js-yaml: 4.1.0
@@ -7763,7 +7763,7 @@ packages:
       micromark-factory-whitespace: 1.0.0
       micromark-util-character: 1.1.0
       parse-entities: 4.0.0
-      scule: 0.2.1
+      scule: 0.3.2
       stringify-entities: 4.0.3
       unist-util-visit: 4.1.1
       unist-util-visit-parents: 5.1.1
@@ -8946,7 +8946,7 @@ packages:
       mri: 1.2.0
       ohmyfetch: 0.4.20
       ufo: 0.8.6
-      ws: 8.9.0
+      ws: 8.10.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -9509,6 +9509,19 @@ packages:
 
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+    dev: true
+
+  /ws/8.10.0:
+    resolution: {integrity: sha512-+s49uSmZpvtAsd2h37vIPy1RBusaLawVe8of+GyEPsaJTCMpj/2v8NpeK1SHXjBlQ95lQTmQofOJnFiLoaN3yw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
     dev: true
 
   /ws/8.2.3:
