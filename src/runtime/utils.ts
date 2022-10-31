@@ -116,7 +116,7 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   return messages
 }
 
-export async function mergeAddtionalMessages<Context extends NuxtApp = NuxtApp>(
+export async function mergeAdditionalMessages<Context extends NuxtApp = NuxtApp>(
   context: Context,
   i18n: I18n,
   locale: Locale
