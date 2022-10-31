@@ -19,5 +19,11 @@ test('load option successfully', async () => {
   const page = await createPage()
   await page.goto(home)
 
+  // click `fr` lang switch link
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  expect(await getText(page, '#home-header')).toEqual('Bonjour-le-monde!')
+
+  // click `en` lang switch link
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
   expect(await getText(page, '#home-header')).toEqual('Hello-World!')
 })
