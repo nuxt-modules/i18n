@@ -86,7 +86,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       ? options.vueI18n
       : isString(options.vueI18n)
         ? resolve(nuxt.options.rootDir, options.vueI18n)
-        : {}
+        : { legacy: false }
 
     /**
      * extend messages via 3rd party nuxt modules
