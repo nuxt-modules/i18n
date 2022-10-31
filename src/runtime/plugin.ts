@@ -18,7 +18,7 @@ import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#b
 import {
   loadInitialMessages,
   loadAndSetLocale,
-  mergeAddtionalMessages,
+  mergeAdditionalMessages,
   detectLocale,
   detectRedirect,
   navigate,
@@ -326,7 +326,7 @@ export default defineNuxtPlugin(async nuxt => {
   inejctNuxtHelpers(nuxtContext, i18n)
 
   // merge addtional locale messages
-  await mergeAddtionalMessages(nuxtContext, i18n, initialLocale)
+  await mergeAdditionalMessages(nuxtContext, i18n, initialLocale)
 
   addRouteMiddleware(
     'locale-changing',

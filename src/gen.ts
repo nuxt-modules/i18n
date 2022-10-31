@@ -1,7 +1,9 @@
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
+import { NUXT_I18N_MODULE_ID } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
+import { parse as parsePath } from 'pathe'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -60,13 +62,17 @@ export function generateLoaderOptions(
         if (key === 'vueI18n') {
           const optionLoaderVariable = `${key}OptionsLoader`
           genCodes += `  const ${optionLoaderVariable} = ${isObject(value)
-            // ? `async (context) => ${toCode(value)}\n`
             ? `async (context) => ${generateVueI18nOptions(value, dev)}\n`
             : isString(value)
               ? `async (context) => import(${toCode(value)}).then(r => (r.default || r)(context))\n`
               : `async (context) => ${toCode({})}\n`
           }`
           genCodes += `  ${rootKey}.${key} = await ${optionLoaderVariable}(context)\n`
+          if (isString(value)) {
+            const parsedLoaderPath = parsePath(value)
+            const loaderFilename = `${parsedLoaderPath.name}${parsedLoaderPath.ext}`
+            genCodes += `  if (${rootKey}.${key}.messages) { console.warn("[${NUXT_I18N_MODULE_ID}]: Cannot include 'messages' option in '${loaderFilename}'. Please use Lazy-load translations."); ${rootKey}.${key}.messages = {}; }\n`
+          }
         } else {
           genCodes += `  ${rootKey}.${key} = ${toCode(value)}\n`
         }

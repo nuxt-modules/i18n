@@ -1,5 +1,6 @@
 # TODO
 
-- [ ] `skipNuxtState` and executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
+- [ ] `skipNuxtState`
+- [ ] executalbe files (`js`, `cjs`, and `mjs`) are not supported yet
 - [ ] `sortRoutes` option
-- [ ] `vueI18n` option for function
+- [x] `vueI18n` option for function

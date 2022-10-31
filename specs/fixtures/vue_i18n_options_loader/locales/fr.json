@@ -1,0 +1,4 @@
+{
+  "hello": "Bonjour le monde!",
+  "modifier": "@.snakeCase:{'hello'}"
+}

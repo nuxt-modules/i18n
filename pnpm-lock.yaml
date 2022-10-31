@@ -167,6 +167,14 @@ importers:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0-rc.12
 
+  specs/fixtures/vue_i18n_options_loader:
+    specifiers:
+      '@nuxtjs/i18n': link:../../..
+      nuxt: ^3.0.0-rc.12
+    devDependencies:
+      '@nuxtjs/i18n': link:../../..
+      nuxt: 3.0.0-rc.12
+
 packages:
 
   /@ampproject/remapping/2.2.0:
