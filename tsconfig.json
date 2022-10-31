@@ -29,7 +29,7 @@
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
     "paths": {
-      "#app": ["./node_modules/nuxt/app.d.ts"],
+      "#app": ["./node_modules/nuxt/dist/app"],
       "#imports": ["./node_modules/nuxt/app.d.ts"],
       "#pages": ["./node_modules/nuxt/dist/pages/runtime/index.d.ts"],
       "#head": ["./node_modules/nuxt/dist/index.d.ts"],

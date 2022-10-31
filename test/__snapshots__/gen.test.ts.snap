@@ -81,6 +81,7 @@ export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   const vueI18nOptionsLoader = async (context) => import(\\"~/plugins/vue-i18n.js\\").then(r => (r.default || r)(context))
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  if (nuxtI18nOptions.vueI18n.messages) { console.warn(\\"[@nuxtjs/i18n]: Cannot include 'messages' option in 'vue-i18n.js'. Please use Lazy-load translations.\\"); nuxtI18nOptions.vueI18n.messages = {}; }
   return nuxtI18nOptions
 }
 
