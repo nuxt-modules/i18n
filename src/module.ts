@@ -1,7 +1,7 @@
 import createDebug from 'debug'
 import { isBoolean, isObject, isString } from '@intlify/shared'
 import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
-import { resolve } from 'pathe'
+import { resolve, relative } from 'pathe'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
@@ -140,6 +140,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     // for loading options
+    const localesRelativeBasePath = relative(nuxt.options.buildDir, nuxt.options.rootDir)
     addTemplate({
       filename: 'i18n.options.mjs',
       write: true,
@@ -147,6 +148,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         return generateLoaderOptions(
           options.lazy,
           options.langDir,
+          localesRelativeBasePath,
           {
             localeCodes,
             localeInfo,

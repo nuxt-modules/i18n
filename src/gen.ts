@@ -23,6 +23,7 @@ const debug = createDebug('@nuxtjs/i18n:gen')
 export function generateLoaderOptions(
   lazy: NonNullable<NuxtI18nOptions['lazy']>,
   langDir: NuxtI18nOptions['langDir'],
+  localesRelativeBase: string,
   options: LoaderOptions = {},
   dev = true
 ) {
@@ -52,7 +53,7 @@ export function generateLoaderOptions(
     importMapper.set(code, genSafeVariableName(`locale_${code}`))
     let loadPath = path
     if (file && langDir) {
-      loadPath = resolveLocaleRelativePath(file, langDir)
+      loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
     }
     // TODO: import assertions (we need to support it on kitwork)
     genCode += `${genImport(loadPath, genSafeVariableName(`locale_${code}`))}\n`
@@ -103,7 +104,7 @@ export function generateLoaderOptions(
         for (const { code, path, file } of asyncLocaleFiles) {
           let loadPath = path
           if (file && langDir) {
-            loadPath = resolveLocaleRelativePath(file, langDir)
+            loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
           }
           // TODO: import assertions (we need to support it on kitwork)
           codes += `  ${toCode(code)}: ${genDynamicImport(loadPath, { comment: `webpackChunkName: "lang-${code}"` })},\n`
@@ -124,8 +125,8 @@ export function generateLoaderOptions(
   return genCode
 }
 
-function resolveLocaleRelativePath(file: string, langDir: string) {
-  return normalize(`../${langDir}/${file}`)
+function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: string) {
+  return normalize(`${relativeBase}/${langDir}/${file}`)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
