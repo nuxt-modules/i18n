@@ -10,11 +10,13 @@ const LOCALE_CODES = ['en', 'ja', 'fr']
 const LOCALE_INFO = [
   {
     code: 'en',
-    path: './locales/en.json'
+    file: 'en.json',
+    path: '/path/to/en.json'
   },
   {
     code: 'ja',
-    path: './locales/ja.json'
+    file: 'ja.json',
+    path: '/path/to/ja.json'
   }
 ]
 const ADDITIONAL_MESSAGES = {
@@ -61,7 +63,7 @@ function validateSyntax(code: string): boolean {
 }
 
 it('basic', () => {
-  const code = generateLoaderOptions(false, '/path/to/locales', {
+  const code = generateLoaderOptions(false, 'locales', '..', {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
     additionalMessages: {},
@@ -74,7 +76,7 @@ it('basic', () => {
 })
 
 it('lazy', () => {
-  const code = generateLoaderOptions(true, '/path/to/locales', {
+  const code = generateLoaderOptions(true, 'locales', '..', {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
     additionalMessages: {},
@@ -86,7 +88,7 @@ it('lazy', () => {
 })
 
 it('vueI18n: path', () => {
-  const code = generateLoaderOptions(false, '/path/to/locales', {
+  const code = generateLoaderOptions(false, 'locales', '..', {
     localeCodes: LOCALE_CODES,
     localeInfo: LOCALE_INFO,
     additionalMessages: ADDITIONAL_MESSAGES,
