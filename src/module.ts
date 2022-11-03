@@ -146,7 +146,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       getContents: () => {
         return generateLoaderOptions(
           options.lazy,
-          langPath,
+          options.langDir,
           {
             localeCodes,
             localeInfo,

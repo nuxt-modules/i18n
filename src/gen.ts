@@ -3,7 +3,7 @@ import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shar
 import { generateJSON } from '@intlify/bundle-utils'
 import { NUXT_I18N_MODULE_ID } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
-import { parse as parsePath } from 'pathe'
+import { parse as parsePath, normalize } from 'pathe'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -48,9 +48,14 @@ export function generateLoaderOptions(
   }
 
   const importMapper = new Map<string, string>()
-  for (const { code, path } of syncLocaleFiles) {
+  for (const { code, path, file } of syncLocaleFiles) {
     importMapper.set(code, genSafeVariableName(`locale_${code}`))
-    genCode += `${genImport(path, genSafeVariableName(`locale_${code}`))}\n`
+    let loadPath = path
+    if (file && langDir) {
+      loadPath = resolveLocaleRelativePath(file, langDir)
+    }
+    // TODO: import assertions (we need to support it on kitwork)
+    genCode += `${genImport(loadPath, genSafeVariableName(`locale_${code}`))}\n`
   }
 
   // prettier-ignore
@@ -95,8 +100,13 @@ export function generateLoaderOptions(
         for (const { code } of syncLocaleFiles) {
           codes += `  ${toCode(code)}: () => Promise.resolve(${importMapper.get(code)}),\n`
         }
-        for (const { code, path } of asyncLocaleFiles) {
-          codes += `  ${toCode(code)}: ${genDynamicImport(path, { comment: `webpackChunkName: "lang-${code}"` })},\n`
+        for (const { code, path, file } of asyncLocaleFiles) {
+          let loadPath = path
+          if (file && langDir) {
+            loadPath = resolveLocaleRelativePath(file, langDir)
+          }
+          // TODO: import assertions (we need to support it on kitwork)
+          codes += `  ${toCode(code)}: ${genDynamicImport(loadPath, { comment: `webpackChunkName: "lang-${code}"` })},\n`
         }
       }
       codes += `}\n`
@@ -112,6 +122,10 @@ export function generateLoaderOptions(
 
   debug('generate code', genCode)
   return genCode
+}
+
+function resolveLocaleRelativePath(file: string, langDir: string) {
+  return normalize(`../${langDir}/${file}`)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
