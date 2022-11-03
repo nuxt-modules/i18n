@@ -11,7 +11,7 @@ importers:
       '@babel/parser': ^7.17.9
       '@intlify/bundle-utils': ^3.2.1
       '@intlify/shared': 9.3.0-beta.6
-      '@intlify/unplugin-vue-i18n': ^0.7.0
+      '@intlify/unplugin-vue-i18n': ^0.7.1
       '@nuxt/kit': ^3.0.0-rc.12
       '@nuxt/module-builder': latest
       '@nuxt/schema': ^3.0.0-rc.12
@@ -55,7 +55,7 @@ importers:
     dependencies:
       '@intlify/bundle-utils': 3.2.1_vue-i18n@9.3.0-beta.6
       '@intlify/shared': 9.3.0-beta.6
-      '@intlify/unplugin-vue-i18n': 0.7.0_vue-i18n@9.3.0-beta.6
+      '@intlify/unplugin-vue-i18n': 0.7.1_vue-i18n@9.3.0-beta.6
       '@nuxt/kit': 3.0.0-rc.12
       cookie-es: 0.5.0
       debug: 4.3.4
@@ -484,7 +484,7 @@ packages:
   /@docus/base-edge/3.0.0-1138f93:
     resolution: {integrity: sha512-4x9/ump1+5Ig5S0xm7zjSPZJUr9BTI4DvhNtLZCJwLFqn2rdK1kz/x8w9QX44Q+ns6GT7Is9FCwij55hywOPbw==}
     dependencies:
-      '@nuxt/content': /@nuxt/content-edge/2.2.1-27781144.409f03f
+      '@nuxt/content': /@nuxt/content-edge/2.2.1-27791397.dee9ae1
       '@nuxthq/admin': /@nuxthq/admin-edge/0.0.1-27627055.9933660
       '@vueuse/core': 8.9.4
       '@vueuse/nuxt': 8.9.4
@@ -675,8 +675,8 @@ packages:
     engines: {node: '>= 14'}
     dev: false
 
-  /@intlify/unplugin-vue-i18n/0.7.0_vue-i18n@9.3.0-beta.6:
-    resolution: {integrity: sha512-FmkQQdTsKINH9KqeKYxOlumxBLD0v6TAMac3+4iqmFTyqqE1pH5Seqta0QQBSAgsJXzsbASkEnHdlsoCC2DfNA==}
+  /@intlify/unplugin-vue-i18n/0.7.1_vue-i18n@9.3.0-beta.6:
+    resolution: {integrity: sha512-lNwLS7ZUe+JR488i9UrNlLYJqAZZ2W9bEbIBwoMDs1W6T+T3qU3JKac7GD0y2tXdQZ4yx0ZYIBDPpdK9aZ9+IQ==}
     engines: {node: '>= 14.16'}
     peerDependencies:
       petite-vue-i18n: '*'
@@ -867,8 +867,8 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@nuxt/content-edge/2.2.1-27781144.409f03f:
-    resolution: {integrity: sha512-JDXywgz1QO0GEReQJ3v/YGTw7tmDRI0muHvhJPyNivnC4+DcRR8pd1mwTBFHMr7VMBViLWuMfn2hzDTNhF7URw==}
+  /@nuxt/content-edge/2.2.1-27791397.dee9ae1:
+    resolution: {integrity: sha512-70EpbaHVnIvxtHYMawG1cZvbBV4Z8XLMEpaHBQ/5TTyX+LyGntSIJGcFRPnFkTJdpGRgizmBD5kBR4e20+uRBw==}
     dependencies:
       '@nuxt/kit': 3.0.0-rc.12
       consola: 2.15.3
