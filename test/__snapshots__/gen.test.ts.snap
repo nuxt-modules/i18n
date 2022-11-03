@@ -1,8 +1,8 @@
 // Vitest Snapshot v1
 
 exports[`basic 1`] = `
-"import locale_en from \\"./locales/en.json\\";
-import locale_ja from \\"./locales/ja.json\\";
+"import locale_en from \\"../locales/en.json\\";
+import locale_ja from \\"../locales/ja.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
@@ -30,12 +30,12 @@ export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 `;
 
 exports[`lazy 1`] = `
-"import locale_en from \\"./locales/en.json\\";
+"import locale_en from \\"../locales/en.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
   \\"en\\": () => Promise.resolve(locale_en),
-  \\"ja\\": () => import(\\"./locales/ja.json\\" /* webpackChunkName: \\"lang-ja\\" */),
+  \\"ja\\": () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang-ja\\" */),
 }
 
 export const additionalMessages = Object({})
@@ -56,8 +56,8 @@ export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 `;
 
 exports[`vueI18n: path 1`] = `
-"import locale_en from \\"./locales/en.json\\";
-import locale_ja from \\"./locales/ja.json\\";
+"import locale_en from \\"../locales/en.json\\";
+import locale_ja from \\"../locales/ja.json\\";
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
