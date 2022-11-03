@@ -14,9 +14,9 @@ import {
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
 } from 'vue-i18n-routing'
-import { navigateTo, NuxtApp } from '#imports'
+import { navigateTo, useState } from '#imports'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
-import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault } from '#build/i18n.options.mjs'
+import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
   getLocaleCookie,
@@ -39,6 +39,7 @@ import type {
   PrefixableOptions,
   SwitchLocalePathIntercepter
 } from 'vue-i18n-routing'
+import type { NuxtApp } from '#imports'
 import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
@@ -292,6 +293,9 @@ function isRootRedirectOptions(rootRedirect: unknown): rootRedirect is RootRedir
   return isObject(rootRedirect) && 'path' in rootRedirect && 'statusCode' in rootRedirect
 }
 
+// composable function for redirect loop avoiding
+const useRedirectState = () => useState<string>(NUXT_I18N_MODULE_ID + ':redirect', () => '')
+
 export async function navigate<Context extends NuxtApp = NuxtApp>(
   i18n: I18n,
   redirectPath: string,
@@ -333,10 +337,16 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
       return navigateTo(redirectPath, { redirectCode: status })
     }
   } else {
+    const state = useRedirectState()
+    __DEBUG__ && console.log('redirect state -> ', state.value)
     if (process.client) {
-      window.location.assign(redirectPath)
+      if (state.value !== redirectPath) {
+        state.value = '' // reset redirect path
+        window.location.assign(redirectPath)
+      }
     } else if (process.server) {
       __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
+      state.value = redirectPath // set reidrct path
     }
   }
 }

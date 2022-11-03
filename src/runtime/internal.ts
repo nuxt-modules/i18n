@@ -14,7 +14,12 @@ import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent } from '#imports'
-import { nuxtI18nOptionsDefault, localeMessages, additionalMessages } from '#build/i18n.options.mjs'
+import {
+  nuxtI18nOptionsDefault,
+  localeMessages,
+  additionalMessages,
+  NUXT_I18N_MODULE_ID
+} from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#imports'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
@@ -23,7 +28,7 @@ import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export function formatMessage(message: string) {
-  return '[@nuxtjs/i18n] ' + message
+  return NUXT_I18N_MODULE_ID + ' ' + message
 }
 
 function isLegacyVueI18n(target: any): target is VueI18n {
