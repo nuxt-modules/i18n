@@ -108,6 +108,8 @@ export function generateLoaderOptions(
 	  }
   }).join('\n')}`
 
+  genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
+
   debug('generate code', genCode)
   return genCode
 }

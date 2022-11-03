@@ -4,7 +4,7 @@ import type { NuxtI18nOptionsDefault } from './constants'
 import type { DeepRequired } from 'ts-essentials'
 
 /**
- * stub type definition for nuxt plugin
+ * stub type definition for @nuxtjs/i18n internally
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,6 +21,7 @@ export const localeCodes: string[] = []
 export const nuxtI18nOptions: DeepRequired<NuxtI18nOptions> = {}
 export const nuxtI18nOptionsDefault: NuxtI18nOptionsDefault = {}
 export const nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions> = {}
+export const NUXT_I18N_MODULE_ID = ''
 
 export {
   NuxtI18nOptions,
