@@ -50,7 +50,7 @@ importers:
       vitest: ^0.23.4
       vue: ^3.2.41
       vue-i18n: ^9.3.0-beta.6
-      vue-i18n-routing: ^0.8.1
+      vue-i18n-routing: ^0.8.2
       yorkie: ^2.0.0
     dependencies:
       '@intlify/bundle-utils': 3.2.1_vue-i18n@9.3.0-beta.6
@@ -68,7 +68,7 @@ importers:
       ufo: 0.8.6
       unplugin: 0.9.6
       vue-i18n: 9.3.0-beta.6_vue@3.2.41
-      vue-i18n-routing: 0.8.1_dybyk3kyl7g34srrts4qxm2bxi
+      vue-i18n-routing: 0.8.2_dybyk3kyl7g34srrts4qxm2bxi
     devDependencies:
       '@babel/parser': 7.19.4
       '@nuxt/module-builder': 0.2.0
@@ -484,7 +484,7 @@ packages:
   /@docus/base-edge/3.0.0-1138f93:
     resolution: {integrity: sha512-4x9/ump1+5Ig5S0xm7zjSPZJUr9BTI4DvhNtLZCJwLFqn2rdK1kz/x8w9QX44Q+ns6GT7Is9FCwij55hywOPbw==}
     dependencies:
-      '@nuxt/content': /@nuxt/content-edge/2.2.1-27791397.dee9ae1
+      '@nuxt/content': /@nuxt/content-edge/2.2.1-27791612.bfadb27
       '@nuxthq/admin': /@nuxthq/admin-edge/0.0.1-27627055.9933660
       '@vueuse/core': 8.9.4
       '@vueuse/nuxt': 8.9.4
@@ -867,8 +867,8 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@nuxt/content-edge/2.2.1-27791397.dee9ae1:
-    resolution: {integrity: sha512-70EpbaHVnIvxtHYMawG1cZvbBV4Z8XLMEpaHBQ/5TTyX+LyGntSIJGcFRPnFkTJdpGRgizmBD5kBR4e20+uRBw==}
+  /@nuxt/content-edge/2.2.1-27791612.bfadb27:
+    resolution: {integrity: sha512-vMJZHkQcTjuS7A1Y/MiiEqoGYqCWBpgBQMp8OWDgH0yo3EnCCsd8Qz5L4nQNYmavaTwNRjelGJeF9AF5/pi0SA==}
     dependencies:
       '@nuxt/kit': 3.0.0-rc.12
       consola: 2.15.3
@@ -891,7 +891,7 @@ packages:
       rehype-sort-attributes: 4.0.0
       remark-emoji: 3.0.2
       remark-gfm: 3.0.1
-      remark-mdc: 1.1.0
+      remark-mdc: 1.1.1
       remark-parse: 10.0.1
       remark-rehype: 10.1.0
       remark-squeeze-paragraphs: 5.0.1
@@ -7758,8 +7758,8 @@ packages:
       unist-util-visit: 4.1.1
     dev: true
 
-  /remark-mdc/1.1.0:
-    resolution: {integrity: sha512-mUGNjzOqT6bBk4MyQjGHQzLWMmjEaxnomB5ZM8FFL7uSlPzUlQsVnwv9NpG4+usU6BA6YJoGNnSAws840+oq9A==}
+  /remark-mdc/1.1.1:
+    resolution: {integrity: sha512-gqpNtzkJfe+UN6flCD2ByJYK7z5z1Hk6q61P/a5TD15kYEwrGNiXeJjs4rmhp1KhSdCh+dz2knwWQ6A0JYw8ZA==}
     dependencies:
       flat: 5.0.2
       js-yaml: 4.1.0
@@ -9319,8 +9319,8 @@ packages:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
     dev: true
 
-  /vue-i18n-routing/0.8.1_dybyk3kyl7g34srrts4qxm2bxi:
-    resolution: {integrity: sha512-oy4oLlyzFRjcAhilmbyT+Awaj/LjRlz2LBpJOBjtrzLRjSnG4Y6ulyKSESDHQ418pQaVJ1ZqeibtuA+V6/TOug==}
+  /vue-i18n-routing/0.8.2_dybyk3kyl7g34srrts4qxm2bxi:
+    resolution: {integrity: sha512-qAAEd5iXp980FngOUYMnsDMEti+Fr8dPF8AdnwtQG3aZr/uVHogZ7rrZq1JKjuUkLnrU+sFo9zAz5rg9BeUxrA==}
     engines: {node: '>= 14.6'}
     peerDependencies:
       vue: ^2.6.14 || ^2.7.0 || ^3.2.0
