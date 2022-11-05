@@ -15,7 +15,7 @@ features:
 
 <alert type="info">
 
-You are looking at the documentation for the new `@nuxtjs/i18n` package. If you are instead looking for the documentation for the legacy `nuxt-i18n` (v6) package then go to [i18n-legacy.nuxtjs.org](https://i18n-legacy.nuxtjs.org/) instead.
+This documentation is for the Nuxt 2 version of the module. For version compatible with Nuxt 3 see https://v8.i18n.nuxtjs.org/.
 
 </alert>
 

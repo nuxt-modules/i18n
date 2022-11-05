@@ -14,8 +14,8 @@
 
 > i18n for your Nuxt project
 
-## For Nuxt 3?
-- 👷 working on [`next`](https://github.com/nuxt-community/i18n-module/tree/next) branch as v8
+## Looking for Nuxt 3 compatible version?
+- 👷 Work-in-progress on the v8 version in the [`next`](https://github.com/nuxt-community/i18n-module/tree/next) branch
 - 📘 [Documentation](https://v8.i18n.nuxtjs.org/)
 
 ## Links
