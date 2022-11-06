@@ -101,7 +101,10 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   }
 ): Promise<Record<string, any>> {
   const { defaultLocale, initialLocale, localeCodes, fallbackLocale, langDir, lazy } = options
-  const setter = (locale: Locale, message: Record<string, any>) => (messages[locale] = message)
+  const setter = (locale: Locale, message: Record<string, any>) => {
+    const base = messages[locale] || {}
+    messages[locale] = { ...base, ...message }
+  }
 
   if (langDir) {
     // load fallback messages
