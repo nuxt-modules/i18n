@@ -1,7 +1,7 @@
 title: '@nuxtjs/i18n'
 description: I18n (Internationalization) for your Nuxt Application
 layout: docs
-url: 'https://i18n.nuxtjs.org'
+url: 'https://v8.i18n.nuxtjs.org'
 debug: false
 socials:
   github: 'nuxt-community/i18n-module'
