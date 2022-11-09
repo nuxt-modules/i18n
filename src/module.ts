@@ -140,7 +140,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     // for loading options
-    const localesRelativeBasePath = relative(nuxt.options.buildDir, nuxt.options.rootDir)
+    const localesRelativeBasePath = relative(nuxt.options.buildDir, nuxt.options.srcDir)
     addTemplate({
       filename: 'i18n.options.mjs',
       write: true,
