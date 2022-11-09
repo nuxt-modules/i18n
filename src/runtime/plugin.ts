@@ -378,10 +378,10 @@ export default defineNuxtPlugin(async nuxt => {
 
 declare module '#app' {
   interface NuxtApp {
-    $getRouteBaseName: (this: NuxtApp, ...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
-    $localePath: (this: NuxtApp, ...args: Parameters<LocalePath>) => ReturnType<LocalePath>
-    $localeRoute: (this: NuxtApp, ...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
-    $localeHead: (this: NuxtApp, ...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
-    $switchLocalePath: (this: NuxtApp, ...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
+    $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
+    $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
+    $localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
+    $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
+    $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
   }
 }

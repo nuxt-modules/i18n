@@ -1,8 +1,7 @@
-import { findBrowserLocale } from 'vue-i18n-routing'
-import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie } from '#imports'
+import { findBrowserLocale, getComposer } from 'vue-i18n-routing'
+import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie, useNuxtApp } from '#imports'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
-import { useI18n } from 'vue-i18n'
 import {
   useRouteBaseName as _useRouteBaseName,
   useLocalePath as _useLocalePath,
@@ -25,9 +24,10 @@ export function useRouteBaseName(
   return _useRouteBaseName(route, { router })
 }
 
-export function useLocalePath({
-  i18n = useI18n()
-}: Pick<NonNullable<Parameters<typeof _useLocalePath>[0]>, 'i18n'> = {}): ReturnType<typeof _useLocalePath> {
+export function useLocalePath(
+  options: Pick<NonNullable<Parameters<typeof _useLocalePath>[0]>, 'i18n'> = {}
+): ReturnType<typeof _useLocalePath> {
+  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
   const route = useRoute()
   const router = useRouter()
   return _useLocalePath({
@@ -37,9 +37,10 @@ export function useLocalePath({
   })
 }
 
-export function useLocaleRoute({
-  i18n = useI18n()
-}: Pick<NonNullable<Parameters<typeof _useLocaleRoute>[0]>, 'i18n'> = {}): ReturnType<typeof _useLocaleRoute> {
+export function useLocaleRoute(
+  options: Pick<NonNullable<Parameters<typeof _useLocaleRoute>[0]>, 'i18n'> = {}
+): ReturnType<typeof _useLocaleRoute> {
+  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
   const route = useRoute()
   const router = useRouter()
   return _useLocaleRoute({
@@ -49,11 +50,10 @@ export function useLocaleRoute({
   })
 }
 
-export function useSwitchLocalePath({
-  i18n = useI18n()
-}: Pick<NonNullable<Parameters<typeof _useSwitchLocalePath>[0]>, 'i18n'> = {}): ReturnType<
-  typeof _useSwitchLocalePath
-> {
+export function useSwitchLocalePath(
+  options: Pick<NonNullable<Parameters<typeof _useSwitchLocalePath>[0]>, 'i18n'> = {}
+): ReturnType<typeof _useSwitchLocalePath> {
+  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
   const route = useRoute()
   const router = useRouter()
   return _useSwitchLocalePath({
@@ -63,15 +63,18 @@ export function useSwitchLocalePath({
   })
 }
 
-export function useLocaleHead({
-  addDirAttribute = false,
-  addSeoAttributes = false,
-  identifierAttribute = 'hid',
-  i18n = useI18n()
-}: Pick<
-  NonNullable<Parameters<typeof _useLocaleHead>[0]>,
-  'i18n' | 'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
-> = {}): ReturnType<typeof _useLocaleHead> {
+export function useLocaleHead(
+  options: Pick<
+    NonNullable<Parameters<typeof _useLocaleHead>[0]>,
+    'i18n' | 'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
+  > = {
+    addDirAttribute: false,
+    addSeoAttributes: false,
+    identifierAttribute: 'hid'
+  }
+): ReturnType<typeof _useLocaleHead> {
+  const { addDirAttribute, addSeoAttributes, identifierAttribute } = options
+  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
   const route = useRoute()
   const router = useRouter()
   return _useLocaleHead({
