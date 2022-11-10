@@ -4,22 +4,14 @@ import { computed } from 'vue'
 // import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
 import { LocaleObject, useI18n } from '#i18n'
 
-definePageMeta({
-  title: 'pages.title.top',
-  pageTransition: {
-    name: 'page',
-    mode: 'out-in'
-  }
-})
-
 const route = useRoute()
 const { t, strategy, locale, locales, localeProperties, setLocale, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 
-route.meta.pageTransition.onBeforeEnter = async () => {
-  await finalizePendingLocaleChange()
-}
+// route.meta.pageTransition.onBeforeEnter = async () => {
+//   await finalizePendingLocaleChange()
+// }
 
 console.log('useBrowserLocale', useBrowserLocale())
 console.log('localeProperties', localeProperties)
@@ -32,6 +24,23 @@ function getLocaleName(code: string) {
 
 const availableLocales = computed(() => {
   return (locales.value as LocaleObject[]).filter(i => i.code !== locale.value)
+})
+
+definePageMeta({
+  title: 'pages.title.top',
+  middleware: () => {
+    const localePath2 = useLocalePath()
+    console.log('middleware', localePath2({ name: 'blog' }))
+  },
+  pageTransition: {
+    name: 'page',
+    mode: 'out-in',
+    onBeforeEnter: async () => {
+      const { finalizePendingLocaleChange } = useNuxtApp().$i18n
+      await finalizePendingLocaleChange()
+      console.log('onBeforeEnter')
+    }
+  }
 })
 </script>
 
