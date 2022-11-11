@@ -3,11 +3,15 @@ import { extendPages } from '@nuxt/kit'
 import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString } from '@intlify/shared'
 import fs from 'node:fs'
+import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
+import { walk } from 'estree-walker'
+import MagicString from 'magic-string'
 import { formatMessage } from './utils'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { RouteOptionsResolver, ComputedRouteOptions, LocalizeRoutesPrefixableOptions } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
+import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
 
@@ -137,47 +141,114 @@ function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
 
 function readComponent(target: string) {
   let options: ComputedRouteOptions | false | undefined = undefined
+
   try {
     const content = fs.readFileSync(target, 'utf8').toString()
-    const { 0: match, index = 0 } =
-      content.match(new RegExp(`\\b${'defineI18nRoute'}\\s*\\(\\s*`)) || ({} as RegExpMatchArray)
-    const macroContent = match ? extractValue(content.slice(index + match.length)) : 'undefined'
-    options = new Function(`return (${macroContent})`)()
+    const { descriptor } = parseSFC(content)
+    const desc = compileScript(descriptor, { id: target })
+    const { scriptSetupAst } = desc
+    let extract = ''
+    if (scriptSetupAst) {
+      const s = new MagicString(desc.loc.source)
+      scriptSetupAst.forEach(ast => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        walk(ast as any, {
+          enter(_node) {
+            const node = _node as Node
+            if (
+              node.type === 'CallExpression' &&
+              node.callee.type === 'Identifier' &&
+              node.callee.name === 'defineI18nRoute'
+            ) {
+              const arg = node.arguments[0]
+              if (arg.type === 'ObjectExpression') {
+                if (verifyObjectValue(arg.properties) && arg.start != null && arg.end != null) {
+                  extract = s.slice(arg.start, arg.end)
+                }
+              } else if (arg.type === 'BooleanLiteral' && arg.start != null && arg.end != null) {
+                extract = s.slice(arg.start, arg.end)
+              }
+            }
+          }
+        })
+      })
+    }
+    options = evalValue(extract)
   } catch (e: unknown) {
     console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
   }
+
   return options
 }
 
-const starts = {
-  '{': '}',
-  '[': ']',
-  '(': ')',
-  '<': '>',
-  '"': '"',
-  "'": "'"
-}
-const REGEX_QUOTE = /["']/
-const REGEX_FALSE = /false/
-
-function extractValue(code: string) {
-  // Strip comments
-  code = code.replace(/^\s*\/\/.*$/gm, '')
-
-  if (REGEX_FALSE.test(code)) {
-    return 'false'
-  }
-
-  const stack: string[] = []
-  let result = ''
-  do {
-    if (stack[0] === code[0] && result.slice(-1) !== '\\') {
-      stack.shift()
-    } else if (code[0] in starts && !REGEX_QUOTE.test(stack[0])) {
-      stack.unshift(starts[code[0] as keyof typeof starts])
+function verifyObjectValue(properties: ObjectExpression['properties']) {
+  let ret = true
+  for (const prop of properties) {
+    if (prop.type === 'ObjectProperty') {
+      if (
+        (prop.key.type === 'Identifier' && prop.key.name === 'locales') ||
+        (prop.key.type === 'StringLiteral' && prop.key.value === 'locales')
+      ) {
+        if (prop.value.type === 'ArrayExpression') {
+          ret = verifyLocalesArrayExpression(prop.value.elements)
+        } else {
+          console.warn(formatMessage(`'locale' value is required array expression`))
+          ret = false
+        }
+      } else if (
+        (prop.key.type === 'Identifier' && prop.key.name === 'paths') ||
+        (prop.key.type === 'StringLiteral' && prop.key.value === 'paths')
+      ) {
+        if (prop.value.type === 'ObjectExpression') {
+          ret = verifyPathsObjectExpress(prop.value.properties)
+        } else {
+          console.warn(formatMessage(`'paths' value is required object expression`))
+          ret = false
+        }
+      }
+    } else {
+      console.warn(formatMessage(`'defineI18nRoute' object expression properties type is required object property`))
+      ret = false
     }
-    result += code[0]
-    code = code.slice(1)
-  } while (stack.length && code.length)
-  return result
+  }
+  return ret
+}
+
+function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
+  let ret = true
+  for (const prop of properties) {
+    if (prop.type === 'ObjectProperty') {
+      if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
+        console.warn(formatMessage(`'paths.${prop.key.name}' value is required string literal`))
+        ret = false
+      } else if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
+        console.warn(formatMessage(`'paths.${prop.key.value}' value is required string literal`))
+        ret = false
+      }
+    } else {
+      console.warn(formatMessage(`'paths' is required object property`))
+      ret = false
+    }
+  }
+  return ret
+}
+
+function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
+  let ret = true
+  for (const element of elements) {
+    if (element?.type !== 'StringLiteral') {
+      console.warn(formatMessage(`required 'locales' value string literal`))
+      ret = false
+    }
+  }
+  return ret
+}
+
+function evalValue(value: string) {
+  try {
+    return new Function(`return (${value})`)() as ComputedRouteOptions | false
+  } catch (e) {
+    console.error(formatMessage(`Cannot evaluate value: ${value}`))
+    return
+  }
 }

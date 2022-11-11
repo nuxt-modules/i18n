@@ -1,5 +1,22 @@
 // Vitest Snapshot v1
 
+exports[`component > JavaScript 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "path": "/ja/about-ja",
+  },
+  {
+    "children": [],
+    "path": "/fr/a-propos",
+  },
+]
+`;
+
 exports[`component > dynamic route 1`] = `
 [
   {
@@ -21,6 +38,23 @@ exports[`component > dynamic route 1`] = `
 `;
 
 exports[`component > simple 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "path": "/ja/about-ja",
+  },
+  {
+    "children": [],
+    "path": "/fr/a-propos",
+  },
+]
+`;
+
+exports[`component > with definePageMeta 1`] = `
 [
   {
     "children": [],
