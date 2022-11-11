@@ -173,6 +173,28 @@ describe.each([
         children: []
       }
     ]
+  },
+  {
+    case: 'with definePageMeta',
+    options: getNuxtOptions({}, true),
+    pages: [
+      {
+        path: '/about',
+        file: resolve(__dirname, '../fixtures/custom_route/with_meta/pages/about.vue'),
+        children: []
+      }
+    ]
+  },
+  {
+    case: 'JavaScript',
+    options: getNuxtOptions({}, true),
+    pages: [
+      {
+        path: '/about',
+        file: resolve(__dirname, '../fixtures/custom_route/js/pages/about.vue'),
+        children: []
+      }
+    ]
   }
 ])('component', ({ case: _case, options, pages }) => {
   test(_case, async () => {
