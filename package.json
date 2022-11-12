@@ -1,7 +1,7 @@
 {
   "name": "@nuxtjs/i18n",
   "description": "i18n for Nuxt",
-  "version": "8.0.0-beta.3",
+  "version": "8.0.0-beta.4",
   "homepage": "https://i18n.nuxtjs.org",
   "packageManager": "pnpm@7.13.5",
   "bugs": {
