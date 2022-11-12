@@ -145,8 +145,12 @@ function readComponent(target: string) {
   try {
     const content = fs.readFileSync(target, 'utf8').toString()
     const { descriptor } = parseSFC(content)
+    if (!descriptor.scriptSetup) {
+      return options
+    }
     const desc = compileScript(descriptor, { id: target })
     const { scriptSetupAst } = desc
+
     let extract = ''
     if (scriptSetupAst) {
       const s = new MagicString(desc.loc.source)
@@ -173,7 +177,10 @@ function readComponent(target: string) {
         })
       })
     }
-    options = evalValue(extract)
+
+    if (extract) {
+      options = evalValue(extract)
+    }
   } catch (e: unknown) {
     console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
   }
