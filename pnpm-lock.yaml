@@ -54,7 +54,7 @@ importers:
       vitest: ^0.25.0
       vue: ^3.2.44
       vue-i18n: ^9.3.0-beta.6
-      vue-i18n-routing: ^0.9.0
+      vue-i18n-routing: ^0.9.1
       yorkie: ^2.0.0
     dependencies:
       '@intlify/bundle-utils': 3.2.1_vue-i18n@9.3.0-beta.6
@@ -74,7 +74,7 @@ importers:
       ufo: 0.8.6
       unplugin: 0.9.6
       vue-i18n: 9.3.0-beta.6_vue@3.2.45
-      vue-i18n-routing: 0.9.0_fnejf2ofhebihn7umpady265im
+      vue-i18n-routing: 0.9.1_fnejf2ofhebihn7umpady265im
     devDependencies:
       '@babel/parser': 7.20.3
       '@babel/plugin-syntax-import-assertions': 7.20.0
@@ -9468,7 +9468,6 @@ packages:
         optional: true
     dependencies:
       vue: 3.2.45
-    dev: true
 
   /vue-demi/0.13.11_y3dbsgppqv4jnxjxtdjaj42kje:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}
@@ -9490,10 +9489,11 @@ packages:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
     dev: true
 
-  /vue-i18n-routing/0.9.0_fnejf2ofhebihn7umpady265im:
-    resolution: {integrity: sha512-zTGacYpHipFz/3vRWgA79JcEVOadj2E9WHUXmNtNsq3H3gscLta2UYhVWT2UzH9fpmox3MsEkZU7EISBt/6+cA==}
+  /vue-i18n-routing/0.9.1_fnejf2ofhebihn7umpady265im:
+    resolution: {integrity: sha512-k/yes9ZS0GVnJfFXVlLYuLkq1mmjp0Tx0fWhI3ndmhh+QC8wu4kfveNILhU/4fwLe0YBkLtIu1hVPT3NSqQeYg==}
     engines: {node: '>= 14.6'}
     peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
       vue: ^2.6.14 || ^2.7.0 || ^3.2.0
       vue-i18n: ^8.26.1 || ^9.2.0 || ^9.3.0-beta.6
       vue-i18n-bridge: ^9.2.0 || ^9.3.0-beta.6
@@ -9515,10 +9515,8 @@ packages:
       '@intlify/vue-router-bridge': 0.7.0_vue@3.2.45
       ufo: 0.8.6
       vue: 3.2.45
-      vue-demi: 0.13.11_y3dbsgppqv4jnxjxtdjaj42kje
+      vue-demi: 0.13.11_vue@3.2.45
       vue-i18n: 9.3.0-beta.6_vue@3.2.45
-    optionalDependencies:
-      '@vue/composition-api': 1.7.1_vue@3.2.45
     dev: false
 
   /vue-i18n/9.3.0-beta.6_vue@3.2.45:
