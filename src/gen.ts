@@ -55,8 +55,16 @@ export function generateLoaderOptions(
     if (file && langDir) {
       loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
     }
-    // TODO: import assertions (we need to support it on kitwork)
-    genCode += `${genImport(loadPath, genSafeVariableName(`locale_${code}`))}\n`
+    let assertFormat = ''
+    if (file) {
+      const { ext } = parsePath(file)
+      assertFormat = ext.slice(1)
+    }
+    genCode += `${genImport(
+      loadPath,
+      genSafeVariableName(`locale_${code}`),
+      assertFormat ? { assert: { type: assertFormat } } : {}
+    )}\n`
   }
 
   // prettier-ignore
@@ -106,7 +114,6 @@ export function generateLoaderOptions(
           if (file && langDir) {
             loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
           }
-          // TODO: import assertions (we need to support it on kitwork)
           codes += `  ${toCode(code)}: ${genDynamicImport(loadPath, { comment: `webpackChunkName: "lang-${code}"` })},\n`
         }
       }

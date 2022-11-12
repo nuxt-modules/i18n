@@ -53,7 +53,8 @@ function validateSyntax(code: string): boolean {
   try {
     const node = parse(code, {
       allowImportExportEverywhere: true,
-      sourceType: 'module'
+      sourceType: 'module',
+      plugins: ['importAssertions']
     })
     ret = !node.errors.length
   } catch (e) {
