@@ -82,7 +82,7 @@
     "ufo": "^0.8.5",
     "unplugin": "^0.9.6",
     "vue-i18n": "^9.3.0-beta.6",
-    "vue-i18n-routing": "^0.9.0"
+    "vue-i18n-routing": "^0.9.1"
   },
   "devDependencies": {
     "@babel/types": "^7.20.2",
