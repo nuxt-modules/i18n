@@ -30,13 +30,16 @@ export function setupPages(
     return !options.differentDomains && DefaultLocalizeRoutesPrefixable(opts)
   }
 
+  // @ts-expect-error TODO:
   let includeUprefixedFallback = nuxt.options.target === 'static'
+  // @ts-expect-error TODO:
   nuxt.hook('generate:before', () => {
     debug('called generate:before hook')
     includeUprefixedFallback = true
   })
 
   const pagesDir = nuxt.options.dir && nuxt.options.dir.pages ? nuxt.options.dir.pages : 'pages'
+  // @ts-expect-error TODO:
   const { trailingSlash } = nuxt.options.router
   debug(`pagesDir: ${pagesDir}, tailingSlash: ${trailingSlash}`)
 
