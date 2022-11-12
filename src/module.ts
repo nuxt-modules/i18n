@@ -99,7 +99,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     if (options.strategy !== 'no_prefix' && localeCodes.length) {
-      await setupPages(options, nuxt, { isBridge: isNuxt2(nuxt), localeCodes })
+      await setupPages(options, nuxt, { trailingSlash: options.trailingSlash })
     }
 
     /**

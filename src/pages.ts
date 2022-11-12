@@ -18,10 +18,8 @@ const debug = createDebug('@nuxtjs/i18n:pages')
 export function setupPages(
   options: Required<NuxtI18nOptions>,
   nuxt: Nuxt,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  additionalOptions: { isBridge?: boolean; localeCodes: string[] } = {
-    isBridge: false,
-    localeCodes: []
+  additionalOptions: { trailingSlash?: boolean } = {
+    trailingSlash: false
   }
 ) {
   // override prefixable path for localized target routes
@@ -30,17 +28,14 @@ export function setupPages(
     return !options.differentDomains && DefaultLocalizeRoutesPrefixable(opts)
   }
 
-  // @ts-expect-error TODO:
-  let includeUprefixedFallback = nuxt.options.target === 'static'
-  // @ts-expect-error TODO:
-  nuxt.hook('generate:before', () => {
-    debug('called generate:before hook')
+  let includeUprefixedFallback = nuxt.options.ssr === false
+  nuxt.hook('build:before', () => {
+    debug('called build:before hook')
     includeUprefixedFallback = true
   })
 
   const pagesDir = nuxt.options.dir && nuxt.options.dir.pages ? nuxt.options.dir.pages : 'pages'
-  // @ts-expect-error TODO:
-  const { trailingSlash } = nuxt.options.router
+  const { trailingSlash } = additionalOptions
   debug(`pagesDir: ${pagesDir}, tailingSlash: ${trailingSlash}`)
 
   extendPages(pages => {
