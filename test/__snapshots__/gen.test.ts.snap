@@ -68,9 +68,9 @@ export const resolveNuxtI18nOptions = async (context) => {
 },}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":((prop) => {
-          return \`Hello \${prop.toString()}\`;
+          return \`Hello \${prop}\`;
         })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":((prop) => {
-          return \`Hello \${prop.toString()}\`;
+          return \`Hello \${prop}\`;
         })})]
   return nuxtI18nOptions
 }
@@ -95,9 +95,9 @@ export const resolveNuxtI18nOptions = async (context) => {
 },}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop.toString()}\`;
+          return \`Hello \${prop}\`;
         })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop.toString()}\`;
+          return \`Hello \${prop}\`;
         })})]
   return nuxtI18nOptions
 }
