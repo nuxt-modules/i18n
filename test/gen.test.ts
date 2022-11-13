@@ -101,3 +101,43 @@ it('vueI18n: path', () => {
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
 })
+
+it('toCode: function (arrow)', () => {
+  const code = generateLoaderOptions(false, 'locales', '..', {
+    localeCodes: LOCALE_CODES,
+    additionalMessages: {},
+    nuxtI18nOptions: {
+      ...NUXT_I18N_OPTIONS,
+      locales: LOCALE_INFO.map(locale => ({
+        ...locale,
+        testFunc: (prop: unknown) => {
+          return `Hello ${prop}`
+        }
+      }))
+    },
+    nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+  })
+  expect(validateSyntax(code)).toBe(true)
+  expect(code).toMatchSnapshot()
+})
+
+it('toCode: function (named)', () => {
+  const code = generateLoaderOptions(false, 'locales', '..', {
+    localeCodes: LOCALE_CODES,
+    additionalMessages: {},
+    nuxtI18nOptions: {
+      ...NUXT_I18N_OPTIONS,
+      locales: LOCALE_INFO.map(locale => ({
+        ...locale,
+        testFunc(prop: unknown) {
+          return `Hello ${prop}`
+        }
+      }))
+    },
+    nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+  })
+  expect(validateSyntax(code)).toBe(true)
+  expect(code).toMatchSnapshot()
+})
