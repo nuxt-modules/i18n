@@ -120,7 +120,7 @@ export function generateLoaderOptions(
       codes += `}\n`
       return codes
     } else if (rootKey === 'additionalMessages') {
-      return `export const ${rootKey} = ${generaeteAdditionalMessages(rootValue, dev)}\n`
+      return `export const ${rootKey} = ${generateAdditionalMessages(rootValue, dev)}\n`
 	  } else {
 	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
 	  }
@@ -157,7 +157,7 @@ function generateVueI18nOptions(options: Record<string, any>, dev: boolean): str
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function generaeteAdditionalMessages(value: Record<string, any>, dev: boolean): string {
+function generateAdditionalMessages(value: Record<string, any>, dev: boolean): string {
   let genCode = 'Object({'
   for (const [locale, messages] of Object.entries(value)) {
     genCode += `${JSON.stringify(locale)}:[`
@@ -198,7 +198,7 @@ export function toCode(code: any): string {
   }
 
   if (isFunction(code) && code.toString) {
-    return `(${code.toString()})`
+    return `(${code.toString().replace(new RegExp(`^${code.name}`), 'function ')})`
   }
 
   if (isArray(code)) {
