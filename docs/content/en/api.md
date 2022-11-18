@@ -47,7 +47,7 @@ All [Vue I18n properties and methods](http://kazupon.github.io/vue-i18n/api/#vue
 ### localeRoute()
 
   - **Arguments**:
-    - route (type: `RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
+    - route (type: [`RawLocation`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L8))
     - locale (type: `string`, default: current locale)
   - **Returns**: [`Route`](https://github.com/vuejs/vue-router/blob/f40139c27a9736efcbda69ec136cb00d8e00fa97/types/router.d.ts#L135-L145) | `undefined`
 
