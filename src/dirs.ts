@@ -10,6 +10,11 @@ export const runtimeDir = fileURLToPath(new URL('./runtime', import.meta.url))
 const pkgDir = resolve(distDir, '..')
 export const pkgModulesDir = resolve(pkgDir, './node_modules')
 
+debug('distDir', distDir)
+debug('runtimeDir', runtimeDir)
+debug('pkgDir', pkgDir)
+debug('pkgModulesDir', pkgModulesDir)
+
 export async function resolveVueI18nPkgPath() {
   const p = await resolvePath('vue-i18n')
   debug('vue-i18n resolved path', p)
