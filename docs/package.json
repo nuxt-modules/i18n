@@ -2,15 +2,14 @@
   "name": "@nuxtjs/i18n-docs",
   "private": true,
   "scripts": {
-    "build": "nuxi build",
     "dev": "nuxi dev",
+    "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview"
   },
   "devDependencies": {
-    "@docus/docs-theme": "npm:@docus/docs-theme-edge@latest",
-    "@docus/github": "npm:@docus/github-edge@latest",
-    "nuxt": "latest",
-    "vue-plausible": "^1.3.2"
+    "@nuxt-themes/docus": "npm:@nuxt-themes/docus-edge@latest",
+    "nuxt": "^3.0.0",
+    "@nuxtjs/tailwindcss": "latest"
   }
 }
