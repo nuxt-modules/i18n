@@ -61,6 +61,7 @@ describe('strategy: no_prefix', async () => {
 
     // click `fr` lang switch link (`setLocale`)
     await page.locator('#lang-switcher-with-set-locale a').click()
+    await page.waitForTimeout(100)
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')

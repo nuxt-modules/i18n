@@ -23,6 +23,7 @@ test('disable', async () => {
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
+  await page.waitForTimeout(100)
   expect(await ctx.cookies()).toMatchObject([])
 
   // navigate to about
@@ -33,9 +34,11 @@ test('disable', async () => {
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
+  await page.waitForTimeout(100)
 
   // navigate with home link
   await page.locator('#link-home').click()
+  await page.waitForTimeout(100)
 
   // set default locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')

@@ -41,11 +41,13 @@ test('detection with cookie', async () => {
 
   // navigate with home link
   await page.locator('#link-home').click()
+  await page.waitForTimeout(100)
 
   // locale in home
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-en').click()
+  await page.waitForTimeout(100)
   expect(await ctx.cookies()).toMatchObject([{ name: 'my_custom_cookie_name', value: 'en' }])
 })

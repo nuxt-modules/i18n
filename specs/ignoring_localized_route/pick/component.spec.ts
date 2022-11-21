@@ -20,6 +20,7 @@ test('can not access to pick route path', async () => {
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForTimeout(100)
 
   // pick href with <NuxtLink>
   expect(await page.locator('#link-ignore-pick').getAttribute('href')).toBe('/fr/ignore-routes/pick')
