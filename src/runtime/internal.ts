@@ -251,6 +251,19 @@ export function setLocaleCookie(
   }
 }
 
+export type DetectBrowserLanguageNotDetectReason =
+  | 'unknown'
+  | 'not_found_match'
+  | 'not_redirect_on_root'
+  | 'not_redirect_on_no_prefix'
+export type DetectBrowserLanguageFrom = 'unknown' | 'cookie' | 'navigator_or_header' | 'fallback'
+export type DetectBrowserLanguageFromResult = {
+  locale: string
+  stat: boolean
+  reason?: DetectBrowserLanguageNotDetectReason
+  from?: DetectBrowserLanguageFrom
+}
+
 export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   context: any,
@@ -258,59 +271,92 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   localeCodes: string[] = [],
   locale: Locale = ''
-): string {
-  __DEBUG__ && console.log('detectBrowserLanguage: locale params', locale)
+): DetectBrowserLanguageFromResult {
   const { strategy } = nuxtI18nOptions
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
     nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
 
   const path = isString(route) ? route : route.path
-  __DEBUG__ && console.log('detectBrowserLanguage check route, strategy and redirectOn', path, strategy, redirectOn)
+  __DEBUG__ &&
+    console.log(
+      'detectBrowserLanguage: (path, strategy, alwaysRedirect, redirectOn, locale) -',
+      path,
+      strategy,
+      alwaysRedirect,
+      redirectOn,
+      locale
+    )
   if (strategy !== 'no_prefix') {
     if (redirectOn === 'root') {
       if (path !== '/') {
         __DEBUG__ && console.log('detectBrowserLanguage: not root')
-        return ''
+        return { locale: '', stat: false, reason: 'not_redirect_on_root' }
       }
     } else if (redirectOn === 'no prefix') {
       if (!alwaysRedirect && path.match(getLocalesRegex(localeCodes as string[]))) {
         __DEBUG__ && console.log('detectBrowserLanguage: no prefix')
-        return ''
+        return { locale: '', stat: false, reason: 'not_redirect_on_no_prefix' }
       }
     }
   }
 
-  const cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
-  __DEBUG__ && console.log('detectBrowserLanguage cookieLocale', cookieLocale)
-  __DEBUG__ && console.log('detectBrowserLanguage browserLocale', getBrowserLocale(nuxtI18nInternalOptions, context))
+  let localeFrom: DetectBrowserLanguageFrom = 'unknown'
+  let cookieLocale: string | undefined
+  let matchedLocale: string | undefined
 
-  let matchedLocale
-  if (useCookie && (matchedLocale = cookieLocale)) {
-    // get preferred language from cookie if present and enabled
-  } else {
-    // try to get locale from either navigator or header detection
-    matchedLocale = getBrowserLocale(nuxtI18nInternalOptions, context)
+  // get preferred language from cookie if present and enabled
+  if (useCookie) {
+    matchedLocale = cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
+    localeFrom = 'cookie'
+    __DEBUG__ && console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
   }
-  __DEBUG__ && console.log('detectBrowserLanguage matchedLocale', matchedLocale)
+  // try to get locale from either navigator or header detection
+  if (!matchedLocale) {
+    matchedLocale = getBrowserLocale(nuxtI18nInternalOptions, context)
+    localeFrom = 'navigator_or_header'
+    __DEBUG__ && console.log('detectBrowserLanguage: browserLocale', matchedLocale)
+  }
+  __DEBUG__ &&
+    console.log(
+      'detectBrowserLanguage: (matchedLocale, cookieLocale, localeFrom) -',
+      matchedLocale,
+      cookieLocale,
+      localeFrom
+    )
 
+  // set fallback locale if that is not matched locale
   const finalLocale = matchedLocale || fallbackLocale
+  if (!matchedLocale && fallbackLocale) {
+    localeFrom = 'fallback'
+  }
+  __DEBUG__ &&
+    console.log(
+      'detectBrowserLanguage: first finaleLocale (finaleLocale, lcoaleForm) -',
+      finalLocale,
+      cookieLocale,
+      localeFrom
+    )
+
   const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
-  __DEBUG__ && console.log('detectBrowserLanguage first finaleLocale', finalLocale)
-  __DEBUG__ && console.log('detectBrowserLanguage vueI18nLocale', vueI18nLocale)
+  __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
 
   // handle cookie option to prevent multiple redirections
   if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {
     if (strategy === 'no_prefix') {
-      return finalLocale
+      return { locale: finalLocale, stat: true, from: localeFrom }
     } else {
-      if (finalLocale !== vueI18nLocale && path !== '/') {
-        __DEBUG__ && console.log('detectBrowserLanguage finalLocale !== vueI18nLocale', finalLocale)
-        return finalLocale
+      if (finalLocale !== vueI18nLocale /* && path !== '/'*/) {
+        __DEBUG__ && console.log('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
+        return { locale: finalLocale, stat: true, from: localeFrom }
+      } else {
+        if (alwaysRedirect && path === '/') {
+          return { locale: finalLocale, stat: true, from: localeFrom }
+        }
       }
     }
   }
 
-  return ''
+  return { locale: '', stat: false, reason: 'not_found_match' }
 }
 
 export function getHost() {
