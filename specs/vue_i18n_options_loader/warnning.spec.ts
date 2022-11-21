@@ -19,7 +19,7 @@ test('warning in messages option', async () => {
   const messages: string[] = []
   page.on('console', msg => messages.push(msg.text()))
   await page.goto(home)
-  await page.waitForTimeout(1000)
+  await page.waitForTimeout(100)
 
   expect(messages[0]).include(
     `[@nuxtjs/i18n]: Cannot include 'messages' option in 'vue-i18n.messages.options.ts'. Please use Lazy-load translations.`

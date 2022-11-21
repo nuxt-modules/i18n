@@ -22,6 +22,7 @@ test('can not access to disable route path', async () => {
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForTimeout(100)
 
   // disalbe href with <NuxtLink>
   expect(await page.locator('#link-ignore-disable').getAttribute('href')).toBe(null)
