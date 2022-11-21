@@ -52,8 +52,8 @@ export default defineNuxtConfig({
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
+    strategy: 'prefix_and_default',
     // rootRedirect: '/ja/about-ja',
-    // strategy: 'prefix_and_default',
     // parsePages: false,
     dynamicRouteParams: true,
     pages: {
@@ -62,15 +62,17 @@ export default defineNuxtConfig({
       }
     },
     // differentDomains: true,
-    skipSettingLocaleOnNavigate: true,
+    // skipSettingLocaleOnNavigate: true,
     detectBrowserLanguage: false,
-    // detectBrowserLanguage: {
-    //   useCookie: true,
-    //   alwaysRedirect: false
-    //   // cookieKey: 'i18n_redirected',
-    //   // cookieKey: 'my_custom_cookie_name',
-    //   // redirectOn: 'root'
-    // },
+    /*
+    detectBrowserLanguage: {
+      useCookie: true,
+      // alwaysRedirect: true,
+      cookieKey: 'i18n_redirected',
+      // cookieKey: 'my_custom_cookie_name',
+      redirectOn: 'root'
+    },
+    //*/
     onBeforeLanguageSwitch: (oldLocale: string, newLocale: string, initial: boolean, nuxt: NuxtApp) => {
       console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial)
     },

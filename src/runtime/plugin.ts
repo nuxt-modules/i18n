@@ -99,7 +99,7 @@ export default defineNuxtPlugin(async nuxt => {
     normalizedLocales,
     localeCodes
   )
-  __DEBUG__ && console.log('first detect locale', initialLocale)
+  __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
   // load initial vue-i18n locale messages
   vueI18nOptions.messages = await loadInitialMessages(nuxtContext, vueI18nOptions.messages, {
