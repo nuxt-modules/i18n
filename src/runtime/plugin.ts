@@ -11,7 +11,8 @@ import {
   switchLocalePath,
   localeHead,
   setLocale,
-  getLocale
+  getLocale,
+  getComposer
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
@@ -34,7 +35,7 @@ import {
 } from '#build/i18n.internal.mjs'
 
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
-import type { LocaleObject, ExtendProperyDescripters } from 'vue-i18n-routing'
+import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#imports'
 
 type GetRouteBaseName = typeof getRouteBaseName
@@ -318,9 +319,24 @@ export default defineNuxtPlugin(async nuxt => {
     }
   })
 
-  // install vue-i18n
-  // TODO: should implement `{ inject: boolean }
-  app.use(i18n)
+  // vue-i18n installation
+  const pluginOptions: VueI18nRoutingPluginOptions = {
+    __composerExtend: (c: Composer) => {
+      const g = getComposer(i18n)
+      c.strategy = g.strategy
+      c.localeProperties = computed(() => g.localeProperties.value)
+      c.setLocale = g.setLocale
+      c.differentDomains = g.differentDomains
+      c.getBrowserLocale = g.getBrowserLocale
+      c.getLocaleCookie = g.getLocaleCookie
+      c.setLocaleCookie = g.setLocaleCookie
+      c.onBeforeLanguageSwitch = g.onBeforeLanguageSwitch
+      c.onLanguageSwitched = g.onLanguageSwitched
+      c.finalizePendingLocaleChange = g.finalizePendingLocaleChange
+      c.waitForPendingLocaleChange = g.waitForPendingLocaleChange
+    }
+  }
+  app.use(i18n, pluginOptions) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
 
   // inject for nuxt helpers
   inejctNuxtHelpers(nuxtContext, i18n)
