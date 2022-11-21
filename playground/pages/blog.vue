@@ -9,9 +9,10 @@ defineI18nRoute({
   }
 })
 
-const { t } = useI18n({
+const { t, locales, baseUrl } = useI18n({
   useScope: 'local'
 })
+console.log('locales', locales, baseUrl)
 </script>
 
 <template>
