@@ -52,6 +52,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   langDir?: string | null
   lazy?: boolean | LazyOptions
   pages?: CustomRoutePages
+  customRoutes?: 'page' | 'config'
   parsePages?: boolean
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
