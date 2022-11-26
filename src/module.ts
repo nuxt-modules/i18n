@@ -9,7 +9,7 @@ import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { distDir, runtimeDir, resolveVueI18nPkgPath, resolveVueI18nRoutingPkgPath } from './dirs'
+import { distDir, runtimeDir, resolveVueI18nPkgPath, resolveVueI18nRoutingDtsPath } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -116,12 +116,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     addPlugin(resolve(runtimeDir, 'plugin'))
 
     // for compoables
-    const i18nPath = addTemplate({
-      filename: 'i18n.mjs',
-      src: resolve(distDir, 'runtime/composables.mjs')
-    })
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    nuxt.options.alias['#i18n'] = i18nPath.dst!
+    nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables.mjs')
     nuxt.options.build.transpile.push('#i18n')
 
     // TODO: We don't want to resolve the following as a template,
@@ -204,8 +199,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
           : false
     }
     const nuxtAppExtendFilename = 'types/i18n-nuxt-app.d.ts'
-    const vueI18nDir = await resolveVueI18nPkgPath()
-    const vueI18nRoutingDir = await resolveVueI18nRoutingPkgPath()
+    const vueI18nRoutingVueI18nDtsPath = await resolveVueI18nRoutingDtsPath('vue-i18n')
+    const vueI18nRoutingMixinDtsPath = await resolveVueI18nRoutingDtsPath('vue')
     addTemplate({
       filename: nuxtAppExtendFilename,
       getContents: () => {
@@ -213,9 +208,16 @@ export default defineNuxtModule<NuxtI18nOptions>({
           `import type { ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} } from 'vue-i18n'`,
           // prettier-ignore
           `import type { NuxtI18nRoutingCustomProperties } from '${resolve(runtimeDir, 'types')}'`,
-          `import type { I18nRoutingCustomProperties } from 'vue-i18n-routing/dist/vue-i18n'`,
-          isLegacyMode() ? `import '${resolve(vueI18nRoutingDir, 'dist/vue')}'` : '',
+          `import type { I18nRoutingCustomProperties } from '${vueI18nRoutingVueI18nDtsPath}'`,
+          // import legacy mixins
+          isLegacyMode() ? `import '${vueI18nRoutingMixinDtsPath}'` : '',
           `declare module '#app' {`,
+          '  interface NuxtApp {',
+          // prettier-ignore
+          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
+          '  }',
+          '}',
+          `declare module 'nuxt/dist/app/nuxt' {`,
           '  interface NuxtApp {',
           // prettier-ignore
           `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
@@ -244,6 +246,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * auto imports
      */
 
+    const vueI18nDir = await resolveVueI18nPkgPath()
     await addImports([
       { name: 'useI18n', from: resolve(vueI18nDir, 'dist/vue-i18n') },
       ...[
