@@ -26,8 +26,13 @@
   "exports": {
     ".": {
       "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
-    }
+      "require": "./dist/module.cjs",
+      "types": "./dist/types.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#i18n": "./dist/runtime/composables.mjs"
   },
   "main": "./dist/module.cjs",
   "module": "./dist/module.mjs",

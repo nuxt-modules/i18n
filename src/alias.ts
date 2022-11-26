@@ -1,11 +1,11 @@
 import createDebug from 'debug'
 import { resolvePath } from '@nuxt/kit'
-import { resolveVueI18nPkgPath, pkgModulesDir } from './dirs'
+import { resolveVueI18nPkgPath, pkgModulesDir, getPackageManagerType } from './dirs'
 import { resolve, parse as parsePath } from 'pathe'
-import { resolveLockfile } from 'pkg-types'
 import { VUE_I18N_PKG, VUE_I18N_BRIDGE_PKG, VUE_ROUTER_BRIDGE_PKG, VUE_I18N_ROUTING_PKG } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
+import type { PackageManager } from './dirs'
 
 const debug = createDebug('@nuxtjs/i18n:alias')
 
@@ -39,60 +39,42 @@ export async function setupAlias(nuxt: Nuxt) {
   debug('vue-i18n-routing alias', nuxt.options.alias[VUE_I18N_ROUTING_PKG])
 }
 
-const PackageManagerLockFiles = {
-  'npm-shrinkwrap.json': 'npm-legacy',
-  'package-lock.json': 'npm',
-  'yarn.lock': 'yarn',
-  'pnpm-lock.yaml': 'pnpm'
-} as const
-
-type LockFile = keyof typeof PackageManagerLockFiles
-type _PackageManager = typeof PackageManagerLockFiles[LockFile]
-type PackageManager = _PackageManager | 'unknown'
-
-async function getPackageManagerType(): Promise<PackageManager> {
-  try {
-    const parsed = parsePath(await resolveLockfile())
-    const lockfile = `${parsed.name}${parsed.ext}` as LockFile
-    debug('getPackageManagerType: lockfile', lockfile)
-    if (lockfile == null) {
-      return 'unknown'
-    }
-    const type = PackageManagerLockFiles[lockfile]
-    return type == null ? 'unknown' : type
-  } catch (e) {
-    debug('getPackageManagerType: resolveLockfile error', e)
-    throw e
-  }
-}
-
 async function resolveVueI18nAlias(nuxt: Nuxt) {
   return resolve(await resolveVueI18nPkgPath(), nuxt.options.dev ? 'dist/vue-i18n.mjs' : 'dist/vue-i18n.runtime.mjs')
 }
 
 async function resolveVueI18nBridgeAlias(pkgModuleDir: string, pkgMgr: PackageManager) {
   if (pkgMgr === 'npm') {
+    debug(
+      'resolveVueI18nBridgeAlias on npm',
+      `${VUE_I18N_ROUTING_PKG}/node_modules/${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`
+    )
     return resolve(pkgModuleDir, `${VUE_I18N_ROUTING_PKG}/node_modules/${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`)
   } else {
     const parsed = parsePath(await resolvePath(VUE_I18N_BRIDGE_PKG))
+    debug(`resolveVueI18nBridgeAlias on ${pkgMgr}`, parsed)
     return `${parsed.dir}/${parsed.name}.mjs`
   }
 }
 
 async function resolveVueRouterBridgeAlias(pkgModuleDir: string, pkgMgr: PackageManager) {
   if (pkgMgr === 'npm') {
+    debug('resolveVueRouterBridgeAlias on npm', `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs`)
     return resolve(pkgModuleDir, `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs`)
   } else {
     const parsed = parsePath(await resolvePath(VUE_ROUTER_BRIDGE_PKG))
+    debug(`resolveVueRouterBridgeAlias on ${pkgMgr}`, parsed)
     return `${parsed.dir}/${parsed.name}.mjs`
   }
 }
 
 async function resolveVueI18nRoutingAlias(pkgModuleDir: string, pkgMgr: PackageManager) {
   if (pkgMgr === 'npm') {
+    debug('resolveVueI18nRoutingAlias on npm', `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`)
     return resolve(pkgModuleDir, `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`)
   } else if (pkgMgr === 'pnpm' || pkgMgr === 'yarn') {
     const parsed = parsePath(await resolvePath(VUE_I18N_ROUTING_PKG))
+    debug(`resolveVueI18nRoutingAlias on ${pkgMgr}`, parsed)
     return `${parsed.dir}/dist/vue-i18n-routing.mjs`
   } else {
     return await resolvePath(VUE_I18N_ROUTING_PKG)

@@ -401,3 +401,14 @@ declare module '#app' {
     $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
   }
 }
+
+// @ts-ignore
+declare module 'nuxt/dist/app/nuxt' {
+  interface NuxtApp {
+    $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
+    $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
+    $localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
+    $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
+    $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
+  }
+}
