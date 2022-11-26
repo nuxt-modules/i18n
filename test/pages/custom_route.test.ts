@@ -130,7 +130,7 @@ describe.each([
 describe.each([
   {
     case: 'simple',
-    options: getNuxtOptions({}, true),
+    options: getNuxtOptions({}, 'page'),
     pages: [
       {
         path: '/about',
@@ -141,7 +141,7 @@ describe.each([
   },
   {
     case: 'dynamic route',
-    options: getNuxtOptions({}, true),
+    options: getNuxtOptions({}, 'page'),
     pages: [
       {
         name: 'articles-name',
@@ -153,7 +153,7 @@ describe.each([
   },
   {
     case: 'with definePageMeta',
-    options: getNuxtOptions({}, true),
+    options: getNuxtOptions({}, 'page'),
     pages: [
       {
         path: '/about',
@@ -164,7 +164,7 @@ describe.each([
   },
   {
     case: 'JavaScript',
-    options: getNuxtOptions({}, true),
+    options: getNuxtOptions({}, 'page'),
     pages: [
       {
         path: '/about',

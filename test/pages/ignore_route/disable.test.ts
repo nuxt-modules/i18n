@@ -140,7 +140,7 @@ describe.each([
 describe.each([
   {
     case: 'basic',
-    options: getNuxtOptions({}, true),
+    options: getNuxtOptions({}, 'page'),
     pages: [
       {
         path: '/about',

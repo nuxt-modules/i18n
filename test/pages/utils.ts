@@ -7,11 +7,11 @@ export type NuxtPage = ExtractArrayType<Parameters<NuxtHooks['pages:extend']>[0]
 
 export function getNuxtOptions(
   pages: Required<NuxtI18nOptions>['pages'],
-  parsePages = false,
+  customRoutes: Required<NuxtI18nOptions>['customRoutes'] = 'config',
   defaultLocale = 'en'
 ): NuxtI18nOptions {
   return {
-    parsePages,
+    customRoutes,
     pages,
     defaultLocale,
     strategy: 'prefix_except_default',
