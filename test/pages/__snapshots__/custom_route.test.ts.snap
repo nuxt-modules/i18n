@@ -275,7 +275,7 @@ exports[`Page components > dynamic route 1`] = `
   {
     "children": [],
     "name": "articles-name___ja",
-    "path": "/ja/記事/:name",
+    "path": "/ja/%E8%A8%98%E4%BA%8B/:name",
   },
   {
     "children": [],

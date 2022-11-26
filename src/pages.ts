@@ -202,21 +202,41 @@ function getRouteOptionsFromPages(
 function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
   debug('getRouteOptionsFromComponent', route)
   const file = route.component || route.file
+
+  // localize disabled if no file (vite) or component (webpack)
   if (!isString(file)) {
     return null
   }
 
-  const componentOptions = readComponent(file)
-  if (componentOptions == null) {
-    return {
-      locales: localeCodes,
-      paths: {}
-    }
-  } else if (componentOptions === false) {
-    return null
-  } else {
-    return componentOptions
+  const options: ComputedRouteOptions = {
+    locales: localeCodes,
+    paths: {}
   }
+
+  const componentOptions = readComponent(file)
+
+  // skip if page components not defined
+  if (componentOptions == null) {
+    return options
+  }
+
+  // localize disabled
+  if (componentOptions === false) {
+    return null
+  }
+
+  options.locales = componentOptions.locales || localeCodes
+
+  // construct paths object
+  const locales = Object.keys(componentOptions.paths || {})
+  for (const locale of locales) {
+    const customLocalePath = componentOptions.paths[locale]
+    if (isString(customLocalePath)) {
+      options.paths[locale] = resolveRoutePath(customLocalePath)
+    }
+  }
+
+  return options
 }
 
 function readComponent(target: string) {
