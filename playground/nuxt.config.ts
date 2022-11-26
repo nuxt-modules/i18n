@@ -54,15 +54,15 @@ export default defineNuxtConfig({
     // strategy: 'prefix',
     strategy: 'prefix_and_default',
     // rootRedirect: '/ja/about-ja',
-    // parsePages: false,
     dynamicRouteParams: true,
+    // customRoutes: 'config',
     pages: {
       about: {
         ja: '/about-ja'
       }
     },
     // differentDomains: true,
-    // skipSettingLocaleOnNavigate: true,
+    skipSettingLocaleOnNavigate: true,
     detectBrowserLanguage: false,
     /*
     detectBrowserLanguage: {

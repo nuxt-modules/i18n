@@ -3,10 +3,12 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { vi, describe, test, expect } from 'vitest'
 import { localizeRoutes } from 'vue-i18n-routing'
-import { getRouteOptionsResolver } from '../../../src/pages'
+import { getRouteOptionsResolver, analyzeNuxtPages } from '../../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 
+import { NuxtPageAnalizeContext, AnalizedNuxtPageMeta } from '../../../src/pages'
 import type { NuxtI18nOptions } from '../../../src/types'
+import type { NuxtPage } from '../utils'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -38,7 +40,7 @@ describe.each([
   {
     case: 'nested static route',
     options: getNuxtOptions({
-      'nested/route': false
+      'nested/route/index': false
     }),
     pages: [
       {
@@ -52,16 +54,9 @@ describe.each([
   {
     case: 'nested dynamic route',
     options: getNuxtOptions({
-      ':nested/:route': false,
-      ':nested/:route/:slug(.*)*': false
+      '[nested]/[route]/index': false
     }),
     pages: [
-      {
-        name: 'nested-route-slug',
-        path: '/:nested/:route/:slug(.*)*',
-        file: '/path/to/nuxt-app/pages/[nested]/[route]/[...slug].vue',
-        children: []
-      },
       {
         name: 'nested-route',
         path: '/:nested/:route',
@@ -74,29 +69,28 @@ describe.each([
     case: 'nested complex route',
     options: getNuxtOptions({
       about: false,
-      services: false,
-      'services/development': false,
+      'services/index': false,
+      'services/development/index': false,
       'services/development/app': false,
       'services/development/website': false,
       'services/coaching': false
     }),
     pages: [
       {
-        name: 'about',
         path: '/about',
-        file: '/path/to/nuxt-app/pages/about/index.vue',
+        file: '/path/to/nuxt-app/pages/about.vue',
+        children: []
+      },
+      {
+        name: 'services-coaching',
+        path: '/services/coaching',
+        file: '/path/to/nuxt-app/pages/services/coaching.vue',
         children: []
       },
       {
         name: 'services-development-app',
         path: '/services/development/app',
-        file: '/path/to/nuxt-app/pages/services/development/app/index.vue',
-        children: []
-      },
-      {
-        name: 'services-development-coaching',
-        path: '/services/development/coaching',
-        file: '/path/to/nuxt-app/pages/services/development/coaching/index.vue',
+        file: '/path/to/nuxt-app/pages/services/development/app.vue',
         children: []
       },
       {
@@ -108,7 +102,7 @@ describe.each([
       {
         name: 'services-development-website',
         path: '/services/development/website',
-        file: '/path/to/nuxt-app/pages/services/development/website/index.vue',
+        file: '/path/to/nuxt-app/pages/services/development/website.vue',
         children: []
       },
       {
@@ -119,14 +113,25 @@ describe.each([
       }
     ]
   }
-])('configuration', ({ case: _case, options, pages }) => {
+])('Module configuration', ({ case: _case, options, pages }) => {
   test(_case, async () => {
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
+
+    const srcDir = '/path/to/nuxt-app'
+    const pagesDir = 'pages'
+    const ctx: NuxtPageAnalizeContext = {
+      stack: [],
+      srcDir,
+      pagesDir,
+      pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
+    }
+
+    analyzeNuxtPages(ctx, pages)
 
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback: false,
-      optionsResolver: getRouteOptionsResolver('pages', options as Required<NuxtI18nOptions>)
+      optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     })
     expect(localizedPages).toMatchSnapshot()
   })
@@ -135,7 +140,7 @@ describe.each([
 describe.each([
   {
     case: 'basic',
-    options: getNuxtOptions({}, true),
+    options: getNuxtOptions({}, 'page'),
     pages: [
       {
         path: '/about',
@@ -144,12 +149,23 @@ describe.each([
       }
     ]
   }
-])('component', ({ case: _case, options, pages }) => {
+])('Page components', ({ case: _case, options, pages }) => {
   test(_case, async () => {
+    const srcDir = '/path/to/nuxt-app'
+    const pagesDir = 'pages'
+    const ctx: NuxtPageAnalizeContext = {
+      stack: [],
+      srcDir,
+      pagesDir,
+      pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
+    }
+
+    analyzeNuxtPages(ctx, pages)
+
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback: false,
-      optionsResolver: getRouteOptionsResolver('pages', options as Required<NuxtI18nOptions>)
+      optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     })
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
   })
