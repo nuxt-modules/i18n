@@ -5,11 +5,15 @@ import type { NuxtHooks } from '@nuxt/schema'
 type ExtractArrayType<T> = T extends (infer U)[] ? U : never
 export type NuxtPage = ExtractArrayType<Parameters<NuxtHooks['pages:extend']>[0]>
 
-export function getNuxtOptions(pages: Required<NuxtI18nOptions>['pages'], parsePages = false): NuxtI18nOptions {
+export function getNuxtOptions(
+  pages: Required<NuxtI18nOptions>['pages'],
+  parsePages = false,
+  defaultLocale = 'en'
+): NuxtI18nOptions {
   return {
     parsePages,
     pages,
-    defaultLocale: 'en',
+    defaultLocale,
     strategy: 'prefix_except_default',
     defaultLocaleRouteNameSuffix: 'default',
     trailingSlash: false,

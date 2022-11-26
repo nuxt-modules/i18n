@@ -10,12 +10,12 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'en',
-      parsePages: false,
+      customRoutes: 'config',
       pages: {
-        about: {
+        'about/index': {
           fr: '/about-fr'
         },
-        blog: {
+        'blog/index': {
           en: '/news'
         },
         'blog/article': {

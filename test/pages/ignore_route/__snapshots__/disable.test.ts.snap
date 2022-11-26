@@ -1,45 +1,23 @@
 // Vitest Snapshot v1
 
-exports[`component > basic 1`] = `
+exports[`Module configuration > nested complex route 1`] = `
 [
   {
     "children": [],
-    "path": "/about",
-  },
-]
-`;
-
-exports[`configuration > nested complex route 1`] = `
-[
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/about/index.vue",
-    "name": "about",
+    "file": "/path/to/nuxt-app/pages/about.vue",
     "path": "/about",
   },
   {
     "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/app/index.vue",
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching",
+    "path": "/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
     "name": "services-development-app",
     "path": "/services/development/app",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/coaching/index.vue",
-    "name": "services-development-coaching___en",
-    "path": "/services/development/coaching",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/coaching/index.vue",
-    "name": "services-development-coaching___ja",
-    "path": "/ja/services/development/coaching",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/coaching/index.vue",
-    "name": "services-development-coaching___fr",
-    "path": "/fr/services/development/coaching",
   },
   {
     "children": [],
@@ -49,7 +27,7 @@ exports[`configuration > nested complex route 1`] = `
   },
   {
     "children": [],
-    "file": "/path/to/nuxt-app/pages/services/development/website/index.vue",
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
     "name": "services-development-website",
     "path": "/services/development/website",
   },
@@ -62,14 +40,8 @@ exports[`configuration > nested complex route 1`] = `
 ]
 `;
 
-exports[`configuration > nested dynamic route 1`] = `
+exports[`Module configuration > nested dynamic route 1`] = `
 [
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/[nested]/[route]/[...slug].vue",
-    "name": "nested-route-slug",
-    "path": "/:nested/:route/:slug(.*)*",
-  },
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
@@ -79,7 +51,7 @@ exports[`configuration > nested dynamic route 1`] = `
 ]
 `;
 
-exports[`configuration > nested static route 1`] = `
+exports[`Module configuration > nested static route 1`] = `
 [
   {
     "children": [],
@@ -90,7 +62,7 @@ exports[`configuration > nested static route 1`] = `
 ]
 `;
 
-exports[`configuration > simple 1`] = `
+exports[`Module configuration > simple 1`] = `
 [
   {
     "children": [
@@ -121,6 +93,15 @@ exports[`configuration > simple 1`] = `
     "file": "/path/to/nuxt-app/pages/index.vue",
     "name": "index___fr",
     "path": "/fr",
+  },
+]
+`;
+
+exports[`Page components > basic 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
   },
 ]
 `;

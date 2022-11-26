@@ -53,6 +53,9 @@ export type NuxtI18nOptions<Context = unknown> = {
   lazy?: boolean | LazyOptions
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
+  /**
+   * @deprecated `'parsePages' option is deprecated. Please use 'customRoutes' option instead. We will remove it in v8 official release.`
+   */
   parsePages?: boolean
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string

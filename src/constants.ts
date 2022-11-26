@@ -55,7 +55,6 @@ export const DEFAULT_OPTIONS = {
   differentDomains: false,
   baseUrl: '',
   dynamicRouteParams: false,
-  parsePages: true,
   customRoutes: 'page',
   pages: {},
   skipSettingLocaleOnNavigate: false,

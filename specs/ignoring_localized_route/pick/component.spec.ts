@@ -8,7 +8,8 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      defaultLocale: 'en'
+      defaultLocale: 'en',
+      customRoutes: 'page'
     }
   }
 })
