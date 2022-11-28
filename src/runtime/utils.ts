@@ -240,6 +240,10 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
       finalLocale = getLocaleDomain(normalizedLocales)
     } else if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
+    } else {
+      if (!nuxtI18nOptions.detectBrowserLanguage) {
+        finalLocale = initialLocale
+      }
     }
   }
 
