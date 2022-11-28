@@ -223,7 +223,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   // prettier-ignore
   const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
-    : { locale: '', stat: false, reason: 'unknown', from: 'unknown' } as DetectBrowserLanguageFromResult
+    : { locale: initialLocale, stat: false, reason: 'unknown', from: 'unknown' } as DetectBrowserLanguageFromResult
   __DEBUG__ &&
     console.log(
       'detectLocale: detectBrowserLanguage (browserLocale, stat, reason, from) -',
