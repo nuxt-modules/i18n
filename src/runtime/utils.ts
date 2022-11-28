@@ -223,7 +223,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   // prettier-ignore
   const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale)
-    : { locale: initialLocale, stat: false, reason: 'unknown', from: 'unknown' } as DetectBrowserLanguageFromResult
+    : { locale: '', stat: false, reason: 'unknown', from: 'unknown' } as DetectBrowserLanguageFromResult
   __DEBUG__ &&
     console.log(
       'detectLocale: detectBrowserLanguage (browserLocale, stat, reason, from) -',
@@ -240,6 +240,10 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
       finalLocale = getLocaleDomain(normalizedLocales)
     } else if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
+    } else {
+      if (!nuxtI18nOptions.detectBrowserLanguage) {
+        finalLocale = initialLocale
+      }
     }
   }
 
