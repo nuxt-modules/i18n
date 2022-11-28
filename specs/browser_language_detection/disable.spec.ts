@@ -41,5 +41,5 @@ test('disable', async () => {
   await page.waitForTimeout(100)
 
   // set default locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })
