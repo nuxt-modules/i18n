@@ -108,7 +108,7 @@
     "js-cookie": "^3.0.1",
     "klona": "^2.0.5",
     "lodash.merge": "^4.6.2",
-    "ufo": "^0.8.5",
+    "ufo": "^1.0.1",
     "vue-i18n": "^8.27.2"
   },
   "devDependencies": {
