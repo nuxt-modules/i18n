@@ -1,11 +1,11 @@
 export default defineAppConfig({
   docus: {
     title: '@nuxtjs/i18n',
-    description: 'I18n (Internationalization) for your Nuxt Application',
+    description: 'Module i18n (Internationalization) for Nuxt',
     url: 'https://v8.i18n.nuxtjs.org',
     layout: 'default',
     socials: {
-      github: 'nuxt-community/i18n-module'
+      github: 'nuxt-modules/i18n'
     },
     github: {
       root: 'content',
@@ -22,8 +22,8 @@ export default defineAppConfig({
       showLinkIcon: false
     },
     cover: {
-      src: '/preview.png',
-      alt: 'I18n for Nuxt developers'
+      src: '/cover.png',
+      alt: 'Module i18n for Nuxt'
     },
     footer: {
       credits: {
