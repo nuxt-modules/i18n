@@ -199,8 +199,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
           : false
     }
     const nuxtAppExtendFilename = 'types/i18n-nuxt-app.d.ts'
-    const vueI18nRoutingVueI18nDtsPath = await resolveVueI18nRoutingDtsPath('vue-i18n')
-    const vueI18nRoutingMixinDtsPath = await resolveVueI18nRoutingDtsPath('vue')
+    const vueI18nRoutingVueI18nDtsPath = await resolveVueI18nRoutingDtsPath('vue-i18n', nuxt.options.rootDir)
+    const vueI18nRoutingMixinDtsPath = await resolveVueI18nRoutingDtsPath('vue', nuxt.options.rootDir)
     addTemplate({
       filename: nuxtAppExtendFilename,
       getContents: () => {

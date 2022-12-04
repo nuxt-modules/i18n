@@ -1,11 +1,38 @@
+import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
 import { resolveFiles } from '@nuxt/kit'
-import { parse } from 'pathe'
+import { parse, parse as parsePath } from 'pathe'
 import { encodePath } from 'ufo'
+import { resolveLockfile } from 'pkg-types'
 import { isObject, isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
+
+const PackageManagerLockFiles = {
+  'npm-shrinkwrap.json': 'npm-legacy',
+  'package-lock.json': 'npm',
+  'yarn.lock': 'yarn',
+  'pnpm-lock.yaml': 'pnpm'
+} as const
+
+type LockFile = keyof typeof PackageManagerLockFiles
+type _PackageManager = typeof PackageManagerLockFiles[LockFile]
+export type PackageManager = _PackageManager | 'unknown'
+
+export async function getPackageManagerType(): Promise<PackageManager> {
+  try {
+    const parsed = parsePath(await resolveLockfile())
+    const lockfile = `${parsed.name}${parsed.ext}` as LockFile
+    if (lockfile == null) {
+      return 'unknown'
+    }
+    const type = PackageManagerLockFiles[lockfile]
+    return type == null ? 'unknown' : type
+  } catch (e) {
+    throw e
+  }
+}
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -37,6 +64,25 @@ export async function resolveLocales(path: string, locales: LocaleObject[]): Pro
         }
       : Object.assign({ path: file }, locale)
   })
+}
+
+export async function tryResolve(id: string, targets: string[], pkgMgr: PackageManager, extention = '') {
+  for (const target of targets) {
+    if (await isExists(target + extention)) {
+      return target
+    }
+  }
+
+  throw new Error(`Cannot resolve ${id} on ${pkgMgr}! please install it on 'node_modules'`)
+}
+
+async function isExists(path: string) {
+  try {
+    await fs.access(path, FS_CONSTANTS.F_OK)
+    return true
+  } catch (e) {
+    return false
+  }
 }
 
 /**
