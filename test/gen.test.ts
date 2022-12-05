@@ -17,6 +17,11 @@ const LOCALE_INFO = [
     code: 'ja',
     file: 'ja.json',
     path: '/path/to/ja.json'
+  },
+  {
+    code: 'fr',
+    file: 'fr.json',
+    path: '/path/to/fr.json'
   }
 ]
 const ADDITIONAL_MESSAGES = {
@@ -33,7 +38,7 @@ const NUXT_I18N_OPTIONS = {
   defaultLocale: 'en',
   vueI18n: {
     locale: 'en',
-    fallbackLocale: 'en',
+    fallbackLocale: 'fr',
     messages: {
       en: { hello: 'Hello!' }
     }

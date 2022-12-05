@@ -29,18 +29,10 @@ export function generateLoaderOptions(
 ) {
   let genCode = ''
   const localeInfo = options.localeInfo || []
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { fallbackLocale } = (isObject(options.nuxtI18nOptions?.vueI18n) ? options.nuxtI18nOptions?.vueI18n : {}) as any
   const syncLocaleFiles = new Set<LocaleInfo>()
   const asyncLocaleFiles = new Set<LocaleInfo>()
 
   if (langDir) {
-    if (fallbackLocale && isString(fallbackLocale)) {
-      const localeObject = localeInfo.find(l => l.code === fallbackLocale)
-      if (localeObject) {
-        syncLocaleFiles.add(localeObject)
-      }
-    }
     for (const locale of localeInfo) {
       if (!syncLocaleFiles.has(locale) && !asyncLocaleFiles.has(locale)) {
         ;(lazy ? asyncLocaleFiles : syncLocaleFiles).add(locale)

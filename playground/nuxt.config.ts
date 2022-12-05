@@ -83,7 +83,7 @@ export default defineNuxtConfig({
     vueI18n: {
       legacy: false,
       locale: 'en',
-      fallbackLocale: 'en'
+      fallbackLocale: 'fr'
       // messages: {
       //   ja: {
       //     hello: 'こんにちは！'
