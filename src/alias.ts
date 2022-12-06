@@ -48,7 +48,7 @@ export async function setupAlias(nuxt: Nuxt) {
   debug('vue-i18n-routing alias', nuxt.options.alias[VUE_I18N_ROUTING_PKG])
 }
 
-async function resolveVueI18nAlias(nuxt: Nuxt) {
+export async function resolveVueI18nAlias(nuxt: Nuxt) {
   return resolve(await resolveVueI18nPkgPath(), nuxt.options.dev ? 'dist/vue-i18n.mjs' : 'dist/vue-i18n.runtime.mjs')
 }
 

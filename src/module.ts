@@ -2,14 +2,14 @@ import createDebug from 'debug'
 import { isBoolean, isObject, isString } from '@intlify/shared'
 import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
 import { resolve, relative } from 'pathe'
-import { setupAlias } from './alias'
+import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { distDir, runtimeDir, resolveVueI18nPkgPath, resolveVueI18nRoutingDtsPath } from './dirs'
+import { distDir, runtimeDir, resolveVueI18nRoutingDtsPath } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -246,9 +246,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * auto imports
      */
 
-    const vueI18nDir = await resolveVueI18nPkgPath()
+    const vueI18nPath = await resolveVueI18nAlias(nuxt)
     await addImports([
-      { name: 'useI18n', from: resolve(vueI18nDir, 'dist/vue-i18n') },
+      { name: 'useI18n', from: vueI18nPath },
       ...[
         'useRouteBaseName',
         'useLocalePath',
