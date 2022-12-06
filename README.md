@@ -31,7 +31,7 @@ npm install @nuxtjs/i18n@next --save-dev
 yarn add --dev @nuxtjs/i18n@next
 
 # Using pnpm 
-pnpm install --shamefully-hoist --dev @nuxtjs/i18n@next
+pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 ```
 
 2. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
