@@ -1,10 +1,9 @@
-import { defineTheme, pallete } from 'pinceau'
+import { defineTheme } from 'pinceau'
 
 // TODO: We need to dig a little deeper pinceau
 
 export default defineTheme({
-  colors: {
-    // primary: pallete('#d6ffee')
+  color: {
     primary: {
       50: { value: '#ecfdf5' },
       100: { value: '#d1fae5' },
@@ -16,32 +15,6 @@ export default defineTheme({
       700: { value: '#047857' },
       800: { value: '#065f46' },
       900: { value: '#064e3b' }
-    }
-  },
-  fonts: {
-    primary: {
-      value: 'Inter, sans-serif'
-    },
-    code: {
-      value: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace'
-    }
-  },
-  page: {
-    height: {
-      value: 'calc(100vh - calc(calc({header.height} + {footer.height})))'
-    },
-    maxWidth: {
-      value: '90rem'
-    }
-  },
-  header: {
-    height: {
-      value: '4rem'
-    }
-  },
-  footer: {
-    height: {
-      value: '4rem'
     }
   }
 })

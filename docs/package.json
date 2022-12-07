@@ -8,8 +8,7 @@
     "preview": "nuxi preview"
   },
   "devDependencies": {
-    "@nuxt-themes/docus": "npm:@nuxt-themes/docus-edge@latest",
-    "nuxt": "^3.0.0",
-    "@nuxtjs/tailwindcss": "latest"
+    "@nuxt-themes/docus": "^1.1.3",
+    "nuxt": "^3.0.0"
   }
 }
