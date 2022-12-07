@@ -4,6 +4,7 @@
     ":prHourlyLimit4",
     ":semanticCommitTypeAll(chore)"
   ],
+  "baseBranches": ["next"],
   "meteor": {
     "enabled": false
   },
