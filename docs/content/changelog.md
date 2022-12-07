@@ -1,9 +1,13 @@
 ---
 layout: docs
 toc: false
-title: Changelog
-description: Discover the latest updates.
 navigation: false
+---
+
+# Changelog
+
+Discover the latest updates.
+
 ---
 
 ::alert{type="warning"}
