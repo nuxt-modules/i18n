@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        The reporting guideline of @nuxtjs/i18n is compliant with Nuxt too.
+        The reporting guideline of nuxt-modules/i18n is compliant with Nuxt too.
         Please carefully read the contribution docs before creating a bug report.
         👉 https://v3.nuxtjs.org/community/reporting-bugs
 

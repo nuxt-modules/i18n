@@ -52,7 +52,7 @@ pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
 ```
 
-2. Run `npm install` or `yarn` or `pnpm isntall --shamefully-hoist`.
+2. Run `npm install` or `yarn` or `pnpm install --shamefully-hoist`.
 
 3. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
 
