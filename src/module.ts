@@ -205,7 +205,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filename: nuxtAppExtendFilename,
       getContents: () => {
         return [
-          `import type { ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} } from 'vue-i18n'`,
+          `import type { ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer, Composer'} } from 'vue-i18n'`,
           // prettier-ignore
           `import type { NuxtI18nRoutingCustomProperties } from '${resolve(runtimeDir, 'types')}'`,
           `import type { I18nRoutingCustomProperties } from '${vueI18nRoutingVueI18nDtsPath}'`,
@@ -214,13 +214,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
           `declare module '#app' {`,
           '  interface NuxtApp {',
           // prettier-ignore
-          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
+          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer & Composer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
           '  }',
           '}',
           `declare module 'nuxt/dist/app/nuxt' {`,
           '  interface NuxtApp {',
           // prettier-ignore
-          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
+          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer & Composer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
           '  }',
           '}'
         ].join('\n')
