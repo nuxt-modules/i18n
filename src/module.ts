@@ -9,7 +9,7 @@ import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { distDir, runtimeDir, resolveVueI18nRoutingDtsPath } from './dirs'
+import { distDir, runtimeDir } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -112,8 +112,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add plugin and templates
      */
 
-    // plugin
-    addPlugin(resolve(runtimeDir, 'plugin'))
+    // for core plugin
+    addPlugin(resolve(runtimeDir, 'plugins/i18n'))
 
     // for compoables
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables.mjs')
@@ -162,28 +162,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     /**
-     * generate type definition for page meta
+     * To be plugged for `PageMeta` type definition on `NuxtApp`
      */
 
     if (!!options.dynamicRouteParams) {
-      const metaKey = isBoolean(options.dynamicRouteParams) ? 'nuxtI18n' : options.dynamicRouteParams
-      const typeMetaFilename = 'types/i18n-page-meta.d.ts'
-      addTemplate({
-        filename: typeMetaFilename,
-        getContents: () => {
-          return [
-            `declare module '#app' {`,
-            '  interface PageMeta {',
-            `    ${metaKey}?: Record<string, any>`,
-            '  }',
-            '}'
-          ].join('\n')
-        }
-      })
-      // add declarations for page meta
-      nuxt.hook('prepare:types', ({ references }) => {
-        references.push({ path: resolve(nuxt.options.buildDir, typeMetaFilename) })
-      })
+      addPlugin(resolve(runtimeDir, 'plugins/meta'))
     }
 
     /**
@@ -194,40 +177,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const isLegacyMode = () => {
       return isString(options.types)
         ? options.types === 'legacy'
-        : isObject(options.vueI18n)
+        : isObject(options.vueI18n) && isBoolean(options.vueI18n.legacy)
           ? options.vueI18n.legacy
           : false
     }
-    const nuxtAppExtendFilename = 'types/i18n-nuxt-app.d.ts'
-    const vueI18nRoutingVueI18nDtsPath = await resolveVueI18nRoutingDtsPath('vue-i18n', nuxt.options.rootDir)
-    const vueI18nRoutingMixinDtsPath = await resolveVueI18nRoutingDtsPath('vue', nuxt.options.rootDir)
-    addTemplate({
-      filename: nuxtAppExtendFilename,
-      getContents: () => {
-        return [
-          `import type { ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer, Composer'} } from 'vue-i18n'`,
-          // prettier-ignore
-          `import type { NuxtI18nRoutingCustomProperties } from '${resolve(runtimeDir, 'types')}'`,
-          `import type { I18nRoutingCustomProperties } from '${vueI18nRoutingVueI18nDtsPath}'`,
-          // import legacy mixins
-          isLegacyMode() ? `import '${vueI18nRoutingMixinDtsPath}'` : '',
-          `declare module '#app' {`,
-          '  interface NuxtApp {',
-          // prettier-ignore
-          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer & Composer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
-          '  }',
-          '}',
-          `declare module 'nuxt/dist/app/nuxt' {`,
-          '  interface NuxtApp {',
-          // prettier-ignore
-          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer & Composer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
-          '  }',
-          '}'
-        ].join('\n')
-      }
-    })
+
+    // To be plugged for `$i18n` type definition on `NuxtApp`
+    addPlugin(resolve(runtimeDir, isLegacyMode() ? 'plugins/legacy' : 'plugins/composition'))
+
     nuxt.hook('prepare:types', ({ references }) => {
-      references.push({ path: resolve(nuxt.options.buildDir, nuxtAppExtendFilename) })
       const vueI18nTypeFilename = resolve(runtimeDir, 'types')
       references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
     })
