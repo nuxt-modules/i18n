@@ -1,4 +1,3 @@
-import { isBoolean } from '@intlify/shared'
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
 import {
@@ -82,9 +81,7 @@ export default defineNuxtPlugin(async nuxt => {
   // so global options is reffered by `vue-i18n-routing`
   registerGlobalOptions(router, {
     ...nuxtI18nOptions,
-    dynamicRouteParamsKey: isBoolean(nuxtI18nOptions.dynamicRouteParams)
-      ? 'nuxtI18n'
-      : nuxtI18nOptions.dynamicRouteParams,
+    dynamicRouteParamsKey: 'nuxtI18n',
     switchLocalePathIntercepter: extendSwitchLocalePathIntercepter(differentDomains, normalizedLocales, nuxtContext),
     prefixable: extendPrefixable(differentDomains)
   })
@@ -393,17 +390,6 @@ export default defineNuxtPlugin(async nuxt => {
 })
 
 declare module '#app' {
-  interface NuxtApp {
-    $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
-    $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
-    $localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
-    $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
-    $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
-  }
-}
-
-// @ts-ignore
-declare module 'nuxt/dist/app/nuxt' {
   interface NuxtApp {
     $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
     $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>

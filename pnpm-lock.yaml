@@ -55,7 +55,7 @@ importers:
       vitest: ^0.25.3
       vue: ^3.2.44
       vue-i18n: ^9.3.0-beta.10
-      vue-i18n-routing: ^0.10.1
+      vue-i18n-routing: ^0.10.2
       yorkie: ^2.0.0
     dependencies:
       '@intlify/bundle-utils': 3.4.0_vue-i18n@9.3.0-beta.10
@@ -76,7 +76,7 @@ importers:
       ufo: 1.0.0
       unplugin: 1.0.0
       vue-i18n: 9.3.0-beta.10_vue@3.2.45
-      vue-i18n-routing: 0.10.1_36lc2e5k5j5o5ffxrxnvapozte
+      vue-i18n-routing: 0.10.2_36lc2e5k5j5o5ffxrxnvapozte
     devDependencies:
       '@babel/parser': 7.20.3
       '@babel/plugin-syntax-import-assertions': 7.20.0
@@ -7378,8 +7378,8 @@ packages:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
     dev: true
 
-  /vue-i18n-routing/0.10.1_36lc2e5k5j5o5ffxrxnvapozte:
-    resolution: {integrity: sha512-7sS6yPLtG87xQxeUIK1kt0SyyhVP57lnkmGciWIBRkM6TNRHzOpU9Ur0I2+IxHCPxmd9UkkwfLIhARoZRDcRDQ==}
+  /vue-i18n-routing/0.10.2_36lc2e5k5j5o5ffxrxnvapozte:
+    resolution: {integrity: sha512-TnGUmRsciC/SJSysOAeoY0BBp3S35LFF1EfvPCybd8vU/vsOwHIyJF/Z5tPlAo4I0Y5AyJSa5WMaqpXs8F9DdQ==}
     engines: {node: '>= 14.6'}
     peerDependencies:
       '@vue/composition-api': ^1.0.0-rc.1
