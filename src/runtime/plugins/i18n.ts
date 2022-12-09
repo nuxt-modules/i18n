@@ -1,4 +1,3 @@
-import { isBoolean } from '@intlify/shared'
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
 import {
@@ -32,7 +31,6 @@ import {
   getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
   setLocaleCookie as _setLocaleCookie
-  // proxyNuxt
 } from '#build/i18n.internal.mjs'
 
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
@@ -45,13 +43,7 @@ type LocaleRoute = typeof localeRoute
 type LocaleHead = typeof localeHead
 type SwitchLocalePath = typeof switchLocalePath
 
-export default defineNuxtPlugin<{
-  getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
-  localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
-  localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
-  localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
-  switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
-}>(async nuxt => {
+export default defineNuxtPlugin(async nuxt => {
   const router = useRouter()
   const route = useRoute()
   const { vueApp: app } = nuxt
@@ -395,27 +387,6 @@ export default defineNuxtPlugin<{
     }),
     { global: true }
   )
-
-  // getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
-  // localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
-  // localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
-  // localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
-  // switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
-  // return {
-  //   provide: {
-  //     getRouteBaseName: proxyNuxt(nuxt, getRouteBaseName) as unknown as (
-  //       ...args: Parameters<GetRouteBaseName>
-  //     ) => ReturnType<GetRouteBaseName>,
-  //     localePath: proxyNuxt(nuxt, localePath) as unknown as (...args: Parameters<LocalePath>) => ReturnType<LocalePath>,
-  //     localeRoute: proxyNuxt(nuxt, localeRoute) as unknown as (
-  //       ...args: Parameters<LocaleRoute>
-  //     ) => ReturnType<LocaleRoute>,
-  //     localeHead: proxyNuxt(nuxt, localeHead) as unknown as (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>,
-  //     switchLocalePath: proxyNuxt(nuxt, switchLocalePath) as unknown as (
-  //       ...args: Parameters<SwitchLocalePath>
-  //     ) => ReturnType<SwitchLocalePath>
-  //   }
-  // }
 })
 
 declare module '#app' {
@@ -427,16 +398,3 @@ declare module '#app' {
     $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
   }
 }
-
-/*
-// @ts-ignore
-declare module 'nuxt/dist/app/nuxt' {
-  interface NuxtApp {
-    $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
-    $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
-    $localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
-    $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
-    $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
-  }
-}
-//*/

@@ -162,31 +162,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     /**
-     * generate type definition for page meta
+     * To be plugged for `PageMeta` type definition on `NuxtApp`
      */
 
     if (!!options.dynamicRouteParams) {
       addPlugin(resolve(runtimeDir, 'plugins/meta'))
-      /*
-      const metaKey = isBoolean(options.dynamicRouteParams) ? 'nuxtI18n' : options.dynamicRouteParams
-      const typeMetaFilename = 'types/i18n-page-meta.d.ts'
-      addTemplate({
-        filename: typeMetaFilename,
-        getContents: () => {
-          return [
-            `declare module '#app' {`,
-            '  interface PageMeta {',
-            `    ${metaKey}?: Record<string, any>`,
-            '  }',
-            '}'
-          ].join('\n')
-        }
-      })
-      // add declarations for page meta
-      nuxt.hook('prepare:types', ({ references }) => {
-        references.push({ path: resolve(nuxt.options.buildDir, typeMetaFilename) })
-      })
-      //*/
     }
 
     /**
@@ -202,45 +182,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
           : false
     }
 
-    // for `$i18n` type definition on `NuxtApp`
-    if (isLegacyMode()) {
-      addPlugin(resolve(runtimeDir, 'plugins/legacy'))
-    } else {
-      addPlugin(resolve(runtimeDir, 'plugins/composition'))
-    }
+    // To be plugged for `$i18n` type definition on `NuxtApp`
+    addPlugin(resolve(runtimeDir, isLegacyMode() ? 'plugins/legacy' : 'plugins/composition'))
 
-    /*
-    const nuxtAppExtendFilename = 'types/i18n-nuxt-app.d.ts'
-    const vueI18nRoutingVueI18nDtsPath = await resolveVueI18nRoutingDtsPath('vue-i18n', nuxt.options.rootDir)
-    const vueI18nRoutingMixinDtsPath = await resolveVueI18nRoutingDtsPath('vue', nuxt.options.rootDir)
-    addTemplate({
-      filename: nuxtAppExtendFilename,
-      getContents: () => {
-        return [
-          `import type { ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer, Composer'} } from 'vue-i18n'`,
-          // prettier-ignore
-          `import type { NuxtI18nRoutingCustomProperties } from '${resolve(runtimeDir, 'types')}'`,
-          `import type { I18nRoutingCustomProperties } from '${vueI18nRoutingVueI18nDtsPath}'`,
-          // import legacy mixins
-          isLegacyMode() ? `import '${vueI18nRoutingMixinDtsPath}'` : '',
-          `declare module '#app' {`,
-          '  interface NuxtApp {',
-          // prettier-ignore
-          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer & Composer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
-          '  }',
-          '}',
-          `declare module 'nuxt/dist/app/nuxt' {`,
-          '  interface NuxtApp {',
-          // prettier-ignore
-          `    $i18n: ${isLegacyMode() ? 'VueI18n' : 'ExportedGlobalComposer & Composer'} & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties`,
-          '  }',
-          '}'
-        ].join('\n')
-      }
-    })
-    //*/
     nuxt.hook('prepare:types', ({ references }) => {
-      // references.push({ path: resolve(nuxt.options.buildDir, nuxtAppExtendFilename) })
       const vueI18nTypeFilename = resolve(runtimeDir, 'types')
       references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
     })
