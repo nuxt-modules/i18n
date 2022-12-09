@@ -65,7 +65,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   vueI18n?: I18nOptions | string
   types?: 'composition' | 'legacy'
   debug?: boolean
-  dynamicRouteParams?: boolean | string
+  dynamicRouteParams?: boolean
 } & Pick<
   I18nRoutingOptions<Context>,
   | 'baseUrl'

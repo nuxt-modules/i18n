@@ -112,8 +112,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add plugin and templates
      */
 
-    // plugin
-    addPlugin(resolve(runtimeDir, 'plugin'))
+    // for core plugin
+    addPlugin(resolve(runtimeDir, 'plugins/i18n'))
 
     // for compoables
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables.mjs')
@@ -166,6 +166,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     if (!!options.dynamicRouteParams) {
+      addPlugin(resolve(runtimeDir, 'plugins/meta'))
+      /*
       const metaKey = isBoolean(options.dynamicRouteParams) ? 'nuxtI18n' : options.dynamicRouteParams
       const typeMetaFilename = 'types/i18n-page-meta.d.ts'
       addTemplate({
@@ -184,6 +186,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       nuxt.hook('prepare:types', ({ references }) => {
         references.push({ path: resolve(nuxt.options.buildDir, typeMetaFilename) })
       })
+      //*/
     }
 
     /**
@@ -194,10 +197,19 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const isLegacyMode = () => {
       return isString(options.types)
         ? options.types === 'legacy'
-        : isObject(options.vueI18n)
+        : isObject(options.vueI18n) && isBoolean(options.vueI18n.legacy)
           ? options.vueI18n.legacy
           : false
     }
+
+    // for `$i18n` type definition on `NuxtApp`
+    if (isLegacyMode()) {
+      addPlugin(resolve(runtimeDir, 'plugins/legacy'))
+    } else {
+      addPlugin(resolve(runtimeDir, 'plugins/composition'))
+    }
+
+    /*
     const nuxtAppExtendFilename = 'types/i18n-nuxt-app.d.ts'
     const vueI18nRoutingVueI18nDtsPath = await resolveVueI18nRoutingDtsPath('vue-i18n', nuxt.options.rootDir)
     const vueI18nRoutingMixinDtsPath = await resolveVueI18nRoutingDtsPath('vue', nuxt.options.rootDir)
@@ -226,8 +238,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
         ].join('\n')
       }
     })
+    //*/
     nuxt.hook('prepare:types', ({ references }) => {
-      references.push({ path: resolve(nuxt.options.buildDir, nuxtAppExtendFilename) })
+      // references.push({ path: resolve(nuxt.options.buildDir, nuxtAppExtendFilename) })
       const vueI18nTypeFilename = resolve(runtimeDir, 'types')
       references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
     })
