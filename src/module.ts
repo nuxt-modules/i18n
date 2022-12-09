@@ -9,7 +9,7 @@ import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { distDir, runtimeDir, resolveVueI18nRoutingDtsPath } from './dirs'
+import { distDir, runtimeDir } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
