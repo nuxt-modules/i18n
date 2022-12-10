@@ -28,13 +28,19 @@ export async function setupAlias(nuxt: Nuxt) {
   nuxt.options.alias[VUE_ROUTER_BRIDGE_PKG] = await resolveVueRouterBridgeAlias(
     pkgModulesDir,
     nuxt.options.rootDir,
+    nuxt.options.workspaceDir,
     pkgMgr
   )
   nuxt.options.build.transpile.push(VUE_ROUTER_BRIDGE_PKG)
   debug('@intlify/vue-router-bridge alias', nuxt.options.alias[VUE_ROUTER_BRIDGE_PKG])
 
   // resolve @intlify/vue-i18n-bridge
-  nuxt.options.alias[VUE_I18N_BRIDGE_PKG] = await resolveVueI18nBridgeAlias(pkgModulesDir, nuxt.options.rootDir, pkgMgr)
+  nuxt.options.alias[VUE_I18N_BRIDGE_PKG] = await resolveVueI18nBridgeAlias(
+    pkgModulesDir,
+    nuxt.options.rootDir,
+    nuxt.options.workspaceDir,
+    pkgMgr
+  )
   nuxt.options.build.transpile.push(VUE_I18N_BRIDGE_PKG)
   debug('@intlify/vue-i18n-bridge alias', nuxt.options.alias[VUE_I18N_BRIDGE_PKG])
 
@@ -42,6 +48,7 @@ export async function setupAlias(nuxt: Nuxt) {
   nuxt.options.alias[VUE_I18N_ROUTING_PKG] = await resolveVueI18nRoutingAlias(
     pkgModulesDir,
     nuxt.options.rootDir,
+    nuxt.options.workspaceDir,
     pkgMgr
   )
   nuxt.options.build.transpile.push(VUE_I18N_ROUTING_PKG)
@@ -61,7 +68,12 @@ export async function resolveVueI18nAlias(nuxt: Nuxt) {
  *  - `@intlify/vue-router-bridge`
  */
 
-async function resolveVueI18nBridgeAlias(pkgModulesDir: string, rootDir: string, pkgMgr: PackageManager) {
+async function resolveVueI18nBridgeAlias(
+  pkgModulesDir: string,
+  rootDir: string,
+  workspaceDir: string,
+  pkgMgr: PackageManager
+) {
   const modulePath = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs` as const
   const targets = [
     // 1st, try to resolve from `node_modules` (hoisted case)
@@ -71,14 +83,22 @@ async function resolveVueI18nBridgeAlias(pkgModulesDir: string, rootDir: string,
     // 3rd, try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
     resolve(pkgModulesDir, modulePath),
     // 4th, try to resolve from `node_modules/@nuxtjs/i18n/node_modules/vue-i18n-routing` (not hoisted case)
-    resolve(pkgModulesDir, `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath)
+    resolve(pkgModulesDir, `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath),
+    // workspace directories
+    resolve(workspaceDir, 'node_modules', modulePath),
+    resolve(workspaceDir, 'node_modules', `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath)
   ]
   debug(`${VUE_I18N_BRIDGE_PKG} resolving from ...`, targets)
 
   return tryResolve(VUE_I18N_BRIDGE_PKG, targets, pkgMgr)
 }
 
-async function resolveVueRouterBridgeAlias(pkgModulesDir: string, rootDir: string, pkgMgr: PackageManager) {
+async function resolveVueRouterBridgeAlias(
+  pkgModulesDir: string,
+  rootDir: string,
+  workspaceDir: string,
+  pkgMgr: PackageManager
+) {
   const modulePath = `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs` as const
   const targets = [
     // 1st, try to resolve from `node_modules` (hoisted case)
@@ -88,20 +108,30 @@ async function resolveVueRouterBridgeAlias(pkgModulesDir: string, rootDir: strin
     // 3rd, try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
     resolve(pkgModulesDir, modulePath),
     // 4th, try to resolve from `node_modules/@nuxtjs/i18n/node_modules/vue-i18n-routing` (not hoisted case)
-    resolve(pkgModulesDir, `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath)
+    resolve(pkgModulesDir, `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath),
+    // workspace directories
+    resolve(workspaceDir, 'node_modules', modulePath),
+    resolve(workspaceDir, 'node_modules', `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath)
   ]
   debug(`${VUE_ROUTER_BRIDGE_PKG} resolving from ...`, targets)
 
   return tryResolve(VUE_ROUTER_BRIDGE_PKG, targets, pkgMgr)
 }
 
-export async function resolveVueI18nRoutingAlias(pkgModulesDir: string, rootDir: string, pkgMgr: PackageManager) {
+export async function resolveVueI18nRoutingAlias(
+  pkgModulesDir: string,
+  rootDir: string,
+  workspaceDir: string,
+  pkgMgr: PackageManager
+) {
   const modulePath = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs` as const
   const targets = [
     // 1st, try to resolve from `node_modules` (hoisted case)
     resolve(rootDir, 'node_modules', modulePath),
     // 2nd, try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
-    resolve(pkgModulesDir, modulePath)
+    resolve(pkgModulesDir, modulePath),
+    // workspace directories
+    resolve(workspaceDir, 'node_modules', modulePath)
   ]
   debug(`${VUE_I18N_ROUTING_PKG} resolving from ...`, targets)
 
