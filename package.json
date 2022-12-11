@@ -74,7 +74,7 @@
   "dependencies": {
     "@intlify/bundle-utils": "^3.4.0",
     "@intlify/shared": "9.3.0-beta.10",
-    "@intlify/unplugin-vue-i18n": "^0.8.0",
+    "@intlify/unplugin-vue-i18n": "^0.8.1",
     "@nuxt/kit": "^3.0.0",
     "@vue/compiler-sfc": "^3.2.45",
     "cookie-es": "^0.5.0",
