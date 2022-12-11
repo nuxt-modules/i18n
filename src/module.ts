@@ -230,6 +230,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // https://github.com/nuxt/framework/issues/5257
     nuxt.options.build.transpile.push('@nuxtjs/i18n')
     nuxt.options.build.transpile.push('@nuxtjs/i18n-edge')
+
+    /**
+     * Optimiaztion deps
+     */
+
+    // Optimize vue-i18n to ensure we share the same symbol
+    nuxt.options.vite.optimizeDeps = nuxt.options.vite.optimizeDeps || {}
+    nuxt.options.vite.optimizeDeps.exclude = nuxt.options.vite.optimizeDeps.exclude || []
+    nuxt.options.vite.optimizeDeps.exclude.push('vue-i18n')
   }
 })
 
