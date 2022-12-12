@@ -176,7 +176,7 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
   if (langDir) {
     const i18nFallbackLocales = getVueI18nPropertyValue<FallbackLocale>(i18n, 'fallbackLocale')
     if (lazy) {
-      const setter = (locale: Locale, message: Record<string, any>) => setLocaleMessage(i18n, locale, message)
+      const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
       if (i18nFallbackLocales) {
         const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
         await Promise.all(fallbackLocales.map(locale => loadLocale(context, locale, setter)))
