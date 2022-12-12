@@ -1,7 +1,6 @@
 import createDebug from 'debug'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve, parse as parsePath } from 'pathe'
-import { resolvePath } from '@nuxt/kit'
 import { VUE_I18N_ROUTING_PKG } from './constants'
 import { getPackageManagerType, tryResolve } from './utils'
 
@@ -16,12 +15,6 @@ debug('distDir', distDir)
 debug('runtimeDir', runtimeDir)
 debug('pkgDir', pkgDir)
 debug('pkgModulesDir', pkgModulesDir)
-
-export async function resolveVueI18nPkgPath() {
-  const p = await resolvePath('vue-i18n')
-  debug('vue-i18n resolved path', p)
-  return resolve(p, '../..')
-}
 
 export async function resolveVueI18nRoutingDtsPath(id: string, rootDir: string) {
   const pkgMgr = await getPackageManagerType()

@@ -8,8 +8,8 @@ import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales } from './utils'
-import { distDir, runtimeDir } from './dirs'
+import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
+import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -204,7 +204,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * auto imports
      */
 
-    const vueI18nPath = await resolveVueI18nAlias(nuxt)
+    const pkgMgr = await getPackageManagerType()
+    const vueI18nPath = await resolveVueI18nAlias(pkgModulesDir, nuxt, pkgMgr)
+    debug('vueI18nPath for auto-import', vueI18nPath)
+
     await addImports([
       { name: 'useI18n', from: vueI18nPath },
       ...[
