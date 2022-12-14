@@ -69,60 +69,84 @@ function validateSyntax(code: string): boolean {
 }
 
 it('basic', () => {
-  const code = generateLoaderOptions(false, 'locales', '..', {
-    localeCodes: LOCALE_CODES,
-    localeInfo: LOCALE_INFO,
-    additionalMessages: {},
-    nuxtI18nOptions: NUXT_I18N_OPTIONS,
-    nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-  })
+  const code = generateLoaderOptions(
+    false,
+    'locales',
+    '..',
+    {
+      localeCodes: LOCALE_CODES,
+      localeInfo: LOCALE_INFO,
+      additionalMessages: {},
+      nuxtI18nOptions: NUXT_I18N_OPTIONS,
+      nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+    },
+    { ssg: false, ssr: true, dev: true }
+  )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
 })
 
 it('lazy', () => {
-  const code = generateLoaderOptions(true, 'locales', '..', {
-    localeCodes: LOCALE_CODES,
-    localeInfo: LOCALE_INFO,
-    additionalMessages: {},
-    nuxtI18nOptions: NUXT_I18N_OPTIONS,
-    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-  })
+  const code = generateLoaderOptions(
+    true,
+    'locales',
+    '..',
+    {
+      localeCodes: LOCALE_CODES,
+      localeInfo: LOCALE_INFO,
+      additionalMessages: {},
+      nuxtI18nOptions: NUXT_I18N_OPTIONS,
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+    },
+    { ssg: false, ssr: true, dev: true }
+  )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
 })
 
 it('vueI18n: path', () => {
-  const code = generateLoaderOptions(false, 'locales', '..', {
-    localeCodes: LOCALE_CODES,
-    localeInfo: LOCALE_INFO,
-    additionalMessages: ADDITIONAL_MESSAGES,
-    nuxtI18nOptions: {
-      vueI18n: '~/plugins/vue-i18n.js'
+  const code = generateLoaderOptions(
+    false,
+    'locales',
+    '..',
+    {
+      localeCodes: LOCALE_CODES,
+      localeInfo: LOCALE_INFO,
+      additionalMessages: ADDITIONAL_MESSAGES,
+      nuxtI18nOptions: {
+        vueI18n: '~/plugins/vue-i18n.js'
+      },
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-  })
+    { ssg: false, ssr: true, dev: true }
+  )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
 })
 
 it('toCode: function (arrow)', () => {
-  const code = generateLoaderOptions(false, 'locales', '..', {
-    localeCodes: LOCALE_CODES,
-    additionalMessages: {},
-    nuxtI18nOptions: {
-      ...NUXT_I18N_OPTIONS,
-      locales: LOCALE_INFO.map(locale => ({
-        ...locale,
-        testFunc: (prop: unknown) => {
-          return `Hello ${prop}`
-        }
-      }))
+  const code = generateLoaderOptions(
+    false,
+    'locales',
+    '..',
+    {
+      localeCodes: LOCALE_CODES,
+      additionalMessages: {},
+      nuxtI18nOptions: {
+        ...NUXT_I18N_OPTIONS,
+        locales: LOCALE_INFO.map(locale => ({
+          ...locale,
+          testFunc: (prop: unknown) => {
+            return `Hello ${prop}`
+          }
+        }))
+      },
+      nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-  })
+    { ssg: false, ssr: true, dev: true }
+  )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
 })

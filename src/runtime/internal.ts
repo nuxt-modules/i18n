@@ -18,7 +18,8 @@ import {
   nuxtI18nOptionsDefault,
   localeMessages,
   additionalMessages,
-  NUXT_I18N_MODULE_ID
+  NUXT_I18N_MODULE_ID,
+  isSSG
 } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#imports'
@@ -256,6 +257,7 @@ export type DetectBrowserLanguageNotDetectReason =
   | 'not_found_match'
   | 'not_redirect_on_root'
   | 'not_redirect_on_no_prefix'
+  | 'detect_ignore_on_ssg'
 export type DetectBrowserLanguageFrom = 'unknown' | 'cookie' | 'navigator_or_header' | 'fallback'
 export type DetectBrowserLanguageFromResult = {
   locale: string
@@ -264,14 +266,27 @@ export type DetectBrowserLanguageFromResult = {
   from?: DetectBrowserLanguageFrom
 }
 
+export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
+  locale: '',
+  stat: false,
+  reason: 'unknown',
+  from: 'unknown'
+}
+
 export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   context: any,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   localeCodes: string[] = [],
-  locale: Locale = ''
+  locale: Locale = '',
+  mode: 'ssg_ignore' | 'ssg_setup' | ''
 ): DetectBrowserLanguageFromResult {
+  // browser detection is ignored if it's a nuxt generate.
+  if (isSSG && (process.server || mode === 'ssg_ignore')) {
+    return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
+  }
+
   const { strategy } = nuxtI18nOptions
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
     nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
@@ -354,6 +369,10 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
         }
       }
     }
+  }
+
+  if (mode === 'ssg_setup' && finalLocale) {
+    return { locale: finalLocale, stat: true, from: localeFrom }
   }
 
   return { locale: '', stat: false, reason: 'not_found_match' }

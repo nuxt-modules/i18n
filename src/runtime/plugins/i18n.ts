@@ -14,7 +14,7 @@ import {
   getComposer
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
-import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions } from '#build/i18n.options.mjs'
+import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions, isSSG, isSSR } from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
   loadAndSetLocale,
@@ -25,12 +25,15 @@ import {
   inejctNuxtHelpers,
   extendBaseUrl,
   extendPrefixable,
-  extendSwitchLocalePathIntercepter
+  extendSwitchLocalePathIntercepter,
+  _setLocale
 } from '#build/i18n.utils.mjs'
 import {
   getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
-  setLocaleCookie as _setLocaleCookie
+  setLocaleCookie as _setLocaleCookie,
+  detectBrowserLanguage,
+  DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
 
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
@@ -62,6 +65,7 @@ export default defineNuxtPlugin(async nuxt => {
     defaultLocaleRouteNameSuffix,
     rootRedirect
   } = nuxtI18nOptions
+  __DEBUG__ && console.log('isSSR', isSSR, ', isSSG', isSSG)
   __DEBUG__ && console.log('useCookie on setup', useCookie)
   __DEBUG__ && console.log('defautlLocale on setup', defaultLocale)
 
@@ -86,15 +90,18 @@ export default defineNuxtPlugin(async nuxt => {
     prefixable: extendPrefixable(differentDomains)
   })
 
+  const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
+
   // detect initial locale
   let initialLocale = detectLocale(
     route,
     nuxt.ssrContext,
     getLocaleFromRoute,
     nuxtI18nOptions,
-    defaultLocale || vueI18nOptions.locale || 'en-US',
+    getDefaultLocale(defaultLocale),
     normalizedLocales,
-    localeCodes
+    localeCodes,
+    isSSG
   )
   __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
@@ -111,7 +118,7 @@ export default defineNuxtPlugin(async nuxt => {
    *  If `initialLocale` is not set, then the `vueI18n` option `locale` is respect!
    *  It means a mode that works only with simple vue-i18n, without nuxtjs/i18n routing, browser detection, SEO, and other features.
    */
-  initialLocale = initialLocale || vueI18nOptions.locale || 'en-US'
+  initialLocale = getDefaultLocale(initialLocale)
   __DEBUG__ && console.log('final initial locale:', initialLocale)
 
   // create i18n instance
@@ -121,8 +128,45 @@ export default defineNuxtPlugin(async nuxt => {
   })
 
   let notInitialSetup = true
-  function isInitialLocaleSetup(locale: Locale): boolean {
-    return initialLocale !== locale && notInitialSetup
+  const isInitialLocaleSetup = (locale: Locale) => initialLocale !== locale && notInitialSetup
+
+  let ssgModeInitialSetup = true
+  const isSSGModeInitialSetup = () => isSSG && ssgModeInitialSetup
+
+  /**
+   * NOTE:
+   *  avoid hydaration miss match for SSG mode
+   */
+  if (isSSGModeInitialSetup() && process.client) {
+    nuxt.hook('app:mounted', async () => {
+      __DEBUG__ && console.log('hook app:mounted')
+      const {
+        locale: browserLocale,
+        stat,
+        reason,
+        from
+      } = nuxtI18nOptions.detectBrowserLanguage
+        ? detectBrowserLanguage(
+            route,
+            nuxtContext,
+            nuxtI18nOptions,
+            nuxtI18nInternalOptions,
+            localeCodes,
+            initialLocale,
+            'ssg_setup'
+          )
+        : DefaultDetectBrowserLanguageFromResult
+      __DEBUG__ &&
+        console.log(
+          'app:mounted: detectBrowserLanguage (browserLocale, stat, reason, from) -',
+          browserLocale,
+          stat,
+          reason,
+          from
+        )
+      _setLocale(i18n, browserLocale)
+      ssgModeInitialSetup = false
+    })
   }
 
   // extend i18n instance
@@ -159,11 +203,19 @@ export default defineNuxtPlugin(async nuxt => {
           const redirectPath = detectRedirect(route, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
           __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
 
-          navigate(i18n, redirectPath, locale, route, {
-            differentDomains,
-            skipSettingLocaleOnNavigate,
-            rootRedirect
-          })
+          navigate(
+            {
+              i18n,
+              redirectPath,
+              locale,
+              route
+            },
+            {
+              differentDomains,
+              skipSettingLocaleOnNavigate,
+              rootRedirect
+            }
+          )
         }
         composer.differentDomains = differentDomains
         composer.getBrowserLocale = () => _getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
@@ -353,10 +405,11 @@ export default defineNuxtPlugin(async nuxt => {
         getLocaleFromRoute,
         nuxtI18nOptions,
         () => {
-          return getLocale(i18n) || defaultLocale || vueI18nOptions.locale || 'en-US'
+          return getLocale(i18n) || getDefaultLocale(defaultLocale)
         },
         normalizedLocales,
-        localeCodes
+        localeCodes,
+        isSSGModeInitialSetup()
       )
       __DEBUG__ && console.log('detect locale', locale)
 
@@ -379,11 +432,19 @@ export default defineNuxtPlugin(async nuxt => {
       const redirectPath = detectRedirect(to, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
       __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
 
-      navigate(i18n, redirectPath, locale, to, {
-        differentDomains,
-        skipSettingLocaleOnNavigate,
-        rootRedirect
-      })
+      navigate(
+        {
+          i18n,
+          redirectPath,
+          locale,
+          route: to
+        },
+        {
+          differentDomains,
+          skipSettingLocaleOnNavigate,
+          rootRedirect
+        }
+      )
     }),
     { global: true }
   )
