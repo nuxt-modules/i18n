@@ -28,6 +28,8 @@ export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],def
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const isSSG = false
+export const isSSR = true
 "
 `;
 
@@ -54,6 +56,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const isSSG = false
+export const isSSR = true
 "
 `;
 
@@ -70,12 +74,12 @@ export const resolveNuxtI18nOptions = async (context) => {
 },}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":((prop) => {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":((prop) => {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\",\\"testFunc\\":((prop) => {
-          return \`Hello \${prop}\`;
-        })})]
+            return \`Hello \${prop}\`;
+          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":((prop) => {
+            return \`Hello \${prop}\`;
+          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\",\\"testFunc\\":((prop) => {
+            return \`Hello \${prop}\`;
+          })})]
   return nuxtI18nOptions
 }
 
@@ -83,6 +87,8 @@ export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],def
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const isSSG = false
+export const isSSR = true
 "
 `;
 
@@ -112,6 +118,8 @@ export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],def
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const isSSG = false
+export const isSSR = true
 "
 `;
 
@@ -151,5 +159,7 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const isSSG = false
+export const isSSR = true
 "
 `;

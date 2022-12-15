@@ -25,7 +25,11 @@ export function generateLoaderOptions(
   langDir: NuxtI18nOptions['langDir'],
   localesRelativeBase: string,
   options: LoaderOptions = {},
-  dev = true
+  misc: {
+    dev: boolean
+    ssg: boolean
+    ssr: boolean
+  } = { dev: true, ssg: false, ssr: true }
 ) {
   let genCode = ''
   const localeInfo = options.localeInfo || []
@@ -68,7 +72,7 @@ export function generateLoaderOptions(
         if (key === 'vueI18n') {
           const optionLoaderVariable = `${key}OptionsLoader`
           genCodes += `  const ${optionLoaderVariable} = ${isObject(value)
-            ? `async (context) => ${generateVueI18nOptions(value, dev)}\n`
+            ? `async (context) => ${generateVueI18nOptions(value, misc.dev)}\n`
             : isString(value)
               ? `async (context) => import(${toCode(value)}).then(r => (r.default || r)(context))\n`
               : `async (context) => ${toCode({})}\n`
@@ -112,13 +116,15 @@ export function generateLoaderOptions(
       codes += `}\n`
       return codes
     } else if (rootKey === 'additionalMessages') {
-      return `export const ${rootKey} = ${generateAdditionalMessages(rootValue, dev)}\n`
+      return `export const ${rootKey} = ${generateAdditionalMessages(rootValue, misc.dev)}\n`
 	  } else {
 	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
 	  }
   }).join('\n')}`
 
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
+  genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
+  genCode += `export const isSSR = ${toCode(misc.ssr)}\n`
 
   debug('generate code', genCode)
   return genCode

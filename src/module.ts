@@ -156,7 +156,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
               __normalizedLocales: normalizedLocales
             }
           },
-          nuxt.options.dev
+          {
+            ssg: nuxt.options._generate,
+            ssr: nuxt.options.ssr,
+            dev: nuxt.options.dev
+          }
         )
       }
     })
