@@ -101,7 +101,7 @@ export default defineNuxtPlugin(async nuxt => {
     getDefaultLocale(defaultLocale),
     normalizedLocales,
     localeCodes,
-    isSSG
+    isSSG ? 'ssg_ignore' : 'normal'
   )
   __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
@@ -409,7 +409,7 @@ export default defineNuxtPlugin(async nuxt => {
         },
         normalizedLocales,
         localeCodes,
-        isSSGModeInitialSetup()
+        isSSGModeInitialSetup() ? 'ssg_ignore' : 'normal'
       )
       __DEBUG__ && console.log('detect locale', locale)
 

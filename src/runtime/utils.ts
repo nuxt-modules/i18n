@@ -43,6 +43,7 @@ import type {
 import type { NuxtApp } from '#imports'
 import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
+import type { DetectLocaleForSSGStatus } from '#build/i18n.internal.mjs'
 import type { DeepRequired } from 'ts-essentials'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
@@ -218,7 +219,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   initialLocaleLoader: Locale | LocaleLoader,
   normalizedLocales: LocaleObject[],
   localeCodes: string[] = [],
-  ignore = false
+  ssgStatus: DetectLocaleForSSGStatus = 'normal'
 ) {
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions
 
@@ -227,7 +228,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
 
   // prettier-ignore
   const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage
-    ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale, ignore ? 'ssg_ignore' : '')
+    ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale, ssgStatus)
     : DefaultDetectBrowserLanguageFromResult
   __DEBUG__ &&
     console.log(

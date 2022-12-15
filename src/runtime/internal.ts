@@ -265,6 +265,7 @@ export type DetectBrowserLanguageFromResult = {
   reason?: DetectBrowserLanguageNotDetectReason
   from?: DetectBrowserLanguageFrom
 }
+export type DetectLocaleForSSGStatus = 'ssg_ignore' | 'ssg_setup' | 'normal'
 
 export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
   locale: '',
@@ -280,7 +281,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   localeCodes: string[] = [],
   locale: Locale = '',
-  mode: 'ssg_ignore' | 'ssg_setup' | ''
+  mode: DetectLocaleForSSGStatus
 ): DetectBrowserLanguageFromResult {
   // browser detection is ignored if it's a nuxt generate.
   if (isSSG && (process.server || mode === 'ssg_ignore')) {
