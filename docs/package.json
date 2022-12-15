@@ -8,7 +8,7 @@
     "preview": "nuxi preview"
   },
   "devDependencies": {
-    "@nuxt-themes/docus": "^1.1.3",
+    "@nuxt-themes/docus": "^1.1.5",
     "nuxt": "^3.0.0"
   }
 }
