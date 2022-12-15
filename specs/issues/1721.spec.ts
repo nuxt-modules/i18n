@@ -1,7 +1,6 @@
-import { test, expect, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
-import { getText, getData } from '../helper'
+import { setup } from '@nuxt/test-utils'
 
 describe.skip('#1721', async () => {
   await setup({
