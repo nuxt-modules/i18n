@@ -52,7 +52,7 @@ importers:
       typescript: ^4.9.4
       ufo: ^1.0.1
       unplugin: ^1.0.1
-      vitest: ^0.26.0
+      vitest: ^0.26.1
       vue: ^3.2.45
       vue-i18n: ^9.3.0-beta.10
       vue-i18n-routing: ^0.10.2
@@ -105,7 +105,7 @@ importers:
       rimraf: 3.0.2
       ts-essentials: 9.3.0_typescript@4.9.4
       typescript: 4.9.4
-      vitest: 0.26.0_jsdom@20.0.3
+      vitest: 0.26.1_jsdom@20.0.3
       vue: 3.2.45
       yorkie: 2.0.0
 
@@ -6906,8 +6906,8 @@ packages:
       - terser
     dev: true
 
-  /vite-node/0.26.0_@types+node@18.11.9:
-    resolution: {integrity: sha512-nLtHWCv6reONl1oFsKhQ/LT7n3UNLpvVARAJlmGrQV6qSElht/9AdN41Pa+WSkw2Winh682UzM0Yw0GNlfqejw==}
+  /vite-node/0.26.1_@types+node@18.11.9:
+    resolution: {integrity: sha512-5FJSKZZJz48zFRKHE55WyevZe61hLMQEsqGn+ungfd60kxEztFybZ3yG9ToGFtOWNCCy7Vn5EVuXD8bdeHOSdw==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     dependencies:
@@ -7070,8 +7070,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest/0.26.0_jsdom@20.0.3:
-    resolution: {integrity: sha512-5kUnms5WOa0qrDCJePEPB13v9mhr+ZT1Qy0qNg0eVj1X7/Fx4GY4L1e5s3OH+BQ/J7M5WtaKsUGv9l1pbC7v2Q==}
+  /vitest/0.26.1_jsdom@20.0.3:
+    resolution: {integrity: sha512-qTLRnjYmjmJpHlLUtErxtlRqGCe8WItFhGXKklpWivu7CLP9KXN9iTezROe+vf51Kb+BB/fzxK6fUG9DvFGL5Q==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:
@@ -7107,7 +7107,7 @@ packages:
       tinypool: 0.3.0
       tinyspy: 1.0.2
       vite: 3.2.4_@types+node@18.11.9
-      vite-node: 0.26.0_@types+node@18.11.9
+      vite-node: 0.26.1_@types+node@18.11.9
     transitivePeerDependencies:
       - less
       - sass
