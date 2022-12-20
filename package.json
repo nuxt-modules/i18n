@@ -60,7 +60,7 @@
     "fix": "run-p lint:fix format:fix",
     "format": "prettier --config .prettierrc.cjs --ignore-path .prettierignore --list-different '**/*.{js,json,html}'",
     "format:fix": "pnpm format --write",
-    "lint": "eslint --ext .js,.ts,.vue,.json .",
+    "lint": "eslint --cache --ext .js,.ts,.vue,.json .",
     "lint:fix": "pnpm lint --fix",
     "test": "run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
