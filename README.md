@@ -6,6 +6,7 @@
 [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://img.shields.io/npm/dt/%40nuxtjs%2Fi18n.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-modules/i18n)
+<a href="https://volta.net/nuxt-modules/i18n?utm_source=nuxt_i18n_readme"><img src="https://user-images.githubusercontent.com/904724/209143798-32345f6c-3cf8-4e06-9659-f4ace4a6acde.svg" alt="Volta board"></a>
 
 # Nuxt I18n
 
