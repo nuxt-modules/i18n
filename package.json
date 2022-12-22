@@ -3,7 +3,7 @@
   "description": "i18n for Nuxt",
   "version": "8.0.0-beta.7",
   "homepage": "https://i18n.nuxtjs.org",
-  "packageManager": "pnpm@7.18.2",
+  "packageManager": "pnpm@7.19.0",
   "bugs": {
     "url": "https://github.com/nuxt-community/i18n-module/issues"
   },
@@ -116,12 +116,12 @@
     "lint-staged": "^13.1.0",
     "npm-run-all": "^4.1.5",
     "nuxt": "^3.0.0",
-    "playwright": "^1.29.0",
+    "playwright": "^1.29.1",
     "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "ts-essentials": "^9.3.0",
     "typescript": "^4.9.4",
-    "vitest": "^0.26.1",
+    "vitest": "^0.26.2",
     "vue": "^3.2.45",
     "yorkie": "^2.0.0"
   },
