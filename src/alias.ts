@@ -3,7 +3,7 @@ import { resolvePath } from '@nuxt/kit'
 import { pkgModulesDir } from './dirs'
 import { resolve } from 'pathe'
 import { VUE_I18N_PKG, VUE_I18N_BRIDGE_PKG, VUE_ROUTER_BRIDGE_PKG, VUE_I18N_ROUTING_PKG } from './constants'
-import { tryResolve, getPackageManagerType } from './utils'
+import { tryResolve, getLayerRootDirs, getPackageManagerType } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PackageManager } from './utils'
@@ -56,6 +56,8 @@ export async function resolveVueI18nAlias(pkgModulesDir: string, nuxt: Nuxt, pkg
     ? `${VUE_I18N_PKG}/dist/vue-i18n.mjs`
     : `${VUE_I18N_PKG}/dist/vue-i18n.runtime.mjs`
   const targets = [
+    // for Nuxt layer
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
     // 1st, try to resolve from `node_modules` (hoisted case)
     resolve(rootDir, 'node_modules', modulePath),
     // 2nd, try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
@@ -72,6 +74,9 @@ async function resolveVueI18nBridgeAlias(pkgModulesDir: string, nuxt: Nuxt, pkgM
   const { rootDir, workspaceDir } = nuxt.options
   const modulePath = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs` as const
   const targets = [
+    // for Nuxt layer
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath)),
     // 1st, try to resolve from `node_modules` (hoisted case)
     resolve(rootDir, 'node_modules', modulePath),
     // 2nd, try to resolve from `node_modules/vue-i18n-routing` (not hoisted case)
@@ -93,6 +98,9 @@ async function resolveVueRouterBridgeAlias(pkgModulesDir: string, nuxt: Nuxt, pk
   const { rootDir, workspaceDir } = nuxt.options
   const modulePath = `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs` as const
   const targets = [
+    // for Nuxt layer
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, `${VUE_I18N_ROUTING_PKG}/node_modules`, modulePath)),
     // 1st, try to resolve from `node_modules` (hoisted case)
     resolve(rootDir, 'node_modules', modulePath),
     // 2nd, try to resolve from `node_modules/vue-i18n-routing` (not hoisted case)
@@ -114,6 +122,8 @@ export async function resolveVueI18nRoutingAlias(pkgModulesDir: string, nuxt: Nu
   const { rootDir, workspaceDir } = nuxt.options
   const modulePath = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs` as const
   const targets = [
+    // for Nuxt layer
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
     // 1st, try to resolve from `node_modules` (hoisted case)
     resolve(rootDir, 'node_modules', modulePath),
     // 2nd, try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
