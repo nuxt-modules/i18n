@@ -8,6 +8,7 @@ import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
+import type { Nuxt } from '@nuxt/schema'
 
 const PackageManagerLockFiles = {
   'npm-shrinkwrap.json': 'npm-legacy',
@@ -64,6 +65,11 @@ export async function resolveLocales(path: string, locales: LocaleObject[]): Pro
         }
       : Object.assign({ path: file }, locale)
   })
+}
+
+export function getLayerRootDirs(nuxt: Nuxt) {
+  const layers = nuxt.options._layers
+  return layers.length > 1 ? layers.map(layer => layer.config.rootDir) : []
 }
 
 export async function tryResolve(id: string, targets: string[], pkgMgr: PackageManager, extention = '') {
