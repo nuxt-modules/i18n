@@ -420,8 +420,9 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
     }
     let protocol
     if (process.server) {
-      // @ts-ignore TODO: fix type error
-      const { req } = useRequestEvent(nuxt)
+      const {
+        node: { req }
+      } = useRequestEvent(nuxt)
       protocol = req && isHTTPS(req) ? 'https' : 'http'
     } else {
       protocol = window.location.protocol.split(':')[0]

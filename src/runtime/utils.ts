@@ -12,7 +12,9 @@ import {
   localeHead,
   LocaleObject,
   DefaultPrefixable,
-  DefaultSwitchLocalePathIntercepter
+  DefaultSwitchLocalePathIntercepter,
+  getComposer,
+  useSwitchLocalePath
 } from 'vue-i18n-routing'
 import { navigateTo, useState } from '#imports'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
@@ -310,8 +312,21 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
   }
 
   if (differentDomains || (isSSG && process.client)) {
-    const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(route.fullPath, targetLocale)
-    __DEBUG__ && console.log('detectRedirect: calculate domain routePath -> ', routePath)
+    /**
+     * `$router.currentRoute` does not yet reflect the `to` value,
+     *  when the Router middleware handler is executed.
+     *  if `$switchLocalePath` is called, the intended path cannot be obtained,
+     *  because it is processed by previso's route.
+     *  so, we don't call that function, and instead, we call `useSwitchLocalePath`,
+     *  let it be processed by the route of the router middleware.
+     */
+    const switchLocalePath = useSwitchLocalePath({
+      i18n: getComposer(context.$i18n),
+      route,
+      router: context.$router
+    })
+    const routePath = switchLocalePath(targetLocale)
+    __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
     if (isString(routePath)) {
       redirectPath = routePath
     }
