@@ -317,7 +317,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
      *  when the Router middleware handler is executed.
      *  if `$switchLocalePath` is called, the intended path cannot be obtained,
      *  because it is processed by previso's route.
-     *  so, we don't call that function, and instead, `$useSwitchLocalePath` will be called,
+     *  so, we don't call that function, and instead, we call `useSwitchLocalePath`,
      *  let it be processed by the route of the router middleware.
      */
     const switchLocalePath = useSwitchLocalePath({
