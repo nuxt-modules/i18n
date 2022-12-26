@@ -3,7 +3,7 @@
   "description": "i18n for Nuxt",
   "version": "8.0.0-beta.7",
   "homepage": "https://i18n.nuxtjs.org",
-  "packageManager": "pnpm@7.19.0",
+  "packageManager": "pnpm@7.20.0",
   "bugs": {
     "url": "https://github.com/nuxt-community/i18n-module/issues"
   },
@@ -73,7 +73,7 @@
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.4.0",
-    "@intlify/shared": "9.3.0-beta.10",
+    "@intlify/shared": "9.3.0-beta.11",
     "@intlify/unplugin-vue-i18n": "^0.8.1",
     "@nuxt/kit": "^3.0.0",
     "@vue/compiler-sfc": "^3.2.45",
@@ -89,13 +89,13 @@
     "pkg-types": "^1.0.1",
     "ufo": "^1.0.1",
     "unplugin": "^1.0.1",
-    "vue-i18n": "^9.3.0-beta.10",
+    "vue-i18n": "^9.3.0-beta.11",
     "vue-i18n-routing": "^0.10.2"
   },
   "devDependencies": {
-    "@babel/parser": "^7.20.5",
+    "@babel/parser": "^7.20.7",
     "@babel/plugin-syntax-import-assertions": "^7.20.0",
-    "@babel/types": "^7.20.5",
+    "@babel/types": "^7.20.7",
     "@nuxt/module-builder": "latest",
     "@nuxt/schema": "^3.0.0",
     "@nuxt/test-utils": "^3.0.0",
