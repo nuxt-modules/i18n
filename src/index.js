@@ -27,13 +27,14 @@ export default async function (moduleOptions) {
   /** @type {Record<string, string>} */
   const localeFileMap = {}
 
-  /**
-   * Helper for `langDir` resources resolving
-   * @param {any[]} args
-   */
-  const relativeToBuild = (...args) => relativeTo(this.options.buildDir, ...args)
-
   if (options.langDir) {
+    /**
+     * Helper for `langDir` resources resolving
+     * @param {any[]} args
+     */
+    const relativeToBuild = (...args) => relativeTo(this.options.buildDir, ...args)
+    const resolvedLangDir = this.nuxt.resolver.resolveAlias(options.langDir)
+
     if (!options.locales.length || typeof options.locales[0] === 'string') {
       throw new Error(formatMessage('When using the "langDir" option the "locales" must be a list of objects.'))
     }
@@ -41,12 +42,7 @@ export default async function (moduleOptions) {
       if (typeof (locale) === 'string' || !locale.file) {
         throw new Error(formatMessage(`All locales must be objects and have the "file" property set when using "langDir".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`))
       }
-    }
-    const resolvedLangDir = this.nuxt.resolver.resolveAlias(options.langDir)
-    for (const locale of options.locales) {
-      if (typeof locale !== 'string' && locale.file) {
-        localeFileMap[String(locale.file)] = relativeToBuild(resolvedLangDir, locale.file)
-      }
+      localeFileMap[String(locale.file)] = relativeToBuild(resolvedLangDir, locale.file)
     }
   }
 
