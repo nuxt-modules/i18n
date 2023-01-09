@@ -1,5 +1,12 @@
 
 
+### [7.3.1](https://github.com/nuxt-community/i18n-module/compare/v7.3.0...v7.3.1) (2023-01-09)
+
+
+### Bug Fixes
+
+* don't expose full project path throuh `langDir` option ([#1786](https://github.com/nuxt-community/i18n-module/issues/1786)) ([0738a0f](https://github.com/nuxt-community/i18n-module/commit/0738a0f4e1cf1758bb44d019642017c88e0b1685))
+
 ## [7.3.0](https://github.com/nuxt-community/i18n-module/compare/v7.2.3...v7.3.0) (2022-08-24)
 
 
