@@ -3,6 +3,7 @@ const { lazy, locales, langDir, vueI18n } = options.options
 const { fallbackLocale } = vueI18n || {}
 const syncLocaleFiles = new Set()
 const asyncLocaleFiles = new Set()
+const localeFiles = JSON.parse(options.localeFiles)
 
 if (langDir) {
   if (fallbackLocale && typeof (fallbackLocale) === 'string') {
@@ -17,7 +18,7 @@ if (langDir) {
     }
   }
   for (const file of syncLocaleFiles) {
-%>import locale<%= hash(file) %> from '<%= `../${relativeToBuild(langDir, file)}` %>'
+%>import locale<%= hash(file) %> from '<%= `../${localeFiles[file]}` %>'
 <%
   }
 }
@@ -62,7 +63,7 @@ export const localeMessages = {
   <%= `'${file}': () => Promise.resolve(locale${hash(file)}),` %><%
   }
   for (const file of asyncLocaleFiles) {%>
-  <%= `'${file}': () => import('../${relativeToBuild(langDir, file)}' /* webpackChunkName: "lang-${file}" */),` %><%
+  <%= `'${file}': () => import('../${localeFiles[file]}' /* webpackChunkName: "lang-${file}" */),` %><%
   }
 %>
 }

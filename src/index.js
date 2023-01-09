@@ -2,6 +2,8 @@ import { resolve, join } from 'path'
 import { readdirSync } from 'fs'
 import merge from 'lodash.merge'
 // @ts-ignore
+import { relativeTo } from '@nuxt/utils'
+// @ts-ignore
 import { directive as i18nExtensionsDirective } from '@intlify/vue-i18n-extensions'
 import { COMPONENT_OPTIONS_KEY, DEFAULT_OPTIONS, ROOT_DIR, STRATEGIES, REDIRECT_ON_OPTIONS } from './helpers/constants'
 import { buildHook, createExtendRoutesHook } from './core/hooks'
@@ -22,7 +24,17 @@ export default async function (moduleOptions) {
     throw new Error(formatMessage('When using the "lazy" option you must also set the "langDir" option.'))
   }
 
+  /** @type {Record<string, string>} */
+  const localeFileMap = {}
+
   if (options.langDir) {
+    /**
+     * Helper for `langDir` resources resolving
+     * @param {any[]} args
+     */
+    const relativeToBuild = (...args) => relativeTo(this.options.buildDir, ...args)
+    const resolvedLangDir = this.nuxt.resolver.resolveAlias(options.langDir)
+
     if (!options.locales.length || typeof options.locales[0] === 'string') {
       throw new Error(formatMessage('When using the "langDir" option the "locales" must be a list of objects.'))
     }
@@ -30,8 +42,8 @@ export default async function (moduleOptions) {
       if (typeof (locale) === 'string' || !locale.file) {
         throw new Error(formatMessage(`All locales must be objects and have the "file" property set when using "langDir".\nFound none in:\n${JSON.stringify(locale, null, 2)}.`))
       }
+      localeFileMap[String(locale.file)] = relativeToBuild(resolvedLangDir, locale.file)
     }
-    options.langDir = this.nuxt.resolver.resolveAlias(options.langDir)
   }
 
   // Templates (including plugins).
@@ -60,7 +72,8 @@ export default async function (moduleOptions) {
       isUniversalMode: nuxtOptions.mode === 'universal',
       trailingSlash: nuxtOptions.router.trailingSlash
     },
-    options
+    options,
+    localeFiles: JSON.stringify(localeFileMap)
   }
 
   const templatesPath = join(__dirname, '/templates')
