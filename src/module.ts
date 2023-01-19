@@ -262,10 +262,10 @@ function checkOptions(options: NuxtI18nOptions) {
       throw new Error(formatMessage('When using the "langDir" option the "locales" must be a list of objects.'))
     }
     for (const locale of locales) {
-      if (isString(locale) || !locale.file) {
+      if (isString(locale) || !(locale.file || locale.files)) {
         throw new Error(
           formatMessage(
-            `All locales must be objects and have the "file" property set when using "langDir".\nFound none in:\n${JSON.stringify(
+            `All locales must be objects and have the "file" or "files" property set when using "langDir".\nFound none in:\n${JSON.stringify(
               locale,
               null,
               2
