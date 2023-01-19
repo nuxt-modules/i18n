@@ -7,10 +7,16 @@ import type { DeepRequired } from 'ts-essentials'
  * stub type definition for @nuxtjs/i18n internally
  */
 
+type LocaleLoader = {
+  key: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  load: () => Promise<any>
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const loadMessages: () => Promise<any> = () => Promise.resolve({})
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const localeMessages: Record<string, () => Promise<any>> = {}
+export const localeMessages: Record<string, LocaleLoader[]> = {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const additionalMessages: Record<string, Array<() => Promise<any>>> = {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

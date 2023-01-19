@@ -1,6 +1,6 @@
 import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
 import { resolveFiles } from '@nuxt/kit'
-import { parse, parse as parsePath } from 'pathe'
+import { parse, parse as parsePath, resolve } from 'pathe'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
 import { isObject, isString } from '@intlify/shared'
@@ -54,16 +54,14 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
 
 export async function resolveLocales(path: string, locales: LocaleObject[]): Promise<LocaleInfo[]> {
   const files = await resolveFiles(path, '**/*{json,json5,yaml,yml}')
-  return files.map(file => {
-    const parsed = parse(file)
-    const locale = locales.find((locale: string | LocaleObject) => isObject(locale) && locale.file === parsed.base)
-    return locales == null
-      ? {
-          path: file,
-          file: parsed.base,
-          code: parsed.name
-        }
-      : Object.assign({ path: file }, locale)
+  const find = (f: string) => files.find(file => file === resolve(path, f))
+  return (locales as LocaleInfo[]).map(locale => {
+    if (locale.file) {
+      locale.path = find(locale.file)
+    } else if (locale.files) {
+      locale.paths = locale.files.map(file => find(file)).filter(Boolean) as string[]
+    }
+    return locale
   })
 }
 

@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest'
+import { test, expect } from 'vitest'
 import { parse } from '@babel/parser'
 import { generateLoaderOptions } from '../src/gen'
 import { DEFAULT_OPTIONS } from '../src/constants'
@@ -68,7 +68,7 @@ function validateSyntax(code: string): boolean {
   return ret
 }
 
-it('basic', () => {
+test('basic', () => {
   const code = generateLoaderOptions(
     false,
     'locales',
@@ -87,7 +87,7 @@ it('basic', () => {
   expect(code).toMatchSnapshot()
 })
 
-it('lazy', () => {
+test('lazy', () => {
   const code = generateLoaderOptions(
     true,
     'locales',
@@ -105,7 +105,39 @@ it('lazy', () => {
   expect(code).toMatchSnapshot()
 })
 
-it('vueI18n: path', () => {
+test('multiple files', () => {
+  const code = generateLoaderOptions(
+    true,
+    'locales',
+    '..',
+    {
+      localeCodes: [...LOCALE_CODES, 'es', 'es-AR'],
+      localeInfo: [
+        ...LOCALE_INFO,
+        ...[
+          {
+            code: 'es',
+            file: 'es.json',
+            path: '/path/to/es.json'
+          },
+          {
+            code: 'es-AR',
+            files: ['es.json', 'es-AR.json'],
+            paths: ['/path/to/es.json', '/path/to/es-AR.json']
+          }
+        ]
+      ],
+      additionalMessages: {},
+      nuxtI18nOptions: NUXT_I18N_OPTIONS,
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+    },
+    { ssg: false, ssr: true, dev: true }
+  )
+  expect(validateSyntax(code)).toBe(true)
+  expect(code).toMatchSnapshot()
+})
+
+test('vueI18n: path', () => {
   const code = generateLoaderOptions(
     false,
     'locales',
@@ -125,7 +157,7 @@ it('vueI18n: path', () => {
   expect(code).toMatchSnapshot()
 })
 
-it('toCode: function (arrow)', () => {
+test('toCode: function (arrow)', () => {
   const code = generateLoaderOptions(
     false,
     'locales',
@@ -151,7 +183,7 @@ it('toCode: function (arrow)', () => {
   expect(code).toMatchSnapshot()
 })
 
-it('toCode: function (named)', () => {
+test('toCode: function (named)', () => {
   const code = generateLoaderOptions(false, 'locales', '..', {
     localeCodes: LOCALE_CODES,
     additionalMessages: {},
