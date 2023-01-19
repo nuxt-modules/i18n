@@ -19,7 +19,8 @@ export interface DetectBrowserLanguageOptions {
 }
 
 export type LocaleInfo = {
-  path: string
+  path?: string
+  paths?: string[]
 } & LocaleObject
 
 export interface RootRedirectOptions {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isArray, isString, isFunction } from '@intlify/shared'
+import { isArray, isString, isFunction, isObject, hasOwn } from '@intlify/shared'
 import {
   findBrowserLocale,
   getLocalesRegex,
@@ -94,6 +94,24 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
+const isNotObjectOrIsArray = (val: unknown) => !isObject(val) || isArray(val)
+
+function deepCopy(src: any, des: any) {
+  if (isNotObjectOrIsArray(src) || isNotObjectOrIsArray(des)) {
+    return
+  }
+
+  for (const key in src) {
+    if (hasOwn(src, key)) {
+      if (isNotObjectOrIsArray(src[key]) || isNotObjectOrIsArray(des[key])) {
+        des[key] = src[key]
+      } else {
+        deepCopy(src[key], des[key])
+      }
+    }
+  }
+}
+
 async function loadMessage(context: NuxtApp, loader: () => Promise<any>) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
@@ -112,6 +130,7 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>) {
 }
 
 const loadedLocales: Locale[] = []
+const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 export async function loadLocale(
   context: NuxtApp,
@@ -119,16 +138,40 @@ export async function loadLocale(
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
   if (process.server || process.dev || !loadedLocales.includes(locale)) {
-    const loader = localeMessages[locale]
-    if (loader != null) {
-      const message = await loadMessage(context, loader)
-      if (message != null) {
-        setter(locale, message)
+    const loaders = localeMessages[locale]
+    if (loaders != null) {
+      if (loaders.length === 1) {
+        const { key, load } = loaders[0]
+        if (!loadedMessages.has(key)) {
+          const message = await loadMessage(context, load)
+          if (message != null) {
+            loadedMessages.set(key, message)
+            setter(locale, message)
+            loadedLocales.push(locale)
+          }
+        }
+      } else if (loaders.length > 1) {
+        const targetMessage: LocaleMessages<DefineLocaleMessage> = {}
+        for (const { key, load } of loaders) {
+          let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
+          if (loadedMessages.has(key)) {
+            message = loadedMessages.get(key)
+          } else {
+            message = await loadMessage(context, load)
+            if (message != null) {
+              loadedMessages.set(key, message)
+            }
+          }
+          if (message != null) {
+            deepCopy(message, targetMessage)
+          }
+        }
+        setter(locale, targetMessage)
         loadedLocales.push(locale)
       }
-    } else {
-      console.warn(formatMessage('Could not find ' + locale + ' locale in localeMessages'))
     }
+  } else {
+    console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
   }
 }
 
