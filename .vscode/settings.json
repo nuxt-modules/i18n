@@ -9,12 +9,5 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "i18n-ally.localesPaths": [
-    "playground/locales",
-    "specs/fixtures/basic/locales",
-    "specs/fixtures/head/locales",
-    "specs/fixtures/vue_i18n_options_loader/locales",
-    "specs/fixtures/lazy/lang"
-  ]
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
