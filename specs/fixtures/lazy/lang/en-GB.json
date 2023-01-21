@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "nest": {
+      "foo": {
+        "bar": {
+          "profile": "Profile"
+        }
+      }
+    }
+  }
+}

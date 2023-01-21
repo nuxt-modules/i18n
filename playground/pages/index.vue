@@ -68,6 +68,7 @@ definePageMeta({
         <a href="javascript:void(0)" @click="setLocale(locale.code)">{{ locale.name }}</a> |
       </span>
     </nav>
+    <p>{{ $t('settings.profile') }}</p>
   </div>
 </template>
 

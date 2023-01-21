@@ -17,6 +17,7 @@ const localesExcludingCurrent = computed(() => {
       <NuxtLink
         v-for="(locale, index) in localesExcludingCurrent"
         :key="index"
+        :id="`lang-switcher-with-nuxt-link-${locale.code}`"
         :exact="true"
         :to="switchLocalePath(locale.code)"
         >{{ locale.name }}</NuxtLink
