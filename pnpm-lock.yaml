@@ -47,7 +47,7 @@ importers:
       pkg-types: ^1.0.1
       playwright: ^1.29.1
       prettier: ^2.8.1
-      rimraf: ^3.0.2
+      rimraf: ^4.1.1
       ts-essentials: ^9.3.0
       typescript: ^4.9.4
       ufo: ^1.0.1
@@ -102,7 +102,7 @@ importers:
       nuxt: 3.0.0_4dtdrtpssurq5w2pg5gvtfajr4
       playwright: 1.29.1
       prettier: 2.8.1
-      rimraf: 3.0.2
+      rimraf: 4.1.1
       ts-essentials: 9.3.0_typescript@4.9.4
       typescript: 4.9.4
       vitest: 0.26.2_jsdom@21.0.0
@@ -6015,6 +6015,12 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
+    dev: true
+
+  /rimraf/4.1.1:
+    resolution: {integrity: sha512-Z4Y81w8atcvaJuJuBB88VpADRH66okZAuEm+Jtaufa+s7rZmIz+Hik2G53kGaNytE7lsfXyWktTmfVz0H9xuDg==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /rollup-plugin-dts/5.0.0_6hu75beimlyhzhs4jaytlzqtvy:
