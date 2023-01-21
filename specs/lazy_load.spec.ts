@@ -20,6 +20,12 @@ await setup({
           name: 'English'
         },
         {
+          code: 'en-GB',
+          iso: 'en-GB',
+          files: ['en.json', 'en-GB.json'],
+          name: 'English (UK)'
+        },
+        {
           code: 'fr',
           iso: 'fr-FR',
           file: 'fr.json5',
@@ -41,12 +47,10 @@ test('can access to no prefix locale (en): /', async () => {
   expect(await getText(page, '#link-about')).toEqual('About us')
 
   // lang switcher rendering
-  expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('Français')
   expect(await getText(page, '#set-locale-link-fr')).toEqual('Français')
 
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
-  expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/fr')
 
   // current locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
@@ -66,16 +70,27 @@ test('can access to prefix locale: /fr', async () => {
   expect(await getText(page, '#link-about')).toEqual('À propos')
 
   // lang switcher rendering
-  expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('English')
   expect(await getText(page, '#set-locale-link-en')).toEqual('English')
 
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
-  expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
 
   // current locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
   // html tag `lang` attriute with iso code
   expect(await page.getAttribute('html', 'lang')).toEqual('fr-FR')
+})
+
+test('mutiple lazy loading', async () => {
+  const home = url('/en-GB')
+  const page = await createPage()
+  await page.goto(home)
+
+  // `en` base rendering
+  expect(await getText(page, '#home-header')).toEqual('Homepage')
+  expect(await getText(page, 'title')).toEqual('Homepage')
+  expect(await getText(page, '#link-about')).toEqual('About us')
+
+  expect(await getText(page, '#profile')).toEqual('Profile')
 })

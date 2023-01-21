@@ -44,23 +44,34 @@ export function generateLoaderOptions(
     }
   }
 
+  const generatedImports = new Map<string, string>()
   const importMapper = new Map<string, string>()
-  for (const { code, path, file } of syncLocaleFiles) {
-    importMapper.set(code, genSafeVariableName(`locale_${code}`))
-    let loadPath = path
-    if (file && langDir) {
-      loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
+
+  function generateSyncImports(gen: string, path?: string) {
+    if (!path) {
+      return gen
     }
-    let assertFormat = ''
-    if (file) {
-      const { ext } = parsePath(file)
-      assertFormat = ext.slice(1)
+
+    const { base, ext } = parsePath(path)
+    if (!generatedImports.has(base)) {
+      let loadPath = path
+      if (langDir) {
+        loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, base)
+      }
+      const assertFormat = ext.slice(1)
+      const variableName = genSafeVariableName(`locale_${convertToImportId(base)}`)
+      gen += `${genImport(loadPath, variableName, assertFormat ? { assert: { type: assertFormat } } : {})}\n`
+      importMapper.set(base, variableName)
+      generatedImports.set(base, loadPath)
     }
-    genCode += `${genImport(
-      loadPath,
-      genSafeVariableName(`locale_${code}`),
-      assertFormat ? { assert: { type: assertFormat } } : {}
-    )}\n`
+
+    return gen
+  }
+
+  for (const { path, paths } of syncLocaleFiles) {
+    ;(path ? [path] : paths || []).forEach(p => {
+      genCode = generateSyncImports(genCode, p)
+    })
   }
 
   // prettier-ignore
@@ -102,15 +113,20 @@ export function generateLoaderOptions(
     } else if (rootKey === 'localeInfo') {
       let codes = `export const localeMessages = {\n`
       if (langDir) {
-        for (const { code } of syncLocaleFiles) {
-          codes += `  ${toCode(code)}: () => Promise.resolve(${importMapper.get(code)}),\n`
+        for (const { code, path, paths } of syncLocaleFiles) {
+          const syncPaths = path ? [path] : paths || []
+          codes += `  ${toCode(code)}: [${syncPaths.map(path => {
+            const { base } = parsePath(path)
+            return `{ key: ${toCode(generatedImports.get(base))}, load: () => Promise.resolve(${importMapper.get(base)}) }`
+          })}],\n`
         }
-        for (const { code, path, file } of asyncLocaleFiles) {
-          let loadPath = path
-          if (file && langDir) {
-            loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
-          }
-          codes += `  ${toCode(code)}: ${genDynamicImport(loadPath, { comment: `webpackChunkName: "lang-${code}"` })},\n`
+        for (const { code, path, paths } of asyncLocaleFiles) {
+          const dynamicPaths = path ? [path] : paths || []
+          codes += `  ${toCode(code)}: [${dynamicPaths.map(path => {
+            const { base } = parsePath(path)
+            const loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, base)
+            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(loadPath, { comment: `webpackChunkName: "lang-${base}"` })} }`
+          })}],\n`
         }
       }
       codes += `}\n`
@@ -128,6 +144,20 @@ export function generateLoaderOptions(
 
   debug('generate code', genCode)
   return genCode
+}
+
+const IMPORT_ID_CACHES = new Map<string, string>()
+
+function convertToImportId(file: string) {
+  if (IMPORT_ID_CACHES.has(file)) {
+    return IMPORT_ID_CACHES.get(file)
+  }
+
+  const { name } = parsePath(file)
+  const id = name.replace(/-/g, '_').replace(/\./g, '_')
+  IMPORT_ID_CACHES.set(file, id)
+
+  return id
 }
 
 function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: string) {
