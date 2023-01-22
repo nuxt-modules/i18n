@@ -1,9 +1,9 @@
 import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
 import { resolveFiles } from '@nuxt/kit'
-import { parse, parse as parsePath, resolve } from 'pathe'
+import { parse as parsePath, resolve } from 'pathe'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
-import { isObject, isString } from '@intlify/shared'
+import { isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
