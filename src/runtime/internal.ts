@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isArray, isString, isFunction, isObject, hasOwn } from '@intlify/shared'
+import { isArray, isString, isFunction, isObject } from '@intlify/shared'
 import {
   findBrowserLocale,
   getLocalesRegex,
@@ -94,20 +94,14 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-const isNotObjectOrIsArray = (val: unknown) => !isObject(val) || isArray(val)
-
-function deepCopy(src: any, des: any) {
-  if (isNotObjectOrIsArray(src) || isNotObjectOrIsArray(des)) {
-    return
-  }
-
+function deepCopy(src: Record<string, any>, des: Record<string, any>) {
   for (const key in src) {
-    if (hasOwn(src, key)) {
-      if (isNotObjectOrIsArray(src[key]) || isNotObjectOrIsArray(des[key])) {
-        des[key] = src[key]
-      } else {
-        deepCopy(src[key], des[key])
-      }
+    if (isObject(src[key])) {
+      if (!isObject(des[key])) des[key] = {}
+
+      deepCopy(src[key], des[key])
+    } else {
+      des[key] = src[key]
     }
   }
 }
