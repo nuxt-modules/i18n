@@ -136,13 +136,18 @@ export async function loadLocale(
     if (loaders != null) {
       if (loaders.length === 1) {
         const { key, load } = loaders[0]
-        if (!loadedMessages.has(key)) {
-          const message = await loadMessage(context, load)
+        let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
+        if (loadedMessages.has(key)) {
+          message = loadedMessages.get(key)
+        } else {
+          message = await loadMessage(context, load)
           if (message != null) {
             loadedMessages.set(key, message)
-            setter(locale, message)
-            loadedLocales.push(locale)
           }
+        }
+        if (message != null) {
+          setter(locale, message)
+          loadedLocales.push(locale)
         }
       } else if (loaders.length > 1) {
         const targetMessage: LocaleMessages<DefineLocaleMessage> = {}
