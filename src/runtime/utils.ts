@@ -304,9 +304,16 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
     // the current route could be 404 in which case attempt to find matching route using the full path since
     // "switchLocalePath" can only find routes if the current route exists.
     const { fullPath } = route
+    const decodedRoute = decodeURI(fullPath)
     const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(fullPath, targetLocale)
     __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, fullPath)
-    if (isString(routePath) && routePath && routePath !== fullPath && !routePath.startsWith('//')) {
+    if (
+      isString(routePath) &&
+      routePath &&
+      routePath !== fullPath &&
+      routePath !== decodedRoute &&
+      !routePath.startsWith('//')
+    ) {
       redirectPath = routePath
     }
   }
