@@ -7,11 +7,12 @@ export default defineAppConfig({
     socials: {
       github: 'nuxt-modules/i18n'
     },
-    // github: {
-    //   root: 'content',
-    //   edit: true,
-    //   releases: false
-    // },
+    github: {
+      branch: 'next',
+      repo: 'nuxt-modules/i18n',
+      owner: 'nuxt-modules',
+      edit: true
+    },
     aside: {
       level: 0,
       exclude: []
