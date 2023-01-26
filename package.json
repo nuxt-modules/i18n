@@ -3,7 +3,6 @@
   "description": "i18n for Nuxt",
   "version": "8.0.0-beta.8",
   "homepage": "https://i18n.nuxtjs.org",
-  "packageManager": "pnpm@7.20.0",
   "bugs": {
     "url": "https://github.com/nuxt-community/i18n-module/issues"
   },

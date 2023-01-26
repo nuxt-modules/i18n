@@ -63,6 +63,7 @@ export default defineNuxtPlugin(async nuxt => {
     langDir,
     routesNameSeparator,
     defaultLocaleRouteNameSuffix,
+    strategy,
     rootRedirect
   } = nuxtI18nOptions
   __DEBUG__ && console.log('isSSR', isSSR, ', isSSG', isSSG)
@@ -101,7 +102,7 @@ export default defineNuxtPlugin(async nuxt => {
     getDefaultLocale(defaultLocale),
     normalizedLocales,
     localeCodes,
-    isSSG ? 'ssg_ignore' : 'normal'
+    isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal'
   )
   __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
@@ -137,7 +138,7 @@ export default defineNuxtPlugin(async nuxt => {
    * NOTE:
    *  avoid hydaration miss match for SSG mode
    */
-  if (isSSGModeInitialSetup() && process.client) {
+  if (isSSGModeInitialSetup() && strategy === 'no_prefix' && process.client) {
     nuxt.hook('app:mounted', async () => {
       __DEBUG__ && console.log('hook app:mounted')
       const {
@@ -177,7 +178,7 @@ export default defineNuxtPlugin(async nuxt => {
     context: nuxtContext,
     hooks: {
       onExtendComposer(composer: Composer) {
-        composer.strategy = nuxtI18nOptions.strategy
+        composer.strategy = strategy
         composer.localeProperties = computed(() => {
           return (
             normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
@@ -409,7 +410,7 @@ export default defineNuxtPlugin(async nuxt => {
         },
         normalizedLocales,
         localeCodes,
-        isSSGModeInitialSetup() ? 'ssg_ignore' : 'normal'
+        isSSGModeInitialSetup() && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal'
       )
       __DEBUG__ && console.log('detect locale', locale)
 
