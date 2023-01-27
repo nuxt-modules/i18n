@@ -2,8 +2,8 @@ lockfileVersion: 5.4
 
 overrides:
   '@nuxtjs/i18n': link:.
-  nuxt: 3.0.0
-  '@nuxt/content': 2.4.0
+  nuxt: ^3.0.0
+  '@nuxt/content': npm:@nuxt/content-edge@latest
 
 importers:
 
@@ -43,7 +43,7 @@ importers:
       magic-string: ^0.27.0
       mlly: ^1.0.0
       npm-run-all: ^4.1.5
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
       pathe: ^1.0.0
       pkg-types: ^1.0.1
       playwright: ^1.29.1
@@ -113,7 +113,7 @@ importers:
   docs:
     specifiers:
       '@nuxt-themes/docus': 1.6.1
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxt-themes/docus': 1.6.1_nuxt@3.0.0
       nuxt: 3.0.0
@@ -121,7 +121,7 @@ importers:
   playground:
     specifiers:
       '@nuxtjs/i18n': link:..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:..
       nuxt: 3.0.0
@@ -129,7 +129,7 @@ importers:
   specs/fixtures/basic:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -137,7 +137,7 @@ importers:
   specs/fixtures/basic_usage:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -145,7 +145,7 @@ importers:
   specs/fixtures/fallback:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -153,7 +153,7 @@ importers:
   specs/fixtures/head:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -161,7 +161,7 @@ importers:
   specs/fixtures/lazy:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -169,7 +169,7 @@ importers:
   specs/fixtures/switcher:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -177,7 +177,7 @@ importers:
   specs/fixtures/vue_i18n_options_loader:
     specifiers:
       '@nuxtjs/i18n': link:../../..
-      nuxt: 3.0.0
+      nuxt: ^3.0.0
     devDependencies:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.0.0
@@ -220,7 +220,7 @@ packages:
       '@babel/helper-compilation-targets': 7.20.7_@babel+core@7.20.12
       '@babel/helper-module-transforms': 7.20.11
       '@babel/helpers': 7.20.13
-      '@babel/parser': 7.20.7
+      '@babel/parser': 7.20.13
       '@babel/template': 7.20.7
       '@babel/traverse': 7.20.13
       '@babel/types': 7.20.7
@@ -542,7 +542,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/code-frame': 7.18.6
-      '@babel/parser': 7.20.7
+      '@babel/parser': 7.20.13
       '@babel/types': 7.20.7
     dev: true
 
@@ -1121,7 +1121,7 @@ packages:
       '@nuxt-themes/elements': 0.5.2
       '@nuxt-themes/tokens': 1.6.1
       '@nuxt-themes/typography': 0.5.2
-      '@nuxt/content': 2.4.0
+      '@nuxt/content': /@nuxt/content-edge/2.4.1-27912577.4d15913
       '@nuxthq/studio': 0.6.5
       '@vueuse/nuxt': 9.11.1_nuxt@3.0.0
     transitivePeerDependencies:
@@ -1182,10 +1182,10 @@ packages:
       - vue
     dev: true
 
-  /@nuxt/content/2.4.0:
-    resolution: {integrity: sha512-yqb0Z9Hah5TNV3srLaumHPABHNH/uwx3UT0AL74EnKHS5A+KqB5zYGGwzorrPU/+3g0WR0088VyD9RjDYbJm8A==}
+  /@nuxt/content-edge/2.4.1-27912577.4d15913:
+    resolution: {integrity: sha512-AVemIo+TtlbkJHkC3c8sBgMxnjwg9MXKfCNFD9kOd74OoEZ8O1NBLBBEkBlCfkipbfDi0Zn3s10YmrLRrkdAow==}
     dependencies:
-      '@nuxt/kit': 3.1.0
+      '@nuxt/kit': 3.1.1
       consola: 2.15.3
       defu: 6.1.2
       destr: 1.2.2
@@ -1613,7 +1613,7 @@ packages:
     dependencies:
       '@nuxt/kit': 3.1.0
       '@nuxt/schema': 3.0.0
-      defu: 6.1.1
+      defu: 6.1.2
       nuxt-component-meta: 0.4.3
       nuxt-config-schema: 0.4.4
       socket.io-client: 4.5.4
@@ -1636,19 +1636,6 @@ packages:
       - supports-color
     dev: true
 
-  /@rollup/plugin-alias/4.0.2_rollup@3.11.0:
-    resolution: {integrity: sha512-1hv7dBOZZwo3SEupxn4UA2N0EDThqSSS+wI1St1TNTBtOZvUchyIClyHcnDcjjrReTPZ47Faedrhblv4n+T5UQ==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-    dependencies:
-      rollup: 3.11.0
-      slash: 4.0.0
-    dev: true
-
   /@rollup/plugin-alias/4.0.3_rollup@2.79.1:
     resolution: {integrity: sha512-ZuDWE1q4PQDhvm/zc5Prun8sBpLJy41DMptYrS6MhAy9s9kL/doN1613BWfEchGVfKxzliJ3BjbOPizXX38DbQ==}
     engines: {node: '>=14.0.0'}
@@ -1659,6 +1646,19 @@ packages:
         optional: true
     dependencies:
       rollup: 2.79.1
+      slash: 4.0.0
+    dev: true
+
+  /@rollup/plugin-alias/4.0.3_rollup@3.11.0:
+    resolution: {integrity: sha512-ZuDWE1q4PQDhvm/zc5Prun8sBpLJy41DMptYrS6MhAy9s9kL/doN1613BWfEchGVfKxzliJ3BjbOPizXX38DbQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      rollup: 3.11.0
       slash: 4.0.0
     dev: true
 
@@ -4501,7 +4501,7 @@ packages:
       https-proxy-agent: 5.0.1
       mri: 1.2.0
       node-fetch-native: 1.0.1
-      pathe: 1.0.0
+      pathe: 1.1.0
       tar: 6.1.12
     transitivePeerDependencies:
       - supports-color
@@ -6248,8 +6248,8 @@ packages:
   /mlly/0.5.17:
     resolution: {integrity: sha512-Rn+ai4G+CQXptDFSRNnChEgNr+xAEauYhwRvpPl/UHStTlgkIftplgJRsA2OXPuoUn86K4XAjB26+x5CEvVb6A==}
     dependencies:
-      acorn: 8.8.1
-      pathe: 1.0.0
+      acorn: 8.8.2
+      pathe: 1.1.0
       pkg-types: 1.0.1
       ufo: 1.0.1
     dev: true
@@ -6635,7 +6635,7 @@ packages:
       changelogen: 0.4.1
       defu: 6.1.2
       jiti: 1.16.2
-      pathe: 1.0.0
+      pathe: 1.1.0
       untyped: 1.2.2
     transitivePeerDependencies:
       - rollup
@@ -8730,7 +8730,7 @@ packages:
     resolution: {integrity: sha512-HlhHj6cUPBQJmhoczQoU6dzdTFO0Jr9EiGWEZ1EwHGXlGRR6LXcKyfX3PMrkM48uWJjBWiCgTQdkFOAk3tlK6Q==}
     hasBin: true
     dependencies:
-      '@rollup/plugin-alias': 4.0.2_rollup@3.11.0
+      '@rollup/plugin-alias': 4.0.3_rollup@3.11.0
       '@rollup/plugin-commonjs': 24.0.1_rollup@3.11.0
       '@rollup/plugin-json': 6.0.0_rollup@3.11.0
       '@rollup/plugin-node-resolve': 15.0.1_rollup@3.11.0
@@ -8772,8 +8772,8 @@ packages:
   /unctx/2.1.1:
     resolution: {integrity: sha512-RffJlpvLOtolWsn0fxXsuSDfwiWcR6cyuykw2e0+zAggvGW1SesXt9WxIWlWpJhwVCZD/WlxxLqKLS50Q0CkWA==}
     dependencies:
-      acorn: 8.8.1
-      estree-walker: 3.0.1
+      acorn: 8.8.2
+      estree-walker: 3.0.3
       magic-string: 0.26.7
       unplugin: 1.0.1
     dev: true

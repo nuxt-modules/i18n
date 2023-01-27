@@ -65,10 +65,13 @@
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
-  "resolutions": {
-    "@nuxtjs/i18n": "link:.",
-    "nuxt": "3.0.0",
-    "@nuxt/content": "2.4.0"
+  "packageManager": "pnpm@7.20.0",
+  "pnpm": {
+    "overrides": {
+      "@nuxtjs/i18n": "link:.",
+      "nuxt": "^3.0.0",
+      "@nuxt/content": "npm:@nuxt/content-edge@latest"
+    }
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.4.0",
