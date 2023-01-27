@@ -3,7 +3,6 @@
   "description": "i18n for Nuxt",
   "version": "8.0.0-beta.8",
   "homepage": "https://i18n.nuxtjs.org",
-  "packageManager": "pnpm@7.20.0",
   "bugs": {
     "url": "https://github.com/nuxt-community/i18n-module/issues"
   },
@@ -44,7 +43,6 @@
   "scripts": {
     "build": "nuxi build-module .",
     "stub": "nuxi build-module --stub .",
-    "prepare": "pnpm docs:setup",
     "prepack": "pnpm build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
     "changelog": "gh-changelogen --repo=nuxt-community/i18n-module",
@@ -53,10 +51,10 @@
     "dev:generate": "nuxi generate playground",
     "dev:preview": "nuxi preview playground",
     "docs:setup": "cd docs && npm install",
-    "docs:dev": "cd docs && nuxi dev",
-    "docs:build": "cd docs && nuxi build",
-    "docs:generate": "cd docs && nuxi generate",
-    "docs:preview": "cd docs && nuxi preview",
+    "docs:dev": "nuxi dev docs",
+    "docs:build": "nuxi build docs",
+    "docs:generate": "nuxi generate docs",
+    "docs:preview": "nuxi preview docs",
     "fix": "run-p lint:fix format:fix",
     "format": "prettier --config .prettierrc.cjs --ignore-path .prettierignore --list-different '**/*.{js,json,html}'",
     "format:fix": "pnpm format --write",
@@ -67,9 +65,13 @@
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
-  "resolutions": {
-    "@nuxtjs/i18n": "link:.",
-    "nuxt": "^3.0.0"
+  "packageManager": "pnpm@7.20.0",
+  "pnpm": {
+    "overrides": {
+      "@nuxtjs/i18n": "link:.",
+      "nuxt": "^3.0.0",
+      "@nuxt/content": "npm:@nuxt/content-edge@latest"
+    }
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.4.0",
