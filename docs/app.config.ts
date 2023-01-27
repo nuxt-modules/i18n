@@ -8,9 +8,10 @@ export default defineAppConfig({
       github: 'nuxt-modules/i18n'
     },
     github: {
-      root: 'content',
-      edit: true,
-      releases: false
+      branch: 'next',
+      repo: 'nuxt-modules/i18n',
+      owner: 'nuxt-modules',
+      edit: true
     },
     aside: {
       level: 0,

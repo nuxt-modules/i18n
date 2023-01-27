@@ -325,12 +325,13 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   locale: Locale = '',
   mode: DetectLocaleForSSGStatus
 ): DetectBrowserLanguageFromResult {
+  const { strategy } = nuxtI18nOptions
+
   // browser detection is ignored if it's a nuxt generate.
-  if (isSSG && (process.server || mode === 'ssg_ignore')) {
+  if (isSSG && strategy === 'no_prefix' && (process.server || mode === 'ssg_ignore')) {
     return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
   }
 
-  const { strategy } = nuxtI18nOptions
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
     nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
 
