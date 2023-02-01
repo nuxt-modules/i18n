@@ -50,7 +50,6 @@
     "dev:build": "nuxi build playground",
     "dev:generate": "nuxi generate playground",
     "dev:preview": "nuxi preview playground",
-    "docs:setup": "cd docs && npm install",
     "docs:dev": "nuxi dev docs",
     "docs:build": "nuxi build docs",
     "docs:generate": "nuxi generate docs",
@@ -69,8 +68,7 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "nuxt": "^3.0.0",
-      "@nuxt/content": "npm:@nuxt/content-edge@latest"
+      "nuxt": "^3.0.0"
     }
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 ---
 title: Roadmap
-description: Discover our kaban board for the next release of the @nuxtjs/i18n module.
+description: Discover our kaban board for the next release of the Nuxt i18n module.
 toc: false
 ---
 
