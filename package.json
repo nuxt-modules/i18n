@@ -65,7 +65,7 @@
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
-  "packageManager": "pnpm@7.20.0",
+  "packageManager": "pnpm@7.26.3",
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
@@ -74,13 +74,13 @@
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.4.0",
-    "@intlify/shared": "9.3.0-beta.16",
+    "@intlify/shared": "9.3.0-beta.14-77e850b",
     "@intlify/unplugin-vue-i18n": "^0.8.1",
     "@nuxt/kit": "^3.1.2",
     "@vue/compiler-sfc": "^3.2.47",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.4",
-    "estree-walker": "^3.0.1",
+    "estree-walker": "^3.0.3",
     "is-https": "^4.0.0",
     "js-cookie": "^3.0.1",
     "knitwork": "^1.0.0",
@@ -90,7 +90,7 @@
     "pkg-types": "^1.0.1",
     "ufo": "^1.0.1",
     "unplugin": "^1.0.1",
-    "vue-i18n": "9.3.0-beta.16",
+    "vue-i18n": "9.3.0-beta.14-77e850b",
     "vue-i18n-routing": "^0.11.0"
   },
   "devDependencies": {
@@ -116,13 +116,13 @@
     "jsdom": "^21.1.0",
     "lint-staged": "^13.1.0",
     "npm-run-all": "^4.1.5",
-    "nuxt": "^3.0.0",
+    "nuxt": "^3.1.2",
     "playwright": "^1.30.0",
     "prettier": "^2.8.3",
     "rimraf": "^4.1.2",
     "ts-essentials": "^9.3.0",
     "typescript": "^4.9.5",
-    "vitest": "^0.26.2",
+    "vitest": "^0.28.4",
     "vue": "^3.2.47",
     "yorkie": "^2.0.0"
   },
