@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@intlify/bundle-utils": "^3.4.0",
-    "@intlify/shared": "9.3.0-beta.11",
+    "@intlify/shared": "9.3.0-beta.16",
     "@intlify/unplugin-vue-i18n": "^0.8.1",
     "@nuxt/kit": "^3.0.0",
     "@vue/compiler-sfc": "^3.2.45",
@@ -92,7 +92,7 @@
     "ufo": "^1.0.1",
     "unplugin": "^1.0.1",
     "vue-i18n": "9.3.0-beta.16",
-    "vue-i18n-routing": "^0.10.2"
+    "vue-i18n-routing": "^0.11.0"
   },
   "devDependencies": {
     "@babel/parser": "^7.20.7",
