@@ -18,6 +18,7 @@ const PackageManagerLockFiles = {
 } as const
 
 type LockFile = keyof typeof PackageManagerLockFiles
+// prettier-ignore
 type _PackageManager = typeof PackageManagerLockFiles[LockFile]
 export type PackageManager = _PackageManager | 'unknown'
 
