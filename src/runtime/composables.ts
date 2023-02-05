@@ -17,56 +17,99 @@ export * from 'vue-i18n'
 export type { LocaleObject } from 'vue-i18n-routing'
 import type { Locale } from 'vue-i18n'
 
+/**
+ * The `useRouteBaseName` composable returns the route base name.
+ *
+ * @remarks
+ * The `useRouteBaseName` is the composable function which is {@link getRouteBaseName} wrapper.
+ *
+ * `useRouteBaseName` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
+ *
+ * @param route - A route object. if not provided, the route is returned with `useRoute` will be used internally
+ *
+ * @returns The route base name, if route name is not defined, return `null`.
+ *
+ * @public
+ */
 export function useRouteBaseName(
   route: NonNullable<Parameters<typeof _useRouteBaseName>[0]> = useRoute()
 ): ReturnType<typeof _useRouteBaseName> {
-  const router = useRouter()
-  return _useRouteBaseName(route, { router })
+  return _useRouteBaseName(route, { router: useRouter() })
 }
 
-export function useLocalePath(
-  options: Pick<NonNullable<Parameters<typeof _useLocalePath>[0]>, 'i18n'> = {}
-): ReturnType<typeof _useLocalePath> {
-  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
-  const route = useRoute()
-  const router = useRouter()
+/**
+ * The `useLocalePath` composable returns function that resolve the locale path.
+ *
+ * @remarks
+ * The function returned by `useLocalePath` is the wrapper function with the same signature as {@link localePath}.
+ *
+ * `useLocalePath` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
+ *
+ * @returns A {@link LocalePathFunction}.
+ *
+ * @public
+ */
+export function useLocalePath(): ReturnType<typeof _useLocalePath> {
   return _useLocalePath({
-    router,
-    route,
-    i18n
+    router: useRouter(),
+    route: useRoute(),
+    i18n: getComposer(useNuxtApp().$i18n)
   })
 }
 
-export function useLocaleRoute(
-  options: Pick<NonNullable<Parameters<typeof _useLocaleRoute>[0]>, 'i18n'> = {}
-): ReturnType<typeof _useLocaleRoute> {
-  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
-  const route = useRoute()
-  const router = useRouter()
+/**
+ * The `useLocaleRoute` composable returns function that resolve the locale route.
+ *
+ * @remarks
+ * The function returned by `useLocaleRoute` is the wrapper function with the same signature as {@link localeRoute}.
+ *
+ * `useLocaleRoute` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
+ *
+ * @returns A {@link LocaleRouteFunction}.
+ *
+ * @public
+ */
+export function useLocaleRoute(): ReturnType<typeof _useLocaleRoute> {
   return _useLocaleRoute({
-    router,
-    route,
-    i18n
+    router: useRouter(),
+    route: useRoute(),
+    i18n: getComposer(useNuxtApp().$i18n)
   })
 }
 
-export function useSwitchLocalePath(
-  options: Pick<NonNullable<Parameters<typeof _useSwitchLocalePath>[0]>, 'i18n'> = {}
-): ReturnType<typeof _useSwitchLocalePath> {
-  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
-  const route = useRoute()
-  const router = useRouter()
+/**
+ * The `useSwitchLocalePath` composable returns function that resolve the locale location.
+ *
+ * @remarks
+ * The function returned by `useSwitchLocalePath` is the wrapper function with the same signature as {@link switchLocalePath}.
+ *
+ * `useSwitchLocalePath` composable returns function that resolve the locale location. `useSwitchLocalePath` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
+ *
+ * @returns A {@link SwitchLocalePathFunction}.
+ *
+ * @public
+ */
+export function useSwitchLocalePath(): ReturnType<typeof _useSwitchLocalePath> {
   return _useSwitchLocalePath({
-    router,
-    route,
-    i18n
+    router: useRouter(),
+    route: useRoute(),
+    i18n: getComposer(useNuxtApp().$i18n)
   })
 }
 
+/**
+ * The `useLocaleHead` composable returns localized head properties for locale-related aspects.
+ *
+ * @param options - An options, see about details {@link I18nHeadOptions}.
+ *
+ * @returns The localized {@link I18nHeadMetaInfo | head properties} with Vue `ref`.
+ *
+ * @public
+ */
 export function useLocaleHead(
   options: Pick<
     NonNullable<Parameters<typeof _useLocaleHead>[0]>,
-    'i18n' | 'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
+    'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
   > = {
     addDirAttribute: false,
     addSeoAttributes: false,
@@ -74,19 +117,26 @@ export function useLocaleHead(
   }
 ): ReturnType<typeof _useLocaleHead> {
   const { addDirAttribute, addSeoAttributes, identifierAttribute } = options
-  const i18n = options.i18n || getComposer(useNuxtApp().$i18n)
-  const route = useRoute()
-  const router = useRouter()
   return _useLocaleHead({
     addDirAttribute,
     addSeoAttributes,
     identifierAttribute,
-    router,
-    route,
-    i18n
+    router: useRouter(),
+    route: useRoute(),
+    i18n: getComposer(useNuxtApp().$i18n)
   })
 }
 
+/**
+ * The `useBrowserLocale` composable returns the browser locale.
+ *
+ * @remarks
+ * if this composable function is called on client-side, it detects the locale from the value of `navigator.languages`. Else on the server side, the locale is detected from the value of `accept-language` header.
+ *
+ * @returns the browser locale, if not detected, return `null`.
+ *
+ * @public
+ */
 export function useBrowserLocale(normalizedLocales = nuxtI18nInternalOptions.__normalizedLocales): string | null {
   const headers = useRequestHeaders(['accept-language'])
   return (
@@ -97,6 +147,18 @@ export function useBrowserLocale(normalizedLocales = nuxtI18nInternalOptions.__n
   )
 }
 
+/**
+ * The `useCookieLocale` composable returns the cookie locale.
+ *
+ * @remarks
+ * If this composable function is called on client-side, it detects the locale from the value of `document.cookie` via `useCookie`. else on the server side, the locale is detected from the value of `cookie` header.
+ *
+ * Note that if the value of `detectBrowserLanguage.useCookie` is `false`, an empty string is always returned.
+ *
+ * @returns the cookie locale with Vue `ref`. if not detected, return **empty string** wiht `ref`.
+ *
+ * @public
+ */
 export function useCookieLocale({
   useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
   cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
