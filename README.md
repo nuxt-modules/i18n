@@ -10,9 +10,9 @@
 
 # Nuxt I18n
 
-> Module i18n for Nuxt
+> I18n module for Nuxt
 
-The next `@nuxtjs/i18n` for Nuxt 3
+The next i18n module for Nuxt 3
 
 ## ✅ Status: v8 beta
 
