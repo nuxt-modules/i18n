@@ -3,7 +3,7 @@ import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shar
 import { generateJSON } from '@intlify/bundle-utils'
 import { NUXT_I18N_MODULE_ID } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
-import { parse as parsePath, normalize } from 'node:path'
+import { parse as parsePath, normalize } from 'pathe'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
