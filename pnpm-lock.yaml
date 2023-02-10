@@ -11,7 +11,7 @@ importers:
       '@babel/parser': ^7.20.15
       '@babel/plugin-syntax-import-assertions': ^7.20.0
       '@babel/types': ^7.20.7
-      '@intlify/bundle-utils': ^3.4.0
+      '@intlify/bundle-utils': ^4.0.0
       '@intlify/shared': 9.3.0-beta.16
       '@intlify/unplugin-vue-i18n': ^0.8.1
       '@nuxt/kit': ^3.1.2
@@ -58,7 +58,7 @@ importers:
       vue-i18n-routing: ^0.11.0
       yorkie: ^2.0.0
     dependencies:
-      '@intlify/bundle-utils': 3.4.0_vue-i18n@9.3.0-beta.16
+      '@intlify/bundle-utils': 4.0.0_vue-i18n@9.3.0-beta.16
       '@intlify/shared': 9.3.0-beta.16
       '@intlify/unplugin-vue-i18n': 0.8.1_vue-i18n@9.3.0-beta.16
       '@nuxt/kit': 3.1.2
@@ -967,6 +967,26 @@ packages:
 
   /@intlify/bundle-utils/3.4.0_vue-i18n@9.3.0-beta.16:
     resolution: {integrity: sha512-2UQkqiSAOSPEHMGWlybqWm4G2K0X+FyYho5AwXz6QklSX1EY5EDmOSxZmwscn2qmKBnp6OYsme5kUrnN9xrWzQ==}
+    engines: {node: '>= 12'}
+    peerDependencies:
+      petite-vue-i18n: '*'
+      vue-i18n: '*'
+    peerDependenciesMeta:
+      petite-vue-i18n:
+        optional: true
+      vue-i18n:
+        optional: true
+    dependencies:
+      '@intlify/message-compiler': 9.3.0-beta.16
+      '@intlify/shared': 9.3.0-beta.16
+      jsonc-eslint-parser: 1.4.1
+      source-map: 0.6.1
+      vue-i18n: 9.3.0-beta.16_vue@3.2.47
+      yaml-eslint-parser: 0.3.2
+    dev: false
+
+  /@intlify/bundle-utils/4.0.0_vue-i18n@9.3.0-beta.16:
+    resolution: {integrity: sha512-klXrYT9VXyKEXsD6UY3pShg0O5MPC07n0TZ5RrSs5ry6T1eZVolIFGJi9c3qcDrh1qjJxgikRnPBmD7qGDqbjw==}
     engines: {node: '>= 12'}
     peerDependencies:
       petite-vue-i18n: '*'
