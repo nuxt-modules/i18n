@@ -9,6 +9,15 @@ import { NuxtPageAnalizeContext, AnalizedNuxtPageMeta } from '../../src/pages'
 import type { NuxtI18nOptions } from '../../src/types'
 import type { NuxtPage } from './utils'
 
+/**
+ * NOTE:
+ *  This teardown is to avoid the weird issue of vitest.
+ *  https://github.com/vitest-dev/vitest/issues/2845#issuecomment-1424666525
+ */
+afterAll(() => {
+  vi.restoreAllMocks()
+})
+
 describe.each([
   {
     case: 'simple',
