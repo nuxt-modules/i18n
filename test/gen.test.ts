@@ -137,6 +137,40 @@ test('multiple files', () => {
   expect(code).toMatchSnapshot()
 })
 
+test('locale file in nested', () => {
+  const code = generateLoaderOptions(
+    true,
+    'locales',
+    '..',
+    {
+      localeCodes: LOCALE_CODES,
+      localeInfo: [
+        {
+          code: 'en',
+          file: 'en/main.json',
+          path: '/path/to/en.json'
+        },
+        {
+          code: 'ja',
+          file: 'ja/main.json',
+          path: '/path/to/ja.json'
+        },
+        {
+          code: 'fr',
+          file: 'fr/main.json',
+          path: '/path/to/fr.json'
+        }
+      ],
+      additionalMessages: {},
+      nuxtI18nOptions: NUXT_I18N_OPTIONS,
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+    },
+    { ssg: false, ssr: true, dev: true }
+  )
+  expect(validateSyntax(code)).toBe(true)
+  expect(code).toMatchSnapshot()
+})
+
 test('vueI18n: path', () => {
   const code = generateLoaderOptions(
     false,

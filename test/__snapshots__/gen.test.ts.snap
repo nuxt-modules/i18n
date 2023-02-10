@@ -37,9 +37,37 @@ exports[`lazy 1`] = `
 "export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => import(\\"../locales/en.json\\" /* webpackChunkName: \\"lang-en.json\\" */) }],
-  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang-ja.json\\" */) }],
-  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang-fr.json\\" */) }],
+  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => import(\\"../locales/en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */) }],
+  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */) }],
+  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */) }],
+}
+
+export const additionalMessages = Object({})
+
+export const resolveNuxtI18nOptions = async (context) => {
+  const nuxtI18nOptions = Object({})
+  nuxtI18nOptions.defaultLocale = \\"en\\"
+  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
+  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
+},}),})
+  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  return nuxtI18nOptions
+}
+
+export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const isSSG = false
+export const isSSR = true
+"
+`;
+
+exports[`locale file in nested 1`] = `
+"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+
+export const localeMessages = {
+  \\"en\\": [{ key: \\"../locales/en/main.json\\", load: () => import(\\"../locales/en/main.json\\" /* webpackChunkName: \\"lang_en_en_main_json\\" */) }],
+  \\"ja\\": [{ key: \\"../locales/ja/main.json\\", load: () => import(\\"../locales/ja/main.json\\" /* webpackChunkName: \\"lang_ja_ja_main_json\\" */) }],
+  \\"fr\\": [{ key: \\"../locales/fr/main.json\\", load: () => import(\\"../locales/fr/main.json\\" /* webpackChunkName: \\"lang_fr_fr_main_json\\" */) }],
 }
 
 export const additionalMessages = Object({})
@@ -65,11 +93,11 @@ exports[`multiple files 1`] = `
 "export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => import(\\"../locales/en.json\\" /* webpackChunkName: \\"lang-en.json\\" */) }],
-  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang-ja.json\\" */) }],
-  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang-fr.json\\" */) }],
-  \\"es\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang-es.json\\" */) }],
-  \\"es-AR\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang-es.json\\" */) },{ key: \\"../locales/es-AR.json\\", load: () => import(\\"../locales/es-AR.json\\" /* webpackChunkName: \\"lang-es-AR.json\\" */) }],
+  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => import(\\"../locales/en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */) }],
+  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */) }],
+  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */) }],
+  \\"es\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */) }],
+  \\"es-AR\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */) },{ key: \\"../locales/es-AR.json\\", load: () => import(\\"../locales/es-AR.json\\" /* webpackChunkName: \\"lang_es_AR_json_es_AR_json\\" */) }],
 }
 
 export const additionalMessages = Object({})
