@@ -371,16 +371,24 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
   let { redirectPath } = args
 
   __DEBUG__ && console.log('navigate options ', status, rootRedirect, differentDomains, skipSettingLocaleOnNavigate)
+  __DEBUG__ && console.log('navigate isSSG', isSSG)
 
   if (route.path === '/' && rootRedirect) {
     if (isString(rootRedirect)) {
-      redirectPath = rootRedirect
+      redirectPath = '/' + rootRedirect
     } else if (isRootRedirectOptions(rootRedirect)) {
       redirectPath = '/' + rootRedirect.path
       status = rootRedirect.statusCode
     }
     __DEBUG__ && console.log('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
-    return navigateTo(redirectPath, { redirectCode: status })
+    if (isSSG && process.client) {
+      if (window.location.pathname !== redirectPath) {
+        window.location.assign(redirectPath)
+      }
+      return
+    } else {
+      return navigateTo(redirectPath, { redirectCode: status })
+    }
   }
 
   if (process.client && skipSettingLocaleOnNavigate) {
@@ -393,7 +401,14 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
 
   if (!differentDomains) {
     if (redirectPath) {
-      return navigateTo(redirectPath, { redirectCode: status })
+      if (isSSG && process.client) {
+        if (window.location.pathname !== redirectPath) {
+          window.location.assign(redirectPath)
+        }
+        return
+      } else {
+        return navigateTo(redirectPath, { redirectCode: status })
+      }
     }
   } else {
     const state = useRedirectState()
