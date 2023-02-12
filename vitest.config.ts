@@ -8,7 +8,7 @@ export default defineConfig({
     threads: false,
     testTimeout: 300000,
     deps: {
-      inline: [/@nuxt\/test-utils-edge/]
+      inline: [/@nuxt\/test-utils/]
     }
   }
 })
