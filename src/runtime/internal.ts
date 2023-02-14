@@ -70,8 +70,7 @@ export function proxyNuxt<T extends (...args: any) => any>(nuxt: NuxtApp, target
         switchLocalePath: nuxt.$switchLocalePath,
         localeHead: nuxt.$localeHead,
         route: (nuxt as any).$router.currentRoute.value,
-        router: (nuxt as any).$router,
-        store: undefined
+        router: (nuxt as any).$router
       },
       // eslint-disable-next-line prefer-rest-params
       arguments
