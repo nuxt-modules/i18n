@@ -356,6 +356,21 @@ type NavigateArgs = {
   route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
 }
 
+function _navigate(redirectPath: string, status: number) {
+  if (isSSG && process.client) {
+    let pathname = window.location.pathname
+    if (pathname.length > 1 && pathname.endsWith('/')) {
+      pathname = pathname.slice(0, -1)
+    }
+    if (pathname !== redirectPath) {
+      window.location.assign(redirectPath)
+    }
+    return
+  } else {
+    return navigateTo(redirectPath, { redirectCode: status })
+  }
+}
+
 export async function navigate<Context extends NuxtApp = NuxtApp>(
   args: NavigateArgs,
   {
@@ -381,14 +396,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
       status = rootRedirect.statusCode
     }
     __DEBUG__ && console.log('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
-    if (isSSG && process.client) {
-      if (window.location.pathname !== redirectPath) {
-        window.location.assign(redirectPath)
-      }
-      return
-    } else {
-      return navigateTo(redirectPath, { redirectCode: status })
-    }
+    return _navigate(redirectPath, status)
   }
 
   if (process.client && skipSettingLocaleOnNavigate) {
@@ -401,14 +409,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
 
   if (!differentDomains) {
     if (redirectPath) {
-      if (isSSG && process.client) {
-        if (window.location.pathname !== redirectPath) {
-          window.location.assign(redirectPath)
-        }
-        return
-      } else {
-        return navigateTo(redirectPath, { redirectCode: status })
-      }
+      return _navigate(redirectPath, status)
     }
   } else {
     const state = useRedirectState()
