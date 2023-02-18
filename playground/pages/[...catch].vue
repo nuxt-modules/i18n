@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { LocaleObject, useI18n } from '#i18n'
+import { LocaleObject } from '#i18n'
 
 const route = useRoute()
 const { locale, locales } = useI18n()

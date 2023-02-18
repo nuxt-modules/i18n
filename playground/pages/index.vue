@@ -2,17 +2,19 @@
 import { computed } from 'vue'
 
 // import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
-import { LocaleObject, useI18n } from '#i18n'
+import { LocaleObject } from '#i18n'
 
 const route = useRoute()
 const { t, strategy, locale, locales, localeProperties, setLocale, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
+const getRouteBaseName = useRouteBaseName()
 
 // route.meta.pageTransition.onBeforeEnter = async () => {
 //   await finalizePendingLocaleChange()
 // }
 
+console.log('route base name', getRouteBaseName())
 console.log('useBrowserLocale', useBrowserLocale())
 console.log('localeProperties', localeProperties)
 console.log('foo', t('foo'))
