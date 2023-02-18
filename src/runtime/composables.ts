@@ -18,23 +18,25 @@ export type { LocaleObject } from 'vue-i18n-routing'
 import type { Locale } from 'vue-i18n'
 
 /**
- * The `useRouteBaseName` composable returns the route base name.
+ * The `useRouteBaseName` composable returns function that get the route base name.
  *
  * @remarks
- * The `useRouteBaseName` is the composable function which is {@link getRouteBaseName} wrapper.
+ * The function returned by `useRouteBaseName` is the wrapper function with the same signature as {@link getRouteBaseName}.
  *
  * `useRouteBaseName` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
  *
  * @param route - A route object. if not provided, the route is returned with `useRoute` will be used internally
  *
- * @returns The route base name, if route name is not defined, return `null`.
+ * @returns A {@link RouteBaseNameFunction}.
  *
  * @public
  */
-export function useRouteBaseName(
-  route: NonNullable<Parameters<typeof _useRouteBaseName>[0]> = useRoute()
-): ReturnType<typeof _useRouteBaseName> {
-  return _useRouteBaseName(route, { router: useRouter() })
+export function useRouteBaseName(): ReturnType<typeof _useRouteBaseName> {
+  return _useRouteBaseName({
+    route: useRoute(),
+    router: useRouter(),
+    i18n: getComposer(useNuxtApp().$i18n)
+  })
 }
 
 /**
