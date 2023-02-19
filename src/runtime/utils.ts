@@ -358,13 +358,10 @@ type NavigateArgs = {
 
 function _navigate(redirectPath: string, status: number) {
   if (isSSG && process.client) {
-    let pathname = window.location.pathname
-    if (pathname.length > 1 && pathname.endsWith('/')) {
-      pathname = pathname.slice(0, -1)
-    }
-    if (pathname !== redirectPath) {
-      window.location.assign(redirectPath)
-    }
+    /**
+     * When in the SSG, nuxt i18n module does not need to redirect in the route middleware (vue-router).
+     * If we overwrite them with `location.assign`, the route history will be broken.
+     */
     return
   } else {
     return navigateTo(redirectPath, { redirectCode: status })
