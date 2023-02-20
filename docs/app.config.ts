@@ -4,6 +4,7 @@ export default defineAppConfig({
     description: 'I18n (Internationalization) module for Nuxt',
     url: 'https://v8.i18n.nuxtjs.org',
     layout: 'default',
+    image: '/cover.png',
     socials: {
       github: 'nuxt-modules/i18n'
     },
