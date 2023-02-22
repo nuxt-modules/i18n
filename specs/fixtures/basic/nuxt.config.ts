@@ -17,6 +17,11 @@ export default defineNuxtConfig({
         code: 'fr',
         iso: 'fr-FR',
         name: 'Français'
+      },
+      {
+        code: 'ja',
+        iso: 'ja-JP',
+        name: 'Japanese'
       }
     ],
     defaultLocale: 'en',
