@@ -223,7 +223,7 @@ export interface I18nRoute {
 /**
  * Define custom route for page component
  *
- * @param route - The custou route
+ * @param route - The custom route
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function defineI18nRoute(route: I18nRoute | false): void {
