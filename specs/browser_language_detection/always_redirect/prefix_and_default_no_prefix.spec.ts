@@ -4,7 +4,7 @@ import { setup, url, createPage } from '@nuxt/test-utils'
 import { getText } from '../../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../../fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../../fixtures/fallback`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
@@ -19,7 +19,7 @@ await setup({
 })
 
 test('alwaysRedirect: no prefix', async () => {
-  const blog = url('/blog/article')
+  const blog = url('/about')
   const page = await createPage(undefined, { locale: 'en' }) // set browser locale
   await page.goto(blog)
 
@@ -31,6 +31,11 @@ test('alwaysRedirect: no prefix', async () => {
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
   // go to `en` home page
-  await page.goto(url('/ja/blog/article'))
+  await page.goto(url('/ja/about'))
+  expect(page.url().endsWith('/ja/about'))
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('ja')
+
+  await page.goto(url('/about'))
+  expect(page.url().endsWith('/ja/about'))
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('ja')
 })

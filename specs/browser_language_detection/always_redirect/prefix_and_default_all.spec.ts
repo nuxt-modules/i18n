@@ -31,6 +31,7 @@ test('alwaysRedirect: all', async () => {
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
   // go to `en` home page
-  await page.goto(url('/en'))
+  await page.goto(blog)
+  expect(page.url().endsWith('/fr/blog/article'))
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })
