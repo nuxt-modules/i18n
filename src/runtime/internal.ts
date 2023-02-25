@@ -406,8 +406,11 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
       if (finalLocale !== vueI18nLocale /* && path !== '/'*/) {
         __DEBUG__ && console.log('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
         return { locale: finalLocale, stat: true, from: localeFrom }
-      } else {
-        if (alwaysRedirect && path === '/') {
+      } else if (alwaysRedirect) {
+        const redirectOnRoot = path === '/'
+        const redirectOnAll = redirectOn === 'all'
+        const redirectOnNoPrefix = redirectOn === 'no prefix' && !path.match(getLocalesRegex(localeCodes as string[]))
+        if (redirectOnRoot || redirectOnAll || redirectOnNoPrefix) {
           return { locale: finalLocale, stat: true, from: localeFrom }
         }
       }
