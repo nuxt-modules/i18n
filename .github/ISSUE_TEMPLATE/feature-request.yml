@@ -9,7 +9,7 @@ body:
 
         Please carefully read the contribution docs before suggesting a new feature.
         (The feature request guideline of nuxt-modules/i18n is compliant with Nuxt too)
-        👉 https://v3.nuxtjs.org/community/contribution/#creating-an-issue
+        👉 https://nuxt.com/docs/community/contribution#creating-an-issue
   - type: textarea
     id: feature-description
     attributes:
@@ -32,7 +32,7 @@ body:
       label: Final checks
       description: Before submitting, please make sure you do the following
       options:
-        - label: Read the [contribution guide](https://v3.nuxtjs.org/community/contribution) (The contribution guideline of nuxt-modules/i18n is compliant with Nuxt too).
+        - label: Read the [contribution guide](https://nuxt.com/docs/community/contribution) (The contribution guideline of nuxt-modules/i18n is compliant with Nuxt too).
           required: true
-        - label: Check existing [discussions](https://github.com/nuxt-modules/i18n/discussions) and [issues](https://github.com/nuxt/framework/issues).
+        - label: Check existing [discussions](https://github.com/nuxt-modules/i18n/discussions) and [issues](https://github.com/nuxt/nuxt/issues).
           required: true
