@@ -1,7 +1,7 @@
 import Module1 from './module1'
 import type { NuxtApp } from 'nuxt/dist/app/index'
 
-// https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
+// https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   modules: [Module1, '@nuxtjs/i18n'],
 

@@ -1,6 +1,6 @@
 import CustomModule from './module'
 
-// https://v3.nuxtjs.org/docs/directory-structure/nuxt.config
+// https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   modules: [CustomModule, '@nuxtjs/i18n'],
 
