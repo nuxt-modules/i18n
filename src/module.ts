@@ -284,5 +284,12 @@ declare module '@nuxt/schema' {
 
   interface NuxtHooks {
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
+    'i18n:before-lang-switch': <Context = unknown>(
+      oldLocale: string,
+      newLocale: string,
+      initialSetup: boolean,
+      context: Context
+    ) => string | void
+    'i18n:lang-switched': (oldLocale: string, newLocale: string) => void
   }
 }

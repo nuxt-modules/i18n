@@ -47,8 +47,6 @@ export type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => 
 
 export type NuxtI18nOptions<Context = unknown> = {
   differentDomains?: boolean
-  onBeforeLanguageSwitch?: BeforeLanguageSwitchHandler
-  onLanguageSwitched?: LanguageSwitchedHandler
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
   lazy?: boolean | LazyOptions

@@ -224,8 +224,12 @@ export default defineNuxtPlugin(async nuxt => {
           _getLocaleCookie(nuxt.ssrContext, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
         composer.setLocaleCookie = (locale: string) =>
           _setLocaleCookie(locale, nuxt.ssrContext, nuxtI18nOptions.detectBrowserLanguage || undefined)
-        composer.onBeforeLanguageSwitch = nuxtI18nOptions.onBeforeLanguageSwitch
-        composer.onLanguageSwitched = nuxtI18nOptions.onLanguageSwitched
+
+        // @ts-ignore
+        composer.onBeforeLanguageSwitch = (o, n, i, ctx) => nuxt.callHook('i18n:before-lang-switch', o, n, i, ctx)
+        // @ts-ignore
+        composer.onLanguageSwitched = (o, n) => nuxt.callHook('i18n:lang-switched', o, n)
+
         composer.finalizePendingLocaleChange = async () => {
           if (!i18n.__pendingLocale) {
             return
