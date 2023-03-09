@@ -22,7 +22,7 @@ If you would like to use the stable version for Nuxt 2, please see the [`main` b
 
 ### Install with `next` tag
 
-1. Add the following line to the `devDependencies` wiht package manager:
+1. Add the following line to the `devDependencies` with your package manager:
 
 ```sh
 # Using npm
@@ -55,7 +55,7 @@ pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 
 2. Run `npm install` or `yarn` or `pnpm install --shamefully-hoist`.
 
-3. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
+3. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`.
 
 ```ts
 {
@@ -69,7 +69,7 @@ pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 
 [Read more v8 documentation](https://v8.i18n.nuxtjs.org/).
 
-Keep in mind that not all features are supported yet and some things might be broken.
+Keep in mind that not all features are currently supported yet and some things might be broken.
 
 ## 🔗 Links
 - 📘 [Documentation for v8](https://v8.i18n.nuxtjs.org/)
