@@ -1,7 +1,7 @@
 import createDebug from 'debug'
 import { isBoolean, isObject, isString } from '@intlify/shared'
 import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
-import { resolve, relative } from 'pathe'
+import { resolve, relative, isAbsolute } from 'pathe'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
@@ -64,6 +64,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * resolve lang directory
      */
 
+    if (isString(options.langDir) && isAbsolute(options.langDir)) {
+      console.warn(
+        formatMessage(
+          `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
+        )
+      )
+    }
     const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null
     debug('langDir path', langPath)
 
