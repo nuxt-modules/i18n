@@ -485,7 +485,9 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
 ): BaseUrlResolveHandler<Context> {
   return (context: Context): string => {
     if (isFunction(baseUrl)) {
-      return baseUrl(context)
+      const baseUrlResult = baseUrl(context)
+      __DEBUG__ && console.log('baseUrl: using localeLoader function -', baseUrlResult)
+      return baseUrlResult
     }
 
     const { differentDomains, localeCodeLoader, normalizedLocales } = options
@@ -493,8 +495,15 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode, normalizedLocales, options.nuxt)
       if (domain) {
+        __DEBUG__ && console.log('baseUrl: using differentDomains -', domain)
         return domain
       }
+    }
+
+    const config = context.$config?.public?.i18n
+    if (config?.baseUrl) {
+      __DEBUG__ && console.log('baseUrl: using runtimeConfig -', config.baseUrl)
+      return config.baseUrl
     }
 
     return baseUrl
