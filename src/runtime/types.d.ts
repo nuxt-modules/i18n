@@ -26,7 +26,7 @@ type BeforeLanguageSwitchHandler = (
   newLocale: string,
   initialSetup: boolean,
   context: NuxtApp
-) => Promise<unknown>
+) => Promise<string | void>
 
 /**
  * Called after the app's locale is switched.
@@ -34,7 +34,7 @@ type BeforeLanguageSwitchHandler = (
  * @param oldLocale - The app's locale before the switch
  * @param newLocale - The app's locale after the switch.
  */
-type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<unknown>
+type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<void>
 
 export interface ComposerCustomProperties {
   /**

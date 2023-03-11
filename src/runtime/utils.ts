@@ -171,7 +171,7 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
   }
 
   // call onBeforeLanguageSwitch
-  const localeOverride = onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, context)
+  const localeOverride = await onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, context)
   const localeCodes = getLocaleCodes(i18n)
   if (localeOverride && localeCodes && localeCodes.includes(localeOverride)) {
     if (localeOverride === oldLocale) {
@@ -201,11 +201,11 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
 
   // set the locale
   if (useCookie) {
-    setCookieLocale(i18n, newLocale)
+    await setCookieLocale(i18n, newLocale)
   }
-  setLocale(i18n, newLocale)
+  await setLocale(i18n, newLocale)
 
-  onLanguageSwitched(i18n, oldLocale, newLocale)
+  await onLanguageSwitched(i18n, oldLocale, newLocale)
 
   ret = true
   return [ret, oldLocale]

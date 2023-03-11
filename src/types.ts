@@ -36,15 +36,6 @@ export type CustomRoutePages = {
       }
 }
 
-export type BeforeLanguageSwitchHandler = <Context = unknown>(
-  oldLocale: string,
-  newLocale: string,
-  initialSetup: boolean,
-  context: Context
-) => Promise<unknown>
-
-export type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<unknown>
-
 export type NuxtI18nOptions<Context = unknown> = {
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false

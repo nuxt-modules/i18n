@@ -8,12 +8,12 @@ await setup({
   browser: true,
   // overrides
   nuxtConfig: {
-    plugins: [fileURLToPath(new URL(`../playground/plugins/i18n.ts`, import.meta.url))],
+    plugins: [fileURLToPath(new URL(`./fixtures/plugins/i18nHooks.ts`, import.meta.url))],
     i18n: { defaultLocale: 'en' }
   }
 })
 
-describe('onBeforeLanguageSwitch / onLanguageSwitched', () => {
+describe('beforeLocaleSwitch / localeSwitched', () => {
   test('<NuxtLink>', async () => {
     const home = url('/')
     const page = await createPage()
