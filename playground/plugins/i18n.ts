@@ -1,11 +1,11 @@
 import { defineNuxtPlugin } from '#imports'
 
 export default defineNuxtPlugin(nuxtApp => {
-  nuxtApp.$i18n.onBeforeLanguageSwitch = (oldLocale, newLocale, isInitialSetup, nuxtApp) => {
-    console.log('onBeforeLanguageSwitch', oldLocale, newLocale, isInitialSetup)
-  }
-  // onLanguageSwitched called right after a new locale has been set
-  nuxtApp.$i18n.onLanguageSwitched = (oldLocale, newLocale) => {
+  nuxtApp.hook('i18n:beforeLocaleSwitch', ({ oldLocale, newLocale, initialSetup }) => {
+    console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup)
+  })
+
+  nuxtApp.hook('i18n:localeSwitched', ({ oldLocale, newLocale }) => {
     console.log('onLanguageSwitched', oldLocale, newLocale)
-  }
+  })
 })

@@ -277,6 +277,9 @@ function checkOptions(options: NuxtI18nOptions) {
   }
 }
 
+type MaybePromise<T> = T | Promise<T>
+type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
+
 declare module '@nuxt/schema' {
   interface NuxtConfig {
     i18n?: NuxtI18nOptions
@@ -284,12 +287,17 @@ declare module '@nuxt/schema' {
 
   interface NuxtHooks {
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
-    'i18n:before-lang-switch': <Context = unknown>(
-      oldLocale: string,
-      newLocale: string,
-      initialSetup: boolean,
-      context: Context
-    ) => string | void
-    'i18n:lang-switched': (oldLocale: string, newLocale: string) => void
+  }
+}
+
+declare module '#app' {
+  interface RuntimeNuxtHooks {
+    'i18n:beforeLocaleSwitch': <Context = unknown>(
+      params: LocaleSwitch & {
+        initialSetup: boolean
+        context: Context
+      }
+    ) => MaybePromise<void>
+    'i18n:localeSwitched': (params: LocaleSwitch) => MaybePromise<void>
   }
 }

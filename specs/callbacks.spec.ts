@@ -8,19 +8,8 @@ await setup({
   browser: true,
   // overrides
   nuxtConfig: {
-    i18n: {
-      defaultLocale: 'en',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onBeforeLanguageSwitch: (oldLocale: string, newLocale: string, initialSetup: boolean, context: any) => {
-        console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup, context)
-        if (newLocale === 'en') {
-          return 'fr'
-        }
-      },
-      onLanguageSwitched: (oldLocale: string, newLocale: string) => {
-        console.log('onLanguageSwitched', oldLocale, newLocale)
-      }
-    }
+    plugins: [fileURLToPath(new URL(`../playground/plugins/i18n.ts`, import.meta.url))],
+    i18n: { defaultLocale: 'en' }
   }
 })
 

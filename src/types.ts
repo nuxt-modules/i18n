@@ -41,9 +41,9 @@ export type BeforeLanguageSwitchHandler = <Context = unknown>(
   newLocale: string,
   initialSetup: boolean,
   context: Context
-) => string | void
+) => Promise<unknown>
 
-export type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => void
+export type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<unknown>
 
 export type NuxtI18nOptions<Context = unknown> = {
   differentDomains?: boolean
