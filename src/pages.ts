@@ -6,7 +6,7 @@ import fs from 'node:fs'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
-import { formatMessage, getRoutePath, parseSegment } from './utils'
+import { getRoutePath, parseSegment, logger } from './utils'
 import { resolve, parse as parsePath } from 'pathe'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
@@ -115,10 +115,8 @@ export function getRouteOptionsResolver(
 
   let useConfig = false
   if (isBoolean(parsePages)) {
-    console.warn(
-      formatMessage(
-        `'parsePages' option is deprecated. Please use 'customRoutes' option instead. We will remove it in v8 official release.`
-      )
+    logger.warn(
+      `'parsePages' option is deprecated. Please use 'customRoutes' option instead. We will remove it in v8 official release.`
     )
     useConfig = !parsePages
   } else {
@@ -159,9 +157,7 @@ function getRouteOptionsFromPages(
 
   // skip if no `AnalizedNuxtPageMeta`
   if (pageMeta == null) {
-    console.warn(
-      formatMessage(`Couldn't find AnalizedNuxtPageMeta by NuxtPage (${route.path}), so no custom route for it`)
-    )
+    logger.warn(`Couldn't find AnalizedNuxtPageMeta by NuxtPage (${route.path}), so no custom route for it`)
     return options
   }
 
@@ -282,7 +278,7 @@ function readComponent(target: string) {
       options = evalValue(extract)
     }
   } catch (e: unknown) {
-    console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
+    logger.warn(`Couldn't read component data at ${target}: (${(e as Error).message})`)
   }
 
   return options
@@ -299,7 +295,7 @@ function verifyObjectValue(properties: ObjectExpression['properties']) {
         if (prop.value.type === 'ArrayExpression') {
           ret = verifyLocalesArrayExpression(prop.value.elements)
         } else {
-          console.warn(formatMessage(`'locale' value is required array`))
+          logger.warn(`'locale' value is required array`)
           ret = false
         }
       } else if (
@@ -309,12 +305,12 @@ function verifyObjectValue(properties: ObjectExpression['properties']) {
         if (prop.value.type === 'ObjectExpression') {
           ret = verifyPathsObjectExpress(prop.value.properties)
         } else {
-          console.warn(formatMessage(`'paths' value is required object`))
+          logger.warn(`'paths' value is required object`)
           ret = false
         }
       }
     } else {
-      console.warn(formatMessage(`'defineI18nRoute' is required object`))
+      logger.warn(`'defineI18nRoute' is required object`)
       ret = false
     }
   }
@@ -326,14 +322,14 @@ function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
   for (const prop of properties) {
     if (prop.type === 'ObjectProperty') {
       if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
-        console.warn(formatMessage(`'paths.${prop.key.name}' value is required string literal`))
+        logger.warn(`'paths.${prop.key.name}' value is required string literal`)
         ret = false
       } else if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
-        console.warn(formatMessage(`'paths.${prop.key.value}' value is required string literal`))
+        logger.warn(`'paths.${prop.key.value}' value is required string literal`)
         ret = false
       }
     } else {
-      console.warn(formatMessage(`'paths' is required object`))
+      logger.warn(`'paths' is required object`)
       ret = false
     }
   }
@@ -344,7 +340,7 @@ function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
   let ret = true
   for (const element of elements) {
     if (element?.type !== 'StringLiteral') {
-      console.warn(formatMessage(`required 'locales' value string literal`))
+      logger.warn(`required 'locales' value string literal`)
       ret = false
     }
   }
@@ -355,7 +351,7 @@ function evalValue(value: string) {
   try {
     return new Function(`return (${value})`)() as ComputedRouteOptions | false
   } catch (e) {
-    console.error(formatMessage(`Cannot evaluate value: ${value}`))
+    console.error(`Cannot evaluate value: ${value}`)
     return
   }
 }

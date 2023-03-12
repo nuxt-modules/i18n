@@ -8,7 +8,7 @@ import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
+import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType, logger } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 
 import type { NuxtI18nOptions } from './types'
@@ -30,12 +30,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
     const options = i18nOptions as Required<NuxtI18nOptions>
-    debug('options', options)
+    logger.debug('options', options)
 
-    /**
-     * Check vertions
-     */
-
+    /** Check versions */
     checkOptions(options)
 
     if (isNuxt2(nuxt)) {
@@ -53,10 +50,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     }
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
-      console.warn(
-        formatMessage(
-          'The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.'
-        )
+      logger.warn(
+        'The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.'
       )
     }
 
@@ -65,10 +60,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     if (isString(options.langDir) && isAbsolute(options.langDir)) {
-      console.warn(
-        formatMessage(
-          `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
-        )
+      logger.warn(
+        `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
       )
     }
     const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null

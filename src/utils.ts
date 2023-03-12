@@ -1,5 +1,5 @@
 import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
-import { resolveFiles } from '@nuxt/kit'
+import { resolveFiles, useLogger } from '@nuxt/kit'
 import { parse as parsePath, resolve } from 'pathe'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
@@ -35,6 +35,8 @@ export async function getPackageManagerType(): Promise<PackageManager> {
     throw e
   }
 }
+
+export const logger = useLogger(NUXT_I18N_MODULE_ID)
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
