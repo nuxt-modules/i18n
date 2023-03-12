@@ -78,12 +78,6 @@ export default defineNuxtConfig({
     //   // // cookieKey: 'my_custom_cookie_name',
     //   // redirectOn: 'root'
     // },
-    onBeforeLanguageSwitch: (oldLocale: string, newLocale: string, initial: boolean, nuxt: NuxtApp) => {
-      console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initial)
-    },
-    onLanguageSwitched: (oldLocale: string, newLocale: string) => {
-      console.log('onLanguageSwitched', oldLocale, newLocale)
-    },
     // vueI18n: './vue-i18n.options.ts'
     vueI18n: {
       legacy: false,

@@ -58,8 +58,6 @@ export const DEFAULT_OPTIONS = {
   customRoutes: 'page',
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  onBeforeLanguageSwitch: () => '',
-  onLanguageSwitched: () => null,
   types: undefined,
   debug: false
 } as const
