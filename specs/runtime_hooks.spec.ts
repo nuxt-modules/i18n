@@ -8,23 +8,12 @@ await setup({
   browser: true,
   // overrides
   nuxtConfig: {
-    i18n: {
-      defaultLocale: 'en',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onBeforeLanguageSwitch: (oldLocale: string, newLocale: string, initialSetup: boolean, context: any) => {
-        console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup, context)
-        if (newLocale === 'en') {
-          return 'fr'
-        }
-      },
-      onLanguageSwitched: (oldLocale: string, newLocale: string) => {
-        console.log('onLanguageSwitched', oldLocale, newLocale)
-      }
-    }
+    plugins: [fileURLToPath(new URL(`./fixtures/plugins/i18nHooks.ts`, import.meta.url))],
+    i18n: { defaultLocale: 'en' }
   }
 })
 
-describe('onBeforeLanguageSwitch / onLanguageSwitched', () => {
+describe('beforeLocaleSwitch / localeSwitched', () => {
   test('<NuxtLink>', async () => {
     const home = url('/')
     const page = await createPage()
