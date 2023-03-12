@@ -36,6 +36,5 @@ export {
   NuxtI18nOptionsDefault,
   NuxtI18nInternalOptions,
   DetectBrowserLanguageOptions,
-  RootRedirectOptions,
-  LanguageSwitchedHandler
+  RootRedirectOptions
 } from './types'

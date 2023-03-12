@@ -201,9 +201,9 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
 
   // set the locale
   if (useCookie) {
-    await setCookieLocale(i18n, newLocale)
+    setCookieLocale(i18n, newLocale)
   }
-  await setLocale(i18n, newLocale)
+  setLocale(i18n, newLocale)
 
   await onLanguageSwitched(i18n, oldLocale, newLocale)
 
