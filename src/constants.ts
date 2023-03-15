@@ -62,4 +62,6 @@ export const DEFAULT_OPTIONS = {
   debug: false
 } as const
 
+export const NUXT_I18N_RESOURCE_PROXY_ID = '@nuxtjs/i18n/__resource__' as const
+
 export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS
