@@ -1,4 +1,4 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`basic 1`] = `
 "import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
@@ -131,11 +131,11 @@ export const resolveNuxtI18nOptions = async (context) => {
   \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
 },}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":((prop) => {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\",\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
           })})]
   return nuxtI18nOptions
@@ -162,11 +162,11 @@ export const resolveNuxtI18nOptions = async (context) => {
   \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
 },}),})
   nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":(function (prop) {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\",\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
         })})]
   return nuxtI18nOptions

@@ -4,6 +4,7 @@ import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin 
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { TransformMacroPlugin, TransformMacroPluginOptions } from './macros'
+import { ResourceProxyPlugin } from './proxy'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions } from './types'
@@ -54,8 +55,9 @@ export async function extendBundler(
     if (hasLocaleFiles && langPath) {
       webpackPluginOptions.include = [resolve(langPath, './**')]
     }
-    addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
 
+    addWebpackPlugin(ResourceProxyPlugin.webpack({}))
+    addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
 
     extendWebpackConfig(config => {
@@ -78,13 +80,15 @@ export async function extendBundler(
    */
 
   const vitePluginOptions: PluginOptions = {
-    runtimeOnly: true
+    runtimeOnly: true,
+    allowDynamic: true
   }
   if (hasLocaleFiles && langPath) {
     vitePluginOptions.include = [resolve(langPath, './**')]
   }
-  addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
 
+  addVitePlugin(ResourceProxyPlugin.vite({}))
+  addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
 
   extendViteConfig(config => {
