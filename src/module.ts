@@ -1,6 +1,15 @@
 import createDebug from 'debug'
 import { isBoolean, isObject, isString } from '@intlify/shared'
-import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
+import {
+  defineNuxtModule,
+  isNuxt2,
+  isNuxt3,
+  getNuxtVersion,
+  addPlugin,
+  addTemplate,
+  addImports,
+  addServerHandler
+} from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
@@ -209,6 +218,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
       nuxtOptions: options as Required<NuxtI18nOptions>,
       hasLocaleFiles,
       langPath
+    })
+
+    /**
+     * extend server handlers
+     */
+    addServerHandler({
+      route: '/api/__i18n__',
+      handler: resolve(runtimeDir, './server/precompile')
     })
 
     /**
