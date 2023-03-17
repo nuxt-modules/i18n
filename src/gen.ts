@@ -1,7 +1,7 @@
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
-import { NUXT_I18N_MODULE_ID, NUXT_I18N_RESOURCE_PROXY_ID } from './constants'
+import { NUXT_I18N_MODULE_ID, NUXT_I18N_RESOURCE_PROXY_ID, NUXT_I18N_PRECOMPILE_ENDPOINT } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
 import fs from 'node:fs'
@@ -14,7 +14,6 @@ import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './typ
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { AdditionalMessages } from './messages'
 import type { File } from '@babel/types'
-import type { LocaleObject } from 'vue-i18n-routing'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -120,13 +119,6 @@ export function generateLoaderOptions(
       return locales
     }
   }
-  // for (const [key, value] of Object.entries(options)) {
-  //   if (key === 'nuxtI18nInternalOptions' && '__normalizedLocales' in value && value.__normalizedLocales) {
-  //     value.__normalizedLocales.map(stripLocaleObject)
-  //   } else if (key === 'nuxtI18nOptions' && 'locales' in value && value.locales) {
-  //     value.locales.map(stripLocaleObject)
-  //   }
-  // }
 
   /**
    * Generate options
@@ -200,6 +192,7 @@ export function generateLoaderOptions(
    * Generate meta info
    */
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
+  genCode += `export const NUXT_I18N_PRECOMPILE_ENDPOINT = ${toCode(NUXT_I18N_PRECOMPILE_ENDPOINT)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
   genCode += `export const isSSR = ${toCode(misc.ssr)}\n`
 
@@ -216,7 +209,7 @@ function genImportSpecifier(id: string, ext: string, absolutePath: string) {
     const anaylzed = scanProgram(parsed.program)
     // prettier-ignore
     return anaylzed === 'arrow-function' || anaylzed === 'function'
-      ? `${asVirtualId(NUXT_I18N_RESOURCE_PROXY_ID)}?import=${id}`
+      ? `${asVirtualId(NUXT_I18N_RESOURCE_PROXY_ID)}?target=${id}`
       : id
   } else {
     return id

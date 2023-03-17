@@ -63,5 +63,6 @@ export const DEFAULT_OPTIONS = {
 } as const
 
 export const NUXT_I18N_RESOURCE_PROXY_ID = '@nuxtjs/i18n/__resource__' as const
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/api/__i18n__' as const
 
 export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS

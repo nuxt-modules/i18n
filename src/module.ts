@@ -8,7 +8,8 @@ import {
   addPlugin,
   addTemplate,
   addImports,
-  addServerHandler
+  addServerHandler,
+  addPrerenderRoutes
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { setupAlias, resolveVueI18nAlias } from './alias'
@@ -16,7 +17,7 @@ import { setupPages } from './pages'
 import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
-import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
+import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS, NUXT_I18N_PRECOMPILE_ENDPOINT } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 
@@ -224,9 +225,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend server handlers
      */
     addServerHandler({
-      route: '/api/__i18n__',
+      route: NUXT_I18N_PRECOMPILE_ENDPOINT,
       handler: resolve(runtimeDir, './server/precompile')
     })
+    // addPrerenderRoutes('/api/__i18n__')
 
     /**
      * auto imports

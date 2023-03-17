@@ -13,12 +13,16 @@ import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
+// TODO:
+import { createStorage, prefixStorage } from 'unstorage'
+import memoryDriver from 'unstorage/drivers/memory'
 import { useRequestHeaders, useRequestEvent } from '#imports'
 import {
   nuxtI18nOptionsDefault,
   localeMessages,
   additionalMessages,
   NUXT_I18N_MODULE_ID,
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
   isSSG
 } from '#build/i18n.options.mjs'
 
@@ -108,11 +112,14 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>) {
 async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale: Locale) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
+    __DEBUG__ && console.log('loadMessage: (locale) -', locale)
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
       message = await getter(context, locale).then((r: any) => r.default || r)
+      __DEBUG__ && console.log('loadMessage: dynamic load', message)
     } else {
       message = getter
+      console.log('loadMessage: load', message)
     }
   } catch (e: any) {
     // eslint-disable-next-line no-console
@@ -182,7 +189,7 @@ export async function loadAdditionalLocale(
   if (process.server || process.dev || !loadedAdditionalLocales.includes(locale)) {
     const additionalLoaders = additionalMessages[locale] || []
     for (const additionalLoader of additionalLoaders) {
-      const message = await loadMessage(context, additionalLoader)
+      const message = await loadMessage(context, additionalLoader, locale)
       if (message != null) {
         merger(locale, message)
         loadedAdditionalLocales.push(locale)
@@ -475,6 +482,30 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   }
 
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+}
+
+// TODO:
+export const localeStorage = prefixStorage(createStorage({ driver: memoryDriver() }), '@i18n')
+// import { appendHeader } from 'h3'
+
+export async function precompileResource(
+  context: NuxtApp,
+  locale: Locale,
+  loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
+) {
+  // if (process.server) {
+  //   const event = useRequestEvent(context)
+  //   appendHeader(event, 'x-nitro-prerender', '/api/__i18n__')
+  // }
+  const loaded = await loader(context, locale)
+  // TODO: We should strictly check if this is really a safe way to get compiled resources.
+  const precompiled = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+    method: 'POST',
+    body: loaded
+  })) as string
+  const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiled)
+  const mod = await import(/* @vite-ignore */ data).then(m => m.default || m)
+  return mod
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

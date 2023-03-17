@@ -1,16 +1,14 @@
 import createDebug from 'debug'
-import { pathToFileURL } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
-import { createFilter } from '@rollup/pluginutils'
+import { isString } from '@intlify/shared'
 import { NUXT_I18N_RESOURCE_PROXY_ID } from './constants'
 
 import type { UnpluginContextMeta } from 'unplugin'
 
-export interface ResourceProxyPluginOptions {
-  include?: string | string[]
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ResourceProxyPluginOptions {}
 
 const debug = createDebug('@nuxtjs/i18n:proxy')
 
@@ -30,51 +28,51 @@ export function asVirtualId(id: string, framework: UnpluginContextMeta['framewor
 }
 
 export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginOptions = {}, meta) => {
-  const filter = createFilter(options.include)
-
   return {
     name: 'nuxtjs:i18n-resource-proxy',
 
     resolveId(id, importer) {
       debug('resolveId', id, importer)
-      if (importer?.endsWith('i18n.options.mjs')) {
-        const { pathname, search } = parseURL(decodeURIComponent(getVirtualId(id)))
-        const query = parseQuery(search)
-        console.log('resolveId', id, pathname, query, pathname === NUXT_I18N_RESOURCE_PROXY_ID)
+      const { pathname, search } = parseURL(decodeURIComponent(getVirtualId(id)))
+      const query = parseQuery(search)
 
-        if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
-          return `${id}&importer=${importer}`
+      if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
+        // console.log('resolveId', id, importer, pathname, query)
+        if (importer?.endsWith('i18n.options.mjs')) {
+          return {
+            id: `${id}&from=${importer}`,
+            moduleSideEffects: true
+          }
+        } else if (isString(query.from) && query.from.endsWith('i18n.options.mjs')) {
+          return {
+            id,
+            moduleSideEffects: true
+          }
         }
-        // return asVirtualId(id, meta.framework)
       }
+
+      return null
     },
 
     async load(id) {
       debug('load', id)
       const { pathname, search } = parseURL(decodeURIComponent(getVirtualId(id)))
       const query = parseQuery(search)
-      console.log('load ->', id, pathname, query, pathname === NUXT_I18N_RESOURCE_PROXY_ID)
 
-      if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
-        console.log('load ...')
-        // TODO:
-        const baseDir = dirname(query.importer)
-        return {
-          code: `
+      if (pathname === NUXT_I18N_RESOURCE_PROXY_ID && isString(query.target) && isString(query.from)) {
+        const baseDir = dirname(query.from)
+        // console.log('load ->', id, pathname, query, baseDir)
+        const code = `import { precompileResource } from '#build/i18n.internal.mjs'
 export default async function(context, locale) {
-  const res = await import(${JSON.stringify(resolve(baseDir, query.import))}).then(m => m.default || m)(context, locale)
-  // const res = await load(context, locale)
-  return Promise.resolve(res)
-}`,
+  const loader = await import(${JSON.stringify(resolve(baseDir, query.target))}).then(m => m.default || m)
+  return await precompileResource(context, locale, loader)
+}`
+        // console.log(`code ->`, code)
+        return {
+          code,
           map: { mappings: '' }
         }
       }
     }
-
-    // transformInclude(id) {
-    //   debug('transformInclude', id)
-    //   // sconst { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-    //   return NUXT_I18N_RESOURCE_PROXY_ID !== getVirtualId(id, meta.framework)
-    // }
   }
 })

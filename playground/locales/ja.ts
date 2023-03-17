@@ -2,7 +2,7 @@
 // import type { NuxtApp } from '@nuxt/schema'
 
 // export default function (context: NuxtApp, locale: Locale) {
-export default async function (context, locale) {
+export default function (context, locale) {
   console.log('dynamical resource loading ...', context, locale)
   return {
     layouts: {
@@ -16,5 +16,5 @@ export default async function (context, locale) {
     },
     welcome: 'ようこそ',
     hello: 'こんにちは {name} ！'
-  }
+  } as Record<string, any>
 }
