@@ -245,16 +245,19 @@ function readComponent(target: string) {
   try {
     const content = fs.readFileSync(target, 'utf8').toString()
     const { descriptor } = parseSFC(content)
-    if (!descriptor.scriptSetup) {
+
+    if (!content.includes('defineI18nRoute')) {
       return options
     }
+
     const desc = compileScript(descriptor, { id: target })
-    const { scriptSetupAst } = desc
+    const { scriptSetupAst, scriptAst } = desc
 
     let extract = ''
-    if (scriptSetupAst) {
+    const genericSetupAst = scriptSetupAst || scriptAst
+    if (genericSetupAst) {
       const s = new MagicString(desc.loc.source)
-      scriptSetupAst.forEach(ast => {
+      genericSetupAst.forEach(ast => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         walk(ast as any, {
           enter(_node) {
