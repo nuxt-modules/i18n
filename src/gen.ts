@@ -15,7 +15,7 @@ import fs from 'node:fs'
 // @ts-ignore
 import { transform as stripType } from '@mizchi/sucrase'
 import { parse as _parseCode } from '@babel/parser'
-import { asVirtualId } from './proxy'
+import { asVirtualId } from './transform/proxy'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'

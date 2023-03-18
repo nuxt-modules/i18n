@@ -10,7 +10,7 @@ import {
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_TEMPLATE_INTERNAL_KEY,
   NUXT_I18N_RESOURCE_PROXY_ID
-} from './constants'
+} from '../constants'
 
 import type { UnpluginContextMeta } from 'unplugin'
 
@@ -77,9 +77,11 @@ export default async function(context, locale) {
   return await precompileResource(context, locale, loader)
 }`
         // console.log(`code ->`, code)
+
+        const s = new MagicString(code)
         return {
-          code,
-          map: { mappings: '' }
+          code: s.toString(),
+          map: s.generateMap({ source: id, includeContent: true })
         }
       }
     },
