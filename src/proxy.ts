@@ -3,7 +3,11 @@ import { dirname, resolve } from 'node:path'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import { isString } from '@intlify/shared'
-import { NUXT_I18N_RESOURCE_PROXY_ID } from './constants'
+import {
+  NUXT_I18N_TEMPLATE_OPTIONS_KEY,
+  NUXT_I18N_TEMPLATE_INTERNAL_KEY,
+  NUXT_I18N_RESOURCE_PROXY_ID
+} from './constants'
 
 import type { UnpluginContextMeta } from 'unplugin'
 
@@ -38,12 +42,12 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
 
       if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
         // console.log('resolveId', id, importer, pathname, query)
-        if (importer?.endsWith('i18n.options.mjs')) {
+        if (importer?.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
           return {
             id: `${id}&from=${importer}`,
             moduleSideEffects: true
           }
-        } else if (isString(query.from) && query.from.endsWith('i18n.options.mjs')) {
+        } else if (isString(query.from) && query.from.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
           return {
             id,
             moduleSideEffects: true
@@ -62,7 +66,7 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
       if (pathname === NUXT_I18N_RESOURCE_PROXY_ID && isString(query.target) && isString(query.from)) {
         const baseDir = dirname(query.from)
         // console.log('load ->', id, pathname, query, baseDir)
-        const code = `import { precompileResource } from '#build/i18n.internal.mjs'
+        const code = `import { precompileResource } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
 export default async function(context, locale) {
   const loader = await import(${JSON.stringify(resolve(baseDir, query.target))}).then(m => m.default || m)
   return await precompileResource(context, locale, loader)

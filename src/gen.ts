@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
@@ -284,7 +286,6 @@ function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: 
   return normalize(`${relativeBase}/${langDir}/${file}`)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateVueI18nOptions(options: Record<string, any>, dev: boolean): string {
   let genCode = 'Object({'
   for (const [key, value] of Object.entries(options)) {
@@ -304,7 +305,6 @@ function generateVueI18nOptions(options: Record<string, any>, dev: boolean): str
   return genCode
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateAdditionalMessages(value: Record<string, any>, dev: boolean): string {
   let genCode = 'Object({'
   for (const [locale, messages] of Object.entries(value)) {
@@ -320,14 +320,12 @@ function generateAdditionalMessages(value: Record<string, any>, dev: boolean): s
   return genCode
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function stringifyObj(obj: Record<string, any>): string {
   return `Object({${Object.entries(obj)
     .map(([key, value]) => `${JSON.stringify(key)}:${toCode(value)}`)
     .join(`,`)}})`
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toCode(code: any): string {
   if (code === null) {
     return `null`
@@ -359,3 +357,5 @@ export function toCode(code: any): string {
 
   return code + ``
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */

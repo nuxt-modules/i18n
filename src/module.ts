@@ -17,7 +17,12 @@ import { setupPages } from './pages'
 import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
-import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS, NUXT_I18N_PRECOMPILE_ENDPOINT } from './constants'
+import {
+  NUXT_I18N_MODULE_ID,
+  DEFAULT_OPTIONS,
+  NUXT_I18N_TEMPLATE_OPTIONS_KEY,
+  NUXT_I18N_PRECOMPILE_ENDPOINT
+} from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 
@@ -156,7 +161,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('localesRelativeBasePath', localesRelativeBasePath)
 
     addTemplate({
-      filename: 'i18n.options.mjs',
+      filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
       write: true,
       getContents: () => {
         return generateLoaderOptions(

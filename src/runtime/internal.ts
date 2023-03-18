@@ -238,7 +238,6 @@ export function getLocaleCookie(
     } else if (process.server) {
       const cookie = useRequestHeaders(['cookie'])
       if ('cookie' in cookie) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
         localeCode = parsedCookie[cookieKey]
         __DEBUG__ && console.log('getLocaleCookie cookie', parsedCookie[cookieKey])
