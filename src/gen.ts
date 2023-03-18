@@ -3,7 +3,12 @@
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
-import { NUXT_I18N_MODULE_ID, NUXT_I18N_RESOURCE_PROXY_ID, NUXT_I18N_PRECOMPILE_ENDPOINT } from './constants'
+import {
+  NUXT_I18N_MODULE_ID,
+  NUXT_I18N_RESOURCE_PROXY_ID,
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NUXT_I18N_PRECOMPILED_LOCALE_KEY
+} from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
 import fs from 'node:fs'
@@ -195,6 +200,7 @@ export function generateLoaderOptions(
    */
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
   genCode += `export const NUXT_I18N_PRECOMPILE_ENDPOINT = ${toCode(NUXT_I18N_PRECOMPILE_ENDPOINT)}\n`
+  genCode += `export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = ${toCode(NUXT_I18N_PRECOMPILED_LOCALE_KEY)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
   genCode += `export const isSSR = ${toCode(misc.ssr)}\n`
 

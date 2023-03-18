@@ -13,16 +13,14 @@ import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-// TODO:
-import { createStorage, prefixStorage } from 'unstorage'
-import memoryDriver from 'unstorage/drivers/memory'
-import { useRequestHeaders, useRequestEvent } from '#imports'
+import { useRequestHeaders, useRequestEvent, useRuntimeConfig } from '#imports'
 import {
   nuxtI18nOptionsDefault,
   localeMessages,
   additionalMessages,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
   isSSG
 } from '#build/i18n.options.mjs'
 
@@ -110,16 +108,26 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>) {
 }
 
 async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale: Locale) {
+  const i18nConfig = useRuntimeConfig().public.i18n
+
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
-      message = await getter(context, locale).then((r: any) => r.default || r)
-      __DEBUG__ && console.log('loadMessage: dynamic load', message)
+      if (i18nConfig.experimental?.jsTsFormatResource) {
+        message = await getter(context, locale).then((r: any) => r.default || r)
+        __DEBUG__ && console.log('loadMessage: dynamic load', message)
+      } else {
+        console.warn(
+          formatMessage(
+            'Not support js / ts extension format as default. you can do enable with `i18n.experimental.jsTsFormatResource: true` (experimental)'
+          )
+        )
+      }
     } else {
       message = getter
-      console.log('loadMessage: load', message)
+      __DEBUG__ && console.log('loadMessage: load', message)
     }
   } catch (e: any) {
     // eslint-disable-next-line no-console
@@ -483,27 +491,34 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
 }
 
-// TODO:
-export const localeStorage = prefixStorage(createStorage({ driver: memoryDriver() }), '@i18n')
-// import { appendHeader } from 'h3'
-
 export async function precompileResource(
   context: NuxtApp,
   locale: Locale,
   loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
 ) {
-  // if (process.server) {
-  //   const event = useRequestEvent(context)
-  //   appendHeader(event, 'x-nitro-prerender', '/api/__i18n__')
-  // }
+  let mod = null
+  if (isSSG) {
+    try {
+      mod = await import(/* @vite-ignore */ '/' + NUXT_I18N_PRECOMPILED_LOCALE_KEY + '-' + locale + '.mjs').then(
+        m => m.default || m
+      )
+    } catch (e) {}
+    __DEBUG__ && console.log('load resource module on ssg', mod)
+    if (mod != null) {
+      return mod
+    }
+  }
   const loaded = await loader(context, locale)
   // TODO: We should strictly check if this is really a safe way to get compiled resources.
-  const precompiled = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+  const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
     method: 'POST',
-    body: loaded
+    body: {
+      locale,
+      resource: loaded
+    }
   })) as string
-  const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiled)
-  const mod = await import(/* @vite-ignore */ data).then(m => m.default || m)
+  const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiledCode)
+  mod = await import(/* @vite-ignore */ data).then(m => m.default || m)
   return mod
 }
 

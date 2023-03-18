@@ -28,6 +28,8 @@ export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],def
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "
@@ -56,6 +58,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "
@@ -84,6 +88,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "
@@ -114,6 +120,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "
@@ -145,6 +153,8 @@ export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],def
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "
@@ -176,6 +186,8 @@ export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],def
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "
@@ -217,6 +229,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
 "

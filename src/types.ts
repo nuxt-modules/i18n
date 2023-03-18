@@ -36,7 +36,12 @@ export type CustomRoutePages = {
       }
 }
 
+export interface ExperimentalFeatures {
+  jsTsFormatResource?: boolean
+}
+
 export type NuxtI18nOptions<Context = unknown> = {
+  experimental?: ExperimentalFeatures
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null

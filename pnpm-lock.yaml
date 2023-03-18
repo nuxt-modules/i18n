@@ -30,6 +30,7 @@ importers:
       changelogithub: ^0.12.7
       cookie-es: ^0.5.0
       debug: ^4.3.4
+      defu: ^6.1.2
       eslint: ^8.33.0
       eslint-config-prettier: ^8.6.0
       eslint-plugin-prettier: ^4.2.1
@@ -70,6 +71,7 @@ importers:
       '@vue/compiler-sfc': 3.2.47
       cookie-es: 0.5.0
       debug: 4.3.4
+      defu: 6.1.2
       estree-walker: 3.0.1
       is-https: 4.0.0
       js-cookie: 3.0.1
@@ -129,7 +131,7 @@ importers:
       '@nuxtjs/i18n': link:..
       nuxt: ^3.1.0
     devDependencies:
-      '@nuxt/devtools': /@nuxt/devtools-edge/0.2.5-27983113.6faec60_nuxt@3.1.2
+      '@nuxt/devtools': /@nuxt/devtools-edge/0.2.5-27985609.d608a0f_nuxt@3.1.2
       '@nuxtjs/i18n': link:..
       nuxt: 3.1.2
 
@@ -1809,15 +1811,15 @@ packages:
     resolution: {integrity: sha512-YBI/6o2EBz02tdEJRBK8xkt3zvOFOWlLBf7WKYGBsSYSRtjjgrqPe2skp6VLLmKx5WbHHDNcW+6oACaurxGzeA==}
     dev: true
 
-  /@nuxt/devtools-edge/0.2.5-27983113.6faec60_nuxt@3.1.2:
-    resolution: {integrity: sha512-O5ayHF1qZAgEybYOxkRRFrMjvVGMaXaJ4qbL/HlvuIBDYwPF4avcN8O9OMQa6wXkeozH/3tNn0bLkpwlSDPAyA==}
+  /@nuxt/devtools-edge/0.2.5-27985609.d608a0f_nuxt@3.1.2:
+    resolution: {integrity: sha512-eSoG4KdzNACShyLTq5Qi1vDqiTtfKWR8XY9XpLUwD/j+M4Wv+us9R6hwzQTls2ah6sFtNbOIqd+r4d6hrblcAQ==}
     hasBin: true
     peerDependencies:
       nuxt: ^3.3.1
       vite: '*'
     dependencies:
       '@antfu/install-pkg': 0.1.1
-      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge/0.2.5-27983113.6faec60_nuxt@3.1.2
+      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge/0.2.5-27985609.d608a0f_nuxt@3.1.2
       '@nuxt/kit': 3.3.1
       birpc: 0.2.10
       consola: 2.15.3
@@ -1842,8 +1844,8 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/devtools-kit-edge/0.2.5-27983113.6faec60_nuxt@3.1.2:
-    resolution: {integrity: sha512-33N3W+gK7UZ51rmVBYWQXn/6iBxZk+1FslLqa0PwQo+u/gbq9yNQGWverhT4zlt2J391L/gQIJCWYbUmEO9wvA==}
+  /@nuxt/devtools-kit-edge/0.2.5-27985609.d608a0f_nuxt@3.1.2:
+    resolution: {integrity: sha512-yTGWKTEYSsf+B3D+nf0n6MfP1pwtXkhpQQsa6Yq6SJywni2D5Wgq8PEAqjSALq2b19Jj4f9h6I8im8xKAwHoZQ==}
     peerDependencies:
       nuxt: ^3.3.1
       vite: '*'

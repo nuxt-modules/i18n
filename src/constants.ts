@@ -30,6 +30,9 @@ export const REDIRECT_ON_OPTIONS = {
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
+  experimental: {
+    jsTsFormatResource: false
+  },
   vueI18n: undefined,
   locales: [] as string[],
   defaultLocale: '',
@@ -63,7 +66,8 @@ export const DEFAULT_OPTIONS = {
 } as const
 
 export const NUXT_I18N_RESOURCE_PROXY_ID = '@nuxtjs/i18n/__resource__' as const
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/api/__i18n__' as const
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/api/__i18n__' as const // TODO: we night use `useRuntimeConfig`?
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = 'i18n-locales' as const // TODO: we night use `useRuntimeConfig`?
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
 export const NUXT_I18N_TEMPLATE_INTERNAL_KEY = 'i18n.internal.mjs' as const
 

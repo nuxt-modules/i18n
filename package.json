@@ -80,6 +80,7 @@
     "@mizchi/sucrase": "^4.1.0",
     "@vue/compiler-sfc": "^3.2.47",
     "cookie-es": "^0.5.0",
+    "defu": "^6.1.2",
     "debug": "^4.3.4",
     "estree-walker": "^3.0.1",
     "is-https": "^4.0.0",

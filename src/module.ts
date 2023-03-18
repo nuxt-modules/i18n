@@ -1,4 +1,5 @@
 import createDebug from 'debug'
+import { promises as fs } from 'node:fs'
 import { isBoolean, isObject, isString } from '@intlify/shared'
 import {
   defineNuxtModule,
@@ -9,9 +10,11 @@ import {
   addTemplate,
   addImports,
   addServerHandler,
-  addPrerenderRoutes
+  useLogger,
+  addPrerenderRoutes // TODO: remove?
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
+import { defu } from 'defu'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
@@ -21,7 +24,8 @@ import {
   NUXT_I18N_MODULE_ID,
   DEFAULT_OPTIONS,
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
-  NUXT_I18N_PRECOMPILE_ENDPOINT
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NUXT_I18N_PRECOMPILED_LOCALE_KEY
 } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
@@ -44,8 +48,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
+    const logger = useLogger(NUXT_I18N_MODULE_ID)
+
     const options = i18nOptions as Required<NuxtI18nOptions>
     debug('options', options)
+
+    if (options.experimental.jsTsFormatResource) {
+      logger.warn('JS / TS extention format resource is experimental')
+    }
 
     /**
      * Check vertions
@@ -74,6 +84,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
         )
       )
     }
+
+    /**
+     * setup runtime config
+     */
+
+    nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
+      experimental: options.experimental,
+      baseUrl: options.baseUrl
+    })
 
     /**
      * resolve lang directory
@@ -229,11 +248,57 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * extend server handlers
      */
+
     addServerHandler({
       route: NUXT_I18N_PRECOMPILE_ENDPOINT,
       handler: resolve(runtimeDir, './server/precompile')
     })
-    // addPrerenderRoutes('/api/__i18n__')
+
+    // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
+    // addPrerenderRoutes([NUXT_I18N_PRECOMPILE_ENDPOINT])
+
+    /**
+     * extend nitro storages
+     */
+
+    const storageKey = NUXT_I18N_PRECOMPILED_LOCALE_KEY.split('-').join(':')
+    nuxt.hook('nitro:config', nitro => {
+      nitro.storage = nitro.storage || {}
+      nitro.storage[storageKey] = {
+        // nitro.devStorage = nitro.devStorage || {}
+        // nitro.devStorage['i18n:locales'] = {
+        driver: 'fs',
+        base: resolve(nuxt.options.buildDir, NUXT_I18N_PRECOMPILED_LOCALE_KEY)
+      }
+      // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
+      // nitro.bundledStorage = nitro.bundledStorage || []
+      // nitro.bundledStorage.push('/i18n/locales')
+    })
+
+    /**
+     * copy pre-compiled locale resources to `public` dir from `.nuxt/i18n-locale`
+     *
+     * NOTE:
+     *  There has to be a smart way to do this, one that is nitro.
+     *  (maybe, I think that is prerender)
+     */
+
+    nuxt.hook('nitro:build:before', async nitro => {
+      const buildLocaleDir = nitro.options.storage[storageKey].base
+      await nitro.storage.watch(async (event, key) => {
+        if (event === 'update') {
+          const buildKey = `build:${NUXT_I18N_PRECOMPILED_LOCALE_KEY}`
+          if (key.startsWith(buildKey)) {
+            const locale = key.split(':')[2]
+            const source = resolve(buildLocaleDir, locale)
+            const target = resolve(nitro.options.output.publicDir, `${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-${locale}`)
+            const localeCode = await fs.readFile(source, 'utf-8')
+            await fs.writeFile(target, localeCode, 'utf-8')
+            debug(`generate locale file: ${source} -> ${target}`)
+          }
+        }
+      })
+    })
 
     /**
      * auto imports
@@ -311,6 +376,8 @@ function checkOptions(options: NuxtI18nOptions) {
 type MaybePromise<T> = T | Promise<T>
 type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
 
+type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl' | 'experimental'>
+
 declare module '@nuxt/schema' {
   interface NuxtConfig {
     i18n?: NuxtI18nOptions
@@ -318,6 +385,14 @@ declare module '@nuxt/schema' {
 
   interface NuxtHooks {
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
+  }
+
+  interface ConfigSchema {
+    runtimeConfig: {
+      public?: {
+        i18n?: ModulePublicRuntimeConfig
+      }
+    }
   }
 }
 

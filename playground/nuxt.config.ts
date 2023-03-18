@@ -21,6 +21,9 @@ export default defineNuxtConfig({
   // },
 
   i18n: {
+    experimental: {
+      jsTsFormatResource: true
+    },
     langDir: 'locales',
     lazy: true,
     baseUrl: 'http://localhost:3000',
@@ -54,7 +57,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    debug: true,
+    // debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
