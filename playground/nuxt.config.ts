@@ -44,7 +44,7 @@ export default defineNuxtConfig({
       {
         code: 'ja',
         iso: 'ja-JP',
-        file: 'ja.mjs',
+        file: 'ja.ts',
         domain: 'mydomain.com',
         name: 'Japanses'
       },
@@ -57,7 +57,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    // debug: true,
+    debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',

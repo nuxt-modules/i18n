@@ -3,6 +3,9 @@ import { dirname, resolve } from 'node:path'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import { isString } from '@intlify/shared'
+import MagicString from 'magic-string'
+// @ts-ignore
+import { transform as stripType } from '@mizchi/sucrase'
 import {
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_TEMPLATE_INTERNAL_KEY,
@@ -32,6 +35,8 @@ export function asVirtualId(id: string, framework: UnpluginContextMeta['framewor
 }
 
 export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginOptions = {}, meta) => {
+  debug('options', options, meta)
+
   return {
     name: 'nuxtjs:i18n-resource-proxy',
 
@@ -76,6 +81,32 @@ export default async function(context, locale) {
           code,
           map: { mappings: '' }
         }
+      }
+    },
+
+    transformInclude(id) {
+      debug('transformInclude', id)
+
+      if (id.startsWith('\x00') || !/\.([c|m]?ts)$/.test(id)) {
+        return false
+      } else {
+        return true
+      }
+    },
+
+    transform(code, id) {
+      debug('transform', id)
+
+      const out = stripType(code, {
+        transforms: ['jsx'],
+        keepUnusedImports: true
+      })
+
+      const s = new MagicString(out.code)
+
+      return {
+        code: s.toString(),
+        map: s.generateMap({ source: id, includeContent: true })
       }
     }
   }

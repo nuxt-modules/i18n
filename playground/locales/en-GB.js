@@ -1,5 +1,3 @@
-export default {
-  settings: {
-    profile: 'Profile'
-  }
+export default async function (context, locale) {
+  return $fetch(`/api/${locale}`)
 }

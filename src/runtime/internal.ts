@@ -13,7 +13,7 @@ import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-import { useRequestHeaders, useRequestEvent, useRuntimeConfig } from '#imports'
+import { useRequestHeaders, useRequestEvent } from '#imports'
 import {
   nuxtI18nOptionsDefault,
   localeMessages,
@@ -499,7 +499,7 @@ export async function precompileResource(
   let mod = null
   if (isSSG) {
     try {
-      mod = await import(/* @vite-ignore */ '/' + NUXT_I18N_PRECOMPILED_LOCALE_KEY + '-' + locale + '.mjs').then(
+      mod = await import(/* @vite-ignore */ '/' + NUXT_I18N_PRECOMPILED_LOCALE_KEY + '-' + locale + '.js').then(
         m => m.default || m
       )
     } catch (e) {}

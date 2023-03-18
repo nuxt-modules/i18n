@@ -6,6 +6,11 @@ import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
  */
 
 const locales: LocaleMessages<DefineLocaleMessage> = {
+  'en-GB': {
+    settings: {
+      profile: 'Profile'
+    }
+  },
   ja: {
     layouts: {
       title: 'ページ ー {title}'
