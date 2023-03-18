@@ -108,7 +108,7 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>) {
 }
 
 async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale: Locale) {
-  const i18nConfig = useRuntimeConfig().public.i18n
+  const i18nConfig = context.$config.public?.i18n
 
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
