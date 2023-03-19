@@ -1,7 +1,16 @@
 import createDebug from 'debug'
 import { isBoolean, isObject, isString } from '@intlify/shared'
-import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
-import { resolve, relative, isAbsolute } from 'pathe'
+import {
+  defineNuxtModule,
+  isNuxt2,
+  isNuxt3,
+  getNuxtVersion,
+  addPlugin,
+  addTemplate,
+  addImports,
+  createResolver
+} from '@nuxt/kit'
+import { relative, isAbsolute } from 'pathe'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
@@ -31,6 +40,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
   async setup(i18nOptions, nuxt) {
     const options = i18nOptions as Required<NuxtI18nOptions>
     debug('options', options)
+    const { resolve } = createResolver(import.meta.url)
 
     /**
      * Check vertions
