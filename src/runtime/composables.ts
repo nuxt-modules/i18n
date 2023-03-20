@@ -15,6 +15,7 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export * from 'vue-i18n'
 export type { LocaleObject } from 'vue-i18n-routing'
+export type { LocaleLoader } from './types'
 import type { Locale } from 'vue-i18n'
 
 /**

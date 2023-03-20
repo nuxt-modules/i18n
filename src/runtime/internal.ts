@@ -29,6 +29,7 @@ import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
+import type { LocaleLoader } from './types'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -116,7 +117,7 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
       if (i18nConfig.experimental?.jsTsFormatResource) {
-        message = await getter(context, locale).then((r: any) => r.default || r)
+        message = await (getter as LocaleLoader)(context, locale).then((r: any) => r.default || r)
         __DEBUG__ && console.log('loadMessage: dynamic load', message)
       } else {
         console.warn(

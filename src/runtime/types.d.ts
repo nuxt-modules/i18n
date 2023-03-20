@@ -7,6 +7,7 @@ import type {
   ComposerCustomProperties as _ComposerCustomProperties
 } from 'vue-i18n-routing'
 import type { I18nRoutingCustomProperties } from 'vue-i18n-routing/dist/vue-i18n'
+import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 
 /**
  * Called before the app's locale is switched.
@@ -27,6 +28,22 @@ type BeforeLanguageSwitchHandler = (
   initialSetup: boolean,
   context: NuxtApp
 ) => Promise<string | void>
+
+/**
+ * Load the locale messages
+ *
+ * @remarks
+ * This function interface is used when you want to dynamically load locale messages in the `js` / `ts` format.
+ *
+ * @param context - the Nuxt app instance.
+ * @param locale - The target locale.
+ *
+ * @returns The locale messages with Promise.
+ */
+export type LocaleLoader = <Messages = LocaleMessages<DefineLocaleMessage>>(
+  context: NuxtApp,
+  locale: Locale
+) => Promise<Messages>
 
 /**
  * Called after the app's locale is switched.

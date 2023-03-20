@@ -54,7 +54,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {
-      logger.warn('JS / TS extension format resource is experimental')
+      logger.warn('JS / TS extension format is experimental')
     }
 
     /**
@@ -92,6 +92,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
       experimental: options.experimental,
       baseUrl: options.baseUrl
+      // TODO: we should support more i18n module options. welcome PRs :-)
     })
 
     /**
