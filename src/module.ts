@@ -54,7 +54,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {
-      logger.warn('JS / TS extention format resource is experimental')
+      logger.warn('JS / TS extension format resource is experimental')
     }
 
     /**
