@@ -77,7 +77,6 @@
     "@intlify/unplugin-vue-i18n": "^0.9.2",
     "@mizchi/sucrase": "^4.1.0",
     "@nuxt/kit": "^3.1.2",
-    "@rollup/pluginutils": "^5.0.2",
     "@vue/compiler-sfc": "^3.2.47",
     "cookie-es": "^0.5.0",
     "debug": "^4.3.4",
