@@ -1,6 +1,7 @@
+import { existsSync } from 'fs'
 import createDebug from 'debug'
 import { isBoolean, isObject, isString } from '@intlify/shared'
-import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
+import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports, resolvePath } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
@@ -94,6 +95,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
       : isString(options.vueI18n)
         ? resolve(nuxt.options.rootDir, options.vueI18n)
         : { legacy: false }
+
+    const configPath = await resolvePath(options.vueI18n?.configFile || 'vue-i18n.options', { cwd: nuxt.options.rootDir, extensions: ['.ts', '.mjs', '.js'] })
 
     /**
      * extend messages via 3rd party nuxt modules

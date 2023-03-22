@@ -52,7 +52,9 @@ export type NuxtI18nOptions<Context = unknown> = {
   skipSettingLocaleOnNavigate?: boolean
   // sortRoutes?: boolean
   strategy?: Strategies
-  vueI18n?: I18nOptions | string
+  vueI18n?: {
+    configFile?: string
+  }
   types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean
