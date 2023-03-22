@@ -29,7 +29,6 @@ import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
-import type { LocaleLoader } from './types'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -117,7 +116,7 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
       if (i18nConfig.experimental?.jsTsFormatResource) {
-        message = await (getter as LocaleLoader)(context, locale).then((r: any) => r.default || r)
+        message = await getter(context, locale).then((r: any) => r.default || r)
         __DEBUG__ && console.log('loadMessage: dynamic load', message)
       } else {
         console.warn(
@@ -492,23 +491,11 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
 }
 
-export async function precompileResource(
+export async function loadResource(
   context: NuxtApp,
   locale: Locale,
   loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
 ) {
-  let mod = null
-  if (isSSG) {
-    try {
-      mod = await import(/* @vite-ignore */ '/' + NUXT_I18N_PRECOMPILED_LOCALE_KEY + '-' + locale + '.js').then(
-        m => m.default || m
-      )
-    } catch (e) {}
-    __DEBUG__ && console.log('load resource module on ssg', mod)
-    if (mod != null) {
-      return mod
-    }
-  }
   const loaded = await loader(context, locale)
   // TODO: We should strictly check if this is really a safe way to get compiled resources.
   const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
@@ -519,8 +506,7 @@ export async function precompileResource(
     }
   })) as string
   const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiledCode)
-  mod = await import(/* @vite-ignore */ data).then(m => m.default || m)
-  return mod
+  return await import(/* @vite-ignore */ data).then(m => m.default || m)
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

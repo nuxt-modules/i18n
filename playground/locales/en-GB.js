@@ -1,3 +1,3 @@
-export default async function (context, locale) {
+export default defineI18nLocale(async function (context, locale) {
   return $fetch(`/api/${locale}`)
-}
+})

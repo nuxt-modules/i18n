@@ -7,7 +7,8 @@ import {
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_RESOURCE_PROXY_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NUXT_I18N_PRECOMPILED_LOCALE_KEY
+  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
@@ -15,7 +16,7 @@ import fs from 'node:fs'
 // @ts-ignore
 import { transform as stripType } from '@mizchi/sucrase'
 import { parse as _parseCode } from '@babel/parser'
-import { asVirtualId } from './transform/proxy'
+import { asVirtualId } from './transform/utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -248,12 +249,19 @@ function scanProgram(program: File['program']) {
       if (node.declaration.type === 'ObjectExpression') {
         ret = 'object'
         break
-      } else if (node.declaration.type === 'FunctionDeclaration') {
-        ret = 'function'
-        break
-      } else if (node.declaration.type === 'ArrowFunctionExpression') {
-        ret = 'arrow-function'
-        break
+      } else if (
+        node.declaration.type === 'CallExpression' &&
+        node.declaration.callee.type === 'Identifier' &&
+        node.declaration.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+      ) {
+        const [fnNode] = node.declaration.arguments
+        if (fnNode.type === 'FunctionExpression') {
+          ret = 'function'
+          break
+        } else if (fnNode.type === 'ArrowFunctionExpression') {
+          ret = 'arrow-function'
+          break
+        }
       }
     }
   }

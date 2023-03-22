@@ -70,5 +70,7 @@ export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/api/__i18n__' as const // TODO: w
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = 'i18n-locales' as const // TODO: we night use `useRuntimeConfig`?
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
 export const NUXT_I18N_TEMPLATE_INTERNAL_KEY = 'i18n.internal.mjs' as const
+export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute' as const
+export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale' as const
 
 export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS

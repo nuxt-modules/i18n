@@ -25,7 +25,9 @@ import {
   DEFAULT_OPTIONS,
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NUXT_I18N_PRECOMPILED_LOCALE_KEY
+  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
+  NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
@@ -54,7 +56,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {
-      logger.warn('JS / TS extension format is experimental')
+      logger.warn(formatMessage('JS / TS extension format is experimental'))
     }
 
     /**
@@ -284,22 +286,24 @@ export default defineNuxtModule<NuxtI18nOptions>({
      *  (maybe, I think that is prerender)
      */
 
-    nuxt.hook('nitro:build:before', async nitro => {
-      const buildLocaleDir = nitro.options.storage[storageKey].base
-      await nitro.storage.watch(async (event, key) => {
-        if (event === 'update') {
-          const buildKey = `build:${NUXT_I18N_PRECOMPILED_LOCALE_KEY}`
-          if (key.startsWith(buildKey)) {
-            const locale = key.split(':')[2]
-            const source = resolve(buildLocaleDir, locale)
-            const target = resolve(nitro.options.output.publicDir, `${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-${locale}`)
-            const localeCode = await fs.readFile(source, 'utf-8')
-            await fs.writeFile(target, localeCode, 'utf-8')
-            debug(`generate locale file: ${source} -> ${target}`)
+    if (nuxt.options._generate) {
+      nuxt.hook('nitro:build:before', async nitro => {
+        const buildLocaleDir = nitro.options.storage[storageKey].base
+        await nitro.storage.watch(async (event, key) => {
+          if (event === 'update') {
+            const buildKey = `build:${NUXT_I18N_PRECOMPILED_LOCALE_KEY}`
+            if (key.startsWith(buildKey)) {
+              const locale = key.split(':')[2]
+              const source = resolve(buildLocaleDir, locale)
+              const target = resolve(nitro.options.output.publicDir, `${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-${locale}`)
+              const localeCode = await fs.readFile(source, 'utf-8')
+              await fs.writeFile(target, localeCode, 'utf-8')
+              debug(`generate locale file: ${source} -> ${target}`)
+            }
           }
-        }
+        })
       })
-    })
+    }
 
     /**
      * auto imports
@@ -319,7 +323,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useLocaleHead',
         'useBrowserLocale',
         'useCookieLocale',
-        'defineI18nRoute'
+        NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
+        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
       ].map(key => ({
         name: key,
         as: key,

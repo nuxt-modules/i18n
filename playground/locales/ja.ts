@@ -1,7 +1,4 @@
-import type { Locale } from 'vue-i18n'
-import type { NuxtApp } from '@nuxt/schema'
-
-export default function (context: NuxtApp, locale: Locale) {
+export default defineI18nLocale((context, locale) => {
   return {
     layouts: {
       title: 'ページ ー {title}'
@@ -14,5 +11,5 @@ export default function (context: NuxtApp, locale: Locale) {
     },
     welcome: 'ようこそ',
     hello: 'こんにちは {name} ！'
-  } as Record<string, any>
-}
+  }
+})
