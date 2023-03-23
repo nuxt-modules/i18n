@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom'
+import { parse } from '@babel/parser'
 
 import type { Page } from 'playwright'
 
@@ -59,4 +60,18 @@ export async function assertLocaleHeadWithDom(dom: Document, headSelector: strin
       }
     }
   }
+}
+
+export function validateSyntax(code: string): boolean {
+  let ret = false
+  try {
+    const node = parse(code, {
+      allowImportExportEverywhere: true,
+      sourceType: 'module'
+    })
+    ret = !node.errors.length
+  } catch (e) {
+    console.error(e)
+  }
+  return ret
 }

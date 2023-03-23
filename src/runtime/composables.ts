@@ -15,7 +15,7 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export * from 'vue-i18n'
 export type { LocaleObject } from 'vue-i18n-routing'
-import type { Locale } from 'vue-i18n'
+import type { Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 
 /**
  * The `useRouteBaseName` composable returns function that get the route base name.
@@ -232,4 +232,37 @@ export function defineI18nRoute(route: I18nRoute | false): void {
   if (process.dev) {
     warnRuntimeUsage('defineI18nRoute')
   }
+}
+
+type MaybePromise<T> = T | Promise<T>
+
+/**
+ * The `defineI18nLocale` defines a composable function to dynamically load locale messages.
+ *
+ * @remarks
+ * This function is used to dynamically load a locale with lazy-load translations.
+ *
+ * You can use at JavaScript and TypeScript extension formats.
+ *
+ * @param context - A Nuxt Application instance that is passed from nuxt i18n module.
+ * @param locale - A target locale that is passed from nuxt i18n module.
+ *
+ * @returns Returns the locale messages object that will be resolved with Promise.
+ */
+export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale> = (
+  context: ReturnType<typeof useNuxtApp>,
+  locale: Locales
+) => MaybePromise<Messages>
+
+/**
+ * Define locale loader for dynamic locale messages loading
+ *
+ * @param loader - The target locale loader
+ *
+ * @returns The defined locale loader
+ */
+export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale>(
+  loader: LocaleLoader<Messages, Locales>
+): LocaleLoader<Messages, Locales> {
+  return loader
 }
