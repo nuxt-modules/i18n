@@ -15,7 +15,7 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export * from 'vue-i18n'
 export type { LocaleObject } from 'vue-i18n-routing'
-import type { Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type { Locale, LocaleMessages, DefineLocaleMessage, I18nOptions } from 'vue-i18n'
 
 /**
  * The `useRouteBaseName` composable returns function that get the route base name.
@@ -265,4 +265,15 @@ export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>,
   loader: LocaleLoader<Messages, Locales>
 ): LocaleLoader<Messages, Locales> {
   return loader
+}
+
+// WIP - not exported yet (since this is build-time)
+/**
+ * Define configuration for vue-i18n runtime plugin
+ *
+ * @param config - The target configuration for vue-i18n
+ * @returns The defined configuration
+ */
+export function defineI18nConfig<Config extends I18nOptions>(config: Config) {
+  return config
 }

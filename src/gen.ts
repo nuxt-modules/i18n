@@ -43,7 +43,8 @@ export function generateLoaderOptions(
     dev: boolean
     ssg: boolean
     ssr: boolean
-  } = { dev: true, ssg: false, ssr: true }
+  } = { dev: true, ssg: false, ssr: true },
+  vueI18nPath: string | false = false
 ) {
   const generatedImports = new Map<string, string>()
   const importMapper = new Map<string, string>()
@@ -83,7 +84,7 @@ export function generateLoaderOptions(
     return gen
   }
 
-  let genCode = ''
+  let genCode = vueI18nPath ? `${genImport(vueI18nPath, 'vueI18nOptions')}\n` : ''
   const localeInfo = options.localeInfo || []
   const syncLocaleFiles = new Set<LocaleInfo>()
   const asyncLocaleFiles = new Set<LocaleInfo>()
@@ -135,25 +136,9 @@ export function generateLoaderOptions(
   genCode += `${Object.entries(options).map(([rootKey, rootValue]) => {
     if (rootKey === 'nuxtI18nOptions') {
       let genCodes = `export const resolveNuxtI18nOptions = async (context) => {\n`
-      genCodes += `  const ${rootKey} = Object({})\n`
-      for (const [key, value] of Object.entries(rootValue)) {
-        if (key === 'vueI18n') {
-          const optionLoaderVariable = `${key}OptionsLoader`
-          genCodes += `  const ${optionLoaderVariable} = ${isObject(value)
-            ? `async (context) => ${generateVueI18nOptions(value, misc.dev)}\n`
-            : isString(value)
-              ? `async (context) => import(${toCode(value)}).then(r => (r.default || r)(context))\n`
-              : `async (context) => ${toCode({})}\n`
-          }`
-          genCodes += `  ${rootKey}.${key} = await ${optionLoaderVariable}(context)\n`
-          if (isString(value)) {
-            const parsedLoaderPath = parsePath(value)
-            const loaderFilename = `${parsedLoaderPath.name}${parsedLoaderPath.ext}`
-            genCodes += `  if (${rootKey}.${key}.messages) { console.warn("[${NUXT_I18N_MODULE_ID}]: Cannot include 'messages' option in '${loaderFilename}'. Please use Lazy-load translations."); ${rootKey}.${key}.messages = {}; }\n`
-          }
-        } else {
-          genCodes += `  ${rootKey}.${key} = ${toCode(key === 'locales' ? stripPathFromLocales(value) : value)}\n`
-        }
+      genCodes += `  const ${rootKey} = ${JSON.stringify(rootValue)}\n`
+      if (vueI18nPath) {
+        genCodes += `${rootKey}.vueI18n = vueI18nOptions\n`
       }
       genCodes += `  return nuxtI18nOptions\n`
       genCodes += `}\n`
@@ -298,25 +283,6 @@ function convertToImportId(file: string) {
 
 function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: string) {
   return normalize(`${relativeBase}/${langDir}/${file}`)
-}
-
-function generateVueI18nOptions(options: Record<string, any>, dev: boolean): string {
-  let genCode = 'Object({'
-  for (const [key, value] of Object.entries(options)) {
-    if (key === 'messages') {
-      genCode += `${JSON.stringify(key)}: Object({`
-      for (const [locale, localeMessages] of Object.entries(value)) {
-        genCode += `${JSON.stringify(locale)}:${
-          generateJSON(JSON.stringify(localeMessages), { type: 'bare', env: dev ? 'development' : 'production' }).code
-        },`
-      }
-      genCode += '}),'
-    } else {
-      genCode += `${JSON.stringify(key)}:${toCode(value)},`
-    }
-  }
-  genCode += '})'
-  return genCode
 }
 
 function generateAdditionalMessages(value: Record<string, any>, dev: boolean): string {

@@ -41,6 +41,8 @@ export interface LocaleMessagePrecompileOptions {
   escapeHtml?: boolean
 }
 
+export { I18nOptions }
+
 export type NuxtI18nOptions<Context = unknown> = {
   experimental?: ExperimentalFeatures
   precompile?: LocaleMessagePrecompileOptions

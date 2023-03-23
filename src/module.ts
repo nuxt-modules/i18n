@@ -12,7 +12,8 @@ import {
   addImports,
   addServerHandler,
   useLogger,
-  addPrerenderRoutes // TODO: remove?
+  addPrerenderRoutes, // TODO: remove?
+  resolvePath
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { defu } from 'defu'
@@ -130,14 +131,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * resolve vue-i18n options
      */
 
-    // prettier-ignore
-    options.vueI18n = isObject(options.vueI18n)
-      ? options.vueI18n
-      : isString(options.vueI18n)
-        ? resolve(nuxt.options.rootDir, options.vueI18n)
-        : { legacy: false }
+    const configPath = await resolvePath(options.vueI18n?.configFile || 'i18n.config', {
+      cwd: nuxt.options.rootDir,
+      extensions: ['.ts', '.mjs', '.js']
+    })
+    const configPathExists = existsSync(configPath)
 
-    const configPath = await resolvePath(options.vueI18n?.configFile || 'vue-i18n.options', { cwd: nuxt.options.rootDir, extensions: ['.ts', '.mjs', '.js'] })
+    if (options.vueI18n?.configFile && !configPathExists) {
+      logger.warn(`Configuration file does not exist at ${configPath}. Skipping..`)
+    }
+
+    // prettier-ignore
+    const vueI18n = configPathExists ? configPath : { legacy: false }
 
     /**
      * extend messages via 3rd party nuxt modules
@@ -211,7 +216,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
             ssg: nuxt.options._generate,
             ssr: nuxt.options.ssr,
             dev: nuxt.options.dev
-          }
+          },
+          configPathExists ? configPath : false
         )
       }
     })
@@ -232,8 +238,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const isLegacyMode = () => {
       return isString(options.types)
         ? options.types === 'legacy'
-        : isObject(options.vueI18n) && isBoolean(options.vueI18n.legacy)
-          ? options.vueI18n.legacy
+        : isObject(vueI18n) && isBoolean(vueI18n.legacy)
+          ? vueI18n.legacy
           : false
     }
 
