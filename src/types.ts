@@ -3,10 +3,6 @@ import type { Locale, I18nOptions } from 'vue-i18n'
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
-export interface LazyOptions {
-  skipNuxtState?: boolean
-}
-
 export interface DetectBrowserLanguageOptions {
   alwaysRedirect?: boolean
   cookieCrossOrigin?: boolean
@@ -36,11 +32,22 @@ export type CustomRoutePages = {
       }
 }
 
+export interface ExperimentalFeatures {
+  jsTsFormatResource?: boolean
+}
+
+export interface LocaleMessagePrecompileOptions {
+  strictMessage?: boolean
+  escapeHtml?: boolean
+}
+
 export type NuxtI18nOptions<Context = unknown> = {
+  experimental?: ExperimentalFeatures
+  precompile?: LocaleMessagePrecompileOptions
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
-  lazy?: boolean | LazyOptions
+  lazy?: boolean
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
   /**

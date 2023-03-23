@@ -1,14 +1,17 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from '@nuxt/test-utils'
-import { getText, getData } from './helper'
+import { getText, getData } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`./fixtures/lazy`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
     i18n: {
+      experimental: {
+        jsTsFormatResource: true
+      },
       defaultLocale: 'en',
       langDir: 'lang',
       lazy: true,
@@ -22,7 +25,7 @@ await setup({
         {
           code: 'en-GB',
           iso: 'en-GB',
-          files: ['en.json', 'en-GB.json'],
+          files: ['en.json', 'en-GB.js', 'en-GB.ts'],
           name: 'English (UK)'
         },
         {
@@ -92,5 +95,6 @@ test('mutiple lazy loading', async () => {
   expect(await getText(page, 'title')).toEqual('Homepage')
   expect(await getText(page, '#link-about')).toEqual('About us')
 
-  expect(await getText(page, '#profile')).toEqual('Profile')
+  expect(await getText(page, '#profile-js')).toEqual('Profile1')
+  expect(await getText(page, '#profile-ts')).toEqual('Profile2')
 })
