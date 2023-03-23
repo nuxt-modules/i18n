@@ -33,6 +33,10 @@ export const DEFAULT_OPTIONS = {
   experimental: {
     jsTsFormatResource: false
   },
+  precompile: {
+    strictMessage: true,
+    escapeHtml: false
+  },
   vueI18n: undefined,
   locales: [] as string[],
   defaultLocale: '',

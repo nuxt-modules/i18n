@@ -58,7 +58,10 @@ export async function extendBundler(
     const webpack = await import('webpack').then(m => m.default || m)
 
     const webpackPluginOptions: PluginOptions = {
-      runtimeOnly: true
+      runtimeOnly: true,
+      allowDynamic: true,
+      strictMessage: nuxtOptions.precompile.strictMessage,
+      escapeHtml: nuxtOptions.precompile.escapeHtml
     }
     if (hasLocaleFiles && langPath) {
       webpackPluginOptions.include = [resolve(langPath, './**')]
@@ -90,7 +93,9 @@ export async function extendBundler(
 
   const vitePluginOptions: PluginOptions = {
     runtimeOnly: true,
-    allowDynamic: true
+    allowDynamic: true,
+    strictMessage: nuxtOptions.precompile.strictMessage,
+    escapeHtml: nuxtOptions.precompile.escapeHtml
   }
   if (hasLocaleFiles && langPath) {
     vitePluginOptions.include = [resolve(langPath, './**')]

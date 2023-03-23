@@ -1,9 +1,8 @@
-import { defineEventHandler, readBody, setResponseHeader } from 'h3'
+import { defineEventHandler, readBody, setResponseHeader, createError } from 'h3'
 import { generateJSON } from '@intlify/bundle-utils'
 import { prefixStorage } from 'unstorage'
 // @ts-ignore TODO: fix resolve
-import { useStorage } from '#imports'
-// import { NUXT_I18N_PRECOMPILED_LOCALE_KEY } from '#build/i18n.options.mjs'
+import { useStorage, useRuntimeConfig } from '#imports'
 
 import type { Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 
@@ -18,19 +17,28 @@ export default defineEventHandler(async event => {
     resource: LocaleMessages<DefineLocaleMessage>
   }>(event)
 
-  // TODO: `locale` and `resource` should be validated
   if (!locale) {
-    return ''
+    throw createError({ statusMessage: `require the 'locale'`, statusCode: 400 })
   }
   if (!resource) {
-    return ''
+    throw createError({ statusMessage: `require the 'resource'`, statusCode: 400 })
   }
 
   let localeCode = await localeStorage.getItem(resourceKey(locale))
   if (!localeCode) {
+    const errors = [] as string[]
+    const config = useRuntimeConfig()
     const { code } = generateJSON(JSON.stringify(resource), {
-      env: process.dev ? 'development' : 'production'
+      env: process.dev ? 'development' : 'production',
+      strictMessage: config.i18n.strictMessage,
+      escapeHtml: config.i18n.escapeHtml,
+      onError: error => {
+        errors.push(error)
+      }
     })
+    if (errors.length > 0) {
+      throw createError({ statusMessage: errors.join('|'), statusCode: 400 })
+    }
     await localeStorage.setItem(resourceKey(locale), code)
     localeCode = code
   }

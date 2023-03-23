@@ -497,7 +497,6 @@ export async function loadResource(
   loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
 ) {
   const loaded = await loader(context, locale)
-  // TODO: We should strictly check if this is really a safe way to get compiled resources.
   const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
     method: 'POST',
     body: {
@@ -505,6 +504,7 @@ export async function loadResource(
       resource: loaded
     }
   })) as string
+  // TODO: We should strictly check if this is really a safe way to get evaluated codes
   const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiledCode)
   return await import(/* @vite-ignore */ data).then(m => m.default || m)
 }

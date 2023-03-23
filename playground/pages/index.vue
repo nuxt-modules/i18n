@@ -71,6 +71,7 @@ definePageMeta({
       </span>
     </nav>
     <p>{{ $t('settings.profile') }}</p>
+    <p>{{ $t('tag') }}</p>
   </div>
 </template>
 

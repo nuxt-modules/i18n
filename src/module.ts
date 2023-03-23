@@ -97,6 +97,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
       // TODO: we should support more i18n module options. welcome PRs :-)
     })
 
+    nuxt.options.runtimeConfig.i18n = defu(nuxt.options.runtimeConfig.i18n, {
+      precompile: options.precompile
+    })
+
     /**
      * resolve lang directory
      */
@@ -383,6 +387,7 @@ type MaybePromise<T> = T | Promise<T>
 type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
 
 type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl' | 'experimental'>
+type ModulePrivateRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'precompile'>
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -397,6 +402,9 @@ declare module '@nuxt/schema' {
     runtimeConfig: {
       public?: {
         i18n?: ModulePublicRuntimeConfig
+      }
+      private?: {
+        i18n?: ModulePrivateRuntimeConfig
       }
     }
   }

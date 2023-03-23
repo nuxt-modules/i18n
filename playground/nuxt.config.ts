@@ -24,6 +24,10 @@ export default defineNuxtConfig({
     experimental: {
       jsTsFormatResource: true
     },
+    precompile: {
+      strictMessage: false,
+      escapeHtml: true
+    },
     langDir: 'locales',
     lazy: true,
     baseUrl: 'http://localhost:3000',

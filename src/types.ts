@@ -36,8 +36,14 @@ export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
 }
 
+export interface LocaleMessagePrecompileOptions {
+  strictMessage?: boolean
+  escapeHtml?: boolean
+}
+
 export type NuxtI18nOptions<Context = unknown> = {
   experimental?: ExperimentalFeatures
+  precompile?: LocaleMessagePrecompileOptions
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
