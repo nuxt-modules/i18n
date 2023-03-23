@@ -1,7 +1,6 @@
-import { test, expect } from 'vitest'
 import { parse } from '@babel/parser'
-import { generateLoaderOptions } from '../src/gen'
 import { DEFAULT_OPTIONS } from '../src/constants'
+import { generateLoaderOptions } from '../src/gen'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from '../src/types'
 import type { AdditionalMessages } from '../src/messages'

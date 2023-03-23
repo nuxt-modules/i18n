@@ -19,6 +19,7 @@ import {
   localeMessages,
   additionalMessages,
   NUXT_I18N_MODULE_ID,
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
   isSSG
 } from '#build/i18n.options.mjs'
 
@@ -105,15 +106,27 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>) {
   }
 }
 
-async function loadMessage(context: NuxtApp, loader: () => Promise<any>) {
+async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale: Locale) {
+  const i18nConfig = context.$config.public?.i18n
+
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
+    __DEBUG__ && console.log('loadMessage: (locale) -', locale)
     const getter = await loader().then(r => r.default || r)
-    // TODO: support for js, cjs, mjs
     if (isFunction(getter)) {
-      console.error(formatMessage('Not support executable file (e.g. js, cjs, mjs)'))
+      if (i18nConfig.experimental?.jsTsFormatResource) {
+        message = await getter(context, locale).then((r: any) => r.default || r)
+        __DEBUG__ && console.log('loadMessage: dynamic load', message)
+      } else {
+        console.warn(
+          formatMessage(
+            'Not support js / ts extension format as default. you can do enable with `i18n.experimental.jsTsFormatResource: true` (experimental)'
+          )
+        )
+      }
     } else {
       message = getter
+      __DEBUG__ && console.log('loadMessage: load', message)
     }
   } catch (e: any) {
     // eslint-disable-next-line no-console
@@ -139,7 +152,7 @@ export async function loadLocale(
         if (loadedMessages.has(key)) {
           message = loadedMessages.get(key)
         } else {
-          message = await loadMessage(context, load)
+          message = await loadMessage(context, load, locale)
           if (message != null) {
             loadedMessages.set(key, message)
           }
@@ -155,7 +168,7 @@ export async function loadLocale(
           if (loadedMessages.has(key)) {
             message = loadedMessages.get(key)
           } else {
-            message = await loadMessage(context, load)
+            message = await loadMessage(context, load, locale)
             if (message != null) {
               loadedMessages.set(key, message)
             }
@@ -183,7 +196,7 @@ export async function loadAdditionalLocale(
   if (process.server || process.dev || !loadedAdditionalLocales.includes(locale)) {
     const additionalLoaders = additionalMessages[locale] || []
     for (const additionalLoader of additionalLoaders) {
-      const message = await loadMessage(context, additionalLoader)
+      const message = await loadMessage(context, additionalLoader, locale)
       if (message != null) {
         merger(locale, message)
         loadedAdditionalLocales.push(locale)
@@ -232,7 +245,6 @@ export function getLocaleCookie(
     } else if (process.server) {
       const cookie = useRequestHeaders(['cookie'])
       if ('cookie' in cookie) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
         localeCode = parsedCookie[cookieKey]
         __DEBUG__ && console.log('getLocaleCookie cookie', parsedCookie[cookieKey])
@@ -476,6 +488,24 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   }
 
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+}
+
+export async function loadResource(
+  context: NuxtApp,
+  locale: Locale,
+  loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
+) {
+  const loaded = await loader(context, locale)
+  const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+    method: 'POST',
+    body: {
+      locale,
+      resource: loaded
+    }
+  })) as string
+  // TODO: We should strictly check if this is really a safe way to get evaluated codes
+  const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiledCode)
+  return await import(/* @vite-ignore */ data).then(m => m.default || m)
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

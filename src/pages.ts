@@ -8,6 +8,7 @@ import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
 import { formatMessage, getRoutePath, parseSegment } from './utils'
 import { resolve, parse as parsePath } from 'pathe'
+import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { RouteOptionsResolver, ComputedRouteOptions, LocalizeRoutesPrefixableOptions } from 'vue-i18n-routing'
@@ -246,7 +247,7 @@ function readComponent(target: string) {
     const content = fs.readFileSync(target, 'utf8').toString()
     const { descriptor } = parseSFC(content)
 
-    if (!content.includes('defineI18nRoute')) {
+    if (!content.includes(NUXT_I18N_COMPOSABLE_DEFINE_ROUTE)) {
       return options
     }
 
@@ -265,7 +266,7 @@ function readComponent(target: string) {
             if (
               node.type === 'CallExpression' &&
               node.callee.type === 'Identifier' &&
-              node.callee.name === 'defineI18nRoute'
+              node.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_ROUTE
             ) {
               const arg = node.arguments[0]
               if (arg.type === 'ObjectExpression') {
