@@ -71,6 +71,9 @@ export default defineNuxtConfig({
     dynamicRouteParams: true,
     // customRoutes: 'config',
     pages: {
+      history: {
+        ja: '/history-ja'
+      },
       about: {
         ja: '/about-ja'
       }

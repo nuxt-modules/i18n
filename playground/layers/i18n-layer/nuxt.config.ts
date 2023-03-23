@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       history: {
         en: '/history',
         fr: '/history-fr',
-        ja: '/history-ja'
+        nl: '/geschiedenis'
       }
     },
     locales: [
