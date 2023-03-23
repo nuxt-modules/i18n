@@ -1,14 +1,6 @@
 import { parse } from '@babel/parser'
 import { DEFAULT_OPTIONS } from '../src/constants'
 import { generateLoaderOptions } from '../src/gen'
-// TODO: fix, module mocking is not working ...
-// vi.mock('../src/gen', async () => {
-//   const actual = await vi.importActual<typeof import('../src/gen')>('../src/gen')
-//   return {
-//     ...actual,
-//     readCode: vi.fn()
-//   }
-// })
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions } from '../src/types'
 import type { AdditionalMessages } from '../src/messages'
@@ -242,36 +234,4 @@ test('toCode: function (named)', () => {
   })
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
-})
-
-describe.todo('js/ts resources', () => {
-  test('static', () => {
-    const code = generateLoaderOptions(
-      true,
-      'locales',
-      '..',
-      {
-        localeCodes: LOCALE_CODES,
-        localeInfo: [
-          {
-            code: 'en',
-            file: 'en.js',
-            path: '/path/to/en.js'
-          }
-          // {
-          //   code: 'ja',
-          //   file: 'ja.ts',
-          //   path: '/path/to/ja.ts'
-          // }
-        ],
-        additionalMessages: {},
-        nuxtI18nOptions: NUXT_I18N_OPTIONS,
-        nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-      },
-      { ssg: false, ssr: true, dev: true }
-    )
-    console.log('done !')
-    expect(validateSyntax(code)).toBe(true)
-    expect(code).toMatchSnapshot()
-  })
 })
