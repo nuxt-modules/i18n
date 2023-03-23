@@ -23,8 +23,8 @@ describe('nuxt layers', async () => {
      */
 
     // click `fr` lang switch link (`setLocale`)
-    // await page.locator('#lang-switcher-with-set-locale a').click()
-    // await page.waitForTimeout(100)
-    // expect(await getText(page, '#vue-i18n-usage p')).toEqual('Bonjour le monde!')
+    await page.locator('.switch-to-fr a').click()
+    await page.waitForTimeout(100)
+    expect(await getText(page, '#vue-i18n-usage p')).toEqual('Bonjour le monde!')
   })
 })

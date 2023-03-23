@@ -138,3 +138,12 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
 
   return mergedLocales
 }
+
+export const getLayerLangPaths = (nuxt: Nuxt) => {
+  return (
+    nuxt.options._layers
+      .filter(layer => layer.config.i18n?.langDir != null)
+      // @ts-ignore
+      .map(layer => pathe.resolve(layer.config.rootDir, layer.config.i18n.langDir)) as string[]
+  )
+}
