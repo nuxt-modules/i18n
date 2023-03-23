@@ -20,7 +20,6 @@ import {
   additionalMessages,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
   isSSG
 } from '#build/i18n.options.mjs'
 
