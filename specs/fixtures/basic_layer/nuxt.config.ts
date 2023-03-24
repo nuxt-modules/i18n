@@ -2,7 +2,7 @@ import pathe from 'pathe'
 import { resolveFiles } from '@nuxt/kit'
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  extends: ['./layer'],
+  //   extends: ['./layer'],
   modules: [
     '@nuxtjs/i18n'
     // async (_, nuxt) => {
