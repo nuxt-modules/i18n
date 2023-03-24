@@ -52,45 +52,6 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
   }
 }
 
-// Merge locales when `lazy: false`
-export const mergeSimpleLocales = (nuxt: Nuxt) => {
-  const projectLayer = nuxt.options._layers[0]
-  const projectI18n = projectLayer.config.i18n
-
-  if (projectI18n == null) return []
-  if (projectI18n.locales == null) return []
-
-  const localeType = typeof projectI18n.locales.at(0)
-
-  const mergedLocales: string[] | LocaleObject[] = []
-  const isStringLocales = (val: unknown): val is string[] => localeType === 'string'
-
-  for (const layer of nuxt.options._layers) {
-    if (layer.config.i18n?.locales == null) continue
-
-    for (const locale of layer.config.i18n.locales) {
-      if (isStringLocales(mergedLocales)) {
-        if (typeof locale !== 'string') continue
-        if (mergedLocales.includes(locale)) continue
-
-        mergedLocales.push(locale)
-        continue
-      }
-
-      if (typeof locale === 'string') continue
-      const localeEntry = mergedLocales.find(x => x.code === locale.code)
-
-      if (localeEntry == null) {
-        mergedLocales.push(locale)
-      } else {
-        Object.assign(localeEntry, locale, localeEntry)
-      }
-    }
-  }
-
-  return mergedLocales
-}
-
 export const mergeLayerLocales = (nuxt: Nuxt) => {
   const projectLayer = nuxt.options._layers[0]
   const projectI18n = projectLayer.config.i18n
@@ -100,45 +61,89 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     return []
   }
 
-  if (!projectI18n.lazy) {
-    return mergeSimpleLocales(nuxt)
-  }
+  /**
+   * Merge locales when `lazy: false`
+   */
+  const mergeSimpleLocales = () => {
+    if (projectI18n.locales == null) return []
 
-  if (projectI18n.langDir == null) {
-    debug('project layer `i18n.langDir` is required')
-    return []
-  }
+    const firstI18nLayer = nuxt.options._layers.find(x => x.config.i18n?.locales && x.config.i18n?.locales?.length > 0)
+    if (firstI18nLayer == null) return []
 
-  const mergedLocales: LocaleObject[] = []
-  const projectLangDir = getProjectPath(nuxt, projectI18n.langDir)
-  debug('project path', getProjectPath(nuxt))
-  for (const layer of nuxt.options._layers) {
-    if (layer.config.i18n?.locales == null) continue
-    if (layer.config.i18n?.langDir == null) continue
+    const localeType = typeof firstI18nLayer.config.i18n?.locales?.at(0)
+    const isStringLocales = (val: unknown): val is string[] => localeType === 'string'
 
-    const layerLangDir = pathe.resolve(layer.config.rootDir, layer.config.i18n.langDir)
-    debug('layer langDir -', layerLangDir)
-    for (const locale of layer.config.i18n.locales) {
-      if (typeof locale === 'string') continue
+    const mergedLocales: string[] | LocaleObject[] = []
+    for (const layer of nuxt.options._layers) {
+      if (layer.config.i18n?.locales == null) continue
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { file, files, ...entry } = locale
-      const localeEntry = mergedLocales.find(x => x.code === locale.code)
+      for (const locale of layer.config.i18n.locales) {
+        if (isStringLocales(mergedLocales)) {
+          if (typeof locale !== 'string') continue
+          if (mergedLocales.includes(locale)) continue
 
-      const fileEntries = getLocaleFiles(locale)
-      const relativeFiles = localeFilesToRelative(projectLangDir, layerLangDir, fileEntries)
+          mergedLocales.push(locale)
+          continue
+        }
 
-      if (localeEntry == null) {
-        mergedLocales.push({ ...entry, files: relativeFiles })
-      } else {
-        localeEntry.files = [...relativeFiles, ...(localeEntry?.files ?? [])]
+        if (typeof locale === 'string') continue
+        const localeEntry = mergedLocales.find(x => x.code === locale.code)
+
+        if (localeEntry == null) {
+          mergedLocales.push(locale)
+        } else {
+          Object.assign(localeEntry, locale, localeEntry)
+        }
       }
     }
+
+    return mergedLocales
   }
 
-  return mergedLocales
+  const mergeLazyLocales = () => {
+    if (projectI18n.langDir == null) {
+      debug('project layer `i18n.langDir` is required')
+      return []
+    }
+
+    const projectLangDir = getProjectPath(nuxt, projectI18n.langDir)
+    debug('project path', getProjectPath(nuxt))
+
+    const mergedLocales: LocaleObject[] = []
+    for (const layer of nuxt.options._layers) {
+      if (layer.config.i18n?.locales == null) continue
+      if (layer.config.i18n?.langDir == null) continue
+
+      const layerLangDir = pathe.resolve(layer.config.rootDir, layer.config.i18n.langDir)
+      debug('layer langDir -', layerLangDir)
+
+      for (const locale of layer.config.i18n.locales) {
+        if (typeof locale === 'string') continue
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { file, files, ...entry } = locale
+        const localeEntry = mergedLocales.find(x => x.code === locale.code)
+
+        const fileEntries = getLocaleFiles(locale)
+        const relativeFiles = localeFilesToRelative(projectLangDir, layerLangDir, fileEntries)
+
+        if (localeEntry == null) {
+          mergedLocales.push({ ...entry, files: relativeFiles })
+        } else {
+          localeEntry.files = [...relativeFiles, ...(localeEntry?.files ?? [])]
+        }
+      }
+    }
+
+    return mergedLocales
+  }
+
+  return projectI18n.lazy ? mergeLazyLocales() : mergeSimpleLocales()
 }
 
+/**
+ * Returns an array of absolute paths to each layers `langDir`
+ */
 export const getLayerLangPaths = (nuxt: Nuxt) => {
   return (
     nuxt.options._layers
