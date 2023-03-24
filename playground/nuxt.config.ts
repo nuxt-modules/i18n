@@ -3,8 +3,8 @@ import type { NuxtApp } from 'nuxt/dist/app/index'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  extends: ['layers/i18n-layer'],
   modules: [Module1, '@nuxtjs/i18n', '@nuxt/devtools'],
-
   vite: {
     build: {
       minify: false
@@ -71,6 +71,9 @@ export default defineNuxtConfig({
     dynamicRouteParams: true,
     // customRoutes: 'config',
     pages: {
+      history: {
+        ja: '/history-ja'
+      },
       about: {
         ja: '/about-ja'
       }
