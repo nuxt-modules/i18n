@@ -1,7 +1,7 @@
-// import { defineI18nConfig, type I18nOptions } from '@nuxtjs/i18n'
+import type { I18nOptions } from 'vue-i18n'
 
-// export default <I18nOptions>{
-export default defineI18nConfig({
+// /** @type {import('@nuxtjs/i18n').I18nOptions} */
+const config: I18nOptions = {
   legacy: false,
   locale: 'en',
   fallbackLocale: 'fr'
@@ -15,4 +15,6 @@ export default defineI18nConfig({
   //   ja: ['en', 'fr', 'ja-JP'],
   //   fr: ['en', 'ja', 'fr-FR']
   // }
-})
+}
+
+export default config

@@ -136,7 +136,7 @@ export function generateLoaderOptions(
   genCode += `${Object.entries(options).map(([rootKey, rootValue]) => {
     if (rootKey === 'nuxtI18nOptions') {
       let genCodes = `export const resolveNuxtI18nOptions = async (context) => {\n`
-      genCodes += `  const ${rootKey} = ${JSON.stringify(rootValue)}\n`
+      genCodes += `  const ${rootKey} = ${JSON.stringify(rootValue || {})}\n`
       if (vueI18nPath) {
         genCodes += `${rootKey}.vueI18n = vueI18nOptions\n`
       }

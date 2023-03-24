@@ -34,14 +34,7 @@ const ADDITIONAL_MESSAGES = {
   ]
 } as AdditionalMessages
 const NUXT_I18N_OPTIONS = {
-  defaultLocale: 'en',
-  vueI18n: {
-    locale: 'en',
-    fallbackLocale: 'fr',
-    messages: {
-      en: { hello: 'Hello!' }
-    }
-  }
+  defaultLocale: 'en'
 } as NuxtI18nOptions
 
 const NUXT_I18N_INTERNAL_OPTIONS = {
@@ -180,7 +173,7 @@ test('vueI18n: path', () => {
       localeInfo: LOCALE_INFO,
       additionalMessages: ADDITIONAL_MESSAGES,
       nuxtI18nOptions: {
-        vueI18n: '~/plugins/vue-i18n.js'
+        vueI18n: { configFile: '~/plugins/vue-i18n.js' }
       },
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },

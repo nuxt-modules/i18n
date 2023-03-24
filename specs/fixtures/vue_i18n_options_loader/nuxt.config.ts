@@ -26,6 +26,9 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
-    detectBrowserLanguage: false
+    detectBrowserLanguage: false,
+    vueI18n: {
+      configFile: './vue-i18n.messages.options.ts'
+    }
   }
 })

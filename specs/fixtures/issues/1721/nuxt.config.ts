@@ -23,22 +23,6 @@ export default defineNuxtConfig({
         code: 'es',
         name: 'ES'
       }
-    ],
-    vueI18n: {
-      legacy: false,
-      locale: 'en',
-      fallbackLocale: ['en'],
-      messages: {
-        en: {
-          welcome: 'Welcome'
-        },
-        fr: {
-          welcome: 'Bienvenue'
-        },
-        es: {
-          welcome: 'Bienvenido'
-        }
-      }
-    }
+    ]
   }
 })

@@ -15,12 +15,7 @@ export const localeMessages = {
 export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  const nuxtI18nOptions = {\\"defaultLocale\\":\\"en\\"}
   return nuxtI18nOptions
 }
 
@@ -47,12 +42,7 @@ export const localeMessages = {
 export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  const nuxtI18nOptions = {\\"defaultLocale\\":\\"en\\"}
   return nuxtI18nOptions
 }
 
@@ -77,12 +67,7 @@ export const localeMessages = {
 export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  const nuxtI18nOptions = {\\"defaultLocale\\":\\"en\\"}
   return nuxtI18nOptions
 }
 
@@ -109,12 +94,7 @@ export const localeMessages = {
 export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
+  const nuxtI18nOptions = {\\"defaultLocale\\":\\"en\\"}
   return nuxtI18nOptions
 }
 
@@ -133,19 +113,7 @@ exports[`toCode: function (arrow) 1`] = `
 export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })})]
+  const nuxtI18nOptions = {\\"defaultLocale\\":\\"en\\",\\"locales\\":[{\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\"},{\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\"},{\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\"}]}
   return nuxtI18nOptions
 }
 
@@ -166,19 +134,7 @@ exports[`toCode: function (named) 1`] = `
 export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })})]
+  const nuxtI18nOptions = {\\"defaultLocale\\":\\"en\\",\\"locales\\":[{\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\"},{\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\"},{\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\"}]}
   return nuxtI18nOptions
 }
 
@@ -220,10 +176,7 @@ export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
 }),],})
 
 export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  const vueI18nOptionsLoader = async (context) => import(\\"~/plugins/vue-i18n.js\\").then(r => (r.default || r)(context))
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  if (nuxtI18nOptions.vueI18n.messages) { console.warn(\\"[@nuxtjs/i18n]: Cannot include 'messages' option in 'vue-i18n.js'. Please use Lazy-load translations.\\"); nuxtI18nOptions.vueI18n.messages = {}; }
+  const nuxtI18nOptions = {\\"vueI18n\\":{\\"configFile\\":\\"~/plugins/vue-i18n.js\\"}}
   return nuxtI18nOptions
 }
 

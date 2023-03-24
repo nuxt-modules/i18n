@@ -148,7 +148,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend messages via 3rd party nuxt modules
      */
 
-    const additionalMessages = await extendMessages(nuxt, localeCodes, options)
+    const additionalMessages = await extendMessages(nuxt, localeCodes)
 
     /**
      * setup nuxt/pages

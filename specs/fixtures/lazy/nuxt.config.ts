@@ -22,11 +22,6 @@ export default defineNuxtConfig({
     ],
     */
     defaultLocale: 'fr',
-    detectBrowserLanguage: false,
-    vueI18n: {
-      legacy: false,
-      messages: {},
-      fallbackLocale: 'en'
-    }
+    detectBrowserLanguage: false
   }
 })
