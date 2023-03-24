@@ -31,6 +31,7 @@ import {
 } from './constants'
 import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
+import { applyLayerOptions } from './layers'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -78,6 +79,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (!isNuxt3(nuxt)) {
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
+
+    applyLayerOptions(options, nuxt)
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       console.warn(
