@@ -129,7 +129,7 @@ importers:
       '@nuxtjs/i18n': link:..
       nuxt: ^3.1.0
     devDependencies:
-      '@nuxt/devtools': /@nuxt/devtools-edge/0.2.5-27991385.f13be91_nuxt@3.1.2
+      '@nuxt/devtools': /@nuxt/devtools-edge/0.2.5-27994283.f736291_nuxt@3.1.2
       '@nuxtjs/i18n': link:..
       nuxt: 3.1.2
 
@@ -141,7 +141,7 @@ importers:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.1.2
 
-  specs/fixtures/basic_usage:
+  specs/fixtures/basic_layer:
     specifiers:
       '@nuxtjs/i18n': link:../../..
       nuxt: ^3.1.0
@@ -149,7 +149,7 @@ importers:
       '@nuxtjs/i18n': link:../../..
       nuxt: 3.1.2
 
-  specs/fixtures/basic_usage_layers:
+  specs/fixtures/basic_usage:
     specifiers:
       '@nuxtjs/i18n': link:../../..
       nuxt: ^3.1.0
@@ -2175,14 +2175,14 @@ packages:
     resolution: {integrity: sha512-YBI/6o2EBz02tdEJRBK8xkt3zvOFOWlLBf7WKYGBsSYSRtjjgrqPe2skp6VLLmKx5WbHHDNcW+6oACaurxGzeA==}
     dev: true
 
-  /@nuxt/devtools-edge/0.2.5-27991385.f13be91_nuxt@3.1.2:
-    resolution: {integrity: sha512-+BJYCiKq8EK0oF4PoRzpudQQd6UkNyKnIcvLXKmU2Wf4HntAQrfkeoR3DwAGnQu8acwk/UX9K0YwoatvbH7irw==}
+  /@nuxt/devtools-edge/0.2.5-27994283.f736291_nuxt@3.1.2:
+    resolution: {integrity: sha512-MxHAwtKKvUpUR7pUURRbNiT1QqGOSkD6HIyU+Rs8/tbNyD+Fb15rvpfh/HdR2aQmG/3wDFqBiXIrIckacFcVpg==}
     hasBin: true
     peerDependencies:
       nuxt: ^3.3.1
       vite: '*'
     dependencies:
-      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge/0.2.5-27991385.f13be91_nuxt@3.1.2
+      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge/0.2.5-27994283.f736291_nuxt@3.1.2
       '@nuxt/kit': 3.3.1
       birpc: 0.2.10
       consola: 2.15.3
@@ -2208,8 +2208,8 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/devtools-kit-edge/0.2.5-27991385.f13be91_nuxt@3.1.2:
-    resolution: {integrity: sha512-vkvi226v1um9ZpNGWjNJ55PP3le6TPZbsdIZvpTQaT57ua0RbNqoUPxKj0MhObtPJAud6F1SVo6s4JVMNjVemg==}
+  /@nuxt/devtools-kit-edge/0.2.5-27994283.f736291_nuxt@3.1.2:
+    resolution: {integrity: sha512-9mRimi9Qcx7hQ4Zff2lYJVWRzRLNhv+Xl/5YeH8KYbVxWcy3Qud2hC3GTmEQrXBIGlMenaDXAUU5FRx3dVtlCQ==}
     peerDependencies:
       nuxt: ^3.3.1
       vite: '*'
@@ -2394,7 +2394,7 @@ packages:
       c12: 1.1.2
       create-require: 1.1.1
       defu: 6.1.2
-      hookable: 5.4.2
+      hookable: 5.5.1
       jiti: 1.18.2
       pathe: 1.1.0
       pkg-types: 1.0.2
@@ -2508,7 +2508,7 @@ packages:
       h3: 1.5.0
       knitwork: 1.0.0
       magic-string: 0.27.0
-      mlly: 1.2.0
+      mlly: 1.1.1
       ohash: 1.0.0
       pathe: 1.1.0
       perfect-debounce: 0.1.3
@@ -2620,7 +2620,7 @@ packages:
   /@nuxtjs/color-mode/3.2.0:
     resolution: {integrity: sha512-isDR01yfadopiHQ/VEVUpyNSPrk5PCjUHS4t1qYRZwuRGefU4s9Iaxf6H9nmr1QFzoMgTm+3T0r/54jLwtpZbA==}
     dependencies:
-      '@nuxt/kit': 3.2.3
+      '@nuxt/kit': 3.3.1
       lodash.template: 4.5.0
       pathe: 1.1.0
     transitivePeerDependencies:
@@ -3191,7 +3191,7 @@ packages:
       bindings: 1.5.0
       estree-walker: 2.0.2
       glob: 7.2.3
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
       micromatch: 4.0.5
       node-gyp-build: 4.5.0
       resolve-from: 5.0.0
@@ -3338,7 +3338,7 @@ packages:
       '@babel/plugin-syntax-jsx': 7.18.6_@babel+core@7.21.3
       '@babel/template': 7.20.7
       '@babel/traverse': 7.20.13
-      '@babel/types': 7.20.7
+      '@babel/types': 7.21.3
       '@vue/babel-helper-vue-transform-on': 1.0.2
       camelcase: 6.3.0
       html-tags: 3.2.0
@@ -3637,7 +3637,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       glob: 7.2.3
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
       lazystream: 1.0.1
       lodash.defaults: 4.2.0
       lodash.difference: 4.5.0
@@ -3948,7 +3948,7 @@ packages:
       glob: 8.1.0
       infer-owner: 1.0.4
       lru-cache: 7.18.3
-      minipass: 3.3.4
+      minipass: 3.3.6
       minipass-collect: 1.0.2
       minipass-flush: 1.0.5
       minipass-pipeline: 1.2.4
@@ -3971,7 +3971,7 @@ packages:
       fs-minipass: 3.0.1
       glob: 8.1.0
       lru-cache: 7.18.3
-      minipass: 4.2.0
+      minipass: 4.2.5
       minipass-collect: 1.0.2
       minipass-flush: 1.0.5
       minipass-pipeline: 1.2.4
@@ -4106,7 +4106,7 @@ packages:
     resolution: {integrity: sha512-p1dJO1Z995odIxdypzAykHIaUu+XnEvwYPSTyKJsbpL82o99sxN1G24tbecoMxTsV4PI+ZId82GJXRL2hhOeJA==}
     hasBin: true
     dependencies:
-      c12: 1.1.2
+      c12: 1.2.0
       consola: 2.15.3
       convert-gitmoji: 0.1.3
       execa: 6.1.0
@@ -4816,7 +4816,7 @@ packages:
     resolution: {integrity: sha512-Nv9m36S/vxpsI+Hc4/ZGRs0n9mXqSWGGq49zxb/cJfPAQMbUtttJAlNPS4AQzaBdw/pKskw5bMbekT/Y7W/Wlg==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
       memory-fs: 0.5.0
       tapable: 1.1.3
 
@@ -4824,7 +4824,7 @@ packages:
     resolution: {integrity: sha512-T0yTFjdpldGY8PmuXXR0PyQ1ufZpEGiHVrp7zHKB7jdR4qlmZHhONVM5AQOAWXuF/w3dnHbEQVrNptJgt7F+cQ==}
     engines: {node: '>=10.13.0'}
     dependencies:
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
       tapable: 2.2.1
     dev: true
 
@@ -5500,7 +5500,7 @@ packages:
     resolution: {integrity: sha512-MhaJDcFRTuLidHrIttu0RDGyyXs/IYHVmlcxfLAEFIWjc1vdLAkdwT7Ace2u7DbitWC0toKMl5eJZRYNVreIMw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      minipass: 4.2.0
+      minipass: 4.2.5
     dev: true
 
   /fs.realpath/1.0.0:
@@ -5754,10 +5754,10 @@ packages:
 
   /graceful-fs/4.2.10:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
+    dev: true
 
   /graceful-fs/4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
-    dev: true
 
   /grapheme-splitter/1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
@@ -6603,7 +6603,7 @@ packages:
     dependencies:
       universalify: 2.0.0
     optionalDependencies:
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
     dev: true
 
   /jsonparse/1.3.1:
@@ -6783,7 +6783,7 @@ packages:
     resolution: {integrity: sha512-Kx8hMakjX03tiGTLAIdJ+lL0htKnXjEZN6hk/tozf/WOuYGdZBJrZ+rCJRbVCugsjB3jMLn9746NsQIf5VjBMw==}
     engines: {node: '>=4'}
     dependencies:
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
       parse-json: 4.0.0
       pify: 3.0.0
       strip-bom: 3.0.0
@@ -6963,7 +6963,7 @@ packages:
       https-proxy-agent: 5.0.1
       is-lambda: 1.0.1
       lru-cache: 7.18.3
-      minipass: 3.3.4
+      minipass: 3.3.6
       minipass-collect: 1.0.2
       minipass-fetch: 2.1.2
       minipass-flush: 1.0.5
@@ -6988,7 +6988,7 @@ packages:
       https-proxy-agent: 5.0.1
       is-lambda: 1.0.1
       lru-cache: 7.18.3
-      minipass: 4.2.0
+      minipass: 4.2.5
       minipass-fetch: 3.0.1
       minipass-flush: 1.0.5
       minipass-pipeline: 1.2.4
@@ -7506,14 +7506,14 @@ packages:
     resolution: {integrity: sha512-6T6lH0H8OG9kITm/Jm6tdooIbogG9e0tLgpY6mphXSm/A9u8Nq1ryBG+Qspiub9LjWlBPsPS3tWQ/Botq4FdxA==}
     engines: {node: '>= 8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /minipass-fetch/2.1.2:
     resolution: {integrity: sha512-LT49Zi2/WMROHYoqGgdlQIZh8mLPZmOrN2NdJjMXxYe4nkN6FUyuPuOAOedNJDrx0IRGg9+4guZewtp8hE6TxA==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
       minipass-sized: 1.0.3
       minizlib: 2.1.2
     optionalDependencies:
@@ -7524,7 +7524,7 @@ packages:
     resolution: {integrity: sha512-t9/wowtf7DYkwz8cfMSt0rMwiyNIBXf5CKZ3S5ZMqRqMYT0oLTp0x1WorMI9WTwvaPg21r1JbFxJMum8JrLGfw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      minipass: 4.2.0
+      minipass: 4.2.5
       minipass-sized: 1.0.3
       minizlib: 2.1.2
     optionalDependencies:
@@ -7535,28 +7535,28 @@ packages:
     resolution: {integrity: sha512-JmQSYYpPUqX5Jyn1mXaRwOda1uQ8HP5KAT/oDSLCzt1BYRhQU0/hDtsB1ufZfEEzMZ9aAVmsBw8+FWsIXlClWw==}
     engines: {node: '>= 8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /minipass-json-stream/1.0.1:
     resolution: {integrity: sha512-ODqY18UZt/I8k+b7rl2AENgbWE8IDYam+undIJONvigAz8KR5GWblsFTEfQs0WODsjbSXWlm+JHEv8Gr6Tfdbg==}
     dependencies:
       jsonparse: 1.3.1
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /minipass-pipeline/1.2.4:
     resolution: {integrity: sha512-xuIq7cIOt09RPRJ19gdi4b+RiNvDFYe5JH+ggNvBqGqpQXcru3PcRmOZuHBKWK1Txf9+cQ+HMVN4d6z46LZP7A==}
     engines: {node: '>=8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /minipass-sized/1.0.3:
     resolution: {integrity: sha512-MbkQQ2CTiBMlA2Dm/5cY+9SWFEN8pzzOXi6rlM5Xxq0Yqbda5ZQy9sU75a673FE9ZK0Zsbr6Y5iP6u9nktfg2g==}
     engines: {node: '>=8'}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /minipass/2.9.0:
@@ -7566,23 +7566,11 @@ packages:
       yallist: 3.1.1
     dev: true
 
-  /minipass/3.3.4:
-    resolution: {integrity: sha512-I9WPbWHCGu8W+6k1ZiGpPu0GkoKBeorkfKNuAFBNS1HNFJvke82sxvI5bzcCNpWPorkOO5QQ+zomzzwRxejXiw==}
-    engines: {node: '>=8'}
-    dependencies:
-      yallist: 4.0.0
-    dev: true
-
   /minipass/3.3.6:
     resolution: {integrity: sha512-DxiNidxSEK+tHG6zOIklvNOwm3hvCrbUrdtzY74U6HKTJxvIDfOUL5W5P2Ghd3DTkhhKPYGqeNUIh5qcM4YBfw==}
     engines: {node: '>=8'}
     dependencies:
       yallist: 4.0.0
-
-  /minipass/4.2.0:
-    resolution: {integrity: sha512-ExlilAIS7zJ2EWUMaVXi14H+FnZ18kr17kFkGemMqBx6jW0m8P6XfqwYVPEG53ENlgsED+alVP9ZxC3JzkK23Q==}
-    engines: {node: '>=8'}
-    dev: true
 
   /minipass/4.2.5:
     resolution: {integrity: sha512-+yQl7SX3bIT83Lhb4BVorMAHVuqsskxRdlmO9kTpyukp8vsm2Sn/fUOV9xlnG8/a5JsypJzap21lz/y3FBMJ8Q==}
@@ -7836,12 +7824,12 @@ packages:
       hookable: 5.4.2
       http-proxy: 1.18.1_debug@4.3.4
       is-primitive: 3.0.1
-      jiti: 1.18.2
+      jiti: 1.17.1
       klona: 2.0.6
       knitwork: 1.0.0
       listhen: 1.0.3
       mime: 3.0.0
-      mlly: 1.2.0
+      mlly: 1.1.1
       mri: 1.2.0
       node-fetch-native: 1.0.2
       ofetch: 1.0.1
@@ -7862,15 +7850,8 @@ packages:
       ufo: 1.1.1
       unenv: 1.0.3
       unimport: 2.2.4_rollup@3.18.0
-      unstorage: 1.4.1
+      unstorage: 1.4.0
     transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@planetscale/database'
       - debug
       - encoding
       - supports-color
@@ -7943,7 +7924,7 @@ packages:
     dependencies:
       env-paths: 2.2.1
       glob: 7.2.3
-      graceful-fs: 4.2.10
+      graceful-fs: 4.2.11
       make-fetch-happen: 10.2.1
       nopt: 6.0.0
       npmlog: 6.0.2
@@ -8064,7 +8045,7 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
       make-fetch-happen: 11.0.3
-      minipass: 4.2.0
+      minipass: 4.2.5
       minipass-fetch: 3.0.1
       minipass-json-stream: 1.0.1
       minizlib: 2.1.2
@@ -8147,7 +8128,7 @@ packages:
   /nuxt-component-meta/0.4.3:
     resolution: {integrity: sha512-40wsnbCh2neNdKVrwSiqV/ea7QshYjp3kpfk8JZaxSW/XcgNg2tzka4L+M8caOvQalyAKi6AaENPLaTYOZDbQg==}
     dependencies:
-      '@nuxt/kit': 3.2.3
+      '@nuxt/kit': 3.3.1
       scule: 1.0.0
       typescript: 4.9.5
       vue-component-meta: 1.0.24_typescript@4.9.5
@@ -8159,7 +8140,7 @@ packages:
   /nuxt-config-schema/0.4.5:
     resolution: {integrity: sha512-Y5anu5puDfMJfDP7IYjXsn6Dvj262HtjZqa73jCBbFRCc5jnjrs+BEpJJmtPG32ZsqzO2+RL4oTNb3H6IfKZLQ==}
     dependencies:
-      '@nuxt/kit': 3.2.3
+      '@nuxt/kit': 3.3.1
       changelogen: 0.4.1
       defu: 6.1.2
       jiti: 1.17.1
@@ -8174,7 +8155,7 @@ packages:
     resolution: {integrity: sha512-066pfova2nE9GZDvHE9oMkqJCwsnJvOZKU2FOSzRpjfXupH3UPtP9Zw8+C2wvZ82Nel6fuRoIUNQh5Sx8ZeQrQ==}
     dependencies:
       '@iconify/vue': 4.1.0
-      '@nuxt/kit': 3.2.3
+      '@nuxt/kit': 3.3.1
       nuxt-config-schema: 0.4.5
     transitivePeerDependencies:
       - rollup
@@ -8279,10 +8260,10 @@ packages:
       h3: 1.1.0
       hash-sum: 2.0.0
       hookable: 5.4.2
-      jiti: 1.18.2
+      jiti: 1.16.2
       knitwork: 1.0.0
       magic-string: 0.27.0
-      mlly: 1.2.0
+      mlly: 1.1.0
       nitropack: 2.1.1_debug@4.3.4
       nuxi: 3.1.2
       ofetch: 1.0.0
@@ -8304,13 +8285,6 @@ packages:
       vue-devtools-stub: 0.1.0
       vue-router: 4.1.6_vue@3.2.47
     transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@planetscale/database'
       - '@types/node'
       - debug
       - encoding
@@ -8521,7 +8495,7 @@ packages:
       '@npmcli/run-script': 6.0.0
       cacache: 17.0.4
       fs-minipass: 3.0.1
-      minipass: 4.2.0
+      minipass: 4.2.5
       npm-package-arg: 10.1.0
       npm-packlist: 7.0.4
       npm-pick-manifest: 8.0.1
@@ -10010,14 +9984,14 @@ packages:
     resolution: {integrity: sha512-WVy6di9DlPOeBWEjMScpNipeSX2jIZBGEn5Uuo8Q7aIuFEuDX0pw8RxcOjlD1TWP4obi24ki7m/13+nFpcbXrw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      minipass: 4.2.0
+      minipass: 4.2.5
     dev: true
 
   /ssri/9.0.1:
     resolution: {integrity: sha512-o57Wcn66jMQvfHG1FlYbWeZWW/dHZhJXjpIcTfXldXEk5nz5lStPo3mK0OJQfGR3RbZUlbISexbljkJzuEj/8Q==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
     dependencies:
-      minipass: 3.3.4
+      minipass: 3.3.6
     dev: true
 
   /stable/0.1.8:
@@ -10186,7 +10160,7 @@ packages:
       commander: 10.0.0
       consola: 2.15.3
       glob: 8.1.0
-      jiti: 1.17.1
+      jiti: 1.18.2
       json5: 2.2.3
       jsonc-parser: 3.2.0
       lodash.template: 4.5.0
@@ -10566,7 +10540,7 @@ packages:
       acorn: 8.8.2
       estree-walker: 3.0.3
       magic-string: 0.27.0
-      unplugin: 1.1.0
+      unplugin: 1.3.1
     dev: true
 
   /undici/5.12.0:
@@ -10868,6 +10842,7 @@ packages:
       ufo: 1.1.1
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /untyped/1.2.2:
     resolution: {integrity: sha512-EANYd5L6AdpgfldlgMcmvOOnj092nWhy0ybhc7uhEH12ipytDYz89EOegBQKj8qWL3u1wgYnmFjADhsuCJs5Aw==}
@@ -11136,7 +11111,7 @@ packages:
       '@antfu/utils': 0.7.2
       '@rollup/pluginutils': 5.0.2
       debug: 4.3.4
-      fs-extra: 11.1.0
+      fs-extra: 11.1.1
       kolorist: 1.7.0
       sirv: 2.0.2
       ufo: 1.1.1
