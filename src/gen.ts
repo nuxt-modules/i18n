@@ -1,13 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
-import { NUXT_I18N_MODULE_ID } from './constants'
+import {
+  NUXT_I18N_MODULE_ID,
+  NUXT_I18N_RESOURCE_PROXY_ID,
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+} from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
+import fs from 'node:fs'
+// @ts-ignore
+import { transform as stripType } from '@mizchi/sucrase'
+import { parse as _parseCode } from '@babel/parser'
+import { asVirtualId } from './transform/utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { AdditionalMessages } from './messages'
+import type { File } from '@babel/types'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -31,11 +45,52 @@ export function generateLoaderOptions(
     ssr: boolean
   } = { dev: true, ssg: false, ssr: true }
 ) {
+  const generatedImports = new Map<string, string>()
+  const importMapper = new Map<string, string>()
+
+  const convertToPairs = ({ file, files, path, paths }: LocaleInfo) => {
+    const _files = file ? [file] : files || []
+    const _paths = path ? [path] : paths || []
+    return _files.map((f, i) => ({ file: f, path: _paths[i] }))
+  }
+
+  const buildImportKey = (root: string, dir: string, base: string) =>
+    normalize(`${root ? `${root}/` : ''}${dir ? `${dir}/` : ''}${base}`)
+
+  function generateSyncImports(gen: string, absolutePath: string, relativePath?: string) {
+    if (!relativePath) {
+      return gen
+    }
+
+    const { root, dir, base, ext } = parsePath(relativePath)
+    const key = buildImportKey(root, dir, base)
+    if (!generatedImports.has(key)) {
+      let loadPath = relativePath
+      if (langDir) {
+        loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, relativePath)
+      }
+      const assertFormat = ext.slice(1)
+      const variableName = genSafeVariableName(`locale_${convertToImportId(key)}`)
+      gen += `${genImport(
+        genImportSpecifier(loadPath, ext, absolutePath),
+        variableName,
+        assertFormat ? { assert: { type: assertFormat } } : {}
+      )}\n`
+      importMapper.set(key, variableName)
+      generatedImports.set(key, loadPath)
+    }
+
+    return gen
+  }
+
   let genCode = ''
   const localeInfo = options.localeInfo || []
   const syncLocaleFiles = new Set<LocaleInfo>()
   const asyncLocaleFiles = new Set<LocaleInfo>()
 
+  /**
+   * Prepare locale files for synthetic or asynthetic
+   */
   if (langDir) {
     for (const locale of localeInfo) {
       if (!syncLocaleFiles.has(locale) && !asyncLocaleFiles.has(locale)) {
@@ -44,40 +99,38 @@ export function generateLoaderOptions(
     }
   }
 
-  const generatedImports = new Map<string, string>()
-  const importMapper = new Map<string, string>()
-
-  const buildImportKey = (root: string, dir: string, base: string) =>
-    normalize(`${root ? `${root}/` : ''}${dir ? `${dir}/` : ''}${base}`)
-
-  function generateSyncImports(gen: string, filepath?: string) {
-    if (!filepath) {
-      return gen
-    }
-
-    const { root, dir, base, ext } = parsePath(filepath)
-    const key = buildImportKey(root, dir, base)
-    if (!generatedImports.has(key)) {
-      let loadPath = filepath
-      if (langDir) {
-        loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, filepath)
-      }
-      const assertFormat = ext.slice(1)
-      const variableName = genSafeVariableName(`locale_${convertToImportId(key)}`)
-      gen += `${genImport(loadPath, variableName, assertFormat ? { assert: { type: assertFormat } } : {})}\n`
-      importMapper.set(key, variableName)
-      generatedImports.set(key, loadPath)
-    }
-
-    return gen
-  }
-
-  for (const { file, files } of syncLocaleFiles) {
-    ;(file ? [file] : files || []).forEach(f => {
-      genCode = generateSyncImports(genCode, f)
+  /**
+   * Generate locale synthetic imports
+   */
+  for (const localeInfo of syncLocaleFiles) {
+    convertToPairs(localeInfo).forEach(({ file, path }) => {
+      genCode = generateSyncImports(genCode, path, file)
     })
   }
 
+  /**
+   * Strip info for code generation
+   */
+  const stripPathFromLocales = (locales: any) => {
+    if (isArray(locales)) {
+      return locales.map(locale => {
+        if (isObject(locale)) {
+          const obj = { ...locale }
+          delete obj.path
+          delete obj.paths
+          return obj
+        } else {
+          return locale
+        }
+      })
+    } else {
+      return locales
+    }
+  }
+
+  /**
+   * Generate options
+   */
   // prettier-ignore
   genCode += `${Object.entries(options).map(([rootKey, rootValue]) => {
     if (rootKey === 'nuxtI18nOptions') {
@@ -99,7 +152,7 @@ export function generateLoaderOptions(
             genCodes += `  if (${rootKey}.${key}.messages) { console.warn("[${NUXT_I18N_MODULE_ID}]: Cannot include 'messages' option in '${loaderFilename}'. Please use Lazy-load translations."); ${rootKey}.${key}.messages = {}; }\n`
           }
         } else {
-          genCodes += `  ${rootKey}.${key} = ${toCode(value)}\n`
+          genCodes += `  ${rootKey}.${key} = ${toCode(key === 'locales' ? stripPathFromLocales(value) : value)}\n`
         }
       }
       genCodes += `  return nuxtI18nOptions\n`
@@ -112,7 +165,7 @@ export function generateLoaderOptions(
       }).join(`,`)}})\n`
     } else if (rootKey === 'nuxtI18nInternalOptions') {
       return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
-        return `${key}: ${toCode(value)}`
+        return `${key}: ${toCode(key === '__normalizedLocales' ? stripPathFromLocales(value) : value)}`
       }).join(`,`)}})\n`
     } else if (rootKey === 'localeInfo') {
       let codes = `export const localeMessages = {\n`
@@ -125,13 +178,12 @@ export function generateLoaderOptions(
             return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}) }`
           })}],\n`
         }
-        for (const { code, file, files } of asyncLocaleFiles) {
-          const dynamicPaths = file ? [file] : files || []
-          codes += `  ${toCode(code)}: [${dynamicPaths.map(filepath => {
-            const { root, dir, base } = parsePath(filepath)
+        for (const localeInfo of asyncLocaleFiles) {
+          codes += `  ${toCode(localeInfo.code)}: [${convertToPairs(localeInfo).map(({ file, path }) => {
+            const { root, dir, base, ext } = parsePath(file)
             const key = buildImportKey(root, dir, base)
-            const loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, filepath)
-            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(loadPath, { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })} }`
+            const loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
+            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(genImportSpecifier(loadPath, ext, path), { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })} }`
           })}],\n`
         }
       }
@@ -144,12 +196,88 @@ export function generateLoaderOptions(
 	  }
   }).join('\n')}`
 
+  /**
+   * Generate meta info
+   */
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
+  genCode += `export const NUXT_I18N_PRECOMPILE_ENDPOINT = ${toCode(NUXT_I18N_PRECOMPILE_ENDPOINT)}\n`
+  genCode += `export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = ${toCode(NUXT_I18N_PRECOMPILED_LOCALE_KEY)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
   genCode += `export const isSSR = ${toCode(misc.ssr)}\n`
 
   debug('generate code', genCode)
   return genCode
+}
+
+const TARGET_TS_EXTENSIONS = ['.ts', '.cts', '.mts']
+
+function genImportSpecifier(id: string, ext: string, absolutePath: string) {
+  if (['.js', '.cjs', '.mjs', ...TARGET_TS_EXTENSIONS].includes(ext)) {
+    const code = readCode(absolutePath, ext)
+    const parsed = parseCode(code, absolutePath)
+    const anaylzed = scanProgram(parsed.program)
+    // prettier-ignore
+    return anaylzed === 'arrow-function' || anaylzed === 'function'
+      ? `${asVirtualId(NUXT_I18N_RESOURCE_PROXY_ID)}?target=${id}`
+      : id
+  } else {
+    return id
+  }
+}
+
+const PARSE_CODE_CACHES = new Map<string, ReturnType<typeof _parseCode>>()
+
+function parseCode(code: string, path: string) {
+  if (PARSE_CODE_CACHES.has(path)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return PARSE_CODE_CACHES.get(path)!
+  }
+
+  const parsed = _parseCode(code, {
+    allowImportExportEverywhere: true,
+    sourceType: 'module'
+  })
+
+  PARSE_CODE_CACHES.set(path, parsed)
+  return parsed
+}
+
+function scanProgram(program: File['program']) {
+  let ret: false | 'object' | 'function' | 'arrow-function' = false
+  for (const node of program.body) {
+    if (node.type === 'ExportDefaultDeclaration') {
+      if (node.declaration.type === 'ObjectExpression') {
+        ret = 'object'
+        break
+      } else if (
+        node.declaration.type === 'CallExpression' &&
+        node.declaration.callee.type === 'Identifier' &&
+        node.declaration.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+      ) {
+        const [fnNode] = node.declaration.arguments
+        if (fnNode.type === 'FunctionExpression') {
+          ret = 'function'
+          break
+        } else if (fnNode.type === 'ArrowFunctionExpression') {
+          ret = 'arrow-function'
+          break
+        }
+      }
+    }
+  }
+  return ret
+}
+
+export function readCode(absolutePath: string, ext: string) {
+  let code = fs.readFileSync(absolutePath, 'utf-8').toString()
+  if (TARGET_TS_EXTENSIONS.includes(ext)) {
+    const out = stripType(code, {
+      transforms: ['jsx'],
+      keepUnusedImports: true
+    })
+    code = out.code
+  }
+  return code
 }
 
 const IMPORT_ID_CACHES = new Map<string, string>()
@@ -172,7 +300,6 @@ function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: 
   return normalize(`${relativeBase}/${langDir}/${file}`)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateVueI18nOptions(options: Record<string, any>, dev: boolean): string {
   let genCode = 'Object({'
   for (const [key, value] of Object.entries(options)) {
@@ -192,7 +319,6 @@ function generateVueI18nOptions(options: Record<string, any>, dev: boolean): str
   return genCode
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function generateAdditionalMessages(value: Record<string, any>, dev: boolean): string {
   let genCode = 'Object({'
   for (const [locale, messages] of Object.entries(value)) {
@@ -208,14 +334,12 @@ function generateAdditionalMessages(value: Record<string, any>, dev: boolean): s
   return genCode
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function stringifyObj(obj: Record<string, any>): string {
   return `Object({${Object.entries(obj)
     .map(([key, value]) => `${JSON.stringify(key)}:${toCode(value)}`)
     .join(`,`)}})`
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toCode(code: any): string {
   if (code === null) {
     return `null`
@@ -247,3 +371,5 @@ export function toCode(code: any): string {
 
   return code + ``
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
