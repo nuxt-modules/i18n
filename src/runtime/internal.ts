@@ -18,7 +18,6 @@ import {
   nuxtI18nOptionsDefault,
   localeMessages,
   additionalMessages,
-  NUXT_I18N_MODULE_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
   isSSG
 } from '#build/i18n.options.mjs'
@@ -28,10 +27,7 @@ import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage 
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
-
-export function formatMessage(message: string) {
-  return NUXT_I18N_MODULE_ID + ' ' + message
-}
+import { debugLog, logger } from './utils'
 
 function isLegacyVueI18n(target: any): target is VueI18n {
   return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
@@ -111,26 +107,24 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
 
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
-    __DEBUG__ && console.log('loadMessage: (locale) -', locale)
+    debugLog('loadMessage: (locale) -', locale)
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
       if (i18nConfig.experimental?.jsTsFormatResource) {
         message = await getter(context, locale).then((r: any) => r.default || r)
-        __DEBUG__ && console.log('loadMessage: dynamic load', message)
+        debugLog('loadMessage: dynamic load', message)
       } else {
-        console.warn(
-          formatMessage(
-            'Not support js / ts extension format as default. you can do enable with `i18n.experimental.jsTsFormatResource: true` (experimental)'
-          )
+        logger.warn(
+          'Not support js / ts extension format as default. you can do enable with `i18n.experimental.jsTsFormatResource: true` (experimental)'
         )
       }
     } else {
       message = getter
-      __DEBUG__ && console.log('loadMessage: load', message)
+      debugLog('loadMessage: load', message)
     }
   } catch (e: any) {
     // eslint-disable-next-line no-console
-    console.error(formatMessage('Failed locale loading: ' + e.message))
+    logger.error('Failed locale loading: ' + e.message)
   }
   return message
 }
@@ -182,7 +176,7 @@ export async function loadLocale(
       }
     }
   } else {
-    console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
+    logger.warn('Could not find ' + locale + ' locale code in localeMessages')
   }
 }
 
@@ -213,11 +207,11 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
-      __DEBUG__ && console.log('getBrowserLocale navigator.languages', navigator.languages)
+      debugLog('getBrowserLocale navigator.languages', navigator.languages)
     }
   } else if (process.server) {
     const header = useRequestHeaders(['accept-language'])
-    __DEBUG__ && console.log('getBrowserLocale accept-language', header)
+    debugLog('getBrowserLocale accept-language', header)
     const accept = header['accept-language']
     if (accept) {
       ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
@@ -237,7 +231,7 @@ export function getLocaleCookie(
     localeCodes?: readonly string[]
   } = {}
 ): string | undefined {
-  __DEBUG__ && console.log('getLocaleCookie', { useCookie, cookieKey, localeCodes })
+  debugLog('getLocaleCookie', { useCookie, cookieKey, localeCodes })
   if (useCookie) {
     let localeCode: string | undefined
     if (process.client) {
@@ -247,7 +241,7 @@ export function getLocaleCookie(
       if ('cookie' in cookie) {
         const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
         localeCode = parsedCookie[cookieKey]
-        __DEBUG__ && console.log('getLocaleCookie cookie', parsedCookie[cookieKey])
+        debugLog('getLocaleCookie cookie', parsedCookie[cookieKey])
       }
     }
 
@@ -347,24 +341,23 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
     nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
 
   const path = isString(route) ? route : route.path
-  __DEBUG__ &&
-    console.log(
-      'detectBrowserLanguage: (path, strategy, alwaysRedirect, redirectOn, locale) -',
-      path,
-      strategy,
-      alwaysRedirect,
-      redirectOn,
-      locale
-    )
+  debugLog(
+    'detectBrowserLanguage: (path, strategy, alwaysRedirect, redirectOn, locale) -',
+    path,
+    strategy,
+    alwaysRedirect,
+    redirectOn,
+    locale
+  )
   if (strategy !== 'no_prefix') {
     if (redirectOn === 'root') {
       if (path !== '/') {
-        __DEBUG__ && console.log('detectBrowserLanguage: not root')
+        debugLog('detectBrowserLanguage: not root')
         return { locale: '', stat: false, reason: 'not_redirect_on_root' }
       }
     } else if (redirectOn === 'no prefix') {
       if (!alwaysRedirect && path.match(getLocalesRegex(localeCodes as string[]))) {
-        __DEBUG__ && console.log('detectBrowserLanguage: no prefix')
+        debugLog('detectBrowserLanguage: no prefix')
         return { locale: '', stat: false, reason: 'not_redirect_on_no_prefix' }
       }
     }
@@ -378,37 +371,35 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   if (useCookie) {
     matchedLocale = cookieLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
     localeFrom = 'cookie'
-    __DEBUG__ && console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
+    debugLog('detectBrowserLanguage: cookieLocale', cookieLocale)
   }
   // try to get locale from either navigator or header detection
   if (!matchedLocale) {
     matchedLocale = getBrowserLocale(nuxtI18nInternalOptions, context)
     localeFrom = 'navigator_or_header'
-    __DEBUG__ && console.log('detectBrowserLanguage: browserLocale', matchedLocale)
+    debugLog('detectBrowserLanguage: browserLocale', matchedLocale)
   }
-  __DEBUG__ &&
-    console.log(
-      'detectBrowserLanguage: (matchedLocale, cookieLocale, localeFrom) -',
-      matchedLocale,
-      cookieLocale,
-      localeFrom
-    )
+  debugLog(
+    'detectBrowserLanguage: (matchedLocale, cookieLocale, localeFrom) -',
+    matchedLocale,
+    cookieLocale,
+    localeFrom
+  )
 
   // set fallback locale if that is not matched locale
   const finalLocale = matchedLocale || fallbackLocale
   if (!matchedLocale && fallbackLocale) {
     localeFrom = 'fallback'
   }
-  __DEBUG__ &&
-    console.log(
-      'detectBrowserLanguage: first finaleLocale (finaleLocale, lcoaleForm) -',
-      finalLocale,
-      cookieLocale,
-      localeFrom
-    )
+  debugLog(
+    'detectBrowserLanguage: first finaleLocale (finaleLocale, lcoaleForm) -',
+    finalLocale,
+    cookieLocale,
+    localeFrom
+  )
 
   const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
-  __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
+  debugLog('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
 
   // handle cookie option to prevent multiple redirections
   if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {
@@ -416,7 +407,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
       return { locale: finalLocale, stat: true, from: localeFrom }
     } else {
       if (finalLocale !== vueI18nLocale /* && path !== '/'*/) {
-        __DEBUG__ && console.log('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
+        debugLog('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
         return { locale: finalLocale, stat: true, from: localeFrom }
       } else if (alwaysRedirect) {
         const redirectOnRoot = path === '/'
@@ -487,7 +478,7 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
     return protocol + '://' + lang.domain
   }
 
-  console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+  logger.warn('Could not find domain name for locale ' + localeCode)
 }
 
 export async function loadResource(

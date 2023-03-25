@@ -1,14 +1,13 @@
-import createDebug from 'debug'
 import { resolvePath } from '@nuxt/kit'
 import { pkgModulesDir } from './dirs'
 import { resolve } from 'pathe'
 import { VUE_I18N_PKG, VUE_I18N_BRIDGE_PKG, VUE_ROUTER_BRIDGE_PKG, VUE_I18N_ROUTING_PKG } from './constants'
-import { tryResolve, getLayerRootDirs, getPackageManagerType } from './utils'
+import { tryResolve, getLayerRootDirs, getPackageManagerType, createDebug } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PackageManager } from './utils'
 
-const debug = createDebug('@nuxtjs/i18n:alias')
+const debug = createDebug('alias', true)
 
 export async function setupAlias(nuxt: Nuxt) {
   const pkgMgr = await getPackageManagerType()

@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { promises as fs } from 'node:fs'
 import { isBoolean, isObject, isString } from '@intlify/shared'
 import {
@@ -10,7 +9,6 @@ import {
   addTemplate,
   addImports,
   addServerHandler,
-  useLogger,
   addPrerenderRoutes // TODO: remove?
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
@@ -29,7 +27,7 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
+import { getNormalizedLocales, resolveLocales, getPackageManagerType, logger, createDebug } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions } from './layers'
 
@@ -38,7 +36,11 @@ import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
 
 export * from './types'
 
-const debug = createDebug('@nuxtjs/i18n:module')
+const debug = createDebug('module', true)
+
+function formatMessage(message: string) {
+  return `[${NUXT_I18N_MODULE_ID}]: ${message}`
+}
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
@@ -51,8 +53,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
-    const logger = useLogger(NUXT_I18N_MODULE_ID)
-
     const options = i18nOptions as Required<NuxtI18nOptions>
     debug('options', options)
 

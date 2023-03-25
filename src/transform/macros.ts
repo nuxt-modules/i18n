@@ -6,19 +6,19 @@
  * - license: MIT
  */
 
-import createDebug from 'debug'
 import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import MagicString from 'magic-string'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from '../constants'
+import { createDebug } from '../utils'
 
 export interface TransformMacroPluginOptions {
   sourcemap?: boolean
 }
 
-const debug = createDebug('@nuxtjs/i18n:transform:macros')
+const debug = createDebug('transform:macros', true)
 
 /**
  * TODO:

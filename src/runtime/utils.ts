@@ -33,6 +33,7 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
 import { joinURL } from 'ufo'
+import consola from 'consola'
 
 import type {
   Route,
@@ -47,6 +48,12 @@ import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage 
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DetectLocaleForSSGStatus } from '#build/i18n.internal.mjs'
 import type { DeepRequired } from 'ts-essentials'
+
+// duplicated from ../utils
+export const logger = consola.withScope(NUXT_I18N_MODULE_ID)
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const debugLog = (message: any, ...args: any[]) => __DEBUG__ && logger.debug(message, ...args)
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -156,7 +163,7 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
 ): Promise<[boolean, string]> {
   let ret = false
   const oldLocale = getLocale(i18n)
-  __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
+  debugLog('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
   if (!newLocale) {
     return [ret, oldLocale]
   }
@@ -226,27 +233,26 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions
 
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
-  __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
+  debugLog('detectLocale: initialLocale -', initialLocale)
 
   // prettier-ignore
   const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes, initialLocale, ssgStatus)
     : DefaultDetectBrowserLanguageFromResult
-  __DEBUG__ &&
-    console.log(
-      'detectLocale: detectBrowserLanguage (browserLocale, stat, reason, from) -',
-      browserLocale,
-      stat,
-      reason,
-      from
-    )
+  debugLog(
+    'detectLocale: detectBrowserLanguage (browserLocale, stat, reason, from) -',
+    browserLocale,
+    stat,
+    reason,
+    from
+  )
 
   if (reason === 'detect_ignore_on_ssg') {
     return initialLocale
   }
 
   let finalLocale: string | undefined = browserLocale
-  __DEBUG__ && console.log('detectLocale: finaleLocale first (finaleLocale, strategy) -', finalLocale, strategy)
+  debugLog('detectLocale: finaleLocale first (finaleLocale, strategy) -', finalLocale, strategy)
   if (!finalLocale) {
     if (differentDomains) {
       finalLocale = getLocaleDomain(normalizedLocales)
@@ -259,22 +265,21 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
     }
   }
 
-  __DEBUG__ &&
-    console.log(
-      'detectLocale: finaleLocale second (finaleLocale, detectBrowserLanguage) -',
-      finalLocale,
-      nuxtI18nOptions.detectBrowserLanguage
-    )
+  debugLog(
+    'detectLocale: finaleLocale second (finaleLocale, detectBrowserLanguage) -',
+    finalLocale,
+    nuxtI18nOptions.detectBrowserLanguage
+  )
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
     finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
   }
 
-  __DEBUG__ && console.log('detectLocale: finalLocale last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)
+  debugLog('detectLocale: finalLocale last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)
   if (!finalLocale) {
     finalLocale = defaultLocale || ''
   }
 
-  __DEBUG__ && console.log('detectLocale: finalLocale -', finalLocale)
+  debugLog('detectLocale: finalLocale -', finalLocale)
   return finalLocale
 }
 
@@ -286,8 +291,8 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>
 ): string {
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions
-  __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
-  __DEBUG__ && console.log('detectRedirect: route -> ', route)
+  debugLog('detectRedirect: targetLocale -> ', targetLocale)
+  debugLog('detectRedirect: route -> ', route)
 
   let redirectPath = ''
   const isStaticGenerate = isSSG && process.server
@@ -310,7 +315,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
     const { fullPath } = route
     const decodedRoute = decodeURI(fullPath)
     const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(fullPath, targetLocale)
-    __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, fullPath)
+    debugLog('detectRedirect: calculate routePath -> ', routePath, fullPath)
     if (
       isString(routePath) &&
       routePath &&
@@ -337,7 +342,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
       router: context.$router
     })
     const routePath = switchLocalePath(targetLocale)
-    __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
+    debugLog('detectRedirect: calculate domain or ssg routePath -> ', routePath)
     if (isString(routePath)) {
       redirectPath = routePath
     }
@@ -386,8 +391,8 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
   const { i18n, locale, route } = args
   let { redirectPath } = args
 
-  __DEBUG__ && console.log('navigate options ', status, rootRedirect, differentDomains, skipSettingLocaleOnNavigate)
-  __DEBUG__ && console.log('navigate isSSG', isSSG)
+  debugLog('navigate options ', status, rootRedirect, differentDomains, skipSettingLocaleOnNavigate)
+  debugLog('navigate isSSG', isSSG)
 
   if (route.path === '/' && rootRedirect) {
     if (isString(rootRedirect)) {
@@ -396,7 +401,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
       redirectPath = '/' + rootRedirect.path
       status = rootRedirect.statusCode
     }
-    __DEBUG__ && console.log('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
+    debugLog('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
     return _navigate(redirectPath, status)
   }
 
@@ -414,14 +419,14 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     }
   } else {
     const state = useRedirectState()
-    __DEBUG__ && console.log('redirect state ->', state.value, 'redirectPath -> ', redirectPath)
+    debugLog('redirect state ->', state.value, 'redirectPath -> ', redirectPath)
     if (process.client) {
       if (state.value !== redirectPath) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
       }
     } else if (process.server) {
-      __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
+      debugLog('differentDomains servermode ', redirectPath)
       state.value = redirectPath // set reidrct path
     }
   }
@@ -463,7 +468,7 @@ export function extendSwitchLocalePathIntercepter(
   return (path: string, locale: Locale): string => {
     if (differentDomains) {
       const domain = getDomainFromLocale(locale, normalizedLocales, nuxt)
-      __DEBUG__ && console.log('extendSwitchLocalePathIntercepter: domain -> ', domain, ' path -> ', path)
+      debugLog('extendSwitchLocalePathIntercepter: domain -> ', domain, ' path -> ', path)
       if (domain) {
         return joinURL(domain, path)
       } else {
@@ -486,7 +491,7 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
   return (context: Context): string => {
     if (isFunction(baseUrl)) {
       const baseUrlResult = baseUrl(context)
-      __DEBUG__ && console.log('baseUrl: using localeLoader function -', baseUrlResult)
+      debugLog('baseUrl: using localeLoader function -', baseUrlResult)
       return baseUrlResult
     }
 
@@ -495,14 +500,14 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode, normalizedLocales, options.nuxt)
       if (domain) {
-        __DEBUG__ && console.log('baseUrl: using differentDomains -', domain)
+        debugLog('baseUrl: using differentDomains -', domain)
         return domain
       }
     }
 
     const config = context.$config?.public?.i18n
     if (config?.baseUrl) {
-      __DEBUG__ && console.log('baseUrl: using runtimeConfig -', config.baseUrl)
+      debugLog('baseUrl: using runtimeConfig -', config.baseUrl)
       return config.baseUrl
     }
 

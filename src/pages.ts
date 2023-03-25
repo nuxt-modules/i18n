@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
 import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString, isBoolean } from '@intlify/shared'
@@ -6,7 +5,7 @@ import fs from 'node:fs'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
-import { formatMessage, getRoutePath, parseSegment } from './utils'
+import { createDebug, getRoutePath, logger, parseSegment } from './utils'
 import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
@@ -16,7 +15,7 @@ import type { RouteOptionsResolver, ComputedRouteOptions, LocalizeRoutesPrefixab
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
 import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
 
-const debug = createDebug('@nuxtjs/i18n:pages')
+const debug = createDebug('pages', true)
 
 export type AnalizedNuxtPageMeta = {
   inRoot: boolean
@@ -360,7 +359,7 @@ function evalValue(value: string) {
   try {
     return new Function(`return (${value})`)() as ComputedRouteOptions | false
   } catch (e) {
-    console.error(`Cannot evaluate value: ${value}`)
+    logger.error(`Cannot evaluate value: ${value}`)
     return
   }
 }

@@ -1,16 +1,16 @@
-import createDebug from 'debug'
 import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import MagicString from 'magic-string'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE } from '../constants'
+import { createDebug } from '../utils'
 
 export interface ResourceDynamicPluginOptions {
   sourcemap?: boolean
 }
 
-const debug = createDebug('@nuxtjs/i18n:transform:dynamic')
+const debug = createDebug('transform:dynamic', true)
 
 export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPluginOptions = {}, meta) => {
   debug('options', options, meta)

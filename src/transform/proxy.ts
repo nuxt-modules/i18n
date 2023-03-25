@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { dirname, resolve } from 'node:path'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
@@ -12,12 +11,13 @@ import {
   NUXT_I18N_TEMPLATE_INTERNAL_KEY,
   NUXT_I18N_RESOURCE_PROXY_ID
 } from '../constants'
+import { createDebug } from '../utils'
 
 export interface ResourceProxyPluginOptions {
   sourcemap?: boolean
 }
 
-const debug = createDebug('@nuxtjs/i18n:transform:proxy')
+const debug = createDebug('transform:proxy', true)
 
 export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginOptions = {}, meta) => {
   debug('options', options, meta)
@@ -58,7 +58,7 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           const baseDir = dirname(query.from)
           // console.log('load ->', id, pathname, query, baseDir)
           // prettier-ignore
-          const code = `import { loadResource, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
+          const code = `import { loadResource } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
 import { NUXT_I18N_PRECOMPILED_LOCALE_KEY, isSSG } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
 export default async function(context, locale) {
   if (process.dev || process.server || !isSSG) {
@@ -73,7 +73,7 @@ export default async function(context, locale) {
         m => m.default || m
       )
     } catch (e) {
-      console.error(format(e.message))
+      console.error('[@nuxtjs/i18n]: ' + e.message)
     }
     return mod || {}
   }

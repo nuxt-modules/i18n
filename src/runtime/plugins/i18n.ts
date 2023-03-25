@@ -39,6 +39,7 @@ import {
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#imports'
+import { debugLog } from '../utils'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
@@ -66,9 +67,9 @@ export default defineNuxtPlugin(async nuxt => {
     strategy,
     rootRedirect
   } = nuxtI18nOptions
-  __DEBUG__ && console.log('isSSR', isSSR, ', isSSG', isSSG)
-  __DEBUG__ && console.log('useCookie on setup', useCookie)
-  __DEBUG__ && console.log('defautlLocale on setup', defaultLocale)
+  debugLog('isSSR', isSSR, ', isSSG', isSSG)
+  debugLog('useCookie on setup', useCookie)
+  debugLog('defautlLocale on setup', defaultLocale)
 
   nuxtI18nOptions.baseUrl = extendBaseUrl(nuxtI18nOptions.baseUrl, {
     differentDomains,
@@ -104,7 +105,7 @@ export default defineNuxtPlugin(async nuxt => {
     localeCodes,
     isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal'
   )
-  __DEBUG__ && console.log('first detect initial locale', initialLocale)
+  debugLog('first detect initial locale', initialLocale)
 
   // load initial vue-i18n locale messages
   vueI18nOptions.messages = await loadInitialMessages(nuxtContext, vueI18nOptions.messages, {
@@ -120,7 +121,7 @@ export default defineNuxtPlugin(async nuxt => {
    *  It means a mode that works only with simple vue-i18n, without nuxtjs/i18n routing, browser detection, SEO, and other features.
    */
   initialLocale = getDefaultLocale(initialLocale)
-  __DEBUG__ && console.log('final initial locale:', initialLocale)
+  debugLog('final initial locale:', initialLocale)
 
   // create i18n instance
   const i18n = createI18n({
@@ -140,7 +141,7 @@ export default defineNuxtPlugin(async nuxt => {
    */
   if (isSSGModeInitialSetup() && strategy === 'no_prefix' && process.client) {
     nuxt.hook('app:mounted', async () => {
-      __DEBUG__ && console.log('hook app:mounted')
+      debugLog('hook app:mounted')
       const {
         locale: browserLocale,
         stat,
@@ -157,14 +158,13 @@ export default defineNuxtPlugin(async nuxt => {
             'ssg_setup'
           )
         : DefaultDetectBrowserLanguageFromResult
-      __DEBUG__ &&
-        console.log(
-          'app:mounted: detectBrowserLanguage (browserLocale, stat, reason, from) -',
-          browserLocale,
-          stat,
-          reason,
-          from
-        )
+      debugLog(
+        'app:mounted: detectBrowserLanguage (browserLocale, stat, reason, from) -',
+        browserLocale,
+        stat,
+        reason,
+        from
+      )
       _setLocale(i18n, browserLocale)
       ssgModeInitialSetup = false
     })
@@ -202,7 +202,7 @@ export default defineNuxtPlugin(async nuxt => {
           }
 
           const redirectPath = detectRedirect(route, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
-          __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
+          debugLog('redirectPath on setLocale', redirectPath)
 
           await navigate(
             {
@@ -402,7 +402,7 @@ export default defineNuxtPlugin(async nuxt => {
     'locale-changing',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     defineNuxtRouteMiddleware(async (to, from) => {
-      __DEBUG__ && console.log('locale-changing middleware', to, from)
+      debugLog('locale-changing middleware', to, from)
 
       const locale = detectLocale(
         to,
@@ -416,10 +416,10 @@ export default defineNuxtPlugin(async nuxt => {
         localeCodes,
         isSSGModeInitialSetup() && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal'
       )
-      __DEBUG__ && console.log('detect locale', locale)
+      debugLog('detect locale', locale)
 
       const localeSetup = isInitialLocaleSetup(locale)
-      __DEBUG__ && console.log('localeSetup', localeSetup)
+      debugLog('localeSetup', localeSetup)
 
       const [modified] = await loadAndSetLocale(locale, nuxtContext, i18n, {
         useCookie,
@@ -435,7 +435,7 @@ export default defineNuxtPlugin(async nuxt => {
       }
 
       const redirectPath = detectRedirect(to, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
-      __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
+      debugLog('redirectPath on locale-changing middleware', redirectPath)
 
       return navigate(
         {

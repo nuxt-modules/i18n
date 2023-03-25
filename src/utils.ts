@@ -9,6 +9,7 @@ import { NUXT_I18N_MODULE_ID } from './constants'
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
 import type { Nuxt } from '@nuxt/schema'
+import type { Consola } from 'consola'
 
 const PackageManagerLockFiles = {
   'npm-shrinkwrap.json': 'npm-legacy',
@@ -36,11 +37,13 @@ export async function getPackageManagerType(): Promise<PackageManager> {
   }
 }
 
-export const logger = useLogger(NUXT_I18N_MODULE_ID)
+export const logger: Consola = useLogger(NUXT_I18N_MODULE_ID)
 
-export function formatMessage(message: string) {
-  return `[${NUXT_I18N_MODULE_ID}]: ${message}`
-}
+export const createDebug = (scope?: string, enable = __DEBUG__) =>
+  enable ? (scope ? logger.withScope(scope) : logger).debug : () => undefined
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const debugLog = (message: any, ...args: any[]) => __DEBUG__ && logger.debug(message, ...args)
 
 export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleObject[] {
   locales = locales || []

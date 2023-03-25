@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { resolve } from 'pathe'
 import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
@@ -11,8 +10,9 @@ import { getLayerLangPaths } from './layers'
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions } from './types'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
+import { createDebug } from './utils'
 
-const debug = createDebug('@nuxtjs/i18n:bundler')
+const debug = createDebug('bundler', true)
 
 export async function extendBundler(
   nuxt: Nuxt,

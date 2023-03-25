@@ -1,11 +1,11 @@
-import createDebug from 'debug'
 import { isString, isArray, isObject, hasOwn } from '@intlify/shared'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { DefineLocaleMessage, FallbackLocale, Locale, LocaleMessages } from 'vue-i18n'
 import type { NuxtI18nOptions } from './types'
+import { createDebug } from './utils'
 
-const debug = createDebug('@nuxtjs/i18n:messages')
+const debug = createDebug('messages', true)
 
 export type AdditionalMessages = Record<Locale, DefineLocaleMessage[]>
 

@@ -1,10 +1,10 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions } from './types'
-import createDebug from 'debug'
 import pathe from 'pathe'
+import { createDebug } from './utils'
 
-const debug = createDebug('@nuxtjs/i18n:layers')
+const debug = createDebug('layers', true)
 
 const getLocaleFiles = (locale: LocaleObject): string[] => {
   if (locale.file != null) return [locale.file]

@@ -1,7 +1,8 @@
 import { defineNuxtPlugin } from '#imports'
+import { debugLog } from '../utils'
 
 export default defineNuxtPlugin(() => {
-  __DEBUG__ && console.log('load Meta type definition plugin')
+  debugLog('load Meta type definition plugin')
 })
 
 // @ts-ignore

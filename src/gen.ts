@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
 import {
@@ -22,6 +21,7 @@ import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './typ
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { AdditionalMessages } from './messages'
 import type { File } from '@babel/types'
+import { createDebug } from './utils'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -32,7 +32,7 @@ export type LoaderOptions = {
   additionalMessages?: AdditionalMessages
 }
 
-const debug = createDebug('@nuxtjs/i18n:gen')
+const debug = createDebug('gen', true)
 
 export function generateLoaderOptions(
   lazy: NonNullable<NuxtI18nOptions['lazy']>,
