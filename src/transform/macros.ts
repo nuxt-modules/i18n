@@ -11,13 +11,14 @@ import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import MagicString from 'magic-string'
+import { VIRTUAL_PREFIX_HEX } from './utils'
+import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from '../constants'
 
 export interface TransformMacroPluginOptions {
-  dev?: boolean
   sourcemap?: boolean
 }
 
-const debug = createDebug('@nuxtjs/i18n:macros')
+const debug = createDebug('@nuxtjs/i18n:transform:macros')
 
 /**
  * TODO:
@@ -31,7 +32,7 @@ export const TransformMacroPlugin = createUnplugin((options: TransformMacroPlugi
     enforce: 'post',
 
     transformInclude(id) {
-      if (!id || id.startsWith('\x00')) {
+      if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
         return false
       }
       const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
@@ -57,7 +58,7 @@ export const TransformMacroPlugin = createUnplugin((options: TransformMacroPlugi
 
       // tree-shake out any runtime references to the macro.
       // we do this first as it applies to all files, not just those with the query
-      const match = code.match(new RegExp(`\\b${'defineI18nRoute'}\\s*\\(\\s*`))
+      const match = code.match(new RegExp(`\\b${NUXT_I18N_COMPOSABLE_DEFINE_ROUTE}\\s*\\(\\s*`))
       if (match?.[0]) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         s.overwrite(match.index!, match.index! + match[0].length, `/*#__PURE__*/ false && ${match[0]}`)

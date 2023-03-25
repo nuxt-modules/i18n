@@ -9,5 +9,6 @@
     }
   },
   "welcome": "Welcome",
-  "hello": "Hello {name} !"
+  "hello": "Hello {name} !",
+  "tag": "<p>Tag</p>"
 }

@@ -1,5 +1,5 @@
 import { findBrowserLocale, getComposer } from 'vue-i18n-routing'
-import { useRoute, useRouter, useRequestHeaders, useCookie as _useCookie, useNuxtApp } from '#imports'
+import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp } from '#imports'
 import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import {
@@ -15,7 +15,7 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 
 export * from 'vue-i18n'
 export type { LocaleObject } from 'vue-i18n-routing'
-import type { Locale } from 'vue-i18n'
+import type { Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 
 /**
  * The `useRouteBaseName` composable returns function that get the route base name.
@@ -153,36 +153,38 @@ export function useBrowserLocale(normalizedLocales = nuxtI18nInternalOptions.__n
  * The `useCookieLocale` composable returns the cookie locale.
  *
  * @remarks
- * If this composable function is called on client-side, it detects the locale from the value of `document.cookie` via `useCookie`. else on the server side, the locale is detected from the value of `cookie` header.
+ * If this composable function is called client-side, it detects the locale from the value of `document.cookie` via `useCookie`. Otherwise when used server-side, it detects the locale from the value of the `cookie` header.
  *
  * Note that if the value of `detectBrowserLanguage.useCookie` is `false`, an empty string is always returned.
  *
- * @returns the cookie locale with Vue `ref`. if not detected, return **empty string** wiht `ref`.
+ * @returns the cookie locale with Vue `ref`. if not detected, return **empty string** with `ref`.
  *
  * @public
  */
-export function useCookieLocale({
-  useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
-  cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
-  localeCodes = _localeCodes
-}: Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieKey'> & {
-  localeCodes: readonly string[]
-}): Ref<string> {
+export function useCookieLocale(
+  options: Required<Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieKey'>> & {
+    localeCodes: readonly string[]
+  } = {
+    useCookie: nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
+    cookieKey: nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
+    localeCodes: _localeCodes
+  }
+): Ref<string> {
   // @ts-ignore NOTE: `ref` is auto-imported from `nuxt`
   const locale: Ref<string> = ref('')
 
-  if (useCookie) {
+  if (options.useCookie) {
     let code: string | null = null
     if (process.client) {
-      const cookie = _useCookie<string>(cookieKey) as Ref<string>
+      const cookie = useCookie<string>(options.cookieKey) as Ref<string>
       code = cookie.value
     } else if (process.server) {
       const cookie = useRequestHeaders(['cookie'])
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      code = (cookie as any)[cookieKey]
+      code = (cookie as any)[options.cookieKey]
     }
 
-    if (code && localeCodes.includes(code)) {
+    if (code && options.localeCodes.includes(code)) {
       locale.value = code
     }
   }
@@ -230,4 +232,37 @@ export function defineI18nRoute(route: I18nRoute | false): void {
   if (process.dev) {
     warnRuntimeUsage('defineI18nRoute')
   }
+}
+
+type MaybePromise<T> = T | Promise<T>
+
+/**
+ * The `defineI18nLocale` defines a composable function to dynamically load locale messages.
+ *
+ * @remarks
+ * This function is used to dynamically load a locale with lazy-load translations.
+ *
+ * You can use at JavaScript and TypeScript extension formats.
+ *
+ * @param context - A Nuxt Application instance that is passed from nuxt i18n module.
+ * @param locale - A target locale that is passed from nuxt i18n module.
+ *
+ * @returns Returns the locale messages object that will be resolved with Promise.
+ */
+export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale> = (
+  context: ReturnType<typeof useNuxtApp>,
+  locale: Locales
+) => MaybePromise<Messages>
+
+/**
+ * Define locale loader for dynamic locale messages loading
+ *
+ * @param loader - The target locale loader
+ *
+ * @returns The defined locale loader
+ */
+export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale>(
+  loader: LocaleLoader<Messages, Locales>
+): LocaleLoader<Messages, Locales> {
+  return loader
 }
