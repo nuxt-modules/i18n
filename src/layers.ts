@@ -6,19 +6,19 @@ import pathe from 'pathe'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
-const getLocaleFiles = (locale: LocaleObject): string[] => {
+export const getLocaleFiles = (locale: LocaleObject): string[] => {
   if (locale.file != null) return [locale.file]
   if (locale.files != null) return locale.files
   return []
 }
 
-const localeFilesToRelative = (projectLangDir: string, layerLangDir: string, files: string[]) => {
+export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string, files: string[]) => {
   const absoluteFiles = files.map(file => pathe.resolve(layerLangDir, file))
   const relativeFiles = absoluteFiles.map(file => pathe.relative(projectLangDir, file))
   return relativeFiles
 }
 
-const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
+export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
   const projectLayer = nuxt.options._layers[0]
   return pathe.resolve(projectLayer.config.rootDir, ...target)
 }

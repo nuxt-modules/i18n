@@ -25,6 +25,12 @@ export async function extendBundler(
   const { nuxtOptions, hasLocaleFiles } = options
   const langPaths = getLayerLangPaths(nuxt)
   debug('langPaths -', langPaths)
+  const i18nModulePaths =
+    nuxt.options._layers[0].config.i18n?.i18nModules?.map(module =>
+      resolve(nuxt.options._layers[0].config.rootDir, module.langDir ?? '')
+    ) ?? []
+  debug('i18nModulePaths -', i18nModulePaths)
+  const localePaths = [...langPaths, ...i18nModulePaths]
 
   /**
    * setup nitro
@@ -66,8 +72,9 @@ export async function extendBundler(
       strictMessage: nuxtOptions.precompile.strictMessage,
       escapeHtml: nuxtOptions.precompile.escapeHtml
     }
-    if (hasLocaleFiles && langPaths.length > 0) {
-      webpackPluginOptions.include = langPaths.map(x => resolve(x, './**'))
+
+    if (hasLocaleFiles && localePaths.length > 0) {
+      webpackPluginOptions.include = localePaths.map(x => resolve(x, './**'))
     }
 
     addWebpackPlugin(ResourceProxyPlugin.webpack(proxyOptions))
@@ -100,8 +107,8 @@ export async function extendBundler(
     strictMessage: nuxtOptions.precompile.strictMessage,
     escapeHtml: nuxtOptions.precompile.escapeHtml
   }
-  if (hasLocaleFiles && langPaths.length > 0) {
-    vitePluginOptions.include = langPaths.map(x => resolve(x, './**'))
+  if (hasLocaleFiles && localePaths.length > 0) {
+    vitePluginOptions.include = localePaths.map(x => resolve(x, './**'))
   }
 
   addVitePlugin(ResourceProxyPlugin.vite(proxyOptions))
