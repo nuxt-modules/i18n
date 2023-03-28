@@ -1,6 +1,6 @@
 import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
 import { resolveFiles } from '@nuxt/kit'
-import { parse as parsePath, resolve } from 'pathe'
+import { parse as parsePath, resolve, relative } from 'pathe'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
 import { isString } from '@intlify/shared'
@@ -208,6 +208,113 @@ export function parseSegment(segment: string) {
   consumeBuffer()
 
   return tokens
+}
+
+export const resolveRelativeLocales = (
+  relativeFileResolver: (files: string[]) => string[],
+  locale: LocaleObject,
+  merged: LocaleObject | undefined
+) => {
+  if (typeof locale === 'string') return merged
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { file, files, ...entry } = locale
+
+  const fileEntries = getLocaleFiles(locale)
+  const relativeFiles = relativeFileResolver(fileEntries)
+  return {
+    ...entry,
+    ...merged,
+    files: [...relativeFiles, ...(merged?.files ?? [])]
+  }
+}
+
+export const getLocaleFiles = (locale: LocaleObject): string[] => {
+  if (locale.file != null) return [locale.file]
+  if (locale.files != null) return locale.files
+  return []
+}
+
+export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string, files: string[]) => {
+  const absoluteFiles = files.map(file => resolve(layerLangDir, file))
+  const relativeFiles = absoluteFiles.map(file => relative(projectLangDir, file))
+
+  return relativeFiles
+}
+
+export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
+  const projectLayer = nuxt.options._layers[0]
+  return resolve(projectLayer.config.rootDir, ...target)
+}
+
+export type LocaleConfig = {
+  projectLangDir?: string | null
+  langDir?: string | null
+  locales?: (string | LocaleObject)[]
+}
+/**
+ * Generically merge LocaleObject locales
+ *
+ * @param configs prepared configs to resolve locales relative to project
+ * @param baseLocales optional array of locale objects to merge configs into
+ */
+export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
+  const mergedLocales = new Map<string, LocaleObject>()
+  baseLocales.forEach(locale => mergedLocales.set(locale.code, locale))
+
+  for (const { locales, langDir, projectLangDir } of configs) {
+    if (locales == null) continue
+    if (langDir == null) continue
+    if (projectLangDir == null) continue
+
+    for (const locale of locales) {
+      if (typeof locale === 'string') continue
+
+      const filesResolver = (files: string[]) => localeFilesToRelative(projectLangDir, langDir, files)
+      const resolvedLocale = resolveRelativeLocales(filesResolver, locale, mergedLocales.get(locale.code))
+      if (resolvedLocale != null) mergedLocales.set(locale.code, resolvedLocale)
+    }
+  }
+
+  return Array.from(mergedLocales.values())
+}
+
+/**
+ * Merges project layer locales with registered i18n modules
+ */
+export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => {
+  const projectLayer = nuxt.options._layers[0]
+
+  if (projectLayer.config.i18n) projectLayer.config.i18n.i18nModules = []
+  const registerI18nModule = async (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => {
+    if (config.langDir == null) return
+    projectLayer.config.i18n?.i18nModules?.push(config)
+  }
+
+  // @ts-ignore
+  await nuxt.callHook('i18n:registerModule', registerI18nModule)
+  const modules = projectLayer.config.i18n?.i18nModules ?? []
+  const projectLangDir = getProjectPath(nuxt, projectLayer.config.i18n?.langDir ?? '')
+
+  if (modules.length > 0) {
+    const baseLocales: LocaleObject[] = []
+    const layerLocales = projectLayer.config.i18n?.locales ?? []
+
+    for (const locale of layerLocales) {
+      if (typeof locale !== 'object') continue
+      baseLocales.push({ ...locale, file: undefined, files: getLocaleFiles(locale) })
+    }
+
+    const mergedLocales = mergeConfigLocales(
+      modules.map(x => ({ ...x, projectLangDir })),
+      baseLocales
+    )
+
+    if (projectLayer.config.i18n) {
+      options.locales = mergedLocales
+      projectLayer.config.i18n.locales = mergedLocales
+    }
+  }
 }
 
 export function getRoutePath(tokens: SegmentToken[]): string {

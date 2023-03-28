@@ -29,13 +29,12 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
+import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType, mergeI18nModules } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
-import { applyLayerOptions, getLocaleFiles, getProjectPath, localeFilesToRelative } from './layers'
+import { applyLayerOptions } from './layers'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
-import type { LocaleObject } from 'vue-i18n-routing'
 
 export * from './types'
 
@@ -81,51 +80,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
 
-    if (nuxt.options._layers[0].config.i18n) nuxt.options._layers[0].config.i18n.i18nModules = []
-    const registerI18nModule = async (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => {
-      debug('registered i18n module - ', config)
-      if (config.langDir == null) return
-
-      nuxt.options._layers[0].config.i18n?.i18nModules?.push(config)
-    }
-    // @ts-ignore
-    await nuxt.callHook('i18n:registerModule', registerI18nModule)
-    const modules = nuxt.options._layers[0].config.i18n?.i18nModules ?? []
-    const projectLangDir = getProjectPath(nuxt, nuxt.options._layers[0].config.i18n?.langDir ?? '')
-    if (modules.length > 0) {
-      const mergedLocales = new Map<string, LocaleObject>()
-      nuxt.options._layers[0].config.i18n?.locales?.forEach(x => {
-        if (typeof x === 'object') mergedLocales.set(x.code, { ...x, file: undefined, files: getLocaleFiles(x) })
-      })
-
-      for (const module of modules) {
-        debug('layer module -', module)
-        if (!module.locales || !module.langDir) continue
-
-        for (const locale of module.locales) {
-          if (typeof locale === 'string') continue
-
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { file, files, ...entry } = locale
-          const localeEntry = mergedLocales.get(locale.code)
-
-          const fileEntries = getLocaleFiles(locale)
-          const relativeFiles = localeFilesToRelative(projectLangDir, module.langDir, fileEntries)
-          mergedLocales.set(locale.code, {
-            ...localeEntry,
-            ...entry,
-            files: [...relativeFiles, ...(localeEntry?.files ?? [])]
-          })
-        }
-      }
-      debug('merged module locales -', Array.from(mergedLocales.values()))
-      if (nuxt.options._layers[0].config.i18n) {
-        options.locales = Array.from(mergedLocales.values())
-        nuxt.options._layers[0].config.i18n.locales = Array.from(mergedLocales.values())
-      }
-    }
-
-    debug('registered i18n modules -', nuxt.options._layers[0].config.i18n?.i18nModules)
+    await mergeI18nModules(options, nuxt)
     applyLayerOptions(options, nuxt)
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
