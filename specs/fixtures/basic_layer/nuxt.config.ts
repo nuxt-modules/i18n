@@ -1,9 +1,9 @@
-import pathe from 'pathe'
-import { resolveFiles } from '@nuxt/kit'
+import LayerModule from './layer-module'
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   //   extends: ['./layer'],
   modules: [
+    LayerModule,
     '@nuxtjs/i18n'
     // async (_, nuxt) => {
     //   const layers = nuxt.options._layers

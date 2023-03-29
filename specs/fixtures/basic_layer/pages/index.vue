@@ -70,5 +70,8 @@ function onClick() {
       <h3>localeRoute</h3>
       <button @click="onClick">Show profile</button>
     </section>
+    <section>
+      <code id="register-module">{{ $t('moduleLayerText') }}</code>
+    </section>
   </div>
 </template>
