@@ -1,10 +1,19 @@
 import Module1 from './module1'
+import LayerModule from './layer-module'
 import type { NuxtApp } from 'nuxt/dist/app/index'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   extends: ['layers/i18n-layer'],
-  modules: [Module1, '@nuxtjs/i18n', '@nuxt/devtools'],
+  modules: [
+    (_, nuxt) => {
+      console.log(nuxt.options._installedModules)
+    },
+    Module1,
+    LayerModule,
+    '@nuxtjs/i18n',
+    '@nuxt/devtools'
+  ],
   vite: {
     build: {
       minify: false
@@ -19,7 +28,7 @@ export default defineNuxtConfig({
   //     }
   //   }
   // },
-
+  debug: false,
   i18n: {
     experimental: {
       jsTsFormatResource: true
@@ -61,7 +70,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    debug: true,
+    debug: false,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
@@ -80,14 +89,14 @@ export default defineNuxtConfig({
     },
     // differentDomains: true,
     // skipSettingLocaleOnNavigate: true,
-    detectBrowserLanguage: false,
-    // detectBrowserLanguage: {
-    //   useCookie: true,
-    //   // alwaysRedirect: true
-    //   // cookieKey: 'i18n_redirected',
-    //   // // cookieKey: 'my_custom_cookie_name',
-    //   // redirectOn: 'root'
-    // },
+    // detectBrowserLanguage: false,
+    detectBrowserLanguage: {
+      useCookie: true
+      // alwaysRedirect: true
+      // cookieKey: 'i18n_redirected',
+      // // cookieKey: 'my_custom_cookie_name',
+      // redirectOn: 'root'
+    },
     // vueI18n: './vue-i18n.options.ts'
     vueI18n: {
       legacy: false,
