@@ -116,6 +116,6 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
     nuxt.options._layers
       .filter(layer => layer.config.i18n?.langDir != null)
       // @ts-ignore
-      .map(layer => pathe.resolve(layer.config.rootDir, layer.config.i18n.langDir)) as string[]
+      .map(layer => pathe.resolve(layer.config.srcDir, layer.config.i18n.langDir)) as string[]
   )
 }
