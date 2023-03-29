@@ -3,25 +3,9 @@ import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions } from './types'
 import createDebug from 'debug'
 import pathe from 'pathe'
+import { getProjectPath, mergeConfigLocales } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
-
-const getLocaleFiles = (locale: LocaleObject): string[] => {
-  if (locale.file != null) return [locale.file]
-  if (locale.files != null) return locale.files
-  return []
-}
-
-const localeFilesToRelative = (projectLangDir: string, layerLangDir: string, files: string[]) => {
-  const absoluteFiles = files.map(file => pathe.resolve(layerLangDir, file))
-  const relativeFiles = absoluteFiles.map(file => pathe.relative(projectLangDir, file))
-  return relativeFiles
-}
-
-const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
-  const projectLayer = nuxt.options._layers[0]
-  return pathe.resolve(projectLayer.config.rootDir, ...target)
-}
 
 export const applyLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   const project = nuxt.options._layers[0]
@@ -109,33 +93,16 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     const projectLangDir = getProjectPath(nuxt, projectI18n.langDir)
     debug('project path', getProjectPath(nuxt))
 
-    const mergedLocales: LocaleObject[] = []
-    for (const layer of nuxt.options._layers) {
-      if (layer.config.i18n?.locales == null) continue
-      if (layer.config.i18n?.langDir == null) continue
+    const configs = nuxt.options._layers
+      .filter(x => x.config.i18n?.locales != null && x.config.i18n?.langDir != null)
+      .map(x => ({
+        ...x.config.i18n,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        langDir: pathe.resolve(x.config.rootDir, x.config.i18n!.langDir!),
+        projectLangDir
+      }))
 
-      const layerLangDir = pathe.resolve(layer.config.rootDir, layer.config.i18n.langDir)
-      debug('layer langDir -', layerLangDir)
-
-      for (const locale of layer.config.i18n.locales) {
-        if (typeof locale === 'string') continue
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { file, files, ...entry } = locale
-        const localeEntry = mergedLocales.find(x => x.code === locale.code)
-
-        const fileEntries = getLocaleFiles(locale)
-        const relativeFiles = localeFilesToRelative(projectLangDir, layerLangDir, fileEntries)
-
-        if (localeEntry == null) {
-          mergedLocales.push({ ...entry, files: relativeFiles })
-        } else {
-          localeEntry.files = [...relativeFiles, ...(localeEntry?.files ?? [])]
-        }
-      }
-    }
-
-    return mergedLocales
+    return mergeConfigLocales(configs)
   }
 
   return projectI18n.lazy ? mergeLazyLocales() : mergeSimpleLocales()

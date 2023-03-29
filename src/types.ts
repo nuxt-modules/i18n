@@ -51,6 +51,10 @@ export type NuxtI18nOptions<Context = unknown> = {
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
   /**
+   * @internal
+   */
+  i18nModules?: { langDir?: string | null; locales?: I18nRoutingOptions<Context>['locales'] }[]
+  /**
    * @deprecated `'parsePages' option is deprecated. Please use 'customRoutes' option instead. We will remove it in v8 official release.`
    */
   parsePages?: boolean
