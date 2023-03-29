@@ -400,7 +400,7 @@ declare module '@nuxt/schema' {
 
   interface NuxtHooks {
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
-    'i18n:registerModule': (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => Promise<void>
+    'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
   }
 
   interface ConfigSchema {

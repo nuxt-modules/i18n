@@ -286,12 +286,11 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
   const projectLayer = nuxt.options._layers[0]
 
   if (projectLayer.config.i18n) projectLayer.config.i18n.i18nModules = []
-  const registerI18nModule = async (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => {
+  const registerI18nModule = (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => {
     if (config.langDir == null) return
     projectLayer.config.i18n?.i18nModules?.push(config)
   }
 
-  // @ts-ignore
   await nuxt.callHook('i18n:registerModule', registerI18nModule)
   const modules = projectLayer.config.i18n?.i18nModules ?? []
   const projectLangDir = getProjectPath(nuxt, projectLayer.config.i18n?.langDir ?? '')
