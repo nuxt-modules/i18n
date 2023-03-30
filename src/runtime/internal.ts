@@ -186,8 +186,10 @@ export async function loadLocale(
   }
 }
 
+// TODO: remove `i18n:extend-messages` before v8 official release
 const loadedAdditionalLocales: Locale[] = []
 
+// TODO: remove `i18n:extend-messages` before v8 official release
 export async function loadAdditionalLocale(
   context: NuxtApp,
   locale: Locale,

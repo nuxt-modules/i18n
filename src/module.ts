@@ -144,6 +144,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend messages via 3rd party nuxt modules
      */
 
+    // TODO: remove `i18n:extend-messages` before v8 official release
+    logger.warn(
+      formatMessage(
+        "`i18n:extend-messages` is deprecated. That hook will be removed feature at the time of the v8 official release. If you're using it, please use `i18n:extend-messages` instead."
+      )
+    )
     const additionalMessages = await extendMessages(nuxt, localeCodes, options)
 
     /**
@@ -399,6 +405,7 @@ declare module '@nuxt/schema' {
   }
 
   interface NuxtHooks {
+    // TODO: remove `i18n:extend-messages` before v8 official release
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
     'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
   }
