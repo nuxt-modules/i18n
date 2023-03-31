@@ -7,6 +7,7 @@ import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
 import { formatMessage, getRoutePath, parseSegment } from './utils'
+import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
@@ -61,7 +62,11 @@ export function setupPages(
       pagesDir,
       pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
     }
+
     analyzeNuxtPages(ctx, pages)
+    const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
+    mergeLayerPages(analyzer, nuxt)
+
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback,
@@ -78,8 +83,8 @@ export function setupPages(
  * Construct the map of full paths from nuxtpage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
-export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[]): void {
-  const pagesPath = resolve(ctx.srcDir, ctx.pagesDir)
+export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[], pageDirOverride?: string): void {
+  const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
     const splited = page.file.split(pagesPath)
     if (splited.length === 2 && splited[1]) {

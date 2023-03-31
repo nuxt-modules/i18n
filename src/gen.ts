@@ -20,7 +20,7 @@ import { asVirtualId } from './transform/utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
-import type { AdditionalMessages } from './messages'
+import type { AdditionalMessages } from './messages' // TODO: remove `i18n:extend-messages` before v8 official release
 import type { File } from '@babel/types'
 
 export type LoaderOptions = {
@@ -29,7 +29,7 @@ export type LoaderOptions = {
   nuxtI18nOptions?: NuxtI18nOptions
   nuxtI18nOptionsDefault?: NuxtI18nOptionsDefault
   nuxtI18nInternalOptions?: NuxtI18nInternalOptions
-  additionalMessages?: AdditionalMessages
+  additionalMessages?: AdditionalMessages // TODO: remove `i18n:extend-messages` before v8 official release
 }
 
 const debug = createDebug('@nuxtjs/i18n:gen')
@@ -175,6 +175,7 @@ export function generateLoaderOptions(
       codes += `}\n`
       return codes
     } else if (rootKey === 'additionalMessages') {
+      // TODO: remove `i18n:extend-messages` before v8 official release
       return `export const ${rootKey} = ${generateAdditionalMessages(rootValue, misc.dev)}\n`
 	  } else {
 	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
@@ -285,6 +286,26 @@ function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: 
   return normalize(`${relativeBase}/${langDir}/${file}`)
 }
 
+function generateVueI18nOptions(options: Record<string, any>, dev: boolean): string {
+  let genCode = 'Object({'
+  for (const [key, value] of Object.entries(options)) {
+    if (key === 'messages') {
+      genCode += `${JSON.stringify(key)}: Object({`
+      for (const [locale, localeMessages] of Object.entries(value)) {
+        genCode += `${JSON.stringify(locale)}:${
+          generateJSON(JSON.stringify(localeMessages), { type: 'bare', env: dev ? 'development' : 'production' }).code
+        },`
+      }
+      genCode += '}),'
+    } else {
+      genCode += `${JSON.stringify(key)}:${toCode(value)},`
+    }
+  }
+  genCode += '})'
+  return genCode
+}
+
+// TODO: remove `i18n:extend-messages` before v8 official release
 function generateAdditionalMessages(value: Record<string, any>, dev: boolean): string {
   let genCode = 'Object({'
   for (const [locale, messages] of Object.entries(value)) {

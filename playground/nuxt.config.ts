@@ -1,10 +1,19 @@
 import Module1 from './module1'
+import LayerModule from './layer-module'
 import type { NuxtApp } from 'nuxt/dist/app/index'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: [Module1, '@nuxtjs/i18n', '@nuxt/devtools'],
-
+  extends: ['layers/i18n-layer'],
+  modules: [
+    (_, nuxt) => {
+      console.log(nuxt.options._installedModules)
+    },
+    Module1,
+    LayerModule,
+    '@nuxtjs/i18n',
+    '@nuxt/devtools'
+  ],
   vite: {
     build: {
       minify: false
@@ -19,7 +28,7 @@ export default defineNuxtConfig({
   //     }
   //   }
   // },
-
+  debug: false,
   i18n: {
     experimental: {
       jsTsFormatResource: true
@@ -61,7 +70,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    debug: true,
+    debug: false,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
@@ -71,20 +80,38 @@ export default defineNuxtConfig({
     dynamicRouteParams: true,
     // customRoutes: 'config',
     pages: {
+      history: {
+        ja: '/history-ja'
+      },
       about: {
         ja: '/about-ja'
       }
     },
     // differentDomains: true,
     // skipSettingLocaleOnNavigate: true,
-    detectBrowserLanguage: false
-    // detectBrowserLanguage: {
-    //   useCookie: true,
-    //   // alwaysRedirect: true
-    //   // cookieKey: 'i18n_redirected',
-    //   // // cookieKey: 'my_custom_cookie_name',
-    //   // redirectOn: 'root'
-    // },
-    // vueI18n: { configFile: './i18n.config.ts' }
+    // detectBrowserLanguage: false,
+    detectBrowserLanguage: {
+      useCookie: true
+      // alwaysRedirect: true
+      // cookieKey: 'i18n_redirected',
+      // // cookieKey: 'my_custom_cookie_name',
+      // redirectOn: 'root'
+    },
+    // vueI18n: './vue-i18n.options.ts'
+    vueI18n: {
+      legacy: false,
+      locale: 'en',
+      fallbackLocale: 'fr'
+      // messages: {
+      //   ja: {
+      //     hello: 'こんにちは！'
+      //   }
+      // }
+      // fallbackLocale: {
+      //   en: ['ja', 'fr', 'en-US'],
+      //   ja: ['en', 'fr', 'ja-JP'],
+      //   fr: ['en', 'ja', 'fr-FR']
+      // }
+    }
   }
 })

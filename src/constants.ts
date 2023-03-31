@@ -44,7 +44,6 @@ export const DEFAULT_OPTIONS = {
   routesNameSeparator: '___',
   trailingSlash: false,
   defaultLocaleRouteNameSuffix: 'default',
-  // sortRoutes: true,
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,

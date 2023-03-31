@@ -31,8 +31,9 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
+import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType, mergeI18nModules } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
+import { applyLayerOptions } from './layers'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -80,6 +81,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (!isNuxt3(nuxt)) {
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
+
+    await mergeI18nModules(options, nuxt)
+    applyLayerOptions(options, nuxt)
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       console.warn(
@@ -148,6 +152,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend messages via 3rd party nuxt modules
      */
 
+    // TODO: remove `i18n:extend-messages` before v8 official release
+    logger.warn(
+      formatMessage(
+        "`i18n:extend-messages` is deprecated. That hook will be removed feature at the time of the v8 official release. If you're using it, please use `i18n:extend-messages` instead."
+      )
+    )
     const additionalMessages = await extendMessages(nuxt, localeCodes)
 
     /**
@@ -404,7 +414,9 @@ declare module '@nuxt/schema' {
   }
 
   interface NuxtHooks {
+    // TODO: remove `i18n:extend-messages` before v8 official release
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
+    'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
   }
 
   interface ConfigSchema {
