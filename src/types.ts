@@ -61,7 +61,6 @@ export type NuxtI18nOptions<Context = unknown> = {
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
-  // sortRoutes?: boolean
   strategy?: Strategies
   vueI18n?: I18nOptions | string
   types?: 'composition' | 'legacy'
