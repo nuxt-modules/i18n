@@ -65,6 +65,7 @@ test('basic', () => {
     false,
     'locales',
     '..',
+    null,
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
@@ -84,6 +85,7 @@ test('lazy', () => {
     true,
     'locales',
     '..',
+    null,
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
@@ -102,6 +104,7 @@ test('multiple files', () => {
     true,
     'locales',
     '..',
+    null,
     {
       localeCodes: [...LOCALE_CODES, 'es', 'es-AR'],
       localeInfo: [
@@ -134,6 +137,7 @@ test('locale file in nested', () => {
     true,
     'locales',
     '..',
+    '/path/i18n.config.ts',
     {
       localeCodes: LOCALE_CODES,
       localeInfo: [
@@ -168,12 +172,13 @@ test('vueI18n: path', () => {
     false,
     'locales',
     '..',
+    '/path/i18n.config.js',
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
       additionalMessages: ADDITIONAL_MESSAGES,
       nuxtI18nOptions: {
-        vueI18n: { configFile: '~/plugins/vue-i18n.js' }
+        vueI18n: 'vue-i18n.config.js'
       },
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
@@ -188,6 +193,7 @@ test('toCode: function (arrow)', () => {
     false,
     'locales',
     '..',
+    null,
     {
       localeCodes: LOCALE_CODES,
       additionalMessages: {},
@@ -210,7 +216,7 @@ test('toCode: function (arrow)', () => {
 })
 
 test('toCode: function (named)', () => {
-  const code = generateLoaderOptions(false, 'locales', '..', {
+  const code = generateLoaderOptions(false, 'locales', '..', null, {
     localeCodes: LOCALE_CODES,
     additionalMessages: {},
     nuxtI18nOptions: {

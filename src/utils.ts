@@ -81,7 +81,7 @@ export async function tryResolve(id: string, targets: string[], pkgMgr: PackageM
   throw new Error(`Cannot resolve ${id} on ${pkgMgr}! please install it on 'node_modules'`)
 }
 
-async function isExists(path: string) {
+export async function isExists(path: string) {
   try {
     await fs.access(path, FS_CONSTANTS.F_OK)
     return true

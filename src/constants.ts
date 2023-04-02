@@ -37,7 +37,7 @@ export const DEFAULT_OPTIONS = {
     strictMessage: true,
     escapeHtml: false
   },
-  vueI18n: undefined,
+  vueI18n: '',
   locales: [] as string[],
   defaultLocale: '',
   defaultDirection: 'ltr',
@@ -64,7 +64,7 @@ export const DEFAULT_OPTIONS = {
   customRoutes: 'page',
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  types: undefined,
+  types: 'composition',
   debug: false
 } as const
 

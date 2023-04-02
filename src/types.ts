@@ -44,6 +44,7 @@ export interface LocaleMessagePrecompileOptions {
 export { I18nOptions }
 
 export type NuxtI18nOptions<Context = unknown> = {
+  vueI18n?: string
   experimental?: ExperimentalFeatures
   precompile?: LocaleMessagePrecompileOptions
   differentDomains?: boolean
@@ -64,9 +65,6 @@ export type NuxtI18nOptions<Context = unknown> = {
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
   strategy?: Strategies
-  vueI18n?: {
-    configFile?: string
-  }
   types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean

@@ -4,7 +4,11 @@ import type { I18nOptions } from 'vue-i18n'
 const config: I18nOptions = {
   legacy: false,
   locale: 'en',
-  fallbackLocale: 'fr'
+  fallbackLocale: 'fr',
+  modifiers: {
+    // @ts-expect-error
+    snakeCase: (str: string) => str.split(' ').join('-')
+  }
   // messages: {
   //   ja: {
   //     hello: 'こんにちは！'

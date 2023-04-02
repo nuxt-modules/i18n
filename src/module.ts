@@ -1,7 +1,6 @@
-import { existsSync } from 'fs'
 import createDebug from 'debug'
 import { promises as fs } from 'node:fs'
-import { isBoolean, isObject, isString } from '@intlify/shared'
+import { isString } from '@intlify/shared'
 import {
   defineNuxtModule,
   isNuxt2,
@@ -31,7 +30,14 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType, mergeI18nModules } from './utils'
+import {
+  formatMessage,
+  getNormalizedLocales,
+  resolveLocales,
+  getPackageManagerType,
+  mergeI18nModules,
+  isExists
+} from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions } from './layers'
 
@@ -132,21 +138,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('localeInfo', localeInfo)
 
     /**
-     * resolve vue-i18n options
+     * resolve vue-i18n config path
      */
 
-    const configPath = await resolvePath(options.vueI18n?.configFile || 'i18n.config', {
+    options.vueI18n = options.vueI18n || 'i18n.config'
+    let vueI18nConfigPath: string | null = await resolvePath(options.vueI18n, {
       cwd: nuxt.options.rootDir,
-      extensions: ['.ts', '.mjs', '.js']
+      extensions: ['.ts', '.cts', '.mts', '.js', '.cjs', '.mjs']
     })
-    const configPathExists = existsSync(configPath)
-
-    if (options.vueI18n?.configFile && !configPathExists) {
-      logger.warn(`Configuration file does not exist at ${configPath}. Skipping..`)
+    if (!(await isExists(vueI18nConfigPath))) {
+      logger.warn(`Vue I18n configuration file does not exist at ${vueI18nConfigPath}. Skipping..`)
+      vueI18nConfigPath = null
     }
-
-    // prettier-ignore
-    const vueI18n = configPathExists ? configPath : { legacy: false }
 
     /**
      * extend messages via 3rd party nuxt modules
@@ -155,10 +158,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // TODO: remove `i18n:extend-messages` before v8 official release
     logger.warn(
       formatMessage(
-        "`i18n:extend-messages` is deprecated. That hook will be removed feature at the time of the v8 official release. If you're using it, please use `i18n:extend-messages` instead."
+        "`i18n:extend-messages` is deprecated. That hook will be removed feature at the time of the v8 official release. If you're using it, please use `i18n:registerModule` instead."
       )
     )
-    const additionalMessages = await extendMessages(nuxt, localeCodes)
+    const additionalMessages = await extendMessages(nuxt, localeCodes, options)
 
     /**
      * setup nuxt/pages
@@ -212,6 +215,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
           options.lazy,
           options.langDir,
           localesRelativeBasePath,
+          vueI18nConfigPath,
           {
             localeCodes,
             localeInfo,
@@ -226,8 +230,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
             ssg: nuxt.options._generate,
             ssr: nuxt.options.ssr,
             dev: nuxt.options.dev
-          },
-          configPathExists ? configPath : false
+          }
         )
       }
     })
@@ -244,14 +247,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add extend type definition
      */
 
-    // prettier-ignore
-    const isLegacyMode = () => {
-      return isString(options.types)
-        ? options.types === 'legacy'
-        : isObject(vueI18n) && isBoolean(vueI18n.legacy)
-          ? vueI18n.legacy
-          : false
-    }
+    const isLegacyMode = () => options.types === 'legacy'
 
     // To be plugged for `$i18n` type definition on `NuxtApp`
     addPlugin(resolve(runtimeDir, isLegacyMode() ? 'plugins/legacy' : 'plugins/composition'))
