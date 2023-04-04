@@ -1,16 +1,21 @@
-import type { I18nOptions } from 'vue-i18n'
-import type { NuxtApp } from 'nuxt/dist/app/index'
 import ja from './locales/ja.json'
 
-export default function (nuxt: NuxtApp) {
-  console.log('load vue-i18n option', ja, nuxt)
+import type { I18nOptions } from 'vue-i18n'
+
+export default defineI18nConfig(nuxt => {
+  console.log('load vue-i18n custom config')
   return {
     legacy: false,
     locale: 'en',
     fallbackLocale: 'en',
-    messages: {},
+    messages: {
+      ja,
+      jojo: {
+        world: 'the world!'
+      }
+    },
     modifiers: {
       snakeCase: (str: string) => str.split(' ').join('-')
     }
   } as I18nOptions
-}
+})

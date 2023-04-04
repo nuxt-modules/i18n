@@ -19,6 +19,13 @@ export type LocaleInfo = {
   paths?: string[]
 } & LocaleObject
 
+export type VueI18nConfigPathInfo = {
+  relative?: string
+  absolute?: string
+  rootDir: string
+  relativeBase: string
+}
+
 export interface RootRedirectOptions {
   path: string
   statusCode: number

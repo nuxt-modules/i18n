@@ -10,6 +10,7 @@ import { getVirtualId, VIRTUAL_PREFIX_HEX } from './utils'
 import {
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_TEMPLATE_INTERNAL_KEY,
+  NUXT_I18N_CONFIG_PROXY_ID,
   NUXT_I18N_RESOURCE_PROXY_ID
 } from '../constants'
 
@@ -31,7 +32,20 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
       const query = parseQuery(search)
 
       if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
-        // console.log('resolveId', id, importer, pathname, query)
+        // console.log('resolveId (resource)', id, importer, pathname, query)
+        if (importer?.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
+          return {
+            id: `${id}&from=${importer}`,
+            moduleSideEffects: true
+          }
+        } else if (isString(query.from) && query.from.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
+          return {
+            id,
+            moduleSideEffects: true
+          }
+        }
+      } else if (pathname === NUXT_I18N_CONFIG_PROXY_ID) {
+        // console.log('resolveId (config)', id, importer, pathname, query)
         if (importer?.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
           return {
             id: `${id}&from=${importer}`,
@@ -56,20 +70,20 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
       if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
         if (isString(query.target) && isString(query.from)) {
           const baseDir = dirname(query.from)
-          // console.log('load ->', id, pathname, query, baseDir)
+          // console.log('load (resource) ->', id, pathname, query, baseDir)
           // prettier-ignore
           const code = `import { loadResource, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
 import { NUXT_I18N_PRECOMPILED_LOCALE_KEY, isSSG } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
 export default async function(context, locale) {
   if (process.dev || process.server || !isSSG) {
     __DEBUG__ && console.log('loadResource', locale)
-    const loader = await import(${JSON.stringify(`${resolve(baseDir, query.target)}?dynamic=true`)}).then(m => m.default || m)
+    const loader = await import(${JSON.stringify(`${resolve(baseDir, query.target)}?resource=true`)}).then(m => m.default || m)
     return await loadResource(context, locale, loader)
   } else {
     __DEBUG__ && console.log('load precompiled resource', locale)
     let mod = null
     try {
-      mod = await import(/* @vite-ignore */ \`/\${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-\${locale}.js\`).then(
+      mod = await import(/* @vite-ignore */ \`/\${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-\${locale}.js\` /* webpackChunkName: ${query.target} */).then(
         m => m.default || m
       )
     } catch (e) {
@@ -78,8 +92,41 @@ export default async function(context, locale) {
     return mod || {}
   }
 }`
-          // console.log(`code ->`, code)
-
+          const s = new MagicString(code)
+          return {
+            code: s.toString(),
+            map: options.sourcemap ? s.generateMap({ source: id, includeContent: true }) : undefined
+          }
+        }
+      } else if (pathname === NUXT_I18N_CONFIG_PROXY_ID) {
+        if (isString(query.target) && isString(query.from)) {
+          const baseDir = dirname(query.from)
+          // console.log('load (config) ->', id, pathname, query, baseDir)
+          // prettier-ignore
+          const code = `import { precompileMessages, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
+import { isSSG } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
+export default async function(context) {
+  const loader = await import(${JSON.stringify(`${resolve(baseDir, query.target)}?config=true`)}).then(m => m.default || m)
+  const config = await loader(context)
+  __DEBUG__ && console.log('loadConfig', config)
+  if (process.dev || process.server || !isSSG) {
+    config.messages = await precompileMessages(config.messages)
+    return config
+  } else {
+    __DEBUG__ && console.log('already pre-compiled vue-i18n messages')
+    let messages = null
+    try {
+      const key = \`/i18n-config.js\` 
+      messages = await import(/* @vite-ignore */ key /* webpackChunkName: nuxt-i18n-config */).then(
+        m => m.default || m
+      )
+    } catch (e) {
+      console.error(format(e.message))
+    }
+    config.messages = messages || {}
+    return config
+  }
+}`
           const s = new MagicString(code)
           return {
             code: s.toString(),

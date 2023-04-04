@@ -8,12 +8,12 @@ const config: I18nOptions = {
   modifiers: {
     // @ts-expect-error
     snakeCase: (str: string) => str.split(' ').join('-')
+  },
+  messages: {
+    ja: {
+      hello: 'こんにちは！'
+    }
   }
-  // messages: {
-  //   ja: {
-  //     hello: 'こんにちは！'
-  //   }
-  // }
   // fallbackLocale: {
   //   en: ['ja', 'fr', 'en-US'],
   //   ja: ['en', 'fr', 'ja-JP'],

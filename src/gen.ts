@@ -4,11 +4,15 @@ import createDebug from 'debug'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
 import {
+  JS_EXTENSIONS,
+  TS_EXTENSIONS,
   NUXT_I18N_MODULE_ID,
+  NUXT_I18N_CONFIG_PROXY_ID,
   NUXT_I18N_RESOURCE_PROXY_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
   NUXT_I18N_PRECOMPILED_LOCALE_KEY,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
 } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
@@ -18,7 +22,7 @@ import { transform as stripType } from '@mizchi/sucrase'
 import { parse as _parseCode } from '@babel/parser'
 import { asVirtualId } from './transform/utils'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo } from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { AdditionalMessages } from './messages' // TODO: remove `i18n:extend-messages` before v8 official release
 import type { File } from '@babel/types'
@@ -38,7 +42,7 @@ export function generateLoaderOptions(
   lazy: NonNullable<NuxtI18nOptions['lazy']>,
   langDir: NuxtI18nOptions['langDir'],
   localesRelativeBase: string,
-  vueI18nConfigPath: string | null,
+  vueI18nConfigPathInfo: VueI18nConfigPathInfo,
   options: LoaderOptions = {},
   misc: {
     dev: boolean
@@ -46,6 +50,10 @@ export function generateLoaderOptions(
     ssr: boolean
   } = { dev: true, ssg: false, ssr: true }
 ) {
+  debug('generateLoaderOptions: langDir', langDir)
+  debug('generateLoaderOptions: localesRelativeBase', localesRelativeBase)
+  debug('generateLoaderOptions: vueI18nConfigPathInfo', vueI18nConfigPathInfo)
+
   const generatedImports = new Map<string, string>()
   const importMapper = new Map<string, string>()
 
@@ -84,7 +92,7 @@ export function generateLoaderOptions(
     return gen
   }
 
-  let genCode = vueI18nConfigPath != null ? `${genImport(vueI18nConfigPath, 'vueI18nOptions')}\n` : ''
+  let genCode = ''
   const localeInfo = options.localeInfo || []
   const syncLocaleFiles = new Set<LocaleInfo>()
   const asyncLocaleFiles = new Set<LocaleInfo>()
@@ -139,15 +147,23 @@ export function generateLoaderOptions(
       genCodes += `  const ${rootKey} = Object({})\n`
       for (const [key, value] of Object.entries(rootValue)) {
         if (key === 'vueI18n') {
-          // const optionLoaderVariable = `${key}OptionsLoader`
-          // genCodes += `  const ${optionLoaderVariable} = ${isString(value) && value !== ''
-          //     // ? `async (context) => import(${toCode(value)}).then(r => (r.default || r)(context))\n`
-          //     ? `async (context) => import(${toCode(value)}).then(r => (r.default || r))\n`
-          //     : `async (context) => ${toCode({})}\n`
-          // }`
-          // genCodes += `  ${rootKey}.${key} = await ${optionLoaderVariable}(context)\n`
-          genCodes += `  ${rootKey}.${key} = ${vueI18nConfigPath != null ? 'vueI18nOptions' : {} }\n`
-          genCodes += `  if (${rootKey}.${key}.messages) { console.warn("[${NUXT_I18N_MODULE_ID}]: Cannot include 'messages' option in '${value}'. Please use Lazy-load translations."); ${rootKey}.${key}.messages = {}; }\n`
+          const { absolute: absolutePath, relative: relativePath, relativeBase, rootDir: configRootDir }  = vueI18nConfigPathInfo
+          if (absolutePath != null && relativePath != null) {
+            const { dir, base, ext } = parsePath(relativePath)
+            const configPath = normalize(`${relativeBase ? `${relativeBase}/` : ''}${dir ? `${dir}/` : ''}${base}`)
+            genCodes += `  const configLoader = ${genDynamicImport(genImportSpecifier(configPath, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}"` })}
+              const config = await configLoader().then(r => r.default || r)
+              if (typeof config === 'object') {
+                ${rootKey}.${key} = config
+              } else if (typeof config === 'function') {
+                ${rootKey}.${key} = await config(context)
+              } else {
+                ${rootKey}.${key} = {}
+              }
+`
+          } else {
+            genCodes += `  ${rootKey}.${key} = ${toCode({})}\n`
+          }
         } else {
           genCodes += `  ${rootKey}.${key} = ${toCode(key === 'locales' ? stripPathFromLocales(value) : value)}\n`
         }
@@ -207,16 +223,20 @@ export function generateLoaderOptions(
   return genCode
 }
 
-const TARGET_TS_EXTENSIONS = ['.ts', '.cts', '.mts']
-
-function genImportSpecifier(id: string, ext: string, absolutePath: string) {
-  if (['.js', '.cjs', '.mjs', ...TARGET_TS_EXTENSIONS].includes(ext)) {
+function genImportSpecifier(
+  id: string,
+  ext: string,
+  absolutePath: string,
+  virtualId: string = NUXT_I18N_RESOURCE_PROXY_ID,
+  funcName: string = NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+) {
+  if ([...JS_EXTENSIONS, ...TS_EXTENSIONS].includes(ext)) {
     const code = readCode(absolutePath, ext)
     const parsed = parseCode(code, absolutePath)
-    const anaylzed = scanProgram(parsed.program)
+    const anaylzed = scanProgram(parsed.program, funcName)
     // prettier-ignore
     return anaylzed === 'arrow-function' || anaylzed === 'function'
-      ? `${asVirtualId(NUXT_I18N_RESOURCE_PROXY_ID)}?target=${id}`
+      ? asVirtualId(`${virtualId}?target=${id}`)
       : id
   } else {
     return id
@@ -240,7 +260,7 @@ function parseCode(code: string, path: string) {
   return parsed
 }
 
-function scanProgram(program: File['program']) {
+function scanProgram(program: File['program'], calleeName: string) {
   let ret: false | 'object' | 'function' | 'arrow-function' = false
   for (const node of program.body) {
     if (node.type === 'ExportDefaultDeclaration') {
@@ -250,7 +270,7 @@ function scanProgram(program: File['program']) {
       } else if (
         node.declaration.type === 'CallExpression' &&
         node.declaration.callee.type === 'Identifier' &&
-        node.declaration.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+        node.declaration.callee.name === calleeName
       ) {
         const [fnNode] = node.declaration.arguments
         if (fnNode.type === 'FunctionExpression') {
@@ -268,7 +288,7 @@ function scanProgram(program: File['program']) {
 
 export function readCode(absolutePath: string, ext: string) {
   let code = fs.readFileSync(absolutePath, 'utf-8').toString()
-  if (TARGET_TS_EXTENSIONS.includes(ext)) {
+  if (TS_EXTENSIONS.includes(ext)) {
     const out = stripType(code, {
       transforms: ['jsx'],
       keepUnusedImports: true
@@ -296,25 +316,6 @@ function convertToImportId(file: string) {
 
 function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: string) {
   return normalize(`${relativeBase}/${langDir}/${file}`)
-}
-
-function generateVueI18nOptions(options: Record<string, any>, dev: boolean): string {
-  let genCode = 'Object({'
-  for (const [key, value] of Object.entries(options)) {
-    if (key === 'messages') {
-      genCode += `${JSON.stringify(key)}: Object({`
-      for (const [locale, localeMessages] of Object.entries(value)) {
-        genCode += `${JSON.stringify(locale)}:${
-          generateJSON(JSON.stringify(localeMessages), { type: 'bare', env: dev ? 'development' : 'production' }).code
-        },`
-      }
-      genCode += '}),'
-    } else {
-      genCode += `${JSON.stringify(key)}:${toCode(value)},`
-    }
-  }
-  genCode += '})'
-  return genCode
 }
 
 // TODO: remove `i18n:extend-messages` before v8 official release

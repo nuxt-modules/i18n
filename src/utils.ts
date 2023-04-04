@@ -1,13 +1,13 @@
 import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
-import { resolveFiles } from '@nuxt/kit'
+import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
 import { isString } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID } from './constants'
+import { NUXT_I18N_MODULE_ID, JS_EXTENSIONS, TS_EXTENSIONS } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
-import type { NuxtI18nOptions, LocaleInfo } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
 import type { Nuxt } from '@nuxt/schema'
 
 const PackageManagerLockFiles = {
@@ -88,6 +88,24 @@ export async function isExists(path: string) {
   } catch (e) {
     return false
   }
+}
+
+export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, nuxt: Nuxt) {
+  const configPathInfo: VueI18nConfigPathInfo = {
+    relativeBase: relative(nuxt.options.buildDir, nuxt.options.rootDir),
+    rootDir: nuxt.options.rootDir
+  }
+
+  const vueI18nConfigRelativePath = (configPathInfo.relative = options.vueI18n || 'i18n.config')
+  const vueI18nConfigAbsolutePath = await resolvePath(vueI18nConfigRelativePath, {
+    cwd: nuxt.options.rootDir,
+    extensions: [...JS_EXTENSIONS, ...TS_EXTENSIONS]
+  })
+  if (await isExists(vueI18nConfigAbsolutePath)) {
+    configPathInfo.absolute = vueI18nConfigAbsolutePath
+  }
+
+  return configPathInfo
 }
 
 /**

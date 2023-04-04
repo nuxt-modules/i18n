@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       {
         code: 'en-GB',
         iso: 'en-GB',
-        files: ['en.json', 'en-GB.js'],
+        files: ['en.json', 'en-GB.js', 'en-KK.js'],
         name: 'English (UK)'
       },
       {
@@ -97,6 +97,6 @@ export default defineNuxtConfig({
       // // cookieKey: 'my_custom_cookie_name',
       // redirectOn: 'root'
     },
-    vueI18n: './i18n.config.ts'
+    vueI18n: './vue-i18n.options.ts'
   }
 })

@@ -258,23 +258,26 @@ export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales
 /**
  * Define locale loader for dynamic locale messages loading
  *
- * @param loader - The target locale loader
+ * @param locale - The target locale
  *
- * @returns The defined locale loader
+ * @returns The defined locale
  */
 export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale>(
-  loader: LocaleLoader<Messages, Locales>
+  locale: LocaleLoader<Messages, Locales>
 ): LocaleLoader<Messages, Locales> {
-  return loader
+  return locale
 }
 
-// WIP - not exported yet (since this is build-time)
+// TOOD: comment
+export type ConfigLoader<Config extends I18nOptions> = (context: ReturnType<typeof useNuxtApp>) => MaybePromise<Config>
+
 /**
  * Define configuration for vue-i18n runtime plugin
  *
  * @param config - The target configuration for vue-i18n
+ *
  * @returns The defined configuration
  */
-export function defineI18nConfig<Config extends I18nOptions>(config: Config) {
+export function defineI18nConfig<Config extends I18nOptions>(config: ConfigLoader<Config>): ConfigLoader<Config> {
   return config
 }

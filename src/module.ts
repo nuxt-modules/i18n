@@ -11,8 +11,7 @@ import {
   addImports,
   addServerHandler,
   useLogger,
-  addPrerenderRoutes, // TODO: remove?
-  resolvePath
+  addPrerenderRoutes // TODO: remove?
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { defu } from 'defu'
@@ -26,9 +25,9 @@ import {
   DEFAULT_OPTIONS,
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
 } from './constants'
 import {
   formatMessage,
@@ -36,7 +35,7 @@ import {
   resolveLocales,
   getPackageManagerType,
   mergeI18nModules,
-  isExists
+  resolveVueI18nConfigInfo
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions } from './layers'
@@ -141,15 +140,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * resolve vue-i18n config path
      */
 
-    options.vueI18n = options.vueI18n || 'i18n.config'
-    let vueI18nConfigPath: string | null = await resolvePath(options.vueI18n, {
-      cwd: nuxt.options.rootDir,
-      extensions: ['.ts', '.cts', '.mts', '.js', '.cjs', '.mjs']
-    })
-    if (!(await isExists(vueI18nConfigPath))) {
-      logger.warn(`Vue I18n configuration file does not exist at ${vueI18nConfigPath}. Skipping..`)
-      vueI18nConfigPath = null
+    const vueI18nConfigPathInfo = await resolveVueI18nConfigInfo(options, nuxt)
+    if (vueI18nConfigPathInfo.absolute == null) {
+      logger.warn(`Vue I18n configuration file does not exist at ${vueI18nConfigPathInfo.relative}. Skipping...`)
     }
+    debug('vueI18nConfigPathInfo', vueI18nConfigPathInfo)
 
     /**
      * extend messages via 3rd party nuxt modules
@@ -215,7 +210,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
           options.lazy,
           options.langDir,
           localesRelativeBasePath,
-          vueI18nConfigPath,
+          vueI18nConfigPathInfo,
           {
             localeCodes,
             localeInfo,
@@ -283,14 +278,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend nitro storages
      */
 
-    const storageKey = NUXT_I18N_PRECOMPILED_LOCALE_KEY.split('-').join(':')
+    const storageKey = 'i18n'
     nuxt.hook('nitro:config', nitro => {
       nitro.storage = nitro.storage || {}
       nitro.storage[storageKey] = {
         // nitro.devStorage = nitro.devStorage || {}
         // nitro.devStorage['i18n:locales'] = {
         driver: 'fs',
-        base: resolve(nuxt.options.buildDir, NUXT_I18N_PRECOMPILED_LOCALE_KEY)
+        base: resolve(nuxt.options.buildDir, storageKey)
       }
       // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
       // nitro.bundledStorage = nitro.bundledStorage || []
@@ -307,17 +302,22 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     if (nuxt.options._generate) {
       nuxt.hook('nitro:build:before', async nitro => {
-        const buildLocaleDir = nitro.options.storage[storageKey].base
+        const buildI18nDir = nitro.options.storage[storageKey].base
         await nitro.storage.watch(async (event, key) => {
           if (event === 'update') {
-            const buildKey = `build:${NUXT_I18N_PRECOMPILED_LOCALE_KEY}`
-            if (key.startsWith(buildKey)) {
-              const locale = key.split(':')[2]
-              const source = resolve(buildLocaleDir, locale)
-              const target = resolve(nitro.options.output.publicDir, `${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-${locale}`)
-              const localeCode = await fs.readFile(source, 'utf-8')
-              await fs.writeFile(target, localeCode, 'utf-8')
+            if (key.startsWith(`build:${storageKey}:config.js`)) {
+              const source = resolve(buildI18nDir, `config.js`)
+              const target = resolve(nitro.options.output.publicDir, `${storageKey}-config.js`)
+              const code = await fs.readFile(source, 'utf-8')
+              await fs.writeFile(target, code, 'utf-8')
               debug(`generate locale file: ${source} -> ${target}`)
+            } else if (key.startsWith(`build:${storageKey}:locales`)) {
+              const locale = key.split(':')[3]
+              const source = resolve(buildI18nDir, `locales/${locale}`)
+              const target = resolve(nitro.options.output.publicDir, `${storageKey}-locales-${locale}`)
+              const code = await fs.readFile(source, 'utf-8')
+              await fs.writeFile(target, code, 'utf-8')
+              debug(`generate locale file: ${locale} -> ${target}`)
             }
           }
         })
@@ -343,7 +343,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useBrowserLocale',
         'useCookieLocale',
         NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+        NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
       ].map(key => ({
         name: key,
         as: key,

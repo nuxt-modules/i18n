@@ -24,6 +24,8 @@ export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsForma
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
@@ -50,6 +52,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
@@ -58,8 +62,7 @@ export const isSSR = true
 `;
 
 exports[`locale file in nested 1`] = `
-"import vueI18nOptions from \\"/path/i18n.config.ts\\";
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
   \\"en\\": [{ key: \\"../locales/en/main.json\\", load: () => import(\\"../locales/en/main.json\\" /* webpackChunkName: \\"lang_en_en_main_json\\" */) }],
@@ -77,6 +80,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
@@ -105,6 +110,8 @@ export const resolveNuxtI18nOptions = async (context) => {
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
@@ -134,6 +141,8 @@ export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsForma
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
@@ -163,6 +172,8 @@ export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsForma
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
@@ -171,8 +182,7 @@ export const isSSR = true
 `;
 
 exports[`vueI18n: path 1`] = `
-"import vueI18nOptions from \\"/path/i18n.config.js\\";
-import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
+"import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
 import locale_ja from \\"../locales/ja.json\\" assert { type: \\"json\\" };
 import locale_fr from \\"../locales/fr.json\\" assert { type: \\"json\\" };
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
@@ -199,13 +209,15 @@ export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.vueI18n = vueI18nOptions
-  if (nuxtI18nOptions.vueI18n.messages) { console.warn(\\"[@nuxtjs/i18n]: Cannot include 'messages' option in 'vue-i18n.config.js'. Please use Lazy-load translations.\\"); nuxtI18nOptions.vueI18n.messages = {}; }
+  const configLoader = () => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=/path/i18n.config.js\\" /* webpackChunkName: \\"_path_i18n_config_js\\" */)(context)
+  nuxtI18nOptions.vueI18n = await configLoader()
   return nuxtI18nOptions
 }
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
+export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
