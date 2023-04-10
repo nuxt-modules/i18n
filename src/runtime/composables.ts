@@ -268,7 +268,18 @@ export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>,
   return locale
 }
 
-// TOOD: comment
+/**
+ * The `defineI18nConfig` defines a composable function to vue-i18n configuration.
+ *
+ * @remarks
+ * This function is used to pass the `createI18n` options on nuxt i18n module.
+ *
+ * For more details about configuration, see the [Vue I18n documentation](https://vue-i18n.intlify.dev/api/general.html#createi18n).
+ *
+ * @param context - A Nuxt Application instance that is passed from nuxt i18n module.
+ *
+ * @returns Return vue-i18n options object that will be resolved by Promise.
+ */
 export type ConfigLoader<Config extends I18nOptions> = (context: ReturnType<typeof useNuxtApp>) => MaybePromise<Config>
 
 /**

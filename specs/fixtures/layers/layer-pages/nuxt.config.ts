@@ -17,19 +17,6 @@ export default defineNuxtConfig({
         iso: 'nl-NL',
         name: 'Nederlands'
       }
-    ],
-    vueI18n: {
-      messages: {
-        en: {
-          hello: 'Hello world!'
-        },
-        fr: {
-          hello: 'Bonjour le monde!'
-        },
-        nl: {
-          hello: 'Hallo wereld!'
-        }
-      }
-    }
+    ]
   }
 })

@@ -1,4 +1,5 @@
 import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
+import { createHash } from 'node:crypto'
 import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
 import { encodePath } from 'ufo'
@@ -90,15 +91,15 @@ export async function isExists(path: string) {
   }
 }
 
-export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, nuxt: Nuxt) {
+export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDir: string, rootDir: string) {
   const configPathInfo: VueI18nConfigPathInfo = {
-    relativeBase: relative(nuxt.options.buildDir, nuxt.options.rootDir),
-    rootDir: nuxt.options.rootDir
+    relativeBase: relative(buildDir, rootDir),
+    rootDir
   }
 
   const vueI18nConfigRelativePath = (configPathInfo.relative = options.vueI18n || 'i18n.config')
   const vueI18nConfigAbsolutePath = await resolvePath(vueI18nConfigRelativePath, {
-    cwd: nuxt.options.rootDir,
+    cwd: rootDir,
     extensions: [...JS_EXTENSIONS, ...TS_EXTENSIONS]
   })
   if (await isExists(vueI18nConfigAbsolutePath)) {
@@ -348,4 +349,8 @@ export function getRoutePath(tokens: SegmentToken[]): string {
             : encodePath(token.value))
     )
   }, '/')
+}
+
+export function getHash(text: Buffer | string): string {
+  return createHash('sha256').update(text).digest('hex').substring(0, 8)
 }

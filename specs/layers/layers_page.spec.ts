@@ -9,6 +9,7 @@ describe('nuxt layers-pages', async () => {
     browser: true,
     // overrides
     nuxtConfig: {
+      // _generate: true,
       extends: [fileURLToPath(new URL(`../fixtures/layers/layer-pages`, import.meta.url))]
     }
   })

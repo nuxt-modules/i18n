@@ -21,6 +21,7 @@ import fs from 'node:fs'
 import { transform as stripType } from '@mizchi/sucrase'
 import { parse as _parseCode } from '@babel/parser'
 import { asVirtualId } from './transform/utils'
+import { getHash } from './utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -43,6 +44,7 @@ export function generateLoaderOptions(
   langDir: NuxtI18nOptions['langDir'],
   localesRelativeBase: string,
   vueI18nConfigPathInfo: VueI18nConfigPathInfo,
+  vueI18nConfigPaths: VueI18nConfigPathInfo[],
   options: LoaderOptions = {},
   misc: {
     dev: boolean
@@ -63,7 +65,7 @@ export function generateLoaderOptions(
     return _files.map((f, i) => ({ file: f, path: _paths[i] }))
   }
 
-  const buildImportKey = (root: string, dir: string, base: string) =>
+  const makImportKey = (root: string, dir: string, base: string) =>
     normalize(`${root ? `${root}/` : ''}${dir ? `${dir}/` : ''}${base}`)
 
   function generateSyncImports(gen: string, absolutePath: string, relativePath?: string) {
@@ -72,7 +74,7 @@ export function generateLoaderOptions(
     }
 
     const { root, dir, base, ext } = parsePath(relativePath)
-    const key = buildImportKey(root, dir, base)
+    const key = makImportKey(root, dir, base)
     if (!generatedImports.has(key)) {
       let loadPath = relativePath
       if (langDir) {
@@ -137,6 +139,21 @@ export function generateLoaderOptions(
     }
   }
 
+  const generateVueI18nConfigration = (
+    configPath: VueI18nConfigPathInfo,
+    fn: (configPath: Required<VueI18nConfigPathInfo>, meta: { dir: string; base: string; ext: string }) => string | null
+  ) => {
+    const { absolute: absolutePath, relative: relativePath } = configPath
+    if (absolutePath != null && relativePath != null) {
+      const { ext } = parsePath(absolutePath)
+      const { dir, base: _base, ext: relativeExt } = parsePath(relativePath)
+      const base = relativeExt === '.config' ? `${_base}${ext}` : _base
+      return fn(configPath as Required<VueI18nConfigPathInfo>, { dir, base, ext })
+    } else {
+      return null
+    }
+  }
+
   /**
    * Generate options
    */
@@ -147,22 +164,61 @@ export function generateLoaderOptions(
       genCodes += `  const ${rootKey} = Object({})\n`
       for (const [key, value] of Object.entries(rootValue)) {
         if (key === 'vueI18n') {
-          const { absolute: absolutePath, relative: relativePath, relativeBase, rootDir: configRootDir }  = vueI18nConfigPathInfo
-          if (absolutePath != null && relativePath != null) {
-            const { dir, base, ext } = parsePath(relativePath)
-            const configPath = normalize(`${relativeBase ? `${relativeBase}/` : ''}${dir ? `${dir}/` : ''}${base}`)
-            genCodes += `  const configLoader = ${genDynamicImport(genImportSpecifier(configPath, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}"` })}
-              const config = await configLoader().then(r => r.default || r)
-              if (typeof config === 'object') {
-                ${rootKey}.${key} = config
-              } else if (typeof config === 'function') {
-                ${rootKey}.${key} = await config(context)
-              } else {
-                ${rootKey}.${key} = {}
-              }
+          genCodes += ` const vueI18nConfigLoader = async (context, loader) => {
+            const config = await loader().then(r => r.default || r)
+            return typeof config === 'object'
+              ? config
+              : typeof config === 'function'
+                ? await config(context)
+                : {}
+          }
 `
+          const basicVueI18nConfigCode = generateVueI18nConfigration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, relativeBase }, { dir, base, ext }) => {
+            const configImportKey = makImportKey(relativeBase, dir, base)
+            return `const vueI18n = await vueI18nConfigLoader(context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${getHash(absolutePath)}"` })}))\n`
+          })
+          if (basicVueI18nConfigCode != null) {
+            genCodes += `  ${basicVueI18nConfigCode}`
+            genCodes += `  ${rootKey}.${key} = vueI18n\n`
           } else {
             genCodes += `  ${rootKey}.${key} = ${toCode({})}\n`
+          }
+
+          if (vueI18nConfigPaths.length > 0) {
+            genCodes += `  const deepCopy = (src, des, predicate) => {
+            for (const key in src) {
+              if (typeof src[key] === 'object') {
+                if (!typeof des[key] === 'object') des[key] = {}
+                deepCopy(src[key], des[key], predicate)
+              } else {
+                if (predicate) {
+                  if (predicate(src[key], des[key])) {
+                    des[key] = src[key]
+                  }
+                } else {
+                  des[key] = src[key]
+                }
+              }
+            }
+          }
+          const mergeMessages = async (messages, context, loader) => {
+            const layerConfig = await vueI18nConfigLoader(context, loader)
+            const vueI18n = layerConfig.vueI18n || {}
+            const layerMessages = vueI18n.messages || {}
+            for (const [locale, message] of Object.entries(layerMessages)) {
+              deepCopy(message, messages[locale])
+            }
+          }
+`
+          }
+          for (const configPath of vueI18nConfigPaths) {
+            const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, relativeBase }, { dir, base, ext }) => {
+              const configImportKey = makImportKey(relativeBase, dir, base)
+              return `await mergeMessages(${rootKey}.${key}.messasges, context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${getHash(absolutePath)}"` })}))\n`
+            })
+            if (additionalVueI18nConfigCode != null) {
+              genCodes += `  ${additionalVueI18nConfigCode}`
+            }
           }
         } else {
           genCodes += `  ${rootKey}.${key} = ${toCode(key === 'locales' ? stripPathFromLocales(value) : value)}\n`
@@ -187,14 +243,14 @@ export function generateLoaderOptions(
           const syncPaths = file ? [file] : files|| []
           codes += `  ${toCode(code)}: [${syncPaths.map(filepath => {
             const { root, dir, base } = parsePath(filepath)
-            const key = buildImportKey(root, dir, base)
+            const key = makImportKey(root, dir, base)
             return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}) }`
           })}],\n`
         }
         for (const localeInfo of asyncLocaleFiles) {
           codes += `  ${toCode(localeInfo.code)}: [${convertToPairs(localeInfo).map(({ file, path }) => {
             const { root, dir, base, ext } = parsePath(file)
-            const key = buildImportKey(root, dir, base)
+            const key = makImportKey(root, dir, base)
             const loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
             return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(genImportSpecifier(loadPath, ext, path), { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })} }`
           })}],\n`
@@ -223,21 +279,38 @@ export function generateLoaderOptions(
   return genCode
 }
 
+type TransformProxyType = typeof NUXT_I18N_RESOURCE_PROXY_ID | typeof NUXT_I18N_CONFIG_PROXY_ID
+type ComposableDefines = typeof NUXT_I18N_COMPOSABLE_DEFINE_LOCALE | typeof NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+
+function raiseSyntaxError(path: string) {
+  throw new Error(
+    `Unexpected syntax detected in '${path}'. Please define the plain object or function, and it export at 'export default’ directly.`
+  )
+}
+
 function genImportSpecifier(
   id: string,
   ext: string,
   absolutePath: string,
-  virtualId: string = NUXT_I18N_RESOURCE_PROXY_ID,
-  funcName: string = NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+  virtualId: TransformProxyType = NUXT_I18N_RESOURCE_PROXY_ID,
+  funcName: ComposableDefines = NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
 ) {
   if ([...JS_EXTENSIONS, ...TS_EXTENSIONS].includes(ext)) {
     const code = readCode(absolutePath, ext)
     const parsed = parseCode(code, absolutePath)
     const anaylzed = scanProgram(parsed.program, funcName)
-    // prettier-ignore
-    return anaylzed === 'arrow-function' || anaylzed === 'function'
-      ? asVirtualId(`${virtualId}?target=${id}`)
-      : id
+    if (virtualId === NUXT_I18N_RESOURCE_PROXY_ID) {
+      !anaylzed && raiseSyntaxError(absolutePath)
+      // prettier-ignore
+      return anaylzed === 'arrow-function' || anaylzed === 'function'
+        ? asVirtualId(`${virtualId}?target=${id}`)
+        : id
+    } else if (virtualId === NUXT_I18N_CONFIG_PROXY_ID) {
+      !anaylzed && raiseSyntaxError(absolutePath)
+      return asVirtualId(`${virtualId}?target=${id}&c=${getHash(absolutePath)}`)
+    } else {
+      return id
+    }
   } else {
     return id
   }

@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "nuxi build",
     "dev": "nuxi dev",
-    "build": "nuxt build",
-    "start": "node .output/server/index.mjs"
+    "generate": "nuxi generate",
+    "preview": "nuxi preview"
   },
   "devDependencies": {
     "@nuxtjs/i18n": "latest",

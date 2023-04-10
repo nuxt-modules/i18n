@@ -39,25 +39,58 @@ await setup({
   }
 })
 
-test('success', async () => {
-  const code = await $fetch('/api/__i18n__', {
-    method: 'POST',
-    body: {
-      locale: 'en',
-      resource: {
-        hello: 'Hello'
+describe('success', async () => {
+  test('locale', async () => {
+    const code = await $fetch('/api/__i18n__', {
+      method: 'POST',
+      body: {
+        type: 'locale',
+        locale: 'en',
+        resource: {
+          hello: 'Hello'
+        }
       }
-    }
+    })
+    expect(validateSyntax(code)).toBe(true)
+    expect(code).toMatchSnapshot()
   })
-  expect(validateSyntax(code)).toBe(true)
-  expect(code).toMatchSnapshot()
+
+  test('config', async () => {
+    const code = await $fetch('/api/__i18n__', {
+      method: 'POST',
+      body: {
+        type: 'config',
+        resource: {
+          ja: {
+            hello: 'こんにちは'
+          }
+        }
+      }
+    })
+    expect(validateSyntax(code)).toBe(true)
+    expect(code).toMatchSnapshot()
+  })
 })
 
 describe('fail', () => {
+  test('no type param', async () => {
+    const res = await fetch('/api/__i18n__', {
+      method: 'POST',
+      body: JSON.stringify({
+        resource: {
+          hello: 'Hello'
+        }
+      })
+    })
+    expect(res.status).toBe(400)
+    expect(res.statusText).toBe(`require the 'type'`)
+  })
+
   test('no locale param', async () => {
     const res = await fetch('/api/__i18n__', {
       method: 'POST',
       body: JSON.stringify({
+        type: 'locale',
         resource: {
           hello: 'Hello'
         }
@@ -71,6 +104,7 @@ describe('fail', () => {
     const res = await fetch('/api/__i18n__', {
       method: 'POST',
       body: JSON.stringify({
+        type: 'locale',
         locale: 'en'
       })
     })
@@ -82,6 +116,7 @@ describe('fail', () => {
     const res = await fetch('/api/__i18n__', {
       method: 'POST',
       body: JSON.stringify({
+        type: 'locale',
         locale: 'en-tag',
         resource: {
           hello: '<script>window.alert("seciruty issue")</script>'

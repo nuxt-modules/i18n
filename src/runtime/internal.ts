@@ -497,11 +497,21 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
 }
 
-async function evalResource(code: string) {
-  // TODO: We should strictly check if this is really a safe way to get evaluated codes
-  const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(code)
-  return await import(/* @vite-ignore */ data).then(m => m.default || m)
+async function evalResource(raw: string | Blob) {
+  if (isString(raw)) {
+    const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(raw)
+    return await import(/* @vite-ignore */ data).then(m => m.default || m)
+  } else {
+    const url = URL.createObjectURL(raw)
+    const code = await import(/* @vite-ignore */ url).then(m => m.default || m)
+    URL.revokeObjectURL(url)
+    return code
+  }
+  // const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(code)
+  // return await import(/* @vite-ignore */ data).then(m => m.default || m)
 }
+
+type FetchOptions = Parameters<typeof $fetch>[1]
 
 export async function loadResource(
   context: NuxtApp,
@@ -509,26 +519,39 @@ export async function loadResource(
   loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
 ) {
   const loaded = await loader(context, locale)
-  const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+  const opts: FetchOptions = {
     method: 'POST',
     body: {
       locale,
       type: 'locale',
       resource: loaded
     }
-  })) as string
+  }
+  if (!process.server) {
+    opts.responseType = 'blob'
+  }
+  const precompiledCode = await $fetch<string | Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, opts)
   return await evalResource(precompiledCode)
 }
 
-export async function precompileMessages(messages: I18nOptions['messages']): Promise<I18nOptions['messages']> {
+export async function precompileMessages(
+  messages: I18nOptions['messages'],
+  configId = ''
+): Promise<I18nOptions['messages']> {
   if (messages != null) {
-    const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+    const opts: FetchOptions = {
       method: 'POST',
       body: {
         type: 'config',
+        configId,
         resource: getNeedPrecompileMessages(messages)
       }
-    })) as string
+    }
+    if (!process.server) {
+      opts.responseType = 'blob'
+    }
+    const precompiledCode = await $fetch<string | Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, opts)
+
     const precompiledMessages = (await evalResource(precompiledCode).then(m => m.default || m)) as NonNullable<
       I18nOptions['messages']
     >

@@ -1,3 +1,5 @@
 export default {
-  'foo.bar.buz': 'Hello, World!'
+  bar: {
+    buz: 'Hello, {name}!'
+  }
 }

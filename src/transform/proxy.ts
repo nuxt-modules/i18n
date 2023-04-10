@@ -105,19 +105,24 @@ export default async function(context, locale) {
           // prettier-ignore
           const code = `import { precompileMessages, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
 import { isSSG } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
+import { isObject, isFunction } from '@intlify/shared'
 export default async function(context) {
   const loader = await import(${JSON.stringify(`${resolve(baseDir, query.target)}?config=true`)}).then(m => m.default || m)
-  const config = await loader(context)
+  const config = isFunction(loader)
+    ? await loader(context)
+    : isObject(loader)
+      ? loader
+      : {}
   __DEBUG__ && console.log('loadConfig', config)
   if (process.dev || process.server || !isSSG) {
-    config.messages = await precompileMessages(config.messages)
+    config.messages = await precompileMessages(config.messages, ${JSON.stringify(query.c)})
     return config
   } else {
     __DEBUG__ && console.log('already pre-compiled vue-i18n messages')
     let messages = null
     try {
-      const key = \`/i18n-config.js\` 
-      messages = await import(/* @vite-ignore */ key /* webpackChunkName: nuxt-i18n-config */).then(
+      const key = \`/i18n-config-${query.c}.js\` 
+      messages = await import(/* @vite-ignore */ key /* webpackChunkName: nuxt-i18n-config-${query.c} */).then(
         m => m.default || m
       )
     } catch (e) {

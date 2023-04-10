@@ -2,10 +2,18 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
 
-  vite: {
-    build: {
-      minify: false
+  experimental: {
+    payloadExtraction: true
+  },
+
+  nitro: {
+    crawlLinks: true,
+    routeRules: {
+      '/': { ssr: true }
     }
+    // prerender: {
+    //   routes: ['/']
+    // }
   },
 
   i18n: {
@@ -27,8 +35,6 @@ export default defineNuxtConfig({
     ],
     defaultLocale: 'en',
     detectBrowserLanguage: false,
-    vueI18n: {
-      configFile: './vue-i18n.messages.options.ts'
-    }
+    vueI18n: './vue-i18n.messages.options.ts'
   }
 })

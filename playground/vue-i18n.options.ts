@@ -1,21 +1,19 @@
-import ja from './locales/ja.json'
+import fr from './locales/fr.json'
 
-import type { I18nOptions } from 'vue-i18n'
-
-export default defineI18nConfig(nuxt => {
-  console.log('load vue-i18n custom config')
-  return {
-    legacy: false,
-    locale: 'en',
-    fallbackLocale: 'en',
-    messages: {
-      ja,
-      jojo: {
-        world: 'the world!'
+export default defineI18nConfig(nuxt => ({
+  legacy: false,
+  locale: 'en',
+  fallbackLocale: 'en',
+  messages: {
+    ja: {
+      bar: {
+        buz: 'こんにちは！{name}!'
       }
     },
-    modifiers: {
-      snakeCase: (str: string) => str.split(' ').join('-')
-    }
-  } as I18nOptions
-})
+    fr
+  },
+  modifiers: {
+    // @ts-ignore
+    snakeCase: (str: string) => str.split(' ').join('-')
+  }
+}))

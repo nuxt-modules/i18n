@@ -1,32 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`basic 1`] = `
-"import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
-import locale_ja from \\"../locales/ja.json\\" assert { type: \\"json\\" };
-import locale_fr from \\"../locales/fr.json\\" assert { type: \\"json\\" };
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"export const ssg = false
 
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => Promise.resolve(locale_en) }],
-  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => Promise.resolve(locale_ja) }],
-  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => Promise.resolve(locale_fr) }],
-}
+export const ssr = true
 
-export const additionalMessages = Object({})
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),precompile: Object({\\"strictMessage\\":true,\\"escapeHtml\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false})
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const dev = true
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
@@ -34,27 +15,13 @@ export const isSSR = true
 `;
 
 exports[`lazy 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"export const ssg = false
 
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => import(\\"../locales/en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */) }],
-  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */) }],
-  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */) }],
-}
+export const ssr = true
 
-export const additionalMessages = Object({})
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const dev = true
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
@@ -62,27 +29,13 @@ export const isSSR = true
 `;
 
 exports[`locale file in nested 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"export const ssg = false
 
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en/main.json\\", load: () => import(\\"../locales/en/main.json\\" /* webpackChunkName: \\"lang_en_en_main_json\\" */) }],
-  \\"ja\\": [{ key: \\"../locales/ja/main.json\\", load: () => import(\\"../locales/ja/main.json\\" /* webpackChunkName: \\"lang_ja_ja_main_json\\" */) }],
-  \\"fr\\": [{ key: \\"../locales/fr/main.json\\", load: () => import(\\"../locales/fr/main.json\\" /* webpackChunkName: \\"lang_fr_fr_main_json\\" */) }],
-}
+export const ssr = true
 
-export const additionalMessages = Object({})
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const dev = true
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
@@ -90,29 +43,13 @@ export const isSSR = true
 `;
 
 exports[`multiple files 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
+"export const ssg = false
 
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => import(\\"../locales/en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */) }],
-  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => import(\\"../locales/ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */) }],
-  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */) }],
-  \\"es\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */) }],
-  \\"es-AR\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */) },{ key: \\"../locales/es-AR.json\\", load: () => import(\\"../locales/es-AR.json\\" /* webpackChunkName: \\"lang_es_AR_json_es_AR_json\\" */) }],
-}
+export const ssr = true
 
-export const additionalMessages = Object({})
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const dev = true
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
@@ -120,30 +57,13 @@ export const isSSR = true
 `;
 
 exports[`toCode: function (arrow) 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"export const ssg = false
 
-export const additionalMessages = Object({})
+export const ssr = true
 
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })})]
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),precompile: Object({\\"strictMessage\\":true,\\"escapeHtml\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false})
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const dev = true
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
@@ -151,30 +71,8 @@ export const isSSR = true
 `;
 
 exports[`toCode: function (named) 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const additionalMessages = Object({})
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })})]
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),precompile: Object({\\"strictMessage\\":true,\\"escapeHtml\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false})
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+"export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
@@ -182,43 +80,13 @@ export const isSSR = true
 `;
 
 exports[`vueI18n: path 1`] = `
-"import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
-import locale_ja from \\"../locales/ja.json\\" assert { type: \\"json\\" };
-import locale_fr from \\"../locales/fr.json\\" assert { type: \\"json\\" };
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"export const ssg = false
 
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../locales/en.json\\", load: () => Promise.resolve(locale_en) }],
-  \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => Promise.resolve(locale_ja) }],
-  \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => Promise.resolve(locale_fr) }],
-}
+export const ssr = true
 
-export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
-  \\"foo\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"foo\\"])};fn.source=\\"foo\\";return fn;})(),
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello1\\"])};fn.source=\\"hello1\\";return fn;})()
-}),() => Promise.resolve({
-  \\"bar\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"bar\\"])};fn.source=\\"bar\\";return fn;})(),
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello2\\"])};fn.source=\\"hello2\\";return fn;})()
-}),],\\"ja\\":[() => Promise.resolve({
-  \\"buz\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"buz\\"])};fn.source=\\"buz\\";return fn;})(),
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello3\\"])};fn.source=\\"hello3\\";return fn;})()
-}),() => Promise.resolve({
-  \\"baz\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"baz\\"])};fn.source=\\"baz\\";return fn;})(),
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"hello4\\"])};fn.source=\\"hello4\\";return fn;})()
-}),],})
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  const configLoader = () => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=/path/i18n.config.js\\" /* webpackChunkName: \\"_path_i18n_config_js\\" */)(context)
-  nuxtI18nOptions.vueI18n = await configLoader()
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
+export const dev = true
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const NUXT_I18N_CONFIG_KEY = \\"i18n-config\\"
-export const NUXT_I18N_BUILD_CONFIG_KEY = \\"config\\"
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/api/__i18n__\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
 export const isSSG = false
 export const isSSR = true
