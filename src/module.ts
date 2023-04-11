@@ -31,6 +31,8 @@ import {
 } from './constants'
 import {
   formatMessage,
+  readFile,
+  writeFile,
   getNormalizedLocales,
   resolveLocales,
   getPackageManagerType,
@@ -337,15 +339,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
               const config = key.split(':')[2]
               const source = resolve(buildI18nDir, config)
               const target = resolve(nitro.options.output.publicDir, `${storageKey}-${config}`)
-              const code = await fs.readFile(source, 'utf-8')
-              await fs.writeFile(target, code, 'utf-8')
+              const code = await readFile(source)
+              await writeFile(target, code)
               debug(`generate locale file: ${source} -> ${target}`)
             } else if (key.startsWith(`build:${storageKey}:locales`)) {
               const locale = key.split(':')[3]
               const source = resolve(buildI18nDir, `locales/${locale}`)
               const target = resolve(nitro.options.output.publicDir, `${storageKey}-locales-${locale}`)
-              const code = await fs.readFile(source, 'utf-8')
-              await fs.writeFile(target, code, 'utf-8')
+              const code = await readFile(source)
+              await writeFile(target, code)
               debug(`generate locale file: ${locale} -> ${target}`)
             }
           }

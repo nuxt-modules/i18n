@@ -16,12 +16,11 @@ import {
 } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
-import fs from 'node:fs'
 // @ts-ignore
 import { transform as stripType } from '@mizchi/sucrase'
 import { parse as _parseCode } from '@babel/parser'
 import { asVirtualId } from './transform/utils'
-import { getHash } from './utils'
+import { getHash, readFileSync } from './utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -360,7 +359,7 @@ function scanProgram(program: File['program'], calleeName: string) {
 }
 
 export function readCode(absolutePath: string, ext: string) {
-  let code = fs.readFileSync(absolutePath, 'utf-8').toString()
+  let code = readFileSync(absolutePath)
   if (TS_EXTENSIONS.includes(ext)) {
     const out = stripType(code, {
       transforms: ['jsx'],

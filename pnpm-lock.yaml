@@ -179,7 +179,7 @@ importers:
     devDependencies:
       '@nuxt/devtools':
         specifier: npm:@nuxt/devtools-edge@latest
-        version: /@nuxt/devtools-edge@0.3.1-28000193.f4b0bac(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1)
+        version: /@nuxt/devtools-edge@0.2.5-27991385.f13be91(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1)
       '@nuxtjs/i18n':
         specifier: link:..
         version: link:..
@@ -1533,14 +1533,14 @@ packages:
     resolution: {integrity: sha512-YBI/6o2EBz02tdEJRBK8xkt3zvOFOWlLBf7WKYGBsSYSRtjjgrqPe2skp6VLLmKx5WbHHDNcW+6oACaurxGzeA==}
     dev: true
 
-  /@nuxt/devtools-edge@0.3.1-28000193.f4b0bac(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1):
-    resolution: {integrity: sha512-agT1wa9UlqgbbALPIdVCf8KZV7XeogFCvKtkebOeVX0cQf8RhdKiiiBGpoze/efeV9BYiAjv8Te+DECwQuFVbw==}
+  /@nuxt/devtools-edge@0.2.5-27991385.f13be91(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1):
+    resolution: {integrity: sha512-+BJYCiKq8EK0oF4PoRzpudQQd6UkNyKnIcvLXKmU2Wf4HntAQrfkeoR3DwAGnQu8acwk/UX9K0YwoatvbH7irw==}
     hasBin: true
     peerDependencies:
       nuxt: ^3.3.1
       vite: '*'
     dependencies:
-      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge@0.3.1-28000193.f4b0bac(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1)
+      '@nuxt/devtools-kit': /@nuxt/devtools-kit-edge@0.2.5-27991385.f13be91(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1)
       '@nuxt/kit': 3.3.2(rollup@3.20.0)
       birpc: 0.2.10
       consola: 2.15.3
@@ -1567,8 +1567,8 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/devtools-kit-edge@0.3.1-28000193.f4b0bac(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1):
-    resolution: {integrity: sha512-usIGVLQV2U9gZo+Tk9zpBIjZHRvQ/nR1pKso/lS680IEnmQmkQghTTtRFMWY6q6gfAHFyYb/JPlbPAmNRZy8dA==}
+  /@nuxt/devtools-kit-edge@0.2.5-27991385.f13be91(nuxt@3.1.2)(rollup@3.20.0)(vite@4.1.1):
+    resolution: {integrity: sha512-vkvi226v1um9ZpNGWjNJ55PP3le6TPZbsdIZvpTQaT57ua0RbNqoUPxKj0MhObtPJAud6F1SVo6s4JVMNjVemg==}
     peerDependencies:
       nuxt: ^3.3.1
       vite: '*'
@@ -2424,7 +2424,7 @@ packages:
   /@vitest/spy@0.29.7:
     resolution: {integrity: sha512-IalL0iO6A6Xz8hthR8sctk6ZS//zVBX48EiNwQguYACdgdei9ZhwMaBFV70mpmeYAFCRAm+DpoFHM5470Im78A==}
     dependencies:
-      tinyspy: 1.0.2
+      tinyspy: 1.1.1
     dev: true
 
   /@vitest/utils@0.29.7:
@@ -9173,8 +9173,8 @@ packages:
     resolution: {integrity: sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==}
     dev: true
 
-  /tinybench@2.3.1:
-    resolution: {integrity: sha512-hGYWYBMPr7p4g5IarQE7XhlyWveh1EKhy4wUBS1LrHXCKYgvz+4/jCqgmJqZxxldesn05vccrtME2RLLZNW7iA==}
+  /tinybench@2.4.0:
+    resolution: {integrity: sha512-iyziEiyFxX4kyxSp+MtY1oCH/lvjH3PxFN8PGCDeqcZWAJ/i+9y+nL85w99PxVzrIvew/GSkSbDYtiGVa85Afg==}
     dev: true
 
   /tinycolor2@1.6.0:
@@ -9186,8 +9186,8 @@ packages:
     engines: {node: '>=14.0.0'}
     dev: true
 
-  /tinyspy@1.0.2:
-    resolution: {integrity: sha512-bSGlgwLBYf7PnUsQ6WOc6SJ3pGOcd+d8AA6EUnLDDM0kWEstC1JIlSZA3UNliDXhd9ABoS7hiRBDCu+XP/sf1Q==}
+  /tinyspy@1.1.1:
+    resolution: {integrity: sha512-UVq5AXt/gQlti7oxoIg5oi/9r0WpF7DGEVwXgqWSMmyN16+e3tl5lIvTaOpJ3TAtu5xFzWccFRM4R5NaWHF+4g==}
     engines: {node: '>=14.0.0'}
     dev: true
 
@@ -10022,10 +10022,10 @@ packages:
       picocolors: 1.0.0
       source-map: 0.6.1
       std-env: 3.3.2
-      strip-literal: 1.0.0
-      tinybench: 2.3.1
+      strip-literal: 1.0.1
+      tinybench: 2.4.0
       tinypool: 0.4.0
-      tinyspy: 1.0.2
+      tinyspy: 1.1.1
       vite: 4.1.1(@types/node@18.11.9)
       vite-node: 0.29.7(@types/node@18.11.9)
       why-is-node-running: 2.2.2

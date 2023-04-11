@@ -1,4 +1,4 @@
-import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
+import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
@@ -80,6 +80,18 @@ export async function tryResolve(id: string, targets: string[], pkgMgr: PackageM
   }
 
   throw new Error(`Cannot resolve ${id} on ${pkgMgr}! please install it on 'node_modules'`)
+}
+
+export async function writeFile(path: string, data: string) {
+  await fs.writeFile(path, data, { encoding: 'utf-8' })
+}
+
+export async function readFile(path: string) {
+  return await fs.readFile(path, { encoding: 'utf-8' })
+}
+
+export function readFileSync(path: string) {
+  return _readFileSync(path, { encoding: 'utf-8' })
 }
 
 export async function isExists(path: string) {
