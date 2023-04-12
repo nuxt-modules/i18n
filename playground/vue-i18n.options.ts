@@ -7,7 +7,8 @@ export default defineI18nConfig(nuxt => ({
   messages: {
     ja: {
       bar: {
-        buz: 'こんにちは！{name}!'
+        buz: 'こんにちは！{name}!',
+        fn: ({ named }: any) => `こんにちは！${named('name')}!`
       }
     },
     fr

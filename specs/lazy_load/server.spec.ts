@@ -2,6 +2,7 @@ import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, $fetch, fetch } from '@nuxt/test-utils'
 import { validateSyntax } from '../helper'
+import { NUXT_I18N_PRECOMPILE_ENDPOINT } from '../../src/constants'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
@@ -41,7 +42,7 @@ await setup({
 
 describe('success', async () => {
   test('locale', async () => {
-    const code = await $fetch('/api/__i18n__', {
+    const code = await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: {
         type: 'locale',
@@ -56,10 +57,11 @@ describe('success', async () => {
   })
 
   test('config', async () => {
-    const code = await $fetch('/api/__i18n__', {
+    const code = await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: {
         type: 'config',
+        configId: '1234',
         resource: {
           ja: {
             hello: 'こんにちは'
@@ -74,7 +76,7 @@ describe('success', async () => {
 
 describe('fail', () => {
   test('no type param', async () => {
-    const res = await fetch('/api/__i18n__', {
+    const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify({
         resource: {
@@ -86,8 +88,22 @@ describe('fail', () => {
     expect(res.statusText).toBe(`require the 'type'`)
   })
 
+  test('no configId param', async () => {
+    const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'config',
+        resource: {
+          hello: 'Hello'
+        }
+      })
+    })
+    expect(res.status).toBe(400)
+    expect(res.statusText).toBe(`require the 'configId'`)
+  })
+
   test('no locale param', async () => {
-    const res = await fetch('/api/__i18n__', {
+    const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
@@ -101,7 +117,7 @@ describe('fail', () => {
   })
 
   test('no resource param', async () => {
-    const res = await fetch('/api/__i18n__', {
+    const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
@@ -113,7 +129,7 @@ describe('fail', () => {
   })
 
   test('include html code in resource', async () => {
-    const res = await fetch('/api/__i18n__', {
+    const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',

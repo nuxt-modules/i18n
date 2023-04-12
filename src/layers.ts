@@ -16,10 +16,10 @@ export const applyLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   if (layers.length === 1) return
 
   const resolvedLayerPaths = layers.map(l => resolve(project.config.rootDir, l.config.rootDir))
-  debug('using layers at paths -', resolvedLayerPaths)
+  debug('using layers at paths', resolvedLayerPaths)
 
   const mergedLocales = mergeLayerLocales(nuxt)
-  debug('merged locales - ', mergedLocales)
+  debug('merged locales', mergedLocales)
 
   options.locales = mergedLocales
 }
@@ -33,6 +33,7 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
 
   for (const l of layers) {
     const lPath = resolve(project.config.rootDir, l.config.rootDir, l.config.dir?.pages ?? 'pages')
+    debug('mergeLayerPages: path ->', lPath)
     analyzer(lPath)
   }
 }
@@ -45,6 +46,7 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     debug('project layer `i18n` configuration is required')
     return []
   }
+  debug('project layer `lazy` option', projectI18n.lazy)
 
   /**
    * Merge locales when `lazy: false`
@@ -60,6 +62,7 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
 
     const mergedLocales: string[] | LocaleObject[] = []
     for (const layer of nuxt.options._layers) {
+      debug('layer.config.i18n.locales', layer.config.i18n?.locales)
       if (layer.config.i18n?.locales == null) continue
 
       for (const locale of layer.config.i18n.locales) {

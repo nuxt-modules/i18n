@@ -1,10 +1,10 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from '@nuxt/test-utils'
-import { getText } from '../helper'
+import { getText } from './helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/vue_i18n_options_loader`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`./fixtures/vue_i18n_options`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

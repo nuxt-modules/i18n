@@ -5,12 +5,12 @@ import { getText } from '../helper'
 
 describe('nuxt layers-pages', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+    rootDir: fileURLToPath(new URL(`../fixtures/basic_pages`, import.meta.url)),
     browser: true,
     // overrides
     nuxtConfig: {
-      // _generate: true,
-      extends: [fileURLToPath(new URL(`../fixtures/layers/layer-pages`, import.meta.url))]
+      extends: [fileURLToPath(new URL(`../fixtures/layers/layer-pages`, import.meta.url))],
+      i18n: {}
     }
   })
 

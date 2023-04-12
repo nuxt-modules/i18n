@@ -1,5 +1,4 @@
 import createDebug from 'debug'
-import { promises as fs } from 'node:fs'
 import { isObject, isString } from '@intlify/shared'
 import {
   defineNuxtModule,

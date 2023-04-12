@@ -51,7 +51,7 @@ export function generateLoaderOptions(
     ssr: boolean
   } = { dev: true, ssg: false, ssr: true }
 ) {
-  debug('generateLoaderOptions: langDir', langDir)
+  debug('generateLoaderOptions: lazy', lazy)
   debug('generateLoaderOptions: localesRelativeBase', localesRelativeBase)
   debug('generateLoaderOptions: vueI18nConfigPathInfo', vueI18nConfigPathInfo)
 
