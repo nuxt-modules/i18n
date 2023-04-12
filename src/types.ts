@@ -19,6 +19,13 @@ export type LocaleInfo = {
   paths?: string[]
 } & LocaleObject
 
+export type VueI18nConfigPathInfo = {
+  relative?: string
+  absolute?: string
+  rootDir: string
+  relativeBase: string
+}
+
 export interface RootRedirectOptions {
   path: string
   statusCode: number
@@ -41,7 +48,10 @@ export interface LocaleMessagePrecompileOptions {
   escapeHtml?: boolean
 }
 
+export { I18nOptions }
+
 export type NuxtI18nOptions<Context = unknown> = {
+  vueI18n?: string
   experimental?: ExperimentalFeatures
   precompile?: LocaleMessagePrecompileOptions
   differentDomains?: boolean
@@ -62,7 +72,6 @@ export type NuxtI18nOptions<Context = unknown> = {
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
   strategy?: Strategies
-  vueI18n?: I18nOptions | string
   types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean
