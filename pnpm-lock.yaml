@@ -72,8 +72,8 @@ importers:
         specifier: 9.3.0-beta.17
         version: 9.3.0-beta.17(vue@3.2.47)
       vue-i18n-routing:
-        specifier: ^0.12.2
-        version: 0.12.2(vue-i18n@9.3.0-beta.17)(vue@3.2.47)
+        specifier: ^0.13.0
+        version: 0.13.0(vue-i18n@9.3.0-beta.17)(vue@3.2.47)
     devDependencies:
       '@babel/parser':
         specifier: ^7.21.3
@@ -10061,8 +10061,8 @@ packages:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
     dev: true
 
-  /vue-i18n-routing@0.12.2(vue-i18n@9.3.0-beta.17)(vue@3.2.47):
-    resolution: {integrity: sha512-VzYUzbUJyPHUP74t973dN42/sJnZUzBwdcYX+TJgr9YHD08+9uouw5Ume2jHO2Pi8Nymu4cz/UiHWDPeMyc/bQ==}
+  /vue-i18n-routing@0.13.0(vue-i18n@9.3.0-beta.17)(vue@3.2.47):
+    resolution: {integrity: sha512-d/WVAZKo68blFqv6BPxFrGy530+FgvXsYVMbuvaICaoFO2CUxuaszF4vPCzCPIi9T68WRzWeUMTUb7vmv2SLyQ==}
     engines: {node: '>= 14.6'}
     peerDependencies:
       '@vue/composition-api': ^1.0.0-rc.1
