@@ -2,11 +2,10 @@ import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
 import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString, isBoolean } from '@intlify/shared'
-import fs from 'node:fs'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
-import { formatMessage, getRoutePath, parseSegment } from './utils'
+import { formatMessage, getRoutePath, parseSegment, readFileSync } from './utils'
 import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
@@ -249,7 +248,7 @@ function readComponent(target: string) {
   let options: ComputedRouteOptions | false | undefined = undefined
 
   try {
-    const content = fs.readFileSync(target, 'utf8').toString()
+    const content = readFileSync(target)
     const { descriptor } = parseSFC(content)
 
     if (!content.includes(NUXT_I18N_COMPOSABLE_DEFINE_ROUTE)) {

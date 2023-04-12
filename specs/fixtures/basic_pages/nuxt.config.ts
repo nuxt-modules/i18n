@@ -1,28 +1,24 @@
+import CustomModule from './module'
+
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/i18n'],
-
-  vite: {
-    build: {
-      minify: false
-    }
-  },
+  modules: [CustomModule, '@nuxtjs/i18n'],
 
   i18n: {
-    lazy: true,
-    langDir: 'locales',
+    lazy: false,
+    baseUrl: 'http://localhost:3000',
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
-        file: 'en.json',
-        name: 'English'
+        iso: 'en',
+        name: 'English',
+        file: 'en-US.json'
       },
       {
         code: 'fr',
         iso: 'fr-FR',
-        file: 'fr.json',
-        name: 'Français'
+        name: 'Français',
+        file: 'fr-FR.json'
       }
     ],
     defaultLocale: 'en',

@@ -52,6 +52,7 @@ definePageMeta({
   <div>
     <h1>Demo: Nuxt 3</h1>
     <h2>{{ $t('hello', { name: 'nuxt3' }) }}</h2>
+    <p>{{ $t('bar.buz', { name: 'buz' }) }}</p>
     <h2>Pages</h2>
     <nav>
       <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |

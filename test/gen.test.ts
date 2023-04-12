@@ -2,8 +2,18 @@ import { parse } from '@babel/parser'
 import { DEFAULT_OPTIONS } from '../src/constants'
 import { generateLoaderOptions } from '../src/gen'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions } from '../src/types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, VueI18nConfigPathInfo } from '../src/types'
 import type { AdditionalMessages } from '../src/messages'
+
+vi.mock('node:fs')
+
+beforeEach(async () => {
+  vi.spyOn(await import('node:fs'), 'readFileSync').mockReturnValue('export default {}')
+})
+
+afterEach(() => {
+  vi.clearAllMocks()
+})
 
 const LOCALE_CODES = ['en', 'ja', 'fr']
 const LOCALE_INFO = [
@@ -34,14 +44,7 @@ const ADDITIONAL_MESSAGES = {
   ]
 } as AdditionalMessages
 const NUXT_I18N_OPTIONS = {
-  defaultLocale: 'en',
-  vueI18n: {
-    locale: 'en',
-    fallbackLocale: 'fr',
-    messages: {
-      en: { hello: 'Hello!' }
-    }
-  }
+  defaultLocale: 'en'
 } as NuxtI18nOptions
 
 const NUXT_I18N_INTERNAL_OPTIONS = {
@@ -51,6 +54,13 @@ const NUXT_I18N_INTERNAL_OPTIONS = {
     }
   ]
 } as NuxtI18nInternalOptions
+
+const NUXT_I18N_VUE_I18N_CONFIG = {
+  absolute: '/path/to/i18n.config.ts',
+  relative: 'i18n.config.ts',
+  rootDir: '/path/to',
+  relativeBase: '..'
+} as VueI18nConfigPathInfo
 
 function validateSyntax(code: string): boolean {
   let ret = false
@@ -67,11 +77,14 @@ function validateSyntax(code: string): boolean {
   return ret
 }
 
-test('basic', () => {
+test('basic', async () => {
+  const { generateLoaderOptions } = await import('../src/gen')
   const code = generateLoaderOptions(
     false,
     'locales',
     '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [],
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
@@ -91,6 +104,8 @@ test('lazy', () => {
     true,
     'locales',
     '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [],
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
@@ -109,6 +124,8 @@ test('multiple files', () => {
     true,
     'locales',
     '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [],
     {
       localeCodes: [...LOCALE_CODES, 'es', 'es-AR'],
       localeInfo: [
@@ -141,6 +158,8 @@ test('locale file in nested', () => {
     true,
     'locales',
     '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [],
     {
       localeCodes: LOCALE_CODES,
       localeInfo: [
@@ -170,17 +189,32 @@ test('locale file in nested', () => {
   expect(code).toMatchSnapshot()
 })
 
-test('vueI18n: path', () => {
+test('vueI18n option', () => {
   const code = generateLoaderOptions(
     false,
     'locales',
     '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [
+      {
+        absolute: '/path/layer1/i18n.custom.ts',
+        relative: 'i18n.custom.ts',
+        rootDir: '/path/layer1',
+        relativeBase: '../..'
+      },
+      {
+        absolute: '/path/foo/layer2/vue-i18n.options.js',
+        relative: 'vue-i18n.options.js',
+        rootDir: '/path/foo/layer2',
+        relativeBase: '../../..'
+      }
+    ],
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
       additionalMessages: ADDITIONAL_MESSAGES,
       nuxtI18nOptions: {
-        vueI18n: '~/plugins/vue-i18n.js'
+        vueI18n: 'vue-i18n.config.ts'
       },
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
@@ -195,6 +229,8 @@ test('toCode: function (arrow)', () => {
     false,
     'locales',
     '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [],
     {
       localeCodes: LOCALE_CODES,
       additionalMessages: {},
@@ -217,7 +253,7 @@ test('toCode: function (arrow)', () => {
 })
 
 test('toCode: function (named)', () => {
-  const code = generateLoaderOptions(false, 'locales', '..', {
+  const code = generateLoaderOptions(false, 'locales', '..', NUXT_I18N_VUE_I18N_CONFIG, [], {
     localeCodes: LOCALE_CODES,
     additionalMessages: {},
     nuxtI18nOptions: {

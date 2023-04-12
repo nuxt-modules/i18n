@@ -94,14 +94,19 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-function deepCopy(src: Record<string, any>, des: Record<string, any>) {
+function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?: (src: any, des: any) => boolean) {
   for (const key in src) {
     if (isObject(src[key])) {
       if (!isObject(des[key])) des[key] = {}
-
-      deepCopy(src[key], des[key])
+      deepCopy(src[key], des[key], predicate)
     } else {
-      des[key] = src[key]
+      if (predicate) {
+        if (predicate(src[key], des[key])) {
+          des[key] = src[key]
+        }
+      } else {
+        des[key] = src[key]
+      }
     }
   }
 }
@@ -492,22 +497,81 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
 }
 
+async function evalResource(raw: string | Blob) {
+  if (isString(raw)) {
+    const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(raw)
+    return await import(/* @vite-ignore */ data).then(m => m.default || m)
+  } else {
+    const url = URL.createObjectURL(raw)
+    const code = await import(/* @vite-ignore */ url).then(m => m.default || m)
+    URL.revokeObjectURL(url)
+    return code
+  }
+  // const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(code)
+  // return await import(/* @vite-ignore */ data).then(m => m.default || m)
+}
+
+type FetchOptions = Parameters<typeof $fetch>[1]
+
 export async function loadResource(
   context: NuxtApp,
   locale: Locale,
   loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
 ) {
   const loaded = await loader(context, locale)
-  const precompiledCode = (await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+  const opts: FetchOptions = {
     method: 'POST',
     body: {
       locale,
+      type: 'locale',
       resource: loaded
     }
-  })) as string
-  // TODO: We should strictly check if this is really a safe way to get evaluated codes
-  const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(precompiledCode)
-  return await import(/* @vite-ignore */ data).then(m => m.default || m)
+  }
+  if (!process.server) {
+    opts.responseType = 'blob'
+  }
+  const precompiledCode = await $fetch<string | Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, opts)
+  return await evalResource(precompiledCode)
+}
+
+export async function precompileMessages(
+  messages: I18nOptions['messages'],
+  configId = ''
+): Promise<I18nOptions['messages']> {
+  if (messages != null) {
+    const opts: FetchOptions = {
+      method: 'POST',
+      body: {
+        type: 'config',
+        configId,
+        resource: getNeedPrecompileMessages(messages)
+      }
+    }
+    if (!process.server) {
+      opts.responseType = 'blob'
+    }
+    const precompiledCode = await $fetch<string | Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, opts)
+
+    const precompiledMessages = (await evalResource(precompiledCode).then(m => m.default || m)) as NonNullable<
+      I18nOptions['messages']
+    >
+    for (const [locale, message] of Object.entries(precompiledMessages)) {
+      deepCopy(message, messages[locale])
+    }
+  }
+  return messages
+}
+
+function getNeedPrecompileMessages(messages: NonNullable<I18nOptions['messages']>) {
+  const needPrecompileMessages: NonNullable<I18nOptions['messages']> = {}
+  // ignore, if messages will have function
+  const predicate = (src: any) => !isFunction(src)
+
+  for (const [locale, message] of Object.entries(messages)) {
+    const dest = (needPrecompileMessages[locale] = {})
+    deepCopy(message, dest, predicate)
+  }
+  return needPrecompileMessages
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

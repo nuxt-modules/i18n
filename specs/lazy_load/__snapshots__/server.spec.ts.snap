@@ -1,6 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`success 1`] = `
+exports[`success > config 1`] = `
+"export default {
+  \\"ja\\": {
+  \\"hello\\": (ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"こんにちは\\"])}
+},
+}
+"
+`;
+
+exports[`success > locale 1`] = `
 "export default {
   \\"hello\\": (ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello\\"])}
 }"

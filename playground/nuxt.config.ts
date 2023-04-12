@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       {
         code: 'en-GB',
         iso: 'en-GB',
-        files: ['en.json', 'en-GB.js'],
+        files: ['en.json', 'en-GB.js', 'en-KK.js'],
         name: 'English (UK)'
       },
       {
@@ -97,21 +97,6 @@ export default defineNuxtConfig({
       // // cookieKey: 'my_custom_cookie_name',
       // redirectOn: 'root'
     },
-    // vueI18n: './vue-i18n.options.ts'
-    vueI18n: {
-      legacy: false,
-      locale: 'en',
-      fallbackLocale: 'fr'
-      // messages: {
-      //   ja: {
-      //     hello: 'こんにちは！'
-      //   }
-      // }
-      // fallbackLocale: {
-      //   en: ['ja', 'fr', 'en-US'],
-      //   ja: ['en', 'fr', 'ja-JP'],
-      //   fr: ['en', 'ja', 'fr-FR']
-      // }
-    }
+    vueI18n: './vue-i18n.options.ts'
   }
 })

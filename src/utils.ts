@@ -1,13 +1,14 @@
-import { promises as fs, constants as FS_CONSTANTS } from 'node:fs'
-import { resolveFiles } from '@nuxt/kit'
+import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
 import { isString } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID } from './constants'
+import { NUXT_I18N_MODULE_ID, JS_EXTENSIONS, TS_EXTENSIONS } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
-import type { NuxtI18nOptions, LocaleInfo } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
 import type { Nuxt } from '@nuxt/schema'
 
 const PackageManagerLockFiles = {
@@ -81,13 +82,43 @@ export async function tryResolve(id: string, targets: string[], pkgMgr: PackageM
   throw new Error(`Cannot resolve ${id} on ${pkgMgr}! please install it on 'node_modules'`)
 }
 
-async function isExists(path: string) {
+export async function writeFile(path: string, data: string) {
+  await fs.writeFile(path, data, { encoding: 'utf-8' })
+}
+
+export async function readFile(path: string) {
+  return await fs.readFile(path, { encoding: 'utf-8' })
+}
+
+export function readFileSync(path: string) {
+  return _readFileSync(path, { encoding: 'utf-8' })
+}
+
+export async function isExists(path: string) {
   try {
     await fs.access(path, FS_CONSTANTS.F_OK)
     return true
   } catch (e) {
     return false
   }
+}
+
+export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDir: string, rootDir: string) {
+  const configPathInfo: VueI18nConfigPathInfo = {
+    relativeBase: relative(buildDir, rootDir),
+    rootDir
+  }
+
+  const vueI18nConfigRelativePath = (configPathInfo.relative = options.vueI18n || 'i18n.config')
+  const vueI18nConfigAbsolutePath = await resolvePath(vueI18nConfigRelativePath, {
+    cwd: rootDir,
+    extensions: [...JS_EXTENSIONS, ...TS_EXTENSIONS]
+  })
+  if (await isExists(vueI18nConfigAbsolutePath)) {
+    configPathInfo.absolute = vueI18nConfigAbsolutePath
+  }
+
+  return configPathInfo
 }
 
 /**
@@ -330,4 +361,8 @@ export function getRoutePath(tokens: SegmentToken[]): string {
             : encodePath(token.value))
     )
   }, '/')
+}
+
+export function getHash(text: Buffer | string): string {
+  return createHash('sha256').update(text).digest('hex').substring(0, 8)
 }

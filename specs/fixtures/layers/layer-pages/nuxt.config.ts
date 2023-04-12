@@ -5,31 +5,21 @@ export default defineNuxtConfig({
       {
         code: 'en',
         iso: 'en-US',
-        name: 'English'
+        name: 'English',
+        file: 'en-US.json'
       },
       {
         code: 'fr',
         iso: 'fr-FR',
-        name: 'Français'
+        name: 'Français',
+        file: 'fr-FR.json'
       },
       {
         code: 'nl',
         iso: 'nl-NL',
-        name: 'Nederlands'
+        name: 'Nederlands',
+        file: 'nl-NL.json'
       }
-    ],
-    vueI18n: {
-      messages: {
-        en: {
-          hello: 'Hello world!'
-        },
-        fr: {
-          hello: 'Bonjour le monde!'
-        },
-        nl: {
-          hello: 'Hallo wereld!'
-        }
-      }
-    }
+    ]
   }
 })

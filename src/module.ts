@@ -1,6 +1,5 @@
 import createDebug from 'debug'
-import { promises as fs } from 'node:fs'
-import { isBoolean, isObject, isString } from '@intlify/shared'
+import { isObject, isString } from '@intlify/shared'
 import {
   defineNuxtModule,
   isNuxt2,
@@ -25,13 +24,22 @@ import {
   DEFAULT_OPTIONS,
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
 } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType, mergeI18nModules } from './utils'
+import {
+  formatMessage,
+  readFile,
+  writeFile,
+  getNormalizedLocales,
+  resolveLocales,
+  getPackageManagerType,
+  mergeI18nModules,
+  resolveVueI18nConfigInfo
+} from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
-import { applyLayerOptions } from './layers'
+import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -57,7 +65,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {
-      logger.warn(formatMessage('JS / TS extension format is experimental'))
+      logger.warn('JS / TS extension format is experimental')
     }
 
     /**
@@ -86,7 +94,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       console.warn(
         formatMessage(
-          'The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.'
+          'The `differentDomains` option and `no_prefix` strategy are not compatible. ' +
+            'Change strategy or disable `differentDomains` option.'
         )
       )
     }
@@ -110,10 +119,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     if (isString(options.langDir) && isAbsolute(options.langDir)) {
-      console.warn(
-        formatMessage(
-          `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
-        )
+      logger.warn(
+        `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). ` +
+          `Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
       )
     }
     const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null
@@ -130,15 +138,39 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('localeInfo', localeInfo)
 
     /**
-     * resolve vue-i18n options
+     * resolve vue-i18n config path
      */
 
-    // prettier-ignore
-    options.vueI18n = isObject(options.vueI18n)
-      ? options.vueI18n
-      : isString(options.vueI18n)
-        ? resolve(nuxt.options.rootDir, options.vueI18n)
-        : { legacy: false }
+    // TODO: remove before v8 official release
+    if (isObject(options.vueI18n)) {
+      throw new Error(
+        formatMessage(
+          'The `vueI18n` option is no longer be specified with object. ' +
+            '\n' +
+            `It must be specified in the configuration file via the 'i18n.config' path.` +
+            '\n' +
+            `About deprecated reason, see https://v8.i18n.nuxtjs.org/guide/migrating#change-the-route-key-rules-in-pages-option` +
+            '\n' +
+            `About new configuration style, sqee https://v8.i18n.nuxtjs.org/getting-started/basic-usage#translate-with-vue-i18n`
+        )
+      )
+    }
+
+    const vueI18nConfigPathInfo = await resolveVueI18nConfigInfo(options, nuxt.options.buildDir, nuxt.options.rootDir)
+    if (vueI18nConfigPathInfo.absolute == null) {
+      logger.warn(`Vue I18n configuration file does not exist at ${vueI18nConfigPathInfo.relative}. Skipping...`)
+    }
+    debug('vueI18nConfigPathInfo', vueI18nConfigPathInfo)
+
+    const layerVueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
+    for (const vueI18nConfigPath of layerVueI18nConfigPaths) {
+      if (vueI18nConfigPath.absolute == null) {
+        logger.warn(
+          `Ignore Vue I18n configuration file does not exist at ${vueI18nConfigPath.relative} on layer ${vueI18nConfigPath.rootDir}. Skipping...`
+        )
+      }
+    }
+    debug('layerVueI18nConfigPaths', layerVueI18nConfigPaths)
 
     /**
      * extend messages via 3rd party nuxt modules
@@ -146,9 +178,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // TODO: remove `i18n:extend-messages` before v8 official release
     logger.warn(
-      formatMessage(
-        "`i18n:extend-messages` is deprecated. That hook will be removed feature at the time of the v8 official release. If you're using it, please use `i18n:extend-messages` instead."
-      )
+      '`i18n:extend-messages` is deprecated. ' +
+        'That hook will be removed feature at the time of the v8 official release.\n' +
+        "If you're using it, please use `i18n:registerModule` instead."
     )
     const additionalMessages = await extendMessages(nuxt, localeCodes, options)
 
@@ -204,6 +236,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
           options.lazy,
           options.langDir,
           localesRelativeBasePath,
+          vueI18nConfigPathInfo,
+          layerVueI18nConfigPaths,
           {
             localeCodes,
             localeInfo,
@@ -235,14 +269,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add extend type definition
      */
 
-    // prettier-ignore
-    const isLegacyMode = () => {
-      return isString(options.types)
-        ? options.types === 'legacy'
-        : isObject(options.vueI18n) && isBoolean(options.vueI18n.legacy)
-          ? options.vueI18n.legacy
-          : false
-    }
+    const isLegacyMode = () => options.types === 'legacy'
 
     // To be plugged for `$i18n` type definition on `NuxtApp`
     addPlugin(resolve(runtimeDir, isLegacyMode() ? 'plugins/legacy' : 'plugins/composition'))
@@ -266,7 +293,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend server handlers
      */
 
+    // end-point for pre-compile
     addServerHandler({
+      method: 'post',
       route: NUXT_I18N_PRECOMPILE_ENDPOINT,
       handler: resolve(runtimeDir, './server/precompile')
     })
@@ -278,18 +307,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend nitro storages
      */
 
-    const storageKey = NUXT_I18N_PRECOMPILED_LOCALE_KEY.split('-').join(':')
+    const storageKey = 'i18n'
     nuxt.hook('nitro:config', nitro => {
       nitro.storage = nitro.storage || {}
       nitro.storage[storageKey] = {
         // nitro.devStorage = nitro.devStorage || {}
         // nitro.devStorage['i18n:locales'] = {
         driver: 'fs',
-        base: resolve(nuxt.options.buildDir, NUXT_I18N_PRECOMPILED_LOCALE_KEY)
+        base: resolve(nuxt.options.buildDir, storageKey)
       }
       // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
       // nitro.bundledStorage = nitro.bundledStorage || []
-      // nitro.bundledStorage.push('/i18n/locales')
+      // nitro.bundledStorage.push(storageKey)
     })
 
     /**
@@ -302,17 +331,23 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     if (nuxt.options._generate) {
       nuxt.hook('nitro:build:before', async nitro => {
-        const buildLocaleDir = nitro.options.storage[storageKey].base
+        const buildI18nDir = nitro.options.storage[storageKey].base
         await nitro.storage.watch(async (event, key) => {
           if (event === 'update') {
-            const buildKey = `build:${NUXT_I18N_PRECOMPILED_LOCALE_KEY}`
-            if (key.startsWith(buildKey)) {
-              const locale = key.split(':')[2]
-              const source = resolve(buildLocaleDir, locale)
-              const target = resolve(nitro.options.output.publicDir, `${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-${locale}`)
-              const localeCode = await fs.readFile(source, 'utf-8')
-              await fs.writeFile(target, localeCode, 'utf-8')
+            if (key.startsWith(`build:${storageKey}:config-`)) {
+              const config = key.split(':')[2]
+              const source = resolve(buildI18nDir, config)
+              const target = resolve(nitro.options.output.publicDir, `${storageKey}-${config}`)
+              const code = await readFile(source)
+              await writeFile(target, code)
               debug(`generate locale file: ${source} -> ${target}`)
+            } else if (key.startsWith(`build:${storageKey}:locales`)) {
+              const locale = key.split(':')[3]
+              const source = resolve(buildI18nDir, `locales/${locale}`)
+              const target = resolve(nitro.options.output.publicDir, `${storageKey}-locales-${locale}`)
+              const code = await readFile(source)
+              await writeFile(target, code)
+              debug(`generate locale file: ${locale} -> ${target}`)
             }
           }
         })
@@ -338,7 +373,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useBrowserLocale',
         'useCookieLocale',
         NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+        NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
       ].map(key => ({
         name: key,
         as: key,
@@ -381,11 +417,9 @@ function checkOptions(options: NuxtI18nOptions) {
       if (isString(locale) || !(locale.file || locale.files)) {
         throw new Error(
           formatMessage(
-            `All locales must be objects and have the "file" or "files" property set when using "langDir".\nFound none in:\n${JSON.stringify(
-              locale,
-              null,
-              2
-            )}.`
+            `All locales must be objects and have the "file" or "files" property set when using "langDir".` +
+              '\n' +
+              `Found none in:\n${JSON.stringify(locale, null, 2)}.`
           )
         )
       }

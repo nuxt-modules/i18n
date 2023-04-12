@@ -6,24 +6,6 @@ export default defineNuxtConfig({
     lazy: false,
     defaultLocale: 'en',
     detectBrowserLanguage: false,
-    locales: ['fr', 'ja', 'en'],
-    vueI18n: {
-      legacy: false,
-      fallbackLocale: 'en',
-      messages: {
-        en: {
-          home: 'Homepage',
-          about: 'About us',
-          posts: 'Posts',
-          dynamic: 'Dynamic'
-        },
-        fr: {
-          home: 'Accueil',
-          about: 'À propos',
-          posts: 'Articles',
-          dynamic: 'Dynamique'
-        }
-      }
-    }
+    locales: ['fr', 'ja', 'en']
   }
 })
