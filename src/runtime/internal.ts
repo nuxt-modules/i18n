@@ -187,7 +187,9 @@ export async function loadLocale(
       }
     }
   } else {
-    console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
+    if (!loadedLocales.includes(locale)) {
+      console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
+    }
   }
 }
 
