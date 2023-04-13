@@ -151,7 +151,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
             '\n' +
             `About deprecated reason, see https://v8.i18n.nuxtjs.org/guide/migrating#change-the-route-key-rules-in-pages-option` +
             '\n' +
-            `About new configuration style, sqee https://v8.i18n.nuxtjs.org/getting-started/basic-usage#translate-with-vue-i18n`
+            `About new configuration style, see https://v8.i18n.nuxtjs.org/getting-started/basic-usage#translate-with-vue-i18n`
         )
       )
     }
