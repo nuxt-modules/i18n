@@ -10,7 +10,8 @@ exports[`success > config 1`] = `
 `;
 
 exports[`success > locale 1`] = `
-"export default {
+"const resource = {
   \\"hello\\": (ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello\\"])}
-}"
+}
+export default resource"
 `;
