@@ -213,7 +213,7 @@ export function generateLoaderOptions(
           for (const configPath of vueI18nConfigPaths) {
             const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, relativeBase }, { dir, base, ext }) => {
               const configImportKey = makImportKey(relativeBase, dir, base)
-              return `await mergeMessages(${rootKey}.${key}.messasges, context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${getHash(absolutePath)}"` })}))\n`
+              return `await mergeMessages(${rootKey}.${key}.messages, context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${getHash(absolutePath)}"` })}))\n`
             })
             if (additionalVueI18nConfigCode != null) {
               genCodes += `  ${additionalVueI18nConfigCode}`
