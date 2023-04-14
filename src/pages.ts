@@ -85,6 +85,9 @@ export function setupPages(
 export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[], pageDirOverride?: string): void {
   const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
+    if (page.file == null) {
+      continue
+    }
     const splited = page.file.split(pagesPath)
     if (splited.length === 2 && splited[1]) {
       const { dir, name } = parsePath(splited[1])
