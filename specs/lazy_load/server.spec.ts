@@ -5,37 +5,14 @@ import { validateSyntax } from '../helper'
 import { NUXT_I18N_PRECOMPILE_ENDPOINT } from '../../src/constants'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/server`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
     i18n: {
-      experimental: {
-        jsTsFormatResource: true
-      },
-      defaultLocale: 'en',
-      langDir: 'lang',
-      lazy: true,
-      locales: [
-        {
-          code: 'en',
-          iso: 'en-US',
-          file: 'en.json',
-          name: 'English'
-        },
-        {
-          code: 'en-GB',
-          iso: 'en-GB',
-          files: ['en.json', 'en-GB.js', 'en-GB.ts'],
-          name: 'English (UK)'
-        },
-        {
-          code: 'fr',
-          iso: 'fr-FR',
-          file: 'fr.json5',
-          name: 'Français'
-        }
-      ]
+      // precompile: {
+      //   strictMessage: false
+      // }
     }
   }
 })

@@ -83,7 +83,9 @@ async function getCacheCode({ type, locale, configId }: I18nBody) {
 function generateCode(body: I18nBody): [string, string[]] {
   const errors = [] as string[]
   const {
-    i18n: { strictMessage, escapeHtml }
+    i18n: {
+      precompile: { strictMessage, escapeHtml }
+    }
   } = useRuntimeConfig()
   const env = process.dev ? 'development' : 'production'
 
