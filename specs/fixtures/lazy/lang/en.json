@@ -2,5 +2,6 @@
   "home": "Homepage",
   "about": "About us",
   "posts": "Posts",
-  "dynamic": "Dynamic"
+  "dynamic": "Dynamic",
+  "html": "<span>This is the danger</span>"
 }

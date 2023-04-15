@@ -5,22 +5,6 @@ export default defineNuxtConfig({
   i18n: {
     baseUrl: 'http://localhost:3000',
     langDir: 'lang',
-    /*
-    locales: [
-      {
-        code: 'en',
-        iso: 'en-US',
-        file: 'en.json',
-        name: 'English'
-      },
-      {
-        code: 'fr',
-        iso: 'fr-FR',
-        file: 'fr.json5',
-        name: 'Français'
-      }
-    ],
-    */
     defaultLocale: 'fr',
     detectBrowserLanguage: false
   }
