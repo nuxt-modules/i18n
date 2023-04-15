@@ -12,6 +12,9 @@ await setup({
       experimental: {
         jsTsFormatResource: true
       },
+      precompile: {
+        strictMessage: false
+      },
       defaultLocale: 'en',
       langDir: 'lang',
       lazy: true,
