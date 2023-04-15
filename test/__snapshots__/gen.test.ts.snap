@@ -231,8 +231,8 @@ export const resolveNuxtI18nOptions = async (context) => {
               deepCopy(message, messages[locale])
             }
           }
-  await mergeMessages(nuxtI18nOptions.vueI18n.messasges, context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../../i18n.custom.ts&c=faa288dc\\" /* webpackChunkName: \\"i18n_custom_ts_faa288dc\\" */)))
-  await mergeMessages(nuxtI18nOptions.vueI18n.messasges, context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../../../vue-i18n.options.js&c=84df1640\\" /* webpackChunkName: \\"vue_i18n_options_js_84df1640\\" */)))
+  await mergeMessages(nuxtI18nOptions.vueI18n.messages, context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../../i18n.custom.ts&c=faa288dc\\" /* webpackChunkName: \\"i18n_custom_ts_faa288dc\\" */)))
+  await mergeMessages(nuxtI18nOptions.vueI18n.messages, context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../../../vue-i18n.options.js&c=84df1640\\" /* webpackChunkName: \\"vue_i18n_options_js_84df1640\\" */)))
   return nuxtI18nOptions
 }
 
