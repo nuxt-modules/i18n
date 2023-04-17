@@ -87,7 +87,7 @@ export default async function(context, locale) {
         m => m.default || m
       )
     } catch (e) {
-      console.error(format(e.message))
+      console.error(formatMessage(e.message))
     }
     return mod || {}
   }
@@ -126,7 +126,7 @@ export default async function(context) {
         m => m.default || m
       )
     } catch (e) {
-      console.error(format(e.message))
+      console.error(formatMessage(e.message))
     }
     config.messages = messages || {}
     return config
