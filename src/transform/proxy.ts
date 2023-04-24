@@ -1,17 +1,18 @@
 import createDebug from 'debug'
 import { dirname, resolve } from 'node:path'
 import { createUnplugin } from 'unplugin'
-import { parseQuery, parseURL } from 'ufo'
+import { parseQuery, parseURL, withQuery } from 'ufo'
 import { isString } from '@intlify/shared'
 import MagicString from 'magic-string'
 // @ts-ignore
 import { transform as stripType } from '@mizchi/sucrase'
 import { getVirtualId, VIRTUAL_PREFIX_HEX } from './utils'
+import { toCode } from '../utils'
 import {
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_TEMPLATE_INTERNAL_KEY,
   NUXT_I18N_CONFIG_PROXY_ID,
-  NUXT_I18N_RESOURCE_PROXY_ID
+  NUXT_I18N_LOCALE_PROXY_ID
 } from '../constants'
 
 export interface ResourceProxyPluginOptions {
@@ -27,15 +28,14 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
     name: 'nuxtjs:i18n-resource-proxy',
 
     resolveId(id, importer) {
-      debug('resolveId', id, importer)
       const { pathname, search } = parseURL(decodeURIComponent(getVirtualId(id)))
       const query = parseQuery(search)
 
-      if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
-        // console.log('resolveId (resource)', id, importer, pathname, query)
+      if (pathname === NUXT_I18N_LOCALE_PROXY_ID) {
+        debug('resolveId (locale)', id, importer)
         if (importer?.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
           return {
-            id: `${id}&from=${importer}`,
+            id: withQuery(id, { from: importer }),
             moduleSideEffects: true
           }
         } else if (isString(query.from) && query.from.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
@@ -45,10 +45,10 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           }
         }
       } else if (pathname === NUXT_I18N_CONFIG_PROXY_ID) {
-        // console.log('resolveId (config)', id, importer, pathname, query)
+        debug('resolveId (config)', id, importer)
         if (importer?.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
           return {
-            id: `${id}&from=${importer}`,
+            id: withQuery(id, { from: importer }),
             moduleSideEffects: true
           }
         } else if (isString(query.from) && query.from.endsWith(NUXT_I18N_TEMPLATE_OPTIONS_KEY)) {
@@ -63,31 +63,35 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
     },
 
     async load(id) {
-      debug('load', id)
       const { pathname, search } = parseURL(decodeURIComponent(getVirtualId(id)))
       const query = parseQuery(search)
 
-      if (pathname === NUXT_I18N_RESOURCE_PROXY_ID) {
+      if (pathname === NUXT_I18N_LOCALE_PROXY_ID) {
         if (isString(query.target) && isString(query.from)) {
           const baseDir = dirname(query.from)
-          // console.log('load (resource) ->', id, pathname, query, baseDir)
+          debug('load (locale) ->', id, baseDir)
           // prettier-ignore
-          const code = `import { loadResource, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
-import { NUXT_I18N_PRECOMPILED_LOCALE_KEY, isSSG } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
+          const code = `import { precompileLocale, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
+import { NUXT_I18N_PRERENDERED_PATH } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
 export default async function(context, locale) {
-  if (process.dev || process.server || !isSSG) {
+  if (process.dev || (process.server && process.env.prerender)) {
     __DEBUG__ && console.log('loadResource', locale)
-    const loader = await import(${JSON.stringify(`${resolve(baseDir, query.target)}?resource=true`)}).then(m => m.default || m)
-    return await loadResource(context, locale, loader)
+    const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, locale: query.locale }))}).then(m => m.default || m)
+    const message = await loader(context, locale)
+    return await precompileLocale(locale, message, ${toCode(query.hash)})
   } else {
     __DEBUG__ && console.log('load precompiled resource', locale)
     let mod = null
     try {
-      mod = await import(/* @vite-ignore */ \`/\${NUXT_I18N_PRECOMPILED_LOCALE_KEY}-\${locale}.js\` /* webpackChunkName: ${query.target} */).then(
+      let url = \`\${NUXT_I18N_PRERENDERED_PATH}/${query.hash}.js\`
+      if (process.server) {
+        url = \`../../../../public/\${url}\`
+      }
+      mod = await import(/* @vite-ignore */ url /* webpackChunkName: ${query.hash} */).then(
         m => m.default || m
       )
     } catch (e) {
-      console.error(format(e.message))
+      console.error(formatMessage(e.message))
     }
     return mod || {}
   }
@@ -101,32 +105,35 @@ export default async function(context, locale) {
       } else if (pathname === NUXT_I18N_CONFIG_PROXY_ID) {
         if (isString(query.target) && isString(query.from)) {
           const baseDir = dirname(query.from)
-          // console.log('load (config) ->', id, pathname, query, baseDir)
+          debug('load (config) ->', id, baseDir)
           // prettier-ignore
-          const code = `import { precompileMessages, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
-import { isSSG } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
+          const code = `import { precompileConfig, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
+import { NUXT_I18N_PRERENDERED_PATH } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
 import { isObject, isFunction } from '@intlify/shared'
 export default async function(context) {
-  const loader = await import(${JSON.stringify(`${resolve(baseDir, query.target)}?config=true`)}).then(m => m.default || m)
+  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, config: 'true' }))}).then(m => m.default || m)
   const config = isFunction(loader)
     ? await loader(context)
     : isObject(loader)
       ? loader
       : {}
   __DEBUG__ && console.log('loadConfig', config)
-  if (process.dev || process.server || !isSSG) {
-    config.messages = await precompileMessages(config.messages, ${JSON.stringify(query.c)})
+  if (process.dev || (process.server && process.env.prerender)) {
+    config.messages = await precompileConfig(config.messages, ${toCode(query.hash)})
     return config
   } else {
     __DEBUG__ && console.log('already pre-compiled vue-i18n messages')
     let messages = null
     try {
-      const key = \`/i18n-config-${query.c}.js\` 
-      messages = await import(/* @vite-ignore */ key /* webpackChunkName: nuxt-i18n-config-${query.c} */).then(
+      let url = \`\${NUXT_I18N_PRERENDERED_PATH}/${query.hash}.js\`
+      if (process.server) {
+        url = \`../../../../public/\${url}\`
+      }
+      messages = await import(/* @vite-ignore */ url /* webpackChunkName: ${query.hash} */).then(
         m => m.default || m
       )
     } catch (e) {
-      console.error(format(e.message))
+      console.error(formatMessage(e.message))
     }
     config.messages = messages || {}
     return config
@@ -142,11 +149,10 @@ export default async function(context) {
     },
 
     transformInclude(id) {
-      debug('transformInclude', id)
-
       if (id.startsWith(VIRTUAL_PREFIX_HEX) || !/\.([c|m]?ts)$/.test(id)) {
         return false
       } else {
+        debug('transformInclude', id)
         return true
       }
     },

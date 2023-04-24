@@ -10,7 +10,7 @@ import {
   addImports,
   addServerHandler,
   useLogger,
-  addPrerenderRoutes // TODO: remove?
+  addPrerenderRoutes
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { defu } from 'defu'
@@ -30,13 +30,13 @@ import {
 } from './constants'
 import {
   formatMessage,
-  readFile,
-  writeFile,
   getNormalizedLocales,
   resolveLocales,
   getPackageManagerType,
   mergeI18nModules,
-  resolveVueI18nConfigInfo
+  resolveVueI18nConfigInfo,
+  analyzePrerenderTargets,
+  rm
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
@@ -104,12 +104,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup runtime config
      */
 
+    // for public
     nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
       experimental: options.experimental,
       baseUrl: options.baseUrl
       // TODO: we should support more i18n module options. welcome PRs :-)
     })
 
+    // for privates
     nuxt.options.runtimeConfig.i18n = defu(nuxt.options.runtimeConfig.i18n, {
       precompile: options.precompile
     })
@@ -250,7 +252,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
           },
           {
             ssg: nuxt.options._generate,
-            ssr: nuxt.options.ssr,
             dev: nuxt.options.dev
           }
         )
@@ -279,6 +280,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
       references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
     })
 
+    const prerenderTargets = analyzePrerenderTargets(localeInfo, [vueI18nConfigPathInfo, ...layerVueI18nConfigPaths])
+    debug('prerenderTargets', prerenderTargets)
+
     /**
      * extend bundler
      */
@@ -286,22 +290,35 @@ export default defineNuxtModule<NuxtI18nOptions>({
     await extendBundler(nuxt, {
       nuxtOptions: options as Required<NuxtI18nOptions>,
       hasLocaleFiles,
-      langPath
+      langPath,
+      prerenderTargets
     })
 
     /**
      * extend server handlers
      */
 
-    // end-point for pre-compile
+    // for pre-compile
     addServerHandler({
       method: 'post',
       route: NUXT_I18N_PRECOMPILE_ENDPOINT,
       handler: resolve(runtimeDir, './server/precompile')
     })
 
-    // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
-    // addPrerenderRoutes([NUXT_I18N_PRECOMPILE_ENDPOINT])
+    // for prerender
+    addServerHandler({
+      method: 'get',
+      route: '/__i18n__/prerender/:hash',
+      handler: resolve(runtimeDir, './server/dynamic')
+    })
+
+    /**
+     * extend prerender routes
+     */
+
+    for (const hash of prerenderTargets.keys()) {
+      addPrerenderRoutes(`/__i18n__/prerender/${hash}.js`)
+    }
 
     /**
      * extend nitro storages
@@ -311,8 +328,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.hook('nitro:config', nitro => {
       nitro.storage = nitro.storage || {}
       nitro.storage[storageKey] = {
-        // nitro.devStorage = nitro.devStorage || {}
-        // nitro.devStorage['i18n:locales'] = {
         driver: 'fs',
         base: resolve(nuxt.options.buildDir, storageKey)
       }
@@ -321,38 +336,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
       // nitro.bundledStorage.push(storageKey)
     })
 
-    /**
-     * copy pre-compiled locale resources to `public` dir from `.nuxt/i18n-locale`
-     *
-     * NOTE:
-     *  There has to be a smart way to do this, one that is nitro.
-     *  (maybe, I think that is prerender)
-     */
-
-    if (nuxt.options._generate) {
-      nuxt.hook('nitro:build:before', async nitro => {
-        const buildI18nDir = nitro.options.storage[storageKey].base
-        await nitro.storage.watch(async (event, key) => {
-          if (event === 'update') {
-            if (key.startsWith(`build:${storageKey}:config-`)) {
-              const config = key.split(':')[2]
-              const source = resolve(buildI18nDir, config)
-              const target = resolve(nitro.options.output.publicDir, `${storageKey}-${config}`)
-              const code = await readFile(source)
-              await writeFile(target, code)
-              debug(`generate locale file: ${source} -> ${target}`)
-            } else if (key.startsWith(`build:${storageKey}:locales`)) {
-              const locale = key.split(':')[3]
-              const source = resolve(buildI18nDir, `locales/${locale}`)
-              const target = resolve(nitro.options.output.publicDir, `${storageKey}-locales-${locale}`)
-              const code = await readFile(source)
-              await writeFile(target, code)
-              debug(`generate locale file: ${locale} -> ${target}`)
-            }
-          }
-        })
-      })
-    }
+    nuxt.hook('nitro:init', async nitro => {
+      // remove i18n storage for refresh
+      if (nuxt.options.dev) {
+        await rm(resolve(nuxt.options.buildDir, storageKey))
+      }
+    })
 
     /**
      * auto imports

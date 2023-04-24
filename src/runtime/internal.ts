@@ -20,6 +20,7 @@ import {
   additionalMessages,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NULL_HASH,
   isSSG
 } from '#build/i18n.options.mjs'
 
@@ -499,62 +500,38 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
 }
 
-async function evalResource(raw: string | Blob) {
-  if (isString(raw)) {
-    const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(raw)
-    return await import(/* @vite-ignore */ data).then(m => m.default || m)
-  } else {
-    const url = URL.createObjectURL(raw)
-    const code = await import(/* @vite-ignore */ url).then(m => m.default || m)
-    URL.revokeObjectURL(url)
-    return code
-  }
-  // const data = 'data:text/javascript;charset=utf-8,' + encodeURIComponent(code)
-  // return await import(/* @vite-ignore */ data).then(m => m.default || m)
-}
-
-type FetchOptions = Parameters<typeof $fetch>[1]
-
-export async function loadResource(
-  context: NuxtApp,
+export async function precompileLocale(
   locale: Locale,
-  loader: (context: NuxtApp, locale: Locale) => Promise<LocaleMessages<DefineLocaleMessage>>
+  messages: LocaleMessages<DefineLocaleMessage>,
+  hash: string = NULL_HASH
 ) {
-  const loaded = await loader(context, locale)
-  const opts: FetchOptions = {
+  await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
     method: 'POST',
     body: {
       locale,
       type: 'locale',
-      resource: loaded
+      hash,
+      resource: messages
     }
-  }
-  if (!process.server) {
-    opts.responseType = 'blob'
-  }
-  const precompiledCode = await $fetch<string | Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, opts)
-  return await evalResource(precompiledCode)
+  })
+  return await loadPrecompiledMessages(locale + '-' + hash + '.js', 'locale')
 }
 
-export async function precompileMessages(
+export async function precompileConfig(
   messages: I18nOptions['messages'],
-  configId = ''
+  hash: string = NULL_HASH
 ): Promise<I18nOptions['messages']> {
   if (messages != null) {
-    const opts: FetchOptions = {
+    await $fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: {
         type: 'config',
-        configId,
+        hash,
         resource: getNeedPrecompileMessages(messages)
       }
-    }
-    if (!process.server) {
-      opts.responseType = 'blob'
-    }
-    const precompiledCode = await $fetch<string | Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, opts)
+    })
 
-    const precompiledMessages = (await evalResource(precompiledCode).then(m => m.default || m)) as NonNullable<
+    const precompiledMessages = (await loadPrecompiledMessages('config-' + hash + '.js', 'config')) as NonNullable<
       I18nOptions['messages']
     >
     for (const [locale, message] of Object.entries(precompiledMessages)) {
@@ -562,6 +539,27 @@ export async function precompileMessages(
     }
   }
   return messages
+}
+
+async function loadPrecompiledMessages(id: string, type: 'locale' | 'config') {
+  __DEBUG__ &&
+    console.log('loadPrecompiledMessages loc ->', id, type, process.server, process.env && process.env.prerender)
+
+  let url = ''
+  // prettier-ignore
+  if (process.server) { // for server
+    if (process.env.prerender) { // for prerender
+      url = type === 'config' ? '../../../i18n/' + id : '../../../i18n/locales/' + id
+    } else if (process.dev) { // for dev mode
+      url = type === 'config' ? '/.nuxt/i18n/' + id : '/.nuxt/i18n/locales/' + id
+    } else {
+      throw new Error(`'loadPrecompiledMessages' is used in invalid environment.`)
+    }
+  } else { // for client
+    url = type === 'config' ? '/.nuxt/i18n/' + id : '/.nuxt/i18n/locales/' + id
+  }
+
+  return await import(/* @vite-ignore */ url).then(m => m.default || m)
 }
 
 function getNeedPrecompileMessages(messages: NonNullable<I18nOptions['messages']>) {

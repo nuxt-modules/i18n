@@ -50,6 +50,7 @@
     "dev:build": "nuxi build playground",
     "dev:generate": "nuxi generate playground",
     "dev:preview": "nuxi preview playground",
+    "dev:clean": "rm -rf playground/.nuxt playground/dist playground/.output",
     "docs:dev": "nuxi dev docs",
     "docs:build": "nuxi build docs",
     "docs:generate": "nuxi generate docs",

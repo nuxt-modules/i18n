@@ -6,20 +6,21 @@ import { useStorage, useRuntimeConfig } from '#imports'
 
 import type { Locale } from 'vue-i18n'
 
-const CONFIG_KEY = 'i18n' as const
-const BUILD_CONFIG_KEY = 'config' as const
-const configStorage = prefixStorage(useStorage(), CONFIG_KEY)
+const BASE_KEY = 'i18n' as const
+const CONFIG_KEY = 'config' as const
+const configStorage = prefixStorage(useStorage(), BASE_KEY)
 
 const PRECOMPILED_LOCALE_KEY = 'i18n:locales' as const
 const localeStorage = prefixStorage(useStorage(), PRECOMPILED_LOCALE_KEY)
 
 const resolveKey = (key: string) => `${key}.js`
-const configKey = (configId: string) => `${BUILD_CONFIG_KEY}-${configId}`
+const localeKey = (locale: string, hash: string) => `${locale}-${hash}`
+const configKey = (hash: string) => `${CONFIG_KEY}-${hash}`
 
 type I18nBody = {
   type: 'locale' | 'config'
   locale: Locale
-  configId: string
+  hash: string
   resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
@@ -27,7 +28,7 @@ export default defineEventHandler(async event => {
   const body = await readBody<{
     type: 'locale' | 'config'
     locale: Locale
-    configId: string
+    hash: string
     resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
   }>(event)
 
@@ -60,21 +61,21 @@ function validate(body: I18nBody) {
       throw createError({ statusMessage: `require the 'locale'`, statusCode: 400 })
     }
   }
-  if (body.type === 'config') {
-    if (!body.configId) {
-      throw createError({ statusMessage: `require the 'configId'`, statusCode: 400 })
-    }
+
+  if (!body.hash) {
+    throw createError({ statusMessage: `require the 'hash'`, statusCode: 400 })
   }
+
   if (!body.resource) {
     throw createError({ statusMessage: `require the 'resource'`, statusCode: 400 })
   }
 }
 
-async function getCacheCode({ type, locale, configId }: I18nBody) {
+async function getCacheCode({ type, locale, hash }: I18nBody) {
   if (type === 'locale') {
-    return await localeStorage.getItem(resolveKey(locale))
+    return await localeStorage.getItem(resolveKey(localeKey(locale, hash)))
   } else if (type === 'config') {
-    return await configStorage.getItem(resolveKey(configKey(configId)))
+    return await configStorage.getItem(resolveKey(configKey(hash)))
   } else {
     return null
   }
@@ -123,10 +124,10 @@ function generateCode(body: I18nBody): [string, string[]] {
   return [gen, errors]
 }
 
-async function setCacheCode(code: string, { type, locale, configId }: I18nBody) {
+async function setCacheCode(code: string, { type, locale, hash }: I18nBody) {
   if (type === 'locale') {
-    await localeStorage.setItem(resolveKey(locale), code)
+    await localeStorage.setItem(resolveKey(localeKey(locale, hash)), code)
   } else if (type === 'config') {
-    await configStorage.setItem(resolveKey(configKey(configId)), code)
+    await configStorage.setItem(resolveKey(configKey(hash)), code)
   }
 }
