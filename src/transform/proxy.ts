@@ -73,11 +73,11 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           // prettier-ignore
           const code = `import { precompileLocale, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
 import { NUXT_I18N_PRERENDERED_PATH } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
-export default async function(context, locale) {
+export default async function(locale) {
   if (process.dev || (process.server && process.env.prerender)) {
     __DEBUG__ && console.log('loadResource', locale)
     const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, locale: query.locale }))}).then(m => m.default || m)
-    const message = await loader(context, locale)
+    const message = await loader(locale)
     return await precompileLocale(locale, message, ${toCode(query.hash)})
   } else {
     __DEBUG__ && console.log('load precompiled resource', locale)
@@ -110,10 +110,10 @@ export default async function(context, locale) {
           const code = `import { precompileConfig, formatMessage } from '#build/${NUXT_I18N_TEMPLATE_INTERNAL_KEY}'
 import { NUXT_I18N_PRERENDERED_PATH } from '#build/${NUXT_I18N_TEMPLATE_OPTIONS_KEY}'
 import { isObject, isFunction } from '@intlify/shared'
-export default async function(context) {
+export default async function() {
   const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, config: 'true' }))}).then(m => m.default || m)
   const config = isFunction(loader)
-    ? await loader(context)
+    ? await loader()
     : isObject(loader)
       ? loader
       : {}

@@ -161,18 +161,18 @@ export function generateLoaderOptions(
       genCodes += `  const ${rootKey} = Object({})\n`
       for (const [key, value] of Object.entries(rootValue)) {
         if (key === 'vueI18n') {
-          genCodes += ` const vueI18nConfigLoader = async (context, loader) => {
+          genCodes += ` const vueI18nConfigLoader = async (loader) => {
             const config = await loader().then(r => r.default || r)
             return typeof config === 'object'
               ? config
               : typeof config === 'function'
-                ? await config(context)
+                ? await config()
                 : {}
           }
 `
           const basicVueI18nConfigCode = generateVueI18nConfigration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
             const configImportKey = makeImportKey(relativeBase, dir, base)
-            return `const vueI18n = await vueI18nConfigLoader(context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
+            return `const vueI18n = await vueI18nConfigLoader((${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
           })
           if (basicVueI18nConfigCode != null) {
             genCodes += `  ${basicVueI18nConfigCode}`
@@ -198,8 +198,8 @@ export function generateLoaderOptions(
               }
             }
           }
-          const mergeMessages = async (messages, context, loader) => {
-            const layerConfig = await vueI18nConfigLoader(context, loader)
+          const mergeMessages = async (messages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
             const vueI18n = layerConfig.vueI18n || {}
             const layerMessages = vueI18n.messages || {}
             for (const [locale, message] of Object.entries(layerMessages)) {
@@ -211,7 +211,7 @@ export function generateLoaderOptions(
           for (const configPath of vueI18nConfigPaths) {
             const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
               const configImportKey = makeImportKey(relativeBase, dir, base)
-              return `await mergeMessages(${rootKey}.${key}.messages, context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
+              return `await mergeMessages(${rootKey}.${key}.messages, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
             })
             if (additionalVueI18nConfigCode != null) {
               genCodes += `  ${additionalVueI18nConfigCode}`

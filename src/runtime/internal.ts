@@ -121,7 +121,7 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
       if (i18nConfig.experimental?.jsTsFormatResource) {
-        message = await getter(context, locale).then((r: any) => r.default || r)
+        message = await getter(locale).then((r: any) => r.default || r)
         __DEBUG__ && console.log('loadMessage: dynamic load', message)
       } else {
         console.warn(

@@ -1,6 +1,6 @@
 import fr from './locales/fr.json'
 
-export default defineI18nConfig(nuxt => ({
+export default defineI18nConfig(() => ({
   legacy: false,
   locale: 'en',
   fallbackLocale: 'en',

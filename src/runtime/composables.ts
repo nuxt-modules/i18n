@@ -245,13 +245,11 @@ type MaybePromise<T> = T | Promise<T>
  *
  * You can use at JavaScript and TypeScript extension formats.
  *
- * @param context - A Nuxt Application instance that is passed from nuxt i18n module.
  * @param locale - A target locale that is passed from nuxt i18n module.
  *
  * @returns Returns the locale messages object that will be resolved with Promise.
  */
 export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale> = (
-  context: ReturnType<typeof useNuxtApp>,
   locale: Locales
 ) => MaybePromise<Messages>
 
@@ -276,11 +274,9 @@ export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>,
  *
  * For more details about configuration, see the [Vue I18n documentation](https://vue-i18n.intlify.dev/api/general.html#createi18n).
  *
- * @param context - A Nuxt Application instance that is passed from nuxt i18n module.
- *
  * @returns Return vue-i18n options object that will be resolved by Promise.
  */
-export type ConfigLoader<Config extends I18nOptions> = (context: ReturnType<typeof useNuxtApp>) => MaybePromise<Config>
+export type ConfigLoader<Config extends I18nOptions> = () => MaybePromise<Config>
 
 /**
  * Define configuration for vue-i18n runtime plugin

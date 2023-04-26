@@ -26,12 +26,12 @@ export default defineEventHandler(async event => {
     if (target.locale == null) {
       throw createError({ statusMessage: `not found locale`, statusCode: 500 })
     }
-    const resource = await loader(event, target.locale)
+    const resource = await loader(target.locale)
     const code = await precompileLocale(target.locale, filename, resource)
     await setResponseHeader(event, 'content-type', 'text/javascript')
     return code
   } else if (target.type === 'config') {
-    const config = (isFunction(loader) ? await loader(event) : isObject(loader) ? loader : {}) as I18nOptions
+    const config = (isFunction(loader) ? await loader() : isObject(loader) ? loader : {}) as I18nOptions
     const code = await precompileConfig(filename, config.messages as NonNullable<I18nOptions['messages']>)
     await setResponseHeader(event, 'content-type', 'text/javascript')
     return code
