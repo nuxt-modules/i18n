@@ -203,12 +203,12 @@ export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
- const vueI18nConfigLoader = async (context, loader) => {
+ const vueI18nConfigLoader = async (loader) => {
             const config = await loader().then(r => r.default || r)
             return typeof config === 'object'
               ? config
               : typeof config === 'function'
-                ? await config(context)
+                ? await config()
                 : {}
           }
   nuxtI18nOptions.vueI18n = Object({})
@@ -228,8 +228,8 @@ export const resolveNuxtI18nOptions = async (context) => {
               }
             }
           }
-          const mergeMessages = async (messages, context, loader) => {
-            const layerConfig = await vueI18nConfigLoader(context, loader)
+          const mergeMessages = async (messages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
             const vueI18n = layerConfig.vueI18n || {}
             const layerMessages = vueI18n.messages || {}
             for (const [locale, message] of Object.entries(layerMessages)) {
