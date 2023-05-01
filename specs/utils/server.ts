@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { execa } from 'execa'
 import { getRandomPort, waitForPort } from 'get-port-please'
 import type { FetchOptions } from 'ofetch'
@@ -97,3 +99,5 @@ export function url(path: string) {
   }
   return ctx.url + path
 }
+
+/* eslint-enable @typescript-eslint/no-non-null-assertion */

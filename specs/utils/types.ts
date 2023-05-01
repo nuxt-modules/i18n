@@ -33,6 +33,7 @@ export interface TestContext {
   browser?: Browser
   url?: string
   serverProcess?: ExecaChildProcess
+  // eslint-disable-next-line @typescript-eslint/ban-types
   mockFn?: Function
 }
 

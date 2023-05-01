@@ -11,7 +11,7 @@ export const setupMaps = {
   vitest: setupVitest
 }
 
-export function createTest (options: Partial<TestOptions>): TestHooks {
+export function createTest(options: Partial<TestOptions>): TestHooks {
   const ctx = createTestContext(options)
 
   const beforeEach = () => {
@@ -50,7 +50,7 @@ export function createTest (options: Partial<TestOptions>): TestHooks {
     }
 
     if (ctx.options.waitFor) {
-      await (new Promise(resolve => setTimeout(resolve, ctx.options.waitFor)))
+      await new Promise(resolve => setTimeout(resolve, ctx.options.waitFor))
     }
 
     if (ctx.options.browser) {
@@ -67,7 +67,7 @@ export function createTest (options: Partial<TestOptions>): TestHooks {
   }
 }
 
-export async function setup (options: Partial<TestOptions> = {}) {
+export async function setup(options: Partial<TestOptions> = {}) {
   const hooks = createTest(options)
 
   const setupFn = setupMaps[hooks.ctx.options.runner]
