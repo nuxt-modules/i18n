@@ -1,5 +1,5 @@
 import { createTestContext, setTestContext } from '../context'
-import { buildFixture, loadFixture } from '../nuxt'
+import { buildFixture, loadFixture, clearDir } from '../nuxt'
 import { startServer, stopServer } from '../server'
 import { createBrowser } from '../browser'
 import type { TestHooks, TestOptions } from '../types'

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch } from '@nuxt/test-utils'
+import { setup, $fetch } from '../utils'
 import { getDom, getDataFromDom, assertLocaleHeadWithDom } from '../helper'
 
 const configDomain = 'https://runtime-config-domain.com'

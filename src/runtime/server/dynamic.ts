@@ -32,7 +32,8 @@ export default defineEventHandler(async event => {
     return code
   } else if (target.type === 'config') {
     const config = (isFunction(loader) ? await loader() : isObject(loader) ? loader : {}) as I18nOptions
-    const code = await precompileConfig(filename, config.messages as NonNullable<I18nOptions['messages']>)
+    const messages = (config.messages || {}) as NonNullable<I18nOptions['messages']>
+    const code = await precompileConfig(filename, messages)
     await setResponseHeader(event, 'content-type', 'text/javascript')
     return code
   } else {

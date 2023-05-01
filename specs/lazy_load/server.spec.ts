@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch, fetch } from '@nuxt/test-utils'
+import { setup, $fetch, fetch } from '../utils'
 import { validateSyntax } from '../helper'
 import { NUXT_I18N_PRECOMPILE_ENDPOINT } from '../../src/constants'
 

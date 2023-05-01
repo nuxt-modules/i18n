@@ -68,7 +68,7 @@ export async function loadFixture() {
   await clearDir(ctx.nuxt.options.buildDir)
 }
 
-async function clearDir(path: string) {
+export async function clearDir(path: string) {
   await fsp.rm(path, { recursive: true, force: true })
   await fsp.mkdir(path, { recursive: true })
 }
