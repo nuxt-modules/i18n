@@ -85,7 +85,7 @@ export default async function(locale) {
     try {
       let url = \`\${NUXT_I18N_PRERENDERED_PATH}/${query.hash}.js\`
       if (process.server) {
-        url = \`../../../../public/\${url}\`
+        url = \`../../../../public\${url}\`
       }
       mod = await import(/* @vite-ignore */ url /* webpackChunkName: ${query.hash} */).then(
         m => m.default || m
@@ -127,7 +127,7 @@ export default async function() {
     try {
       let url = \`\${NUXT_I18N_PRERENDERED_PATH}/${query.hash}.js\`
       if (process.server) {
-        url = \`../../../../public/\${url}\`
+        url = \`../../../../public\${url}\`
       }
       messages = await import(/* @vite-ignore */ url /* webpackChunkName: ${query.hash} */).then(
         m => m.default || m
