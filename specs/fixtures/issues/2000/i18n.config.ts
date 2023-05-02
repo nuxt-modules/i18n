@@ -4,9 +4,7 @@ export default defineI18nConfig(() => {
     locale: 'en',
     messages: {
       ja: {
-        // big: 'こんにちは, '.repeat(8 * 1024 * 500)
-        // big: 'こんにちは, '.repeat(8 * 500)
-        big: 'こんにちは, '
+        big: 'こんにちは,'.repeat(8 * 500)
       }
     }
   }

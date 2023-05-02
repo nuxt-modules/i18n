@@ -1,11 +1,12 @@
 {
   "name": "nuxt3-test-issues-2000",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "start": "node .output/server/index.mjs"
   },
   "devDependencies": {
     "@nuxtjs/i18n": "latest",

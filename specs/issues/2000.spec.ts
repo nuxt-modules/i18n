@@ -14,8 +14,6 @@ describe('#2000', async () => {
     const page = await createPage()
     await page.goto(home)
 
-    // expect(await getText(page, '#render')).toEqual('hello, '.repeat(8 * 1024 * 500))
-    // expect(await getText(page, '#render')).toEqual('hello, '.repeat(8 * 500))
-    expect(await getText(page, '#render')).toEqual('hello, ')
+    expect(await getText(page, '#render')).toEqual('hello,'.repeat(8 * 500))
   })
 })
