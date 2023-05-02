@@ -5,15 +5,11 @@ import { validateSyntax } from '../helper'
 import { NUXT_I18N_PRECOMPILE_ENDPOINT } from '../../src/constants'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/server`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/precompile`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
-    i18n: {
-      // precompile: {
-      //   strictMessage: false
-      // }
-    }
+    i18n: {}
   }
 })
 
