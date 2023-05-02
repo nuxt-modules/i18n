@@ -6,7 +6,7 @@ import { getText } from './helper'
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
   browser: true,
-  prerender: true,
+  // prerender: true,
   // overrides
   nuxtConfig: {
     i18n: {

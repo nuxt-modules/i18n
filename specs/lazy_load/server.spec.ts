@@ -24,6 +24,7 @@ describe('success', async () => {
       body: {
         type: 'locale',
         locale: 'en',
+        hash: '1234',
         resource: {
           hello: 'Hello'
         }
@@ -38,7 +39,7 @@ describe('success', async () => {
       method: 'POST',
       body: {
         type: 'config',
-        configId: '1234',
+        hash: '1234',
         resource: {
           ja: {
             hello: 'こんにちは'
@@ -56,6 +57,7 @@ describe('fail', () => {
     const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify({
+        hash: '1234',
         resource: {
           hello: 'Hello'
         }
@@ -76,7 +78,7 @@ describe('fail', () => {
       })
     })
     expect(res.status).toBe(400)
-    expect(res.statusText).toBe(`require the 'configId'`)
+    expect(res.statusText).toBe(`require the 'hash'`)
   })
 
   test('no locale param', async () => {
@@ -84,6 +86,7 @@ describe('fail', () => {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
+        hash: '1234',
         resource: {
           hello: 'Hello'
         }
@@ -98,6 +101,7 @@ describe('fail', () => {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
+        hash: '1234',
         locale: 'en'
       })
     })
@@ -110,6 +114,7 @@ describe('fail', () => {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
+        hash: '1234',
         locale: 'en-tag',
         resource: {
           hello: '<script>window.alert("seciruty issue")</script>'

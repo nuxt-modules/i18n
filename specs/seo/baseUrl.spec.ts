@@ -4,7 +4,7 @@ import { setup, $fetch } from '../utils'
 import { getDom, assertLocaleHeadWithDom } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/base_url`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

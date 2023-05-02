@@ -2,6 +2,12 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
 
+  vite: {
+    build: {
+      minify: false
+    }
+  },
+
   i18n: {
     experimental: {
       jsTsFormatResource: true
@@ -13,7 +19,7 @@ export default defineNuxtConfig({
       {
         code: 'en',
         iso: 'en-US',
-        file: 'en.ts',
+        files: ['en.ts'],
         name: 'English'
       }
     ]

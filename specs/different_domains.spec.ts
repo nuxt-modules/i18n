@@ -4,7 +4,7 @@ import { setup, $fetch } from './utils'
 import { getDom } from './helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`./fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`./fixtures/domain`, import.meta.url)),
   // overrides
   nuxtConfig: {
     i18n: {

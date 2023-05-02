@@ -1,9 +1,9 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
+import { setup, url, createPage } from '../utils'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/head`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/custom_route_paths_component`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

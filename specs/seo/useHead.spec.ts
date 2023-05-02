@@ -4,7 +4,7 @@ import { setup, url, createPage } from '../utils'
 import { getText, assetLocaleHead } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/use_head`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

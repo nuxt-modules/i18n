@@ -1,4 +1,5 @@
 {
+  "name": "nuxt3-test-issues-2000",
   "private": true,
   "scripts": {
     "build": "nuxt build",

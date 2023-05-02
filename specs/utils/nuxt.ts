@@ -36,7 +36,7 @@ const resolveRootDir = () => {
 export async function loadFixture() {
   const ctx = useTestContext()
 
-  ctx.options.rootDir = resolveRootDir()
+  const rootDir = (ctx.options.rootDir = resolveRootDir())
 
   if (!ctx.options.dev) {
     // NOTE: the following code is original code
@@ -44,13 +44,15 @@ export async function loadFixture() {
     // const buildDir = resolve(ctx.options.rootDir, '.nuxt', randomId)
 
     const buildDir = resolve(ctx.options.rootDir, '.nuxt')
+    const outputDir = ctx.options.prerender ? resolve(buildDir, 'output') : resolve(rootDir, '.output')
+
     ctx.options.nuxtConfig = defu(ctx.options.nuxtConfig, {
       buildDir,
       // NOTE: the following code is added for prerender
       _generate: ctx.options.prerender,
       nitro: {
         output: {
-          dir: resolve(buildDir, 'output')
+          dir: outputDir
         }
       }
     })
@@ -66,6 +68,9 @@ export async function loadFixture() {
   // NOTE: the following code is original code
   // await fsp.mkdir(ctx.nuxt.options.buildDir, { recursive: true })
   await clearDir(ctx.nuxt.options.buildDir)
+  if (ctx.nuxt.options.nitro?.output?.dir) {
+    await clearDir(ctx.nuxt.options.nitro.output?.dir)
+  }
 }
 
 export async function clearDir(path: string) {
