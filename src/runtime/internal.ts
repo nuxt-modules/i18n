@@ -523,6 +523,12 @@ export async function precompileLocale(
     }
   })
   if (process.dev && process.client) {
+    /**
+     * NOTE:
+     * If code precompiled directly by dynamic import is loaded directly as well as on the server side,
+     * it will be routed on the server side when the request is received.
+     * To avoid this, use the code received by fetching the precompiled code.
+     */
     return evaluateCode(raw)
   } else {
     return await loadPrecompiledMessages(locale + '-' + hash + '.js', 'locale')
@@ -545,6 +551,12 @@ export async function precompileConfig(
     })
     let precompiledMessages: I18nOptions['messages']
     if (process.dev && process.client) {
+      /**
+       * NOTE:
+       * If code precompiled directly by dynamic import is loaded directly as well as on the server side,
+       * it will be routed on the server side when the request is received.
+       * To avoid this, use the code received by fetching the precompiled code.
+       */
       precompiledMessages = await evaluateCode(raw)
     } else {
       precompiledMessages = (await loadPrecompiledMessages('config-' + hash + '.js', 'config')) as NonNullable<
