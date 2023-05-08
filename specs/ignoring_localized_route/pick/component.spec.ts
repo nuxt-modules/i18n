@@ -1,9 +1,9 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
+import { setup, url, createPage } from '../../utils'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../../fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../../fixtures/ignore_pick_component`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

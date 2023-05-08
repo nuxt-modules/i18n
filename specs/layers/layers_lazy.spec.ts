@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
+import { setup, url, createPage } from '../utils'
 import { getText } from '../helper'
 
 await setup({

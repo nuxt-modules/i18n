@@ -1,11 +1,11 @@
 import { expect, test } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch } from '@nuxt/test-utils'
+import { setup, $fetch } from '../utils'
 import { getDom, getDataFromDom, assertLocaleHeadWithDom } from '../helper'
 
 const configDomain = 'https://runtime-config-domain.com'
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/base_url_runtime`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

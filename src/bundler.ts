@@ -9,8 +9,9 @@ import { ResourceDynamicPlugin, ResourceDynamicPluginOptions } from './transform
 import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
+import type { NuxtI18nOptions } from './types'
+import type { PrerenderTargets } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -20,6 +21,7 @@ export async function extendBundler(
     nuxtOptions: Required<NuxtI18nOptions>
     hasLocaleFiles: boolean
     langPath: string | null
+    prerenderTargets: PrerenderTargets
   }
 ) {
   const { nuxtOptions, hasLocaleFiles } = options
@@ -55,6 +57,8 @@ export async function extendBundler(
   }
 
   const dynamicOptions: ResourceDynamicPluginOptions = {
+    prerenderTargs: options.prerenderTargets,
+    dev: nuxt.options.dev,
     sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
   }
 

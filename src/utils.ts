@@ -2,14 +2,18 @@ import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANT
 import { createHash } from 'node:crypto'
 import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
+import { parse as _parseCode } from '@babel/parser'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
-import { isString } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID, JS_EXTENSIONS, TS_EXTENSIONS } from './constants'
+// @ts-ignore
+import { transform as stripType } from '@mizchi/sucrase'
+import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
+import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
 import type { LocaleObject } from 'vue-i18n-routing'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
 import type { Nuxt } from '@nuxt/schema'
+import type { File } from '@babel/types'
 
 const PackageManagerLockFiles = {
   'npm-shrinkwrap.json': 'npm-legacy',
@@ -60,11 +64,92 @@ export async function resolveLocales(path: string, locales: LocaleObject[]): Pro
   return (locales as LocaleInfo[]).map(locale => {
     if (locale.file) {
       locale.path = find(locale.file)
+      if (locale.path) {
+        locale.hash = getHash(locale.path)
+        locale.type = getLocaleType(locale.path)
+      }
     } else if (locale.files) {
       locale.paths = locale.files.map(file => find(file)).filter(Boolean) as string[]
+      if (locale.paths) {
+        locale.hashes = locale.paths.map(path => getHash(path))
+        locale.types = locale.paths.map(path => getLocaleType(path))
+      }
     }
     return locale
   })
+}
+
+function getLocaleType(path: string): LocaleType {
+  const ext = parsePath(path).ext
+  if (EXECUTABLE_EXTENSIONS.includes(ext)) {
+    const code = readCode(path, ext)
+    const parsed = parseCode(code, path)
+    const anaylzed = scanProgram(parsed.program)
+    if (anaylzed === 'object') {
+      return 'static'
+    } else if (anaylzed === 'function' || anaylzed === 'arrow-function') {
+      return 'dynamic'
+    } else {
+      return 'unknown'
+    }
+  } else {
+    return 'static'
+  }
+}
+
+const PARSE_CODE_CACHES = new Map<string, ReturnType<typeof _parseCode>>()
+
+function parseCode(code: string, path: string) {
+  if (PARSE_CODE_CACHES.has(path)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return PARSE_CODE_CACHES.get(path)!
+  }
+
+  const parsed = _parseCode(code, {
+    allowImportExportEverywhere: true,
+    sourceType: 'module'
+  })
+
+  PARSE_CODE_CACHES.set(path, parsed)
+  return parsed
+}
+
+function scanProgram(program: File['program'] /*, calleeName: string*/) {
+  let ret: false | 'object' | 'function' | 'arrow-function' = false
+  for (const node of program.body) {
+    if (node.type === 'ExportDefaultDeclaration') {
+      if (node.declaration.type === 'ObjectExpression') {
+        ret = 'object'
+        break
+      } else if (
+        node.declaration.type === 'CallExpression' &&
+        node.declaration.callee.type === 'Identifier' // &&
+        // node.declaration.callee.name === calleeName
+      ) {
+        const [fnNode] = node.declaration.arguments
+        if (fnNode.type === 'FunctionExpression') {
+          ret = 'function'
+          break
+        } else if (fnNode.type === 'ArrowFunctionExpression') {
+          ret = 'arrow-function'
+          break
+        }
+      }
+    }
+  }
+  return ret
+}
+
+export function readCode(absolutePath: string, ext: string) {
+  let code = readFileSync(absolutePath)
+  if (TS_EXTENSIONS.includes(ext)) {
+    const out = stripType(code, {
+      transforms: ['jsx'],
+      keepUnusedImports: true
+    })
+    code = out.code
+  }
+  return code
 }
 
 export function getLayerRootDirs(nuxt: Nuxt) {
@@ -94,6 +179,10 @@ export function readFileSync(path: string) {
   return _readFileSync(path, { encoding: 'utf-8' })
 }
 
+export async function rm(path: string) {
+  return await fs.rm(path, { recursive: true, force: true })
+}
+
 export async function isExists(path: string) {
   try {
     await fs.access(path, FS_CONSTANTS.F_OK)
@@ -106,19 +195,99 @@ export async function isExists(path: string) {
 export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDir: string, rootDir: string) {
   const configPathInfo: VueI18nConfigPathInfo = {
     relativeBase: relative(buildDir, rootDir),
-    rootDir
+    rootDir,
+    hash: NULL_HASH
   }
 
   const vueI18nConfigRelativePath = (configPathInfo.relative = options.vueI18n || 'i18n.config')
   const vueI18nConfigAbsolutePath = await resolvePath(vueI18nConfigRelativePath, {
     cwd: rootDir,
-    extensions: [...JS_EXTENSIONS, ...TS_EXTENSIONS]
+    extensions: EXECUTABLE_EXTENSIONS
   })
   if (await isExists(vueI18nConfigAbsolutePath)) {
     configPathInfo.absolute = vueI18nConfigAbsolutePath
+    configPathInfo.hash = getHash(vueI18nConfigAbsolutePath)
+    configPathInfo.type = getLocaleType(vueI18nConfigAbsolutePath)
   }
 
   return configPathInfo
+}
+
+export type PrerenderTarget = {
+  type: 'locale' | 'config'
+  path: string
+}
+
+export type PrerenderTargets = ReturnType<typeof analyzePrerenderTargets>
+
+export function analyzePrerenderTargets(locales: LocaleInfo[], configs: VueI18nConfigPathInfo[]) {
+  const targets = new Map<string, PrerenderTarget>()
+
+  // for locale files
+  for (const { path, hash, type, paths, hashes, types } of locales) {
+    if (path && hash && type === 'dynamic') {
+      const { ext } = parsePath(path)
+      EXECUTABLE_EXTENSIONS.includes(ext) && targets.set(hash, { type: 'locale', path })
+    }
+    if (paths && hashes && types) {
+      paths.forEach((path, index) => {
+        const { ext } = parsePath(path)
+        EXECUTABLE_EXTENSIONS.includes(ext) &&
+          types[index] === 'dynamic' &&
+          targets.set(hashes[index], { type: 'locale', path })
+      })
+    }
+  }
+
+  // for vue-i18n config files
+  for (const { absolute, hash } of configs) {
+    if (absolute && hash) {
+      const { ext } = parsePath(absolute)
+      EXECUTABLE_EXTENSIONS.includes(ext) && targets.set(hash, { type: 'config', path: absolute })
+    }
+  }
+
+  return targets
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toCode(code: any): string {
+  if (code === null) {
+    return `null`
+  }
+
+  if (code === undefined) {
+    return `undefined`
+  }
+
+  if (isString(code)) {
+    return JSON.stringify(code)
+  }
+
+  if (isRegExp(code) && code.toString) {
+    return code.toString()
+  }
+
+  if (isFunction(code) && code.toString) {
+    return `(${code.toString().replace(new RegExp(`^${code.name}`), 'function ')})`
+  }
+
+  if (isArray(code)) {
+    return `[${code.map(c => toCode(c)).join(`,`)}]`
+  }
+
+  if (isObject(code)) {
+    return stringifyObj(code)
+  }
+
+  return code + ``
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function stringifyObj(obj: Record<string, any>): string {
+  return `Object({${Object.entries(obj)
+    .map(([key, value]) => `${JSON.stringify(key)}:${toCode(value)}`)
+    .join(`,`)}})`
 }
 
 /**

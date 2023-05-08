@@ -1,11 +1,11 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
+import { setup, url, createPage } from '../../utils'
 
 import type { Response } from 'playwright'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../../fixtures/basic`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../../fixtures/ignore_disable_module_configration`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

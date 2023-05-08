@@ -1,19 +1,15 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch, fetch } from '@nuxt/test-utils'
+import { setup, $fetch, fetch } from '../utils'
 import { validateSyntax } from '../helper'
 import { NUXT_I18N_PRECOMPILE_ENDPOINT } from '../../src/constants'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/server`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/precompile`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
-    i18n: {
-      // precompile: {
-      //   strictMessage: false
-      // }
-    }
+    i18n: {}
   }
 })
 
@@ -24,6 +20,7 @@ describe('success', async () => {
       body: {
         type: 'locale',
         locale: 'en',
+        hash: '1234',
         resource: {
           hello: 'Hello'
         }
@@ -38,7 +35,7 @@ describe('success', async () => {
       method: 'POST',
       body: {
         type: 'config',
-        configId: '1234',
+        hash: '1234',
         resource: {
           ja: {
             hello: 'こんにちは'
@@ -56,6 +53,7 @@ describe('fail', () => {
     const res = await fetch(NUXT_I18N_PRECOMPILE_ENDPOINT, {
       method: 'POST',
       body: JSON.stringify({
+        hash: '1234',
         resource: {
           hello: 'Hello'
         }
@@ -76,7 +74,7 @@ describe('fail', () => {
       })
     })
     expect(res.status).toBe(400)
-    expect(res.statusText).toBe(`require the 'configId'`)
+    expect(res.statusText).toBe(`require the 'hash'`)
   })
 
   test('no locale param', async () => {
@@ -84,6 +82,7 @@ describe('fail', () => {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
+        hash: '1234',
         resource: {
           hello: 'Hello'
         }
@@ -98,6 +97,7 @@ describe('fail', () => {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
+        hash: '1234',
         locale: 'en'
       })
     })
@@ -110,6 +110,7 @@ describe('fail', () => {
       method: 'POST',
       body: JSON.stringify({
         type: 'locale',
+        hash: '1234',
         locale: 'en-tag',
         resource: {
           hello: '<script>window.alert("seciruty issue")</script>'

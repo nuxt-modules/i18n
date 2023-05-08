@@ -1,4 +1,4 @@
-export default defineI18nLocale((context, locale) => {
+export default defineI18nLocale(locale => {
   return {
     layouts: {
       title: 'ページ ー {title}'

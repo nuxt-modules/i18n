@@ -26,8 +26,9 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -52,8 +53,9 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -78,8 +80,9 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -106,8 +109,9 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -135,8 +139,9 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -164,8 +169,9 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -197,16 +203,15 @@ export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
- const vueI18nConfigLoader = async (context, loader) => {
+ const vueI18nConfigLoader = async (loader) => {
             const config = await loader().then(r => r.default || r)
             return typeof config === 'object'
               ? config
               : typeof config === 'function'
-                ? await config(context)
+                ? await config()
                 : {}
           }
-  const vueI18n = await vueI18nConfigLoader(context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../i18n.config.ts&c=42902d1e\\" /* webpackChunkName: \\"i18n_config_ts_42902d1e\\" */)))
-  nuxtI18nOptions.vueI18n = vueI18n
+  nuxtI18nOptions.vueI18n = Object({})
   const deepCopy = (src, des, predicate) => {
             for (const key in src) {
               if (typeof src[key] === 'object') {
@@ -223,16 +228,14 @@ export const resolveNuxtI18nOptions = async (context) => {
               }
             }
           }
-          const mergeMessages = async (messages, context, loader) => {
-            const layerConfig = await vueI18nConfigLoader(context, loader)
+          const mergeMessages = async (messages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
             const vueI18n = layerConfig.vueI18n || {}
             const layerMessages = vueI18n.messages || {}
             for (const [locale, message] of Object.entries(layerMessages)) {
               deepCopy(message, messages[locale])
             }
           }
-  await mergeMessages(nuxtI18nOptions.vueI18n.messages, context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../../i18n.custom.ts&c=faa288dc\\" /* webpackChunkName: \\"i18n_custom_ts_faa288dc\\" */)))
-  await mergeMessages(nuxtI18nOptions.vueI18n.messages, context, (() => import(\\"\\\\u0000@nuxtjs/i18n/__config__?target=../../../vue-i18n.options.js&c=84df1640\\" /* webpackChunkName: \\"vue_i18n_options_js_84df1640\\" */)))
   return nuxtI18nOptions
 }
 
@@ -240,7 +243,8 @@ export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;

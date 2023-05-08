@@ -1,31 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import createDebug from 'debug'
-import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
+import { isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
 import {
-  JS_EXTENSIONS,
-  TS_EXTENSIONS,
+  EXECUTABLE_EXTENSIONS,
+  NULL_HASH,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_CONFIG_PROXY_ID,
-  NUXT_I18N_RESOURCE_PROXY_ID,
+  NUXT_I18N_LOCALE_PROXY_ID,
   NUXT_I18N_PRECOMPILE_ENDPOINT,
   NUXT_I18N_PRECOMPILED_LOCALE_KEY,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+  NUXT_I18N_PRERENDERED_PATH
 } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
-// @ts-ignore
-import { transform as stripType } from '@mizchi/sucrase'
-import { parse as _parseCode } from '@babel/parser'
+import { withQuery } from 'ufo'
 import { asVirtualId } from './transform/utils'
-import { getHash, readFileSync } from './utils'
+import { toCode } from './utils'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo } from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { AdditionalMessages } from './messages' // TODO: remove `i18n:extend-messages` before v8 official release
-import type { File } from '@babel/types'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -48,8 +44,7 @@ export function generateLoaderOptions(
   misc: {
     dev: boolean
     ssg: boolean
-    ssr: boolean
-  } = { dev: true, ssg: false, ssr: true }
+  } = { dev: true, ssg: false }
 ) {
   debug('generateLoaderOptions: lazy', lazy)
   debug('generateLoaderOptions: localesRelativeBase', localesRelativeBase)
@@ -58,22 +53,24 @@ export function generateLoaderOptions(
   const generatedImports = new Map<string, string>()
   const importMapper = new Map<string, string>()
 
-  const convertToPairs = ({ file, files, path, paths }: LocaleInfo) => {
+  const convertToPairs = ({ file, files, path, paths, hash, hashes, type, types }: LocaleInfo) => {
     const _files = file ? [file] : files || []
     const _paths = path ? [path] : paths || []
-    return _files.map((f, i) => ({ file: f, path: _paths[i] }))
+    const _hashes = hash ? [hash] : hashes || []
+    const _types = type ? [type] : types || []
+    return _files.map((f, i) => ({ file: f, path: _paths[i], hash: _hashes[i], type: _types[i] }))
   }
 
-  const makImportKey = (root: string, dir: string, base: string) =>
+  const makeImportKey = (root: string, dir: string, base: string) =>
     normalize(`${root ? `${root}/` : ''}${dir ? `${dir}/` : ''}${base}`)
 
-  function generateSyncImports(gen: string, absolutePath: string, relativePath?: string) {
+  function generateSyncImports(gen: string, absolutePath: string, type: LocaleType, relativePath?: string) {
     if (!relativePath) {
       return gen
     }
 
     const { root, dir, base, ext } = parsePath(relativePath)
-    const key = makImportKey(root, dir, base)
+    const key = makeImportKey(root, dir, base)
     if (!generatedImports.has(key)) {
       let loadPath = relativePath
       if (langDir) {
@@ -82,7 +79,7 @@ export function generateLoaderOptions(
       const assertFormat = ext.slice(1)
       const variableName = genSafeVariableName(`locale_${convertToImportId(key)}`)
       gen += `${genImport(
-        genImportSpecifier(loadPath, ext, absolutePath),
+        genImportSpecifier(loadPath, ext, absolutePath, type),
         variableName,
         assertFormat ? { assert: { type: assertFormat } } : {}
       )}\n`
@@ -113,8 +110,9 @@ export function generateLoaderOptions(
    * Generate locale synthetic imports
    */
   for (const localeInfo of syncLocaleFiles) {
-    convertToPairs(localeInfo).forEach(({ file, path }) => {
-      genCode = generateSyncImports(genCode, path, file)
+    convertToPairs(localeInfo).forEach(({ path, type, file }) => {
+      // TODO: support hash
+      genCode = generateSyncImports(genCode, path, type, file)
     })
   }
 
@@ -142,8 +140,8 @@ export function generateLoaderOptions(
     configPath: VueI18nConfigPathInfo,
     fn: (configPath: Required<VueI18nConfigPathInfo>, meta: { dir: string; base: string; ext: string }) => string | null
   ) => {
-    const { absolute: absolutePath, relative: relativePath } = configPath
-    if (absolutePath != null && relativePath != null) {
+    const { absolute: absolutePath, relative: relativePath, hash } = configPath
+    if (absolutePath != null && relativePath != null && hash != null) {
       const { ext } = parsePath(absolutePath)
       const { dir, base: _base, ext: relativeExt } = parsePath(relativePath)
       const base = relativeExt === '.config' ? `${_base}${ext}` : _base
@@ -163,18 +161,18 @@ export function generateLoaderOptions(
       genCodes += `  const ${rootKey} = Object({})\n`
       for (const [key, value] of Object.entries(rootValue)) {
         if (key === 'vueI18n') {
-          genCodes += ` const vueI18nConfigLoader = async (context, loader) => {
+          genCodes += ` const vueI18nConfigLoader = async (loader) => {
             const config = await loader().then(r => r.default || r)
             return typeof config === 'object'
               ? config
               : typeof config === 'function'
-                ? await config(context)
+                ? await config()
                 : {}
           }
 `
-          const basicVueI18nConfigCode = generateVueI18nConfigration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, relativeBase }, { dir, base, ext }) => {
-            const configImportKey = makImportKey(relativeBase, dir, base)
-            return `const vueI18n = await vueI18nConfigLoader(context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${getHash(absolutePath)}"` })}))\n`
+          const basicVueI18nConfigCode = generateVueI18nConfigration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
+            const configImportKey = makeImportKey(relativeBase, dir, base)
+            return `const vueI18n = await vueI18nConfigLoader((${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
           })
           if (basicVueI18nConfigCode != null) {
             genCodes += `  ${basicVueI18nConfigCode}`
@@ -200,8 +198,8 @@ export function generateLoaderOptions(
               }
             }
           }
-          const mergeMessages = async (messages, context, loader) => {
-            const layerConfig = await vueI18nConfigLoader(context, loader)
+          const mergeMessages = async (messages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
             const vueI18n = layerConfig.vueI18n || {}
             const layerMessages = vueI18n.messages || {}
             for (const [locale, message] of Object.entries(layerMessages)) {
@@ -211,9 +209,9 @@ export function generateLoaderOptions(
 `
           }
           for (const configPath of vueI18nConfigPaths) {
-            const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, relativeBase }, { dir, base, ext }) => {
-              const configImportKey = makImportKey(relativeBase, dir, base)
-              return `await mergeMessages(${rootKey}.${key}.messages, context, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, NUXT_I18N_CONFIG_PROXY_ID, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${getHash(absolutePath)}"` })}))\n`
+            const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
+              const configImportKey = makeImportKey(relativeBase, dir, base)
+              return `await mergeMessages(${rootKey}.${key}.messages, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
             })
             if (additionalVueI18nConfigCode != null) {
               genCodes += `  ${additionalVueI18nConfigCode}`
@@ -242,16 +240,16 @@ export function generateLoaderOptions(
           const syncPaths = file ? [file] : files|| []
           codes += `  ${toCode(code)}: [${syncPaths.map(filepath => {
             const { root, dir, base } = parsePath(filepath)
-            const key = makImportKey(root, dir, base)
+            const key = makeImportKey(root, dir, base)
             return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}) }`
           })}],\n`
         }
         for (const localeInfo of asyncLocaleFiles) {
-          codes += `  ${toCode(localeInfo.code)}: [${convertToPairs(localeInfo).map(({ file, path }) => {
+          codes += `  ${toCode(localeInfo.code)}: [${convertToPairs(localeInfo).map(({ file, path, hash, type }) => {
             const { root, dir, base, ext } = parsePath(file)
-            const key = makImportKey(root, dir, base)
+            const key = makeImportKey(root, dir, base)
             const loadPath = resolveLocaleRelativePath(localesRelativeBase, langDir, file)
-            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(genImportSpecifier(loadPath, ext, path), { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })} }`
+            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(genImportSpecifier(loadPath, ext, path, type, { hash, query: { locale: localeInfo.code } }), { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })} }`
           })}],\n`
         }
       }
@@ -271,103 +269,48 @@ export function generateLoaderOptions(
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
   genCode += `export const NUXT_I18N_PRECOMPILE_ENDPOINT = ${toCode(NUXT_I18N_PRECOMPILE_ENDPOINT)}\n`
   genCode += `export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = ${toCode(NUXT_I18N_PRECOMPILED_LOCALE_KEY)}\n`
+  genCode += `export const NUXT_I18N_PRERENDERED_PATH = ${toCode(NUXT_I18N_PRERENDERED_PATH)}\n`
+  genCode += `export const NULL_HASH = ${toCode(NULL_HASH)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
-  genCode += `export const isSSR = ${toCode(misc.ssr)}\n`
 
   debug('generate code', genCode)
   return genCode
 }
 
-type TransformProxyType = typeof NUXT_I18N_RESOURCE_PROXY_ID | typeof NUXT_I18N_CONFIG_PROXY_ID
-type ComposableDefines = typeof NUXT_I18N_COMPOSABLE_DEFINE_LOCALE | typeof NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+type TransformProxyType = typeof NUXT_I18N_LOCALE_PROXY_ID | typeof NUXT_I18N_CONFIG_PROXY_ID
 
 function raiseSyntaxError(path: string) {
-  throw new Error(
-    `Unexpected syntax detected in '${path}'. Please define the plain object or function, and it export at 'export default’ directly.`
-  )
+  throw new Error(`'unknown' type in '${path}'.`)
 }
 
 function genImportSpecifier(
   id: string,
   ext: string,
   absolutePath: string,
-  virtualId: TransformProxyType = NUXT_I18N_RESOURCE_PROXY_ID,
-  funcName: ComposableDefines = NUXT_I18N_COMPOSABLE_DEFINE_LOCALE
+  type: LocaleType,
+  {
+    hash = NULL_HASH,
+    virtualId = NUXT_I18N_LOCALE_PROXY_ID,
+    query = {}
+  }: {
+    hash?: string
+    virtualId?: TransformProxyType
+    query?: Record<string, string>
+  } = {}
 ) {
-  if ([...JS_EXTENSIONS, ...TS_EXTENSIONS].includes(ext)) {
-    const code = readCode(absolutePath, ext)
-    const parsed = parseCode(code, absolutePath)
-    const anaylzed = scanProgram(parsed.program, funcName)
-    if (virtualId === NUXT_I18N_RESOURCE_PROXY_ID) {
-      !anaylzed && raiseSyntaxError(absolutePath)
-      // prettier-ignore
-      return anaylzed === 'arrow-function' || anaylzed === 'function'
-        ? asVirtualId(`${virtualId}?target=${id}`)
-        : id
+  if (EXECUTABLE_EXTENSIONS.includes(ext)) {
+    if (virtualId === NUXT_I18N_LOCALE_PROXY_ID) {
+      type === 'unknown' && raiseSyntaxError(absolutePath)
+      return type === 'dynamic' ? asVirtualId(withQuery(virtualId, { target: id, hash, ...query })) : id
     } else if (virtualId === NUXT_I18N_CONFIG_PROXY_ID) {
-      !anaylzed && raiseSyntaxError(absolutePath)
-      return asVirtualId(`${virtualId}?target=${id}&c=${getHash(absolutePath)}`)
+      type === 'unknown' && raiseSyntaxError(absolutePath)
+      return asVirtualId(withQuery(virtualId, { target: id, hash, ...query }))
     } else {
       return id
     }
   } else {
     return id
   }
-}
-
-const PARSE_CODE_CACHES = new Map<string, ReturnType<typeof _parseCode>>()
-
-function parseCode(code: string, path: string) {
-  if (PARSE_CODE_CACHES.has(path)) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return PARSE_CODE_CACHES.get(path)!
-  }
-
-  const parsed = _parseCode(code, {
-    allowImportExportEverywhere: true,
-    sourceType: 'module'
-  })
-
-  PARSE_CODE_CACHES.set(path, parsed)
-  return parsed
-}
-
-function scanProgram(program: File['program'], calleeName: string) {
-  let ret: false | 'object' | 'function' | 'arrow-function' = false
-  for (const node of program.body) {
-    if (node.type === 'ExportDefaultDeclaration') {
-      if (node.declaration.type === 'ObjectExpression') {
-        ret = 'object'
-        break
-      } else if (
-        node.declaration.type === 'CallExpression' &&
-        node.declaration.callee.type === 'Identifier' &&
-        node.declaration.callee.name === calleeName
-      ) {
-        const [fnNode] = node.declaration.arguments
-        if (fnNode.type === 'FunctionExpression') {
-          ret = 'function'
-          break
-        } else if (fnNode.type === 'ArrowFunctionExpression') {
-          ret = 'arrow-function'
-          break
-        }
-      }
-    }
-  }
-  return ret
-}
-
-export function readCode(absolutePath: string, ext: string) {
-  let code = readFileSync(absolutePath)
-  if (TS_EXTENSIONS.includes(ext)) {
-    const out = stripType(code, {
-      transforms: ['jsx'],
-      keepUnusedImports: true
-    })
-    code = out.code
-  }
-  return code
 }
 
 const IMPORT_ID_CACHES = new Map<string, string>()
@@ -404,44 +347,6 @@ function generateAdditionalMessages(value: Record<string, any>, dev: boolean): s
   }
   genCode += '})'
   return genCode
-}
-
-export function stringifyObj(obj: Record<string, any>): string {
-  return `Object({${Object.entries(obj)
-    .map(([key, value]) => `${JSON.stringify(key)}:${toCode(value)}`)
-    .join(`,`)}})`
-}
-
-export function toCode(code: any): string {
-  if (code === null) {
-    return `null`
-  }
-
-  if (code === undefined) {
-    return `undefined`
-  }
-
-  if (isString(code)) {
-    return JSON.stringify(code)
-  }
-
-  if (isRegExp(code) && code.toString) {
-    return code.toString()
-  }
-
-  if (isFunction(code) && code.toString) {
-    return `(${code.toString().replace(new RegExp(`^${code.name}`), 'function ')})`
-  }
-
-  if (isArray(code)) {
-    return `[${code.map(c => toCode(c)).join(`,`)}]`
-  }
-
-  if (isObject(code)) {
-    return stringifyObj(code)
-  }
-
-  return code + ``
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
