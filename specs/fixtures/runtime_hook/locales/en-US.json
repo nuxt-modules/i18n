@@ -1,0 +1,12 @@
+{
+  "home": "Homepage",
+  "about": "About us",
+  "blog": "Blog",
+  "posts": "Posts",
+  "dynamic": "Dynamic",
+  "pages": {
+    "blog": {
+      "article": "This is blog article page"
+    }
+  }
+}

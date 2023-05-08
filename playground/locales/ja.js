@@ -1,9 +1,4 @@
-// import type { Locale } from 'vue-i18n'
-// import type { NuxtApp } from '@nuxt/schema'
-
-// export default function (context: NuxtApp, locale: Locale) {
-export default async function (context, locale) {
-  console.log('dynamical resource loading ...', context, locale)
+export default async function (locale) {
   return {
     layouts: {
       title: 'ページ ー {title}'

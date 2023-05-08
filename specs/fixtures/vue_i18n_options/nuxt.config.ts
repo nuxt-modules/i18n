@@ -6,14 +6,10 @@ export default defineNuxtConfig({
     payloadExtraction: true
   },
 
-  nitro: {
-    crawlLinks: true,
-    routeRules: {
-      '/': { ssr: true }
+  vite: {
+    build: {
+      minify: false
     }
-    // prerender: {
-    //   routes: ['/']
-    // }
   },
 
   i18n: {

@@ -14,14 +14,30 @@ export interface DetectBrowserLanguageOptions {
   useCookie?: boolean
 }
 
+export type LocaleType = 'static' | 'dynamic' | 'unknown'
+
 export type LocaleInfo = {
-  path?: string
+  /**
+   * NOTE:
+   *  The following fields are for `file` in the nuxt i18n module `locales` option
+   */
+  path?: string // abolute path
+  hash?: string
+  type?: LocaleType
+  /**
+   * NOTE:
+   *  The following fields are for `files` (excluds nuxt layers) in the nuxt i18n module `locales` option.
+   */
   paths?: string[]
+  hashes?: string[]
+  types?: LocaleType[]
 } & LocaleObject
 
 export type VueI18nConfigPathInfo = {
   relative?: string
   absolute?: string
+  hash?: string
+  type?: LocaleType
   rootDir: string
   relativeBase: string
 }

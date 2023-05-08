@@ -14,7 +14,7 @@ import {
   getComposer
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
-import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions, isSSG, isSSR } from '#build/i18n.options.mjs'
+import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions, isSSG } from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
   loadAndSetLocale,
@@ -66,7 +66,7 @@ export default defineNuxtPlugin(async nuxt => {
     strategy,
     rootRedirect
   } = nuxtI18nOptions
-  __DEBUG__ && console.log('isSSR', isSSR, ', isSSG', isSSG)
+  __DEBUG__ && console.log('isSSG', isSSG)
   __DEBUG__ && console.log('useCookie on setup', useCookie)
   __DEBUG__ && console.log('defautlLocale on setup', defaultLocale)
 

@@ -1,10 +1,10 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
+import { setup, url, createPage } from '../utils'
 import { getText, assetLocaleHead } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/head`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/meta_component`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
