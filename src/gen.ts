@@ -64,7 +64,14 @@ export function generateLoaderOptions(
   const makeImportKey = (root: string, dir: string, base: string) =>
     normalize(`${root ? `${root}/` : ''}${dir ? `${dir}/` : ''}${base}`)
 
-  function generateSyncImports(gen: string, absolutePath: string, type: LocaleType, relativePath?: string) {
+  function generateSyncImports(
+    gen: string,
+    absolutePath: string,
+    type: LocaleType,
+    localeCode: string,
+    hash: string,
+    relativePath?: string
+  ) {
     if (!relativePath) {
       return gen
     }
@@ -79,7 +86,11 @@ export function generateLoaderOptions(
       const assertFormat = ext.slice(1)
       const variableName = genSafeVariableName(`locale_${convertToImportId(key)}`)
       gen += `${genImport(
-        genImportSpecifier(loadPath, ext, absolutePath, type),
+        genImportSpecifier(loadPath, ext, absolutePath, type, {
+          hash,
+          virtualId: NUXT_I18N_LOCALE_PROXY_ID,
+          query: { locale: localeCode }
+        }),
         variableName,
         assertFormat ? { assert: { type: assertFormat } } : {}
       )}\n`
@@ -110,9 +121,8 @@ export function generateLoaderOptions(
    * Generate locale synthetic imports
    */
   for (const localeInfo of syncLocaleFiles) {
-    convertToPairs(localeInfo).forEach(({ path, type, file }) => {
-      // TODO: support hash
-      genCode = generateSyncImports(genCode, path, type, file)
+    convertToPairs(localeInfo).forEach(({ path, type, file, hash }) => {
+      genCode = generateSyncImports(genCode, path, type, localeInfo.code, hash, file)
     })
   }
 
