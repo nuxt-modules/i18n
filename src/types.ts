@@ -3,10 +3,6 @@ import type { Locale, I18nOptions } from 'vue-i18n'
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
-export interface LazyOptions {
-  skipNuxtState?: boolean
-}
-
 export interface DetectBrowserLanguageOptions {
   alwaysRedirect?: boolean
   cookieCrossOrigin?: boolean
@@ -18,10 +14,33 @@ export interface DetectBrowserLanguageOptions {
   useCookie?: boolean
 }
 
+export type LocaleType = 'static' | 'dynamic' | 'unknown'
+
 export type LocaleInfo = {
-  path?: string
+  /**
+   * NOTE:
+   *  The following fields are for `file` in the nuxt i18n module `locales` option
+   */
+  path?: string // abolute path
+  hash?: string
+  type?: LocaleType
+  /**
+   * NOTE:
+   *  The following fields are for `files` (excluds nuxt layers) in the nuxt i18n module `locales` option.
+   */
   paths?: string[]
+  hashes?: string[]
+  types?: LocaleType[]
 } & LocaleObject
+
+export type VueI18nConfigPathInfo = {
+  relative?: string
+  absolute?: string
+  hash?: string
+  type?: LocaleType
+  rootDir: string
+  relativeBase: string
+}
 
 export interface RootRedirectOptions {
   path: string
@@ -36,13 +55,31 @@ export type CustomRoutePages = {
       }
 }
 
+export interface ExperimentalFeatures {
+  jsTsFormatResource?: boolean
+}
+
+export interface LocaleMessagePrecompileOptions {
+  strictMessage?: boolean
+  escapeHtml?: boolean
+}
+
+export { I18nOptions }
+
 export type NuxtI18nOptions<Context = unknown> = {
+  vueI18n?: string
+  experimental?: ExperimentalFeatures
+  precompile?: LocaleMessagePrecompileOptions
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
-  lazy?: boolean | LazyOptions
+  lazy?: boolean
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
+  /**
+   * @internal
+   */
+  i18nModules?: { langDir?: string | null; locales?: I18nRoutingOptions<Context>['locales'] }[]
   /**
    * @deprecated `'parsePages' option is deprecated. Please use 'customRoutes' option instead. We will remove it in v8 official release.`
    */
@@ -50,9 +87,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
-  // sortRoutes?: boolean
   strategy?: Strategies
-  vueI18n?: I18nOptions | string
   types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean

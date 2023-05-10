@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, createPage, url } from '@nuxt/test-utils'
+import { setup, createPage, url } from '../utils'
 import { getText } from '../helper'
 
 describe('#1740', async () => {

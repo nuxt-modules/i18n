@@ -1,15 +1,45 @@
 import createDebug from 'debug'
-import { isBoolean, isObject, isString } from '@intlify/shared'
-import { defineNuxtModule, isNuxt2, isNuxt3, getNuxtVersion, addPlugin, addTemplate, addImports } from '@nuxt/kit'
+import { isObject, isString } from '@intlify/shared'
+import {
+  defineNuxtModule,
+  isNuxt2,
+  isNuxt3,
+  getNuxtVersion,
+  addPlugin,
+  addTemplate,
+  addImports,
+  addServerHandler,
+  useLogger,
+  addPrerenderRoutes
+} from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
+import { defu } from 'defu'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
 import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
-import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
-import { formatMessage, getNormalizedLocales, resolveLocales, getPackageManagerType } from './utils'
+import {
+  NUXT_I18N_MODULE_ID,
+  DEFAULT_OPTIONS,
+  NUXT_I18N_TEMPLATE_OPTIONS_KEY,
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+} from './constants'
+import {
+  formatMessage,
+  getNormalizedLocales,
+  resolveLocales,
+  getPackageManagerType,
+  mergeI18nModules,
+  resolveVueI18nConfigInfo,
+  analyzePrerenderTargets,
+  rm
+} from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
+import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
 import type { NuxtI18nOptions } from './types'
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
@@ -29,8 +59,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
+    const logger = useLogger(NUXT_I18N_MODULE_ID)
+
     const options = i18nOptions as Required<NuxtI18nOptions>
     debug('options', options)
+
+    if (options.experimental.jsTsFormatResource) {
+      logger.warn('JS / TS extension format is experimental')
+    }
 
     /**
      * Check vertions
@@ -52,23 +88,42 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
 
+    await mergeI18nModules(options, nuxt)
+    applyLayerOptions(options, nuxt)
+
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       console.warn(
         formatMessage(
-          'The `differentDomains` option and `no_prefix` strategy are not compatible. Change strategy or disable `differentDomains` option.'
+          'The `differentDomains` option and `no_prefix` strategy are not compatible. ' +
+            'Change strategy or disable `differentDomains` option.'
         )
       )
     }
+
+    /**
+     * setup runtime config
+     */
+
+    // for public
+    nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
+      experimental: options.experimental,
+      baseUrl: options.baseUrl
+      // TODO: we should support more i18n module options. welcome PRs :-)
+    })
+
+    // for privates
+    nuxt.options.runtimeConfig.i18n = defu(nuxt.options.runtimeConfig.i18n, {
+      precompile: options.precompile
+    })
 
     /**
      * resolve lang directory
      */
 
     if (isString(options.langDir) && isAbsolute(options.langDir)) {
-      console.warn(
-        formatMessage(
-          `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
-        )
+      logger.warn(
+        `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). ` +
+          `Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
       )
     }
     const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null
@@ -85,20 +140,50 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('localeInfo', localeInfo)
 
     /**
-     * resolve vue-i18n options
+     * resolve vue-i18n config path
      */
 
-    // prettier-ignore
-    options.vueI18n = isObject(options.vueI18n)
-      ? options.vueI18n
-      : isString(options.vueI18n)
-        ? resolve(nuxt.options.rootDir, options.vueI18n)
-        : { legacy: false }
+    // TODO: remove before v8 official release
+    if (isObject(options.vueI18n)) {
+      throw new Error(
+        formatMessage(
+          'The `vueI18n` option is no longer be specified with object. ' +
+            '\n' +
+            `It must be specified in the configuration file via the 'i18n.config' path.` +
+            '\n' +
+            `About deprecated reason, see https://v8.i18n.nuxtjs.org/guide/migrating#change-the-route-key-rules-in-pages-option` +
+            '\n' +
+            `About new configuration style, see https://v8.i18n.nuxtjs.org/getting-started/basic-usage#translate-with-vue-i18n`
+        )
+      )
+    }
+
+    const vueI18nConfigPathInfo = await resolveVueI18nConfigInfo(options, nuxt.options.buildDir, nuxt.options.rootDir)
+    if (vueI18nConfigPathInfo.absolute == null) {
+      logger.warn(`Vue I18n configuration file does not exist at ${vueI18nConfigPathInfo.relative}. Skipping...`)
+    }
+    debug('vueI18nConfigPathInfo', vueI18nConfigPathInfo)
+
+    const layerVueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
+    for (const vueI18nConfigPath of layerVueI18nConfigPaths) {
+      if (vueI18nConfigPath.absolute == null) {
+        logger.warn(
+          `Ignore Vue I18n configuration file does not exist at ${vueI18nConfigPath.relative} on layer ${vueI18nConfigPath.rootDir}. Skipping...`
+        )
+      }
+    }
+    debug('layerVueI18nConfigPaths', layerVueI18nConfigPaths)
 
     /**
      * extend messages via 3rd party nuxt modules
      */
 
+    // TODO: remove `i18n:extend-messages` before v8 official release
+    logger.warn(
+      '`i18n:extend-messages` is deprecated. ' +
+        'That hook will be removed feature at the time of the v8 official release.\n' +
+        "If you're using it, please use `i18n:registerModule` instead."
+    )
     const additionalMessages = await extendMessages(nuxt, localeCodes, options)
 
     /**
@@ -146,13 +231,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('localesRelativeBasePath', localesRelativeBasePath)
 
     addTemplate({
-      filename: 'i18n.options.mjs',
+      filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
       write: true,
       getContents: () => {
         return generateLoaderOptions(
           options.lazy,
           options.langDir,
           localesRelativeBasePath,
+          vueI18nConfigPathInfo,
+          layerVueI18nConfigPaths,
           {
             localeCodes,
             localeInfo,
@@ -165,7 +252,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
           },
           {
             ssg: nuxt.options._generate,
-            ssr: nuxt.options.ssr,
             dev: nuxt.options.dev
           }
         )
@@ -184,14 +270,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add extend type definition
      */
 
-    // prettier-ignore
-    const isLegacyMode = () => {
-      return isString(options.types)
-        ? options.types === 'legacy'
-        : isObject(options.vueI18n) && isBoolean(options.vueI18n.legacy)
-          ? options.vueI18n.legacy
-          : false
-    }
+    const isLegacyMode = () => options.types === 'legacy'
 
     // To be plugged for `$i18n` type definition on `NuxtApp`
     addPlugin(resolve(runtimeDir, isLegacyMode() ? 'plugins/legacy' : 'plugins/composition'))
@@ -201,6 +280,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
       references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
     })
 
+    const prerenderTargets = analyzePrerenderTargets(localeInfo, [vueI18nConfigPathInfo, ...layerVueI18nConfigPaths])
+    debug('prerenderTargets', prerenderTargets)
+
     /**
      * extend bundler
      */
@@ -208,7 +290,57 @@ export default defineNuxtModule<NuxtI18nOptions>({
     await extendBundler(nuxt, {
       nuxtOptions: options as Required<NuxtI18nOptions>,
       hasLocaleFiles,
-      langPath
+      langPath,
+      prerenderTargets
+    })
+
+    /**
+     * extend server handlers
+     */
+
+    // for pre-compile
+    addServerHandler({
+      method: 'post',
+      route: NUXT_I18N_PRECOMPILE_ENDPOINT,
+      handler: resolve(runtimeDir, './server/precompile')
+    })
+
+    // for prerender
+    addServerHandler({
+      method: 'get',
+      route: '/__i18n__/prerender/:hash',
+      handler: resolve(runtimeDir, './server/dynamic')
+    })
+
+    /**
+     * extend prerender routes
+     */
+
+    for (const hash of prerenderTargets.keys()) {
+      addPrerenderRoutes(`/__i18n__/prerender/${hash}.js`)
+    }
+
+    /**
+     * extend nitro storages
+     */
+
+    const storageKey = 'i18n'
+    nuxt.hook('nitro:config', nitro => {
+      nitro.storage = nitro.storage || {}
+      nitro.storage[storageKey] = {
+        driver: 'fs',
+        base: resolve(nuxt.options.buildDir, storageKey)
+      }
+      // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
+      // nitro.bundledStorage = nitro.bundledStorage || []
+      // nitro.bundledStorage.push(storageKey)
+    })
+
+    nuxt.hook('nitro:init', async nitro => {
+      // remove i18n storage for refresh
+      if (nuxt.options.dev) {
+        await rm(resolve(nuxt.options.buildDir, storageKey))
+      }
     })
 
     /**
@@ -229,7 +361,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useLocaleHead',
         'useBrowserLocale',
         'useCookieLocale',
-        'defineI18nRoute'
+        NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
+        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+        NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
       ].map(key => ({
         name: key,
         as: key,
@@ -272,11 +406,9 @@ function checkOptions(options: NuxtI18nOptions) {
       if (isString(locale) || !(locale.file || locale.files)) {
         throw new Error(
           formatMessage(
-            `All locales must be objects and have the "file" or "files" property set when using "langDir".\nFound none in:\n${JSON.stringify(
-              locale,
-              null,
-              2
-            )}.`
+            `All locales must be objects and have the "file" or "files" property set when using "langDir".` +
+              '\n' +
+              `Found none in:\n${JSON.stringify(locale, null, 2)}.`
           )
         )
       }
@@ -287,13 +419,29 @@ function checkOptions(options: NuxtI18nOptions) {
 type MaybePromise<T> = T | Promise<T>
 type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
 
+type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl' | 'experimental'>
+type ModulePrivateRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'precompile'>
+
 declare module '@nuxt/schema' {
   interface NuxtConfig {
     i18n?: NuxtI18nOptions
   }
 
   interface NuxtHooks {
+    // TODO: remove `i18n:extend-messages` before v8 official release
     'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
+    'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
+  }
+
+  interface ConfigSchema {
+    runtimeConfig: {
+      public?: {
+        i18n?: ModulePublicRuntimeConfig
+      }
+      private?: {
+        i18n?: ModulePrivateRuntimeConfig
+      }
+    }
   }
 }
 

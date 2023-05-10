@@ -2,12 +2,13 @@ import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
 import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString, isBoolean } from '@intlify/shared'
-import fs from 'node:fs'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
-import { formatMessage, getRoutePath, parseSegment } from './utils'
+import { formatMessage, getRoutePath, parseSegment, readFileSync } from './utils'
+import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath } from 'pathe'
+import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { RouteOptionsResolver, ComputedRouteOptions, LocalizeRoutesPrefixableOptions } from 'vue-i18n-routing'
@@ -60,7 +61,11 @@ export function setupPages(
       pagesDir,
       pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
     }
+
     analyzeNuxtPages(ctx, pages)
+    const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
+    mergeLayerPages(analyzer, nuxt)
+
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback,
@@ -77,9 +82,12 @@ export function setupPages(
  * Construct the map of full paths from nuxtpage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
-export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[]): void {
-  const pagesPath = resolve(ctx.srcDir, ctx.pagesDir)
+export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[], pageDirOverride?: string): void {
+  const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
+    if (page.file == null) {
+      continue
+    }
     const splited = page.file.split(pagesPath)
     if (splited.length === 2 && splited[1]) {
       const { dir, name } = parsePath(splited[1])
@@ -243,10 +251,10 @@ function readComponent(target: string) {
   let options: ComputedRouteOptions | false | undefined = undefined
 
   try {
-    const content = fs.readFileSync(target, 'utf8').toString()
+    const content = readFileSync(target)
     const { descriptor } = parseSFC(content)
 
-    if (!content.includes('defineI18nRoute')) {
+    if (!content.includes(NUXT_I18N_COMPOSABLE_DEFINE_ROUTE)) {
       return options
     }
 
@@ -265,7 +273,7 @@ function readComponent(target: string) {
             if (
               node.type === 'CallExpression' &&
               node.callee.type === 'Identifier' &&
-              node.callee.name === 'defineI18nRoute'
+              node.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_ROUTE
             ) {
               const arg = node.arguments[0]
               if (arg.type === 'ObjectExpression') {

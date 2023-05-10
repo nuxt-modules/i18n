@@ -3,11 +3,15 @@ import { resolve } from 'pathe'
 import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
-import { TransformMacroPlugin, TransformMacroPluginOptions } from './macros'
+import { TransformMacroPlugin, TransformMacroPluginOptions } from './transform/macros'
+import { ResourceProxyPlugin, ResourceProxyPluginOptions } from './transform/proxy'
+import { ResourceDynamicPlugin, ResourceDynamicPluginOptions } from './transform/dynamic'
+import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
+import type { NuxtI18nOptions } from './types'
+import type { PrerenderTargets } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -17,9 +21,18 @@ export async function extendBundler(
     nuxtOptions: Required<NuxtI18nOptions>
     hasLocaleFiles: boolean
     langPath: string | null
+    prerenderTargets: PrerenderTargets
   }
 ) {
-  const { nuxtOptions, hasLocaleFiles, langPath } = options
+  const { nuxtOptions, hasLocaleFiles } = options
+  const langPaths = getLayerLangPaths(nuxt)
+  debug('langPaths -', langPaths)
+  const i18nModulePaths =
+    nuxt.options._layers[0].config.i18n?.i18nModules?.map(module =>
+      resolve(nuxt.options._layers[0].config.rootDir, module.langDir ?? '')
+    ) ?? []
+  debug('i18nModulePaths -', i18nModulePaths)
+  const localePaths = [...langPaths, ...i18nModulePaths]
 
   /**
    * setup nitro
@@ -34,8 +47,17 @@ export async function extendBundler(
   }
   debug('nitro.replace', nuxt.options.nitro.replace)
 
+  const proxyOptions: ResourceProxyPluginOptions = {
+    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
+  }
+
   // extract macros from components
   const macroOptions: TransformMacroPluginOptions = {
+    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
+  }
+
+  const dynamicOptions: ResourceDynamicPluginOptions = {
+    prerenderTargs: options.prerenderTargets,
     dev: nuxt.options.dev,
     sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
   }
@@ -49,14 +71,20 @@ export async function extendBundler(
     const webpack = await import('webpack').then(m => m.default || m)
 
     const webpackPluginOptions: PluginOptions = {
-      runtimeOnly: true
+      runtimeOnly: true,
+      allowDynamic: true,
+      strictMessage: nuxtOptions.precompile.strictMessage,
+      escapeHtml: nuxtOptions.precompile.escapeHtml
     }
-    if (hasLocaleFiles && langPath) {
-      webpackPluginOptions.include = [resolve(langPath, './**')]
-    }
-    addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
 
+    if (hasLocaleFiles && localePaths.length > 0) {
+      webpackPluginOptions.include = localePaths.map(x => resolve(x, './**'))
+    }
+
+    addWebpackPlugin(ResourceProxyPlugin.webpack(proxyOptions))
+    addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
+    addWebpackPlugin(ResourceDynamicPlugin.webpack(dynamicOptions))
 
     extendWebpackConfig(config => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
@@ -78,14 +106,19 @@ export async function extendBundler(
    */
 
   const vitePluginOptions: PluginOptions = {
-    runtimeOnly: true
+    runtimeOnly: true,
+    allowDynamic: true,
+    strictMessage: nuxtOptions.precompile.strictMessage,
+    escapeHtml: nuxtOptions.precompile.escapeHtml
   }
-  if (hasLocaleFiles && langPath) {
-    vitePluginOptions.include = [resolve(langPath, './**')]
+  if (hasLocaleFiles && localePaths.length > 0) {
+    vitePluginOptions.include = localePaths.map(x => resolve(x, './**'))
   }
-  addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
 
+  addVitePlugin(ResourceProxyPlugin.vite(proxyOptions))
+  addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
+  addVitePlugin(ResourceDynamicPlugin.vite(dynamicOptions))
 
   extendViteConfig(config => {
     if (config.define) {

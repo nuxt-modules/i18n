@@ -30,14 +30,20 @@ export const REDIRECT_ON_OPTIONS = {
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
-  vueI18n: undefined,
+  experimental: {
+    jsTsFormatResource: false
+  },
+  precompile: {
+    strictMessage: true,
+    escapeHtml: false
+  },
+  vueI18n: '',
   locales: [] as string[],
   defaultLocale: '',
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
   trailingSlash: false,
   defaultLocaleRouteNameSuffix: 'default',
-  // sortRoutes: true,
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
@@ -58,8 +64,25 @@ export const DEFAULT_OPTIONS = {
   customRoutes: 'page',
   pages: {},
   skipSettingLocaleOnNavigate: false,
-  types: undefined,
+  types: 'composition',
   debug: false
 } as const
+
+export const NUXT_I18N_LOCALE_PROXY_ID = '@nuxtjs/i18n/__locale__' as const
+export const NUXT_I18N_CONFIG_PROXY_ID = '@nuxtjs/i18n/__config__' as const
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/__i18n__/precompile' as const // TODO: we might use `useRuntimeConfig`?
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = 'i18n-locales' as const // TODO: we might use `useRuntimeConfig`?
+export const NUXT_I18N_PRERENDERED_PATH = '/__i18n__/prerender' as const // TODO: we might use `useRuntimeConfig`?
+export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
+export const NUXT_I18N_TEMPLATE_INTERNAL_KEY = 'i18n.internal.mjs' as const
+export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute' as const
+export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale' as const
+export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig' as const
+
+export const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
+export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
+export const EXECUTABLE_EXTENSIONS = [...JS_EXTENSIONS, ...TS_EXTENSIONS]
+
+export const NULL_HASH = '00000000' as const
 
 export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS

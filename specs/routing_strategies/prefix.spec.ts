@@ -1,13 +1,13 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '@nuxt/test-utils'
+import { setup, url, createPage } from '../utils'
 import { getText, getData } from '../helper'
 
 import type { Response } from 'playwright'
 
 describe('strategy: prefix', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+    rootDir: fileURLToPath(new URL(`../fixtures/routing_prefix`, import.meta.url)),
     browser: true,
     // overrides
     nuxtConfig: {

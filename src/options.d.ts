@@ -28,8 +28,11 @@ export const nuxtI18nOptions: DeepRequired<NuxtI18nOptions> = {}
 export const nuxtI18nOptionsDefault: NuxtI18nOptionsDefault = {}
 export const nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions> = {}
 export const NUXT_I18N_MODULE_ID = ''
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = ''
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = ''
+export const NUXT_I18N_PRERENDERED_PATH = '/__i18n__/prerender'
+export const NULL_HASH = '00000000' as const
 export const isSSG = false
-export const isSSR = false
 
 export {
   NuxtI18nOptions,

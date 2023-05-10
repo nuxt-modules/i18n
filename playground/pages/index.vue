@@ -18,6 +18,8 @@ console.log('route base name', getRouteBaseName())
 console.log('useBrowserLocale', useBrowserLocale())
 console.log('localeProperties', localeProperties)
 console.log('foo', t('foo'))
+console.log('message if local layer merged:', t('layerText'))
+console.log('message if github layer merged:', t('layer-test-key'))
 
 function getLocaleName(code: string) {
   const locale = (locales.value as LocaleObject[]).find(i => i.code === code)
@@ -50,11 +52,13 @@ definePageMeta({
   <div>
     <h1>Demo: Nuxt 3</h1>
     <h2>{{ $t('hello', { name: 'nuxt3' }) }}</h2>
+    <p>{{ $t('bar.buz', { name: 'buz' }) }}</p>
     <h2>Pages</h2>
     <nav>
       <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink> |
-      <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink>
+      <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink> |
+      <NuxtLink :to="localePath({ name: 'history' })">History</NuxtLink>
     </nav>
     <h2>Current Language: {{ getLocaleName(locale) }}</h2>
     <h2>Current Strategy: {{ strategy }}</h2>
@@ -71,6 +75,7 @@ definePageMeta({
       </span>
     </nav>
     <p>{{ $t('settings.profile') }}</p>
+    <p>{{ $t('tag') }}</p>
   </div>
 </template>
 

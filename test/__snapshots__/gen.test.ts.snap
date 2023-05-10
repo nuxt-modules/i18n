@@ -1,4 +1,4 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`basic 1`] = `
 "import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
@@ -17,19 +17,18 @@ export const additionalMessages = Object({})
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   return nuxtI18nOptions
 }
 
-export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: undefined,debug: false})
+export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),precompile: Object({\\"strictMessage\\":true,\\"escapeHtml\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false})
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -47,17 +46,16 @@ export const additionalMessages = Object({})
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   return nuxtI18nOptions
 }
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -75,17 +73,16 @@ export const additionalMessages = Object({})
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   return nuxtI18nOptions
 }
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -105,17 +102,16 @@ export const additionalMessages = Object({})
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
   return nuxtI18nOptions
 }
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -127,26 +123,25 @@ export const additionalMessages = Object({})
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":((prop) => {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\",\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
           })})]
   return nuxtI18nOptions
 }
 
-export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: undefined,debug: false})
+export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),precompile: Object({\\"strictMessage\\":true,\\"escapeHtml\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false})
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
@@ -158,30 +153,29 @@ export const additionalMessages = Object({})
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  const vueI18nOptionsLoader = async (context) => Object({\\"locale\\":\\"en\\",\\"fallbackLocale\\":\\"fr\\",\\"messages\\": Object({\\"en\\":{
-  \\"hello\\": (()=>{const fn=(ctx) => {const { normalize: _normalize } = ctx;return _normalize([\\"Hello!\\"])};fn.source=\\"Hello!\\";return fn;})()
-},}),})
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"path\\":\\"/path/to/en.json\\",\\"testFunc\\":(function (prop) {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"file\\":\\"en.json\\",\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"path\\":\\"/path/to/ja.json\\",\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"ja\\",\\"file\\":\\"ja.json\\",\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"path\\":\\"/path/to/fr.json\\",\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"fr\\",\\"file\\":\\"fr.json\\",\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
         })})]
   return nuxtI18nOptions
 }
 
-export const nuxtI18nOptionsDefault = Object({vueI18n: undefined,locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: undefined,debug: false})
+export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),precompile: Object({\\"strictMessage\\":true,\\"escapeHtml\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false})
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;
 
-exports[`vueI18n: path 1`] = `
+exports[`vueI18n option 1`] = `
 "import locale_en from \\"../locales/en.json\\" assert { type: \\"json\\" };
 import locale_ja from \\"../locales/ja.json\\" assert { type: \\"json\\" };
 import locale_fr from \\"../locales/fr.json\\" assert { type: \\"json\\" };
@@ -209,15 +203,48 @@ export const additionalMessages = Object({\\"en\\":[() => Promise.resolve({
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
-  const vueI18nOptionsLoader = async (context) => import(\\"~/plugins/vue-i18n.js\\").then(r => (r.default || r)(context))
-  nuxtI18nOptions.vueI18n = await vueI18nOptionsLoader(context)
-  if (nuxtI18nOptions.vueI18n.messages) { console.warn(\\"[@nuxtjs/i18n]: Cannot include 'messages' option in 'vue-i18n.js'. Please use Lazy-load translations.\\"); nuxtI18nOptions.vueI18n.messages = {}; }
+ const vueI18nConfigLoader = async (loader) => {
+            const config = await loader().then(r => r.default || r)
+            return typeof config === 'object'
+              ? config
+              : typeof config === 'function'
+                ? await config()
+                : {}
+          }
+  nuxtI18nOptions.vueI18n = Object({})
+  const deepCopy = (src, des, predicate) => {
+            for (const key in src) {
+              if (typeof src[key] === 'object') {
+                if (!typeof des[key] === 'object') des[key] = {}
+                deepCopy(src[key], des[key], predicate)
+              } else {
+                if (predicate) {
+                  if (predicate(src[key], des[key])) {
+                    des[key] = src[key]
+                  }
+                } else {
+                  des[key] = src[key]
+                }
+              }
+            }
+          }
+          const mergeMessages = async (messages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
+            const vueI18n = layerConfig.vueI18n || {}
+            const layerMessages = vueI18n.messages || {}
+            for (const [locale, message] of Object.entries(layerMessages)) {
+              deepCopy(message, messages[locale])
+            }
+          }
   return nuxtI18nOptions
 }
 
 export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
 export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
+export const NUXT_I18N_PRECOMPILE_ENDPOINT = \\"/__i18n__/precompile\\"
+export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = \\"i18n-locales\\"
+export const NUXT_I18N_PRERENDERED_PATH = \\"/__i18n__/prerender\\"
+export const NULL_HASH = \\"00000000\\"
 export const isSSG = false
-export const isSSR = true
 "
 `;

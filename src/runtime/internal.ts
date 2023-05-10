@@ -19,6 +19,8 @@ import {
   localeMessages,
   additionalMessages,
   NUXT_I18N_MODULE_ID,
+  NUXT_I18N_PRECOMPILE_ENDPOINT,
+  NULL_HASH,
   isSSG
 } from '#build/i18n.options.mjs'
 
@@ -93,27 +95,44 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-function deepCopy(src: Record<string, any>, des: Record<string, any>) {
+function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?: (src: any, des: any) => boolean) {
   for (const key in src) {
     if (isObject(src[key])) {
       if (!isObject(des[key])) des[key] = {}
-
-      deepCopy(src[key], des[key])
+      deepCopy(src[key], des[key], predicate)
     } else {
-      des[key] = src[key]
+      if (predicate) {
+        if (predicate(src[key], des[key])) {
+          des[key] = src[key]
+        }
+      } else {
+        des[key] = src[key]
+      }
     }
   }
 }
 
-async function loadMessage(context: NuxtApp, loader: () => Promise<any>) {
+async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale: Locale) {
+  const i18nConfig = context.$config.public?.i18n
+
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
+    __DEBUG__ && console.log('loadMessage: (locale) -', locale)
     const getter = await loader().then(r => r.default || r)
-    // TODO: support for js, cjs, mjs
     if (isFunction(getter)) {
-      console.error(formatMessage('Not support executable file (e.g. js, cjs, mjs)'))
+      if (i18nConfig.experimental?.jsTsFormatResource) {
+        message = await getter(locale).then((r: any) => r.default || r)
+        __DEBUG__ && console.log('loadMessage: dynamic load', message)
+      } else {
+        console.warn(
+          formatMessage(
+            'Not support js / ts extension format as default. you can do enable with `i18n.experimental.jsTsFormatResource: true` (experimental)'
+          )
+        )
+      }
     } else {
       message = getter
+      __DEBUG__ && console.log('loadMessage: load', message)
     }
   } catch (e: any) {
     // eslint-disable-next-line no-console
@@ -139,7 +158,7 @@ export async function loadLocale(
         if (loadedMessages.has(key)) {
           message = loadedMessages.get(key)
         } else {
-          message = await loadMessage(context, load)
+          message = await loadMessage(context, load, locale)
           if (message != null) {
             loadedMessages.set(key, message)
           }
@@ -155,7 +174,7 @@ export async function loadLocale(
           if (loadedMessages.has(key)) {
             message = loadedMessages.get(key)
           } else {
-            message = await loadMessage(context, load)
+            message = await loadMessage(context, load, locale)
             if (message != null) {
               loadedMessages.set(key, message)
             }
@@ -169,12 +188,16 @@ export async function loadLocale(
       }
     }
   } else {
-    console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
+    if (!loadedLocales.includes(locale)) {
+      console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
+    }
   }
 }
 
+// TODO: remove `i18n:extend-messages` before v8 official release
 const loadedAdditionalLocales: Locale[] = []
 
+// TODO: remove `i18n:extend-messages` before v8 official release
 export async function loadAdditionalLocale(
   context: NuxtApp,
   locale: Locale,
@@ -183,7 +206,7 @@ export async function loadAdditionalLocale(
   if (process.server || process.dev || !loadedAdditionalLocales.includes(locale)) {
     const additionalLoaders = additionalMessages[locale] || []
     for (const additionalLoader of additionalLoaders) {
-      const message = await loadMessage(context, additionalLoader)
+      const message = await loadMessage(context, additionalLoader, locale)
       if (message != null) {
         merger(locale, message)
         loadedAdditionalLocales.push(locale)
@@ -232,7 +255,6 @@ export function getLocaleCookie(
     } else if (process.server) {
       const cookie = useRequestHeaders(['cookie'])
       if ('cookie' in cookie) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
         localeCode = parsedCookie[cookieKey]
         __DEBUG__ && console.log('getLocaleCookie cookie', parsedCookie[cookieKey])
@@ -476,6 +498,111 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   }
 
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+}
+
+async function evaluateCode(raw: Blob) {
+  const url = URL.createObjectURL(raw)
+  const code = await import(/* @vite-ignore */ url).then(m => m.default || m)
+  URL.revokeObjectURL(url)
+  return code
+}
+
+export async function precompileLocale(
+  locale: Locale,
+  messages: LocaleMessages<DefineLocaleMessage>,
+  hash: string = NULL_HASH
+) {
+  const raw = await $fetch<Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+    method: 'POST',
+    responseType: 'blob',
+    body: {
+      locale,
+      type: 'locale',
+      hash,
+      resource: messages
+    }
+  })
+  if (process.dev && process.client) {
+    /**
+     * NOTE:
+     * If code precompiled directly by dynamic import is loaded directly as well as on the server side,
+     * it will be routed on the server side when the request is received.
+     * To avoid this, use the code received by fetching the precompiled code.
+     */
+    return evaluateCode(raw)
+  } else {
+    return await loadPrecompiledMessages(locale + '-' + hash + '.js', 'locale')
+  }
+}
+
+export async function precompileConfig(
+  messages: I18nOptions['messages'],
+  hash: string = NULL_HASH
+): Promise<I18nOptions['messages']> {
+  if (messages != null) {
+    const raw = await $fetch<Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, {
+      method: 'POST',
+      responseType: 'blob',
+      body: {
+        type: 'config',
+        hash,
+        resource: getNeedPrecompileMessages(messages)
+      }
+    })
+    let precompiledMessages: I18nOptions['messages']
+    if (process.dev && process.client) {
+      /**
+       * NOTE:
+       * If code precompiled directly by dynamic import is loaded directly as well as on the server side,
+       * it will be routed on the server side when the request is received.
+       * To avoid this, use the code received by fetching the precompiled code.
+       */
+      precompiledMessages = await evaluateCode(raw)
+    } else {
+      precompiledMessages = (await loadPrecompiledMessages('config-' + hash + '.js', 'config')) as NonNullable<
+        I18nOptions['messages']
+      >
+    }
+    if (precompiledMessages != null) {
+      for (const [locale, message] of Object.entries(precompiledMessages)) {
+        deepCopy(message, messages[locale])
+      }
+    }
+  }
+  return messages
+}
+
+async function loadPrecompiledMessages(id: string, type: 'locale' | 'config') {
+  __DEBUG__ &&
+    console.log('loadPrecompiledMessages loc ->', id, type, process.server, process.env && process.env.prerender)
+
+  let url = ''
+  // prettier-ignore
+  if (process.server) { // for server
+    if (process.env.prerender) { // for prerender
+      url = type === 'config' ? '../../../i18n/' + id : '../../../i18n/locales/' + id
+    } else if (process.dev) { // for dev mode
+      url = type === 'config' ? '.nuxt/i18n/' + id : '.nuxt/i18n/locales/' + id
+    } else {
+      throw new Error(`'loadPrecompiledMessages' is used in invalid environment.`)
+    }
+  } else {
+    throw new Error(`'loadPrecompiledMessages' is used in invalid environment.`)
+  }
+
+  return await import(/* @vite-ignore */ url).then(m => m.default || m)
+}
+
+function getNeedPrecompileMessages(messages: NonNullable<I18nOptions['messages']>) {
+  const needPrecompileMessages: NonNullable<I18nOptions['messages']> = {}
+  // ignore, if messages will have function
+  const predicate = (src: any) => !isFunction(src)
+
+  for (const [locale, message] of Object.entries(messages)) {
+    const dest = (needPrecompileMessages[locale] = {})
+    deepCopy(message, dest, predicate)
+  }
+  return needPrecompileMessages
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
