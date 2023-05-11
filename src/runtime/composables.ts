@@ -19,114 +19,128 @@ export type { LocaleObject } from 'vue-i18n-routing'
 import type { Locale, LocaleMessages, DefineLocaleMessage, I18nOptions } from 'vue-i18n'
 
 /**
- * The `useRouteBaseName` composable returns function that get the route base name.
+ * The `useRouteBaseName` composable returns a function that gets the route's base name.
  *
  * @remarks
  * The function returned by `useRouteBaseName` is the wrapper function with the same signature as {@link getRouteBaseName}.
  *
  * `useRouteBaseName` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
  *
- * @param route - A route object. if not provided, the route is returned with `useRoute` will be used internally
+ * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
  *
  * @returns A {@link RouteBaseNameFunction}.
  *
  * @public
  */
-export function useRouteBaseName(): ReturnType<typeof _useRouteBaseName> {
+export function useRouteBaseName(
+  options?: Pick<NonNullable<Parameters<typeof _useRouteBaseName>[0]>, 'route' | 'router' | 'i18n'>
+): ReturnType<typeof _useRouteBaseName> {
+  const { route, router, i18n } = options || {}
   return _useRouteBaseName({
-    route: useRoute(),
-    router: useRouter(),
-    i18n: getComposer(useNuxtApp().$i18n)
+    route: route || useRoute(),
+    router: router || useRouter(),
+    i18n: i18n || getComposer(useNuxtApp().$i18n)
   })
 }
 
 /**
- * The `useLocalePath` composable returns function that resolve the locale path.
+ * The `useLocalePath` composable returns a function that resolves a path according to the current locale.
  *
  * @remarks
  * The function returned by `useLocalePath` is the wrapper function with the same signature as {@link localePath}.
  *
  * `useLocalePath` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
  *
+ * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
+ *
  * @returns A {@link LocalePathFunction}.
  *
  * @public
  */
-export function useLocalePath(): ReturnType<typeof _useLocalePath> {
+export function useLocalePath(
+  options?: Pick<NonNullable<Parameters<typeof _useLocalePath>[0]>, 'route' | 'router' | 'i18n'>
+): ReturnType<typeof _useLocalePath> {
+  const { route, router, i18n } = options || {}
   return _useLocalePath({
-    router: useRouter(),
-    route: useRoute(),
-    i18n: getComposer(useNuxtApp().$i18n)
+    route: route || useRoute(),
+    router: router || useRouter(),
+    i18n: i18n || getComposer(useNuxtApp().$i18n)
   })
 }
 
 /**
- * The `useLocaleRoute` composable returns function that resolve the locale route.
+ * The `useLocaleRoute` composable returns a function that resolves the route according to the current locale.
  *
  * @remarks
  * The function returned by `useLocaleRoute` is the wrapper function with the same signature as {@link localeRoute}.
  *
  * `useLocaleRoute` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
  *
+ * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
+ *
  * @returns A {@link LocaleRouteFunction}.
  *
  * @public
  */
-export function useLocaleRoute(): ReturnType<typeof _useLocaleRoute> {
+export function useLocaleRoute(
+  options?: Pick<NonNullable<Parameters<typeof _useLocaleRoute>[0]>, 'route' | 'router' | 'i18n'>
+): ReturnType<typeof _useLocaleRoute> {
+  const { route, router, i18n } = options || {}
   return _useLocaleRoute({
-    router: useRouter(),
-    route: useRoute(),
-    i18n: getComposer(useNuxtApp().$i18n)
+    route: route || useRoute(),
+    router: router || useRouter(),
+    i18n: i18n || getComposer(useNuxtApp().$i18n)
   })
 }
 
 /**
- * The `useSwitchLocalePath` composable returns function that resolve the locale location.
+ * The `useSwitchLocalePath` composable returns a function that allows to switch the locale.
  *
  * @remarks
  * The function returned by `useSwitchLocalePath` is the wrapper function with the same signature as {@link switchLocalePath}.
  *
  * `useSwitchLocalePath` composable returns function that resolve the locale location. `useSwitchLocalePath` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
  *
+ * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
+ *
  * @returns A {@link SwitchLocalePathFunction}.
  *
  * @public
  */
-export function useSwitchLocalePath(): ReturnType<typeof _useSwitchLocalePath> {
+export function useSwitchLocalePath(
+  options?: Pick<NonNullable<Parameters<typeof _useSwitchLocalePath>[0]>, 'route' | 'router' | 'i18n'>
+): ReturnType<typeof _useSwitchLocalePath> {
+  const { route, router, i18n } = options || {}
   return _useSwitchLocalePath({
-    router: useRouter(),
-    route: useRoute(),
-    i18n: getComposer(useNuxtApp().$i18n)
+    route: route || useRoute(),
+    router: router || useRouter(),
+    i18n: i18n || getComposer(useNuxtApp().$i18n)
   })
 }
 
 /**
  * The `useLocaleHead` composable returns localized head properties for locale-related aspects.
  *
- * @param options - An options, see about details {@link I18nHeadOptions}.
+ * @param options - An options object, see {@link I18nHeadOptions}.
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties} with Vue `ref`.
  *
  * @public
  */
 export function useLocaleHead(
-  options: Pick<
+  options?: Pick<
     NonNullable<Parameters<typeof _useLocaleHead>[0]>,
-    'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
-  > = {
-    addDirAttribute: false,
-    addSeoAttributes: false,
-    identifierAttribute: 'hid'
-  }
+    'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute' | 'route' | 'router' | 'i18n'
+  >
 ): ReturnType<typeof _useLocaleHead> {
-  const { addDirAttribute, addSeoAttributes, identifierAttribute } = options
+  const { addDirAttribute, addSeoAttributes, identifierAttribute, route, router, i18n } = options || {}
   return _useLocaleHead({
-    addDirAttribute,
-    addSeoAttributes,
-    identifierAttribute,
-    router: useRouter(),
-    route: useRoute(),
-    i18n: getComposer(useNuxtApp().$i18n)
+    addDirAttribute: addDirAttribute || false,
+    addSeoAttributes: addSeoAttributes || false,
+    identifierAttribute: identifierAttribute || 'hid',
+    route: route || useRoute(),
+    router: router || useRouter(),
+    i18n: i18n || getComposer(useNuxtApp().$i18n)
   })
 }
 
