@@ -41,12 +41,6 @@ export function setupPages(
     return !options.differentDomains && DefaultLocalizeRoutesPrefixable(opts)
   }
 
-  let includeUprefixedFallback = nuxt.options.ssr === false
-  nuxt.hook('nitro:init', () => {
-    debug('enable includeUprefixedFallback')
-    includeUprefixedFallback = true
-  })
-
   const pagesDir = nuxt.options.dir && nuxt.options.dir.pages ? nuxt.options.dir.pages : 'pages'
   const srcDir = nuxt.options.srcDir
   const { trailingSlash } = additionalOptions
@@ -63,7 +57,6 @@ export function setupPages(
     analyzeNuxtPages(ctx, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUprefixedFallback,
       localizeRoutesPrefixable,
       optionsResolver: getRouteOptionsResolver(ctx, options)
     })
