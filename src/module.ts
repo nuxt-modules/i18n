@@ -179,11 +179,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     // TODO: remove `i18n:extend-messages` before v8 official release
-    logger.warn(
-      '`i18n:extend-messages` is deprecated. ' +
-        'That hook will be removed feature at the time of the v8 official release.\n' +
-        "If you're using it, please use `i18n:registerModule` instead."
-    )
+    // @ts-ignore Property '_hooks' is private and only accessible within class 'Hookable<HooksT, HookNameT>'
+    if ('i18n:extend-messages' in nuxt.hooks._hooks) {
+      logger.warn(
+        '`i18n:extend-messages` is deprecated. ' +
+          'That hook will be removed feature at the time of the v8 official release.\n' +
+          "If you're using it, please use `i18n:registerModule` instead."
+      )
+    }
     const additionalMessages = await extendMessages(nuxt, localeCodes, options)
 
     /**
