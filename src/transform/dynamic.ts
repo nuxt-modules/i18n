@@ -87,7 +87,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
     },
 
     vite: {
-      generateBundle(outputOptions) {
+      generateBundle() {
         // console.log('generateBundle: outputOptions', outputOptions)
         const resources = [...resoucesMap].reduce((obj, [hash, { type, locale, ref }]) => {
           obj[hash] = { type, locale, path: this.getFileName(ref) }

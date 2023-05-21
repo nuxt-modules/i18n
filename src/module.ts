@@ -336,7 +336,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       // nitro.bundledStorage.push(storageKey)
     })
 
-    nuxt.hook('nitro:init', async nitro => {
+    nuxt.hook('nitro:init', async () => {
       // remove i18n storage for refresh
       if (nuxt.options.dev) {
         await rm(resolve(nuxt.options.buildDir, storageKey))
