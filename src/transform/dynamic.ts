@@ -11,11 +11,12 @@ import type { PrerenderTargets, PrerenderTarget } from '../utils'
 
 export interface ResourceDynamicPluginOptions {
   prerenderTargs: PrerenderTargets
+  ssr: boolean
   dev?: boolean
   sourcemap?: boolean
 }
 
-type ResourceMapValue = Pick<PrerenderTarget, 'type'> & { ref: string; locale?: string }
+type ResourceMapValue = Pick<PrerenderTarget, 'type'> & { ref: string; hash: string; locale?: string }
 
 const debug = createDebug('@nuxtjs/i18n:transform:dynamic')
 
@@ -73,10 +74,12 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
         const ref = this.emitFile({
           // @ts-expect-error
           type: 'chunk',
-          id
+          id,
+          preserveSignature: 'strict'
         }) as unknown as string
 
-        resoucesMap.set(hash, {
+        resoucesMap.set(id, {
+          hash,
           type: query.locale ? 'locale' : 'config',
           locale: query.locale as string,
           ref
@@ -87,10 +90,18 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
     },
 
     vite: {
-      generateBundle() {
-        // console.log('generateBundle: outputOptions', outputOptions)
-        const resources = [...resoucesMap].reduce((obj, [hash, { type, locale, ref }]) => {
-          obj[hash] = { type, locale, path: this.getFileName(ref) }
+      generateBundle(outputOptions) {
+        /**
+         * NOTE:
+         * avoid generating i18n-meta.json for SPA mode,
+         * because some i18n resources doesn't bundle on server-side
+         */
+        if (!options.ssr && outputOptions.dir?.endsWith('server')) {
+          return
+        }
+
+        const resources = [...resoucesMap].reduce((obj, [_, { hash, type, locale, ref }]) => {
+          obj[hash] = { hash, type, locale, path: this.getFileName(ref) }
           return obj
         }, {} as Record<string, Omit<ResourceMapValue, 'ref'> & { path: string }>)
         debug('generateBundle: resources', resources)
