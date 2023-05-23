@@ -1,6 +1,6 @@
 import { defineEventHandler, setResponseHeader, createError } from 'h3'
 // @ts-expect-error
-import { useStorage } from '#imports'
+import { useStorage, useRuntimeConfig } from '#imports'
 import { relative, join } from 'pathe'
 import { isObject, isFunction } from '@intlify/shared'
 
@@ -10,17 +10,31 @@ import type { PrerenderTarget } from '../../utils'
 type ResourceMapValue = Pick<PrerenderTarget, 'type' | 'path'> & { locale?: string }
 
 export default defineEventHandler(async event => {
+  const config = useRuntimeConfig()
+
   const hash = event.context.params?.hash
   if (hash == null) {
     throw createError({ statusMessage: `require the 'hash'`, statusCode: 400 })
   }
 
-  const i18nMeta = await getI18nMeta()
-  const [filename] = hash.split('.') // request from `xxx.js`
+  /**
+   * resolve pre-comilable config or locales
+   */
+
+  const i18nMeta = await getI18nMeta(config.i18n.ssr)
+  const filename = getFilename(hash)
   const target = i18nMeta[filename]
 
-  const loadPath = await resolveModule(target.path)
+  /**
+   * import a module that can pre-compile config or locales.
+   */
+
+  const loadPath = await resolveModule(target.path, config.i18n.ssr)
   const loader = await import(loadPath).then(m => m.default || m)
+
+  /**
+   * pre-compile
+   */
 
   if (target.type === 'locale') {
     if (target.locale == null) {
@@ -41,16 +55,26 @@ export default defineEventHandler(async event => {
   }
 })
 
-async function getI18nMeta() {
-  return (await useStorage().getItem('build:dist:server:i18n-meta.json')) as Record<string, ResourceMapValue>
+function getFilename(hash: string) {
+  const [filename] = hash.split('.') // request from `xxx.js`
+  return filename
 }
 
-async function resolveModule(path: string) {
+const resourcePlace = (ssr = true) => (ssr ? 'server' : 'client')
+
+async function getI18nMeta(ssr = true) {
+  return (await useStorage().getItem(`build:dist:${resourcePlace(ssr)}:i18n-meta.json`)) as Record<
+    string,
+    ResourceMapValue
+  >
+}
+
+async function resolveModule(path: string, ssr = true) {
   const storage = await useStorage()
   const rootMount = await storage.getMount('root')
   const root = rootMount.driver.options.base
   const rootRelative = relative(new URL(import.meta.url).pathname, root)
-  return join(rootRelative, 'dist/server', path)
+  return join(rootRelative, `dist/${resourcePlace(ssr)}`, path)
 }
 
 async function precompileLocale(locale: string, filename: string, messages: LocaleMessages<DefineLocaleMessage>) {

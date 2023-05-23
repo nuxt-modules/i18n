@@ -113,7 +113,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // for privates
     nuxt.options.runtimeConfig.i18n = defu(nuxt.options.runtimeConfig.i18n, {
-      precompile: options.precompile
+      precompile: options.precompile,
+      ssr: nuxt.options.ssr
     })
 
     /**
