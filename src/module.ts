@@ -68,6 +68,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
       logger.warn('JS / TS extension format is experimental')
     }
 
+    if (!options.experimental.runtimeOnlyVueI18nBundle) {
+      logger.warn('Disabled runtimeOnlyVueI18nBundle is experimental')
+    }
+
     /**
      * Check vertions
      */

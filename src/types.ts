@@ -57,6 +57,7 @@ export type CustomRoutePages = {
 
 export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
+  runtimeOnlyVueI18nBundle: boolean
 }
 
 export interface LocaleMessagePrecompileOptions {

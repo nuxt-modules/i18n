@@ -72,7 +72,7 @@ export async function extendBundler(
     const webpack = await import('webpack').then(m => m.default || m)
 
     const webpackPluginOptions: PluginOptions = {
-      runtimeOnly: true,
+      runtimeOnly: nuxtOptions.experimental.runtimeOnlyVueI18nBundle,
       allowDynamic: true,
       strictMessage: nuxtOptions.precompile.strictMessage,
       escapeHtml: nuxtOptions.precompile.escapeHtml
@@ -107,7 +107,7 @@ export async function extendBundler(
    */
 
   const vitePluginOptions: PluginOptions = {
-    runtimeOnly: true,
+    runtimeOnly: nuxtOptions.experimental.runtimeOnlyVueI18nBundle,
     allowDynamic: true,
     strictMessage: nuxtOptions.precompile.strictMessage,
     escapeHtml: nuxtOptions.precompile.escapeHtml

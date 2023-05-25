@@ -31,7 +31,8 @@ export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
   experimental: {
-    jsTsFormatResource: false
+    jsTsFormatResource: false,
+    runtimeOnlyVueI18nBundle: true
   },
   precompile: {
     strictMessage: true,

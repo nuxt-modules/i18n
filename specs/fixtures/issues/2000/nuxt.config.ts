@@ -10,7 +10,8 @@ export default defineNuxtConfig({
 
   i18n: {
     experimental: {
-      jsTsFormatResource: true
+      jsTsFormatResource: true,
+      runtimeOnlyVueI18nBundle: true
     },
     defaultLocale: 'en',
     langDir: 'locales',

@@ -11,7 +11,8 @@ describe('basic', async () => {
     nuxtConfig: {
       i18n: {
         experimental: {
-          jsTsFormatResource: true
+          jsTsFormatResource: true,
+          runtimeOnlyVueI18nBundle: true
         },
         precompile: {
           strictMessage: false
