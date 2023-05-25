@@ -4,6 +4,7 @@ import type { NuxtApp } from 'nuxt/dist/app/index'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  // ssr: false,
   extends: ['layers/i18n-layer'],
   modules: [
     (_, nuxt) => {

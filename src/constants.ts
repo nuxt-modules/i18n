@@ -70,6 +70,7 @@ export const DEFAULT_OPTIONS = {
 
 export const NUXT_I18N_LOCALE_PROXY_ID = '@nuxtjs/i18n/__locale__' as const
 export const NUXT_I18N_CONFIG_PROXY_ID = '@nuxtjs/i18n/__config__' as const
+export const NUXT_I18N_BUNDLE_PROXY_ID = '@nuxtjs/i18n/__bundle__' as const
 export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/__i18n__/precompile' as const // TODO: we might use `useRuntimeConfig`?
 export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = 'i18n-locales' as const // TODO: we might use `useRuntimeConfig`?
 export const NUXT_I18N_PRERENDERED_PATH = '/__i18n__/prerender' as const // TODO: we might use `useRuntimeConfig`?

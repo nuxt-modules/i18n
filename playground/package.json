@@ -1,7 +1,6 @@
 {
   "name": "@nuxtjs/i18n-playground",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "nuxi build",
     "dev": "nuxi dev",

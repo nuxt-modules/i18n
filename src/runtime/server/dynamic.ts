@@ -9,6 +9,10 @@ import type { PrerenderTarget } from '../../utils'
 
 type ResourceMapValue = Pick<PrerenderTarget, 'type' | 'path'> & { locale?: string }
 
+async function dynamicImportCompatibility(fileUrl: string, isESM: boolean) {
+  return isESM ? import(fileUrl) : new Function('file', 'return import(file)')(fileUrl)
+}
+
 export default defineEventHandler(async event => {
   const config = useRuntimeConfig()
 
@@ -30,6 +34,7 @@ export default defineEventHandler(async event => {
    */
 
   const loadPath = await resolveModule(target.path, config.i18n.ssr)
+  console.log('load mod with', await dynamicImportCompatibility(loadPath, false))
   const loader = await import(loadPath).then(m => m.default || m)
 
   /**
@@ -60,7 +65,8 @@ function getFilename(hash: string) {
   return filename
 }
 
-const resourcePlace = (ssr = true) => (ssr ? 'server' : 'client')
+// const resourcePlace = (ssr = true) => (ssr ? 'server' : 'client')
+const resourcePlace = (ssr = true) => 'client'
 
 async function getI18nMeta(ssr = true) {
   return (await useStorage().getItem(`build:dist:${resourcePlace(ssr)}:i18n-meta.json`)) as Record<
