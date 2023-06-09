@@ -8,6 +8,7 @@ export default defineComponent({
     console.log('$i18n.getBrowserLocale', this.$i18n.getBrowserLocale())
     console.log('$i18n.getLocaleCookie', this.$i18n.getLocaleCookie())
     console.log('$i18n.localeProperties', this.$i18n.localeProperties)
+    console.log('$i18n.defaultLocale', this.$i18n.defaultLocale)
   },
   computed: {
     availableLocales() {

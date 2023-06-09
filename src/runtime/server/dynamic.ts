@@ -107,6 +107,7 @@ async function precompileConfig(filename: string, messages: NonNullable<I18nOpti
  *  (we know use monorepo packages...)
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?: (src: any, des: any) => boolean) {
   for (const key in src) {
     if (isObject(src[key])) {
@@ -127,7 +128,7 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?
 export function getNeedPrecompileMessages(messages: NonNullable<I18nOptions['messages']>) {
   const needPrecompileMessages: NonNullable<I18nOptions['messages']> = {}
   // ignore, if messages will have function
-  const predicate = (src: any) => !isFunction(src)
+  const predicate = (src: any) => !isFunction(src) // eslint-disable-line @typescript-eslint/no-explicit-any
 
   for (const [locale, message] of Object.entries(messages)) {
     const dest = (needPrecompileMessages[locale] = {})

@@ -100,6 +100,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
           return
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const resources = [...resoucesMap].reduce((obj, [_, { hash, type, locale, ref }]) => {
           obj[hash] = { hash, type, locale, path: this.getFileName(ref) }
           return obj

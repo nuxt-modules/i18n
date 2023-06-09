@@ -54,6 +54,10 @@ export interface ComposerCustomProperties {
    */
   defaultDirection: Directions
   /**
+   * Default locale as specified in options.
+   */
+  defaultLocale: Locale
+  /**
    * Switches locale of the app to specified locale code.
    *
    * @remarks
@@ -133,6 +137,10 @@ export interface NuxtI18nRoutingCustomProperties {
    * Default direction as specified in options.
    */
   readonly defaultDirection: Directions
+  /**
+   * Default locale as specified in options.
+   */
+  readonly defaultLocale: Locale
   /**
    * Switches locale of the app to specified locale code.
    *
