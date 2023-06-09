@@ -338,7 +338,7 @@ export default defineNuxtPlugin(async nuxt => {
           },
           defaultLocale: {
             get() {
-              return g.defaultLocale
+              return composer.defaultLocale
             }
           },
           getBrowserLocale: {
