@@ -219,6 +219,7 @@ export default defineNuxtPlugin(async nuxt => {
           )
         }
         composer.differentDomains = differentDomains
+        composer.defaultLocale = defaultLocale
         composer.getBrowserLocale = () => _getBrowserLocale(nuxtI18nInternalOptions, nuxt.ssrContext)
         composer.getLocaleCookie = () =>
           _getLocaleCookie(nuxt.ssrContext, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
@@ -266,6 +267,11 @@ export default defineNuxtPlugin(async nuxt => {
           differentDomains: {
             get() {
               return g.differentDomains
+            }
+          },
+          defaultLocale: {
+            get() {
+              return g.defaultLocale
             }
           },
           getBrowserLocale: {
@@ -328,6 +334,11 @@ export default defineNuxtPlugin(async nuxt => {
           differentDomains: {
             get() {
               return composer.differentDomains
+            }
+          },
+          defaultLocale: {
+            get() {
+              return composer.defaultLocale
             }
           },
           getBrowserLocale: {
