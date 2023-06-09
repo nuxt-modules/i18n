@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { LocaleObject } from '#i18n'
 
 const route = useRoute()
-const { t, strategy, locale, locales, localeProperties, setLocale, finalizePendingLocaleChange } = useI18n()
+const { t, strategy, locale, locales, localeProperties, setLocale, defaultLocale, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const getRouteBaseName = useRouteBaseName()
