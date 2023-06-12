@@ -10,5 +10,6 @@
   },
   "welcome": "Welcome",
   "hello": "Hello {name} !",
-  "tag": "<p>Tag</p>"
+  "tag": "<p>Tag</p>",
+  "items": [{ "name": "apple" }, { "name": "banana" }, { "name": "strabelly" }]
 }

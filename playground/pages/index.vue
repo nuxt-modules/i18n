@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import { LocaleObject } from '#i18n'
 
 const route = useRoute()
-const { t, strategy, locale, locales, localeProperties, setLocale, defaultLocale, finalizePendingLocaleChange } = useI18n()
+const { t, rt, tm, strategy, locale, locales, localeProperties, setLocale, defaultLocale, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const getRouteBaseName = useRouteBaseName()
@@ -29,6 +29,11 @@ function getLocaleName(code: string) {
 const availableLocales = computed(() => {
   return (locales.value as LocaleObject[]).filter(i => i.code !== locale.value)
 })
+
+const i = tm('items')
+console.log('items via tm', i, typeof i)
+const items = i.map(item => rt(item.name))
+console.log('items items', items)
 
 definePageMeta({
   title: 'pages.title.top',
@@ -76,6 +81,10 @@ definePageMeta({
     </nav>
     <p>{{ $t('settings.profile') }}</p>
     <p>{{ $t('tag') }}</p>
+    <h3>Items</h3>
+    <div v-for="item in items">
+      <p>{{ item }}</p>
+    </div>
   </div>
 </template>
 
