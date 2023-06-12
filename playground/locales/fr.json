@@ -9,5 +9,6 @@
     }
   },
   "welcome": "Bienvenue",
-  "hello": "Bonjour {name} !"
+  "hello": "Bonjour {name} !",
+  "items": []
 }
