@@ -9,7 +9,8 @@ export default defineI18nConfig(() => ({
       bar: {
         buz: 'こんにちは！{name}!',
         fn: ({ named }: any) => `こんにちは！${named('name')}!`
-      }
+      },
+      items: [{ name: 'りんご' }, { name: 'バナナ' }, { name: 'いちご' }]
     },
     fr
   },

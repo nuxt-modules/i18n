@@ -97,8 +97,21 @@ export function parseAcceptLanguage(input: string): string[] {
 
 function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?: (src: any, des: any) => boolean) {
   for (const key in src) {
-    if (isObject(src[key])) {
-      if (!isObject(des[key])) des[key] = {}
+    if (isArray(src[key])) {
+      if (!isArray(des[key])) {
+        des[key] = []
+      }
+      ;(src[key] as any[]).forEach((item, index) => {
+        if (!des[key][index]) {
+          const desItem = {}
+          deepCopy(item, desItem, predicate)
+          des[key].push(desItem)
+        }
+      })
+    } else if (isObject(src[key])) {
+      if (!isObject(des[key])) {
+        des[key] = {}
+      }
       deepCopy(src[key], des[key], predicate)
     } else {
       if (predicate) {
