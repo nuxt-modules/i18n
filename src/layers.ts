@@ -74,7 +74,6 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     })
     if (firstI18nLayer == null) return []
 
-    // const localeType = typeof firstI18nLayer.config.i18n?.locales?.at(0)
     const localeType = typeof getProjectLayerI18n(firstI18nLayer)?.locales?.at(0)
     const isStringLocales = (val: unknown): val is string[] => localeType === 'string'
 
