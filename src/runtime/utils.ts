@@ -294,10 +294,6 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
   let redirectPath = ''
   const isStaticGenerate = isSSG && process.server
 
-  if (!isI18nRouteDefined(route)) {
-    return redirectPath
-  }
-
   // decide whether we should redirect to a different route.
   if (
     !isStaticGenerate &&
@@ -510,10 +506,6 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
 
     return baseUrl
   }
-}
-function isI18nRouteDefined(route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded): boolean {
-  const i18nLocales = route.matched[0]?.meta.nuxtI18n
-  return i18nLocales ? Object.keys(i18nLocales).length > 0 : false
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
