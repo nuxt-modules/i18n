@@ -5,9 +5,10 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
   i18n: {
     langDir: 'locales',
-    lazy: true,
+    lazy: false,
     baseUrl: 'http://localhost:3000',
     customRoutes: 'config',
+    differentDomains: true,
     pages: {
       history: {
         en: '/history',
@@ -18,25 +19,23 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
         file: 'en.json',
-        // domain: 'localhost',
+        domain: 'aigner.test',
         name: 'English'
       },
       {
         code: 'fr',
-        iso: 'fr-FR',
         file: 'fr.json',
-        // domain: 'localhost',
+        domain: 'en.aigner.test',
         name: 'Francais'
       },
-      {
-        code: 'nl',
-        iso: 'nl-NL',
-        file: 'nl.json',
-        // domain: 'localhost',
-        name: 'Nederlands'
-      }
+      // {
+      //   code: 'nl',
+      //   iso: 'nl-NL',
+      //   file: 'nl.json',
+      //   // domain: 'localhost',
+      //   name: 'Nederlands'
+      // }
       //   {
       //     code: 'en-GB',
       //     iso: 'en-GB',
