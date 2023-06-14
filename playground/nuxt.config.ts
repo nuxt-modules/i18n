@@ -113,34 +113,34 @@ export default defineNuxtConfig({
       escapeHtml: true
     },
     langDir: 'locales',
-    lazy: true,
+    lazy: false,
     baseUrl: 'http://localhost:3000',
     locales: [
       {
         code: 'en',
         iso: 'en-US',
         file: 'en.json',
-        // domain: 'localhost',
+        domain: 'en.aigner-club.test',
         name: 'English'
       },
-      {
-        code: 'en-GB',
-        iso: 'en-GB',
-        files: ['en.json', 'en-GB.js', 'en-KK.js'],
-        name: 'English (UK)'
-      },
-      {
-        code: 'ja',
-        iso: 'ja-JP',
-        file: 'ja.ts',
-        domain: 'mydomain.com',
-        name: 'Japanses'
-      },
+      // {
+      //   code: 'en-GB',
+      //   iso: 'en-GB',
+      //   files: ['en.json', 'en-GB.js', 'en-KK.js'],
+      //   name: 'English (UK)'
+      // },
+      // {
+      //   code: 'ja',
+      //   iso: 'ja-JP',
+      //   file: 'ja.ts',
+      //   domain: 'mydomain.com',
+      //   name: 'Japanses'
+      // },
       {
         code: 'fr',
         iso: 'fr-FR',
         file: 'fr.json',
-        domain: 'mydomain.fr',
+        domain: 'aigner-club.test',
         name: 'Français'
       }
     ],
