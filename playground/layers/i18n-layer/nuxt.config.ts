@@ -20,13 +20,13 @@ export default defineNuxtConfig({
       {
         code: 'en',
         file: 'en.json',
-        domain: 'aigner.test',
+        domain: 'layer-en.example.com',
         name: 'English'
       },
       {
         code: 'fr',
         file: 'fr.json',
-        domain: 'en.aigner.test',
+        domain: 'layer-fr.example.com',
         name: 'Francais'
       },
       // {

@@ -120,7 +120,7 @@ export default defineNuxtConfig({
         code: 'en',
         iso: 'en-US',
         file: 'en.json',
-        domain: 'en.aigner-club.test',
+        domain: 'project-en.example.com',
         name: 'English'
       },
       // {
@@ -140,7 +140,7 @@ export default defineNuxtConfig({
         code: 'fr',
         iso: 'fr-FR',
         file: 'fr.json',
-        domain: 'aigner-club.test',
+        domain: 'project-fr.example.com',
         name: 'Français'
       }
     ],
