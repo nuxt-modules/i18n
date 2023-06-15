@@ -100,9 +100,9 @@ export default defineNuxtPlugin(async nuxt => {
     getLocaleFromRoute,
     nuxtI18nOptions,
     getDefaultLocale(defaultLocale),
+    { ssg: isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal', callType: 'setup' },
     normalizedLocales,
-    localeCodes,
-    isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal'
+    localeCodes
   )
   __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
@@ -152,9 +152,9 @@ export default defineNuxtPlugin(async nuxt => {
             nuxtContext,
             nuxtI18nOptions,
             nuxtI18nInternalOptions,
+            { ssg: 'ssg_setup', callType: 'setup' },
             localeCodes,
-            initialLocale,
-            'ssg_setup'
+            initialLocale
           )
         : DefaultDetectBrowserLanguageFromResult
       __DEBUG__ &&
@@ -424,9 +424,9 @@ export default defineNuxtPlugin(async nuxt => {
         () => {
           return getLocale(i18n) || getDefaultLocale(defaultLocale)
         },
+        { ssg: isSSGModeInitialSetup() && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal', callType: 'routing' },
         normalizedLocales,
-        localeCodes,
-        isSSGModeInitialSetup() && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal'
+        localeCodes
       )
       __DEBUG__ && console.log('detect locale', locale)
 

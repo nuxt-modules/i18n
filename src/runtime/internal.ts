@@ -342,6 +342,8 @@ export type DetectBrowserLanguageFromResult = {
   from?: DetectBrowserLanguageFrom
 }
 export type DetectLocaleForSSGStatus = 'ssg_ignore' | 'ssg_setup' | 'normal'
+export type DetectLocaleCallType = 'setup' | 'routing'
+export type DetectLocaleContext = { ssg: DetectLocaleForSSGStatus; callType: DetectLocaleCallType }
 
 export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
   locale: '',
@@ -355,14 +357,16 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   context: any,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
+  detectLocaleContext: DetectLocaleContext,
   localeCodes: string[] = [],
-  locale: Locale = '',
-  mode: DetectLocaleForSSGStatus
+  locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const { strategy } = nuxtI18nOptions
+  const { ssg, callType } = detectLocaleContext
+  __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType) - ', ssg, callType)
 
   // browser detection is ignored if it's a nuxt generate.
-  if (isSSG && strategy === 'no_prefix' && (process.server || mode === 'ssg_ignore')) {
+  if (isSSG && strategy === 'no_prefix' && (process.server || ssg === 'ssg_ignore')) {
     return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
   }
 
@@ -386,8 +390,8 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
         return { locale: '', stat: false, reason: 'not_redirect_on_root' }
       }
     } else if (redirectOn === 'no prefix') {
+      __DEBUG__ && console.log('detectBrowserLanguage: no prefix (path) -', path)
       if (!alwaysRedirect && path.match(getLocalesRegex(localeCodes as string[]))) {
-        __DEBUG__ && console.log('detectBrowserLanguage: no prefix')
         return { locale: '', stat: false, reason: 'not_redirect_on_no_prefix' }
       }
     }
@@ -438,13 +442,23 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
     if (strategy === 'no_prefix') {
       return { locale: finalLocale, stat: true, from: localeFrom }
     } else {
-      if (finalLocale !== vueI18nLocale /* && path !== '/'*/) {
-        __DEBUG__ && console.log('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
-        return { locale: finalLocale, stat: true, from: localeFrom }
-      } else if (alwaysRedirect) {
+      if (callType === 'setup') {
+        if (finalLocale !== vueI18nLocale) {
+          __DEBUG__ && console.log('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
+          return { locale: finalLocale, stat: true, from: localeFrom }
+        }
+      }
+      if (alwaysRedirect) {
         const redirectOnRoot = path === '/'
         const redirectOnAll = redirectOn === 'all'
         const redirectOnNoPrefix = redirectOn === 'no prefix' && !path.match(getLocalesRegex(localeCodes as string[]))
+        __DEBUG__ &&
+          console.log(
+            'detectBrowserLanguage: (redirectOnRoot, redirectOnAll, redirectOnNoPrefix) - ',
+            redirectOnRoot,
+            redirectOnAll,
+            redirectOnNoPrefix
+          )
         if (redirectOnRoot || redirectOnAll || redirectOnNoPrefix) {
           return { locale: finalLocale, stat: true, from: localeFrom }
         }
@@ -452,7 +466,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
     }
   }
 
-  if (mode === 'ssg_setup' && finalLocale) {
+  if (ssg === 'ssg_setup' && finalLocale) {
     return { locale: finalLocale, stat: true, from: localeFrom }
   }
 

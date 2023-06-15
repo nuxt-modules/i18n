@@ -21,23 +21,23 @@ await setup({
 })
 
 test('alwaysRedirect: no prefix', async () => {
-  const blog = url('/about')
   const page = await createPage(undefined, { locale: 'en' }) // set browser locale
-  await page.goto(blog)
+  await page.goto(url('/about'))
 
   // detect locale from navigator language
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 
-  // click `fr` lang switch link
+  // click `fr` lang switch with nutlink
   await page.locator('#set-locale-link-fr').click()
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
-  // go to `en` home page
-  await page.goto(url('/ja/about'))
-  expect(page.url().endsWith('/ja/about'))
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('ja')
+  // go to `blog/article` page
+  await page.goto(url('/blog/article'))
+  expect(page.url().endsWith('/fr/about'))
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
+  // go to `/about` page
   await page.goto(url('/about'))
-  expect(page.url().endsWith('/ja/about'))
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('ja')
+  expect(page.url().endsWith('/fr/about'))
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })

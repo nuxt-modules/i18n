@@ -6,6 +6,22 @@ export default defineNuxtConfig({
     lazy: false,
     defaultLocale: 'en',
     detectBrowserLanguage: false,
-    locales: ['fr', 'ja', 'en']
+    locales: [
+      {
+        code: 'en',
+        iso: 'en-US',
+        name: 'English'
+      },
+      {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français'
+      },
+      {
+        code: 'ja',
+        iso: 'ja-JP',
+        name: '日本語'
+      }
+    ]
   }
 })
