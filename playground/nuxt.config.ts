@@ -140,7 +140,7 @@ export default defineNuxtConfig({
         code: 'fr',
         iso: 'fr-FR',
         file: 'fr.json',
-        domain: 'mydomain.fr',
+        domain: 'project-fr.example.com',
         name: 'Français'
       }
     ],

@@ -78,7 +78,13 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     const isStringLocales = (val: unknown): val is string[] => localeType === 'string'
 
     const mergedLocales: string[] | LocaleObject[] = []
-    for (const layer of nuxt.options._layers) {
+
+    /*
+      Layers need to be reversed to ensure that the original first layer (project)
+      has the highest priority in merging (because in the reversed array it gets merged last)
+    */
+    const reversedLayers = [...nuxt.options._layers].reverse()
+    for (const layer of reversedLayers) {
       const i18n = getProjectLayerI18n(layer)
       debug('layer.config.i18n.locales', i18n?.locales)
       if (i18n?.locales == null) continue
