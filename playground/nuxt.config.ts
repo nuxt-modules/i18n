@@ -1,5 +1,6 @@
 import Module1 from './module1'
 import LayerModule from './layer-module'
+import ModuleExperimental from './module-experimental'
 import type { NuxtApp } from 'nuxt/dist/app/index'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
@@ -10,6 +11,7 @@ export default defineNuxtConfig({
       console.log(nuxt.options._installedModules)
     },
     Module1,
+    ModuleExperimental,
     LayerModule,
     /*
     [

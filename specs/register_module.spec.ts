@@ -21,4 +21,10 @@ test('register module hook', async () => {
   await page.locator('.switch-to-fr a').click()
 
   expect(await getText(page, '#register-module')).toEqual('This is a merged module layer locale key in French')
+
+  // click `nl` lang switch link
+  await page.locator('.switch-to-nl a').click()
+  await page.waitForLoadState('networkidle')
+
+  expect(await getText(page, '#register-module')).toEqual('This is a merged module layer locale key in Dutch')
 })
