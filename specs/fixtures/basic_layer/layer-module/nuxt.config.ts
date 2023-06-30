@@ -25,7 +25,7 @@ export default defineNuxtConfig({
       {
         code: 'nl',
         iso: 'nl-NL',
-        file: 'nl.json',
+        file: 'nl.ts',
         // domain: 'localhost',
         name: 'Nederlands'
       }
