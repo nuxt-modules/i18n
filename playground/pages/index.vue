@@ -5,7 +5,18 @@ import { computed } from 'vue'
 import { LocaleObject } from '#i18n'
 
 const route = useRoute()
-const { t, rt, tm, strategy, locale, locales, localeProperties, setLocale, defaultLocale, finalizePendingLocaleChange } = useI18n()
+const {
+  t,
+  rt,
+  tm,
+  strategy,
+  locale,
+  locales,
+  localeProperties,
+  setLocale,
+  defaultLocale,
+  finalizePendingLocaleChange
+} = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const getRouteBaseName = useRouteBaseName()
@@ -20,6 +31,7 @@ console.log('localeProperties', localeProperties)
 console.log('foo', t('foo'))
 console.log('message if local layer merged:', t('layerText'))
 console.log('message if github layer merged:', t('layer-test-key'))
+console.log('experimental module', t('goodDay'))
 
 function getLocaleName(code: string) {
   const locale = (locales.value as LocaleObject[]).find(i => i.code === code)

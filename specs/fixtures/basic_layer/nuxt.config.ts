@@ -30,6 +30,9 @@ export default defineNuxtConfig({
     lazy: true,
     langDir: 'lang',
     defaultLocale: 'en',
+    experimental: {
+      jsTsFormatResource: true
+    },
     locales: [
       {
         code: 'en',

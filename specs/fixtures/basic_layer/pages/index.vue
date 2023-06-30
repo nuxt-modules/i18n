@@ -64,6 +64,9 @@ function onClick() {
         <li class="switch-to-fr">
           <NuxtLink :to="switchLocalePath('fr')">Français</NuxtLink>
         </li>
+        <li class="switch-to-nl">
+          <NuxtLink :to="switchLocalePath('nl')">Nederlands</NuxtLink>
+        </li>
       </ul>
     </section>
     <section id="locale-route-usages">
