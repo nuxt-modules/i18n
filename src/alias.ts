@@ -52,9 +52,10 @@ export async function setupAlias(nuxt: Nuxt) {
 
 export async function resolveVueI18nAlias(pkgModulesDir: string, nuxt: Nuxt, pkgMgr: PackageManager) {
   const { rootDir, workspaceDir } = nuxt.options
-  const modulePath = nuxt.options.dev
-    ? `${VUE_I18N_PKG}/dist/vue-i18n.mjs`
-    : `${VUE_I18N_PKG}/dist/vue-i18n.runtime.mjs`
+  const modulePath =
+    nuxt.options.dev || nuxt.options._prepare
+      ? `${VUE_I18N_PKG}/dist/vue-i18n.mjs`
+      : `${VUE_I18N_PKG}/dist/vue-i18n.runtime.mjs`
   const targets = [
     // for Nuxt layer
     ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
