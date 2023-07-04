@@ -1,6 +1,6 @@
 import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { resolveFiles, resolvePath } from '@nuxt/kit'
+import { resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { encodePath } from 'ufo'
