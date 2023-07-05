@@ -68,7 +68,7 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           // prettier-ignore
           const code = `export default async function(locale) {
   __DEBUG__ && console.log('loadResource', locale)
-  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, locale: query.locale }))}).then(m => m.default || m)
+  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { locale: query.locale }))}).then(m => m.default || m)
   const message = await loader(locale)
   __DEBUG__ && console.log('loaded on loadResource', message)
   return message
@@ -76,7 +76,7 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           const s = new MagicString(code)
           return {
             code: s.toString(),
-            map: options.sourcemap ? s.generateMap({ source: id, includeContent: true }) : undefined
+            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
           }
         }
       } else if (pathname === NUXT_I18N_CONFIG_PROXY_ID) {
@@ -86,7 +86,7 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           // prettier-ignore
           const code = `import { isObject, isFunction } from '@intlify/shared'
 export default async function() {
-  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, config: 'true' }))}).then(m => m.default || m)
+  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { config: 'true' }))}).then(m => m.default || m)
   const config = isFunction(loader)
     ? await loader()
     : isObject(loader)
@@ -98,7 +98,7 @@ export default async function() {
           const s = new MagicString(code)
           return {
             code: s.toString(),
-            map: options.sourcemap ? s.generateMap({ source: id, includeContent: true }) : undefined
+            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
           }
         }
       }
@@ -125,7 +125,7 @@ export default async function() {
 
       return {
         code: s.toString(),
-        map: options.sourcemap ? s.generateMap({ source: id, includeContent: true }) : undefined
+        map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
       }
     }
   }

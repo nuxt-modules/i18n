@@ -6,10 +6,7 @@ import MagicString from 'magic-string'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
 
-// TODO: remove
 export interface ResourceDynamicPluginOptions {
-  ssr: boolean
-  dev?: boolean
   sourcemap?: boolean
 }
 
@@ -17,8 +14,6 @@ const debug = createDebug('@nuxtjs/i18n:transform:dynamic')
 
 export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPluginOptions) => {
   debug('options', options)
-
-  // const relativeToSrcDir = (path: string) => relative(options.srcDir, path)
 
   return {
     name: 'nuxtjs:i18n-resource-dynamic',
@@ -33,7 +28,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
 
       const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
       const query = parseQuery(search)
-      return /\.([c|m]?[j|t]s)$/.test(pathname) && !!query.hash && (!!query.locale || !!query.config)
+      return /\.([c|m]?[j|t]s)$/.test(pathname) && (!!query.locale || !!query.config)
     },
 
     transform(code, id) {
@@ -41,7 +36,6 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
 
       const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
       const query = parseQuery(search)
-      const hash = query.hash as string
 
       const s = new MagicString(code)
 
@@ -49,10 +43,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
         if (s.hasChanged()) {
           return {
             code: s.toString(),
-            map:
-              options.sourcemap && !/\.([c|m]?ts)$/.test(pathname)
-                ? s.generateMap({ source: id, includeContent: true })
-                : undefined
+            map: options.sourcemap && !/\.([c|m]?ts)$/.test(pathname) ? s.generateMap({ hires: true }) : null
           }
         }
       }

@@ -55,8 +55,6 @@ export async function extendBundler(
   }
 
   const dynamicOptions: ResourceDynamicPluginOptions = {
-    ssr: nuxt.options.ssr,
-    dev: nuxt.options.dev,
     sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
   }
 
