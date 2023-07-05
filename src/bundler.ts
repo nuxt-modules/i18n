@@ -11,7 +11,6 @@ import { getLayerLangPaths } from './layers'
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
-import type { PrerenderTargets } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -21,7 +20,6 @@ export async function extendBundler(
     nuxtOptions: Required<NuxtI18nOptions>
     hasLocaleFiles: boolean
     langPath: string | null
-    prerenderTargets: PrerenderTargets
   }
 ) {
   const { nuxtOptions, hasLocaleFiles } = options
@@ -57,7 +55,6 @@ export async function extendBundler(
   }
 
   const dynamicOptions: ResourceDynamicPluginOptions = {
-    prerenderTargs: options.prerenderTargets,
     ssr: nuxt.options.ssr,
     dev: nuxt.options.dev,
     sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
@@ -74,8 +71,9 @@ export async function extendBundler(
     const webpackPluginOptions: PluginOptions = {
       runtimeOnly: true,
       allowDynamic: true,
-      strictMessage: nuxtOptions.precompile.strictMessage,
-      escapeHtml: nuxtOptions.precompile.escapeHtml
+      jitCompilation: true,
+      strictMessage: nuxtOptions.compilation.strictMessage,
+      escapeHtml: nuxtOptions.compilation.escapeHtml
     }
 
     if (hasLocaleFiles && localePaths.length > 0) {
@@ -94,6 +92,7 @@ export async function extendBundler(
           __VUE_I18N_FULL_INSTALL__: 'true',
           __VUE_I18N_LEGACY_API__: 'true',
           __INTLIFY_PROD_DEVTOOLS__: 'false',
+          __INTLIFY_JIT_COMPILATION__: 'true',
           __DEBUG__: JSON.stringify(nuxtOptions.debug)
         })
       )
@@ -109,8 +108,9 @@ export async function extendBundler(
   const vitePluginOptions: PluginOptions = {
     runtimeOnly: true,
     allowDynamic: true,
-    strictMessage: nuxtOptions.precompile.strictMessage,
-    escapeHtml: nuxtOptions.precompile.escapeHtml
+    jitCompilation: true,
+    strictMessage: nuxtOptions.compilation.strictMessage,
+    escapeHtml: nuxtOptions.compilation.escapeHtml
   }
   if (hasLocaleFiles && localePaths.length > 0) {
     vitePluginOptions.include = localePaths.map(x => resolve(x, './**'))

@@ -59,7 +59,7 @@ export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
 }
 
-export interface LocaleMessagePrecompileOptions {
+export interface LocaleMessageCompilationOptions {
   strictMessage?: boolean
   escapeHtml?: boolean
 }
@@ -69,7 +69,7 @@ export { I18nOptions }
 export type NuxtI18nOptions<Context = unknown> = {
   vueI18n?: string
   experimental?: ExperimentalFeatures
-  precompile?: LocaleMessagePrecompileOptions
+  compilation?: LocaleMessageCompilationOptions
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
