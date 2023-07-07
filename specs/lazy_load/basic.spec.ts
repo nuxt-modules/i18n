@@ -13,7 +13,7 @@ describe('basic', async () => {
         experimental: {
           jsTsFormatResource: true
         },
-        precompile: {
+        compilation: {
           strictMessage: false
         },
         defaultLocale: 'en',

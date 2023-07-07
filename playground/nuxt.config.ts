@@ -20,7 +20,7 @@ export default defineNuxtConfig({
         experimental: {
           jsTsFormatResource: true
         },
-        precompile: {
+        compilation: {
           strictMessage: false,
           escapeHtml: true
         },
@@ -110,7 +110,7 @@ export default defineNuxtConfig({
     experimental: {
       jsTsFormatResource: true
     },
-    precompile: {
+    compilation: {
       strictMessage: false,
       escapeHtml: true
     },

@@ -19,8 +19,6 @@ import {
   localeMessages,
   additionalMessages,
   NUXT_I18N_MODULE_ID,
-  NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NULL_HASH,
   isSSG
 } from '#build/i18n.options.mjs'
 
@@ -525,111 +523,6 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
   }
 
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
-}
-
-async function evaluateCode(raw: Blob) {
-  const url = URL.createObjectURL(raw)
-  const code = await import(/* @vite-ignore */ url).then(m => m.default || m)
-  URL.revokeObjectURL(url)
-  return code
-}
-
-export async function precompileLocale(
-  locale: Locale,
-  messages: LocaleMessages<DefineLocaleMessage>,
-  hash: string = NULL_HASH
-) {
-  const raw = await $fetch<Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, {
-    method: 'POST',
-    responseType: 'blob',
-    body: {
-      locale,
-      type: 'locale',
-      hash,
-      resource: messages
-    }
-  })
-  if (process.dev && process.client) {
-    /**
-     * NOTE:
-     * If code precompiled directly by dynamic import is loaded directly as well as on the server side,
-     * it will be routed on the server side when the request is received.
-     * To avoid this, use the code received by fetching the precompiled code.
-     */
-    return evaluateCode(raw)
-  } else {
-    return await loadPrecompiledMessages(locale + '-' + hash + '.js', 'locale')
-  }
-}
-
-export async function precompileConfig(
-  messages: I18nOptions['messages'],
-  hash: string = NULL_HASH
-): Promise<I18nOptions['messages']> {
-  if (messages != null) {
-    const raw = await $fetch<Blob>(NUXT_I18N_PRECOMPILE_ENDPOINT, {
-      method: 'POST',
-      responseType: 'blob',
-      body: {
-        type: 'config',
-        hash,
-        resource: getNeedPrecompileMessages(messages)
-      }
-    })
-    let precompiledMessages: I18nOptions['messages']
-    if (process.dev && process.client) {
-      /**
-       * NOTE:
-       * If code precompiled directly by dynamic import is loaded directly as well as on the server side,
-       * it will be routed on the server side when the request is received.
-       * To avoid this, use the code received by fetching the precompiled code.
-       */
-      precompiledMessages = await evaluateCode(raw)
-    } else {
-      precompiledMessages = (await loadPrecompiledMessages('config-' + hash + '.js', 'config')) as NonNullable<
-        I18nOptions['messages']
-      >
-    }
-    if (precompiledMessages != null) {
-      for (const [locale, message] of Object.entries(precompiledMessages)) {
-        deepCopy(message, messages[locale])
-      }
-    }
-  }
-  return messages
-}
-
-async function loadPrecompiledMessages(id: string, type: 'locale' | 'config') {
-  __DEBUG__ &&
-    console.log('loadPrecompiledMessages loc ->', id, type, process.server, process.env && process.env.prerender)
-
-  let url = ''
-  // prettier-ignore
-  if (process.server) { // for server
-    if (process.env.prerender) { // for prerender
-      url = type === 'config' ? '../../../i18n/' + id : '../../../i18n/locales/' + id
-    } else if (process.dev) { // for dev mode
-      url = type === 'config' ? '.nuxt/i18n/' + id : '.nuxt/i18n/locales/' + id
-    } else {
-      throw new Error(`'loadPrecompiledMessages' is used in invalid environment.`)
-    }
-  } else {
-    throw new Error(`'loadPrecompiledMessages' is used in invalid environment.`)
-  }
-
-  return await import(/* @vite-ignore */ url).then(m => m.default || m)
-}
-
-function getNeedPrecompileMessages(messages: NonNullable<I18nOptions['messages']>) {
-  const needPrecompileMessages: NonNullable<I18nOptions['messages']> = {}
-  // ignore, if messages will have function
-  const predicate = (src: any) => !isFunction(src)
-
-  for (const [locale, message] of Object.entries(messages)) {
-    const dest = (needPrecompileMessages[locale] = {})
-    deepCopy(message, dest, predicate)
-  }
-  return needPrecompileMessages
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

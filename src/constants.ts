@@ -33,7 +33,7 @@ export const DEFAULT_OPTIONS = {
   experimental: {
     jsTsFormatResource: false
   },
-  precompile: {
+  compilation: {
     strictMessage: true,
     escapeHtml: false
   },
@@ -70,11 +70,7 @@ export const DEFAULT_OPTIONS = {
 
 export const NUXT_I18N_LOCALE_PROXY_ID = '@nuxtjs/i18n/__locale__' as const
 export const NUXT_I18N_CONFIG_PROXY_ID = '@nuxtjs/i18n/__config__' as const
-export const NUXT_I18N_PRECOMPILE_ENDPOINT = '/__i18n__/precompile' as const // TODO: we might use `useRuntimeConfig`?
-export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = 'i18n-locales' as const // TODO: we might use `useRuntimeConfig`?
-export const NUXT_I18N_PRERENDERED_PATH = '/__i18n__/prerender' as const // TODO: we might use `useRuntimeConfig`?
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
-export const NUXT_I18N_TEMPLATE_INTERNAL_KEY = 'i18n.internal.mjs' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig' as const

@@ -180,10 +180,6 @@ export function readFileSync(path: string) {
   return _readFileSync(path, { encoding: 'utf-8' })
 }
 
-export async function rm(path: string) {
-  return await fs.rm(path, { recursive: true, force: true })
-}
-
 export async function isExists(path: string) {
   try {
     await fs.access(path, FS_CONSTANTS.F_OK)
@@ -217,38 +213,6 @@ export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDi
 export type PrerenderTarget = {
   type: 'locale' | 'config'
   path: string
-}
-
-export type PrerenderTargets = ReturnType<typeof analyzePrerenderTargets>
-
-export function analyzePrerenderTargets(locales: LocaleInfo[], configs: VueI18nConfigPathInfo[]) {
-  const targets = new Map<string, PrerenderTarget>()
-
-  // for locale files
-  for (const { path, hash, type, paths, hashes, types } of locales) {
-    if (path && hash && type === 'dynamic') {
-      const { ext } = parsePath(path)
-      EXECUTABLE_EXTENSIONS.includes(ext) && targets.set(hash, { type: 'locale', path })
-    }
-    if (paths && hashes && types) {
-      paths.forEach((path, index) => {
-        const { ext } = parsePath(path)
-        EXECUTABLE_EXTENSIONS.includes(ext) &&
-          types[index] === 'dynamic' &&
-          targets.set(hashes[index], { type: 'locale', path })
-      })
-    }
-  }
-
-  // for vue-i18n config files
-  for (const { absolute, hash } of configs) {
-    if (absolute && hash) {
-      const { ext } = parsePath(absolute)
-      EXECUTABLE_EXTENSIONS.includes(ext) && targets.set(hash, { type: 'config', path: absolute })
-    }
-  }
-
-  return targets
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
