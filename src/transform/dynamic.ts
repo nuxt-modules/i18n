@@ -1,30 +1,19 @@
 import createDebug from 'debug'
 import { pathToFileURL } from 'node:url'
-// import { parse as parsePath, resolve, relative, dirname } from 'node:path'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import MagicString from 'magic-string'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
 
-import type { PrerenderTargets, PrerenderTarget } from '../utils'
-
 export interface ResourceDynamicPluginOptions {
-  prerenderTargs: PrerenderTargets
-  ssr: boolean
-  dev?: boolean
   sourcemap?: boolean
 }
-
-type ResourceMapValue = Pick<PrerenderTarget, 'type'> & { ref: string; hash: string; locale?: string }
 
 const debug = createDebug('@nuxtjs/i18n:transform:dynamic')
 
 export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPluginOptions) => {
   debug('options', options)
-
-  const resoucesMap = new Map<string, ResourceMapValue>()
-  // const relativeToSrcDir = (path: string) => relative(options.srcDir, path)
 
   return {
     name: 'nuxtjs:i18n-resource-dynamic',
@@ -39,7 +28,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
 
       const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
       const query = parseQuery(search)
-      return /\.([c|m]?[j|t]s)$/.test(pathname) && !!query.hash && (!!query.locale || !!query.config)
+      return /\.([c|m]?[j|t]s)$/.test(pathname) && (!!query.locale || !!query.config)
     },
 
     transform(code, id) {
@@ -47,7 +36,6 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
 
       const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
       const query = parseQuery(search)
-      const hash = query.hash as string
 
       const s = new MagicString(code)
 
@@ -55,10 +43,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
         if (s.hasChanged()) {
           return {
             code: s.toString(),
-            map:
-              options.sourcemap && !/\.([c|m]?ts)$/.test(pathname)
-                ? s.generateMap({ source: id, includeContent: true })
-                : undefined
+            map: options.sourcemap && !/\.([c|m]?ts)$/.test(pathname) ? s.generateMap({ hires: true }) : null
           }
         }
       }
@@ -70,50 +55,7 @@ export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPlu
         s.remove(match.index!, match.index! + match[0].length)
       }
 
-      if (!options.dev) {
-        const ref = this.emitFile({
-          // @ts-expect-error
-          type: 'chunk',
-          id,
-          preserveSignature: 'strict'
-        }) as unknown as string
-
-        resoucesMap.set(id, {
-          hash,
-          type: query.locale ? 'locale' : 'config',
-          locale: query.locale as string,
-          ref
-        })
-      }
-
       return result()
-    },
-
-    vite: {
-      generateBundle(outputOptions) {
-        /**
-         * NOTE:
-         * avoid generating i18n-meta.json for SPA mode,
-         * because some i18n resources doesn't bundle on server-side
-         */
-        if (!options.ssr && outputOptions.dir?.endsWith('server')) {
-          return
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const resources = [...resoucesMap].reduce((obj, [_, { hash, type, locale, ref }]) => {
-          obj[hash] = { hash, type, locale, path: this.getFileName(ref) }
-          return obj
-        }, {} as Record<string, Omit<ResourceMapValue, 'ref'> & { path: string }>)
-        debug('generateBundle: resources', resources)
-
-        this.emitFile({
-          type: 'asset',
-          fileName: 'i18n-meta.json',
-          name: 'i18n-meta.json',
-          source: JSON.stringify(resources, null, 2)
-        })
-      }
     }
   }
 })

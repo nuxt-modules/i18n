@@ -8,9 +8,7 @@ import {
   addPlugin,
   addTemplate,
   addImports,
-  addServerHandler,
-  useLogger,
-  addPrerenderRoutes
+  useLogger
 } from '@nuxt/kit'
 import { resolve, relative, isAbsolute } from 'pathe'
 import { defu } from 'defu'
@@ -23,7 +21,6 @@ import {
   NUXT_I18N_MODULE_ID,
   DEFAULT_OPTIONS,
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
-  NUXT_I18N_PRECOMPILE_ENDPOINT,
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
   NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
@@ -34,9 +31,7 @@ import {
   resolveLocales,
   getPackageManagerType,
   mergeI18nModules,
-  resolveVueI18nConfigInfo,
-  analyzePrerenderTargets,
-  rm
+  resolveVueI18nConfigInfo
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
@@ -109,12 +104,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       experimental: options.experimental,
       baseUrl: options.baseUrl
       // TODO: we should support more i18n module options. welcome PRs :-)
-    })
-
-    // for privates
-    nuxt.options.runtimeConfig.i18n = defu(nuxt.options.runtimeConfig.i18n, {
-      precompile: options.precompile,
-      ssr: nuxt.options.ssr
     })
 
     /**
@@ -284,9 +273,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
     })
 
-    const prerenderTargets = analyzePrerenderTargets(localeInfo, [vueI18nConfigPathInfo, ...layerVueI18nConfigPaths])
-    debug('prerenderTargets', prerenderTargets)
-
     /**
      * extend bundler
      */
@@ -294,57 +280,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     await extendBundler(nuxt, {
       nuxtOptions: options as Required<NuxtI18nOptions>,
       hasLocaleFiles,
-      langPath,
-      prerenderTargets
-    })
-
-    /**
-     * extend server handlers
-     */
-
-    // for pre-compile
-    addServerHandler({
-      method: 'post',
-      route: NUXT_I18N_PRECOMPILE_ENDPOINT,
-      handler: resolve(runtimeDir, './server/precompile')
-    })
-
-    // for prerender
-    addServerHandler({
-      method: 'get',
-      route: '/__i18n__/prerender/:hash',
-      handler: resolve(runtimeDir, './server/dynamic')
-    })
-
-    /**
-     * extend prerender routes
-     */
-
-    for (const hash of prerenderTargets.keys()) {
-      addPrerenderRoutes(`/__i18n__/prerender/${hash}.js`)
-    }
-
-    /**
-     * extend nitro storages
-     */
-
-    const storageKey = 'i18n'
-    nuxt.hook('nitro:config', nitro => {
-      nitro.storage = nitro.storage || {}
-      nitro.storage[storageKey] = {
-        driver: 'fs',
-        base: resolve(nuxt.options.buildDir, storageKey)
-      }
-      // NOTE: Maybe, there is a better way to pre-compile resources using prerender...
-      // nitro.bundledStorage = nitro.bundledStorage || []
-      // nitro.bundledStorage.push(storageKey)
-    })
-
-    nuxt.hook('nitro:init', async () => {
-      // remove i18n storage for refresh
-      if (nuxt.options.dev) {
-        await rm(resolve(nuxt.options.buildDir, storageKey))
-      }
+      langPath
     })
 
     /**
@@ -424,7 +360,6 @@ type MaybePromise<T> = T | Promise<T>
 type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
 
 type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl' | 'experimental'>
-type ModulePrivateRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'precompile'>
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -441,9 +376,6 @@ declare module '@nuxt/schema' {
     runtimeConfig: {
       public?: {
         i18n?: ModulePublicRuntimeConfig
-      }
-      private?: {
-        i18n?: ModulePrivateRuntimeConfig
       }
     }
   }

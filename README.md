@@ -31,7 +31,7 @@ npm install @nuxtjs/i18n@next --save-dev
 # Using yarn
 yarn add --dev @nuxtjs/i18n@next
 
-# Using pnpm 
+# Using pnpm
 pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 ```
 
@@ -72,6 +72,7 @@ pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 Keep in mind that not all features are currently supported yet and some things might be broken.
 
 ## 🔗 Links
+
 - 📘 [Documentation for v8](https://v8.i18n.nuxtjs.org/)
 - 📘 [Documentation for v7](https://i18n.nuxtjs.org/)
 - 🔖 [Release notes](./CHANGELOG.md)

@@ -51,7 +51,7 @@ export const TransformMacroPlugin = createUnplugin((options: TransformMacroPlugi
           debug('transformed: code -> ', s.toString())
           return {
             code: s.toString(),
-            map: options.sourcemap ? s.generateMap({ source: id, includeContent: true }) : undefined
+            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
           }
         }
       }

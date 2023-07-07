@@ -8,10 +8,7 @@ import {
   NULL_HASH,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_CONFIG_PROXY_ID,
-  NUXT_I18N_LOCALE_PROXY_ID,
-  NUXT_I18N_PRECOMPILE_ENDPOINT,
-  NUXT_I18N_PRECOMPILED_LOCALE_KEY,
-  NUXT_I18N_PRERENDERED_PATH
+  NUXT_I18N_LOCALE_PROXY_ID
 } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
@@ -277,10 +274,6 @@ export function generateLoaderOptions(
    * Generate meta info
    */
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
-  genCode += `export const NUXT_I18N_PRECOMPILE_ENDPOINT = ${toCode(NUXT_I18N_PRECOMPILE_ENDPOINT)}\n`
-  genCode += `export const NUXT_I18N_PRECOMPILED_LOCALE_KEY = ${toCode(NUXT_I18N_PRECOMPILED_LOCALE_KEY)}\n`
-  genCode += `export const NUXT_I18N_PRERENDERED_PATH = ${toCode(NUXT_I18N_PRERENDERED_PATH)}\n`
-  genCode += `export const NULL_HASH = ${toCode(NULL_HASH)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
 
   debug('generate code', genCode)
@@ -350,7 +343,7 @@ function generateAdditionalMessages(value: Record<string, any>, dev: boolean): s
     genCode += `${JSON.stringify(locale)}:[`
     for (const [, p] of Object.entries(messages)) {
       genCode += `() => Promise.resolve(${
-        generateJSON(JSON.stringify(p), { type: 'bare', env: dev ? 'development' : 'production' }).code
+        generateJSON(JSON.stringify(p), { type: 'bare', env: dev ? 'development' : 'production', jit: true }).code
       }),`
     }
     genCode += `],`

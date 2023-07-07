@@ -8,11 +8,9 @@ The resolving of the `buildDir` is a bit special, un-like `nuxi` CLI. It's furth
 
 nuxt i18n module uses nitro prerender and unjs/unstorage, depends on the nuxt `buildDir` path structure regularly.
 
-
 ## 🔨 Rquirement for e2e fixture
 
 When you need e2e test for some bug fixes and feauture, You need to **set up the fixture for your `.spec.ts`**.
-
 
 ## ©️ License
 
