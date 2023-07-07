@@ -16,8 +16,8 @@ importers:
         specifier: 9.3.0-beta.22
         version: 9.3.0-beta.22
       '@intlify/unplugin-vue-i18n':
-        specifier: ^0.12.0
-        version: 0.12.0(rollup@3.26.2)(vue-i18n@9.3.0-beta.22)
+        specifier: ^0.12.1
+        version: 0.12.1(rollup@3.26.2)(vue-i18n@9.3.0-beta.22)
       '@mizchi/sucrase':
         specifier: ^4.1.0
         version: 4.1.0
@@ -1453,8 +1453,8 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
-  /@intlify/unplugin-vue-i18n@0.12.0(rollup@3.26.2)(vue-i18n@9.3.0-beta.22):
-    resolution: {integrity: sha512-L155p03eZpzYUIU1YKbb38xq++GcaW6bsqo800GdonmkQXY8nc4/HsKQRQY5lRoAOkbhO0Vyt7yrsU11vVrqnw==}
+  /@intlify/unplugin-vue-i18n@0.12.1(rollup@3.26.2)(vue-i18n@9.3.0-beta.22):
+    resolution: {integrity: sha512-gdWRdlOWC8x/OyvVk5qnGnvScMj+PRZaTB4LBf24l7X1dhGYVrQVt2dAZt97tSpEwRRxy4vBaL/qBqKN4kkaRw==}
     engines: {node: '>= 14.16'}
     peerDependencies:
       petite-vue-i18n: '*'
@@ -1473,7 +1473,7 @@ packages:
       '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
       '@vue/compiler-sfc': 3.3.4
       debug: 4.3.4
-      fast-glob: 3.2.12
+      fast-glob: 3.3.0
       js-yaml: 4.1.0
       json5: 2.2.3
       pathe: 1.1.1
@@ -8891,14 +8891,6 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /rollup@3.26.0:
-    resolution: {integrity: sha512-YzJH0eunH2hr3knvF3i6IkLO/jTjAEwU4HoMUbQl4//Tnl3ou0e7P5SjxdDr8HQJdeUJShlbEHXrrnEHy1l7Yg==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /rollup@3.26.2:
     resolution: {integrity: sha512-6umBIGVz93er97pMgQO08LuH3m6PUb3jlDUUGFsNJB6VgTCUaDFpupf5JfU30529m/UKOgmiX+uY6Sx8cOYpLA==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
@@ -10326,7 +10318,7 @@ packages:
       esbuild: 0.17.19
       postcss: 8.4.24
       resolve: 1.22.2
-      rollup: 3.26.0
+      rollup: 3.26.2
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
