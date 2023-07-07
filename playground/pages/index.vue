@@ -44,7 +44,7 @@ const availableLocales = computed(() => {
 
 const i = tm('items')
 console.log('items via tm', i, typeof i)
-const items = [] // i.map(item => rt(item.name))
+const items = i.map(item => rt(item.name))
 console.log('items items', items)
 
 definePageMeta({
