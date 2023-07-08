@@ -86,7 +86,7 @@ export const ResourceProxyPlugin = createUnplugin((options: ResourceProxyPluginO
           // prettier-ignore
           const code = `import { isObject, isFunction } from '@intlify/shared'
 export default async function() {
-  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { config: 'true' }))}).then(m => m.default || m)
+  const loader = await import(${toCode(withQuery(resolve(baseDir, query.target), { hash: query.hash, config: 'true' }))}).then(m => m.default || m)
   const config = isFunction(loader)
     ? await loader()
     : isObject(loader)
