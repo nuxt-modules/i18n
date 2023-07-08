@@ -45,23 +45,37 @@ pnpm install --shamefully-hoist -D @nuxtjs/i18n@next
 }
 ```
 
-### Install edge version
+## Edge Release Channel
 
-1. Add the following line to the `devDependencies` in `package.json`:
+We provide [the Edge Release Channel nuxt i18n module, like Nuxt3](https://nuxt.com/docs/guide/going-further/edge-channel#edge-release-channel)
 
-```json
-"@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
+Nuxt i18n module is undergoing commits, improvements and bug fixes. You can opt-in to be the first to test it before the next release.
+
+### Opting Into the Edge Channel
+
+Update nuxt i18n module dependency inside `package.json`:
+
+```diff
+{
+  "devDependencies": {
+--    "@nuxtjs/i18n": "^8.0.0-beta.13"
+++    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
+  }
+}
 ```
 
-2. Run `npm install` or `yarn` or `pnpm install --shamefully-hoist`.
+Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
 
-3. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`.
+### Opting Out From the Edge Channel
 
-```ts
+Update nuxt i18n module dependency inside `package.json`:
+
+```diff
 {
-  modules: [
-    '@nuxtjs/i18n',
-  ],
+  "devDependencies": {
+--    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
+++    "@nuxtjs/i18n": "^8.0.0-beta.13"
+  }
 }
 ```
 
