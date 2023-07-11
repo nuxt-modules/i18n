@@ -6,6 +6,7 @@ import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { TransformMacroPlugin, TransformMacroPluginOptions } from './transform/macros'
 import { ResourceProxyPlugin, ResourceProxyPluginOptions } from './transform/proxy'
 import { ResourceDynamicPlugin, ResourceDynamicPluginOptions } from './transform/dynamic'
+import { assign } from '@intlify/shared'
 import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -86,13 +87,7 @@ export async function extendBundler(
     extendWebpackConfig(config => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
       config.plugins!.push(
-        new webpack.DefinePlugin({
-          __VUE_I18N_FULL_INSTALL__: 'true',
-          __VUE_I18N_LEGACY_API__: 'true',
-          __INTLIFY_PROD_DEVTOOLS__: 'false',
-          __INTLIFY_JIT_COMPILATION__: 'true',
-          __DEBUG__: JSON.stringify(nuxtOptions.debug)
-        })
+        new webpack.DefinePlugin(assign(getFeatureFlags(), { __DEBUG__: String(nuxtOptions.debug) }))
       )
     })
   } catch (e: unknown) {
@@ -129,4 +124,13 @@ export async function extendBundler(
     }
     debug('vite.config.define', config.define)
   })
+}
+
+export function getFeatureFlags() {
+  return {
+    __VUE_I18N_FULL_INSTALL__: 'true',
+    __VUE_I18N_LEGACY_API__: 'true',
+    __INTLIFY_PROD_DEVTOOLS__: 'false',
+    __INTLIFY_JIT_COMPILATION__: 'true'
+  }
 }
