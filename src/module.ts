@@ -14,6 +14,7 @@ import { resolve, relative, isAbsolute } from 'pathe'
 import { defu } from 'defu'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
+import { setupNitro } from './nitro'
 import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
@@ -282,6 +283,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
       hasLocaleFiles,
       langPath
     })
+
+    /**
+     * setup nitro
+     */
+
+    await setupNitro(nuxt)
 
     /**
      * auto imports

@@ -5,6 +5,7 @@ export const VUE_I18N_PKG = 'vue-i18n' as const
 export const VUE_I18N_BRIDGE_PKG = '@intlify/vue-i18n-bridge' as const
 export const VUE_ROUTER_BRIDGE_PKG = '@intlify/vue-router-bridge' as const
 export const VUE_I18N_ROUTING_PKG = 'vue-i18n-routing' as const
+export const MESSAGE_COMPILER_PKG = '@intlify/message-compiler' as const
 
 // Options
 const STRATEGY_PREFIX = 'prefix'
