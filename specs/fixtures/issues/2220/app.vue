@@ -15,5 +15,5 @@ const data = ref([])
 const env = process.dev ? 'DEV' : 'PROD'
 const correct = computed(() => ['Test', 'Тест'].includes(data.value[0]))
 
-data.value = await $fetch('/api/test')
+data.value = await $fetch('/api/foo')
 </script>

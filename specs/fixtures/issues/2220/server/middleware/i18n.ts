@@ -1,3 +1,4 @@
+import { defineEventHandler, getCookie } from 'h3'
 import { createI18n } from 'vue-i18n'
 import locales from '../../locales'
 import en from '../../locales/en.json'
