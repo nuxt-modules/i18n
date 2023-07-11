@@ -1,8 +1,14 @@
 import createDebug from 'debug'
 import { resolvePath } from '@nuxt/kit'
-import { pkgModulesDir } from './dirs'
 import { resolve } from 'pathe'
-import { VUE_I18N_PKG, VUE_I18N_BRIDGE_PKG, VUE_ROUTER_BRIDGE_PKG, VUE_I18N_ROUTING_PKG } from './constants'
+import {
+  VUE_I18N_PKG,
+  VUE_I18N_BRIDGE_PKG,
+  VUE_ROUTER_BRIDGE_PKG,
+  VUE_I18N_ROUTING_PKG,
+  MESSAGE_COMPILER_PKG
+} from './constants'
+import { pkgModulesDir } from './dirs'
 import { tryResolve, getLayerRootDirs, getPackageManagerType } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -23,6 +29,10 @@ export async function setupAlias(nuxt: Nuxt) {
   nuxt.options.alias['@intlify/shared'] = await resolvePath('@intlify/shared')
   nuxt.options.build.transpile.push('@intlify/shared')
   debug('@intlify/shared alias', nuxt.options.alias['@intlify/shared'])
+
+  nuxt.options.alias['@intlify/message-compiler'] = await resolveMessageCompilerAlias(pkgModulesDir, nuxt, pkgMgr)
+  nuxt.options.build.transpile.push('@intlify/message-compiler')
+  debug('@intlify/message-compiler alias', nuxt.options.alias['@intlify/message-compiler'])
 
   // resolve @intlify/vue-router-bridge
   nuxt.options.alias[VUE_ROUTER_BRIDGE_PKG] = await resolveVueRouterBridgeAlias(pkgModulesDir, nuxt, pkgMgr)
@@ -135,4 +145,22 @@ export async function resolveVueI18nRoutingAlias(pkgModulesDir: string, nuxt: Nu
   debug(`${VUE_I18N_ROUTING_PKG} resolving from ...`, targets)
 
   return tryResolve(VUE_I18N_ROUTING_PKG, targets, pkgMgr)
+}
+
+export async function resolveMessageCompilerAlias(pkgModulesDir: string, nuxt: Nuxt, pkgMgr: PackageManager) {
+  const { rootDir, workspaceDir } = nuxt.options
+  const modulePath = `${MESSAGE_COMPILER_PKG}/dist/message-compiler.mjs` as const
+  const targets = [
+    // for Nuxt layer
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
+    // 1st, try to resolve from `node_modules` (hoisted case)
+    resolve(rootDir, 'node_modules', modulePath),
+    // 2nd, try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
+    resolve(pkgModulesDir, modulePath),
+    // workspace directories
+    resolve(workspaceDir, 'node_modules', modulePath)
+  ]
+  debug(`${MESSAGE_COMPILER_PKG} resolving from ...`, targets)
+
+  return tryResolve(MESSAGE_COMPILER_PKG, targets, pkgMgr)
 }
