@@ -33,7 +33,10 @@ test('switching', async () => {
   expect(await getText(page, '#set-locale-link-en')).toMatch('English')
 
   // page path
-  expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
+  expect(await getData(page, '#home-use-async-data')).toMatchObject({
+    aboutPath: '/about',
+    aboutTranslation: 'About us'
+  })
   expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/')
 
   // current locale
