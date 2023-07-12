@@ -498,7 +498,7 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
       }
     }
 
-    const config = context.$config?.public?.i18n
+    const config = context.$config?.public?.i18n as { baseUrl?: string }
     if (config?.baseUrl) {
       __DEBUG__ && console.log('baseUrl: using runtimeConfig -', config.baseUrl)
       return config.baseUrl
