@@ -75,7 +75,8 @@ definePageMeta({
       <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink> |
-      <NuxtLink :to="localePath({ name: 'history' })">History</NuxtLink>
+      <NuxtLinkLocale :to="{ name: 'history' }" class="history-link">History</NuxtLinkLocale> |
+      <NuxtLinkLocale :to="'/'" lang="ja" activeClass="link-active">Home (Japanese)</NuxtLinkLocale>
     </nav>
     <h2>Current Language: {{ getLocaleName(locale) }}</h2>
     <h2>Current Strategy: {{ strategy }}</h2>
@@ -108,5 +109,9 @@ definePageMeta({
 .page-enter,
 .page-leave-active {
   opacity: 0;
+}
+
+.link-active {
+  color: rgb(51, 175, 51);
 }
 </style>
