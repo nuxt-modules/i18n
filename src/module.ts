@@ -301,7 +301,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     await addComponent({
       name: 'NuxtLinkLocale',
-      filePath: resolve(runtimeDir, 'components/NuxtLinkLocale.vue')
+      filePath: resolve(runtimeDir, 'components/NuxtLinkLocale')
     })
 
     await addImports([

@@ -1,21 +1,21 @@
-<script lang="ts">
 import { useLocalePath } from '#i18n'
-import { defineComponent, computed } from '#imports'
+import { defineComponent, computed, defineNuxtLink, h } from '#imports'
 
 import type { PropType } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 import type { RawLocation, RouteLocation } from '@intlify/vue-router-bridge'
 
+const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
+
 export default defineComponent({
   name: 'NuxtLinkLocale',
-  inheritAttrs: false,
   props: {
     to: {
       type: [String, Object] as PropType<RawLocation | RouteLocation>,
       default: undefined,
       required: false
     },
-    lang: {
+    locale: {
       type: String as PropType<string>,
       default: undefined,
       required: false
@@ -100,16 +100,11 @@ export default defineComponent({
       required: false
     }
   },
-  setup(props) {
+  setup(props, { slots }) {
     const localePath = useLocalePath()
-    const resolvedPath = computed(() => (props.to != null ? localePath(props.to, props.lang) : props.to))
-    return { resolvedPath }
+    const resolvedPath = computed(() => (props.to != null ? localePath(props.to, props.locale) : props.to))
+
+    return () => h(NuxtLinkLocale, { ...props, to: resolvedPath }, slots.default)
   }
 })
-</script>
 
-<template>
-  <NuxtLink v-bind="{ ...$props, ...$attrs, to: resolvedPath }">
-    <slot></slot>
-  </NuxtLink>
-</template>
