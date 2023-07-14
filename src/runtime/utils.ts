@@ -42,7 +42,7 @@ import type {
   PrefixableOptions,
   SwitchLocalePathIntercepter
 } from 'vue-i18n-routing'
-import type { NuxtApp } from '#imports'
+import type { NuxtApp } from '#app'
 import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DetectLocaleContext } from '#build/i18n.internal.mjs'

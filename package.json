@@ -63,7 +63,8 @@
     "test": "run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
-    "test:spec": "vitest run specs"
+    "test:spec": "vitest run specs",
+    "postinstall": "nuxi prepare"
   },
   "packageManager": "pnpm@8.5.0",
   "pnpm": {

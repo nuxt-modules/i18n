@@ -38,7 +38,7 @@ import {
 
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
-import type { NuxtApp } from '#imports'
+import type { NuxtApp } from '#app'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
