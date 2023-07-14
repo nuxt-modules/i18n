@@ -25,8 +25,5 @@ describe('#2226', async () => {
     await page.locator('#lang-switch').click()
     await page.locator('#goto-about').click()
     expect(await getText(page, '#content')).include(`This is about page. To home page`)
-    // expect((await page.url()).endsWith('en')).toBe(true)
-    // expect(await getText(page, '#app')).include('PROD [ "Test" ]')
-    // expect(await getText(page, '#app')).include(`yeah! it's finally working in prod too`)
   })
 })
