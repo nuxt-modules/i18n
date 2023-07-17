@@ -60,11 +60,10 @@
     "format:fix": "pnpm format --write",
     "lint": "eslint --cache --ext .js,.ts,.vue,.json .",
     "lint:fix": "pnpm lint --fix",
-    "test": "run-s test:types test:unit test:spec",
+    "test": "nuxi prepare && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
-    "test:spec": "vitest run specs",
-    "postinstall": "nuxi prepare"
+    "test:spec": "vitest run specs"
   },
   "packageManager": "pnpm@8.5.0",
   "pnpm": {
