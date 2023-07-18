@@ -32,7 +32,7 @@ import {
   proxyNuxt,
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
-import { joinURL } from 'ufo'
+import { joinURL, isEqual } from 'ufo'
 
 import type {
   Route,
@@ -281,7 +281,10 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
 }
 
 export function detectRedirect<Context extends NuxtApp = NuxtApp>(
-  route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: {
+    to: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
+    from?: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
+  },
   context: Context,
   targetLocale: Locale,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
@@ -301,21 +304,20 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
     strategy !== 'no_prefix' &&
     // skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
     // locale, in which case we might still redirect as we prefer unprefixed route in this case.
-    (routeLocaleGetter(route) !== targetLocale || (strategy === 'prefix_and_default' && targetLocale === defaultLocale))
+    (routeLocaleGetter(route.to) !== targetLocale ||
+      (strategy === 'prefix_and_default' && targetLocale === defaultLocale))
   ) {
-    const { fullPath } = route
-    const decodedRoute = decodeURI(fullPath)
+    const { fullPath } = route.to
     // the current route could be 404 in which case attempt to find matching route using the full path
-    const routePath = context.$localePath(fullPath, targetLocale)
+    const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(fullPath, targetLocale)
     __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, fullPath)
-    if (
-      isString(routePath) &&
-      routePath &&
-      routePath !== fullPath &&
-      routePath !== decodedRoute &&
-      !routePath.startsWith('//')
-    ) {
-      redirectPath = routePath
+    if (isString(routePath) && routePath && !isEqual(routePath, fullPath) && !routePath.startsWith('//')) {
+      /**
+       * NOTE: for #1889, #2226
+       * If it's the same as the previous route path, respect the current route without redirecting.
+       * (If an empty string is set, the current route is respected. after this function return, it's pass navigate function)
+       */
+      redirectPath = !(route.from && route.from.fullPath === routePath) ? routePath : ''
     }
   }
 
@@ -330,7 +332,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
      */
     const switchLocalePath = useSwitchLocalePath({
       i18n: getComposer(context.$i18n),
-      route,
+      route: route.to,
       router: context.$router
     })
     const routePath = switchLocalePath(targetLocale)
