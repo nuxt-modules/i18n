@@ -22,7 +22,7 @@ import {
   isSSG
 } from '#build/i18n.options.mjs'
 
-import type { NuxtApp } from '#imports'
+import type { NuxtApp } from '#app'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'

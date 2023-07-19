@@ -5,6 +5,7 @@ import {
   isNuxt2,
   isNuxt3,
   getNuxtVersion,
+  addComponent,
   addPlugin,
   addTemplate,
   addImports,
@@ -297,6 +298,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const pkgMgr = await getPackageManagerType()
     const vueI18nPath = await resolveVueI18nAlias(pkgModulesDir, nuxt, pkgMgr)
     debug('vueI18nPath for auto-import', vueI18nPath)
+
+    await addComponent({
+      name: 'NuxtLinkLocale',
+      filePath: resolve(runtimeDir, 'components/NuxtLinkLocale')
+    })
 
     await addImports([
       { name: 'useI18n', from: vueI18nPath },

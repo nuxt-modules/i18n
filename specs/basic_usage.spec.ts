@@ -27,10 +27,20 @@ test('basic usage', async () => {
   // URL path localizing with `useLocalePath`
   expect(await page.locator('#locale-path-usages .name a').getAttribute('href')).toEqual('/')
   expect(await page.locator('#locale-path-usages .path a').getAttribute('href')).toEqual('/')
-  expect(await page.locator('#locale-path-usages .named-with-locale a').getAttribute('href')).toEqual('/')
+  expect(await page.locator('#locale-path-usages .named-with-locale a').getAttribute('href')).toEqual('/fr')
   expect(await page.locator('#locale-path-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
   expect(await page.locator('#locale-path-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
   expect(await page.locator('#locale-path-usages .object-with-named a').getAttribute('href')).toEqual(
+    '/category/nintendo'
+  )
+
+  // URL path localizing with `NuxtLinkLocale`
+  expect(await page.locator('#nuxt-link-locale-usages .name a').getAttribute('href')).toEqual('/')
+  expect(await page.locator('#nuxt-link-locale-usages .path a').getAttribute('href')).toEqual('/')
+  expect(await page.locator('#nuxt-link-locale-usages .named-with-locale a').getAttribute('href')).toEqual('/fr')
+  expect(await page.locator('#nuxt-link-locale-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
+  expect(await page.locator('#nuxt-link-locale-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
+  expect(await page.locator('#nuxt-link-locale-usages .object-with-named a').getAttribute('href')).toEqual(
     '/category/nintendo'
   )
 
