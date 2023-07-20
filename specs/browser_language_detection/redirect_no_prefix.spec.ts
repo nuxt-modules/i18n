@@ -24,13 +24,14 @@ test('redirectOn: no prefix', async () => {
   await page.goto(blog)
 
   // detect locale from navigator language
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
-
-  // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
-  // navigate to home
-  await page.goto(url('/'))
+  // click `en` lang switch link
+  await page.locator('#set-locale-link-en').click()
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+
+  // navigate to pl blog
+  const plBlog = url('/pl/blog/article')
+  await page.goto(plBlog)
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('pl')
 })

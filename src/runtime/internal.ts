@@ -263,12 +263,13 @@ export function getLocaleCookie(
     let localeCode: string | undefined
     if (process.client) {
       localeCode = JsCookie.get(cookieKey)
+      __DEBUG__ && console.log('getLocaleCookie cookie (client) -', localeCode)
     } else if (process.server) {
       const cookie = useRequestHeaders(['cookie'])
       if ('cookie' in cookie) {
         const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
         localeCode = parsedCookie[cookieKey]
-        __DEBUG__ && console.log('getLocaleCookie cookie', parsedCookie[cookieKey])
+        __DEBUG__ && console.log('getLocaleCookie cookie (server) -', localeCode)
       }
     }
 
@@ -426,7 +427,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   }
   __DEBUG__ &&
     console.log(
-      'detectBrowserLanguage: first finaleLocale (finaleLocale, lcoaleForm) -',
+      'detectBrowserLanguage: first finaleLocale (finaleLocale, cookieLocale, localeFrom) -',
       finalLocale,
       cookieLocale,
       localeFrom
@@ -446,6 +447,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
           return { locale: finalLocale, stat: true, from: localeFrom }
         }
       }
+
       if (alwaysRedirect) {
         const redirectOnRoot = path === '/'
         const redirectOnAll = redirectOn === 'all'
@@ -465,6 +467,10 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   }
 
   if (ssg === 'ssg_setup' && finalLocale) {
+    return { locale: finalLocale, stat: true, from: localeFrom }
+  }
+
+  if (localeFrom === 'navigator_or_header' && finalLocale) {
     return { locale: finalLocale, stat: true, from: localeFrom }
   }
 
