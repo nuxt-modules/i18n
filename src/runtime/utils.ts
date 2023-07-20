@@ -247,6 +247,10 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
     return initialLocale
   }
 
+  if (from === 'navigator_or_header' && browserLocale) {
+    return browserLocale
+  }
+
   let finalLocale: string | undefined = browserLocale
   __DEBUG__ && console.log('detectLocale: finaleLocale first (finaleLocale, strategy) -', finalLocale, strategy)
   if (!finalLocale) {

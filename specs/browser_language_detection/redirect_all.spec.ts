@@ -23,11 +23,11 @@ test('redirectOn: all', async () => {
   await page.goto(blog)
 
   // detect locale from navigator language
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
-
-  // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+
+  // click `en` lang switch link
+  await page.locator('#set-locale-link-en').click()
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 
   // navigate to home
   await page.goto(url('/'))
