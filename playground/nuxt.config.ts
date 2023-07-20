@@ -111,6 +111,7 @@ export default defineNuxtConfig({
       jsTsFormatResource: true
     },
     compilation: {
+      // jit: false,
       strictMessage: false,
       escapeHtml: true
     },

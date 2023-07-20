@@ -65,6 +65,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
       logger.warn('JS / TS extension format is experimental')
     }
 
+    if (!options.compilation.jit) {
+      logger.warn(
+        'Opt-out JIT compilation. ' +
+          `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
+          `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
+      )
+    }
+
     /**
      * Check vertions
      */
@@ -289,7 +297,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nitro
      */
 
-    await setupNitro(nuxt)
+    await setupNitro(nuxt, options)
 
     /**
      * auto imports

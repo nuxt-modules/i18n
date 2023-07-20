@@ -70,7 +70,7 @@ export async function extendBundler(
     const webpackPluginOptions: PluginOptions = {
       runtimeOnly: true,
       allowDynamic: true,
-      jitCompilation: true,
+      jitCompilation: nuxtOptions.compilation.jit,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml
     }
@@ -87,7 +87,9 @@ export async function extendBundler(
     extendWebpackConfig(config => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
       config.plugins!.push(
-        new webpack.DefinePlugin(assign(getFeatureFlags(), { __DEBUG__: String(nuxtOptions.debug) }))
+        new webpack.DefinePlugin(
+          assign(getFeatureFlags(nuxtOptions.compilation.jit), { __DEBUG__: String(nuxtOptions.debug) })
+        )
       )
     })
   } catch (e: unknown) {
@@ -101,7 +103,7 @@ export async function extendBundler(
   const vitePluginOptions: PluginOptions = {
     runtimeOnly: true,
     allowDynamic: true,
-    jitCompilation: true,
+    jitCompilation: nuxtOptions.compilation.jit,
     strictMessage: nuxtOptions.compilation.strictMessage,
     escapeHtml: nuxtOptions.compilation.escapeHtml
   }
@@ -126,11 +128,11 @@ export async function extendBundler(
   })
 }
 
-export function getFeatureFlags() {
+export function getFeatureFlags(jit = true) {
   return {
     __VUE_I18N_FULL_INSTALL__: 'true',
     __VUE_I18N_LEGACY_API__: 'true',
     __INTLIFY_PROD_DEVTOOLS__: 'false',
-    __INTLIFY_JIT_COMPILATION__: 'true'
+    __INTLIFY_JIT_COMPILATION__: String(jit)
   }
 }
