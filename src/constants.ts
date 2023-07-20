@@ -36,6 +36,7 @@ export const DEFAULT_OPTIONS = {
     jsTsFormatResource: false
   },
   compilation: {
+    jit: true,
     strictMessage: true,
     escapeHtml: false
   },
