@@ -290,7 +290,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>
 ): string {
-  const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions
+  const { strategy, differentDomains } = nuxtI18nOptions
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
 
@@ -302,10 +302,8 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
     !isStaticGenerate &&
     !differentDomains &&
     strategy !== 'no_prefix' &&
-    // skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
-    // locale, in which case we might still redirect as we prefer unprefixed route in this case.
-    (routeLocaleGetter(route.to) !== targetLocale ||
-      (strategy === 'prefix_and_default' && targetLocale === defaultLocale))
+    strategy !== 'prefix_and_default' &&
+    routeLocaleGetter(route.to) !== targetLocale
   ) {
     const { fullPath } = route.to
     // the current route could be 404 in which case attempt to find matching route using the full path
