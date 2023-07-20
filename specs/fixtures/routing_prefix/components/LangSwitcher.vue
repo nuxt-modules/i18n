@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useI18n, useSwitchLocalePath } from '#i18n'
+import { useRoute } from '#imports'
 
 const { locales, locale, setLocale } = useI18n()
+const route = useRoute()
 const switchLocalePath = useSwitchLocalePath()
 
 const localesExcludingCurrent = computed(() => {
@@ -38,6 +40,9 @@ const localesExcludingCurrent = computed(() => {
       <strong
         >Current Locale: <code>{{ locale }}</code></strong
       >:
+    </section>
+    <section>
+      <code id="route-path">route: {{ route.path }}</code>
     </section>
   </div>
 </template>
