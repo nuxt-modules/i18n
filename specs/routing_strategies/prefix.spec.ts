@@ -47,6 +47,7 @@ describe('strategy: prefix', async () => {
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/en/about' })
+    expect(await getText(page, '#route-path')).toEqual('route: /en')
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/fr')
 
     // current locale
@@ -69,6 +70,7 @@ describe('strategy: prefix', async () => {
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
+    expect(await getText(page, '#route-path')).toEqual('route: /fr')
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/en')
 
     // current locale
@@ -108,6 +110,7 @@ describe('strategy: prefix', async () => {
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
+    expect(await getText(page, '#route-path')).toEqual('route: /fr')
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/en')
 
     // current locale
