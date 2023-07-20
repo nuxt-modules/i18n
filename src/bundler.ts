@@ -33,19 +33,6 @@ export async function extendBundler(
   debug('i18nModulePaths -', i18nModulePaths)
   const localePaths = [...langPaths, ...i18nModulePaths]
 
-  /**
-   * setup nitro
-   */
-
-  if (nuxt.options.nitro.replace) {
-    nuxt.options.nitro.replace['__DEBUG__'] = nuxtOptions.debug
-  } else {
-    nuxt.options.nitro.replace = {
-      __DEBUG__: nuxtOptions.debug
-    }
-  }
-  debug('nitro.replace', nuxt.options.nitro.replace)
-
   const proxyOptions: ResourceProxyPluginOptions = {
     sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
   }
