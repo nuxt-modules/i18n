@@ -111,7 +111,7 @@ export default defineNuxtConfig({
       jsTsFormatResource: true
     },
     compilation: {
-      jit: false,
+      // jit: false,
       strictMessage: false,
       escapeHtml: true
     },
@@ -151,9 +151,9 @@ export default defineNuxtConfig({
     debug: false,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
-    strategy: 'prefix',
+    // strategy: 'prefix',
     // strategy: 'prefix_and_default',
-    // strategy: 'prefix_except_default',
+    strategy: 'prefix_except_default',
     // rootRedirect: '/ja/about-ja',
     dynamicRouteParams: true,
     // customRoutes: 'config',
