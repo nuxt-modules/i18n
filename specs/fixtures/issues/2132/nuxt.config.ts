@@ -19,10 +19,10 @@ export default defineNuxtConfig({
     ],
     strategy: 'prefix',
     defaultLocale: 'en',
+    // debug: true,
     detectBrowserLanguage: {
       useCookie: true,
       cookieSecure: true,
-      alwaysRedirect: true,
       fallbackLocale: 'en',
       redirectOn: 'no prefix'
     }
