@@ -1,3 +1,3 @@
 export default {
-  title: 'Hello this is English',
-};
+  title: 'Hello this is English'
+}
