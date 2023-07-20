@@ -60,6 +60,7 @@ export interface ExperimentalFeatures {
 }
 
 export interface LocaleMessageCompilationOptions {
+  jit?: boolean
   strictMessage?: boolean
   escapeHtml?: boolean
 }
