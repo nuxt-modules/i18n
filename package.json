@@ -41,13 +41,14 @@
     "dist"
   ],
   "scripts": {
+    "prepare": "git config --local core.hooksPath .githooks",
     "build": "nuxi build-module .",
     "stub": "nuxi build-module --stub .",
     "prepack": "pnpm build",
-    "prepare": "nuxi prepare",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
     "changelog": "gh-changelogen --repo=nuxt-community/i18n-module",
-    "dev": "pnpm prepare && pnpm build && nuxi dev playground",
+    "dev": "pnpm dev:prepare && pnpm build && nuxi dev playground",
+    "dev:prepare": "nuxi prepare",
     "dev:build": "nuxi build playground",
     "dev:generate": "nuxi generate playground",
     "dev:preview": "nuxi preview playground",
@@ -61,7 +62,7 @@
     "format:fix": "pnpm format --write",
     "lint": "eslint --cache --ext .js,.ts,.vue,.json .",
     "lint:fix": "pnpm lint --fix",
-    "test": "pnpm prepare && run-s test:types test:unit test:spec",
+    "test": "pnpm dev:prepare && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
@@ -127,11 +128,7 @@
     "ts-essentials": "^9.3.2",
     "typescript": "^5.1.6",
     "vitest": "^0.32.4",
-    "vue": "^3.3.4",
-    "yorkie": "^2.0.0"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
+    "vue": "^3.3.4"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
