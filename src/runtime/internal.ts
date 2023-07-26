@@ -234,7 +234,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
-      __DEBUG__ && console.log('getBrowserLocale navigator.languages', navigator.languages)
+      __DEBUG__ && console.log('getBrowserLocale (navigator.languages, ret) -', navigator.languages, ret)
     }
   } else if (process.server) {
     const header = useRequestHeaders(['accept-language'])
@@ -242,6 +242,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>, con
     const accept = header['accept-language']
     if (accept) {
       ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
+      __DEBUG__ && console.log('getBrowserLocale ret', ret)
     }
   }
 
@@ -470,7 +471,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
     return { locale: finalLocale, stat: true, from: localeFrom }
   }
 
-  if (localeFrom === 'navigator_or_header' && finalLocale) {
+  if ((localeFrom === 'navigator_or_header' || localeFrom === 'cookie') && finalLocale) {
     return { locale: finalLocale, stat: true, from: localeFrom }
   }
 
