@@ -1,7 +1,7 @@
 import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
 import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
-import { isString, isBoolean } from '@intlify/shared'
+import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
@@ -117,21 +117,11 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[],
 
 export function getRouteOptionsResolver(
   ctx: NuxtPageAnalizeContext,
-  options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'parsePages' | 'customRoutes'>
+  options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'customRoutes'>
 ): RouteOptionsResolver {
-  const { pages, defaultLocale, parsePages, customRoutes } = options
+  const { pages, defaultLocale, customRoutes } = options
 
-  let useConfig = false
-  if (isBoolean(parsePages)) {
-    console.warn(
-      formatMessage(
-        `'parsePages' option is deprecated. Please use 'customRoutes' option instead. We will remove it in v8 official release.`
-      )
-    )
-    useConfig = !parsePages
-  } else {
-    useConfig = customRoutes === 'config'
-  }
+  const useConfig = customRoutes === 'config'
   debug('getRouteOptionsResolver useConfig', useConfig)
 
   return (route, localeCodes): ComputedRouteOptions | null => {
