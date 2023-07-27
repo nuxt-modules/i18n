@@ -3,17 +3,10 @@
 import createDebug from 'debug'
 import { isArray, isObject } from '@intlify/shared'
 import { generateJSON } from '@intlify/bundle-utils'
-import {
-  EXECUTABLE_EXTENSIONS,
-  NULL_HASH,
-  NUXT_I18N_MODULE_ID,
-  NUXT_I18N_CONFIG_PROXY_ID,
-  NUXT_I18N_LOCALE_PROXY_ID
-} from './constants'
+import { EXECUTABLE_EXTENSIONS, NULL_HASH, NUXT_I18N_MODULE_ID } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
 import { withQuery } from 'ufo'
-import { asVirtualId } from './transform/utils'
 import { toCode } from './utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
@@ -28,6 +21,8 @@ export type LoaderOptions = {
   nuxtI18nInternalOptions?: NuxtI18nInternalOptions
   additionalMessages?: AdditionalMessages // TODO: remove `i18n:extend-messages` before v8 official release
 }
+
+type ResourceType = 'locale' | 'config'
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
@@ -85,7 +80,7 @@ export function generateLoaderOptions(
       gen += `${genImport(
         genImportSpecifier(loadPath, ext, absolutePath, type, {
           hash,
-          virtualId: NUXT_I18N_LOCALE_PROXY_ID,
+          resourceType: 'locale',
           query: { locale: localeCode }
         }),
         variableName,
@@ -179,7 +174,7 @@ export function generateLoaderOptions(
 `
           const basicVueI18nConfigCode = generateVueI18nConfigration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
             const configImportKey = makeImportKey(relativeBase, dir, base)
-            return `const vueI18n = await vueI18nConfigLoader((${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
+            return `const vueI18n = await vueI18nConfigLoader((${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
           })
           if (basicVueI18nConfigCode != null) {
             genCodes += `  ${basicVueI18nConfigCode}`
@@ -218,7 +213,7 @@ export function generateLoaderOptions(
           for (const configPath of vueI18nConfigPaths) {
             const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
               const configImportKey = makeImportKey(relativeBase, dir, base)
-              return `await mergeMessages(${rootKey}.${key}.messages, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, virtualId: NUXT_I18N_CONFIG_PROXY_ID }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
+              return `await mergeMessages(${rootKey}.${key}.messages, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
             })
             if (additionalVueI18nConfigCode != null) {
               genCodes += `  ${additionalVueI18nConfigCode}`
@@ -280,8 +275,6 @@ export function generateLoaderOptions(
   return genCode
 }
 
-type TransformProxyType = typeof NUXT_I18N_LOCALE_PROXY_ID | typeof NUXT_I18N_CONFIG_PROXY_ID
-
 function raiseSyntaxError(path: string) {
   throw new Error(`'unknown' type in '${path}'.`)
 }
@@ -293,21 +286,21 @@ function genImportSpecifier(
   type: LocaleType,
   {
     hash = NULL_HASH,
-    virtualId = NUXT_I18N_LOCALE_PROXY_ID,
+    resourceType = 'locale',
     query = {}
   }: {
     hash?: string
-    virtualId?: TransformProxyType
+    resourceType?: ResourceType
     query?: Record<string, string>
   } = {}
 ) {
   if (EXECUTABLE_EXTENSIONS.includes(ext)) {
-    if (virtualId === NUXT_I18N_LOCALE_PROXY_ID) {
+    if (resourceType === 'locale') {
       type === 'unknown' && raiseSyntaxError(absolutePath)
-      return type === 'dynamic' ? asVirtualId(withQuery(virtualId, { target: id, hash, ...query })) : id
-    } else if (virtualId === NUXT_I18N_CONFIG_PROXY_ID) {
+      return type === 'dynamic' ? withQuery(id, { hash, ...query }) : id
+    } else if (resourceType === 'config') {
       type === 'unknown' && raiseSyntaxError(absolutePath)
-      return asVirtualId(withQuery(virtualId, { target: id, hash, ...query }))
+      return withQuery(id, { hash, ...query, ...{ config: 1 } })
     } else {
       return id
     }
