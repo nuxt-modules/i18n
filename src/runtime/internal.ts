@@ -132,7 +132,7 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
     const getter = await loader().then(r => r.default || r)
     if (isFunction(getter)) {
       if (i18nConfig.experimental?.jsTsFormatResource) {
-        message = await getter(locale).then((r: any) => r.default || r)
+        message = await getter(locale)
         __DEBUG__ && console.log('loadMessage: dynamic load', message)
       } else {
         console.warn(
@@ -167,8 +167,10 @@ export async function loadLocale(
         const { key, load } = loaders[0]
         let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
         if (loadedMessages.has(key)) {
+          __DEBUG__ && console.log(key + ' is already loaded')
           message = loadedMessages.get(key)
         } else {
+          __DEBUG__ && console.log(key + ' is loading ...')
           message = await loadMessage(context, load, locale)
           if (message != null) {
             loadedMessages.set(key, message)
@@ -183,8 +185,10 @@ export async function loadLocale(
         for (const { key, load } of loaders) {
           let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
           if (loadedMessages.has(key)) {
+            __DEBUG__ && console.log(key + ' is already loaded')
             message = loadedMessages.get(key)
           } else {
+            __DEBUG__ && console.log(key + ' is loading ...')
             message = await loadMessage(context, load, locale)
             if (message != null) {
               loadedMessages.set(key, message)

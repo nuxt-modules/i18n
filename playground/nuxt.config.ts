@@ -105,7 +105,7 @@ export default defineNuxtConfig({
   //     }
   //   }
   // },
-  debug: false,
+  debug: true,
   i18n: {
     experimental: {
       jsTsFormatResource: true
@@ -148,12 +148,12 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    debug: false,
+    debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
     // strategy: 'prefix_and_default',
-    strategy: 'prefix_except_default',
+    // strategy: 'prefix_except_default',
     // rootRedirect: '/ja/about-ja',
     dynamicRouteParams: true,
     // customRoutes: 'config',
@@ -167,14 +167,14 @@ export default defineNuxtConfig({
     },
     // differentDomains: true,
     // skipSettingLocaleOnNavigate: true,
-    // detectBrowserLanguage: false,
-    detectBrowserLanguage: {
-      useCookie: true
-      // alwaysRedirect: true
-      // cookieKey: 'i18n_redirected',
-      // // cookieKey: 'my_custom_cookie_name',
-      // redirectOn: 'root'
-    },
+    detectBrowserLanguage: false,
+    // detectBrowserLanguage: {
+    //   // useCookie: true
+    //   // alwaysRedirect: true
+    //   // cookieKey: 'i18n_redirected',
+    //   // // cookieKey: 'my_custom_cookie_name',
+    //   // redirectOn: 'root'
+    // },
     vueI18n: './vue-i18n.options.ts'
   }
 })
