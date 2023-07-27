@@ -71,8 +71,6 @@ export const DEFAULT_OPTIONS = {
   debug: false
 } as const
 
-export const NUXT_I18N_LOCALE_PROXY_ID = '@nuxtjs/i18n/__locale__' as const
-export const NUXT_I18N_CONFIG_PROXY_ID = '@nuxtjs/i18n/__config__' as const
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale' as const

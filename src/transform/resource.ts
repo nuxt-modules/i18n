@@ -6,17 +6,17 @@ import MagicString from 'magic-string'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
 
-export interface ResourceDynamicPluginOptions {
+export interface ResourcePluginOptions {
   sourcemap?: boolean
 }
 
-const debug = createDebug('@nuxtjs/i18n:transform:dynamic')
+const debug = createDebug('@nuxtjs/i18n:transform:resource')
 
-export const ResourceDynamicPlugin = createUnplugin((options: ResourceDynamicPluginOptions) => {
+export const ResourcePlugin = createUnplugin((options: ResourcePluginOptions) => {
   debug('options', options)
 
   return {
-    name: 'nuxtjs:i18n-resource-dynamic',
+    name: 'nuxtjs:i18n-resource',
     enforce: 'post',
 
     transformInclude(id) {
