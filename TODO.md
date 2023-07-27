@@ -2,7 +2,7 @@
 
 - For Official release
   - [ ] remove `i18n:extends-messages` hook logic
-  - [ ] remove `parsePage` option logic
+  - [x] remove `parsePage` option logic
   - [ ] update `@intlify/**` and vue-i18-\* pkgs for latest version
 - Refactoring
   - [ ] module alias, langs option, etc should be resolved with `createResolver`
