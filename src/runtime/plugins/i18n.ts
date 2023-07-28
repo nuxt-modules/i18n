@@ -18,7 +18,6 @@ import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions, isSSG } f
 import {
   loadInitialMessages,
   loadAndSetLocale,
-  mergeAdditionalMessages, // TODO: remove `i18n:extend-messages` before v8 official release
   detectLocale,
   detectRedirect,
   navigate,
@@ -405,10 +404,6 @@ export default defineNuxtPlugin(async nuxt => {
 
   // inject for nuxt helpers
   inejctNuxtHelpers(nuxtContext, i18n)
-
-  // TODO: remove `i18n:extend-messages` before v8 official release
-  // merge addtional locale messages
-  await mergeAdditionalMessages(nuxtContext, i18n, initialLocale)
 
   addRouteMiddleware(
     'locale-changing',

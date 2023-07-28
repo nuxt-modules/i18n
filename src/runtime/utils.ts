@@ -25,7 +25,6 @@ import {
   callVueI18nInterfaces,
   getVueI18nPropertyValue,
   loadLocale,
-  loadAdditionalLocale, // TODO: remove `i18n:extend-messages` before v8 official release
   defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
@@ -60,7 +59,6 @@ export function setLocaleMessage(i18n: I18n, locale: Locale, messages: Record<st
   return callVueI18nInterfaces(i18n, 'setLocaleMessage', locale, messages)
 }
 
-// TODO: remove `i18n:extend-messages` before v8 official release
 export function mergeLocaleMessage(i18n: I18n, locale: Locale, messages: Record<string, any>) {
   return callVueI18nInterfaces(i18n, 'mergeLocaleMessage', locale, messages)
 }
@@ -129,17 +127,6 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   return messages
 }
 
-// TODO: remove `i18n:extend-messages` before v8 official release
-export async function mergeAdditionalMessages<Context extends NuxtApp = NuxtApp>(
-  context: Context,
-  i18n: I18n,
-  locale: Locale
-) {
-  await loadAdditionalLocale(context, locale, (locale: Locale, message: Record<string, any>) =>
-    mergeLocaleMessage(i18n, locale, message)
-  )
-}
-
 export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
   newLocale: string,
   context: Context,
@@ -193,9 +180,6 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
       await loadLocale(context, newLocale, setter)
     }
   }
-
-  // merge additional locale messages
-  await mergeAdditionalMessages(context, i18n, newLocale)
 
   if (skipSettingLocaleOnNavigate) {
     return [ret, oldLocale]

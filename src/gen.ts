@@ -2,7 +2,6 @@
 
 import createDebug from 'debug'
 import { isArray, isObject } from '@intlify/shared'
-import { generateJSON } from '@intlify/bundle-utils'
 import { EXECUTABLE_EXTENSIONS, NULL_HASH, NUXT_I18N_MODULE_ID } from './constants'
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
@@ -11,7 +10,6 @@ import { toCode } from './utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
-import type { AdditionalMessages } from './messages' // TODO: remove `i18n:extend-messages` before v8 official release
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -19,7 +17,6 @@ export type LoaderOptions = {
   nuxtI18nOptions?: NuxtI18nOptions
   nuxtI18nOptionsDefault?: NuxtI18nOptionsDefault
   nuxtI18nInternalOptions?: NuxtI18nInternalOptions
-  additionalMessages?: AdditionalMessages // TODO: remove `i18n:extend-messages` before v8 official release
 }
 
 type ResourceType = 'locale' | 'config'
@@ -257,9 +254,6 @@ export function generateLoaderOptions(
       }
       codes += `}\n`
       return codes
-    } else if (rootKey === 'additionalMessages') {
-      // TODO: remove `i18n:extend-messages` before v8 official release
-      return `export const ${rootKey} = ${generateAdditionalMessages(rootValue, misc.dev)}\n`
 	  } else {
 	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
 	  }
@@ -327,22 +321,6 @@ function convertToImportId(file: string) {
 
 function resolveLocaleRelativePath(relativeBase: string, langDir: string, file: string) {
   return normalize(`${relativeBase}/${langDir}/${file}`)
-}
-
-// TODO: remove `i18n:extend-messages` before v8 official release
-function generateAdditionalMessages(value: Record<string, any>, dev: boolean): string {
-  let genCode = 'Object({'
-  for (const [locale, messages] of Object.entries(value)) {
-    genCode += `${JSON.stringify(locale)}:[`
-    for (const [, p] of Object.entries(messages)) {
-      genCode += `() => Promise.resolve(${
-        generateJSON(JSON.stringify(p), { type: 'bare', env: dev ? 'development' : 'production', jit: true }).code
-      }),`
-    }
-    genCode += `],`
-  }
-  genCode += '})'
-  return genCode
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
