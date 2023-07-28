@@ -14,13 +14,7 @@ import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent } from '#imports'
-import {
-  nuxtI18nOptionsDefault,
-  localeMessages,
-  additionalMessages,
-  NUXT_I18N_MODULE_ID,
-  isSSG
-} from '#build/i18n.options.mjs'
+import { nuxtI18nOptionsDefault, localeMessages, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#app'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
@@ -205,27 +199,6 @@ export async function loadLocale(
   } else {
     if (!loadedLocales.includes(locale)) {
       console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
-    }
-  }
-}
-
-// TODO: remove `i18n:extend-messages` before v8 official release
-const loadedAdditionalLocales: Locale[] = []
-
-// TODO: remove `i18n:extend-messages` before v8 official release
-export async function loadAdditionalLocale(
-  context: NuxtApp,
-  locale: Locale,
-  merger: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
-) {
-  if (process.server || process.dev || !loadedAdditionalLocales.includes(locale)) {
-    const additionalLoaders = additionalMessages[locale] || []
-    for (const additionalLoader of additionalLoaders) {
-      const message = await loadMessage(context, additionalLoader, locale)
-      if (message != null) {
-        merger(locale, message)
-        loadedAdditionalLocales.push(locale)
-      }
     }
   }
 }

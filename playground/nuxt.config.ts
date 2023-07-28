@@ -105,7 +105,7 @@ export default defineNuxtConfig({
   //     }
   //   }
   // },
-  debug: true,
+  // debug: true,
   i18n: {
     experimental: {
       jsTsFormatResource: true
@@ -148,7 +148,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    debug: true,
+    // debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',

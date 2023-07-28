@@ -16,7 +16,6 @@ import { defu } from 'defu'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
-import { extendMessages } from './messages'
 import { extendBundler } from './bundler'
 import { generateLoaderOptions } from './gen'
 import {
@@ -39,7 +38,6 @@ import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
 import type { NuxtI18nOptions } from './types'
-import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
 
 export * from './types'
 
@@ -175,21 +173,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('layerVueI18nConfigPaths', layerVueI18nConfigPaths)
 
     /**
-     * extend messages via 3rd party nuxt modules
-     */
-
-    // TODO: remove `i18n:extend-messages` before v8 official release
-    // @ts-ignore Property '_hooks' is private and only accessible within class 'Hookable<HooksT, HookNameT>'
-    if ('i18n:extend-messages' in nuxt.hooks._hooks) {
-      logger.warn(
-        '`i18n:extend-messages` is deprecated. ' +
-          'That hook will be removed feature at the time of the v8 official release.\n' +
-          "If you're using it, please use `i18n:registerModule` instead."
-      )
-    }
-    const additionalMessages = await extendMessages(nuxt, localeCodes, options)
-
-    /**
      * setup nuxt/pages
      */
 
@@ -246,7 +229,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
           {
             localeCodes,
             localeInfo,
-            additionalMessages,
             nuxtI18nOptions: options,
             nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
             nuxtI18nInternalOptions: {
@@ -388,8 +370,6 @@ declare module '@nuxt/schema' {
   }
 
   interface NuxtHooks {
-    // TODO: remove `i18n:extend-messages` before v8 official release
-    'i18n:extend-messages': (messages: LocaleMessages<DefineLocaleMessage>[], localeCodes: string[]) => Promise<void>
     'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
   }
 
