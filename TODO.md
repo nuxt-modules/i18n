@@ -1,7 +1,7 @@
 # TODO
 
 - For Official release
-  - [ ] remove `i18n:extends-messages` hook logic
+  - [x] remove `i18n:extends-messages` hook logic
   - [x] remove `parsePage` option logic
   - [ ] update `@intlify/**` and vue-i18-\* pkgs for latest version
 - Refactoring

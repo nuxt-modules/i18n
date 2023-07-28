@@ -3,7 +3,6 @@ import { DEFAULT_OPTIONS } from '../src/constants'
 import { generateLoaderOptions } from '../src/gen'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, VueI18nConfigPathInfo } from '../src/types'
-import type { AdditionalMessages } from '../src/messages'
 
 vi.mock('node:fs')
 
@@ -33,16 +32,6 @@ const LOCALE_INFO = [
     path: '/path/to/fr.json'
   }
 ]
-const ADDITIONAL_MESSAGES = {
-  en: [
-    { foo: 'foo', hello: 'hello1' },
-    { bar: 'bar', hello: 'hello2' }
-  ],
-  ja: [
-    { buz: 'buz', hello: 'hello3' },
-    { baz: 'baz', hello: 'hello4' }
-  ]
-} as AdditionalMessages
 const NUXT_I18N_OPTIONS = {
   defaultLocale: 'en'
 } as NuxtI18nOptions
@@ -88,7 +77,6 @@ test('basic', async () => {
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
-      additionalMessages: {},
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
@@ -109,7 +97,6 @@ test('lazy', () => {
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
-      additionalMessages: {},
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
@@ -143,7 +130,6 @@ test('multiple files', () => {
           }
         ]
       ],
-      additionalMessages: {},
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
@@ -179,7 +165,6 @@ test('locale file in nested', () => {
           path: '/path/to/fr.json'
         }
       ],
-      additionalMessages: {},
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
@@ -212,7 +197,6 @@ test('vueI18n option', () => {
     {
       localeCodes: LOCALE_CODES,
       localeInfo: LOCALE_INFO,
-      additionalMessages: ADDITIONAL_MESSAGES,
       nuxtI18nOptions: {
         vueI18n: 'vue-i18n.config.ts'
       },
@@ -233,7 +217,6 @@ test('toCode: function (arrow)', () => {
     [],
     {
       localeCodes: LOCALE_CODES,
-      additionalMessages: {},
       nuxtI18nOptions: {
         ...NUXT_I18N_OPTIONS,
         locales: LOCALE_INFO.map(locale => ({
@@ -255,7 +238,6 @@ test('toCode: function (arrow)', () => {
 test('toCode: function (named)', () => {
   const code = generateLoaderOptions(false, 'locales', '..', NUXT_I18N_VUE_I18N_CONFIG, [], {
     localeCodes: LOCALE_CODES,
-    additionalMessages: {},
     nuxtI18nOptions: {
       ...NUXT_I18N_OPTIONS,
       locales: LOCALE_INFO.map(locale => ({
