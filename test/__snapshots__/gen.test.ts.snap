@@ -12,8 +12,6 @@ export const localeMessages = {
   \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => Promise.resolve(locale_fr) }],
 }
 
-export const additionalMessages = Object({})
-
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
@@ -37,8 +35,6 @@ export const localeMessages = {
   \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => import(\\"../locales/fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */) }],
 }
 
-export const additionalMessages = Object({})
-
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
@@ -59,8 +55,6 @@ export const localeMessages = {
   \\"ja\\": [{ key: \\"../locales/ja/main.json\\", load: () => import(\\"../locales/ja/main.json\\" /* webpackChunkName: \\"lang_ja_ja_main_json\\" */) }],
   \\"fr\\": [{ key: \\"../locales/fr/main.json\\", load: () => import(\\"../locales/fr/main.json\\" /* webpackChunkName: \\"lang_fr_fr_main_json\\" */) }],
 }
-
-export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
@@ -85,8 +79,6 @@ export const localeMessages = {
   \\"es-AR\\": [{ key: \\"../locales/es.json\\", load: () => import(\\"../locales/es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */) },{ key: \\"../locales/es-AR.json\\", load: () => import(\\"../locales/es-AR.json\\" /* webpackChunkName: \\"lang_es_AR_json_es_AR_json\\" */) }],
 }
 
-export const additionalMessages = Object({})
-
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
@@ -101,8 +93,6 @@ export const isSSG = false
 
 exports[`toCode: function (arrow) 1`] = `
 "export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
@@ -127,8 +117,6 @@ export const isSSG = false
 
 exports[`toCode: function (named) 1`] = `
 "export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const additionalMessages = Object({})
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
@@ -162,8 +150,6 @@ export const localeMessages = {
   \\"ja\\": [{ key: \\"../locales/ja.json\\", load: () => Promise.resolve(locale_ja) }],
   \\"fr\\": [{ key: \\"../locales/fr.json\\", load: () => Promise.resolve(locale_fr) }],
 }
-
-export const additionalMessages = Object({\\"en\\":[Object({\\"foo\\":\\"foo\\",\\"hello\\":\\"hello1\\"}),Object({\\"bar\\":\\"bar\\",\\"hello\\":\\"hello2\\"})],\\"ja\\":[Object({\\"buz\\":\\"buz\\",\\"hello\\":\\"hello3\\"}),Object({\\"baz\\":\\"baz\\",\\"hello\\":\\"hello4\\"})]})
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
