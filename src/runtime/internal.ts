@@ -308,6 +308,7 @@ export function setLocaleCookie(
 export type DetectBrowserLanguageNotDetectReason =
   | 'unknown'
   | 'not_found_match'
+  | 'first_access_only'
   | 'not_redirect_on_root'
   | 'not_redirect_on_no_prefix'
   | 'detect_ignore_on_ssg'
@@ -320,7 +321,11 @@ export type DetectBrowserLanguageFromResult = {
 }
 export type DetectLocaleForSSGStatus = 'ssg_ignore' | 'ssg_setup' | 'normal'
 export type DetectLocaleCallType = 'setup' | 'routing'
-export type DetectLocaleContext = { ssg: DetectLocaleForSSGStatus; callType: DetectLocaleCallType }
+export type DetectLocaleContext = {
+  ssg: DetectLocaleForSSGStatus
+  callType: DetectLocaleCallType
+  firstAccess: boolean
+}
 
 export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
   locale: '',
@@ -339,12 +344,17 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const { strategy } = nuxtI18nOptions
-  const { ssg, callType } = detectLocaleContext
-  __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType) - ', ssg, callType)
+  const { ssg, callType, firstAccess } = detectLocaleContext
+  __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
   // browser detection is ignored if it's a nuxt generate.
   if (isSSG && strategy === 'no_prefix' && (process.server || ssg === 'ssg_ignore')) {
     return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
+  }
+
+  // Locale detection from the browser is first access only
+  if (!firstAccess) {
+    return { locale: '', stat: false, reason: 'first_access_only' }
   }
 
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
@@ -360,6 +370,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
       redirectOn,
       locale
     )
+
   if (strategy !== 'no_prefix') {
     if (redirectOn === 'root') {
       if (path !== '/') {

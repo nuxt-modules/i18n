@@ -23,6 +23,7 @@ await setup({
 test('alwaysRedirect: no prefix', async () => {
   const page = await createPage(undefined, { locale: 'en' }) // set browser locale
   await page.goto(url('/about'))
+  const ctx = await page.context()
 
   // detect locale from navigator language
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
@@ -30,6 +31,7 @@ test('alwaysRedirect: no prefix', async () => {
   // click `fr` lang switch with nutlink
   await page.locator('#set-locale-link-fr').click()
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'fr' }])
 
   // go to `blog/article` page
   await page.goto(url('/blog/article'))

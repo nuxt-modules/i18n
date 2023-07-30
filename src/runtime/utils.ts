@@ -214,6 +214,9 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
 
+  const { ssg, callType, firstAccess } = detectLocaleContext
+  __DEBUG__ && console.log('detectLocale: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
+
   // prettier-ignore
   const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage
     ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, detectLocaleContext, localeCodes, initialLocale)
@@ -231,12 +234,16 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
     return initialLocale
   }
 
-  if (from === 'navigator_or_header' && browserLocale) {
+  /**
+   * respect the locale detected by `detectBrowserLanguage`
+   */
+  if ((from === 'navigator_or_header' || from === 'cookie' || from === 'fallback') && browserLocale) {
     return browserLocale
   }
 
-  let finalLocale: string | undefined = browserLocale
+  let finalLocale: string = browserLocale
   __DEBUG__ && console.log('detectLocale: finaleLocale first (finaleLocale, strategy) -', finalLocale, strategy)
+
   if (!finalLocale) {
     if (differentDomains) {
       finalLocale = getLocaleDomain(normalizedLocales)
@@ -256,7 +263,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
       nuxtI18nOptions.detectBrowserLanguage
     )
   if (!finalLocale && nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) {
-    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
+    finalLocale = getLocaleCookie(context, { ...nuxtI18nOptions.detectBrowserLanguage, localeCodes }) || ''
   }
 
   __DEBUG__ && console.log('detectLocale: finalLocale last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)
