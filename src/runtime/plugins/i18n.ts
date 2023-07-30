@@ -99,7 +99,7 @@ export default defineNuxtPlugin(async nuxt => {
     getLocaleFromRoute,
     nuxtI18nOptions,
     getDefaultLocale(defaultLocale),
-    { ssg: isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal', callType: 'setup' },
+    { ssg: isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal', callType: 'setup', firstAccess: true },
     normalizedLocales,
     localeCodes
   )
@@ -151,7 +151,7 @@ export default defineNuxtPlugin(async nuxt => {
             nuxtContext,
             nuxtI18nOptions,
             nuxtI18nInternalOptions,
-            { ssg: 'ssg_setup', callType: 'setup' },
+            { ssg: 'ssg_setup', callType: 'setup', firstAccess: true },
             localeCodes,
             initialLocale
           )
@@ -405,6 +405,8 @@ export default defineNuxtPlugin(async nuxt => {
   // inject for nuxt helpers
   inejctNuxtHelpers(nuxtContext, i18n)
 
+  let routeChangeCount = 0
+
   addRouteMiddleware(
     'locale-changing',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -419,7 +421,11 @@ export default defineNuxtPlugin(async nuxt => {
         () => {
           return getLocale(i18n) || getDefaultLocale(defaultLocale)
         },
-        { ssg: isSSGModeInitialSetup() && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal', callType: 'routing' },
+        {
+          ssg: isSSGModeInitialSetup() && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
+          callType: 'routing',
+          firstAccess: routeChangeCount === 0
+        },
         normalizedLocales,
         localeCodes
       )
@@ -443,6 +449,8 @@ export default defineNuxtPlugin(async nuxt => {
 
       const redirectPath = detectRedirect({ to, from }, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
       __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
+
+      routeChangeCount++
 
       return navigate(
         {
