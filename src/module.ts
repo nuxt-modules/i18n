@@ -373,12 +373,8 @@ declare module '@nuxt/schema' {
     'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
   }
 
-  interface ConfigSchema {
-    runtimeConfig: {
-      public?: {
-        i18n?: ModulePublicRuntimeConfig
-      }
-    }
+  interface PublicRuntimeConfig {
+    i18n?: ModulePublicRuntimeConfig
   }
 }
 
