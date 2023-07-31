@@ -14,7 +14,7 @@
 
 The next i18n module for Nuxt 3
 
-## ✅ Status: v8 beta
+## ✅ Status: v8 RC (Release candidate)
 
 If you would like to use the stable version for Nuxt 2, please see the [`main` branch](https://github.com/nuxt-modules/i18n/tree/main)
 
@@ -58,7 +58,7 @@ Update nuxt i18n module dependency inside `package.json`:
 ```diff
 {
   "devDependencies": {
---    "@nuxtjs/i18n": "^8.0.0-beta.13"
+--    "@nuxtjs/i18n": "^8.0.0-rc.1"
 ++    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
   }
 }
@@ -74,7 +74,7 @@ Update nuxt i18n module dependency inside `package.json`:
 {
   "devDependencies": {
 --    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
-++    "@nuxtjs/i18n": "^8.0.0-beta.13"
+++    "@nuxtjs/i18n": "^8.0.0-rc.1"
   }
 }
 ```
