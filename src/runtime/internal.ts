@@ -13,8 +13,9 @@ import JsCookie from 'js-cookie'
 import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-import { useRequestHeaders, useRequestEvent } from '#imports'
+import { useRequestHeaders, useRequestEvent, useAppConfig } from '#imports'
 import { nuxtI18nOptionsDefault, localeMessages, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
+import { defu } from 'defu'
 
 import type { NuxtApp } from '#app'
 import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
@@ -422,7 +423,11 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
       localeFrom
     )
 
-  const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
+  const appConfig = useAppConfig()
+
+  const vueI18nOptions = defu(nuxtI18nOptions.vueI18n, appConfig.i18n?.vueI18n) as I18nOptions
+
+  const vueI18nLocale = locale || vueI18nOptions.locale
   __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
 
   // handle cookie option to prevent multiple redirections

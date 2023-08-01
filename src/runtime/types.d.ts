@@ -7,6 +7,7 @@ import type {
   ComposerCustomProperties as _ComposerCustomProperties
 } from 'vue-i18n-routing'
 import type { I18nRoutingCustomProperties } from 'vue-i18n-routing/dist/vue-i18n'
+import type { I18nOptions } from 'vue-i18n'
 
 /**
  * Called before the app's locale is switched.
@@ -218,6 +219,14 @@ declare module 'vue-i18n' {
     __pendingLocale?: string
     __pendingLocalePromise?: Promise<void>
     __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
+  }
+}
+
+declare module 'nuxt/schema' {
+  interface AppConfig {
+    i18n?: {
+      vueI18n?: I18nOptions
+    }
   }
 }
 
