@@ -1,4 +1,3 @@
-import { NuxtLink } from '#components'
 import { useLocalePath } from '#i18n'
 import { defineComponent, computed, defineNuxtLink, h } from '#imports'
 import { hasProtocol } from 'ufo'
@@ -49,7 +48,7 @@ export default defineComponent({
 
     return () =>
       isExternal.value
-        ? h(NuxtLink, props, slots.default)
+        ? h(NuxtLinkLocale, props, slots.default)
         : h(NuxtLinkLocale, { ...props, to: resolvedPath }, slots.default)
   }
 })
