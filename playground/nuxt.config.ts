@@ -148,7 +148,7 @@ export default defineNuxtConfig({
       }
     ],
     // trailingSlash: true,
-    // debug: true,
+    debug: true,
     defaultLocale: 'en',
     // strategy: 'no_prefix',
     // strategy: 'prefix',
@@ -166,7 +166,7 @@ export default defineNuxtConfig({
       }
     },
     // differentDomains: true,
-    // skipSettingLocaleOnNavigate: true,
+    skipSettingLocaleOnNavigate: true,
     detectBrowserLanguage: false,
     // detectBrowserLanguage: {
     //   // useCookie: true

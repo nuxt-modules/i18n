@@ -213,7 +213,8 @@ export default defineNuxtPlugin(async nuxt => {
             {
               differentDomains,
               skipSettingLocaleOnNavigate,
-              rootRedirect
+              rootRedirect,
+              enableNavigate: true
             }
           )
         }

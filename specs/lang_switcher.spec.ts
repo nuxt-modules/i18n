@@ -32,15 +32,19 @@ test('switching', async () => {
   expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('English')
   expect(await getText(page, '#set-locale-link-en')).toMatch('English')
 
+  // click `en` lang switch with `setLocale`
+  await page.locator('#set-locale-link-en').click()
+  await page.waitForTimeout(1000)
+
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({
-    aboutPath: '/fr/about',
-    aboutTranslation: 'À propos'
+    aboutPath: '/about',
+    aboutTranslation: 'About us'
   })
   expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/')
 
   // current locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 })
 
 describe('dynamic route parameter', () => {
