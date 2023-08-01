@@ -162,6 +162,7 @@ export const resolveNuxtI18nOptions = async (context) => {
                 : {}
           }
   nuxtI18nOptions.vueI18n = Object({})
+  nuxtI18nOptions.vueI18n.messages ??= {}
   const deepCopy = (src, des, predicate) => {
             for (const key in src) {
               if (typeof src[key] === 'object') {
@@ -180,9 +181,10 @@ export const resolveNuxtI18nOptions = async (context) => {
           }
           const mergeMessages = async (messages, loader) => {
             const layerConfig = await vueI18nConfigLoader(loader)
-            const vueI18n = layerConfig.vueI18n || {}
+            const vueI18n = layerConfig || {}
             const layerMessages = vueI18n.messages || {}
             for (const [locale, message] of Object.entries(layerMessages)) {
+              messages[locale] ??= {}
               deepCopy(message, messages[locale])
             }
           }
