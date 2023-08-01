@@ -34,8 +34,8 @@ test('switching', async () => {
 
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({
-    aboutPath: '/about',
-    aboutTranslation: 'About us'
+    aboutPath: '/fr/about',
+    aboutTranslation: 'À propos'
   })
   expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/')
 

@@ -66,6 +66,7 @@ export function setupPages(
     const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
     mergeLayerPages(analyzer, nuxt)
 
+    // @ts-expect-error Nuxt allows any valid redirect object, not just strings
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUprefixedFallback,
