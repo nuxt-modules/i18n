@@ -382,7 +382,7 @@ declare module '@nuxt/schema' {
   }
 }
 
-declare module '#app' {
+declare module '#app/nuxt' {
   interface RuntimeNuxtHooks {
     'i18n:beforeLocaleSwitch': <Context = unknown>(
       params: LocaleSwitch & {
