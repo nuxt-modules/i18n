@@ -6,7 +6,7 @@
       <li
         v-for="({ code, name }, i) in locales"
         :key="code"
-        :class="{ 'selected': code === locale }"
+        :class="{ selected: code === locale }"
         @click.prevent="setLocale(code)"
       >
         {{ name }}
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-const { locale, locales, setLocale } = useI18n();
+const { locale, locales, setLocale } = useI18n()
 </script>
 
 <style>

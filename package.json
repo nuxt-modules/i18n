@@ -1,7 +1,7 @@
 {
   "name": "@nuxtjs/i18n",
   "description": "i18n for Nuxt",
-  "version": "8.0.0-beta.13",
+  "version": "8.0.0-rc.1",
   "homepage": "https://i18n.nuxtjs.org",
   "bugs": {
     "url": "https://github.com/nuxt-community/i18n-module/issues"
@@ -71,7 +71,7 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "nuxt": "^3.6.2",
+      "nuxt": "^3.6.5",
       "consola": "^3"
     }
   },
@@ -79,7 +79,7 @@
     "@intlify/shared": "9.3.0-beta.24",
     "@intlify/unplugin-vue-i18n": "^0.12.2",
     "@mizchi/sucrase": "^4.1.0",
-    "@nuxt/kit": "^3.4.1",
+    "@nuxt/kit": "^3.6.5",
     "@vue/compiler-sfc": "^3.3.4",
     "cookie-es": "^1.0.0",
     "debug": "^4.3.4",
@@ -103,7 +103,7 @@
     "@babel/plugin-syntax-import-assertions": "^7.22.5",
     "@babel/types": "^7.22.5",
     "@nuxt/module-builder": "latest",
-    "@nuxt/schema": "^3.4.1",
+    "@nuxt/schema": "^3.6.5",
     "@types/debug": "^4.1.8",
     "@types/js-cookie": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -120,7 +120,7 @@
     "jsdom": "^21.1.2",
     "lint-staged": "^13.2.3",
     "npm-run-all": "^4.1.5",
-    "nuxt": "^3.6.2",
+    "nuxt": "^3.6.5",
     "ofetch": "^1.1.1",
     "playwright": "^1.35.1",
     "prettier": "^3.0.0",

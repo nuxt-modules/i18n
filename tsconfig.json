@@ -30,6 +30,7 @@
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
     "paths": {
       "#app": ["./node_modules/nuxt/dist/app"],
+      "#app/*": ["./node_modules/nuxt/dist/app/*"],
       "#components": ["./.nuxt/components"],
       "#imports": ["./.nuxt/imports.d.ts"],
       "#pages": ["./node_modules/nuxt/dist/pages/runtime/index.d.ts"],
