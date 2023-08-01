@@ -78,6 +78,9 @@ function onClick() {
             {{ category.title }}
           </NuxtLinkLocale>
         </li>
+        <li class="external-url">
+          <NuxtLinkLocale :to="'https://nuxt.com/'">Nuxt.com</NuxtLinkLocale>
+        </li>
       </ul>
     </section>
     <section id="switch-locale-path-usages">
