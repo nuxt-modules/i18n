@@ -370,15 +370,25 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     status = 301,
     rootRedirect = nuxtI18nOptionsDefault.rootRedirect,
     differentDomains = nuxtI18nOptionsDefault.differentDomains,
-    skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
+    skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate,
+    enableNavigate = false
   }: {
     status?: number
+    enableNavigate?: boolean
   } & Pick<NuxtI18nOptions<Context>, 'skipSettingLocaleOnNavigate' | 'differentDomains' | 'rootRedirect'> = {}
 ) {
   const { i18n, locale, route } = args
   let { redirectPath } = args
 
-  __DEBUG__ && console.log('navigate options ', status, rootRedirect, differentDomains, skipSettingLocaleOnNavigate)
+  __DEBUG__ &&
+    console.log(
+      'navigate options ',
+      status,
+      rootRedirect,
+      differentDomains,
+      skipSettingLocaleOnNavigate,
+      enableNavigate
+    )
   __DEBUG__ && console.log('navigate isSSG', isSSG)
 
   if (route.path === '/' && rootRedirect) {
@@ -397,7 +407,9 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     i18n.__pendingLocalePromise = new Promise(resolve => {
       i18n.__resolvePendingLocalePromise = resolve
     })
-    return
+    if (!enableNavigate) {
+      return
+    }
   }
 
   if (!differentDomains) {
