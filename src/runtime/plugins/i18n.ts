@@ -13,7 +13,14 @@ import {
   getLocale,
   getComposer
 } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
+import {
+  defineNuxtPlugin,
+  useRouter,
+  useRoute,
+  addRouteMiddleware,
+  defineNuxtRouteMiddleware,
+  useAppConfig
+} from '#imports'
 import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions, isSSG } from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
@@ -34,6 +41,7 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
+import { defu } from 'defu'
 
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
@@ -77,7 +85,10 @@ export default defineNuxtPlugin(async nuxt => {
   })
   const getLocaleFromRoute = createLocaleFromRouteGetter(localeCodes, routesNameSeparator, defaultLocaleRouteNameSuffix)
 
-  const vueI18nOptions = nuxtI18nOptions.vueI18n as I18nOptions
+  const appConfig = useAppConfig()
+
+  const vueI18nOptions = defu(nuxtI18nOptions.vueI18n, appConfig.i18n?.vueI18n) as I18nOptions
+
   vueI18nOptions.messages = vueI18nOptions.messages || {}
   vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
 

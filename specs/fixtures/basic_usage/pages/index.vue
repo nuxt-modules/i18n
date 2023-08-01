@@ -55,7 +55,7 @@ function onClick() {
         </li>
       </ul>
     </section>
-	    <section id="nuxt-link-locale-usages">
+    <section id="nuxt-link-locale-usages">
       <h3>NuxtLinkLocale</h3>
       <ul>
         <li class="name">
