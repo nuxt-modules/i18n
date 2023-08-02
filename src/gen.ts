@@ -179,6 +179,7 @@ export function generateLoaderOptions(
           } else {
             genCodes += `  ${rootKey}.${key} = ${toCode({})}\n`
           }
+          genCodes += `  ${rootKey}.${key}.messages ??= {}\n`
 
           if (vueI18nConfigPaths.length > 0) {
             genCodes += `  const deepCopy = (src, des, predicate) => {
@@ -199,9 +200,10 @@ export function generateLoaderOptions(
           }
           const mergeMessages = async (messages, loader) => {
             const layerConfig = await vueI18nConfigLoader(loader)
-            const vueI18n = layerConfig.vueI18n || {}
+            const vueI18n = layerConfig || {}
             const layerMessages = vueI18n.messages || {}
             for (const [locale, message] of Object.entries(layerMessages)) {
+              messages[locale] ??= {}
               deepCopy(message, messages[locale])
             }
           }
