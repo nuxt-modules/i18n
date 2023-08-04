@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from '../utils'
 import { getText, getData } from '../helper'
 
-describe('basic', async () => {
+describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
     browser: true,
@@ -23,24 +23,51 @@ describe('basic', async () => {
           {
             code: 'en',
             iso: 'en-US',
-            file: 'en.json',
+            file: 'lazy-locale-en.json',
             name: 'English'
           },
           {
             code: 'en-GB',
             iso: 'en-GB',
-            files: ['en.json', 'en-GB.js', 'en-GB.ts'],
+            files: ['lazy-locale-en.json', 'lazy-locale-en-GB.js', 'lazy-locale-en-GB.ts'],
             name: 'English (UK)'
           },
           {
             code: 'fr',
             iso: 'fr-FR',
-            file: 'fr.json5',
+            file: 'lazy-locale-fr.json5',
             name: 'Français'
           }
         ]
       }
     }
+  })
+
+  // TODO: fix lazy loading
+  test.fails('(fails) locales are fetched on demand', async () => {
+    const home = url('/')
+    const page = await createPage()
+
+    // collect locale requests
+    const fetchedLocales = new Set<string>()
+    page.on('request', request => {
+      const requestUrl = new URL(request.url())
+      if (requestUrl.pathname.includes('lazy-locale-')) {
+        fetchedLocales.add(requestUrl.pathname)
+      }
+    })
+
+    // only default locales are fetched (en)
+    await page.goto(home)
+    expect.soft([...fetchedLocales].filter(locale => locale.includes('fr'))).toHaveLength(0)
+
+    // wait for request after navigation
+    const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
+    await page.click('#lang-switcher-with-nuxt-link-fr')
+    await localeRequestFr
+
+    // `fr` locale has been fetched
+    expect([...fetchedLocales].filter(locale => locale.includes('fr'))).toHaveLength(1)
   })
 
   test('can access to no prefix locale (en): /', async () => {
