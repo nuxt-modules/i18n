@@ -12,7 +12,7 @@ import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } 
 
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
-import type { Nuxt } from '@nuxt/schema'
+import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
 
 const PackageManagerLockFiles = {
@@ -449,20 +449,21 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
  */
 export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => {
   const projectLayer = nuxt.options._layers[0]
+  const projectI18n = getLayerI18n(projectLayer)
+  if (options) options.i18nModules = []
 
-  if (projectLayer.config.i18n) projectLayer.config.i18n.i18nModules = []
   const registerI18nModule = (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => {
     if (config.langDir == null) return
-    projectLayer.config.i18n?.i18nModules?.push(config)
+    options?.i18nModules?.push(config)
   }
 
   await nuxt.callHook('i18n:registerModule', registerI18nModule)
-  const modules = projectLayer.config.i18n?.i18nModules ?? []
-  const projectLangDir = getProjectPath(nuxt, projectLayer.config.i18n?.langDir ?? '')
+  const modules = options?.i18nModules ?? []
+  const projectLangDir = getProjectPath(nuxt, projectI18n?.langDir ?? '')
 
   if (modules.length > 0) {
     const baseLocales: LocaleObject[] = []
-    const layerLocales = projectLayer.config.i18n?.locales ?? []
+    const layerLocales = options.locales ?? []
 
     for (const locale of layerLocales) {
       if (typeof locale !== 'object') continue
@@ -474,10 +475,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
       baseLocales
     )
 
-    if (projectLayer.config.i18n) {
-      options.locales = mergedLocales
-      projectLayer.config.i18n.locales = mergedLocales
-    }
+    options.locales = mergedLocales
   }
 }
 
@@ -499,4 +497,16 @@ export function getRoutePath(tokens: SegmentToken[]): string {
 
 export function getHash(text: Buffer | string): string {
   return createHash('sha256').update(text).digest('hex').substring(0, 8)
+}
+
+export function getLayerI18n(configLayer: NuxtConfigLayer) {
+  const layerInlineOptions = (configLayer.config.modules || []).find(
+    (mod): mod is [string, NuxtI18nOptions] | undefined => isArray(mod) && mod[0] === NUXT_I18N_MODULE_ID
+  )?.[1]
+
+  if (configLayer.config.i18n) {
+    return { ...layerInlineOptions, ...configLayer.config.i18n }
+  }
+
+  return layerInlineOptions
 }
