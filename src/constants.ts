@@ -68,7 +68,8 @@ export const DEFAULT_OPTIONS = {
   pages: {},
   skipSettingLocaleOnNavigate: false,
   types: 'composition',
-  debug: false
+  debug: false,
+  parallelPlugin: false
 } as const
 
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const

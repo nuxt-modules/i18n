@@ -33,7 +33,8 @@ export function generateLoaderOptions(
   misc: {
     dev: boolean
     ssg: boolean
-  } = { dev: true, ssg: false }
+    parallelPlugin: boolean
+  } = { dev: true, ssg: false, parallelPlugin: false }
 ) {
   debug('generateLoaderOptions: lazy', lazy)
   debug('generateLoaderOptions: localesRelativeBase', localesRelativeBase)
@@ -237,8 +238,8 @@ export function generateLoaderOptions(
     } else if (rootKey === 'localeInfo') {
       let codes = `export const localeMessages = {\n`
       if (langDir) {
-        for (const { code, file, files} of syncLocaleFiles) {
-          const syncPaths = file ? [file] : files|| []
+        for (const { code, file, files } of syncLocaleFiles) {
+          const syncPaths = file ? [file] : files || []
           codes += `  ${toCode(code)}: [${syncPaths.map(filepath => {
             const { root, dir, base } = parsePath(filepath)
             const key = makeImportKey(root, dir, base)
@@ -256,9 +257,9 @@ export function generateLoaderOptions(
       }
       codes += `}\n`
       return codes
-	  } else {
-	    return `export const ${rootKey} = ${toCode(rootValue)}\n`
-	  }
+    } else {
+      return `export const ${rootKey} = ${toCode(rootValue)}\n`
+    }
   }).join('\n')}`
 
   /**
@@ -266,6 +267,7 @@ export function generateLoaderOptions(
    */
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
+  genCode += `export const parallelPlugin = ${toCode(misc.parallelPlugin)}\n`
 
   debug('generate code', genCode)
   return genCode

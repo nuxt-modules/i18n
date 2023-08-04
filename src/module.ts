@@ -237,7 +237,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
           },
           {
             ssg: nuxt.options._generate,
-            dev: nuxt.options.dev
+            dev: nuxt.options.dev,
+            parallelPlugin: i18nOptions.parallelPlugin
           }
         )
       }
