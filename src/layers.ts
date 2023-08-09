@@ -1,10 +1,8 @@
 import createDebug from 'debug'
 import { resolve } from 'pathe'
-import { isArray } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID } from './constants'
-import { getProjectPath, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
+import { getLayerI18n, getProjectPath, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
 
-import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
+import type { Nuxt } from '@nuxt/schema'
 import type { LocaleObject } from 'vue-i18n-routing'
 import type { NuxtI18nOptions } from './types'
 
@@ -40,21 +38,9 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
   }
 }
 
-function getProjectLayerI18n(configLayer: NuxtConfigLayer) {
-  if (configLayer.config.i18n) {
-    return configLayer.config.i18n
-  }
-
-  for (const mod of configLayer.config.modules || []) {
-    if (isArray(mod) && mod[0] === NUXT_I18N_MODULE_ID) {
-      return mod[1] as NuxtI18nOptions
-    }
-  }
-}
-
 export const mergeLayerLocales = (nuxt: Nuxt) => {
   const projectLayer = nuxt.options._layers[0]
-  const projectI18n = getProjectLayerI18n(projectLayer)
+  const projectI18n = getLayerI18n(projectLayer)
 
   if (projectI18n == null) {
     debug('project layer `i18n` configuration is required')
@@ -69,12 +55,12 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     if (projectI18n.locales == null) return []
 
     const firstI18nLayer = nuxt.options._layers.find(layer => {
-      const i18n = getProjectLayerI18n(layer)
+      const i18n = getLayerI18n(layer)
       return i18n?.locales && i18n?.locales?.length > 0
     })
     if (firstI18nLayer == null) return []
 
-    const localeType = typeof getProjectLayerI18n(firstI18nLayer)?.locales?.at(0)
+    const localeType = typeof getLayerI18n(firstI18nLayer)?.locales?.at(0)
     const isStringLocales = (val: unknown): val is string[] => localeType === 'string'
 
     const mergedLocales: string[] | LocaleObject[] = []
@@ -85,7 +71,7 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
     */
     const reversedLayers = [...nuxt.options._layers].reverse()
     for (const layer of reversedLayers) {
-      const i18n = getProjectLayerI18n(layer)
+      const i18n = getLayerI18n(layer)
       debug('layer.config.i18n.locales', i18n?.locales)
       if (i18n?.locales == null) continue
 
@@ -123,11 +109,11 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
 
     const configs = nuxt.options._layers
       .filter(layer => {
-        const i18n = getProjectLayerI18n(layer)
+        const i18n = getLayerI18n(layer)
         return i18n?.locales != null && i18n?.langDir != null
       })
       .map(layer => {
-        const i18n = getProjectLayerI18n(layer)
+        const i18n = getLayerI18n(layer)
         return {
           ...i18n,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -148,11 +134,11 @@ export const mergeLayerLocales = (nuxt: Nuxt) => {
 export const getLayerLangPaths = (nuxt: Nuxt) => {
   return nuxt.options._layers
     .filter(layer => {
-      const i18n = getProjectLayerI18n(layer)
+      const i18n = getLayerI18n(layer)
       return i18n?.langDir != null
     })
     .map(layer => {
-      const i18n = getProjectLayerI18n(layer)
+      const i18n = getLayerI18n(layer)
       // @ts-ignore
       return resolve(layer.config.srcDir, i18n.langDir)
     }) as string[]
@@ -167,7 +153,7 @@ export async function resolveLayerVueI18nConfigInfo(nuxt: Nuxt, buildDir: string
   layers.shift()
   return await Promise.all(
     layers.map(layer => {
-      const i18n = getProjectLayerI18n(layer)
+      const i18n = getLayerI18n(layer)
       return resolveVueI18nConfigInfo(i18n || {}, buildDir, layer.config.rootDir)
     })
   )
