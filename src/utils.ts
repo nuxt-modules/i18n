@@ -504,7 +504,7 @@ export function getLayerI18n(configLayer: NuxtConfigLayer) {
   )?.[1]
 
   if (configLayer.config.i18n) {
-    return { ...layerInlineOptions, ...configLayer.config.i18n }
+    return defu(configLayer.config.i18n, layerInlineOptions)
   }
 
   return layerInlineOptions
