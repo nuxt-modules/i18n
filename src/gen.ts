@@ -25,7 +25,6 @@ const debug = createDebug('@nuxtjs/i18n:gen')
 
 export function generateLoaderOptions(
   lazy: NonNullable<NuxtI18nOptions['lazy']>,
-  langDir: NuxtI18nOptions['langDir'],
   localesRelativeBase: string,
   vueI18nConfigPathInfo: VueI18nConfigPathInfo,
   vueI18nConfigPaths: VueI18nConfigPathInfo[],

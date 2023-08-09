@@ -211,7 +211,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       getContents: () => {
         return generateLoaderOptions(
           options.lazy,
-          options.langDir,
           localesRelativeBasePath,
           vueI18nConfigPathInfo,
           layerVueI18nConfigPaths,

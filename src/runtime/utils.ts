@@ -135,11 +135,9 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
     skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate,
     differentDomains = nuxtI18nOptionsDefault.differentDomains,
     initial = false,
-    lazy = false,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    langDir = null
+    lazy = false
   }: Pick<DetectBrowserLanguageOptions, 'useCookie'> &
-    Pick<NuxtI18nOptions<Context>, 'lazy' | 'langDir' | 'skipSettingLocaleOnNavigate' | 'differentDomains'> & {
+    Pick<NuxtI18nOptions<Context>, 'lazy' | 'skipSettingLocaleOnNavigate' | 'differentDomains'> & {
       initial?: boolean
     } = {}
 ): Promise<[boolean, string]> {
