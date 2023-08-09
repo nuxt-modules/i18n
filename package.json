@@ -112,7 +112,7 @@
     "changelogithub": "^0.12.12",
     "debug": "^4.3.4",
     "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-prettier": "^9.0.0",
     "execa": "^7.1.1",
     "get-port-please": "^3.0.1",
     "gh-changelogen": "^0.2.8",
