@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
+import { defu } from 'defu'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
 // @ts-ignore
@@ -509,4 +510,15 @@ export function getLayerI18n(configLayer: NuxtConfigLayer) {
   }
 
   return layerInlineOptions
+}
+
+export const applyOptionOverrides = (options: NuxtI18nOptions, nuxt: Nuxt) => {
+  const project = nuxt.options._layers[0]
+  const { overrides, ...mergedOptions } = options
+
+  if (overrides) {
+    delete options.overrides
+    project.config.i18n = defu(overrides, project.config.i18n)
+    Object.assign(options, defu(overrides, mergedOptions))
+  }
 }

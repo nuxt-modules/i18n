@@ -32,7 +32,8 @@ import {
   resolveLocales,
   getPackageManagerType,
   mergeI18nModules,
-  resolveVueI18nConfigInfo
+  resolveVueI18nConfigInfo,
+  applyOptionOverrides
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
@@ -57,6 +58,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const logger = useLogger(NUXT_I18N_MODULE_ID)
 
     const options = i18nOptions as Required<NuxtI18nOptions>
+    applyOptionOverrides(options, nuxt)
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {

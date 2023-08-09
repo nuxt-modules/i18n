@@ -1,5 +1,5 @@
 import { createTestContext, setTestContext } from '../context'
-import { buildFixture, loadFixture, clearDir } from '../nuxt'
+import { buildFixture, loadFixture } from '../nuxt'
 import { startServer, stopServer } from '../server'
 import { createBrowser } from '../browser'
 import type { TestHooks, TestOptions } from '../types'
@@ -68,6 +68,16 @@ export function createTest(options: Partial<TestOptions>): TestHooks {
 }
 
 export async function setup(options: Partial<TestOptions> = {}) {
+  // Our layer support handles each layer individually (ignoring merged options)
+  // `nuxtConfig` overrides are not applied to `_layers` but passed to merged options
+  // `i18n.overrides` are applied at project layer to support overrides from tests
+
+  // @ts-ignore
+  if (options?.nuxtConfig?.i18n != null) {
+    // @ts-ignore
+    options.nuxtConfig.i18n = { ...options.nuxtConfig.i18n, overrides: options.nuxtConfig.i18n }
+  }
+
   const hooks = createTest(options)
 
   const setupFn = setupMaps[hooks.ctx.options.runner]
