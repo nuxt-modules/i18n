@@ -171,7 +171,7 @@ importers:
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
-        version: 0.7.3(debug@4.3.4)(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7)
+        version: 0.7.4(debug@4.3.4)(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7)
       '@nuxtjs/i18n':
         specifier: link:..
         version: link:..
@@ -324,6 +324,15 @@ importers:
         version: 3.6.5(@types/node@20.4.5)(debug@4.3.4)(eslint@8.44.0)(rollup@3.27.0)(typescript@5.1.6)
 
   specs/fixtures/ignore_pick_module_configration:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.6.5
+        version: 3.6.5(@types/node@20.4.5)(debug@4.3.4)(eslint@8.44.0)(rollup@3.27.0)(typescript@5.1.6)
+
+  specs/fixtures/inline_options:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -1332,6 +1341,11 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
+  /@intlify/shared@9.3.0-beta.25:
+    resolution: {integrity: sha512-Zg+ECV9RPdp227tCJOgvPb+S3i651nf4kKHsMojSyWCppVK/4NFuDrBG2lIQSQL6Iq5LKVr5MkezHCW2NBTQRg==}
+    engines: {node: '>= 16'}
+    dev: false
+
   /@intlify/unplugin-vue-i18n@0.12.2(rollup@3.27.0)(vue-i18n@9.3.0-beta.24):
     resolution: {integrity: sha512-IIgzLRSPUKZM1FBdUAZ9NwVPiLUr4ea5g/HLWe2lB7gNtPDz4FOfUNUllIT504hT+3pDoJmjaYJ6pyqT7F4Wuw==}
     engines: {node: '>= 14.16'}
@@ -1734,8 +1748,8 @@ packages:
     resolution: {integrity: sha512-GBzP8zOc7CGWyFQS6dv1lQz8VVpz5C2yRszbXufwG/9zhStTIH50EtD87NmWbTMwXDvZLNg8GIpb1UFdH93JCA==}
     dev: true
 
-  /@nuxt/devtools-kit@0.7.3(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7):
-    resolution: {integrity: sha512-Sh88eXF5m/nL9LmkONIAb1VrsM15QBp378eAQhpsWUFjKWZ1PjvHXWvcq/Nq5+SZGFVegUSuHrN5m6WQHFsrKQ==}
+  /@nuxt/devtools-kit@0.7.4(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7):
+    resolution: {integrity: sha512-+CKSSqalyW3elK364FamcHtXm6F03Iarfs9ftBiWmj3CdCTuv9aGpJFi0FKzXKzq/xlCtbWvIrqcaf2Iy//6NQ==}
     peerDependencies:
       nuxt: ^3.6.5
       vite: '*'
@@ -1750,8 +1764,8 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/devtools-wizard@0.7.3:
-    resolution: {integrity: sha512-NEdQ5F5D5wCQf2IhjqSapoUP8DuJk33UlQi6juFe0pm8t4/VsavYZ62wHQRn16Lap16aIMK74FjA4VbJ/RflAA==}
+  /@nuxt/devtools-wizard@0.7.4:
+    resolution: {integrity: sha512-Ga+OgxTEZu0AnOmak5eMPrFThvLdoFVB5kEyyCrnBNdkTvX5Dtr8FvVAL+6jV0ALmqhWSXp99op2+QwHg7kgDg==}
     hasBin: true
     dependencies:
       consola: 3.2.3
@@ -1767,15 +1781,15 @@ packages:
       semver: 7.5.4
     dev: true
 
-  /@nuxt/devtools@0.7.3(debug@4.3.4)(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7):
-    resolution: {integrity: sha512-ZZsjwna8UJQd7r7Ua7QoTPgdkTvzPqiePGcNvI1X4b2kalvHrct880E++ROZJGvGSbdugA0vA3Va0ybsRc8Wvw==}
+  /@nuxt/devtools@0.7.4(debug@4.3.4)(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7):
+    resolution: {integrity: sha512-uaKvVIYWuJ5L1NasXYiZfOh3w2HkHwaMyyVCceabVsOh27PBIeV7rzF5zyMrkyO3vivmWUuXcoZo3M0JO41sqg==}
     hasBin: true
     peerDependencies:
       nuxt: ^3.6.5
       vite: '*'
     dependencies:
-      '@nuxt/devtools-kit': 0.7.3(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7)
-      '@nuxt/devtools-wizard': 0.7.3
+      '@nuxt/devtools-kit': 0.7.4(nuxt@3.6.5)(rollup@3.27.0)(vite@4.4.7)
+      '@nuxt/devtools-wizard': 0.7.4
       '@nuxt/kit': 3.6.5(rollup@3.27.0)
       birpc: 0.2.12
       boxen: 7.1.1
@@ -10559,7 +10573,7 @@ packages:
       vue-router:
         optional: true
     dependencies:
-      '@intlify/shared': 9.3.0-beta.24
+      '@intlify/shared': 9.3.0-beta.25
       '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.24)
       '@intlify/vue-router-bridge': 0.8.0(vue@3.3.4)
       ufo: 1.1.2
