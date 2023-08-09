@@ -1,5 +1,5 @@
 import createDebug from 'debug'
-import { isObject, isString } from '@intlify/shared'
+import { isObject } from '@intlify/shared'
 import {
   defineNuxtModule,
   isNuxt2,
@@ -11,7 +11,7 @@ import {
   addImports,
   useLogger
 } from '@nuxt/kit'
-import { resolve, relative, isAbsolute } from 'pathe'
+import { resolve, relative } from 'pathe'
 import { defu } from 'defu'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
@@ -93,8 +93,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
 
-    await mergeI18nModules(options, nuxt)
     applyLayerOptions(options, nuxt)
+    await mergeI18nModules(options, nuxt)
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       console.warn(
@@ -136,7 +136,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const normalizedLocales = getNormalizedLocales(options.locales)
     const hasLocaleFiles = normalizedLocales.length > 0
     const localeCodes = normalizedLocales.map(locale => locale.code)
-    const localeInfo = langPath != null ? await resolveLocales(langPath, normalizedLocales) : []
+    const localeInfo = await resolveLocales(resolve(nuxt.options.srcDir), normalizedLocales)
     debug('localeInfo', localeInfo)
 
     /**
@@ -273,8 +273,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     await extendBundler(nuxt, {
       nuxtOptions: options as Required<NuxtI18nOptions>,
-      hasLocaleFiles,
-      langPath
+      hasLocaleFiles
     })
 
     /**
