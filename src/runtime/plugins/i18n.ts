@@ -200,7 +200,13 @@ export default defineNuxtPlugin(async nuxt => {
             notInitialSetup = false
           }
 
-          const redirectPath = detectRedirect({ to: route }, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
+          const redirectPath = detectRedirect({
+            route: { to: route },
+            context: nuxtContext,
+            targetLocale: locale,
+            routeLocaleGetter: getLocaleFromRoute,
+            nuxtI18nOptions
+          })
           __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
 
           await navigate(
@@ -448,7 +454,14 @@ export default defineNuxtPlugin(async nuxt => {
         notInitialSetup = false
       }
 
-      const redirectPath = detectRedirect({ to, from }, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions)
+      const redirectPath = detectRedirect({
+        route: { to, from },
+        context: nuxtContext,
+        targetLocale: locale,
+        routeLocaleGetter: getLocaleFromRoute,
+        nuxtI18nOptions,
+        calledWithRoutng: true
+      })
       __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
 
       routeChangeCount++
