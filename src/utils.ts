@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
+import { defu } from 'defu'
 import { encodePath } from 'ufo'
 import { resolveLockfile } from 'pkg-types'
 // @ts-ignore
@@ -377,20 +378,21 @@ export function parseSegment(segment: string) {
 
 export const resolveRelativeLocales = (
   relativeFileResolver: (files: string[]) => string[],
-  locale: LocaleObject,
-  merged: LocaleObject | undefined
+  locale: LocaleObject | string,
+  merged: LocaleObject | string | undefined
 ) => {
-  if (typeof locale === 'string') return merged
+  if (typeof locale === 'string') return merged ?? locale
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { file, files, ...entry } = locale
 
   const fileEntries = getLocaleFiles(locale)
   const relativeFiles = relativeFileResolver(fileEntries)
+  const mergedLocaleObject = typeof merged === 'string' ? undefined : merged
   return {
     ...entry,
-    ...merged,
-    files: [...relativeFiles, ...(merged?.files ?? [])]
+    ...mergedLocaleObject,
+    files: [...(relativeFiles ?? []), ...(mergedLocaleObject?.files ?? [])]
   }
 }
 
@@ -400,7 +402,7 @@ export const getLocaleFiles = (locale: LocaleObject): string[] => {
   return []
 }
 
-export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string, files: string[]) => {
+export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string = '', files: string[] = []) => {
   const absoluteFiles = files.map(file => resolve(layerLangDir, file))
   const relativeFiles = absoluteFiles.map(file => relative(projectLangDir, file))
 
@@ -413,9 +415,9 @@ export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
 }
 
 export type LocaleConfig = {
-  projectLangDir?: string | null
+  projectLangDir: string
   langDir?: string | null
-  locales?: (string | LocaleObject)[]
+  locales?: string[] | LocaleObject[]
 }
 /**
  * Generically merge LocaleObject locales
@@ -424,32 +426,29 @@ export type LocaleConfig = {
  * @param baseLocales optional array of locale objects to merge configs into
  */
 export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
-  const mergedLocales = new Map<string, LocaleObject>()
+  const mergedLocales = new Map<string, LocaleObject | string>()
   baseLocales.forEach(locale => mergedLocales.set(locale.code, locale))
+
+  const getLocaleCode = (val: string | LocaleObject) => (typeof val === 'string' ? val : val.code)
 
   for (const { locales, langDir, projectLangDir } of configs) {
     if (locales == null) continue
-    if (langDir == null) continue
-    if (projectLangDir == null) continue
 
     for (const locale of locales) {
-      if (typeof locale === 'string') continue
-
-      const filesResolver = (files: string[]) => localeFilesToRelative(projectLangDir, langDir, files)
-      const resolvedLocale = resolveRelativeLocales(filesResolver, locale, mergedLocales.get(locale.code))
-      if (resolvedLocale != null) mergedLocales.set(locale.code, resolvedLocale)
+      const code = getLocaleCode(locale)
+      const filesResolver = (files: string[]) => localeFilesToRelative(projectLangDir, langDir ?? '', files)
+      const resolvedLocale = resolveRelativeLocales(filesResolver, locale, mergedLocales.get(code))
+      if (resolvedLocale != null) mergedLocales.set(code, resolvedLocale)
     }
   }
 
-  return Array.from(mergedLocales.values())
+  return Array.from(mergedLocales.values()) as string[] | LocaleObject[]
 }
 
 /**
  * Merges project layer locales with registered i18n modules
  */
 export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => {
-  const projectLayer = nuxt.options._layers[0]
-  const projectI18n = getLayerI18n(projectLayer)
   if (options) options.i18nModules = []
 
   const registerI18nModule = (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => {
@@ -459,7 +458,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
 
   await nuxt.callHook('i18n:registerModule', registerI18nModule)
   const modules = options?.i18nModules ?? []
-  const projectLangDir = getProjectPath(nuxt, projectI18n?.langDir ?? '')
+  const projectLangDir = getProjectPath(nuxt, nuxt.options.rootDir)
 
   if (modules.length > 0) {
     const baseLocales: LocaleObject[] = []
@@ -505,8 +504,19 @@ export function getLayerI18n(configLayer: NuxtConfigLayer) {
   )?.[1]
 
   if (configLayer.config.i18n) {
-    return { ...layerInlineOptions, ...configLayer.config.i18n }
+    return defu(configLayer.config.i18n, layerInlineOptions)
   }
 
   return layerInlineOptions
+}
+
+export const applyOptionOverrides = (options: NuxtI18nOptions, nuxt: Nuxt) => {
+  const project = nuxt.options._layers[0]
+  const { overrides, ...mergedOptions } = options
+
+  if (overrides) {
+    delete options.overrides
+    project.config.i18n = defu(overrides, project.config.i18n)
+    Object.assign(options, defu(overrides, mergedOptions))
+  }
 }

@@ -5,20 +5,17 @@ export default defineNuxtConfig({
       {
         code: 'en',
         iso: 'en-US',
-        name: 'English',
-        file: 'en-US.json'
+        name: 'English'
       },
       {
         code: 'fr',
         iso: 'fr-FR',
-        name: 'Français',
-        file: 'fr-FR.json'
+        name: 'Français'
       },
       {
         code: 'nl',
         iso: 'nl-NL',
-        name: 'Nederlands',
-        file: 'nl-NL.json'
+        name: 'Nederlands'
       }
     ]
   }
