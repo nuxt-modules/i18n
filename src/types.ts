@@ -80,6 +80,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   /**
    * @internal
    */
+  overrides?: Omit<NuxtI18nOptions, 'overrides'>
   i18nModules?: { langDir?: string | null; locales?: I18nRoutingOptions<Context>['locales'] }[]
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string

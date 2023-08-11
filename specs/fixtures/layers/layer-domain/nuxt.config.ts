@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     differentDomains: true,
     defaultLocale: 'en',
     strategy: 'prefix_except_default',
-    // langDir: 'locales',
+    langDir: 'locales',
     locales: [
       {
         code: 'en',

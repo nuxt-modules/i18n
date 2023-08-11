@@ -59,7 +59,6 @@ export default defineNuxtPlugin(async nuxt => {
     differentDomains,
     skipSettingLocaleOnNavigate,
     lazy,
-    langDir,
     routesNameSeparator,
     defaultLocaleRouteNameSuffix,
     strategy,
@@ -192,8 +191,7 @@ export default defineNuxtPlugin(async nuxt => {
             differentDomains,
             initial: localeSetup,
             skipSettingLocaleOnNavigate,
-            lazy,
-            langDir
+            lazy
           })
 
           if (modified && localeSetup) {
@@ -440,8 +438,7 @@ export default defineNuxtPlugin(async nuxt => {
         differentDomains,
         initial: localeSetup,
         skipSettingLocaleOnNavigate,
-        lazy,
-        langDir
+        lazy
       })
 
       if (modified && localeSetup) {
