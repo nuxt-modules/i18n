@@ -107,22 +107,21 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
     localeCodes: string[]
   }
 ): Promise<Record<string, any>> {
-  const { defaultLocale, initialLocale, localeCodes, fallbackLocale, langDir, lazy } = options
+  const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
   const setter = (locale: Locale, message: Record<string, any>) => {
     const base = messages[locale] || {}
     messages[locale] = { ...base, ...message }
   }
 
-  if (langDir) {
-    // load fallback messages
-    if (lazy && fallbackLocale) {
-      const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
-      await Promise.all(fallbackLocales.map(locale => loadLocale(context, locale, setter)))
-    }
-    // load initial messages
-    const locales = lazy ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
-    await Promise.all(locales.map(locale => loadLocale(context, locale, setter)))
+  // load fallback messages
+  if (lazy && fallbackLocale) {
+    const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
+    await Promise.all(fallbackLocales.map(locale => loadLocale(context, locale, setter)))
   }
+
+  // load initial messages
+  const locales = lazy ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
+  await Promise.all(locales.map(locale => loadLocale(context, locale, setter)))
 
   return messages
 }
@@ -136,10 +135,9 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
     skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate,
     differentDomains = nuxtI18nOptionsDefault.differentDomains,
     initial = false,
-    lazy = false,
-    langDir = null
+    lazy = false
   }: Pick<DetectBrowserLanguageOptions, 'useCookie'> &
-    Pick<NuxtI18nOptions<Context>, 'lazy' | 'langDir' | 'skipSettingLocaleOnNavigate' | 'differentDomains'> & {
+    Pick<NuxtI18nOptions<Context>, 'lazy' | 'skipSettingLocaleOnNavigate' | 'differentDomains'> & {
       initial?: boolean
     } = {}
 ): Promise<[boolean, string]> {
@@ -169,16 +167,14 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
     newLocale = localeOverride
   }
 
-  if (langDir) {
-    const i18nFallbackLocales = getVueI18nPropertyValue<FallbackLocale>(i18n, 'fallbackLocale')
-    if (lazy) {
-      const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
-      if (i18nFallbackLocales) {
-        const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-        await Promise.all(fallbackLocales.map(locale => loadLocale(context, locale, setter)))
-      }
-      await loadLocale(context, newLocale, setter)
+  const i18nFallbackLocales = getVueI18nPropertyValue<FallbackLocale>(i18n, 'fallbackLocale')
+  if (lazy) {
+    const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
+    if (i18nFallbackLocales) {
+      const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
+      await Promise.all(fallbackLocales.map(locale => loadLocale(context, locale, setter)))
     }
+    await loadLocale(context, newLocale, setter)
   }
 
   if (skipSettingLocaleOnNavigate) {

@@ -70,7 +70,6 @@ test('basic', async () => {
   const { generateLoaderOptions } = await import('../src/gen')
   const code = generateLoaderOptions(
     false,
-    'locales',
     '..',
     NUXT_I18N_VUE_I18N_CONFIG,
     [],
@@ -90,7 +89,6 @@ test('basic', async () => {
 test('lazy', () => {
   const code = generateLoaderOptions(
     true,
-    'locales',
     '..',
     NUXT_I18N_VUE_I18N_CONFIG,
     [],
@@ -109,7 +107,6 @@ test('lazy', () => {
 test('multiple files', () => {
   const code = generateLoaderOptions(
     true,
-    'locales',
     '..',
     NUXT_I18N_VUE_I18N_CONFIG,
     [],
@@ -142,7 +139,6 @@ test('multiple files', () => {
 test('locale file in nested', () => {
   const code = generateLoaderOptions(
     true,
-    'locales',
     '..',
     NUXT_I18N_VUE_I18N_CONFIG,
     [],
@@ -177,7 +173,6 @@ test('locale file in nested', () => {
 test('vueI18n option', () => {
   const code = generateLoaderOptions(
     false,
-    'locales',
     '..',
     NUXT_I18N_VUE_I18N_CONFIG,
     [
@@ -211,7 +206,6 @@ test('vueI18n option', () => {
 test('toCode: function (arrow)', () => {
   const code = generateLoaderOptions(
     false,
-    'locales',
     '..',
     NUXT_I18N_VUE_I18N_CONFIG,
     [],
@@ -236,7 +230,7 @@ test('toCode: function (arrow)', () => {
 })
 
 test('toCode: function (named)', () => {
-  const code = generateLoaderOptions(false, 'locales', '..', NUXT_I18N_VUE_I18N_CONFIG, [], {
+  const code = generateLoaderOptions(false, '..', NUXT_I18N_VUE_I18N_CONFIG, [], {
     localeCodes: LOCALE_CODES,
     nuxtI18nOptions: {
       ...NUXT_I18N_OPTIONS,

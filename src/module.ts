@@ -1,5 +1,5 @@
 import createDebug from 'debug'
-import { isObject, isString } from '@intlify/shared'
+import { isObject } from '@intlify/shared'
 import {
   defineNuxtModule,
   isNuxt2,
@@ -11,7 +11,7 @@ import {
   addImports,
   useLogger
 } from '@nuxt/kit'
-import { resolve, relative, isAbsolute } from 'pathe'
+import { resolve, relative } from 'pathe'
 import { defu } from 'defu'
 import { setupAlias, resolveVueI18nAlias } from './alias'
 import { setupPages } from './pages'
@@ -32,10 +32,11 @@ import {
   resolveLocales,
   getPackageManagerType,
   mergeI18nModules,
-  resolveVueI18nConfigInfo
+  resolveVueI18nConfigInfo,
+  applyOptionOverrides
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
-import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
+import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
 import type { NuxtI18nOptions } from './types'
 
@@ -57,6 +58,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const logger = useLogger(NUXT_I18N_MODULE_ID)
 
     const options = i18nOptions as Required<NuxtI18nOptions>
+    applyOptionOverrides(options, nuxt)
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {
@@ -72,10 +74,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
     }
 
     /**
-     * Check vertions
+     * Check versions
      */
 
-    checkOptions(options)
+    checkLayerOptions(options, nuxt)
 
     if (isNuxt2(nuxt)) {
       throw new Error(
@@ -91,8 +93,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
 
-    await mergeI18nModules(options, nuxt)
     applyLayerOptions(options, nuxt)
+    await mergeI18nModules(options, nuxt)
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       console.warn(
@@ -115,26 +117,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     /**
-     * resolve lang directory
-     */
-
-    if (isString(options.langDir) && isAbsolute(options.langDir)) {
-      logger.warn(
-        `\`langdir\` is set to an absolute path (${options.langDir}) but should be set a path relative to \`srcDir\` (${nuxt.options.srcDir}). ` +
-          `Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
-      )
-    }
-    const langPath = isString(options.langDir) ? resolve(nuxt.options.srcDir, options.langDir) : null
-    debug('langDir path', langPath)
-
-    /**
      * resolve locale info
      */
 
     const normalizedLocales = getNormalizedLocales(options.locales)
     const hasLocaleFiles = normalizedLocales.length > 0
     const localeCodes = normalizedLocales.map(locale => locale.code)
-    const localeInfo = langPath != null ? await resolveLocales(langPath, normalizedLocales) : []
+    const localeInfo = await resolveLocales(resolve(nuxt.options.srcDir), normalizedLocales)
     debug('localeInfo', localeInfo)
 
     /**
@@ -222,7 +211,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       getContents: () => {
         return generateLoaderOptions(
           options.lazy,
-          options.langDir,
           localesRelativeBasePath,
           vueI18nConfigPathInfo,
           layerVueI18nConfigPaths,
@@ -271,8 +259,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     await extendBundler(nuxt, {
       nuxtOptions: options as Required<NuxtI18nOptions>,
-      hasLocaleFiles,
-      langPath
+      hasLocaleFiles
     })
 
     /**
@@ -332,32 +319,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.options.vite.optimizeDeps.exclude.push('vue-i18n')
   }
 })
-
-function checkOptions(options: NuxtI18nOptions) {
-  // check `lazy` and `langDir` option
-  if (options.lazy && !options.langDir) {
-    throw new Error(formatMessage('When using the "lazy" option you must also set the "langDir" option.'))
-  }
-
-  // check `langDir` option
-  if (options.langDir) {
-    const locales = options.locales || []
-    if (!locales.length || isString(locales[0])) {
-      throw new Error(formatMessage('When using the "langDir" option the "locales" must be a list of objects.'))
-    }
-    for (const locale of locales) {
-      if (isString(locale) || !(locale.file || locale.files)) {
-        throw new Error(
-          formatMessage(
-            `All locales must be objects and have the "file" or "files" property set when using "langDir".` +
-              '\n' +
-              `Found none in:\n${JSON.stringify(locale, null, 2)}.`
-          )
-        )
-      }
-    }
-  }
-}
 
 type MaybePromise<T> = T | Promise<T>
 type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
