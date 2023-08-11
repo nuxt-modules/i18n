@@ -271,29 +271,43 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   return finalLocale
 }
 
-export function detectRedirect<Context extends NuxtApp = NuxtApp>(
+export function detectRedirect<Context extends NuxtApp = NuxtApp>({
+  route,
+  context,
+  targetLocale,
+  routeLocaleGetter,
+  nuxtI18nOptions,
+  calledWithRoutng = false
+}: {
   route: {
     to: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
     from?: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
-  },
-  context: Context,
-  targetLocale: Locale,
-  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
+  }
+  context: Context
+  targetLocale: Locale
+  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>
-): string {
+  calledWithRoutng?: boolean
+}): string {
   const { strategy, differentDomains } = nuxtI18nOptions
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
+  __DEBUG__ && console.log('detectRedirect: calledWithRoutng -> ', calledWithRoutng, routeLocaleGetter(route.to))
 
   let redirectPath = ''
   const isStaticGenerate = isSSG && process.server
 
-  // decide whether we should redirect to a different route.
+  /**
+   * decide whether we should redirect to a different route.
+   *
+   * NOTE: #2288
+   * If this function is called directly (e.g setLocale) than routing,
+   * it must be processed regardless of the strategy. because the route is not switched.
+   */
   if (
     !isStaticGenerate &&
     !differentDomains &&
-    strategy !== 'no_prefix' &&
-    strategy !== 'prefix_and_default' &&
+    (calledWithRoutng || (strategy !== 'no_prefix' && strategy !== 'prefix_and_default')) &&
     routeLocaleGetter(route.to) !== targetLocale
   ) {
     const { fullPath } = route.to
@@ -310,7 +324,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>(
     }
   }
 
-  if (differentDomains || (isSSG && process.client)) {
+  if ((differentDomains || (isSSG && process.client)) && routeLocaleGetter(route.to) !== targetLocale) {
     /**
      * `$router.currentRoute` does not yet reflect the `to` value,
      *  when the Router middleware handler is executed.
@@ -349,15 +363,7 @@ type NavigateArgs = {
 }
 
 function _navigate(redirectPath: string, status: number) {
-  if (isSSG && process.client) {
-    /**
-     * When in the SSG, nuxt i18n module does not need to redirect in the route middleware (vue-router).
-     * If we overwrite them with `location.assign`, the route history will be broken.
-     */
-    return
-  } else {
-    return navigateTo(redirectPath, { redirectCode: status })
-  }
+  return navigateTo(redirectPath, { redirectCode: status })
 }
 
 export async function navigate<Context extends NuxtApp = NuxtApp>(
