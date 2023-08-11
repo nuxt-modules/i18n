@@ -6,9 +6,9 @@
         <nuxt-link id="root-en" class="link" to="/en"> /en </nuxt-link>
         <nuxt-link id="about-en" class="link" to="/en/about"> /en/about </nuxt-link>
         <nuxt-link class="link" to="/about"> /about </nuxt-link>
-        <nuxt-link class="link" to="/ar/about"> /ar/about </nuxt-link>
+        <nuxt-link id="about-ar" class="link" to="/ar/about"> /ar/about </nuxt-link>
         <nuxt-link id="example-ar" class="link" to="/ar/example"> /ar/example </nuxt-link>
-        <nuxt-link class="link" to="/en/example"> /en/example </nuxt-link>
+        <nuxt-link id="example-en" class="link" to="/en/example"> /en/example </nuxt-link>
         <nuxt-link class="link" to="/example"> /example </nuxt-link>
       </nav>
 

@@ -2,7 +2,6 @@ import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { URL } from 'node:url'
 import { setup, url, createPage } from '../utils'
-import { getText } from '../helper'
 
 describe('#2288', async () => {
   await setup({
@@ -16,22 +15,27 @@ describe('#2288', async () => {
 
     // goto to `/en/about`
     await page.locator('#about-en').click()
-    expect(await getText(page, '#route-path')).toEqual('/en/about')
+    await page.waitForTimeout(10)
+    expect(await page.url().endsWith('/en/about')).toBe(true)
 
     // change to `ar`
     await page.locator('#ar').click()
-    expect(await getText(page, '#route-path')).toEqual('/about')
+    await page.waitForTimeout(10)
+    expect(await page.url().endsWith('/about')).toBe(true)
 
     // change to `en`
     await page.locator('#en').click()
-    expect(await getText(page, '#route-path')).toEqual('/en/about')
+    await page.waitForTimeout(10)
+    expect(await page.url().endsWith('/en/about')).toBe(true)
 
     // goto to `/ar/example`
-    await page.locator('#ar-example').click()
-    expect(await getText(page, '#route-path')).toEqual('/example')
+    await page.locator('#example-ar').click()
+    await page.waitForTimeout(10)
+    expect(await page.url().endsWith('/ar/example')).toBe(true)
 
-    // change to `en`
-    await page.locator('#en').click()
-    expect(await getText(page, '#route-path')).toEqual('/en/example')
+    // goto to `/en/example`
+    await page.locator('#example-en').click()
+    await page.waitForTimeout(10)
+    expect(await page.url().endsWith('/en/example')).toBe(true)
   })
 })

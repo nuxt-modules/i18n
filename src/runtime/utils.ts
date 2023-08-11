@@ -328,7 +328,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
     }
   }
 
-  if (differentDomains || (isSSG && process.client)) {
+  if ((differentDomains || (isSSG && process.client)) && routeLocaleGetter(route.to) !== targetLocale) {
     /**
      * `$router.currentRoute` does not yet reflect the `to` value,
      *  when the Router middleware handler is executed.
@@ -367,15 +367,7 @@ type NavigateArgs = {
 }
 
 function _navigate(redirectPath: string, status: number) {
-  if (isSSG && process.client) {
-    /**
-     * When in the SSG, nuxt i18n module does not need to redirect in the route middleware (vue-router).
-     * If we overwrite them with `location.assign`, the route history will be broken.
-     */
-    return
-  } else {
-    return navigateTo(redirectPath, { redirectCode: status })
-  }
+  return navigateTo(redirectPath, { redirectCode: status })
 }
 
 export async function navigate<Context extends NuxtApp = NuxtApp>(
