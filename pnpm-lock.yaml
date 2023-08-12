@@ -70,8 +70,8 @@ importers:
         specifier: 9.3.0-beta.24
         version: 9.3.0-beta.24(vue@3.3.4)
       vue-i18n-routing:
-        specifier: ^0.13.1
-        version: 0.13.1(vue-i18n@9.3.0-beta.24)(vue@3.3.4)
+        specifier: ^0.13.2
+        version: 0.13.2(vue-i18n@9.3.0-beta.24)(vue@3.3.4)
     devDependencies:
       '@babel/parser':
         specifier: ^7.22.7
@@ -10547,14 +10547,13 @@ packages:
         optional: true
     dependencies:
       vue: 3.3.4
-    dev: true
 
   /vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
     dev: true
 
-  /vue-i18n-routing@0.13.1(vue-i18n@9.3.0-beta.24)(vue@3.3.4):
-    resolution: {integrity: sha512-F+VYikc86UqJSUziXtRvEJM7/ZIusN27hjtbvMKjweznBTVD4FWour+xe4d3zi0ETnajBsldu4FddZN7VlUOyg==}
+  /vue-i18n-routing@0.13.2(vue-i18n@9.3.0-beta.24)(vue@3.3.4):
+    resolution: {integrity: sha512-BB7JbPr4FjVfoe27SKQgpq7a90Z4rdo0bR9TjPQ/roAAPM+YJdO3a+ixVgGfcYemXNYMplhG1ZACF8EqYYkZhw==}
     engines: {node: '>= 14.6'}
     peerDependencies:
       '@vue/composition-api': ^1.0.0-rc.1
@@ -10577,9 +10576,9 @@ packages:
       '@intlify/shared': 9.3.0-beta.25
       '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.24)
       '@intlify/vue-router-bridge': 0.8.0(vue@3.3.4)
-      ufo: 1.1.2
+      ufo: 1.2.0
       vue: 3.3.4
-      vue-demi: 0.13.11(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
       vue-i18n: 9.3.0-beta.24(vue@3.3.4)
     dev: false
 
