@@ -17,16 +17,16 @@ import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
 
-export type AnalizedNuxtPageMeta = {
+export type AnalyzedNuxtPageMeta = {
   inRoot: boolean
   path: string
 }
 
-export type NuxtPageAnalizeContext = {
+export type NuxtPageAnalyzeContext = {
   stack: string[]
   srcDir: string
   pagesDir: string
-  pages: Map<NuxtPage, AnalizedNuxtPageMeta>
+  pages: Map<NuxtPage, AnalyzedNuxtPageMeta>
 }
 
 export function setupPages(
@@ -55,11 +55,11 @@ export function setupPages(
 
   extendPages(pages => {
     debug('pages making ...', pages)
-    const ctx: NuxtPageAnalizeContext = {
+    const ctx: NuxtPageAnalyzeContext = {
       stack: [],
       srcDir,
       pagesDir,
-      pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
+      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
     }
 
     analyzeNuxtPages(ctx, pages)
@@ -80,18 +80,18 @@ export function setupPages(
 }
 
 /**
- * Construct the map of full paths from nuxtpage to support custom routes.
+ * Construct the map of full paths from NuxtPage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
-export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[], pageDirOverride?: string): void {
+export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages: NuxtPage[], pageDirOverride?: string): void {
   const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
     if (page.file == null) {
       continue
     }
-    const splited = page.file.split(pagesPath)
-    if (splited.length === 2 && splited[1]) {
-      const { dir, name } = parsePath(splited[1])
+    const splits = page.file.split(pagesPath)
+    if (splits.length === 2 && splits[1]) {
+      const { dir, name } = parsePath(splits[1])
       let path = ''
       if (ctx.stack.length > 0) {
         path += `${dir.slice(1, dir.length)}/${name}`
@@ -101,7 +101,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[],
         }
         path += name
       }
-      const p: AnalizedNuxtPageMeta = {
+      const p: AnalyzedNuxtPageMeta = {
         inRoot: ctx.stack.length === 0,
         path
       }
@@ -117,7 +117,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalizeContext, pages: NuxtPage[],
 }
 
 export function getRouteOptionsResolver(
-  ctx: NuxtPageAnalizeContext,
+  ctx: NuxtPageAnalyzeContext,
   options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'customRoutes'>
 ): RouteOptionsResolver {
   const { pages, defaultLocale, customRoutes } = options
@@ -142,7 +142,7 @@ function resolveRoutePath(path: string): string {
 }
 
 function getRouteOptionsFromPages(
-  ctx: NuxtPageAnalizeContext,
+  ctx: NuxtPageAnalyzeContext,
   route: I18nRoute,
   localeCodes: string[],
   pages: CustomRoutePages,
@@ -153,13 +153,13 @@ function getRouteOptionsFromPages(
     paths: {}
   }
 
-  // get `AnalizedNuxtPageMeta` to use Vue Router path mapping
+  // get `AnalyzedNuxtPageMeta` to use Vue Router path mapping
   const pageMeta = ctx.pages.get(route as unknown as NuxtPage)
 
-  // skip if no `AnalizedNuxtPageMeta`
+  // skip if no `AnalyzedNuxtPageMeta`
   if (pageMeta == null) {
     console.warn(
-      formatMessage(`Couldn't find AnalizedNuxtPageMeta by NuxtPage (${route.path}), so no custom route for it`)
+      formatMessage(`Couldn't find AnalyzedNuxtPageMeta by NuxtPage (${route.path}), so no custom route for it`)
     )
     return options
   }

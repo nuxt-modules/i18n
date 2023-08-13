@@ -2,7 +2,7 @@ import { test, expect } from 'vitest'
 import { analyzeNuxtPages } from '../../src/pages'
 
 import type { NuxtPage } from '@nuxt/schema'
-import type { NuxtPageAnalizeContext, AnalizedNuxtPageMeta } from '../../src/pages'
+import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
 
 test('analyzeNuxtPages', () => {
   const pages: NuxtPage[] = [
@@ -103,11 +103,11 @@ test('analyzeNuxtPages', () => {
 
   const srcDir = '/path/to/nuxt-app'
   const pagesDir = 'pages'
-  const ctx: NuxtPageAnalizeContext = {
+  const ctx: NuxtPageAnalyzeContext = {
     stack: [],
     srcDir,
     pagesDir,
-    pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
+    pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
   }
   analyzeNuxtPages(ctx, pages)
 
