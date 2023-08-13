@@ -86,10 +86,10 @@ function getLocaleType(path: string): LocaleType {
   if (EXECUTABLE_EXTENSIONS.includes(ext)) {
     const code = readCode(path, ext)
     const parsed = parseCode(code, path)
-    const anaylzed = scanProgram(parsed.program)
-    if (anaylzed === 'object') {
+    const analyzed = scanProgram(parsed.program)
+    if (analyzed === 'object') {
       return 'static'
-    } else if (anaylzed === 'function' || anaylzed === 'arrow-function') {
+    } else if (analyzed === 'function' || analyzed === 'arrow-function') {
       return 'dynamic'
     } else {
       return 'unknown'
@@ -159,9 +159,9 @@ export function getLayerRootDirs(nuxt: Nuxt) {
   return layers.length > 1 ? layers.map(layer => layer.config.rootDir) : []
 }
 
-export async function tryResolve(id: string, targets: string[], pkgMgr: PackageManager, extention = '') {
+export async function tryResolve(id: string, targets: string[], pkgMgr: PackageManager, extension = '') {
   for (const target of targets) {
-    if (await isExists(target + extention)) {
+    if (await isExists(target + extension)) {
       return target
     }
   }
@@ -257,7 +257,7 @@ export function stringifyObj(obj: Record<string, any>): string {
 }
 
 /**
- * sergment parser, forked from the below:
+ * segment parser, forked from the below:
  * - original repository url: https://github.com/nuxt/framework
  * - code url: https://github.com/nuxt/framework/blob/main/packages/nuxt/src/pages/utils.ts
  * - author: Nuxt Framework Team

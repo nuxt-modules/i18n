@@ -8,4 +8,4 @@
   - [ ] module alias, langs option, etc should be resolved with `createResolver`
   - [ ] resolve i18n options of nuxt.config with `useRuntimeConfig`, not `i18n.options.mjs`
   - [ ] pass `vueI18n` option as config and pass it to vue-i18n in runtime context.
-  - [ ] request nuxt sergment parser from `@nuxt/kit` API and use it.
+  - [ ] request nuxt segment parser from `@nuxt/kit` API and use it.

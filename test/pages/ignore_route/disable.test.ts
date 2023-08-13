@@ -6,7 +6,7 @@ import { localizeRoutes } from 'vue-i18n-routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 
-import { NuxtPageAnalizeContext, AnalizedNuxtPageMeta } from '../../../src/pages'
+import { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../../src/pages'
 import type { NuxtI18nOptions } from '../../../src/types'
 import type { NuxtPage } from '../utils'
 
@@ -119,11 +119,11 @@ describe.each([
 
     const srcDir = '/path/to/nuxt-app'
     const pagesDir = 'pages'
-    const ctx: NuxtPageAnalizeContext = {
+    const ctx: NuxtPageAnalyzeContext = {
       stack: [],
       srcDir,
       pagesDir,
-      pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
+      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
     }
 
     analyzeNuxtPages(ctx, pages)
@@ -153,11 +153,11 @@ describe.each([
   test(_case, async () => {
     const srcDir = '/path/to/nuxt-app'
     const pagesDir = 'pages'
-    const ctx: NuxtPageAnalizeContext = {
+    const ctx: NuxtPageAnalyzeContext = {
       stack: [],
       srcDir,
       pagesDir,
-      pages: new Map<NuxtPage, AnalizedNuxtPageMeta>()
+      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
     }
 
     analyzeNuxtPages(ctx, pages)

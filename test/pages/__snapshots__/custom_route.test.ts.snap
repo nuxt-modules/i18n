@@ -95,7 +95,7 @@ exports[`#1649 1`] = `
 ]
 `;
 
-exports[`Modeule configration > dynamic parameters 1`] = `
+exports[`Module configuration > dynamic parameters 1`] = `
 [
   {
     "children": [],
@@ -118,7 +118,7 @@ exports[`Modeule configration > dynamic parameters 1`] = `
 ]
 `;
 
-exports[`Modeule configration > simple 1`] = `
+exports[`Module configuration > simple 1`] = `
 [
   {
     "children": [],
@@ -138,7 +138,7 @@ exports[`Modeule configration > simple 1`] = `
 ]
 `;
 
-exports[`Modeule configration > the part of URL 1`] = `
+exports[`Module configuration > the part of URL 1`] = `
 [
   {
     "children": [],

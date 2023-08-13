@@ -277,7 +277,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
   targetLocale,
   routeLocaleGetter,
   nuxtI18nOptions,
-  calledWithRoutng = false
+  calledWithRouting = false
 }: {
   route: {
     to: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
@@ -287,12 +287,12 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
   targetLocale: Locale
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>
-  calledWithRoutng?: boolean
+  calledWithRouting?: boolean
 }): string {
   const { strategy, differentDomains } = nuxtI18nOptions
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
-  __DEBUG__ && console.log('detectRedirect: calledWithRoutng -> ', calledWithRoutng, routeLocaleGetter(route.to))
+  __DEBUG__ && console.log('detectRedirect: calledWithRouting -> ', calledWithRouting, routeLocaleGetter(route.to))
 
   let redirectPath = ''
   const isStaticGenerate = isSSG && process.server
@@ -307,7 +307,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
   if (
     !isStaticGenerate &&
     !differentDomains &&
-    (calledWithRoutng || (strategy !== 'no_prefix' && strategy !== 'prefix_and_default')) &&
+    (calledWithRouting || (strategy !== 'no_prefix' && strategy !== 'prefix_and_default')) &&
     routeLocaleGetter(route.to) !== targetLocale
   ) {
     const { fullPath } = route.to
@@ -433,7 +433,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
   }
 }
 
-export function inejctNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
+export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
   /**
    * NOTE:
    *  we will inject `i18n.global` to **nuxt app instance only**

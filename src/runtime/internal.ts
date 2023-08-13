@@ -131,7 +131,7 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
       } else {
         console.warn(
           formatMessage(
-            'Not support js / ts extension format as default. you can do enable with `i18n.experimental.jsTsFormatResource: true` (experimental)'
+            'JS / TS extension format is not supported by default. This can be enabled by setting `i18n.experimental.jsTsFormatResource: true` (experimental)'
           )
         )
       }
@@ -352,7 +352,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
     return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
   }
 
-  // Locale detection from the browser is first access only
+  // browser locale detection happens during first access only
   if (!firstAccess) {
     return { locale: '', stat: false, reason: 'first_access_only' }
   }
@@ -425,7 +425,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
   __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
 
-  // handle cookie option to prevent multiple redirections
+  // handle cookie option to prevent multiple redirects
   if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {
     if (strategy === 'no_prefix') {
       return { locale: finalLocale, stat: true, from: localeFrom }
