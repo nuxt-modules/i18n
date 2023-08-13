@@ -32,7 +32,8 @@ export function generateLoaderOptions(
   misc: {
     dev: boolean
     ssg: boolean
-  } = { dev: true, ssg: false }
+    parallelPlugin: boolean
+  } = { dev: true, ssg: false, parallelPlugin: false }
 ) {
   debug('generateLoaderOptions: lazy', lazy)
   debug('generateLoaderOptions: localesRelativeBase', localesRelativeBase)
@@ -258,6 +259,7 @@ export function generateLoaderOptions(
    */
   genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
   genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
+  genCode += `export const parallelPlugin = ${toCode(misc.parallelPlugin)}\n`
 
   debug('generate code', genCode)
   return genCode

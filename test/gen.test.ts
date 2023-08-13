@@ -80,7 +80,7 @@ test('basic', async () => {
       nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    { ssg: false, dev: true }
+    { ssg: false, dev: true, parallelPlugin: false }
   )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
@@ -98,7 +98,7 @@ test('lazy', () => {
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    { ssg: false, dev: true }
+    { ssg: false, dev: true, parallelPlugin: false }
   )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
@@ -130,7 +130,7 @@ test('multiple files', () => {
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    { ssg: false, dev: true }
+    { ssg: false, dev: true, parallelPlugin: false }
   )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
@@ -164,7 +164,7 @@ test('locale file in nested', () => {
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    { ssg: false, dev: true }
+    { ssg: false, dev: true, parallelPlugin: false }
   )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
@@ -197,7 +197,7 @@ test('vueI18n option', () => {
       },
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    { ssg: false, dev: true }
+    { ssg: false, dev: true, parallelPlugin: false }
   )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()
@@ -223,7 +223,7 @@ test('toCode: function (arrow)', () => {
       nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
       nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
     },
-    { ssg: false, dev: true }
+    { ssg: false, dev: true, parallelPlugin: false }
   )
   expect(validateSyntax(code)).toBe(true)
   expect(code).toMatchSnapshot()

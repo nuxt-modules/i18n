@@ -89,6 +89,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean
+  parallelPlugin?: boolean
 } & Pick<
   I18nRoutingOptions<Context>,
   | 'baseUrl'
