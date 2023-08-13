@@ -93,7 +93,7 @@ export function generateLoaderOptions(
   const asyncLocaleFiles = new Set<LocaleInfo>()
 
   /**
-   * Prepare locale files for synthetic or asynthetic
+   * Prepare locale files for synchronous or asynchronous
    */
   for (const locale of localeInfo) {
     if (!syncLocaleFiles.has(locale) && !asyncLocaleFiles.has(locale)) {
@@ -102,7 +102,7 @@ export function generateLoaderOptions(
   }
 
   /**
-   * Generate locale synthetic imports
+   * Generate locale synchronous imports
    */
   for (const localeInfo of syncLocaleFiles) {
     convertToPairs(localeInfo).forEach(({ path, type, file, hash }) => {
@@ -130,7 +130,7 @@ export function generateLoaderOptions(
     }
   }
 
-  const generateVueI18nConfigration = (
+  const generateVueI18nConfiguration = (
     configPath: VueI18nConfigPathInfo,
     fn: (configPath: Required<VueI18nConfigPathInfo>, meta: { dir: string; base: string; ext: string }) => string | null
   ) => {
@@ -164,7 +164,7 @@ export function generateLoaderOptions(
                 : {}
           }
 `
-          const basicVueI18nConfigCode = generateVueI18nConfigration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
+          const basicVueI18nConfigCode = generateVueI18nConfiguration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
             const configImportKey = makeImportKey(relativeBase, dir, base)
             return `const vueI18n = await vueI18nConfigLoader((${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
           })
@@ -205,7 +205,7 @@ export function generateLoaderOptions(
 `
           }
           for (const configPath of vueI18nConfigPaths) {
-            const additionalVueI18nConfigCode = generateVueI18nConfigration(configPath, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
+            const additionalVueI18nConfigCode = generateVueI18nConfiguration(configPath, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
               const configImportKey = makeImportKey(relativeBase, dir, base)
               return `await mergeMessages(${rootKey}.${key}.messages, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
             })

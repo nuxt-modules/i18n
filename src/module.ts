@@ -62,7 +62,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     debug('options', options)
 
     if (options.experimental.jsTsFormatResource) {
-      logger.warn('JS / TS extension format is experimental')
+      logger.warn('JS / TS extension format is an experimental feature')
     }
 
     if (!options.compilation.jit) {
@@ -182,7 +182,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // for core plugin
     addPlugin(resolve(runtimeDir, 'plugins/i18n'))
 
-    // for compoables
+    // for composables
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables.mjs')
     nuxt.options.build.transpile.push('#i18n')
 
@@ -311,7 +311,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.options.build.transpile.push('@nuxtjs/i18n-edge')
 
     /**
-     * Optimiaztion deps
+     * Optimize deps
      */
 
     // Optimize vue-i18n to ensure we share the same symbol

@@ -33,7 +33,7 @@ export const checkLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
     try {
       // check `lazy` and `langDir` option
       if (layerI18n.lazy && !layerI18n.langDir) {
-        throw new Error('When using the `lazy`option you must also set the `langDir` option.')
+        throw new Error('When using the `lazy` option you must also set the `langDir` option.')
       }
 
       // check `langDir` option
@@ -45,7 +45,7 @@ export const checkLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
 
         if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
           logger.warn(
-            `${layerHint} \`langdir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
+            `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
               `Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
           )
         }

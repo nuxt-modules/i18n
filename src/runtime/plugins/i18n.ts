@@ -21,7 +21,7 @@ import {
   detectLocale,
   detectRedirect,
   navigate,
-  inejctNuxtHelpers,
+  injectNuxtHelpers,
   extendBaseUrl,
   extendPrefixable,
   extendSwitchLocalePathIntercepter,
@@ -71,7 +71,7 @@ export default defineNuxtPlugin({
     } = nuxtI18nOptions
     __DEBUG__ && console.log('isSSG', isSSG)
     __DEBUG__ && console.log('useCookie on setup', useCookie)
-    __DEBUG__ && console.log('defautlLocale on setup', defaultLocale)
+    __DEBUG__ && console.log('defaultLocale on setup', defaultLocale)
 
     nuxtI18nOptions.baseUrl = extendBaseUrl(nuxtI18nOptions.baseUrl, {
       differentDomains,
@@ -143,7 +143,7 @@ export default defineNuxtPlugin({
 
     /**
      * NOTE:
-     *  avoid hydaration miss match for SSG mode
+     *  avoid hydration mismatch for SSG mode
      */
     if (isSSGModeInitialSetup() && strategy === 'no_prefix' && process.client) {
       nuxt.hook('app:mounted', async () => {
@@ -422,7 +422,7 @@ export default defineNuxtPlugin({
     app.use(i18n, pluginOptions) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
 
     // inject for nuxt helpers
-    inejctNuxtHelpers(nuxtContext, i18n)
+    injectNuxtHelpers(nuxtContext, i18n)
 
     let routeChangeCount = 0
 
@@ -471,7 +471,7 @@ export default defineNuxtPlugin({
           targetLocale: locale,
           routeLocaleGetter: getLocaleFromRoute,
           nuxtI18nOptions,
-          calledWithRoutng: true
+          calledWithRouting: true
         })
         __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
 

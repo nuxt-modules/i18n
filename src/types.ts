@@ -26,7 +26,7 @@ export type LocaleInfo = {
   type?: LocaleType
   /**
    * NOTE:
-   *  The following fields are for `files` (excluds nuxt layers) in the nuxt i18n module `locales` option.
+   *  The following fields are for `files` (excludes nuxt layers) in the nuxt i18n module `locales` option.
    */
   paths?: string[]
   hashes?: string[]
