@@ -422,7 +422,7 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
     const state = useRedirectState()
     __DEBUG__ && console.log('redirect state ->', state.value, 'redirectPath -> ', redirectPath)
     if (process.client) {
-      if (state.value !== redirectPath) {
+      if (state.value && state.value !== redirectPath) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
       }
