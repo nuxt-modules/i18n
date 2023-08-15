@@ -512,7 +512,7 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
       } = useRequestEvent(nuxt)
       protocol = req && isHTTPS(req) ? 'https' : 'http'
     } else {
-      protocol = window.location.protocol.split(':')[0]
+      protocol = new URL(window.location.origin).protocol
     }
     return protocol + '://' + lang.domain
   }
