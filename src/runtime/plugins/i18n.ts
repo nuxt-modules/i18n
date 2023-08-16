@@ -417,6 +417,7 @@ export default defineNuxtPlugin({
         c.onLanguageSwitched = g.onLanguageSwitched
         c.finalizePendingLocaleChange = g.finalizePendingLocaleChange
         c.waitForPendingLocaleChange = g.waitForPendingLocaleChange
+        return () => {}
       }
     }
     app.use(i18n, pluginOptions) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration

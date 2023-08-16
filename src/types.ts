@@ -1,5 +1,6 @@
 import type { Strategies, LocaleObject, I18nRoutingOptions } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from 'vue-i18n'
+import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
@@ -59,6 +60,8 @@ export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
 }
 
+export interface BundleOptions extends Pick<PluginOptions, 'compositionOnly'> {}
+
 export interface LocaleMessageCompilationOptions {
   jit?: boolean
   strictMessage?: boolean
@@ -70,6 +73,7 @@ export { I18nOptions }
 export type NuxtI18nOptions<Context = unknown> = {
   vueI18n?: string
   experimental?: ExperimentalFeatures
+  bundle?: BundleOptions
   compilation?: LocaleMessageCompilationOptions
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
