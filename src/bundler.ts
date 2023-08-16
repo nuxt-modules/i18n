@@ -66,7 +66,9 @@ export async function extendBundler(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
       config.plugins!.push(
         new webpack.DefinePlugin(
-          assign(getFeatureFlags(nuxtOptions.compilation.jit), { __DEBUG__: String(nuxtOptions.debug) })
+          assign(getFeatureFlags(nuxtOptions.compilation.jit, nuxtOptions.bundle.compositionOnly), {
+            __DEBUG__: String(nuxtOptions.debug)
+          })
         )
       )
     })
@@ -81,6 +83,7 @@ export async function extendBundler(
   const vitePluginOptions: PluginOptions = {
     runtimeOnly: true,
     allowDynamic: true,
+    compositionOnly: nuxtOptions.bundle.compositionOnly,
     jitCompilation: nuxtOptions.compilation.jit,
     strictMessage: nuxtOptions.compilation.strictMessage,
     escapeHtml: nuxtOptions.compilation.escapeHtml
@@ -105,10 +108,10 @@ export async function extendBundler(
   })
 }
 
-export function getFeatureFlags(jit = true) {
+export function getFeatureFlags(jit = true, compositionOnly = true) {
   return {
     __VUE_I18N_FULL_INSTALL__: 'true',
-    __VUE_I18N_LEGACY_API__: 'true',
+    __VUE_I18N_LEGACY_API__: String(!compositionOnly),
     __INTLIFY_PROD_DEVTOOLS__: 'false',
     __INTLIFY_JIT_COMPILATION__: String(jit)
   }

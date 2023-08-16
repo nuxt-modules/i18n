@@ -35,6 +35,9 @@ export const DEFAULT_OPTIONS = {
   experimental: {
     jsTsFormatResource: false
   },
+  bundle: {
+    compositionOnly: true
+  },
   compilation: {
     jit: true,
     strictMessage: true,
