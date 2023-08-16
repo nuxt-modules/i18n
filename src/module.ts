@@ -93,6 +93,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(formatMessage(`Cannot support nuxt version: ${getNuxtVersion(nuxt)}`))
     }
 
+    /**
+     * Check conflicting options
+     */
+
+    if (options.bundle.compositionOnly && options.types === 'legacy') {
+      throw new Error(
+        formatMessage(
+          `'i18n.bundle.compositionOnly' option and 'i18n.types' option is conflicting: i18n.bundle.compositionOnly: ${
+            options.bundle.compositionOnly
+          }, i18n.types: ${JSON.stringify(options.types)}`
+        )
+      )
+    }
+
     applyLayerOptions(options, nuxt)
     await mergeI18nModules(options, nuxt)
 
