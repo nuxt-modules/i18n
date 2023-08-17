@@ -100,24 +100,34 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (options.bundle.compositionOnly && options.types === 'legacy') {
       throw new Error(
         formatMessage(
-          `'i18n.bundle.compositionOnly' option and 'i18n.types' option is conflicting: i18n.bundle.compositionOnly: ${
-            options.bundle.compositionOnly
-          }, i18n.types: ${JSON.stringify(options.types)}`
+          '`bundle.compositionOnly` option and `types` option is conflicting: ' +
+            `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
         )
       )
     }
+
+    if (options.bundle.runtimeOnly && options.compilation.jit) {
+      logger.warn(
+        '`bundle.runtimeOnly` option and `compilation.jit` option is conflicting: ' +
+          `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
+            options.compilation.jit
+          )}`
+      )
+    }
+
+    if (options.strategy === 'no_prefix' && options.differentDomains) {
+      logger.warn(
+        '`differentDomains` option and `no_prefix` strategy are not compatible. ' +
+          'Change strategy or disable `differentDomains` option.'
+      )
+    }
+
+    /**
+     * nuxt layers handling ...
+     */
 
     applyLayerOptions(options, nuxt)
     await mergeI18nModules(options, nuxt)
-
-    if (options.strategy === 'no_prefix' && options.differentDomains) {
-      console.warn(
-        formatMessage(
-          'The `differentDomains` option and `no_prefix` strategy are not compatible. ' +
-            'Change strategy or disable `differentDomains` option.'
-        )
-      )
-    }
 
     /**
      * setup runtime config
@@ -161,7 +171,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     const vueI18nConfigPathInfo = await resolveVueI18nConfigInfo(options, nuxt.options.buildDir, nuxt.options.rootDir)
     if (vueI18nConfigPathInfo.absolute == null) {
-      logger.warn(`Vue I18n configuration file does not exist at ${vueI18nConfigPathInfo.relative}. Skipping...`)
+      logger.info(`Vue I18n configuration file does not exist at ${vueI18nConfigPathInfo.relative}. Skipping...`)
     }
     debug('vueI18nConfigPathInfo', vueI18nConfigPathInfo)
 
@@ -187,7 +197,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup module alias
      */
 
-    await setupAlias(nuxt)
+    await setupAlias(nuxt, options)
 
     /**
      * add plugin and templates
@@ -288,7 +298,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     const pkgMgr = await getPackageManagerType()
-    const vueI18nPath = await resolveVueI18nAlias(pkgModulesDir, nuxt, pkgMgr)
+    const vueI18nPath = await resolveVueI18nAlias(pkgModulesDir, options, nuxt, pkgMgr)
     debug('vueI18nPath for auto-import', vueI18nPath)
 
     await addComponent({

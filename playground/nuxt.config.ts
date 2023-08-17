@@ -147,6 +147,9 @@ export default defineNuxtConfig({
         name: 'Français'
       }
     ],
+    // bundle: {
+    //   runtimeOnly: true
+    // },
     // trailingSlash: true,
     debug: true,
     defaultLocale: 'en',

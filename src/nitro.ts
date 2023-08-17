@@ -17,7 +17,11 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
     // vue-i18n feature flags configuration for server-side (server api, server middleware, etc...)
     nitroConfig.replace = assign(
       nitroConfig.replace || {},
-      getFeatureFlags(nuxtOptions.compilation.jit, nuxtOptions.bundle.compositionOnly)
+      getFeatureFlags({
+        jit: nuxtOptions.compilation.jit,
+        compositionOnly: nuxtOptions.bundle.compositionOnly,
+        fullInstall: nuxtOptions.bundle.fullInstall
+      })
     )
 
     // setup debug flag
