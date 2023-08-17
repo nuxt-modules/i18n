@@ -12,20 +12,19 @@ export default defineAppConfig({
       branch: 'next',
       repo: 'nuxt-modules/i18n',
       owner: 'nuxt-modules',
+      dir: 'docs/content',
       edit: true
     },
     aside: {
-      level: 0,
-      exclude: []
-    },
-    header: {
-      title: false,
-      logo: true,
-      showLinkIcon: false
+      level: 1
     },
     cover: {
       src: '/cover.png',
       alt: 'I18n module for Nuxt'
+    },
+    header: {
+      logo: true,
+      showLinkIcon: false
     },
     footer: {
       credits: {
