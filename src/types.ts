@@ -60,7 +60,9 @@ export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
 }
 
-export interface BundleOptions extends Pick<PluginOptions, 'compositionOnly'> {}
+export interface BundleOptions extends Pick<PluginOptions, 'compositionOnly' | 'runtimeOnly' | 'fullInstall'> {}
+
+export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang' | 'globalSFCScope'> {}
 
 export interface LocaleMessageCompilationOptions {
   jit?: boolean
@@ -75,6 +77,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   experimental?: ExperimentalFeatures
   bundle?: BundleOptions
   compilation?: LocaleMessageCompilationOptions
+  customBlocks?: CustomBlocksOptions
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
