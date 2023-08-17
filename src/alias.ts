@@ -13,15 +13,16 @@ import { tryResolve, getLayerRootDirs, getPackageManagerType } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PackageManager } from './utils'
+import type { NuxtI18nOptions } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:alias')
 
-export async function setupAlias(nuxt: Nuxt) {
+export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   const pkgMgr = await getPackageManagerType()
   debug('setupAlias: pkgMgr', pkgMgr)
 
   // resolve vue-i18@v9
-  nuxt.options.alias[VUE_I18N_PKG] = await resolveVueI18nAlias(pkgModulesDir, nuxt, pkgMgr)
+  nuxt.options.alias[VUE_I18N_PKG] = await resolveVueI18nAlias(pkgModulesDir, options, nuxt, pkgMgr)
   nuxt.options.build.transpile.push(VUE_I18N_PKG)
   debug('vue-i18n alias', nuxt.options.alias[VUE_I18N_PKG])
 
@@ -62,12 +63,18 @@ export async function setupAlias(nuxt: Nuxt) {
  *  - `@intlify/vue-router-bridge`
  */
 
-export async function resolveVueI18nAlias(pkgModulesDir: string, nuxt: Nuxt, pkgMgr: PackageManager) {
+export async function resolveVueI18nAlias(
+  pkgModulesDir: string,
+  options: NuxtI18nOptions,
+  nuxt: Nuxt,
+  pkgMgr: PackageManager
+) {
   const { rootDir, workspaceDir } = nuxt.options
+  const runtimeOnly = options.bundle?.runtimeOnly
   const modulePath =
     nuxt.options.dev || nuxt.options._prepare
       ? `${VUE_I18N_PKG}/dist/vue-i18n.mjs`
-      : `${VUE_I18N_PKG}/dist/vue-i18n.runtime.mjs`
+      : `${VUE_I18N_PKG}/dist/vue-i18n${runtimeOnly ? '.runtime' : ''}.mjs`
   const targets = [
     // for Nuxt layer
     ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),

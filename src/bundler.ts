@@ -47,8 +47,9 @@ export async function extendBundler(
     const webpack = await import('webpack').then(m => m.default || m)
 
     const webpackPluginOptions: PluginOptions = {
-      runtimeOnly: true,
       allowDynamic: true,
+      runtimeOnly: nuxtOptions.bundle.runtimeOnly,
+      compositionOnly: nuxtOptions.bundle.compositionOnly,
       jitCompilation: nuxtOptions.compilation.jit,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml
@@ -66,9 +67,16 @@ export async function extendBundler(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
       config.plugins!.push(
         new webpack.DefinePlugin(
-          assign(getFeatureFlags(nuxtOptions.compilation.jit, nuxtOptions.bundle.compositionOnly), {
-            __DEBUG__: String(nuxtOptions.debug)
-          })
+          assign(
+            getFeatureFlags({
+              jit: nuxtOptions.compilation.jit,
+              compositionOnly: nuxtOptions.bundle.compositionOnly,
+              fullInstall: nuxtOptions.bundle.fullInstall
+            }),
+            {
+              __DEBUG__: String(nuxtOptions.debug)
+            }
+          )
         )
       )
     })
@@ -81,12 +89,15 @@ export async function extendBundler(
    */
 
   const vitePluginOptions: PluginOptions = {
-    runtimeOnly: true,
     allowDynamic: true,
+    runtimeOnly: nuxtOptions.bundle.runtimeOnly,
     compositionOnly: nuxtOptions.bundle.compositionOnly,
+    fullInstall: nuxtOptions.bundle.fullInstall,
     jitCompilation: nuxtOptions.compilation.jit,
     strictMessage: nuxtOptions.compilation.strictMessage,
-    escapeHtml: nuxtOptions.compilation.escapeHtml
+    escapeHtml: nuxtOptions.compilation.escapeHtml,
+    defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
+    globalSFCScope: nuxtOptions.customBlocks.globalSFCScope
   }
   if (hasLocaleFiles && localePaths.length > 0) {
     vitePluginOptions.include = localePaths.map(x => resolve(x, './**'))
@@ -108,9 +119,9 @@ export async function extendBundler(
   })
 }
 
-export function getFeatureFlags(jit = true, compositionOnly = true) {
+export function getFeatureFlags({ jit = true, compositionOnly = true, fullInstall = true }) {
   return {
-    __VUE_I18N_FULL_INSTALL__: 'true',
+    __VUE_I18N_FULL_INSTALL__: String(fullInstall),
     __VUE_I18N_LEGACY_API__: String(!compositionOnly),
     __INTLIFY_PROD_DEVTOOLS__: 'false',
     __INTLIFY_JIT_COMPILATION__: String(jit)

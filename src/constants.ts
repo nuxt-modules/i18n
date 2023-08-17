@@ -36,12 +36,18 @@ export const DEFAULT_OPTIONS = {
     jsTsFormatResource: false
   },
   bundle: {
-    compositionOnly: true
+    compositionOnly: true,
+    runtimeOnly: false,
+    fullInstall: true
   },
   compilation: {
     jit: true,
     strictMessage: true,
     escapeHtml: false
+  },
+  customBlocks: {
+    defaultSFCLang: 'json',
+    globalSFCScope: false
   },
   vueI18n: '',
   locales: [] as string[],
