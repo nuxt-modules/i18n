@@ -1,5 +1,4 @@
 import createDebug from 'debug'
-import { isObject } from '@intlify/shared'
 import {
   defineNuxtModule,
   isNuxt2,
@@ -153,21 +152,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * resolve vue-i18n config path
      */
-
-    // TODO: remove before v8 official release
-    if (isObject(options.vueI18n)) {
-      throw new Error(
-        formatMessage(
-          'The `vueI18n` option is no longer be specified with object. ' +
-            '\n' +
-            `It must be specified in the configuration file via the 'i18n.config' path.` +
-            '\n' +
-            `About deprecated reason, see https://v8.i18n.nuxtjs.org/guide/migrating#change-the-route-key-rules-in-pages-option` +
-            '\n' +
-            `About new configuration style, see https://v8.i18n.nuxtjs.org/getting-started/basic-usage#translate-with-vue-i18n`
-        )
-      )
-    }
 
     const vueI18nConfigPathInfo = await resolveVueI18nConfigInfo(options, nuxt.options.buildDir, nuxt.options.rootDir)
     if (vueI18nConfigPathInfo.absolute == null) {
