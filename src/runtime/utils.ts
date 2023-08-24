@@ -369,7 +369,7 @@ function _navigate(redirectPath: string, status: number) {
 export async function navigate<Context extends NuxtApp = NuxtApp>(
   args: NavigateArgs,
   {
-    status = 301,
+    status = 302,
     rootRedirect = nuxtI18nOptionsDefault.rootRedirect,
     differentDomains = nuxtI18nOptionsDefault.differentDomains,
     skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate,
