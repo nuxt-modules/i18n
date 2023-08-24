@@ -295,6 +295,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
   __DEBUG__ && console.log('detectRedirect: calledWithRouting -> ', calledWithRouting, routeLocaleGetter(route.to))
 
   let redirectPath = ''
+  const { fullPath: toFullPath } = route.to
   const isStaticGenerate = isSSG && process.server
 
   /**
@@ -310,11 +311,10 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
     (calledWithRouting || (strategy !== 'no_prefix' && strategy !== 'prefix_and_default')) &&
     routeLocaleGetter(route.to) !== targetLocale
   ) {
-    const { fullPath } = route.to
     // the current route could be 404 in which case attempt to find matching route using the full path
-    const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(fullPath, targetLocale)
-    __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, fullPath)
-    if (isString(routePath) && routePath && !isEqual(routePath, fullPath) && !routePath.startsWith('//')) {
+    const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(toFullPath, targetLocale)
+    __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, toFullPath)
+    if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       /**
        * NOTE: for #1889, #2226
        * If it's the same as the previous route path, respect the current route without redirecting.
@@ -340,7 +340,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
     })
     const routePath = switchLocalePath(targetLocale)
     __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
-    if (isString(routePath)) {
+    if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       redirectPath = routePath
     }
   }
