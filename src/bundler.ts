@@ -31,11 +31,11 @@ export async function extendBundler(
 
   // extract macros from components
   const macroOptions: TransformMacroPluginOptions = {
-    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
+    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
   const resourceOptions: ResourcePluginOptions = {
-    sourcemap: nuxt.options.sourcemap.server || nuxt.options.sourcemap.client
+    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
   /**
