@@ -6,45 +6,11 @@ import { getText, getData } from '../helper'
 describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-    browser: true,
-    // overrides
-    nuxtConfig: {
-      i18n: {
-        experimental: {
-          jsTsFormatResource: true
-        },
-        compilation: {
-          strictMessage: false
-        },
-        defaultLocale: 'en',
-        langDir: 'lang',
-        lazy: true,
-        locales: [
-          {
-            code: 'en',
-            iso: 'en-US',
-            file: 'lazy-locale-en.json',
-            name: 'English'
-          },
-          {
-            code: 'en-GB',
-            iso: 'en-GB',
-            files: ['lazy-locale-en.json', 'lazy-locale-en-GB.js', 'lazy-locale-en-GB.ts'],
-            name: 'English (UK)'
-          },
-          {
-            code: 'fr',
-            iso: 'fr-FR',
-            file: 'lazy-locale-fr.json5',
-            name: 'Français'
-          }
-        ]
-      }
-    }
+    browser: true
   })
 
   // TODO: fix lazy loading
-  test.fails('(fails) locales are fetched on demand', async () => {
+  test('locales are fetched on demand', async () => {
     const home = url('/')
     const page = await createPage()
 
@@ -59,7 +25,7 @@ describe('basic lazy loading', async () => {
 
     // only default locales are fetched (en)
     await page.goto(home)
-    expect.soft([...fetchedLocales].filter(locale => locale.includes('fr'))).toHaveLength(0)
+    expect([...fetchedLocales].filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
 
     // wait for request after navigation
     const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
@@ -68,6 +34,14 @@ describe('basic lazy loading', async () => {
 
     // `fr` locale has been fetched
     expect([...fetchedLocales].filter(locale => locale.includes('fr'))).toHaveLength(1)
+
+    // wait for request after navigation
+    const localeRequestNl = page.waitForRequest(/lazy-locale-module-nl/)
+    await page.click('#lang-switcher-with-nuxt-link-nl')
+    await localeRequestNl
+
+    // `nl` (module) locale has been fetched
+    expect([...fetchedLocales].filter(locale => locale.includes('nl'))).toHaveLength(1)
   })
 
   test('can access to no prefix locale (en): /', async () => {

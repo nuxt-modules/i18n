@@ -263,6 +263,23 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     /**
+     * disable preloading/prefetching lazy loaded locales
+     */
+    nuxt.hook('build:manifest', manifest => {
+      if (options.lazy) {
+        const langFiles = localeInfo.flatMap(locale => (locale.file != null ? locale.file : [...(locale?.files ?? [])]))
+        const langPaths = [...new Set(langFiles)]
+
+        for (const key in manifest) {
+          if (langPaths.some(x => key.startsWith(x))) {
+            manifest[key].prefetch = false
+            manifest[key].preload = false
+          }
+        }
+      }
+    })
+
+    /**
      * extend bundler
      */
 
