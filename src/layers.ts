@@ -140,9 +140,11 @@ export async function resolveLayerVueI18nConfigInfo(nuxt: Nuxt, buildDir: string
   const layers = [...nuxt.options._layers]
   layers.shift()
   return await Promise.all(
-    layers.map(layer => {
-      const i18n = getLayerI18n(layer)
-      return resolveVueI18nConfigInfo(i18n || {}, buildDir, layer.config.rootDir)
-    })
+    layers
+      .filter(layer => getLayerI18n(layer))
+      .map(layer => {
+        const i18n = getLayerI18n(layer)
+        return resolveVueI18nConfigInfo(i18n || {}, buildDir, layer.config.rootDir)
+      })
   )
 }
