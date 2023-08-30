@@ -51,6 +51,7 @@ export async function extendBundler(
       runtimeOnly: nuxtOptions.bundle.runtimeOnly,
       compositionOnly: nuxtOptions.bundle.compositionOnly,
       jitCompilation: nuxtOptions.compilation.jit,
+      dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml
     }
@@ -71,7 +72,8 @@ export async function extendBundler(
             getFeatureFlags({
               jit: nuxtOptions.compilation.jit,
               compositionOnly: nuxtOptions.bundle.compositionOnly,
-              fullInstall: nuxtOptions.bundle.fullInstall
+              fullInstall: nuxtOptions.bundle.fullInstall,
+              dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false
             }),
             {
               __DEBUG__: String(nuxtOptions.debug)
@@ -94,6 +96,7 @@ export async function extendBundler(
     compositionOnly: nuxtOptions.bundle.compositionOnly,
     fullInstall: nuxtOptions.bundle.fullInstall,
     jitCompilation: nuxtOptions.compilation.jit,
+    dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false,
     strictMessage: nuxtOptions.compilation.strictMessage,
     escapeHtml: nuxtOptions.compilation.escapeHtml,
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
@@ -119,11 +122,17 @@ export async function extendBundler(
   })
 }
 
-export function getFeatureFlags({ jit = true, compositionOnly = true, fullInstall = true }) {
+export function getFeatureFlags({
+  jit = true,
+  compositionOnly = true,
+  fullInstall = true,
+  dropMessageCompiler = false
+}) {
   return {
     __VUE_I18N_FULL_INSTALL__: String(fullInstall),
     __VUE_I18N_LEGACY_API__: String(!compositionOnly),
     __INTLIFY_PROD_DEVTOOLS__: 'false',
-    __INTLIFY_JIT_COMPILATION__: String(jit)
+    __INTLIFY_JIT_COMPILATION__: String(jit),
+    __INTLIFY_DROP_MESSAGE_COMPILER__: String(dropMessageCompiler)
   }
 }

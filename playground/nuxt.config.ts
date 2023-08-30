@@ -115,6 +115,9 @@ export default defineNuxtConfig({
       strictMessage: false,
       escapeHtml: true
     },
+    bundle: {
+      // dropMessageCompiler: true
+    },
     langDir: 'locales',
     lazy: true,
     baseUrl: 'http://localhost:3000',

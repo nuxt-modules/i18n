@@ -60,7 +60,8 @@ export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
 }
 
-export interface BundleOptions extends Pick<PluginOptions, 'compositionOnly' | 'runtimeOnly' | 'fullInstall'> {}
+export interface BundleOptions
+  extends Pick<PluginOptions, 'compositionOnly' | 'runtimeOnly' | 'fullInstall' | 'dropMessageCompiler'> {}
 
 export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang' | 'globalSFCScope'> {}
 

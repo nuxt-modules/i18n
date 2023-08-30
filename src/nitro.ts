@@ -20,7 +20,8 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
       getFeatureFlags({
         jit: nuxtOptions.compilation.jit,
         compositionOnly: nuxtOptions.bundle.compositionOnly,
-        fullInstall: nuxtOptions.bundle.fullInstall
+        fullInstall: nuxtOptions.bundle.fullInstall,
+        dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false
       })
     )
 
