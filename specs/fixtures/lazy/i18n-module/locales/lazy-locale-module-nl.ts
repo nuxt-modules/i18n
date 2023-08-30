@@ -1,3 +1,4 @@
 export default defineI18nLocale(locale => ({
-  moduleLayerText: 'This is a merged module layer locale key in Dutch'
+  moduleLayerText: 'This is a merged module layer locale key in Dutch',
+  dynamicTime: new Date().toISOString()
 }))

@@ -2,5 +2,6 @@
   home: 'Accueil',
   about: 'À propos',
   posts: 'Articles',
-  dynamic: 'Dynamique'
+  dynamic: 'Dynamique',
+  dynamicTime: 'Not dynamic'
 }
