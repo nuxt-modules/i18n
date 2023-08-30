@@ -38,7 +38,8 @@ export const DEFAULT_OPTIONS = {
   bundle: {
     compositionOnly: true,
     runtimeOnly: false,
-    fullInstall: true
+    fullInstall: true,
+    dropMessageCompiler: false
   },
   compilation: {
     jit: true,
