@@ -117,7 +117,7 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?
   }
 }
 
-type LocaleLoader = { key: string; load: () => Promise<any> }
+type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
 const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 async function loadMessage(context: NuxtApp, { key, load }: LocaleLoader, locale: Locale) {
@@ -167,10 +167,11 @@ export async function loadLocale(
   for (const loader of loaders) {
     let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
 
-    if (loadedMessages.has(loader.key)) {
+    if (loadedMessages.has(loader.key) && loader.cache) {
       __DEBUG__ && console.log(loader.key + ' is already loaded')
       message = loadedMessages.get(loader.key)
     } else {
+      __DEBUG__ && !loader.cache && console.log(loader.key + ' bypassing cache!')
       __DEBUG__ && console.log(loader.key + ' is loading ...')
       message = await loadMessage(context, loader, locale)
     }

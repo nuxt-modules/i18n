@@ -1,4 +1,4 @@
-import type { Strategies, LocaleObject, I18nRoutingOptions } from 'vue-i18n-routing'
+import type { Strategies, I18nRoutingOptions, LocaleObject, Directions } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 
@@ -32,7 +32,20 @@ export type LocaleInfo = {
   paths?: string[]
   hashes?: string[]
   types?: LocaleType[]
-} & LocaleObject
+} & Omit<LocaleOption, 'files'> & { files: LocaleFile[] }
+
+export type LocaleFile = { path: string; cache?: boolean }
+
+export type LocaleOption = {
+  code: Locale
+  name?: string
+  dir?: Directions
+  domain?: string
+  isCatchallLocale?: boolean
+  iso?: string
+  file?: string | LocaleFile
+  files?: string[] | LocaleFile[]
+}
 
 export type VueI18nConfigPathInfo = {
   relative?: string
@@ -85,11 +98,12 @@ export type NuxtI18nOptions<Context = unknown> = {
   lazy?: boolean
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
+  locales: string[] | LocaleOption[]
   /**
    * @internal
    */
-  overrides?: Omit<NuxtI18nOptions, 'overrides'>
-  i18nModules?: { langDir?: string | null; locales?: I18nRoutingOptions<Context>['locales'] }[]
+  overrides?: Omit<NuxtI18nOptions<Context>, 'overrides'>
+  i18nModules?: { langDir?: string | null; locales?: NuxtI18nOptions<Context>['locales'] }[]
   rootRedirect?: string | null | RootRedirectOptions
   routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
@@ -105,7 +119,6 @@ export type NuxtI18nOptions<Context = unknown> = {
   | 'defaultDirection'
   | 'defaultLocale'
   | 'defaultLocaleRouteNameSuffix'
-  | 'locales'
   | 'routesNameSeparator'
   | 'trailingSlash'
 >

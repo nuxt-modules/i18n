@@ -32,7 +32,8 @@ import {
   getPackageManagerType,
   mergeI18nModules,
   resolveVueI18nConfigInfo,
-  applyOptionOverrides
+  applyOptionOverrides,
+  getLocaleFiles
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
@@ -228,7 +229,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
             nuxtI18nOptions: options,
             nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
             nuxtI18nInternalOptions: {
-              __normalizedLocales: normalizedLocales
+              __normalizedLocales: normalizedLocales.map(x => ({ ...x, file: undefined, files: getLocaleFiles(x) }))
             }
           },
           {
@@ -267,7 +268,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     nuxt.hook('build:manifest', manifest => {
       if (options.lazy) {
-        const langFiles = localeInfo.flatMap(locale => (locale.file != null ? locale.file : [...(locale?.files ?? [])]))
+        const langFiles = localeInfo
+          .flatMap(locale => getLocaleFiles(locale))
+          .filter(file => !file.cache)
+          .map(x => x.path)
         const langPaths = [...new Set(langFiles)]
 
         for (const key in manifest) {
@@ -353,11 +357,13 @@ type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
-    i18n?: NuxtI18nOptions
+    i18n?: NuxtI18nOptions<unknown>
   }
 
   interface NuxtHooks {
-    'i18n:registerModule': (registerModule: (config: Pick<NuxtI18nOptions, 'langDir' | 'locales'>) => void) => void
+    'i18n:registerModule': (
+      registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
+    ) => void
   }
 
   interface PublicRuntimeConfig {
