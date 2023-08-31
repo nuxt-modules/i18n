@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from '../utils'
-import { getText, getData } from '../helper'
+import { getText, getData, waitForMs } from '../helper'
 
 describe('basic lazy loading', async () => {
   await setup({
@@ -9,7 +9,25 @@ describe('basic lazy loading', async () => {
     browser: true
   })
 
-  // TODO: fix lazy loading
+  test('dynamic locale files are not cached', async () => {
+    const home = url('/nl')
+    const page = await createPage()
+    await page.goto(home)
+
+    // capture dynamicTime - simulates changing api response
+    const dynamicTime = await getText(page, '#dynamic-time')
+
+    await page.click('#lang-switcher-with-nuxt-link-fr')
+    expect(await getText(page, '#dynamic-time')).toEqual('Not dynamic')
+
+    // dynamicTime depends on passage of some time
+    await waitForMs(100)
+
+    // dynamicTime does not match captured dynamicTime
+    await page.click('#lang-switcher-with-nuxt-link-nl')
+    expect(await getText(page, '#dynamic-time')).to.not.equal(dynamicTime)
+  })
+
   test('locales are fetched on demand', async () => {
     const home = url('/')
     const page = await createPage()
