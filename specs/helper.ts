@@ -75,3 +75,7 @@ export function validateSyntax(code: string): boolean {
   }
   return ret
 }
+
+export async function waitForMs(ms = 1000) {
+  await new Promise(resolve => setTimeout(resolve, ms))
+}

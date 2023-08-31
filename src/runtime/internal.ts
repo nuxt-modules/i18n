@@ -117,13 +117,16 @@ function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?
   }
 }
 
-async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale: Locale) {
+type LocaleLoader = { key: string; load: () => Promise<any> }
+const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
+
+async function loadMessage(context: NuxtApp, { key, load }: LocaleLoader, locale: Locale) {
   const i18nConfig = context.$config.public?.i18n as { experimental?: { jsTsFormatResource?: boolean } }
 
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
-    const getter = await loader().then(r => r.default || r)
+    const getter = await load().then(r => r.default || r)
     if (isFunction(getter)) {
       if (i18nConfig.experimental?.jsTsFormatResource) {
         message = await getter(locale)
@@ -137,6 +140,9 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
       }
     } else {
       message = getter
+      if (message != null) {
+        loadedMessages.set(key, message)
+      }
       __DEBUG__ && console.log('loadMessage: load', message)
     }
   } catch (e: any) {
@@ -146,61 +152,35 @@ async function loadMessage(context: NuxtApp, loader: () => Promise<any>, locale:
   return message
 }
 
-const loadedLocales: Locale[] = []
-const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
-
 export async function loadLocale(
   context: NuxtApp,
   locale: Locale,
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
-  if (process.server || process.dev || !loadedLocales.includes(locale)) {
-    const loaders = localeMessages[locale]
-    if (loaders != null) {
-      if (loaders.length === 1) {
-        const { key, load } = loaders[0]
-        let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
-        if (loadedMessages.has(key)) {
-          __DEBUG__ && console.log(key + ' is already loaded')
-          message = loadedMessages.get(key)
-        } else {
-          __DEBUG__ && console.log(key + ' is loading ...')
-          message = await loadMessage(context, load, locale)
-          if (message != null) {
-            loadedMessages.set(key, message)
-          }
-        }
-        if (message != null) {
-          setter(locale, message)
-          loadedLocales.push(locale)
-        }
-      } else if (loaders.length > 1) {
-        const targetMessage: LocaleMessages<DefineLocaleMessage> = {}
-        for (const { key, load } of loaders) {
-          let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
-          if (loadedMessages.has(key)) {
-            __DEBUG__ && console.log(key + ' is already loaded')
-            message = loadedMessages.get(key)
-          } else {
-            __DEBUG__ && console.log(key + ' is loading ...')
-            message = await loadMessage(context, load, locale)
-            if (message != null) {
-              loadedMessages.set(key, message)
-            }
-          }
-          if (message != null) {
-            deepCopy(message, targetMessage)
-          }
-        }
-        setter(locale, targetMessage)
-        loadedLocales.push(locale)
-      }
+  const loaders = localeMessages[locale]
+  if (loaders == null) {
+    console.warn(formatMessage('Could not find messages for locale code' + locale))
+    return
+  }
+
+  const targetMessage: LocaleMessages<DefineLocaleMessage> = {}
+  for (const loader of loaders) {
+    let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
+
+    if (loadedMessages.has(loader.key)) {
+      __DEBUG__ && console.log(loader.key + ' is already loaded')
+      message = loadedMessages.get(loader.key)
+    } else {
+      __DEBUG__ && console.log(loader.key + ' is loading ...')
+      message = await loadMessage(context, loader, locale)
     }
-  } else {
-    if (!loadedLocales.includes(locale)) {
-      console.warn(formatMessage('Could not find ' + locale + ' locale code in localeMessages'))
+
+    if (message != null) {
+      deepCopy(message, targetMessage)
     }
   }
+
+  setter(locale, targetMessage)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
