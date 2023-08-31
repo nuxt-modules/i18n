@@ -52,39 +52,42 @@ test('resolveLocales', async () => {
   const resolvedLocales = await resolveLocales('/path/to/project/locales', locales)
   expect(resolvedLocales).toEqual([
     {
-      path: '/path/to/project/locales/en.json',
+      paths: ['/path/to/project/locales/en.json'],
       code: 'en',
-      file: 'en.json',
-      hash: '18f36abf',
-      type: 'static'
+      files: [{ cache: true, path: 'en.json' }],
+      hashes: ['18f36abf'],
+      types: ['static']
     },
     {
-      path: '/path/to/project/locales/ja.json',
+      paths: ['/path/to/project/locales/ja.json'],
       code: 'ja',
-      file: 'ja.json',
-      hash: '147c88eb',
-      type: 'static'
+      files: [{ path: 'ja.json', cache: true }],
+      hashes: ['147c88eb'],
+      types: ['static']
     },
     {
-      path: '/path/to/project/locales/es.json',
+      paths: ['/path/to/project/locales/es.json'],
       code: 'es',
-      file: 'es.json',
-      hash: 'f4490d2c',
-      type: 'static'
+      files: [{ path: 'es.json', cache: true }],
+      hashes: ['f4490d2c'],
+      types: ['static']
     },
     {
       paths: ['/path/to/project/locales/es.json', '/path/to/project/locales/es-AR.json'],
       code: 'es-AR',
-      files: ['es.json', 'es-AR.json'],
+      files: [
+        { path: 'es.json', cache: true },
+        { path: 'es-AR.json', cache: true }
+      ],
       hashes: ['f4490d2c', '96ad3952'],
       types: ['static', 'static']
     },
     {
-      path: '/path/to/project/locales/nl.js',
+      paths: ['/path/to/project/locales/nl.js'],
       code: 'nl',
-      file: 'nl.js',
-      hash: '68b1a130',
-      type: 'dynamic'
+      files: [{ path: 'nl.js', cache: false }],
+      hashes: ['68b1a130'],
+      types: ['dynamic']
     }
   ])
 })

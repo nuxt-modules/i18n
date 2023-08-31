@@ -25,7 +25,8 @@ import {
   extendBaseUrl,
   extendPrefixable,
   extendSwitchLocalePathIntercepter,
-  _setLocale
+  _setLocale,
+  getLocalePaths
 } from '#build/i18n.utils.mjs'
 import {
   getBrowserLocale as _getBrowserLocale,
@@ -40,6 +41,7 @@ import { parallelPlugin } from '#build/i18n.options'
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
+import { LocaleOption } from '../types'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
@@ -179,7 +181,15 @@ export default defineNuxtPlugin({
 
     // extend i18n instance
     extendI18n(i18n, {
-      locales: nuxtI18nOptions.locales,
+      locales: nuxtI18nOptions.locales.map(x =>
+        typeof x === 'string'
+          ? x
+          : {
+              ...(x as LocaleOption),
+              file: undefined as string | undefined,
+              files: getLocalePaths(x as LocaleOption) as string[]
+            }
+      ) as LocaleObject[],
       localeCodes,
       baseUrl: nuxtI18nOptions.baseUrl,
       context: nuxtContext,

@@ -98,7 +98,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   lazy?: boolean
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
-  locales: string[] | LocaleOption[]
+  locales?: string[] | LocaleOption[]
   /**
    * @internal
    */

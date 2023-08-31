@@ -33,7 +33,8 @@ import {
   mergeI18nModules,
   resolveVueI18nConfigInfo,
   applyOptionOverrides,
-  getLocaleFiles
+  getLocaleFiles,
+  getLocalePaths
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
@@ -229,7 +230,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
             nuxtI18nOptions: options,
             nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
             nuxtI18nInternalOptions: {
-              __normalizedLocales: normalizedLocales.map(x => ({ ...x, file: undefined, files: getLocaleFiles(x) }))
+              __normalizedLocales: normalizedLocales.map(x => {
+                const files = getLocalePaths(x)
+
+                if (files.length === 0) return { iso: x.iso, code: x.code }
+
+                return { ...x, file: undefined, files }
+              })
             }
           },
           {
@@ -268,10 +275,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     nuxt.hook('build:manifest', manifest => {
       if (options.lazy) {
-        const langFiles = localeInfo
-          .flatMap(locale => getLocaleFiles(locale))
-          .filter(file => !file.cache)
-          .map(x => x.path)
+        const langFiles = localeInfo.flatMap(locale => getLocaleFiles(locale)).map(x => x.path)
         const langPaths = [...new Set(langFiles)]
 
         for (const key in manifest) {

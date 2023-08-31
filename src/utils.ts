@@ -68,6 +68,7 @@ export async function resolveLocales(path: string, locales: LocaleOption[]): Pro
     locale.paths = files.map(file => find(file.path)).filter(Boolean) as string[]
     locale.hashes = locale.paths.map(path => getHash(path))
     locale.types = locale.paths.map(path => getLocaleType(path))
+    locale.file = undefined
     locale.files = files.map(file => {
       const filePath = find(file.path)
       const isCached = filePath ? getLocaleType(filePath) !== 'dynamic' : true
@@ -398,7 +399,7 @@ export const resolveRelativeLocales = (
   }
 }
 
-const getLocalePaths = (locale: LocaleOption): string[] => {
+export const getLocalePaths = (locale: LocaleOption): string[] => {
   if (locale.file != null) {
     // @ts-ignore
     return [locale.file as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))

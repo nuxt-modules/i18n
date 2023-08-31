@@ -8,7 +8,14 @@ import { parse as parsePath, normalize } from 'pathe'
 import { withQuery } from 'ufo'
 import { toCode } from './utils'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
+import type {
+  NuxtI18nOptions,
+  NuxtI18nInternalOptions,
+  LocaleInfo,
+  VueI18nConfigPathInfo,
+  LocaleType,
+  LocaleOption
+} from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 
 export type LoaderOptions = {
@@ -84,6 +91,18 @@ export function generateLoaderOptions(
     }
 
     return gen
+  }
+
+  function simplifyLocaleOptions(locales: LocaleOption[]) {
+    return locales.map(locale => {
+      if (
+        locale?.files?.length === 0 &&
+        Object.keys(locale).filter(k => !['iso', 'code', 'hashes', 'types', 'file', 'files'].includes(k)).length === 0
+      ) {
+        return locale.code
+      }
+      return locale
+    })
   }
 
   let genCode = ''
@@ -218,7 +237,9 @@ export function generateLoaderOptions(
             }
           }
         } else {
-          genCodes += `  ${rootKey}.${key} = ${toCode(key === 'locales' ? stripPathFromLocales(value) : value)}\n`
+          genCodes += `  ${rootKey}.${key} = ${toCode(
+            key === 'locales' ? simplifyLocaleOptions(stripPathFromLocales(value)) : value
+          )}\n`
         }
       }
       genCodes += `  return nuxtI18nOptions\n`
@@ -236,7 +257,7 @@ export function generateLoaderOptions(
     } else if (rootKey === 'localeInfo') {
       let codes = `export const localeMessages = {\n`
         for (const { code, files} of syncLocaleFiles) {
-          codes += `  ${toCode(code)}: [${files.map(file => {
+          codes += `  ${toCode(code)}: [${(files ?? []).map(file => {
             const { root, dir, base } = parsePath(file.path)
             const key = makeImportKey(root, dir, base)
             return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}), cache: ${toCode(file.cache)} }`
