@@ -159,13 +159,11 @@ export const localeMessages = {
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
- const vueI18nConfigLoader = async (loader) => {
+ const vueI18nConfigLoader = async loader => {
             const config = await loader().then(r => r.default || r)
-            return typeof config === 'object'
-              ? config
-              : typeof config === 'function'
-                ? await config()
-                : {}
+            if (typeof config === 'object') return config
+            if (typeof config === 'function') return await config()
+            return {}
           }
   nuxtI18nOptions.vueI18n = Object({})
   nuxtI18nOptions.vueI18n.messages ??= {}
@@ -185,13 +183,24 @@ export const resolveNuxtI18nOptions = async (context) => {
               }
             }
           }
-          const mergeMessages = async (messages, loader) => {
+
+          const mergeVueI18nConfigs = async (configuredMessages, loader) => {
             const layerConfig = await vueI18nConfigLoader(loader)
-            const vueI18n = layerConfig || {}
-            const layerMessages = vueI18n.messages || {}
-            for (const [locale, message] of Object.entries(layerMessages)) {
-              messages[locale] ??= {}
-              deepCopy(message, messages[locale])
+            const cfg = layerConfig || {}
+            cfg.messages ??= {}
+            const skipped = ['messages']
+
+            for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
+              if(nuxtI18nOptions.vueI18n?.[k] === undefined) {
+                nuxtI18nOptions.vueI18n[k] = v
+              } else {
+                deepCopy(v, nuxtI18nOptions.vueI18n[k])
+              }
+            }
+
+            for (const [locale, message] of Object.entries(cfg.messages)) {
+              configuredMessages[locale] ??= {}
+              deepCopy(message, configuredMessages[locale])
             }
           }
   return nuxtI18nOptions
