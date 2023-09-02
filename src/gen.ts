@@ -6,7 +6,7 @@ import { EXECUTABLE_EXTENSIONS, NULL_HASH, NUXT_I18N_MODULE_ID } from './constan
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
 import { withQuery } from 'ufo'
-import { toCode } from './utils'
+import { getLocalePaths, toCode } from './utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
@@ -95,7 +95,8 @@ export function generateLoaderOptions(
       ) {
         return locale.code
       }
-      return locale
+
+      return { ...locale, files: getLocalePaths(locale) }
     })
   }
 

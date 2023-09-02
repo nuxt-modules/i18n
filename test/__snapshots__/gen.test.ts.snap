@@ -125,11 +125,11 @@ exports[`toCode: function (arrow) 1`] = `
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[Object({\\"path\\":\\"en.json\\",\\"cache\\":true})],\\"testFunc\\":((prop) => {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"files\\":[Object({\\"path\\":\\"ja.json\\",\\"cache\\":true})],\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"files\\":[Object({\\"path\\":\\"fr.json\\",\\"cache\\":true})],\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
           })})]
   return nuxtI18nOptions
@@ -150,11 +150,11 @@ exports[`toCode: function (named) 1`] = `
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[Object({\\"path\\":\\"en.json\\",\\"cache\\":true})],\\"testFunc\\":(function (prop) {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"files\\":[Object({\\"path\\":\\"ja.json\\",\\"cache\\":true})],\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"files\\":[Object({\\"path\\":\\"fr.json\\",\\"cache\\":true})],\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
         })})]
   return nuxtI18nOptions

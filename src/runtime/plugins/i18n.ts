@@ -25,8 +25,7 @@ import {
   extendBaseUrl,
   extendPrefixable,
   extendSwitchLocalePathIntercepter,
-  _setLocale,
-  getLocalePaths
+  _setLocale
 } from '#build/i18n.utils.mjs'
 import {
   getBrowserLocale as _getBrowserLocale,
@@ -180,9 +179,7 @@ export default defineNuxtPlugin({
 
     // extend i18n instance
     extendI18n(i18n, {
-      locales: nuxtI18nOptions.locales.map(x =>
-        typeof x === 'string' ? x : { ...x, file: undefined, files: getLocalePaths(x) }
-      ) as LocaleObject[],
+      locales: nuxtI18nOptions.locales,
       localeCodes,
       baseUrl: nuxtI18nOptions.baseUrl,
       context: nuxtContext,
