@@ -8,7 +8,7 @@ const localePath = useLocalePath()
 const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
 
 useHead({
-  title: t('home'),
+  title: 'Home',
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang
   },
@@ -20,6 +20,8 @@ useHead({
 <template>
   <div>
     <div id="layer-message">{{ $t('thanks') }}</div>
+    <div id="snake-case">{{ $t('snakeCaseText') }}</div>
+    <div id="pascal-case">{{ $t('pascalCaseText') }}</div>
     <LangSwitcher />
     <section>
       <strong><code>useHead</code> with <code>useLocaleHead</code></strong
