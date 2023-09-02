@@ -33,13 +33,13 @@ import {
   mergeI18nModules,
   resolveVueI18nConfigInfo,
   applyOptionOverrides,
-  getLocaleFiles,
-  getLocalePaths
+  getLocaleFiles
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
 import type { NuxtI18nOptions } from './types'
+import { LocaleObject } from 'vue-i18n-routing'
 
 export * from './types'
 
@@ -230,13 +230,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
             nuxtI18nOptions: options,
             nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
             nuxtI18nInternalOptions: {
-              __normalizedLocales: normalizedLocales.map(x => {
-                const files = getLocalePaths(x)
-
-                if (files.length === 0) return { iso: x.iso, code: x.code }
-
-                return { ...x, file: undefined, files }
-              })
+              __normalizedLocales: normalizedLocales as LocaleObject[]
             }
           },
           {
