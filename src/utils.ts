@@ -11,9 +11,10 @@ import { transform as stripType } from '@mizchi/sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleOption } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
+import type { LocaleObject } from 'vue-i18n-routing'
 
 const PackageManagerLockFiles = {
   'npm-shrinkwrap.json': 'npm-legacy',
@@ -45,9 +46,9 @@ export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
-export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleOption[] {
+export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleObject[] {
   locales = locales || []
-  const normalized: LocaleOption[] = []
+  const normalized: LocaleObject[] = []
   for (const locale of locales) {
     if (isString(locale)) {
       normalized.push({ code: locale, iso: locale })
@@ -58,7 +59,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   return normalized
 }
 
-export async function resolveLocales(path: string, locales: LocaleOption[]): Promise<LocaleInfo[]> {
+export async function resolveLocales(path: string, locales: LocaleObject[]): Promise<LocaleInfo[]> {
   const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(path, x)))
 
   const find = (f: string) => files.find(file => file === resolve(path, f))
@@ -380,8 +381,8 @@ export function parseSegment(segment: string) {
 
 export const resolveRelativeLocales = (
   relativeFileResolver: (files: LocaleFile[]) => LocaleFile[],
-  locale: LocaleOption | string,
-  merged: LocaleOption | undefined
+  locale: LocaleObject | string,
+  merged: LocaleObject | undefined
 ) => {
   if (typeof locale === 'string') return merged ?? { iso: locale, code: locale }
 
@@ -395,14 +396,13 @@ export const resolveRelativeLocales = (
     ...entry,
     ...mergedLocaleObject,
     // @ts-ignore
-    files: [...(relativeFiles ?? []), ...((mergedLocaleObject?.files ?? []) as LocaleOption)]
+    files: [...(relativeFiles ?? []), ...((mergedLocaleObject?.files ?? []) as LocaleObject)]
   }
 }
 
-export const getLocalePaths = (locale: LocaleOption): string[] => {
+export const getLocalePaths = (locale: LocaleObject): string[] => {
   if (locale.file != null) {
-    // @ts-ignore
-    return [locale.file as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))
+    return [locale.file as unknown as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))
   }
 
   if (locale.files != null) {
@@ -412,7 +412,7 @@ export const getLocalePaths = (locale: LocaleOption): string[] => {
   return []
 }
 
-export const getLocaleFiles = (locale: LocaleOption | LocaleInfo): LocaleFile[] => {
+export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
   if (locale.file != null) {
     return [locale.file].map(x => (typeof x === 'string' ? { path: x, cache: undefined } : x))
   }
@@ -439,7 +439,7 @@ export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
 export type LocaleConfig = {
   projectLangDir: string
   langDir?: string | null
-  locales?: string[] | LocaleOption[]
+  locales?: string[] | LocaleObject[]
 }
 /**
  * Generically merge LocaleObject locales
@@ -447,11 +447,11 @@ export type LocaleConfig = {
  * @param configs prepared configs to resolve locales relative to project
  * @param baseLocales optional array of locale objects to merge configs into
  */
-export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleOption[] = []) => {
-  const mergedLocales = new Map<string, LocaleOption>()
+export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
+  const mergedLocales = new Map<string, LocaleObject>()
   baseLocales.forEach(locale => mergedLocales.set(locale.code, locale))
 
-  const getLocaleCode = (val: string | LocaleOption) => (typeof val === 'string' ? val : val.code)
+  const getLocaleCode = (val: string | LocaleObject) => (typeof val === 'string' ? val : val.code)
 
   for (const { locales, langDir, projectLangDir } of configs) {
     if (locales == null) continue
@@ -483,7 +483,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
   const projectLangDir = getProjectPath(nuxt, nuxt.options.rootDir)
 
   if (modules.length > 0) {
-    const baseLocales: LocaleOption[] = []
+    const baseLocales: LocaleObject[] = []
     const layerLocales = options.locales ?? []
 
     for (const locale of layerLocales) {

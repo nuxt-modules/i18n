@@ -8,15 +8,9 @@ import { parse as parsePath, normalize } from 'pathe'
 import { withQuery } from 'ufo'
 import { toCode } from './utils'
 
-import type {
-  NuxtI18nOptions,
-  NuxtI18nInternalOptions,
-  LocaleInfo,
-  VueI18nConfigPathInfo,
-  LocaleType,
-  LocaleOption
-} from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
+import type { LocaleObject } from 'vue-i18n-routing'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -93,7 +87,7 @@ export function generateLoaderOptions(
     return gen
   }
 
-  function simplifyLocaleOptions(locales: LocaleOption[]) {
+  function simplifyLocaleOptions(locales: LocaleObject[]) {
     return locales.map(locale => {
       if (
         locale?.files?.length === 0 &&

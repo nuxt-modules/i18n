@@ -46,7 +46,7 @@ import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage 
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DetectLocaleContext } from '#build/i18n.internal.mjs'
 import type { DeepRequired } from 'ts-essentials'
-import type { LocaleOption } from './types'
+import { LocaleFile } from '../types'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -517,10 +517,9 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
   }
 }
 
-export const getLocalePaths = (locale: LocaleOption): string[] => {
+export const getLocalePaths = (locale: LocaleObject): string[] => {
   if (locale.file != null) {
-    // @ts-ignore
-    return [locale.file as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))
+    return [locale.file as unknown as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))
   }
 
   if (locale.files != null) {

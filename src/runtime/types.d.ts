@@ -221,17 +221,4 @@ declare module 'vue-i18n' {
   }
 }
 
-export type LocaleFile = { path: string; cache?: boolean }
-
-export type LocaleOption = {
-  code: Locale
-  name?: string
-  dir?: Directions
-  domain?: string
-  isCatchallLocale?: boolean
-  iso?: string
-  file?: string | LocaleFile
-  files?: string[] | LocaleFile[]
-}
-
 export {}
