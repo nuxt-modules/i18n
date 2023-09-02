@@ -6,7 +6,14 @@ import { getText } from '../helper'
 describe('nuxt layers vuei18n options', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/layer_consumer`, import.meta.url)),
-    browser: true
+    browser: true,
+    nuxtConfig: {
+      overrides: {
+        compilation: {
+          jit: false
+        }
+      }
+    }
   })
 
   test('layer vueI18n options provides `nl` message', async () => {
@@ -21,9 +28,6 @@ describe('nuxt layers vuei18n options', async () => {
     const home = url('/')
     const page = await createPage(undefined)
     await page.goto(home)
-
-    // Wait for load, VueI18n messages with modifiers are not supported with jit compilation
-    await page.waitForLoadState('load')
 
     expect(await getText(page, '#snake-case')).toEqual('Over-deze-site')
     expect(await getText(page, '#pascal-case')).toEqual('OverDezeSite')
