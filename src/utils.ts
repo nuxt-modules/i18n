@@ -500,7 +500,10 @@ export function getHash(text: Buffer | string): string {
 
 export function getLayerI18n(configLayer: NuxtConfigLayer) {
   const layerInlineOptions = (configLayer.config.modules || []).find(
-    (mod): mod is [string, NuxtI18nOptions] | undefined => isArray(mod) && mod[0] === NUXT_I18N_MODULE_ID
+    (mod): mod is [string, NuxtI18nOptions] | undefined =>
+      isArray(mod) &&
+      typeof mod[0] === 'string' &&
+      [NUXT_I18N_MODULE_ID, `${NUXT_I18N_MODULE_ID}-edge`].includes(mod[0])
   )?.[1]
 
   if (configLayer.config.i18n) {
