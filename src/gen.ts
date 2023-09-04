@@ -155,60 +155,65 @@ export function generateLoaderOptions(
       genCodes += `  const ${rootKey} = Object({})\n`
       for (const [key, value] of Object.entries(rootValue)) {
         if (key === 'vueI18n') {
-          genCodes += ` const vueI18nConfigLoader = async (loader) => {
+          genCodes += ` const vueI18nConfigLoader = async loader => {
             const config = await loader().then(r => r.default || r)
-            return typeof config === 'object'
-              ? config
-              : typeof config === 'function'
-                ? await config()
-                : {}
+            if (typeof config === 'object') return config
+            if (typeof config === 'function') return await config()
+            return {}
           }
 `
-          const basicVueI18nConfigCode = generateVueI18nConfiguration(vueI18nConfigPathInfo, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
-            const configImportKey = makeImportKey(relativeBase, dir, base)
-            return `const vueI18n = await vueI18nConfigLoader((${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
-          })
-          if (basicVueI18nConfigCode != null) {
-            genCodes += `  ${basicVueI18nConfigCode}`
-            genCodes += `  ${rootKey}.${key} = vueI18n\n`
-          } else {
-            genCodes += `  ${rootKey}.${key} = ${toCode({})}\n`
-          }
-          genCodes += `  ${rootKey}.${key}.messages ??= {}\n`
+          genCodes += `  ${rootKey}.${key} = ${toCode({ messages: {} })}\n`
 
-          if (vueI18nConfigPaths.length > 0) {
-            genCodes += `  const deepCopy = (src, des, predicate) => {
-            for (const key in src) {
-              if (typeof src[key] === 'object') {
-                if (!typeof des[key] === 'object') des[key] = {}
-                deepCopy(src[key], des[key], predicate)
-              } else {
-                if (predicate) {
-                  if (predicate(src[key], des[key])) {
-                    des[key] = src[key]
-                  }
-                } else {
+          const combinedConfigs = [vueI18nConfigPathInfo, ...vueI18nConfigPaths].reverse()
+          genCodes += `  const deepCopy = (src, des, predicate) => {
+          for (const key in src) {
+            if (typeof src[key] === 'object') {
+              if (!(typeof des[key] === 'object')) des[key] = {}
+              deepCopy(src[key], des[key], predicate)
+            } else {
+              if (predicate) {
+                if (predicate(src[key], des[key])) {
                   des[key] = src[key]
                 }
+              } else {
+                des[key] = src[key]
               }
             }
           }
-          const mergeMessages = async (messages, loader) => {
-            const layerConfig = await vueI18nConfigLoader(loader)
-            const vueI18n = layerConfig || {}
-            const layerMessages = vueI18n.messages || {}
-            for (const [locale, message] of Object.entries(layerMessages)) {
-              messages[locale] ??= {}
-              deepCopy(message, messages[locale])
+        }
+
+        const mergeVueI18nConfigs = async (configuredMessages, loader) => {
+          const layerConfig = await vueI18nConfigLoader(loader)
+          const cfg = layerConfig || {}
+          cfg.messages ??= {}
+          const skipped = ['messages']
+
+          for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
+            if(nuxtI18nOptions.vueI18n?.[k] === undefined) {
+              nuxtI18nOptions.vueI18n[k] = v
+            } else {
+              deepCopy(v, nuxtI18nOptions.vueI18n[k])
             }
           }
-`
+
+          for (const [locale, message] of Object.entries(cfg.messages)) {
+            configuredMessages[locale] ??= {}
+            deepCopy(message, configuredMessages[locale])
           }
-          for (const configPath of vueI18nConfigPaths) {
-            const additionalVueI18nConfigCode = generateVueI18nConfiguration(configPath, ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
-              const configImportKey = makeImportKey(relativeBase, dir, base)
-              return `await mergeMessages(${rootKey}.${key}.messages, (${genDynamicImport(genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }), { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` })}))\n`
-            })
+        }
+`
+          
+          for (const configPath of combinedConfigs) {
+            const additionalVueI18nConfigCode = generateVueI18nConfiguration(
+              configPath,
+              ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
+                const configImportKey = makeImportKey(relativeBase, dir, base)
+                return `await mergeVueI18nConfigs(${rootKey}.${key}.messages, (${genDynamicImport(
+                  genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }),
+                  { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` }
+                )}))\n`
+              }
+            )
             if (additionalVueI18nConfigCode != null) {
               genCodes += `  ${additionalVueI18nConfigCode}`
             }

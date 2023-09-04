@@ -69,6 +69,8 @@ definePageMeta({
   <div>
     <h1>Demo: Nuxt 3</h1>
     <h2>{{ $t('hello', { name: 'nuxt3' }) }}</h2>
+    <p>{{ $t('snakeCaseText') }}</p>
+    <p>{{ $t('pascalCaseText') }}</p>
     <p>{{ $t('bar.buz', { name: 'buz' }) }}</p>
     <h2>Pages</h2>
     <nav>

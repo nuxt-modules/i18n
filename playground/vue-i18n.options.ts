@@ -17,5 +17,10 @@ export default defineI18nConfig(() => ({
   modifiers: {
     // @ts-ignore
     snakeCase: (str: string) => str.split(' ').join('-')
-  }
+  },
+  missingWarn: true,
+  fallbackWarn: true,
+  warnHtmlMessage: true,
+  silentFallbackWarn: false,
+  silentTranslationWarn: false
 }))
