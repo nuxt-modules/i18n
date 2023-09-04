@@ -491,11 +491,11 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
       const {
         node: { req }
       } = useRequestEvent(nuxt)
-      protocol = req && isHTTPS(req) ? 'https' : 'http'
+      protocol = req && isHTTPS(req) ? 'https:' : 'http:'
     } else {
       protocol = new URL(window.location.origin).protocol
     }
-    return protocol + '://' + lang.domain
+    return protocol + '//' + lang.domain
   }
 
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
