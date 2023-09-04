@@ -11,10 +11,10 @@ import { transform as stripType } from '@mizchi/sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
-import type { LocaleObject } from 'vue-i18n-routing'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
+import type { LocaleObject } from 'vue-i18n-routing'
 
 const PackageManagerLockFiles = {
   'npm-shrinkwrap.json': 'npm-legacy',
@@ -60,23 +60,26 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
 }
 
 export async function resolveLocales(path: string, locales: LocaleObject[]): Promise<LocaleInfo[]> {
-  const files = await Promise.all(locales.flatMap(x => (x.file ? [x.file] : x.files ?? [])).map(x => resolve(path, x)))
+  const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(path, x)))
 
   const find = (f: string) => files.find(file => file === resolve(path, f))
   return (locales as LocaleInfo[]).map(locale => {
-    if (locale.file) {
-      locale.path = find(locale.file)
-      if (locale.path) {
-        locale.hash = getHash(locale.path)
-        locale.type = getLocaleType(locale.path)
+    const files = getLocaleFiles(locale)
+
+    locale.paths = files.map(file => find(file.path)).filter(Boolean) as string[]
+    locale.hashes = locale.paths.map(path => getHash(path))
+    locale.types = locale.paths.map(path => getLocaleType(path))
+    locale.file = undefined
+    locale.files = files.map(file => {
+      const filePath = find(file.path)
+      const isCached = filePath ? getLocaleType(filePath) !== 'dynamic' : true
+
+      return {
+        path: file.path,
+        cache: file.cache ?? isCached
       }
-    } else if (locale.files) {
-      locale.paths = locale.files.map(file => find(file)).filter(Boolean) as string[]
-      if (locale.paths) {
-        locale.hashes = locale.paths.map(path => getHash(path))
-        locale.types = locale.paths.map(path => getLocaleType(path))
-      }
-    }
+    })
+
     return locale
   })
 }
@@ -377,11 +380,11 @@ export function parseSegment(segment: string) {
 }
 
 export const resolveRelativeLocales = (
-  relativeFileResolver: (files: string[]) => string[],
+  relativeFileResolver: (files: LocaleFile[]) => LocaleFile[],
   locale: LocaleObject | string,
-  merged: LocaleObject | string | undefined
+  merged: LocaleObject | undefined
 ) => {
-  if (typeof locale === 'string') return merged ?? locale
+  if (typeof locale === 'string') return merged ?? { iso: locale, code: locale }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { file, files, ...entry } = locale
@@ -392,19 +395,38 @@ export const resolveRelativeLocales = (
   return {
     ...entry,
     ...mergedLocaleObject,
-    files: [...(relativeFiles ?? []), ...(mergedLocaleObject?.files ?? [])]
+    // @ts-ignore
+    files: [...(relativeFiles ?? []), ...((mergedLocaleObject?.files ?? []) as LocaleObject)]
   }
 }
 
-export const getLocaleFiles = (locale: LocaleObject): string[] => {
-  if (locale.file != null) return [locale.file]
-  if (locale.files != null) return locale.files
+export const getLocalePaths = (locale: LocaleObject): string[] => {
+  if (locale.file != null) {
+    return [locale.file as unknown as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))
+  }
+
+  if (locale.files != null) {
+    return [...locale.files].map(x => (typeof x === 'string' ? x : x.path))
+  }
+
   return []
 }
 
-export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string = '', files: string[] = []) => {
-  const absoluteFiles = files.map(file => resolve(layerLangDir, file))
-  const relativeFiles = absoluteFiles.map(file => relative(projectLangDir, file))
+export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
+  if (locale.file != null) {
+    return [locale.file].map(x => (typeof x === 'string' ? { path: x, cache: undefined } : x))
+  }
+
+  if (locale.files != null) {
+    return [...locale.files].map(x => (typeof x === 'string' ? { path: x, cache: undefined } : x))
+  }
+
+  return []
+}
+
+export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string = '', files: LocaleFile[] = []) => {
+  const absoluteFiles = files.map(file => ({ path: resolve(layerLangDir, file.path), cache: file.cache }))
+  const relativeFiles = absoluteFiles.map(file => ({ path: relative(projectLangDir, file.path), cache: file.cache }))
 
   return relativeFiles
 }
@@ -426,7 +448,7 @@ export type LocaleConfig = {
  * @param baseLocales optional array of locale objects to merge configs into
  */
 export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
-  const mergedLocales = new Map<string, LocaleObject | string>()
+  const mergedLocales = new Map<string, LocaleObject>()
   baseLocales.forEach(locale => mergedLocales.set(locale.code, locale))
 
   const getLocaleCode = (val: string | LocaleObject) => (typeof val === 'string' ? val : val.code)
@@ -436,13 +458,13 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
 
     for (const locale of locales) {
       const code = getLocaleCode(locale)
-      const filesResolver = (files: string[]) => localeFilesToRelative(projectLangDir, langDir ?? '', files)
+      const filesResolver = (files: LocaleFile[]) => localeFilesToRelative(projectLangDir, langDir ?? '', files)
       const resolvedLocale = resolveRelativeLocales(filesResolver, locale, mergedLocales.get(code))
       if (resolvedLocale != null) mergedLocales.set(code, resolvedLocale)
     }
   }
 
-  return Array.from(mergedLocales.values()) as string[] | LocaleObject[]
+  return Array.from(mergedLocales.values())
 }
 
 /**

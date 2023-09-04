@@ -130,7 +130,7 @@ describe.each([
       ...options,
       includeUprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
-    })
+    } as Parameters<typeof localizeRoutes>[1])
 
     expect(localizedPages).toMatchSnapshot()
   })
@@ -198,7 +198,7 @@ describe.each([
       ...options,
       includeUprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
-    })
+    } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
   })
 })
@@ -265,7 +265,7 @@ test('#1649', async () => {
     ...options,
     includeUprefixedFallback: false,
     optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
-  })
+  } as Parameters<typeof localizeRoutes>[1])
 
   expect(localizedPages).toMatchSnapshot()
 })
