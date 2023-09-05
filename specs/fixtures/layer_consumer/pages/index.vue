@@ -22,6 +22,7 @@ useHead({
     <div id="layer-message">{{ $t('thanks') }}</div>
     <div id="snake-case">{{ $t('snakeCaseText') }}</div>
     <div id="pascal-case">{{ $t('pascalCaseText') }}</div>
+    <div id="fallback-message">{{ $t('uniqueTranslation') }}</div>
     <LangSwitcher />
     <section>
       <strong><code>useHead</code> with <code>useLocaleHead</code></strong
