@@ -28,6 +28,7 @@ describe('nuxt layers vuei18n options', async () => {
     const home = url('/')
     const page = await createPage(undefined)
     await page.goto(home)
+    await page.waitForTimeout(1000)
 
     expect(await getText(page, '#snake-case')).toEqual('Over-deze-site')
     expect(await getText(page, '#pascal-case')).toEqual('OverDezeSite')
