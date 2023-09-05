@@ -11,6 +11,7 @@ type LocaleLoader = {
   key: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   load: () => Promise<any>
+  cache: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

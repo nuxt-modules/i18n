@@ -6,7 +6,12 @@ import { getText, getData, waitForMs } from '../helper'
 describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-    browser: true
+    browser: true,
+    nuxtConfig: {
+      i18n: {
+        debug: true
+      }
+    }
   })
 
   test('dynamic locale files are not cached', async () => {
@@ -120,5 +125,30 @@ describe('basic lazy loading', async () => {
 
     expect(await getText(page, '#profile-js')).toEqual('Profile1')
     expect(await getText(page, '#profile-ts')).toEqual('Profile2')
+  })
+
+  test('files with cache disabled bypass caching', async () => {
+    const home = url('/')
+    const page = await createPage()
+    await page.goto(home)
+    const messages: string[] = []
+    page.on('console', msg => {
+      const content = msg.text()
+      if (content.includes('lazy-locale-')) {
+        messages.push(content)
+      }
+    })
+
+    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    expect([...messages].filter(msg => msg.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
+
+    await page.click('#lang-switcher-with-nuxt-link-fr')
+    expect([...messages].filter(msg => msg.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(1)
+
+    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    expect([...messages].filter(msg => msg.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(2)
+
+    await page.click('#lang-switcher-with-nuxt-link-fr')
+    expect([...messages].filter(msg => msg.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
   })
 })
