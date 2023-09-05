@@ -33,7 +33,7 @@ export default defineNuxtConfig({
       {
         code: 'fr',
         iso: 'fr-FR',
-        file: 'lazy-locale-fr.json5',
+        file: { path: 'lazy-locale-fr.json5', cache: false },
         name: 'Français'
       }
     ]

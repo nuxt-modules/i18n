@@ -6,10 +6,11 @@ import { EXECUTABLE_EXTENSIONS, NULL_HASH, NUXT_I18N_MODULE_ID } from './constan
 import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
 import { parse as parsePath, normalize } from 'pathe'
 import { withQuery } from 'ufo'
-import { toCode } from './utils'
+import { getLocalePaths, toCode } from './utils'
 
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
+import type { LocaleObject } from 'vue-i18n-routing'
 
 export type LoaderOptions = {
   localeCodes?: string[]
@@ -42,12 +43,11 @@ export function generateLoaderOptions(
   const generatedImports = new Map<string, string>()
   const importMapper = new Map<string, string>()
 
-  const convertToPairs = ({ file, files, path, paths, hash, hashes, type, types }: LocaleInfo) => {
-    const _files = file ? [file] : files || []
+  const convertToPairs = ({ files, path, paths, hash, hashes, type, types }: LocaleInfo) => {
     const _paths = path ? [path] : paths || []
     const _hashes = hash ? [hash] : hashes || []
     const _types = type ? [type] : types || []
-    return _files.map((f, i) => ({ file: f, path: _paths[i], hash: _hashes[i], type: _types[i] }))
+    return (files ?? []).map((f, i) => ({ file: f, path: _paths[i], hash: _hashes[i], type: _types[i] }))
   }
 
   const makeImportKey = (root: string, dir: string, base: string) =>
@@ -87,6 +87,19 @@ export function generateLoaderOptions(
     return gen
   }
 
+  function simplifyLocaleOptions(locales: LocaleObject[]) {
+    return locales.map(locale => {
+      if (
+        locale?.files?.length === 0 &&
+        Object.keys(locale).filter(k => !['iso', 'code', 'hashes', 'types', 'file', 'files'].includes(k)).length === 0
+      ) {
+        return locale.code
+      }
+
+      return { ...locale, files: getLocalePaths(locale) }
+    })
+  }
+
   let genCode = ''
   const localeInfo = options.localeInfo || []
   const syncLocaleFiles = new Set<LocaleInfo>()
@@ -106,7 +119,7 @@ export function generateLoaderOptions(
    */
   for (const localeInfo of syncLocaleFiles) {
     convertToPairs(localeInfo).forEach(({ path, type, file, hash }) => {
-      genCode = generateSyncImports(genCode, path, type, localeInfo.code, hash, file)
+      genCode = generateSyncImports(genCode, path, type, localeInfo.code, hash, file.path)
     })
   }
 
@@ -219,7 +232,9 @@ export function generateLoaderOptions(
             }
           }
         } else {
-          genCodes += `  ${rootKey}.${key} = ${toCode(key === 'locales' ? stripPathFromLocales(value) : value)}\n`
+          genCodes += `  ${rootKey}.${key} = ${toCode(
+            key === 'locales' ? simplifyLocaleOptions(stripPathFromLocales(value)) : value
+          )}\n`
         }
       }
       genCodes += `  return nuxtI18nOptions\n`
@@ -236,20 +251,21 @@ export function generateLoaderOptions(
       }).join(`,`)}})\n`
     } else if (rootKey === 'localeInfo') {
       let codes = `export const localeMessages = {\n`
-        for (const { code, file, files} of syncLocaleFiles) {
-          const syncPaths = file ? [file] : files|| []
-          codes += `  ${toCode(code)}: [${syncPaths.map(filepath => {
-            const { root, dir, base } = parsePath(filepath)
+        for (const { code, files} of syncLocaleFiles) {
+          codes += `  ${toCode(code)}: [${(files ?? []).map(file => {
+            const { root, dir, base } = parsePath(file.path)
             const key = makeImportKey(root, dir, base)
-            return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}) }`
+            return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}), cache: ${toCode(file.cache)} }`
           })}],\n`
         }
         for (const localeInfo of asyncLocaleFiles) {
           codes += `  ${toCode(localeInfo.code)}: [${convertToPairs(localeInfo).map(({ file, path, hash, type }) => {
-            const { root, dir, base, ext } = parsePath(file)
+            const { root, dir, base, ext } = parsePath(file.path)
             const key = makeImportKey(root, dir, base)
-            const loadPath = resolveLocaleRelativePath(localesRelativeBase, file)
-            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(genImportSpecifier(loadPath, ext, path, type, { hash, query: { locale: localeInfo.code } }), { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })} }`
+            const loadPath = resolveLocaleRelativePath(localesRelativeBase, file.path)
+            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(
+              genImportSpecifier(loadPath, ext, path, type, { hash, query: { locale: localeInfo.code } }),
+              { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })}, cache: ${toCode(file.cache)} }`
           })}],\n`
         }
       codes += `}\n`

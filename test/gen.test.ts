@@ -18,18 +18,18 @@ const LOCALE_CODES = ['en', 'ja', 'fr']
 const LOCALE_INFO = [
   {
     code: 'en',
-    file: 'en.json',
-    path: '/path/to/en.json'
+    files: [{ path: 'en.json', cache: true }],
+    paths: ['/path/to/en.json']
   },
   {
     code: 'ja',
-    file: 'ja.json',
-    path: '/path/to/ja.json'
+    files: [{ path: 'ja.json', cache: true }],
+    paths: ['/path/to/ja.json']
   },
   {
     code: 'fr',
-    file: 'fr.json',
-    path: '/path/to/fr.json'
+    files: [{ path: 'fr.json', cache: true }],
+    paths: ['/path/to/fr.json']
   }
 ]
 const NUXT_I18N_OPTIONS = {
@@ -117,12 +117,50 @@ test('multiple files', () => {
         ...[
           {
             code: 'es',
-            file: 'es.json',
-            path: '/path/to/es.json'
+            files: [{ path: 'es.json', cache: true }],
+            paths: ['/path/to/es.json']
           },
           {
             code: 'es-AR',
-            files: ['es.json', 'es-AR.json'],
+            files: [
+              { path: 'es.json', cache: true },
+              { path: 'es-AR.json', cache: true }
+            ],
+            paths: ['/path/to/es.json', '/path/to/es-AR.json']
+          }
+        ]
+      ],
+      nuxtI18nOptions: NUXT_I18N_OPTIONS,
+      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+    },
+    { ssg: false, dev: true, parallelPlugin: false }
+  )
+  expect(validateSyntax(code)).toBe(true)
+  expect(code).toMatchSnapshot()
+})
+
+test('files with cache configuration', () => {
+  const code = generateLoaderOptions(
+    true,
+    '..',
+    NUXT_I18N_VUE_I18N_CONFIG,
+    [],
+    {
+      localeCodes: [...LOCALE_CODES, 'es', 'es-AR'],
+      localeInfo: [
+        ...LOCALE_INFO,
+        ...[
+          {
+            code: 'es',
+            files: [{ path: 'es.json', cache: false }],
+            paths: ['/path/to/es.json']
+          },
+          {
+            code: 'es-AR',
+            files: [
+              { path: 'es.json', cache: false },
+              { path: 'es-AR.json', cache: true }
+            ],
             paths: ['/path/to/es.json', '/path/to/es-AR.json']
           }
         ]
@@ -147,18 +185,18 @@ test('locale file in nested', () => {
       localeInfo: [
         {
           code: 'en',
-          file: 'en/main.json',
-          path: '/path/to/en.json'
+          files: [{ path: 'en/main.json', cache: true }],
+          paths: ['/path/to/en.json']
         },
         {
           code: 'ja',
-          file: 'ja/main.json',
-          path: '/path/to/ja.json'
+          files: [{ path: 'ja/main.json', cache: true }],
+          paths: ['/path/to/ja.json']
         },
         {
           code: 'fr',
-          file: 'fr/main.json',
-          path: '/path/to/fr.json'
+          files: [{ path: 'fr/main.json', cache: true }],
+          paths: ['/path/to/fr.json']
         }
       ],
       nuxtI18nOptions: NUXT_I18N_OPTIONS,
