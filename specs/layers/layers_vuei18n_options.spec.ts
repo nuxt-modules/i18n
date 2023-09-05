@@ -36,9 +36,11 @@ describe('nuxt layers vuei18n options', async () => {
     await page.click(`#set-locale-link-en`)
     expect(await getText(page, '#snake-case')).toEqual('About-this-site')
     expect(await getText(page, '#pascal-case')).toEqual('AboutThisSite')
+    expect(await getText(page, '#fallback-message')).toEqual('Unieke vertaling')
 
     await page.click(`#set-locale-link-fr`)
     expect(await getText(page, '#snake-case')).toEqual('À-propos-de-ce-site')
     expect(await getText(page, '#pascal-case')).toEqual('ÀProposDeCeSite')
+    expect(await getText(page, '#fallback-message')).toEqual('Unieke vertaling')
   })
 })

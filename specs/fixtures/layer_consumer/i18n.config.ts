@@ -1,4 +1,5 @@
 export default {
+  fallbackLocale: 'nl',
   messages: {
     nl: {
       about: 'Over deze site',
