@@ -202,7 +202,7 @@ export function generateLoaderOptions(
           const skipped = ['messages']
 
           for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
-            if(nuxtI18nOptions.vueI18n?.[k] === undefined) {
+            if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
               nuxtI18nOptions.vueI18n[k] = v
             } else {
               deepCopy(v, nuxtI18nOptions.vueI18n[k])

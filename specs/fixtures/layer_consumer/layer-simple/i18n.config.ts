@@ -1,11 +1,13 @@
 export default {
+  fallbackLocale: 'en',
   messages: {
     fr: {
       thanks: 'Merci!',
       about: 'Should be overridden'
     },
     nl: {
-      thanks: 'Bedankt!'
+      thanks: 'Bedankt!',
+      uniqueTranslation: 'Unieke vertaling'
     },
     en: {
       about: 'About this site',
