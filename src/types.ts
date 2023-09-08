@@ -2,7 +2,7 @@ import type { Strategies, I18nRoutingOptions, LocaleObject } from 'vue-i18n-rout
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 
-export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
+export type RedirectOnOptions = 'all' | 'root' | 'no prefix' | 'false'
 
 export interface DetectBrowserLanguageOptions {
   alwaysRedirect?: boolean
