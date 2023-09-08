@@ -470,11 +470,14 @@ export function getLocaleDomain(locales: LocaleObject[]): string {
   let host = getHost() || ''
   if (host) {
     const matchingLocale = locales.find(locale => {
-      let domain = locale.domain
-      if (hasProtocol(locale.domain)) {
-        domain = locale.domain.replace(/(http|https):\/\//, '')
+      if (locale && locale.domain) {
+        let domain = locale.domain
+        if (hasProtocol(locale.domain)) {
+          domain = locale.domain.replace(/(http|https):\/\//, '')
+        }
+        return domain === host
       }
-      return domain === host
+      return false
     })
     if (matchingLocale) {
       return matchingLocale.code
