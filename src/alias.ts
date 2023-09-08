@@ -6,7 +6,8 @@ import {
   VUE_ROUTER_BRIDGE_PKG,
   VUE_I18N_ROUTING_PKG,
   SHARED_PKG,
-  MESSAGE_COMPILER_PKG
+  MESSAGE_COMPILER_PKG,
+  CORE_BASE_PKG
 } from './constants'
 import { pkgModulesDir } from './dirs'
 import { tryResolve, getLayerRootDirs, getPackageManagerType } from './utils'
@@ -31,9 +32,15 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   nuxt.options.build.transpile.push(SHARED_PKG)
   debug('@intlify/shared alias', nuxt.options.alias[SHARED_PKG])
 
+  // resolve @intlify/message-compiler
   nuxt.options.alias['@intlify/message-compiler'] = await resolveMessageCompilerAlias(pkgModulesDir, nuxt, pkgMgr)
   nuxt.options.build.transpile.push(MESSAGE_COMPILER_PKG)
   debug('@intlify/message-compiler alias', nuxt.options.alias[MESSAGE_COMPILER_PKG])
+
+  // resolve @intlify/core-base
+  nuxt.options.alias['@intlify/core-base'] = await resolveCoreBaseAlias(pkgModulesDir, nuxt, pkgMgr)
+  nuxt.options.build.transpile.push(CORE_BASE_PKG)
+  debug('@intlify/core-base alias', nuxt.options.alias[CORE_BASE_PKG])
 
   // resolve @intlify/vue-router-bridge
   nuxt.options.alias[VUE_ROUTER_BRIDGE_PKG] = await resolveVueRouterBridgeAlias(pkgModulesDir, nuxt, pkgMgr)
@@ -59,6 +66,8 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
  *  - `vue-i18n`
  *  - `vue-i18n-routing`
  *  - `@intlify/shared`
+ *  - `@intlify/message-compiler`
+ *  - `@intlify/core-base`
  *  - `@intlify/vue-i18n-bridge`
  *  - `@intlify/vue-router-bridge`
  */
@@ -114,6 +123,24 @@ export async function resolveSharedAlias(pkgModulesDir: string, nuxt: Nuxt, pkgM
   debug(`${SHARED_PKG} resolving from ...`, targets)
 
   return tryResolve(SHARED_PKG, targets, pkgMgr)
+}
+
+export async function resolveCoreBaseAlias(pkgModulesDir: string, nuxt: Nuxt, pkgMgr: PackageManager) {
+  const { rootDir, workspaceDir } = nuxt.options
+  const modulePath = `${CORE_BASE_PKG}/dist/core-base.mjs` as const
+  const targets = [
+    // for Nuxt layer
+    ...getLayerRootDirs(nuxt).map(root => resolve(root, 'node_modules', modulePath)),
+    // try to resolve from `node_modules/@nuxtjs/i18n` (not hoisted case)
+    resolve(pkgModulesDir, modulePath),
+    // try to resolve from `node_modules` (hoisted case)
+    resolve(rootDir, 'node_modules', modulePath),
+    // workspace directories
+    resolve(workspaceDir, 'node_modules', modulePath)
+  ]
+  debug(`${CORE_BASE_PKG} resolving from ...`, targets)
+
+  return tryResolve(CORE_BASE_PKG, targets, pkgMgr)
 }
 
 export async function resolveMessageCompilerAlias(pkgModulesDir: string, nuxt: Nuxt, pkgMgr: PackageManager) {
