@@ -47,6 +47,18 @@ test('switching', async () => {
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 })
 
+test('retains query parameters', async () => {
+  const home = url('/?foo=123')
+  const page = await createPage()
+  await page.goto(home)
+  await page.waitForTimeout(1000)
+  expect(page.url()).include('/?foo=123')
+
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForTimeout(1000)
+  expect(page.url()).include('/fr?foo=123')
+})
+
 describe('dynamic route parameter', () => {
   test('basic', async () => {
     const home = url('/')
