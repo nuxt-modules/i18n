@@ -106,7 +106,7 @@ describe.each([
     pages: [
       {
         name: 'blog-date-slug',
-        path: '/blog/:date/:slug',
+        path: '/blog/:date()/:slug()',
         file: '/path/to/nuxt-app/pages/blog/[date]/[slug].vue',
         children: []
       }
@@ -154,7 +154,7 @@ describe.each([
     pages: [
       {
         name: 'articles-name',
-        path: '/articles/:name',
+        path: '/articles/:name()',
         file: resolve(__dirname, '../fixtures/custom_route/dynamic/pages/articles/[name].vue'),
         children: []
       }

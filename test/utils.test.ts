@@ -93,7 +93,7 @@ test('resolveLocales', async () => {
 })
 
 test('parseSegment', () => {
-  const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
+  const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]__smth')
   expect(tokens).toEqual([
     { type: 1, value: 'foo' },
     { type: 0, value: '_' },
@@ -101,11 +101,12 @@ test('parseSegment', () => {
     { type: 0, value: ':' },
     { type: 3, value: 'buz' },
     { type: 0, value: '_buz_' },
-    { type: 2, value: 'qux' }
+    { type: 2, value: 'qux' },
+    { type: 0, value: '__smth' }
   ])
 })
 
 test('getRoutePath', () => {
-  const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
-  expect(getRoutePath(tokens)).toBe(`/:foo_:bar::buz(.*)*_buz_:qux?`)
+  const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]__smth')
+  expect(getRoutePath(tokens)).toBe(`/:foo()_:bar()::buz(.*)*_buz_:qux?__smth`)
 })
