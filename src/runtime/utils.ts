@@ -421,14 +421,14 @@ export async function navigate<Context extends NuxtApp = NuxtApp>(
   } else {
     const state = useRedirectState()
     __DEBUG__ && console.log('redirect state ->', state.value, 'redirectPath -> ', redirectPath)
-    if (process.client) {
-      if (state.value && state.value !== redirectPath) {
+    if (state.value && state.value !== redirectPath) {
+      if (process.client) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
+      } else if (process.server) {
+        __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
+        state.value = redirectPath // set redirect path
       }
-    } else if (process.server) {
-      __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
-      state.value = redirectPath // set reidrct path
     }
   }
 }
