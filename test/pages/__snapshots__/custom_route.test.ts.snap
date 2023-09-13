@@ -248,6 +248,165 @@ exports[`Module configuration > the part of URL 1`] = `
 ]
 `;
 
+exports[`Module named configuration > dynamic parameters 1`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/blog/[date]/[slug].vue",
+    "name": "blog-date-slug___en",
+    "path": "/blog/:date()/:slug()",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/blog/[date]/[slug].vue",
+    "name": "blog-date-slug___ja",
+    "path": "/ja/blog/tech/:date()/:slug()",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/blog/[date]/[slug].vue",
+    "name": "blog-date-slug___fr",
+    "path": "/fr/blog/:date()/:slug()",
+  },
+]
+`;
+
+exports[`Module named configuration > simple 1`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "about___en",
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "about___ja",
+    "path": "/ja/about-us",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "about___fr",
+    "path": "/fr/a-propos",
+  },
+]
+`;
+
+exports[`Module named configuration > the part of URL 1`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "about___en",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "about___ja",
+    "path": "/ja/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "about___fr",
+    "path": "/fr/a-propos",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching___en",
+    "path": "/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching___ja",
+    "path": "/ja/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching___fr",
+    "path": "/fr/offres/formation",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app___en",
+    "path": "/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app___ja",
+    "path": "/ja/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app___fr",
+    "path": "/fr/offres/developement/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development___en",
+    "path": "/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development___ja",
+    "path": "/ja/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development___fr",
+    "path": "/fr/offres/developement",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website___en",
+    "path": "/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website___ja",
+    "path": "/ja/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website___fr",
+    "path": "/fr/offres/developement/site-web",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services___en",
+    "path": "/services",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services___ja",
+    "path": "/ja/services",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services___fr",
+    "path": "/fr/offres",
+  },
+]
+`;
+
 exports[`Page components > JavaScript 1`] = `
 [
   {
