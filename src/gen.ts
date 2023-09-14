@@ -100,7 +100,7 @@ export function generateLoaderOptions(
     })
   }
 
-  let genCode = ''
+  let genCode = '// @ts-nocheck\n'
   const localeInfo = options.localeInfo || []
   const syncLocaleFiles = new Set<LocaleInfo>()
   const asyncLocaleFiles = new Set<LocaleInfo>()
