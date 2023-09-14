@@ -1,7 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`basic 1`] = `
-"import locale_en_json_en from \\"../en.json\\" assert { type: \\"json\\" };
+"// @ts-nocheck
+import locale_en_json_en from \\"../en.json\\" assert { type: \\"json\\" };
 import locale_ja_json_ja from \\"../ja.json\\" assert { type: \\"json\\" };
 import locale_fr_json_fr from \\"../fr.json\\" assert { type: \\"json\\" };
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
@@ -28,7 +29,8 @@ export const parallelPlugin = false
 `;
 
 exports[`files with cache configuration 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
+"// @ts-nocheck
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
 
 export const localeMessages = {
   \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */), cache: true }],
@@ -52,7 +54,8 @@ export const parallelPlugin = false
 `;
 
 exports[`lazy 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"// @ts-nocheck
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
   \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */), cache: true }],
@@ -74,7 +77,8 @@ export const parallelPlugin = false
 `;
 
 exports[`locale file in nested 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"// @ts-nocheck
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
   \\"en\\": [{ key: \\"../en/main.json\\", load: () => import(\\"../en/main.json\\" /* webpackChunkName: \\"lang_en_en_main_json\\" */), cache: true }],
@@ -96,7 +100,8 @@ export const parallelPlugin = false
 `;
 
 exports[`multiple files 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
+"// @ts-nocheck
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
 
 export const localeMessages = {
   \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */), cache: true }],
@@ -120,7 +125,8 @@ export const parallelPlugin = false
 `;
 
 exports[`toCode: function (arrow) 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"// @ts-nocheck
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
@@ -145,7 +151,8 @@ export const parallelPlugin = false
 `;
 
 exports[`toCode: function (named) 1`] = `
-"export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
+"// @ts-nocheck
+export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
@@ -170,7 +177,8 @@ export const parallelPlugin = false
 `;
 
 exports[`vueI18n option 1`] = `
-"import locale_en_json_en from \\"../en.json\\" assert { type: \\"json\\" };
+"// @ts-nocheck
+import locale_en_json_en from \\"../en.json\\" assert { type: \\"json\\" };
 import locale_ja_json_ja from \\"../ja.json\\" assert { type: \\"json\\" };
 import locale_fr_json_fr from \\"../fr.json\\" assert { type: \\"json\\" };
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
