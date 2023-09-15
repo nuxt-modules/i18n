@@ -105,7 +105,7 @@
     "@nuxt/module-builder": "latest",
     "@nuxt/schema": "^3.7.3",
     "@types/debug": "^4.1.8",
-    "@types/js-cookie": "^3.0.3",
+    "@types/js-cookie": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "bumpp": "^9.2.0",
