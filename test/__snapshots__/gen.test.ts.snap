@@ -2,15 +2,15 @@
 
 exports[`basic 1`] = `
 "// @ts-nocheck
-import locale_en_json_en from \\"../en.json\\" assert { type: \\"json\\" };
-import locale_ja_json_ja from \\"../ja.json\\" assert { type: \\"json\\" };
-import locale_fr_json_fr from \\"../fr.json\\" assert { type: \\"json\\" };
+import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };
+import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };
+import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => Promise.resolve(locale_en_json_en), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => Promise.resolve(locale_ja_json_ja), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => Promise.resolve(locale_fr_json_fr), cache: true }],
+  \\"en\\": [{ key: \\"../en.json\\", load: () => Promise.resolve(locale__test_srcDir_en_json), cache: true }],
+  \\"ja\\": [{ key: \\"../ja.json\\", load: () => Promise.resolve(locale__test_srcDir_ja_json), cache: true }],
+  \\"fr\\": [{ key: \\"../fr.json\\", load: () => Promise.resolve(locale__test_srcDir_fr_json), cache: true }]
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -33,11 +33,11 @@ exports[`files with cache configuration 1`] = `
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */), cache: true }],
-  \\"es\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */), cache: false }],
-  \\"es-AR\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */), cache: false },{ key: \\"../es-AR.json\\", load: () => import(\\"../es-AR.json\\" /* webpackChunkName: \\"lang_es_AR_json_es_AR_json\\" */), cache: true }],
+  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */), cache: true }],
+  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */), cache: true }],
+  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */), cache: true }],
+  \\"es\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: false }],
+  \\"es-AR\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: false },{ key: \\"../es-AR.json\\", load: () => import(\\"../es-AR.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_AR_json\\" */), cache: true }]
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -58,9 +58,9 @@ exports[`lazy 1`] = `
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */), cache: true }],
+  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */), cache: true }],
+  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */), cache: true }],
+  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */), cache: true }]
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -81,9 +81,9 @@ exports[`locale file in nested 1`] = `
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../en/main.json\\", load: () => import(\\"../en/main.json\\" /* webpackChunkName: \\"lang_en_en_main_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja/main.json\\", load: () => import(\\"../ja/main.json\\" /* webpackChunkName: \\"lang_ja_ja_main_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr/main.json\\", load: () => import(\\"../fr/main.json\\" /* webpackChunkName: \\"lang_fr_fr_main_json\\" */), cache: true }],
+  \\"en\\": [{ key: \\"../en/main.json\\", load: () => import(\\"../en/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_main_json\\" */), cache: true }],
+  \\"ja\\": [{ key: \\"../ja/main.json\\", load: () => import(\\"../ja/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_main_json\\" */), cache: true }],
+  \\"fr\\": [{ key: \\"../fr/main.json\\", load: () => import(\\"../fr/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_main_json\\" */), cache: true }]
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -104,11 +104,11 @@ exports[`multiple files 1`] = `
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"lang_en_json_en_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"lang_ja_json_ja_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"lang_fr_json_fr_json\\" */), cache: true }],
-  \\"es\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */), cache: true }],
-  \\"es-AR\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"lang_es_json_es_json\\" */), cache: true },{ key: \\"../es-AR.json\\", load: () => import(\\"../es-AR.json\\" /* webpackChunkName: \\"lang_es_AR_json_es_AR_json\\" */), cache: true }],
+  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */), cache: true }],
+  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */), cache: true }],
+  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */), cache: true }],
+  \\"es\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: true }],
+  \\"es-AR\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: true },{ key: \\"../es-AR.json\\", load: () => import(\\"../es-AR.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_AR_json\\" */), cache: true }]
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -131,11 +131,11 @@ export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"testFunc\\":((prop) => {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"paths\\":[\\"/path/to/en.json\\"],\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"paths\\":[\\"/path/to/ja.json\\"],\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"testFunc\\":((prop) => {
+          })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"paths\\":[\\"/path/to/fr.json\\"],\\"testFunc\\":((prop) => {
             return \`Hello \${prop}\`;
           })})]
   return nuxtI18nOptions
@@ -157,11 +157,11 @@ export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 export const resolveNuxtI18nOptions = async (context) => {
   const nuxtI18nOptions = Object({})
   nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"testFunc\\":(function (prop) {
+  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"paths\\":[\\"/path/to/en.json\\"],\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"paths\\":[\\"/path/to/ja.json\\"],\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"testFunc\\":(function (prop) {
+        })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"paths\\":[\\"/path/to/fr.json\\"],\\"testFunc\\":(function (prop) {
           return \`Hello \${prop}\`;
         })})]
   return nuxtI18nOptions
@@ -178,15 +178,15 @@ export const parallelPlugin = false
 
 exports[`vueI18n option 1`] = `
 "// @ts-nocheck
-import locale_en_json_en from \\"../en.json\\" assert { type: \\"json\\" };
-import locale_ja_json_ja from \\"../ja.json\\" assert { type: \\"json\\" };
-import locale_fr_json_fr from \\"../fr.json\\" assert { type: \\"json\\" };
+import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };
+import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };
+import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };
 export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
 
 export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => Promise.resolve(locale_en_json_en), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => Promise.resolve(locale_ja_json_ja), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => Promise.resolve(locale_fr_json_fr), cache: true }],
+  \\"en\\": [{ key: \\"../en.json\\", load: () => Promise.resolve(locale__test_srcDir_en_json), cache: true }],
+  \\"ja\\": [{ key: \\"../ja.json\\", load: () => Promise.resolve(locale__test_srcDir_ja_json), cache: true }],
+  \\"fr\\": [{ key: \\"../fr.json\\", load: () => Promise.resolve(locale__test_srcDir_fr_json), cache: true }]
 }
 
 export const resolveNuxtI18nOptions = async (context) => {
@@ -197,43 +197,46 @@ export const resolveNuxtI18nOptions = async (context) => {
             if (typeof config === 'function') return await config()
             return {}
           }
-  nuxtI18nOptions.vueI18n = Object({\\"messages\\":Object({})})
-  const deepCopy = (src, des, predicate) => {
-          for (const key in src) {
-            if (typeof src[key] === 'object') {
-              if (!(typeof des[key] === 'object')) des[key] = {}
-              deepCopy(src[key], des[key], predicate)
-            } else {
-              if (predicate) {
-                if (predicate(src[key], des[key])) {
+          const deepCopy = (src, des, predicate) => {
+            for (const key in src) {
+              if (typeof src[key] === 'object') {
+                if (!(typeof des[key] === 'object')) des[key] = {}
+                deepCopy(src[key], des[key], predicate)
+              } else {
+                if (predicate) {
+                  if (predicate(src[key], des[key])) {
+                    des[key] = src[key]
+                  }
+                } else {
                   des[key] = src[key]
                 }
-              } else {
-                des[key] = src[key]
               }
             }
           }
-        }
 
-        const mergeVueI18nConfigs = async (configuredMessages, loader) => {
-          const layerConfig = await vueI18nConfigLoader(loader)
-          const cfg = layerConfig || {}
-          cfg.messages ??= {}
-          const skipped = ['messages']
+          const mergeVueI18nConfigs = async (configuredMessages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
+            const cfg = layerConfig || {}
+            cfg.messages ??= {}
+            const skipped = ['messages']
 
-          for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
-            if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
-              nuxtI18nOptions.vueI18n[k] = v
-            } else {
-              deepCopy(v, nuxtI18nOptions.vueI18n[k])
+            for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
+              if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
+                nuxtI18nOptions.vueI18n[k] = v
+              } else {
+                deepCopy(v, nuxtI18nOptions.vueI18n[k])
+              }
+            }
+
+            for (const [locale, message] of Object.entries(cfg.messages)) {
+              configuredMessages[locale] ??= {}
+              deepCopy(message, configuredMessages[locale])
             }
           }
-
-          for (const [locale, message] of Object.entries(cfg.messages)) {
-            configuredMessages[locale] ??= {}
-            deepCopy(message, configuredMessages[locale])
-          }
-        }
+  nuxtI18nOptions.vueI18n = Object({\\"messages\\":Object({})})
+  await mergeVueI18nConfigs(nuxtI18nOptions.vueI18n.messages, (() => import(\\"../foo/layer2/vue-i18n.options.js?hash=84df1640&config=1\\" /* webpackChunkName: vue_i18n_options_js_84df1640 */)))
+  await mergeVueI18nConfigs(nuxtI18nOptions.vueI18n.messages, (() => import(\\"../layer1/i18n.custom.ts?hash=faa288dc&config=1\\" /* webpackChunkName: i18n_custom_ts_faa288dc */)))
+  await mergeVueI18nConfigs(nuxtI18nOptions.vueI18n.messages, (() => import(\\"../to/i18n.config.ts?hash=42902d1e&config=1\\" /* webpackChunkName: i18n_config_ts_42902d1e */)))
   return nuxtI18nOptions
 }
 
