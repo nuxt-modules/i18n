@@ -96,8 +96,8 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8
       '@types/js-cookie':
-        specifier: ^3.0.3
-        version: 3.0.3
+        specifier: ^3.0.4
+        version: 3.0.4
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.7.0
         version: 6.7.0(@typescript-eslint/parser@6.7.0)(eslint@8.49.0)(typescript@5.2.2)
@@ -2726,8 +2726,8 @@ packages:
       '@types/node': 20.4.5
     dev: true
 
-  /@types/js-cookie@3.0.3:
-    resolution: {integrity: sha512-Xe7IImK09HP1sv2M/aI+48a20VX+TdRJucfq4vfRVy6nWN8PYPOEnlMRSgxJAgYQIXJVL8dZ4/ilAM7dWNaOww==}
+  /@types/js-cookie@3.0.4:
+    resolution: {integrity: sha512-vMMnFF+H5KYqdd/myCzq6wLDlPpteJK+jGFgBus3Da7lw+YsDmx2C8feGTzY2M3Fo823yON+HC2CL240j4OV+w==}
     dev: true
 
   /@types/json-schema@7.0.12:
