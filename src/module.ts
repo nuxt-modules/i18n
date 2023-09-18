@@ -209,27 +209,26 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     addTemplate({
       filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
+      src: resolve(distDir, 'runtime/templates/options.template.mjs'),
       write: true,
-      getContents: () => {
-        return generateLoaderOptions(
-          options.lazy,
-          layerVueI18nConfigPaths as Required<VueI18nConfigPathInfo>[],
-          {
-            localeCodes,
-            localeInfo,
-            nuxtI18nOptions: options,
-            nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-            nuxtI18nInternalOptions: {
-              __normalizedLocales: normalizedLocales as LocaleObject[]
-            }
-          },
-          {
-            ssg: nuxt.options._generate,
-            dev: nuxt.options.dev,
-            parallelPlugin: i18nOptions.parallelPlugin ?? false
+      options: generateLoaderOptions(
+        options.lazy,
+        layerVueI18nConfigPaths as Required<VueI18nConfigPathInfo>[],
+        {
+          localeCodes,
+          localeInfo,
+          nuxtI18nOptions: options,
+          nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+          nuxtI18nInternalOptions: {
+            __normalizedLocales: normalizedLocales as LocaleObject[]
           }
-        )
-      }
+        },
+        {
+          ssg: nuxt.options._generate,
+          dev: nuxt.options.dev,
+          parallelPlugin: i18nOptions.parallelPlugin ?? false
+        }
+      )
     })
 
     /**

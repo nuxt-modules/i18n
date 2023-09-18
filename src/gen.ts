@@ -55,10 +55,11 @@ export function generateLoaderOptions(
 ) {
   debug('generateLoaderOptions: lazy', lazy)
 
-  const importMapper = new Map<string, string>()
+  const importMapper = new Map<string, { key: string; load: string; cache: string }>()
+  const importStrings: string[] = []
 
-  function generateLocaleImports(gen: string, locale: string, meta: NonNullable<LocaleInfo['meta']>[number]) {
-    if (importMapper.has(meta.key)) return gen
+  function generateLocaleImports(locale: string, meta: NonNullable<LocaleInfo['meta']>[number]) {
+    if (importMapper.has(meta.key)) return
     const importSpecifier = genImportSpecifier(meta, 'locale', { locale })
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
@@ -67,27 +68,25 @@ export function generateLoaderOptions(
     } else {
       const assertFormat = meta.parsed.ext.slice(1)
       const importOptions = assertFormat ? { assert: { type: assertFormat } } : {}
-      gen += `${genImport(importSpecifier, meta.key, importOptions)}\n`
+      importStrings.push(genImport(importSpecifier, meta.key, importOptions))
 
       importer.load = `() => Promise.resolve(${meta.key})`
     }
 
-    importMapper.set(
-      meta.key,
-      `{ key: ${toCode(importer?.key)}, load: ${importer?.load}, cache: ${toCode(importer?.cache)} }`
-    )
-
-    return gen
+    importMapper.set(meta.key, {
+      key: toCode(importer?.key),
+      load: importer?.load,
+      cache: toCode(importer?.cache)
+    })
   }
 
-  let genCode = '// @ts-nocheck\n'
-  const localeInfo = options.localeInfo || []
+  options.localeInfo ??= []
 
   /**
    * Prepare locale file imports
    */
-  for (const locale of localeInfo) {
-    locale?.meta?.forEach(meta => (genCode = generateLocaleImports(genCode, locale.code, meta)))
+  for (const locale of options.localeInfo) {
+    locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta))
   }
 
   /**
@@ -99,93 +98,33 @@ export function generateLoaderOptions(
     .map(config => generateVueI18nConfiguration(config))
     .filter((x): x is string => x != null)
 
-  /**
-   * Generate options
-   */
-  // prettier-ignore
-  genCode += `${Object.entries(options).map(([rootKey, rootValue]) => {
-    if (rootKey === 'nuxtI18nOptions') {
-      let genCodes = `export const resolveNuxtI18nOptions = async (context) => {\n`
-      genCodes += `  const ${rootKey} = Object({})\n`
-      for (const [key, value] of Object.entries(rootValue)) {
-        if (key === 'vueI18n') {
-          genCodes += ` const vueI18nConfigLoader = async loader => {
-            const config = await loader().then(r => r.default || r)
-            if (typeof config === 'object') return config
-            if (typeof config === 'function') return await config()
-            return {}
-          }
-          const deepCopy = (src, des, predicate) => {
-            for (const key in src) {
-              if (typeof src[key] === 'object') {
-                if (!(typeof des[key] === 'object')) des[key] = {}
-                deepCopy(src[key], des[key], predicate)
-              } else {
-                if (predicate) {
-                  if (predicate(src[key], des[key])) {
-                    des[key] = src[key]
-                  }
-                } else {
-                  des[key] = src[key]
-                }
-              }
-            }
-          }
+  const localeMessages = options.localeInfo.map(locale => [
+    locale.code,
+    locale.meta?.map(meta => importMapper.get(meta.key))
+  ])
 
-          const mergeVueI18nConfigs = async (configuredMessages, loader) => {
-            const layerConfig = await vueI18nConfigLoader(loader)
-            const cfg = layerConfig || {}
-            cfg.messages ??= {}
-            const skipped = ['messages']
+  const nuxtI18nOptions = {
+    ...options.nuxtI18nOptions,
+    locales: simplifyLocaleOptions((options?.nuxtI18nOptions?.locales ?? []) as unknown as LocaleObject[])
+  }
+  delete nuxtI18nOptions.vueI18n
 
-            for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
-              if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
-                nuxtI18nOptions.vueI18n[k] = v
-              } else {
-                deepCopy(v, nuxtI18nOptions.vueI18n[k])
-              }
-            }
+  const generated = {
+    localeCodes: options.localeCodes ?? [],
+    importStrings,
+    localeMessages,
+    NUXT_I18N_MODULE_ID: toCode(NUXT_I18N_MODULE_ID),
+    isSSG: misc.ssg,
+    parallelPlugin: misc.parallelPlugin,
+    nuxtI18nOptions,
+    nuxtI18nInternalOptions: options.nuxtI18nInternalOptions ?? {},
+    nuxtI18nOptionsDefault: options.nuxtI18nOptionsDefault ?? {},
+    vueI18nConfigs: vueI18nConfigImports
+  }
 
-            for (const [locale, message] of Object.entries(cfg.messages)) {
-              configuredMessages[locale] ??= {}
-              deepCopy(message, configuredMessages[locale])
-            }
-          }
-`
-          genCodes += `  ${rootKey}.${key} = ${toCode({ messages: {} })}\n`
-          
-          for (const importStatement of vueI18nConfigImports) {
-            genCodes += `  await mergeVueI18nConfigs(${rootKey}.${key}.messages, (${importStatement}))\n`
-          }
-        } else {
-          genCodes += `  ${rootKey}.${key} = ${toCode(
-            key === 'locales' ? simplifyLocaleOptions(value as unknown as LocaleObject[]) : value
-          )}\n`
-        }
-      }
-      genCodes += `  return nuxtI18nOptions\n`
-      genCodes += `}\n`
-      return genCodes
-    } else if (rootKey === 'nuxtI18nOptionsDefault') {
-      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => `${key}: ${toCode(value)}`).join(`,`)}})\n`
-    } else if (rootKey === 'nuxtI18nInternalOptions') {
-      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => `${key}: ${toCode(value)}`).join(`,`)}})\n`
-    } else if (rootKey === 'localeInfo') {
-      return `export const localeMessages = {\n${localeInfo.map(locale => `  ${toCode(locale.code)}: [${locale.meta?.map(meta => importMapper.get(meta.key))}]`).join(',\n')}\n}\n`
-    } else {
-      return `export const ${rootKey} = ${toCode(rootValue)}\n`
-    }
-  }).join('\n')}`
+  debug('generate code', generated)
 
-  /**
-   * Generate meta info
-   */
-  genCode += `export const NUXT_I18N_MODULE_ID = ${toCode(NUXT_I18N_MODULE_ID)}\n`
-  genCode += `export const isSSG = ${toCode(misc.ssg)}\n`
-  genCode += `export const parallelPlugin = ${toCode(misc.parallelPlugin)}\n`
-
-  debug('generate code', genCode)
-  return genCode
+  return generated
 }
 
 function genImportSpecifier(
