@@ -14,14 +14,7 @@ import type { NuxtI18nOptions } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
-export async function extendBundler(
-  nuxt: Nuxt,
-  options: {
-    nuxtOptions: Required<NuxtI18nOptions>
-    hasLocaleFiles: boolean
-  }
-) {
-  const { nuxtOptions, hasLocaleFiles } = options
+export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
   const langPaths = getLayerLangPaths(nuxt)
   debug('langPaths -', langPaths)
   const i18nModulePaths =
@@ -56,7 +49,7 @@ export async function extendBundler(
       escapeHtml: nuxtOptions.compilation.escapeHtml
     }
 
-    if (hasLocaleFiles && localePaths.length > 0) {
+    if (localePaths.length > 0) {
       webpackPluginOptions.include = localePaths.map(x => resolve(x, './**'))
     }
 
@@ -102,7 +95,7 @@ export async function extendBundler(
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
     globalSFCScope: nuxtOptions.customBlocks.globalSFCScope
   }
-  if (hasLocaleFiles && localePaths.length > 0) {
+  if (localePaths.length > 0) {
     vitePluginOptions.include = localePaths.map(x => resolve(x, './**'))
   }
 

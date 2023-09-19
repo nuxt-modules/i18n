@@ -31,14 +31,13 @@ import {
   resolveLocales,
   getPackageManagerType,
   mergeI18nModules,
-  resolveVueI18nConfigInfo,
   applyOptionOverrides,
   getLocaleFiles
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
-import type { NuxtI18nOptions } from './types'
+import type { NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
 import { LocaleObject } from 'vue-i18n-routing'
 
 export * from './types'
@@ -146,30 +145,27 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     const normalizedLocales = getNormalizedLocales(options.locales)
-    const hasLocaleFiles = normalizedLocales.length > 0
     const localeCodes = normalizedLocales.map(locale => locale.code)
-    const localeInfo = await resolveLocales(resolve(nuxt.options.srcDir), normalizedLocales)
+    const localeInfo = await resolveLocales(
+      resolve(nuxt.options.srcDir),
+      normalizedLocales,
+      relative(nuxt.options.buildDir, nuxt.options.srcDir)
+    )
     debug('localeInfo', localeInfo)
 
     /**
      * resolve vue-i18n config path
      */
 
-    const vueI18nConfigPathInfo = await resolveVueI18nConfigInfo(options, nuxt.options.buildDir, nuxt.options.rootDir)
-    if (vueI18nConfigPathInfo.absolute == null) {
-      logger.info(`Vue I18n configuration file does not exist at ${vueI18nConfigPathInfo.relative}. Skipping...`)
-    }
-    debug('vueI18nConfigPathInfo', vueI18nConfigPathInfo)
-
     const layerVueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
     for (const vueI18nConfigPath of layerVueI18nConfigPaths) {
-      if (vueI18nConfigPath.absolute == null) {
+      if (vueI18nConfigPath.absolute === '') {
         logger.warn(
-          `Ignore Vue I18n configuration file does not exist at ${vueI18nConfigPath.relative} on layer ${vueI18nConfigPath.rootDir}. Skipping...`
+          `Ignore Vue I18n configuration file does not exist at ${vueI18nConfigPath.relative} in ${vueI18nConfigPath.rootDir}. Skipping...`
         )
       }
     }
-    debug('layerVueI18nConfigPaths', layerVueI18nConfigPaths)
+    debug('VueI18nConfigPaths', layerVueI18nConfigPaths)
 
     /**
      * setup nuxt/pages
@@ -211,19 +207,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
       src: resolve(distDir, 'runtime/utils.mjs')
     })
 
-    // for loading options
-    const localesRelativeBasePath = relative(nuxt.options.buildDir, nuxt.options.srcDir)
-    debug('localesRelativeBasePath', localesRelativeBasePath)
-
     addTemplate({
       filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
       write: true,
       getContents: () => {
         return generateLoaderOptions(
           options.lazy,
-          localesRelativeBasePath,
-          vueI18nConfigPathInfo,
-          layerVueI18nConfigPaths,
+          layerVueI18nConfigPaths as Required<VueI18nConfigPathInfo>[],
           {
             localeCodes,
             localeInfo,
@@ -285,10 +275,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend bundler
      */
 
-    await extendBundler(nuxt, {
-      nuxtOptions: options as Required<NuxtI18nOptions>,
-      hasLocaleFiles
-    })
+    await extendBundler(nuxt, options as Required<NuxtI18nOptions>)
 
     /**
      * setup nitro

@@ -1,6 +1,7 @@
 import type { Strategies, I18nRoutingOptions, LocaleObject } from 'vue-i18n-routing'
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
+import type { ParsedPath } from 'path'
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
@@ -34,7 +35,16 @@ export type LocaleInfo = {
   paths?: string[]
   hashes?: string[]
   types?: LocaleType[]
-} & Omit<LocaleObject, 'file' | 'files'> & { files: LocaleFile[] }
+} & Omit<LocaleObject, 'file' | 'files'> & { files: LocaleFile[]; meta?: (FileMeta & { file: LocaleFile })[] }
+
+export type FileMeta = {
+  path: string
+  loadPath: string
+  hash: string
+  type: LocaleType
+  parsed: ParsedPath
+  key: string
+}
 
 export type VueI18nConfigPathInfo = {
   relative?: string
@@ -43,6 +53,7 @@ export type VueI18nConfigPathInfo = {
   type?: LocaleType
   rootDir: string
   relativeBase: string
+  meta: FileMeta
 }
 
 export interface RootRedirectOptions {

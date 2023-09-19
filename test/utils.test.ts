@@ -1,6 +1,11 @@
 import { parseSegment, getRoutePath, resolveLocales } from '../src/utils'
 import type { LocaleObject } from 'vue-i18n-routing'
 
+vi.mock('pathe', async () => {
+  const mod = await vi.importActual<typeof import('pathe')>('pathe')
+  return { ...mod, resolve: vi.fn((...args: string[]) => mod.normalize(args.join('/'))) }
+})
+
 vi.mock('@nuxt/kit', () => {
   const resolveFiles = () => {
     return [
@@ -30,15 +35,15 @@ test('resolveLocales', async () => {
   const locales = [
     {
       code: 'en',
-      file: 'en.json'
+      files: ['en.json']
     },
     {
       code: 'ja',
-      file: 'ja.json'
+      files: ['ja.json']
     },
     {
       code: 'es',
-      file: 'es.json'
+      files: ['es.json']
     },
     {
       code: 'es-AR',
@@ -46,48 +51,133 @@ test('resolveLocales', async () => {
     },
     {
       code: 'nl',
-      file: 'nl.js'
+      files: ['nl.js']
     }
   ] as LocaleObject[]
-  const resolvedLocales = await resolveLocales('/path/to/project/locales', locales)
+  const resolvedLocales = await resolveLocales('/path/to/project/locales', locales, '..')
   expect(resolvedLocales).toEqual([
     {
-      paths: ['/path/to/project/locales/en.json'],
       code: 'en',
-      files: [{ cache: true, path: 'en.json' }],
-      hashes: ['18f36abf'],
-      types: ['static']
+      files: [{ path: 'en.json', cache: true }],
+      meta: [
+        {
+          path: '/path/to/project/locales/en.json',
+          loadPath: '../en.json',
+          type: 'static',
+          hash: '18f36abf',
+          parsed: {
+            root: '/',
+            dir: '/path/to/project/locales',
+            base: 'en.json',
+            ext: '.json',
+            name: 'en'
+          },
+          key: 'locale__path_to_project_locales_en_json',
+          file: { path: 'en.json', cache: true }
+        }
+      ]
     },
     {
-      paths: ['/path/to/project/locales/ja.json'],
       code: 'ja',
       files: [{ path: 'ja.json', cache: true }],
-      hashes: ['147c88eb'],
-      types: ['static']
+      meta: [
+        {
+          path: '/path/to/project/locales/ja.json',
+          loadPath: '../ja.json',
+          type: 'static',
+          hash: '147c88eb',
+          parsed: {
+            root: '/',
+            dir: '/path/to/project/locales',
+            base: 'ja.json',
+            ext: '.json',
+            name: 'ja'
+          },
+          key: 'locale__path_to_project_locales_ja_json',
+          file: { path: 'ja.json', cache: true }
+        }
+      ]
     },
     {
-      paths: ['/path/to/project/locales/es.json'],
       code: 'es',
       files: [{ path: 'es.json', cache: true }],
-      hashes: ['f4490d2c'],
-      types: ['static']
+      meta: [
+        {
+          path: '/path/to/project/locales/es.json',
+          loadPath: '../es.json',
+          type: 'static',
+          hash: 'f4490d2c',
+          parsed: {
+            root: '/',
+            dir: '/path/to/project/locales',
+            base: 'es.json',
+            ext: '.json',
+            name: 'es'
+          },
+          key: 'locale__path_to_project_locales_es_json',
+          file: { path: 'es.json', cache: true }
+        }
+      ]
     },
     {
-      paths: ['/path/to/project/locales/es.json', '/path/to/project/locales/es-AR.json'],
       code: 'es-AR',
       files: [
         { path: 'es.json', cache: true },
         { path: 'es-AR.json', cache: true }
       ],
-      hashes: ['f4490d2c', '96ad3952'],
-      types: ['static', 'static']
+      meta: [
+        {
+          path: '/path/to/project/locales/es.json',
+          loadPath: '../es.json',
+          type: 'static',
+          hash: 'f4490d2c',
+          parsed: {
+            root: '/',
+            dir: '/path/to/project/locales',
+            base: 'es.json',
+            ext: '.json',
+            name: 'es'
+          },
+          key: 'locale__path_to_project_locales_es_json',
+          file: { path: 'es.json', cache: true }
+        },
+        {
+          path: '/path/to/project/locales/es-AR.json',
+          loadPath: '../es-AR.json',
+          type: 'static',
+          hash: '96ad3952',
+          parsed: {
+            root: '/',
+            dir: '/path/to/project/locales',
+            base: 'es-AR.json',
+            ext: '.json',
+            name: 'es-AR'
+          },
+          key: 'locale__path_to_project_locales_es_AR_json',
+          file: { path: 'es-AR.json', cache: true }
+        }
+      ]
     },
     {
-      paths: ['/path/to/project/locales/nl.js'],
       code: 'nl',
       files: [{ path: 'nl.js', cache: false }],
-      hashes: ['68b1a130'],
-      types: ['dynamic']
+      meta: [
+        {
+          path: '/path/to/project/locales/nl.js',
+          loadPath: '../nl.js',
+          type: 'dynamic',
+          hash: '68b1a130',
+          parsed: {
+            root: '/',
+            dir: '/path/to/project/locales',
+            base: 'nl.js',
+            ext: '.js',
+            name: 'nl'
+          },
+          key: 'locale__path_to_project_locales_nl_js',
+          file: { path: 'nl.js', cache: false }
+        }
+      ]
     }
   ])
 })
