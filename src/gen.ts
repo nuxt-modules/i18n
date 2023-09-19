@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import createDebug from 'debug'
-import { isArray, isObject } from '@intlify/shared'
-import { EXECUTABLE_EXTENSIONS, NULL_HASH, NUXT_I18N_MODULE_ID } from './constants'
-import { genImport, genSafeVariableName, genDynamicImport } from 'knitwork'
-import { parse as parsePath, normalize } from 'pathe'
+import { EXECUTABLE_EXTENSIONS, NUXT_I18N_MODULE_ID } from './constants'
+import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
 import { getLocalePaths, toCode } from './utils'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType } from './types'
+import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta } from './types'
 import type { NuxtI18nOptionsDefault } from './constants'
 import type { LocaleObject } from 'vue-i18n-routing'
 
@@ -24,11 +22,30 @@ type ResourceType = 'locale' | 'config'
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
+const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): string => {
+  return genDynamicImport(genImportSpecifier(config.meta, 'config'), {
+    comment: `webpackChunkName: ${config.meta.key}`
+  })
+}
+
+function simplifyLocaleOptions(locales: LocaleObject[]) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return locales.map(({ meta, ...locale }) => {
+    if (
+      locale?.files == null ||
+      (locale?.files?.length === 0 &&
+        Object.keys(locale).filter(k => !['iso', 'code', 'hashes', 'types', 'file', 'files'].includes(k)).length === 0)
+    ) {
+      return locale.code
+    }
+
+    return { ...locale, files: getLocalePaths(locale) }
+  })
+}
+
 export function generateLoaderOptions(
   lazy: NonNullable<NuxtI18nOptions['lazy']>,
-  localesRelativeBase: string,
-  vueI18nConfigPathInfo: VueI18nConfigPathInfo,
-  vueI18nConfigPaths: VueI18nConfigPathInfo[],
+  vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[],
   options: LoaderOptions = {},
   misc: {
     dev: boolean
@@ -37,126 +54,50 @@ export function generateLoaderOptions(
   } = { dev: true, ssg: false, parallelPlugin: false }
 ) {
   debug('generateLoaderOptions: lazy', lazy)
-  debug('generateLoaderOptions: localesRelativeBase', localesRelativeBase)
-  debug('generateLoaderOptions: vueI18nConfigPathInfo', vueI18nConfigPathInfo)
 
-  const generatedImports = new Map<string, string>()
   const importMapper = new Map<string, string>()
 
-  const convertToPairs = ({ files, path, paths, hash, hashes, type, types }: LocaleInfo) => {
-    const _paths = path ? [path] : paths || []
-    const _hashes = hash ? [hash] : hashes || []
-    const _types = type ? [type] : types || []
-    return (files ?? []).map((f, i) => ({ file: f, path: _paths[i], hash: _hashes[i], type: _types[i] }))
-  }
+  function generateLocaleImports(gen: string, locale: string, meta: NonNullable<LocaleInfo['meta']>[number]) {
+    if (importMapper.has(meta.key)) return gen
+    const importSpecifier = genImportSpecifier(meta, 'locale', { locale })
+    const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
-  const makeImportKey = (root: string, dir: string, base: string) =>
-    normalize(`${root ? `${root}/` : ''}${dir ? `${dir}/` : ''}${base}`)
+    if (lazy) {
+      importer.load = genDynamicImport(importSpecifier, { comment: `webpackChunkName: "${meta.key}"` })
+    } else {
+      const assertFormat = meta.parsed.ext.slice(1)
+      const importOptions = assertFormat ? { assert: { type: assertFormat } } : {}
+      gen += `${genImport(importSpecifier, meta.key, importOptions)}\n`
 
-  function generateSyncImports(
-    gen: string,
-    absolutePath: string,
-    type: LocaleType,
-    localeCode: string,
-    hash: string,
-    relativePath?: string
-  ) {
-    if (!relativePath) {
-      return gen
+      importer.load = `() => Promise.resolve(${meta.key})`
     }
 
-    const { root, dir, base, ext } = parsePath(relativePath)
-    const key = makeImportKey(root, dir, base)
-    if (!generatedImports.has(key)) {
-      const loadPath = resolveLocaleRelativePath(localesRelativeBase, relativePath)
-      const assertFormat = ext.slice(1)
-      const variableName = genSafeVariableName(`locale_${convertToImportId(key)}`)
-      gen += `${genImport(
-        genImportSpecifier(loadPath, ext, absolutePath, type, {
-          hash,
-          resourceType: 'locale',
-          query: { locale: localeCode }
-        }),
-        variableName,
-        assertFormat ? { assert: { type: assertFormat } } : {}
-      )}\n`
-      importMapper.set(key, variableName)
-      generatedImports.set(key, loadPath)
-    }
+    importMapper.set(
+      meta.key,
+      `{ key: ${toCode(importer?.key)}, load: ${importer?.load}, cache: ${toCode(importer?.cache)} }`
+    )
 
     return gen
   }
 
-  function simplifyLocaleOptions(locales: LocaleObject[]) {
-    return locales.map(locale => {
-      if (
-        locale?.files?.length === 0 &&
-        Object.keys(locale).filter(k => !['iso', 'code', 'hashes', 'types', 'file', 'files'].includes(k)).length === 0
-      ) {
-        return locale.code
-      }
-
-      return { ...locale, files: getLocalePaths(locale) }
-    })
-  }
-
   let genCode = '// @ts-nocheck\n'
   const localeInfo = options.localeInfo || []
-  const syncLocaleFiles = new Set<LocaleInfo>()
-  const asyncLocaleFiles = new Set<LocaleInfo>()
 
   /**
-   * Prepare locale files for synchronous or asynchronous
+   * Prepare locale file imports
    */
   for (const locale of localeInfo) {
-    if (!syncLocaleFiles.has(locale) && !asyncLocaleFiles.has(locale)) {
-      ;(lazy ? asyncLocaleFiles : syncLocaleFiles).add(locale)
-    }
+    locale?.meta?.forEach(meta => (genCode = generateLocaleImports(genCode, locale.code, meta)))
   }
 
   /**
-   * Generate locale synchronous imports
+   * Reverse order so project overwrites layers
    */
-  for (const localeInfo of syncLocaleFiles) {
-    convertToPairs(localeInfo).forEach(({ path, type, file, hash }) => {
-      genCode = generateSyncImports(genCode, path, type, localeInfo.code, hash, file.path)
-    })
-  }
-
-  /**
-   * Strip info for code generation
-   */
-  const stripPathFromLocales = (locales: any) => {
-    if (isArray(locales)) {
-      return locales.map(locale => {
-        if (isObject(locale)) {
-          const obj = { ...locale }
-          delete obj.path
-          delete obj.paths
-          return obj
-        } else {
-          return locale
-        }
-      })
-    } else {
-      return locales
-    }
-  }
-
-  const generateVueI18nConfiguration = (
-    configPath: VueI18nConfigPathInfo,
-    fn: (configPath: Required<VueI18nConfigPathInfo>, meta: { dir: string; base: string; ext: string }) => string | null
-  ) => {
-    const { absolute: absolutePath, relative: relativePath, hash } = configPath
-    if (absolutePath != null && relativePath != null && hash != null) {
-      const { ext } = parsePath(absolutePath)
-      const { dir, base: _base, ext: relativeExt } = parsePath(relativePath)
-      const base = relativeExt === '.config' ? `${_base}${ext}` : _base
-      return fn(configPath as Required<VueI18nConfigPathInfo>, { dir, base, ext })
-    } else {
-      return null
-    }
-  }
+  const vueI18nConfigImports = vueI18nConfigPaths
+    .reverse()
+    .filter(config => config.absolute !== '')
+    .map(config => generateVueI18nConfiguration(config))
+    .filter((x): x is string => x != null)
 
   /**
    * Generate options
@@ -174,66 +115,51 @@ export function generateLoaderOptions(
             if (typeof config === 'function') return await config()
             return {}
           }
-`
-          genCodes += `  ${rootKey}.${key} = ${toCode({ messages: {} })}\n`
-
-          const combinedConfigs = [vueI18nConfigPathInfo, ...vueI18nConfigPaths].reverse()
-          genCodes += `  const deepCopy = (src, des, predicate) => {
-          for (const key in src) {
-            if (typeof src[key] === 'object') {
-              if (!(typeof des[key] === 'object')) des[key] = {}
-              deepCopy(src[key], des[key], predicate)
-            } else {
-              if (predicate) {
-                if (predicate(src[key], des[key])) {
+          const deepCopy = (src, des, predicate) => {
+            for (const key in src) {
+              if (typeof src[key] === 'object') {
+                if (!(typeof des[key] === 'object')) des[key] = {}
+                deepCopy(src[key], des[key], predicate)
+              } else {
+                if (predicate) {
+                  if (predicate(src[key], des[key])) {
+                    des[key] = src[key]
+                  }
+                } else {
                   des[key] = src[key]
                 }
+              }
+            }
+          }
+
+          const mergeVueI18nConfigs = async (configuredMessages, loader) => {
+            const layerConfig = await vueI18nConfigLoader(loader)
+            const cfg = layerConfig || {}
+            cfg.messages ??= {}
+            const skipped = ['messages']
+
+            for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
+              if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
+                nuxtI18nOptions.vueI18n[k] = v
               } else {
-                des[key] = src[key]
+                deepCopy(v, nuxtI18nOptions.vueI18n[k])
               }
             }
-          }
-        }
 
-        const mergeVueI18nConfigs = async (configuredMessages, loader) => {
-          const layerConfig = await vueI18nConfigLoader(loader)
-          const cfg = layerConfig || {}
-          cfg.messages ??= {}
-          const skipped = ['messages']
-
-          for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
-            if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
-              nuxtI18nOptions.vueI18n[k] = v
-            } else {
-              deepCopy(v, nuxtI18nOptions.vueI18n[k])
+            for (const [locale, message] of Object.entries(cfg.messages)) {
+              configuredMessages[locale] ??= {}
+              deepCopy(message, configuredMessages[locale])
             }
           }
-
-          for (const [locale, message] of Object.entries(cfg.messages)) {
-            configuredMessages[locale] ??= {}
-            deepCopy(message, configuredMessages[locale])
-          }
-        }
 `
+          genCodes += `  ${rootKey}.${key} = ${toCode({ messages: {} })}\n`
           
-          for (const configPath of combinedConfigs) {
-            const additionalVueI18nConfigCode = generateVueI18nConfiguration(
-              configPath,
-              ({ absolute: absolutePath, relative: relativePath, hash, relativeBase, type }, { dir, base, ext }) => {
-                const configImportKey = makeImportKey(relativeBase, dir, base)
-                return `await mergeVueI18nConfigs(${rootKey}.${key}.messages, (${genDynamicImport(
-                  genImportSpecifier(configImportKey, ext, absolutePath, type, { hash, resourceType: 'config' }),
-                  { comment: `webpackChunkName: "${normalizeWithUnderScore(relativePath)}_${hash}"` }
-                )}))\n`
-              }
-            )
-            if (additionalVueI18nConfigCode != null) {
-              genCodes += `  ${additionalVueI18nConfigCode}`
-            }
+          for (const importStatement of vueI18nConfigImports) {
+            genCodes += `  await mergeVueI18nConfigs(${rootKey}.${key}.messages, (${importStatement}))\n`
           }
         } else {
           genCodes += `  ${rootKey}.${key} = ${toCode(
-            key === 'locales' ? simplifyLocaleOptions(stripPathFromLocales(value)) : value
+            key === 'locales' ? simplifyLocaleOptions(value as unknown as LocaleObject[]) : value
           )}\n`
         }
       }
@@ -241,35 +167,11 @@ export function generateLoaderOptions(
       genCodes += `}\n`
       return genCodes
     } else if (rootKey === 'nuxtI18nOptionsDefault') {
-      // generate default nuxtI18n options
-      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
-        return `${key}: ${toCode(value)}`
-      }).join(`,`)}})\n`
+      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => `${key}: ${toCode(value)}`).join(`,`)}})\n`
     } else if (rootKey === 'nuxtI18nInternalOptions') {
-      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => {
-        return `${key}: ${toCode(key === '__normalizedLocales' ? stripPathFromLocales(value) : value)}`
-      }).join(`,`)}})\n`
+      return `export const ${rootKey} = Object({${Object.entries(rootValue).map(([key, value]) => `${key}: ${toCode(value)}`).join(`,`)}})\n`
     } else if (rootKey === 'localeInfo') {
-      let codes = `export const localeMessages = {\n`
-        for (const { code, files} of syncLocaleFiles) {
-          codes += `  ${toCode(code)}: [${(files ?? []).map(file => {
-            const { root, dir, base } = parsePath(file.path)
-            const key = makeImportKey(root, dir, base)
-            return `{ key: ${toCode(generatedImports.get(key))}, load: () => Promise.resolve(${importMapper.get(key)}), cache: ${toCode(file.cache)} }`
-          })}],\n`
-        }
-        for (const localeInfo of asyncLocaleFiles) {
-          codes += `  ${toCode(localeInfo.code)}: [${convertToPairs(localeInfo).map(({ file, path, hash, type }) => {
-            const { root, dir, base, ext } = parsePath(file.path)
-            const key = makeImportKey(root, dir, base)
-            const loadPath = resolveLocaleRelativePath(localesRelativeBase, file.path)
-            return `{ key: ${toCode(loadPath)}, load: ${genDynamicImport(
-              genImportSpecifier(loadPath, ext, path, type, { hash, query: { locale: localeInfo.code } }),
-              { comment: `webpackChunkName: "lang_${normalizeWithUnderScore(key)}"` })}, cache: ${toCode(file.cache)} }`
-          })}],\n`
-        }
-      codes += `}\n`
-      return codes
+      return `export const localeMessages = {\n${localeInfo.map(locale => `  ${toCode(locale.code)}: [${locale.meta?.map(meta => importMapper.get(meta.key))}]`).join(',\n')}\n}\n`
     } else {
       return `export const ${rootKey} = ${toCode(rootValue)}\n`
     }
@@ -286,58 +188,26 @@ export function generateLoaderOptions(
   return genCode
 }
 
-function raiseSyntaxError(path: string) {
-  throw new Error(`'unknown' type in '${path}'.`)
-}
-
 function genImportSpecifier(
-  id: string,
-  ext: string,
-  absolutePath: string,
-  type: LocaleType,
-  {
-    hash = NULL_HASH,
-    resourceType = 'locale',
-    query = {}
-  }: {
-    hash?: string
-    resourceType?: ResourceType
-    query?: Record<string, string>
-  } = {}
+  { loadPath, path, parsed, hash, type }: Pick<FileMeta, 'loadPath' | 'path' | 'parsed' | 'hash' | 'type'>,
+  resourceType: ResourceType | undefined,
+  query: Record<string, string> = {}
 ) {
-  if (EXECUTABLE_EXTENSIONS.includes(ext)) {
-    if (resourceType === 'locale') {
-      type === 'unknown' && raiseSyntaxError(absolutePath)
-      return type === 'dynamic' ? withQuery(id, { hash, ...query }) : id
-    } else if (resourceType === 'config') {
-      type === 'unknown' && raiseSyntaxError(absolutePath)
-      return withQuery(id, { hash, ...query, ...{ config: 1 } })
-    } else {
-      return id
-    }
-  } else {
-    return id
-  }
-}
+  if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) return loadPath
 
-const IMPORT_ID_CACHES = new Map<string, string>()
-
-const normalizeWithUnderScore = (name: string) => name.replace(/-/g, '_').replace(/\./g, '_').replace(/\//g, '_')
-
-function convertToImportId(file: string) {
-  if (IMPORT_ID_CACHES.has(file)) {
-    return IMPORT_ID_CACHES.get(file)
+  if (resourceType != null && type === 'unknown') {
+    throw new Error(`'unknown' type in '${path}'.`)
   }
 
-  const { name, dir } = parsePath(file)
-  const id = normalizeWithUnderScore(`${dir}/${name}`)
-  IMPORT_ID_CACHES.set(file, id)
+  if (resourceType === 'locale') {
+    return withQuery(loadPath, type === 'dynamic' ? { hash, ...query } : {})
+  }
 
-  return id
-}
+  if (resourceType === 'config') {
+    return withQuery(loadPath, { hash, ...query, ...{ config: 1 } })
+  }
 
-function resolveLocaleRelativePath(relativeBase: string, file: string) {
-  return normalize(`${relativeBase}/${file}`)
+  return loadPath
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

@@ -1,7 +1,7 @@
 import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { resolvePath } from '@nuxt/kit'
-import { parse as parsePath, resolve, relative } from 'pathe'
+import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
 import { encodePath } from 'ufo'
@@ -15,6 +15,7 @@ import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, Lo
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
 import type { LocaleObject } from 'vue-i18n-routing'
+import { genSafeVariableName } from 'knitwork'
 
 const PackageManagerLockFiles = {
   'npm-shrinkwrap.json': 'npm-legacy',
@@ -59,29 +60,64 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   return normalized
 }
 
-export async function resolveLocales(path: string, locales: LocaleObject[]): Promise<LocaleInfo[]> {
+const IMPORT_ID_CACHES = new Map<string, string>()
+
+export const normalizeWithUnderScore = (name: string) => name.replace(/-/g, '_').replace(/\./g, '_').replace(/\//g, '_')
+
+function convertToImportId(file: string) {
+  if (IMPORT_ID_CACHES.has(file)) {
+    return IMPORT_ID_CACHES.get(file)
+  }
+
+  const { dir, base } = parsePath(file)
+  const id = normalizeWithUnderScore(`${dir}/${base}`)
+  IMPORT_ID_CACHES.set(file, id)
+
+  return id
+}
+
+export async function resolveLocales(
+  path: string,
+  locales: LocaleObject[],
+  relativeBase: string
+): Promise<LocaleInfo[]> {
   const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(path, x)))
 
   const find = (f: string) => files.find(file => file === resolve(path, f))
-  return (locales as LocaleInfo[]).map(locale => {
+  const localesResolved: LocaleInfo[] = []
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for (const { file, ...locale } of locales) {
+    const resolved: LocaleInfo = { ...locale, files: [], meta: undefined }
     const files = getLocaleFiles(locale)
 
-    locale.paths = files.map(file => find(file.path)).filter(Boolean) as string[]
-    locale.hashes = locale.paths.map(path => getHash(path))
-    locale.types = locale.paths.map(path => getLocaleType(path))
-    locale.file = undefined
-    locale.files = files.map(file => {
-      const filePath = find(file.path)
+    resolved.meta = files.map(file => {
+      const filePath = find(file.path) ?? ''
       const isCached = filePath ? getLocaleType(filePath) !== 'dynamic' : true
+      const parsed = parsePath(filePath)
+      const importKey = join(parsed.root, parsed.dir, parsed.base)
+      const key = genSafeVariableName(`locale_${convertToImportId(importKey)}`)
 
       return {
-        path: file.path,
-        cache: file.cache ?? isCached
+        path: filePath,
+        loadPath: normalize(`${relativeBase}/${file.path}`),
+        type: getLocaleType(filePath),
+        hash: getHash(filePath),
+        parsed,
+        key,
+        file: {
+          path: file.path,
+          cache: file.cache ?? isCached
+        }
       }
     })
 
-    return locale
-  })
+    resolved.files = resolved.meta.map(meta => meta.file)
+
+    localesResolved.push(resolved)
+  }
+
+  return localesResolved
 }
 
 function getLocaleType(path: string): LocaleType {
@@ -194,21 +230,40 @@ export async function isExists(path: string) {
 }
 
 export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDir: string, rootDir: string) {
-  const configPathInfo: VueI18nConfigPathInfo = {
+  const configPathInfo: Required<VueI18nConfigPathInfo> = {
     relativeBase: relative(buildDir, rootDir),
+    relative: options.vueI18n ?? 'i18n.config',
+    absolute: '',
     rootDir,
-    hash: NULL_HASH
+    hash: NULL_HASH,
+    type: 'unknown',
+    meta: {
+      path: '',
+      loadPath: '',
+      type: 'unknown',
+      hash: NULL_HASH,
+      key: '',
+      parsed: { base: '', dir: '', ext: '', name: '', root: '' }
+    }
   }
 
-  const vueI18nConfigRelativePath = (configPathInfo.relative = options.vueI18n || 'i18n.config')
-  const vueI18nConfigAbsolutePath = await resolvePath(vueI18nConfigRelativePath, {
-    cwd: rootDir,
-    extensions: EXECUTABLE_EXTENSIONS
-  })
-  if (await isExists(vueI18nConfigAbsolutePath)) {
-    configPathInfo.absolute = vueI18nConfigAbsolutePath
-    configPathInfo.hash = getHash(vueI18nConfigAbsolutePath)
-    configPathInfo.type = getLocaleType(vueI18nConfigAbsolutePath)
+  const absolutePath = await resolvePath(configPathInfo.relative, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
+  if (await isExists(absolutePath)) {
+    configPathInfo.absolute = absolutePath
+    configPathInfo.hash = getHash(absolutePath)
+    configPathInfo.type = getLocaleType(absolutePath)
+
+    const key = `${normalizeWithUnderScore(configPathInfo.relative)}_${configPathInfo.hash}`
+    const parsed = parsePath(absolutePath)
+
+    configPathInfo.meta = {
+      path: absolutePath,
+      type: configPathInfo.type,
+      hash: configPathInfo.hash,
+      loadPath: join(configPathInfo.relativeBase, parsed.base),
+      parsed,
+      key
+    }
   }
 
   return configPathInfo
