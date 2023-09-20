@@ -7,8 +7,10 @@ export default defineConfig({
     restoreMocks: true,
     threads: false,
     testTimeout: 300000,
-    deps: {
-      inline: [/@nuxt\/test-utils/]
+    server: {
+      deps: {
+        inline: [/@nuxt\/test-utils/]
+      }
     }
   }
 })
