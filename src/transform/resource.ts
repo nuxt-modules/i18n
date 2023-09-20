@@ -49,8 +49,9 @@ export const ResourcePlugin = createUnplugin((options: ResourcePluginOptions) =>
       }
 
       const pattern = query.locale ? NUXT_I18N_COMPOSABLE_DEFINE_LOCALE : NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
-      const match = code.match(new RegExp(`\\b${pattern}\\s*`))
-      if (match?.[0]) {
+      const matches = code.matchAll(new RegExp(`\\b${pattern}\\s*`, 'g'))
+
+      for (const match of matches) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         s.remove(match.index!, match.index! + match[0].length)
       }
