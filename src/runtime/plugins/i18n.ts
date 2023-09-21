@@ -14,7 +14,13 @@ import {
   getComposer
 } from 'vue-i18n-routing'
 import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
-import { localeCodes, resolveNuxtI18nOptions, nuxtI18nInternalOptions, isSSG } from '#build/i18n.options.mjs'
+import {
+  localeCodes,
+  resolveNuxtI18nOptions,
+  nuxtI18nInternalOptions,
+  isSSG,
+  parallelPlugin
+} from '#build/i18n.options.mjs'
 import {
   loadInitialMessages,
   loadAndSetLocale,
@@ -34,8 +40,6 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
-// @ts-expect-error virtual file
-import { parallelPlugin } from '#build/i18n.options'
 
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'

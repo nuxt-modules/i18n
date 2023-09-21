@@ -1,24 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import createDebug from 'debug'
-import { EXECUTABLE_EXTENSIONS, NUXT_I18N_MODULE_ID } from './constants'
+import { EXECUTABLE_EXTENSIONS } from './constants'
 import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
-import { getLocalePaths, toCode } from './utils'
+import { PrerenderTarget, getLocalePaths, toCode } from './utils'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta } from './types'
-import type { NuxtI18nOptionsDefault } from './constants'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta } from './types'
 import type { LocaleObject } from 'vue-i18n-routing'
 
 export type LoaderOptions = {
-  localeCodes?: string[]
-  localeInfo?: LocaleInfo[]
-  nuxtI18nOptions?: NuxtI18nOptions
-  nuxtI18nOptionsDefault?: NuxtI18nOptionsDefault
-  nuxtI18nInternalOptions?: NuxtI18nInternalOptions
+  vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
+  localeInfo: LocaleInfo[]
+  nuxtI18nOptions: NuxtI18nOptions
 }
-
-type ResourceType = 'locale' | 'config'
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
@@ -43,17 +38,8 @@ function simplifyLocaleOptions(locales: LocaleObject[]) {
   })
 }
 
-export function generateLoaderOptions(
-  lazy: NonNullable<NuxtI18nOptions['lazy']>,
-  vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[],
-  options: LoaderOptions = {},
-  misc: {
-    dev: boolean
-    ssg: boolean
-    parallelPlugin: boolean
-  } = { dev: true, ssg: false, parallelPlugin: false }
-) {
-  debug('generateLoaderOptions: lazy', lazy)
+export function generateLoaderOptions({ nuxtI18nOptions, vueI18nConfigPaths, localeInfo }: LoaderOptions) {
+  debug('generateLoaderOptions: lazy', nuxtI18nOptions.lazy)
 
   const importMapper = new Map<string, { key: string; load: string; cache: string }>()
   const importStrings: string[] = []
@@ -63,7 +49,7 @@ export function generateLoaderOptions(
     const importSpecifier = genImportSpecifier(meta, 'locale', { locale })
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
-    if (lazy) {
+    if (nuxtI18nOptions.lazy) {
       importer.load = genDynamicImport(importSpecifier, { comment: `webpackChunkName: "${meta.key}"` })
     } else {
       const assertFormat = meta.parsed.ext.slice(1)
@@ -80,12 +66,10 @@ export function generateLoaderOptions(
     })
   }
 
-  options.localeInfo ??= []
-
   /**
    * Prepare locale file imports
    */
-  for (const locale of options.localeInfo) {
+  for (const locale of localeInfo) {
     locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta))
   }
 
@@ -96,29 +80,19 @@ export function generateLoaderOptions(
     .reverse()
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config))
-    .filter((x): x is string => x != null)
 
-  const localeMessages = options.localeInfo.map(locale => [
-    locale.code,
-    locale.meta?.map(meta => importMapper.get(meta.key))
-  ])
+  const localeMessages = localeInfo.map(locale => [locale.code, locale.meta?.map(meta => importMapper.get(meta.key))])
 
-  const nuxtI18nOptions = {
-    ...options.nuxtI18nOptions,
-    locales: simplifyLocaleOptions((options?.nuxtI18nOptions?.locales ?? []) as unknown as LocaleObject[])
+  const generatedNuxtI18nOptions = {
+    ...nuxtI18nOptions,
+    locales: simplifyLocaleOptions((nuxtI18nOptions?.locales ?? []) as unknown as LocaleObject[])
   }
   delete nuxtI18nOptions.vueI18n
 
   const generated = {
-    localeCodes: options.localeCodes ?? [],
     importStrings,
     localeMessages,
-    NUXT_I18N_MODULE_ID: toCode(NUXT_I18N_MODULE_ID),
-    isSSG: misc.ssg,
-    parallelPlugin: misc.parallelPlugin,
-    nuxtI18nOptions,
-    nuxtI18nInternalOptions: options.nuxtI18nInternalOptions ?? {},
-    nuxtI18nOptionsDefault: options.nuxtI18nOptionsDefault ?? {},
+    nuxtI18nOptions: generatedNuxtI18nOptions,
     vueI18nConfigs: vueI18nConfigImports
   }
 
@@ -129,7 +103,7 @@ export function generateLoaderOptions(
 
 function genImportSpecifier(
   { loadPath, path, parsed, hash, type }: Pick<FileMeta, 'loadPath' | 'path' | 'parsed' | 'hash' | 'type'>,
-  resourceType: ResourceType | undefined,
+  resourceType: PrerenderTarget['type'] | undefined,
   query: Record<string, string> = {}
 ) {
   if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) return loadPath

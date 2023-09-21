@@ -37,8 +37,7 @@ import {
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
-import type { NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
-import { LocaleObject } from 'vue-i18n-routing'
+import type { NuxtI18nOptions } from './types'
 
 export * from './types'
 
@@ -157,15 +156,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * resolve vue-i18n config path
      */
 
-    const layerVueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
-    for (const vueI18nConfigPath of layerVueI18nConfigPaths) {
+    const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
+    for (const vueI18nConfigPath of vueI18nConfigPaths) {
       if (vueI18nConfigPath.absolute === '') {
         logger.warn(
           `Ignore Vue I18n configuration file does not exist at ${vueI18nConfigPath.relative} in ${vueI18nConfigPath.rootDir}. Skipping...`
         )
       }
     }
-    debug('VueI18nConfigPaths', layerVueI18nConfigPaths)
+    debug('VueI18nConfigPaths', vueI18nConfigPaths)
 
     /**
      * setup nuxt/pages
@@ -211,24 +210,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
       src: resolve(distDir, 'runtime/templates/options.template.mjs'),
       write: true,
-      options: generateLoaderOptions(
-        options.lazy,
-        layerVueI18nConfigPaths as Required<VueI18nConfigPathInfo>[],
-        {
-          localeCodes,
+      options: {
+        ...generateLoaderOptions({
+          vueI18nConfigPaths,
           localeInfo,
-          nuxtI18nOptions: options,
-          nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-          nuxtI18nInternalOptions: {
-            __normalizedLocales: normalizedLocales as LocaleObject[]
-          }
-        },
-        {
-          ssg: nuxt.options._generate,
-          dev: nuxt.options.dev,
-          parallelPlugin: i18nOptions.parallelPlugin ?? false
-        }
-      )
+          nuxtI18nOptions: options
+        }),
+        NUXT_I18N_MODULE_ID,
+        localeCodes,
+        nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
+        nuxtI18nInternalOptions: { __normalizedLocales: normalizedLocales },
+        dev: nuxt.options.dev,
+        isSSG: nuxt.options._generate,
+        parallelPlugin: options.parallelPlugin
+      }
     })
 
     /**

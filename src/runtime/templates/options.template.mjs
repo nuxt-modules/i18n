@@ -61,6 +61,6 @@ export const nuxtI18nOptionsDefault = <%= JSON.stringify(options.nuxtI18nOptions
 
 export const nuxtI18nInternalOptions = <%= JSON.stringify(options.nuxtI18nInternalOptions, null, 2) %>
  
-export const NUXT_I18N_MODULE_ID = <%= options.NUXT_I18N_MODULE_ID %>
+export const NUXT_I18N_MODULE_ID = "<%= options.NUXT_I18N_MODULE_ID %>"
 export const parallelPlugin = <%= options.parallelPlugin %>
 export const isSSG = <%= options.isSSG %>

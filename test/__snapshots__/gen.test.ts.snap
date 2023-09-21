@@ -2,17 +2,10 @@
 
 exports[`basic 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [
     "import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };",
     "import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };",
     "import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };",
-  ],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
   ],
   "localeMessages": [
     [
@@ -46,86 +39,20 @@ exports[`basic 1`] = `
       ],
     ],
   ],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
-    "locales": [],
-  },
-  "nuxtI18nOptionsDefault": {
-    "baseUrl": "",
-    "bundle": {
-      "compositionOnly": true,
-      "dropMessageCompiler": false,
-      "fullInstall": true,
-      "runtimeOnly": false,
-    },
-    "compilation": {
-      "escapeHtml": false,
-      "jit": true,
-      "strictMessage": true,
-    },
-    "customBlocks": {
-      "defaultSFCLang": "json",
-      "globalSFCScope": false,
-    },
-    "customRoutes": "page",
-    "debug": false,
-    "defaultDirection": "ltr",
-    "defaultLocale": "",
-    "defaultLocaleRouteNameSuffix": "default",
-    "detectBrowserLanguage": {
-      "alwaysRedirect": false,
-      "cookieCrossOrigin": false,
-      "cookieDomain": null,
-      "cookieKey": "i18n_redirected",
-      "cookieSecure": false,
-      "fallbackLocale": "",
-      "redirectOn": "root",
-      "useCookie": true,
-    },
-    "differentDomains": false,
-    "dynamicRouteParams": false,
-    "experimental": {
-      "jsTsFormatResource": false,
-    },
-    "langDir": null,
     "lazy": false,
     "locales": [],
-    "pages": {},
-    "parallelPlugin": false,
-    "rootRedirect": null,
-    "routesNameSeparator": "___",
-    "skipSettingLocaleOnNavigate": false,
-    "strategy": "prefix_except_default",
-    "trailingSlash": false,
-    "types": "composition",
-    "vueI18n": "",
   },
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`files with cache configuration 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
-    "es",
-    "es-AR",
-  ],
   "localeMessages": [
     [
       "en",
@@ -183,35 +110,20 @@ exports[`files with cache configuration 1`] = `
       ],
     ],
   ],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
+    "lazy": true,
     "locales": [],
   },
-  "nuxtI18nOptionsDefault": {},
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`lazy 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
-  ],
   "localeMessages": [
     [
       "en",
@@ -244,35 +156,20 @@ exports[`lazy 1`] = `
       ],
     ],
   ],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
+    "lazy": true,
     "locales": [],
   },
-  "nuxtI18nOptionsDefault": {},
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`locale file in nested 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
-  ],
   "localeMessages": [
     [
       "en",
@@ -305,37 +202,20 @@ exports[`locale file in nested 1`] = `
       ],
     ],
   ],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
+    "lazy": true,
     "locales": [],
   },
-  "nuxtI18nOptionsDefault": {},
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`multiple files 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
-    "es",
-    "es-AR",
-  ],
   "localeMessages": [
     [
       "en",
@@ -393,45 +273,24 @@ exports[`multiple files 1`] = `
       ],
     ],
   ],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
+    "lazy": true,
     "locales": [],
   },
-  "nuxtI18nOptionsDefault": {},
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`toCode: function (arrow) 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
-  ],
   "localeMessages": [],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
+    "lazy": false,
     "locales": [
       {
         "code": "en",
@@ -465,83 +324,19 @@ exports[`toCode: function (arrow) 1`] = `
       },
     ],
   },
-  "nuxtI18nOptionsDefault": {
-    "baseUrl": "",
-    "bundle": {
-      "compositionOnly": true,
-      "dropMessageCompiler": false,
-      "fullInstall": true,
-      "runtimeOnly": false,
-    },
-    "compilation": {
-      "escapeHtml": false,
-      "jit": true,
-      "strictMessage": true,
-    },
-    "customBlocks": {
-      "defaultSFCLang": "json",
-      "globalSFCScope": false,
-    },
-    "customRoutes": "page",
-    "debug": false,
-    "defaultDirection": "ltr",
-    "defaultLocale": "",
-    "defaultLocaleRouteNameSuffix": "default",
-    "detectBrowserLanguage": {
-      "alwaysRedirect": false,
-      "cookieCrossOrigin": false,
-      "cookieDomain": null,
-      "cookieKey": "i18n_redirected",
-      "cookieSecure": false,
-      "fallbackLocale": "",
-      "redirectOn": "root",
-      "useCookie": true,
-    },
-    "differentDomains": false,
-    "dynamicRouteParams": false,
-    "experimental": {
-      "jsTsFormatResource": false,
-    },
-    "langDir": null,
-    "lazy": false,
-    "locales": [],
-    "pages": {},
-    "parallelPlugin": false,
-    "rootRedirect": null,
-    "routesNameSeparator": "___",
-    "skipSettingLocaleOnNavigate": false,
-    "strategy": "prefix_except_default",
-    "trailingSlash": false,
-    "types": "composition",
-    "vueI18n": "",
-  },
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`toCode: function (named) 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
-  ],
   "localeMessages": [],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
     "defaultLocale": "en",
+    "lazy": false,
     "locales": [
       {
         "code": "en",
@@ -575,76 +370,18 @@ exports[`toCode: function (named) 1`] = `
       },
     ],
   },
-  "nuxtI18nOptionsDefault": {
-    "baseUrl": "",
-    "bundle": {
-      "compositionOnly": true,
-      "dropMessageCompiler": false,
-      "fullInstall": true,
-      "runtimeOnly": false,
-    },
-    "compilation": {
-      "escapeHtml": false,
-      "jit": true,
-      "strictMessage": true,
-    },
-    "customBlocks": {
-      "defaultSFCLang": "json",
-      "globalSFCScope": false,
-    },
-    "customRoutes": "page",
-    "debug": false,
-    "defaultDirection": "ltr",
-    "defaultLocale": "",
-    "defaultLocaleRouteNameSuffix": "default",
-    "detectBrowserLanguage": {
-      "alwaysRedirect": false,
-      "cookieCrossOrigin": false,
-      "cookieDomain": null,
-      "cookieKey": "i18n_redirected",
-      "cookieSecure": false,
-      "fallbackLocale": "",
-      "redirectOn": "root",
-      "useCookie": true,
-    },
-    "differentDomains": false,
-    "dynamicRouteParams": false,
-    "experimental": {
-      "jsTsFormatResource": false,
-    },
-    "langDir": null,
-    "lazy": false,
-    "locales": [],
-    "pages": {},
-    "parallelPlugin": false,
-    "rootRedirect": null,
-    "routesNameSeparator": "___",
-    "skipSettingLocaleOnNavigate": false,
-    "strategy": "prefix_except_default",
-    "trailingSlash": false,
-    "types": "composition",
-    "vueI18n": "",
-  },
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
   ],
 }
 `;
 
 exports[`vueI18n option 1`] = `
 {
-  "NUXT_I18N_MODULE_ID": "\\"@nuxtjs/i18n\\"",
   "importStrings": [
     "import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };",
     "import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };",
     "import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };",
-  ],
-  "isSSG": false,
-  "localeCodes": [
-    "en",
-    "ja",
-    "fr",
   ],
   "localeMessages": [
     [
@@ -678,22 +415,15 @@ exports[`vueI18n option 1`] = `
       ],
     ],
   ],
-  "nuxtI18nInternalOptions": {
-    "__normalizedLocales": [
-      {
-        "code": "en",
-      },
-    ],
-  },
   "nuxtI18nOptions": {
+    "lazy": false,
     "locales": [],
+    "vueI18n": "vue-i18n.config.ts",
   },
-  "nuxtI18nOptionsDefault": {},
-  "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=475488e5&config=1\\" /* webpackChunkName: vue_i18n_options_js_00000000 */)",
-    "() => import(\\"../layer1/i18n.custom.ts?hash=0ca697e2&config=1\\" /* webpackChunkName: i18n_custom_ts_00000000 */)",
-    "() => import(\\"../to/i18n.config.ts?hash=fb1304e8&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
+    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=475488e5&config=1\\" /* webpackChunkName: vue_i18n_options_js_475488e5 */)",
+    "() => import(\\"../layer1/i18n.custom.ts?hash=0ca697e2&config=1\\" /* webpackChunkName: i18n_custom_ts_0ca697e2 */)",
+    "() => import(\\"../to/i18n.config.ts?hash=fb1304e8&config=1\\" /* webpackChunkName: i18n_config_ts_fb1304e8 */)",
   ],
 }
 `;
