@@ -109,7 +109,7 @@ exports[`basic 1`] = `
   },
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -197,7 +197,7 @@ exports[`files with cache configuration 1`] = `
   "nuxtI18nOptionsDefault": {},
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -258,7 +258,7 @@ exports[`lazy 1`] = `
   "nuxtI18nOptionsDefault": {},
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -319,7 +319,7 @@ exports[`locale file in nested 1`] = `
   "nuxtI18nOptionsDefault": {},
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -407,7 +407,7 @@ exports[`multiple files 1`] = `
   "nuxtI18nOptionsDefault": {},
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -517,7 +517,7 @@ exports[`toCode: function (arrow) 1`] = `
   },
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -627,7 +627,7 @@ exports[`toCode: function (named) 1`] = `
   },
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=ab235e94&config=1\\" /* webpackChunkName: i18n_config_ts_ab235e94 */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;
@@ -691,9 +691,9 @@ exports[`vueI18n option 1`] = `
   "nuxtI18nOptionsDefault": {},
   "parallelPlugin": false,
   "vueI18nConfigs": [
-    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=84df1640&config=1\\" /* webpackChunkName: vue_i18n_options_js_84df1640 */)",
-    "() => import(\\"../layer1/i18n.custom.ts?hash=faa288dc&config=1\\" /* webpackChunkName: i18n_custom_ts_faa288dc */)",
-    "() => import(\\"../to/i18n.config.ts?hash=42902d1e&config=1\\" /* webpackChunkName: i18n_config_ts_42902d1e */)",
+    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=475488e5&config=1\\" /* webpackChunkName: vue_i18n_options_js_00000000 */)",
+    "() => import(\\"../layer1/i18n.custom.ts?hash=0ca697e2&config=1\\" /* webpackChunkName: i18n_custom_ts_00000000 */)",
+    "() => import(\\"../to/i18n.config.ts?hash=fb1304e8&config=1\\" /* webpackChunkName: i18n_config_ts_00000000 */)",
   ],
 }
 `;

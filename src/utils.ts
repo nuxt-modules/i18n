@@ -250,17 +250,18 @@ export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDi
   const absolutePath = await resolvePath(configPathInfo.relative, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
   if (await isExists(absolutePath)) {
     configPathInfo.absolute = absolutePath
-    configPathInfo.hash = getHash(absolutePath)
     configPathInfo.type = getLocaleType(absolutePath)
 
-    const key = `${normalizeWithUnderScore(configPathInfo.relative)}_${configPathInfo.hash}`
     const parsed = parsePath(absolutePath)
+    const key = `${normalizeWithUnderScore(configPathInfo.relative)}_${configPathInfo.hash}`
+    const loadPath = join(configPathInfo.relativeBase, parsed.base)
 
+    configPathInfo.hash = getHash(loadPath)
     configPathInfo.meta = {
       path: absolutePath,
       type: configPathInfo.type,
       hash: configPathInfo.hash,
-      loadPath: join(configPathInfo.relativeBase, parsed.base),
+      loadPath,
       parsed,
       key
     }
