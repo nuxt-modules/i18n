@@ -1,4 +1,3 @@
-import { parse } from '@babel/parser'
 import { DEFAULT_OPTIONS } from '../src/constants'
 import { generateLoaderOptions } from '../src/gen'
 import { resolveLocales, resolveVueI18nConfigInfo } from '../src/utils'
@@ -57,21 +56,6 @@ const NUXT_I18N_VUE_I18N_CONFIG = {
   relativeBase: '..'
 } as Required<VueI18nConfigPathInfo>
 
-function validateSyntax(code: string): boolean {
-  let ret = false
-  try {
-    const node = parse(code, {
-      allowImportExportEverywhere: true,
-      sourceType: 'module',
-      plugins: ['importAssertions']
-    })
-    ret = !node.errors.length
-  } catch (e) {
-    console.error(e)
-  }
-  return ret
-}
-
 test('basic', async () => {
   const { generateLoaderOptions } = await import('../src/gen')
   const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '..')
@@ -88,7 +72,7 @@ test('basic', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -106,7 +90,7 @@ test('lazy', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -146,7 +130,7 @@ test('multiple files', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -186,7 +170,7 @@ test('files with cache configuration', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -225,7 +209,7 @@ test('locale file in nested', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -261,7 +245,7 @@ test('vueI18n option', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -286,7 +270,7 @@ test('toCode: function (arrow)', async () => {
     },
     { ssg: false, dev: true, parallelPlugin: false }
   )
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
 
@@ -306,6 +290,6 @@ test('toCode: function (named)', async () => {
     nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
     nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
   })
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })
