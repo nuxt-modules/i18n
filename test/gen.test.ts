@@ -1,9 +1,7 @@
-import { parse } from '@babel/parser'
-import { DEFAULT_OPTIONS } from '../src/constants'
 import { generateLoaderOptions } from '../src/gen'
 import { resolveLocales, resolveVueI18nConfigInfo } from '../src/utils'
 
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, VueI18nConfigPathInfo } from '../src/types'
+import type { NuxtI18nOptions, VueI18nConfigPathInfo } from '../src/types'
 
 vi.mock('node:fs')
 
@@ -20,7 +18,6 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-const LOCALE_CODES = ['en', 'ja', 'fr']
 const LOCALE_INFO = [
   {
     code: 'en',
@@ -38,17 +35,10 @@ const LOCALE_INFO = [
     paths: ['/path/to/fr.json']
   }
 ]
+
 const NUXT_I18N_OPTIONS = {
   defaultLocale: 'en'
 } as NuxtI18nOptions
-
-const NUXT_I18N_INTERNAL_OPTIONS = {
-  __normalizedLocales: [
-    {
-      code: 'en'
-    }
-  ]
-} as NuxtI18nInternalOptions
 
 const NUXT_I18N_VUE_I18N_CONFIG = {
   absolute: '/path/to/i18n.config.ts',
@@ -57,56 +47,28 @@ const NUXT_I18N_VUE_I18N_CONFIG = {
   relativeBase: '..'
 } as Required<VueI18nConfigPathInfo>
 
-function validateSyntax(code: string): boolean {
-  let ret = false
-  try {
-    const node = parse(code, {
-      allowImportExportEverywhere: true,
-      sourceType: 'module',
-      plugins: ['importAssertions']
-    })
-    ret = !node.errors.length
-  } catch (e) {
-    console.error(e)
-  }
-  return ret
-}
-
 test('basic', async () => {
   const { generateLoaderOptions } = await import('../src/gen')
   const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '..')
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
-  const code = generateLoaderOptions(
-    false,
-    [vueI18nConfig],
-    {
-      localeCodes: LOCALE_CODES,
-      localeInfo,
-      nuxtI18nOptions: NUXT_I18N_OPTIONS,
-      nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo,
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: false }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
 test('lazy', async () => {
   const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '..')
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
-  const code = generateLoaderOptions(
-    true,
-    [vueI18nConfig],
-    {
-      localeCodes: LOCALE_CODES,
-      localeInfo,
-      nuxtI18nOptions: NUXT_I18N_OPTIONS,
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo,
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
@@ -135,18 +97,12 @@ test('multiple files', async () => {
   )
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
 
-  const code = generateLoaderOptions(
-    true,
-    [vueI18nConfig],
-    {
-      localeCodes: [...LOCALE_CODES, 'es', 'es-AR'],
-      localeInfo,
-      nuxtI18nOptions: NUXT_I18N_OPTIONS,
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo,
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
@@ -175,18 +131,12 @@ test('files with cache configuration', async () => {
   )
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
 
-  const code = generateLoaderOptions(
-    true,
-    [vueI18nConfig],
-    {
-      localeCodes: [...LOCALE_CODES, 'es', 'es-AR'],
-      localeInfo,
-      nuxtI18nOptions: NUXT_I18N_OPTIONS,
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo,
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
@@ -214,18 +164,12 @@ test('locale file in nested', async () => {
   )
 
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
-  const code = generateLoaderOptions(
-    true,
-    [vueI18nConfig],
-    {
-      localeCodes: LOCALE_CODES,
-      localeInfo,
-      nuxtI18nOptions: NUXT_I18N_OPTIONS,
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo,
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
@@ -248,64 +192,54 @@ test('vueI18n option', async () => {
       }
     ].map(x => resolveVueI18nConfigInfo({ vueI18n: x.relative }, '/path/.nuxt', x.rootDir))
   )
-  const code = generateLoaderOptions(
-    false,
-    vueI18nConfigs as Required<VueI18nConfigPathInfo>[],
-    {
-      localeCodes: LOCALE_CODES,
-      localeInfo,
-      nuxtI18nOptions: {
-        vueI18n: 'vue-i18n.config.ts'
-      },
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: vueI18nConfigs as Required<VueI18nConfigPathInfo>[],
+    localeInfo,
+    nuxtI18nOptions: {
+      vueI18n: 'vue-i18n.config.ts',
+      lazy: false
+    }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
 test('toCode: function (arrow)', async () => {
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
-  const code = generateLoaderOptions(
-    false,
-    [vueI18nConfig],
-    {
-      localeCodes: LOCALE_CODES,
-      nuxtI18nOptions: {
-        ...NUXT_I18N_OPTIONS,
-        locales: LOCALE_INFO.map(locale => ({
-          ...locale,
-          testFunc: (prop: unknown) => {
-            return `Hello ${prop}`
-          }
-        }))
-      },
-      nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-      nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
-    },
-    { ssg: false, dev: true, parallelPlugin: false }
-  )
-  expect(validateSyntax(code)).toBe(true)
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo: [],
+    nuxtI18nOptions: {
+      ...NUXT_I18N_OPTIONS,
+      lazy: false,
+      locales: LOCALE_INFO.map(locale => ({
+        ...locale,
+        testFunc: (prop: unknown) => {
+          return `Hello ${prop}`
+        }
+      }))
+    }
+  })
+
   expect(code).toMatchSnapshot()
 })
 
 test('toCode: function (named)', async () => {
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
-  const code = generateLoaderOptions(false, [vueI18nConfig], {
-    localeCodes: LOCALE_CODES,
+  const code = generateLoaderOptions({
+    vueI18nConfigPaths: [vueI18nConfig],
+    localeInfo: [],
     nuxtI18nOptions: {
       ...NUXT_I18N_OPTIONS,
+      lazy: false,
       locales: LOCALE_INFO.map(locale => ({
         ...locale,
         testFunc(prop: unknown) {
           return `Hello ${prop}`
         }
       }))
-    },
-    nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-    nuxtI18nInternalOptions: NUXT_I18N_INTERNAL_OPTIONS
+    }
   })
-  expect(validateSyntax(code)).toBe(true)
+
   expect(code).toMatchSnapshot()
 })

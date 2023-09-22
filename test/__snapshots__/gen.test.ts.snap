@@ -1,248 +1,429 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`basic 1`] = `
-"// @ts-nocheck
-import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };
-import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };
-import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => Promise.resolve(locale__test_srcDir_en_json), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => Promise.resolve(locale__test_srcDir_ja_json), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => Promise.resolve(locale__test_srcDir_fr_json), cache: true }]
+{
+  "importStrings": [
+    "import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };",
+    "import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };",
+    "import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };",
+  ],
+  "localeMessages": [
+    [
+      "en",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../en.json\\"",
+          "load": "() => Promise.resolve(locale__test_srcDir_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../ja.json\\"",
+          "load": "() => Promise.resolve(locale__test_srcDir_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../fr.json\\"",
+          "load": "() => Promise.resolve(locale__test_srcDir_fr_json)",
+        },
+      ],
+    ],
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": false,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),bundle: Object({\\"compositionOnly\\":true,\\"runtimeOnly\\":false,\\"fullInstall\\":true,\\"dropMessageCompiler\\":false}),compilation: Object({\\"jit\\":true,\\"strictMessage\\":true,\\"escapeHtml\\":false}),customBlocks: Object({\\"defaultSFCLang\\":\\"json\\",\\"globalSFCScope\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false,parallelPlugin: false})
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`files with cache configuration 1`] = `
-"// @ts-nocheck
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
-
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */), cache: true }],
-  \\"es\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: false }],
-  \\"es-AR\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: false },{ key: \\"../es-AR.json\\", load: () => import(\\"../es-AR.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_AR_json\\" */), cache: true }]
+{
+  "importStrings": [],
+  "localeMessages": [
+    [
+      "en",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../en.json\\"",
+          "load": "() => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../ja.json\\"",
+          "load": "() => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../fr.json\\"",
+          "load": "() => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "es",
+      [
+        {
+          "cache": "false",
+          "key": "\\"../es.json\\"",
+          "load": "() => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "es-AR",
+      [
+        {
+          "cache": "false",
+          "key": "\\"../es.json\\"",
+          "load": "() => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */)",
+        },
+        {
+          "cache": "true",
+          "key": "\\"../es-AR.json\\"",
+          "load": "() => import(\\"../es-AR.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_AR_json\\" */)",
+        },
+      ],
+    ],
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`lazy 1`] = `
-"// @ts-nocheck
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */), cache: true }]
+{
+  "importStrings": [],
+  "localeMessages": [
+    [
+      "en",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../en.json\\"",
+          "load": "() => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../ja.json\\"",
+          "load": "() => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../fr.json\\"",
+          "load": "() => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */)",
+        },
+      ],
+    ],
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`locale file in nested 1`] = `
-"// @ts-nocheck
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../en/main.json\\", load: () => import(\\"../en/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_main_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja/main.json\\", load: () => import(\\"../ja/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_main_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr/main.json\\", load: () => import(\\"../fr/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_main_json\\" */), cache: true }]
+{
+  "importStrings": [],
+  "localeMessages": [
+    [
+      "en",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../en/main.json\\"",
+          "load": "() => import(\\"../en/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_main_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../ja/main.json\\"",
+          "load": "() => import(\\"../ja/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_main_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../fr/main.json\\"",
+          "load": "() => import(\\"../fr/main.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_main_json\\" */)",
+        },
+      ],
+    ],
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`multiple files 1`] = `
-"// @ts-nocheck
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\",\\"es\\",\\"es-AR\\"]
-
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */), cache: true }],
-  \\"es\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: true }],
-  \\"es-AR\\": [{ key: \\"../es.json\\", load: () => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */), cache: true },{ key: \\"../es-AR.json\\", load: () => import(\\"../es-AR.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_AR_json\\" */), cache: true }]
+{
+  "importStrings": [],
+  "localeMessages": [
+    [
+      "en",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../en.json\\"",
+          "load": "() => import(\\"../en.json\\" /* webpackChunkName: \\"locale__test_srcDir_en_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../ja.json\\"",
+          "load": "() => import(\\"../ja.json\\" /* webpackChunkName: \\"locale__test_srcDir_ja_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../fr.json\\"",
+          "load": "() => import(\\"../fr.json\\" /* webpackChunkName: \\"locale__test_srcDir_fr_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "es",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../es.json\\"",
+          "load": "() => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */)",
+        },
+      ],
+    ],
+    [
+      "es-AR",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../es.json\\"",
+          "load": "() => import(\\"../es.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_json\\" */)",
+        },
+        {
+          "cache": "true",
+          "key": "\\"../es-AR.json\\"",
+          "load": "() => import(\\"../es-AR.json\\" /* webpackChunkName: \\"locale__test_srcDir_es_AR_json\\" */)",
+        },
+      ],
+    ],
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`toCode: function (arrow) 1`] = `
-"// @ts-nocheck
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"paths\\":[\\"/path/to/en.json\\"],\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"paths\\":[\\"/path/to/ja.json\\"],\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"paths\\":[\\"/path/to/fr.json\\"],\\"testFunc\\":((prop) => {
-            return \`Hello \${prop}\`;
-          })})]
-  return nuxtI18nOptions
+{
+  "importStrings": [],
+  "localeMessages": [],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": false,
+    "locales": [
+      {
+        "code": "en",
+        "files": [
+          "en.json",
+        ],
+        "paths": [
+          "/path/to/en.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "ja",
+        "files": [
+          "ja.json",
+        ],
+        "paths": [
+          "/path/to/ja.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "fr",
+        "files": [
+          "fr.json",
+        ],
+        "paths": [
+          "/path/to/fr.json",
+        ],
+        "testFunc": [Function],
+      },
+    ],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),bundle: Object({\\"compositionOnly\\":true,\\"runtimeOnly\\":false,\\"fullInstall\\":true,\\"dropMessageCompiler\\":false}),compilation: Object({\\"jit\\":true,\\"strictMessage\\":true,\\"escapeHtml\\":false}),customBlocks: Object({\\"defaultSFCLang\\":\\"json\\",\\"globalSFCScope\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false,parallelPlugin: false})
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`toCode: function (named) 1`] = `
-"// @ts-nocheck
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
-  nuxtI18nOptions.defaultLocale = \\"en\\"
-  nuxtI18nOptions.locales = [Object({\\"code\\":\\"en\\",\\"files\\":[\\"en.json\\"],\\"paths\\":[\\"/path/to/en.json\\"],\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"ja\\",\\"files\\":[\\"ja.json\\"],\\"paths\\":[\\"/path/to/ja.json\\"],\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })}),Object({\\"code\\":\\"fr\\",\\"files\\":[\\"fr.json\\"],\\"paths\\":[\\"/path/to/fr.json\\"],\\"testFunc\\":(function (prop) {
-          return \`Hello \${prop}\`;
-        })})]
-  return nuxtI18nOptions
+{
+  "importStrings": [],
+  "localeMessages": [],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "lazy": false,
+    "locales": [
+      {
+        "code": "en",
+        "files": [
+          "en.json",
+        ],
+        "paths": [
+          "/path/to/en.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "ja",
+        "files": [
+          "ja.json",
+        ],
+        "paths": [
+          "/path/to/ja.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "fr",
+        "files": [
+          "fr.json",
+        ],
+        "paths": [
+          "/path/to/fr.json",
+        ],
+        "testFunc": [Function],
+      },
+    ],
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+  ],
 }
-
-export const nuxtI18nOptionsDefault = Object({experimental: Object({\\"jsTsFormatResource\\":false}),bundle: Object({\\"compositionOnly\\":true,\\"runtimeOnly\\":false,\\"fullInstall\\":true,\\"dropMessageCompiler\\":false}),compilation: Object({\\"jit\\":true,\\"strictMessage\\":true,\\"escapeHtml\\":false}),customBlocks: Object({\\"defaultSFCLang\\":\\"json\\",\\"globalSFCScope\\":false}),vueI18n: \\"\\",locales: [],defaultLocale: \\"\\",defaultDirection: \\"ltr\\",routesNameSeparator: \\"___\\",trailingSlash: false,defaultLocaleRouteNameSuffix: \\"default\\",strategy: \\"prefix_except_default\\",lazy: false,langDir: null,rootRedirect: null,detectBrowserLanguage: Object({\\"alwaysRedirect\\":false,\\"cookieCrossOrigin\\":false,\\"cookieDomain\\":null,\\"cookieKey\\":\\"i18n_redirected\\",\\"cookieSecure\\":false,\\"fallbackLocale\\":\\"\\",\\"redirectOn\\":\\"root\\",\\"useCookie\\":true}),differentDomains: false,baseUrl: \\"\\",dynamicRouteParams: false,customRoutes: \\"page\\",pages: Object({}),skipSettingLocaleOnNavigate: false,types: \\"composition\\",debug: false,parallelPlugin: false})
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;
 
 exports[`vueI18n option 1`] = `
-"// @ts-nocheck
-import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };
-import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };
-import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };
-export const localeCodes = [\\"en\\",\\"ja\\",\\"fr\\"]
-
-export const localeMessages = {
-  \\"en\\": [{ key: \\"../en.json\\", load: () => Promise.resolve(locale__test_srcDir_en_json), cache: true }],
-  \\"ja\\": [{ key: \\"../ja.json\\", load: () => Promise.resolve(locale__test_srcDir_ja_json), cache: true }],
-  \\"fr\\": [{ key: \\"../fr.json\\", load: () => Promise.resolve(locale__test_srcDir_fr_json), cache: true }]
+{
+  "importStrings": [
+    "import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };",
+    "import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };",
+    "import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };",
+  ],
+  "localeMessages": [
+    [
+      "en",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../en.json\\"",
+          "load": "() => Promise.resolve(locale__test_srcDir_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../ja.json\\"",
+          "load": "() => Promise.resolve(locale__test_srcDir_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "cache": "true",
+          "key": "\\"../fr.json\\"",
+          "load": "() => Promise.resolve(locale__test_srcDir_fr_json)",
+        },
+      ],
+    ],
+  ],
+  "nuxtI18nOptions": {
+    "lazy": false,
+    "locales": [],
+    "vueI18n": "vue-i18n.config.ts",
+  },
+  "vueI18nConfigs": [
+    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=475488e5&config=1\\" /* webpackChunkName: vue_i18n_options_js_475488e5 */)",
+    "() => import(\\"../layer1/i18n.custom.ts?hash=0ca697e2&config=1\\" /* webpackChunkName: i18n_custom_ts_0ca697e2 */)",
+    "() => import(\\"../to/i18n.config.ts?hash=fb1304e8&config=1\\" /* webpackChunkName: i18n_config_ts_fb1304e8 */)",
+  ],
 }
-
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = Object({})
- const vueI18nConfigLoader = async loader => {
-            const config = await loader().then(r => r.default || r)
-            if (typeof config === 'object') return config
-            if (typeof config === 'function') return await config()
-            return {}
-          }
-          const deepCopy = (src, des, predicate) => {
-            for (const key in src) {
-              if (typeof src[key] === 'object') {
-                if (!(typeof des[key] === 'object')) des[key] = {}
-                deepCopy(src[key], des[key], predicate)
-              } else {
-                if (predicate) {
-                  if (predicate(src[key], des[key])) {
-                    des[key] = src[key]
-                  }
-                } else {
-                  des[key] = src[key]
-                }
-              }
-            }
-          }
-
-          const mergeVueI18nConfigs = async (configuredMessages, loader) => {
-            const layerConfig = await vueI18nConfigLoader(loader)
-            const cfg = layerConfig || {}
-            cfg.messages ??= {}
-            const skipped = ['messages']
-
-            for (const [k, v] of Object.entries(cfg).filter(([k]) => !skipped.includes(k))) {
-              if(nuxtI18nOptions.vueI18n?.[k] === undefined || typeof nuxtI18nOptions.vueI18n?.[k] !== 'object') {
-                nuxtI18nOptions.vueI18n[k] = v
-              } else {
-                deepCopy(v, nuxtI18nOptions.vueI18n[k])
-              }
-            }
-
-            for (const [locale, message] of Object.entries(cfg.messages)) {
-              configuredMessages[locale] ??= {}
-              deepCopy(message, configuredMessages[locale])
-            }
-          }
-  nuxtI18nOptions.vueI18n = Object({\\"messages\\":Object({})})
-  await mergeVueI18nConfigs(nuxtI18nOptions.vueI18n.messages, (() => import(\\"../foo/layer2/vue-i18n.options.js?hash=84df1640&config=1\\" /* webpackChunkName: vue_i18n_options_js_84df1640 */)))
-  await mergeVueI18nConfigs(nuxtI18nOptions.vueI18n.messages, (() => import(\\"../layer1/i18n.custom.ts?hash=faa288dc&config=1\\" /* webpackChunkName: i18n_custom_ts_faa288dc */)))
-  await mergeVueI18nConfigs(nuxtI18nOptions.vueI18n.messages, (() => import(\\"../to/i18n.config.ts?hash=42902d1e&config=1\\" /* webpackChunkName: i18n_config_ts_42902d1e */)))
-  return nuxtI18nOptions
-}
-
-export const nuxtI18nInternalOptions = Object({__normalizedLocales: [Object({\\"code\\":\\"en\\"})]})
-export const NUXT_I18N_MODULE_ID = \\"@nuxtjs/i18n\\"
-export const isSSG = false
-export const parallelPlugin = false
-"
 `;

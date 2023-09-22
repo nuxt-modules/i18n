@@ -7,3 +7,4 @@ coverage
 docs/components/content/Logo.vue
 docs/components/content/VoltaBoard.vue
 .eslintcache
+src/runtime/templates
