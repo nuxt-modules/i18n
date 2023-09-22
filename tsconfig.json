@@ -113,5 +113,5 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "exclude": ["**/.nuxt/**", "**/*/dist/*", "docs/**", "playground/**", "specs/**"]
+  "exclude": ["**/.nuxt/**", "**/*/dist/*", "docs/**", "playground/**", "specs/**", "src/runtime/templates/**"]
 }
