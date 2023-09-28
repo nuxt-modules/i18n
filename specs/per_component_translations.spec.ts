@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from './utils'
-import { getText } from './helper'
+import { getText, waitForTransition } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/component`, import.meta.url)),
@@ -21,17 +21,17 @@ test('i18n custom block', async () => {
 
   // click `fr` lang switch with `<NuxtLink>`
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForTimeout(1000)
+  await waitForTransition(page)
 
   // go to category page
   await page.locator('#link-category').click()
-  await page.waitForTimeout(1000)
+  await waitForTransition(page)
 
   expect(await getText(page, '#per-component-hello')).toMatch('Bonjour!')
 
   // click `en` lang switch with `<NuxtLink>`
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForTimeout(1000)
+  await waitForTransition(page)
 
   expect(await getText(page, '#per-component-hello')).toMatch('Hello!')
 })

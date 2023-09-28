@@ -11,6 +11,10 @@ export async function getData(page: Page, selector: string, options?: Parameters
   return JSON.parse(await page.locator(selector, options).innerText())
 }
 
+export async function waitForTransition(page: Page, selector: string = '#nuxt-page.my-leave-active') {
+  return await page.locator(selector).waitFor({ state: 'detached' })
+}
+
 export async function assetLocaleHead(page: Page, headSelector: string) {
   const localeHeadValue = await getData(page, headSelector)
   const headHandle = await page.locator('head').elementHandle()

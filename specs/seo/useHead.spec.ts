@@ -44,7 +44,7 @@ test('render with useHead', async () => {
 
   // click `fr` lang switch link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr')
 
   // title tag
   expect(await getText(page, 'title')).toMatch('Accueil')

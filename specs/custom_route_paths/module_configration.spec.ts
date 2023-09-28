@@ -33,14 +33,14 @@ test('can access to custom route path', async () => {
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr')
 
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about-fr' })
 
   // navigate to about page for `fr`
   await page.locator('#link-about').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr/about-fr')
 
   expect(await getText(page, '#about-header')).toEqual('À propos')
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
@@ -54,13 +54,13 @@ test('can access to custom nested route path', async () => {
 
   // navigate to blog index page
   await page.locator('#link-blog').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/news')
 
   expect(await page.url()).include('/news')
 
   // navigate to blog article page
   await page.locator('#link-blog-article').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/news/article')
 
   expect(await page.url()).include('/news/article')
 })

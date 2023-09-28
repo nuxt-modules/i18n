@@ -20,15 +20,17 @@ test('can access to custom route path', async () => {
   await page.goto(home)
 
   await page.locator('#link-blog').click()
-  await page.waitForTimeout(500)
+  await page.waitForURL('**/blog-us')
 
   expect(await page.url()).include('/blog-us')
 
   await page.goBack()
+  await page.waitForURL('**/')
   await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForURL('**/fr')
 
   await page.locator('#link-blog').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr/a-blog')
 
   expect(await page.url()).include('/fr/a-blog')
 })
@@ -39,15 +41,17 @@ test('can access to custom dynamic route path', async () => {
   await page.goto(home)
 
   await page.locator('#link-category').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/categories/foo')
 
   expect(await page.url()).include('/categories/foo')
 
   await page.goBack()
+  await page.waitForURL('**/')
   await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForURL('**/fr')
 
   await page.locator('#link-category').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**' + encodeURI('/fr/catégories/foo'))
 
   expect(await page.url()).include(encodeURI('/fr/catégories/foo'))
 })

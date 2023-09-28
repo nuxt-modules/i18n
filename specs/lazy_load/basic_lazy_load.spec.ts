@@ -23,6 +23,7 @@ describe('basic lazy loading', async () => {
     const dynamicTime = await getText(page, '#dynamic-time')
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
+    await page.waitForURL('**/fr')
     expect(await getText(page, '#dynamic-time')).toEqual('Not dynamic')
 
     // dynamicTime depends on passage of some time
@@ -30,6 +31,7 @@ describe('basic lazy loading', async () => {
 
     // dynamicTime does not match captured dynamicTime
     await page.click('#lang-switcher-with-nuxt-link-nl')
+    await page.waitForURL('**/nl')
     expect(await getText(page, '#dynamic-time')).to.not.equal(dynamicTime)
   })
 

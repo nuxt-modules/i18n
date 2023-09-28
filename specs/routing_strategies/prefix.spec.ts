@@ -97,7 +97,7 @@ describe('strategy: prefix', async () => {
 
     // click `fr` lang switch link
     await page.locator('#lang-switcher-with-nuxt-link a').click()
-    await page.waitForTimeout(100)
+    await page.waitForURL('**/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')

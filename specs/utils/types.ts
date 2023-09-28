@@ -1,6 +1,7 @@
 import type { Nuxt, NuxtConfig } from '@nuxt/schema'
 import type { ExecaChildProcess } from 'execa'
 import type { Browser, LaunchOptions } from 'playwright'
+import type { NuxtI18nOptions } from '../../src/types'
 
 export type TestRunner = 'vitest' | 'jest'
 
@@ -10,7 +11,7 @@ export interface TestOptions {
   configFile: string
   rootDir: string
   buildDir: string
-  nuxtConfig: NuxtConfig
+  nuxtConfig: NuxtConfig & { i18n?: NuxtI18nOptions }
   build: boolean
   dev: boolean
   prerender: boolean // NOTE: this option for `nuxi generate` emulation
