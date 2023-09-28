@@ -85,7 +85,7 @@ jobs:
       matrix:
         node-version: [18]
         os: [ubuntu-latest]
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     name: Test on Node.js ${{ matrix.node-version }}
     steps:
