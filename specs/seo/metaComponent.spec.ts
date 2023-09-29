@@ -25,7 +25,7 @@ test('render with meta components', async () => {
 
   // title tag
   expect(await getText(page, 'title')).toMatch('Page - Homepage')
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/')
 
   // html tag `lang` attriute
   expect(await page.getAttribute('html', 'lang')).toMatch('en')
@@ -42,7 +42,7 @@ test('render with meta components', async () => {
 
   // click `fr` lang switch link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr')
 
   // title tag
   expect(await getText(page, 'title')).toMatch('Page - Accueil')
@@ -59,7 +59,7 @@ test('render with meta components', async () => {
 
   // click about page
   await page.locator('#link-about').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr/about')
 
   // title tag
   expect(await getText(page, 'title')).toMatch('Page - À propos')

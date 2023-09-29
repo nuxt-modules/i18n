@@ -34,7 +34,7 @@ test('can not access to pick route path', async () => {
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/fr')
 
   // disalbe href with <NuxtLink>
   expect(await page.locator('#link-about').getAttribute('href')).toBe(null)

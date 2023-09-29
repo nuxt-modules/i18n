@@ -15,27 +15,27 @@ describe('#2288', async () => {
 
     // goto to `/en/about`
     await page.locator('#about-en').click()
-    await page.waitForTimeout(10)
+    await page.waitForURL('**/en/about')
     expect(await page.url().endsWith('/en/about')).toBe(true)
 
     // change to `ar`
     await page.locator('#ar').click()
-    await page.waitForTimeout(10)
+    await page.waitForURL('**/about')
     expect(await page.url().endsWith('/about')).toBe(true)
 
     // change to `en`
     await page.locator('#en').click()
-    await page.waitForTimeout(10)
+    await page.waitForURL('**/en/about')
     expect(await page.url().endsWith('/en/about')).toBe(true)
 
     // goto to `/ar/example`
     await page.locator('#example-ar').click()
-    await page.waitForTimeout(10)
+    await page.waitForURL('**/ar/example')
     expect(await page.url().endsWith('/ar/example')).toBe(true)
 
     // goto to `/en/example`
     await page.locator('#example-en').click()
-    await page.waitForTimeout(10)
+    await page.waitForURL('**/en/example')
     expect(await page.url().endsWith('/en/example')).toBe(true)
   })
 })

@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest'
+import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from './utils'
 import { getText } from './helper'
@@ -35,11 +35,11 @@ describe('beforeLocaleSwitch / localeSwitched', () => {
 
     // navigate to about page
     await page.locator('#link-about').click()
-    await page.waitForTimeout(1000)
+    await page.waitForURL('**/fr/about')
 
     // navigate to home page
     await page.locator('#link-home').click()
-    await page.waitForTimeout(1000)
+    await page.waitForURL('**/fr')
   })
 
   test('setLocale', async () => {
