@@ -6,5 +6,7 @@ test/fixtures
 coverage
 docs/components/content/Logo.vue
 docs/components/content/VoltaBoard.vue
+docs/components/AppHeader.vue
+docs/components/AppHeaderNavigation.vue
 .eslintcache
 src/runtime/templates
