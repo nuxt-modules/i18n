@@ -28,17 +28,19 @@ describe('nuxt layers vuei18n options', async () => {
     const home = url('/')
     const page = await createPage(undefined)
     await page.goto(home)
-    await page.waitForTimeout(1000)
+    await page.waitForURL('**/')
 
     expect(await getText(page, '#snake-case')).toEqual('Over-deze-site')
     expect(await getText(page, '#pascal-case')).toEqual('OverDezeSite')
 
     await page.click(`#set-locale-link-en`)
+    await page.waitForURL('**/en')
     expect(await getText(page, '#snake-case')).toEqual('About-this-site')
     expect(await getText(page, '#pascal-case')).toEqual('AboutThisSite')
     expect(await getText(page, '#fallback-message')).toEqual('Unieke vertaling')
 
     await page.click(`#set-locale-link-fr`)
+    await page.waitForURL('**/fr')
     expect(await getText(page, '#snake-case')).toEqual('À-propos-de-ce-site')
     expect(await getText(page, '#pascal-case')).toEqual('ÀProposDeCeSite')
     expect(await getText(page, '#fallback-message')).toEqual('Unieke vertaling')

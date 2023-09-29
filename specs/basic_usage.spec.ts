@@ -54,7 +54,7 @@ test('basic usage', async () => {
   // URL path with Route object with `useLocaleRoute`
   const button = await page.locator('#locale-route-usages button')
   await button.click()
-  await page.waitForTimeout(100)
+  await page.waitForURL('**/user/profile?foo=1')
   expect(await getText(page, '#profile-page')).toEqual('This is profile page')
   expect(await page.url()).include('/user/profile?foo=1')
 })

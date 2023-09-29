@@ -81,7 +81,7 @@ describe('default strategy: prefix_except_default', async () => {
 
     // click `fr` lang switch link with NuxtLink
     await page.locator('#lang-switcher-with-nuxt-link a').click()
-    await page.waitForTimeout(100)
+    await page.waitForURL('**/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
@@ -101,9 +101,9 @@ describe('default strategy: prefix_except_default', async () => {
 
     // click `en` and `fr` lang switch link with setLocale
     await page.locator('#set-locale-link-en').click()
-    await page.waitForTimeout(100)
+    await page.waitForURL('**/')
     await page.locator('#set-locale-link-fr').click()
-    await page.waitForTimeout(100)
+    await page.waitForURL('**/fr')
 
     // navigation URL
     expect(await page.url()).toEqual(url('/fr'))

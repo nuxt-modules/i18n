@@ -24,6 +24,7 @@ test('fallback to target lang', async () => {
 
   // click `ja` lang switch with `<NuxtLink>`
   await page.locator('#lang-switcher-with-nuxt-link-ja a').click()
+  await page.waitForURL('**/ja')
 
   // fallback to en content translation
   expect(await getText(page, '#home-header')).toEqual('Homepage')
