@@ -3,6 +3,17 @@ import { resolve } from 'node:path'
 import { defu } from 'defu'
 import * as _kit from '@nuxt/kit'
 import { useTestContext } from './context'
+import { parse } from 'pathe'
+
+import type { VitestContext } from './types'
+
+function getTestKey(ctx: VitestContext) {
+  const testPath = ctx.file?.filepath ?? ctx.filepath
+  const testFile = parse(testPath ?? '').base
+  const testKey = testFile.replaceAll('.', '-')
+
+  return testKey
+}
 
 // @ts-expect-error type cast
 // eslint-disable-next-line
@@ -33,7 +44,7 @@ const resolveRootDir = () => {
   throw new Error('Invalid nuxt app. (Please explicitly set `options.rootDir` pointing to a valid nuxt app)')
 }
 
-export async function loadFixture() {
+export async function loadFixture(testContext: VitestContext) {
   const ctx = useTestContext()
 
   const rootDir = (ctx.options.rootDir = resolveRootDir())
@@ -43,8 +54,12 @@ export async function loadFixture() {
     // const randomId = Math.random().toString(36).slice(2, 8)
     // const buildDir = resolve(ctx.options.rootDir, '.nuxt', randomId)
 
-    const buildDir = resolve(ctx.options.rootDir, '.nuxt')
-    const outputDir = ctx.options.prerender ? resolve(buildDir, 'output') : resolve(rootDir, '.output')
+    let testKey = getTestKey(testContext)
+
+    const buildDir = resolve(ctx.options.rootDir, '.nuxt', testKey)
+    const outputDir = ctx.options.prerender
+      ? resolve(buildDir, 'output', testKey)
+      : resolve(rootDir, '.output', testKey)
 
     ctx.options.nuxtConfig = defu(ctx.options.nuxtConfig, {
       buildDir,
