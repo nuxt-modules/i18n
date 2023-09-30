@@ -4,7 +4,7 @@ import { setup, url, createPage } from '../utils'
 import { getText } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/browser_language_detection/fallback`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {

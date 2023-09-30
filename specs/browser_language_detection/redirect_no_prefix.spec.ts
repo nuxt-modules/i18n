@@ -4,7 +4,7 @@ import { setup, url, createPage } from '../utils'
 import { getText } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/browser_language_detection/redirect_no_prefix`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
   browser: true,
   // overrides
   nuxtConfig: {
@@ -30,8 +30,8 @@ test('redirectOn: no prefix', async () => {
   await page.locator('#set-locale-link-en').click()
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 
-  // navigate to pl blog
-  const plBlog = url('/pl/blog/article')
-  await page.goto(plBlog)
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('pl')
+  // navigate to fr blog
+  const frBlog = url('/fr/blog/article')
+  await page.goto(frBlog)
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })
