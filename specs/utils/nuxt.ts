@@ -3,14 +3,16 @@ import { resolve } from 'node:path'
 import { defu } from 'defu'
 import * as _kit from '@nuxt/kit'
 import { useTestContext } from './context'
-import { parse } from 'pathe'
+import { relative } from 'pathe'
 
 import type { VitestContext } from './types'
 
+const normalizeWithUnderScore = (name: string) => name.replace(/-/g, '_').replace(/\./g, '_').replace(/\//g, '_')
+
 function getTestKey(ctx: VitestContext) {
-  const testPath = ctx.file?.filepath ?? ctx.filepath
-  const testFile = parse(testPath ?? '').base
-  const testKey = testFile.replaceAll('.', '-')
+  const testPath = ctx.file?.filepath ?? ctx.filepath ?? ''
+  const relativePath = relative(__dirname, testPath)
+  const testKey = normalizeWithUnderScore(relativePath)
 
   return testKey
 }
