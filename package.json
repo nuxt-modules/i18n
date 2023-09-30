@@ -116,7 +116,7 @@
     "get-port-please": "^3.1.1",
     "gh-changelogen": "^0.2.8",
     "jiti": "^1.20.0",
-    "jsdom": "^21.1.2",
+    "jsdom": "^22.1.0",
     "lint-staged": "^14.0.1",
     "npm-run-all": "^4.1.5",
     "nuxt": "^3.7.4",
