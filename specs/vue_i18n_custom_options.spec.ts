@@ -9,7 +9,7 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      vueI18n: './vue-i18n.options.ts'
+      vueI18n: './config/vue-i18n.options.ts'
     }
   }
 })
