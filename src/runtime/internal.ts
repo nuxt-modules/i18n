@@ -490,10 +490,13 @@ export function getLocaleDomain(locales: LocaleObject[]): string {
 
 export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[], nuxt?: NuxtApp): string | undefined {
   // lookup the `differentDomain` origin associated with given locale.
+  const config = nuxt?.$config.public.i18n as { locales?: Record<Locale, { domain?: string }> }
   const lang = locales.find(locale => locale.code === localeCode)
-  if (lang && lang.domain) {
-    if (hasProtocol(lang.domain)) {
-      return lang.domain
+  const domain = config?.locales?.[localeCode]?.domain ?? lang?.domain
+
+  if (domain) {
+    if (hasProtocol(domain, { strict: true })) {
+      return domain
     }
     let protocol
     if (process.server) {
@@ -504,7 +507,7 @@ export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[],
     } else {
       protocol = new URL(window.location.origin).protocol
     }
-    return protocol + '//' + lang.domain
+    return protocol + '//' + domain
   }
 
   console.warn(formatMessage('Could not find domain name for locale ' + localeCode))

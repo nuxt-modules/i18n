@@ -135,7 +135,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // for public
     nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
       experimental: options.experimental,
-      baseUrl: options.baseUrl
+      baseUrl: options.baseUrl,
+      locales: options.locales.reduce(
+        (obj, locale) => {
+          if (typeof locale === 'string') {
+            obj[locale] = { domain: undefined }
+          } else {
+            obj[locale.code] = { domain: locale.domain }
+          }
+          return obj
+        },
+        {} as Record<string, { domain: string | undefined }>
+      )
       // TODO: we should support more i18n module options. welcome PRs :-)
     })
 
