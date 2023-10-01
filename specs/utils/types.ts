@@ -2,6 +2,7 @@ import type { Nuxt, NuxtConfig } from '@nuxt/schema'
 import type { ExecaChildProcess } from 'execa'
 import type { Browser, LaunchOptions } from 'playwright'
 import type { NuxtI18nOptions } from '../../src/types'
+import type { Suite, File } from 'vitest'
 
 export type TestRunner = 'vitest' | 'jest'
 
@@ -42,6 +43,8 @@ export interface TestHooks {
   beforeEach: () => void
   afterEach: () => void
   afterAll: () => void
-  setup: () => void
+  setup: (testContext: VitestContext) => void
   ctx: TestContext
 }
+
+export type VitestContext = Suite | File
