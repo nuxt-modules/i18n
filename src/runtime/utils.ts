@@ -464,7 +464,7 @@ export function extendPrefixable(differentDomains: boolean) {
 export function extendSwitchLocalePathIntercepter(
   differentDomains: boolean,
   normalizedLocales: LocaleObject[],
-  nuxt?: NuxtApp
+  nuxt: NuxtApp
 ): SwitchLocalePathIntercepter {
   return (path: string, locale: Locale): string => {
     if (differentDomains) {
