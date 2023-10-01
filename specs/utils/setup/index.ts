@@ -2,10 +2,11 @@ import { createTestContext, setTestContext } from '../context'
 import { buildFixture, loadFixture } from '../nuxt'
 import { startServer, stopServer } from '../server'
 import { createBrowser } from '../browser'
-import type { TestHooks, TestOptions } from '../types'
 import setupJest from './jest'
 import setupVitest from './vitest'
 import consola from 'consola'
+
+import type { TestHooks, TestOptions, VitestContext } from '../types'
 
 export const setupMaps = {
   jest: setupJest,
@@ -30,17 +31,19 @@ export function createTest(options: Partial<TestOptions>): TestHooks {
       await stopServer()
       setTestContext(undefined)
     }
+
     if (ctx.nuxt && ctx.nuxt.options.dev) {
       await ctx.nuxt.close()
     }
+
     if (ctx.browser) {
       await ctx.browser.close()
     }
   }
 
-  const setup = async () => {
+  const setup = async (testContext: VitestContext) => {
     if (ctx.options.fixture) {
-      await loadFixture()
+      await loadFixture(testContext)
     }
 
     if (ctx.options.build) {

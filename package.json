@@ -63,7 +63,7 @@
     "lint": "eslint --cache --ext .js,.ts,.vue,.json .",
     "lint:fix": "pnpm lint --fix",
     "test": "pnpm dev:prepare && run-s test:types test:unit test:spec",
-    "test:types": "tsc --noEmit",
+    "test:types": "tsc --noEmit --project tsconfig.test.json",
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
