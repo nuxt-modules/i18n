@@ -6,7 +6,6 @@ import { getDom, getDataFromDom, assertLocaleHeadWithDom } from '../helper'
 const configDomain = 'https://runtime-config-domain.com'
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
-  browser: true,
   // overrides
   nuxtConfig: {
     runtimeConfig: {

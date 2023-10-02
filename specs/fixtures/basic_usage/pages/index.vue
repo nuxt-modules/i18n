@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { navigateTo, useHead } from '#imports'
+import LangSwitcher from '../components/LangSwitcher.vue'
 
-const { locale } = useI18n()
+const { t, locale, locales } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
+const appConfig = useAppConfig()
 
 const category = ref({
   title: 'Kirby',
   slug: 'nintendo'
 })
+
+const normalizedLocales = computed(() =>
+  locales.value.map(x => (typeof x === 'string' ? { code: x, name: x } : { code: x.code, name: x.name ?? x.code }))
+)
 
 function onClick() {
   const route = localeRoute({ name: 'user-profile', query: { foo: '1' } })
@@ -17,6 +23,22 @@ function onClick() {
     return navigateTo(route.fullPath)
   }
 }
+const { data, refresh } = useAsyncData('home', () =>
+  Promise.resolve({
+    aboutPath: localePath('about'),
+    aboutTranslation: t('about')
+  })
+)
+
+const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
+useHead({
+  title: t('home'),
+  htmlAttrs: {
+    lang: i18nHead.value.htmlAttrs!.lang
+  },
+  link: [...(i18nHead.value.link || [])],
+  meta: [...(i18nHead.value.meta || [])]
+})
 </script>
 
 <template>
@@ -29,6 +51,12 @@ function onClick() {
         </select>
         <p>{{ $t('welcome') }}</p>
       </form>
+    </section>
+    <LangSwitcher />
+    <section>
+      <strong>resolve with <code>useAsyncData</code></strong
+      >:
+      <code id="home-use-async-data">{{ data }}</code>
     </section>
     <section id="locale-path-usages">
       <h3>localePath</h3>
@@ -55,7 +83,7 @@ function onClick() {
         </li>
       </ul>
     </section>
-	    <section id="nuxt-link-locale-usages">
+    <section id="nuxt-link-locale-usages">
       <h3>NuxtLinkLocale</h3>
       <ul>
         <li class="name">
@@ -86,17 +114,32 @@ function onClick() {
     <section id="switch-locale-path-usages">
       <h3>switchLocalePath</h3>
       <ul>
-        <li class="switch-to-en">
-          <NuxtLink :to="switchLocalePath('en')">English</NuxtLink>
-        </li>
-        <li class="switch-to-fr">
-          <NuxtLink :to="switchLocalePath('fr')">Français</NuxtLink>
+        <li v-for="locale of normalizedLocales" :key="locale.code" :class="`switch-to-${locale.code}`">
+          <NuxtLink :to="switchLocalePath(locale.code)">{{ locale.name }}</NuxtLink>
         </li>
       </ul>
     </section>
     <section id="locale-route-usages">
       <h3>localeRoute</h3>
       <button @click="onClick">Show profile</button>
+    </section>
+    <section>
+      <code id="register-module">{{ $t('moduleLayerText') }}</code>
+    </section>
+    <section>
+      <p id="app-config-name">{{ appConfig.myProject.name }}</p>
+    </section>
+    <section>
+      <div id="layer-message">{{ $t('thanks') }}</div>
+      <div id="snake-case">{{ $t('snakeCaseText') }}</div>
+      <div id="pascal-case">{{ $t('pascalCaseText') }}</div>
+      <div id="fallback-message">{{ $t('uniqueTranslation') }}</div>
+    </section>
+    <section>
+      <div id="home-header">{{ $t('modifier') }}</div>
+    </section>
+    <section>
+      <div id="fallback-key">{{ $t('fallbackMessage') }}</div>
     </section>
   </div>
 </template>
