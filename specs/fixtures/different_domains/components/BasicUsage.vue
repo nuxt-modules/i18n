@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { computed, navigateTo } from '#imports'
 import { useLocalePath, useSwitchLocalePath, useLocaleRoute, useI18n } from '#i18n'
 
-const { locale } = useI18n()
+const { locale, locales } = useI18n()
+const normalizedLocales = computed(() =>
+  locales.value.map(x => (typeof x === 'string' ? { code: x, name: x } : { code: x.code, name: x.name ?? x.code }))
+)
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
@@ -63,11 +66,8 @@ function onClick() {
     <section id="switch-locale-path-usages">
       <h3>switchLocalePath</h3>
       <ul>
-        <li class="switch-to-en">
-          <NuxtLink :to="switchLocalePath('en')">English</NuxtLink>
-        </li>
-        <li class="switch-to-fr">
-          <NuxtLink :to="switchLocalePath('fr')">Français</NuxtLink>
+        <li v-for="l of normalizedLocales" :key="l.code" :class="`switch-to-${l.code}`">
+          <NuxtLink :to="switchLocalePath(l.code)">{{ l.name }}</NuxtLink>
         </li>
       </ul>
     </section>
