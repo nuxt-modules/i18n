@@ -1,10 +1,10 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   i18n: {
-    lazy: false,
-    differentDomains: true,
-    defaultLocale: 'en',
-    strategy: 'prefix_except_default',
+    // lazy: false,
+    // differentDomains: true,
+    // defaultLocale: 'en',
+    // strategy: 'prefix_except_default',
     langDir: 'locales',
     locales: [
       {
@@ -22,11 +22,11 @@ export default defineNuxtConfig({
         name: 'Nederlands'
       },
       {
-        code: 'fr',
-        iso: 'fr-FR',
-        file: 'fr.json',
-        domain: 'layer-fr.example.com',
-        name: 'Français'
+        code: 'ja',
+        iso: 'ja',
+        file: 'ja.json',
+        domain: 'layer-ja.example.com',
+        name: 'Japanese'
       }
     ]
   }

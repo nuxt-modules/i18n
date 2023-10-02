@@ -4,24 +4,25 @@ import { setup, $fetch } from './utils'
 import { getDom } from './helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`./fixtures/domain`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`./fixtures/different_domains`, import.meta.url)),
   // overrides
   nuxtConfig: {
+    extends: [fileURLToPath(new URL(`./fixtures/layers/layer-domain`, import.meta.url))],
     i18n: {
-      locales: [
-        {
-          code: 'en',
-          iso: 'en',
-          name: 'English',
-          domain: 'en.nuxt-app.localhost'
-        },
-        {
-          code: 'fr',
-          iso: 'fr-FR',
-          name: 'Français',
-          domain: 'fr.nuxt-app.localhost'
-        }
-      ],
+      // locales: [
+      //   {
+      //     code: 'en',
+      //     iso: 'en',
+      //     name: 'English',
+      //     domain: 'en.nuxt-app.localhost'
+      //   },
+      //   {
+      //     code: 'fr',
+      //     iso: 'fr-FR',
+      //     name: 'Français',
+      //     domain: 'fr.nuxt-app.localhost'
+      //   }
+      // ],
       differentDomains: true,
       detectBrowserLanguage: {
         useCookie: true
@@ -71,5 +72,28 @@ test('pass `<NuxtLink> to props', async () => {
   )
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
     `http://fr.nuxt-app.localhost`
+  )
+})
+
+test('layer provides locales with domains', async () => {
+  const html = await $fetch('/', {
+    headers: {
+      Host: 'fr.nuxt-app.localhost'
+    }
+  })
+  const dom = getDom(html)
+
+  // `en` link uses project domain configuration, overrides layer
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
+    `http://en.nuxt-app.localhost`
+  )
+
+  // `nl` link uses layer domain configuration
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-nl a').getAttribute('href')).toEqual(
+    `http://layer-nl.example.com`
+  )
+  // `ja` link uses layer domain configuration
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-ja a').getAttribute('href')).toEqual(
+    `http://layer-ja.example.com`
   )
 })

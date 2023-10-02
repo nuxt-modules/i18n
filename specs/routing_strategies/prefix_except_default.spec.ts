@@ -7,7 +7,7 @@ import type { Response } from 'playwright'
 
 describe('default strategy: prefix_except_default', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/routing_prefix_except_default`, import.meta.url)),
+    rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
     browser: true,
     // overrides
     nuxtConfig: {
