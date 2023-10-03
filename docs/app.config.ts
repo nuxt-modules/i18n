@@ -2,14 +2,14 @@ export default defineAppConfig({
   docus: {
     title: '@nuxtjs/i18n',
     description: 'I18n (Internationalization) module for Nuxt',
-    url: 'https://v8.i18n.nuxtjs.org',
+    url: 'https://i18n.nuxtjs.org',
     layout: 'default',
     image: '/cover.png',
     socials: {
       github: 'nuxt-modules/i18n'
     },
     github: {
-      branch: 'next',
+      branch: 'main',
       repo: 'nuxt-modules/i18n',
       owner: 'nuxt-modules',
       dir: 'docs/content',

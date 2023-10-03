@@ -79,14 +79,14 @@ Update nuxt i18n module dependency inside `package.json`:
 
 ## 📖 Documentation
 
-[Read more v8 documentation](https://v8.i18n.nuxtjs.org/).
+[Read more v8 documentation](https://i18n.nuxtjs.org/).
 
 Keep in mind that not all features are currently supported yet and some things might be broken.
 
 ## 🔗 Links
 
-- 📘 [Documentation for v8](https://v8.i18n.nuxtjs.org/)
-- 📘 [Documentation for v7](https://i18n.nuxtjs.org/)
+- 📘 [Documentation for v8](https://i18n.nuxtjs.org/)
+- 📘 [Documentation for v7](https://i18n.nuxtjs.org/v7/setup)
 - 🔖 [Release notes](./CHANGELOG.md)
 - 👥 [Community](https://discord.nuxtjs.org/) (`#i18n` channel)
 

@@ -46,7 +46,7 @@ export const checkLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
         if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
           logger.warn(
             `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
-              `Absolute paths will not work in production, see https://v8.i18n.nuxtjs.org/options/lazy#langdir for more details.`
+              `Absolute paths will not work in production, see https://i18n.nuxtjs.org/options/lazy#langdir for more details.`
           )
         }
 
