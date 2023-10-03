@@ -168,13 +168,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
-    for (const vueI18nConfigPath of vueI18nConfigPaths) {
-      if (vueI18nConfigPath.absolute === '') {
-        logger.warn(
-          `Ignore Vue I18n configuration file does not exist at ${vueI18nConfigPath.relative} in ${vueI18nConfigPath.rootDir}. Skipping...`
-        )
-      }
-    }
     debug('VueI18nConfigPaths', vueI18nConfigPaths)
 
     /**

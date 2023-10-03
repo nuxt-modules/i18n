@@ -14,7 +14,7 @@ import { isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
+import type { NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
@@ -133,14 +133,36 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
 }
 
 export async function resolveLayerVueI18nConfigInfo(nuxt: Nuxt, buildDir: string) {
+  const logger = useLogger(NUXT_I18N_MODULE_ID)
   const layers = [...nuxt.options._layers]
   const project = layers.shift() as NuxtConfigLayer
   const i18nLayers = [project, ...layers.filter(layer => getLayerI18n(layer))]
 
-  return await Promise.all(
-    i18nLayers.map(layer => {
-      const i18n = getLayerI18n(layer)
-      return resolveVueI18nConfigInfo(i18n || {}, buildDir, layer.config.rootDir)
-    })
+  const resolved = await Promise.all(
+    i18nLayers
+      .map(layer => {
+        const i18n = getLayerI18n(layer) as NuxtI18nOptions
+
+        return [layer, i18n, resolveVueI18nConfigInfo(i18n || {}, buildDir, layer.config.rootDir)] as [
+          NuxtConfigLayer,
+          NuxtI18nOptions,
+          Promise<VueI18nConfigPathInfo | undefined>
+        ]
+      })
+      .map(async ([layer, i18n, resolver]) => {
+        const res = await resolver
+
+        if (res == null && i18n?.vueI18n != null) {
+          logger.warn(
+            `Ignore Vue I18n configuration file does not exist at ${i18n.vueI18n} in ${layer.config.rootDir}. Skipping...`
+          )
+
+          return undefined
+        }
+
+        return res
+      })
   )
+
+  return resolved.filter((x): x is Required<VueI18nConfigPathInfo> => x != null)
 }
