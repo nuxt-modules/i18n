@@ -1,0 +1,15 @@
+{
+  "Meta": {
+    "locale": "French"
+  },
+  "Pages": {
+    "Home": {
+      "title": "Page d'accueil",
+      "description": "Page d'accueil description"
+    },
+    "About": {
+      "title": "À propos",
+      "description": "A propos description"
+    }
+  }
+}
