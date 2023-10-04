@@ -1,0 +1,15 @@
+{
+  "Meta": {
+    "locale": "English"
+  },
+  "Pages": {
+    "Home": {
+      "title": "Home page",
+      "description": "Home page description"
+    },
+    "About": {
+      "title": "About page",
+      "description": "About page description"
+    }
+  }
+}
