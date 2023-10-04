@@ -335,7 +335,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
 
   // browser locale detection happens during first access only
   if (!firstAccess) {
-    return { locale: '', stat: false, reason: 'first_access_only' }
+    return { locale: strategy === 'no_prefix' ? locale : '', stat: false, reason: 'first_access_only' }
   }
 
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
