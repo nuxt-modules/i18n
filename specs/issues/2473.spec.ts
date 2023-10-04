@@ -18,6 +18,7 @@ describe('#2473', async () => {
 
     // change page
     await page.locator('#locale').click()
+    await page.waitForURL('**/about')
     expect(await getText(page, '#title')).toEqual(`À propos`)
 
     // one more change page
