@@ -97,6 +97,7 @@ export default async function (moduleOptions) {
   }
 
   if (options.strategy !== STRATEGIES.NO_PREFIX && options.localeCodes.length) {
+    // @ts-ignore
     this.extendRoutes(createExtendRoutesHook.call(this, options))
   }
 
