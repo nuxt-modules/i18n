@@ -18,7 +18,9 @@ export function createTest(options: Partial<TestOptions>): TestHooks {
 
   const beforeEach = () => {
     setTestContext(ctx)
-    consola.restoreConsole()
+    if (!process.env.CI) {
+      consola.restoreConsole()
+    }
   }
 
   const afterEach = () => {

@@ -12,6 +12,10 @@ await setup({
       defaultLocale: 'en',
       customRoutes: 'config',
       pages: {
+        'category/[slug]': false,
+        history: {
+          fr: false
+        },
         'about/index': {
           fr: '/about-fr'
         },
@@ -63,4 +67,50 @@ test('can access to custom nested route path', async () => {
   await page.waitForURL('**/news/article')
 
   expect(await page.url()).include('/news/article')
+})
+
+test('can not access to pick route path', async () => {
+  const home = url('/')
+  const page = await createPage()
+  await page.goto(home)
+
+  // click `fr` switching link
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForURL('**/fr')
+
+  // disalbe href with <NuxtLink>
+  expect(await page.locator('#link-history').getAttribute('href')).toBe(null)
+
+  // disalbe direct url access
+  let res: Response | (Error & { status: () => number }) | null = null
+  try {
+    res = await page.goto(url('/fr/history'))
+  } catch (error: unknown) {
+    res = error as Error & { status: () => number }
+  }
+  // 404
+  expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+})
+
+test('can not access to disable route path', async () => {
+  const home = url('/')
+  const page = await createPage()
+  await page.goto(home)
+
+  // click `fr` switching link
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await page.waitForURL('**/fr')
+
+  // disalbe href with <NuxtLink>
+  expect(await page.locator('#link-category').getAttribute('href')).toBe(null)
+
+  // disalbe direct url access
+  let res: Response | (Error & { status: () => number }) | null = null
+  try {
+    res = await page.goto(url('/fr/category/test'))
+  } catch (error: unknown) {
+    res = error as Error & { status: () => number }
+  }
+  // 404
+  expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
 })
