@@ -61,5 +61,10 @@ useHead({
     <NuxtLink id="link-ignore-pick" :to="localePath('/ignore-routes/pick')"
       >go to ignoring localized pick route</NuxtLink
     >
+    <NuxtLink id="link-category" :to="localePath('/category/test')">go to category test</NuxtLink>
+    <NuxtLink id="link-products" :to="localePath({ name: 'products', params: { id: 'foo' } })">
+      go to product foo
+    </NuxtLink>
+    <NuxtLink id="link-history" :to="localePath({ name: 'history' })">go to history</NuxtLink>
   </div>
 </template>

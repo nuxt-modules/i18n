@@ -5,7 +5,6 @@ import { getDom, assertLocaleHeadWithDom } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
-  browser: true,
   // overrides
   nuxtConfig: {
     i18n: {

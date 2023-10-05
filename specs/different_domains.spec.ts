@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest'
+import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, $fetch } from './utils'
 import { getDom } from './helper'

@@ -113,3 +113,25 @@ test('wait for page transition', async () => {
   await page.waitForURL('**/')
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 })
+
+test('i18n custom block', async () => {
+  const home = url('/')
+  const page = await createPage()
+  await page.goto(home)
+
+  // click `fr` lang switch with `<NuxtLink>`
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await waitForTransition(page)
+
+  // go to category page
+  await page.locator('#link-category').click()
+  await waitForTransition(page)
+
+  expect(await getText(page, '#per-component-hello')).toMatch('Bonjour!')
+
+  // click `en` lang switch with `<NuxtLink>`
+  await page.locator('#lang-switcher-with-nuxt-link a').click()
+  await waitForTransition(page)
+
+  expect(await getText(page, '#per-component-hello')).toMatch('Hello!')
+})
