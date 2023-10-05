@@ -74,7 +74,10 @@ export interface ExperimentalFeatures {
 }
 
 export interface BundleOptions
-  extends Pick<PluginOptions, 'compositionOnly' | 'runtimeOnly' | 'fullInstall' | 'dropMessageCompiler'> {}
+  extends Pick<
+    PluginOptions,
+    'compositionOnly' | 'runtimeOnly' | 'fullInstall' | 'dropMessageCompiler' | 'onlyLocales'
+  > {}
 
 export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang' | 'globalSFCScope'> {}
 
