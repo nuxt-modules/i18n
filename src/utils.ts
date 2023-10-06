@@ -47,6 +47,28 @@ export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
+export function castArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value]
+}
+
+export function normalizeIncludingLocales(locales?: string | string[]) {
+  return (castArray(locales) ?? []).filter(isString)
+}
+
+export function filterLocales(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
+  const project = getLayerI18n(nuxt.options._layers[0])
+  const includingLocales = normalizeIncludingLocales(project?.bundle?.onlyLocales)
+
+  if (!includingLocales.length) {
+    return
+  }
+
+  options.locales = options.locales.filter(locale => {
+    const code = isString(locale) ? locale : locale.code
+    return includingLocales.includes(code)
+  }) as string[] | LocaleObject[]
+}
+
 export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleObject[] {
   locales = locales || []
   const normalized: LocaleObject[] = []
