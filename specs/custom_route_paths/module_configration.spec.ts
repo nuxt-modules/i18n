@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText, getData } from '../helper'
+import { setup, url } from '../utils'
+import { getText, getData, renderPage, waitForURL } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -31,20 +31,18 @@ await setup({
 })
 
 test('can access to custom route path', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForURL('**/fr')
+  await waitForURL(page, '/fr')
 
   // page path
   expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about-fr' })
 
   // navigate to about page for `fr`
   await page.locator('#link-about').click()
-  await page.waitForURL('**/fr/about-fr')
+  await waitForURL(page, '/fr/about-fr')
 
   expect(await getText(page, '#about-header')).toEqual('À propos')
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
@@ -52,31 +50,27 @@ test('can access to custom route path', async () => {
 })
 
 test('can access to custom nested route path', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // navigate to blog index page
   await page.locator('#link-blog').click()
-  await page.waitForURL('**/news')
+  await waitForURL(page, '/news')
 
   expect(await page.url()).include('/news')
 
   // navigate to blog article page
   await page.locator('#link-blog-article').click()
-  await page.waitForURL('**/news/article')
+  await waitForURL(page, '/news/article')
 
   expect(await page.url()).include('/news/article')
 })
 
 test('can not access to pick route path', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForURL('**/fr')
+  await waitForURL(page, '/fr')
 
   // disalbe href with <NuxtLink>
   expect(await page.locator('#link-history').getAttribute('href')).toBe(null)
@@ -93,13 +87,11 @@ test('can not access to pick route path', async () => {
 })
 
 test('can not access to disable route path', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // click `fr` switching link
   await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await page.waitForURL('**/fr')
+  await waitForURL(page, '/fr')
 
   // disalbe href with <NuxtLink>
   expect(await page.locator('#link-category').getAttribute('href')).toBe(null)

@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from './utils'
-import { getText } from './helper'
+import { setup } from './utils'
+import { getText, renderPage } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/locale_codes`, import.meta.url)),
@@ -17,9 +17,7 @@ await setup({
 })
 
 test('leave only English locale', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   const locales = await page.locator('li')
 

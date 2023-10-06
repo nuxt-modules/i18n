@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText } from '../helper'
+import { setup } from '../utils'
+import { getText, gotoPath, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -19,9 +19,7 @@ await setup({
 })
 
 test('redirectOn: no prefix', async () => {
-  const blog = url('/blog/article')
-  const page = await createPage(undefined, { locale: 'fr' }) // set browser locale
-  await page.goto(blog)
+  const { page } = await renderPage('/blog/article', { locale: 'fr' })
 
   // detect locale from navigator language
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
@@ -31,7 +29,6 @@ test('redirectOn: no prefix', async () => {
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 
   // navigate to fr blog
-  const frBlog = url('/fr/blog/article')
-  await page.goto(frBlog)
+  await gotoPath(page, '/fr/blog/article')
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })

@@ -1,7 +1,7 @@
 import { test, describe, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, createPage, url } from '../utils'
-import { getText } from '../helper'
+import { setup } from '../utils'
+import { getText, gotoPath, renderPage } from '../helper'
 
 describe('#2132', async () => {
   await setup({
@@ -10,13 +10,11 @@ describe('#2132', async () => {
   })
 
   test('should be work redirectOn "no prefix"', async () => {
-    const home = url('/')
-    const page = await createPage(undefined, { locale: 'ja' }) // set browser locale
+    const { page } = await renderPage('/', { locale: 'ja' })
 
-    await page.goto(home)
     expect(await getText(page, '#msg')).toEqual('日本語のメッセージ')
 
-    await page.goto(url('/en'))
+    await gotoPath(page, '/en')
     expect(await getText(page, '#msg')).toEqual('English message')
   })
 })

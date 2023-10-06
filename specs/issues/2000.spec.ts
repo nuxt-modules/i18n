@@ -1,7 +1,7 @@
 import { test, describe, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, createPage, url } from '../utils'
-import { getText } from '../helper'
+import { setup } from '../utils'
+import { getText, renderPage } from '../helper'
 
 describe('#2000', async () => {
   await setup({
@@ -10,9 +10,7 @@ describe('#2000', async () => {
   })
 
   test('should be loaded vue-i18n messages', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/')
 
     expect(await getText(page, '#render')).toEqual('hello,'.repeat(8 * 500))
   })

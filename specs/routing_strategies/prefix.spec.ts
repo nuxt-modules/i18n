@@ -1,26 +1,26 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText, getData } from '../helper'
+import { setup, url } from '../utils'
+import { getText, getData, renderPage, waitForURL } from '../helper'
 
 import type { Response } from 'playwright'
 
-describe('strategy: prefix', async () => {
-  await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
-    browser: true,
-    // overrides
-    nuxtConfig: {
-      i18n: {
-        strategy: 'prefix',
-        defaultLocale: 'en'
-      }
+await setup({
+  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  browser: true,
+  // overrides
+  nuxtConfig: {
+    i18n: {
+      strategy: 'prefix',
+      defaultLocale: 'en'
     }
-  })
+  }
+})
 
+describe('strategy: prefix', async () => {
   test.todo('cannot access to no prefix url: /', async () => {
     const home = url('/')
-    const page = await createPage()
+    const { page } = await renderPage(home)
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
@@ -32,9 +32,7 @@ describe('strategy: prefix', async () => {
   })
 
   test('can access to prefix locale: /en', async () => {
-    const home = url('/en')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/en')
 
     // `en` rendering
     expect(await getText(page, '#home-header')).toEqual('Homepage')
@@ -55,9 +53,7 @@ describe('strategy: prefix', async () => {
   })
 
   test('can access to prefix locale: /fr', async () => {
-    const home = url('/fr')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
@@ -79,7 +75,7 @@ describe('strategy: prefix', async () => {
 
   test('cannot access to not defined locale: /ja', async () => {
     const home = url('/ja')
-    const page = await createPage()
+    const { page } = await renderPage(home)
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
@@ -91,13 +87,11 @@ describe('strategy: prefix', async () => {
   })
 
   test('reactivity', async () => {
-    const home = url('/en')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/en')
 
     // click `fr` lang switch link
     await page.locator('#lang-switcher-with-nuxt-link a').click()
-    await page.waitForURL('**/fr')
+    await waitForURL(page, '/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')

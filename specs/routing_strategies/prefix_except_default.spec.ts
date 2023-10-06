@@ -1,27 +1,25 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText, getData, assetLocaleHead } from '../helper'
+import { setup, url } from '../utils'
+import { getText, getData, assetLocaleHead, renderPage, waitForURL } from '../helper'
 
 import type { Response } from 'playwright'
 
-describe('default strategy: prefix_except_default', async () => {
-  await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
-    browser: true,
-    // overrides
-    nuxtConfig: {
-      i18n: {
-        defaultLocale: 'en',
-        defaultDirection: 'auto'
-      }
+await setup({
+  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  browser: true,
+  // overrides
+  nuxtConfig: {
+    i18n: {
+      defaultLocale: 'en',
+      defaultDirection: 'auto'
     }
-  })
+  }
+})
 
+describe('default strategy: prefix_except_default', async () => {
   test('can access to no prefix locale (defaultLocale: en): /', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/')
 
     // `en` rendering
     expect(await getText(page, '#home-header')).toEqual('Homepage')
@@ -41,9 +39,7 @@ describe('default strategy: prefix_except_default', async () => {
   })
 
   test('can access to prefix locale: /fr', async () => {
-    const home = url('/fr')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
@@ -64,7 +60,7 @@ describe('default strategy: prefix_except_default', async () => {
 
   test('cannot access to not defined locale: /ja', async () => {
     const home = url('/ja')
-    const page = await createPage()
+    const { page } = await renderPage(home)
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
@@ -76,13 +72,11 @@ describe('default strategy: prefix_except_default', async () => {
   })
 
   test('reactivity', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/')
 
     // click `fr` lang switch link with NuxtLink
     await page.locator('#lang-switcher-with-nuxt-link a').click()
-    await page.waitForURL('**/fr')
+    await waitForURL(page, '/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
@@ -102,18 +96,16 @@ describe('default strategy: prefix_except_default', async () => {
 
     // click `en` and `fr` lang switch link with setLocale
     await page.locator('#set-locale-link-en').click()
-    await page.waitForURL('**/')
+    await waitForURL(page, '/')
     await page.locator('#set-locale-link-fr').click()
-    await page.waitForURL('**/fr')
+    await waitForURL(page, '/fr')
 
     // navigation URL
     expect(await page.url()).toEqual(url('/fr'))
   })
 
   test('render with useHead', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/')
 
     /**
      * defautl locale
@@ -137,7 +129,7 @@ describe('default strategy: prefix_except_default', async () => {
 
     // click `fr` lang switch link
     await page.locator('#lang-switcher-with-nuxt-link a').click()
-    await page.waitForURL('**/fr')
+    await waitForURL(page, '/fr')
 
     // title tag
     expect(await getText(page, 'title')).toMatch('Accueil')

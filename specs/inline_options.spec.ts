@@ -1,18 +1,16 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from './utils'
-// import { getText, getData } from './helper'
+import { setup } from './utils'
+import { renderPage } from './helper'
+
+await setup({
+  rootDir: fileURLToPath(new URL(`./fixtures/inline_options`, import.meta.url)),
+  browser: true
+})
 
 describe('inline options are handled correctly', async () => {
-  await setup({
-    rootDir: fileURLToPath(new URL(`./fixtures/inline_options`, import.meta.url)),
-    browser: true
-  })
-
   test('inline options are handled correctly', async () => {
-    const home = url('/')
-    const page = await createPage()
-    page.goto(home)
+    const { page } = await renderPage('/')
 
     // Inline options provide `en` locale
     expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-en').getAttribute('href')).toEqual('/')
