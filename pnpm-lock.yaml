@@ -195,7 +195,43 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
+  specs/fixtures/basic_layer:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
+  specs/fixtures/basic_pages:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
   specs/fixtures/basic_usage:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
+  specs/fixtures/component:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
+  specs/fixtures/custom_route_paths_component:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -213,6 +249,15 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
+  specs/fixtures/fallback:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
   specs/fixtures/inline_options:
     devDependencies:
       '@nuxtjs/i18n':
@@ -222,7 +267,7 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
-  specs/fixtures/lazy:
+  specs/fixtures/layer_consumer:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -231,7 +276,7 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
-  specs/fixtures/locale_codes:
+  specs/fixtures/lazy:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -250,6 +295,24 @@ importers:
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
   specs/fixtures/switcher:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
+  specs/fixtures/locale_codes:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
+  specs/fixtures/vue_i18n_options:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -5376,6 +5439,19 @@ packages:
       duplexer: 0.1.2
     dev: true
 
+  /h3@1.8.0:
+    resolution: {integrity: sha512-057VY83X7Tg5n4XU2GV9M3dsCWUU4jtw2Lc/r4GjAcf9Jb6GI1mD5F8TCQHUcvLMEgtx6lbfobOFu7Vdmejihg==}
+    dependencies:
+      cookie-es: 1.0.0
+      defu: 6.1.2
+      destr: 2.0.1
+      iron-webcrypto: 0.8.0
+      radix3: 1.1.0
+      ufo: 1.3.1
+      uncrypto: 0.1.3
+      unenv: 1.7.4
+    dev: true
+
   /h3@1.8.1:
     resolution: {integrity: sha512-m5rFuu+5bpwBBHqqS0zexjK+Q8dhtFRvO9JXQG0RvSPL6QrIT6vv42vuBM22SLOgGMoZYsHk0y7VPidt9s+nkw==}
     dependencies:
@@ -6032,6 +6108,11 @@ packages:
       '@pkgjs/parseargs': 0.11.0
     dev: true
 
+  /jiti@1.19.3:
+    resolution: {integrity: sha512-5eEbBDQT/jF1xg6l36P+mWGGoH9Spuy0PCdSr2dtWRDGC6ph/w9ZCL4lmESW8f8F7MwT3XKescfP0wnZWAKL9w==}
+    hasBin: true
+    dev: true
+
   /jiti@1.20.0:
     resolution: {integrity: sha512-3TV69ZbrvV6U5DfQimop50jE9Dl6J8O1ja1dvBbMba/sZ3YBEQqJ2VZRoQPVnhlzjNtU1vaXRZVrVjU4qtm8yA==}
     hasBin: true
@@ -6428,6 +6509,13 @@ packages:
 
   /magic-string@0.27.0:
     resolution: {integrity: sha512-8UnnX2PeRAPZuN12svgR9j7M1uWMovg/CEnIwIG0LFkXSJJe4PdfUGiTGl8V9bsBHFUtfVINcSyYxd7q+kx9fA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
+
+  /magic-string@0.30.3:
+    resolution: {integrity: sha512-B7xGbll2fG/VjP+SWg4sX3JynwIU0mjoTc6MPpKNuIvftk6u6vqhDnk1R80b8C2GBR6ywqy+1DcKBrevBg+bmw==}
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
@@ -7090,6 +7178,15 @@ packages:
       typescript: 5.2.2
     dev: true
 
+  /mlly@1.4.1:
+    resolution: {integrity: sha512-SCDs78Q2o09jiZiE2WziwVBEqXQ02XkGdUy45cbJf+BpYRIjArXRJ1Wbowxkb+NaM9DWvS3UC9GiO/6eqvQ/pg==}
+    dependencies:
+      acorn: 8.10.0
+      pathe: 1.1.1
+      pkg-types: 1.0.3
+      ufo: 1.3.1
+    dev: true
+
   /mlly@1.4.2:
     resolution: {integrity: sha512-i/Ykufi2t1EZ6NaPLdfnZk2AX8cs0d+mTzVKuPfqPKPatxLApaBoxJQ9x1/uckXtrS/U5oisPMDkNs0yQTaBRg==}
     dependencies:
@@ -7473,6 +7570,14 @@ packages:
       boolbase: 1.0.0
     dev: true
 
+  /nuxi@3.7.0:
+    resolution: {integrity: sha512-FZEwNCGeEdE+CyKCoThZm+Lv+u4TnbClTyYvvby3a2joK5t8nc7upNiZ7hsd+xoOeNuZW7CZHsQp9szJm2ev9Q==}
+    engines: {node: ^14.18.0 || >=16.10.0}
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+
   /nuxi@3.7.3:
     resolution: {integrity: sha512-Cg+ygRmhonE6PwAtDeKvKU/0VRqEyzmSSoJYfr0MzwIxQYrBSnLvw0z3UgJl/8MgFKjiZ5Y4wBUEiRsUw8O6uw==}
     engines: {node: ^14.18.0 || >=16.10.0}
@@ -7554,16 +7659,16 @@ packages:
       estree-walker: 3.0.3
       fs-extra: 11.1.1
       globby: 13.2.2
-      h3: 1.8.1
+      h3: 1.8.0
       hookable: 5.5.3
-      jiti: 1.20.0
+      jiti: 1.19.3
       klona: 2.0.6
       knitwork: 1.0.0
-      magic-string: 0.30.4
-      mlly: 1.4.2
+      magic-string: 0.30.3
+      mlly: 1.4.1
       nitropack: 2.6.1
-      nuxi: 3.7.3
-      nypm: 0.3.3
+      nuxi: 3.7.0
+      nypm: 0.3.1
       ofetch: 1.3.3
       ohash: 1.1.3
       pathe: 1.1.1
@@ -7573,13 +7678,13 @@ packages:
       scule: 1.0.0
       std-env: 3.4.3
       strip-literal: 1.3.0
-      ufo: 1.3.1
+      ufo: 1.3.0
       ultrahtml: 1.3.0
       uncrypto: 0.1.3
       unctx: 2.3.1
       unenv: 1.7.4
-      unimport: 3.3.0(rollup@3.28.1)
-      unplugin: 1.5.0
+      unimport: 3.2.0(rollup@3.28.1)
+      unplugin: 1.4.0
       unplugin-vue-router: 0.6.4(rollup@3.28.1)(vue-router@4.2.4)(vue@3.3.4)
       untyped: 1.4.0
       vue: 3.3.4
@@ -7619,6 +7724,14 @@ packages:
 
   /nwsapi@2.2.4:
     resolution: {integrity: sha512-NHj4rzRo0tQdijE9ZqAx6kYDcoRwYwSYzCA8MY3JzfxlrvEU0jhnhJT9BhqhJs7I/dKcrDm6TyulaRqZPIhN5g==}
+    dev: true
+
+  /nypm@0.3.1:
+    resolution: {integrity: sha512-WbyW4kp5TEIchdfdAUW4PdFlxl508nPAJsZml0ONk+A29vNHSW+3HEq3OmLvbDWYZrSVZ+Ios++7D/ENnv1YlA==}
+    engines: {node: ^14.16.0 || >=16.10.0}
+    dependencies:
+      execa: 8.0.1
+      ufo: 1.3.1
     dev: true
 
   /nypm@0.3.3:
@@ -9682,6 +9795,10 @@ packages:
     resolution: {integrity: sha512-fk6CmUgwKCfX79EzcDQQpSCMxrHstvbLswFChHS0Vump+kFkw7nJBfTZoC1j0bOGoY9I7R3n2DGek5ajbcYnOw==}
     dev: true
 
+  /ufo@1.3.0:
+    resolution: {integrity: sha512-bRn3CsoojyNStCZe0BG0Mt4Nr/4KF+rhFlnNXybgqt5pXHNFRlqinSoQaTrGyzE4X8aHplSb+TorH+COin9Yxw==}
+    dev: true
+
   /ufo@1.3.1:
     resolution: {integrity: sha512-uY/99gMLIOlJPwATcMVYfqDSxUR9//AUcgZMzwfSTJPDKzA1S8mX4VLqa+fiAtveraQUBCz4FFcwVZBGbwBXIw==}
 
@@ -9826,6 +9943,24 @@ packages:
       vfile: 5.3.7
     dev: true
 
+  /unimport@3.2.0(rollup@3.28.1):
+    resolution: {integrity: sha512-9buxPxkNwxwxAlH/RfOFHxtQTUrlmBGi9Ai9HezY2yYbkoOhgJTYPI6+WqxI1EZphoM9cw1SHoCFRkXSb8/fjQ==}
+    dependencies:
+      '@rollup/pluginutils': 5.0.4(rollup@3.28.1)
+      escape-string-regexp: 5.0.0
+      fast-glob: 3.3.1
+      local-pkg: 0.4.3
+      magic-string: 0.30.4
+      mlly: 1.4.2
+      pathe: 1.1.1
+      pkg-types: 1.0.3
+      scule: 1.0.0
+      strip-literal: 1.3.0
+      unplugin: 1.5.0
+    transitivePeerDependencies:
+      - rollup
+    dev: true
+
   /unimport@3.3.0(rollup@3.28.1):
     resolution: {integrity: sha512-3jhq3ZG5hFZzrWGDCpx83kjPzefP/EeuKkIO1T0MA4Zwj+dO/Og1mFvZ4aZ5WSDm0FVbbdVIRH1zKBG7c4wOpg==}
     dependencies:
@@ -9968,6 +10103,15 @@ packages:
     transitivePeerDependencies:
       - rollup
       - vue
+    dev: true
+
+  /unplugin@1.4.0:
+    resolution: {integrity: sha512-5x4eIEL6WgbzqGtF9UV8VEC/ehKptPXDS6L2b0mv4FRMkJxRtjaJfOWDd6a8+kYbqsjklix7yWP0N3SUepjXcg==}
+    dependencies:
+      acorn: 8.10.0
+      chokidar: 3.5.3
+      webpack-sources: 3.2.3
+      webpack-virtual-modules: 0.5.0
     dev: true
 
   /unplugin@1.5.0:
