@@ -26,7 +26,6 @@ export default defineNuxtConfig({
         },
         langDir: 'locales',
         lazy: true,
-        baseUrl: 'http://localhost:3000',
         locales: [
           {
             code: 'en',
@@ -117,7 +116,6 @@ export default defineNuxtConfig({
     },
     langDir: 'locales',
     lazy: true,
-    baseUrl: 'http://localhost:3000',
     locales: [
       {
         code: 'en',
@@ -179,5 +177,8 @@ export default defineNuxtConfig({
     //   // redirectOn: 'root'
     // },
     vueI18n: './vue-i18n.options.ts'
+  },
+  site: {
+    url: 'http://localhost:3000'
   }
 })

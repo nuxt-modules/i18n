@@ -4,7 +4,6 @@ import i18nModule from './i18n-module'
 export default defineNuxtConfig({
   modules: [i18nModule, '@nuxtjs/i18n'],
   i18n: {
-    baseUrl: 'http://localhost:3000',
     // langDir: 'lang',
     // defaultLocale: 'fr',
     detectBrowserLanguage: false,
@@ -34,5 +33,8 @@ export default defineNuxtConfig({
         name: 'Français'
       }
     ]
+  },
+  site: {
+    url: 'http://localhost:3000'
   }
 })

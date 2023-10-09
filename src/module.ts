@@ -12,6 +12,7 @@ import {
 } from '@nuxt/kit'
 import { resolve, relative } from 'pathe'
 import { defu } from 'defu'
+import { installNuxtSiteConfig, useSiteConfig } from 'nuxt-site-config-kit'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
@@ -65,8 +66,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (!options.compilation.jit) {
       logger.warn(
         'Opt-out JIT compilation. ' +
-          `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
-          `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
+        `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
+        `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
+      )
+    }
+
+    if (options.baseUrl && options.baseUrl !== '') {
+      logger.warn(
+        "`i18n.baseUrl` is deprecated in favor of `site.url` as nuxt i18n now makes use of Nuxt SEO's site config."
       )
     }
 
@@ -98,7 +105,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(
         formatMessage(
           '`bundle.compositionOnly` option and `types` option is conflicting: ' +
-            `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
+          `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
         )
       )
     }
@@ -106,16 +113,16 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (options.bundle.runtimeOnly && options.compilation.jit) {
       logger.warn(
         '`bundle.runtimeOnly` option and `compilation.jit` option is conflicting: ' +
-          `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
-            options.compilation.jit
-          )}`
+        `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
+          options.compilation.jit
+        )}`
       )
     }
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       logger.warn(
         '`differentDomains` option and `no_prefix` strategy are not compatible. ' +
-          'Change strategy or disable `differentDomains` option.'
+        'Change strategy or disable `differentDomains` option.'
       )
     }
 
@@ -126,6 +133,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
     applyLayerOptions(options, nuxt)
     await mergeI18nModules(options, nuxt)
     filterLocales(options, nuxt)
+
+    /**
+     * source baseUrl from Nuxt SEO's `site.url`
+     * TODO: remove i18n's `baseUrl` module option when `site.url` has been in use for a sufficiently long time (starting October 2023)
+     */
+
+    await installNuxtSiteConfig()
+    const siteConfig = useSiteConfig()
+
+    if (siteConfig.url) {
+      options.baseUrl = siteConfig.url
+    }
 
     /**
      * setup runtime config
@@ -145,7 +164,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         },
         {} as Record<string, { domain: string | undefined }>
       )
-      // TODO: we should support more i18n module options. welcome PRs :-)
+      // TODO: we should support more i18n module options as runtime config. PRs welcome :-)
     })
 
     /**
@@ -331,7 +350,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 })
 
 // Used by nuxt/module-builder for `types.d.ts` generation
-export interface ModuleOptions extends NuxtI18nOptions {}
+export interface ModuleOptions extends NuxtI18nOptions { }
 
 export interface ModulePublicRuntimeConfig {
   i18n?: Pick<NuxtI18nOptions<unknown>, 'baseUrl'>
@@ -358,7 +377,7 @@ export interface RuntimeModuleHooks {
 
 // Used by module for type inference in source code
 declare module '#app' {
-  interface RuntimeNuxtHooks extends RuntimeModuleHooks {}
+  interface RuntimeNuxtHooks extends RuntimeModuleHooks { }
 }
 
 declare module '@nuxt/schema' {
@@ -368,6 +387,6 @@ declare module '@nuxt/schema' {
   interface NuxtOptions {
     ['i18n']?: ModuleOptions
   }
-  interface NuxtHooks extends ModuleHooks {}
-  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
+  interface NuxtHooks extends ModuleHooks { }
+  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig { }
 }
