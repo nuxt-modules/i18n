@@ -159,7 +159,7 @@ export async function loadLocale(
 ) {
   const loaders = localeMessages[locale]
   if (loaders == null) {
-    console.warn(formatMessage('Could not find messages for locale code' + locale))
+    console.warn(formatMessage('Could not find messages for locale code: ' + locale))
     return
   }
 
