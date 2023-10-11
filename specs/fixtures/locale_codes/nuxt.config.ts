@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: ['@nuxtjs/i18n'],
+  modules: ['./modules/ExtendI18n'],
+
+  extends: './layers/i18n-layer',
 
   vite: {
     build: {

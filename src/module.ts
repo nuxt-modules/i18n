@@ -127,8 +127,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     applyLayerOptions(options, nuxt)
-    filterLocales(options, nuxt)
     await mergeI18nModules(options, nuxt)
+    filterLocales(options, nuxt)
 
     /**
      * setup runtime config
