@@ -303,6 +303,15 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
+  specs/fixtures/locale_codes:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.7.0
+        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
+
   specs/fixtures/vue_i18n_options:
     devDependencies:
       '@nuxtjs/i18n':
