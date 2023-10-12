@@ -32,7 +32,8 @@ import {
   getPackageManagerType,
   mergeI18nModules,
   applyOptionOverrides,
-  getLocaleFiles
+  getLocaleFiles,
+  filterLocales
 } from './utils'
 import { distDir, runtimeDir, pkgModulesDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
@@ -127,6 +128,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     applyLayerOptions(options, nuxt)
     await mergeI18nModules(options, nuxt)
+    filterLocales(options, nuxt)
 
     /**
      * setup runtime config
