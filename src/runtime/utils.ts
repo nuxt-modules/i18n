@@ -316,11 +316,21 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
     __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, toFullPath)
     if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       /**
+       * NOTE: for #2382
+       * If the current path contains any special characters like whitespaces or äöü we have to make sure that these are encoded properly,
+       * otherwise the path won't match route.from.fullPath and falsy set as redirectPath.
+       * Since routePath already contains properly encoded query parameters, these have to be extracted from the route to ensure that the query is not encoded multiple times.       *
+       * (Looks like an issue within vue-i18n-routing since query parameters are properly encoded)
+       */
+      const splitRoutePath = routePath.split('?')
+      splitRoutePath[0] = encodeURI(splitRoutePath[0])
+      const properlyEncodedRoutePath = splitRoutePath.join('?')
+      /**
        * NOTE: for #1889, #2226
        * If it's the same as the previous route path, respect the current route without redirecting.
        * (If an empty string is set, the current route is respected. after this function return, it's pass navigate function)
        */
-      redirectPath = !(route.from && route.from.fullPath === routePath) ? routePath : ''
+      redirectPath = !(route.from && route.from.fullPath === properlyEncodedRoutePath) ? properlyEncodedRoutePath : ''
     }
   }
 

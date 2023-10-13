@@ -1,0 +1,14 @@
+{
+  "name": "nuxt3-test-issues-2382",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "@nuxtjs/i18n": "latest",
+    "nuxt": "latest"
+  }
+}

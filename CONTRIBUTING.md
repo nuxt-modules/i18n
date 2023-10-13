@@ -30,7 +30,7 @@ git checkout -b my-new-feature
 ```sh
 pnpm fix
 pnpm test:unit
-pnpm test:e2e
+pnpm test:spec
 ```
 
 - Commit and push your changes
