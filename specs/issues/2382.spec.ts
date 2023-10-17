@@ -14,6 +14,7 @@ describe('#2382', async () => {
     const page = await createPage(undefined, { locale: 'en' })
     await page.goto(home)
     await page.locator('#level-1-no-special-character').click()
+    await page.waitForURL('**/level-1')
 
     expect(await getText(page, '#title')).toEqual(`sub page level-1`)
   })
@@ -23,6 +24,7 @@ describe('#2382', async () => {
     const page = await createPage(undefined, { locale: 'en' })
     await page.goto(home)
     await page.locator('#level-2-with-special-character').click()
+    await page.waitForURL(`**/level-1/${encodeURI('lövöl-2')}`)
 
     expect(await getText(page, '#title')).toEqual(`sub page level-2 with route param id`)
   })
@@ -31,9 +33,11 @@ describe('#2382', async () => {
     const home = url('/level-1/somepath-with-ö')
     const page = await createPage(undefined, { locale: 'en' })
     await page.goto(home)
+    await page.waitForURL(`**/${encodeURI('level-1/somepath-with-ö')}**`)
     expect(await getText(page, '#title')).toEqual(`sub page level-2 with route param id`)
 
     await page.locator('#home').click()
+    await page.waitForURL(/\/$/)
     expect(await getText(page, '#title')).toEqual(`main page with link to sub page with route param`)
   })
 
@@ -41,9 +45,11 @@ describe('#2382', async () => {
     const home = url('/level-1/somepath-with-ö?foo=bär')
     const page = await createPage(undefined, { locale: 'en' })
     await page.goto(home)
+    await page.waitForURL(`**/${encodeURI('level-1/somepath-with-ö')}**`)
     expect(await getText(page, '#title')).toEqual(`sub page level-2 with route param id`)
 
     await page.locator('#home').click()
+    await page.waitForURL(/\/$/)
     expect(await getText(page, '#title')).toEqual(`main page with link to sub page with route param`)
   })
 })
