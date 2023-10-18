@@ -10,6 +10,9 @@
   "devDependencies": {
     "@nuxt-themes/docus": "^1.14.6",
     "@nuxtjs/plausible": "^0.2.3",
-    "nuxt": "3.7.3"
+    "@unocss/reset": "^0.56.5",
+    "nuxt": "3.7.3",
+    "pinceau": "0.18.9",
+    "vue-router": "^4.2.5"
   }
 }
