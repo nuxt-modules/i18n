@@ -8,8 +8,6 @@ import {
   SHARED_PKG,
   MESSAGE_COMPILER_PKG,
   CORE_BASE_PKG,
-  JS_COOKIE_PKG,
-  COOKIE_ES_PKG,
   UFO_PKG
 } from './constants'
 
@@ -32,8 +30,6 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   modules[VUE_ROUTER_BRIDGE_PKG] = `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_BRIDGE_PKG] = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_ROUTING_PKG] = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`
-  modules[JS_COOKIE_PKG] = JS_COOKIE_PKG
-  modules[COOKIE_ES_PKG] = COOKIE_ES_PKG
   modules[UFO_PKG] = UFO_PKG
 
   for (const [moduleName, moduleFile] of Object.entries(modules)) {
