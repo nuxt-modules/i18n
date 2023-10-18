@@ -129,7 +129,8 @@
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6",
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
