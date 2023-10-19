@@ -474,7 +474,7 @@ export default defineNuxtPlugin({
           route: { to, from },
           context: nuxtContext,
           targetLocale: locale,
-          routeLocaleGetter: getLocaleFromRoute,
+          routeLocaleGetter: nuxtI18nOptions.strategy === 'no_prefix' ? () => locale : getLocaleFromRoute,
           nuxtI18nOptions,
           calledWithRouting: true
         })
