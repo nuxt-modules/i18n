@@ -78,4 +78,24 @@ describe('strategy: no_prefix', async () => {
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
   })
+
+  test('(#2493) should navigate from url with and without trailing slash', async () => {
+    const page = await createPage()
+    await page.goto(url('/category/nested/'))
+    await page.waitForURL('**/category/nested/')
+
+    await page.locator('#return-home-link').click()
+
+    await page.waitForURL(/:[0-9]+\/$/)
+
+    expect(page.url()).toEqual(url('/'))
+
+    await page.goto(url('/category/nested'))
+    await page.waitForURL('**/category/nested')
+
+    await page.locator('#return-home-link').click()
+    await page.waitForURL(/:[0-9]+\/$/)
+
+    expect(page.url()).toEqual(url('/'))
+  })
 })
