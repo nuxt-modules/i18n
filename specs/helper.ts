@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-ignore
 import { JSDOM } from 'jsdom'
-import { parse } from '@babel/parser'
+import { parse as babelParse } from '@babel/parser'
+import { expect } from 'vitest'
+import { getBrowser, url, useTestContext } from './utils'
 
-import type { Page } from 'playwright'
+import { errors, type BrowserContextOptions, type Page } from 'playwright'
 
 export async function getText(page: Page, selector: string, options?: Parameters<Page['locator']>[1]) {
   return page.locator(selector, options).innerText()
@@ -69,7 +73,7 @@ export async function assertLocaleHeadWithDom(dom: Document, headSelector: strin
 export function validateSyntax(code: string): boolean {
   let ret = false
   try {
-    const node = parse(code, {
+    const node = babelParse(code, {
       allowImportExportEverywhere: true,
       sourceType: 'module'
     })
@@ -82,4 +86,88 @@ export function validateSyntax(code: string): boolean {
 
 export async function waitForMs(ms = 1000) {
   await new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export const isRenderingJson = true
+
+export async function renderPage(path = '/', options?: BrowserContextOptions) {
+  const ctx = useTestContext()
+  if (!ctx.options.browser) {
+    throw new Error('`renderPage` require `options.browser` to be set')
+  }
+
+  const browser = await getBrowser()
+  const page = await browser.newPage(options)
+  const pageErrors: Error[] = []
+  const requests: string[] = []
+  const consoleLogs: { type: string; text: string }[] = []
+
+  page.on('console', message => {
+    consoleLogs.push({
+      type: message.type(),
+      text: message.text()
+    })
+  })
+  page.on('pageerror', err => {
+    pageErrors.push(err)
+  })
+  page.on('request', req => {
+    try {
+      requests.push(req.url().replace(url('/'), '/'))
+    } catch (err) {
+      // TODO
+    }
+  })
+
+  if (path) {
+    await page.goto(url(path), { waitUntil: 'networkidle' })
+    await page.waitForFunction(() => window.useNuxtApp?.())
+  }
+
+  return {
+    page,
+    pageErrors,
+    requests,
+    consoleLogs
+  }
+}
+
+export async function expectNoClientErrors(path: string) {
+  const ctx = useTestContext()
+  if (!ctx.options.browser) {
+    return
+  }
+
+  const { page, pageErrors, consoleLogs } = (await renderPage(path))!
+
+  const consoleLogErrors = consoleLogs.filter(i => i.type === 'error')
+  const consoleLogWarnings = consoleLogs.filter(i => i.type === 'warning')
+
+  expect(pageErrors).toEqual([])
+  expect(consoleLogErrors).toEqual([])
+  expect(consoleLogWarnings).toEqual([])
+
+  await page.close()
+}
+
+export async function gotoPath(page: Page, path: string) {
+  await page.goto(url(path))
+  await waitForURL(page, path)
+}
+
+export async function waitForURL(page: Page, path: string) {
+  try {
+    await page.waitForFunction(path => window.useNuxtApp?.()._route.fullPath === path, path)
+  } catch (err) {
+    if (err instanceof errors.TimeoutError) {
+      const currentPath = await page.evaluate(() => window.useNuxtApp?.()._route.fullPath)
+      err.message += `\nWaited for URL to be ${path} but got stuck on ${currentPath}`
+
+      const arr = err.stack?.split('\n')
+      arr?.splice(1, 1)
+      err.stack = arr?.join('\n') ?? undefined
+    }
+
+    throw err
+  }
 }

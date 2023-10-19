@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText } from '../helper'
+import { setup } from '../utils'
+import { getText, gotoPath, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -16,9 +16,7 @@ await setup({
 })
 
 test('disable', async () => {
-  const home = url('/')
-  const page = await createPage(undefined, { locale: 'en' })
-  await page.goto(home)
+  const { page } = await renderPage('/', { locale: 'en' })
   const ctx = await page.context()
 
   // click `fr` lang switch link
@@ -26,7 +24,7 @@ test('disable', async () => {
   expect(await ctx.cookies()).toMatchObject([])
 
   // navigate to about
-  await page.goto(url('/about'))
+  await gotoPath(page, '/about')
 
   // set default locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')

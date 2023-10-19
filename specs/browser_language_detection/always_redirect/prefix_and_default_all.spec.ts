@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../../utils'
-import { getText } from '../../helper'
+import { setup, url } from '../../utils'
+import { getText, renderPage } from '../../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../../fixtures/basic`, import.meta.url)),
@@ -19,9 +19,8 @@ await setup({
 })
 
 test('alwaysRedirect: all', async () => {
-  const blog = url('/blog/article')
-  const page = await createPage(undefined, { locale: 'en' }) // set browser locale
-  await page.goto(blog)
+  const blog = '/blog/article'
+  const { page } = await renderPage(blog, { locale: 'en' }) // set browser locale
 
   // detect locale from navigator language
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
@@ -31,7 +30,7 @@ test('alwaysRedirect: all', async () => {
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
   // go to `en` home page
-  await page.goto(blog)
+  await page.goto(url(blog))
   expect(page.url().endsWith('/fr/blog/article'))
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })

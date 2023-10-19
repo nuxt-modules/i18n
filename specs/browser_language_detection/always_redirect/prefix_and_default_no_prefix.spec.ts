@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../../utils'
-import { getText } from '../../helper'
+import { setup, url } from '../../utils'
+import { getText, renderPage } from '../../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../../fixtures/basic`, import.meta.url)),
@@ -19,8 +19,7 @@ await setup({
 })
 
 test('alwaysRedirect: no prefix', async () => {
-  const page = await createPage(undefined, { locale: 'en' }) // set browser locale
-  await page.goto(url('/about'))
+  const { page } = await renderPage('/about', { locale: 'en' }) // set browser locale
   const ctx = await page.context()
 
   // detect locale from navigator language
