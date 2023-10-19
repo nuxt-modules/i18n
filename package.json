@@ -101,6 +101,7 @@
     "@babel/parser": "^7.23.0",
     "@babel/plugin-syntax-import-assertions": "^7.22.5",
     "@babel/types": "^7.23.0",
+    "@intlify/vue-router-bridge": "^1.0.1",
     "@nuxt/module-builder": "latest",
     "@nuxt/schema": "^3.7.4",
     "@types/debug": "^4.1.9",
@@ -109,11 +110,13 @@
     "@typescript-eslint/parser": "^6.7.4",
     "bumpp": "^9.2.0",
     "changelogithub": "^0.13.0",
+    "consola": "^3",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "execa": "^8.0.1",
     "get-port-please": "^3.1.1",
     "gh-changelogen": "^0.2.8",
+    "globby": "^13.2.2",
     "jiti": "^1.20.0",
     "jsdom": "^21.1.2",
     "lint-staged": "^14.0.1",
@@ -124,8 +127,10 @@
     "prettier": "^3.0.3",
     "ts-essentials": "^9.4.0",
     "typescript": "^5.2.2",
+    "unbuild": "^2.0.0",
     "vitest": "^0.34.6",
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
