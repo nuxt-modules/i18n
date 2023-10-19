@@ -9,11 +9,9 @@ import {
   isExportedGlobalComposer,
   isVueI18n
 } from 'vue-i18n-routing'
-import JsCookie from 'js-cookie'
-import { parse, serialize } from 'cookie-es'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-import { useRequestHeaders, useRequestEvent } from '#imports'
+import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie } from '#imports'
 import { nuxtI18nOptionsDefault, localeMessages, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#app'
@@ -218,23 +216,16 @@ export function getLocaleCookie(
   } = {}
 ): string | undefined {
   __DEBUG__ && console.log('getLocaleCookie', { useCookie, cookieKey, localeCodes })
-  if (useCookie) {
-    let localeCode: string | undefined
-    if (process.client) {
-      localeCode = JsCookie.get(cookieKey)
-      __DEBUG__ && console.log('getLocaleCookie cookie (client) -', localeCode)
-    } else if (process.server) {
-      const cookie = useRequestHeaders(['cookie'])
-      if ('cookie' in cookie) {
-        const parsedCookie = parse((cookie as any)['cookie']) as Record<string, string>
-        localeCode = parsedCookie[cookieKey]
-        __DEBUG__ && console.log('getLocaleCookie cookie (server) -', localeCode)
-      }
-    }
+  if (!useCookie) {
+    return
+  }
 
-    if (localeCode && localeCodes.includes(localeCode)) {
-      return localeCode
-    }
+  const localeCookie = useNuxtCookie(cookieKey)
+  const localeCode: string | undefined = localeCookie.value ?? undefined
+  __DEBUG__ && console.log(`getLocaleCookie cookie (${process.client ? 'client' : 'server'}) -`, localeCode)
+
+  if (localeCode && localeCodes.includes(localeCode)) {
+    return localeCode
   }
 }
 
@@ -268,22 +259,8 @@ export function setLocaleCookie(
     cookieOptions.domain = cookieDomain
   }
 
-  if (process.client) {
-    JsCookie.set(cookieKey, locale, cookieOptions)
-  } else if (process.server) {
-    if (context.res) {
-      const { res } = context
-      let headers = res.getHeader('Set-Cookie') || []
-      if (!isArray(headers)) {
-        headers = [String(headers)]
-      }
-
-      const redirectCookie = serialize(cookieKey, locale, cookieOptions)
-      headers.push(redirectCookie)
-
-      res.setHeader('Set-Cookie', headers)
-    }
-  }
+  const localeCookie = useNuxtCookie(cookieKey, cookieOptions)
+  localeCookie.value = locale
 }
 
 export type DetectBrowserLanguageNotDetectReason =
