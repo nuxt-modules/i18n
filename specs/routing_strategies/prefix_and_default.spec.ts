@@ -92,8 +92,7 @@ describe('strategy: prefix_and_default', async () => {
     expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
   })
 
-  // TODO: Fix setLocale
-  test.fails('reactivity', async () => {
+  test('reactivity', async () => {
     const { page } = await renderPage('/')
 
     // click `fr` lang switch link with NuxtLink
@@ -119,8 +118,11 @@ describe('strategy: prefix_and_default', async () => {
     // click `en` and `fr` lang switch link with setLocale
     await page.locator('#set-locale-link-en').click()
     await waitForURL(page, '/')
+    expect(await getText(page, 'title')).toEqual('Homepage')
+
     await page.locator('#set-locale-link-fr').click()
     await waitForURL(page, '/fr')
+    expect(await getText(page, 'title')).toEqual('Accueil')
 
     // navigation URL
     expect(await page.url()).toEqual(url('/fr'))

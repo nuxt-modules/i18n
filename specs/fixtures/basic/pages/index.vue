@@ -24,7 +24,7 @@ watchEffect(() => {
   refresh()
 })
 
-useHead({
+useHead(() => ({
   title: t('home'),
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang,
@@ -32,7 +32,7 @@ useHead({
   },
   link: [...(i18nHead.value.link || [])],
   meta: [...(i18nHead.value.meta || [])]
-})
+}))
 </script>
 
 <template>
