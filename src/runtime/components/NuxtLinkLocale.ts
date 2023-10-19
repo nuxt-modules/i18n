@@ -46,9 +46,26 @@ export default defineComponent({
       return props.to === '' || hasProtocol(props.to, { acceptRelative: true })
     })
 
-    return () =>
-      isExternal.value
-        ? h(NuxtLinkLocale, props, slots.default)
-        : h(NuxtLinkLocale, { ...props, to: resolvedPath }, slots.default)
+    /**
+     * Get props to pass to NuxtLink
+     * @returns NuxtLink props
+     */
+    const getNuxtLinkProps = () => {
+      const _props = {
+        ...props
+      }
+
+      if (!isExternal.value) {
+        _props.to = resolvedPath
+      }
+
+      // The locale attribute cannot be set for NuxtLink
+      // @see https://github.com/nuxt-modules/i18n/issues/2498
+      delete _props.locale
+
+      return _props
+    }
+
+    return () => h(NuxtLinkLocale, getNuxtLinkProps(), slots.default)
   }
 })
