@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from './utils'
-import { getData, getText } from './helper'
+import { setup } from './utils'
+import { getData, getText, gotoPath, renderPage, waitForURL } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
@@ -22,9 +22,7 @@ await setup({
 })
 
 test('basic usage', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // vue-i18n using
   expect(await getText(page, '#vue-i18n-usage p')).toEqual('Welcome')
@@ -65,83 +63,68 @@ test('basic usage', async () => {
 })
 
 test('register module hook', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   expect(await getText(page, '#register-module')).toEqual('This is a merged module layer locale key')
 
   // click `fr` lang switch link
   await page.locator('.switch-to-fr a').click()
-  await page.waitForURL('**/fr')
+  await waitForURL(page, '/fr')
 
   expect(await getText(page, '#register-module')).toEqual('This is a merged module layer locale key in French')
 })
 
 test('layer provides locale `nl` and translation for key `hello`', async () => {
-  const home = url('/layer-page')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/layer-page')
 
   expect(await getText(page, '#i18n-layer-target')).toEqual('Hello world!')
 
-  const homeNL = url('/nl/layer-page')
-  await page.goto(homeNL)
+  await gotoPath(page, '/nl/layer-page')
   expect(await getText(page, '#i18n-layer-target')).toEqual('Hallo wereld!')
 })
 
 test('layer vueI18n options provides `nl` message', async () => {
-  const home = url('/nl')
-  const page = await createPage(undefined)
-  await page.goto(home)
+  const { page } = await renderPage('/nl')
 
   expect(await getText(page, '#layer-message')).toEqual('Bedankt!')
 })
 
 test('layer vueI18n options properties are merge and override by priority', async () => {
-  const home = url('/')
-  const page = await createPage(undefined)
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   expect(await getText(page, '#snake-case')).toEqual('About-this-site')
   expect(await getText(page, '#pascal-case')).toEqual('AboutThisSite')
 
   await page.click(`#switch-locale-path-usages .switch-to-fr a`)
-  await page.waitForURL('**/fr')
+  await waitForURL(page, '/fr')
   expect(await getText(page, '#snake-case')).toEqual('À-propos-de-ce-site')
   expect(await getText(page, '#pascal-case')).toEqual('ÀProposDeCeSite')
   expect(await getText(page, '#fallback-message')).toEqual('Unique translation')
 })
 
 test('load option successfully', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // click `fr` lang switch link
   await page.locator('#switch-locale-path-usages .switch-to-fr a').click()
-  await page.waitForURL('**/fr')
+  await waitForURL(page, '/fr')
 
   expect(await getText(page, '#home-header')).toEqual('Bonjour-le-monde!')
 
   // click `en` lang switch link
   await page.locator('#switch-locale-path-usages .switch-to-en a').click()
-  await page.waitForURL('**/')
+  await waitForURL(page, '/')
   expect(await getText(page, '#home-header')).toEqual('Hello-world!')
 })
 
 test('(#1740) should be loaded vue-i18n related modules', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   expect(await getText(page, '#app-config-name')).toEqual('This is Nuxt layer')
 })
 
 test('fallback to target lang', async () => {
-  const home = url('/')
-  const page = await createPage()
-  await page.goto(home)
+  const { page } = await renderPage('/')
 
   // `en` rendering
   expect(await getText(page, '#locale-path-usages .name a')).toEqual('Homepage')
@@ -150,7 +133,7 @@ test('fallback to target lang', async () => {
 
   // click `nl` lang switch with `<NuxtLink>`
   await page.locator('#switch-locale-path-usages .switch-to-nl a').click()
-  await page.waitForURL('**/nl')
+  await waitForURL(page, '/nl')
 
   // fallback to en content translation
   expect(await getText(page, '#locale-path-usages .name a')).toEqual('Homepage')

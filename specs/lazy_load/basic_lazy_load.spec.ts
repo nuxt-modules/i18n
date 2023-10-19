@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText, getData, waitForMs } from '../helper'
+import { setup, url } from '../utils'
+import { getText, getData, waitForMs, renderPage, waitForURL } from '../helper'
 
 describe('basic lazy loading', async () => {
   await setup({
@@ -15,15 +15,17 @@ describe('basic lazy loading', async () => {
   })
 
   test('dynamic locale files are not cached', async () => {
-    const home = url('/nl')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/nl')
+
+    page.on('domcontentloaded', () => {
+      console.log('domcontentload triggered!')
+    })
 
     // capture dynamicTime - simulates changing api response
     const dynamicTime = await getText(page, '#dynamic-time')
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    await page.waitForURL('**/fr')
+    await waitForURL(page, '/fr')
     expect(await getText(page, '#dynamic-time')).toEqual('Not dynamic')
 
     // dynamicTime depends on passage of some time
@@ -31,26 +33,19 @@ describe('basic lazy loading', async () => {
 
     // dynamicTime does not match captured dynamicTime
     await page.click('#lang-switcher-with-nuxt-link-nl')
-    await page.waitForURL('**/nl')
+    await waitForURL(page, '/nl')
     expect(await getText(page, '#dynamic-time')).to.not.equal(dynamicTime)
   })
 
   test('locales are fetched on demand', async () => {
     const home = url('/')
-    const page = await createPage()
+    const { page, requests } = await renderPage(home)
 
-    // collect locale requests
-    const fetchedLocales = new Set<string>()
-    page.on('request', request => {
-      const requestUrl = new URL(request.url())
-      if (requestUrl.pathname.includes('lazy-locale-')) {
-        fetchedLocales.add(requestUrl.pathname)
-      }
-    })
+    const setFromRequests = () => [...new Set(requests)].filter(x => x.includes('lazy-locale-'))
 
     // only default locales are fetched (en)
     await page.goto(home)
-    expect([...fetchedLocales].filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
+    expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
 
     // wait for request after navigation
     const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
@@ -58,7 +53,7 @@ describe('basic lazy loading', async () => {
     await localeRequestFr
 
     // `fr` locale has been fetched
-    expect([...fetchedLocales].filter(locale => locale.includes('fr'))).toHaveLength(1)
+    expect(setFromRequests().filter(locale => locale.includes('fr'))).toHaveLength(1)
 
     // wait for request after navigation
     const localeRequestNl = page.waitForRequest(/lazy-locale-module-nl/)
@@ -66,13 +61,11 @@ describe('basic lazy loading', async () => {
     await localeRequestNl
 
     // `nl` (module) locale has been fetched
-    expect([...fetchedLocales].filter(locale => locale.includes('nl'))).toHaveLength(1)
+    expect(setFromRequests().filter(locale => locale.includes('nl'))).toHaveLength(1)
   })
 
   test('can access to no prefix locale (en): /', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/')
 
     // `en` rendering
     expect(await getText(page, '#home-header')).toEqual('Homepage')
@@ -93,9 +86,7 @@ describe('basic lazy loading', async () => {
   })
 
   test('can access to prefix locale: /fr', async () => {
-    const home = url('/fr')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/fr')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
@@ -116,9 +107,7 @@ describe('basic lazy loading', async () => {
   })
 
   test('mutiple lazy loading', async () => {
-    const home = url('/en-GB')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/en-GB')
 
     // `en` base rendering
     expect(await getText(page, '#home-header')).toEqual('Homepage')
@@ -130,27 +119,28 @@ describe('basic lazy loading', async () => {
   })
 
   test('files with cache disabled bypass caching', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
-    const messages: string[] = []
-    page.on('console', msg => {
-      const content = msg.text()
-      if (content.includes('lazy-locale-')) {
-        messages.push(content)
-      }
-    })
+    // const home = url('/')
+    // const page = await createPage()
+    // await page.goto(home)
+    const { page, consoleLogs } = await renderPage('/')
+    // const messages: string[] = []
+    // page.on('console', msg => {
+    //   const content = msg.text()
+    //   if (content.includes('lazy-locale-')) {
+    //     messages.push(content)
+    //   }
+    // })
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect([...messages].filter(msg => msg.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
+    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect([...messages].filter(msg => msg.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(1)
+    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect([...messages].filter(msg => msg.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(2)
+    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(2)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect([...messages].filter(msg => msg.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
+    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
   })
 })

@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText } from '../helper'
+import { setup } from '../utils'
+import { getText, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -20,9 +20,7 @@ await setup({
 })
 
 test('fallback', async () => {
-  const home = url('/')
-  const page = await createPage(undefined, { locale: 'ja' }) // set browser locale
-  await page.goto(home)
+  const { page } = await renderPage('/', { locale: 'ja' })
 
   // detect fallback locale with navigator language
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')

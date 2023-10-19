@@ -1,26 +1,26 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText, getData } from '../helper'
+import { setup, url } from '../utils'
+import { getText, getData, renderPage, waitForURL, gotoPath } from '../helper'
 
 import type { Response } from 'playwright'
 
-describe('strategy: no_prefix', async () => {
-  await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
-    browser: true,
-    // overrides
-    nuxtConfig: {
-      i18n: {
-        strategy: 'no_prefix',
-        defaultLocale: 'en'
-      }
+await setup({
+  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  browser: true,
+  // overrides
+  nuxtConfig: {
+    i18n: {
+      strategy: 'no_prefix',
+      defaultLocale: 'en'
     }
-  })
+  }
+})
 
+describe('strategy: no_prefix', async () => {
   test('cannot access with locale prefix: /ja', async () => {
     const home = url('/ja')
-    const page = await createPage()
+    const { page } = await renderPage(home)
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
@@ -32,9 +32,7 @@ describe('strategy: no_prefix', async () => {
   })
 
   test('locale change with reactivity', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
+    const { page } = await renderPage('/')
 
     /**
      * default locale `en`
@@ -61,7 +59,7 @@ describe('strategy: no_prefix', async () => {
 
     // click `fr` lang switch link (`setLocale`)
     await page.locator('#lang-switcher-with-set-locale a').click()
-    await page.waitForURL('**/')
+    await waitForURL(page, '/')
 
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
@@ -80,21 +78,17 @@ describe('strategy: no_prefix', async () => {
   })
 
   test('(#2493) should navigate from url with and without trailing slash', async () => {
-    const page = await createPage()
-    await page.goto(url('/category/nested/'))
-    await page.waitForURL('**/category/nested/')
+    const { page } = await renderPage('/category/nested/')
 
     await page.locator('#return-home-link').click()
-
-    await page.waitForURL(/:[0-9]+\/$/)
+    await waitForURL(page, '/')
 
     expect(page.url()).toEqual(url('/'))
 
-    await page.goto(url('/category/nested'))
-    await page.waitForURL('**/category/nested')
+    await gotoPath(page, '/category/nested')
 
     await page.locator('#return-home-link').click()
-    await page.waitForURL(/:[0-9]+\/$/)
+    await waitForURL(page, '/')
 
     expect(page.url()).toEqual(url('/'))
   })

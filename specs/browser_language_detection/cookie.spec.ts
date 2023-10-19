@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
-import { getText } from '../helper'
+import { setup } from '../utils'
+import { getText, gotoPath, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -22,9 +22,7 @@ await setup({
 })
 
 test('detection with cookie', async () => {
-  const home = url('/')
-  const page = await createPage(undefined, { locale: 'en' })
-  await page.goto(home)
+  const { page } = await renderPage('/', { locale: 'en' })
   const ctx = await page.context()
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
@@ -33,7 +31,7 @@ test('detection with cookie', async () => {
   ])
 
   // navigate to about
-  await page.goto(url('/about'))
+  await gotoPath(page, '/about')
   // detect locale from persisted cookie
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
   // navigate with home link
