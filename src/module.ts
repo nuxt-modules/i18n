@@ -217,7 +217,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       src: resolve(distDir, 'runtime/templates/options.template.mjs'),
       write: true,
       options: {
-        ...generateLoaderOptions({
+        ...generateLoaderOptions(nuxt, {
           vueI18nConfigPaths,
           localeInfo,
           nuxtI18nOptions: options
