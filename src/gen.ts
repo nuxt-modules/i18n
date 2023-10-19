@@ -6,6 +6,7 @@ import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
 import { PrerenderTarget, getLocalePaths, toCode } from './utils'
 
+import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta } from './types'
 import type { LocaleObject } from 'vue-i18n-routing'
 
@@ -23,22 +24,29 @@ const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): 
   })
 }
 
-function simplifyLocaleOptions(locales: LocaleObject[]) {
+function simplifyLocaleOptions(nuxt: Nuxt, locales: LocaleObject[]) {
+  const hasObjectLocales = nuxt.options._layers.some(
+    layer => layer?.config?.i18n?.locales?.some(x => typeof x !== 'string')
+  )
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return locales.map(({ meta, ...locale }) => {
-    if (
-      locale?.files == null ||
-      (locale?.files?.length === 0 &&
-        Object.keys(locale).filter(k => !['iso', 'code', 'hashes', 'types', 'file', 'files'].includes(k)).length === 0)
-    ) {
+    if (!hasObjectLocales) {
       return locale.code
     }
 
-    return { ...locale, files: getLocalePaths(locale) }
+    if (locale.file || (locale.files?.length ?? 0) > 0) {
+      locale.files = getLocalePaths(locale)
+    } else {
+      delete locale.files
+    }
+    delete locale.file
+
+    return locale
   })
 }
 
-export function generateLoaderOptions({ nuxtI18nOptions, vueI18nConfigPaths, localeInfo }: LoaderOptions) {
+export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConfigPaths, localeInfo }: LoaderOptions) {
   debug('generateLoaderOptions: lazy', nuxtI18nOptions.lazy)
 
   const importMapper = new Map<string, { key: string; load: string; cache: string }>()
@@ -85,7 +93,7 @@ export function generateLoaderOptions({ nuxtI18nOptions, vueI18nConfigPaths, loc
 
   const generatedNuxtI18nOptions = {
     ...nuxtI18nOptions,
-    locales: simplifyLocaleOptions((nuxtI18nOptions?.locales ?? []) as unknown as LocaleObject[])
+    locales: simplifyLocaleOptions(nuxt, (nuxtI18nOptions?.locales ?? []) as unknown as LocaleObject[])
   }
   delete nuxtI18nOptions.vueI18n
 
