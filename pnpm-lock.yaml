@@ -58,9 +58,6 @@ importers:
       pathe:
         specifier: ^1.1.1
         version: 1.1.1
-      pkg-types:
-        specifier: ^1.0.3
-        version: 1.0.3
       ufo:
         specifier: ^1.3.1
         version: 1.3.1
@@ -195,43 +192,7 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
-  specs/fixtures/basic_layer:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
-  specs/fixtures/basic_pages:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
   specs/fixtures/basic_usage:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
-  specs/fixtures/component:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
-  specs/fixtures/custom_route_paths_component:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -249,15 +210,6 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
-  specs/fixtures/fallback:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
   specs/fixtures/inline_options:
     devDependencies:
       '@nuxtjs/i18n':
@@ -267,7 +219,7 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
-  specs/fixtures/layer_consumer:
+  specs/fixtures/lazy:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -276,7 +228,7 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
-  specs/fixtures/lazy:
+  specs/fixtures/locale_codes:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -295,24 +247,6 @@ importers:
         version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
 
   specs/fixtures/switcher:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
-  specs/fixtures/locale_codes:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.7.0
-        version: 3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2)
-
-  specs/fixtures/vue_i18n_options:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..

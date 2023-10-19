@@ -5,7 +5,6 @@ import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
 import { encodePath } from 'ufo'
-import { resolveLockfile } from 'pkg-types'
 // @ts-ignore
 import { transform as stripType } from '@mizchi/sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
@@ -16,32 +15,6 @@ import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
 import type { LocaleObject } from 'vue-i18n-routing'
 import { genSafeVariableName } from 'knitwork'
-
-const PackageManagerLockFiles = {
-  'npm-shrinkwrap.json': 'npm-legacy',
-  'package-lock.json': 'npm',
-  'yarn.lock': 'yarn',
-  'pnpm-lock.yaml': 'pnpm'
-} as const
-
-type LockFile = keyof typeof PackageManagerLockFiles
-// prettier-ignore
-type _PackageManager = typeof PackageManagerLockFiles[LockFile]
-export type PackageManager = _PackageManager | 'unknown'
-
-export async function getPackageManagerType(): Promise<PackageManager> {
-  try {
-    const parsed = parsePath(await resolveLockfile())
-    const lockfile = `${parsed.name}${parsed.ext}` as LockFile
-    if (lockfile == null) {
-      return 'unknown'
-    }
-    const type = PackageManagerLockFiles[lockfile]
-    return type == null ? 'unknown' : type
-  } catch (e) {
-    throw e
-  }
-}
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -218,16 +191,6 @@ export function readCode(absolutePath: string, ext: string) {
 export function getLayerRootDirs(nuxt: Nuxt) {
   const layers = nuxt.options._layers
   return layers.length > 1 ? layers.map(layer => layer.config.rootDir) : []
-}
-
-export async function tryResolve(id: string, targets: string[], pkgMgr: PackageManager, extension = '') {
-  for (const target of targets) {
-    if (await isExists(target + extension)) {
-      return target
-    }
-  }
-
-  throw new Error(`Cannot resolve ${id} on ${pkgMgr}! please install it on 'node_modules'`)
 }
 
 export async function writeFile(path: string, data: string) {

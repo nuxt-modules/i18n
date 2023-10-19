@@ -12,7 +12,7 @@ import {
 } from '@nuxt/kit'
 import { resolve, relative } from 'pathe'
 import { defu } from 'defu'
-import { setupAlias, resolveVueI18nAlias } from './alias'
+import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
@@ -23,19 +23,19 @@ import {
   NUXT_I18N_TEMPLATE_OPTIONS_KEY,
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
+  VUE_I18N_PKG
 } from './constants'
 import {
   formatMessage,
   getNormalizedLocales,
   resolveLocales,
-  getPackageManagerType,
   mergeI18nModules,
   applyOptionOverrides,
   getLocaleFiles,
   filterLocales
 } from './utils'
-import { distDir, runtimeDir, pkgModulesDir } from './dirs'
+import { distDir, runtimeDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
 import type { NuxtI18nOptions } from './types'
@@ -287,8 +287,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * auto imports
      */
 
-    const pkgMgr = await getPackageManagerType()
-    const vueI18nPath = await resolveVueI18nAlias(pkgModulesDir, options, nuxt, pkgMgr)
+    const vueI18nPath = nuxt.options.alias[VUE_I18N_PKG]
     debug('vueI18nPath for auto-import', vueI18nPath)
 
     await addComponent({
