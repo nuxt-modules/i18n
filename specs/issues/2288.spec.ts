@@ -10,7 +10,7 @@ describe('#2288', async () => {
   })
 
   // TODO: Fix setLocale
-  test.fails('change route with setLocale', async () => {
+  test('change route with setLocale', async () => {
     const home = url('/')
     const page = await createPage()
     await page.goto(home)
