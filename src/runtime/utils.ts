@@ -308,7 +308,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
   if (
     !isStaticGenerate &&
     !differentDomains &&
-    (calledWithRouting || (strategy !== 'no_prefix' && strategy !== 'prefix_and_default')) &&
+    (calledWithRouting || strategy !== 'no_prefix') &&
     routeLocaleGetter(route.to) !== targetLocale
   ) {
     // the current route could be 404 in which case attempt to find matching route using the full path
