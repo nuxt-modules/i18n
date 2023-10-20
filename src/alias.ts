@@ -8,7 +8,8 @@ import {
   SHARED_PKG,
   MESSAGE_COMPILER_PKG,
   CORE_BASE_PKG,
-  UFO_PKG
+  UFO_PKG,
+  IS_HTTPS_PKG
 } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -31,6 +32,7 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   modules[VUE_I18N_BRIDGE_PKG] = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_ROUTING_PKG] = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`
   modules[UFO_PKG] = UFO_PKG
+  modules[IS_HTTPS_PKG] = IS_HTTPS_PKG
 
   for (const [moduleName, moduleFile] of Object.entries(modules)) {
     const module = await tryResolveModule(moduleFile, nuxt.options.modulesDir)
