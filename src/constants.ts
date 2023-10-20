@@ -9,6 +9,7 @@ export const VUE_I18N_BRIDGE_PKG = '@intlify/vue-i18n-bridge' as const
 export const VUE_ROUTER_BRIDGE_PKG = '@intlify/vue-router-bridge' as const
 export const VUE_I18N_ROUTING_PKG = 'vue-i18n-routing' as const
 export const UFO_PKG = 'ufo' as const
+export const IS_HTTPS_PKG = 'is-https' as const
 
 // Options
 const STRATEGY_PREFIX = 'prefix'
