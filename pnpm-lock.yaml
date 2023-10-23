@@ -65,8 +65,8 @@ importers:
         specifier: 9.5.0
         version: 9.5.0(vue@3.3.4)
       vue-i18n-routing:
-        specifier: ^1.1.1
-        version: 1.1.1(vue-i18n@9.5.0)(vue-router@4.2.5)(vue@3.3.4)
+        specifier: ^1.1.2
+        version: 1.1.2(vue-i18n@9.5.0)(vue-router@4.2.5)(vue@3.3.4)
     devDependencies:
       '@babel/parser':
         specifier: ^7.23.0
@@ -2451,6 +2451,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: true
     bundledDependencies:
       - napi-wasm
@@ -11063,8 +11064,8 @@ packages:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
     dev: true
 
-  /vue-i18n-routing@1.1.1(vue-i18n@9.5.0)(vue-router@4.2.5)(vue@3.3.4):
-    resolution: {integrity: sha512-VhND1ErGylDy4fjuGXiHXqvIhvyLwZH2RRqbgHiLaUudjjkcgSGc8hfVNgMzF+v6X3bcx4ZkPsYyKvdIzJw77A==}
+  /vue-i18n-routing@1.1.2(vue-i18n@9.5.0)(vue-router@4.2.5)(vue@3.3.4):
+    resolution: {integrity: sha512-3PY32vT9DT7RXfhiZkFIvn6AIJE+z3cy0Uzgliue+0lTJHadc+sm5T4WoGEaO/pit32IYODvCiuA4B8XNsf4vA==}
     engines: {node: '>= 14.6'}
     peerDependencies:
       '@vue/composition-api': ^1.0.0-rc.1
