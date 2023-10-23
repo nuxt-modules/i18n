@@ -93,7 +93,7 @@
     "unplugin": "^1.5.0",
     "unstorage": "^1.9.0",
     "vue-i18n": "9.5.0",
-    "vue-i18n-routing": "^1.1.1"
+    "vue-i18n-routing": "^1.1.2"
   },
   "devDependencies": {
     "@babel/parser": "^7.23.0",
