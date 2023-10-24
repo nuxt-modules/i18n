@@ -36,6 +36,7 @@
       "#pages": ["./node_modules/nuxt/dist/pages/runtime/index.d.ts"],
       "#head": ["./node_modules/nuxt/dist/index.d.ts"],
       "#i18n": ["./src/runtime/composables.ts"],
+      "#vue-router": ["./node_modules/vue-router"],
       "#build/i18n.shared.mjs": ["./src/runtime/shared.ts"],
       "#build/i18n.options.mjs": ["./src/options.d.ts"],
       "#build/i18n.internal.mjs": ["./src/runtime/internal.ts"],

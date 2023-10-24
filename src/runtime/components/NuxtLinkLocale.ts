@@ -1,21 +1,17 @@
 import { useLocalePath } from '#i18n'
-import { defineComponent, computed, defineNuxtLink, h } from '#imports'
+import { defineComponent, computed, h } from 'vue'
+import { defineNuxtLink } from 'nuxt/app'
 import { hasProtocol } from 'ufo'
 
 import type { PropType } from 'vue'
-import type { RawLocation, RouteLocation } from '@intlify/vue-router-bridge'
+import type { NuxtLinkProps } from 'nuxt/app'
 
 const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
 
-export default defineComponent({
+export default defineComponent<NuxtLinkProps & { locale?: string; to: NuxtLinkProps['to'] }>({
   name: 'NuxtLinkLocale',
   props: {
     ...NuxtLinkLocale.props,
-    to: {
-      type: [String, Object] as PropType<RawLocation | RouteLocation>,
-      default: undefined,
-      required: false
-    },
     locale: {
       type: String as PropType<string>,
       default: undefined,
@@ -43,7 +39,7 @@ export default defineComponent({
         return false
       }
 
-      return props.to === '' || hasProtocol(props.to, { acceptRelative: true })
+      return props.to === '' || props.to == null || hasProtocol(props.to, { acceptRelative: true })
     })
 
     /**
@@ -56,7 +52,7 @@ export default defineComponent({
       }
 
       if (!isExternal.value) {
-        _props.to = resolvedPath
+        _props.to = resolvedPath.value
       }
 
       // The locale attribute cannot be set for NuxtLink
