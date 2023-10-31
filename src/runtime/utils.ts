@@ -320,7 +320,8 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
        * If it's the same as the previous route path, respect the current route without redirecting.
        * (If an empty string is set, the current route is respected. after this function return, it's pass navigate function)
        */
-      redirectPath = !(route.from && route.from.fullPath === routePath) ? routePath : ''
+      const fromFullPath = route.from?.fullPath?.endsWith('/') ? route.from.fullPath.slice(0, -1) : route.from?.fullPath
+      redirectPath = !(fromFullPath === routePath) ? routePath : ''
     }
   }
 
