@@ -36,7 +36,9 @@ export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
   experimental: {
-    jsTsFormatResource: false
+    jsTsFormatResource: false,
+    disableWarnings: false
+
   },
   bundle: {
     compositionOnly: true,

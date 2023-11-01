@@ -71,6 +71,7 @@ export type CustomRoutePages = {
 
 export interface ExperimentalFeatures {
   jsTsFormatResource?: boolean
+  disableWarnings?: boolean
 }
 
 export interface BundleOptions

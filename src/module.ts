@@ -61,7 +61,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     applyOptionOverrides(options, nuxt)
     debug('options', options)
 
-    if (options.experimental.jsTsFormatResource) {
+    if (options.experimental.jsTsFormatResource && options.experimental.disableWarnings !== true) {
       logger.warn('JS / TS extension format is an experimental feature')
     }
 
