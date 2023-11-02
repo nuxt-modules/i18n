@@ -61,10 +61,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     applyOptionOverrides(options, nuxt)
     debug('options', options)
 
-    if (options.experimental.jsTsFormatResource && options.experimental.disableWarnings !== true) {
-      logger.warn('JS / TS extension format is an experimental feature')
-    }
-
     if (!options.compilation.jit) {
       logger.warn(
         'Opt-out JIT compilation. ' +
@@ -136,7 +132,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // for public
     nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
-      experimental: options.experimental,
       baseUrl: options.baseUrl,
       locales: options.locales.reduce(
         (obj, locale) => {
@@ -337,7 +332,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 type MaybePromise<T> = T | Promise<T>
 type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
 
-type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl' | 'experimental'>
+type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl'>
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {

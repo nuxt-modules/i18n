@@ -11,9 +11,6 @@ export default defineNuxtConfig({
         lazy: false,
         langDir: 'lang',
         defaultLocale: 'en',
-        experimental: {
-          jsTsFormatResource: true
-        },
         detectBrowserLanguage: false,
         locales: [
           {

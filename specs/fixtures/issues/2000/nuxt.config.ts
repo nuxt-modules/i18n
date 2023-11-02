@@ -9,9 +9,6 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    experimental: {
-      jsTsFormatResource: true
-    },
     defaultLocale: 'en',
     langDir: 'locales',
     lazy: true,
