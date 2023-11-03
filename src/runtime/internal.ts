@@ -119,23 +119,13 @@ type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
 const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 async function loadMessage(context: NuxtApp, { key, load }: LocaleLoader, locale: Locale) {
-  const i18nConfig = context.$config.public?.i18n as { experimental?: { jsTsFormatResource?: boolean } }
-
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
     const getter = await load().then(r => r.default || r)
     if (isFunction(getter)) {
-      if (i18nConfig.experimental?.jsTsFormatResource) {
-        message = await getter(locale)
-        __DEBUG__ && console.log('loadMessage: dynamic load', message)
-      } else {
-        console.warn(
-          formatMessage(
-            'JS / TS extension format is not supported by default. This can be enabled by setting `i18n.experimental.jsTsFormatResource: true` (experimental)'
-          )
-        )
-      }
+      message = await getter(locale)
+      __DEBUG__ && console.log('loadMessage: dynamic load', message)
     } else {
       message = getter
       if (message != null) {

@@ -24,9 +24,6 @@ export default defineNuxtConfig({
     ],
     strategy: 'prefix',
     defaultLocale: 'en',
-    experimental: {
-      jsTsFormatResource: true
-    },
     // debug: true,
     detectBrowserLanguage: {
       useCookie: true,

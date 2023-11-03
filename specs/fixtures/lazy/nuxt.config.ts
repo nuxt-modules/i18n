@@ -8,9 +8,6 @@ export default defineNuxtConfig({
     // langDir: 'lang',
     // defaultLocale: 'fr',
     detectBrowserLanguage: false,
-    experimental: {
-      jsTsFormatResource: true
-    },
     compilation: {
       strictMessage: false
     },
