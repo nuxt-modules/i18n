@@ -20,9 +20,6 @@ export default defineNuxtConfig({
     [
       '@nuxtjs/i18n',
       {
-        experimental: {
-          jsTsFormatResource: true
-        },
         compilation: {
           strictMessage: false,
           escapeHtml: true
@@ -110,9 +107,6 @@ export default defineNuxtConfig({
   // },
   // debug: true,
   i18n: {
-    experimental: {
-      jsTsFormatResource: true
-    },
     compilation: {
       // jit: false,
       strictMessage: false,
