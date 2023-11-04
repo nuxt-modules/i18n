@@ -146,3 +146,23 @@ test('fallback to target lang', async () => {
   // current locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('nl')
 })
+
+test('(#2525) localePath should keep hash', async () => {
+  const { page } = await renderPage('/')
+
+  expect(await page.locator('#link-about-hash').getAttribute('href')).toEqual('/about#my-hash')
+  expect(await page.locator('#link-about-hash-object').getAttribute('href')).toEqual('/about#my-hash')
+
+  expect(await page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/about?foo=bar#my-hash')
+  expect(await page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual('/about?foo=bar#my-hash')
+
+  // click `nl` lang switch with `<NuxtLink>`
+  await page.locator('#switch-locale-path-usages .switch-to-nl a').click()
+  await waitForURL(page, '/nl')
+
+  expect(await page.locator('#link-about-hash').getAttribute('href')).toEqual('/nl/about#my-hash')
+  expect(await page.locator('#link-about-hash-object').getAttribute('href')).toEqual('/nl/about#my-hash')
+
+  expect(await page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
+  expect(await page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
+})

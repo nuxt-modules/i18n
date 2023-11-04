@@ -81,6 +81,27 @@ useHead({
             {{ category.title }}
           </NuxtLink>
         </li>
+        <li class="path-hash">
+          <NuxtLink id="link-about-hash" :to="localePath('/about#my-hash')">{{ $t('about') }}</NuxtLink>
+        </li>
+        <li class="path-query-hash">
+          <NuxtLink id="link-about-query-hash" :to="localePath('/about?foo=bar#my-hash')">
+            {{ $t('about') }}
+          </NuxtLink>
+        </li>
+        <li class="path-hash">
+          <NuxtLink id="link-about-hash-object" :to="localePath({ name: 'about', hash: '#my-hash' })">{{
+            $t('about')
+          }}</NuxtLink>
+        </li>
+        <li class="path-query-hash">
+          <NuxtLink
+            id="link-about-query-hash-object"
+            :to="localePath({ name: 'about', query: { foo: 'bar' }, hash: '#my-hash' })"
+          >
+            {{ $t('about') }}
+          </NuxtLink>
+        </li>
       </ul>
     </section>
     <section id="nuxt-link-locale-usages">
