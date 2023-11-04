@@ -166,3 +166,18 @@ test('(#2525) localePath should keep hash', async () => {
   expect(await page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
   expect(await page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
 })
+
+test('(#2523) localePath should not double encode paths', async () => {
+  const { page } = await renderPage('/')
+  const encodedPath = encodeURI('page with spaces')
+
+  expect(await page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/${encodedPath}`)
+  expect(await page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/${encodedPath}`)
+
+  // click `nl` lang switch with `<NuxtLink>`
+  await page.locator('#switch-locale-path-usages .switch-to-nl a').click()
+  await waitForURL(page, '/nl')
+
+  expect(await page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
+  expect(await page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
+})

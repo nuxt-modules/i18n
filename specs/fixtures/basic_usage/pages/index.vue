@@ -102,6 +102,16 @@ useHead({
             {{ $t('about') }}
           </NuxtLink>
         </li>
+        <li class="path-spaces">
+          <NuxtLink id="link-page-with-spaces" :to="localePath({ name: 'page with spaces' })">
+            To the page with spaces!
+          </NuxtLink>
+        </li>
+        <li class="path-spaces-encoded">
+          <NuxtLink id="link-page-with-spaces-encoded" :to="localePath(`/${encodeURI('page with spaces')}`)">
+            To the page with spaces!
+          </NuxtLink>
+        </li>
       </ul>
     </section>
     <section id="nuxt-link-locale-usages">
