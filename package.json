@@ -28,6 +28,10 @@
       "require": "./dist/module.cjs",
       "types": "./dist/types.d.ts"
     },
+    "./composables": {
+      "import": "./dist/runtime/composables.mjs",
+      "types": "./dist/runtime/composables.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
