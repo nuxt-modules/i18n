@@ -81,6 +81,37 @@ useHead({
             {{ category.title }}
           </NuxtLink>
         </li>
+        <li class="path-hash">
+          <NuxtLink id="link-about-hash" :to="localePath('/about#my-hash')">{{ $t('about') }}</NuxtLink>
+        </li>
+        <li class="path-query-hash">
+          <NuxtLink id="link-about-query-hash" :to="localePath('/about?foo=bar#my-hash')">
+            {{ $t('about') }}
+          </NuxtLink>
+        </li>
+        <li class="path-hash">
+          <NuxtLink id="link-about-hash-object" :to="localePath({ name: 'about', hash: '#my-hash' })">{{
+            $t('about')
+          }}</NuxtLink>
+        </li>
+        <li class="path-query-hash">
+          <NuxtLink
+            id="link-about-query-hash-object"
+            :to="localePath({ name: 'about', query: { foo: 'bar' }, hash: '#my-hash' })"
+          >
+            {{ $t('about') }}
+          </NuxtLink>
+        </li>
+        <li class="path-spaces">
+          <NuxtLink id="link-page-with-spaces" :to="localePath({ name: 'page with spaces' })">
+            To the page with spaces!
+          </NuxtLink>
+        </li>
+        <li class="path-spaces-encoded">
+          <NuxtLink id="link-page-with-spaces-encoded" :to="localePath(`/${encodeURI('page with spaces')}`)">
+            To the page with spaces!
+          </NuxtLink>
+        </li>
       </ul>
     </section>
     <section id="nuxt-link-locale-usages">
