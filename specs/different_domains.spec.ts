@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch } from './utils'
+import { setup, $fetch, undiciRequest } from './utils'
 import { getDom } from './helper'
 
 await setup({
@@ -36,12 +36,12 @@ describe('detection locale with host on server', () => {
     ['en', 'en.nuxt-app.localhost', 'Homepage'],
     ['fr', 'fr.nuxt-app.localhost', 'Accueil']
   ])('%s host', async (locale, host, header) => {
-    const html = await $fetch('/', {
+    const res = await undiciRequest('/', {
       headers: {
         Host: host
       }
     })
-    const dom = getDom(html)
+    const dom = getDom(await res.body.text())
 
     expect(dom.querySelector('#lang-switcher-current-locale code').textContent).toEqual(locale)
     expect(dom.querySelector('#home-header').textContent).toEqual(header)
@@ -61,12 +61,12 @@ test('detection locale with x-forwarded-host on server', async () => {
 })
 
 test('pass `<NuxtLink> to props', async () => {
-  const html = await $fetch('/', {
+  const res = await undiciRequest('/', {
     headers: {
       Host: 'fr.nuxt-app.localhost'
     }
   })
-  const dom = getDom(html)
+  const dom = getDom(await res.body.text())
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
     `http://en.nuxt-app.localhost`
   )
@@ -76,12 +76,12 @@ test('pass `<NuxtLink> to props', async () => {
 })
 
 test('layer provides locales with domains', async () => {
-  const html = await $fetch('/', {
+  const res = await undiciRequest('/', {
     headers: {
       Host: 'fr.nuxt-app.localhost'
     }
   })
-  const dom = getDom(html)
+  const dom = getDom(await res.body.text())
 
   // `en` link uses project domain configuration, overrides layer
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
