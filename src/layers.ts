@@ -1,18 +1,12 @@
 import createDebug from 'debug'
-import {
-  getLayerI18n,
-  getProjectPath,
-  mergeConfigLocales,
-  resolveVueI18nConfigInfo,
-  LocaleConfig,
-  formatMessage
-} from './utils'
+import { getLayerI18n, getProjectPath, mergeConfigLocales, resolveVueI18nConfigInfo, formatMessage } from './utils'
 
 import { useLogger } from '@nuxt/kit'
 import { isAbsolute, resolve } from 'pathe'
 import { isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
+import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
 

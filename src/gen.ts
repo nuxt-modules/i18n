@@ -4,9 +4,10 @@ import createDebug from 'debug'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
-import { PrerenderTarget, getLocalePaths, toCode } from './utils'
+import { getLocalePaths, toCode } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
+import type { PrerenderTarget } from './utils'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta } from './types'
 import type { LocaleObject } from 'vue-i18n-routing'
 

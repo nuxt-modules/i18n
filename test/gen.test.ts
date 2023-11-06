@@ -2,7 +2,7 @@ import { generateLoaderOptions } from '../src/gen'
 import { resolveLocales, resolveVueI18nConfigInfo } from '../src/utils'
 
 import type { LocaleInfo, NuxtI18nOptions, VueI18nConfigPathInfo } from '../src/types'
-import { Nuxt } from '@nuxt/schema'
+import type { Nuxt } from '@nuxt/schema'
 
 vi.mock('node:fs')
 
