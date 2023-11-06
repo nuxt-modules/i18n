@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [18.17]
+        node-version: [18]
         os: [ubuntu-latest]
     timeout-minutes: 10
 
@@ -47,7 +47,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [18.17]
+        node-version: [18]
         os: [ubuntu-latest]
     timeout-minutes: 10
 
@@ -83,7 +83,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [18.17]
+        node-version: [18]
         os: [ubuntu-latest]
     timeout-minutes: 25
 
@@ -148,7 +148,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [18.17]
+        node-version: [18]
         os: [ubuntu-latest]
     steps:
       - name: Checkout codes
