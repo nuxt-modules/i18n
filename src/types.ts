@@ -85,7 +85,7 @@ export interface LocaleMessageCompilationOptions {
   escapeHtml?: boolean
 }
 
-export { I18nOptions }
+export type { I18nOptions }
 
 export type NuxtI18nOptions<Context = unknown> = {
   vueI18n?: string
