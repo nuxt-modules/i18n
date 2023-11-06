@@ -3,14 +3,16 @@ import { resolve } from 'pathe'
 import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
-import { TransformMacroPlugin, TransformMacroPluginOptions } from './transform/macros'
-import { ResourcePlugin, ResourcePluginOptions } from './transform/resource'
+import { TransformMacroPlugin } from './transform/macros'
+import { ResourcePlugin } from './transform/resource'
 import { assign } from '@intlify/shared'
 import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
+import type { TransformMacroPluginOptions } from './transform/macros'
+import type { ResourcePluginOptions } from './transform/resource'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 

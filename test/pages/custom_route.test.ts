@@ -5,7 +5,7 @@ import { localizeRoutes } from 'vue-i18n-routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from './utils'
 
-import { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
+import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
 import type { NuxtI18nOptions } from '../../src/types'
 import type { NuxtPage } from './utils'
 

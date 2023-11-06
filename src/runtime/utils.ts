@@ -10,7 +10,6 @@ import {
   localeRoute,
   switchLocalePath,
   localeHead,
-  LocaleObject,
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter,
   getComposer,
@@ -35,6 +34,7 @@ import { joinURL, isEqual } from 'ufo'
 
 import type {
   Route,
+  LocaleObject,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   BaseUrlResolveHandler,

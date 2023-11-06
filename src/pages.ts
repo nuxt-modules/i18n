@@ -1,6 +1,6 @@
 import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
-import { I18nRoute, localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
+import { localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
@@ -11,7 +11,12 @@ import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
-import type { RouteOptionsResolver, ComputedRouteOptions, LocalizeRoutesPrefixableOptions } from 'vue-i18n-routing'
+import type {
+  I18nRoute,
+  RouteOptionsResolver,
+  ComputedRouteOptions,
+  LocalizeRoutesPrefixableOptions
+} from 'vue-i18n-routing'
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
 import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
 
