@@ -125,6 +125,7 @@
     "ts-essentials": "^9.4.0",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
+    "undici": "^5.27.2",
     "vitest": "^0.34.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"

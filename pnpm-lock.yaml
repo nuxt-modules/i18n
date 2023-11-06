@@ -155,6 +155,9 @@ importers:
       unbuild:
         specifier: ^2.0.0
         version: 2.0.0(typescript@5.2.2)
+      undici:
+        specifier: ^5.27.2
+        version: 5.27.2
       vitest:
         specifier: ^0.34.6
         version: 0.34.6(jsdom@21.1.2)(playwright@1.38.1)
@@ -8083,7 +8086,7 @@ packages:
       destr: 1.2.2
       node-fetch-native: 0.1.8
       ufo: 0.8.6
-      undici: 5.26.4
+      undici: 5.27.2
     dev: true
 
   /on-finished@2.4.1:
@@ -8139,7 +8142,7 @@ packages:
       fast-glob: 3.3.1
       js-yaml: 4.1.0
       supports-color: 9.4.0
-      undici: 5.26.4
+      undici: 5.27.2
       yargs-parser: 21.1.1
     dev: true
 
@@ -10216,6 +10219,13 @@ packages:
 
   /undici@5.26.4:
     resolution: {integrity: sha512-OG+QOf0fTLtazL9P9X7yqWxQ+Z0395Wk6DSkyTxtaq3wQEjIroVe7Y4asCX/vcCxYpNGMnwz8F0qbRYUoaQVMw==}
+    engines: {node: '>=14.0'}
+    dependencies:
+      '@fastify/busboy': 2.0.0
+    dev: true
+
+  /undici@5.27.2:
+    resolution: {integrity: sha512-iS857PdOEy/y3wlM3yRp+6SNQQ6xU0mmZcwRSriqk+et/cwWAtwmIGf6WkoDN2EK/AMdCO/dfXzIwi+rFMrjjQ==}
     engines: {node: '>=14.0'}
     dependencies:
       '@fastify/busboy': 2.0.0

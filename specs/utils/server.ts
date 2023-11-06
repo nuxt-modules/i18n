@@ -7,6 +7,7 @@ import { $fetch as _$fetch, fetch as _fetch } from 'ofetch'
 import * as _kit from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { useTestContext } from './context'
+import { request } from 'undici'
 
 // @ts-expect-error type cast
 // eslint-disable-next-line
@@ -92,6 +93,10 @@ export function fetch(path: string, options?: any) {
 
 export function $fetch(path: string, options?: FetchOptions) {
   return _$fetch(url(path), options)
+}
+
+export function undiciRequest(path: string, options?: Parameters<typeof request>[1]) {
+  return request(url(path), options)
 }
 
 export function url(path: string) {
