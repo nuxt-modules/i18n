@@ -1,6 +1,6 @@
 import { useLocalePath } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
-import { defineNuxtLink } from 'nuxt/app'
+import { defineNuxtLink } from '#imports'
 import { hasProtocol } from 'ufo'
 
 import type { PropType } from 'vue'
