@@ -1,4 +1,4 @@
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#imports'
 
 import type { RouterConfig } from '@nuxt/schema'
 
