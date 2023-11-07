@@ -38,6 +38,7 @@ import {
 import { distDir, runtimeDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 
+import type { HookResult } from '@nuxt/schema'
 import type { NuxtI18nOptions } from './types'
 
 export * from './types'
@@ -329,35 +330,42 @@ export default defineNuxtModule<NuxtI18nOptions>({
   }
 })
 
-type MaybePromise<T> = T | Promise<T>
-type LocaleSwitch<T extends string = string> = { oldLocale: T; newLocale: T }
+// Used by nuxt/module-builder for `types.d.ts` generation
+export interface ModuleOptions extends NuxtI18nOptions {}
 
-type ModulePublicRuntimeConfig<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl'>
+export interface ModulePublicRuntimeConfig {
+  i18n?: Pick<NuxtI18nOptions<unknown>, 'baseUrl'>
+}
+
+export interface ModuleHooks {
+  'i18n:registerModule': (
+    registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
+  ) => HookResult
+}
+
+export interface RuntimeModuleHooks {
+  'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
+    oldLocale: string
+    newLocale: string
+    initialSetup: boolean
+    context: Context
+  }) => HookResult
+
+  'i18n:localeSwitched': (params: { oldLocale: string; newLocale: string }) => HookResult
+}
+
+// Used by module for type inference in source code
+declare module '#app' {
+  interface RuntimeNuxtHooks extends RuntimeModuleHooks {}
+}
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
-    i18n?: NuxtI18nOptions<unknown>
+    ['i18n']?: Partial<ModuleOptions>
   }
-
-  interface NuxtHooks {
-    'i18n:registerModule': (
-      registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
-    ) => void
+  interface NuxtOptions {
+    ['i18n']?: ModuleOptions
   }
-
-  interface PublicRuntimeConfig {
-    i18n?: ModulePublicRuntimeConfig
-  }
-}
-
-declare module '#app/nuxt' {
-  interface RuntimeNuxtHooks {
-    'i18n:beforeLocaleSwitch': <Context = unknown>(
-      params: LocaleSwitch & {
-        initialSetup: boolean
-        context: Context
-      }
-    ) => MaybePromise<void>
-    'i18n:localeSwitched': (params: LocaleSwitch) => MaybePromise<void>
-  }
+  interface NuxtHooks extends ModuleHooks {}
+  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
 }
