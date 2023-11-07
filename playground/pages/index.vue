@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 // import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
-import { LocaleObject } from '#i18n'
+import type { LocaleObject } from '#i18n'
 
 const route = useRoute()
 const {

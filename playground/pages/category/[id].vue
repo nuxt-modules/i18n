@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LocaleObject } from '#i18n'
+import type { LocaleObject } from '#i18n'
 
 const route = useRoute()
 const { locale, locales } = useI18n()
