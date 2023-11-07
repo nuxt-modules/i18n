@@ -1,5 +1,5 @@
 import type { Strategies, I18nRoutingOptions, LocaleObject } from 'vue-i18n-routing'
-import type { Locale, I18nOptions } from 'vue-i18n'
+import type { Locale } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { ParsedPath } from 'path'
 
@@ -84,8 +84,6 @@ export interface LocaleMessageCompilationOptions {
   strictMessage?: boolean
   escapeHtml?: boolean
 }
-
-export type { I18nOptions }
 
 export type NuxtI18nOptions<Context = unknown> = {
   vueI18n?: string
