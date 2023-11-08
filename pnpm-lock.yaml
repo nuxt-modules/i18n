@@ -81,8 +81,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(vue-router@4.2.5)(vue@3.3.4)
       '@nuxt/module-builder':
-        specifier: latest
-        version: 0.5.2(@nuxt/kit@3.7.4)(nuxi@3.9.0)(typescript@5.2.2)
+        specifier: ^0.5.4
+        version: 0.5.4(@nuxt/kit@3.7.4)(nuxi@3.9.1)(typescript@5.2.2)
       '@nuxt/schema':
         specifier: ^3.7.4
         version: 3.7.4(rollup@3.28.1)
@@ -2113,18 +2113,18 @@ packages:
       - rollup
       - supports-color
 
-  /@nuxt/module-builder@0.5.2(@nuxt/kit@3.7.4)(nuxi@3.9.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-MsnPTsa94VNrzV76RKCDS0C96uaKw9s3EbTtabI/BkAXOD4Ud1w6m0O20XUdI9tmRtE8Kbgyr4XUhD/YB3eeAw==}
+  /@nuxt/module-builder@0.5.4(@nuxt/kit@3.7.4)(nuxi@3.9.1)(typescript@5.2.2):
+    resolution: {integrity: sha512-lCPh8s8LSfYqHgIMMsctDhz+AX1z6TnATkUes/GXc/No4kApC0zmJkQWrbtDRjmsWjElwl1kE7l7OzYdYc3d4w==}
     hasBin: true
     peerDependencies:
-      '@nuxt/kit': ^3.7.4
-      nuxi: ^3.9.0
+      '@nuxt/kit': ^3.8.1
+      nuxi: ^3.9.1
     dependencies:
       '@nuxt/kit': 3.7.4(rollup@3.28.1)
       citty: 0.1.4
       consola: 3.2.3
       mlly: 1.4.2
-      nuxi: 3.9.0
+      nuxi: 3.9.1
       pathe: 1.1.1
       unbuild: 2.0.0(typescript@5.2.2)
     transitivePeerDependencies:
@@ -7871,8 +7871,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /nuxi@3.9.0:
-    resolution: {integrity: sha512-roCfCnQsp/oaHm6PL3HFvvGrwm1d2y1n7G9KzIx+i91eiO4P7fBuaVKibB2e8uqEJBgTwN52KxFha6MJnDykJQ==}
+  /nuxi@3.9.1:
+    resolution: {integrity: sha512-4R4tcC2uQ5QCnHxyKoX5nZm/YUesCcQM3bZBKYU/8ZWrWjK6aPG6Q5zOQG1aLPkAotyahNsqtSiU/CrRoenEgA==}
     engines: {node: ^14.18.0 || >=16.10.0}
     hasBin: true
     optionalDependencies:
