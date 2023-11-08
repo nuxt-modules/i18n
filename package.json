@@ -100,7 +100,7 @@
     "@babel/plugin-syntax-import-assertions": "^7.22.5",
     "@babel/types": "^7.23.0",
     "@intlify/vue-router-bridge": "^1.0.1",
-    "@nuxt/module-builder": "latest",
+    "@nuxt/module-builder": "^0.5.4",
     "@nuxt/schema": "^3.7.4",
     "@types/debug": "^4.1.9",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
