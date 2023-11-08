@@ -344,6 +344,8 @@ export interface ModuleHooks {
 }
 
 export interface RuntimeModuleHooks {
+  // NOTE: To make type inference work the function signature returns `HookResult`
+  // Should return `string | void`
   'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
     oldLocale: string
     newLocale: string
