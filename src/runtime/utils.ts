@@ -115,12 +115,12 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
 
   // load fallback messages
   if (lazy && fallbackLocale) {
-    const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
+    const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [initialLocale])
     await Promise.all(fallbackLocales.map(locale => loadLocale(context, locale, setter)))
   }
 
   // load initial messages
-  const locales = lazy ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
+  const locales = lazy ? [...new Set<Locale>().add(initialLocale)] : localeCodes
   await Promise.all(locales.map(locale => loadLocale(context, locale, setter)))
 
   return messages
