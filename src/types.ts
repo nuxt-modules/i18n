@@ -112,6 +112,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   debug?: boolean
   dynamicRouteParams?: boolean
   parallelPlugin?: boolean
+  skipDefaultLocale?: boolean
 } & Pick<
   I18nRoutingOptions<Context>,
   | 'baseUrl'
