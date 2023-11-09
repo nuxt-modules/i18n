@@ -133,13 +133,13 @@ export default defineNuxtConfig({
         files: ['en.json', 'en-GB.js', 'en-KK.js'],
         name: 'English (UK)'
       },
-      // {
-      //   code: 'ja',
-      //   iso: 'ja-JP',
-      //   file: 'ja.ts',
-      //   domain: 'mydomain.com',
-      //   name: 'Japanses'
-      // },
+      {
+        code: 'ja',
+        iso: 'ja-JP',
+        file: 'ja.ts',
+        domain: 'mydomain.com',
+        name: 'Japanses'
+      },
       {
         code: 'fr',
         iso: 'fr-FR',
