@@ -17,6 +17,7 @@ import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRo
 import {
   localeCodes,
   resolveNuxtI18nOptions,
+  vueI18nConfigLoaders,
   nuxtI18nInternalOptions,
   isSSG,
   parallelPlugin
@@ -44,6 +45,7 @@ import {
 import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
+import defu from 'defu'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
@@ -61,6 +63,18 @@ export default defineNuxtPlugin({
     const nuxtContext = nuxt as unknown as NuxtApp
 
     const nuxtI18nOptions = await resolveNuxtI18nOptions<NuxtApp>(nuxtContext)
+
+    // @ts-ignore
+    nuxtI18nOptions.vueI18n = { messages: {} }
+
+    for (const vLoader of vueI18nConfigLoaders) {
+      const { default: resolver } = await vLoader()
+      const resolved = typeof resolver === 'function' ? resolver() : resolver
+
+      // @ts-ignore
+      nuxtI18nOptions.vueI18n = defu(nuxtI18nOptions.vueI18n, resolved)
+    }
+
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
     const {
