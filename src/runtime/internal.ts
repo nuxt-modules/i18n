@@ -287,6 +287,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
   context: any,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
+  vueI18nOptions: I18nOptions,
   detectLocaleContext: DetectLocaleContext,
   localeCodes: string[] = [],
   locale: Locale = ''
@@ -370,7 +371,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
       localeFrom
     )
 
-  const vueI18nLocale = locale || (nuxtI18nOptions.vueI18n as I18nOptions).locale
+  const vueI18nLocale = locale || vueI18nOptions.locale
   __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
 
   // handle cookie option to prevent multiple redirects

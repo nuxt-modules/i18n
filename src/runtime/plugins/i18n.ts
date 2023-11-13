@@ -16,8 +16,8 @@ import {
 import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
 import {
   localeCodes,
-  resolveNuxtI18nOptions,
-  vueI18nConfigLoaders,
+  vueI18nConfigs,
+  nuxtI18nOptions,
   nuxtI18nInternalOptions,
   isSSG,
   parallelPlugin
@@ -32,7 +32,8 @@ import {
   extendBaseUrl,
   extendPrefixable,
   extendSwitchLocalePathIntercepter,
-  _setLocale
+  _setLocale,
+  resolveVueI18nOptions
 } from '#build/i18n.utils.mjs'
 import {
   getBrowserLocale as _getBrowserLocale,
@@ -42,10 +43,9 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
 
-import type { Composer, I18nOptions, Locale } from 'vue-i18n'
+import type { Composer, Locale } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
-import defu from 'defu'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
@@ -62,18 +62,7 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
-    const nuxtI18nOptions = await resolveNuxtI18nOptions<NuxtApp>(nuxtContext)
-
-    // @ts-ignore
-    nuxtI18nOptions.vueI18n = { messages: {} }
-
-    for (const vLoader of vueI18nConfigLoaders) {
-      const { default: resolver } = await vLoader()
-      const resolved = typeof resolver === 'function' ? resolver() : resolver
-
-      // @ts-ignore
-      nuxtI18nOptions.vueI18n = defu(nuxtI18nOptions.vueI18n, resolved)
-    }
+    const vueI18nOptions = await resolveVueI18nOptions(vueI18nConfigs)
 
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
@@ -103,7 +92,6 @@ export default defineNuxtPlugin({
       defaultLocaleRouteNameSuffix
     )
 
-    const vueI18nOptions = nuxtI18nOptions.vueI18n as I18nOptions
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
 
@@ -124,6 +112,7 @@ export default defineNuxtPlugin({
       nuxt.ssrContext,
       getLocaleFromRoute,
       nuxtI18nOptions,
+      vueI18nOptions,
       getDefaultLocale(defaultLocale),
       { ssg: isSSG && strategy === 'no_prefix' ? 'ssg_ignore' : 'normal', callType: 'setup', firstAccess: true },
       normalizedLocales,
@@ -177,6 +166,7 @@ export default defineNuxtPlugin({
               nuxtContext,
               nuxtI18nOptions,
               nuxtI18nInternalOptions,
+              vueI18nOptions,
               { ssg: 'ssg_setup', callType: 'setup', firstAccess: true },
               localeCodes,
               initialLocale
@@ -456,6 +446,7 @@ export default defineNuxtPlugin({
           nuxt.ssrContext,
           getLocaleFromRoute,
           nuxtI18nOptions,
+          vueI18nOptions,
           () => {
             return getLocale(i18n) || getDefaultLocale(defaultLocale)
           },
