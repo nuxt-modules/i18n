@@ -74,6 +74,12 @@ test('register module hook', async () => {
   expect(await getText(page, '#register-module')).toEqual('This is a merged module layer locale key in French')
 })
 
+test('vueI18n config file can access runtimeConfig', async () => {
+  const { page } = await renderPage('/')
+
+  expect(await getText(page, '#runtime-config')).toEqual('Hello from runtime config!')
+})
+
 test('layer provides locale `nl` and translation for key `hello`', async () => {
   const { page } = await renderPage('/layer-page')
 
