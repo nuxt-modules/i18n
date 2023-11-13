@@ -32,8 +32,7 @@ import {
   extendBaseUrl,
   extendPrefixable,
   extendSwitchLocalePathIntercepter,
-  _setLocale,
-  resolveVueI18nOptions
+  _setLocale
 } from '#build/i18n.utils.mjs'
 import {
   getBrowserLocale as _getBrowserLocale,
@@ -42,8 +41,9 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
+import defu from 'defu'
 
-import type { Composer, Locale } from 'vue-i18n'
+import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
 
@@ -62,7 +62,13 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
-    const vueI18nOptions = await resolveVueI18nOptions(vueI18nConfigs)
+    let vueI18nOptions: I18nOptions = { messages: {} }
+    for (const configFile of vueI18nConfigs) {
+      const { default: resolver } = await configFile()
+      const resolved = typeof resolver === 'function' ? await resolver() : resolver
+
+      vueI18nOptions = defu(vueI18nOptions, resolved)
+    }
 
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions

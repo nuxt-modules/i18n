@@ -31,7 +31,6 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
 import { joinURL, isEqual } from 'ufo'
-import defu from 'defu'
 
 import type {
   Route,
@@ -44,12 +43,7 @@ import type {
 } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
 import type { I18n, I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
-import type {
-  NuxtI18nOptions,
-  DetectBrowserLanguageOptions,
-  RootRedirectOptions,
-  VueI18nConfig
-} from '#build/i18n.options.mjs'
+import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DetectLocaleContext } from '#build/i18n.internal.mjs'
 import type { DeepRequired } from 'ts-essentials'
 
@@ -535,19 +529,6 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
 
     return baseUrl
   }
-}
-
-export const resolveVueI18nOptions = async (configFiles: VueI18nConfig[]) => {
-  let resolvedOptions: I18nOptions = { messages: {} }
-
-  for (const configFile of configFiles) {
-    const { default: resolver } = await configFile()
-    const resolved = typeof resolver === 'function' ? await resolver() : resolver
-
-    resolvedOptions = defu(resolvedOptions, resolved)
-  }
-
-  return resolvedOptions
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
