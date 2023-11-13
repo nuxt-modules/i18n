@@ -21,7 +21,7 @@ const debug = createDebug('@nuxtjs/i18n:gen')
 
 const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): string => {
   return genDynamicImport(genImportSpecifier(config.meta, 'config'), {
-    comment: `webpackChunkName: ${config.meta.key}`
+    comment: `webpackChunkName: "${config.meta.key}"`
   })
 }
 
