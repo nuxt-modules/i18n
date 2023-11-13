@@ -172,5 +172,8 @@ useHead({
     <section>
       <div id="fallback-key">{{ $t('fallbackMessage') }}</div>
     </section>
+    <section>
+      <div id="runtime-config">{{ $t('runtimeKey') }}</div>
+    </section>
   </div>
 </template>
