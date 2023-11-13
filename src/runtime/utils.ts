@@ -31,6 +31,7 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
 import { joinURL, isEqual } from 'ufo'
+import defu from 'defu'
 
 import type {
   Route,
@@ -42,8 +43,13 @@ import type {
   SwitchLocalePathIntercepter
 } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
-import type { I18n, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
-import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
+import type { I18n, I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type {
+  NuxtI18nOptions,
+  DetectBrowserLanguageOptions,
+  RootRedirectOptions,
+  VueI18nConfig
+} from '#build/i18n.options.mjs'
 import type { DetectLocaleContext } from '#build/i18n.internal.mjs'
 import type { DeepRequired } from 'ts-essentials'
 
@@ -200,6 +206,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   context: any,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
+  vueI18nOptions: I18nOptions,
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext,
   normalizedLocales: LocaleObject[],
@@ -214,8 +221,22 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
   __DEBUG__ && console.log('detectLocale: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
   // prettier-ignore
-  const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage
-    ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, detectLocaleContext, localeCodes, initialLocale)
+  const {
+    locale: browserLocale,
+    stat,
+    reason,
+    from
+  } = nuxtI18nOptions.detectBrowserLanguage
+    ? detectBrowserLanguage(
+        route,
+        context,
+        nuxtI18nOptions,
+        nuxtI18nInternalOptions,
+        vueI18nOptions,
+        detectLocaleContext,
+        localeCodes,
+        initialLocale
+      )
     : DefaultDetectBrowserLanguageFromResult
   __DEBUG__ &&
     console.log(
@@ -514,6 +535,19 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
 
     return baseUrl
   }
+}
+
+export const resolveVueI18nOptions = async (configFiles: VueI18nConfig[]) => {
+  let resolvedOptions: I18nOptions = { messages: {} }
+
+  for (const configFile of configFiles) {
+    const { default: resolver } = await configFile()
+    const resolved = typeof resolver === 'function' ? await resolver() : resolver
+
+    resolvedOptions = defu(resolvedOptions, resolved)
+  }
+
+  return resolvedOptions
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

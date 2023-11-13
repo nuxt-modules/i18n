@@ -2,7 +2,7 @@
 <% options.importStrings.forEach(function (importer) { %>
 <%= importer %><% }); %>
 
-export const localeCodes = <%= JSON.stringify(options.localeCodes, null, 2) %>
+export const localeCodes = <%= JSON.stringify(options.localeCodes, null, 2) %>;
 
 export const localeMessages = { <% options.localeMessages.forEach(function ([key, val]) { %>
   "<%= key %>": [<% val.forEach(function (entry) { %>
@@ -10,16 +10,11 @@ export const localeMessages = { <% options.localeMessages.forEach(function ([key
   ],<% }); %>
 }
 
-export const vueI18nConfigLoaders = [ 
-  <% options.vueI18nConfigs.forEach(function (importer) { %><%= importer %>,
-    <% }); %>
+export const vueI18nConfigs = [<% options.vueI18nConfigs.forEach(function (importer) { %>
+  <%= importer %>,<% }); %>
 ]
 
-export const resolveNuxtI18nOptions = async (context) => {
-  const nuxtI18nOptions = <%= JSON.stringify(options.nuxtI18nOptions, null, 2) %>
-  
-  return nuxtI18nOptions
-}
+export const nuxtI18nOptions = <%= JSON.stringify(options.nuxtI18nOptions, null, 2) %>
 
 export const nuxtI18nOptionsDefault = <%= JSON.stringify(options.nuxtI18nOptionsDefault, null, 2) %>
 
