@@ -45,7 +45,7 @@ exports[`basic 1`] = `
     "locales": [],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -116,7 +116,7 @@ exports[`files with cache configuration 1`] = `
     "locales": [],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -162,7 +162,7 @@ exports[`lazy 1`] = `
     "locales": [],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -208,7 +208,7 @@ exports[`locale file in nested 1`] = `
     "locales": [],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -279,7 +279,7 @@ exports[`multiple files 1`] = `
     "locales": [],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -325,7 +325,7 @@ exports[`toCode: function (arrow) 1`] = `
     ],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -371,7 +371,7 @@ exports[`toCode: function (named) 1`] = `
     ],
   },
   "vueI18nConfigs": [
-    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: i18n_config_ts_bffaebcb */)",
+    "() => import(\\"../i18n.config.ts?hash=bffaebcb&config=1\\" /* webpackChunkName: \\"i18n_config_ts_bffaebcb\\" */)",
   ],
 }
 `;
@@ -421,9 +421,9 @@ exports[`vueI18n option 1`] = `
     "vueI18n": "vue-i18n.config.ts",
   },
   "vueI18nConfigs": [
-    "() => import(\\"../to/i18n.config.ts?hash=fb1304e8&config=1\\" /* webpackChunkName: i18n_config_ts_fb1304e8 */)",
-    "() => import(\\"../layer1/i18n.custom.ts?hash=0ca697e2&config=1\\" /* webpackChunkName: i18n_custom_ts_0ca697e2 */)",
-    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=475488e5&config=1\\" /* webpackChunkName: vue_i18n_options_js_475488e5 */)",
+    "() => import(\\"../to/i18n.config.ts?hash=fb1304e8&config=1\\" /* webpackChunkName: \\"i18n_config_ts_fb1304e8\\" */)",
+    "() => import(\\"../layer1/i18n.custom.ts?hash=0ca697e2&config=1\\" /* webpackChunkName: \\"i18n_custom_ts_0ca697e2\\" */)",
+    "() => import(\\"../foo/layer2/vue-i18n.options.js?hash=475488e5&config=1\\" /* webpackChunkName: \\"vue_i18n_options_js_475488e5\\" */)",
   ],
 }
 `;
