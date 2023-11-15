@@ -15,7 +15,7 @@ import {
   getComposer,
   useSwitchLocalePath
 } from 'vue-i18n-routing'
-import { navigateTo, useState } from '#imports'
+import { navigateTo, useState, useSiteConfig } from '#imports'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 import {
@@ -221,7 +221,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
     reason,
     from
   } = nuxtI18nOptions.detectBrowserLanguage
-    ? detectBrowserLanguage(
+      ? detectBrowserLanguage(
         route,
         context,
         nuxtI18nOptions,
@@ -231,7 +231,7 @@ export function detectLocale<Context extends NuxtApp = NuxtApp>(
         localeCodes,
         initialLocale
       )
-    : DefaultDetectBrowserLanguageFromResult
+      : DefaultDetectBrowserLanguageFromResult
   __DEBUG__ &&
     console.log(
       'detectLocale: detectBrowserLanguage (browserLocale, stat, reason, from) -',
@@ -505,6 +505,12 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
   }
 ): BaseUrlResolveHandler<Context> {
   return (context: Context): string => {
+    const siteConfig = useSiteConfig()
+    if (siteConfig.url) {
+      __DEBUG__ && console.log('baseUrl: using site config -', siteConfig.url)
+      return siteConfig.url
+    }
+
     if (isFunction(baseUrl)) {
       const baseUrlResult = baseUrl(context)
       __DEBUG__ && console.log('baseUrl: using localeLoader function -', baseUrlResult)
