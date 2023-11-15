@@ -66,14 +66,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (!options.compilation.jit) {
       logger.warn(
         'Opt-out JIT compilation. ' +
-        `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
-        `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
-      )
-    }
-
-    if (options.baseUrl && options.baseUrl !== '') {
-      logger.warn(
-        "`i18n.baseUrl` is deprecated in favor of `site.url` as nuxt i18n now makes use of Nuxt SEO's site config."
+          `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
+          `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
       )
     }
 
@@ -105,7 +99,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       throw new Error(
         formatMessage(
           '`bundle.compositionOnly` option and `types` option is conflicting: ' +
-          `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
+            `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
         )
       )
     }
@@ -113,16 +107,16 @@ export default defineNuxtModule<NuxtI18nOptions>({
     if (options.bundle.runtimeOnly && options.compilation.jit) {
       logger.warn(
         '`bundle.runtimeOnly` option and `compilation.jit` option is conflicting: ' +
-        `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
-          options.compilation.jit
-        )}`
+          `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
+            options.compilation.jit
+          )}`
       )
     }
 
     if (options.strategy === 'no_prefix' && options.differentDomains) {
       logger.warn(
         '`differentDomains` option and `no_prefix` strategy are not compatible. ' +
-        'Change strategy or disable `differentDomains` option.'
+          'Change strategy or disable `differentDomains` option.'
       )
     }
 
@@ -350,7 +344,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 })
 
 // Used by nuxt/module-builder for `types.d.ts` generation
-export interface ModuleOptions extends NuxtI18nOptions { }
+export interface ModuleOptions extends NuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
   i18n?: Pick<NuxtI18nOptions<unknown>, 'baseUrl'>
@@ -377,7 +371,7 @@ export interface RuntimeModuleHooks {
 
 // Used by module for type inference in source code
 declare module '#app' {
-  interface RuntimeNuxtHooks extends RuntimeModuleHooks { }
+  interface RuntimeNuxtHooks extends RuntimeModuleHooks {}
 }
 
 declare module '@nuxt/schema' {
@@ -387,6 +381,6 @@ declare module '@nuxt/schema' {
   interface NuxtOptions {
     ['i18n']?: ModuleOptions
   }
-  interface NuxtHooks extends ModuleHooks { }
-  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig { }
+  interface NuxtHooks extends ModuleHooks {}
+  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
 }
