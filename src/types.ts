@@ -110,9 +110,22 @@ export type NuxtI18nOptions<Context = unknown> = {
   debug?: boolean
   dynamicRouteParams?: boolean
   parallelPlugin?: boolean
+  /**
+   * The fallback base URL to use as a prefix for alternate URLs in hreflang tags.
+   * You can also use `site.url` instead of `i18n.baseUrl`.
+   *
+   * @remarks
+   * By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used.
+   *
+   * Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string.
+   *
+   * Useful to make base URL dynamic based on request headers.
+   *
+   * @defaultValue ''
+   */
+  baseUrl?: I18nRoutingOptions<Context>['baseUrl']
 } & Pick<
   I18nRoutingOptions<Context>,
-  | 'baseUrl'
   | 'strategy'
   | 'defaultDirection'
   | 'defaultLocale'
