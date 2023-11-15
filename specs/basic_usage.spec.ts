@@ -84,9 +84,13 @@ test('layer provides locale `nl` and translation for key `hello`', async () => {
   const { page } = await renderPage('/layer-page')
 
   expect(await getText(page, '#i18n-layer-target')).toEqual('Hello world!')
+  expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/layer-parent')
+  expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual('/layer-parent/layer-child')
 
   await gotoPath(page, '/nl/layer-page')
   expect(await getText(page, '#i18n-layer-target')).toEqual('Hallo wereld!')
+  expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/nl/layer-ouder')
+  expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual('/nl/layer-ouder/layer-kind')
 })
 
 test('layer vueI18n options provides `nl` message', async () => {
