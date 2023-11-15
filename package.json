@@ -88,6 +88,8 @@
     "knitwork": "^1.0.0",
     "magic-string": "^0.30.4",
     "mlly": "^1.4.2",
+    "nuxt-site-config": "^1.4.0",
+    "nuxt-site-config-kit": "^1.4.0",
     "pathe": "^1.1.1",
     "ufo": "^1.3.1",
     "unplugin": "^1.5.0",

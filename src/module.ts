@@ -12,6 +12,7 @@ import {
 } from '@nuxt/kit'
 import { resolve, relative } from 'pathe'
 import { defu } from 'defu'
+import { installNuxtSiteConfig } from 'nuxt-site-config-kit'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
@@ -128,6 +129,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
     filterLocales(options, nuxt)
 
     /**
+     * source baseUrl from Nuxt SEO's `site.url`
+     * TODO: remove i18n's `baseUrl` module option when `site.url` has been in use for a sufficiently long time (starting November 2023)
+     */
+
+    await installNuxtSiteConfig()
+
+    /**
      * setup runtime config
      */
 
@@ -145,7 +153,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         },
         {} as Record<string, { domain: string | undefined }>
       )
-      // TODO: we should support more i18n module options. welcome PRs :-)
+      // TODO: we should support more i18n module options as runtime config. PRs welcome :-)
     })
 
     /**

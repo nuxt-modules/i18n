@@ -49,6 +49,12 @@ importers:
       mlly:
         specifier: ^1.4.2
         version: 1.4.2
+      nuxt-site-config:
+        specifier: ^1.4.0
+        version: 1.4.0(rollup@3.28.1)(vue@3.3.4)
+      nuxt-site-config-kit:
+        specifier: ^1.4.0
+        version: 1.4.0(rollup@3.28.1)(vue@3.3.4)
       pathe:
         specifier: ^1.1.1
         version: 1.1.1
@@ -7917,6 +7923,36 @@ packages:
       - vue
     dev: true
 
+  /nuxt-site-config-kit@1.4.0(rollup@3.28.1)(vue@3.3.4):
+    resolution: {integrity: sha512-zQDlpXMkhLYBTmi4P+dDmHvHdQ7RZC7lVWBxopX27RS9Pf6xRzQR1H7WN2kgjEkbZRVCvYaUS9BsYsVF6Yqu8A==}
+    dependencies:
+      '@nuxt/kit': 3.7.4(rollup@3.28.1)
+      '@nuxt/schema': 3.7.4(rollup@3.28.1)
+      pkg-types: 1.0.3
+      site-config-stack: 1.4.0(vue@3.3.4)
+      std-env: 3.4.3
+      ufo: 1.3.1
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+      - vue
+    dev: false
+
+  /nuxt-site-config@1.4.0(rollup@3.28.1)(vue@3.3.4):
+    resolution: {integrity: sha512-63JJy03qTwn+1tMXAt9Nff41fp3WsBd/NLv3/giAXUPiilgPH7Tdyf/2zKaMacXsZUJ3ySY8KgNHI6t2lJmwaQ==}
+    dependencies:
+      '@nuxt/kit': 3.7.4(rollup@3.28.1)
+      '@nuxt/schema': 3.7.4(rollup@3.28.1)
+      nuxt-site-config-kit: 1.4.0(rollup@3.28.1)(vue@3.3.4)
+      pathe: 1.1.1
+      site-config-stack: 1.4.0(vue@3.3.4)
+      ufo: 1.3.1
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+      - vue
+    dev: false
+
   /nuxt@3.7.0(eslint@8.50.0)(rollup@3.28.1)(typescript@5.2.2):
     resolution: {integrity: sha512-y0/xHYqwuJt20r26xezjpr74FLWR144dMpwSxZ/O2XXUrQUnyO7vHm3fEY4vi+miKbf343YMH5B78GXAELO/Vw==}
     engines: {node: ^14.18.0 || >=16.10.0}
@@ -9531,6 +9567,15 @@ packages:
   /sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
     dev: true
+
+  /site-config-stack@1.4.0(vue@3.3.4):
+    resolution: {integrity: sha512-768t6mk7024SnhtOQJNLWj+eSsUsGLcP5lnmD1ivNQip+mVnF6Xw+7ls08X6J9pF4IWkPdSNP+fR3GTXb7U3Vw==}
+    peerDependencies:
+      vue: ^3
+    dependencies:
+      ufo: 1.3.1
+      vue: 3.3.4
+    dev: false
 
   /slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}

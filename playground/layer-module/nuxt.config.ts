@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   i18n: {
     langDir: 'locales',
     lazy: true,
-    baseUrl: 'http://localhost:3000',
     locales: [
       {
         code: 'en',
@@ -30,5 +29,8 @@ export default defineNuxtConfig({
         name: 'Nederlands'
       }
     ]
+  },
+  site: {
+    url: 'http://localhost:3000'
   }
 })
