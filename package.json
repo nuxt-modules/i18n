@@ -76,7 +76,7 @@
     }
   },
   "dependencies": {
-    "@intlify/shared": "9.5.0",
+    "@intlify/shared": "^9.7.0",
     "@intlify/unplugin-vue-i18n": "^1.4.0",
     "@mizchi/sucrase": "^4.1.0",
     "@nuxt/kit": "^3.7.4",
