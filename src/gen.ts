@@ -86,6 +86,7 @@ export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConf
    * Prepare Vue I18n config imports
    */
   const vueI18nConfigImports = vueI18nConfigPaths
+    .reverse()
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config))
 

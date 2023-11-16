@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
+import { deepCopy } from '@intlify/shared'
 import {
   createLocaleFromRouteGetter,
   extendI18n,
@@ -41,7 +42,6 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
-import defu from 'defu'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
@@ -62,12 +62,12 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
-    let vueI18nOptions: I18nOptions = { messages: {} }
+    const vueI18nOptions: I18nOptions = { messages: {} }
     for (const configFile of vueI18nConfigs) {
       const { default: resolver } = await configFile()
       const resolved = typeof resolver === 'function' ? await resolver() : resolver
 
-      vueI18nOptions = defu(vueI18nOptions, resolved)
+      deepCopy(resolved, vueI18nOptions)
     }
 
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie

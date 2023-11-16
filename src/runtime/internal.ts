@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isArray, isString, isFunction, isObject } from '@intlify/shared'
+import { isArray, isString, isFunction, deepCopy } from '@intlify/shared'
 import {
   findBrowserLocale,
   getLocalesRegex,
@@ -83,36 +83,6 @@ export function parseAcceptLanguage(input: string): string[] {
   // after dash. Tag can also contain score after semicolon, that is assumed to match order
   // so it's not explicitly used.
   return input.split(',').map(tag => tag.split(';')[0])
-}
-
-function deepCopy(src: Record<string, any>, des: Record<string, any>, predicate?: (src: any, des: any) => boolean) {
-  for (const key in src) {
-    if (isArray(src[key])) {
-      if (!isArray(des[key])) {
-        des[key] = []
-      }
-      ;(src[key] as any[]).forEach((item, index) => {
-        if (!des[key][index]) {
-          const desItem = {}
-          deepCopy(item, desItem, predicate)
-          des[key].push(desItem)
-        }
-      })
-    } else if (isObject(src[key])) {
-      if (!isObject(des[key])) {
-        des[key] = {}
-      }
-      deepCopy(src[key], des[key], predicate)
-    } else {
-      if (predicate) {
-        if (predicate(src[key], des[key])) {
-          des[key] = src[key]
-        }
-      } else {
-        des[key] = src[key]
-      }
-    }
-  }
 }
 
 type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }

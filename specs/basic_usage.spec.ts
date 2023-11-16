@@ -187,3 +187,10 @@ test('(#2523) localePath should not double encode paths', async () => {
   expect(await page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
   expect(await page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
 })
+
+test('(#2476) Parametrized messages can be overwritten', async () => {
+  const { page } = await renderPage('/')
+
+  expect(await getText(page, '#module-layer-base-key')).toEqual('Layer base key overwritten!')
+  expect(await getText(page, '#module-layer-base-key-named')).toEqual('Layer base key overwritten, greetings bar!')
+})
