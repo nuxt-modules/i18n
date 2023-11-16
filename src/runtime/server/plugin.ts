@@ -2,7 +2,7 @@ import { defineI18nMiddleware } from '@intlify/h3'
 import { localeMessages, nuxtI18nOptions, isSSG } from '#build/i18n.options.mjs'
 import { example } from '#build/example-file.mjs'
 // @ts-ignore
-import { localeDetector as _localeDetector } from '#inernal/i18n/locale_detector.mjs'
+import { localeDetector as _localeDetector } from '#internal/i18n/locale.detector.mjs'
 
 import type { NitroAppPlugin } from 'nitropack'
 import type { H3Event } from 'h3'
@@ -28,17 +28,9 @@ export const nitroPlugin: NitroAppPlugin = nitro => {
   })
 
   // @ts-expect-error TODO: Argument of type '(event: any) => void' is not assignable to parameter of type 'never'.
-  nitro.hooks.hook('request', event => {
-    // TODO:
-    console.log('onRequest')
-    onRequest(event)
-  })
+  nitro.hooks.hook('request', onRequest)
   // @ts-expect-error TDOO: Argument of type '(event: any) => void' is not assignable to parameter of type 'never'.
-  nitro.hooks.hook('afterResponse', event => {
-    // TODO:
-    console.log('onAfterResponse')
-    onAfterResponse(event)
-  })
+  nitro.hooks.hook('afterResponse', onAfterResponse)
 }
 
 export default nitroPlugin

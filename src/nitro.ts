@@ -31,7 +31,7 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
        * We want to share nuxt i18n options and use the same settings in the nitro plugin.
        *
        */
-      nitroConfig.virtual['#inernal/i18n/locale_detector.mjs'] = () => `
+      nitroConfig.virtual['#internal/i18n/locale.detector.mjs'] = () => `
 import localeDetector from ${JSON.stringify(localeDetectionPath)}
 export { localeDetector }
 `
@@ -47,7 +47,6 @@ export { localeDetector }
         })
       }
 
-      // NOTE: WIP, this
       /**
        * NOTE:
        * WIP
@@ -91,8 +90,7 @@ export { localeDetector }
 }
 
 async function resolveLocaleDetectorPath(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
-  const logger = useLogger(NUXT_I18N_MODULE_ID)
-  const enableServerIntegration = nuxtOptions.experimental.localeDetector != null
+  let enableServerIntegration = nuxtOptions.experimental.localeDetector != null
   if (enableServerIntegration) {
     const localeDetectorPath = await resolvePath(nuxtOptions.experimental.localeDetector!, {
       cwd: nuxt.options.rootDir,
@@ -100,7 +98,9 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt, nuxtOptions: Required<NuxtI
     })
     const hasLocaleDetector = await isExists(localeDetectorPath)
     if (!hasLocaleDetector) {
+      const logger = useLogger(NUXT_I18N_MODULE_ID)
       logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
+      enableServerIntegration = false
     }
     return [enableServerIntegration, localeDetectorPath]
   } else {
