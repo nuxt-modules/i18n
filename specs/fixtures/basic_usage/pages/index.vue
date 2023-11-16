@@ -175,5 +175,9 @@ useHead({
     <section>
       <div id="runtime-config">{{ $t('runtimeKey') }}</div>
     </section>
+    <section>
+      <div id="module-layer-base-key">{{ $t('moduleLayerBaseKey') }}</div>
+      <div id="module-layer-base-key-named">{{ $t('moduleLayerBaseKeyNamed', { name: 'bar' }) }}</div>
+    </section>
   </div>
 </template>

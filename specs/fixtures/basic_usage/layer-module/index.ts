@@ -10,7 +10,7 @@ export default defineNuxtModule({
           {
             code: 'en',
             iso: 'en-US',
-            file: 'en.json',
+            files: ['en-base.json', 'en.json'],
             name: 'English'
           },
           {

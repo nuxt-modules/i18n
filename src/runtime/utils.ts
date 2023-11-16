@@ -16,7 +16,7 @@ import {
   useSwitchLocalePath
 } from 'vue-i18n-routing'
 import { navigateTo, useState } from '#imports'
-import { isString, isFunction, isArray, isObject } from '@intlify/shared'
+import { isString, isFunction, isArray, isObject, deepCopy } from '@intlify/shared'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -110,7 +110,8 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
   const setter = (locale: Locale, message: Record<string, any>) => {
     const base = messages[locale] || {}
-    messages[locale] = { ...base, ...message }
+    deepCopy(message, base)
+    messages[locale] = base
   }
 
   // load fallback messages
