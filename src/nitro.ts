@@ -2,8 +2,10 @@ import createDebug from 'debug'
 import { assign } from '@intlify/shared'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
-import { addServerPlugin, addTemplate, createResolver } from '@nuxt/kit'
+import { addServerPlugin, addTemplate, createResolver, resolvePath, useLogger } from '@nuxt/kit'
 import { getFeatureFlags } from './bundler'
+import { isExists } from './utils'
+import { EXECUTABLE_EXTENSIONS, NUXT_I18N_MODULE_ID } from './constants'
 
 import type { NuxtI18nOptions } from './types'
 import type { Nuxt } from '@nuxt/schema'
@@ -12,9 +14,10 @@ const debug = createDebug('@nuxtjs/i18n:nitro')
 
 export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
   const { resolve } = createResolver(import.meta.url)
+  const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt, nuxtOptions)
 
   nuxt.hook('nitro:config', async nitroConfig => {
-    if (nuxtOptions.experimental.server) {
+    if (enableServerIntegration) {
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {}, {
         inline: [resolve('./runtime')]
@@ -28,7 +31,10 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
        * We want to share nuxt i18n options and use the same settings in the nitro plugin.
        *
        */
-      nitroConfig.virtual['#i18n/resources'] = () => `export const config = { foo: 1 }`
+      nitroConfig.virtual['#inernal/i18n/locale_detector.mjs'] = () => `
+import localeDetector from ${JSON.stringify(localeDetectionPath)}
+export { localeDetector }
+`
 
       // auto import `@intlify/h3` utilities for server-side
       if (nitroConfig.imports) {
@@ -79,7 +85,25 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
   })
 
   // add nitro plugin
-  if (nuxtOptions.experimental.server) {
+  if (enableServerIntegration) {
     await addServerPlugin(resolve('runtime/server/plugin'))
+  }
+}
+
+async function resolveLocaleDetectorPath(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
+  const logger = useLogger(NUXT_I18N_MODULE_ID)
+  const enableServerIntegration = nuxtOptions.experimental.localeDetector != null
+  if (enableServerIntegration) {
+    const localeDetectorPath = await resolvePath(nuxtOptions.experimental.localeDetector!, {
+      cwd: nuxt.options.rootDir,
+      extensions: EXECUTABLE_EXTENSIONS
+    })
+    const hasLocaleDetector = await isExists(localeDetectorPath)
+    if (!hasLocaleDetector) {
+      logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
+    }
+    return [enableServerIntegration, localeDetectorPath]
+  } else {
+    return [enableServerIntegration, '']
   }
 }

@@ -70,7 +70,7 @@ export type CustomRoutePages = {
 }
 
 export interface ExperimentalFeatures {
-  server?: boolean
+  localeDetector?: string
 }
 
 export interface BundleOptions

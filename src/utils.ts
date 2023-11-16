@@ -4,6 +4,7 @@ import { resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
+import { genSafeVariableName } from 'knitwork'
 import { encodePath } from 'ufo'
 // @ts-ignore
 import { transform as stripType } from '@mizchi/sucrase'
@@ -14,7 +15,6 @@ import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, Lo
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
 import type { LocaleObject } from 'vue-i18n-routing'
-import { genSafeVariableName } from 'knitwork'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`

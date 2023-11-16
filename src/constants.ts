@@ -36,7 +36,7 @@ export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
   experimental: {
-    server: false
+    localeDetector: ''
   },
   bundle: {
     compositionOnly: true,

@@ -108,7 +108,7 @@ export default defineNuxtConfig({
   // debug: true,
   i18n: {
     experimental: {
-      server: true
+      localeDetector: './localeDetector.ts'
     },
     compilation: {
       // jit: false,

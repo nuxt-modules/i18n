@@ -1,6 +1,8 @@
 <script setup lang="ts">
-const { data } = await useFetch('/api/server')
-console.log('fetch data from server-side', data)
+const { locale } = useI18n()
+const { data } = await useFetch(`/api/server?locale=${locale.value}`)
+console.log('client locale', locale.value)
+console.log('fetch data from server-side', data.value)
 </script>
 
 <template>

@@ -1,7 +1,8 @@
-import { defineI18nMiddleware, detectLocaleFromAcceptLanguageHeader } from '@intlify/h3'
+import { defineI18nMiddleware } from '@intlify/h3'
 import { localeMessages, nuxtI18nOptions, isSSG } from '#build/i18n.options.mjs'
 import { example } from '#build/example-file.mjs'
-import { config } from '#i18n/resources'
+// @ts-ignore
+import { localeDetector as _localeDetector } from '#inernal/i18n/locale_detector.mjs'
 
 import type { NitroAppPlugin } from 'nitropack'
 import type { H3Event } from 'h3'
@@ -9,15 +10,15 @@ import type { H3Event } from 'h3'
 export const nitroPlugin: NitroAppPlugin = nitro => {
   console.log('nitro plugin test: load nuxt i18n options at nitro plugin ---->', localeMessages, nuxtI18nOptions, isSSG)
   console.log('nitro plugin test: load data at nitro plugin via getContents of addTemplate ---->', example)
-  console.log('nitro plugin test: load nuxt i18n options at nitro plugin via virtual module ---->', config)
+  console.log('nitro plugin test: load nuxt i18n options at nitro plugin via virtual module ---->', _localeDetector)
 
   // NOTE:
   // WIP, custom locale detection
   // We need to respect `detectBrowserLanguage` option (navigator.language, cookie, and `locale` of nuxt i18n options),
   // And we might need to lazy-load i18n resource too
   const localeDetector = (event: H3Event) => {
-    // TODO:
-    const locale = detectLocaleFromAcceptLanguageHeader(event)
+    const locale = _localeDetector(event)
+    console.log('localeDetector', locale)
     return locale
   }
 
