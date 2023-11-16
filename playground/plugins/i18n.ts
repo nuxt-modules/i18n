@@ -1,6 +1,7 @@
 import { defineNuxtPlugin } from '#imports'
 
 export default defineNuxtPlugin(nuxtApp => {
+  console.log('nuxtApp', nuxtApp.$config.public)
   nuxtApp.hook('i18n:beforeLocaleSwitch', ({ oldLocale, newLocale, initialSetup }) => {
     console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup)
   })

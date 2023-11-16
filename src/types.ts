@@ -69,7 +69,9 @@ export type CustomRoutePages = {
       }
 }
 
-export interface ExperimentalFeatures {}
+export interface ExperimentalFeatures {
+  server?: boolean
+}
 
 export interface BundleOptions
   extends Pick<

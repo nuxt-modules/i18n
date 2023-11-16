@@ -107,6 +107,9 @@ export default defineNuxtConfig({
   // },
   // debug: true,
   i18n: {
+    experimental: {
+      server: true
+    },
     compilation: {
       // jit: false,
       strictMessage: false,

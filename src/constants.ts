@@ -35,7 +35,9 @@ export const REDIRECT_ON_OPTIONS = {
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
-  experimental: {},
+  experimental: {
+    server: false
+  },
   bundle: {
     compositionOnly: true,
     runtimeOnly: false,
