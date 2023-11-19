@@ -114,7 +114,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages: NuxtPage[],
 
       if (page.children && page.children.length > 0) {
         ctx.stack.push(page.path)
-        analyzeNuxtPages(ctx, page.children)
+        analyzeNuxtPages(ctx, page.children, pageDirOverride)
         ctx.stack.pop()
       }
     }

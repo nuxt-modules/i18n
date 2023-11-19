@@ -21,6 +21,15 @@ export default defineNuxtConfig({
         file: 'nl.json',
         name: 'Nederlands'
       }
-    ]
+    ],
+    customRoutes: 'config',
+    pages: {
+      'layer-parent': {
+        nl: '/layer-ouder'
+      },
+      'layer-parent/layer-child': {
+        nl: '/layer-ouder/layer-kind'
+      }
+    }
   }
 })
