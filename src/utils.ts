@@ -5,8 +5,7 @@ import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
 import { encodePath } from 'ufo'
-// @ts-ignore
-import { transform as stripType } from '@mizchi/sucrase'
+import { transform as stripType } from 'sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
@@ -180,7 +179,7 @@ export function readCode(absolutePath: string, ext: string) {
   let code = readFileSync(absolutePath)
   if (TS_EXTENSIONS.includes(ext)) {
     const out = stripType(code, {
-      transforms: ['jsx'],
+      transforms: ['typescript', 'jsx'],
       keepUnusedImports: true
     })
     code = out.code
