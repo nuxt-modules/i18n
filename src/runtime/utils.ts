@@ -29,7 +29,7 @@ import {
   getDomainFromLocale,
   proxyNuxt,
   DefaultDetectBrowserLanguageFromResult
-} from '#build/i18n.internal.mjs'
+} from './internal'
 import { joinURL, isEqual } from 'ufo'
 
 import type {
@@ -44,7 +44,7 @@ import type {
 import type { NuxtApp } from '#app'
 import type { I18n, I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
-import type { DetectLocaleContext } from '#build/i18n.internal.mjs'
+import type { DetectLocaleContext } from './internal'
 import type { DeepRequired } from 'ts-essentials'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
