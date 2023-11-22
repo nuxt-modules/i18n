@@ -4,6 +4,7 @@ export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n' as const
 export const VUE_I18N_PKG = 'vue-i18n' as const
 export const SHARED_PKG = '@intlify/shared' as const
 export const MESSAGE_COMPILER_PKG = '@intlify/message-compiler' as const
+export const CORE_PKG = '@intlify/core' as const
 export const CORE_BASE_PKG = '@intlify/core-base' as const
 export const VUE_I18N_BRIDGE_PKG = '@intlify/vue-i18n-bridge' as const
 export const VUE_ROUTER_BRIDGE_PKG = '@intlify/vue-router-bridge' as const

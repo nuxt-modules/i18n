@@ -7,6 +7,7 @@ import {
   VUE_I18N_ROUTING_PKG,
   SHARED_PKG,
   MESSAGE_COMPILER_PKG,
+  CORE_PKG,
   CORE_BASE_PKG,
   UFO_PKG,
   IS_HTTPS_PKG
@@ -28,6 +29,7 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   modules[SHARED_PKG] = `${SHARED_PKG}/dist/shared.mjs`
   modules[MESSAGE_COMPILER_PKG] = `${MESSAGE_COMPILER_PKG}/dist/message-compiler.mjs`
   modules[CORE_BASE_PKG] = `${CORE_BASE_PKG}/dist/core-base.mjs`
+  modules[CORE_PKG] = `${CORE_PKG}/dist/core.node.mjs`
   modules[VUE_ROUTER_BRIDGE_PKG] = `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_BRIDGE_PKG] = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_ROUTING_PKG] = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`
