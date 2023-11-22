@@ -34,14 +34,14 @@ import {
   extendPrefixable,
   extendSwitchLocalePathIntercepter,
   _setLocale
-} from '#build/i18n.utils.mjs'
+} from '../utils'
 import {
   getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
   setLocaleCookie as _setLocaleCookie,
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
-} from '#build/i18n.internal.mjs'
+} from '../internal'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
