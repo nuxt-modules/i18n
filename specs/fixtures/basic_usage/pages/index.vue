@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { navigateTo, useHead } from '#imports'
 import LangSwitcher from '../components/LangSwitcher.vue'
+import LocalScope from '../components/LocalScope.vue'
 
-const { t, locale, locales } = useI18n()
+const { t, locale, locales, localeProperties } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
@@ -80,6 +81,9 @@ useHead({
           <NuxtLink :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
             {{ category.title }}
           </NuxtLink>
+        </li>
+        <li class="path-about">
+          <NuxtLink id="link-about" :to="localePath('/about')">{{ $t('about') }}</NuxtLink>
         </li>
         <li class="path-hash">
           <NuxtLink id="link-about-hash" :to="localePath('/about#my-hash')">{{ $t('about') }}</NuxtLink>
@@ -178,6 +182,10 @@ useHead({
     <section>
       <div id="module-layer-base-key">{{ $t('moduleLayerBaseKey') }}</div>
       <div id="module-layer-base-key-named">{{ $t('moduleLayerBaseKeyNamed', { name: 'bar' }) }}</div>
+    </section>
+    <section>
+      <code id="global-scope-properties">{{ localeProperties }}</code>
+      <LocalScope />
     </section>
   </div>
 </template>

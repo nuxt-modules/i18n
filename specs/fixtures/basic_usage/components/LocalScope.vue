@@ -1,5 +1,5 @@
 <template>
-  <code id="local">{{ localeProperties }}</code>
+  <code id="local-scope-properties">{{ localeProperties }}</code>
 </template>
 
 <script setup lang="ts">

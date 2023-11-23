@@ -8,21 +8,38 @@ await setup({
   // overrides
   nuxtConfig: {
     extends: [fileURLToPath(new URL(`./fixtures/layers/layer-domain`, import.meta.url))],
+    runtimeConfig: {
+      public: {
+        i18n: {
+          locales: {
+            kr: {
+              domain: 'kr.staging.nuxt-app.localhost'
+            }
+          }
+        }
+      }
+    },
     i18n: {
-      // locales: [
-      //   {
-      //     code: 'en',
-      //     iso: 'en',
-      //     name: 'English',
-      //     domain: 'en.nuxt-app.localhost'
-      //   },
-      //   {
-      //     code: 'fr',
-      //     iso: 'fr-FR',
-      //     name: 'Français',
-      //     domain: 'fr.nuxt-app.localhost'
-      //   }
-      // ],
+      locales: [
+        {
+          code: 'en',
+          iso: 'en',
+          name: 'English',
+          domain: 'en.nuxt-app.localhost'
+        },
+        {
+          code: 'fr',
+          iso: 'fr-FR',
+          name: 'Français',
+          domain: 'fr.nuxt-app.localhost'
+        },
+        {
+          code: 'kr',
+          iso: 'ko-KR',
+          name: '한국어',
+          domain: 'kr.nuxt-app.localhost'
+        }
+      ],
       differentDomains: true,
       detectBrowserLanguage: {
         useCookie: true
@@ -95,5 +112,17 @@ test('layer provides locales with domains', async () => {
   // `ja` link uses layer domain configuration
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-ja a').getAttribute('href')).toEqual(
     `http://layer-ja.example.com`
+  )
+})
+
+test('pass `<NuxtLink> to props using domains from runtimeConfig', async () => {
+  const res = await undiciRequest('/', {
+    headers: {
+      Host: 'fr.nuxt-app.localhost'
+    }
+  })
+  const dom = getDom(await res.body.text())
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-kr a').getAttribute('href')).toEqual(
+    `http://kr.staging.nuxt-app.localhost`
   )
 })

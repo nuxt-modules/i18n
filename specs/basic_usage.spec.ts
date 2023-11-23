@@ -14,6 +14,7 @@ await setup({
       fileURLToPath(new URL(`./fixtures/layers/layer-vueI18n-options/layer-simple`, import.meta.url)),
       fileURLToPath(new URL(`./fixtures/layers/layer-vueI18n-options/layer-simple-secondary`, import.meta.url))
     ],
+    plugins: [fileURLToPath(new URL(`./fixtures/plugins/i18nHooks.ts`, import.meta.url))],
     i18n: {
       locales: ['en', 'fr'],
       defaultLocale: 'en'
@@ -197,4 +198,57 @@ test('(#2476) Parametrized messages can be overwritten', async () => {
 
   expect(await getText(page, '#module-layer-base-key')).toEqual('Layer base key overwritten!')
   expect(await getText(page, '#module-layer-base-key-named')).toEqual('Layer base key overwritten, greetings bar!')
+})
+
+test('(#2338) should be extended API', async () => {
+  const { page } = await renderPage('/')
+
+  const globalData = await getData(page, '#global-scope-properties')
+  expect(globalData.code).toEqual('en')
+  const localeData = await getData(page, '#local-scope-properties')
+  expect(localeData.code).toEqual('en')
+})
+
+test('<NuxtLink> triggers runtime hooks', async () => {
+  const { page, consoleLogs } = await renderPage('/kr')
+
+  // click `fr` lang switch with `<NuxtLink>`
+  await page.locator('#nuxt-locale-link-fr').click()
+  await waitForURL(page, '/fr')
+
+  // click `kr` lang switch with `<NuxtLink>`
+  await page.locator('#nuxt-locale-link-kr').click()
+  await waitForURL(page, '/kr')
+
+  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
+  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr kr false'))).toBeTruthy()
+  expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
+
+  // current locale
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+
+  // navigate to about page
+  await page.locator('#link-about').click()
+  await waitForURL(page, '/fr/about')
+
+  // navigate to home page
+  await page.locator('#link-home').click()
+  await waitForURL(page, '/fr')
+})
+
+test('setLocale triggers runtime hooks', async () => {
+  const { page, consoleLogs } = await renderPage('/kr')
+
+  // click `fr` lang switch link
+  await page.locator('#set-locale-link-fr').click()
+
+  // click `kr` lang switch link
+  // Hook prevents locale change to `kr`, stays `fr`
+  await page.locator('#set-locale-link-kr').click()
+  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
+  expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
+  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr kr false'))).toBeTruthy()
+
+  // current locale
+  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 })

@@ -2,7 +2,7 @@
 import { navigateTo } from '#imports'
 import { useLocalePath, useSwitchLocalePath, useLocaleRoute, useI18n } from '#i18n'
 
-const { locale } = useI18n()
+const { locale, locales } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
@@ -63,12 +63,12 @@ function onClick() {
     <section id="switch-locale-path-usages">
       <h3>switchLocalePath</h3>
       <ul>
-        <li class="switch-to-en">
-          <NuxtLink :to="switchLocalePath('en')">English</NuxtLink>
+        <li v-for="l in locales" :key="l" :class="`switch-to-${l}`">
+          <NuxtLink :to="switchLocalePath(l)">l</NuxtLink>
         </li>
-        <li class="switch-to-fr">
+        <!-- <li class="switch-to-fr">
           <NuxtLink :to="switchLocalePath('fr')">Français</NuxtLink>
-        </li>
+        </li> -->
       </ul>
     </section>
     <section id="locale-route-usages">
