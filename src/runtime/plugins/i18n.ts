@@ -41,7 +41,7 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '#build/i18n.internal.mjs'
-import { mergeVueI18nOptions } from '../messages'
+import { loadVueI18nOptions } from '../messages'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
@@ -62,7 +62,7 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
-    const vueI18nOptions: I18nOptions = await mergeVueI18nOptions(vueI18nConfigs)
+    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
 
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions

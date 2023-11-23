@@ -2,7 +2,7 @@ import { defineI18nMiddleware } from '@intlify/h3'
 import { vueI18nConfigs, localeMessages } from '#internal/i18n/options.mjs'
 // @ts-ignore
 import { localeDetector as _localeDetector } from '#internal/i18n/locale.detector.mjs'
-import { mergeVueI18nOptions } from '../messages'
+import { loadVueI18nOptions } from '../messages'
 
 import type { NitroAppPlugin } from 'nitropack'
 import type { H3Event } from 'h3'
@@ -11,8 +11,8 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
   console.log('nitro plugin test: load nuxt i18n options at nitro plugin ---->', localeMessages, vueI18nConfigs)
   console.log('nitro plugin test: load nuxt i18n options at nitro plugin via virtual module ---->', _localeDetector)
 
-  // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue - i18n options
-  const options = (await mergeVueI18nOptions(vueI18nConfigs)) as any // eslint-disable-line @typescript-eslint/no-explicit-any
+  // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue-i18n options
+  const options = (await loadVueI18nOptions(vueI18nConfigs)) as any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // NOTE:
   // WIP, custom locale detection
