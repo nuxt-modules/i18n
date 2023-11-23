@@ -1,9 +1,6 @@
 import fr from './locales/fr.json'
-import { useRuntimeConfig } from '#imports'
 
 export default defineI18nConfig(() => {
-  // defineNuxtPlugin()
-  console.log(useRuntimeConfig())
   return {
     legacy: false,
     locale: 'en',

@@ -1,9 +1,10 @@
-import { findBrowserLocale, getComposer } from 'vue-i18n-routing'
 import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp } from '#imports'
 import { ref } from 'vue'
-import { parseAcceptLanguage } from '#build/i18n.internal.mjs'
+import { parseAcceptLanguage } from '../internal'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import {
+  getComposer,
+  findBrowserLocale,
   useRouteBaseName as _useRouteBaseName,
   useLocalePath as _useLocalePath,
   useLocaleRoute as _useLocaleRoute,

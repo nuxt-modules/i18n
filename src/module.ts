@@ -194,21 +194,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.mjs')
     nuxt.options.build.transpile.push('#i18n')
 
-    // TODO: We don't want to resolve the following as a template,
-    //  but in the runtime dir we want to use as an ESM (e.g. internal and utils)
-
-    // for internal
-    addTemplate({
-      filename: 'i18n.internal.mjs',
-      src: resolve(distDir, 'runtime/internal.mjs')
-    })
-
-    // for utils
-    addTemplate({
-      filename: 'i18n.utils.mjs',
-      src: resolve(distDir, 'runtime/utils.mjs')
-    })
-
     const genTemplate = (isServer: boolean) => {
       return generateTemplateNuxtI18nOptions({
         ...generateLoaderOptions(nuxt, {

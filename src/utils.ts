@@ -6,8 +6,7 @@ import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
 import { genSafeVariableName } from 'knitwork'
 import { encodePath } from 'ufo'
-// @ts-ignore
-import { transform as stripType } from '@mizchi/sucrase'
+import { transform as stripType } from 'sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
@@ -180,7 +179,7 @@ export function readCode(absolutePath: string, ext: string) {
   let code = readFileSync(absolutePath)
   if (TS_EXTENSIONS.includes(ext)) {
     const out = stripType(code, {
-      transforms: ['jsx'],
+      transforms: ['typescript', 'jsx'],
       keepUnusedImports: true
     })
     code = out.code
@@ -351,10 +350,10 @@ export function parseSegment(segment: string) {
         state === SegmentParserState.static
           ? SegmentTokenType.static
           : state === SegmentParserState.dynamic
-          ? SegmentTokenType.dynamic
-          : state === SegmentParserState.optional
-          ? SegmentTokenType.optional
-          : SegmentTokenType.catchall,
+            ? SegmentTokenType.dynamic
+            : state === SegmentParserState.optional
+              ? SegmentTokenType.optional
+              : SegmentTokenType.catchall,
       value: buffer
     })
 
