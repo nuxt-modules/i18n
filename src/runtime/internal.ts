@@ -88,7 +88,7 @@ export function parseAcceptLanguage(input: string): string[] {
 type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
 const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
-async function loadMessage({ key, load }: LocaleLoader, locale: Locale) {
+async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
@@ -130,7 +130,7 @@ export async function loadLocale(
     } else {
       __DEBUG__ && !loader.cache && console.log(loader.key + ' bypassing cache!')
       __DEBUG__ && console.log(loader.key + ' is loading ...')
-      message = await loadMessage(loader, locale)
+      message = await loadMessage(locale, loader)
     }
 
     if (message != null) {
