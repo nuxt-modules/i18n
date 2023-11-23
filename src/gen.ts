@@ -15,12 +15,13 @@ export type LoaderOptions = {
   vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
   localeInfo: LocaleInfo[]
   nuxtI18nOptions: NuxtI18nOptions
+  isServer: boolean
 }
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
-const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): string => {
-  return genDynamicImport(genImportSpecifier(config.meta, 'config'), {
+const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, isServer = false): string => {
+  return genDynamicImport(genImportSpecifier({ ...config.meta, isServer }, 'config'), {
     comment: `webpackChunkName: "${config.meta.key}"`
   })
 }
@@ -47,15 +48,18 @@ function simplifyLocaleOptions(nuxt: Nuxt, locales: LocaleObject[]) {
   })
 }
 
-export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConfigPaths, localeInfo }: LoaderOptions) {
+export function generateLoaderOptions(
+  nuxt: Nuxt,
+  { nuxtI18nOptions, vueI18nConfigPaths, localeInfo, isServer }: LoaderOptions
+) {
   debug('generateLoaderOptions: lazy', nuxtI18nOptions.lazy)
 
   const importMapper = new Map<string, { key: string; load: string; cache: string }>()
   const importStrings: string[] = []
 
-  function generateLocaleImports(locale: string, meta: NonNullable<LocaleInfo['meta']>[number]) {
+  function generateLocaleImports(locale: string, meta: NonNullable<LocaleInfo['meta']>[number], isServer = false) {
     if (importMapper.has(meta.key)) return
-    const importSpecifier = genImportSpecifier(meta, 'locale', { locale })
+    const importSpecifier = genImportSpecifier({ ...meta, isServer }, 'locale', { locale })
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
     if (nuxtI18nOptions.lazy) {
@@ -79,7 +83,7 @@ export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConf
    * Prepare locale file imports
    */
   for (const locale of localeInfo) {
-    locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta))
+    locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta, isServer))
   }
 
   /**
@@ -88,7 +92,7 @@ export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConf
   const vueI18nConfigImports = vueI18nConfigPaths
     .reverse()
     .filter(config => config.absolute !== '')
-    .map(config => generateVueI18nConfiguration(config))
+    .map(config => generateVueI18nConfiguration(config, isServer))
 
   const localeMessages = localeInfo.map(locale => [locale.code, locale.meta?.map(meta => importMapper.get(meta.key))])
 
@@ -111,25 +115,36 @@ export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConf
 }
 
 function genImportSpecifier(
-  { loadPath, path, parsed, hash, type }: Pick<FileMeta, 'loadPath' | 'path' | 'parsed' | 'hash' | 'type'>,
+  {
+    loadPath,
+    path,
+    parsed,
+    hash,
+    type,
+    isServer
+  }: Pick<FileMeta, 'loadPath' | 'path' | 'parsed' | 'hash' | 'type'> & { isServer?: boolean },
   resourceType: PrerenderTarget['type'] | undefined,
   query: Record<string, string> = {}
 ) {
-  if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) return loadPath
+  const getLoadPath = () => (!isServer ? loadPath : path)
+
+  if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) {
+    return getLoadPath()
+  }
 
   if (resourceType != null && type === 'unknown') {
     throw new Error(`'unknown' type in '${path}'.`)
   }
 
   if (resourceType === 'locale') {
-    return withQuery(loadPath, type === 'dynamic' ? { hash, ...query } : {})
+    return !isServer ? withQuery(getLoadPath(), type === 'dynamic' ? { hash, ...query } : {}) : getLoadPath()
   }
 
   if (resourceType === 'config') {
-    return withQuery(loadPath, { hash, ...query, ...{ config: 1 } })
+    return !isServer ? withQuery(getLoadPath(), { hash, ...query, ...{ config: 1 } }) : getLoadPath()
   }
 
-  return loadPath
+  return getLoadPath()
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

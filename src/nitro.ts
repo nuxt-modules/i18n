@@ -2,17 +2,24 @@ import createDebug from 'debug'
 import { assign } from '@intlify/shared'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
-import { addServerPlugin, addTemplate, createResolver, resolvePath, useLogger } from '@nuxt/kit'
+import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/kit'
 import { getFeatureFlags } from './bundler'
 import { isExists } from './utils'
-import { EXECUTABLE_EXTENSIONS, NUXT_I18N_MODULE_ID } from './constants'
+import {
+  EXECUTABLE_EXTENSIONS,
+  NUXT_I18N_MODULE_ID,
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+} from './constants'
 
-import type { NuxtI18nOptions } from './types'
 import type { Nuxt } from '@nuxt/schema'
+import type { NuxtI18nOptions } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
-export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
+export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>, nuxtI18nOptionsCode: string) {
+  console.log('#internal/i18n/options.mjs', nuxtI18nOptionsCode)
+
   const { resolve } = createResolver(import.meta.url)
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt, nuxtOptions)
 
@@ -24,20 +31,15 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
       })
 
       nitroConfig.virtual = nitroConfig.virtual || {}
-      /**
-       * NOTE:
-       * WIP
-       * On the nitro side, we can share code by using virtual modules.
-       * We want to share nuxt i18n options and use the same settings in the nitro plugin.
-       *
-       */
+      nitroConfig.virtual['#internal/i18n/options.mjs'] = () => nuxtI18nOptionsCode
       nitroConfig.virtual['#internal/i18n/locale.detector.mjs'] = () => `
 import localeDetector from ${JSON.stringify(localeDetectionPath)}
 export { localeDetector }
 `
 
-      // auto import `@intlify/h3` utilities for server-side
+      // auto import for server-side
       if (nitroConfig.imports) {
+        // `@intlify/h3` utilities
         const h3Exports = await resolveModuleExportNames('@intlify/h3', { url: import.meta.url })
         const excludes = ['defineI18nMiddleware', 'detectLocaleFromAcceptLanguageHeader']
         nitroConfig.imports.presets = nitroConfig.imports.presets || []
@@ -45,24 +47,16 @@ export { localeDetector }
           from: '@intlify/h3',
           imports: h3Exports.filter(name => !excludes.includes(name))
         })
+        // `defineI18nLocale` and `defineI18nConfig`
+        nitroConfig.imports.imports = nitroConfig.imports.imports || []
+        nitroConfig.imports.imports.push(
+          ...[NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
+            name: key,
+            as: key,
+            from: resolve('runtime/composables/shared')
+          }))
+        )
       }
-
-      /**
-       * NOTE:
-       * WIP
-       * This is a test code to see if the nitro plugin can import when using `getContents` instead of the template file at `addTemplate`.
-       */
-      addTemplate({
-        filename: 'example-file.mjs',
-        getContents: data => {
-          console.log('exmpale-file.mjs', data.options)
-          return 'export const example = 42;\nexport const foo = "bar"'
-        },
-        options: {
-          foo: 'bar',
-          test: 1
-        }
-      })
     }
 
     if (nuxt.options.ssr) {
