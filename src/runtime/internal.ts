@@ -88,8 +88,13 @@ export function parseAcceptLanguage(input: string): string[] {
 type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
 const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
-async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
+async function loadMessage(
+  locale: Locale,
+  { key, load }: LocaleLoader,
+  cache?: Map<string, LocaleMessages<DefineLocaleMessage>>
+) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
+  const cacheMessages = cache || loadedMessages
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
     const getter = await load().then(r => r.default || r)
@@ -99,7 +104,7 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
     } else {
       message = getter
       if (message != null) {
-        loadedMessages.set(key, message)
+        cacheMessages.set(key, message)
       }
       __DEBUG__ && console.log('loadMessage: load', message)
     }
