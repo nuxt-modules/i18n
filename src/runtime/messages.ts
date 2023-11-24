@@ -3,16 +3,7 @@ import { deepCopy } from '@intlify/shared'
 import type { I18nOptions } from 'vue-i18n'
 import type { VueI18nConfig } from '../types'
 
-export async function loadVueI18nOptions(
-  vueI18nConfigs: VueI18nConfig[],
-  configFn?: () => unknown,
-  nuxt?: unknown
-): Promise<I18nOptions> {
-  const configFnBackup = globalThis.useRuntimeConfig
-  if (configFn) {
-    globalThis.useRuntimeConfig = configFn
-  }
-
+export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[], nuxt?: unknown): Promise<I18nOptions> {
   const vueI18nOptions: I18nOptions = { messages: {} }
   for (const configFile of vueI18nConfigs) {
     const { default: resolver } = await configFile()
@@ -26,10 +17,6 @@ export async function loadVueI18nOptions(
         : resolver
 
     deepCopy(resolved, vueI18nOptions)
-  }
-
-  if (configFn) {
-    globalThis.useRuntimeConfig = configFnBackup
   }
 
   return vueI18nOptions

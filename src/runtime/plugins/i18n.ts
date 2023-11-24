@@ -62,7 +62,7 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
-    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, undefined, nuxtContext)
+    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtContext)
 
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
