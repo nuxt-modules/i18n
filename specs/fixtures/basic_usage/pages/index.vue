@@ -31,9 +31,13 @@ const { data, refresh } = useAsyncData('home', () =>
   })
 )
 
+// @ts-ignore
+definePageMeta({
+  title: 'home'
+})
+
 const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
 useHead({
-  title: t('home'),
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang
   },
@@ -162,7 +166,7 @@ useHead({
       <code id="register-module">{{ $t('moduleLayerText') }}</code>
     </section>
     <section>
-      <p id="app-config-name">{{ appConfig.myProject.name }}</p>
+      <p id="app-config-name">{{ appConfig?.myProject?.name }}</p>
     </section>
     <section>
       <div id="layer-message">{{ $t('thanks') }}</div>

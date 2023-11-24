@@ -1,25 +1,14 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup } from './utils'
-import { getData, getText, gotoPath, renderPage, waitForURL } from './helper'
+import { assetLocaleHead, getData, getText, gotoPath, renderPage, waitForURL } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
   browser: true,
   // prerender: true,
   // overrides
-  nuxtConfig: {
-    extends: [
-      fileURLToPath(new URL(`./fixtures/layers/layer-lazy`, import.meta.url)),
-      fileURLToPath(new URL(`./fixtures/layers/layer-vueI18n-options/layer-simple`, import.meta.url)),
-      fileURLToPath(new URL(`./fixtures/layers/layer-vueI18n-options/layer-simple-secondary`, import.meta.url))
-    ],
-    plugins: [fileURLToPath(new URL(`./fixtures/plugins/i18nHooks.ts`, import.meta.url))],
-    i18n: {
-      locales: ['en', 'fr'],
-      defaultLocale: 'en'
-    }
-  }
+  nuxtConfig: {}
 })
 
 test('basic usage', async () => {
@@ -139,7 +128,7 @@ test('fallback to target lang', async () => {
 
   // `en` rendering
   expect(await getText(page, '#locale-path-usages .name a')).toEqual('Homepage')
-  expect(await getText(page, 'title')).toEqual('Homepage')
+  expect(await getText(page, 'title')).toEqual('Page - Homepage')
   expect(await getText(page, '#fallback-key')).toEqual('This is the fallback message!')
 
   // click `nl` lang switch with `<NuxtLink>`
@@ -148,7 +137,7 @@ test('fallback to target lang', async () => {
 
   // fallback to en content translation
   expect(await getText(page, '#locale-path-usages .name a')).toEqual('Homepage')
-  expect(await getText(page, 'title')).toEqual('Homepage')
+  expect(await getText(page, 'title')).toEqual('Page - Homepage')
   expect(await getText(page, '#fallback-key')).toEqual('This is the fallback message!')
 
   // page path
@@ -251,4 +240,59 @@ test('setLocale triggers runtime hooks', async () => {
 
   // current locale
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+})
+
+test('render with meta components', async () => {
+  const { page } = await renderPage('/')
+
+  /**
+   * default locale
+   */
+
+  // title tag
+  expect(await getText(page, 'title')).toMatch('Page - Homepage')
+  await waitForURL(page, '/')
+
+  // html tag `lang` attribute
+  expect(await page.getAttribute('html', 'lang')).toMatch('en')
+
+  // html tag `dir` attribute
+  expect(await page.getAttribute('html', 'dir')).toMatch('ltr')
+
+  // rendering link tag and meta tag in head tag
+  await assetLocaleHead(page, '#layout-use-locale-head')
+
+  /**
+   * change locale
+   */
+
+  // click `fr` lang switch link
+  await page.locator('#nuxt-locale-link-fr').click()
+  await waitForURL(page, '/fr')
+
+  // title tag
+  expect(await getText(page, 'title')).toMatch('Page - Accueil')
+
+  // html tag `lang` attribute
+  expect(await page.getAttribute('html', 'lang')).toMatch('fr')
+
+  // rendering link tag and meta tag in head tag
+  await assetLocaleHead(page, '#layout-use-locale-head')
+
+  /**
+   * access to other page
+   */
+
+  // click about page
+  await page.locator('#link-about').click()
+  await waitForURL(page, '/fr/about')
+
+  // title tag
+  expect(await getText(page, 'title')).toMatch('Page - À propos')
+
+  // html tag `lang` attribute
+  expect(await page.getAttribute('html', 'lang')).toMatch('fr')
+
+  // rendering link tag and meta tag in head tag
+  await assetLocaleHead(page, '#layout-use-locale-head')
 })

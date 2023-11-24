@@ -66,9 +66,6 @@ function onClick() {
         <li v-for="l in locales" :key="l" :class="`switch-to-${l}`">
           <NuxtLink :to="switchLocalePath(l)">l</NuxtLink>
         </li>
-        <!-- <li class="switch-to-fr">
-          <NuxtLink :to="switchLocalePath('fr')">Français</NuxtLink>
-        </li> -->
       </ul>
     </section>
     <section id="locale-route-usages">

@@ -126,3 +126,27 @@ test('pass `<NuxtLink> to props using domains from runtimeConfig', async () => {
     `http://kr.staging.nuxt-app.localhost`
   )
 })
+
+test.each([
+  ['en.nuxt-app.localhost', 'Welcome'],
+  ['fr.nuxt-app.localhost', 'Bienvenue']
+])('(#2374) detect %s with host on server', async (host, header) => {
+  const res = await undiciRequest('/', {
+    headers: {
+      host: host
+    }
+  })
+  const dom = getDom(await res.body.text())
+  expect(dom.querySelector('#welcome-text').textContent).toEqual(header)
+})
+
+test('(#2374) detect with x-forwarded-host on server', async () => {
+  const html = await $fetch('/', {
+    headers: {
+      'X-Forwarded-Host': 'fr.nuxt-app.localhost'
+    }
+  })
+  const dom = getDom(html)
+
+  expect(dom.querySelector('#welcome-text').textContent).toEqual('Bienvenue')
+})
