@@ -13,6 +13,7 @@ import {
   getLocale,
   getComposer
 } from 'vue-i18n-routing'
+import { deepCopy } from '@intlify/shared'
 import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
 import {
   localeCodes,
@@ -22,7 +23,6 @@ import {
   isSSG,
   parallelPlugin
 } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions } from '../messages'
 import {
   loadInitialMessages,
   loadAndSetLocale,
@@ -62,7 +62,16 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
-    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
+    /**
+     * NOTE: we want to use `loadVueI18nOptions` of `messages.ts` ... if we use it, `useRuntimeConfig` does not work...
+     */
+    const vueI18nOptions: I18nOptions = { messages: {} }
+    for (const configFile of vueI18nConfigs) {
+      const { default: resolver } = await configFile()
+      const resolved = typeof resolver === 'function' ? await resolver() : resolver
+
+      deepCopy(resolved, vueI18nOptions)
+    }
 
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions

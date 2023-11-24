@@ -1,6 +1,7 @@
 import fr from './locales/fr.json'
 
 export default defineI18nConfig(() => {
+  const config = useRuntimeConfig()
   return {
     legacy: false,
     locale: 'en',
