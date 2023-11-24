@@ -2,7 +2,6 @@ import fr from './locales/fr.json'
 
 export default defineI18nConfig(() => {
   const config = useRuntimeConfig()
-  console.log(useRuntimeConfig())
   return {
     legacy: false,
     locale: 'en',
@@ -13,8 +12,7 @@ export default defineI18nConfig(() => {
           buz: 'こんにちは！{name}!',
           fn: ({ named }: any) => `こんにちは！${named('name')}!`
         },
-        items: [{ name: 'りんご' }, { name: 'バナナ' }, { name: 'いちご' }],
-        runtimeConfigKey: config.public.runtimeConfigKey
+        items: [{ name: 'りんご' }, { name: 'バナナ' }, { name: 'いちご' }]
       },
       fr
     },

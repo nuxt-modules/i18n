@@ -22,6 +22,7 @@ import {
   isSSG,
   parallelPlugin
 } from '#build/i18n.options.mjs'
+import { loadVueI18nOptions } from '../messages'
 import {
   loadInitialMessages,
   loadAndSetLocale,
@@ -45,7 +46,6 @@ import {
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
-import { loadVueI18nOptions } from '../messages'
 
 type GetRouteBaseName = typeof getRouteBaseName
 type LocalePath = typeof localePath
