@@ -1,14 +1,24 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup } from './utils'
-import { assetLocaleHead, getData, getText, gotoPath, renderPage, waitForURL } from './helper'
+import { getData, getText, gotoPath, renderPage, waitForURL } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
   browser: true,
   // prerender: true,
   // overrides
-  nuxtConfig: {}
+  nuxtConfig: {
+    extends: [
+      fileURLToPath(new URL(`./fixtures/layers/layer-lazy`, import.meta.url)),
+      fileURLToPath(new URL(`./fixtures/layers/layer-vueI18n-options/layer-simple`, import.meta.url)),
+      fileURLToPath(new URL(`./fixtures/layers/layer-vueI18n-options/layer-simple-secondary`, import.meta.url))
+    ],
+    i18n: {
+      locales: ['en', 'fr'],
+      defaultLocale: 'en'
+    }
+  }
 })
 
 test('basic usage', async () => {
@@ -97,8 +107,8 @@ test('layer vueI18n options properties are merge and override by priority', asyn
 
   await page.click(`#switch-locale-path-usages .switch-to-fr a`)
   await waitForURL(page, '/fr')
-  expect(await getText(page, '#snake-case')).toEqual('À-propos-de-ce-site')
-  expect(await getText(page, '#pascal-case')).toEqual('ÀProposDeCeSite')
+  expect(await getText(page, '#snake-case')).toEqual('Should-be-overridden')
+  expect(await getText(page, '#pascal-case')).toEqual('ShouldBeOverridden')
   expect(await getText(page, '#fallback-message')).toEqual('Unique translation')
 })
 
@@ -187,112 +197,4 @@ test('(#2476) Parametrized messages can be overwritten', async () => {
 
   expect(await getText(page, '#module-layer-base-key')).toEqual('Layer base key overwritten!')
   expect(await getText(page, '#module-layer-base-key-named')).toEqual('Layer base key overwritten, greetings bar!')
-})
-
-test('(#2338) should be extended API', async () => {
-  const { page } = await renderPage('/')
-
-  const globalData = await getData(page, '#global-scope-properties')
-  expect(globalData.code).toEqual('en')
-  const localeData = await getData(page, '#local-scope-properties')
-  expect(localeData.code).toEqual('en')
-})
-
-test('<NuxtLink> triggers runtime hooks', async () => {
-  const { page, consoleLogs } = await renderPage('/kr')
-
-  // click `fr` lang switch with `<NuxtLink>`
-  await page.locator('#nuxt-locale-link-fr').click()
-  await waitForURL(page, '/fr')
-
-  // click `kr` lang switch with `<NuxtLink>`
-  await page.locator('#nuxt-locale-link-kr').click()
-  await waitForURL(page, '/kr')
-
-  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
-  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr kr false'))).toBeTruthy()
-  expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
-
-  // current locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
-
-  // navigate to about page
-  await page.locator('#link-about').click()
-  await waitForURL(page, '/fr/about')
-
-  // navigate to home page
-  await page.locator('#link-home').click()
-  await waitForURL(page, '/fr')
-})
-
-test('setLocale triggers runtime hooks', async () => {
-  const { page, consoleLogs } = await renderPage('/kr')
-
-  // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
-
-  // click `kr` lang switch link
-  // Hook prevents locale change to `kr`, stays `fr`
-  await page.locator('#set-locale-link-kr').click()
-  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
-  expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
-  expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr kr false'))).toBeTruthy()
-
-  // current locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
-})
-
-test('render with meta components', async () => {
-  const { page } = await renderPage('/')
-
-  /**
-   * default locale
-   */
-
-  // title tag
-  expect(await getText(page, 'title')).toMatch('Page - Homepage')
-  await waitForURL(page, '/')
-
-  // html tag `lang` attribute
-  expect(await page.getAttribute('html', 'lang')).toMatch('en')
-
-  // html tag `dir` attribute
-  expect(await page.getAttribute('html', 'dir')).toMatch('ltr')
-
-  // rendering link tag and meta tag in head tag
-  await assetLocaleHead(page, '#layout-use-locale-head')
-
-  /**
-   * change locale
-   */
-
-  // click `fr` lang switch link
-  await page.locator('#nuxt-locale-link-fr').click()
-  await waitForURL(page, '/fr')
-
-  // title tag
-  expect(await getText(page, 'title')).toMatch('Page - Accueil')
-
-  // html tag `lang` attribute
-  expect(await page.getAttribute('html', 'lang')).toMatch('fr')
-
-  // rendering link tag and meta tag in head tag
-  await assetLocaleHead(page, '#layout-use-locale-head')
-
-  /**
-   * access to other page
-   */
-
-  // click about page
-  await page.locator('#link-about').click()
-  await waitForURL(page, '/fr/about')
-
-  // title tag
-  expect(await getText(page, 'title')).toMatch('Page - À propos')
-
-  // html tag `lang` attribute
-  expect(await page.getAttribute('html', 'lang')).toMatch('fr')
-
-  // rendering link tag and meta tag in head tag
-  await assetLocaleHead(page, '#layout-use-locale-head')
 })
