@@ -89,7 +89,7 @@ export function generateLoaderOptions(
   /**
    * Prepare Vue I18n config imports
    */
-  const vueI18nConfigImports = vueI18nConfigPaths
+  const vueI18nConfigImports = [...vueI18nConfigPaths]
     .reverse()
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config, isServer))
