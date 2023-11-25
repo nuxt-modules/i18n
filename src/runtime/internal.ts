@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { isArray, isString, isFunction, deepCopy } from '@intlify/shared'
+import { isArray, isString } from '@intlify/shared'
 import {
   findBrowserLocale,
   getLocalesRegex,
@@ -12,10 +12,10 @@ import {
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie } from '#imports'
-import { nuxtI18nOptionsDefault, localeMessages, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
+import { nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#app'
-import type { I18nOptions, Locale, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type { I18nOptions, Locale, VueI18n } from 'vue-i18n'
 import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
 import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
@@ -83,67 +83,6 @@ export function parseAcceptLanguage(input: string): string[] {
   // after dash. Tag can also contain score after semicolon, that is assumed to match order
   // so it's not explicitly used.
   return input.split(',').map(tag => tag.split(';')[0])
-}
-
-type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
-const loadedMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
-
-async function loadMessage(
-  locale: Locale,
-  { key, load }: LocaleLoader,
-  cache?: Map<string, LocaleMessages<DefineLocaleMessage>>
-) {
-  let message: LocaleMessages<DefineLocaleMessage> | null = null
-  const cacheMessages = cache || loadedMessages
-  try {
-    __DEBUG__ && console.log('loadMessage: (locale) -', locale)
-    const getter = await load().then(r => r.default || r)
-    if (isFunction(getter)) {
-      message = await getter(locale)
-      __DEBUG__ && console.log('loadMessage: dynamic load', message)
-    } else {
-      message = getter
-      if (message != null) {
-        cacheMessages.set(key, message)
-      }
-      __DEBUG__ && console.log('loadMessage: load', message)
-    }
-  } catch (e: any) {
-    // eslint-disable-next-line no-console
-    console.error(formatMessage('Failed locale loading: ' + e.message))
-  }
-  return message
-}
-
-export async function loadLocale(
-  locale: Locale,
-  setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
-) {
-  const loaders = localeMessages[locale]
-  if (loaders == null) {
-    console.warn(formatMessage('Could not find messages for locale code: ' + locale))
-    return
-  }
-
-  const targetMessage: LocaleMessages<DefineLocaleMessage> = {}
-  for (const loader of loaders) {
-    let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
-
-    if (loadedMessages.has(loader.key) && loader.cache) {
-      __DEBUG__ && console.log(loader.key + ' is already loaded')
-      message = loadedMessages.get(loader.key)
-    } else {
-      __DEBUG__ && !loader.cache && console.log(loader.key + ' bypassing cache!')
-      __DEBUG__ && console.log(loader.key + ' is loading ...')
-      message = await loadMessage(locale, loader)
-    }
-
-    if (message != null) {
-      deepCopy(message, targetMessage)
-    }
-  }
-
-  setter(locale, targetMessage)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

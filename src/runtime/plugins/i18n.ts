@@ -20,11 +20,11 @@ import {
   nuxtI18nOptions,
   nuxtI18nInternalOptions,
   isSSG,
+  localeMessages,
   parallelPlugin
 } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions } from '../messages'
+import { loadVueI18nOptions, loadInitialMessages } from '../messages'
 import {
-  loadInitialMessages,
   loadAndSetLocale,
   detectLocale,
   detectRedirect,
@@ -43,7 +43,7 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from '../internal'
 
-import type { Composer, Locale, I18nOptions } from 'vue-i18n'
+import type { Composer, Locale, I18nOptions, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
 
@@ -52,6 +52,9 @@ type LocalePath = typeof localePath
 type LocaleRoute = typeof localeRoute
 type LocaleHead = typeof localeHead
 type SwitchLocalePath = typeof switchLocalePath
+
+// cache for locale messages
+const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -121,11 +124,12 @@ export default defineNuxtPlugin({
     __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
     // load initial vue-i18n locale messages
-    vueI18nOptions.messages = await loadInitialMessages(vueI18nOptions.messages, {
+    vueI18nOptions.messages = await loadInitialMessages(vueI18nOptions.messages, localeMessages, {
       ...nuxtI18nOptions,
       initialLocale,
       fallbackLocale: vueI18nOptions.fallbackLocale,
-      localeCodes
+      localeCodes,
+      cacheMessages
     })
 
     /**
@@ -203,10 +207,11 @@ export default defineNuxtPlugin({
           })
           composer.setLocale = async (locale: string) => {
             const localeSetup = isInitialLocaleSetup(locale)
-            const [modified] = await loadAndSetLocale(locale, nuxtContext, i18n, {
+            const [modified] = await loadAndSetLocale(locale, nuxtContext, localeMessages, i18n, {
               useCookie,
               differentDomains,
               initial: localeSetup,
+              cacheMessages,
               skipSettingLocaleOnNavigate,
               lazy
             })
@@ -463,10 +468,11 @@ export default defineNuxtPlugin({
         const localeSetup = isInitialLocaleSetup(locale)
         __DEBUG__ && console.log('localeSetup', localeSetup)
 
-        const [modified] = await loadAndSetLocale(locale, nuxtContext, i18n, {
+        const [modified] = await loadAndSetLocale(locale, nuxtContext, localeMessages, i18n, {
           useCookie,
           differentDomains,
           initial: localeSetup,
+          cacheMessages,
           skipSettingLocaleOnNavigate,
           lazy
         })
