@@ -38,6 +38,7 @@ useHead({
 <template>
   <div>
     <h1 id="home-header">{{ $t('home') }}</h1>
+    <div id="welcome-text">{{ t('welcome') }}</div>
     <BasicUsage />
     <LangSwitcher />
     <section>

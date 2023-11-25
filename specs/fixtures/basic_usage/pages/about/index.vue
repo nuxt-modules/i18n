@@ -9,6 +9,11 @@ const code = computed(() => {
   return localeProperties.value.code
 })
 
+// @ts-ignore
+definePageMeta({
+  title: 'about'
+})
+
 /*
 // TODO: defineNuxtI18n macro
 defineNuxtI18n({

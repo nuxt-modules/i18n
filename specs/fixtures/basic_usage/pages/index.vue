@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { navigateTo, useHead } from '#imports'
 import LangSwitcher from '../components/LangSwitcher.vue'
+import LocalScope from '../components/LocalScope.vue'
 
-const { t, locale, locales } = useI18n()
+const { t, locale, locales, localeProperties } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
@@ -30,9 +31,13 @@ const { data, refresh } = useAsyncData('home', () =>
   })
 )
 
+// @ts-ignore
+definePageMeta({
+  title: 'home'
+})
+
 const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
 useHead({
-  title: t('home'),
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang
   },
@@ -80,6 +85,9 @@ useHead({
           <NuxtLink :to="localePath({ name: 'category-slug', params: { slug: category.slug } })">
             {{ category.title }}
           </NuxtLink>
+        </li>
+        <li class="path-about">
+          <NuxtLink id="link-about" :to="localePath('/about')">{{ $t('about') }}</NuxtLink>
         </li>
         <li class="path-hash">
           <NuxtLink id="link-about-hash" :to="localePath('/about#my-hash')">{{ $t('about') }}</NuxtLink>
@@ -158,7 +166,7 @@ useHead({
       <code id="register-module">{{ $t('moduleLayerText') }}</code>
     </section>
     <section>
-      <p id="app-config-name">{{ appConfig.myProject.name }}</p>
+      <p id="app-config-name">{{ appConfig?.myProject?.name }}</p>
     </section>
     <section>
       <div id="layer-message">{{ $t('thanks') }}</div>
@@ -178,6 +186,10 @@ useHead({
     <section>
       <div id="module-layer-base-key">{{ $t('moduleLayerBaseKey') }}</div>
       <div id="module-layer-base-key-named">{{ $t('moduleLayerBaseKeyNamed', { name: 'bar' }) }}</div>
+    </section>
+    <section>
+      <code id="global-scope-properties">{{ localeProperties }}</code>
+      <LocalScope />
     </section>
   </div>
 </template>

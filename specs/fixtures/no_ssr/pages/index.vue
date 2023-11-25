@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div id="top">Foo</div>
     Locale: <code id="locale">{{ locale }}</code>
   </div>
 </template>
