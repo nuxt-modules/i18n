@@ -10,7 +10,7 @@ const head = useLocaleHead({
   identifierAttribute: 'id',
   addSeoAttributes: { canonicalQueries: ['page'] }
 })
-const title = computed(() => `Page - ${t(route.meta.title as string)}`)
+const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 </script>
 
 <template>
@@ -25,16 +25,10 @@ const title = computed(() => `Page - ${t(route.meta.title as string)}`)
       </template>
     </Head>
     <Body>
-      <NuxtPage />
-      <section style="display: none">
-        <code id="home-use-locale-head">{{ head }}</code>
+      <slot />
+      <section>
+        <code id="layout-use-locale-head">{{ head }}</code>
       </section>
     </Body>
   </Html>
 </template>
-
-<style>
-section {
-  margin: 1rem 0;
-}
-</style>

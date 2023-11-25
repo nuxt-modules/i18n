@@ -4,7 +4,7 @@ export default defineNuxtPlugin(nuxtApp => {
   nuxtApp.hook('i18n:beforeLocaleSwitch', ({ oldLocale, newLocale, initialSetup }) => {
     console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup)
 
-    if (newLocale === 'en') {
+    if (newLocale === 'kr') {
       return 'fr'
     }
   })

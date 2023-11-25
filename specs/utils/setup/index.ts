@@ -4,7 +4,7 @@ import { startServer, stopServer } from '../server'
 import { createBrowser } from '../browser'
 import setupJest from './jest'
 import setupVitest from './vitest'
-// import consola from 'consola'
+import consola from 'consola'
 
 import type { TestHooks, TestOptions, VitestContext } from '../types'
 
@@ -18,9 +18,9 @@ export function createTest(options: Partial<TestOptions>): TestHooks {
 
   const beforeEach = () => {
     setTestContext(ctx)
-    // if (!process.env.CI) {
-    //   consola.restoreConsole()
-    // }
+    if (!process.env.CI) {
+      consola.restoreConsole()
+    }
   }
 
   const afterEach = () => {

@@ -6,8 +6,11 @@ export default defineI18nConfig(() => {
     locale: 'en',
     messages: {
       fr: {
-        welcome: 'Bienvenue',
         home: 'Accueil',
+        about: 'À propos',
+        posts: 'Articles',
+        categories: 'Catégories',
+        welcome: 'Bienvenue',
         profile: 'Profil',
         aboutSite: 'À propos de ce site',
         snakeCaseText: "@.snakeCase:{'aboutSite'}",
@@ -16,8 +19,11 @@ export default defineI18nConfig(() => {
         modifier: "@.snakeCase:{'hello'}"
       },
       en: {
-        welcome: 'Welcome',
         home: 'Homepage',
+        about: 'About us',
+        posts: 'Posts',
+        categories: 'Categories',
+        welcome: 'Welcome',
         profile: 'Profile',
         hello: 'Hello world!',
         modifier: "@.snakeCase:{'hello'}",
