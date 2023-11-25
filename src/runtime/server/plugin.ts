@@ -15,7 +15,7 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
   console.log('nitro plugin test: load nuxt i18n options at nitro plugin via virtual module ---->', _localeDetector)
 
   // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue-i18n options
-  const options = await loadVueI18nOptions(vueI18nConfigs, nuxtMock)
+  const options = (await loadVueI18nOptions(vueI18nConfigs, nuxtMock)) as any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // NOTE:
   // WIP, custom locale detection
