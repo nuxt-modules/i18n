@@ -20,6 +20,12 @@ export default defineNuxtConfig({
         iso: 'nl-NL',
         file: 'nl.json',
         name: 'Nederlands'
+      },
+      {
+        code: 'kr',
+        iso: 'kr-KO',
+        file: 'kr.json',
+        name: '한국어'
       }
     ],
     customRoutes: 'config',

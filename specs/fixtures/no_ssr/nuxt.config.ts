@@ -11,9 +11,13 @@ export default defineNuxtConfig({
       {
         code: 'fr',
         domain: 'fr.nuxt-app.localhost'
+      },
+      {
+        code: 'nl',
+        domain: 'localhost'
       }
     ],
-    strategy: 'prefix'
+    strategy: 'no_prefix'
     // detectBrowserLanguage: false
   },
   ssr: false
