@@ -14,7 +14,7 @@ export type TemplateNuxtI18nOptions = {
 } & ReturnType<typeof generateLoaderOptions>
 
 export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
-  const t = `
+  return `
 // @ts-nocheck
 ${options.importStrings.length > 0 ? options.importStrings.join('\n') + '\n' : ''}
 
@@ -48,5 +48,4 @@ export const parallelPlugin = ${options.parallelPlugin}
 export const isSSG = ${options.isSSG}
 
 `
-  return t
 }

@@ -18,8 +18,6 @@ import type { NuxtI18nOptions } from './types'
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
 export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>, nuxtI18nOptionsCode: string) {
-  console.log('#internal/i18n/options.mjs', nuxtI18nOptionsCode)
-
   const { resolve } = createResolver(import.meta.url)
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt, nuxtOptions)
 
@@ -59,10 +57,12 @@ export { localeDetector }
       }
     }
 
+    nitroConfig.replace = nitroConfig.replace || {}
+
     if (nuxt.options.ssr) {
       // vue-i18n feature flags configuration for server-side (server api, server middleware, etc...)
       nitroConfig.replace = assign(
-        nitroConfig.replace || {},
+        nitroConfig.replace,
         getFeatureFlags({
           jit: nuxtOptions.compilation.jit,
           compositionOnly: nuxtOptions.bundle.compositionOnly,
@@ -70,11 +70,11 @@ export { localeDetector }
           dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false
         })
       )
-
-      // setup debug flag
-      nitroConfig.replace['__DEBUG__'] = String(nuxtOptions.debug)
-      debug('nitro.replace', nitroConfig.replace)
     }
+
+    // setup debug flag
+    nitroConfig.replace['__DEBUG__'] = String(nuxtOptions.debug)
+    debug('nitro.replace', nitroConfig.replace)
   })
 
   // add nitro plugin
