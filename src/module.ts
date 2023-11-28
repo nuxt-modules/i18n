@@ -194,12 +194,17 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.mjs')
     nuxt.options.build.transpile.push('#i18n')
 
-    const genTemplate = (isServer: boolean) => {
+    const genTemplate = (isServer: boolean, lazy?: boolean) => {
+      const nuxtI18nOptions = defu({}, options)
+      // override `lazy` options
+      if (lazy != null) {
+        nuxtI18nOptions.lazy = lazy
+      }
       return generateTemplateNuxtI18nOptions({
         ...generateLoaderOptions(nuxt, {
           vueI18nConfigPaths,
           localeInfo,
-          nuxtI18nOptions: options,
+          nuxtI18nOptions,
           isServer
         }),
         NUXT_I18N_MODULE_ID,
@@ -267,7 +272,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nitro
      */
 
-    await setupNitro(nuxt, options, genTemplate(true))
+    await setupNitro(nuxt, options, genTemplate(true, true))
 
     /**
      * auto imports
