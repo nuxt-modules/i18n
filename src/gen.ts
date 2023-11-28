@@ -21,9 +21,14 @@ export type LoaderOptions = {
 const debug = createDebug('@nuxtjs/i18n:gen')
 
 const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, isServer = false): string => {
-  return genDynamicImport(genImportSpecifier({ ...config.meta, isServer }, 'config'), {
-    comment: `webpackChunkName: "${config.meta.key}"`
-  })
+  return genDynamicImport(
+    genImportSpecifier({ ...config.meta, isServer }, 'config'),
+    !isServer
+      ? {
+          comment: `webpackChunkName: "${config.meta.key}"`
+        }
+      : {}
+  )
 }
 
 function simplifyLocaleOptions(nuxt: Nuxt, locales: LocaleObject[]) {
@@ -63,7 +68,7 @@ export function generateLoaderOptions(
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
     if (nuxtI18nOptions.lazy) {
-      importer.load = genDynamicImport(importSpecifier, { comment: `webpackChunkName: "${meta.key}"` })
+      importer.load = genDynamicImport(importSpecifier, !isServer ? { comment: `webpackChunkName: "${meta.key}"` } : {})
     } else {
       const assertFormat = meta.parsed.ext.slice(1)
       const importOptions = assertFormat ? { assert: { type: assertFormat } } : {}
