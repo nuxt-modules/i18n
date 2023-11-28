@@ -3,9 +3,9 @@
 exports[`basic 1`] = `
 {
   "importStrings": [
-    "import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };",
-    "import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };",
-    "import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };",
+    "import locale__test_srcDir_en_json from \\"../en.json\\";",
+    "import locale__test_srcDir_ja_json from \\"../ja.json\\";",
+    "import locale__test_srcDir_fr_json from \\"../fr.json\\";",
   ],
   "localeMessages": [
     [
@@ -379,9 +379,9 @@ exports[`toCode: function (named) 1`] = `
 exports[`vueI18n option 1`] = `
 {
   "importStrings": [
-    "import locale__test_srcDir_en_json from \\"../en.json\\" assert { type: \\"json\\" };",
-    "import locale__test_srcDir_ja_json from \\"../ja.json\\" assert { type: \\"json\\" };",
-    "import locale__test_srcDir_fr_json from \\"../fr.json\\" assert { type: \\"json\\" };",
+    "import locale__test_srcDir_en_json from \\"../en.json\\";",
+    "import locale__test_srcDir_ja_json from \\"../ja.json\\";",
+    "import locale__test_srcDir_fr_json from \\"../fr.json\\";",
   ],
   "localeMessages": [
     [

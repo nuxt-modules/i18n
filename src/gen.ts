@@ -70,10 +70,7 @@ export function generateLoaderOptions(
     if (nuxtI18nOptions.lazy) {
       importer.load = genDynamicImport(importSpecifier, !isServer ? { comment: `webpackChunkName: "${meta.key}"` } : {})
     } else {
-      const assertFormat = meta.parsed.ext.slice(1)
-      const importOptions = assertFormat ? { assert: { type: assertFormat } } : {}
-      importStrings.push(genImport(importSpecifier, meta.key, importOptions))
-
+      importStrings.push(genImport(importSpecifier, meta.key))
       importer.load = `() => Promise.resolve(${meta.key})`
     }
 
