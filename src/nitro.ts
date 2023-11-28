@@ -18,7 +18,7 @@ import type { NuxtI18nOptions } from './types'
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
 export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>, nuxtI18nOptionsCode: string) {
-  // console.log('#internal/i18n/options.mjs', nuxtI18nOptionsCode)
+  console.log('#internal/i18n/options.mjs', nuxtI18nOptionsCode)
 
   const { resolve } = createResolver(import.meta.url)
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt, nuxtOptions)
