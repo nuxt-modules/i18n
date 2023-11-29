@@ -319,3 +319,12 @@ test('server integration extended from `layers/layer-server`', async () => {
   const resQuery = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
   expect(resQuery?.snakeCaseText).toMatch('À-propos-de-ce-site')
 })
+
+test('dynamic parameters', async () => {
+  const { page } = await renderPage('/products/big-chair')
+  console.log(await page.content())
+  expect(await page.locator('#switch-nuxt-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
+
+  await gotoPath(page, '/nl/products/rode-mok')
+  expect(await page.locator('#switch-nuxt-link-en').getAttribute('href')).toEqual('/products/red-mug')
+})
