@@ -543,7 +543,7 @@ export function addHreflangLinks(locales: LocaleObject[], head: HeadParam, idAtt
     if (localePath) {
       links.push({
         [idAttribute]: 'i18n-xd',
-        rel: 'alternate2',
+        rel: 'alternate',
         href: toAbsoluteUrl(localePath, baseUrl.value),
         hreflang: 'x-default'
       })

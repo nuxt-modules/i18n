@@ -7,11 +7,13 @@ import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 
 const locales: LocaleMessages<DefineLocaleMessage> = {
   'en-GB': {
+    id: new Date().toISOString(),
     settings: {
       profile: 'Profile'
     }
   },
   ja: {
+    id: new Date().toISOString(),
     layouts: {
       title: 'ページ ー {title}'
     },
@@ -26,8 +28,12 @@ const locales: LocaleMessages<DefineLocaleMessage> = {
   }
 }
 
-export default defineEventHandler(event => {
+export default defineEventHandler(async event => {
   const locale = event.context.params?.locale
+  locales['en-GB'].id = new Date().toISOString()
+  locales['ja'].id = new Date().toISOString()
+
+  await new Promise(resolve => setTimeout(resolve, 5000))
   if (locale == null) {
     return {}
   }
