@@ -296,6 +296,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useLocaleHead',
         'useBrowserLocale',
         'useCookieLocale',
+        'useSetI18nParams',
         NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
         NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
         NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
