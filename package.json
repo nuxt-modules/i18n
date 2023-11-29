@@ -106,6 +106,7 @@
     "@types/debug": "^4.1.9",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
+    "@unhead/vue": "^1.8.8",
     "bumpp": "^9.2.0",
     "changelogithub": "^0.13.0",
     "consola": "^3",
@@ -130,6 +131,7 @@
     "unbuild": "^2.0.0",
     "undici": "^6.0.1",
     "vitest": "^1.0.0",
+    "unhead": "^1.8.8",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+import { useI18n } from 'vue-i18n'
 import {
   getLocale,
   setLocale,
@@ -13,11 +13,14 @@ import {
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter,
   getComposer,
-  useSwitchLocalePath
+  useLocaleRoute,
+  useRouteBaseName,
+  useSwitchLocalePath,
+  STRATEGIES
 } from 'vue-i18n-routing'
 import { joinURL, isEqual } from 'ufo'
-import { isString, isFunction, isObject } from '@intlify/shared'
-import { navigateTo, useState } from '#imports'
+import { isString, isFunction, isArray, isObject } from '@intlify/shared'
+import { navigateTo, useRoute, useState } from '#imports'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -39,7 +42,8 @@ import type {
   RouteLocationNormalizedLoaded,
   BaseUrlResolveHandler,
   PrefixableOptions,
-  SwitchLocalePathIntercepter
+  SwitchLocalePathIntercepter,
+  I18nHeadOptions
 } from 'vue-i18n-routing'
 import type { I18n, I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -47,6 +51,7 @@ import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions
 import type { DeepRequired } from 'ts-essentials'
 import type { DetectLocaleContext } from './internal'
 import type { LocaleLoader as LocaleInternalLoader } from './messages'
+import type { HeadSafe } from '@unhead/vue'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -491,3 +496,151 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+export type HeadParam = Required<Pick<HeadSafe, 'htmlAttrs' | 'meta' | 'link'>>
+type IdParam = NonNullable<I18nHeadOptions['identifierAttribute']>
+
+export function addHreflangLinks(locales: LocaleObject[], head: HeadParam, idAttribute: IdParam) {
+  const { defaultLocale, strategy, baseUrl } = useI18n()
+  const switchLocalePath = useSwitchLocalePath()
+
+  if (strategy === STRATEGIES.NO_PREFIX) {
+    return
+  }
+
+  const localeMap = new Map<string, LocaleObject>()
+  const links = []
+  for (const locale of locales) {
+    const localeIso = locale.iso
+
+    if (!localeIso) {
+      console.warn('Locale ISO code is required to generate alternate link')
+      continue
+    }
+
+    const [language, region] = localeIso.split('-')
+    if (language && region && (locale.isCatchallLocale || !localeMap.has(language))) {
+      localeMap.set(language, locale)
+    }
+
+    localeMap.set(localeIso, locale)
+  }
+
+  for (const [iso, mapLocale] of localeMap.entries()) {
+    const localePath = switchLocalePath(mapLocale.code)
+    if (localePath) {
+      links.push({
+        [idAttribute]: `i18n-alt-${iso}`,
+        rel: 'alternate',
+        href: toAbsoluteUrl(localePath, baseUrl.value),
+        hreflang: iso
+      })
+    }
+  }
+
+  if (defaultLocale) {
+    const localePath = switchLocalePath(defaultLocale)
+    if (localePath) {
+      links.push({
+        [idAttribute]: 'i18n-xd',
+        rel: 'alternate2',
+        href: toAbsoluteUrl(localePath, baseUrl.value),
+        hreflang: 'x-default'
+      })
+    }
+  }
+
+  head.link.push(...links)
+}
+
+export function addCanonicalLinksAndOgUrl(
+  head: HeadParam,
+  idAttribute: IdParam,
+  seoAttributesOptions: I18nHeadOptions['addSeoAttributes']
+) {
+  const { baseUrl } = useI18n()
+  const route = useRoute()
+  const localeRoute = useLocaleRoute()
+  const getRouteBaseName = useRouteBaseName()
+  const currentRoute = localeRoute({ ...route, name: getRouteBaseName.call(route) })
+
+  if (!currentRoute) return
+  let href = toAbsoluteUrl(currentRoute.path, baseUrl.value)
+
+  const canonicalQueries = (isObject(seoAttributesOptions) && seoAttributesOptions.canonicalQueries) || []
+  const currentRouteQueryParams = currentRoute.query
+  const params = new URLSearchParams()
+  for (const queryParamName of canonicalQueries) {
+    if (queryParamName in currentRouteQueryParams) {
+      const queryParamValue = currentRouteQueryParams[queryParamName]
+
+      if (isArray(queryParamValue)) {
+        queryParamValue.forEach(v => params.append(queryParamName, v || ''))
+      } else {
+        params.append(queryParamName, queryParamValue || '')
+      }
+    }
+  }
+
+  const queryString = params.toString()
+  if (queryString) {
+    href = `${href}?${queryString}`
+  }
+
+  head.link.push({ [idAttribute]: 'i18n-can', rel: 'canonical', href })
+  head.meta.push({ [idAttribute]: 'i18n-og-url', property: 'og:url', content: href })
+}
+
+export function addCurrentOgLocale(
+  currentLocale: LocaleObject,
+  currentIso: string | undefined,
+  head: HeadParam,
+  idAttribute: IdParam
+) {
+  if (!currentLocale || !currentIso) return
+
+  head.meta.push({
+    [idAttribute]: 'i18n-og',
+    property: 'og:locale',
+    // Replace dash with underscore as defined in spec: language_TERRITORY
+    content: hypenToUnderscore(currentIso)
+  })
+}
+
+export function addAlternateOgLocales(
+  locales: LocaleObject[],
+  currentIso: string | undefined,
+  head: HeadParam,
+  idAttribute: IdParam
+) {
+  const alternateLocales = locales.filter(locale => locale.iso && locale.iso !== currentIso)
+
+  for (const locale of alternateLocales) {
+    head.meta.push({
+      [idAttribute]: `i18n-og-alt-${locale.iso}`,
+      property: 'og:locale:alternate',
+      content: hypenToUnderscore(locale.iso!)
+    })
+  }
+}
+
+function hypenToUnderscore(str: string) {
+  return (str || '').replace(/-/g, '_')
+}
+
+function toAbsoluteUrl(urlOrPath: string, baseUrl: string) {
+  if (urlOrPath.match(/^https?:\/\//)) return urlOrPath
+  return baseUrl + urlOrPath
+}
+
+export function getNormalizedLocales(locales: string[] | LocaleObject[]): LocaleObject[] {
+  const normalized: LocaleObject[] = []
+  for (const locale of locales) {
+    if (isString(locale)) {
+      normalized.push({ code: locale })
+      continue
+    }
+    normalized.push(locale)
+  }
+  return normalized
+}

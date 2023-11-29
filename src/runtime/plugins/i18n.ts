@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { createI18n } from 'vue-i18n'
 import {
   createLocaleFromRouteGetter,
@@ -13,7 +13,14 @@ import {
   getLocale,
   getComposer
 } from 'vue-i18n-routing'
-import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware } from '#imports'
+import {
+  defineNuxtPlugin,
+  useRouter,
+  useRoute,
+  addRouteMiddleware,
+  defineNuxtRouteMiddleware,
+  useState
+} from '#imports'
 import {
   localeCodes,
   vueI18nConfigs,
@@ -104,7 +111,8 @@ export default defineNuxtPlugin({
       ...nuxtI18nOptions,
       dynamicRouteParamsKey: 'nuxtI18n',
       switchLocalePathIntercepter: extendSwitchLocalePathIntercepter(differentDomains, normalizedLocales, nuxtContext),
-      prefixable: extendPrefixable(differentDomains)
+      prefixable: extendPrefixable(differentDomains),
+      dynamicParamsInterceptor: () => useState('nuxt-i18n-meta', () => ref({}))
     })
 
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'

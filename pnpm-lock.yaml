@@ -98,6 +98,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^6.7.4
         version: 6.13.2(eslint@8.55.0)(typescript@5.3.2)
+      '@unhead/vue':
+        specifier: ^1.8.8
+        version: 1.8.8(vue@3.3.10)
       bumpp:
         specifier: ^9.2.0
         version: 9.2.0
@@ -167,6 +170,9 @@ importers:
       undici:
         specifier: ^6.0.1
         version: 6.0.1
+      unhead:
+        specifier: ^1.8.8
+        version: 1.8.8
       vitest:
         specifier: ^1.0.0
         version: 1.0.1(jsdom@23.0.1)
