@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup } from './utils'
+import { setup, $fetch } from './utils'
 import { assetLocaleHead, getData, getText, gotoPath, renderPage, waitForURL } from './helper'
 
 await setup({
@@ -295,4 +295,12 @@ test('render with meta components', async () => {
 
   // rendering link tag and meta tag in head tag
   await assetLocaleHead(page, '#layout-use-locale-head')
+})
+
+test('server integration from `layer-server`', async () => {
+  const res = await $fetch('/api/server', { query: { key: 'snakeCaseText' } })
+  expect(res?.snakeCaseText).toMatch('About-this-site')
+
+  const frRes = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
+  expect(frRes?.snakeCaseText).toMatch('À-propos-de-ce-site')
 })

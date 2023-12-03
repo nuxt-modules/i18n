@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  devtools: { enabled: true },
   modules: ['./layer-module', '@nuxtjs/i18n'],
   runtimeConfig: {
     public: {
@@ -7,6 +8,7 @@ export default defineNuxtConfig({
     }
   },
   extends: [
+    `../layers/layer-server`,
     `../layers/layer-lazy`,
     `../layers/layer-vueI18n-options/layer-simple`,
     `../layers/layer-vueI18n-options/layer-simple-secondary`
