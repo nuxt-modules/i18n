@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { ref, onMounted } from '#imports'
-import LangSwitcher from '../components/LangSwitcher.vue'
+import { ref } from '#imports'
+
 const products = ref([])
 const { locale } = useI18n()
 const localePath = useLocalePath()
@@ -12,7 +12,6 @@ onMounted(async () => {
 
 <template>
   <div>
-    <LangSwitcher />
     <NuxtLink
       class="product"
       v-for="product in products"

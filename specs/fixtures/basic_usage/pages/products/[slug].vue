@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import { useI18n, useLocalePath, useSetI18nParams } from '#i18n'
-import { ref, computed, onMounted, useHead, useRoute } from '#imports'
-import LangSwitcher from '@/components/LangSwitcher.vue'
+import { useI18n, useSetI18nParams } from '#i18n'
+import { ref, useRoute } from '#imports'
+import LangSwitcher from '../components/LangSwitcher.vue'
+
 const product = ref()
 const { locale } = useI18n()
-const localePath = useLocalePath()
 const route = useRoute()
-const head = useHead({})
 
 const setI18nParams = useSetI18nParams({ addSeoAttributes: true })
 product.value = await $fetch(`/api/products/${route.params.slug}`)

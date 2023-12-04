@@ -21,7 +21,6 @@ const localesExcludingCurrent = computed(() => {
         :id="`nuxt-locale-link-${locale.code}`"
         :key="index"
         :exact="true"
-        :id="`switch-nuxt-link-${locale.code}`"
         :to="switchLocalePath(locale.code)"
         >{{ locale.name }}</NuxtLink
       >
