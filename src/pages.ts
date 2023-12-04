@@ -50,7 +50,7 @@ export function setupPages(
   let includeUprefixedFallback = nuxt.options.ssr === false
   nuxt.hook('nitro:init', () => {
     debug('enable includeUprefixedFallback')
-    includeUprefixedFallback = true
+    includeUprefixedFallback = options.strategy !== 'prefix'
   })
 
   const pagesDir = nuxt.options.dir && nuxt.options.dir.pages ? nuxt.options.dir.pages : 'pages'
