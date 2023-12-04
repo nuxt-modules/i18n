@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url } from '../utils'
+import { setup, url, fetch } from '../utils'
 import { getText, getData, renderPage, waitForURL } from '../helper'
 
 import type { Response } from 'playwright'
@@ -18,17 +18,14 @@ await setup({
 })
 
 describe('strategy: prefix', async () => {
-  test.todo('cannot access to no prefix url: /', async () => {
-    const home = url('/')
-    const { page } = await renderPage(home)
-    let res: Response | (Error & { status: () => number }) | null = null
-    try {
-      res = await page.goto(home)
-    } catch (error: unknown) {
-      res = error as Error & { status: () => number }
-    }
-    // 404
-    expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+  test.each([
+    ['/', '/en'],
+    ['/about', '/en/about'],
+    ['/category/foo', '/en/category/foo']
+  ])('cannot access unprefixed url: %s', async (pathUrl, destination) => {
+    const res = await fetch(pathUrl, { redirect: 'manual' })
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toBe(destination)
   })
 
   test('can access to prefix locale: /en', async () => {
