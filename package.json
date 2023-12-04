@@ -111,7 +111,7 @@
     "execa": "^8.0.1",
     "get-port-please": "^3.1.1",
     "gh-changelogen": "^0.2.8",
-    "globby": "^13.2.2",
+    "globby": "^14.0.0",
     "jiti": "^1.20.0",
     "jsdom": "^23.0.1",
     "lint-staged": "^15.0.2",
