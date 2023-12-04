@@ -297,10 +297,25 @@ test('render with meta components', async () => {
   await assetLocaleHead(page, '#layout-use-locale-head')
 })
 
-test('server integration from `layer-server`', async () => {
+test('server integration extended from `layers/layer-server`', async () => {
   const res = await $fetch('/api/server', { query: { key: 'snakeCaseText' } })
   expect(res?.snakeCaseText).toMatch('About-this-site')
 
-  const frRes = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
-  expect(frRes?.snakeCaseText).toMatch('À-propos-de-ce-site')
+  // LocaleDetector: header
+  const resHeader = await $fetch('/api/server', {
+    query: { key: 'snakeCaseText' },
+    headers: { 'Accept-Language': 'fr' }
+  })
+  expect(resHeader?.snakeCaseText).toMatch('À-propos-de-ce-site')
+
+  // LocaleDetector: cookie
+  const resCookie = await $fetch('/api/server', {
+    query: { key: 'snakeCaseText' },
+    headers: { cookie: 'i18n_locale=fr;' }
+  })
+  expect(resCookie?.snakeCaseText).toMatch('À-propos-de-ce-site')
+
+  // LocaleDetector: query
+  const resQuery = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
+  expect(resQuery?.snakeCaseText).toMatch('À-propos-de-ce-site')
 })
