@@ -2,6 +2,7 @@ import createDebug from 'debug'
 import { assign } from '@intlify/shared'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
+import { resolve } from 'pathe'
 import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/kit'
 import { getFeatureFlags } from './bundler'
 import { isExists } from './utils'
@@ -19,7 +20,7 @@ const debug = createDebug('@nuxtjs/i18n:nitro')
 
 export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>, nuxtI18nOptionsCode: string) {
   const { resolve } = createResolver(import.meta.url)
-  const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt, nuxtOptions)
+  const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
   nuxt.hook('nitro:config', async nitroConfig => {
     if (enableServerIntegration) {
@@ -83,10 +84,15 @@ export { localeDetector }
   }
 }
 
-async function resolveLocaleDetectorPath(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
-  let enableServerIntegration = nuxtOptions.experimental.localeDetector !== ''
-  if (enableServerIntegration) {
-    const localeDetectorPath = await resolvePath(nuxtOptions.experimental.localeDetector!, {
+async function resolveLocaleDetectorPath(nuxt: Nuxt) {
+  const serverI18nLayer = nuxt.options._layers.find(
+    l => l.config.i18n?.experimental?.localeDetector != null && l.config.i18n?.experimental?.localeDetector !== ''
+  )
+  let enableServerIntegration = serverI18nLayer != null
+
+  if (serverI18nLayer != null) {
+    const pathTo = resolve(serverI18nLayer.config.rootDir, serverI18nLayer.config.i18n!.experimental!.localeDetector!)
+    const localeDetectorPath = await resolvePath(pathTo!, {
       cwd: nuxt.options.rootDir,
       extensions: EXECUTABLE_EXTENSIONS
     })
