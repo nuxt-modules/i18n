@@ -10,7 +10,8 @@ import {
   CORE_PKG,
   CORE_BASE_PKG,
   UFO_PKG,
-  IS_HTTPS_PKG
+  IS_HTTPS_PKG,
+  NUXT_I18N_MODULE_ID
 } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -36,8 +37,11 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   modules[UFO_PKG] = UFO_PKG
   modules[IS_HTTPS_PKG] = IS_HTTPS_PKG
 
+  const moduleDirs: string[] = nuxt.options.modulesDir || []
+  const enhancedModulesDirs = [...moduleDirs, ...moduleDirs.map(dir => `${dir}/${NUXT_I18N_MODULE_ID}/node_modules`)]
+
   for (const [moduleName, moduleFile] of Object.entries(modules)) {
-    const module = await tryResolveModule(moduleFile, nuxt.options.modulesDir)
+    const module = await tryResolveModule(moduleFile, enhancedModulesDirs)
     if (!module) throw new Error(`Could not resolve module "${moduleFile}"`)
     nuxt.options.alias[moduleName] = module
     nuxt.options.build.transpile.push(moduleName)
