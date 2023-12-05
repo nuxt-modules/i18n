@@ -14,14 +14,17 @@ importers:
   .:
     dependencies:
       '@intlify/h3':
-        specifier: ^0.4.1
-        version: 0.4.1
+        specifier: ^0.4.2
+        version: 0.4.2
       '@intlify/shared':
         specifier: ^9.8.0
         version: 9.8.0
       '@intlify/unplugin-vue-i18n':
         specifier: ^1.4.0
         version: 1.5.0(rollup@3.29.4)(vue-i18n@9.8.0)
+      '@intlify/utils':
+        specifier: ^0.11.1
+        version: 0.11.1
       '@nuxt/kit':
         specifier: ^3.7.4
         version: 3.8.2(rollup@3.29.4)
@@ -1296,8 +1299,8 @@ packages:
       '@intlify/shared': 9.8.0
     dev: false
 
-  /@intlify/h3@0.4.1:
-    resolution: {integrity: sha512-O6IeVcv3NoHHinZ9OJFrfkuhVWLMP4UyHNjl2ROOaps+dHeJ4qGdPGQY3WcKx83OOIaBIiJFvUV61uxlWilQsQ==}
+  /@intlify/h3@0.4.2:
+    resolution: {integrity: sha512-DT5ceHW9WlpIOWQ2NJWtLT8eGs4PGE0EK85bVEaXeyCQtSqdvqaQwCx7Ap34KqUrA3uR7cc1dvAFcSPdkN0OrA==}
     engines: {node: '>= 18'}
     dependencies:
       '@intlify/core': 9.8.0
@@ -2131,6 +2134,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     bundledDependencies:
       - napi-wasm
 
@@ -7063,6 +7067,9 @@ packages:
     resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
     engines: {node: ^14 || ^16 || >=18}
     hasBin: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
 
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}

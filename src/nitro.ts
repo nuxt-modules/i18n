@@ -7,6 +7,8 @@ import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/k
 import { getFeatureFlags } from './bundler'
 import { isExists } from './utils'
 import {
+  H3_PKG,
+  UTILS_H3_PKG,
   EXECUTABLE_EXTENSIONS,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
@@ -38,22 +40,28 @@ export { localeDetector }
 
       // auto import for server-side
       if (nitroConfig.imports) {
-        // `@intlify/h3` utilities
-        const h3Exports = await resolveModuleExportNames('@intlify/h3', { url: import.meta.url })
-        const excludes = ['defineI18nMiddleware', 'detectLocaleFromAcceptLanguageHeader']
         nitroConfig.imports.presets = nitroConfig.imports.presets || []
+        // `@intlify/h3` utilities
         nitroConfig.imports.presets.push({
-          from: '@intlify/h3',
-          imports: h3Exports.filter(name => !excludes.includes(name))
+          from: H3_PKG,
+          imports: ['useTranslation']
         })
-        // `defineI18nLocale` and `defineI18nConfig`
+        const h3UtilsExports = await resolveModuleExportNames(UTILS_H3_PKG, { url: import.meta.url })
+        // `@intlify/utils/h3`, `defineI18nLocale` and `defineI18nConfig`
         nitroConfig.imports.imports = nitroConfig.imports.imports || []
         nitroConfig.imports.imports.push(
-          ...[NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
-            name: key,
-            as: key,
-            from: resolve('runtime/composables/shared')
-          }))
+          ...[
+            ...h3UtilsExports.map(key => ({
+              name: key,
+              as: key,
+              from: resolve(nuxt.options.alias[UTILS_H3_PKG])
+            })),
+            ...[NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
+              name: key,
+              as: key,
+              from: resolve('runtime/composables/shared')
+            }))
+          ]
         )
       }
     }

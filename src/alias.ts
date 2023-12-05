@@ -9,6 +9,8 @@ import {
   MESSAGE_COMPILER_PKG,
   CORE_PKG,
   CORE_BASE_PKG,
+  UTILS_PKG,
+  UTILS_H3_PKG,
   UFO_PKG,
   IS_HTTPS_PKG,
   NUXT_I18N_MODULE_ID
@@ -31,6 +33,7 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   modules[MESSAGE_COMPILER_PKG] = `${MESSAGE_COMPILER_PKG}/dist/message-compiler.mjs`
   modules[CORE_BASE_PKG] = `${CORE_BASE_PKG}/dist/core-base.mjs`
   modules[CORE_PKG] = `${CORE_PKG}/dist/core.node.mjs`
+  modules[UTILS_H3_PKG] = `${UTILS_PKG}/dist/h3.mjs` // for `@intlify/utils/h3`
   modules[VUE_ROUTER_BRIDGE_PKG] = `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_BRIDGE_PKG] = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`
   modules[VUE_I18N_ROUTING_PKG] = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`
