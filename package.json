@@ -71,7 +71,7 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "nuxt": "^3.7.0",
+      "nuxt": "^3.8.0",
       "consola": "^3"
     }
   },
