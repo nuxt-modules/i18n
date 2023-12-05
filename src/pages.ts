@@ -1,12 +1,13 @@
 import createDebug from 'debug'
 import { extendPages } from '@nuxt/kit'
-import { localizeRoutes, DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
+import { DefaultLocalizeRoutesPrefixable } from 'vue-i18n-routing'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
 import { formatMessage, getRoutePath, parseSegment, readFileSync } from './utils'
 import { mergeLayerPages } from './layers'
+import { localizeRoutes } from './routing'
 import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
@@ -238,6 +239,10 @@ function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
     if (isString(customLocalePath)) {
       options.paths[locale] = resolveRoutePath(customLocalePath)
     }
+  }
+
+  if (componentOptions.name != null) {
+    options.name = componentOptions.name
   }
 
   return options

@@ -226,6 +226,7 @@ const warnRuntimeUsage = (method: string) =>
  * The i18n custom route for page components
  */
 export interface I18nRoute {
+  name?: string
   /**
    * Customize page component routes per locale.
    *

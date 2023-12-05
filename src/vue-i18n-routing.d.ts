@@ -6,6 +6,10 @@ declare module 'vue-i18n-routing' {
     file?: string | LocaleFile
     files?: string[] | LocaleFile[]
   }
+
+  export interface ComputedRouteOptions {
+    name?: string
+  }
 }
 
 export {}
