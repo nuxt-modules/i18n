@@ -25,11 +25,12 @@ const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): 
   })
 }
 
-function simplifyLocaleOptions(nuxt: Nuxt, locales: LocaleObject[]) {
-  const hasObjectLocales = nuxt.options._layers.some(
-    layer => layer?.config?.i18n?.locales?.some(x => typeof x !== 'string')
-  )
+function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
+  const hasObjectLocales =
+    nuxt.options._layers.some(layer => layer?.config?.i18n?.locales?.some(x => typeof x !== 'string')) ||
+    options?.i18nModules?.some(module => module?.locales?.some(x => typeof x !== 'string'))
 
+  const locales = (options.locales ?? []) as LocaleObject[]
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return locales.map(({ meta, ...locale }) => {
     if (!hasObjectLocales) {
@@ -94,7 +95,7 @@ export function generateLoaderOptions(nuxt: Nuxt, { nuxtI18nOptions, vueI18nConf
 
   const generatedNuxtI18nOptions = {
     ...nuxtI18nOptions,
-    locales: simplifyLocaleOptions(nuxt, (nuxtI18nOptions?.locales ?? []) as unknown as LocaleObject[])
+    locales: simplifyLocaleOptions(nuxt, nuxtI18nOptions)
   }
   delete nuxtI18nOptions.vueI18n
 
