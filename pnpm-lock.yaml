@@ -14,8 +14,8 @@ importers:
   .:
     dependencies:
       '@intlify/h3':
-        specifier: ^0.4.2
-        version: 0.4.2
+        specifier: ^0.5.0
+        version: 0.5.0
       '@intlify/shared':
         specifier: ^9.8.0
         version: 9.8.0
@@ -23,8 +23,8 @@ importers:
         specifier: ^1.4.0
         version: 1.5.0(rollup@3.29.4)(vue-i18n@9.8.0)
       '@intlify/utils':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: ^0.12.0
+        version: 0.12.0
       '@nuxt/kit':
         specifier: ^3.7.4
         version: 3.8.2(rollup@3.29.4)
@@ -1299,12 +1299,12 @@ packages:
       '@intlify/shared': 9.8.0
     dev: false
 
-  /@intlify/h3@0.4.2:
-    resolution: {integrity: sha512-DT5ceHW9WlpIOWQ2NJWtLT8eGs4PGE0EK85bVEaXeyCQtSqdvqaQwCx7Ap34KqUrA3uR7cc1dvAFcSPdkN0OrA==}
+  /@intlify/h3@0.5.0:
+    resolution: {integrity: sha512-cgfrtD3qu3BPJ47gfZ35J2LJpI64Riic0K8NGgid5ilyPXRQTNY7mXlT/B+HZYQg1hmBxKa5G5HJXyAZ4R2H5A==}
     engines: {node: '>= 18'}
     dependencies:
       '@intlify/core': 9.8.0
-      '@intlify/utils': 0.11.1
+      '@intlify/utils': 0.12.0
     dev: false
 
   /@intlify/message-compiler@9.8.0:
@@ -1353,8 +1353,8 @@ packages:
       - supports-color
     dev: false
 
-  /@intlify/utils@0.11.1:
-    resolution: {integrity: sha512-nP3EjYFcTXfbBws8FJHcYQ7JdgIvpmEd99MlfTaTnqM8GSrRQUZh2sn5awhbnjcd0xQ8vWGX/OLNDumvd7sjDg==}
+  /@intlify/utils@0.12.0:
+    resolution: {integrity: sha512-yCBNcuZQ49iInqmWC2xfW0rgEQyNtCM8C8KcWKTXxyscgUE1+48gjLgZZqP75MjhlApxwph7ZMWLqyABkSgxQA==}
     engines: {node: '>= 18'}
     dev: false
 
