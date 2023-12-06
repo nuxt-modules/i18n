@@ -12,7 +12,8 @@ import {
   EXECUTABLE_EXTENSIONS,
   NUXT_I18N_MODULE_ID,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR
 } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -60,7 +61,14 @@ export { localeDetector }
               name: key,
               as: key,
               from: resolve('runtime/composables/shared')
-            }))
+            })),
+            ...[
+              {
+                name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+                as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+                from: resolve('runtime/composables/server')
+              }
+            ]
           ]
         )
       }

@@ -43,7 +43,7 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
     event: H3Event,
     i18nContext: CoreContext<string, DefineLocaleMessage>
   ): Promise<Locale> => {
-    const locale = _localeDetector(event)
+    const locale = _localeDetector(event, { defaultLocale: initialLocale, fallbackLocale: options.fallbackLocale })
     if (lazy) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const setter = (locale: Locale, message: Record<string, any>) => {
