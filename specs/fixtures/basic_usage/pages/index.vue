@@ -120,6 +120,11 @@ useHead({
             To the page with spaces!
           </NuxtLink>
         </li>
+        <li class="path-products-named">
+          <NuxtLink id="link-products-named" :to="localePath({ name: 'products-named' })">
+            {{ $t('products') }}
+          </NuxtLink>
+        </li>
       </ul>
     </section>
     <section id="nuxt-link-locale-usages">

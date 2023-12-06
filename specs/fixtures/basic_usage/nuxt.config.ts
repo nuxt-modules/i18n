@@ -18,7 +18,14 @@ export default defineNuxtConfig({
   i18n: {
     vueI18n: './config/i18n.config.ts',
     locales: ['en', 'fr'],
-    defaultLocale: 'en'
+    defaultLocale: 'en',
+    pages: {
+      // This is based on filename, not route name
+      products: {
+        en: '/products',
+        nl: '/producten'
+      }
+    }
     // debug: true,
   }
 })

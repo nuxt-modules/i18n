@@ -319,3 +319,15 @@ test('server integration extended from `layers/layer-server`', async () => {
   const resQuery = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
   expect(resQuery?.snakeCaseText).toMatch('À-propos-de-ce-site')
 })
+
+test('(#2581) `definePageMeta` name does not override localized routes', async () => {
+  const { page } = await renderPage('/')
+
+  expect(await page.locator('#link-products-named').getAttribute('href')).toEqual('/products')
+
+  // click `nl` lang switch with `<NuxtLink>`
+  await page.locator('#switch-locale-path-usages .switch-to-nl a').click()
+  await waitForURL(page, '/nl')
+
+  expect(await page.locator('#link-products-named').getAttribute('href')).toEqual('/nl/producten')
+})
