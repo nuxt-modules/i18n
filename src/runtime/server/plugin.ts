@@ -17,9 +17,6 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
   // cache for locale messages
   const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
-  console.log('nitro plugin test: load nuxt i18n options at nitro plugin ---->', localeMessages, vueI18nConfigs)
-  console.log('nitro plugin test: load nuxt i18n options at nitro plugin via virtual module ---->', _localeDetector)
-
   // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue-i18n options
   const options = (await loadVueI18nOptions(vueI18nConfigs, nuxtMock)) as any // eslint-disable-line @typescript-eslint/no-explicit-any
   options.messages = options.messages || {}
@@ -36,8 +33,6 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
     localeCodes,
     cacheMessages
   })
-
-  console.log('nitro plugin test: load vue i18n options at nitro plugin ---->', options.messages)
 
   const localeDetector = async (
     event: H3Event,
