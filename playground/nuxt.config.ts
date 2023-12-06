@@ -118,6 +118,7 @@ export default defineNuxtConfig({
     langDir: 'locales',
     lazy: true,
     baseUrl: 'http://localhost:3000',
+    // disableDefaultLocaleLoading: true,
     locales: [
       {
         code: 'en',

@@ -80,7 +80,8 @@ export default defineNuxtPlugin({
       routesNameSeparator,
       defaultLocaleRouteNameSuffix,
       strategy,
-      rootRedirect
+      rootRedirect,
+      skipDefaultLocale
     } = nuxtI18nOptions
     __DEBUG__ && console.log('isSSG', isSSG)
     __DEBUG__ && console.log('useCookie on setup', useCookie)
@@ -131,7 +132,8 @@ export default defineNuxtPlugin({
       ...nuxtI18nOptions,
       initialLocale,
       fallbackLocale: vueI18nOptions.fallbackLocale,
-      localeCodes
+      localeCodes,
+      skipDefaultLocale
     })
 
     /**
