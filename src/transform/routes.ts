@@ -25,8 +25,7 @@ export const RoutesPlugin = createUnplugin((options: RoutesPluginOptions) => {
         return false
       }
 
-      const { pathname } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-      return /routes\.mjs$/.test(pathname)
+      return id.startsWith('virtual:nuxt:') && id.endsWith('routes.mjs')
     },
 
     transform(code, id) {
@@ -45,9 +44,12 @@ export const RoutesPlugin = createUnplugin((options: RoutesPluginOptions) => {
         }
       }
 
+      // Replace string
+      // name: (fileHashVariable?.name) ?? "(routeName)(___localeSuffix)"
       s.replaceAll(
-        new RegExp(`name:\\s(.+)\\s\\?\\?\\s"(.+)(___.+)"`, 'g'),
-        'name: ($1 ? $1 + "$3" : undefined) ?? "$2$3"'
+        /name:\s(?<varName>.+)\s\?\?\s"(?<routeName>.+)(?<localeSuffix>___.+)"/g,
+        (_, varName, routeName, localeSuffix) =>
+          `name: (${varName} ? ${varName} + "${localeSuffix}" : undefined) ?? "${routeName}${localeSuffix}"`
       )
 
       return result()
