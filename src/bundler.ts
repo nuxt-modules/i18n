@@ -13,6 +13,7 @@ import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
 import type { TransformMacroPluginOptions } from './transform/macros'
 import type { ResourcePluginOptions } from './transform/resource'
+import { RoutesPlugin, type RoutesPluginOptions } from './transform/routes'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -30,6 +31,10 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   }
 
   const resourceOptions: ResourcePluginOptions = {
+    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
+  }
+
+  const routeOptions: RoutesPluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
@@ -58,6 +63,7 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
 
     addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
+    addWebpackPlugin(RoutesPlugin.webpack(routeOptions))
     addWebpackPlugin(ResourcePlugin.webpack(resourceOptions))
 
     extendWebpackConfig(config => {
@@ -105,6 +111,7 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
 
   addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
+  addVitePlugin(RoutesPlugin.vite(routeOptions))
   addVitePlugin(ResourcePlugin.vite(resourceOptions))
 
   extendViteConfig(config => {

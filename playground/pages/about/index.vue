@@ -32,6 +32,7 @@ export default defineComponent({
       }
     })
     definePageMeta({
+      name: 'named-about',
       title: 'pages.title.about'
     })
     return {}
