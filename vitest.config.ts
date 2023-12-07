@@ -14,7 +14,11 @@ export default defineConfig({
     },
     setupFiles: ['./specs/utils/setup-env.ts'],
     exclude: [...configDefaults.exclude],
-    maxThreads: process.env.CI ? undefined : 4,
-    minThreads: process.env.CI ? undefined : 4
+    poolOptions: {
+      vmThreads: {
+        maxThreads: process.env.CI ? undefined : 4,
+        minThreads: process.env.CI ? undefined : 4
+      }
+    }
   }
 })

@@ -76,6 +76,7 @@ definePageMeta({
     <nav>
       <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink> |
+      <NuxtLink :to="localePath({ name: 'server' })">Server</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink> |
       <NuxtLinkLocale :to="{ name: 'history' }" class="history-link">History</NuxtLinkLocale> |
       <NuxtLinkLocale :to="'/'" locale="ja" activeClass="link-active">Home (Japanese)</NuxtLinkLocale>
