@@ -71,7 +71,8 @@ test('basic', async () => {
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: false }
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: false },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -83,7 +84,8 @@ test('lazy', async () => {
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -117,7 +119,8 @@ test('multiple files', async () => {
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -151,7 +154,8 @@ test('files with cache configuration', async () => {
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -184,7 +188,8 @@ test('locale file in nested', async () => {
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -215,7 +220,8 @@ test('vueI18n option', async () => {
     nuxtI18nOptions: {
       vueI18n: 'vue-i18n.config.ts',
       lazy: false
-    }
+    },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -236,7 +242,8 @@ test('toCode: function (arrow)', async () => {
       ...NUXT_I18N_OPTIONS,
       lazy: false,
       locales: localeInfo
-    }
+    },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()
@@ -257,7 +264,8 @@ test('toCode: function (named)', async () => {
       ...NUXT_I18N_OPTIONS,
       lazy: false,
       locales: localeInfo
-    }
+    },
+    isServer: false
   })
 
   expect(code).toMatchSnapshot()

@@ -4,7 +4,11 @@ export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n' as const
 export const VUE_I18N_PKG = 'vue-i18n' as const
 export const SHARED_PKG = '@intlify/shared' as const
 export const MESSAGE_COMPILER_PKG = '@intlify/message-compiler' as const
+export const CORE_PKG = '@intlify/core' as const
 export const CORE_BASE_PKG = '@intlify/core-base' as const
+export const H3_PKG = '@intlify/h3' as const
+export const UTILS_PKG = '@intlify/utils' as const
+export const UTILS_H3_PKG = '@intlify/utils/h3' as const
 export const VUE_I18N_BRIDGE_PKG = '@intlify/vue-i18n-bridge' as const
 export const VUE_ROUTER_BRIDGE_PKG = '@intlify/vue-router-bridge' as const
 export const VUE_I18N_ROUTING_PKG = 'vue-i18n-routing' as const
@@ -35,7 +39,9 @@ export const REDIRECT_ON_OPTIONS = {
 export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
 
 export const DEFAULT_OPTIONS = {
-  experimental: {},
+  experimental: {
+    localeDetector: ''
+  },
   bundle: {
     compositionOnly: true,
     runtimeOnly: false,
@@ -87,6 +93,7 @@ export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale' as const
 export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig' as const
+export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR = 'defineI18nLocaleDetector' as const
 
 export const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
 export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']

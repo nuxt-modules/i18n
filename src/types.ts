@@ -1,5 +1,5 @@
 import type { Strategies, I18nRoutingOptions, LocaleObject } from 'vue-i18n-routing'
-import type { Locale } from 'vue-i18n'
+import type { Locale, I18nOptions } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { ParsedPath } from 'path'
 
@@ -69,7 +69,9 @@ export type CustomRoutePages = {
       }
 }
 
-export interface ExperimentalFeatures {}
+export interface ExperimentalFeatures {
+  localeDetector?: string
+}
 
 export interface BundleOptions
   extends Pick<
@@ -125,3 +127,5 @@ export type NuxtI18nOptions<Context = unknown> = {
 export type NuxtI18nInternalOptions = {
   __normalizedLocales?: LocaleObject[]
 }
+
+export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOptions | Promise<I18nOptions>) }>

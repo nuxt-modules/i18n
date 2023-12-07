@@ -4,6 +4,7 @@ import { resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
+import { genSafeVariableName } from 'knitwork'
 import { encodePath } from 'ufo'
 import { transform as stripType } from 'sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
@@ -13,7 +14,6 @@ import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, Lo
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
 import type { LocaleObject } from 'vue-i18n-routing'
-import { genSafeVariableName } from 'knitwork'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -350,10 +350,10 @@ export function parseSegment(segment: string) {
         state === SegmentParserState.static
           ? SegmentTokenType.static
           : state === SegmentParserState.dynamic
-          ? SegmentTokenType.dynamic
-          : state === SegmentParserState.optional
-          ? SegmentTokenType.optional
-          : SegmentTokenType.catchall,
+            ? SegmentTokenType.dynamic
+            : state === SegmentParserState.optional
+              ? SegmentTokenType.optional
+              : SegmentTokenType.catchall,
       value: buffer
     })
 

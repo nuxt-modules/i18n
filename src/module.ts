@@ -37,6 +37,7 @@ import {
 } from './utils'
 import { distDir, runtimeDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
+import { generateTemplateNuxtI18nOptions } from './template'
 
 import type { HookResult } from '@nuxt/schema'
 import type { NuxtI18nOptions } from './types'
@@ -190,18 +191,21 @@ export default defineNuxtModule<NuxtI18nOptions>({
     addPlugin(resolve(runtimeDir, 'plugins/i18n'))
 
     // for composables
-    nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables.mjs')
+    nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.mjs')
     nuxt.options.build.transpile.push('#i18n')
 
-    addTemplate({
-      filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
-      src: resolve(distDir, 'runtime/templates/options.template.mjs'),
-      write: true,
-      options: {
+    const genTemplate = (isServer: boolean, lazy?: boolean) => {
+      const nuxtI18nOptions = defu({}, options)
+      // override `lazy` options
+      if (lazy != null) {
+        nuxtI18nOptions.lazy = lazy
+      }
+      return generateTemplateNuxtI18nOptions({
         ...generateLoaderOptions(nuxt, {
           vueI18nConfigPaths,
           localeInfo,
-          nuxtI18nOptions: options
+          nuxtI18nOptions,
+          isServer
         }),
         NUXT_I18N_MODULE_ID,
         localeCodes,
@@ -210,7 +214,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
         dev: nuxt.options.dev,
         isSSG: nuxt.options._generate,
         parallelPlugin: options.parallelPlugin
-      }
+      })
+    }
+
+    addTemplate({
+      filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
+      write: true,
+      getContents: () => genTemplate(false)
     })
 
     /**
@@ -262,7 +272,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nitro
      */
 
-    await setupNitro(nuxt, options)
+    await setupNitro(nuxt, options, genTemplate(true, true))
 
     /**
      * auto imports
@@ -292,7 +302,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       ].map(key => ({
         name: key,
         as: key,
-        from: resolve(runtimeDir, 'composables')
+        from: resolve(runtimeDir, 'composables/index')
       }))
     ])
 
