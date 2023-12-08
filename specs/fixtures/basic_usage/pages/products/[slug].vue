@@ -6,7 +6,7 @@ const product = ref()
 const { locale } = useI18n()
 const route = useRoute()
 
-const setI18nParams = useSetI18nParams({ addSeoAttributes: true })
+const setI18nParams = useSetI18nParams({ addDirAttribute: true, addSeoAttributes: true })
 product.value = await $fetch(`/api/products/${route.params.slug}`)
 if (product.value != null) {
   const availableLocales = Object.keys(product.value.slugs)

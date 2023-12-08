@@ -44,16 +44,15 @@ import {
  * @public
  */
 export function useSetI18nParams(
-  options?: Pick<
-    NonNullable<Parameters<typeof _useLocaleHead>[0]>,
-    'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute' | 'route' | 'router' | 'i18n'
-  >
+  options?: Pick<NonNullable<Parameters<typeof _useLocaleHead>[0]>, 'addDirAttribute' | 'addSeoAttributes'>
 ) {
-  const i18n = useI18n()
+  const route = useRoute()
   const head = getActiveHead()
+
+  const i18n = useI18n()
   const locale = getLocale(i18n)
   const locales = getNormalizedLocales(getLocales(i18n))
-  const route = useRoute()
+
   const i18nParams = computed({
     get() {
       return route.meta.nuxtI18n ?? {}
@@ -62,9 +61,9 @@ export function useSetI18nParams(
       route.meta.nuxtI18n = val
     }
   })
-  const addDirAttribute = options?.addDirAttribute ?? true
-  const addSeoAttributes = options?.addSeoAttributes ?? true
-  const idAttribute = options?.identifierAttribute ?? 'id'
+
+  const addDirAttribute = options?.addDirAttribute ?? false
+  const addSeoAttributes = options?.addSeoAttributes ?? false
 
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
   const currentLocaleIso = currentLocale.iso
@@ -82,10 +81,10 @@ export function useSetI18nParams(
 
     // Adding SEO Meta
     if (addSeoAttributes && locale && i18n.locales) {
-      addHreflangLinks(locales as LocaleObject[], metaObject, idAttribute)
-      addCanonicalLinksAndOgUrl(metaObject, idAttribute, addSeoAttributes)
-      addCurrentOgLocale(currentLocale, currentLocaleIso, metaObject, idAttribute)
-      addAlternateOgLocales(locales as LocaleObject[], currentLocaleIso, metaObject, idAttribute)
+      addHreflangLinks(locales as LocaleObject[], metaObject, 'id')
+      addCanonicalLinksAndOgUrl(metaObject, 'id', addSeoAttributes)
+      addCurrentOgLocale(currentLocale, currentLocaleIso, metaObject, 'id')
+      addAlternateOgLocales(locales as LocaleObject[], currentLocaleIso, metaObject, 'id')
     }
 
     head?.push(metaObject)

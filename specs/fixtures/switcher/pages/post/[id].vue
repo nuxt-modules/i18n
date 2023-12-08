@@ -3,7 +3,7 @@ import LangSwitcher from '../../components/LangSwitcher.vue'
 
 const route = useRoute()
 
-const setI18nParams = useSetI18nParams()
+const setI18nParams = useSetI18nParams({ addDirAttribute: true, addSeoAttributes: true })
 setI18nParams({
   en: { id: 'my-post' },
   fr: { id: 'mon-article' }

@@ -5,7 +5,7 @@ const switchLocalePath = useSwitchLocalePath()
 const { locale, locales } = useI18n()
 const route = useRoute()
 
-const setI18nParams = useSetI18nParams()
+const setI18nParams = useSetI18nParams({ addDirAttribute: true, addSeoAttributes: true })
 const { data, pending } = await useAsyncData(`products-${route.params.slug}`, () =>
   $fetch(`/api/products/${route.params.slug}`)
 )
