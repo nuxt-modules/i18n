@@ -1,8 +1,9 @@
-import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp, useState } from '#imports'
-import { ref } from 'vue'
+import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp } from '#imports'
+import { ref, computed } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
+import { useI18n } from 'vue-i18n'
 import {
   getComposer,
   findBrowserLocale,
@@ -21,7 +22,8 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 export * from 'vue-i18n'
 export * from './shared'
 export type { LocaleObject } from 'vue-i18n-routing'
-import { type Locale, type LocaleMessages, type DefineLocaleMessage, type I18nOptions, useI18n } from 'vue-i18n'
+
+import type { Locale } from 'vue-i18n'
 import type { LocaleObject } from 'vue-i18n-routing'
 import {
   addAlternateOgLocales,
@@ -51,7 +53,15 @@ export function useSetI18nParams(
   const head = getActiveHead()
   const locale = getLocale(i18n)
   const locales = getNormalizedLocales(getLocales(i18n))
-  const metaState = useState<Record<string, unknown>>('nuxt-i18n-meta')
+  const route = useRoute()
+  const i18nParams = computed({
+    get() {
+      return route.meta.nuxtI18n ?? {}
+    },
+    set(val) {
+      route.meta.nuxtI18n = val
+    }
+  })
   const addDirAttribute = options?.addDirAttribute ?? true
   const addSeoAttributes = options?.addSeoAttributes ?? true
   const idAttribute = options?.identifierAttribute ?? 'id'
@@ -82,7 +92,7 @@ export function useSetI18nParams(
   }
 
   return function (params: Record<string, unknown>) {
-    metaState.value = { ...params }
+    i18nParams.value = { ...params }
     setMeta()
   }
 }
