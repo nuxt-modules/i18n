@@ -4,16 +4,6 @@ const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 
 const { data } = await useAsyncData('products', () => $fetch(`/api/products`))
-definePageMeta({
-  pageTransition: {
-    name: 'page',
-    mode: 'out-in',
-    onBeforeEnter: async () => {
-      const { finalizePendingLocaleChange } = useNuxtApp().$i18n
-      await finalizePendingLocaleChange()
-    }
-  }
-})
 </script>
 
 <template>
@@ -23,7 +13,6 @@ definePageMeta({
         <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
       </span>
     </nav>
-    {{ locale }}
     <NuxtLink
       class="product"
       v-for="product in data"

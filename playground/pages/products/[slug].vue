@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { useI18n, useLocalePath, useSetI18nParams, useSwitchLocalePath } from '#i18n'
-import { ref, computed, onMounted, useHead, useRoute } from '#imports'
-// import LangSwitcher from '@/components/LangSwitcher.vue'
-const product = ref()
+import { useI18n, useSetI18nParams } from '#i18n'
+import { useRoute } from '#imports'
+const switchLocalePath = useSwitchLocalePath()
 const { locale, locales } = useI18n()
 const route = useRoute()
 
@@ -26,6 +25,11 @@ if (data.value != null) {
 <template>
   <div>
     <section class="product">{{ pending ? 'loading' : data?.name?.[locale] }}</section>
+    <nav style="padding: 1em">
+      <span v-for="locale in locales" :key="locale.code">
+        <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
+      </span>
+    </nav>
   </div>
 </template>
 
