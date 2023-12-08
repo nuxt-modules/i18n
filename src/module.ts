@@ -122,7 +122,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     if (options.dynamicRouteParams) {
       logger.warn(
-        'The `dynamicRouteParams` options is deprecated and will be removed in `v8.1`, use `useSetI18nParameters` instead.'
+        'The `dynamicRouteParams` options is deprecated and will be removed in `v8.1`, use the `useSetI18nParams` composable instead.'
       )
     }
 

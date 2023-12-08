@@ -49,7 +49,7 @@ export const MetaDeprecationPlugin = createUnplugin((options: MetaDeprecationPlu
       if (match?.[0]) {
         // prettier-ignore
         console.warn(
-          `Setting \`nuxtI18n\` on \`definePageMeta\` is deprecated and will be removed in \`v8.1\`, use \`useSetI18nParameters\` instead.\nUsage found in ${id.split('?')[0]}`
+          `Setting \`nuxtI18n\` on \`definePageMeta\` is deprecated and will be removed in \`v8.1\`, use the \`useSetI18nParams\` composable instead.\nUsage found in ${id.split('?')[0]}`
         )
       }
 
