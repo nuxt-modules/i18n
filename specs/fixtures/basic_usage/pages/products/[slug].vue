@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useI18n, useSetI18nParams } from '#i18n'
 import { ref, useRoute } from '#imports'
-import LangSwitcher from '../components/LangSwitcher.vue'
 
 const product = ref()
 const { locale } = useI18n()
@@ -24,7 +23,6 @@ if (product.value != null) {
 <template>
   <div>
     <section class="product">{{ product?.name?.[locale] }}</section>
-    <LangSwitcher />
   </div>
 </template>
 

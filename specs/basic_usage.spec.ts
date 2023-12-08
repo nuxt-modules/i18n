@@ -323,10 +323,7 @@ test('server integration extended from `layers/layer-server`', async () => {
 test('dynamic parameters', async () => {
   const { page } = await renderPage('/products/big-chair')
 
-  // NOTE: Test is deceptive, does not test SSR
-  // lang switcher renders localized links as it's rendered after `setI18nParams` calls
   expect(await page.locator('#nuxt-locale-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
-  // END
 
   await gotoPath(page, '/nl/products/rode-mok')
   expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug')
