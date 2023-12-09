@@ -43,7 +43,8 @@ import type {
   BaseUrlResolveHandler,
   PrefixableOptions,
   SwitchLocalePathIntercepter,
-  I18nHeadOptions
+  I18nHeadOptions,
+  SeoAttributesOptions
 } from 'vue-i18n-routing'
 import type { I18n, I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -497,7 +498,7 @@ export function extendBaseUrl<Context extends NuxtApp = NuxtApp>(
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type HeadParam = Required<Pick<HeadSafe, 'htmlAttrs' | 'meta' | 'link'>>
+export type HeadParam = Required<Pick<HeadSafe, 'meta' | 'link'>>
 type IdParam = NonNullable<I18nHeadOptions['identifierAttribute']>
 
 export function addHreflangLinks(locales: LocaleObject[], head: HeadParam, idAttribute: IdParam) {
@@ -556,7 +557,7 @@ export function addHreflangLinks(locales: LocaleObject[], head: HeadParam, idAtt
 export function addCanonicalLinksAndOgUrl(
   head: HeadParam,
   idAttribute: IdParam,
-  seoAttributesOptions: I18nHeadOptions['addSeoAttributes']
+  seoAttributesOptions: SeoAttributesOptions = {}
 ) {
   const { baseUrl } = useI18n()
   const route = useRoute()

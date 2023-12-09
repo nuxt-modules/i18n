@@ -10,8 +10,8 @@ const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? '
 
 <template>
   <div>
-    <Html>
-      <Head :lang="head.htmlAttrs.lang">
+    <Html :lang="head.htmlAttrs.lang">
+      <Head>
         <Title>{{ title }}</Title>
         <template v-for="link in head.link" :key="link.hid">
           <Link :id="link.hid" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />

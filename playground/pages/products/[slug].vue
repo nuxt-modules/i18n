@@ -4,7 +4,7 @@ import { useRoute } from '#imports'
 const { locale } = useI18n()
 const route = useRoute()
 
-const setI18nParams = useSetI18nParams({ addDirAttribute: true, addSeoAttributes: true })
+const setI18nParams = useSetI18nParams()
 const { data, pending } = await useAsyncData(`products-${route.params.slug}`, () =>
   $fetch(`/api/products/${route.params.slug}`)
 )

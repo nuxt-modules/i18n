@@ -24,7 +24,7 @@ export * from './shared'
 export type { LocaleObject } from 'vue-i18n-routing'
 
 import type { Locale } from 'vue-i18n'
-import type { LocaleObject } from 'vue-i18n-routing'
+import type { LocaleObject, SeoAttributesOptions } from 'vue-i18n-routing'
 import {
   addAlternateOgLocales,
   addCanonicalLinksAndOgUrl,
@@ -37,15 +37,14 @@ import {
 /**
  * Returns a function to set i18n params.
  *
- * @param options - An options, see about details {@link I18nHeadOptions}.
+ * @param options - An options object, see {@link SeoAttributesOptions}.
  *
- * @returns setI18nParams {@link I18nHeadMetaInfo | head properties}.
+ * @returns a {@link SetI18nParamsFunction}.
  *
  * @public
  */
-export function useSetI18nParams(
-  options?: Pick<NonNullable<Parameters<typeof _useLocaleHead>[0]>, 'addDirAttribute' | 'addSeoAttributes'>
-) {
+export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
+export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
   const route = useRoute()
   const head = getActiveHead()
 
@@ -62,27 +61,19 @@ export function useSetI18nParams(
     }
   })
 
-  const addDirAttribute = options?.addDirAttribute ?? false
-  const addSeoAttributes = options?.addSeoAttributes ?? false
-
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
   const currentLocaleIso = currentLocale.iso
-  const currentLocaleDir = currentLocale.dir || i18n.defaultDirection
 
   const setMeta = () => {
     const metaObject: HeadParam = {
-      htmlAttrs: {
-        dir: addDirAttribute ? currentLocaleDir : undefined,
-        lang: addSeoAttributes && locale && i18n.locales ? currentLocaleIso : undefined
-      },
       link: [],
       meta: []
     }
 
     // Adding SEO Meta
-    if (addSeoAttributes && locale && i18n.locales) {
+    if (locale && i18n.locales) {
       addHreflangLinks(locales as LocaleObject[], metaObject, 'id')
-      addCanonicalLinksAndOgUrl(metaObject, 'id', addSeoAttributes)
+      addCanonicalLinksAndOgUrl(metaObject, 'id', seoAttributes)
       addCurrentOgLocale(currentLocale, currentLocaleIso, metaObject, 'id')
       addAlternateOgLocales(locales as LocaleObject[], currentLocaleIso, metaObject, 'id')
     }
