@@ -2,8 +2,11 @@ import createDebug from 'debug'
 import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
+import { useLogger } from '@nuxt/kit'
 import MagicString from 'magic-string'
+
 import { VIRTUAL_PREFIX_HEX } from './utils'
+import { NUXT_I18N_MODULE_ID } from '../constants'
 
 export interface MetaDeprecationPluginOptions {
   sourcemap?: boolean
@@ -12,6 +15,8 @@ export interface MetaDeprecationPluginOptions {
 const debug = createDebug('@nuxtjs/i18n:transform:meta-deprecation')
 
 export const MetaDeprecationPlugin = createUnplugin((options: MetaDeprecationPluginOptions) => {
+  const logger = useLogger(NUXT_I18N_MODULE_ID)
+
   debug('options', options)
 
   return {
@@ -48,7 +53,7 @@ export const MetaDeprecationPlugin = createUnplugin((options: MetaDeprecationPlu
       const match = code.match(new RegExp(`\\bdefinePageMeta\\({[.\\s]+(?=nuxtI18n)`))
       if (match?.[0]) {
         // prettier-ignore
-        console.warn(
+        logger.warn(
           `Setting \`nuxtI18n\` on \`definePageMeta\` is deprecated and will be removed in \`v8.1\`, use the \`useSetI18nParams\` composable instead.\nUsage found in ${id.split('?')[0]}`
         )
       }
