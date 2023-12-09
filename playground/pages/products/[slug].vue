@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { useI18n, useSetI18nParams } from '#i18n'
 import { useRoute } from '#imports'
-const switchLocalePath = useSwitchLocalePath()
-const { locale, locales } = useI18n()
+const { locale } = useI18n()
 const route = useRoute()
 
 const setI18nParams = useSetI18nParams({ addDirAttribute: true, addSeoAttributes: true })
@@ -25,11 +24,6 @@ if (data.value != null) {
 <template>
   <div>
     <section class="product">{{ pending ? 'loading' : data?.name?.[locale] }}</section>
-    <nav style="padding: 1em">
-      <span v-for="locale in locales" :key="locale.code">
-        <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
-      </span>
-    </nav>
   </div>
 </template>
 
