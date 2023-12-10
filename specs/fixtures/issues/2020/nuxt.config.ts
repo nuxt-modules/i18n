@@ -16,7 +16,6 @@ export default defineNuxtConfig({
         iso: 'en-US'
       }
     ],
-    dynamicRouteParams: true,
     defaultLocale: 'fr',
     strategy: 'prefix'
   }

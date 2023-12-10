@@ -79,9 +79,8 @@ definePageMeta({
       <NuxtLink :to="localePath({ name: 'server' })">Server</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink> |
       <NuxtLinkLocale :to="{ name: 'history' }" class="history-link">History</NuxtLinkLocale> |
-      <NuxtLinkLocale :to="'/'" locale="ja" activeClass="link-active">Home (Japanese)</NuxtLinkLocale>
-      <nuxt-link to=""></nuxt-link>
-      <NuxtLinkLocale to=""></NuxtLinkLocale>
+      <NuxtLinkLocale :to="'/'" locale="ja" activeClass="link-active">Home (Japanese)</NuxtLinkLocale> |
+      <NuxtLinkLocale :to="{ name: 'products' }" class="products-link">Products</NuxtLinkLocale>
     </nav>
     <h2>Current Language: {{ getLocaleName(locale) }}</h2>
     <h2>Current Strategy: {{ strategy }}</h2>

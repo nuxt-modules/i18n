@@ -3,11 +3,10 @@ import LangSwitcher from '../components/LangSwitcher.vue'
 
 const route = useRoute()
 
-definePageMeta({
-  nuxtI18n: {
-    en: { pathMatch: ['my-post', 'abc'] },
-    fr: { pathMatch: ['mon-article', 'xyz'] }
-  }
+const setI18nParams = useSetI18nParams()
+setI18nParams({
+  en: { pathMatch: ['my-post', 'abc'] },
+  fr: { pathMatch: ['mon-article', 'xyz'] }
 })
 </script>
 

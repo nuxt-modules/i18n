@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, $fetch } from './utils'
-import { assetLocaleHead, getData, getText, gotoPath, renderPage, waitForURL } from './helper'
+import { assetLocaleHead, getData, getText, gotoPath, renderPage, waitForURL, getDom } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
@@ -318,4 +318,22 @@ test('server integration extended from `layers/layer-server`', async () => {
   // LocaleDetector: query
   const resQuery = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
   expect(resQuery?.snakeCaseText).toMatch('À-propos-de-ce-site')
+})
+
+test('dynamic parameters', async () => {
+  const { page } = await renderPage('/products/big-chair')
+
+  expect(await page.locator('#nuxt-locale-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
+
+  await gotoPath(page, '/nl/products/rode-mok')
+  expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug')
+
+  // head tags - alt links are updated server side
+  const product1Html = await $fetch('/products/big-chair')
+  const product1Dom = getDom(product1Html)
+  expect(product1Dom.querySelector('#i18n-alt-nl').href).toEqual('/nl/products/grote-stoel')
+
+  const product2Html = await $fetch('/nl/products/rode-mok')
+  const product2dom = getDom(product2Html)
+  expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('/products/red-mug')
 })

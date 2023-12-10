@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useSetI18nParams, useLocaleHead } from '#i18n'
+import { useHead } from '#imports'
+
 const route = useRoute()
 const { t } = useI18n()
-const head = useLocaleHead({ addSeoAttributes: true })
+const head = useLocaleHead({ addDirAttribute: true, addSeoAttributes: true })
 const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 </script>
 
@@ -21,7 +24,7 @@ const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? '
         <slot />
         <div>
           <h2>I18n Head</h2>
-          <code>{{ head }}</code>
+          <pre>{{ head }}</pre>
         </div>
       </Body>
     </Html>

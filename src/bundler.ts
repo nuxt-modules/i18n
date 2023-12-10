@@ -13,6 +13,7 @@ import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
 import type { TransformMacroPluginOptions } from './transform/macros'
 import type { ResourcePluginOptions } from './transform/resource'
+import { MetaDeprecationPlugin, type MetaDeprecationPluginOptions } from './transform/meta-deprecation'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -30,6 +31,10 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   }
 
   const resourceOptions: ResourcePluginOptions = {
+    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
+  }
+
+  const metaDeprecationOptions: MetaDeprecationPluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
@@ -59,6 +64,7 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
     addWebpackPlugin(ResourcePlugin.webpack(resourceOptions))
+    addWebpackPlugin(MetaDeprecationPlugin.webpack(metaDeprecationOptions))
 
     extendWebpackConfig(config => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
@@ -106,6 +112,7 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
   addVitePlugin(ResourcePlugin.vite(resourceOptions))
+  addVitePlugin(MetaDeprecationPlugin.vite(metaDeprecationOptions))
 
   extendViteConfig(config => {
     if (config.define) {
