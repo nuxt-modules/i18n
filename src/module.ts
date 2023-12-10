@@ -120,6 +120,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
       )
     }
 
+    if (options.dynamicRouteParams) {
+      logger.warn(
+        'The `dynamicRouteParams` options is deprecated and will be removed in `v8.1`, use the `useSetI18nParams` composable instead.'
+      )
+    }
+
     /**
      * nuxt layers handling ...
      */
@@ -296,6 +302,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useLocaleHead',
         'useBrowserLocale',
         'useCookieLocale',
+        'useSetI18nParams',
         NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
         NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
         NUXT_I18N_COMPOSABLE_DEFINE_CONFIG

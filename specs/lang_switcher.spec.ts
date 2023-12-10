@@ -9,8 +9,7 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      defaultLocale: 'en',
-      dynamicRouteParams: true
+      defaultLocale: 'en'
     }
   }
 })

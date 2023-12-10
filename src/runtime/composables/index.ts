@@ -1,10 +1,14 @@
 import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp } from '#imports'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
+import { getActiveHead } from 'unhead'
+import { useI18n } from 'vue-i18n'
 import {
   getComposer,
   findBrowserLocale,
+  getLocale,
+  getLocales,
   useRouteBaseName as _useRouteBaseName,
   useLocalePath as _useLocalePath,
   useLocaleRoute as _useLocaleRoute,
@@ -18,7 +22,70 @@ import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
 export * from 'vue-i18n'
 export * from './shared'
 export type { LocaleObject } from 'vue-i18n-routing'
+
 import type { Locale } from 'vue-i18n'
+import type { LocaleObject, SeoAttributesOptions } from 'vue-i18n-routing'
+import {
+  addAlternateOgLocales,
+  addCanonicalLinksAndOgUrl,
+  addCurrentOgLocale,
+  addHreflangLinks,
+  getNormalizedLocales,
+  type HeadParam
+} from '../utils'
+
+/**
+ * Returns a function to set i18n params.
+ *
+ * @param options - An options object, see {@link SeoAttributesOptions}.
+ *
+ * @returns a {@link SetI18nParamsFunction}.
+ *
+ * @public
+ */
+export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
+export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
+  const route = useRoute()
+  const head = getActiveHead()
+
+  const i18n = useI18n()
+  const locale = getLocale(i18n)
+  const locales = getNormalizedLocales(getLocales(i18n))
+
+  const i18nParams = computed({
+    get() {
+      return route.meta.nuxtI18n ?? {}
+    },
+    set(val) {
+      route.meta.nuxtI18n = val
+    }
+  })
+
+  const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
+  const currentLocaleIso = currentLocale.iso
+
+  const setMeta = () => {
+    const metaObject: HeadParam = {
+      link: [],
+      meta: []
+    }
+
+    // Adding SEO Meta
+    if (locale && i18n.locales) {
+      addHreflangLinks(locales as LocaleObject[], metaObject, 'id')
+      addCanonicalLinksAndOgUrl(metaObject, 'id', seoAttributes)
+      addCurrentOgLocale(currentLocale, currentLocaleIso, metaObject, 'id')
+      addAlternateOgLocales(locales as LocaleObject[], currentLocaleIso, metaObject, 'id')
+    }
+
+    head?.push(metaObject)
+  }
+
+  return function (params: Record<string, unknown>) {
+    i18nParams.value = { ...params }
+    setMeta()
+  }
+}
 
 /**
  * The `useRouteBaseName` composable returns a function that gets the route's base name.
