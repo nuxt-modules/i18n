@@ -318,6 +318,12 @@ test('server integration extended from `layers/layer-server`', async () => {
   // LocaleDetector: query
   const resQuery = await $fetch('/api/server', { query: { key: 'snakeCaseText', locale: 'fr' } })
   expect(resQuery?.snakeCaseText).toMatch('À-propos-de-ce-site')
+
+  // yaml, json5 resource
+  const enRes = await $fetch('/api/server', { query: { key: 'server-key', locale: 'en' } })
+  expect(enRes?.['server-key']).toMatch('Hello!')
+  const jaRes = await $fetch('/api/server', { query: { key: 'server-key', locale: 'ja' } })
+  expect(jaRes?.['server-key']).toMatch('こんにちは！')
 })
 
 test('dynamic parameters', async () => {

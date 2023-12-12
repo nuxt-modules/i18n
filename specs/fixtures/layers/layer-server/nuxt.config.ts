@@ -9,7 +9,7 @@ export default defineNuxtConfig({
       {
         code: 'en',
         iso: 'en-US',
-        file: 'en.json',
+        file: 'en.json5',
         name: 'English'
       },
       {
