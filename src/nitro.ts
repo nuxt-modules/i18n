@@ -43,7 +43,7 @@ export async function setupNitro(
         inline: [resolve('./runtime')]
       })
 
-      // install server resource transform plugin for yaml format
+      // install server resource transform plugin for yaml / json5 format
       nitroConfig.rollupConfig = nitroConfig.rollupConfig || {}
       nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
       nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
