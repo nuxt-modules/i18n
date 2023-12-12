@@ -5,6 +5,7 @@ import { defu } from 'defu'
 import { resolve } from 'pathe'
 import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
+import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getFeatureFlags } from './bundler'
 import { isExists } from './utils'
 import {
@@ -43,15 +44,20 @@ export async function setupNitro(
       })
 
       // install server resource transform plugin for yaml format
-      const yamlPaths = getYamlResourcePaths(additionalParams.localeInfo)
+      nitroConfig.rollupConfig = nitroConfig.rollupConfig || {}
+      nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
+      nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
+        ? nitroConfig.rollupConfig.plugins
+        : [nitroConfig.rollupConfig.plugins]
+      const yamlPaths = getResourcePaths(additionalParams.localeInfo, /\.ya?ml$/)
       if (yamlPaths.length > 0) {
-        nitroConfig.rollupConfig = nitroConfig.rollupConfig || {}
-        nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
-        nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
-          ? nitroConfig.rollupConfig.plugins
-          : [nitroConfig.rollupConfig.plugins]
-        // @ts-ignore NOTE: A type error occurs due to a mismatch between the version of rollup on the nitro side (v3.x) and the version of rollup that `@rollup/plugin-yaml` depends on (v4.x). We ignore this type error because `@rollup/plugin-yaml` is rollup version compatible.
+        // @ts-ignore NOTE: A type error occurs due to a mismatch between the version of rollup on the nitro side (v4.x) and the version of rollup that `@rollup/plugin-yaml` depends on (v3.x). We ignore this type error because `@rollup/plugin-yaml` is rollup version compatible.
         nitroConfig.rollupConfig.plugins.push(yamlPlugin({ include: yamlPaths }))
+      }
+      const json5Paths = getResourcePaths(additionalParams.localeInfo, /\.json5?$/)
+      if (json5Paths.length > 0) {
+        // @ts-ignore NOTE: A type error occurs due to a mismatch between the version of rollup on the nitro side (v4.x) and the version of rollup that `@miyaneee/rollup-plugin-json5` depends on (v3.x). We ignore this type error because `@miyaneee/rollup-plugin-json5` is rollup version compatible.
+        nitroConfig.rollupConfig.plugins.push(json5Plugin({ include: json5Paths }))
       }
 
       nitroConfig.virtual = nitroConfig.virtual || {}
@@ -146,11 +152,11 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
   }
 }
 
-function getYamlResourcePaths(localeInfo: LocaleInfo[]): string[] {
+function getResourcePaths(localeInfo: LocaleInfo[], extPattern: RegExp): string[] {
   return localeInfo.reduce((acc, locale) => {
     if (locale.meta) {
       const collected = locale.meta
-        .map(meta => (/ya?ml$/.test(meta.path) ? meta.path : undefined))
+        .map(meta => (extPattern.test(meta.path) ? meta.path : undefined))
         .filter(Boolean) as string[]
       return [...acc, ...collected]
     } else {
