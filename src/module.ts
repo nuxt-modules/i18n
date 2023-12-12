@@ -278,7 +278,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nitro
      */
 
-    await setupNitro(nuxt, options, genTemplate(true, true))
+    await setupNitro(nuxt, options, {
+      optionsCode: genTemplate(true, true),
+      localeInfo
+    })
 
     /**
      * auto imports

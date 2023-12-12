@@ -9,13 +9,13 @@ export default defineNuxtConfig({
       {
         code: 'en',
         iso: 'en-US',
-        file: 'en.json',
+        file: 'en.json5',
         name: 'English'
       },
       {
         code: 'ja',
         iso: 'ja-JP',
-        file: 'ja.json',
+        file: 'ja.yaml',
         name: 'Japanese'
       }
     ]
