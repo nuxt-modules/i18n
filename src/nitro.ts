@@ -1,9 +1,10 @@
 import createDebug from 'debug'
-import { assign } from '@intlify/shared'
+import { assign, isArray } from '@intlify/shared'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
 import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/kit'
+import yamlPlugin from '@rollup/plugin-yaml'
 import { getFeatureFlags } from './bundler'
 import { isExists } from './utils'
 import {
@@ -17,11 +18,20 @@ import {
 } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
+import type { NuxtI18nOptions, LocaleInfo } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
-export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>, nuxtI18nOptionsCode: string) {
+type AdditionalSetupNitroParams = {
+  optionsCode: string
+  localeInfo: LocaleInfo[]
+}
+
+export async function setupNitro(
+  nuxt: Nuxt,
+  nuxtOptions: Required<NuxtI18nOptions>,
+  additionalParams: AdditionalSetupNitroParams
+) {
   const { resolve } = createResolver(import.meta.url)
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
@@ -32,8 +42,20 @@ export async function setupNitro(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptio
         inline: [resolve('./runtime')]
       })
 
+      // install server resource transform plugin for yaml format
+      const yamlPaths = getYamlResourcePaths(additionalParams.localeInfo)
+      if (yamlPaths.length > 0) {
+        nitroConfig.rollupConfig = nitroConfig.rollupConfig || {}
+        nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
+        nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
+          ? nitroConfig.rollupConfig.plugins
+          : [nitroConfig.rollupConfig.plugins]
+        // @ts-ignore NOTE: A type error occurs due to a mismatch between the version of rollup on the nitro side (v3.x) and the version of rollup that `@rollup/plugin-yaml` depends on (v4.x). We ignore this type error because `@rollup/plugin-yaml` is rollup version compatible.
+        nitroConfig.rollupConfig.plugins.push(yamlPlugin({ include: yamlPaths }))
+      }
+
       nitroConfig.virtual = nitroConfig.virtual || {}
-      nitroConfig.virtual['#internal/i18n/options.mjs'] = () => nuxtI18nOptionsCode
+      nitroConfig.virtual['#internal/i18n/options.mjs'] = () => additionalParams.optionsCode
       nitroConfig.virtual['#internal/i18n/locale.detector.mjs'] = () => `
 import localeDetector from ${JSON.stringify(localeDetectionPath)}
 export { localeDetector }
@@ -122,4 +144,18 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
   } else {
     return [enableServerIntegration, '']
   }
+}
+
+function getYamlResourcePaths(localeInfo: LocaleInfo[]): string[] {
+  const paths = localeInfo.reduce((acc, locale) => {
+    if (locale.meta) {
+      const collected = locale.meta
+        .map(meta => (/ya?ml$/.test(meta.path) ? meta.path : undefined))
+        .filter(Boolean) as string[]
+      return [...acc, ...collected]
+    } else {
+      return acc
+    }
+  }, [] as string[])
+  return paths
 }

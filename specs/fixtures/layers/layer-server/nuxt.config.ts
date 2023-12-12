@@ -15,7 +15,7 @@ export default defineNuxtConfig({
       {
         code: 'ja',
         iso: 'ja-JP',
-        file: 'ja.json',
+        file: 'ja.yaml',
         name: 'Japanese'
       }
     ]
