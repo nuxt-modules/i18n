@@ -17,7 +17,7 @@ import { defineNuxtPlugin, useRouter, useRoute, addRouteMiddleware, defineNuxtRo
 import {
   localeCodes,
   vueI18nConfigs,
-  nuxtI18nOptions,
+  nuxtI18nOptions as _nuxtI18nOptions,
   nuxtI18nInternalOptions,
   isSSG,
   localeMessages,
@@ -67,6 +67,7 @@ export default defineNuxtPlugin({
 
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtContext)
 
+    const nuxtI18nOptions = { ..._nuxtI18nOptions }
     const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
     const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
     const {
