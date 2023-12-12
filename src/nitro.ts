@@ -147,7 +147,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
 }
 
 function getYamlResourcePaths(localeInfo: LocaleInfo[]): string[] {
-  const paths = localeInfo.reduce((acc, locale) => {
+  return localeInfo.reduce((acc, locale) => {
     if (locale.meta) {
       const collected = locale.meta
         .map(meta => (/ya?ml$/.test(meta.path) ? meta.path : undefined))
@@ -157,5 +157,4 @@ function getYamlResourcePaths(localeInfo: LocaleInfo[]): string[] {
       return acc
     }
   }, [] as string[])
-  return paths
 }
