@@ -28,6 +28,9 @@ importers:
       '@nuxt/kit':
         specifier: ^3.7.4
         version: 3.8.2(rollup@3.29.4)
+      '@rollup/plugin-yaml':
+        specifier: ^4.1.2
+        version: 4.1.2(rollup@3.29.4)
       '@vue/compiler-sfc':
         specifier: ^3.3.4
         version: 3.3.10
@@ -89,9 +92,6 @@ importers:
       '@nuxt/schema':
         specifier: ^3.7.4
         version: 3.8.2(rollup@3.29.4)
-      '@rollup/plugin-yaml':
-        specifier: ^4.1.2
-        version: 4.1.2(rollup@3.29.4)
       '@types/debug':
         specifier: ^4.1.9
         version: 4.1.12
@@ -2419,7 +2419,7 @@ packages:
       js-yaml: 4.1.0
       rollup: 3.29.4
       tosource: 2.0.0-alpha.3
-    dev: true
+    dev: false
 
   /@rollup/pluginutils@4.2.1:
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
@@ -9382,7 +9382,7 @@ packages:
   /tosource@2.0.0-alpha.3:
     resolution: {integrity: sha512-KAB2lrSS48y91MzFPFuDg4hLbvDiyTjOVgaK7Erw+5AmZXNq4sFRVn8r6yxSLuNs15PaokrDRpS61ERY9uZOug==}
     engines: {node: '>=10'}
-    dev: true
+    dev: false
 
   /totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
