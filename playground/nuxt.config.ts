@@ -132,7 +132,7 @@ export default defineNuxtConfig({
       {
         code: 'en-GB',
         iso: 'en-GB',
-        files: ['en.json', 'en-GB.js', 'en-KK.js'],
+        files: ['en.json', 'en-GB.js', 'en-KK.js', 'en-US.yaml', 'en-CA.json5'],
         name: 'English (UK)'
       },
       {
