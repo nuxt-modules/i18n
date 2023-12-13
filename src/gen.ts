@@ -4,7 +4,7 @@ import createDebug from 'debug'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
-import { getLocalePaths, toCode } from './utils'
+import { getLayerI18n, getLocalePaths, toCode } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PrerenderTarget } from './utils'
@@ -32,14 +32,16 @@ const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, i
 }
 
 function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
-  const hasObjectLocales =
-    nuxt.options._layers.some(layer => layer?.config?.i18n?.locales?.some(x => typeof x !== 'string')) ||
-    options?.i18nModules?.some(module => module?.locales?.some(x => typeof x !== 'string'))
+  const isLocaleObjectsArray = (locales?: string[] | LocaleObject[]) => locales?.some(x => typeof x !== 'string')
+
+  const hasLocaleObjects =
+    nuxt.options._layers.some(layer => isLocaleObjectsArray(getLayerI18n(layer)?.locales)) ||
+    options?.i18nModules?.some(module => isLocaleObjectsArray(module?.locales))
 
   const locales = (options.locales ?? []) as LocaleObject[]
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return locales.map(({ meta, ...locale }) => {
-    if (!hasObjectLocales) {
+    if (!hasLocaleObjects) {
       return locale.code
     }
 
