@@ -24,7 +24,7 @@ import {
 import {
   localeCodes,
   vueI18nConfigs,
-  nuxtI18nOptions,
+  nuxtI18nOptions as _nuxtI18nOptions,
   nuxtI18nInternalOptions,
   isSSG,
   localeMessages,
@@ -71,6 +71,9 @@ export default defineNuxtPlugin({
     const route = useRoute()
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
+
+    // Fresh copy per request to prevent reusing mutated options
+    const nuxtI18nOptions = { ..._nuxtI18nOptions }
 
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
 
