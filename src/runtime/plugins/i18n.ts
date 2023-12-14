@@ -90,7 +90,8 @@ export default defineNuxtPlugin({
     __DEBUG__ && console.log('useCookie on setup', useCookie)
     __DEBUG__ && console.log('defaultLocale on setup', defaultLocale)
 
-    nuxtI18nOptions.baseUrl = extendBaseUrl(nuxtI18nOptions.baseUrl, {
+    let newBaseUrl = Object.assign({}, nuxtI18nOptions.baseUrl);
+    nuxtI18nOptions.baseUrl = extendBaseUrl(newBaseUrl, {
       differentDomains,
       localeCodeLoader: defaultLocale,
       normalizedLocales
