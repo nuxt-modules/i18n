@@ -1,3 +1,4 @@
+import globals from 'globals'
 import tsEsLintPlugin from '@typescript-eslint/eslint-plugin'
 import tsEsLintParser from '@typescript-eslint/parser'
 import eslintConfigPrettier from 'eslint-config-prettier'
@@ -20,9 +21,7 @@ export default [
       '.eslintcache',
       'src/runtime/templates'
     ],
-    env: { node: true },
-    languageOptions: { parser: tsEsLintParser },
-    parserOptions: { sourceType: 'module' }
+    languageOptions: { globals: globals.node, parser: tsEsLintParser, parserOptions: { sourceType: 'module' } }
   },
 
   // Extends

@@ -77,9 +77,9 @@
   },
   "dependencies": {
     "@intlify/h3": "^0.5.0",
-    "@intlify/utils": "^0.12.0",
     "@intlify/shared": "^9.8.0",
     "@intlify/unplugin-vue-i18n": "^1.4.0",
+    "@intlify/utils": "^0.12.0",
     "@miyaneee/rollup-plugin-json5": "^1.1.2",
     "@nuxt/kit": "^3.7.4",
     "@rollup/plugin-yaml": "^4.1.2",
@@ -117,6 +117,7 @@
     "execa": "^8.0.1",
     "get-port-please": "^3.1.1",
     "gh-changelogen": "^0.2.8",
+    "globals": "^13.24.0",
     "globby": "^14.0.0",
     "h3": "^1.8.2",
     "jiti": "^1.20.0",
@@ -132,8 +133,8 @@
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "undici": "^6.0.1",
-    "vitest": "^1.0.0",
     "unhead": "^1.8.8",
+    "vitest": "^1.0.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },
