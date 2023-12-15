@@ -1,12 +1,12 @@
 import tsEsLintPlugin from '@typescript-eslint/eslint-plugin'
+import tsEsLintParser from '@typescript-eslint/parser'
 import eslintConfigPrettier from 'eslint-config-prettier'
-
-// extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended', 'prettier']
 
 export default [
   // Globals
   {
     env: { node: true },
+    languageOptions: { parser: tsEsLintParser },
     parserOptions: { sourceType: 'module' }
   },
 

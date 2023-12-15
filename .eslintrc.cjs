@@ -5,7 +5,7 @@ module.exports = {
   // },
   // extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended', 'prettier'],
   // plugins: ['@typescript-eslint'],
-  parser: '@typescript-eslint/parser'
+  // parser: '@typescript-eslint/parser'
   // parserOptions: {
   //   // project: true,
   //   sourceType: 'module'
