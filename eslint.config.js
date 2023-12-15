@@ -27,7 +27,11 @@ export default [
   // Globals
   {
     files: ['**/*.js', '**/*.ts', '**/*.vue', '**/*.json'],
-    languageOptions: { globals: globals.node, parser: tsEsLintParser, parserOptions: { sourceType: 'module' } }
+    languageOptions: {
+      globals: globals.node,
+      parser: tsEsLintParser,
+      parserOptions: { sourceType: 'module' }
+    }
   },
 
   // Extends
