@@ -2,6 +2,8 @@ import globals from 'globals'
 import tsEsLintPlugin from '@typescript-eslint/eslint-plugin'
 import tsEsLintParser from '@typescript-eslint/parser'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import { FlatCompat } from '@eslint/eslintrc'
+const compat = new FlatCompat()
 
 export default [
   // Globals
@@ -25,8 +27,8 @@ export default [
   },
 
   // Extends
-  ...tsEsLintPlugin.configs['recommended'].rules,
-  ...tsEsLintPlugin.configs['eslint-recommended'],
+  ...compat.extends('plugin:@typescript-eslint/recommended'),
+  ...compat.extends('plugin:@typescript-eslint/eslint-recommended'),
   eslintConfigPrettier,
 
   // TS Plugin
