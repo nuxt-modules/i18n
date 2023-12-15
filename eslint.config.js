@@ -5,6 +5,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 export default [
   // Globals
   {
+    files: ['**/*.js', '**/*.ts', '**/*.vue', '**/*.json'],
     ignores: [
       'dist',
       'playground',
