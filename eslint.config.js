@@ -6,23 +6,27 @@ import { FlatCompat } from '@eslint/eslintrc'
 const compat = new FlatCompat()
 
 export default [
-  // Globals
+  // Ignores
   {
-    files: ['**/*.js', '**/*.ts', '**/*.vue', '**/*.json'],
     ignores: [
-      'dist',
-      'playground',
-      'specs/fixtures',
-      'specs/utils',
-      'test/fixtures',
-      'coverage',
+      '.eslintcache/**',
+      'dist/**',
+      'playground/**',
+      'specs/fixtures/**',
+      'specs/utils/**',
+      'test/fixtures/**',
+      'coverage/**',
+      'src/runtime/templates/**',
       'docs/components/content/Logo.vue',
       'docs/components/content/VoltaBoard.vue',
       'docs/components/AppHeader.vue',
-      'docs/components/AppHeaderNavigation.vue',
-      '.eslintcache',
-      'src/runtime/templates'
-    ],
+      'docs/components/AppHeaderNavigation.vue'
+    ]
+  },
+
+  // Globals
+  {
+    files: ['**/*.js', '**/*.ts', '**/*.vue', '**/*.json'],
     languageOptions: { globals: globals.node, parser: tsEsLintParser, parserOptions: { sourceType: 'module' } }
   },
 
