@@ -3,7 +3,7 @@ module.exports = {
   // env: {
   //   node: true
   // },
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended', 'prettier'],
+  // extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended', 'prettier'],
   plugins: ['@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   // parserOptions: {
