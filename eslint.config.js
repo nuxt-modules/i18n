@@ -1,6 +1,8 @@
 import tsEsLintPlugin from '@typescript-eslint/eslint-plugin'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
+// extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended', 'prettier']
+
 export default [
   // Globals
   {
@@ -11,5 +13,11 @@ export default [
   // Extends
   ...tsEsLintPlugin.configs['recommended'].rules,
   ...tsEsLintPlugin.configs['eslint-recommended'],
-  eslintConfigPrettier
+  eslintConfigPrettier,
+
+  // TS Plugin
+  {
+    plugins: { '@typescript-eslint': tsEsLintPlugin },
+    rules: { '@typescript-eslint/ban-ts-comment': 'off' }
+  }
 ]
