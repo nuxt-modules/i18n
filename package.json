@@ -144,11 +144,11 @@
     ],
     "*.{js,vue}": [
       "prettier --write",
-      "eslint --fix --ext .js,.vue"
+      "eslint --fix"
     ],
     "*.ts?(x)": [
       "prettier --parser=typescript --write",
-      "eslint --fix --ext .ts"
+      "eslint --fix"
     ]
   },
   "publishConfig": {
