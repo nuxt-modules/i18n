@@ -1,7 +1,7 @@
 import { deepCopy, isFunction, isArray, isObject, isString } from '@intlify/shared'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
-import type { NuxtApp } from 'nuxt/dist/app'
+import type { NuxtApp } from '#app'
 import type { DeepRequired } from 'ts-essentials'
 import type { VueI18nConfig, NuxtI18nOptions } from '../types'
 
