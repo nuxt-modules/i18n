@@ -1,7 +1,7 @@
 import { vi, test, expect } from 'vitest'
 import fs from 'node:fs'
 import { resolve } from 'node:path'
-import { localizeRoutes } from 'vue-i18n-routing'
+import { localizeRoutes } from '../../src/routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from './utils'
 

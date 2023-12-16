@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { vi, describe, test, expect } from 'vitest'
-import { localizeRoutes } from 'vue-i18n-routing'
+import { localizeRoutes } from '../../../src/routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 
