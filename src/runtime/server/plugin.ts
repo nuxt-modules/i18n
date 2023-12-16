@@ -7,7 +7,7 @@ import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadL
 
 import type { NitroAppPlugin } from 'nitropack'
 import type { H3Event } from 'h3'
-import type { NuxtApp } from 'nuxt/dist/app'
+import type { NuxtApp } from 'nuxt/app'
 import type { Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { CoreContext } from '@intlify/h3'
 
