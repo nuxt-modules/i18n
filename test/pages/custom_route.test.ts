@@ -106,7 +106,7 @@ describe.each([
     pages: [
       {
         name: 'blog-date-slug',
-        path: '/blog/:date/:slug',
+        path: '/blog/:date()/:slug()',
         file: '/path/to/nuxt-app/pages/blog/[date]/[slug].vue',
         children: []
       }
@@ -114,6 +114,138 @@ describe.each([
   }
 ])('Module configuration', ({ case: _case, options, pages }) => {
   test(_case, async () => {
+    vi.spyOn(fs, 'readFileSync').mockReturnValue('')
+
+    const srcDir = '/path/to/nuxt-app'
+    const pagesDir = 'pages'
+    const ctx: NuxtPageAnalyzeContext = {
+      stack: [],
+      srcDir,
+      pagesDir,
+      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
+    }
+
+    analyzeNuxtPages(ctx, pages)
+    const localizedPages = localizeRoutes(pages, {
+      ...options,
+      includeUprefixedFallback: false,
+      optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
+    } as Parameters<typeof localizeRoutes>[1])
+
+    expect(localizedPages).toMatchSnapshot()
+  })
+})
+
+describe.each([
+  {
+    case: 'simple',
+    options: getNuxtOptions(
+      {
+        about: {
+          en: '/about-us',
+          fr: '/a-propos',
+          es: '/sobre'
+        }
+      },
+      'named-config'
+    ),
+    pages: [
+      {
+        name: 'about',
+        path: '/about',
+        file: '/path/to/nuxt-app/pages/about.vue',
+        children: []
+      }
+    ]
+  },
+  {
+    case: 'the part of URL',
+    options: getNuxtOptions(
+      {
+        about: {
+          fr: '/a-propos'
+        },
+        services: {
+          fr: '/offres'
+        },
+        'services-development': {
+          fr: '/offres/developement'
+        },
+        'services-development-app': {
+          fr: '/offres/developement/app'
+        },
+        'services-development-website': {
+          fr: '/offres/developement/site-web'
+        },
+        'services-coaching': {
+          fr: '/offres/formation'
+        }
+      },
+      'named-config'
+    ),
+    pages: [
+      {
+        name: 'about',
+        path: '/about',
+        file: '/path/to/nuxt-app/pages/about.vue',
+        children: []
+      },
+      {
+        name: 'services-coaching',
+        path: '/services/coaching',
+        file: '/path/to/nuxt-app/pages/services/coaching.vue',
+        children: []
+      },
+      {
+        name: 'services-development-app',
+        path: '/services/development/app',
+        file: '/path/to/nuxt-app/pages/services/development/app.vue',
+        children: []
+      },
+      {
+        name: 'services-development',
+        path: '/services/development',
+        file: '/path/to/nuxt-app/pages/services/development/index.vue',
+        children: []
+      },
+      {
+        name: 'services-development-website',
+        path: '/services/development/website',
+        file: '/path/to/nuxt-app/pages/services/development/website.vue',
+        children: []
+      },
+      {
+        name: 'services',
+        path: '/services',
+        file: '/path/to/nuxt-app/pages/services/index.vue',
+        children: []
+      }
+    ]
+  },
+  {
+    case: 'dynamic parameters',
+    options: getNuxtOptions(
+      {
+        'blog-date-slug': {
+          ja: '/blog/tech/:date()/:slug()'
+        }
+      },
+      'named-config'
+    ),
+    pages: [
+      {
+        name: 'blog-date-slug',
+        path: '/blog/:date()/:slug()',
+        file: '/path/to/nuxt-app/pages/blog/[date]/[slug].vue',
+        children: []
+      }
+    ]
+  }
+])('Module named configuration', ({ case: _case, options, pages }) => {
+  test(_case, async () => {
+    console.log(' -------------------------------------------------')
+    console.log('file: custom_route.test.ts:243 ~ options:', options)
+    console.log(' -------------------------------------------------')
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
     const srcDir = '/path/to/nuxt-app'
@@ -154,7 +286,7 @@ describe.each([
     pages: [
       {
         name: 'articles-name',
-        path: '/articles/:name',
+        path: '/articles/:name()',
         file: resolve(__dirname, '../fixtures/custom_route/dynamic/pages/articles/[name].vue'),
         children: []
       }

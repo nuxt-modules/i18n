@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     (_, nuxt) => {
       console.log(nuxt.options._installedModules)
     },
+
     Module1,
     ModuleExperimental,
     LayerModule,
@@ -87,6 +88,25 @@ export default defineNuxtConfig({
       }
     ],
   */
+    (_, nuxt) => {
+      nuxt.hook('pages:extend', pages => {
+        let pagesCopy = JSON.parse(JSON.stringify(pages))
+        function processRoutes(routes) {
+          return routes.map(r => {
+            if (r.children) {
+              r.children = processRoutes(r.children)
+            }
+            return {
+              name: r.name,
+              path: r.path,
+              children: r.children
+            }
+          })
+        }
+        console.log('PAGES:')
+        console.log(JSON.stringify(processRoutes(pagesCopy), null, 4))
+      })
+    },
     '@nuxtjs/i18n',
     '@nuxt/devtools'
   ],
@@ -170,6 +190,22 @@ export default defineNuxtConfig({
         ja: '/about-ja'
       }
     },
+
+    // // NAMED-CONFIG
+    // customRoutes: 'named-config',
+    // pages: {
+    //   history: {
+    //     ja: '/history-ja'
+    //   },
+    //   about: {
+    //     ja: '/about-ja'
+    //   },
+    //   'category-id': {
+    //     ja: '/category-ja/:id()'
+    //   }
+    // },
+    // // END OF NAMED-CONFIG
+
     // differentDomains: true,
     skipSettingLocaleOnNavigate: true,
     detectBrowserLanguage: false,

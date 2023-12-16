@@ -98,7 +98,7 @@ export type NuxtI18nOptions<Context = unknown> = {
   langDir?: string | null
   lazy?: boolean
   pages?: CustomRoutePages
-  customRoutes?: 'page' | 'config'
+  customRoutes?: 'page' | 'config' | 'named-config'
   /**
    * @internal
    */

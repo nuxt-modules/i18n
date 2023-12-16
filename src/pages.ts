@@ -127,13 +127,27 @@ export function getRouteOptionsResolver(
 ): RouteOptionsResolver {
   const { pages, defaultLocale, customRoutes } = options
 
-  const useConfig = customRoutes === 'config'
-  debug('getRouteOptionsResolver useConfig', useConfig)
+  let customRoutesProvider = 'page'
+  if (customRoutes && ['config', 'named-config', 'page'].includes(customRoutes)) {
+    customRoutesProvider = customRoutes
+  } else if (customRoutes) {
+    console.warn(
+      formatMessage(
+        `Unknown customRoutes property (${JSON.stringify(customRoutes)}), will be reset to default ("page")`
+      )
+    )
+  }
+
+  debug('getRouteOptionsResolver customRoutes:', customRoutes)
 
   return (route, localeCodes): ComputedRouteOptions | null => {
-    const ret = useConfig
-      ? getRouteOptionsFromPages(ctx, route, localeCodes, pages, defaultLocale)
-      : getRouteOptionsFromComponent(route, localeCodes)
+    const routesGetters = {
+      config: () => getRouteOptionsFromPages(ctx, route, localeCodes, pages, defaultLocale),
+      'named-config': () => getRouteOptionsFromRoutesNames(ctx, route, localeCodes, pages, defaultLocale),
+      page: () => getRouteOptionsFromComponent(route, localeCodes)
+    }
+
+    const ret = routesGetters[customRoutesProvider]()
     debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
     return ret
   }
@@ -197,6 +211,51 @@ function getRouteOptionsFromPages(
     if (isString(customDefaultLocalePath)) {
       // set default locale's custom path if any
       options.paths[locale] = resolveRoutePath(customDefaultLocalePath)
+    }
+  }
+
+  return options
+}
+
+function getRouteOptionsFromRoutesNames(
+  ctx: NuxtPageAnalyzeContext,
+  route: I18nRoute,
+  localeCodes: string[],
+  pages: CustomRoutePages,
+  defaultLocale: string
+) {
+  const options: ComputedRouteOptions = {
+    locales: localeCodes,
+    paths: {}
+  }
+  const pageOptions = pages[route.name]
+
+  // routing disabled
+  if (pageOptions === false) {
+    return null
+  }
+
+  // skip if no page options defined
+  if (!pageOptions) {
+    return options
+  }
+
+  // remove disabled locales from page options
+  options.locales = options.locales.filter(locale => pageOptions[locale] !== false)
+
+  // construct paths object
+  for (const locale of options.locales) {
+    const customLocalePath = pageOptions[locale]
+    if (isString(customLocalePath)) {
+      // set custom path if any
+      options.paths[locale] = customLocalePath
+      continue
+    }
+
+    const customDefaultLocalePath = pageOptions[defaultLocale]
+    if (isString(customDefaultLocalePath)) {
+      // set default locale's custom path if any
+      options.paths[locale] = customDefaultLocalePath
     }
   }
 
