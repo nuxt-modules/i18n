@@ -158,11 +158,11 @@ exports[`Page components > simple 1`] = `
 [
   {
     "children": [],
-    "path": "/ja/about",
+    "path": "/fr/about",
   },
   {
     "children": [],
-    "path": "/fr/about",
+    "path": "/ja/about",
   },
 ]
 `;

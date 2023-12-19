@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`localizeRoutes > Route optiosn resolver: routing disable > should be disabled routing 1`] = `
+exports[`localizeRoutes > Route options resolver: routing disable > should be disabled routing 1`] = `
 [
   {
     "name": "home",
@@ -155,6 +155,48 @@ exports[`localizeRoutes > strategy: "prefix_and_default" > should be localized r
   {
     "name": "about___ja",
     "path": "/ja/about",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___en___default",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___en___default",
+        "path": "posts",
+      },
+    ],
+    "name": "user___en___default",
+    "path": "/user/:id",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___en",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___en",
+        "path": "posts",
+      },
+    ],
+    "name": "user___en",
+    "path": "/en/user/:id",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___ja",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___ja",
+        "path": "posts",
+      },
+    ],
+    "name": "user___ja",
+    "path": "/ja/user/:id",
   },
 ]
 `;

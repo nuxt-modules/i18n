@@ -5,19 +5,14 @@ import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import MagicString from 'magic-string'
 import { formatMessage, getRoutePath, parseSegment, readFileSync } from './utils'
-import { localizeRoutes, DefaultLocalizeRoutesPrefixable } from './routing'
+import { localizeRoutes } from './routing'
 import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
-import type {
-  I18nRoute,
-  RouteOptionsResolver,
-  ComputedRouteOptions,
-  LocalizeRoutesPrefixableOptions
-} from 'vue-i18n-routing'
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
+import type { ComputedRouteOptions, RouteOptionsResolver } from './routing'
 import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
@@ -34,29 +29,16 @@ export type NuxtPageAnalyzeContext = {
   pages: Map<NuxtPage, AnalyzedNuxtPageMeta>
 }
 
-export function setupPages(
-  options: Required<NuxtI18nOptions>,
-  nuxt: Nuxt,
-  additionalOptions: { trailingSlash?: boolean } = {
-    trailingSlash: false
-  }
-) {
-  // override prefixable path for localized target routes
-  function localizeRoutesPrefixable(opts: LocalizeRoutesPrefixableOptions): boolean {
-    // no prefix if app uses different locale domains
-    return !options.differentDomains && DefaultLocalizeRoutesPrefixable(opts)
-  }
-
-  let includeUprefixedFallback = nuxt.options.ssr === false
+export function setupPages(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
+  let includeUnprefixedFallback = nuxt.options.ssr === false
   nuxt.hook('nitro:init', () => {
     debug('enable includeUprefixedFallback')
-    includeUprefixedFallback = options.strategy !== 'prefix'
+    includeUnprefixedFallback = options.strategy !== 'prefix'
   })
 
   const pagesDir = nuxt.options.dir && nuxt.options.dir.pages ? nuxt.options.dir.pages : 'pages'
   const srcDir = nuxt.options.srcDir
-  const { trailingSlash } = additionalOptions
-  debug(`pagesDir: ${pagesDir}, srcDir: ${srcDir}, tailingSlash: ${trailingSlash}`)
+  debug(`pagesDir: ${pagesDir}, srcDir: ${srcDir}, trailingSlash: ${options.trailingSlash}`)
 
   extendPages(pages => {
     debug('pages making ...', pages)
@@ -71,11 +53,9 @@ export function setupPages(
     const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
     mergeLayerPages(analyzer, nuxt)
 
-    // @ts-expect-error Nuxt allows any valid redirect object, not just strings
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUprefixedFallback,
-      localizeRoutesPrefixable,
+      includeUnprefixedFallback,
       optionsResolver: getRouteOptionsResolver(ctx, options)
     })
     pages.splice(0, pages.length)
@@ -130,7 +110,7 @@ export function getRouteOptionsResolver(
   const useConfig = customRoutes === 'config'
   debug('getRouteOptionsResolver useConfig', useConfig)
 
-  return (route, localeCodes): ComputedRouteOptions | null => {
+  return (route, localeCodes): ComputedRouteOptions | undefined => {
     const ret = useConfig
       ? getRouteOptionsFromPages(ctx, route, localeCodes, pages, defaultLocale)
       : getRouteOptionsFromComponent(route, localeCodes)
@@ -148,7 +128,7 @@ function resolveRoutePath(path: string): string {
 
 function getRouteOptionsFromPages(
   ctx: NuxtPageAnalyzeContext,
-  route: I18nRoute,
+  route: NuxtPage,
   localeCodes: string[],
   pages: CustomRoutePages,
   defaultLocale: string
@@ -173,7 +153,7 @@ function getRouteOptionsFromPages(
 
   // routing disabled
   if (pageOptions === false) {
-    return null
+    return undefined
   }
 
   // skip if no page options defined
@@ -203,13 +183,13 @@ function getRouteOptionsFromPages(
   return options
 }
 
-function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
+function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
   debug('getRouteOptionsFromComponent', route)
-  const file = route.component || route.file
+  const file = route.file
 
   // localize disabled if no file (vite) or component (webpack)
   if (!isString(file)) {
-    return null
+    return undefined
   }
 
   const options: ComputedRouteOptions = {
@@ -226,17 +206,15 @@ function getRouteOptionsFromComponent(route: I18nRoute, localeCodes: string[]) {
 
   // localize disabled
   if (componentOptions === false) {
-    return null
+    return undefined
   }
 
   options.locales = componentOptions.locales || localeCodes
 
   // construct paths object
-  const locales = Object.keys(componentOptions.paths || {})
-  for (const locale of locales) {
-    const customLocalePath = componentOptions.paths[locale]
-    if (isString(customLocalePath)) {
-      options.paths[locale] = resolveRoutePath(customLocalePath)
+  for (const [locale, path] of Object.entries(componentOptions.paths ?? {})) {
+    if (isString(path)) {
+      options.paths[locale] = resolveRoutePath(path)
     }
   }
 

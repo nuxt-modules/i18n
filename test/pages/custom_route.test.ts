@@ -5,9 +5,9 @@ import { localizeRoutes } from '../../src/routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from './utils'
 
+import type { NuxtPage } from '@nuxt/schema'
 import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
 import type { NuxtI18nOptions } from '../../src/types'
-import type { NuxtPage } from './utils'
 
 /**
  * NOTE:
@@ -128,7 +128,7 @@ describe.each([
     analyzeNuxtPages(ctx, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUprefixedFallback: false,
+      includeUnprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
 
@@ -196,7 +196,7 @@ describe.each([
     analyzeNuxtPages(ctx, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUprefixedFallback: false,
+      includeUnprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
@@ -263,7 +263,7 @@ test('#1649', async () => {
   analyzeNuxtPages(ctx, pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    includeUprefixedFallback: false,
+    includeUnprefixedFallback: false,
     optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
   } as Parameters<typeof localizeRoutes>[1])
 
