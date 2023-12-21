@@ -1,15 +1,17 @@
 import type { NuxtI18nOptions } from '../../src/types'
-import type { I18nRoute } from 'vue-i18n-routing'
-import type { NuxtHooks } from '@nuxt/schema'
+import type { NuxtPage } from '@nuxt/schema'
 
-type ExtractArrayType<T> = T extends (infer U)[] ? U : never
-export type NuxtPage = ExtractArrayType<Parameters<NuxtHooks['pages:extend']>[0]>
+import type { MarkRequired } from 'ts-essentials'
+import type { LocaleObject } from 'vue-i18n-routing'
 
 export function getNuxtOptions(
   pages: Required<NuxtI18nOptions>['pages'],
   customRoutes: Required<NuxtI18nOptions>['customRoutes'] = 'config',
   defaultLocale = 'en'
-): NuxtI18nOptions {
+): MarkRequired<
+  NuxtI18nOptions,
+  'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'routesNameSeparator'
+> {
   return {
     customRoutes,
     pages,
@@ -22,11 +24,11 @@ export function getNuxtOptions(
       { code: 'en', iso: 'en-US', file: 'en.json', name: 'English' },
       { code: 'ja', iso: 'ja-JP', file: 'ja.json', name: 'Japanses' },
       { code: 'fr', iso: 'fr-FR', file: 'fr.json', name: 'Français' }
-    ]
+    ] as LocaleObject[]
   }
 }
 
-export function stripFilePropertyFromPages(pages: I18nRoute[]) {
+export function stripFilePropertyFromPages(pages: NuxtPage[]) {
   return pages.map(page => {
     delete page.file
     if (page.children) {
