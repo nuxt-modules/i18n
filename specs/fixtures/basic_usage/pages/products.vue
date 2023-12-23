@@ -14,13 +14,23 @@ onMounted(async () => {
 <template>
   <div>
     <LangSwitcher />
-    <NuxtLink
-      class="product"
-      v-for="product in products"
-      :key="product.id"
-      :to="localePath({ name: 'products-slug', params: { slug: product?.slugs?.[locale] ?? 'none' } })"
-      >{{ product.name?.[locale] }}
-    </NuxtLink>
+    <ul>
+      <li>
+        <NuxtLink id="params-add-query" :to="localePath({ query: { test: '123' } })">Add query</NuxtLink>
+      </li>
+      <li>
+        <NuxtLink id="params-remove-query" :to="localePath({ query: undefined })">Remove query</NuxtLink>
+      </li>
+    </ul>
+    <ul>
+      <li v-for="product in products" :key="product.id">
+        <NuxtLink
+          class="product"
+          :to="localePath({ name: 'products-slug', params: { slug: product?.slugs?.[locale] ?? 'none' } })"
+          >{{ product.name?.[locale] }}
+        </NuxtLink>
+      </li>
+    </ul>
     <NuxtPage />
   </div>
 </template>

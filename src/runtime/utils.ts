@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useI18n } from 'vue-i18n'
 import {
   getLocale,
   setLocale,
@@ -13,9 +12,6 @@ import {
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter,
   getComposer,
-  useLocaleRoute,
-  useRouteBaseName,
-  useSwitchLocalePath,
   STRATEGIES
 } from 'vue-i18n-routing'
 import { joinURL, isEqual } from 'ufo'
@@ -53,6 +49,7 @@ import type { DeepRequired } from 'ts-essentials'
 import type { DetectLocaleContext } from './internal'
 import type { LocaleLoader as LocaleInternalLoader } from './messages'
 import type { HeadSafe } from '@unhead/vue'
+import { useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '#i18n'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -499,7 +496,7 @@ export type HeadParam = Required<Pick<HeadSafe, 'meta' | 'link'>>
 type IdParam = NonNullable<I18nHeadOptions['identifierAttribute']>
 
 export function addHreflangLinks(locales: LocaleObject[], head: HeadParam, idAttribute: IdParam) {
-  const { defaultLocale, strategy, baseUrl } = useI18n()
+  const { defaultLocale, strategy, baseUrl } = getComposer(useNuxtApp().$i18n)
   const switchLocalePath = useSwitchLocalePath()
 
   if (strategy === STRATEGIES.NO_PREFIX) {
@@ -556,7 +553,7 @@ export function addCanonicalLinksAndOgUrl(
   idAttribute: IdParam,
   seoAttributesOptions: SeoAttributesOptions = {}
 ) {
-  const { baseUrl } = useI18n()
+  const { baseUrl } = getComposer(useNuxtApp().$i18n)
   const route = useRoute()
   const localeRoute = useLocaleRoute()
   const getRouteBaseName = useRouteBaseName()
