@@ -1,5 +1,5 @@
 import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp } from '#imports'
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
@@ -46,19 +46,33 @@ import {
 export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
 export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
   const route = useRoute()
+  // const router = useRouter()
   const head = getActiveHead()
 
   const i18n = useI18n()
   const locale = getLocale(i18n)
   const locales = getNormalizedLocales(getLocales(i18n))
+  const _i18nParams = ref({})
 
   const i18nParams = computed({
     get() {
       return route.meta.nuxtI18n ?? {}
     },
     set(val) {
+      _i18nParams.value = val
       route.meta.nuxtI18n = val
     }
+  })
+
+  const stop = watch(
+    () => route.fullPath,
+    () => {
+      route.meta.nuxtI18n = _i18nParams.value
+    }
+  )
+
+  onUnmounted(() => {
+    stop()
   })
 
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
