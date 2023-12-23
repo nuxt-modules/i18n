@@ -334,6 +334,15 @@ test('dynamic parameters', async () => {
   await gotoPath(page, '/nl/products/rode-mok')
   expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug')
 
+  // Translated params are not lost on query changes
+  await page.locator('#params-add-query').click()
+  await waitForURL(page, '/nl/products/rode-mok?test=123')
+  expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug?test=123')
+
+  await page.locator('#params-remove-query').click()
+  await waitForURL(page, '/nl/products/rode-mok')
+  expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug')
+
   // head tags - alt links are updated server side
   const product1Html = await $fetch('/products/big-chair')
   const product1Dom = getDom(product1Html)
