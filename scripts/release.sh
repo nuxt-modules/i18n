@@ -17,5 +17,5 @@ if [[ ! -z ${NPM_TOKEN} ]] ; then
 fi
 
 # Release package
-echo "⚡ Publishing with tag next"
-npx npm@8.17.0 publish --tag next --access public --tolerate-republish
+echo "⚡ Publishing with tag latest"
+npx npm@8.17.0 publish --tag latest --access public --tolerate-republish
