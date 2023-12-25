@@ -1,6 +1,6 @@
 [![Nuxt i18n](./docs/public/cover.png)](https://v8.i18n.nuxtjs.org)
 
-[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/next.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
+[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://img.shields.io/npm/dt/%40nuxtjs%2Fi18n.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-modules/i18n)
@@ -10,27 +10,27 @@
 
 > I18n module for Nuxt
 
-The next i18n module for Nuxt 3
+The i18n module for Nuxt 3
 
-## ✅ Status: v8 RC (Release candidate)
+## ✅ Status: v8
 
 If you would like to use the stable version for Nuxt 2, please see the [`v7` branch](https://github.com/nuxt-modules/i18n/tree/main)
 
 ## 🚀 Usage
 
-### Install with `next` tag
+### Install
 
 1. Add the following line to the `devDependencies` with your package manager:
 
 ```sh
 # Using npm
-npm install @nuxtjs/i18n@next --save-dev
+npm install @nuxtjs/i18n --save-dev
 
 # Using yarn
-yarn add --dev @nuxtjs/i18n@next
+yarn add --dev @nuxtjs/i18n
 
 # Using pnpm
-pnpm install -D @nuxtjs/i18n@next
+pnpm install -D @nuxtjs/i18n
 ```
 
 2. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
@@ -56,7 +56,7 @@ Update nuxt i18n module dependency inside `package.json`:
 ```diff
 {
   "devDependencies": {
---    "@nuxtjs/i18n": "^8.0.0-rc.1"
+--    "@nuxtjs/i18n": "^8.0.0"
 ++    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
   }
 }
@@ -72,7 +72,7 @@ Update nuxt i18n module dependency inside `package.json`:
 {
   "devDependencies": {
 --    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
-++    "@nuxtjs/i18n": "^8.0.0-rc.1"
+++    "@nuxtjs/i18n": "^8.0.0"
   }
 }
 ```
