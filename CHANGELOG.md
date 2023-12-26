@@ -11,7 +11,7 @@ We had commited with [60 over contributors](https://github.com/nuxt-modules/i18n
 
 ## 📜 v8 Changes
 
-[See more view changes on GitHub](https://github.com/nuxt-modules/i18n/compare/v7.3.1...v8.0.0)
+[See more view changes on GitHub](https://github.com/nuxt-modules/i18n/compare/d65024d...0271481)
 
 # v8.0.0-rc.11 (2023-12-14T16:13:12Z)
 
