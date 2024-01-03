@@ -132,13 +132,13 @@ export default defineNuxtPlugin({
     __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
     // load initial vue-i18n locale messages
-    vueI18nOptions.messages = await loadInitialMessages(vueI18nOptions.messages, localeMessages, {
+    vueI18nOptions.messages = JSON.parse(JSON.stringify(await loadInitialMessages(vueI18nOptions.messages, localeMessages, {
       ...nuxtI18nOptions,
       initialLocale,
       fallbackLocale: vueI18nOptions.fallbackLocale,
       localeCodes,
       cacheMessages
-    })
+    })))
 
     /**
      * NOTE:
