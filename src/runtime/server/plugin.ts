@@ -1,5 +1,5 @@
 import { defineI18nMiddleware } from '@intlify/h3'
-import { deepCopy } from '@intlify/shared'
+import { deepCopyIteratively } from '../utils'
 import { nuxtI18nOptions, localeCodes, vueI18nConfigs, localeMessages } from '#internal/i18n/options.mjs'
 // @ts-ignore
 import { localeDetector as _localeDetector } from '#internal/i18n/locale.detector.mjs'
@@ -43,7 +43,7 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const setter = (locale: Locale, message: Record<string, any>) => {
         i18nContext.messages[locale] = i18nContext.messages[locale] || {}
-        deepCopy(message, i18nContext.messages[locale])
+        deepCopyIteratively(message, i18nContext.messages[locale])
       }
       if (fallbackLocale) {
         const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])

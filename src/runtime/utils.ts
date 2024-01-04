@@ -639,3 +639,72 @@ export function getNormalizedLocales(locales: string[] | LocaleObject[]): Locale
   }
   return normalized
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isObjectNotArray(val: any) {
+  return typeof val === 'object' && !Array.isArray(val)
+}
+
+export const MESSAGE_CACHE_KEY = '__mCacheKey'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const deepCopyCache = new Map<string, any>()
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function deepCopyIteratively(_src: any, _des: any) {
+  if (typeof _src !== 'object' || _src === null || typeof _des !== 'object' || _des === null) {
+    throw new Error('Both src and des must be non-null objects')
+  }
+
+  // create cacheKey if arguments are objects and at least one of them has MESSAGE_CACHE_KEY
+  let cacheKey = ''
+  // prettier-ignore
+  if (
+    isObjectNotArray(_src) && isObjectNotArray(_des) &&
+    (MESSAGE_CACHE_KEY in _src || MESSAGE_CACHE_KEY in _des)
+  ) {
+    // prettier-ignore
+    cacheKey = [
+      _src?.[MESSAGE_CACHE_KEY],
+      _des?.[MESSAGE_CACHE_KEY]
+    ].map(k => k ?? 'empty').join('-')
+
+    // set and exit early if cache exists
+    if (deepCopyCache.has(cacheKey)) {
+      _des = deepCopyCache.get(cacheKey)
+      return
+    }
+  }
+
+  const src = structuredClone(_src)
+  const des = structuredClone(_des)
+
+  // merge objects iteratively
+  const stack = [{ src, des }]
+  while (stack.length) {
+    const { src, des } = stack.pop()!
+
+    for (const key in src) {
+      if (!src.hasOwnProperty(key)) continue
+
+      if (typeof src[key] === 'object' && src[key] != null) {
+        if (typeof des[key] !== 'object' || des[key] == null) {
+          des[key] = Array.isArray(src[key]) ? [] : {}
+        }
+
+        // if both are objects, push them onto the stack for further processing
+        stack.push({ src: src[key], des: des[key] })
+      } else {
+        // for primitive types or null, directly copy the value
+        des[key] = src[key]
+      }
+    }
+  }
+
+  if (cacheKey) {
+    delete des[MESSAGE_CACHE_KEY]
+    deepCopyCache.set(cacheKey, des)
+  }
+
+  _des = des
+}

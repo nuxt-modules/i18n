@@ -1,4 +1,5 @@
-import { deepCopy, isFunction, isArray, isObject, isString } from '@intlify/shared'
+import { isFunction, isArray, isObject, isString } from '@intlify/shared'
+import { MESSAGE_CACHE_KEY, deepCopyIteratively } from './utils'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -18,7 +19,7 @@ export async function loadVueI18nOptions(
 
     const resolved = typeof resolver === 'function' ? await nuxt.runWithContext(async () => await resolver()) : resolver
 
-    deepCopy(resolved, vueI18nOptions)
+    deepCopyIteratively(resolved, vueI18nOptions)
   }
 
   return vueI18nOptions
@@ -56,7 +57,7 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setter = (locale: Locale, message: Record<string, any>) => {
     const base = messages[locale] || {}
-    deepCopy(message, base)
+    deepCopyIteratively(message, base)
     messages[locale] = base
   }
 
@@ -92,6 +93,8 @@ async function loadMessage(
     } else {
       message = getter
       if (message != null && cacheMessages) {
+        // @ts-expect-error Type should be changed
+        message[MESSAGE_CACHE_KEY] = key
         cacheMessages.set(key, message)
       }
       __DEBUG__ && console.log('loadMessage: load', message)
@@ -139,7 +142,7 @@ export async function loadLocale(
     }
 
     if (message != null) {
-      deepCopy(message, targetMessage)
+      deepCopyIteratively(message, targetMessage)
     }
   }
 
