@@ -17,7 +17,13 @@ import {
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRoute, useRuntimeConfig, useState } from '#imports'
-import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
+import {
+  nuxtI18nInternalOptions,
+  nuxtI18nOptionsDefault,
+  NUXT_I18N_MODULE_ID,
+  isSSG,
+  localeMessages
+} from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
   getLocaleCookie,
@@ -42,12 +48,11 @@ import type {
   I18nHeadOptions,
   SeoAttributesOptions
 } from 'vue-i18n-routing'
-import type { I18n, I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type { I18n, I18nOptions, Locale, FallbackLocale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 import type { DetectLocaleContext } from './internal'
-import type { LocaleLoader as LocaleInternalLoader } from './messages'
 import type { HeadSafe } from '@unhead/vue'
 import { useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '#i18n'
 
@@ -87,19 +92,16 @@ export async function finalizePendingLocaleChange(i18n: I18n) {
 
 export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
   newLocale: string,
-  localeMessages: Record<Locale, LocaleInternalLoader[]>,
   i18n: I18n,
   {
     useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
     skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate,
     differentDomains = nuxtI18nOptionsDefault.differentDomains,
     initial = false,
-    cacheMessages = undefined,
     lazy = false
   }: Pick<DetectBrowserLanguageOptions, 'useCookie'> &
     Pick<NuxtI18nOptions<Context>, 'lazy' | 'skipSettingLocaleOnNavigate' | 'differentDomains'> & {
       initial?: boolean
-      cacheMessages?: Map<string, LocaleMessages<DefineLocaleMessage>>
     } = {}
 ): Promise<[boolean, string]> {
   const nuxtApp = useNuxtApp()
@@ -134,9 +136,9 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
     const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
     if (i18nFallbackLocales) {
       const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      await Promise.all(fallbackLocales.map(locale => loadLocale({ locale, setter, localeMessages }, cacheMessages)))
+      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeMessages, setter)))
     }
-    await loadLocale({ locale: newLocale, setter, localeMessages }, cacheMessages)
+    await loadLocale(newLocale, localeMessages, setter)
   }
 
   if (skipSettingLocaleOnNavigate) {

@@ -4,9 +4,12 @@ import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleM
 import type { NuxtApp } from '#app'
 import type { DeepRequired } from 'ts-essentials'
 import type { VueI18nConfig, NuxtI18nOptions } from '../types'
+import type { CoreContext } from '@intlify/h3'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
+
+const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 export async function loadVueI18nOptions(
   vueI18nConfigs: VueI18nConfig[],
@@ -43,45 +46,30 @@ export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Local
 
 export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   messages: LocaleMessages<DefineLocaleMessage>,
-  localeLoaderMessages: Record<Locale, LocaleLoader[]>,
-  options: DeepRequired<NuxtI18nOptions<Context>> & {
+  localeLoaders: Record<Locale, LocaleLoader[]>,
+  options: Pick<DeepRequired<NuxtI18nOptions<Context>>, 'defaultLocale' | 'lazy'> & {
     initialLocale: Locale
     fallbackLocale: FallbackLocale
     localeCodes: string[]
-    cacheMessages?: Map<string, LocaleMessages<DefineLocaleMessage>>
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Record<string, any>> {
-  const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy, cacheMessages } = options
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setter = (locale: Locale, message: Record<string, any>) => {
-    const base = messages[locale] || {}
-    deepCopy(message, base)
-    messages[locale] = base
-  }
+  const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
 
   // load fallback messages
   if (lazy && fallbackLocale) {
     const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
-    await Promise.all(
-      fallbackLocales.map(locale => loadLocale({ locale, setter, localeMessages: localeLoaderMessages }, cacheMessages))
-    )
+    await Promise.all(fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, messages)))
   }
 
   // load initial messages
   const locales = lazy ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
-  await Promise.all(
-    locales.map((locale: Locale) => loadLocale({ locale, setter, localeMessages: localeLoaderMessages }, cacheMessages))
-  )
+  await Promise.all(locales.map((locale: Locale) => loadAndSetLocaleMessages(locale, localeLoaders, messages)))
 
   return messages
 }
 
-async function loadMessage(
-  locale: Locale,
-  { key, load }: LocaleLoader,
-  cacheMessages?: Map<string, LocaleMessages<DefineLocaleMessage>>
-) {
+async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
@@ -106,21 +94,13 @@ async function loadMessage(
 }
 
 export async function loadLocale(
-  {
-    locale,
-    localeMessages,
-    setter
-  }: {
-    locale: Locale
-    localeMessages: Record<Locale, LocaleLoader[]>
-    setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
-  },
-  cacheMessages?: Map<string, LocaleMessages<DefineLocaleMessage>>
+  locale: Locale,
+  localeLoaders: Record<Locale, LocaleLoader[]>,
+  setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
-  const loaders = localeMessages[locale]
+  const loaders = localeLoaders[locale]
 
   if (loaders == null) {
-    // console.warn(formatMessage('Could not find messages for locale code: ' + locale))
     console.warn('Could not find messages for locale code: ' + locale)
     return
   }
@@ -135,7 +115,7 @@ export async function loadLocale(
     } else {
       __DEBUG__ && !loader.cache && console.log(loader.key + ' bypassing cache!')
       __DEBUG__ && console.log(loader.key + ' is loading ...')
-      message = await loadMessage(locale, loader, cacheMessages)
+      message = await loadMessage(locale, loader)
     }
 
     if (message != null) {
@@ -144,4 +124,22 @@ export async function loadLocale(
   }
 
   setter(locale, targetMessage)
+}
+
+type LocaleLoaderMessages = CoreContext['messages'] | LocaleMessages<DefineLocaleMessage>
+export async function loadAndSetLocaleMessages(
+  locale: Locale,
+  localeLoaders: Record<Locale, LocaleLoader[]>,
+  messages: LocaleLoaderMessages
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const setter = (locale: Locale, message: Record<string, any>) => {
+    // @ts-expect-error should be able to use `locale` as index
+    const base = messages[locale] || {}
+    deepCopy(message, base)
+    // @ts-expect-error should be able to use `locale` as index
+    messages[locale] = base
+  }
+
+  await loadLocale(locale, localeLoaders, setter)
 }
