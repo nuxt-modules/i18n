@@ -151,7 +151,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
           return obj
         },
         {} as Record<string, { domain: string | undefined }>
-      )
+      ),
+      detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage
       // TODO: we should support more i18n module options. welcome PRs :-)
     })
 
@@ -339,7 +340,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 export interface ModuleOptions extends NuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
-  i18n?: Pick<NuxtI18nOptions<unknown>, 'baseUrl'>
+  i18n: Required<Pick<NuxtI18nOptions<unknown>, 'baseUrl' | 'detectBrowserLanguage'>>
 }
 
 export interface ModuleHooks {
