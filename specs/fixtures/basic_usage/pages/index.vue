@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useLocaleHead } from '#i18n'
 import { navigateTo, useHead } from '#imports'
 import LangSwitcher from '../components/LangSwitcher.vue'
 import LocalScope from '../components/LocalScope.vue'
@@ -36,7 +37,11 @@ definePageMeta({
   title: 'home'
 })
 
-const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
+const i18nHead = useLocaleHead({
+  addDirAttribute: true,
+  identifierAttribute: 'id',
+  addSeoAttributes: { canonicalQueries: ['page'] }
+})
 useHead({
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang
@@ -62,6 +67,11 @@ useHead({
       <strong>resolve with <code>useAsyncData</code></strong
       >:
       <code id="home-use-async-data">{{ data }}</code>
+    </section>
+    <section>
+      <strong><code>useHead</code> with <code>useLocaleHead</code></strong
+      >:
+      <code id="home-use-locale-head">{{ i18nHead }}</code>
     </section>
     <section id="locale-path-usages">
       <h3>localePath</h3>
