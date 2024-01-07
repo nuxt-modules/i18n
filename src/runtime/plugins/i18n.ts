@@ -27,7 +27,8 @@ import {
   setLocaleCookie as _setLocaleCookie,
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult,
-  getI18nCookie
+  getI18nCookie,
+  runtimeDetectBrowserLanguage
 } from '../internal'
 import { getComposer, getLocale, setLocale } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
@@ -55,12 +56,10 @@ export default defineNuxtPlugin({
     const nuxtI18nOptions = { ..._nuxtI18nOptions }
     nuxtI18nOptions.baseUrl = extendBaseUrl()
 
+    const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
+
     __DEBUG__ && console.log('isSSG', isSSG)
-    __DEBUG__ &&
-      console.log(
-        'useCookie on setup',
-        nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
-      )
+    __DEBUG__ && console.log('useCookie on setup', _detectBrowserLanguage && _detectBrowserLanguage.useCookie)
     __DEBUG__ && console.log('defaultLocale on setup', nuxtI18nOptions.defaultLocale)
 
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
@@ -124,7 +123,7 @@ export default defineNuxtPlugin({
           stat,
           reason,
           from
-        } = nuxtI18nOptions.detectBrowserLanguage
+        } = _detectBrowserLanguage
           ? detectBrowserLanguage(
               route,
               vueI18nOptions.locale,

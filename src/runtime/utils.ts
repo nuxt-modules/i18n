@@ -22,7 +22,8 @@ import {
   defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
-  DefaultDetectBrowserLanguageFromResult
+  DefaultDetectBrowserLanguageFromResult,
+  runtimeDetectBrowserLanguage
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
 import {
@@ -104,7 +105,7 @@ export async function loadAndSetLocale(
   initial: boolean = false
 ): Promise<[boolean, string]> {
   const { differentDomains, skipSettingLocaleOnNavigate, lazy, detectBrowserLanguage } = nuxtI18nOptions
-  const useCookie = detectBrowserLanguage && detectBrowserLanguage.useCookie
+  const opts = runtimeDetectBrowserLanguage()
   const nuxtApp = useNuxtApp()
 
   let ret = false
@@ -148,7 +149,7 @@ export async function loadAndSetLocale(
   }
 
   // set the locale
-  if (useCookie) {
+  if (opts !== false && opts.useCookie) {
     setCookieLocale(i18n, newLocale)
   }
   setLocale(i18n, newLocale)
@@ -168,7 +169,8 @@ export function detectLocale(
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext
 ) {
-  const { strategy, defaultLocale, differentDomains, detectBrowserLanguage: _detectBrowserLanguage } = nuxtI18nOptions
+  const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions
+  const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
 
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
@@ -181,7 +183,7 @@ export function detectLocale(
     stat,
     reason,
     from
-  } = _detectBrowserLanguage
+  } = runtimeDetectBrowserLanguage()
     ? detectBrowserLanguage(route, vueI18nOptionsLocale, detectLocaleContext, initialLocale)
     : DefaultDetectBrowserLanguageFromResult
   __DEBUG__ &&

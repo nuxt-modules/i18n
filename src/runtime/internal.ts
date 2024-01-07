@@ -95,7 +95,7 @@ export function getBrowserLocale(): string | undefined {
 }
 
 export function getI18nCookie() {
-  const detect = nuxtI18nOptions.detectBrowserLanguage
+  const detect = runtimeDetectBrowserLanguage()
   const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
   const date = new Date()
   const cookieOptions: Record<string, any> = {
@@ -113,7 +113,7 @@ export function getI18nCookie() {
 }
 
 export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): string | undefined {
-  const detect = nuxtI18nOptions.detectBrowserLanguage
+  const detect = runtimeDetectBrowserLanguage()
 
   __DEBUG__ &&
     console.log('getLocaleCookie', {
@@ -122,7 +122,7 @@ export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): strin
       localeCodes
     })
 
-  if (!detect || !detect.useCookie) {
+  if (detect === false || !detect.useCookie) {
     return
   }
 
@@ -135,9 +135,9 @@ export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): strin
 }
 
 export function setLocaleCookie(cookieRef: CookieRef<string | undefined>, locale: string) {
-  const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
+  const detect = runtimeDetectBrowserLanguage()
 
-  if (!useCookie) {
+  if (detect === false || !detect.useCookie) {
     return
   }
 
@@ -195,7 +195,7 @@ export function detectBrowserLanguage(
   }
 
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
-    nuxtI18nOptions.detectBrowserLanguage as DetectBrowserLanguageOptions
+    runtimeDetectBrowserLanguage() as DetectBrowserLanguageOptions
 
   const path = isString(route) ? route : route.path
   __DEBUG__ &&
@@ -372,3 +372,10 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+export const runtimeDetectBrowserLanguage = () => {
+  const opts = useRuntimeConfig().public.i18n
+  if (opts?.detectBrowserLanguage === false) return false
+
+  return opts?.detectBrowserLanguage
+}
