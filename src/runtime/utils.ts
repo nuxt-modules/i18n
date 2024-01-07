@@ -22,7 +22,7 @@ import {
   nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
   isSSG,
-  localeMessages
+  localeLoaders
 } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -136,9 +136,9 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
     const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
     if (i18nFallbackLocales) {
       const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeMessages, setter)))
+      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter)))
     }
-    await loadLocale(newLocale, localeMessages, setter)
+    await loadLocale(newLocale, localeLoaders, setter)
   }
 
   if (skipSettingLocaleOnNavigate) {

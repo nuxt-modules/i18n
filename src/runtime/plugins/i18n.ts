@@ -27,7 +27,7 @@ import {
   nuxtI18nOptions as _nuxtI18nOptions,
   nuxtI18nInternalOptions,
   isSSG,
-  localeMessages,
+  localeLoaders,
   parallelPlugin
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages } from '../messages'
@@ -129,7 +129,7 @@ export default defineNuxtPlugin({
     __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
     // load initial vue-i18n locale messages
-    vueI18nOptions.messages = await loadInitialMessages(vueI18nOptions.messages, localeMessages, {
+    vueI18nOptions.messages = await loadInitialMessages(vueI18nOptions.messages, localeLoaders, {
       localeCodes,
       initialLocale,
       lazy: nuxtI18nOptions.lazy,

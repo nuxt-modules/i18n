@@ -99,7 +99,7 @@ export function generateLoaderOptions(
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config, isServer))
 
-  const localeMessages = localeInfo.map(locale => [locale.code, locale.meta?.map(meta => importMapper.get(meta.key))])
+  const localeLoaders = localeInfo.map(locale => [locale.code, locale.meta?.map(meta => importMapper.get(meta.key))])
 
   const generatedNuxtI18nOptions = {
     ...nuxtI18nOptions,
@@ -109,7 +109,7 @@ export function generateLoaderOptions(
 
   const generated = {
     importStrings,
-    localeMessages,
+    localeLoaders,
     nuxtI18nOptions: generatedNuxtI18nOptions,
     vueI18nConfigs: vueI18nConfigImports
   }

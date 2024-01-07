@@ -86,8 +86,6 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
-    // eslint-disable-next-line no-console
-    // console.error(formatMessage('Failed locale loading: ' + e.message))
     console.error('Failed locale loading: ' + e.message)
   }
   return message

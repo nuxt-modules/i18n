@@ -1,5 +1,5 @@
 import { defineI18nMiddleware } from '@intlify/h3'
-import { nuxtI18nOptions, localeCodes, vueI18nConfigs, localeMessages } from '#internal/i18n/options.mjs'
+import { nuxtI18nOptions, localeCodes, vueI18nConfigs, localeLoaders } from '#internal/i18n/options.mjs'
 // @ts-ignore
 import { localeDetector as _localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadAndSetLocaleMessages } from '../messages'
@@ -22,7 +22,7 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
   const initialLocale = defaultLocale || options.locale || 'en-US'
 
   // load initial locale messages for intlify/h3
-  options.messages = await loadInitialMessages(options.messages, localeMessages, {
+  options.messages = await loadInitialMessages(options.messages, localeLoaders, {
     localeCodes,
     initialLocale,
     lazy: nuxtI18nOptions.lazy,
@@ -39,10 +39,10 @@ export const nitroPlugin: NitroAppPlugin = async nitro => {
       if (fallbackLocale) {
         const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
         await Promise.all(
-          fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeMessages, i18nContext.messages))
+          fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages))
         )
       }
-      await loadAndSetLocaleMessages(locale, localeMessages, i18nContext.messages)
+      await loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages)
     }
     return locale
   }
