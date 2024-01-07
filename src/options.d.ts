@@ -14,10 +14,7 @@ type LocaleLoader = {
   cache: boolean
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const loadMessages: () => Promise<any> = () => Promise.resolve({})
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const localeMessages: Record<string, LocaleLoader[]> = {}
+export const localeLoaders: Record<string, LocaleLoader[]> = {}
 
 export const vueI18nConfigs: VueI18nConfig[]
 
