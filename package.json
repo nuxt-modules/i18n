@@ -121,7 +121,7 @@
     "gh-changelogen": "^0.2.8",
     "globals": "^13.24.0",
     "globby": "^14.0.0",
-    "h3": "^1.8.2",
+    "h3": "npm:h3-nightly@1.10.1-1704400265.ae91fc8",
     "jiti": "^1.20.0",
     "jsdom": "^23.0.1",
     "lint-staged": "^15.0.2",
