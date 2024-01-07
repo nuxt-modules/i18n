@@ -1,14 +1,33 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch } from './utils'
-import { assetLocaleHead, getData, getText, gotoPath, renderPage, waitForURL, getDom } from './helper'
+import { $fetch, setup } from './utils'
+import {
+  assertLocaleHeadWithDom,
+  assetLocaleHead,
+  getData,
+  getDataFromDom,
+  getDom,
+  getText,
+  gotoPath,
+  renderPage,
+  startServerWithRuntimeConfig,
+  waitForURL
+} from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
   browser: true,
   // prerender: true,
   // overrides
-  nuxtConfig: {}
+  nuxtConfig: {
+    runtimeConfig: {
+      public: {
+        i18n: {
+          baseUrl: ''
+        }
+      }
+    }
+  }
 })
 
 test('basic usage', async () => {
@@ -68,6 +87,15 @@ test('vueI18n config file can access runtimeConfig', async () => {
   const { page } = await renderPage('/')
 
   expect(await getText(page, '#runtime-config')).toEqual('Hello from runtime config!')
+
+  const restore = await startServerWithRuntimeConfig({
+    public: { runtimeValue: 'The environment variable has changed!' }
+  })
+
+  await gotoPath(page, '/')
+  expect(await getText(page, '#runtime-config')).toEqual('The environment variable has changed!')
+
+  await restore()
 })
 
 test('layer provides locale `nl` and translation for key `hello`', async () => {
@@ -295,6 +323,28 @@ test('render with meta components', async () => {
 
   // rendering link tag and meta tag in head tag
   await assetLocaleHead(page, '#layout-use-locale-head')
+})
+
+test('render seo tags with baseUrl', async () => {
+  const configDomain = 'https://runtime-config-domain.com'
+
+  const restore = await startServerWithRuntimeConfig({
+    public: {
+      i18n: {
+        baseUrl: configDomain
+      }
+    }
+  })
+
+  const html = await $fetch('/?noncanonical')
+  const dom = getDom(html)
+  await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
+
+  const links = getDataFromDom(dom, '#home-use-locale-head').link
+  const i18nCan = links.find(x => x.id === 'i18n-can')
+  expect(i18nCan.href).toContain(configDomain)
+
+  await restore()
 })
 
 test('server integration extended from `layers/layer-server`', async () => {
