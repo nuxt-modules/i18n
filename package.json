@@ -71,7 +71,8 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "nuxt": "^3.8.0",
+      "nitropack": "npm:nitropack-nightly@2.9.0-28406650.c8e8549",
+      "nuxt": "^3.9.1",
       "consola": "^3"
     }
   },
@@ -81,7 +82,7 @@
     "@intlify/unplugin-vue-i18n": "^2.0.0",
     "@intlify/utils": "^0.12.0",
     "@miyaneee/rollup-plugin-json5": "^1.1.2",
-    "@nuxt/kit": "^3.7.4",
+    "@nuxt/kit": "^3.9.1",
     "@rollup/plugin-yaml": "^4.1.2",
     "@vue/compiler-sfc": "^3.3.4",
     "debug": "^4.3.4",
@@ -92,6 +93,7 @@
     "magic-string": "^0.30.4",
     "mlly": "^1.4.2",
     "pathe": "^1.1.1",
+    "scule": "^1.1.1",
     "sucrase": "^3.34.0",
     "ufo": "^1.3.1",
     "unplugin": "^1.5.0",
@@ -103,7 +105,7 @@
     "@babel/plugin-syntax-import-assertions": "^7.22.5",
     "@babel/types": "^7.23.0",
     "@nuxt/module-builder": "^0.5.4",
-    "@nuxt/schema": "^3.7.4",
+    "@nuxt/schema": "^3.9.1",
     "@types/debug": "^4.1.9",
     "@unhead/vue": "^1.8.8",
     "bumpp": "^9.2.0",
