@@ -7,7 +7,7 @@ exports[`basic 1`] = `
     "import locale__test_srcDir_ja_json from "../ja.json";",
     "import locale__test_srcDir_fr_json from "../fr.json";",
   ],
-  "localeMessages": [
+  "localeLoaders": [
     [
       "en",
       [
@@ -53,7 +53,7 @@ exports[`basic 1`] = `
 exports[`files with cache configuration 1`] = `
 {
   "importStrings": [],
-  "localeMessages": [
+  "localeLoaders": [
     [
       "en",
       [
@@ -124,7 +124,7 @@ exports[`files with cache configuration 1`] = `
 exports[`lazy 1`] = `
 {
   "importStrings": [],
-  "localeMessages": [
+  "localeLoaders": [
     [
       "en",
       [
@@ -170,7 +170,7 @@ exports[`lazy 1`] = `
 exports[`locale file in nested 1`] = `
 {
   "importStrings": [],
-  "localeMessages": [
+  "localeLoaders": [
     [
       "en",
       [
@@ -216,7 +216,7 @@ exports[`locale file in nested 1`] = `
 exports[`multiple files 1`] = `
 {
   "importStrings": [],
-  "localeMessages": [
+  "localeLoaders": [
     [
       "en",
       [
@@ -287,7 +287,7 @@ exports[`multiple files 1`] = `
 exports[`toCode: function (arrow) 1`] = `
 {
   "importStrings": [],
-  "localeMessages": [],
+  "localeLoaders": [],
   "nuxtI18nOptions": {
     "defaultLocale": "en",
     "lazy": false,
@@ -333,7 +333,7 @@ exports[`toCode: function (arrow) 1`] = `
 exports[`toCode: function (named) 1`] = `
 {
   "importStrings": [],
-  "localeMessages": [],
+  "localeLoaders": [],
   "nuxtI18nOptions": {
     "defaultLocale": "en",
     "lazy": false,
@@ -383,7 +383,7 @@ exports[`vueI18n option 1`] = `
     "import locale__test_srcDir_ja_json from "../ja.json";",
     "import locale__test_srcDir_fr_json from "../fr.json";",
   ],
-  "localeMessages": [
+  "localeLoaders": [
     [
       "en",
       [

@@ -20,8 +20,8 @@ ${options.importStrings.length > 0 ? options.importStrings.join('\n') + '\n' : '
 
 export const localeCodes =  ${JSON.stringify(options.localeCodes, null, 2)}
 
-export const localeMessages = {
-${options.localeMessages
+export const localeLoaders = {
+${options.localeLoaders
   .map(([key, val]) => {
     return `  "${key}": [${val
       .map(
