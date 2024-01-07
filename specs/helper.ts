@@ -3,7 +3,8 @@
 import { JSDOM } from 'jsdom'
 import { parse as babelParse } from '@babel/parser'
 import { expect } from 'vitest'
-import { getBrowser, url, useTestContext } from './utils'
+import { getBrowser, startServer, url, useTestContext } from './utils'
+import { snakeCase } from 'scule'
 
 import { errors, type BrowserContextOptions, type Page } from 'playwright'
 
@@ -170,4 +171,49 @@ export async function waitForURL(page: Page, path: string) {
 
     throw err
   }
+}
+
+// function _isObject(input: unknown) {
+//   return typeof input === 'object' && !Array.isArray(input)
+// }
+
+export function flattenObject(obj: Record<string, unknown> = {}) {
+  const flattened: Record<string, unknown> = {}
+
+  for (const key in obj) {
+    if (!(key in obj)) continue
+
+    const entry = obj[key]
+    if (typeof entry !== 'object' || entry == null) {
+      flattened[key] = obj[key]
+      continue
+    }
+    const flatObject = flattenObject(entry as Record<string, unknown>)
+
+    for (const x in flatObject) {
+      if (!(x in flatObject)) continue
+
+      flattened[key + '_' + x] = flatObject[x]
+    }
+  }
+
+  return flattened
+}
+
+export function convertObjectToConfig(obj: Record<string, unknown>) {
+  const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
+
+  const env: Record<string, unknown> = {}
+  const flattened = flattenObject(obj)
+  for (const key in flattened) {
+    env[makeEnvKey(key)] = flattened[key]
+  }
+
+  return env
+}
+
+export async function startServerWithRuntimeConfig(env: Record<string, unknown>) {
+  const converted = convertObjectToConfig(env)
+  await startServer(converted)
+  return async () => startServer()
 }
