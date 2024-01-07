@@ -13,7 +13,7 @@ import { request } from 'undici'
 // eslint-disable-next-line
 const kit: typeof _kit = _kit.default || _kit
 
-export async function startServer() {
+export async function startServer(env: Record<string, unknown> = {}) {
   const ctx = useTestContext()
   await stopServer()
   const host = '127.0.0.1'
@@ -29,7 +29,8 @@ export async function startServer() {
         _PORT: String(port), // Used by internal _dev command
         PORT: String(port),
         HOST: host,
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        ...env
       }
     })
     await waitForPort(port, { retries: 32, host }).catch(() => {})
@@ -51,7 +52,10 @@ export async function startServer() {
     const command = `npx serve -s ./dist -p ${port}`
     const [_command, ...commandArgs] = command.split(' ')
     ctx.serverProcess = execa(_command, commandArgs, {
-      cwd: ctx.nuxt!.options.rootDir
+      cwd: ctx.nuxt!.options.rootDir,
+      env: {
+        ...env
+      }
       // stdio: 'inherit'
     })
     await waitForPort(port, { retries: 32 })
@@ -73,7 +77,8 @@ export async function startServer() {
         ...process.env,
         PORT: String(port),
         HOST: host,
-        NODE_ENV: 'test'
+        NODE_ENV: 'test',
+        ...env
       }
     })
     await waitForPort(port, { retries: 20, host })
