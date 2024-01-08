@@ -40,7 +40,7 @@ import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } f
 import { generateTemplateNuxtI18nOptions } from './template'
 
 import type { HookResult } from '@nuxt/schema'
-import type { NuxtI18nOptions, SimpleLocaleObject } from './types'
+import type { NuxtI18nOptions } from './types'
 
 export * from './types'
 
@@ -213,10 +213,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
           nuxtI18nOptions,
           isServer
         }),
-        NUXT_I18N_MODULE_ID,
         localeCodes,
-        nuxtI18nOptionsDefault: DEFAULT_OPTIONS,
-        nuxtI18nInternalOptions: { __normalizedLocales: normalizedLocales as SimpleLocaleObject[] },
+        normalizedLocales,
         dev: nuxt.options.dev,
         isSSG: nuxt.options._generate,
         parallelPlugin: options.parallelPlugin

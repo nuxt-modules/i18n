@@ -11,17 +11,18 @@ import {
   useNuxtApp,
   unref
 } from '#imports'
-import { nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
+import {
+  nuxtI18nOptionsDefault,
+  NUXT_I18N_MODULE_ID,
+  isSSG,
+  localeCodes,
+  nuxtI18nOptions,
+  normalizedLocales
+} from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#app'
-import type { I18nOptions, Locale } from 'vue-i18n'
-import type { DeepRequired } from 'ts-essentials'
-import type {
-  NuxtI18nOptions,
-  NuxtI18nInternalOptions,
-  DetectBrowserLanguageOptions,
-  LocaleObject
-} from '#build/i18n.options.mjs'
+import type { Locale } from 'vue-i18n'
+import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex, getI18nTarget } from './routing/utils'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
@@ -81,14 +82,13 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>): string | undefined {
+export function getBrowserLocale(): string | undefined {
   let ret: string | undefined
 
   if (process.client) {
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
-      ret = findBrowserLocale(options.__normalizedLocales, navigator.languages as string[])
+      ret = findBrowserLocale(normalizedLocales, navigator.languages as string[])
       __DEBUG__ && console.log('getBrowserLocale (navigator.languages, ret) -', navigator.languages, ret)
     }
   } else if (process.server) {
@@ -96,7 +96,7 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>): st
     __DEBUG__ && console.log('getBrowserLocale accept-language', header)
     const accept = header['accept-language']
     if (accept) {
-      ret = findBrowserLocale(options.__normalizedLocales, parseAcceptLanguage(accept))
+      ret = findBrowserLocale(normalizedLocales, parseAcceptLanguage(accept))
       __DEBUG__ && console.log('getBrowserLocale ret', ret)
     }
   }
@@ -104,19 +104,21 @@ export function getBrowserLocale(options: Required<NuxtI18nInternalOptions>): st
   return ret
 }
 
-export function getLocaleCookie({
-  useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
-  cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
-  localeCodes = []
-}: Pick<DetectBrowserLanguageOptions, 'useCookie' | 'cookieKey'> & {
-  localeCodes?: readonly string[]
-} = {}): string | undefined {
-  __DEBUG__ && console.log('getLocaleCookie', { useCookie, cookieKey, localeCodes })
-  if (!useCookie) {
+export function getLocaleCookie(): string | undefined {
+  const detect = nuxtI18nOptions.detectBrowserLanguage
+
+  __DEBUG__ &&
+    console.log('getLocaleCookie', {
+      useCookie: detect && detect.useCookie,
+      cookieKey: detect && detect.cookieKey,
+      localeCodes
+    })
+
+  if (!detect || !detect.useCookie) {
     return
   }
 
-  const localeCookie = useNuxtCookie(cookieKey)
+  const localeCookie = useNuxtCookie(detect.cookieKey)
   const localeCode: string | undefined = localeCookie.value ?? undefined
   __DEBUG__ && console.log(`getLocaleCookie cookie (${process.client ? 'client' : 'server'}) -`, localeCode)
 
@@ -125,19 +127,10 @@ export function getLocaleCookie({
   }
 }
 
-export function setLocaleCookie(
-  locale: string,
-  {
-    useCookie = nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie,
-    cookieKey = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey,
-    cookieDomain = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieDomain,
-    cookieSecure = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieSecure,
-    cookieCrossOrigin = nuxtI18nOptionsDefault.detectBrowserLanguage.cookieCrossOrigin
-  }: Pick<
-    DetectBrowserLanguageOptions,
-    'useCookie' | 'cookieDomain' | 'cookieKey' | 'cookieSecure' | 'cookieCrossOrigin'
-  > = {}
-) {
+export function setLocaleCookie(locale: string) {
+  const { useCookie, cookieKey, cookieDomain, cookieSecure, cookieCrossOrigin } =
+    nuxtI18nOptions.detectBrowserLanguage || nuxtI18nOptionsDefault.detectBrowserLanguage
+
   if (!useCookie) {
     return
   }
@@ -187,13 +180,10 @@ export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromRe
   from: 'unknown'
 }
 
-export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
+export function detectBrowserLanguage(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
-  nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
-  vueI18nOptions: I18nOptions,
+  vueI18nOptionsLocale: Locale | undefined,
   detectLocaleContext: DetectLocaleContext,
-  localeCodes: string[] = [],
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const { strategy } = nuxtI18nOptions
@@ -244,13 +234,13 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
 
   // get preferred language from cookie if present and enabled
   if (useCookie) {
-    matchedLocale = cookieLocale = getLocaleCookie({ ...nuxtI18nOptions.detectBrowserLanguage, localeCodes })
+    matchedLocale = cookieLocale = getLocaleCookie()
     localeFrom = 'cookie'
     __DEBUG__ && console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
   }
   // try to get locale from either navigator or header detection
   if (!matchedLocale) {
-    matchedLocale = getBrowserLocale(nuxtI18nInternalOptions)
+    matchedLocale = getBrowserLocale()
     localeFrom = 'navigator_or_header'
     __DEBUG__ && console.log('detectBrowserLanguage: browserLocale', matchedLocale)
   }
@@ -275,7 +265,7 @@ export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
       localeFrom
     )
 
-  const vueI18nLocale = locale || vueI18nOptions.locale
+  const vueI18nLocale = locale || vueI18nOptionsLocale
   __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
 
   // handle cookie option to prevent multiple redirects
@@ -360,12 +350,12 @@ export function getLocaleDomain(locales: LocaleObject[]): string {
   return host
 }
 
-export function getDomainFromLocale(localeCode: Locale, locales: LocaleObject[]): string | undefined {
+export function getDomainFromLocale(localeCode: Locale): string | undefined {
   const runtimeConfig = useRuntimeConfig()
   const nuxtApp = useNuxtApp()
   // lookup the `differentDomain` origin associated with given locale.
   const config = runtimeConfig.public.i18n as { locales?: Record<Locale, { domain?: string }> }
-  const lang = locales.find(locale => locale.code === localeCode)
+  const lang = normalizedLocales.find(locale => locale.code === localeCode)
   const domain = config?.locales?.[localeCode]?.domain ?? lang?.domain
 
   if (domain) {

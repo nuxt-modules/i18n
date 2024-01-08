@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
 import { parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-import { nuxtI18nInternalOptions, nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref, useNuxtApp, useRoute, useRouter } from '#imports'
 
 import { resolve, routeToObject } from './utils'
@@ -19,8 +19,6 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
-
-const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
@@ -127,7 +125,7 @@ export function resolveRoute(route: RouteLocationRaw, locale?: Locale) {
   const i18n = getComposer(useNuxtApp().$i18n)
   const _locale = locale || getLocale(i18n)
   const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } = nuxtI18nOptions
-  const prefixable = extendPrefixable(nuxtI18nOptions.differentDomains)
+  const prefixable = extendPrefixable()
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw
   if (isString(route)) {
@@ -238,10 +236,7 @@ export function switchLocalePath(
     return ''
   }
 
-  const switchLocalePathIntercepter = extendSwitchLocalePathIntercepter(
-    nuxtI18nOptions.differentDomains,
-    normalizedLocales
-  )
+  const switchLocalePathIntercepter = extendSwitchLocalePathIntercepter()
   const routeCopy = routeToObject(route)
   const resolvedParams = getLocalizableMetaFromDynamicParams(route)[locale]
 
