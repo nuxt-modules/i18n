@@ -1,13 +1,11 @@
 import { isString, isObject } from '@intlify/shared'
 import { getLocalesRegex } from '../utils'
+import { localeCodes, nuxtI18nOptions } from '#build/i18n.options.mjs'
 
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
-export function createLocaleFromRouteGetter(
-  localeCodes: string[],
-  routesNameSeparator: string,
-  defaultLocaleRouteNameSuffix: string
-) {
+export function createLocaleFromRouteGetter() {
+  const { routesNameSeparator, defaultLocaleRouteNameSuffix } = nuxtI18nOptions
   const localesPattern = `(${localeCodes.join('|')})`
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
   const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
