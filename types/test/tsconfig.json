@@ -1,16 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "es2015",
+    "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "node",
     "strict": true,
     "noEmit": true,
-    "lib": [
-      "es5",
-      "dom",
-      "es2015",
-      "es2015.promise",
-      "es2015.core"
-    ]
-  }
+  },
+  "files": ["index.ts"]
 }
