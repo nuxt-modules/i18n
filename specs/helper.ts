@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // @ts-ignore
 import { JSDOM } from 'jsdom'
 import { parse as babelParse } from '@babel/parser'
@@ -173,26 +172,19 @@ export async function waitForURL(page: Page, path: string) {
   }
 }
 
-// function _isObject(input: unknown) {
-//   return typeof input === 'object' && !Array.isArray(input)
-// }
-
 export function flattenObject(obj: Record<string, unknown> = {}) {
   const flattened: Record<string, unknown> = {}
 
-  for (const key in obj) {
-    if (!(key in obj)) continue
-
+  for (const key of Object.keys(obj)) {
     const entry = obj[key]
+
     if (typeof entry !== 'object' || entry == null) {
       flattened[key] = obj[key]
       continue
     }
+
     const flatObject = flattenObject(entry as Record<string, unknown>)
-
-    for (const x in flatObject) {
-      if (!(x in flatObject)) continue
-
+    for (const x of Object.keys(flatObject)) {
       flattened[key + '_' + x] = flatObject[x]
     }
   }

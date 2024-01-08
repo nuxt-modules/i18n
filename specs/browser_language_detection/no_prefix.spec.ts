@@ -8,19 +8,6 @@ await setup({
   browser: true,
   // overrides
   nuxtConfig: {
-    // runtimeConfig: {
-    //   public: {
-    //     i18n: {
-    //       detectBrowserLanguage: {
-    //         useCookie: true,
-    //         cookieKey: 'my_custom_cookie_name',
-    //         redirectOn: 'root',
-    //         cookieCrossOrigin: true,
-    //         cookieSecure: true
-    //       }
-    //     }
-    //   }
-    // },
     i18n: {
       debug: true,
       strategy: 'no_prefix',
