@@ -6,7 +6,7 @@ import { makeRoutes } from '../helpers/routes'
  * @this {import('@nuxt/types/config/module').ModuleThis}
  *
  * @param {import('../../types/internal').ResolvedOptions} options
- * @return {import('@nuxt/types/config/router').NuxtOptionsRouter['extendRoutes']}
+ * @return {Required<import('@nuxt/types/config/router').NuxtOptionsRouter>['extendRoutes']}
  */
 export function createExtendRoutesHook (options) {
   const nuxtOptions = this.options
