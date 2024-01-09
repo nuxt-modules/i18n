@@ -1,5 +1,6 @@
 import { resolve } from 'path'
 import type { ChromiumBrowser, Page } from 'playwright-chromium'
+import type { NuxtConfig } from '@nuxt/types'
 import { generate, setup, url, generatePort } from '@nuxtjs/module-test-utils'
 import { describe, afterAll, beforeAll, test, expect } from 'vitest'
 import { $$, createBrowser, loadConfig, startHttpServer, type StaticServer } from './utils'
@@ -38,7 +39,7 @@ describe(browserString, () => {
   }
 
   beforeAll(async () => {
-    const overrides = { plugins: ['~/plugins/i18n-hooks.js'] }
+    const overrides: NuxtConfig = { plugins: ['~/plugins/i18n-hooks.js'] }
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
     browser = await createBrowser()
   })
@@ -129,7 +130,7 @@ describe(`${browserString}, target: static, trailingSlash: true`, () => {
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       target: 'static',
       router: {
         trailingSlash: true
@@ -162,13 +163,15 @@ describe(`${browserString}, target: static, trailingSlash: true`, () => {
   })
 })
 
-for (const target of ['server', 'static']) {
+const targets: Required<NuxtConfig>['target'][] = ['server', 'static']
+
+for (const target of targets) {
   describe(`${browserString}, target ${target}, trailingSlash: true and strategy prefix`, () => {
     let nuxt: Nuxt
     let browser: ChromiumBrowser
 
     beforeAll(async () => {
-      const overrides = {
+      const overrides: NuxtConfig = {
         target,
         router: {
           trailingSlash: true
@@ -215,7 +218,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
   beforeAll(async () => {
     const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: { dir: distDir },
       router: { base }
     }
@@ -295,7 +298,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is all`, ()
   beforeAll(async () => {
     const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: { dir: distDir },
       router: { base },
       i18n: {
@@ -379,7 +382,7 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: {
         dir: distDir,
         subFolders: false
@@ -448,7 +451,7 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: {
         dir: distDir,
         subFolders: false
@@ -515,7 +518,7 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
   })
 })
 
-for (const target of ['server', 'static']) {
+for (const target of targets) {
   describe(`${browserString} (target ${target}, generate, prefix strategy, alwaysRedirect, redirectOn is root)`, () => {
     let browser: ChromiumBrowser
     let page: Page
@@ -523,7 +526,7 @@ for (const target of ['server', 'static']) {
 
     beforeAll(async () => {
       const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-      const overrides = {
+      const overrides: NuxtConfig = {
         target,
         generate: { dir: distDir },
         i18n: {
@@ -581,7 +584,7 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
 
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: { dir: distDir },
       i18n: {
         detectBrowserLanguage: {
@@ -628,7 +631,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         detectBrowserLanguage: {
@@ -647,7 +650,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
               posts: 'Artikkeler'
             }
           },
-          fallbackLocale: null
+          fallbackLocale: undefined
         }
       }
     }
@@ -655,7 +658,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'pl', iso: 'pl-PL' },
       { code: 'no', iso: 'no-NO' }
     ]
@@ -702,7 +705,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: true,
@@ -711,7 +714,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
           fallbackLocale: null
         },
         vueI18n: {
-          fallbackLocale: null
+          fallbackLocale: undefined
         }
       }
     }
@@ -719,7 +722,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
     ]
@@ -774,7 +777,7 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: true,
@@ -788,7 +791,7 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'en', iso: 'en-US', file: 'en-US.js' },
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
@@ -862,7 +865,7 @@ describe(`${browserString} (lazy with { skipNuxtState: true} )`, () => {
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: { skipNuxtState: true },
@@ -876,7 +879,7 @@ describe(`${browserString} (lazy with { skipNuxtState: true} )`, () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'en', iso: 'en-US', file: 'en-US.js' },
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
@@ -909,7 +912,7 @@ describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: false,
@@ -923,7 +926,7 @@ describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'en', iso: 'en-US', file: 'en-US.js' },
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
@@ -985,7 +988,7 @@ describe(`${browserString} (SPA)`, () => {
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       mode: 'spa'
     }
 
@@ -1036,7 +1039,7 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
   let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       mode: 'spa',
       router: {
         mode: 'hash'
@@ -1077,7 +1080,7 @@ describe(`${browserString} (redirectOn is root + alwaysRedirect + no_prefix)`, (
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'no_prefix',
@@ -1128,7 +1131,7 @@ describe(`${browserString} (alwaysRedirect, prefix)`, () => {
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix',
@@ -1164,7 +1167,7 @@ describe(`${browserString} (redirectOn is root + prefix_except_default)`, () => 
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
@@ -1233,7 +1236,7 @@ describe(`${browserString} (redirectOn is root + alwaysRedirect + prefix_except_
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
@@ -1276,7 +1279,7 @@ describe(`${browserString} (redirectOn is root + prefix_and_default)`, () => {
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
@@ -1317,7 +1320,7 @@ describe(`${browserString} (redirectOn is root + prefix)`, () => {
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix',
@@ -1372,7 +1375,7 @@ describe(`${browserString} (vuex disabled)`, () => {
   let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         vuex: false,
         detectBrowserLanguage: false
@@ -1408,7 +1411,7 @@ describe('differentDomains', () => {
 
   beforeAll(async () => {
     port = await generatePort()
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         detectBrowserLanguage: false,
         differentDomains: true,
@@ -1419,7 +1422,7 @@ describe('differentDomains', () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       {
         code: 'en',
         iso: 'en-US',

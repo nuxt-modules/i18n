@@ -52,6 +52,7 @@ export class StaticServer {
 
     this.server = await setupDevServer({
       command: args.join(' '),
+      launchTimeout: 20000,
       port: this.port
     })
   }
