@@ -110,7 +110,7 @@
     "klona": "^2.0.6",
     "lodash.merge": "^4.6.2",
     "ufo": "^0.8.5",
-    "vue-i18n": "^8.27.2"
+    "vue-i18n": "^9.9.0"
   },
   "devDependencies": {
     "@babel/core": "7.23.7",
