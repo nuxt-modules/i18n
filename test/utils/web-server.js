@@ -24,6 +24,7 @@ export class StaticServer {
     this.port = options.port || null
     this.noTrailingSlashRedirect = options.noTrailingSlashRedirect || false
     this.verbose = options.verbose
+    this.server = null
   }
 
   /** @param {string} path */
@@ -49,14 +50,17 @@ export class StaticServer {
       args.push('--no-trailing-slash-redirect')
     }
 
-    await setupDevServer({
+    this.server = await setupDevServer({
       command: args.join(' '),
       port: this.port
     })
   }
 
   async destroy () {
-    await teardownDevServer()
+    if (this.server) {
+      await teardownDevServer(this.server)
+      this.server = null
+    }
   }
 }
 

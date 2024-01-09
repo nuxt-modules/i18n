@@ -1,3 +1,5 @@
+import { expect } from 'vitest'
+
 /** @param {Document} dom */
 export default function getSeoTags (dom) {
   const head = dom.querySelector('head')

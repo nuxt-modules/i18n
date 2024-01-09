@@ -17,7 +17,6 @@
     "types": [
       "../types",
       "@nuxt/types",
-      "@types/jest",
       "@types/jsdom",
     ],
   },
