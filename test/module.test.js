@@ -1075,6 +1075,36 @@ describe('with rootRedirect (object)', () => {
   })
 })
 
+describe('with redirectStatusCode', () => {
+  /** @type {Nuxt} */
+  let nuxt
+
+  beforeAll(async () => {
+    const override = {
+      i18n: {
+        redirectStatusCode: 301,
+        strategy: 'prefix'
+      }
+    }
+    nuxt = (await setup(loadConfig(__dirname, 'basic', override, { merge: true }))).nuxt
+  })
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('redirect unprefixed route /about-us to /en/about-us with correct status', async () => {
+    const requestOptions = {
+      followRedirect: false,
+      resolveWithFullResponse: true,
+      simple: false // Don't reject on non-2xx response
+    }
+    const response = await get('/about-us', requestOptions)
+    expect(response.statusCode).toBe(301)
+    expect(response.headers.location).toBe('/en/about-us')
+  })
+})
+
 describe('prefix_and_default strategy', () => {
   /** @type {Nuxt} */
   let nuxt
