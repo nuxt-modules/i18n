@@ -100,7 +100,7 @@
   "dependencies": {
     "@babel/parser": "^7.23.6",
     "@babel/traverse": "^7.23.7",
-    "@intlify/vue-i18n-extensions": "^1.0.2",
+    "@intlify/vue-i18n-extensions": "^5.0.1",
     "@intlify/vue-i18n-loader": "^1.1.0",
     "@nuxt/utils": "2.x",
     "cookie": "^0.5.0",
