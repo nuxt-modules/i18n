@@ -11,36 +11,13 @@ import {
 } from '../compatibles'
 import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
 
-import { DEFAULT_BASE_URL, type I18nRoutingOptions, type LocaleObject } from '#build/i18n.options.mjs'
+import { DEFAULT_BASE_URL } from '#build/i18n.options.mjs'
+import type { I18nRoutingOptions, LocaleObject } from '#build/i18n.options.mjs'
 import type { Composer, ComposerExtender, Disposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'
 import { computed, effectScope, type App, ref, watch } from 'vue'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Vue = any
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-export function proxyVueInstance(target: Function): Function {
-  // `this` is the Vue instance
-  return function (this: Vue) {
-    return Reflect.apply(
-      target,
-      {
-        getRouteBaseName: this.getRouteBaseName,
-        localePath: this.localePath,
-        localeRoute: this.localeRoute,
-        localeLocation: this.localeLocation,
-        resolveRoute: this.resolveRoute,
-        switchLocalePath: this.switchLocalePath,
-        localeHead: this.localeHead,
-        i18n: this.$i18n,
-        route: this.$route,
-        router: this.$router
-      },
-      // eslint-disable-next-line prefer-rest-params
-      arguments
-    )
-  }
-}
 
 /**
  * An options of Vue I18n Routing Plugin
@@ -143,6 +120,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
 
     // extend vue component instance for Vue 3
     const app = vue as App
+
     // prettier-ignore
     const exported = i18n.mode === 'composition'
       ? app.config.globalProperties.$i18n
@@ -156,13 +134,13 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
       // extend vue component instance
       vue.mixin({
         methods: {
-          resolveRoute: proxyVueInstance(resolveRoute),
-          localePath: proxyVueInstance(localePath),
-          localeRoute: proxyVueInstance(localeRoute),
-          localeLocation: proxyVueInstance(localeLocation),
-          switchLocalePath: proxyVueInstance(switchLocalePath),
-          getRouteBaseName: proxyVueInstance(getRouteBaseName),
-          localeHead: proxyVueInstance(localeHead)
+          resolveRoute,
+          localePath,
+          localeRoute,
+          localeLocation,
+          switchLocalePath,
+          getRouteBaseName,
+          localeHead
         }
       })
     }
@@ -209,7 +187,7 @@ function extendComposer<Context = unknown>(composer: Composer, options: VueI18nE
   }
 }
 
-function extendProperyDescripters(
+function extendPropertyDescriptors(
   composer: Composer,
   exported: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   hook?: ExtendVueI18nHook | ExtendExportedGlobalHook
@@ -243,12 +221,12 @@ function extendProperyDescripters(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extendExportedGlobal(exported: any, g: Composer, hook?: ExtendExportedGlobalHook) {
-  extendProperyDescripters(g, exported, hook)
+  extendPropertyDescriptors(g, exported, hook)
 }
 
 function extendVueI18n(vueI18n: VueI18n, hook?: ExtendVueI18nHook): void {
   const c = getComposer(vueI18n)
-  extendProperyDescripters(c, vueI18n, hook)
+  extendPropertyDescriptors(c, vueI18n, hook)
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
