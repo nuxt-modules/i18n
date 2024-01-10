@@ -26,8 +26,14 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: yarn install
         run: yarn
-      - name: Unittesting
-        run: yarn test
+      - name: test:types
+        run: yarn test:types
+      - name: test:unit
+        run: yarn test:unit
+      - name: test:e2e-ssr
+        run: yarn test:e2e-ssr
+      - name: test:e2e-browser
+        run: yarn test:e2e-browser
       - name: Linting
         # Only test on one version to avoid duplicate linter annotations.
         if: ${{ matrix.node-version == '18.x' }}
