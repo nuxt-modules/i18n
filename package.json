@@ -114,7 +114,7 @@
     "jiti": "^1.21.0",
     "jsdom": "23.2.0",
     "messageformat": "2.3.0",
-    "nuxt": "2.17.2",
+    "nuxt": "3.9.1",
     "pathe": "^1.1.1",
     "playwright-chromium": "1.40.1",
     "release-it": "15.2.0",
