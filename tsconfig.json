@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "module": "esnext",
+    "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "node",
     "lib": [
       "esnext",
@@ -14,13 +14,12 @@
     "sourceMap": true,
     "strict": true,
     "noEmit": true,
-    "baseUrl": ".",
     "paths": {
       "~i18n-klona": [
-        "node_modules/klona"
+        "./node_modules/klona"
       ],
       "~i18n-ufo": [
-        "node_modules/ufo"
+        "./node_modules/ufo"
       ],
       "~/*": [
         "./*",

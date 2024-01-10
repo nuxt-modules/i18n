@@ -8,12 +8,13 @@ import serveStatic from 'serve-static'
  * Starts a server.
  *
  * @param {string} path
+ * @param {string} host
  * @param {number} port
  * @param {string} base
  * @param {boolean} noTrailingSlashRedirect
  * @param {boolean} verbose
  */
-function startServer (path, port, base, noTrailingSlashRedirect, verbose) {
+function startServer (path, host, port, base, noTrailingSlashRedirect, verbose) {
   const app = express()
 
   // @ts-ignore
@@ -37,7 +38,6 @@ function startServer (path, port, base, noTrailingSlashRedirect, verbose) {
 
   app.on('error', error => console.error(error))
 
-  const host = 'localhost'
   return app.listen(port, host, () => {
     if (verbose) {
       // eslint-disable-next-line no-console
@@ -51,6 +51,12 @@ const parser = new ArgumentParser()
 parser.add_argument('path', {
   type: 'str',
   help: 'The path to start server in'
+})
+
+parser.add_argument('-a', '--host', {
+  type: 'str',
+  default: 'localhost',
+  help: 'Host to run on (default: localhost)'
 })
 
 parser.add_argument('-p', '--port', {
@@ -80,7 +86,7 @@ parser.add_argument('-v', '--verbose', {
 const args = parser.parse_args()
 
 /** @type {import('http').Server | null} */
-let server = startServer(args.path, args.port, args.base, args.no_trailing_slash_redirect, args.verbose)
+let server = startServer(args.path, args.host, args.port, args.base, args.no_trailing_slash_redirect, args.verbose)
 
 process.on('SIGTERM', () => {
   if (server) {

@@ -3,22 +3,6 @@ module.exports = {
   extends: [
     '@nuxtjs/eslint-config-typescript'
   ],
-  plugins: [
-    'jest'
-  ],
-  env: {
-    'jest/globals': true
-  },
-  overrides: [
-    {
-      files: [
-        'test/**/*'
-      ],
-      plugins: [
-        'jest'
-      ]
-    }
-  ],
   rules: {
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'arrow-parens': 'off',

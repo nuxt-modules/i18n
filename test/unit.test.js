@@ -1,4 +1,5 @@
 import path from 'path'
+import { describe, test, expect, vi } from 'vitest'
 import { parseComponent } from 'vue-template-compiler'
 import { matchBrowserLocale, parseAcceptLanguage } from '../src/templates/utils-common'
 
@@ -16,7 +17,7 @@ describe('parsePages', () => {
   test('triggers warning with invalid in-component options', async () => {
     const { extractComponentOptions } = await import('../src/helpers/components')
 
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => { })
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => { })
     const options = extractComponentOptions(path.join(__dirname, './fixture/typescript/pages/invalidOptions.vue'), parseComponent)
     expect(spy.mock.calls[0][0]).toContain('Error parsing')
     spy.mockRestore()

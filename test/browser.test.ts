@@ -1,21 +1,15 @@
 import { resolve } from 'path'
-import { generate, setup, loadConfig, url, generatePort } from '@nuxtjs/module-test-utils'
-import { chromium } from 'playwright-chromium'
-import { startHttpServer } from './utils'
+import type { ChromiumBrowser, Page } from 'playwright-chromium'
+import type { NuxtConfig } from '@nuxt/types'
+import { generate, setup, url, generatePort } from '@nuxtjs/module-test-utils'
+import { describe, afterAll, beforeAll, test, expect } from 'vitest'
+import { $$, createBrowser, loadConfig, startHttpServer, type StaticServer } from './utils'
 
-/** @typedef {any} Nuxt */
+type Nuxt = any
 
 const browserString = process.env.BROWSER_STRING || 'chromium'
 
-async function createBrowser () {
-  return await chromium.launch()
-}
-
-/**
- * @param {import('playwright-chromium').Page} page
- * @param {string} path
- */
-async function navigate (page, path) {
+async function navigate (page: Page, path: string) {
   await page.evaluate(path => {
     return new Promise((resolve, reject) => {
       window.$nuxt.$router.push(path, () => resolve(null), reject)
@@ -24,18 +18,14 @@ async function navigate (page, path) {
   await new Promise(resolve => setTimeout(resolve, 50))
 }
 
-/** @param {import("playwright-chromium").Page} page */
-async function getRouteFullPath (page) {
+async function getRouteFullPath (page: Page) {
   return await page.evaluate(() => window.$nuxt.$route.fullPath)
 }
 
 describe(browserString, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   async function getTestData () {
     return await page.evaluate(() => {
@@ -49,7 +39,7 @@ describe(browserString, () => {
   }
 
   beforeAll(async () => {
-    const overrides = { plugins: ['~/plugins/i18n-hooks.js'] }
+    const overrides: NuxtConfig = { plugins: ['~/plugins/i18n-hooks.js'] }
     nuxt = (await setup(loadConfig(__dirname, 'basic', overrides, { merge: true }))).nuxt
     browser = await createBrowser()
   })
@@ -66,7 +56,7 @@ describe(browserString, () => {
     page = await browser.newPage()
     await page.goto(url('/'))
 
-    expect(await (await page.$('body'))?.textContent()).toContain('page: Homepage')
+    expect(await $$('body', page)).toContain('page: Homepage')
 
     const aboutLink = await page.$('a[href="/about-us"]')
     expect(aboutLink).toBeDefined()
@@ -78,7 +68,7 @@ describe(browserString, () => {
 
     await navigate(page, '/fr/a-propos')
 
-    expect(await (await page.$('body'))?.textContent()).toContain('page: À propos')
+    expect(await $$('body', page)).toContain('page: À propos')
   })
 
   test('changes route and locale with setLocale', async () => {
@@ -97,7 +87,7 @@ describe(browserString, () => {
         oldLocale: 'en'
       }
     ])
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 
   test('onLanguageSwitched listener triggers after locale was changed', async () => {
@@ -116,7 +106,7 @@ describe(browserString, () => {
         oldLocale: 'en'
       }
     ])
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 
   test('APIs in app context work after SPA navigation', async () => {
@@ -124,9 +114,9 @@ describe(browserString, () => {
     await page.goto(url('/'))
     await navigate(page, '/middleware')
 
-    expect(await (await page.$('#paths'))?.textContent()).toBe('/middleware,/fr/middleware-fr')
-    expect(await (await page.$('#name'))?.textContent()).toBe('middleware')
-    const routeObject = await (await page.$('#localizedRoute'))?.textContent() || '{}'
+    expect(await $$('#paths', page)).toBe('/middleware,/fr/middleware-fr')
+    expect(await $$('#name', page)).toBe('middleware')
+    const routeObject = await $$('#localizedRoute', page) || '{}'
     expect(JSON.parse(routeObject)).toMatchObject({
       name: 'middleware___fr',
       fullPath: '/fr/middleware-fr'
@@ -135,15 +125,12 @@ describe(browserString, () => {
 })
 
 describe(`${browserString}, target: static, trailingSlash: true`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       target: 'static',
       router: {
         trailingSlash: true
@@ -172,19 +159,19 @@ describe(`${browserString}, target: static, trailingSlash: true`, () => {
   test('does not trigger redirect loop on route with disabled locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/about-no-locale/'), { waitUntil: 'load', timeout: 2000 })
-    expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
+    expect(await $$('body', page)).toContain('page: About us')
   })
 })
 
-for (const target of ['server', 'static']) {
+const targets: Required<NuxtConfig>['target'][] = ['server', 'static']
+
+for (const target of targets) {
   describe(`${browserString}, target ${target}, trailingSlash: true and strategy prefix`, () => {
-    /** @type {Nuxt} */
-    let nuxt
-    /** @type {import('playwright-chromium').ChromiumBrowser} */
-    let browser
+    let nuxt: Nuxt
+    let browser: ChromiumBrowser
 
     beforeAll(async () => {
-      const overrides = {
+      const overrides: NuxtConfig = {
         target,
         router: {
           trailingSlash: true
@@ -210,31 +197,28 @@ for (const target of ['server', 'static']) {
     test('redirects from root (404) path to default locale while preserving query', async () => {
       const page = await browser.newPage()
       await page.goto(url('/?key=value'))
-      expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+      expect(await $$('body', page)).toContain('locale: en')
       expect(await getRouteFullPath(page)).toBe('/en/?key=value')
     })
 
     test('redirects from root (404) path to default locale while preserving query and hash', async () => {
       const page = await browser.newPage()
       await page.goto(url('/?key=value#hash'))
-      expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+      expect(await $$('body', page)).toContain('locale: en')
       expect(await getRouteFullPath(page)).toBe('/en/?key=value#hash')
     })
   })
 }
 
 describe(`${browserString} (generate, with router base) + redirectOn is root`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
+  let browser: ChromiumBrowser
+  let page: Page
+  let server: StaticServer
 
   beforeAll(async () => {
     const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: { dir: distDir },
       router: { base }
     }
@@ -256,13 +240,13 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
   test('navigate to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
 
     await navigate(page, '/fr')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
 
     await navigate(page, '/')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
   })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/737
@@ -296,11 +280,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
   test('localePath returns correct path', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    /**
-     * @param {string} route
-     * @param {string | undefined} [locale]
-     */
-    const localePath = async (route, locale) => {
+    const localePath = async (route: string, locale?: string) => {
       // @ts-ignore
       return await page.evaluate(args => window.$nuxt.localePath(...args), [route, locale])
     }
@@ -311,17 +291,14 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
 })
 
 describe(`${browserString} (generate, with router base) + redirectOn is all`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
+  let browser: ChromiumBrowser
+  let page: Page
+  let server: StaticServer
 
   beforeAll(async () => {
     const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: { dir: distDir },
       router: { base },
       i18n: {
@@ -348,13 +325,13 @@ describe(`${browserString} (generate, with router base) + redirectOn is all`, ()
   test('navigate to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
 
     await navigate(page, '/fr')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
 
     await navigate(page, '/')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
   })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/737
@@ -388,11 +365,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is all`, ()
   test('localePath returns correct path', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    /**
-     * @param {string} route
-     * @param {string | undefined} [locale]
-     */
-    const localePath = async (route, locale) => {
+    const localePath = async (route: string, locale?: string) => {
       // @ts-ignore
       return await page.evaluate(args => window.$nuxt.localePath(...args), [route, locale])
     }
@@ -403,16 +376,13 @@ describe(`${browserString} (generate, with router base) + redirectOn is all`, ()
 })
 
 describe(`${browserString} (generate, no subFolders, trailingSlash === false) + redirectOn is root`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
+  let browser: ChromiumBrowser
+  let page: Page
+  let server: StaticServer
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: {
         dir: distDir,
         subFolders: false
@@ -438,13 +408,13 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
   test('navigate to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
 
     await navigate(page, '/fr')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
 
     await navigate(page, '/')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
   })
 
   test('reactivity works after redirecting to detected browser locale (root path)', async () => {
@@ -475,16 +445,13 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
 })
 
 describe(`${browserString} (generate, no subFolders, trailingSlash === false) + redirectOn is all`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
+  let browser: ChromiumBrowser
+  let page: Page
+  let server: StaticServer
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: {
         dir: distDir,
         subFolders: false
@@ -515,13 +482,13 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
   test('navigate to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
 
     await navigate(page, '/fr')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
 
     await navigate(page, '/')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
   })
 
   test('reactivity works after redirecting to detected browser locale (root path)', async () => {
@@ -551,18 +518,15 @@ describe(`${browserString} (generate, no subFolders, trailingSlash === false) + 
   })
 })
 
-for (const target of ['server', 'static']) {
+for (const target of targets) {
   describe(`${browserString} (target ${target}, generate, prefix strategy, alwaysRedirect, redirectOn is root)`, () => {
-    /** @type {import('playwright-chromium').ChromiumBrowser} */
-    let browser
-    /** @type {import('playwright-chromium').Page} */
-    let page
-    /** @type {import('./utils').StaticServer} */
-    let server
+    let browser: ChromiumBrowser
+    let page: Page
+    let server: StaticServer
 
     beforeAll(async () => {
       const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
-      const overrides = {
+      const overrides: NuxtConfig = {
         target,
         generate: { dir: distDir },
         i18n: {
@@ -592,10 +556,10 @@ for (const target of ['server', 'static']) {
     test('non-prefixed routes are generated for redirect purposes', async () => {
       page = await browser.newPage()
       await page.goto(server.getUrl('/'))
-      expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+      expect(await $$('body', page)).toContain('locale: en')
 
       await navigate(page, '/about')
-      expect(await (await page.$('body'))?.textContent()).toContain('page: About us')
+      expect(await $$('body', page)).toContain('page: About us')
     })
 
     // Issue https://github.com/nuxt-community/i18n-module/issues/887
@@ -603,27 +567,24 @@ for (const target of ['server', 'static']) {
       page = await browser.newPage()
       await page.goto(server.getUrl('/fr'))
       expect(page.url()).toBe(server.getUrl('/fr/'))
-      expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+      expect(await $$('body', page)).toContain('locale: fr')
 
       await page.goto(server.getUrl('/'))
       expect(page.url()).toBe(server.getUrl('/fr/'))
-      expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+      expect(await $$('body', page)).toContain('locale: fr')
     })
   })
 }
 
 describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`, () => {
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
-  /** @type {import('./utils').StaticServer} */
-  let server
+  let browser: ChromiumBrowser
+  let page: Page
+  let server: StaticServer
 
   beforeAll(async () => {
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
 
-    const overrides = {
+    const overrides: NuxtConfig = {
       generate: { dir: distDir },
       i18n: {
         detectBrowserLanguage: {
@@ -650,30 +611,27 @@ describe(`${browserString} (generate with detectBrowserLanguage.fallbackLocale)`
   test('generates pages in all locales', async () => {
     page = await browser.newPage()
     await page.goto(server.getUrl('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
 
     await navigate(page, '/fr')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 
   test('redirects to browser locale', async () => {
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(server.getUrl('/'))
     expect(page.url()).toBe(server.getUrl('/fr/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 })
 
 describe(`${browserString} (no fallbackLocale, browser language not supported)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         detectBrowserLanguage: {
@@ -692,7 +650,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
               posts: 'Artikkeler'
             }
           },
-          fallbackLocale: null
+          fallbackLocale: undefined
         }
       }
     }
@@ -700,7 +658,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'pl', iso: 'pl-PL' },
       { code: 'no', iso: 'no-NO' }
     ]
@@ -722,35 +680,32 @@ describe(`${browserString} (no fallbackLocale, browser language not supported)`,
   test('updates language after navigating from default to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
     await navigate(page, '/no')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
   })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/843
   test('updates language after navigating from non-default to default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/no'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
     await navigate(page, '/')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
   })
 })
 
 describe(`${browserString} (no fallbackLocale, browser language not supported, lazy)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: true,
@@ -759,7 +714,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
           fallbackLocale: null
         },
         vueI18n: {
-          fallbackLocale: null
+          fallbackLocale: undefined
         }
       }
     }
@@ -767,7 +722,7 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
     ]
@@ -789,22 +744,22 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
   test('updates language after navigating from default to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
     await navigate(page, '/no')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
   })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/843
   test('updates language after navigating from non-default to default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/no'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
     await navigate(page, '/')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
   })
 
   test('current locale messages have been passed through Nuxt state', async () => {
@@ -817,15 +772,12 @@ describe(`${browserString} (no fallbackLocale, browser language not supported, l
 })
 
 describe(`${browserString} (with fallbackLocale, lazy)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: true,
@@ -839,7 +791,7 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'en', iso: 'en-US', file: 'en-US.js' },
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
@@ -862,22 +814,22 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
   test('updates language after navigating from default to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
     await navigate(page, '/no')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
   })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/843
   test('updates language after navigating from non-default to default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/no'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
     await navigate(page, '/')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
   })
 
   test('fallbackLocale messages have not been passed through Nuxt state', async () => {
@@ -903,20 +855,17 @@ describe(`${browserString} (with fallbackLocale, lazy)`, () => {
     const i18nState = await page.evaluate(() => window.__NUXT__.__i18n)
     expect(Object.keys(i18nState.langs)).toEqual([])
     // The message function should work when loaded directly through client-side.
-    expect(await (await page.$('#message-function'))?.textContent()).toBe('Demo string')
+    expect(await $$('#message-function', page)).toBe('Demo string')
   })
 })
 
 describe(`${browserString} (lazy with { skipNuxtState: true} )`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: { skipNuxtState: true },
@@ -930,7 +879,7 @@ describe(`${browserString} (lazy with { skipNuxtState: true} )`, () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'en', iso: 'en-US', file: 'en-US.js' },
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
@@ -958,15 +907,12 @@ describe(`${browserString} (lazy with { skipNuxtState: true} )`, () => {
 })
 
 describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'pl',
         lazy: false,
@@ -980,7 +926,7 @@ describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       { code: 'en', iso: 'en-US', file: 'en-US.js' },
       { code: 'pl', iso: 'pl-PL', file: 'pl-PL.json' },
       { code: 'no', iso: 'no-NO', file: 'no-NO.json' }
@@ -1003,22 +949,22 @@ describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
   test('updates language after navigating from default to non-default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
     await navigate(page, '/no')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
   })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/843
   test('updates language after navigating from non-default to default locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/no'))
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: no')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Hjemmeside')
+    expect(await $$('#current-locale', page)).toBe('locale: no')
+    expect(await $$('#current-page', page)).toBe('page: Hjemmeside')
     await navigate(page, '/')
-    expect(await (await page.$('#current-locale'))?.textContent()).toBe('locale: pl')
-    expect(await (await page.$('#current-page'))?.textContent()).toBe('page: Strona glowna')
+    expect(await $$('#current-locale', page)).toBe('locale: pl')
+    expect(await $$('#current-page', page)).toBe('page: Strona glowna')
   })
 
   test('messages have not been passed through Nuxt state', async () => {
@@ -1032,20 +978,17 @@ describe(`${browserString} (with fallbackLocale, langDir, non-lazy)`, () => {
   test('can resolve translation for non-current locale', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('#english-translation'))?.textContent()).toBe('Homepage')
+    expect(await $$('#english-translation', page)).toBe('Homepage')
   })
 })
 
 describe(`${browserString} (SPA)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       mode: 'spa'
     }
 
@@ -1064,20 +1007,20 @@ describe(`${browserString} (SPA)`, () => {
   test('renders existing page', async () => {
     page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
   })
 
   test('renders 404 page', async () => {
     page = await browser.newPage()
     await page.goto(url('/nopage'))
-    expect(await (await page.$('body'))?.textContent()).toContain('page could not be found')
+    expect(await $$('body', page)).toContain('page could not be found')
   })
 
   test('preserves the URL on 404 page', async () => {
     const path = '/nopage?a#h'
     page = await browser.newPage()
     await page.goto(url(path))
-    expect(await (await page.$('body'))?.textContent()).toContain('page could not be found')
+    expect(await $$('body', page)).toContain('page could not be found')
     expect(await getRouteFullPath(page)).toBe(path)
   })
 
@@ -1085,21 +1028,18 @@ describe(`${browserString} (SPA)`, () => {
     const path = '/nopage?a#h'
     page = await browser.newPage({ locale: 'fr' })
     await page.goto(url(path))
-    expect(await (await page.$('body'))?.textContent()).toContain('page could not be found')
+    expect(await $$('body', page)).toContain('page could not be found')
     expect(await getRouteFullPath(page)).toBe(path)
   })
 })
 
 describe(`${browserString} (SPA with router in hash mode)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
-  /** @type {import('playwright-chromium').Page} */
-  let page
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
+  let page: Page
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       mode: 'spa',
       router: {
         mode: 'hash'
@@ -1125,24 +1065,22 @@ describe(`${browserString} (SPA with router in hash mode)`, () => {
   test('navigates directly to page with trailing slash', async () => {
     page = await browser.newPage()
     await page.goto(url('/#/fr/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 
   test('navigates directly to page with query', async () => {
     page = await browser.newPage()
     await page.goto(url('/#/fr?a=1'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 })
 
 describe(`${browserString} (redirectOn is root + alwaysRedirect + no_prefix)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'no_prefix',
@@ -1168,13 +1106,13 @@ describe(`${browserString} (redirectOn is root + alwaysRedirect + no_prefix)`, (
   test('redirectOn is root does not affect locale detection on root path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 
   test('redirectOn is root does not affect locale detection on sub-path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/about'))
-    expect(await (await page.$('#current-page'))?.textContent()).toContain('page: À propos')
+    expect(await $$('#current-page', page)).toContain('page: À propos')
     // Custom paths are not supported in "no_prefix" strategy.
     // expect(await getRouteFullPath(page)).toBe('/a-propos')
   })
@@ -1182,20 +1120,18 @@ describe(`${browserString} (redirectOn is root + alwaysRedirect + no_prefix)`, (
   test('localeProperties is reactive', async () => {
     const page = await browser.newPage()
     await page.goto(url('/about'))
-    expect(await (await page.$('#locale-properties-code'))?.textContent()).toBe('code: en')
+    expect(await $$('#locale-properties-code', page)).toBe('code: en')
     await page.click('#set-locale-link-fr')
-    expect(await (await page.$('#locale-properties-code'))?.textContent()).toBe('code: fr')
+    expect(await $$('#locale-properties-code', page)).toBe('code: fr')
   })
 })
 
 describe(`${browserString} (alwaysRedirect, prefix)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix',
@@ -1222,18 +1158,16 @@ describe(`${browserString} (alwaysRedirect, prefix)`, () => {
     const page = await browser.newPage()
     await page.goto(url('/'))
     await navigate(page, '/fr')
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 })
 
 describe(`${browserString} (redirectOn is root + prefix_except_default)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
@@ -1257,34 +1191,34 @@ describe(`${browserString} (redirectOn is root + prefix_except_default)`, () => 
   test('redirects to detected locale on unprefixed root path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 
   test('does not detect locale and redirect on unprefixed non-root path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/simple'))
-    expect(await (await page.$('#container'))?.textContent()).toContain('Homepage')
+    expect(await $$('#container', page)).toContain('Homepage')
     expect(await getRouteFullPath(page)).toBe('/simple')
   })
 
   test('does not detect locale and redirect on prefixed, root path', async () => {
     const page = await browser.newPage({ locale: 'en' })
     await page.goto(url('/fr/'))
-    expect(await (await page.$('#current-page'))?.textContent()).toContain('page: Accueil')
+    expect(await $$('#current-page', page)).toContain('page: Accueil')
     expect(await getRouteFullPath(page)).toBe('/fr/')
   })
 
   test('does not detect locale and redirect on prefixed, non-root path', async () => {
     const page = await browser.newPage({ locale: 'en' })
     await page.goto(url('/fr/a-propos'))
-    expect(await (await page.$('#current-page'))?.textContent()).toContain('page: À propos')
+    expect(await $$('#current-page', page)).toContain('page: À propos')
     expect(await getRouteFullPath(page)).toBe('/fr/a-propos')
   })
 
   test('does not redirect to locale stored in cookie on second navigation to root path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
     expect(await getRouteFullPath(page)).toBe('/fr')
     const browserContext = page.context()
     // Verify that cookie was set.
@@ -1292,19 +1226,17 @@ describe(`${browserString} (redirectOn is root + prefix_except_default)`, () => 
     expect(cookies).toMatchObject([{ name: 'i18n_redirected', value: 'fr' }])
     // Navigate again to root, expecting to NOT be redirected again.
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
     expect(await getRouteFullPath(page)).toBe('/')
   })
 })
 
 describe(`${browserString} (redirectOn is root + alwaysRedirect + prefix_except_default)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
@@ -1329,7 +1261,7 @@ describe(`${browserString} (redirectOn is root + alwaysRedirect + prefix_except_
   test('redirects to locale stored in cookie on second navigation to root path', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
     expect(await getRouteFullPath(page)).toBe('/fr')
     const browserContext = page.context()
     // Verify that cookie was set.
@@ -1337,19 +1269,17 @@ describe(`${browserString} (redirectOn is root + alwaysRedirect + prefix_except_
     expect(cookies).toMatchObject([{ name: 'i18n_redirected', value: 'fr' }])
     // Navigate again to root, expecting to be redirected again.
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
     expect(await getRouteFullPath(page)).toBe('/fr')
   })
 })
 
 describe(`${browserString} (redirectOn is root + prefix_and_default)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
@@ -1373,26 +1303,24 @@ describe(`${browserString} (redirectOn is root + prefix_and_default)`, () => {
   test('redirects from prefixed to unprefixed default locale', async () => {
     const page = await browser.newPage()
     await page.goto(url('/en'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
     expect(await getRouteFullPath(page)).toBe('/')
   })
 
   test('does not redirect from unprefixed default locale', async () => {
     const page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
     expect(await getRouteFullPath(page)).toBe('/')
   })
 })
 
 describe(`${browserString} (redirectOn is root + prefix)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         defaultLocale: 'en',
         strategy: 'prefix',
@@ -1416,14 +1344,14 @@ describe(`${browserString} (redirectOn is root + prefix)`, () => {
   test('does not redirect from one locale to another', async () => {
     const page = await browser.newPage({ locale: 'fr' })
     await page.goto(url('/en'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
     expect(await getRouteFullPath(page)).toBe('/en')
   })
 
   test('redirects from root (404) path to default locale', async () => {
     const page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
     expect(await getRouteFullPath(page)).toBe('/en')
   })
 
@@ -1432,24 +1360,22 @@ describe(`${browserString} (redirectOn is root + prefix)`, () => {
 
     // Ensure the detected locale cookie is saved
     await page.goto(url('/fr'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
     expect(await getRouteFullPath(page)).toBe('/fr')
 
     // Verify that we navigate to saved locale
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
     expect(await getRouteFullPath(page)).toBe('/fr')
   })
 })
 
 describe(`${browserString} (vuex disabled)`, () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
 
   beforeAll(async () => {
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         vuex: false,
         detectBrowserLanguage: false
@@ -1470,24 +1396,22 @@ describe(`${browserString} (vuex disabled)`, () => {
   test('navigates to route with correct locale', async () => {
     const page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: en')
+    expect(await $$('body', page)).toContain('locale: en')
 
     const page2 = await browser.newPage()
     await page2.goto(url('/fr'))
-    expect(await (await page2.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page2)).toContain('locale: fr')
   })
 })
 
 describe('differentDomains', () => {
-  /** @type {Nuxt} */
-  let nuxt
-  /** @type {import('playwright-chromium').ChromiumBrowser} */
-  let browser
+  let nuxt: Nuxt
+  let browser: ChromiumBrowser
   let port
 
   beforeAll(async () => {
     port = await generatePort()
-    const overrides = {
+    const overrides: NuxtConfig = {
       i18n: {
         detectBrowserLanguage: false,
         differentDomains: true,
@@ -1498,7 +1422,7 @@ describe('differentDomains', () => {
     const localConfig = loadConfig(__dirname, 'basic', overrides, { merge: true })
 
     // Override after merging options to avoid arrays being merged.
-    localConfig.i18n.locales = [
+    localConfig.i18n!.locales = [
       {
         code: 'en',
         iso: 'en-US',
@@ -1528,6 +1452,6 @@ describe('differentDomains', () => {
   test('navigates to route with correct locale', async () => {
     const page = await browser.newPage()
     await page.goto(url('/'))
-    expect(await (await page.$('body'))?.textContent()).toContain('locale: fr')
+    expect(await $$('body', page)).toContain('locale: fr')
   })
 })

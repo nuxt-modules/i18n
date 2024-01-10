@@ -24,6 +24,7 @@ export class StaticServer {
     this.port = options.port || null
     this.noTrailingSlashRedirect = options.noTrailingSlashRedirect || false
     this.verbose = options.verbose
+    this.processes = null
   }
 
   /** @param {string} path */
@@ -38,8 +39,8 @@ export class StaticServer {
 
     this.url = `http://localhost:${this.port}${this.base}`
 
-    const serverPath = resolve(__dirname, 'http-server-internal.js')
-    const args = [`jiti ${serverPath}`, this.path, `--port ${this.port}`, `--base ${this.base}`]
+    const serverPath = resolve(__dirname, 'http-server-internal.mjs')
+    const args = ['node', serverPath, this.path, '--host localhost', `--port ${this.port}`, `--base ${this.base}`]
 
     if (this.verbose) {
       args.push('--verbose')
@@ -49,14 +50,18 @@ export class StaticServer {
       args.push('--no-trailing-slash-redirect')
     }
 
-    await setupDevServer({
+    this.processes = await setupDevServer({
       command: args.join(' '),
+      host: 'localhost',
       port: this.port
     })
   }
 
   async destroy () {
-    await teardownDevServer()
+    if (this.processes) {
+      await teardownDevServer(this.processes)
+      this.processes = null
+    }
   }
 }
 
