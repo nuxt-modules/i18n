@@ -45,7 +45,6 @@ describe(browserString, () => {
   })
 
   afterAll(async () => {
-    console.error('>>> AFTER ALL HAS BROWSER?', browser)
     if (browser) {
       await browser.close()
     }
@@ -225,6 +224,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
       router: { base }
     }
     await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
+    console.error('TESTS PID:', process.pid)
     server = await startHttpServer({ path: distDir, base, verbose: true })
     browser = await createBrowser()
 

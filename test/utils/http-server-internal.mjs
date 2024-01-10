@@ -83,8 +83,9 @@ const args = parser.parse_args()
 /** @type {import('http').Server | null} */
 let server = startServer(args.path, args.port, args.base, args.no_trailing_slash_redirect, args.verbose)
 
+console.error('HTTP_SERVER_INTERNAL PID:', process.pid)
+
 process.on('SIGTERM', () => {
-  debugger
   console.error('SIGTERM')
   if (server) {
     server.close()
