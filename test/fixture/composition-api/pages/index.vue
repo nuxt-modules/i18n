@@ -4,13 +4,11 @@
     <nuxt-link
       id="unprocessed-url"
       :to="localePath(unprocessedUrl.to)"
-      v-text="$t(unprocessedUrl.text)"
-    />
+    >{{ $t(unprocessedUrl.text) }}</nuxt-link>
     <nuxt-link
       id="processed-url"
       :to="processedUrl.to"
-      v-text="processedUrl.text"
-    />
+    >{{ processedUrl.text }}</nuxt-link>
     <div id="route-base-name">
       {{ getRouteBaseName() }}
     </div>

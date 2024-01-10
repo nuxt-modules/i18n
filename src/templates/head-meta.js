@@ -74,7 +74,6 @@ export function nuxtI18nHead ({ addDirAttribute = false, addSeoAttributes = fals
       const localeIso = locale.iso
 
       if (!localeIso) {
-        // eslint-disable-next-line no-console
         console.warn(formatMessage('Locale ISO code is required to generate alternate link'))
         continue
       }

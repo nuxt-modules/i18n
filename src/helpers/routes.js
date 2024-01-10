@@ -1,6 +1,10 @@
+import { fileURLToPath } from 'url'
+import initJiti from 'jiti'
 import { STRATEGIES } from './constants'
 import { extractComponentOptions } from './components'
 import { adjustRouteDefinitionForTrailingSlash, getPageOptions } from './utils'
+
+const jiti = initJiti(fileURLToPath(import.meta.url))
 
 /**
  * @typedef {import('@nuxt/types/config/router').NuxtRouteConfig} NuxtRouteConfig
@@ -176,8 +180,7 @@ export function makeRoutes (baseRoutes, {
 
   if (sortRoutes) {
     try {
-      // @ts-ignore
-      const { sortRoutes: sortRoutesFn } = require('@nuxt/utils')
+      const { sortRoutes: sortRoutesFn } = jiti('@nuxt/utils')
       localizedRoutes = sortRoutesFn(localizedRoutes)
     } catch (error) {
       // Ignore

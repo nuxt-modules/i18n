@@ -15,7 +15,6 @@ export default async function (moduleOptions) {
   const options = merge({}, DEFAULT_OPTIONS, moduleOptions, this.options.i18n)
 
   if (!Object.values(STRATEGIES).includes(options.strategy)) {
-    // eslint-disable-next-line no-console
     console.error(formatMessage(`Invalid "strategy" option "${options.strategy}" (must be one of: ${Object.values(STRATEGIES).join(', ')}).`))
     return
   }
