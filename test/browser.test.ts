@@ -45,6 +45,7 @@ describe(browserString, () => {
   })
 
   afterAll(async () => {
+    console.error('>>> AFTER ALL HAS BROWSER?', browser)
     if (browser) {
       await browser.close()
     }
