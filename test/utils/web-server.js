@@ -59,10 +59,9 @@ export class StaticServer {
   }
 
   async destroy () {
-    console.error('destroy()', this.processes)
+    console.error('destroy()', this.processes?.length)
     if (this.processes) {
       await teardownDevServer(this.processes)
-      console.error('destroy()-ed')
       this.processes = null
     }
   }
