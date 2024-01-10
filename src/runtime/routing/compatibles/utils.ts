@@ -1,9 +1,9 @@
+import { useRouter } from '#imports'
 import { assign } from '@intlify/shared'
 
-import type { Strategies } from '../types'
 import type { RouteLocationNormalizedLoaded, RouteLocationPathRaw } from 'vue-router'
 import type { Locale } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import type { Strategies } from '#build/i18n.options.mjs'
 
 function split(str: string, index: number) {
   const result = [str.slice(0, index), str.slice(index)]

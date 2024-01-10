@@ -1,37 +1,38 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
-import {
-  type Route,
-  type RawLocation,
-  type RouteLocationRaw,
-  type RouteLocationNormalizedLoaded,
-  type Router,
-  type RouteMeta,
-  type RouteLocationNamedRaw,
-  type RouteLocationPathRaw,
-  type RouteLocation,
-  type Location
-} from '@intlify/vue-router-bridge'
 import { parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-
-import { DEFAULT_DYNAMIC_PARAMS_KEY } from '../../constants'
-import { getLocale } from 'vue-i18n-routing'
 
 import { resolve, routeToObject } from './utils'
 
-import type { PrefixableOptions, SwitchLocalePathIntercepter } from './types'
-import type { Strategies, I18nRoutingOptions } from '../types'
-import { nuxtI18nInternalOptions, nuxtI18nOptions } from '#build/i18n.options.mjs'
-import { isRef, unref } from 'vue'
-import { getComposer, getLocaleRouteName, getRouteName } from '../utils'
+import {
+  nuxtI18nInternalOptions,
+  nuxtI18nOptions,
+  DEFAULT_DYNAMIC_PARAMS_KEY,
+  type Strategies,
+  type PrefixableOptions,
+  type SwitchLocalePathIntercepter,
+  type I18nRoutingOptions
+} from '#build/i18n.options.mjs'
+import { unref } from 'vue'
+import { getComposer, getLocale, getLocaleRouteName, getRouteName } from '../utils'
 import type { Locale } from 'vue-i18n'
-import { useNuxtApp } from 'nuxt/app'
-import { useRoute, useRouter } from 'vue-router'
-import { extendPrefixable, extendSwitchLocalePathIntercepter } from '../../runtime/utils'
+import { useNuxtApp, useRoute, useRouter } from '#imports'
+import {
+  type RouteLocation,
+  type RouteLocationRaw,
+  type Router,
+  type RouteLocationPathRaw,
+  type RouteLocationNamedRaw,
+  type RouteLocationNormalizedLoaded,
+  type RouteLocationNormalized
+} from 'vue-router'
+import { extendPrefixable, extendSwitchLocalePathIntercepter } from '../../utils'
+const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
-function prefixable(optons: PrefixableOptions): boolean {
-  const { currentLocale, defaultLocale, strategy } = optons
+function prefixable(options: PrefixableOptions): boolean {
+  const { currentLocale, defaultLocale, strategy } = options
   const isDefaultLocale = currentLocale === defaultLocale
   // don't prefix default locale
   return (
@@ -79,7 +80,7 @@ export function getRouteBaseName(givenRoute?: RouteLocation): string | undefined
  * @public
  */
 export function localePath(
-  route: RawLocation | RouteLocationRaw,
+  route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
 ): string {
   const localizedRoute = resolveRoute(route, locale)
@@ -100,9 +101,9 @@ export function localePath(
  * @public
  */
 export function localeRoute(
-  route: RawLocation | RouteLocationRaw,
+  route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
-): Route | ReturnType<Router['resolve']> | undefined {
+): ReturnType<Router['resolve']> | undefined {
   const resolved = resolveRoute(route, locale)
   return resolved ?? undefined
 }
@@ -121,14 +122,14 @@ export function localeRoute(
  * @public
  */
 export function localeLocation(
-  route: RawLocation | RouteLocationRaw,
+  route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
 ): Location | (RouteLocation & { href: string }) | undefined {
   const resolved = resolveRoute(route, locale)
   return resolved ?? undefined
 }
 
-export function resolveRoute(route: RawLocation | RouteLocationRaw, locale?: Locale) {
+export function resolveRoute(route: RouteLocationRaw, locale?: Locale) {
   const router = useRouter()
   const i18n = getComposer(useNuxtApp().$i18n)
   const _locale = locale || getLocale(i18n)
@@ -218,26 +219,14 @@ export function resolveRoute(route: RawLocation | RouteLocationRaw, locale?: Loc
 export const DefaultSwitchLocalePathIntercepter: SwitchLocalePathIntercepter = (path: string) => path
 
 function getLocalizableMetaFromDynamicParams(
-  route: Route | RouteLocationNormalizedLoaded,
-  key: Required<I18nRoutingOptions>['dynamicRouteParamsKey']
-): Record<Locale, unknown> {
-  const metaDefault = {}
-  if (key === DEFAULT_DYNAMIC_PARAMS_KEY) {
-    return metaDefault
-  }
-
-  const meta = (route as RouteLocationNormalizedLoaded).meta || metaDefault
-
-  if (isRef<RouteMeta>(meta)) {
-    return (meta.value[key] || metaDefault) as Record<Locale, unknown>
-  } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return ((meta as any)[key] || metaDefault) as Record<Locale, unknown>
-  }
+  route: RouteLocationNormalizedLoaded
+): Record<Locale, Record<string, unknown>> {
+  const meta = route.meta || {}
+  return (unref(meta)?.[DEFAULT_DYNAMIC_PARAMS_KEY] || {}) as Record<Locale, any>
 }
 
 export type MetaDynamicParamsInterceptor = (
-  route: Route | RouteLocationNormalizedLoaded,
+  route: RouteLocationNormalizedLoaded,
   key: Required<I18nRoutingOptions>['dynamicRouteParamsKey']
 ) => Record<Locale, unknown>
 
@@ -250,42 +239,27 @@ export type MetaDynamicParamsInterceptor = (
  *
  * @public
  */
-export function switchLocalePath(locale: Locale): string {
-  const route = useRoute()
+export function switchLocalePath(
+  locale: Locale,
+  _route?: RouteLocationNormalized | RouteLocationNormalizedLoaded
+): string {
+  const route = _route ?? useRoute()
   const name = getRouteBaseName(route)
+
   if (!name) {
     return ''
   }
 
-  const dynamicRouteParamsKey = 'nuxtI18n'
-
-  const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
   const switchLocalePathIntercepter = extendSwitchLocalePathIntercepter(
     nuxtI18nOptions.differentDomains,
     normalizedLocales
   )
-  const dynamicParamsInterceptor = () => ({ value: undefined })
-  const routeValue = route as RouteLocationNormalizedLoaded // for vue-router v4
-  const routeCopy = routeToObject(routeValue)
-  const langSwitchParamsIntercepted = dynamicParamsInterceptor?.()?.value?.[locale]
-  const langSwitchParams = getLocalizableMetaFromDynamicParams(route, dynamicRouteParamsKey)[locale] || {}
+  const routeCopy = routeToObject(route)
+  const resolvedParams = getLocalizableMetaFromDynamicParams(route)[locale]
 
-  const resolvedParams = langSwitchParamsIntercepted ?? langSwitchParams ?? {}
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const _baseRoute: any = {
-    name,
-    params: {
-      ...routeCopy.params,
-      ...resolvedParams
-    }
-  }
-
-  const baseRoute = assign({}, routeCopy, _baseRoute)
-  let path = localePath(baseRoute, locale)
+  const baseRoute = { ...routeCopy, name, params: { ...routeCopy.params, ...resolvedParams } }
+  const path = localePath(baseRoute, locale)
 
   // custom locale path with interceptor
-  path = switchLocalePathIntercepter(path, locale)
-
-  return path
+  return switchLocalePathIntercepter(path, locale)
 }

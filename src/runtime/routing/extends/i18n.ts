@@ -1,0 +1,257 @@
+import { isObject, isFunction, assign } from '@intlify/shared'
+
+import {
+  localePath,
+  localeRoute,
+  localeLocation,
+  switchLocalePath,
+  getRouteBaseName,
+  resolveRoute,
+  localeHead
+} from '../compatibles'
+import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
+
+import { DEFAULT_BASE_URL, type I18nRoutingOptions, type LocaleObject } from '#build/i18n.options.mjs'
+import type { Composer, ComposerExtender, Disposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'
+import { computed, effectScope, type App, ref, watch } from 'vue'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Vue = any
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function proxyVueInstance(target: Function): Function {
+  // `this` is the Vue instance
+  return function (this: Vue) {
+    return Reflect.apply(
+      target,
+      {
+        getRouteBaseName: this.getRouteBaseName,
+        localePath: this.localePath,
+        localeRoute: this.localeRoute,
+        localeLocation: this.localeLocation,
+        resolveRoute: this.resolveRoute,
+        switchLocalePath: this.switchLocalePath,
+        localeHead: this.localeHead,
+        i18n: this.$i18n,
+        route: this.$route,
+        router: this.$router
+      },
+      // eslint-disable-next-line prefer-rest-params
+      arguments
+    )
+  }
+}
+
+/**
+ * An options of Vue I18n Routing Plugin
+ */
+export interface VueI18nRoutingPluginOptions {
+  /**
+   * Whether to inject some option APIs style methods into Vue instance
+   *
+   * @defaultValue `true`
+   */
+  inject?: boolean
+  /**
+   * @internal
+   */
+  __composerExtend?: ComposerExtender
+  /**
+   * @internal
+   */
+  __vueI18nExtend?: VueI18nExtender
+}
+
+export interface ExtendProperyDescripters {
+  [key: string]: Pick<PropertyDescriptor, 'get'>
+}
+export type ExtendComposerHook = (compser: Composer) => void
+export type ExtendVueI18nHook = (composer: Composer) => ExtendProperyDescripters
+export type ExtendExportedGlobalHook = (global: Composer) => ExtendProperyDescripters
+
+export interface ExtendHooks {
+  onExtendComposer?: ExtendComposerHook
+  onExtendExportedGlobal?: ExtendExportedGlobalHook
+  onExtendVueI18n?: ExtendVueI18nHook
+}
+
+export type VueI18nExtendOptions<Context = unknown> = Pick<I18nRoutingOptions<Context>, 'baseUrl'> & {
+  locales?: string[] | LocaleObject[]
+  localeCodes?: string[]
+  context?: Context
+  hooks?: ExtendHooks
+}
+
+export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
+  i18n: TI18n,
+  {
+    locales = [],
+    localeCodes = [],
+    baseUrl = DEFAULT_BASE_URL,
+    hooks = {},
+    context = {} as Context
+  }: VueI18nExtendOptions<Context> = {}
+) {
+  const scope = effectScope()
+
+  const orgInstall = i18n.install
+  i18n.install = (vue: Vue, ...options: unknown[]) => {
+    const pluginOptions = isPluginOptions(options[0]) ? assign({}, options[0]) : { inject: true }
+    if (pluginOptions.inject == null) {
+      pluginOptions.inject = true
+    }
+    const orgComposerExtend = pluginOptions.__composerExtend
+    pluginOptions.__composerExtend = (localComposer: Composer) => {
+      const globalComposer = getComposer(i18n)
+      localComposer.locales = computed(() => globalComposer.locales.value)
+      localComposer.localeCodes = computed(() => globalComposer.localeCodes.value)
+      localComposer.baseUrl = computed(() => globalComposer.baseUrl.value)
+      let orgComposerDispose: Disposer | undefined
+      if (isFunction(orgComposerExtend)) {
+        orgComposerDispose = Reflect.apply(orgComposerExtend, pluginOptions, [localComposer])
+      }
+      return () => {
+        orgComposerDispose && orgComposerDispose()
+      }
+    }
+    if (i18n.mode === 'legacy') {
+      const orgVueI18nExtend = pluginOptions.__vueI18nExtend
+      pluginOptions.__vueI18nExtend = (vueI18n: VueI18n) => {
+        extendVueI18n(vueI18n, hooks.onExtendVueI18n)
+        let orgVueI18nDispose: Disposer | undefined
+        if (isFunction(orgVueI18nExtend)) {
+          orgVueI18nDispose = Reflect.apply(orgVueI18nExtend, pluginOptions, [vueI18n])
+        }
+        return () => {
+          orgVueI18nDispose && orgVueI18nDispose()
+        }
+      }
+    }
+
+    options[0] = pluginOptions
+    Reflect.apply(orgInstall, i18n, [vue, ...options])
+
+    const globalComposer = getComposer(i18n)
+
+    // extend global
+    scope.run(() => {
+      extendComposer(globalComposer, { locales, localeCodes, baseUrl, hooks, context })
+      if (i18n.mode === 'legacy' && isVueI18n(i18n.global)) {
+        extendVueI18n(i18n.global, hooks.onExtendVueI18n)
+      }
+    })
+
+    // extend vue component instance for Vue 3
+    const app = vue as App
+    // prettier-ignore
+    const exported = i18n.mode === 'composition'
+      ? app.config.globalProperties.$i18n
+      // for legacy mode
+      : null
+    if (exported) {
+      extendExportedGlobal(exported, globalComposer, hooks.onExtendExportedGlobal)
+    }
+
+    if (pluginOptions.inject) {
+      // extend vue component instance
+      vue.mixin({
+        methods: {
+          resolveRoute: proxyVueInstance(resolveRoute),
+          localePath: proxyVueInstance(localePath),
+          localeRoute: proxyVueInstance(localeRoute),
+          localeLocation: proxyVueInstance(localeLocation),
+          switchLocalePath: proxyVueInstance(switchLocalePath),
+          getRouteBaseName: proxyVueInstance(getRouteBaseName),
+          localeHead: proxyVueInstance(localeHead)
+        }
+      })
+    }
+
+    // dispose when app will be unmounting
+    if (app.unmount) {
+      const unmountApp = app.unmount
+      app.unmount = () => {
+        scope.stop()
+        unmountApp()
+      }
+    }
+  }
+
+  return scope
+}
+
+function extendComposer<Context = unknown>(composer: Composer, options: VueI18nExtendOptions<Context>) {
+  const { locales, localeCodes, baseUrl, context } = options
+
+  const _locales = ref<string[] | LocaleObject[]>(locales!)
+  const _localeCodes = ref<string[]>(localeCodes!)
+  const _baseUrl = ref<string>('')
+
+  // @ts-ignore
+  composer.locales = computed(() => _locales.value)
+  composer.localeCodes = computed(() => _localeCodes.value)
+  composer.baseUrl = computed(() => _baseUrl.value)
+
+  if (inBrowser) {
+    watch(
+      composer.locale,
+      () => {
+        _baseUrl.value = resolveBaseUrl(baseUrl!, context!)
+      },
+      { immediate: true }
+    )
+  } else {
+    _baseUrl.value = resolveBaseUrl(baseUrl!, context!)
+  }
+
+  if (options.hooks && options.hooks.onExtendComposer) {
+    options.hooks.onExtendComposer(composer)
+  }
+}
+
+function extendProperyDescripters(
+  composer: Composer,
+  exported: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  hook?: ExtendVueI18nHook | ExtendExportedGlobalHook
+): void {
+  const properties: ExtendProperyDescripters[] = [
+    {
+      locales: {
+        get() {
+          return composer.locales.value
+        }
+      },
+      localeCodes: {
+        get() {
+          return composer.localeCodes.value
+        }
+      },
+      baseUrl: {
+        get() {
+          return composer.baseUrl.value
+        }
+      }
+    }
+  ]
+  hook && properties.push(hook(composer))
+  for (const property of properties) {
+    for (const [key, descriptor] of Object.entries(property)) {
+      Object.defineProperty(exported, key, descriptor)
+    }
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extendExportedGlobal(exported: any, g: Composer, hook?: ExtendExportedGlobalHook) {
+  extendProperyDescripters(g, exported, hook)
+}
+
+function extendVueI18n(vueI18n: VueI18n, hook?: ExtendVueI18nHook): void {
+  const c = getComposer(vueI18n)
+  extendProperyDescripters(c, vueI18n, hook)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isPluginOptions(options: any): options is VueI18nRoutingPluginOptions {
+  return isObject(options) && ('inject' in options || '__composerExtend' in options || '__vueI18nExtend' in options)
+}

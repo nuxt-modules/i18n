@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isString, isSymbol, isFunction } from '@intlify/shared'
+import { isRef } from 'vue'
 
-import type { LocaleObject, Strategies, BaseUrlResolveHandler, I18nRoutingOptions } from './types'
-import type { useRoute, useRouter, RouteLocationNormalizedLoaded, Route } from '@intlify/vue-router-bridge'
+import type { LocaleObject, Strategies, BaseUrlResolveHandler, I18nRoutingOptions } from '#build/i18n.options.mjs'
 import type { Composer, ExportedGlobalComposer, I18n, Locale, VueI18n } from 'vue-i18n'
-import { isRef, type Ref } from 'vue'
-const isVueRouter4 = true
+import type { useRoute, useRouter } from '#imports'
 /**
  * @public
  */
@@ -94,8 +93,6 @@ export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
       : i18n
 }
 
-const isVue2 = false
-
 /**
  * Get a locale
  *
@@ -108,9 +105,7 @@ export function getLocale(i18n: I18n | Composer | VueI18n): Locale {
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
   return isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? i18n.locale
-      : target.locale.value
+    ? target.locale.value
     : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
       ? target.locale
       : (target as any).locale // TODO:
@@ -120,9 +115,7 @@ export function getLocales(i18n: I18n | VueI18n | Composer): string[] | LocaleOb
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
   return isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? i18n.locales
-      : (target as any).locales.value
+    ? (target as any).locales.value
     : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
       ? (target as any).locales
       : (target as any).locales // TODO:
@@ -132,9 +125,7 @@ export function getLocaleCodes(i18n: I18n | VueI18n | Composer): string[] {
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   // prettier-ignore
   return isComposer(target)
-    ? isVue2 && isLegacyVueI18n(i18n)
-      ? i18n.localeCodes
-      : (target as any).localeCodes.value
+    ? (target as any).localeCodes.value
     : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
       ? (target as any).localeCodes
       : (target as any).localeCodes // TODO:
@@ -147,15 +138,10 @@ export function getLocaleCodes(i18n: I18n | VueI18n | Composer): string[] {
  * @param locale - A target locale
  */
 export function setLocale(i18n: I18n | Composer, locale: Locale): void {
-  // console.log('setLocale', i18n)
   const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
   if (isComposer(target)) {
     // TODO: we might re-design `setLocale` for vue-i18n-next & vue-i18n-bridge (legacy mode & Vue 2)
-    if (isVue2 && isLegacyVueI18n(i18n)) {
-      i18n.locale = locale
-    } else {
-      target.locale.value = locale
-    }
+    target.locale.value = locale
   } else if (isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)) {
     target.locale = locale
   } else {
@@ -170,18 +156,6 @@ export function adjustRoutePathForTrailingSlash(
   isChildWithRelativePath: boolean
 ) {
   return pagePath.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
-}
-
-export function toRawRoute(
-  maybeRoute: Ref<RouteLocationNormalizedLoaded> | Route
-): RouteLocationNormalizedLoaded | Route {
-  return isVueRouter4
-    ? isRef(maybeRoute)
-      ? maybeRoute.value
-      : maybeRoute
-    : isRef(maybeRoute)
-      ? maybeRoute.value
-      : maybeRoute
 }
 
 export function getRouteName(routeName?: string | symbol | null) {
@@ -222,6 +196,7 @@ export function resolveBaseUrl<Context = unknown>(baseUrl: string | BaseUrlResol
   if (isFunction(baseUrl)) {
     return baseUrl(context)
   }
+
   return baseUrl
 }
 
@@ -348,6 +323,10 @@ export function findBrowserLocale(
   }
 
   return matchedLocales.length ? matchedLocales[0].code : ''
+}
+
+export function getLocalesRegex(localeCodes: string[]) {
+  return new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`, 'i')
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */

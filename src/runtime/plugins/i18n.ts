@@ -1,13 +1,6 @@
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
-import {
-  createLocaleFromRouteGetter,
-  extendI18n,
-  registerGlobalOptions,
-  setLocale,
-  getLocale,
-  getComposer
-} from 'vue-i18n-routing'
+import { createLocaleFromRouteGetter, registerGlobalOptions } from 'vue-i18n-routing'
 import {
   defineNuxtPlugin,
   useRouter,
@@ -23,7 +16,9 @@ import {
   nuxtI18nInternalOptions,
   isSSG,
   localeLoaders,
-  parallelPlugin
+  parallelPlugin,
+  type SwitchLocalePathIntercepter,
+  type SimpleLocaleObject
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages } from '../messages'
 import {
@@ -46,8 +41,11 @@ import {
 } from '../internal'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
-import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
+import type { ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
+import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
+import { getComposer, getLocale, setLocale } from '../routing/utils'
+import { extendI18n } from '../routing/extends/i18n'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -187,6 +185,7 @@ export default defineNuxtPlugin({
 
     // extend i18n instance
     extendI18n(i18n, {
+      // @ts-ignore
       locales: nuxtI18nOptions.locales,
       localeCodes,
       baseUrl: nuxtI18nOptions.baseUrl,
@@ -196,7 +195,7 @@ export default defineNuxtPlugin({
           composer.strategy = strategy
           composer.localeProperties = computed(() => {
             return (
-              normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
+              normalizedLocales.find((l: SimpleLocaleObject) => l.code === composer.locale.value) || {
                 code: composer.locale.value
               }
             )
@@ -501,3 +500,65 @@ export default defineNuxtPlugin({
     )
   }
 })
+
+type GetRouteBaseName = typeof getRouteBaseName
+type LocalePath = typeof localePath
+type LocaleRoute = typeof localeRoute
+type LocaleHead = typeof localeHead
+type SwitchLocalePath = typeof switchLocalePath
+
+declare module '#app' {
+  interface NuxtApp {
+    /**
+     * Returns base name of current (if argument not provided) or passed in route.
+     *
+     * @remarks
+     * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
+     *
+     * @param givenRoute - A route.
+     *
+     * @returns The route base name. if cannot get, `undefined` is returned.
+     */
+    $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
+    /**
+     * Returns localized path for passed in route.
+     *
+     * @remarks
+     * If locale is not specified, uses current locale.
+     *
+     * @param route - A route.
+     * @param locale - A locale, optional.
+     *
+     * @returns A path of the current route.
+     */
+    $localePath: (...args: Parameters<LocalePath>) => ReturnType<SwitchLocalePathIntercepter>
+    /**
+     * Returns localized route for passed in `route` parameters.
+     *
+     * @remarks
+     * If `locale` is not specified, uses current locale.
+     *
+     * @param route - A route.
+     * @param locale - A {@link Locale | locale}, optional.
+     *
+     * @returns A route. if cannot resolve, `undefined` is returned.
+     */
+    $localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
+    /**
+     * Returns localized head properties for locale-related aspects.
+     *
+     * @param options - An options, see about details [I18nHeadOptions](https://github.com/intlify/routing/blob/main/packages/vue-i18n-routing/api.md#i18nheadoptions).
+     *
+     * @returns The localized [head properties](https://github.com/intlify/routing/blob/main/packages/vue-i18n-routing/api.md#i18nheadmetainfo).
+     */
+    $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
+    /**
+     * Returns path of the current route for specified locale
+     *
+     * @param locale - A {@link Locale}
+     *
+     * @returns A path of the current route
+     */
+    $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
+  }
+}

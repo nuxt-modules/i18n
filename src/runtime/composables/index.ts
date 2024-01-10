@@ -1,38 +1,33 @@
-import { useRoute, useRouter, useRequestHeaders, useCookie, useNuxtApp } from '#imports'
+import { useRoute, useRequestHeaders, useCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
 import { useI18n } from 'vue-i18n'
 import {
-  getComposer,
-  findBrowserLocale,
-  getLocale,
-  getLocales,
   useRouteBaseName as _useRouteBaseName,
   useLocalePath as _useLocalePath,
   useLocaleRoute as _useLocaleRoute,
-  useSwitchLocalePath as _useSwitchLocalePath,
-  useLocaleHead as _useLocaleHead
-} from 'vue-i18n-routing'
+  useSwitchLocalePath as _useSwitchLocalePath
+} from '../routing/composables/routing'
 
 import type { Ref } from 'vue'
-import type { DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
+import type { DetectBrowserLanguageOptions, SeoAttributesOptions } from '#build/i18n.options.mjs'
 
 export * from 'vue-i18n'
 export * from './shared'
-export type { LocaleObject } from 'vue-i18n-routing'
 
 import type { Locale } from 'vue-i18n'
-import type { LocaleObject, SeoAttributesOptions } from 'vue-i18n-routing'
+import { getNormalizedLocales, type HeadParam } from '../utils'
 import {
-  addAlternateOgLocales,
-  addCanonicalLinksAndOgUrl,
-  addCurrentOgLocale,
-  addHreflangLinks,
-  getNormalizedLocales,
-  type HeadParam
-} from '../utils'
+  useLocaleHead as _useLocaleHead,
+  getAlternateOgLocales,
+  getCanonicalLink,
+  getCurrentOgLocale,
+  getHreflangLinks,
+  getOgUrl
+} from '../routing/compatibles/head'
+import { findBrowserLocale, getLocale, getLocales } from '../routing/utils'
 
 /**
  * Returns a function to set i18n params.
@@ -86,10 +81,20 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
 
     // Adding SEO Meta
     if (locale && i18n.locales) {
-      addHreflangLinks(locales as LocaleObject[], metaObject, 'id')
-      addCanonicalLinksAndOgUrl(metaObject, 'id', seoAttributes)
-      addCurrentOgLocale(currentLocale, currentLocaleIso, metaObject, 'id')
-      addAlternateOgLocales(locales as LocaleObject[], currentLocaleIso, metaObject, 'id')
+      // Hard code to 'id', this is used to replace payload before ssr response
+      const idAttribute = 'id'
+
+      // prettier-ignore
+      metaObject.link.push(
+        ...getHreflangLinks(locales, idAttribute),
+        ...getCanonicalLink(idAttribute, seoAttributes)
+      )
+
+      metaObject.meta.push(
+        ...getOgUrl(idAttribute, seoAttributes),
+        ...getCurrentOgLocale(currentLocale, currentLocaleIso, idAttribute),
+        ...getAlternateOgLocales(locales, currentLocaleIso, idAttribute)
+      )
     }
 
     head?.push(metaObject)
@@ -115,15 +120,8 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
  *
  * @public
  */
-export function useRouteBaseName(
-  options?: Pick<NonNullable<Parameters<typeof _useRouteBaseName>[0]>, 'route' | 'router' | 'i18n'>
-): ReturnType<typeof _useRouteBaseName> {
-  const { route, router, i18n } = options || {}
-  return _useRouteBaseName({
-    route: route || useRoute(),
-    router: router || useRouter(),
-    i18n: i18n || getComposer(useNuxtApp().$i18n)
-  })
+export function useRouteBaseName(): ReturnType<typeof _useRouteBaseName> {
+  return _useRouteBaseName()
 }
 
 /**
@@ -140,15 +138,8 @@ export function useRouteBaseName(
  *
  * @public
  */
-export function useLocalePath(
-  options?: Pick<NonNullable<Parameters<typeof _useLocalePath>[0]>, 'route' | 'router' | 'i18n'>
-): ReturnType<typeof _useLocalePath> {
-  const { route, router, i18n } = options || {}
-  return _useLocalePath({
-    route: route || useRoute(),
-    router: router || useRouter(),
-    i18n: i18n || getComposer(useNuxtApp().$i18n)
-  })
+export function useLocalePath(): ReturnType<typeof _useLocalePath> {
+  return _useLocalePath()
 }
 
 /**
@@ -165,15 +156,8 @@ export function useLocalePath(
  *
  * @public
  */
-export function useLocaleRoute(
-  options?: Pick<NonNullable<Parameters<typeof _useLocaleRoute>[0]>, 'route' | 'router' | 'i18n'>
-): ReturnType<typeof _useLocaleRoute> {
-  const { route, router, i18n } = options || {}
-  return _useLocaleRoute({
-    route: route || useRoute(),
-    router: router || useRouter(),
-    i18n: i18n || getComposer(useNuxtApp().$i18n)
-  })
+export function useLocaleRoute(): ReturnType<typeof _useLocaleRoute> {
+  return _useLocaleRoute()
 }
 
 /**
@@ -190,15 +174,8 @@ export function useLocaleRoute(
  *
  * @public
  */
-export function useSwitchLocalePath(
-  options?: Pick<NonNullable<Parameters<typeof _useSwitchLocalePath>[0]>, 'route' | 'router' | 'i18n'>
-): ReturnType<typeof _useSwitchLocalePath> {
-  const { route, router, i18n } = options || {}
-  return _useSwitchLocalePath({
-    route: route || useRoute(),
-    router: router || useRouter(),
-    i18n: i18n || getComposer(useNuxtApp().$i18n)
-  })
+export function useSwitchLocalePath(): ReturnType<typeof _useSwitchLocalePath> {
+  return _useSwitchLocalePath()
 }
 
 /**
@@ -213,17 +190,14 @@ export function useSwitchLocalePath(
 export function useLocaleHead(
   options?: Pick<
     NonNullable<Parameters<typeof _useLocaleHead>[0]>,
-    'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute' | 'route' | 'router' | 'i18n'
+    'addDirAttribute' | 'addSeoAttributes' | 'identifierAttribute'
   >
 ): ReturnType<typeof _useLocaleHead> {
-  const { addDirAttribute, addSeoAttributes, identifierAttribute, route, router, i18n } = options || {}
+  const { addDirAttribute, addSeoAttributes, identifierAttribute } = options || {}
   return _useLocaleHead({
     addDirAttribute: addDirAttribute || false,
     addSeoAttributes: addSeoAttributes || false,
-    identifierAttribute: identifierAttribute || 'hid',
-    route: route || useRoute(),
-    router: router || useRouter(),
-    i18n: i18n || getComposer(useNuxtApp().$i18n)
+    identifierAttribute: identifierAttribute || 'hid'
   })
 }
 

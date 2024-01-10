@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isArray, isString } from '@intlify/shared'
-import {
-  findBrowserLocale,
-  getLocalesRegex,
-  isI18nInstance,
-  isComposer,
-  isExportedGlobalComposer,
-  isVueI18n
-} from 'vue-i18n-routing'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp } from '#imports'
@@ -16,9 +8,22 @@ import { nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.
 
 import type { NuxtApp } from '#app'
 import type { I18nOptions, Locale, VueI18n } from 'vue-i18n'
-import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
 import type { DeepRequired } from 'ts-essentials'
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
+import type {
+  NuxtI18nOptions,
+  NuxtI18nInternalOptions,
+  DetectBrowserLanguageOptions,
+  LocaleObject
+} from '#build/i18n.options.mjs'
+import {
+  findBrowserLocale,
+  isComposer,
+  isExportedGlobalComposer,
+  isI18nInstance,
+  isVueI18n,
+  getLocalesRegex
+} from './routing/utils'
+import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -192,7 +197,7 @@ export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromRe
 }
 
 export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   vueI18nOptions: I18nOptions,

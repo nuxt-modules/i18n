@@ -96,7 +96,8 @@
     "ufo": "^1.3.1",
     "unplugin": "^1.5.0",
     "vue-i18n": "^9.9.0",
-    "vue-i18n-routing": "^1.2.0"
+    "vue-i18n-routing": "^1.2.0",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@babel/parser": "^7.23.0",
@@ -135,8 +136,7 @@
     "undici": "^6.0.1",
     "unhead": "^1.8.8",
     "vitest": "^1.0.0",
-    "vue": "^3.3.4",
-    "vue-router": "^4.2.5"
+    "vue": "^3.4.7"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
