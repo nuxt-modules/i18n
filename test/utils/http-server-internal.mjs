@@ -4,6 +4,8 @@ import { ArgumentParser } from 'argparse'
 import express from 'express'
 import serveStatic from 'serve-static'
 
+console.error('IMPORT SERVER')
+
 /**
  * Starts a server.
  *
