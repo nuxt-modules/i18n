@@ -73,7 +73,6 @@ export function extractComponentOptions (component, parseComponent) {
       }
     })
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.warn(formatMessage(`Error parsing "${COMPONENT_OPTIONS_KEY}" component option in file "${component}"`))
   }
 

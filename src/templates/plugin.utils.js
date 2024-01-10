@@ -1,7 +1,7 @@
 import isHTTPS from 'is-https'
+import { hasProtocol } from '~i18n-ufo'
 import { localeMessages, options } from './options'
 import { formatMessage } from './utils-common'
-import { hasProtocol } from '~i18n-ufo'
 
 /** @typedef {import('../../types/internal').ResolvedOptions} ResolvedOptions */
 
@@ -44,7 +44,6 @@ export async function loadLanguageAsync (context, locale) {
             const getter = await localeMessages[file]().then(m => m.default || m)
             messages = typeof getter === 'function' ? await Promise.resolve(getter(context, locale)) : getter
           } catch (error) {
-            // eslint-disable-next-line no-console
             console.error(formatMessage(`Failed loading async locale export: ${/** @type {Error} */(error).message}`))
           }
         }
@@ -112,7 +111,6 @@ export function getDomainFromLocale (localeCode, req, { normalizedLocales }) {
     return `${protocol}://${lang.domain}`
   }
 
-  // eslint-disable-next-line no-console
   console.warn(formatMessage(`Could not find domain name for locale ${localeCode}`))
 }
 
@@ -179,17 +177,14 @@ export function registerStore (store, vuex, localeCodes) {
  */
 export function validateRouteParams (routeParams, localeCodes) {
   if (!isObject(routeParams)) {
-    // eslint-disable-next-line no-console
     console.warn(formatMessage('Route params should be an object'))
     return
   }
 
   for (const [key, value] of Object.entries(routeParams)) {
     if (!localeCodes.includes(key)) {
-    // eslint-disable-next-line no-console
       console.warn(formatMessage(`Trying to set route params for key ${key} which is not a valid locale`))
     } else if (!isObject(value)) {
-    // eslint-disable-next-line no-console
       console.warn(formatMessage(`Trying to set route params for locale ${key} with a non-object value`))
     }
   }
