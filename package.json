@@ -92,7 +92,7 @@
   "devDependencies": {
     "@nuxt/types": "2.17.2",
     "@nuxtjs/composition-api": "0.33.1",
-    "@nuxtjs/eslint-config-typescript": "10.0.0",
+    "@nuxtjs/eslint-config-typescript": "12.1.0",
     "@nuxtjs/module-test-utils": "1.6.3",
     "@release-it/conventional-changelog": "8.0.1",
     "@types/argparse": "2.0.14",
