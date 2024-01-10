@@ -40,7 +40,7 @@ export class StaticServer {
     this.url = `http://localhost:${this.port}${this.base}`
 
     const serverPath = resolve(__dirname, 'http-server-internal.mjs')
-    const args = ['node', serverPath, this.path, `--port ${this.port}`, `--base ${this.base}`]
+    const args = ['node', serverPath, this.path, '--host localhost', `--port ${this.port}`, `--base ${this.base}`]
 
     if (this.verbose) {
       args.push('--verbose')
@@ -54,7 +54,7 @@ export class StaticServer {
     this.processes = await setupDevServer({
       command: args.join(' '),
       debug: true,
-      // host: '0.0.0.0',
+      host: 'localhost',
       port: this.port
     })
   }
