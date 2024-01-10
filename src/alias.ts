@@ -4,7 +4,7 @@ import {
   VUE_I18N_PKG,
   // VUE_I18N_BRIDGE_PKG,
   // VUE_ROUTER_BRIDGE_PKG,
-  VUE_I18N_ROUTING_PKG,
+  // VUE_I18N_ROUTING_PKG,
   SHARED_PKG,
   MESSAGE_COMPILER_PKG,
   CORE_PKG,
@@ -36,7 +36,7 @@ export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
   modules[UTILS_H3_PKG] = `${UTILS_PKG}/dist/h3.mjs` // for `@intlify/utils/h3`
   // modules[VUE_ROUTER_BRIDGE_PKG] = `${VUE_ROUTER_BRIDGE_PKG}/lib/index.mjs`
   // modules[VUE_I18N_BRIDGE_PKG] = `${VUE_I18N_BRIDGE_PKG}/lib/index.mjs`
-  modules[VUE_I18N_ROUTING_PKG] = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`
+  // modules[VUE_I18N_ROUTING_PKG] = `${VUE_I18N_ROUTING_PKG}/dist/vue-i18n-routing.mjs`
   modules[UFO_PKG] = UFO_PKG
   modules[IS_HTTPS_PKG] = IS_HTTPS_PKG
 

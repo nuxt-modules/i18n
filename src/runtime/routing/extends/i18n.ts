@@ -62,12 +62,12 @@ export interface VueI18nRoutingPluginOptions {
   __vueI18nExtend?: VueI18nExtender
 }
 
-export interface ExtendProperyDescripters {
+export interface ExtendPropertyDescriptors {
   [key: string]: Pick<PropertyDescriptor, 'get'>
 }
 export type ExtendComposerHook = (compser: Composer) => void
-export type ExtendVueI18nHook = (composer: Composer) => ExtendProperyDescripters
-export type ExtendExportedGlobalHook = (global: Composer) => ExtendProperyDescripters
+export type ExtendVueI18nHook = (composer: Composer) => ExtendPropertyDescriptors
+export type ExtendExportedGlobalHook = (global: Composer) => ExtendPropertyDescriptors
 
 export interface ExtendHooks {
   onExtendComposer?: ExtendComposerHook
@@ -214,7 +214,7 @@ function extendProperyDescripters(
   exported: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   hook?: ExtendVueI18nHook | ExtendExportedGlobalHook
 ): void {
-  const properties: ExtendProperyDescripters[] = [
+  const properties: ExtendPropertyDescriptors[] = [
     {
       locales: {
         get() {

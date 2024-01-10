@@ -32,7 +32,7 @@ export const parallelPlugin: boolean
 
 export const STRATEGIES: typeof constants.STRATEGIES
 export const DEFAULT_LOCALE: typeof constants.DEFAULT_LOCALE
-export const DEFAULT_STRATEGY: keyof typeof constants.STRATEGIES
+export const DEFAULT_STRATEGY: (typeof STRATEGIES)[keyof typeof STRATEGIES]
 export const DEFAULT_TRAILING_SLASH: typeof constants.DEFAULT_TRAILING_SLASH
 export const DEFAULT_ROUTES_NAME_SEPARATOR: typeof constants.DEFAULT_ROUTES_NAME_SEPARATOR
 export const DEFAULT_LOCALE_ROUTE_NAME_SUFFIX: typeof constants.DEFAULT_LOCALE_ROUTE_NAME_SUFFIX

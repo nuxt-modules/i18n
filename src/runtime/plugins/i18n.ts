@@ -1,14 +1,6 @@
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { createLocaleFromRouteGetter, registerGlobalOptions } from 'vue-i18n-routing'
-import {
-  defineNuxtPlugin,
-  useRouter,
-  useRoute,
-  addRouteMiddleware,
-  defineNuxtRouteMiddleware,
-  useNuxtApp
-} from '#imports'
+import { defineNuxtPlugin, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
 import {
   localeCodes,
   vueI18nConfigs,
@@ -28,8 +20,6 @@ import {
   navigate,
   injectNuxtHelpers,
   extendBaseUrl,
-  extendPrefixable,
-  extendSwitchLocalePathIntercepter,
   _setLocale
 } from '../utils'
 import {
@@ -41,17 +31,16 @@ import {
 } from '../internal'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
-import type { ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
 import { getComposer, getLocale, setLocale } from '../routing/utils'
-import { extendI18n } from '../routing/extends/i18n'
+import { extendI18n, type ExtendPropertyDescriptors, type VueI18nRoutingPluginOptions } from '../routing/extends/i18n'
+import { createLocaleFromRouteGetter } from '../routing/extends/router'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(nuxt) {
-    const router = useRouter()
     const route = useRoute()
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
@@ -90,18 +79,6 @@ export default defineNuxtPlugin({
 
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
-
-    // register nuxt/i18n options as global
-    // so global options is reffered by `vue-i18n-routing`
-    registerGlobalOptions(router, {
-      ...nuxtI18nOptions,
-      dynamicRouteParamsKey: 'nuxtI18n',
-      switchLocalePathIntercepter: extendSwitchLocalePathIntercepter(
-        nuxtI18nOptions.differentDomains,
-        normalizedLocales
-      ),
-      prefixable: extendPrefixable(nuxtI18nOptions.differentDomains)
-    })
 
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
 
@@ -265,7 +242,7 @@ export default defineNuxtPlugin({
             }
           }
         },
-        onExtendExportedGlobal(g: Composer): ExtendProperyDescripters {
+        onExtendExportedGlobal(g: Composer): ExtendPropertyDescriptors {
           return {
             strategy: {
               get() {
@@ -332,7 +309,7 @@ export default defineNuxtPlugin({
             }
           }
         },
-        onExtendVueI18n(composer: Composer): ExtendProperyDescripters {
+        onExtendVueI18n(composer: Composer): ExtendPropertyDescriptors {
           return {
             strategy: {
               get() {

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createLocaleFromRouteGetter } from 'vue-i18n-routing'
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRoute, useRuntimeConfig, useState } from '#imports'
@@ -24,7 +23,6 @@ import {
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
 
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-i18n-routing'
 import type { I18n, I18nOptions, Locale, FallbackLocale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type {
@@ -52,6 +50,8 @@ import {
   localeHead
 } from './routing/compatibles'
 import { getComposer, getLocale, setLocale, getLocaleCodes } from './routing/utils'
+import type { createLocaleFromRouteGetter } from './routing/extends/router'
+import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -423,8 +423,8 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
 
 // override prefix for route path, support domain
 export function extendPrefixable(differentDomains: boolean) {
-  return (opts: PrefixableOptions): boolean => {
-    return DefaultPrefixable(opts) && !differentDomains
+  return (options: PrefixableOptions): boolean => {
+    return DefaultPrefixable(options) && !differentDomains
   }
 }
 

@@ -41,7 +41,7 @@ export const inBrowser = typeof window !== 'undefined'
 
 export function warn(msg: string, err?: Error): void {
   if (typeof console !== 'undefined') {
-    console.warn(`[vue-i18n-routing] ` + msg)
+    console.warn(`[nuxt-i18n-routing] ` + msg)
     /* istanbul ignore if */
     if (err) {
       console.warn(err.stack)

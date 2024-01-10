@@ -132,6 +132,7 @@ export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOp
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RouterOptions } from 'vue-router'
 import type { STRATEGIES } from './constants'
+import type { NuxtPage } from '@nuxt/schema'
 
 /**
  * Route config for vue-router v4
@@ -228,23 +229,19 @@ export type RouteOptionsResolver = (route: I18nRoute, localeCodes: string[]) => 
  *
  * @public
  */
-export interface LocalizeRoutesPrefixableOptions {
+export interface PrefixLocalizedRouteOptions {
   /**
    * Current locale
    */
-  currentLocale: Locale
+  locale: Locale
   /**
    * Default locale
    */
-  defaultLocale: Locale
+  defaultLocale?: Locale | undefined
   /**
-   * Curernt strategy
+   * The parent route of the route to be resolved
    */
-  strategy: Strategies
-  /**
-   * Whether the route to be resolved is child or not
-   */
-  isChild: boolean
+  parent: NuxtPage | undefined
   /**
    * The path of route
    */
@@ -256,7 +253,7 @@ export interface LocalizeRoutesPrefixableOptions {
  *
  * @public
  */
-export type LocalizeRoutesPrefixable = (options: LocalizeRoutesPrefixableOptions) => boolean
+export type LocalizeRoutesPrefixable = (options: PrefixLocalizedRouteOptions) => boolean
 
 /**
  * Options to initialize a VueRouter instance
@@ -445,7 +442,20 @@ export interface I18nHeadMetaInfo {
 /**
  * Route path prefix judgment options used in {@link Prefixable}
  */
-export type PrefixableOptions = Pick<LocalizeRoutesPrefixableOptions, 'currentLocale' | 'defaultLocale' | 'strategy'>
+export type PrefixableOptions = {
+  /**
+   * Current locale
+   */
+  currentLocale: Locale
+  /**
+   * Default locale
+   */
+  defaultLocale: Locale
+  /**
+   * Curernt strategy
+   */
+  strategy: Strategies
+}
 
 /**
  * Route path prefix judgment logic in {@link resolveRoute} function
