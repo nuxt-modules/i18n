@@ -216,6 +216,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
   let server: StaticServer
 
   beforeAll(async () => {
+    console.error('>>> BEFORE ALL', { server, browser })
     const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
     const overrides: NuxtConfig = {
@@ -228,6 +229,7 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
   })
 
   afterAll(async () => {
+    console.error('>>> AFTER ALL', { server, browser })
     if (server) {
       await server.destroy()
     }
