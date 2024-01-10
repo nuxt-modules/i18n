@@ -1,5 +1,7 @@
 import { isObject, isFunction, assign } from '@intlify/shared'
-
+import { computed, effectScope, ref, watch } from '#imports'
+import { DEFAULT_BASE_URL } from '#build/i18n.options.mjs'
+import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
 import {
   localePath,
   localeRoute,
@@ -9,12 +11,10 @@ import {
   resolveRoute,
   localeHead
 } from '../compatibles'
-import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
 
-import { DEFAULT_BASE_URL } from '#build/i18n.options.mjs'
-import type { I18nRoutingOptions, LocaleObject } from '#build/i18n.options.mjs'
+import type { App } from 'vue'
 import type { Composer, ComposerExtender, Disposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'
-import { computed, effectScope, type App, ref, watch } from 'vue'
+import type { I18nRoutingOptions, LocaleObject } from '#build/i18n.options.mjs'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Vue = any

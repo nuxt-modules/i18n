@@ -1,32 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
 import { parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
+import { nuxtI18nInternalOptions, nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { unref, useNuxtApp, useRoute, useRouter } from '#imports'
 
 import { resolve, routeToObject } from './utils'
-
-import {
-  nuxtI18nInternalOptions,
-  nuxtI18nOptions,
-  DEFAULT_DYNAMIC_PARAMS_KEY,
-  type Strategies,
-  type PrefixableOptions,
-  type SwitchLocalePathIntercepter,
-  type I18nRoutingOptions
-} from '#build/i18n.options.mjs'
-import { unref } from 'vue'
 import { getComposer, getLocale, getLocaleRouteName, getRouteName } from '../utils'
-import type { Locale } from 'vue-i18n'
-import { useNuxtApp, useRoute, useRouter } from '#imports'
-import {
-  type RouteLocation,
-  type RouteLocationRaw,
-  type Router,
-  type RouteLocationPathRaw,
-  type RouteLocationNamedRaw,
-  type RouteLocationNormalizedLoaded,
-  type RouteLocationNormalized
-} from 'vue-router'
 import { extendPrefixable, extendSwitchLocalePathIntercepter } from '../../utils'
+
+import type {
+  Strategies,
+  PrefixableOptions,
+  SwitchLocalePathIntercepter,
+  I18nRoutingOptions
+} from '#build/i18n.options.mjs'
+import type { Locale } from 'vue-i18n'
+import type {
+  RouteLocation,
+  RouteLocationRaw,
+  Router,
+  RouteLocationPathRaw,
+  RouteLocationNamedRaw,
+  RouteLocationNormalizedLoaded,
+  RouteLocationNormalized
+} from 'vue-router'
+
 const { __normalizedLocales: normalizedLocales } = nuxtI18nInternalOptions
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])

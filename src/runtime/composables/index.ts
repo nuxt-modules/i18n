@@ -4,12 +4,6 @@ import { parseAcceptLanguage } from '../internal'
 import { nuxtI18nInternalOptions, nuxtI18nOptionsDefault, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
 import { useI18n } from 'vue-i18n'
-import {
-  useRouteBaseName as _useRouteBaseName,
-  useLocalePath as _useLocalePath,
-  useLocaleRoute as _useLocaleRoute,
-  useSwitchLocalePath as _useSwitchLocalePath
-} from '../routing/composables/routing'
 
 import type { Ref } from 'vue'
 import type { DetectBrowserLanguageOptions, SeoAttributesOptions } from '#build/i18n.options.mjs'
@@ -20,14 +14,16 @@ export * from './shared'
 import type { Locale } from 'vue-i18n'
 import { getNormalizedLocales, type HeadParam } from '../utils'
 import {
-  useLocaleHead as _useLocaleHead,
   getAlternateOgLocales,
   getCanonicalLink,
   getCurrentOgLocale,
   getHreflangLinks,
   getOgUrl
-} from '../routing/compatibles/head'
+} from '../routing/compatibles'
 import { findBrowserLocale, getLocale, getLocales } from '../routing/utils'
+import { useLocaleHead as _useLocaleHead } from '../routing/composables'
+
+export { useRouteBaseName, useLocalePath, useLocaleRoute, useSwitchLocalePath } from '../routing/composables'
 
 /**
  * Returns a function to set i18n params.
@@ -104,78 +100,6 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
     i18nParams.value = { ...params }
     setMeta()
   }
-}
-
-/**
- * The `useRouteBaseName` composable returns a function that gets the route's base name.
- *
- * @remarks
- * The function returned by `useRouteBaseName` is the wrapper function with the same signature as {@link getRouteBaseName}.
- *
- * `useRouteBaseName` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
- *
- * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
- *
- * @returns A {@link RouteBaseNameFunction}.
- *
- * @public
- */
-export function useRouteBaseName(): ReturnType<typeof _useRouteBaseName> {
-  return _useRouteBaseName()
-}
-
-/**
- * The `useLocalePath` composable returns a function that resolves a path according to the current locale.
- *
- * @remarks
- * The function returned by `useLocalePath` is the wrapper function with the same signature as {@link localePath}.
- *
- * `useLocalePath` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
- *
- * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
- *
- * @returns A {@link LocalePathFunction}.
- *
- * @public
- */
-export function useLocalePath(): ReturnType<typeof _useLocalePath> {
-  return _useLocalePath()
-}
-
-/**
- * The `useLocaleRoute` composable returns a function that resolves the route according to the current locale.
- *
- * @remarks
- * The function returned by `useLocaleRoute` is the wrapper function with the same signature as {@link localeRoute}.
- *
- * `useLocaleRoute` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
- *
- * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
- *
- * @returns A {@link LocaleRouteFunction}.
- *
- * @public
- */
-export function useLocaleRoute(): ReturnType<typeof _useLocaleRoute> {
-  return _useLocaleRoute()
-}
-
-/**
- * The `useSwitchLocalePath` composable returns a function that allows to switch the locale.
- *
- * @remarks
- * The function returned by `useSwitchLocalePath` is the wrapper function with the same signature as {@link switchLocalePath}.
- *
- * `useSwitchLocalePath` composable returns function that resolve the locale location. `useSwitchLocalePath` is powered by [vue-i18n-routing](https://github.com/intlify/routing/tree/main/packages/vue-i18n-routing).
- *
- * @param options - An options object, see {@link I18nCommonRoutingOptionsWithComposable}
- *
- * @returns A {@link SwitchLocalePathFunction}.
- *
- * @public
- */
-export function useSwitchLocalePath(): ReturnType<typeof _useSwitchLocalePath> {
-  return _useSwitchLocalePath()
 }
 
 /**

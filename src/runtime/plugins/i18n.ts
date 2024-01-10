@@ -9,7 +9,6 @@ import {
   isSSG,
   localeLoaders,
   parallelPlugin,
-  type SwitchLocalePathIntercepter,
   type SimpleLocaleObject
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages } from '../messages'
@@ -508,7 +507,7 @@ declare module '#app' {
      *
      * @returns A path of the current route.
      */
-    $localePath: (...args: Parameters<LocalePath>) => ReturnType<SwitchLocalePathIntercepter>
+    $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
     /**
      * Returns localized route for passed in `route` parameters.
      *

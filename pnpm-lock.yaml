@@ -86,9 +86,6 @@ importers:
       '@babel/types':
         specifier: ^7.23.0
         version: 7.23.5
-      '@intlify/vue-router-bridge':
-        specifier: ^1.1.0
-        version: 1.1.0(vue-router@4.2.5)(vue@3.4.7)
       '@nuxt/module-builder':
         specifier: ^0.5.4
         version: 0.5.4(@nuxt/kit@3.8.2)(nuxi@3.10.0)(typescript@5.3.2)
@@ -1401,26 +1398,6 @@ packages:
     resolution: {integrity: sha512-yCBNcuZQ49iInqmWC2xfW0rgEQyNtCM8C8KcWKTXxyscgUE1+48gjLgZZqP75MjhlApxwph7ZMWLqyABkSgxQA==}
     engines: {node: '>= 18'}
     dev: false
-
-  /@intlify/vue-router-bridge@1.1.0(vue-router@4.2.5)(vue@3.4.7):
-    resolution: {integrity: sha512-EX+KndT9VS3muMdZWFmc99D8nUaWTOXr322a8zNf5HnMCbpbogdifWYW8hat+nVE73St/gcDbPz6u5smVUPoQg==}
-    engines: {node: '>= 12'}
-    hasBin: true
-    requiresBuild: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue-router: ^4.0.0-0 || ^3.0.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-      vue-router:
-        optional: true
-    dependencies:
-      vue-demi: 0.14.6(vue@3.4.7)
-      vue-router: 4.2.5(vue@3.4.7)
-    transitivePeerDependencies:
-      - vue
-    dev: true
 
   /@ioredis/commands@1.2.0:
     resolution: {integrity: sha512-Sx1pU8EM64o2BrqNpEO1CNLtKQwyhuXuqyfH7oGKCk+1a33d2r5saW8zNwm3j6BTExtjrv2BxTgzzkMwts6vGg==}

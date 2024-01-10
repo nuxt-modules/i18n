@@ -1,5 +1,5 @@
 import { useSwitchLocalePath, useLocaleRoute, useRouteBaseName } from '../composables/routing'
-import { useRouter, type Ref, ref, onUnmounted, unref, useNuxtApp, watch } from '#imports'
+import { useRouter, unref, useNuxtApp } from '#imports'
 import { nuxtI18nOptions, STRATEGIES } from '#build/i18n.options.mjs'
 
 import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
@@ -17,57 +17,6 @@ export type I18nCommonRoutingOptions = Pick<
   I18nRoutingOptions,
   'defaultLocale' | 'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'locales' | 'routesNameSeparator'
 >
-
-/**
- * The `useLocaleHead` composable returns localized head properties for locale-related aspects.
- *
- * @param options - An options, see about details {@link I18nHeadOptions}
- *
- * @returns The localized {@link I18nHeadMetaInfo | head properties} with Vue `ref`.
- *
- * @public
- */
-export function useLocaleHead({
-  addDirAttribute = false,
-  addSeoAttributes = false,
-  identifierAttribute = 'hid'
-}: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
-  const router = useRouter()
-
-  const metaObject: Ref<I18nHeadMetaInfo> = ref({
-    htmlAttrs: {},
-    link: [],
-    meta: []
-  })
-
-  function cleanMeta() {
-    metaObject.value = {
-      htmlAttrs: {},
-      link: [],
-      meta: []
-    }
-  }
-
-  function updateMeta() {
-    metaObject.value = localeHead({ addDirAttribute, addSeoAttributes, identifierAttribute }) as I18nHeadMetaInfo
-  }
-
-  if (process.client) {
-    const stop = watch(
-      () => router.currentRoute.value,
-      () => {
-        cleanMeta()
-        updateMeta()
-      },
-      { immediate: true }
-    )
-    onUnmounted(() => stop())
-  } else {
-    updateMeta()
-  }
-
-  return metaObject
-}
 
 /**
  * Returns localized head properties for locale-related aspects.

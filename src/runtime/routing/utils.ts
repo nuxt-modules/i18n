@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isString, isSymbol, isFunction } from '@intlify/shared'
-import { isRef } from 'vue'
+import { isRef } from '#imports'
 
 import type { LocaleObject, Strategies, BaseUrlResolveHandler, I18nRoutingOptions } from '#build/i18n.options.mjs'
 import type { Composer, ExportedGlobalComposer, I18n, Locale, VueI18n } from 'vue-i18n'
