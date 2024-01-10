@@ -54,7 +54,7 @@ parser.add_argument('path', {
 })
 
 parser.add_argument('-a', '--host', {
-  type: 'string',
+  type: 'str',
   default: 'localhost',
   help: 'Host to run on (default: localhost)'
 })
