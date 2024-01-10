@@ -1,0 +1,12 @@
+diff --git a/node_modules/jest-dev-server/dist/index.js b/node_modules/jest-dev-server/dist/index.js
+index f825a3b..e6c43e3 100644
+--- a/node_modules/jest-dev-server/dist/index.js
++++ b/node_modules/jest-dev-server/dist/index.js
+@@ -152,6 +152,7 @@ const checkIsTimeoutError = (err)=>{
+     return Boolean(err?.message?.startsWith("Timed out waiting for"));
+ };
+ const waitForServerToBeReady = async (config)=>{
++    console.error('WAITFORSERVERTOBEREADY', config)
+     if (config.port === undefined) return;
+     const { launchTimeout, protocol, host, port, path, waitOnScheme } = config;
+     let resource = `${host ?? "0.0.0.0"}:${port}`;
