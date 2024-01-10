@@ -15,7 +15,6 @@ import serveStatic from 'serve-static'
  * @param {boolean} verbose
  */
 function startServer (path, host, port, base, noTrailingSlashRedirect, verbose) {
-  console.error('START SERVER', { path, port, base, noTrailingSlashRedirect, verbose })
   const app = express()
 
   // @ts-ignore
@@ -42,7 +41,7 @@ function startServer (path, host, port, base, noTrailingSlashRedirect, verbose) 
   return app.listen(port, host, () => {
     if (verbose) {
       // eslint-disable-next-line no-console
-      console.error(`Static server started on http://${host}:${port}`)
+      console.info(`Static server started on http://${host}:${port}`)
     }
   })
 }
@@ -54,7 +53,7 @@ parser.add_argument('path', {
   help: 'The path to start server in'
 })
 
-parser.add_argument('-h', '--host', {
+parser.add_argument('-a', '--host', {
   type: 'string',
   default: 'localhost',
   help: 'Host to run on (default: localhost)'
@@ -89,10 +88,7 @@ const args = parser.parse_args()
 /** @type {import('http').Server | null} */
 let server = startServer(args.path, args.host, args.port, args.base, args.no_trailing_slash_redirect, args.verbose)
 
-console.error('HTTP_SERVER_INTERNAL PID:', process.pid)
-
 process.on('SIGTERM', () => {
-  console.error('SIGTERM')
   if (server) {
     server.close()
     server = null

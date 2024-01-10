@@ -216,7 +216,6 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
   let server: StaticServer
 
   beforeAll(async () => {
-    console.error('>>> BEFORE ALL', { server, browser })
     const base = '/nuxt/'
     const distDir = resolve(__dirname, 'fixture', 'basic', '.nuxt-generate')
     const overrides: NuxtConfig = {
@@ -224,30 +223,18 @@ describe(`${browserString} (generate, with router base) + redirectOn is root`, (
       router: { base }
     }
     await generate(loadConfig(__dirname, 'basic', overrides, { merge: true }))
-    console.error('TESTS PID:', process.pid)
     server = await startHttpServer({ path: distDir, base, verbose: true })
     browser = await createBrowser()
-
-    return async () => {
-      console.error('>>> AFTER ALL', { server, browser })
-      if (server) {
-        await server.destroy()
-      }
-      if (browser) {
-        await browser.close()
-      }
-    }
   })
 
-  // afterAll(async () => {
-  //   console.error('>>> AFTER ALL', { server, browser })
-  //   if (server) {
-  //     await server.destroy()
-  //   }
-  //   if (browser) {
-  //     await browser.close()
-  //   }
-  // })
+  afterAll(async () => {
+    if (server) {
+      await server.destroy()
+    }
+    if (browser) {
+      await browser.close()
+    }
+  })
 
   // Issue https://github.com/nuxt-community/i18n-module/issues/378
   test('navigate to non-default locale', async () => {

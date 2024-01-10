@@ -36,7 +36,6 @@
     "test:unit": "vitest run test/unit.test",
     "test:types": "tsc -p types/test",
     "release": "release-it",
-    "postinstall": "patch-package",
     "docs:dev": "cd ./docs && yarn dev && cd ..",
     "docs:build": "cd ./docs && yarn generate && cd .."
   },
@@ -116,7 +115,6 @@
     "jsdom": "23.2.0",
     "messageformat": "2.3.0",
     "nuxt": "2.17.2",
-    "patch-package": "^8.0.0",
     "pathe": "^1.1.1",
     "playwright-chromium": "1.40.1",
     "release-it": "15.2.0",
