@@ -50,6 +50,7 @@ export class StaticServer {
       args.push('--no-trailing-slash-redirect')
     }
 
+    console.error('start()')
     this.processes = await setupDevServer({
       command: args.join(' '),
       debug: true,
@@ -58,8 +59,10 @@ export class StaticServer {
   }
 
   async destroy () {
+    console.error('destroy()', this.processes)
     if (this.processes) {
       await teardownDevServer(this.processes)
+      console.error('destroy()-ed')
       this.processes = null
     }
   }
