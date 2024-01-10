@@ -81,7 +81,7 @@
     "@intlify/vue-i18n-loader": "^1.1.0",
     "@nuxt/utils": "2.x",
     "cookie": "^0.6.0",
-    "devalue": "^2.0.1",
+    "devalue": "^4.3.2",
     "is-https": "^4.0.0",
     "jiti": "^1.21.0",
     "js-cookie": "^3.0.5",
