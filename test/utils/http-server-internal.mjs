@@ -4,8 +4,6 @@ import { ArgumentParser } from 'argparse'
 import express from 'express'
 import serveStatic from 'serve-static'
 
-console.error('IMPORT SERVER')
-
 /**
  * Starts a server.
  *
@@ -16,6 +14,7 @@ console.error('IMPORT SERVER')
  * @param {boolean} verbose
  */
 function startServer (path, port, base, noTrailingSlashRedirect, verbose) {
+  console.error('START SERVER', { path, port, base, noTrailingSlashRedirect, verbose })
   const app = express()
 
   // @ts-ignore
