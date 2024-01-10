@@ -54,6 +54,7 @@ export class StaticServer {
     this.processes = await setupDevServer({
       command: args.join(' '),
       debug: true,
+      // host: '0.0.0.0',
       port: this.port
     })
   }

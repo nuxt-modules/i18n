@@ -42,7 +42,7 @@ function startServer (path, port, base, noTrailingSlashRedirect, verbose) {
   return app.listen(port, host, () => {
     if (verbose) {
       // eslint-disable-next-line no-console
-      console.info(`Static server started on http://${host}:${port}`)
+      console.error(`Static server started on http://${host}:${port}`)
     }
   })
 }
