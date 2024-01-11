@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isString, isSymbol, isFunction } from '@intlify/shared'
-import { isRef } from '#imports'
+import { isRef, unref } from '#imports'
 
 import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#build/i18n.options.mjs'
-import type { Composer, ExportedGlobalComposer, I18n, Locale, VueI18n } from 'vue-i18n'
+import type { Composer, I18n, Locale, VueI18n } from 'vue-i18n'
 import type { useRoute, useRouter } from '#imports'
 
 /**
@@ -27,16 +27,6 @@ export interface ComposableOptions {
 
 export const inBrowser = typeof window !== 'undefined'
 
-export function warn(msg: string, err?: Error): void {
-  if (typeof console !== 'undefined') {
-    console.warn(`[nuxt-i18n-routing] ` + msg)
-    /* istanbul ignore if */
-    if (err) {
-      console.warn(err.stack)
-    }
-  }
-}
-
 export function getNormalizedLocales(locales: string[] | LocaleObject[]): LocaleObject[] {
   locales = locales || []
   const normalized: LocaleObject[] = []
@@ -50,24 +40,20 @@ export function getNormalizedLocales(locales: string[] | LocaleObject[]): Locale
   return normalized
 }
 
-export function isI18nInstance(i18n: any): i18n is I18n {
+function isI18nInstance(i18n: I18n | VueI18n | Composer): i18n is I18n {
   return i18n != null && 'global' in i18n && 'mode' in i18n
 }
 
-export function isComposer(target: any): target is Composer {
-  return target != null && !('__composer' in target) && isRef(target.locale)
+function isComposer(target: I18n | VueI18n | Composer): target is Composer {
+  return target != null && !('__composer' in target) && 'locale' in target && isRef(target.locale)
 }
 
-export function isVueI18n(target: any): target is VueI18n {
+export function isVueI18n(target: I18n | VueI18n | Composer): target is VueI18n {
   return target != null && '__composer' in target
 }
 
-export function isExportedGlobalComposer(target: any): target is ExportedGlobalComposer {
-  return target != null && !('__composer' in target) && !isRef(target.locale)
-}
-
-export function isLegacyVueI18n(target: any): target is Pick<VueI18n, 'locale'> {
-  return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
+export function getI18nTarget(i18n: I18n | VueI18n | Composer) {
+  return isI18nInstance(i18n) ? i18n.global : i18n
 }
 
 export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
@@ -90,33 +76,15 @@ export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
  */
 export function getLocale(i18n: I18n | Composer | VueI18n): Locale {
   // TODO: we might re-design `getLocale` for vue-i18n-next & vue-i18n-bridge (legacy mode & Vue 2)
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  return isComposer(target)
-    ? target.locale.value
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? target.locale
-      : (target as any).locale // TODO:
+  return unref(getI18nTarget(i18n).locale)
 }
 
 export function getLocales(i18n: I18n | VueI18n | Composer): string[] | LocaleObject[] {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  return isComposer(target)
-    ? (target as any).locales.value
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? (target as any).locales
-      : (target as any).locales // TODO:
+  return unref(getI18nTarget(i18n).locales)
 }
 
 export function getLocaleCodes(i18n: I18n | VueI18n | Composer): string[] {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  return isComposer(target)
-    ? (target as any).localeCodes.value
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? (target as any).localeCodes
-      : (target as any).localeCodes // TODO:
+  return unref(getI18nTarget(i18n).localeCodes)
 }
 
 /**
@@ -126,14 +94,11 @@ export function getLocaleCodes(i18n: I18n | VueI18n | Composer): string[] {
  * @param locale - A target locale
  */
 export function setLocale(i18n: I18n | Composer, locale: Locale): void {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  if (isComposer(target)) {
-    // TODO: we might re-design `setLocale` for vue-i18n-next & vue-i18n-bridge (legacy mode & Vue 2)
+  const target = getI18nTarget(i18n)
+  if (isRef(target.locale)) {
     target.locale.value = locale
-  } else if (isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)) {
-    target.locale = locale
   } else {
-    throw new Error('TODO:')
+    target.locale = locale
   }
 }
 
@@ -147,12 +112,9 @@ export function adjustRoutePathForTrailingSlash(
 }
 
 export function getRouteName(routeName?: string | symbol | null) {
-  // prettier-ignore
-  return isString(routeName)
-    ? routeName
-    : isSymbol(routeName)
-      ? routeName.toString()
-      : '(null)'
+  if (isString(routeName)) return routeName
+  if (isSymbol(routeName)) return routeName.toString()
+  return '(null)'
 }
 
 export function getLocaleRouteName(
