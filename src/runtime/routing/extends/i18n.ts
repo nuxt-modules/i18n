@@ -12,12 +12,9 @@ import {
   localeHead
 } from '../compatibles'
 
-import type { App } from 'vue'
+import type { NuxtApp } from 'nuxt/app'
 import type { Composer, ComposerExtender, Disposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'
 import type { I18nRoutingOptions, LocaleObject } from '#build/i18n.options.mjs'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Vue = any
 
 /**
  * An options of Vue I18n Routing Plugin
@@ -72,7 +69,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
   const scope = effectScope()
 
   const orgInstall = i18n.install
-  i18n.install = (vue: Vue, ...options: unknown[]) => {
+  i18n.install = (vue: NuxtApp['vueApp'], ...options: unknown[]) => {
     const pluginOptions = isPluginOptions(options[0]) ? assign({}, options[0]) : { inject: true }
     if (pluginOptions.inject == null) {
       pluginOptions.inject = true
@@ -80,9 +77,11 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     const orgComposerExtend = pluginOptions.__composerExtend
     pluginOptions.__composerExtend = (localComposer: Composer) => {
       const globalComposer = getComposer(i18n)
+
       localComposer.locales = computed(() => globalComposer.locales.value)
       localComposer.localeCodes = computed(() => globalComposer.localeCodes.value)
       localComposer.baseUrl = computed(() => globalComposer.baseUrl.value)
+
       let orgComposerDispose: Disposer | undefined
       if (isFunction(orgComposerExtend)) {
         orgComposerDispose = Reflect.apply(orgComposerExtend, pluginOptions, [localComposer])
@@ -119,7 +118,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     })
 
     // extend vue component instance for Vue 3
-    const app = vue as App
+    const app = vue as NuxtApp['vueApp']
 
     // prettier-ignore
     const exported = i18n.mode === 'composition'

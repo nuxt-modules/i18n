@@ -1,58 +1,7 @@
-import { isString, isObject, makeSymbol } from '@intlify/shared'
-import { warn, getLocalesRegex } from '../utils'
+import { isString, isObject } from '@intlify/shared'
+import { getLocalesRegex } from '../utils'
 
-import type { I18nRoutingOptions } from '#build/i18n.options.mjs'
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded, Router } from 'vue-router'
-
-/**
- * Global options for i18n routing
- */
-export type I18nRoutingGlobalOptions<Context = unknown> = Pick<
-  I18nRoutingOptions<Context>,
-  | 'defaultLocale'
-  | 'defaultDirection'
-  | 'defaultLocaleRouteNameSuffix'
-  | 'trailingSlash'
-  | 'routesNameSeparator'
-  | 'strategy'
-  | 'prefixable'
-  | 'switchLocalePathIntercepter'
-  | 'dynamicRouteParamsKey'
-> & { localeCodes?: string[] }
-
-const GlobalOptionsRegistry = makeSymbol('nuxt-i18n-routing-gor')
-
-/**
- * Register global i18n routing option registory
- *
- * @param router - A router instance, about router type
- * @param options - A global options, about options type, see {@link I18nRoutingGlobalOptions}
- */
-export function registerGlobalOptions<Context = unknown>(
-  router: Router,
-  options: I18nRoutingGlobalOptions<Context>
-): void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const _options: I18nRoutingGlobalOptions | undefined = (router as any)[GlobalOptionsRegistry]
-  if (_options) {
-    warn('already registered global options')
-  } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(router as any)[GlobalOptionsRegistry] = options
-  }
-}
-
-/**
- * Get global i18n routing options
- *
- * @param router - A router instance, about router type
- *
- * @returns - {@link I18nRoutingGlobalOptions | global options} from i18n routing options registory, if registered, return it, else empty object
- */
-export function getGlobalOptions(router: Router): I18nRoutingGlobalOptions {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (router as any)[GlobalOptionsRegistry] ?? {}
-}
+import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
 export function createLocaleFromRouteGetter(
   localeCodes: string[],

@@ -28,13 +28,13 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '../internal'
+import { getComposer, getLocale, setLocale } from '../routing/utils'
+import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
+import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
-import { getComposer, getLocale, setLocale } from '../routing/utils'
-import { extendI18n, type ExtendPropertyDescriptors, type VueI18nRoutingPluginOptions } from '../routing/extends/i18n'
-import { createLocaleFromRouteGetter } from '../routing/extends/router'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',

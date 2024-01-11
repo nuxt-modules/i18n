@@ -1,22 +1,11 @@
-import { useSwitchLocalePath, useLocaleRoute, useRouteBaseName } from '../composables/routing'
 import { useRouter, unref, useNuxtApp } from '#imports'
 import { nuxtI18nOptions, STRATEGIES } from '#build/i18n.options.mjs'
 
 import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
+import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { isArray, isObject } from '@intlify/shared'
 
-import type {
-  I18nHeadMetaInfo,
-  MetaAttrs,
-  LocaleObject,
-  I18nHeadOptions,
-  I18nRoutingOptions
-} from '#build/i18n.options.mjs'
-
-export type I18nCommonRoutingOptions = Pick<
-  I18nRoutingOptions,
-  'defaultLocale' | 'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'locales' | 'routesNameSeparator'
->
+import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'
 
 /**
  * Returns localized head properties for locale-related aspects.
@@ -89,7 +78,6 @@ export function getHreflangLinks(
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
   const baseUrl = getBaseUrl()
-  const switchLocalePath = useSwitchLocalePath()
   const { defaultLocale, strategy } = nuxtI18nOptions
   const links: MetaAttrs[] = []
 
@@ -141,8 +129,6 @@ export function getHreflangLinks(
 
 export function getCanonicalUrl(baseUrl: string, seoAttributes: I18nHeadOptions['addSeoAttributes']) {
   const route = useRouter().currentRoute.value
-  const localeRoute = useLocaleRoute()
-  const getRouteBaseName = useRouteBaseName()
   const currentRoute = localeRoute({ ...route, name: getRouteBaseName(route) })
 
   if (!currentRoute) return ''

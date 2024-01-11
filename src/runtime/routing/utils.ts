@@ -3,16 +3,9 @@
 import { isString, isSymbol, isFunction } from '@intlify/shared'
 import { isRef } from '#imports'
 
-import type { LocaleObject, Strategies, BaseUrlResolveHandler, I18nRoutingOptions } from '#build/i18n.options.mjs'
+import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#build/i18n.options.mjs'
 import type { Composer, ExportedGlobalComposer, I18n, Locale, VueI18n } from 'vue-i18n'
 import type { useRoute, useRouter } from '#imports'
-/**
- * @public
- */
-export type I18nCommonRoutingOptions = Pick<
-  I18nRoutingOptions,
-  'defaultLocale' | 'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'locales' | 'routesNameSeparator'
->
 
 /**
  * @public
@@ -31,11 +24,6 @@ export interface ComposableOptions {
    */
   i18n?: Composer
 }
-
-/**
- * @public
- */
-export type I18nCommonRoutingOptionsWithComposable = I18nCommonRoutingOptions & ComposableOptions
 
 export const inBrowser = typeof window !== 'undefined'
 

@@ -8,12 +8,7 @@ import { resolve, routeToObject } from './utils'
 import { getComposer, getLocale, getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter } from '../../utils'
 
-import type {
-  Strategies,
-  PrefixableOptions,
-  SwitchLocalePathIntercepter,
-  I18nRoutingOptions
-} from '#build/i18n.options.mjs'
+import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '#build/i18n.options.mjs'
 import type { Locale } from 'vue-i18n'
 import type {
   RouteLocation,
@@ -222,11 +217,6 @@ function getLocalizableMetaFromDynamicParams(
   const meta = route.meta || {}
   return (unref(meta)?.[DEFAULT_DYNAMIC_PARAMS_KEY] || {}) as Record<Locale, any>
 }
-
-export type MetaDynamicParamsInterceptor = (
-  route: RouteLocationNormalizedLoaded,
-  key: Required<I18nRoutingOptions>['dynamicRouteParamsKey']
-) => Record<Locale, unknown>
 
 /**
  * Returns path of the current route for specified locale.
