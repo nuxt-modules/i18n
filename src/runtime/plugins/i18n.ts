@@ -523,9 +523,9 @@ declare module '#app' {
     /**
      * Returns localized head properties for locale-related aspects.
      *
-     * @param options - An options, see about details [I18nHeadOptions](https://github.com/intlify/routing/blob/main/packages/vue-i18n-routing/api.md#i18nheadoptions).
+     * @param options - An options object, see `I18nHeadOptions`.
      *
-     * @returns The localized [head properties](https://github.com/intlify/routing/blob/main/packages/vue-i18n-routing/api.md#i18nheadmetainfo).
+     * @returns The localized head properties.
      */
     $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
     /**

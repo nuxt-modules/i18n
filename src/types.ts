@@ -147,7 +147,7 @@ interface Route {
 }
 
 /**
- * Route config for vue-i18n-routing
+ * Route config for i18n routing
  *
  * @public
  */
