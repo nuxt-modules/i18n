@@ -13,7 +13,15 @@ import {
 } from '../compatibles'
 
 import type { NuxtApp } from 'nuxt/app'
-import type { Composer, ComposerExtender, Disposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'
+import type {
+  Composer,
+  ComposerExtender,
+  Disposer,
+  ExportedGlobalComposer,
+  I18n,
+  VueI18n,
+  VueI18nExtender
+} from 'vue-i18n'
 import type { I18nRoutingOptions, LocaleObject } from '#build/i18n.options.mjs'
 
 /**
@@ -218,8 +226,7 @@ function extendPropertyDescriptors(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extendExportedGlobal(exported: any, g: Composer, hook?: ExtendExportedGlobalHook) {
+function extendExportedGlobal(exported: ExportedGlobalComposer, g: Composer, hook?: ExtendExportedGlobalHook) {
   extendPropertyDescriptors(g, exported, hook)
 }
 

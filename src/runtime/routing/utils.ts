@@ -5,25 +5,6 @@ import { isRef, unref } from '#imports'
 
 import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#build/i18n.options.mjs'
 import type { Composer, I18n, Locale, VueI18n } from 'vue-i18n'
-import type { useRoute, useRouter } from '#imports'
-
-/**
- * @public
- */
-export interface ComposableOptions {
-  /**
-   * vue-router route instance, which is returned with `useRoute`.
-   */
-  route?: ReturnType<typeof useRoute>
-  /**
-   * vue-router router instance, which is returned with `useRouter`.
-   */
-  router?: ReturnType<typeof useRouter>
-  /**
-   * vue-i18n Composer instance.
-   */
-  i18n?: Composer
-}
 
 export const inBrowser = typeof window !== 'undefined'
 
@@ -57,14 +38,12 @@ export function getI18nTarget(i18n: I18n | VueI18n | Composer) {
 }
 
 export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
-  // prettier-ignore
-  return isI18nInstance(i18n)
-    ? isComposer(i18n.global)
-      ? i18n.global
-      : ((i18n.global as any).__composer as Composer)
-    : isVueI18n(i18n)
-      ? ((i18n as any).__composer as Composer)
-      : i18n
+  const target = getI18nTarget(i18n)
+
+  if (isComposer(target)) return target
+  if (isVueI18n(target)) return (target as any).__composer as Composer
+
+  return target
 }
 
 /**
@@ -75,7 +54,6 @@ export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
  * @returns A locale
  */
 export function getLocale(i18n: I18n | Composer | VueI18n): Locale {
-  // TODO: we might re-design `getLocale` for vue-i18n-next & vue-i18n-bridge (legacy mode & Vue 2)
   return unref(getI18nTarget(i18n).locale)
 }
 
@@ -102,7 +80,6 @@ export function setLocale(i18n: I18n | Composer, locale: Locale): void {
   }
 }
 
-// Language: typescript
 export function adjustRoutePathForTrailingSlash(
   pagePath: string,
   trailingSlash: boolean,
