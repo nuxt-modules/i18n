@@ -286,6 +286,15 @@ importers:
         specifier: ^3.8.0
         version: 3.8.2(eslint@8.55.0)(rollup@3.29.4)(typescript@5.3.2)(vite@5.0.5)
 
+  specs/fixtures/routing:
+    devDependencies:
+      '@nuxtjs/i18n':
+        specifier: link:../../..
+        version: link:../../..
+      nuxt:
+        specifier: ^3.8.0
+        version: 3.8.2(eslint@8.55.0)(rollup@3.29.4)(typescript@5.3.2)(vite@5.0.5)
+
   specs/fixtures/switcher:
     devDependencies:
       '@nuxtjs/i18n':
