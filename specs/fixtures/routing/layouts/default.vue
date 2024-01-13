@@ -9,6 +9,7 @@ const switchLocalePath = useSwitchLocalePath()
     <section id="switch-locale-path">
       <span class="en">{{ switchLocalePath('en') }}</span>
       <span class="ja">{{ switchLocalePath('ja') }}</span>
+      <span class="undefined">{{ switchLocalePath('undefined') }}</span>
     </section>
     <slot />
   </div>

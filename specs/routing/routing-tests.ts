@@ -6,56 +6,60 @@ import { url } from '../utils'
 export async function localePathTests(strategy: Strategies) {
   const prefix = strategy !== STRATEGIES.NO_PREFIX
 
-  // Helper function to adjust checked path based on `strategy`
-  const p = (path: string = '/', locale: string = 'en') => {
+  // Helper function to add prefix to path based on `strategy`
+  const prefixPath = (path: string = '/', locale: string = 'en') => {
     if (!prefix) return path.startsWith('/') ? path : '/' + path
     const resolvedRoute = path === '/' ? undefined : path
 
     return ['/', locale, resolvedRoute].filter(Boolean).join('')
   }
 
-  const { page, consoleLogs } = await renderPage(p('/'))
+  const { page, consoleLogs } = await renderPage(prefixPath('/'))
 
   // path
-  expect(await getText(page, '#locale-path .index')).toEqual(p('/'))
-  expect(await getText(page, '#locale-path .index-ja')).toEqual(p('/', 'ja'))
+  expect(await getText(page, '#locale-path .index')).toEqual(prefixPath('/'))
+  expect(await getText(page, '#locale-path .index-ja')).toEqual(prefixPath('/', 'ja'))
 
   // name
-  expect(await getText(page, '#locale-path .about')).toEqual(p('/about'))
-  expect(await getText(page, '#locale-path .about-ja-path')).toEqual(p('/about', 'ja'))
+  expect(await getText(page, '#locale-path .about')).toEqual(prefixPath('/about'))
+  expect(await getText(page, '#locale-path .about-ja-path')).toEqual(prefixPath('/about', 'ja'))
 
   // pathMatch
   // TODO: fix named paths
-  expect(await getText(page, '#locale-path .not-found')).toEqual(p('/'))
-  expect(await getText(page, '#locale-path .not-found-ja')).toEqual(p('', 'ja'))
+  expect(await getText(page, '#locale-path .not-found')).toEqual(prefixPath('/'))
+  expect(await getText(page, '#locale-path .not-found-ja')).toEqual(prefixPath('', 'ja'))
 
   // // object
-  expect(await getText(page, '#locale-path .about-ja-name-object')).toEqual(p('/about', 'ja'))
+  expect(await getText(page, '#locale-path .about-ja-name-object')).toEqual(prefixPath('/about', 'ja'))
 
   // // omit name & path
-  expect(await getText(page, '#locale-path .state-foo')).toEqual(p('/'))
+  expect(await getText(page, '#locale-path .state-foo')).toEqual(prefixPath('/'))
 
   // // preserve query parameters
-  expect(await getText(page, '#locale-path .query-foo')).toEqual(p('?foo=1'))
-  expect(await getText(page, '#locale-path .query-foo-index')).toEqual(p('?foo=1'))
-  expect(await getText(page, '#locale-path .query-foo-name-about')).toEqual(p('/about?foo=1'))
-  expect(await getText(page, '#locale-path .query-foo-path-about')).toEqual(p('/about?foo=1'))
-  expect(await getText(page, '#locale-path .query-foo-string')).toEqual(p('?foo=1'))
-  expect(await getText(page, '#locale-path .query-foo-string-about')).toEqual(p('/about?foo=1'))
-  expect(await getText(page, '#locale-path .query-foo-test-string')).toEqual(p('/about?foo=1&test=2'))
+  expect(await getText(page, '#locale-path .query-foo')).toEqual(prefixPath('?foo=1'))
+  expect(await getText(page, '#locale-path .query-foo-index')).toEqual(prefixPath('?foo=1'))
+  expect(await getText(page, '#locale-path .query-foo-name-about')).toEqual(prefixPath('/about?foo=1'))
+  expect(await getText(page, '#locale-path .query-foo-path-about')).toEqual(prefixPath('/about?foo=1'))
+  expect(await getText(page, '#locale-path .query-foo-string')).toEqual(prefixPath('?foo=1'))
+  expect(await getText(page, '#locale-path .query-foo-string-about')).toEqual(prefixPath('/about?foo=1'))
+  expect(await getText(page, '#locale-path .query-foo-test-string')).toEqual(prefixPath('/about?foo=1&test=2'))
   if (prefix) {
-    expect(await getText(page, '#locale-path .query-foo-path-param')).toEqual(p('/path/as a test?foo=bar+sentence'))
+    expect(await getText(page, '#locale-path .query-foo-path-param')).toEqual(
+      prefixPath('/path/as a test?foo=bar+sentence')
+    )
   } else {
     // TODO: fix localePath escapes paths for `no_prefix` strategy
-    expect(await getText(page, '#locale-path .query-foo-path-param')).not.toEqual(p('/path/as a test?foo=bar+sentence'))
+    expect(await getText(page, '#locale-path .query-foo-path-param')).not.toEqual(
+      prefixPath('/path/as a test?foo=bar+sentence')
+    )
   }
   expect(await getText(page, '#locale-path .query-foo-path-param-escaped')).toEqual(
-    p('/path/as%20a%20test?foo=bar+sentence')
+    prefixPath('/path/as%20a%20test?foo=bar+sentence')
   )
-  expect(await getText(page, '#locale-path .hash-path-about')).toEqual(p('/about#foo=bar'))
+  expect(await getText(page, '#locale-path .hash-path-about')).toEqual(prefixPath('/about#foo=bar'))
 
   // undefined path
-  expect(await getText(page, '#locale-path .undefined-path')).toEqual(p('/vue-i18n'))
+  expect(await getText(page, '#locale-path .undefined-path')).toEqual(prefixPath('/vue-i18n'))
   // undefined name
   expect(await getText(page, '#locale-path .undefined-name')).toEqual('')
 
@@ -69,14 +73,12 @@ export async function switchLocalePathTests() {
 
   expect(await getText(page, '#switch-locale-path .en')).toEqual('/en')
   expect(await getText(page, '#switch-locale-path .ja')).toEqual('/ja')
-  // assert.equal(vm.switchLocalePath('vue-i18n'), '')
+  expect(await getText(page, '#switch-locale-path .undefined')).toEqual('')
 
-  // await gotoPath(page, '/ja/about')
   await gotoPath(page, '/ja/about')
 
   expect(await getText(page, '#switch-locale-path .en')).toEqual('/en/about')
   expect(await getText(page, '#switch-locale-path .ja')).toEqual('/ja/about')
-  // assert.equal(vm.switchLocalePath('vue-i18n'), '')
 
   await gotoPath(page, '/ja/about?foo=1&test=2')
   expect(await getText(page, '#switch-locale-path .en')).toEqual('/en/about?foo=1&test=2')
@@ -127,7 +129,6 @@ export async function localeLocationTests() {
   expect(JSON.parse(await getText(page, '#locale-location .index'))).include({
     fullPath: '/en',
     path: '/en',
-    // name: 'not-found___en',
     name: 'index___en',
     href: '/en'
   })
@@ -208,7 +209,6 @@ export async function localeRouteTests() {
   expect(JSON.parse(await getText(page, '#locale-route .index'))).include({
     fullPath: '/en',
     path: '/en',
-    // name: 'not-found___en',
     name: 'index___en',
     href: '/en'
   })
@@ -233,18 +233,21 @@ export async function localeRouteTests() {
     name: 'about___ja',
     href: '/ja/about'
   })
+
   expect(JSON.parse(await getText(page, '#locale-route .about-name-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
     name: 'about___ja',
     href: '/ja/about'
   })
+
   expect(JSON.parse(await getText(page, '#locale-route .path-match-ja'))).include({
     fullPath: '/ja/:pathMatch(.*)*',
     path: '/ja/:pathMatch(.*)*',
     name: 'pathMatch___ja',
     href: '/ja/:pathMatch(.*)*'
   })
+
   // name
   expect(JSON.parse(await getText(page, '#locale-route .path-match-name'))).include({
     fullPath: '/en',
@@ -252,12 +255,14 @@ export async function localeRouteTests() {
     name: 'pathMatch___en',
     href: '/en'
   })
+
   expect(JSON.parse(await getText(page, '#locale-route .path-match-name-ja'))).include({
     fullPath: '/ja',
     path: '/ja',
     name: 'pathMatch___ja',
     href: '/ja'
   })
+
   // object
   expect(JSON.parse(await getText(page, '#locale-route .about-object-ja'))).include({
     fullPath: '/ja/about',
