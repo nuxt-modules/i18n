@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, it } from 'vitest'
 import { STRATEGIES } from '../../src/constants'
 import { setup } from '../utils'
-import { localePathTests } from './locale-path'
+import { localePathTests } from './routing-tests'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/routing`, import.meta.url)),
