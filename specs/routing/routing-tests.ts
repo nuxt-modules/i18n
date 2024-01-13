@@ -160,12 +160,12 @@ export async function localeLocationTests() {
     href: '/ja/about'
   })
 
-  // expect(JSON.parse(await getText(page, '#locale-location .path-match-ja'))).include({
-  //   fullPath: '/ja/:pathMatch(.*)*',
-  //   path: '/ja/:pathMatch(.*)*',
-  //   name: 'not-found___ja',
-  //   href: '/ja/:pathMatch(.*)*'
-  // })
+  expect(JSON.parse(await getText(page, '#locale-location .path-match-ja'))).include({
+    fullPath: '/ja/:pathMatch(.*)*',
+    path: '/ja/:pathMatch(.*)*',
+    name: 'pathMatch___ja',
+    href: '/ja/:pathMatch(.*)*'
+  })
 
   // name
   expect(JSON.parse(await getText(page, '#locale-location .path-match-name'))).include({
@@ -190,16 +190,16 @@ export async function localeLocationTests() {
     href: '/ja/about'
   })
 
-  // no define path
-  // expect(JSON.parse(await getText(page, '#locale-location .undefined-ja'))).include({
-  //   fullPath: '/ja/vue-i18n',
-  //   path: '/ja/vue-i18n',
-  //   name: 'not-found___ja',
-  //   href: '/ja/vue-i18n'
-  // })
-  // no define name
-  // assert.isUndefined(vm.localeLocation('vue-i18n'))
-  // }
+  // undefined path
+  expect(JSON.parse(await getText(page, '#locale-location .undefined-path-ja'))).include({
+    fullPath: '/ja/vue-i18n',
+    path: '/ja/vue-i18n',
+    name: 'pathMatch___ja',
+    href: '/ja/vue-i18n'
+  })
+
+  // undefined name
+  expect(await getText(page, '#locale-location .undefined-name-ja')).toEqual('')
 }
 
 export async function localeRouteTests() {
@@ -239,12 +239,12 @@ export async function localeRouteTests() {
     name: 'about___ja',
     href: '/ja/about'
   })
-  // expect(JSON.parse(await getText(page, '#locale-route .path-match-ja'))).include({
-  //   fullPath: '/ja/:pathMatch(.*)*',
-  //   path: '/ja/:pathMatch(.*)*',
-  //   name: 'not-found___ja',
-  //   href: '/ja/:pathMatch(.*)*'
-  // })
+  expect(JSON.parse(await getText(page, '#locale-route .path-match-ja'))).include({
+    fullPath: '/ja/:pathMatch(.*)*',
+    path: '/ja/:pathMatch(.*)*',
+    name: 'pathMatch___ja',
+    href: '/ja/:pathMatch(.*)*'
+  })
   // name
   expect(JSON.parse(await getText(page, '#locale-route .path-match-name'))).include({
     fullPath: '/en',
@@ -265,14 +265,15 @@ export async function localeRouteTests() {
     name: 'about___ja',
     href: '/ja/about'
   })
-  // no define path
-  // expect(JSON.parse(await getText(page, '#locale-route .undefined-ja'))).include({
-  //   fullPath: '/ja/vue-i18n',
-  //   path: '/ja/vue-i18n',
-  //   name: 'not-found___ja',
-  //   href: '/ja/vue-i18n'
-  // })
-  // no define name
-  // assert.isUndefined(vm.localeRoute('vue-i18n'))
-  // }
+
+  // undefined path
+  expect(JSON.parse(await getText(page, '#locale-route .undefined-path-ja'))).include({
+    fullPath: '/ja/vue-i18n',
+    path: '/ja/vue-i18n',
+    name: 'pathMatch___ja',
+    href: '/ja/vue-i18n'
+  })
+
+  // undefined name
+  expect(await getText(page, '#locale-route .undefined-name-ja')).toEqual('')
 }

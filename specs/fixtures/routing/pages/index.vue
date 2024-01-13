@@ -54,11 +54,11 @@ const localeRoute = useLocaleRoute()
         <span class="about-ja">{{ localeRoute('/about', 'ja') }}</span>
         <span class="about-name-ja">{{ localeRoute('about', 'ja') }}</span>
         <span class="about-object-ja">{{ localeRoute({ name: 'about' }, 'ja') }}</span>
-        <span class="path-match-ja">{{ localeRoute('[...pathMatch]', 'ja') }}</span>
+        <span class="path-match-ja">{{ localeRoute('/:pathMatch(.*)*', 'ja') }}</span>
         <span class="path-match-name">{{ localeRoute('pathMatch') }}</span>
         <span class="path-match-name-ja">{{ localeRoute('pathMatch', 'ja') }}</span>
-        <!-- <span class="-ja">{{ localeRoute('/vue-i18n', 'ja') }}</span> -->
-        <span class="undefined-ja">{{ localeRoute('vue-i18n', 'ja') }}</span>
+        <span class="undefined-path-ja">{{ localeRoute('/vue-i18n', 'ja') }}</span>
+        <span class="undefined-name-ja">{{ localeRoute('vue-i18n', 'ja') }}</span>
       </section>
     </ClientOnly>
     <ClientOnly>
@@ -69,12 +69,18 @@ const localeRoute = useLocaleRoute()
         <span class="about-ja">{{ localeLocation('/about', 'ja') }}</span>
         <span class="about-name-ja">{{ localeLocation('about', 'ja') }}</span>
         <span class="about-object-ja">{{ localeLocation({ name: 'about' }, 'ja') }}</span>
-        <span class="path-match-ja">{{ localeLocation('[...pathMatch]', 'ja') }}</span>
+        <span class="path-match-ja">{{ localeLocation('/:pathMatch(.*)*', 'ja') }}</span>
         <span class="path-match-name">{{ localeLocation('pathMatch') }}</span>
         <span class="path-match-name-ja">{{ localeLocation('pathMatch', 'ja') }}</span>
-        <!-- <span class="-ja">{{ localeLocation('/vue-i18n', 'ja') }}</span> -->
-        <span class="undefined-ja">{{ localeLocation('vue-i18n', 'ja') }}</span>
+        <span class="undefined-path-ja">{{ localeRoute('/vue-i18n', 'ja') }}</span>
+        <span class="undefined-name-ja">{{ localeRoute('vue-i18n', 'ja') }}</span>
       </section>
     </ClientOnly>
   </div>
 </template>
+
+<style>
+span {
+  display: block;
+}
+</style>
