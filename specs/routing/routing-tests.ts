@@ -6,7 +6,7 @@ import { url } from '../utils'
 export async function localePathTests(strategy: Strategies) {
   const prefix = strategy !== STRATEGIES.NO_PREFIX
 
-  // Helper function to add prefix to path based on `strategy`
+  // helper function to add prefix to path based on `strategy`
   const prefixPath = (path: string = '/', locale: string = 'en') => {
     if (!prefix) return path.startsWith('/') ? path : '/' + path
     const resolvedRoute = path === '/' ? undefined : path
@@ -25,7 +25,7 @@ export async function localePathTests(strategy: Strategies) {
   expect(await getText(page, '#locale-path .about-ja-path')).toEqual(prefixPath('/about', 'ja'))
 
   // pathMatch
-  // TODO: fix named paths
+  // TODO: fix named paths https://github.com/nuxt-modules/i18n/issues/2581
   expect(await getText(page, '#locale-path .not-found')).toEqual(prefixPath('/'))
   expect(await getText(page, '#locale-path .not-found-ja')).toEqual(prefixPath('', 'ja'))
 
@@ -43,13 +43,14 @@ export async function localePathTests(strategy: Strategies) {
   expect(await getText(page, '#locale-path .query-foo-string')).toEqual(prefixPath('?foo=1'))
   expect(await getText(page, '#locale-path .query-foo-string-about')).toEqual(prefixPath('/about?foo=1'))
   expect(await getText(page, '#locale-path .query-foo-test-string')).toEqual(prefixPath('/about?foo=1&test=2'))
-  if (prefix) {
-    expect(await getText(page, '#locale-path .query-foo-path-param')).toEqual(
+  if (strategy === 'no_prefix') {
+    // TODO: fix localePath escapes paths for `no_prefix` strategy
+    // unexpectedly resolves to /path/as%20a%20test?foo=bar+sentence
+    expect(await getText(page, '#locale-path .query-foo-path-param')).not.toEqual(
       prefixPath('/path/as a test?foo=bar+sentence')
     )
   } else {
-    // TODO: fix localePath escapes paths for `no_prefix` strategy
-    expect(await getText(page, '#locale-path .query-foo-path-param')).not.toEqual(
+    expect(await getText(page, '#locale-path .query-foo-path-param')).toEqual(
       prefixPath('/path/as a test?foo=bar+sentence')
     )
   }
