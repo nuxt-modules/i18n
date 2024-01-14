@@ -1,19 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  getLocale,
-  setLocale,
-  getLocaleCodes,
-  createLocaleFromRouteGetter,
-  getRouteBaseName,
-  localePath,
-  localeRoute,
-  switchLocalePath,
-  localeHead,
-  DefaultPrefixable,
-  DefaultSwitchLocalePathIntercepter,
-  getComposer,
-  STRATEGIES
-} from 'vue-i18n-routing'
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRoute, useRuntimeConfig, useState } from '#imports'
@@ -22,7 +7,8 @@ import {
   nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
   isSSG,
-  localeLoaders
+  localeLoaders,
+  STRATEGIES
 } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -37,24 +23,35 @@ import {
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
 
-import type {
-  Route,
-  LocaleObject,
-  RouteLocationNormalized,
-  RouteLocationNormalizedLoaded,
-  BaseUrlResolveHandler,
-  PrefixableOptions,
-  SwitchLocalePathIntercepter,
-  I18nHeadOptions,
-  SeoAttributesOptions
-} from 'vue-i18n-routing'
 import type { I18n, I18nOptions, Locale, FallbackLocale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from '#build/i18n.options.mjs'
+import type {
+  NuxtI18nOptions,
+  DetectBrowserLanguageOptions,
+  RootRedirectOptions,
+  LocaleObject,
+  PrefixableOptions,
+  SwitchLocalePathIntercepter,
+  BaseUrlResolveHandler,
+  I18nHeadOptions,
+  SeoAttributesOptions
+} from '#build/i18n.options.mjs'
 import type { DeepRequired } from 'ts-essentials'
 import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
 import { useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '#i18n'
+import {
+  localePath,
+  localeRoute,
+  switchLocalePath,
+  getRouteBaseName,
+  DefaultPrefixable,
+  DefaultSwitchLocalePathIntercepter,
+  localeHead
+} from './routing/compatibles'
+import { getComposer, getLocale, setLocale, getLocaleCodes } from './routing/utils'
+import type { createLocaleFromRouteGetter } from './routing/extends/router'
+import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -160,7 +157,7 @@ export async function loadAndSetLocale<Context extends NuxtApp = NuxtApp>(
 type LocaleLoader = () => Locale
 
 export function detectLocale<Context extends NuxtApp = NuxtApp>(
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   vueI18nOptions: I18nOptions,
@@ -256,8 +253,8 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
   calledWithRouting = false
 }: {
   route: {
-    to: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
-    from?: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
+    to: RouteLocationNormalized | RouteLocationNormalizedLoaded
+    from?: RouteLocationNormalized | RouteLocationNormalizedLoaded
   }
   targetLocale: Locale
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>
@@ -309,12 +306,7 @@ export function detectRedirect<Context extends NuxtApp = NuxtApp>({
      *  so, we don't call that function, and instead, we call `useSwitchLocalePath`,
      *  let it be processed by the route of the router middleware.
      */
-    const switchLocalePath = useSwitchLocalePath({
-      i18n: getComposer(nuxtApp.$i18n),
-      route: route.to,
-      router: nuxtApp.$router
-    })
-    const routePath = switchLocalePath(targetLocale)
+    const routePath = switchLocalePath(targetLocale, route.to)
     __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
     if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       redirectPath = routePath
@@ -335,7 +327,7 @@ type NavigateArgs = {
   i18n: I18n
   redirectPath: string
   locale: string
-  route: Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
+  route: RouteLocationNormalized | RouteLocationNormalizedLoaded
 }
 
 function _navigate(redirectPath: string, status: number) {
@@ -431,8 +423,8 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
 
 // override prefix for route path, support domain
 export function extendPrefixable(differentDomains: boolean) {
-  return (opts: PrefixableOptions): boolean => {
-    return DefaultPrefixable(opts) && !differentDomains
+  return (options: PrefixableOptions): boolean => {
+    return DefaultPrefixable(options) && !differentDomains
   }
 }
 

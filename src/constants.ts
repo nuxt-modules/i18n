@@ -9,9 +9,6 @@ export const CORE_BASE_PKG = '@intlify/core-base' as const
 export const H3_PKG = '@intlify/h3' as const
 export const UTILS_PKG = '@intlify/utils' as const
 export const UTILS_H3_PKG = '@intlify/utils/h3' as const
-export const VUE_I18N_BRIDGE_PKG = '@intlify/vue-i18n-bridge' as const
-export const VUE_ROUTER_BRIDGE_PKG = '@intlify/vue-router-bridge' as const
-export const VUE_I18N_ROUTING_PKG = 'vue-i18n-routing' as const
 export const UFO_PKG = 'ufo' as const
 export const IS_HTTPS_PKG = 'is-https' as const
 
@@ -26,6 +23,15 @@ export const STRATEGIES = {
   PREFIX_AND_DEFAULT: STRATEGY_PREFIX_AND_DEFAULT,
   NO_PREFIX: STRATEGY_NO_PREFIX
 } as const
+
+export const DEFAULT_LOCALE = ''
+export const DEFAULT_STRATEGY = STRATEGIES.PREFIX_EXCEPT_DEFAULT
+export const DEFAULT_TRAILING_SLASH = false
+export const DEFAULT_ROUTES_NAME_SEPARATOR = '___'
+export const DEFAULT_LOCALE_ROUTE_NAME_SUFFIX = 'default'
+export const DEFAULT_DETECTION_DIRECTION = 'ltr'
+export const DEFAULT_BASE_URL = ''
+export const DEFAULT_DYNAMIC_PARAMS_KEY = 'nuxtI18n'
 
 const REDIRECT_ON_ALL = 'all'
 const REDIRECT_ON_ROOT = 'root'

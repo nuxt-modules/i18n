@@ -1,12 +1,24 @@
 import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
-import type {
-  LocaleObject,
-  Strategies,
-  Directions,
-  ComposerCustomProperties as _ComposerCustomProperties
-} from 'vue-i18n-routing'
-import type { I18nRoutingCustomProperties } from 'vue-i18n-routing/dist/vue-i18n'
+import type { Strategies, Directions, LocaleObject } from './routing/types'
+
+export interface I18nRoutingCustomProperties {
+  /**
+   * List of locales
+   *
+   * @remarks
+   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
+   */
+  readonly locales: string[] | LocaleObject[]
+  /**
+   * List of locale codes
+   */
+  readonly localeCodes: string[]
+  /**
+   * Base URL that is used in generating canonical links
+   */
+  baseUrl: string
+}
 
 /**
  * Called before the app's locale is switched.
@@ -37,6 +49,21 @@ type BeforeLanguageSwitchHandler = (
 type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<void>
 
 export interface ComposerCustomProperties {
+  /**
+   * List of locales
+   *
+   * @remarks
+   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
+   */
+  locales: ComputedRef<string[] | LocaleObject[]>
+  /**
+   * List of locale codes
+   */
+  localeCodes: ComputedRef<string[]>
+  /**
+   * Base URL that is used in generating canonical links
+   */
+  baseUrl: ComputedRef<string>
   /**
    * Routing strategy.
    */
@@ -206,7 +233,7 @@ export interface NuxtI18nRoutingCustomProperties {
 
 declare module 'vue-i18n' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface ComposerCustom extends ComposerCustomProperties, _ComposerCustomProperties {}
+  interface ComposerCustom extends ComposerCustomProperties {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface ExportedGlobalComposer extends NuxtI18nRoutingCustomProperties, I18nRoutingCustomProperties {}

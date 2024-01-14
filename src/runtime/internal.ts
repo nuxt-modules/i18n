@@ -1,49 +1,45 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { isArray, isString } from '@intlify/shared'
-import {
-  findBrowserLocale,
-  getLocalesRegex,
-  isI18nInstance,
-  isComposer,
-  isExportedGlobalComposer,
-  isVueI18n
-} from 'vue-i18n-routing'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp } from '#imports'
+import {
+  useRequestHeaders,
+  useRequestEvent,
+  useCookie as useNuxtCookie,
+  useRuntimeConfig,
+  useNuxtApp,
+  unref
+} from '#imports'
 import { nuxtI18nOptionsDefault, NUXT_I18N_MODULE_ID, isSSG } from '#build/i18n.options.mjs'
 
 import type { NuxtApp } from '#app'
-import type { I18nOptions, Locale, VueI18n } from 'vue-i18n'
-import type { Route, RouteLocationNormalized, RouteLocationNormalizedLoaded, LocaleObject } from 'vue-i18n-routing'
+import type { I18nOptions, Locale } from 'vue-i18n'
 import type { DeepRequired } from 'ts-essentials'
-import type { NuxtI18nOptions, NuxtI18nInternalOptions, DetectBrowserLanguageOptions } from '#build/i18n.options.mjs'
+import type {
+  NuxtI18nOptions,
+  NuxtI18nInternalOptions,
+  DetectBrowserLanguageOptions,
+  LocaleObject
+} from '#build/i18n.options.mjs'
+import { findBrowserLocale, getLocalesRegex, getI18nTarget } from './routing/utils'
+import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
 }
 
-function isLegacyVueI18n(target: any): target is VueI18n {
-  return target != null && ('__VUE_I18N_BRIDGE__' in target || '_sync' in target)
-}
-
 export function callVueI18nInterfaces(i18n: any, name: string, ...args: any[]): any {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
+  const target = getI18nTarget(i18n)
   // prettier-ignore
   const [obj, method] = [target, (target as any)[name]]
   return Reflect.apply(method, obj, [...args])
 }
 
 export function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): Return {
-  const target: unknown = isI18nInstance(i18n) ? i18n.global : i18n
-  // prettier-ignore
-  const ret = isComposer(target)
-    ? (target as any)[name].value
-    : isExportedGlobalComposer(target) || isVueI18n(target) || isLegacyVueI18n(target)
-      ? (target as any)[name]
-      : (target as any)[name]
-  return ret as Return
+  const target = getI18nTarget(i18n)
+  // @ts-expect-error name should be typed instead of string
+  return unref(target[name]) as Return
 }
 
 export function defineGetter<K extends string | number | symbol, V>(obj: Record<K, V>, key: K, val: V) {
@@ -192,7 +188,7 @@ export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromRe
 }
 
 export function detectBrowserLanguage<Context extends NuxtApp = NuxtApp>(
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>,
   nuxtI18nInternalOptions: DeepRequired<NuxtI18nInternalOptions>,
   vueI18nOptions: I18nOptions,

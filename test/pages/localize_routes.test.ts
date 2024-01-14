@@ -4,7 +4,7 @@ import { localizeRoutes } from '../../src/routing'
 import { getNuxtOptions } from './utils'
 
 import type { NuxtPage } from '@nuxt/schema'
-import type { LocaleObject } from 'vue-i18n-routing'
+import type { LocaleObject } from '../../src/types'
 
 const nuxtOptions = getNuxtOptions({})
 nuxtOptions.locales = nuxtOptions.locales?.filter(x => (x as LocaleObject).code !== 'fr') as LocaleObject[]

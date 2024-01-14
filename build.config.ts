@@ -1,5 +1,5 @@
 import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
-  externals: ['node:fs', 'node:url', '@intlify/vue-i18n-bridge', 'webpack', '@babel/parser']
+  externals: ['node:fs', 'node:url', 'webpack', '@babel/parser']
 })

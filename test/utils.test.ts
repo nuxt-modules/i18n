@@ -1,5 +1,5 @@
 import { parseSegment, getRoutePath, resolveLocales } from '../src/utils'
-import type { LocaleObject } from 'vue-i18n-routing'
+import type { LocaleObject } from '../src/types'
 
 vi.mock('pathe', async () => {
   const mod = await vi.importActual<typeof import('pathe')>('pathe')

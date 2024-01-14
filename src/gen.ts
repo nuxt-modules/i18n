@@ -8,8 +8,7 @@ import { getLayerI18n, getLocalePaths, toCode } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PrerenderTarget } from './utils'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta } from './types'
-import type { LocaleObject } from 'vue-i18n-routing'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta, LocaleObject } from './types'
 
 export type LoaderOptions = {
   vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
