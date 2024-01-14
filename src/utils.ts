@@ -10,10 +10,9 @@ import { transform as stripType } from 'sucrase'
 import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { File } from '@babel/types'
-import type { LocaleObject } from 'vue-i18n-routing'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -455,6 +454,7 @@ export const getLocalePaths = (locale: LocaleObject): string[] => {
 
 export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
   if (locale.file != null) {
+    // @ts-ignore
     return [locale.file].map(x => (typeof x === 'string' ? { path: x, cache: undefined } : x))
   }
 

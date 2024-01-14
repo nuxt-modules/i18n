@@ -20,5 +20,10 @@ export default defineConfig({
         minThreads: process.env.CI ? undefined : 4
       }
     }
+  },
+  resolve: {
+    alias: {
+      '#imports': 'nuxt'
+    }
   }
 })

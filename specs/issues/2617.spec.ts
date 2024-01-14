@@ -16,7 +16,7 @@ describe('#2617', async () => {
       consoleLogs.some(
         log =>
           log.type === 'warning' &&
-          log.text.includes('[vue-i18n-routing] Locale ISO code is required to generate alternate link')
+          log.text.includes('[nuxt-i18n-routing] Locale ISO code is required to generate alternate link')
       )
     ).toBe(false)
   })

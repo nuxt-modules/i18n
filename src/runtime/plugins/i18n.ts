@@ -1,26 +1,6 @@
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
-import {
-  createLocaleFromRouteGetter,
-  extendI18n,
-  registerGlobalOptions,
-  getRouteBaseName,
-  localePath,
-  localeRoute,
-  switchLocalePath,
-  localeHead,
-  setLocale,
-  getLocale,
-  getComposer
-} from 'vue-i18n-routing'
-import {
-  defineNuxtPlugin,
-  useRouter,
-  useRoute,
-  addRouteMiddleware,
-  defineNuxtRouteMiddleware,
-  useNuxtApp
-} from '#imports'
+import { defineNuxtPlugin, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
 import {
   localeCodes,
   vueI18nConfigs,
@@ -28,7 +8,8 @@ import {
   nuxtI18nInternalOptions,
   isSSG,
   localeLoaders,
-  parallelPlugin
+  parallelPlugin,
+  type SimpleLocaleObject
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages } from '../messages'
 import {
@@ -38,8 +19,6 @@ import {
   navigate,
   injectNuxtHelpers,
   extendBaseUrl,
-  extendPrefixable,
-  extendSwitchLocalePathIntercepter,
   _setLocale
 } from '../utils'
 import {
@@ -49,22 +28,18 @@ import {
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult
 } from '../internal'
+import { getComposer, getLocale, setLocale } from '../routing/utils'
+import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 
 import type { Composer, Locale, I18nOptions } from 'vue-i18n'
-import type { LocaleObject, ExtendProperyDescripters, VueI18nRoutingPluginOptions } from 'vue-i18n-routing'
 import type { NuxtApp } from '#app'
-
-type GetRouteBaseName = typeof getRouteBaseName
-type LocalePath = typeof localePath
-type LocaleRoute = typeof localeRoute
-type LocaleHead = typeof localeHead
-type SwitchLocalePath = typeof switchLocalePath
+import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
+import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(nuxt) {
-    const router = useRouter()
     const route = useRoute()
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
@@ -103,15 +78,6 @@ export default defineNuxtPlugin({
 
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
-
-    // register nuxt/i18n options as global
-    // so global options is reffered by `vue-i18n-routing`
-    registerGlobalOptions(router, {
-      ...nuxtI18nOptions,
-      dynamicRouteParamsKey: 'nuxtI18n',
-      switchLocalePathIntercepter: extendSwitchLocalePathIntercepter(differentDomains, normalizedLocales),
-      prefixable: extendPrefixable(differentDomains)
-    })
 
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
 
@@ -195,6 +161,7 @@ export default defineNuxtPlugin({
 
     // extend i18n instance
     extendI18n(i18n, {
+      // @ts-ignore
       locales: nuxtI18nOptions.locales,
       localeCodes,
       baseUrl: nuxtI18nOptions.baseUrl,
@@ -204,7 +171,7 @@ export default defineNuxtPlugin({
           composer.strategy = strategy
           composer.localeProperties = computed(() => {
             return (
-              normalizedLocales.find((l: LocaleObject) => l.code === composer.locale.value) || {
+              normalizedLocales.find((l: SimpleLocaleObject) => l.code === composer.locale.value) || {
                 code: composer.locale.value
               }
             )
@@ -274,7 +241,7 @@ export default defineNuxtPlugin({
             }
           }
         },
-        onExtendExportedGlobal(g: Composer): ExtendProperyDescripters {
+        onExtendExportedGlobal(g: Composer): ExtendPropertyDescriptors {
           return {
             strategy: {
               get() {
@@ -341,7 +308,7 @@ export default defineNuxtPlugin({
             }
           }
         },
-        onExtendVueI18n(composer: Composer): ExtendProperyDescripters {
+        onExtendVueI18n(composer: Composer): ExtendPropertyDescriptors {
           return {
             strategy: {
               get() {
@@ -510,6 +477,12 @@ export default defineNuxtPlugin({
   }
 })
 
+type GetRouteBaseName = typeof getRouteBaseName
+type LocalePath = typeof localePath
+type LocaleRoute = typeof localeRoute
+type LocaleHead = typeof localeHead
+type SwitchLocalePath = typeof switchLocalePath
+
 declare module '#app' {
   interface NuxtApp {
     /**
@@ -550,9 +523,9 @@ declare module '#app' {
     /**
      * Returns localized head properties for locale-related aspects.
      *
-     * @param options - An options, see about details [I18nHeadOptions](https://github.com/intlify/routing/blob/main/packages/vue-i18n-routing/api.md#i18nheadoptions).
+     * @param options - An options object, see `I18nHeadOptions`.
      *
-     * @returns The localized [head properties](https://github.com/intlify/routing/blob/main/packages/vue-i18n-routing/api.md#i18nheadmetainfo).
+     * @returns The localized head properties.
      */
     $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
     /**

@@ -50,7 +50,7 @@ export interface PrefixLocalizedRouteOptions {
    */
   path: string
 }
-function prefixLocalizedRoute(
+export function prefixLocalizedRoute(
   localizeOptions: PrefixLocalizedRouteOptions,
   options: LocalizeRoutesParams,
   extra = false

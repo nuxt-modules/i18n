@@ -2,7 +2,7 @@ import type { NuxtI18nOptions } from '../../src/types'
 import type { NuxtPage } from '@nuxt/schema'
 
 import type { MarkRequired } from 'ts-essentials'
-import type { LocaleObject } from 'vue-i18n-routing'
+import type { LocaleObject } from '../../src/types'
 
 export function getNuxtOptions(
   pages: Required<NuxtI18nOptions>['pages'],
