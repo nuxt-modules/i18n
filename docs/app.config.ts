@@ -10,7 +10,7 @@ export default defineAppConfig({
     },
     github: {
       branch: 'main',
-      repo: 'nuxt-modules/i18n',
+      repo: 'i18n',
       owner: 'nuxt-modules',
       dir: 'docs/content',
       edit: true
