@@ -189,20 +189,20 @@ importers:
   docs:
     devDependencies:
       '@nuxt-themes/docus':
-        specifier: ^1.15.0
+        specifier: ^1.14.6
         version: 1.15.0(nuxt@3.8.2)(postcss@8.4.32)(rollup@3.29.4)(vue@3.4.7)
       '@nuxtjs/plausible':
-        specifier: ^0.2.4
+        specifier: ^0.2.3
         version: 0.2.4(rollup@3.29.4)
       '@unocss/reset':
-        specifier: ^0.58.3
-        version: 0.58.3
+        specifier: ^0.56.5
+        version: 0.56.5
       nuxt:
         specifier: ^3.8.0
         version: 3.8.2(eslint@8.55.0)(rollup@3.29.4)(typescript@5.3.2)(vite@5.0.5)
       pinceau:
-        specifier: 0.20.1
-        version: 0.20.1(postcss@8.4.32)
+        specifier: 0.18.9
+        version: 0.18.9(postcss@8.4.32)
       vue-router:
         specifier: ^4.2.5
         version: 4.2.5(vue@3.4.7)
@@ -1725,7 +1725,7 @@ packages:
       ufo: 1.3.2
       unist-util-stringify-position: 4.0.0
       unstorage: 1.10.1
-      ws: 8.15.1
+      ws: 8.14.2
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -2163,7 +2163,7 @@ packages:
       '@nuxt/kit': 3.8.2(rollup@3.29.4)
       '@types/hast': 3.0.3
       '@types/mdast': 4.0.3
-      '@vue/compiler-core': 3.4.7
+      '@vue/compiler-core': 3.3.10
       consola: 3.2.3
       defu: 6.1.3
       destr: 2.0.2
@@ -2993,12 +2993,8 @@ packages:
     resolution: {integrity: sha512-2WoM6O9VyuHDPAnvCXr7LBJQ8ZRHDnuQAFsL1dWXp561Iq2l9whdNtPuMcozLGJGUUrFfVBXIrHY4sfxxScgWg==}
     dev: true
 
-  /@unocss/reset@0.54.3:
-    resolution: {integrity: sha512-5FjdfZKvwJ0JrUr2rVWnZzHfg7jOCMaJjD93VvCdFIr8Q9dChSzuZoWGCcx6EEsZm5zEfpB7+qwwz6Y2lN9vxg==}
-    dev: true
-
-  /@unocss/reset@0.58.3:
-    resolution: {integrity: sha512-Q2KiRQlam2iYsTZgKdvnXEfUN4TA2oVpGIVD9Wa0ggs0XlYj5aOo0g0+4Tgqqn+YaviZQeJKnDs/JWE+ygHhZA==}
+  /@unocss/reset@0.56.5:
+    resolution: {integrity: sha512-//Pv2ITAdnpWB9FIr0JiQVl1rL1XgISR8mu3OikhCfi6d/4OH+o6/WyE7evF1pOmk1JjsQlznOABIZXQlcpbHQ==}
     dev: true
 
   /@vercel/nft@0.24.4:
@@ -3120,10 +3116,10 @@ packages:
     dependencies:
       '@volar/language-core': 1.4.1
       '@volar/source-map': 1.4.1
-      '@vue/compiler-dom': 3.4.7
-      '@vue/compiler-sfc': 3.4.7
-      '@vue/reactivity': 3.4.7
-      '@vue/shared': 3.4.7
+      '@vue/compiler-dom': 3.3.10
+      '@vue/compiler-sfc': 3.3.10
+      '@vue/reactivity': 3.3.10
+      '@vue/shared': 3.3.10
       minimatch: 9.0.3
       muggle-string: 0.2.2
       vue-template-compiler: 2.7.15
@@ -3250,8 +3246,8 @@ packages:
     dependencies:
       '@volar/language-core': 1.11.1
       '@volar/source-map': 1.11.1
-      '@vue/compiler-dom': 3.4.7
-      '@vue/shared': 3.4.7
+      '@vue/compiler-dom': 3.3.10
+      '@vue/shared': 3.3.10
       computeds: 0.0.1
       minimatch: 9.0.3
       muggle-string: 0.3.1
@@ -3268,6 +3264,12 @@ packages:
       '@vue/shared': 3.3.10
       estree-walker: 2.0.2
       magic-string: 0.30.5
+
+  /@vue/reactivity@3.3.10:
+    resolution: {integrity: sha512-H5Z7rOY/JLO+e5a6/FEXaQ1TMuOvY4LDVgT+/+HKubEAgs9qeeZ+NhADSeEtrNQeiKLDuzeKc8v0CUFpB6Pqgw==}
+    dependencies:
+      '@vue/shared': 3.3.10
+    dev: true
 
   /@vue/reactivity@3.4.7:
     resolution: {integrity: sha512-F539DO0ogH0+L8F9Pnw7cjqibcmSOh5UTk16u5f4MKQ8fraqepI9zdh+sozPX6VmEHOcjo8qw3Or9ZcFFw4SZA==}
@@ -3645,13 +3647,6 @@ packages:
 
   /ast-types@0.15.2:
     resolution: {integrity: sha512-c27loCv9QkZinsa5ProX751khO9DJl/AcB5c2KNtA6NRvHKS0PgLfcftz72KVq504vB0Gku5s2kUZzDBvQWvHg==}
-    engines: {node: '>=4'}
-    dependencies:
-      tslib: 2.6.2
-    dev: true
-
-  /ast-types@0.16.1:
-    resolution: {integrity: sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==}
     engines: {node: '>=4'}
     dependencies:
       tslib: 2.6.2
@@ -4333,6 +4328,10 @@ packages:
     engines: {node: '>=14'}
     dependencies:
       rrweb-cssom: 0.6.0
+    dev: true
+
+  /csstype@3.1.2:
+    resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
     dev: true
 
   /csstype@3.1.3:
@@ -7977,7 +7976,7 @@ packages:
     resolution: {integrity: sha512-SZfJe/y9fbpeXZU+Kf7cSG2G7rnGP50hUYzCvcWyhp7hYzA3YXGthpkGfv6NSt0oo6QbcRyKwycg/6dpG5p8aw==}
     deprecated: Please migrate to https://github.com/unjs/magicast
     dependencies:
-      '@babel/parser': 7.23.6
+      '@babel/parser': 7.23.5
       '@types/estree': 1.0.5
       recast: 0.22.0
     dev: true
@@ -8158,7 +8157,7 @@ packages:
       acorn: 8.11.2
       chroma-js: 2.4.2
       consola: 3.2.3
-      csstype: 3.1.3
+      csstype: 3.1.2
       defu: 6.1.3
       magic-string: 0.30.5
       nanoid: 4.0.2
@@ -8169,34 +8168,6 @@ packages:
       postcss-dark-theme-class: 0.7.3(postcss@8.4.32)
       postcss-nested: 6.0.1(postcss@8.4.32)
       recast: 0.22.0
-      scule: 1.1.1
-      style-dictionary-esm: 1.9.2
-      unbuild: 1.2.1
-      unplugin: 1.5.1
-    transitivePeerDependencies:
-      - postcss
-      - sass
-      - supports-color
-    dev: true
-
-  /pinceau@0.20.1(postcss@8.4.32):
-    resolution: {integrity: sha512-A6EEYijgSudIbmZH9opFxBLqprFFxaTMhzJM8GcpE0J41VNZa5kPh/3zv2s4Q7gTm1jjbyUyZPIuF4BsNXP6Nw==}
-    dependencies:
-      '@unocss/reset': 0.54.3
-      '@volar/vue-language-core': 1.6.5
-      acorn: 8.11.2
-      chroma-js: 2.4.2
-      consola: 3.2.3
-      csstype: 3.1.3
-      defu: 6.1.3
-      magic-string: 0.30.5
-      nanoid: 4.0.2
-      ohash: 1.1.3
-      pathe: 1.1.1
-      postcss-custom-properties: 13.3.0(postcss@8.4.32)
-      postcss-dark-theme-class: 0.7.3(postcss@8.4.32)
-      postcss-nested: 6.0.1(postcss@8.4.32)
-      recast: 0.23.4
       scule: 1.1.1
       style-dictionary-esm: 1.9.2
       unbuild: 1.2.1
@@ -8274,19 +8245,6 @@ packages:
 
   /postcss-custom-properties@13.1.4(postcss@8.4.32):
     resolution: {integrity: sha512-iSAdaZrM3KMec8cOSzeTUNXPYDlhqsMJHpt62yrjwG6nAnMtRHPk5JdMzGosBJtqEahDolvD5LNbcq+EZ78o5g==}
-    engines: {node: ^14 || ^16 || >=18}
-    peerDependencies:
-      postcss: ^8.4
-    dependencies:
-      '@csstools/cascade-layer-name-parser': 1.0.5(@csstools/css-parser-algorithms@2.3.2)(@csstools/css-tokenizer@2.2.1)
-      '@csstools/css-parser-algorithms': 2.3.2(@csstools/css-tokenizer@2.2.1)
-      '@csstools/css-tokenizer': 2.2.1
-      postcss: 8.4.32
-      postcss-value-parser: 4.2.0
-    dev: true
-
-  /postcss-custom-properties@13.3.0(postcss@8.4.32):
-    resolution: {integrity: sha512-q4VgtIKSy5+KcUvQ0WxTjDy9DZjQ5VCXAZ9+tT9+aPMbA0z6s2t1nMw0QHszru1ib5ElkXl9JUpYYU37VVUs7g==}
     engines: {node: ^14 || ^16 || >=18}
     peerDependencies:
       postcss: ^8.4
@@ -8719,17 +8677,6 @@ packages:
     dependencies:
       assert: 2.1.0
       ast-types: 0.15.2
-      esprima: 4.0.1
-      source-map: 0.6.1
-      tslib: 2.6.2
-    dev: true
-
-  /recast@0.23.4:
-    resolution: {integrity: sha512-qtEDqIZGVcSZCHniWwZWbRy79Dc6Wp3kT/UmDA2RJKBPg7+7k51aQBZirHmUGn5uvHf2rg8DkjizrN26k61ATw==}
-    engines: {node: '>= 4'}
-    dependencies:
-      assert: 2.1.0
-      ast-types: 0.16.1
       esprima: 4.0.1
       source-map: 0.6.1
       tslib: 2.6.2
@@ -9180,7 +9127,6 @@ packages:
 
   /shiki-es@0.14.0:
     resolution: {integrity: sha512-e+/aueHx0YeIEut6RXC6K8gSf0PykwZiHD7q7AHtpTW8Kd8TpFUIWqTwhAnrGjOyOMyrwv+syr5WPagMpDpVYQ==}
-    deprecated: Please migrate to https://github.com/antfu/shikiji
     dev: true
 
   /shikiji@0.6.13:
@@ -10990,6 +10936,7 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+    dev: false
 
   /xml-name-validator@5.0.0:
     resolution: {integrity: sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg==}
