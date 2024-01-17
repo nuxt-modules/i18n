@@ -1,4 +1,5 @@
 import { getNormalizedLocales } from './utils'
+import { isObject } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
@@ -25,13 +26,12 @@ export function prefixLocalizedRoute(
   options: LocalizeRoutesParams,
   extra = false
 ): boolean {
-  const isDefaultLocale = localizeOptions.locale === (options.defaultLocale ?? '')
+  const isDefaultLocale = localizeOptions.locale === (localizeOptions.defaultLocale ?? '')
   const isChildWithRelativePath = localizeOptions.parent != null && !localizeOptions.path.startsWith('/')
 
   // no need to add prefix if child's path is relative
   return (
     !extra &&
-    !options.differentDomains &&
     !isChildWithRelativePath &&
     // skip default locale if strategy is 'prefix_except_default'
     !(isDefaultLocale && options.strategy === 'prefix_except_default')
@@ -86,6 +86,14 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     return routes
   }
 
+  let defaultLocales = [options.defaultLocale ?? '']
+  if (options.differentDomains) {
+    const domainDefaults = options.locales
+      .filter(locale => (isObject(locale) ? locale.domainDefault : false))
+      .map(locale => (isObject(locale) ? locale.code : locale))
+    defaultLocales = defaultLocales.concat(domainDefaults)
+  }
+
   function localizeRoute(
     route: NuxtPage,
     { locales = [], parent, parentLocalized, extra = false }: LocalizeRouteParams
@@ -112,7 +120,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     const localizedRoutes: (LocalizedRoute | NuxtPage)[] = []
     for (const locale of componentOptions.locales) {
       const localized: LocalizedRoute = { ...route, locale, parent }
-      const isDefaultLocale = locale === options.defaultLocale
+      const isDefaultLocale = defaultLocales.includes(locale)
       const addDefaultTree = isDefaultLocale && options.strategy === 'prefix_and_default' && parent == null && !extra
 
       // localize route again for strategy `prefix_and_default`
@@ -131,7 +139,11 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       // use custom path if found
       localized.path = componentOptions.paths?.[locale] ?? localized.path
 
-      const localePrefixable = prefixLocalizedRoute(localized, options, extra)
+      const localePrefixable = prefixLocalizedRoute(
+        { defaultLocale: isDefaultLocale ? locale : options.defaultLocale, ...localized },
+        options,
+        extra
+      )
       if (localePrefixable) {
         localized.path = join('/', locale, localized.path)
 
