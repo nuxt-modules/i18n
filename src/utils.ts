@@ -392,7 +392,7 @@ export function parseSegment(segment: string) {
         if (c === '[' && state === SegmentParserState.dynamic) {
           state = SegmentParserState.optional
         }
-        if (c === ']' && (state !== SegmentParserState.optional || buffer[buffer.length - 1] === ']')) {
+        if (c === ']' && (state !== SegmentParserState.optional || segment[i - 1] === ']')) {
           if (!buffer) {
             throw new Error('Empty param')
           } else {
@@ -402,7 +402,6 @@ export function parseSegment(segment: string) {
         } else if (PARAM_CHAR_RE.test(c)) {
           buffer += c
         } else {
-          // eslint-disable-next-line no-console
           // console.debug(`[pages]Ignored character "${c}" while building param "${buffer}" from "segment"`)
         }
         break
@@ -543,16 +542,15 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
 
 export function getRoutePath(tokens: SegmentToken[]): string {
   return tokens.reduce((path, token) => {
-    // prettier-ignore
     return (
       path +
       (token.type === SegmentTokenType.optional
         ? `:${token.value}?`
         : token.type === SegmentTokenType.dynamic
-          ? `:${token.value}`
+          ? `:${token.value}()`
           : token.type === SegmentTokenType.catchall
             ? `:${token.value}(.*)*`
-            : encodePath(token.value))
+            : encodePath(token.value).replace(/:/g, '\\:'))
     )
   }, '/')
 }
