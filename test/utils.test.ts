@@ -197,5 +197,5 @@ test('parseSegment', () => {
 
 test('getRoutePath', () => {
   const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
-  expect(getRoutePath(tokens)).toBe(`/:foo_:bar::buz(.*)*_buz_:qux?`)
+  expect(getRoutePath(tokens)).toBe(`/:foo()_:bar()\\::buz(.*)*_buz_:qux?`)
 })
