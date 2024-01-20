@@ -332,6 +332,9 @@ test('dynamic parameters', async () => {
   expect(await page.locator('#nuxt-locale-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
 
   await gotoPath(page, '/nl/products/rode-mok')
+  await page.waitForFunction(
+    () => document.querySelector('#nuxt-locale-link-en')?.getAttribute('href') === '/products/red-mug'
+  )
   expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug')
 
   // Translated params are not lost on query changes
