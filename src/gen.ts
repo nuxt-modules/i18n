@@ -165,7 +165,7 @@ export {}`
 }
 
 export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
-  const vueI18nTypes = [options.types === 'legacy' ? 'VueI18n' : 'ExportedGlobalComposer', 'Composer']
+  const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
   const resolvedLocaleType = typeof generatedLocales === 'string' ? 'string[]' : 'LocaleObject[]'
 
