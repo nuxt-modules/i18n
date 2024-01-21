@@ -259,7 +259,10 @@ export type LocalizeRoutesPrefixable = (options: PrefixLocalizedRouteOptions) =>
  *
  * @public
  */
-export type I18nRoutingOptions<Context = unknown> = {
+export type I18nRoutingOptions<
+  Context = unknown,
+  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+> = {
   /**
    * Vue Router version
    *
@@ -290,7 +293,7 @@ export type I18nRoutingOptions<Context = unknown> = {
    *
    * @defaultValue []
    */
-  locales?: string[] | LocaleObject[]
+  locales?: ConfiguredLocaleType
   /**
    * Routes strategy
    *

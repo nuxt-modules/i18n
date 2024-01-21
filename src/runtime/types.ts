@@ -1,24 +1,7 @@
 import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
-import type { Strategies, Directions, LocaleObject } from './routing/types'
-
-export interface I18nRoutingCustomProperties {
-  /**
-   * List of locales
-   *
-   * @remarks
-   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
-   */
-  readonly locales: string[] | LocaleObject[]
-  /**
-   * List of locale codes
-   */
-  readonly localeCodes: string[]
-  /**
-   * Base URL that is used in generating canonical links
-   */
-  baseUrl: string
-}
+import type { Directions, LocaleObject, Strategies } from '../types'
+import type { Locale } from 'vue-i18n'
 
 /**
  * Called before the app's locale is switched.
@@ -48,14 +31,16 @@ type BeforeLanguageSwitchHandler = (
  */
 type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<void>
 
-export interface ComposerCustomProperties {
+export interface ComposerCustomProperties<
+  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+> {
   /**
    * List of locales
    *
    * @remarks
    * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
    */
-  locales: ComputedRef<string[] | LocaleObject[]>
+  locales: ComputedRef<ConfiguredLocaleType>
   /**
    * List of locale codes
    */
@@ -147,7 +132,24 @@ export interface ComposerCustomProperties {
   waitForPendingLocaleChange: () => Promise<void>
 }
 
-export interface NuxtI18nRoutingCustomProperties {
+export interface NuxtI18nRoutingCustomProperties<
+  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+> {
+  /**
+   * List of locales
+   *
+   * @remarks
+   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
+   */
+  readonly locales: ConfiguredLocaleType
+  /**
+   * List of locale codes
+   */
+  readonly localeCodes: string[]
+  /**
+   * Base URL that is used in generating canonical links
+   */
+  baseUrl: string
   /**
    * Routing strategy.
    */
@@ -232,20 +234,9 @@ export interface NuxtI18nRoutingCustomProperties {
 }
 
 declare module 'vue-i18n' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface ComposerCustom extends ComposerCustomProperties {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface ExportedGlobalComposer extends NuxtI18nRoutingCustomProperties, I18nRoutingCustomProperties {}
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface VueI18n extends NuxtI18nRoutingCustomProperties, I18nRoutingCustomProperties {}
-
   interface I18n {
     __pendingLocale?: string
     __pendingLocalePromise?: Promise<void>
     __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
   }
 }
-
-export {}
