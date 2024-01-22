@@ -9,15 +9,14 @@ import {
   DEFAULT_DETECTION_DIRECTION,
   DEFAULT_DYNAMIC_PARAMS_KEY,
   DEFAULT_LOCALE_ROUTE_NAME_SUFFIX,
-  DEFAULT_STRATEGY
+  DEFAULT_STRATEGY,
+  NUXT_I18N_MODULE_ID
 } from './constants'
-import type { SimpleLocaleObject } from './types'
+import type { LocaleObject } from './types'
 
 export type TemplateNuxtI18nOptions = {
-  NUXT_I18N_MODULE_ID: string
   localeCodes: string[]
-  nuxtI18nOptionsDefault: typeof DEFAULT_OPTIONS
-  nuxtI18nInternalOptions: { __normalizedLocales: SimpleLocaleObject[] }
+  normalizedLocales: LocaleObject[]
   dev: boolean
   isSSG: boolean
   parallelPlugin: boolean
@@ -49,11 +48,11 @@ export const vueI18nConfigs = [
 
 export const nuxtI18nOptions = ${JSON.stringify(options.nuxtI18nOptions, null, 2)}
 
-export const nuxtI18nOptionsDefault = ${JSON.stringify(options.nuxtI18nOptionsDefault, null, 2)}
+export const nuxtI18nOptionsDefault = ${JSON.stringify(DEFAULT_OPTIONS, null, 2)}
 
-export const nuxtI18nInternalOptions = ${JSON.stringify(options.nuxtI18nInternalOptions, null, 2)}
+export const normalizedLocales = ${JSON.stringify(options.normalizedLocales, null, 2)}
 
-export const NUXT_I18N_MODULE_ID = "${options.NUXT_I18N_MODULE_ID}"
+export const NUXT_I18N_MODULE_ID = "${NUXT_I18N_MODULE_ID}"
 export const parallelPlugin = ${options.parallelPlugin}
 export const isSSG = ${options.isSSG}
 
