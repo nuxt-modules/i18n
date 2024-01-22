@@ -1,5 +1,5 @@
 import { useRoute, useRouter, useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted, getCurrentInstance } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { localeCodes, normalizedLocales, nuxtI18nOptions } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
@@ -404,9 +404,21 @@ export interface I18nRoute {
  *
  * @param route - The custom route
  */
+/* #__NO_SIDE_EFFECTS__ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function defineI18nRoute(route: I18nRoute | false): void {
-  if (process.dev) {
+  if (import.meta.dev) {
+    const component = getCurrentInstance()?.type
+    try {
+      const isRouteComponent =
+        component && useRoute().matched.some(p => Object.values(p.components || {}).includes(component))
+      if (isRouteComponent) {
+        // don't warn if it's being used in a route component
+        return
+      }
+    } catch {
+      // ignore any errors with accessing current instance or route
+    }
     warnRuntimeUsage('defineI18nRoute')
   }
 }

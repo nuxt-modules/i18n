@@ -3,7 +3,6 @@ import { resolve } from 'pathe'
 import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
-import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { assign } from '@intlify/shared'
 import { getLayerLangPaths } from './layers'
@@ -11,7 +10,6 @@ import { getLayerLangPaths } from './layers'
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
-import type { TransformMacroPluginOptions } from './transform/macros'
 import type { ResourcePluginOptions } from './transform/resource'
 import { MetaDeprecationPlugin, type MetaDeprecationPluginOptions } from './transform/meta-deprecation'
 
@@ -24,11 +22,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     nuxtOptions?.i18nModules?.map(module => resolve(nuxt.options._layers[0].config.rootDir, module.langDir ?? '')) ?? []
   debug('i18nModulePaths -', i18nModulePaths)
   const localePaths = [...langPaths, ...i18nModulePaths]
-
-  // extract macros from components
-  const macroOptions: TransformMacroPluginOptions = {
-    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
-  }
 
   const resourceOptions: ResourcePluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
@@ -62,7 +55,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     }
 
     addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
-    addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
     addWebpackPlugin(ResourcePlugin.webpack(resourceOptions))
     addWebpackPlugin(MetaDeprecationPlugin.webpack(metaDeprecationOptions))
 
@@ -110,7 +102,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   }
 
   addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
-  addVitePlugin(TransformMacroPlugin.vite(macroOptions))
   addVitePlugin(ResourcePlugin.vite(resourceOptions))
   addVitePlugin(MetaDeprecationPlugin.vite(metaDeprecationOptions))
 
