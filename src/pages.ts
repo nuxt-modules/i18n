@@ -11,8 +11,7 @@ import { resolve, parse as parsePath } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
-import type { NuxtI18nOptions, CustomRoutePages } from './types'
-import type { ComputedRouteOptions, RouteOptionsResolver } from './routing'
+import type { NuxtI18nOptions, CustomRoutePages, ComputedRouteOptions, RouteOptionsResolver } from './types'
 import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
 
 const debug = createDebug('@nuxtjs/i18n:pages')

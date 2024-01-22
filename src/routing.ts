@@ -3,7 +3,7 @@ import { getNormalizedLocales } from './utils'
 import type { Locale } from 'vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
 import type { MarkRequired, MarkOptional } from 'ts-essentials'
-import type { NuxtI18nOptions } from './types'
+import type { NuxtI18nOptions, PrefixLocalizedRouteOptions, RouteOptionsResolver } from './types'
 
 const join = (...args: (string | undefined)[]) => args.filter(Boolean).join('')
 
@@ -20,36 +20,6 @@ export declare interface ComputedRouteOptions {
   paths: Record<string, string>
 }
 
-/**
- * Resolver for route localizing options
- *
- * @public
- */
-export declare type RouteOptionsResolver = (route: NuxtPage, localeCodes: string[]) => ComputedRouteOptions | undefined
-
-/**
- * Localize route path prefix judgment options used in {@link LocalizeRoutesPrefixable}
- *
- * @public
- */
-export interface PrefixLocalizedRouteOptions {
-  /**
-   * Current locale
-   */
-  locale: Locale
-  /**
-   * Default locale
-   */
-  defaultLocale?: Locale | undefined
-  /**
-   * The parent route of the route to be resolved
-   */
-  parent: NuxtPage | undefined
-  /**
-   * The path of route
-   */
-  path: string
-}
 export function prefixLocalizedRoute(
   localizeOptions: PrefixLocalizedRouteOptions,
   options: LocalizeRoutesParams,

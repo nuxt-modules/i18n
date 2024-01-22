@@ -1,6 +1,8 @@
 import type { Locale, I18nOptions } from 'vue-i18n'
-import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { ParsedPath } from 'path'
+import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
+import type { NuxtPage } from '@nuxt/schema'
+import type { STRATEGIES } from './constants'
 
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
@@ -86,12 +88,29 @@ export interface LocaleMessageCompilationOptions {
   escapeHtml?: boolean
 }
 
-export type NuxtI18nOptions<Context = unknown> = {
+export type NuxtI18nOptions<
+  Context = unknown,
+  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+> = {
+  /**
+   * Path to a Vue I18n configuration file, the module will scan for a i18n.config{.js,.mjs,.ts} if left unset.
+   *
+   * @defaultValue `''` (empty string)
+   */
   vueI18n?: string
   experimental?: ExperimentalFeatures
   bundle?: BundleOptions
   compilation?: LocaleMessageCompilationOptions
   customBlocks?: CustomBlocksOptions
+  /**
+   * Enable when using different domains for each locale
+   *
+   * @remarks
+   * If enabled, no prefix is added to routes
+   * and `locales` must be configured as an array of `LocaleObject` objects with the `domain` property set.
+   *
+   * @defaultValue `false`
+   */
   differentDomains?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
@@ -100,180 +119,20 @@ export type NuxtI18nOptions<Context = unknown> = {
   customRoutes?: 'page' | 'config'
   /**
    * @internal
+   * Do not use in projects - this is used internally for e2e tests to override default option merging.
    */
   overrides?: Omit<NuxtI18nOptions<Context>, 'overrides'>
+  /**
+   * @internal
+   * Do not use in projects
+   */
   i18nModules?: { langDir?: string | null; locales?: NuxtI18nOptions<Context>['locales'] }[]
   rootRedirect?: string | null | RootRedirectOptions
-  routesNameSeparator?: string
   skipSettingLocaleOnNavigate?: boolean
-  strategy?: Strategies
   types?: 'composition' | 'legacy'
   debug?: boolean
   dynamicRouteParams?: boolean
   parallelPlugin?: boolean
-} & Pick<
-  I18nRoutingOptions<Context>,
-  | 'baseUrl'
-  | 'strategy'
-  | 'defaultDirection'
-  | 'defaultLocale'
-  | 'locales'
-  | 'defaultLocaleRouteNameSuffix'
-  | 'routesNameSeparator'
-  | 'trailingSlash'
->
-
-export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOptions | Promise<I18nOptions>) }>
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { RouterOptions } from 'vue-router'
-import type { STRATEGIES } from './constants'
-import type { NuxtPage } from '@nuxt/schema'
-
-/**
- * Route config for vue-router v4
- *
- * @public
- */
-interface Route {
-  name?: string
-  path: string
-  file?: string // for nuxt bridge & nuxt 3
-  children?: Route[]
-}
-
-/**
- * Route config for i18n routing
- *
- * @public
- */
-export type I18nRoute = Route & { redirect?: string }
-
-/**
- * Routing strategy
- *
- * @public
- */
-export type Strategies = (typeof STRATEGIES)[keyof typeof STRATEGIES]
-
-/**
- * Direction
- *
- * @public
- */
-export type Directions = 'ltr' | 'rtl' | 'auto'
-
-/**
- * Locale object
- *
- * @public
- */
-export interface LocaleObject extends Record<string, any> {
-  code: Locale
-  name?: string
-  dir?: Directions
-  domain?: string
-  file?: string | LocaleFile
-  files?: string[] | LocaleFile[]
-  isCatchallLocale?: boolean
-  iso?: string
-}
-
-/**
- * Simple Locale object
- *
- * @public
- */
-export interface SimpleLocaleObject extends Record<string, any> {
-  code: Locale
-  name?: string
-  dir?: Directions
-  domain?: string
-  file?: string
-  files?: string[]
-  isCatchallLocale?: boolean
-  iso?: string
-}
-
-/**
- * @public
- */
-export type BaseUrlResolveHandler<Context = any> = (context: Context) => string
-
-/**
- * Options to compute route localizing
- *
- * @remarks
- * The route options that is compute the route to be localized on {@link localizeRoutes}
- *
- * @public
- */
-export interface ComputedRouteOptions {
-  locales: readonly string[]
-  paths: Record<string, string>
-}
-
-/**
- * Resolver for route localizing options
- *
- * @public
- */
-export type RouteOptionsResolver = (route: I18nRoute, localeCodes: string[]) => ComputedRouteOptions | null
-
-/**
- * Localize route path prefix judgment options used in {@link LocalizeRoutesPrefixable}
- *
- * @public
- */
-export interface PrefixLocalizedRouteOptions {
-  /**
-   * Current locale
-   */
-  locale: Locale
-  /**
-   * Default locale
-   */
-  defaultLocale?: Locale | undefined
-  /**
-   * The parent route of the route to be resolved
-   */
-  parent: NuxtPage | undefined
-  /**
-   * The path of route
-   */
-  path: string
-}
-
-/**
- * Localize route path prefix judgment logic in {@link localizeRoutes} function
- *
- * @public
- */
-export type LocalizeRoutesPrefixable = (options: PrefixLocalizedRouteOptions) => boolean
-
-/**
- * Options to initialize a VueRouter instance
- *
- * @remarks
- * This options is extended from Vue Router `RouterOptioins`, so you can specify those options.
- *
- * @public
- */
-export type I18nRoutingOptions<
-  Context = unknown,
-  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
-> = {
-  /**
-   * Vue Router version
-   *
-   * @remarks
-   * You can choice between vue-router v3 and v4.
-   *
-   * If you specify `3`, this function return Vue Router v3 instance, else specify `4`, this function return Vue Router v4 instance.
-   *
-   * @defaultValue 4
-   */
-  version?: 3 | 4
   /**
    * The app's default locale
    *
@@ -282,7 +141,7 @@ export type I18nRoutingOptions<
    *
    * It's recommended to set this to some locale regardless of chosen strategy, as it will be used as a fallback locale when navigating to a non-existent route
    *
-   * @defaultValue '' (emputy string)
+   * @defaultValue '' (empty string)
    */
   defaultLocale?: string
   /**
@@ -348,37 +207,90 @@ export type I18nRoutingOptions<
    * @defaultValue ''
    */
   baseUrl?: string | BaseUrlResolveHandler<Context>
+}
+
+export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOptions | Promise<I18nOptions>) }>
+
+/**
+ * Routing strategy
+ *
+ * @public
+ */
+export type Strategies = (typeof STRATEGIES)[keyof typeof STRATEGIES]
+
+/**
+ * Direction
+ *
+ * @public
+ */
+export type Directions = 'ltr' | 'rtl' | 'auto'
+
+/**
+ * Locale object
+ *
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface LocaleObject extends Record<string, any> {
+  code: Locale
+  name?: string
+  dir?: Directions
+  domain?: string
+  file?: string | LocaleFile
+  files?: string[] | LocaleFile[]
+  isCatchallLocale?: boolean
+  iso?: string
+}
+
+/**
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type BaseUrlResolveHandler<Context = any> = (context: Context) => string
+
+/**
+ * Options to compute route localizing
+ *
+ * @remarks
+ * The route options that is compute the route to be localized on {@link localizeRoutes}
+ *
+ * @public
+ */
+export interface ComputedRouteOptions {
+  locales: readonly string[]
+  paths: Record<string, string>
+}
+
+/**
+ * Resolver for route localizing options
+ *
+ * @public
+ */
+export type RouteOptionsResolver = (route: NuxtPage, localeCodes: string[]) => ComputedRouteOptions | undefined
+
+/**
+ * Localize route path prefix judgment options used in {@link LocalizeRoutesPrefixable}
+ *
+ * @public
+ */
+export interface PrefixLocalizedRouteOptions {
   /**
-   * Route options resolver
-   *
-   * @defaultValue undefined
+   * Current locale
    */
-  routeOptionsResolver?: RouteOptionsResolver
+  locale: Locale
   /**
-   * Whether to prefix the route path with the locale or not
-   *
-   * @defaultValue {@link DefaultPrefixable}
+   * Default locale
    */
-  prefixable?: Prefixable
+  defaultLocale?: Locale | undefined
   /**
-   * An option that Intercepter for custom processing for paths resolved with {@link switchLocalePath}
-   *
-   * @defaultValue {@link DefaultSwitchLocalePathIntercepter}
+   * The parent route of the route to be resolved
    */
-  switchLocalePathIntercepter?: SwitchLocalePathIntercepter
+  parent: NuxtPage | undefined
   /**
-   * Whether to prefix the localize route path with the locale or not
-   *
-   * @defaultValue {@link DefaultLocalizeRoutesPrefixable}
+   * The path of route
    */
-  localizeRoutesPrefixable?: LocalizeRoutesPrefixable
-  /**
-   * The key which to access vue router meta object, when dynamic route params need localize.
-   *
-   * @defaultValue ''
-   */
-  dynamicRouteParamsKey?: string | symbol
-} & RouterOptions
+  path: string
+}
 
 /**
  * SEO Attribute options.
@@ -425,6 +337,7 @@ export interface I18nHeadOptions {
  *
  * @public
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MetaAttrs = Record<string, any>
 
 /**
@@ -455,11 +368,6 @@ export type PrefixableOptions = {
    */
   strategy: Strategies
 }
-
-/**
- * Route path prefix judgment logic in {@link resolveRoute} function
- */
-export type Prefixable = (optons: PrefixableOptions) => boolean
 
 /**
  * The intercept handler which is called in {@link switchLocalePath} function
