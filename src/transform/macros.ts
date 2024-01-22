@@ -61,7 +61,7 @@ export const TransformMacroPlugin = createUnplugin((options: TransformMacroPlugi
       const match = code.match(new RegExp(`\\b${NUXT_I18N_COMPOSABLE_DEFINE_ROUTE}\\s*\\(\\s*`))
       if (match?.[0]) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        s.overwrite(match.index!, match.index! + match[0].length, `/*#__PURE__*/ false && ${match[0]}`)
+        s.overwrite(match.index!, match.index! + match[0].length, `false && /*#__PURE__*/ ${match[0]}`)
       }
 
       if (!parseQuery(search).macro) {
