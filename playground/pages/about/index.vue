@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import type { ExportedGlobalComposer, LocaleObject } from '#i18n'
 
 export default defineComponent({
   mounted() {
@@ -12,11 +11,10 @@ export default defineComponent({
   },
   computed: {
     availableLocales() {
-      return (this.$i18n.locales as LocaleObject[]).filter(i => i.code !== this.$i18n.locale)
+      return this.$i18n.locales.filter(i => i.code !== this.$i18n.locale)
     },
     switchableLocale() {
-      const i18n = this.$i18n as ExportedGlobalComposer
-      const _locales = (i18n.locales as LocaleObject[]).filter(i => i.code !== this.$i18n.locale)
+      const _locales = this.$i18n.locales.filter(i => i.code !== this.$i18n.locale)
       return _locales.length !== 0 ? _locales[0] : { code: 'ja', name: '日本語' }
     }
   },
