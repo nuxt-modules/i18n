@@ -22,7 +22,7 @@ import type {
   VueI18n,
   VueI18nExtender
 } from 'vue-i18n'
-import type { I18nRoutingOptions, LocaleObject } from '#build/i18n.options.mjs'
+import type { LocaleObject, NuxtI18nOptions } from '#build/i18n.options.mjs'
 
 /**
  * An options of Vue I18n Routing Plugin
@@ -57,7 +57,7 @@ export interface ExtendHooks {
   onExtendVueI18n?: ExtendVueI18nHook
 }
 
-export type VueI18nExtendOptions<Context = unknown> = Pick<I18nRoutingOptions<Context>, 'baseUrl'> & {
+export type VueI18nExtendOptions<Context = unknown> = Pick<NuxtI18nOptions<Context>, 'baseUrl'> & {
   locales?: string[] | LocaleObject[]
   localeCodes?: string[]
   context?: Context
