@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-// import { useLocalePath, useSwitchLocalePath, useLocaleHead, useBrowserLocale } from '#i18n'
-import type { LocaleObject } from '#i18n'
-
 const route = useRoute()
 const {
   t,
@@ -34,12 +31,12 @@ console.log('message if github layer merged:', t('layer-test-key'))
 console.log('experimental module', t('goodDay'))
 
 function getLocaleName(code: string) {
-  const locale = (locales.value as LocaleObject[]).find(i => i.code === code)
+  const locale = locales.value.find(i => i.code === code)
   return locale ? locale.name : code
 }
 
 const availableLocales = computed(() => {
-  return (locales.value as LocaleObject[]).filter(i => i.code !== locale.value)
+  return locales.value.filter(i => i.code !== locale.value)
 })
 
 const i = tm('items')

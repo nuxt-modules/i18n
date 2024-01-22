@@ -7,6 +7,7 @@ import {
   addComponent,
   addPlugin,
   addTemplate,
+  addTypeTemplate,
   addImports,
   useLogger
 } from '@nuxt/kit'
@@ -16,7 +17,7 @@ import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { generateLoaderOptions } from './gen'
+import { generateI18nPageTypes, generateI18nTypes, generateLoaderOptions } from './gen'
 import {
   NUXT_I18N_MODULE_ID,
   DEFAULT_OPTIONS,
@@ -228,25 +229,23 @@ export default defineNuxtModule<NuxtI18nOptions>({
     })
 
     /**
-     * To be plugged for `PageMeta` type definition on `NuxtApp`
+     * `PageMeta` augmentation to add `nuxtI18n` property
+     * TODO: Remove in v8.1, `useSetI18nParams` should be used instead
      */
-
     if (!!options.dynamicRouteParams) {
-      addPlugin(resolve(runtimeDir, 'plugins/meta'))
+      addTypeTemplate({
+        filename: 'types/i18n-page-meta.d.ts',
+        getContents: () => generateI18nPageTypes()
+      })
     }
 
     /**
-     * add extend type definition
+     * `$i18n` type narrowing based on 'legacy' or 'composition'
+     * `locales` type narrowing based on generated configuration
      */
-
-    const isLegacyMode = () => options.types === 'legacy'
-
-    // To be plugged for `$i18n` type definition on `NuxtApp`
-    addPlugin(resolve(runtimeDir, isLegacyMode() ? 'plugins/legacy' : 'plugins/composition'))
-
-    nuxt.hook('prepare:types', ({ references }) => {
-      const vueI18nTypeFilename = resolve(runtimeDir, 'types')
-      references.push({ path: resolve(nuxt.options.buildDir, vueI18nTypeFilename) })
+    addTypeTemplate({
+      filename: 'types/i18n-plugin.d.ts',
+      getContents: () => generateI18nTypes(nuxt, i18nOptions)
     })
 
     /**

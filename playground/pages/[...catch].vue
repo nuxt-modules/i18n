@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { LocaleObject } from '#i18n'
-
 const route = useRoute()
 const { locale, locales } = useI18n()
 
 const availableLocales = computed(() => {
-  return (locales.value as LocaleObject[]).filter(i => i.code !== locale.value)
+  return locales.value.filter(i => i.code !== locale.value)
 })
 
 definePageMeta({
