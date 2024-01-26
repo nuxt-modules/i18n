@@ -112,7 +112,7 @@
     "express": "4.18.2",
     "husky": "9.0.6",
     "jest-dev-server": "^9.0.2",
-    "jsdom": "23.2.0",
+    "jsdom": "24.0.0",
     "messageformat": "2.3.0",
     "nuxt": "2.17.3",
     "pathe": "^1.1.2",
