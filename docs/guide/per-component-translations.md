@@ -1,0 +1,52 @@
+# Per-component translations
+
+Enable vue-i18n-loader.
+
+---
+
+If you'd like to define translations per-page or per-component you can take advantage of the i18n custom block.
+
+You can now define translations using i18n custom blocks in your Vue files:
+
+```vue
+<script setup lang="ts">
+const { t } = useI18n({
+  useScope: 'local'
+})
+</script>
+
+<template>
+  <p>{{ t('hello') }}</p>
+</template>
+
+<i18n lang="json">
+{
+  "en": {
+    "hello": "hello world!"
+  },
+  "ja": {
+    "hello": "こんにちは、世界!"
+  }
+}
+</i18n>
+```
+
+or using the Yaml syntax:
+
+```vue
+<i18n lang="yaml">
+en:
+  hello: 'hello world!'
+ja:
+  hello: 'こんにちは、世界!'
+</i18n>
+```
+
+::: info
+Read more about [i18n custom blocks](https://vue-i18n.intlify.dev/guide/advanced/sfc.html)
+:::
+
+::: warning
+When you use per-component translations, you will need to use `t` exported by `useI18n`, **not `$t`**.
+To read more about `$t` which isn't used in per-component translation, see the ["implicit with injected properties and functions" section of Vue I18n docs](https://vue-i18n.intlify.dev/guide/advanced/composition.html#implicit-with-injected-properties-and-functions).
+:::

@@ -1,0 +1,47 @@
+# Compilation
+
+Vue I18n message format compile options.
+
+## `compilation`
+
+- type: `object`
+- default: `{ jit: true, strictMessage: true, escapeHtml: false }`
+
+Configure flags that sets the behavior compilation of locale messages.
+
+Supported properties:
+
+### `jit`
+
+- type: `boolean`
+- default: `true`
+
+Whether to use the JIT compilation of Vue I18n message compiler.
+
+::: warning
+Mean that necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.)
+
+And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.
+:::
+
+### `strictMessage`
+
+- type: `boolean`
+- default: `true`
+
+Strictly check that the locale message does not contain HTML tags. If HTML tags are included, an error is thrown.
+
+::: warning
+If you do not want the error to be thrown, you can work around it by setting it to false. However, **this means that the locale message might cause security issues with XSS**. In that case, we recommend setting the `escapeHtml` option to `true`.
+:::
+
+### `escapeHtml`
+
+- type: `boolean`
+- default: `false`
+
+Determine whether to escape HTML tags if they are included in the locale message.
+
+::: warning
+If `strictMessage` is disabled by setting it to `false`, we recommend enabling this option.
+:::

@@ -1,0 +1,60 @@
+# Misc
+
+Miscellaneous options.
+
+## `experimental`
+
+- type: `object`
+- default: `{ localeDetector: '' }`
+
+Supported properties:
+
+- `localeDetector` (default: `''`) - Specify the locale detector to be called per request on the server side. You need to specify the filepath where the locale detector is defined.
+
+::: warning
+About how to define the locale detector, see the [`defineI18nLocaleDetector` API](../api/composables#definei18nlocaledetector)
+:::
+
+## `customBlocks`
+
+- type: `object`
+- default: `{ defaultSFCLang: 'json', globalSFCScope: false }`
+
+Configure the `i18n` custom blocks of SFC.
+
+Supported properties:
+
+- `defaultSFCLang` (default: `'json'`) - Specify the content for all your inlined i18n custom blocks on your SFC. about details, see [here](https://github.com/intlify/bundle-tools/blob/main/packages/unplugin-vue-i18n/README.md#defaultsfclang)
+
+- `globalSFCScope` (default: `false`) - Whether to include all `i18n` custom blocks on your SFC on global scope. about details, see [here](https://github.com/intlify/bundle-tools/blob/main/packages/unplugin-vue-i18n/README.md#globalsfcscope)
+
+## `types`
+
+- type: `string` (`composition` or `legacy`)
+- default: `composition`
+
+Enforces the type definition of the API style to be used. if you set `compostion`, Composition API types provided by Vue I18n and `@nuxtjs/i18n` are supported, else `legacy`, Options API types are supported. If you are running a dev server with `nuxi dev`, watching the Nuxt configuration will switch the type.
+
+::: warning
+If it can not detect Nuxt configuration changing, you need to run `nuxi prepare`.
+:::
+
+## `debug`
+
+- type: `boolean`
+- default: `false`
+
+Whether to use `@nuxtjs/i18n` debug mode. If `true`, logs will be output to the console.
+
+::: warning
+The purpose of this option is to help identify any problems with @nuxtjs/i18n.
+
+Don't enable this option for use in production. Performance will be decreased.
+:::
+
+## `parallelPlugin`
+
+- type: `boolean`
+- default: `false`
+
+Set the plugin as `parallel`. See [nuxt plugin loading strategy](https://nuxt.com/docs/guide/directory-structure/plugins#loading-strategy).

@@ -1,0 +1,66 @@
+# Setup
+
+::: warning
+You are reading the `v8` documentation compatible with **Nuxt 3**. :br :br
+Checkout the `v7` documentation for Nuxt 2 [here](../v7/setup).
+::::
+
+::: info
+Check the [Nuxt documentation](https://nuxt.com/docs/guide/concepts/modules) for more information about installing and using modules in Nuxt.
+::::
+
+::: info
+Nuxt i18n module is using Vue I18n **v9**. please see [Vue i18n docs](https://vue-i18n.intlify.dev/) for about how to usage.
+::::
+
+Add `@nuxtjs/i18n` dependency to your project:
+
+:::code-group
+
+```bash [NPM]
+npm install @nuxtjs/i18n --save-dev
+```
+
+```bash [Yarn]
+yarn add --dev @nuxtjs/i18n
+```
+
+```bash [pnpm]
+pnpm add @nuxtjs/i18n --save-dev
+```
+
+::::
+
+Then, add `@nuxtjs/i18n` to the `modules` section in your `nuxt.config`. You can use either of the following ways to specify the module options:
+
+:::code-group
+
+```ts {}[nuxt.config.ts]
+export default defineNuxtConfig({
+  modules: ['@nuxtjs/i18n'],
+  i18n: {
+    /* module options */
+  }
+})
+```
+
+::::
+
+or
+
+:::code-group
+
+```ts {}[nuxt.config.ts]
+export default defineNuxtConfig({
+  modules: [
+    [
+      '@nuxtjs/i18n',
+      {
+        /* module options */
+      }
+    ]
+  ]
+})
+```
+
+::::

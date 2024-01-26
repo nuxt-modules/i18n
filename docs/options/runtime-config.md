@@ -1,0 +1,61 @@
+# Runtime config
+
+Some options can be set via the `runtimeConfig`, setting options this way makes it possible to override these after building using environment variables.
+
+## Usage
+
+If you want to use environment variables to change [supported options](#supported-options), you will have to set these in `runtimeConfig.public.i18n`.
+
+:::code-group
+```ts {}[nuxt.config.ts]
+export default defineNuxtConfig({
+  modules: ['@nuxtjs/i18n'],
+  i18n: {
+    // Leave options unset that you want to set using `runtimeConfig`
+    // baseUrl: 'https://example.com',
+  },
+  runtimeConfig: {
+    public: {
+      i18n: {
+        baseUrl: 'https://example.com',
+        locales: {}
+        // other options ...
+      }
+    }
+  }
+})
+```
+:::
+
+You can read more about how this works in the [Nuxt documentation](https://nuxt.com/docs/guide/going-further/runtime-config#environment-variables).
+
+::: warning
+Only [serializable values are supported](https://nuxt.com/docs/guide/going-further/runtime-config#serialization) in `runtimeConfig`, options set this way may not support all available types (such as functions) as would normally be possible using the default configuration.
+:::
+
+::: info
+If you would like other options to be supported, open an issue describing your use case, or open a PR adding to add support yourself!
+:::
+
+## Supported options
+
+The module configuration takes precedence, options set through `runtimeConfig` will only be used if they are unset.
+
+These options can be set using `runtimeConfig`:
+
+### `baseUrl`
+
+- key: `NUXT_PUBLIC_I18N_BASE_URL`
+
+This runtime config option is the same as the [`baseUrl`](./routing#baseUrl) module option.
+
+::: warning
+Note that the `baseUrl` module option allows you to set the function, but the runtime config does not due to limitations.
+:::
+
+### `locales`
+
+- property: `locales[code].domain`
+- key: `NUXT_PUBLIC_I18N_LOCALES_{code}_DOMAIN`
+
+This runtime config option allows overriding the domain set in the [`locales`](./routing#locales) module option.

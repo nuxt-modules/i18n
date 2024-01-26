@@ -1,0 +1,71 @@
+# Bundle
+
+Bundle options.
+
+## `bundle`
+
+- type: `object`
+- default: `{ compositionOnly: true, runtimeOnly: false, fullInstall: true, dropMessageCompiler: false }`
+
+Configure the bundling optimization for nuxt i18n module.
+
+Supported properties:
+
+### `compositionOnly`
+
+- type: `boolean`
+- default: `true`
+
+Whether to make vue-i18n API only composition API. By default the legacy API is tree-shaken. For more details, See [here](https://vue-i18n.intlify.dev/guide/advanced/optimization.html#reduce-bundle-size-with-feature-build-flags)
+
+::: warning
+If you would like to use Vue I18n's Legacy API, you must set `compositionOnly: false`. **Note that setting this value will disable Vue I18n Composition API**.
+
+Note that the Legacy API can also be used in hybrid by setting the Vue I18n option to `allowComposition: true` in i18n.config, but this is limited. See [here](https://vue-i18n.intlify.dev/guide/migration/vue3.html) for details.
+:::
+
+### `runtimeOnly`
+
+- type: `boolean`
+- default: `false`
+
+Whether or not to automatically use Vue I18n runtime-only in build.
+
+::: warning
+When you will enable this option, vue-i18n message compiler is not bundled. This means that you will not be able to dynamically retrieve locale messages for use in your application from back-end APIs or DB via fetch, or programmatically compose the locale messages. That is to say, **you must be able to fully resolve locale messages at build time.**
+:::
+
+### `fullInstall`
+
+- type: `boolean`
+- default: `true`
+
+Whether to install the full set of APIs, components, etc. By default, all of them will be installed. If `false` is specified, buld-in components (`i18n-t`, `i18n-d` and `i18n-n`) and directive (`v-t`) will not be installed in vue and will be tree-shaken. For more details, See [here](https://vue-i18n.intlify.dev/guide/advanced/optimization.html#reduce-bundle-size-with-feature-build-flags)
+
+### `dropMessageCompiler`
+
+- type: `boolean`
+- default: `false`
+
+Whether to tree-shake message compiler when we will be bundling.
+
+::: info
+If you use this option, you need to enable the `compilation.jit` option.
+:::
+
+::: warning
+If you enable this option, **you should check resources in your application are pre-compiled with nuxt i18n module**. If you will be loading resources dynamically from the back-end via the API, enabling this option does not work because there is no message compiler.
+:::
+
+### `onlyLocales`
+
+- type: `string | string[]`
+- default: `undefined`
+
+Specify the locales codes that need to be included, the rest will be removed.
+
+It can be useful if you have one code base (e.g. [Nuxt Layers](https://nuxt.com/docs/getting-started/layers)) for several similar projects using different languages.
+
+::: warning
+The value of this **option will not be merged with other Nuxt Layers**. This option should only be specified in the final project config.
+:::

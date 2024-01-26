@@ -1,0 +1,93 @@
+# Routing & Strategies
+
+Nuxt i18n module overrides Nuxt default routes to add locale prefixes to every URL with routing strategies.
+
+::: warning
+This feature works under [nuxt routing](https://nuxt.com/docs/getting-started/routing). It's assumed that you are using the `pages` directory to control routing.
+:::
+
+## Routing
+
+**Nuxt i18n module** overrides Nuxt default routes to add locale prefixes to every URL (except in `no_prefix` strategy).
+
+Say your app supports two languages: French and English as the default language, and you have the following pages in your project:
+
+```asciidoc
+└── pages
+    ├── about
+    │   └── index.vue
+    └── index.vue
+```
+
+This would result in the following routes being generated
+
+```js
+[
+  {
+    path: "/",
+    name: "index___en",
+    ...
+  },
+  {
+    path: "/fr/",
+    name: "index___fr",
+    ...
+  },
+  {
+    path: "/about",
+    name: "about___en",
+    ...
+  },
+  {
+    path: "/fr/about",
+    name: "about___fr",
+    ...
+  }
+]
+```
+
+Note that routes for the English version do not have any prefix because it is the default language, see the routing strategies section for more details.
+
+## Strategies
+
+There are 4 supported strategies that affect how app's routes are generated:
+
+### `no_prefix`
+
+With this strategy, your routes won't have a locale prefix added. The locale will be detected & changed without changing the URL. This implies that you have to rely on browser & cookie detection, and implement locale switches by calling the i18n API.
+
+::: warning
+This strategy doesn't support [Custom paths](./custom-paths) and [Ignore routes](./ignoring-localized-routes) features.
+:::
+
+### `prefix_except_default`
+
+Using this strategy, all of your routes will have a locale prefix added except for the default language.
+
+### `prefix`
+
+With this strategy, all routes will have a locale prefix.
+
+### `prefix_and_default`
+
+This strategy combines both previous strategies behaviours, meaning that you will get URLs with prefixes for every language, but URLs for the default language will also have a non-prefixed version (though the prefixed version will be preferred when `detectBrowserLanguage` is enabled).
+
+### Configuration
+
+To configure the strategy, use the `strategy` option.
+Make sure that you have a `defaultLocale` defined, especially if using `prefix_except_default`, `prefix_and_default` or `no_prefix` strategy. For other strategies it's also recommended to set this as it will be used as a fallback when attempting to redirect from a 404 page.
+
+:::code-group
+```js {}[nuxt.config.js]
+export default defineNuxtConfig({
+  // ...
+
+  i18n: {
+    strategy: 'prefix_except_default',
+    defaultLocale: 'en'
+  }
+
+  // ...
+})
+```
+:::

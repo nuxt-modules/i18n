@@ -1,0 +1,66 @@
+# Vue
+
+Extension of Vue.
+
+## Extension of Vue
+
+::: warning
+The APIs listed are available in the Options API. They are kept for Nuxt2 to migration from `@nuxtjs/i18n`. we will be deprecated in the future.
+:::
+
+### getRouteBaseName()
+
+- **Arguments**:
+  - route (type: `Route`, default: current route)
+- **Returns**: `string`
+
+Returns base name of the passed route (uses the current route by default). The base name of a route is its name without a locale suffix or other metadata added by `@nuxtjs/i18n`.
+
+### switchLocalePath()
+
+- **Arguments**:
+  - locale: (type: `Locale`)
+- **Returns**: `string`
+
+Returns path of the current route for specified `locale`.
+
+See also [Link localizing](/getting-started/basic-usage)
+
+### localePath()
+
+- **Arguments**:
+  - route (type: `string` | `Location`)
+  - locale (type: `Locale`, default: current locale)
+- **Returns**: `string`
+
+Returns localized path for the passed `route`. Uses the current `locale` by default.
+
+See also [Link localizing](/getting-started/basic-usage)
+
+### localeRoute()
+
+- **Arguments**:
+  - route (type: `string` | `Location`)
+  - locale (type: `Locale`, default: current locale)
+- **Returns**: `Route` | `undefined`
+
+Returns localized route for the passed `route`. Uses the current `locale` by default.
+
+See also [Link localizing](/getting-started/basic-usage)
+
+### localeHead()
+
+::: info
+`localeHead` is renamed from `$nuxtI18nHead` provided in `@nuxtjs/i18n` v7.x.
+:::
+
+- **Arguments**:
+  - options: (type: `I18nHeadOptions`)
+- **Returns**: `I18nHeadMetaInfo`
+
+The `options` object accepts these optional properties:
+
+- `addDirAttribute` (type: `boolean`) - Adds a `dir` attribute to the HTML element. Default: `false`
+- `addSeoAttributes` (type: `boolean | SeoAttributesOptions`) - Adds various SEO attributes. Default: `false`
+
+See also [SEO](/guide/seo)

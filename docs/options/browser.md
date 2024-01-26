@@ -1,0 +1,79 @@
+# Browser
+
+Browser locale management options.
+
+## `detectBrowserLanguage`
+
+- type: `object` | `boolean`
+- default: `{ alwaysRedirect: false, fallbackLocale: '', redirectOn: 'root', useCookie: true, cookieCrossOrigin: false, cookieDomain: null, cookieKey: 'i18n_redirected', cookieSecure: false }`
+
+Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
+
+See also [Browser language detection](/guide/browser-language-detection) for a guide.
+
+::: info
+Note that for better SEO it's recommended to set `redirectOn` to `root`.
+:::
+
+Set to `false` to disable.
+
+Supported properties:
+
+### `alwaysRedirect`
+
+- type: `boolean`
+- default: `false`
+
+Set to always redirect to the value stored in the cookie, not just on first visit.
+
+### `fallbackLocale`
+
+- type: `string` or `null`
+
+If none of the locales match the browser's locale, use this one as a fallback.
+
+### `redirectOn`
+
+- type: `string`
+- default: `root`
+
+Supported options:
+
+- `all` - detect browser locale on all paths.
+- `root` (recommended for improved SEO) - only detect the browser locale on the root path (`/`) of the site. Only effective when using strategy other than `'no_prefix'`.
+- `no prefix` - a more permissive variant of `root` that will detect the browser locale on the root path (`/`) and also on paths that have no locale prefix (like `/foo`). Only effective when using strategy other than `'no_prefix'`.
+
+### `useCookie`
+
+- type: `boolean`
+- default: `true`
+
+If enabled, a cookie is set once the user has been redirected to browser's preferred locale, to prevent subsequent redirects. Set to `false` to redirect every time.
+
+### `cookieKey`
+
+- type: `string`
+- default: `'i18n_redirected'`
+
+Cookie name.
+
+### `cookieDomain`
+
+- type: `string` or `null`
+- default: `null`
+
+Set to override the default domain of the cookie. Defaults to the **host** of the site.
+
+### `cookieCrossOrigin`
+
+- type: `boolean`
+- default: `false`
+
+When `true`, sets the flags `SameSite=None; Secure` on the cookie to allow cross-domain use of the cookie (required when app is embedded in an iframe).
+
+### `cookieSecure`
+
+- type: `boolean`
+- default: `false`
+
+Sets the `Secure` flag for the cookie.
