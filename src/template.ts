@@ -1,6 +1,5 @@
 import { generateLoaderOptions } from './gen'
 import {
-  DEFAULT_OPTIONS,
   STRATEGIES,
   DEFAULT_LOCALE,
   DEFAULT_TRAILING_SLASH,
@@ -48,8 +47,6 @@ export const vueI18nConfigs = [
 
 export const nuxtI18nOptions = ${JSON.stringify(options.nuxtI18nOptions, null, 2)}
 
-export const nuxtI18nOptionsDefault = ${JSON.stringify(DEFAULT_OPTIONS, null, 2)}
-
 export const normalizedLocales = ${JSON.stringify(options.normalizedLocales, null, 2)}
 
 export const NUXT_I18N_MODULE_ID = "${NUXT_I18N_MODULE_ID}"
@@ -65,7 +62,5 @@ export const DEFAULT_LOCALE_ROUTE_NAME_SUFFIX = ${JSON.stringify(DEFAULT_LOCALE_
 export const DEFAULT_DETECTION_DIRECTION = ${JSON.stringify(DEFAULT_DETECTION_DIRECTION)}
 export const DEFAULT_BASE_URL = ${JSON.stringify(DEFAULT_BASE_URL)}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
-
-
 `
 }

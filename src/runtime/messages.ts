@@ -1,9 +1,9 @@
 import { deepCopy, isFunction, isArray, isObject, isString } from '@intlify/shared'
+import { useRuntimeConfig } from '#imports'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { DeepRequired } from 'ts-essentials'
-import type { VueI18nConfig, NuxtI18nOptions } from '../types'
+import type { VueI18nConfig } from '../types'
 import type { CoreContext } from '@intlify/h3'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,17 +44,18 @@ export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Local
   return fallbackLocales
 }
 
-export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
+export async function loadInitialMessages(
   messages: LocaleMessages<DefineLocaleMessage>,
   localeLoaders: Record<Locale, LocaleLoader[]>,
-  options: Pick<DeepRequired<NuxtI18nOptions<Context>>, 'defaultLocale' | 'lazy'> & {
+  options: {
     initialLocale: Locale
     fallbackLocale: FallbackLocale
     localeCodes: string[]
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Record<string, any>> {
-  const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
+  const { initialLocale, localeCodes, fallbackLocale } = options
+  const { defaultLocale, lazy } = useRuntimeConfig().public.i18n
 
   // load fallback messages
   if (lazy && fallbackLocale) {

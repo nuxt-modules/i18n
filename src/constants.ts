@@ -1,5 +1,3 @@
-import type { NuxtI18nOptionsDefault } from './options'
-
 export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n' as const
 export const VUE_I18N_PKG = 'vue-i18n' as const
 export const SHARED_PKG = '@intlify/shared' as const
@@ -73,7 +71,7 @@ export const DEFAULT_OPTIONS = {
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
-  rootRedirect: null,
+  rootRedirect: undefined,
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,
@@ -106,5 +104,3 @@ export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
 export const EXECUTABLE_EXTENSIONS = [...JS_EXTENSIONS, ...TS_EXTENSIONS]
 
 export const NULL_HASH = '00000000' as const
-
-export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS

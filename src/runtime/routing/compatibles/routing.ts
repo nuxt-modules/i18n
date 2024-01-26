@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
 import { parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
-import { unref, useNuxtApp, useRoute, useRouter } from '#imports'
+import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { unref, useNuxtApp, useRoute, useRouter, useRuntimeConfig } from '#imports'
 
 import { resolve, routeToObject } from './utils'
 import { getComposer, getLocale, getLocaleRouteName, getRouteName } from '../utils'
@@ -48,7 +48,7 @@ export const DefaultPrefixable = prefixable
  * @public
  */
 export function getRouteBaseName(givenRoute?: RouteLocation): string | undefined {
-  const { routesNameSeparator } = nuxtI18nOptions
+  const { routesNameSeparator } = useRuntimeConfig().public.i18n
   const route = unref(givenRoute)
   if (route == null || !route.name) {
     return
@@ -124,7 +124,8 @@ export function resolveRoute(route: RouteLocationRaw, locale?: Locale) {
   const router = useRouter()
   const i18n = getComposer(useNuxtApp().$i18n)
   const _locale = locale || getLocale(i18n)
-  const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } = nuxtI18nOptions
+  const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } =
+    useRuntimeConfig().public.i18n
   const prefixable = extendPrefixable()
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw

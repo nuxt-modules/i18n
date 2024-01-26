@@ -1,5 +1,5 @@
-import { useRouter, unref, useNuxtApp } from '#imports'
-import { nuxtI18nOptions, STRATEGIES } from '#build/i18n.options.mjs'
+import { useRouter, unref, useNuxtApp, useRuntimeConfig } from '#imports'
+import { STRATEGIES } from '#build/i18n.options.mjs'
 
 import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
@@ -22,7 +22,7 @@ export function localeHead({
   identifierAttribute: idAttribute = 'hid'
 }: I18nHeadOptions = {}): I18nHeadMetaInfo {
   const i18n = getComposer(useNuxtApp().$i18n)
-  const { defaultDirection } = nuxtI18nOptions
+  const { defaultDirection } = useRuntimeConfig().public.i18n
 
   const metaObject: Required<I18nHeadMetaInfo> = {
     htmlAttrs: {},
@@ -78,7 +78,7 @@ export function getHreflangLinks(
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
   const baseUrl = getBaseUrl()
-  const { defaultLocale, strategy } = nuxtI18nOptions
+  const { defaultLocale, strategy } = useRuntimeConfig().public.i18n
   const links: MetaAttrs[] = []
 
   if (strategy === STRATEGIES.NO_PREFIX) return links

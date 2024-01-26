@@ -3,12 +3,10 @@ import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRoute, useRuntimeConfig, useState } from '#imports'
 import {
-  nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
   isSSG,
   localeLoaders,
   normalizedLocales,
-  nuxtI18nOptions,
   type RootRedirectOptions,
   type PrefixableOptions,
   type SwitchLocalePathIntercepter,
@@ -88,13 +86,11 @@ export async function loadAndSetLocale(
   i18n: I18n,
   initial: boolean = false
 ): Promise<[boolean, string]> {
-  const _differentDomains = nuxtI18nOptions.differentDomains ?? nuxtI18nOptionsDefault.differentDomains
-  const skipSettingLocaleOnNavigate =
-    nuxtI18nOptions.skipSettingLocaleOnNavigate ?? nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
-  const lazy = nuxtI18nOptions.lazy ?? nuxtI18nOptionsDefault.lazy
-  const useCookie =
-    (nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) ??
-    nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie
+  const buildOptions = useRuntimeConfig().public.i18n
+  const _differentDomains = buildOptions.differentDomains
+  const skipSettingLocaleOnNavigate = buildOptions.skipSettingLocaleOnNavigate
+  const lazy = buildOptions.lazy
+  const useCookie = buildOptions.detectBrowserLanguage && buildOptions.detectBrowserLanguage.useCookie
   const nuxtApp = useNuxtApp()
   let ret = false
   const oldLocale = getLocale(i18n)
@@ -157,7 +153,12 @@ export function detectLocale(
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext
 ) {
-  const { strategy, defaultLocale, differentDomains, detectBrowserLanguage: _detectBrowserLanguage } = nuxtI18nOptions
+  const {
+    strategy,
+    defaultLocale,
+    differentDomains,
+    detectBrowserLanguage: _detectBrowserLanguage
+  } = useRuntimeConfig().public.i18n
 
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
@@ -242,7 +243,7 @@ export function detectRedirect({
   calledWithRouting?: boolean
 }): string {
   const nuxtApp = useNuxtApp()
-  const { strategy, differentDomains } = nuxtI18nOptions
+  const { strategy, differentDomains } = useRuntimeConfig().public.i18n
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
   __DEBUG__ && console.log('detectRedirect: calledWithRouting -> ', calledWithRouting, routeLocaleGetter(route.to))
@@ -318,10 +319,10 @@ export async function navigate(
   args: NavigateArgs,
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
-  const rootRedirect = nuxtI18nOptions.rootRedirect ?? nuxtI18nOptionsDefault.rootRedirect
-  const differentDomains = nuxtI18nOptions.differentDomains ?? nuxtI18nOptionsDefault.differentDomains
-  const skipSettingLocaleOnNavigate =
-    nuxtI18nOptions.skipSettingLocaleOnNavigate ?? nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
+  const buildOptions = useRuntimeConfig().public.i18n
+  const rootRedirect = buildOptions.rootRedirect
+  const differentDomains = buildOptions.differentDomains
+  const skipSettingLocaleOnNavigate = buildOptions.skipSettingLocaleOnNavigate
   const { i18n, locale, route } = args
   let { redirectPath } = args
 
@@ -399,14 +400,14 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
 // override prefix for route path, support domain
 export function extendPrefixable() {
   return (opts: PrefixableOptions): boolean => {
-    return DefaultPrefixable(opts) && !nuxtI18nOptions.differentDomains
+    return DefaultPrefixable(opts) && !useRuntimeConfig().public.i18n.differentDomains
   }
 }
 
 // override switch locale path intercepter, support domain
 export function extendSwitchLocalePathIntercepter(): SwitchLocalePathIntercepter {
   return (path: string, locale: Locale): string => {
-    if (nuxtI18nOptions.differentDomains) {
+    if (useRuntimeConfig().public.i18n.differentDomains) {
       const domain = getDomainFromLocale(locale)
       __DEBUG__ && console.log('extendSwitchLocalePathIntercepter: domain -> ', domain, ' path -> ', path)
       if (domain) {
@@ -424,7 +425,8 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
   return (): string => {
     const ctx = useNuxtApp()
     const runtimeConfig = useRuntimeConfig()
-    const baseUrl = nuxtI18nOptions.baseUrl
+    const buildOptions = runtimeConfig.public.i18n
+    const baseUrl = runtimeConfig.public.i18n.baseUrl!
 
     if (isFunction(baseUrl)) {
       const baseUrlResult = baseUrl(ctx)
@@ -432,9 +434,9 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
       return baseUrlResult
     }
 
-    const localeCodeLoader = nuxtI18nOptions.defaultLocale
+    const localeCodeLoader = buildOptions.defaultLocale
     const localeCode = isFunction(localeCodeLoader) ? localeCodeLoader() : localeCodeLoader
-    if (nuxtI18nOptions.differentDomains && localeCode) {
+    if (buildOptions.differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode)
       if (domain) {
         __DEBUG__ && console.log('baseUrl: using differentDomains -', domain)

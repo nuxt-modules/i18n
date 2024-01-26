@@ -140,8 +140,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     // for public
+
     nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
       baseUrl: options.baseUrl,
+      defaultLocale: options.defaultLocale,
+      defaultDirection: options.defaultDirection,
+      strategy: options.strategy,
+      detectBrowserLanguage: options.detectBrowserLanguage,
+      lazy: options.lazy,
+      rootRedirect: options.rootRedirect,
+      routesNameSeparator: options.routesNameSeparator,
+      defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix,
+      skipSettingLocaleOnNavigate: options.skipSettingLocaleOnNavigate,
+      differentDomains: options.differentDomains,
+      trailingSlash: options.trailingSlash,
       locales: options.locales.reduce(
         (obj, locale) => {
           if (typeof locale === 'string') {
@@ -336,7 +348,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
 export interface ModuleOptions extends NuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
-  i18n?: Pick<NuxtI18nOptions<unknown>, 'baseUrl'>
+  i18n: Pick<NuxtI18nOptions<unknown>, 'baseUrl' | 'rootRedirect'> &
+    Pick<
+      Required<NuxtI18nOptions<unknown>>,
+      | 'differentDomains'
+      | 'skipSettingLocaleOnNavigate'
+      | 'defaultLocale'
+      | 'lazy'
+      | 'defaultDirection'
+      | 'detectBrowserLanguage'
+      | 'strategy'
+      | 'routesNameSeparator'
+      | 'defaultLocaleRouteNameSuffix'
+      | 'trailingSlash'
+    >
 }
 
 export interface ModuleHooks {
