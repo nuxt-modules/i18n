@@ -108,17 +108,16 @@ export function useSetI18nParams(
 }
 
 /**
- * The function that resolve route.
+ * The `localeHead` function returns localized head properties for locale-related aspects.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localeRoute}.
+ * The parameter signature of this function is the same as {@link localeHead}.
  *
- * @param route - A route location. The path or name of the route or an object for more complex routes.
- * @param locale - A locale optinal, if not specified, uses the current locale.
+ * @param options - An options object, see {@link I18nHeadOptions}
  *
  * @returns the route object for a given route, the route object is resolved by vue-router rather than just a full route path.
  *
- * @see {@link useLocaleRoute}
+ * @see {@link localeHead}
  *
  * @public
  */
@@ -127,7 +126,7 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => ReturnType<typeof
 /**
  * The `useLocaleHead` composable returns localized head properties for locale-related aspects.
  *
- * @param options - An options, see about details {@link I18nHeadOptions}
+ * @param options - An options object, see {@link I18nHeadOptions}
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties} with Vue `ref`.
  *
@@ -209,7 +208,7 @@ export function useRouteBaseName(): RouteBaseNameFunction {
  * The function that resolve locale path.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localePath}.
+ * The parameter signature of this function is same as {@link localePath}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
  * @param locale - A locale optional, if not specified, uses the current locale.
@@ -240,7 +239,7 @@ export function useLocalePath(common = initComposableOptions()): LocalePathFunct
  * The function that resolve route.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localeRoute}.
+ * The parameter signature of this function is same as {@link localeRoute}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
  * @param locale - A locale optinal, if not specified, uses the current locale.
@@ -274,7 +273,7 @@ export function useLocaleRoute(common = initComposableOptions()): LocaleRouteFun
  * The function that resolve locale location.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localeLocation}.
+ * The parameter signature of this function is same as {@link localeLocation}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
  * @param locale - A locale optional, if not specified, uses the current locale.
@@ -305,7 +304,7 @@ export function useLocaleLocation(common = initComposableOptions()): LocaleLocat
  * The functin that swtich locale path.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link switchLocalePath}.
+ * The parameter signature of this function is same as {@link switchLocalePath}.
  *
  * @param locale - A locale optional, if not specified, uses the current locale.
  *
