@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { joinURL, isEqual } from 'ufo'
-import { isString, isFunction, isArray, isObject } from '@intlify/shared'
-import { navigateTo, useNuxtApp, useRoute, useRouter, useRuntimeConfig, useState } from '#imports'
+import { isString, isFunction, isObject } from '@intlify/shared'
+import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
   nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
@@ -13,10 +13,7 @@ import {
   type PrefixableOptions,
   type SwitchLocalePathIntercepter,
   type BaseUrlResolveHandler,
-  type I18nHeadOptions,
-  type LocaleObject,
-  STRATEGIES,
-  type SeoAttributesOptions
+  type LocaleObject
 } from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
@@ -29,14 +26,14 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-import { useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocalePath, useLocaleHead } from '#i18n'
+import { useLocaleRoute, useSwitchLocalePath, useLocalePath, useLocaleHead } from '#i18n'
 import {
   switchLocalePath,
   getRouteBaseName,
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
 } from './routing/compatibles'
-import { getComposer, getLocale, setLocale, getLocaleCodes, getI18nTarget } from './routing/utils'
+import { getLocale, setLocale, getLocaleCodes, getI18nTarget } from './routing/utils'
 
 import type { I18n, Locale, FallbackLocale, Composer, VueI18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -392,15 +389,17 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n | VueI18n | Composer
   /**
    * NOTE:
    *  we will inject `i18n.global` to **nuxt app instance only**
-   *  because vue-i18n has already injected into vue,
-   *  it's not necessary to do, so we borrow from nuxt inject implementation.
+   *  as vue-i18n has already been injected into vue,
+   *
+   *  implementation borrowed from
+   *  https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
    */
-  defineGetter(nuxt as any, '$i18n', getI18nTarget(i18n))
-  defineGetter(nuxt as any, '$getRouteBaseName', getRouteBaseName)
-  defineGetter(nuxt as any, '$localePath', useLocalePath())
-  defineGetter(nuxt as any, '$localeRoute', useLocaleRoute())
-  defineGetter(nuxt as any, '$switchLocalePath', useSwitchLocalePath())
-  defineGetter(nuxt as any, '$localeHead', useLocaleHead())
+  defineGetter(nuxt, '$i18n', getI18nTarget(i18n))
+  defineGetter(nuxt, '$getRouteBaseName', getRouteBaseName)
+  defineGetter(nuxt, '$localePath', useLocalePath())
+  defineGetter(nuxt, '$localeRoute', useLocaleRoute())
+  defineGetter(nuxt, '$switchLocalePath', useSwitchLocalePath())
+  defineGetter(nuxt, '$localeHead', useLocaleHead())
 }
 
 // override prefix for route path, support domain
@@ -460,143 +459,7 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
-
 export type HeadParam = Required<Pick<HeadSafe, 'meta' | 'link'>>
-type IdParam = NonNullable<I18nHeadOptions['identifierAttribute']>
-
-export function addHreflangLinks(locales: LocaleObject[], head: HeadParam, idAttribute: IdParam) {
-  const { defaultLocale, strategy, baseUrl } = getComposer(useNuxtApp().$i18n)
-  const switchLocalePath = useSwitchLocalePath()
-
-  if (strategy === STRATEGIES.NO_PREFIX) {
-    return
-  }
-
-  const localeMap = new Map<string, LocaleObject>()
-  const links = []
-  for (const locale of locales) {
-    const localeIso = locale.iso
-
-    if (!localeIso) {
-      console.warn('Locale ISO code is required to generate alternate link')
-      continue
-    }
-
-    const [language, region] = localeIso.split('-')
-    if (language && region && (locale.isCatchallLocale || !localeMap.has(language))) {
-      localeMap.set(language, locale)
-    }
-
-    localeMap.set(localeIso, locale)
-  }
-
-  for (const [iso, mapLocale] of localeMap.entries()) {
-    const localePath = switchLocalePath(mapLocale.code)
-    if (localePath) {
-      links.push({
-        [idAttribute]: `i18n-alt-${iso}`,
-        rel: 'alternate',
-        href: toAbsoluteUrl(localePath, baseUrl.value),
-        hreflang: iso
-      })
-    }
-  }
-
-  if (defaultLocale) {
-    const localePath = switchLocalePath(defaultLocale)
-    if (localePath) {
-      links.push({
-        [idAttribute]: 'i18n-xd',
-        rel: 'alternate',
-        href: toAbsoluteUrl(localePath, baseUrl.value),
-        hreflang: 'x-default'
-      })
-    }
-  }
-
-  head.link.push(...links)
-}
-
-export function addCanonicalLinksAndOgUrl(
-  head: HeadParam,
-  idAttribute: IdParam,
-  seoAttributesOptions: SeoAttributesOptions = {}
-) {
-  const { baseUrl } = getComposer(useNuxtApp().$i18n)
-  const route = useRoute()
-  const localeRoute = useLocaleRoute()
-  const getRouteBaseName = useRouteBaseName()
-  const currentRoute = localeRoute({ ...route, name: getRouteBaseName.call(route) })
-
-  if (!currentRoute) return
-  let href = toAbsoluteUrl(currentRoute.path, baseUrl.value)
-
-  const canonicalQueries = (isObject(seoAttributesOptions) && seoAttributesOptions.canonicalQueries) || []
-  const currentRouteQueryParams = currentRoute.query
-  const params = new URLSearchParams()
-  for (const queryParamName of canonicalQueries) {
-    if (queryParamName in currentRouteQueryParams) {
-      const queryParamValue = currentRouteQueryParams[queryParamName]
-
-      if (isArray(queryParamValue)) {
-        queryParamValue.forEach(v => params.append(queryParamName, v || ''))
-      } else {
-        params.append(queryParamName, queryParamValue || '')
-      }
-    }
-  }
-
-  const queryString = params.toString()
-  if (queryString) {
-    href = `${href}?${queryString}`
-  }
-
-  head.link.push({ [idAttribute]: 'i18n-can', rel: 'canonical', href })
-  head.meta.push({ [idAttribute]: 'i18n-og-url', property: 'og:url', content: href })
-}
-
-export function addCurrentOgLocale(
-  currentLocale: LocaleObject,
-  currentIso: string | undefined,
-  head: HeadParam,
-  idAttribute: IdParam
-) {
-  if (!currentLocale || !currentIso) return
-
-  head.meta.push({
-    [idAttribute]: 'i18n-og',
-    property: 'og:locale',
-    // Replace dash with underscore as defined in spec: language_TERRITORY
-    content: hypenToUnderscore(currentIso)
-  })
-}
-
-export function addAlternateOgLocales(
-  locales: LocaleObject[],
-  currentIso: string | undefined,
-  head: HeadParam,
-  idAttribute: IdParam
-) {
-  const alternateLocales = locales.filter(locale => locale.iso && locale.iso !== currentIso)
-
-  for (const locale of alternateLocales) {
-    head.meta.push({
-      [idAttribute]: `i18n-og-alt-${locale.iso}`,
-      property: 'og:locale:alternate',
-      content: hypenToUnderscore(locale.iso!)
-    })
-  }
-}
-
-function hypenToUnderscore(str: string) {
-  return (str || '').replace(/-/g, '_')
-}
-
-function toAbsoluteUrl(urlOrPath: string, baseUrl: string) {
-  if (urlOrPath.match(/^https?:\/\//)) return urlOrPath
-  return baseUrl + urlOrPath
-}
-
 export function getNormalizedLocales(locales: string[] | LocaleObject[]): LocaleObject[] {
   const normalized: LocaleObject[] = []
   for (const locale of locales) {
