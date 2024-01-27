@@ -1,9 +1,9 @@
-import { useRouter } from '#imports'
 import { assign } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationNormalizedLoaded, RouteLocationPathRaw } from 'vue-router'
 import type { Strategies } from '#build/i18n.options.mjs'
+import type { CommonComposableOptions } from '../../utils'
 
 function split(str: string, index: number) {
   const result = [str.slice(0, index), str.slice(index)]
@@ -37,8 +37,12 @@ export function routeToObject(route: RouteLocationNormalizedLoaded) {
  * When using the `prefix` strategy, the path specified by `localePath` is specified as a path not prefixed with a locale.
  * This will cause vue-router to issue a warning, so we can work-around by using `router.options.routes`.
  */
-export function resolve(route: RouteLocationPathRaw, strategy: Strategies, locale: Locale) {
-  const router = useRouter()
+export function resolve(
+  route: RouteLocationPathRaw,
+  strategy: Strategies,
+  locale: Locale,
+  { router }: CommonComposableOptions
+) {
   if (strategy !== 'prefix') {
     return router.resolve(route)
   }

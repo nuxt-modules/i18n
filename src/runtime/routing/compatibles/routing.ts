@@ -123,11 +123,8 @@ export function localeLocation(
   return resolved ?? undefined
 }
 
-export function resolveRoute(
-  route: RouteLocationRaw,
-  locale: Locale | undefined,
-  { i18n, router }: CommonComposableOptions
-) {
+export function resolveRoute(route: RouteLocationRaw, locale: Locale | undefined, common: CommonComposableOptions) {
+  const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
   const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } = nuxtI18nOptions
   const prefixable = extendPrefixable()
@@ -153,7 +150,7 @@ export function resolveRoute(
     'path' in val && !!val.path && !('name' in val)
 
   if (isRouteLocationPathRaw(localizedRoute)) {
-    const resolvedRoute = resolve(localizedRoute, strategy, _locale)
+    const resolvedRoute = resolve(localizedRoute, strategy, _locale, common)
 
     // @ts-ignore
     const resolvedRouteName = getRouteBaseName(resolvedRoute)
