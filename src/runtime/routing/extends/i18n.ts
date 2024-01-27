@@ -2,15 +2,9 @@ import { isObject, isFunction, assign } from '@intlify/shared'
 import { computed, effectScope, ref, watch } from '#imports'
 import { DEFAULT_BASE_URL } from '#build/i18n.options.mjs'
 import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
-import {
-  localePath,
-  localeRoute,
-  localeLocation,
-  switchLocalePath,
-  getRouteBaseName,
-  resolveRoute,
-  localeHead
-} from '../compatibles'
+import { getRouteBaseName, resolveRoute } from '../compatibles'
+import { useLocalePath, useLocaleRoute, useLocaleLocation, useSwitchLocalePath, useLocaleHead } from '#i18n'
+import { initComposableOptions } from '../../utils'
 
 import type { NuxtApp } from 'nuxt/app'
 import type {
@@ -138,16 +132,17 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     }
 
     if (pluginOptions.inject) {
+      const common = initComposableOptions(i18n)
       // extend vue component instance
       vue.mixin({
         methods: {
           resolveRoute,
-          localePath,
-          localeRoute,
-          localeLocation,
-          switchLocalePath,
           getRouteBaseName,
-          localeHead
+          localePath: useLocalePath(common),
+          localeRoute: useLocaleRoute(common),
+          localeLocation: useLocaleLocation(common),
+          switchLocalePath: useSwitchLocalePath(common),
+          localeHead: useLocaleHead
         }
       })
     }

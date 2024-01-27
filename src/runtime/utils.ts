@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isArray, isObject } from '@intlify/shared'
-import { navigateTo, useNuxtApp, useRoute, useRuntimeConfig, useState } from '#imports'
+import { navigateTo, useNuxtApp, useRoute, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
   nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
@@ -26,28 +26,26 @@ import {
   defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
-  proxyNuxt,
   DefaultDetectBrowserLanguageFromResult
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-
-import type { I18n, Locale, FallbackLocale } from 'vue-i18n'
-import type { NuxtApp } from '#app'
-import type { DetectLocaleContext } from './internal'
-import type { HeadSafe } from '@unhead/vue'
-import { useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '#i18n'
+import { useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocalePath, useLocaleHead } from '#i18n'
 import {
-  localePath,
-  localeRoute,
   switchLocalePath,
   getRouteBaseName,
   DefaultPrefixable,
-  DefaultSwitchLocalePathIntercepter,
-  localeHead
+  DefaultSwitchLocalePathIntercepter
 } from './routing/compatibles'
-import { getComposer, getLocale, setLocale, getLocaleCodes } from './routing/utils'
+import { getComposer, getLocale, setLocale, getLocaleCodes, getI18nTarget } from './routing/utils'
+
+import type { I18n, Locale, FallbackLocale, Composer, VueI18n } from 'vue-i18n'
+import type { NuxtApp } from '#app'
+import type { Router } from '#vue-router'
+import type { DetectLocaleContext } from './internal'
+import type { HeadSafe } from '@unhead/vue'
 import type { createLocaleFromRouteGetter } from './routing/extends/router'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import type { RuntimeConfig } from '@nuxt/schema'
 
 export function _setLocale(i18n: I18n, locale: Locale) {
   return callVueI18nInterfaces(i18n, 'setLocale', locale)
@@ -81,6 +79,19 @@ export function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: str
 
 export async function finalizePendingLocaleChange(i18n: I18n) {
   return callVueI18nInterfaces(i18n, 'finalizePendingLocaleChange')
+}
+
+export type CommonComposableOptions = {
+  router: Router
+  i18n: I18n
+  runtimeConfig: RuntimeConfig
+}
+export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
+  return {
+    i18n: i18n ?? useNuxtApp().$i18n,
+    router: useRouter(),
+    runtimeConfig: useRuntimeConfig()
+  }
 }
 
 export async function loadAndSetLocale(
@@ -242,6 +253,7 @@ export function detectRedirect({
   calledWithRouting?: boolean
 }): string {
   const nuxtApp = useNuxtApp()
+  const common = initComposableOptions()
   const { strategy, differentDomains } = nuxtI18nOptions
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
@@ -286,7 +298,7 @@ export function detectRedirect({
      *  so, we don't call that function, and instead, we call `useSwitchLocalePath`,
      *  let it be processed by the route of the router middleware.
      */
-    const routePath = switchLocalePath(targetLocale, route.to)
+    const routePath = switchLocalePath(targetLocale, route.to, common)
     __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
     if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       redirectPath = routePath
@@ -376,24 +388,19 @@ export async function navigate(
   }
 }
 
-export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
+export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n | VueI18n | Composer) {
   /**
    * NOTE:
    *  we will inject `i18n.global` to **nuxt app instance only**
    *  because vue-i18n has already injected into vue,
    *  it's not necessary to do, so we borrow from nuxt inject implementation.
    */
-  defineGetter(nuxt as any, '$i18n', i18n.global)
-
-  for (const pair of [
-    ['getRouteBaseName', getRouteBaseName],
-    ['localePath', localePath],
-    ['localeRoute', localeRoute],
-    ['switchLocalePath', switchLocalePath],
-    ['localeHead', localeHead]
-  ]) {
-    defineGetter(nuxt as any, '$' + pair[0], proxyNuxt(nuxt, pair[1] as (...args: any) => any))
-  }
+  defineGetter(nuxt as any, '$i18n', getI18nTarget(i18n))
+  defineGetter(nuxt as any, '$getRouteBaseName', getRouteBaseName)
+  defineGetter(nuxt as any, '$localePath', useLocalePath())
+  defineGetter(nuxt as any, '$localeRoute', useLocaleRoute())
+  defineGetter(nuxt as any, '$switchLocalePath', useSwitchLocalePath())
+  defineGetter(nuxt as any, '$localeHead', useLocaleHead())
 }
 
 // override prefix for route path, support domain
