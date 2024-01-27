@@ -71,11 +71,11 @@ export function getRouteBaseName(givenRoute?: RouteLocation): string | undefined
  * @public
  */
 export function localePath(
+  common: CommonComposableOptions,
   route: RouteLocationRaw,
-  locale: Locale | undefined, // TODO: locale should be more type inference (completion)
-  common: CommonComposableOptions
+  locale?: Locale // TODO: locale should be more type inference (completion)
 ): string {
-  const localizedRoute = resolveRoute(route, locale, common)
+  const localizedRoute = resolveRoute(common, route, locale)
   return localizedRoute == null ? '' : localizedRoute.redirectedFrom?.fullPath || localizedRoute.fullPath
 }
 
@@ -93,11 +93,11 @@ export function localePath(
  * @public
  */
 export function localeRoute(
+  common: CommonComposableOptions,
   route: RouteLocationRaw,
-  locale: Locale | undefined, // TODO: locale should be more type inference (completion)
-  common: CommonComposableOptions
+  locale?: Locale // TODO: locale should be more type inference (completion)
 ): ReturnType<Router['resolve']> | undefined {
-  const resolved = resolveRoute(route, locale, common)
+  const resolved = resolveRoute(common, route, locale)
   return resolved ?? undefined
 }
 
@@ -115,15 +115,15 @@ export function localeRoute(
  * @public
  */
 export function localeLocation(
+  common: CommonComposableOptions,
   route: RouteLocationRaw,
-  locale: Locale | undefined, // TODO: locale should be more type inference (completion)
-  common: CommonComposableOptions
+  locale?: Locale // TODO: locale should be more type inference (completion)
 ): Location | (RouteLocation & { href: string }) | undefined {
-  const resolved = resolveRoute(route, locale, common)
+  const resolved = resolveRoute(common, route, locale)
   return resolved ?? undefined
 }
 
-export function resolveRoute(route: RouteLocationRaw, locale: Locale | undefined, common: CommonComposableOptions) {
+export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
   const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } = nuxtI18nOptions
@@ -150,7 +150,7 @@ export function resolveRoute(route: RouteLocationRaw, locale: Locale | undefined
     'path' in val && !!val.path && !('name' in val)
 
   if (isRouteLocationPathRaw(localizedRoute)) {
-    const resolvedRoute = resolve(localizedRoute, strategy, _locale, common)
+    const resolvedRoute = resolve(common, localizedRoute, strategy, _locale)
 
     // @ts-ignore
     const resolvedRouteName = getRouteBaseName(resolvedRoute)
@@ -228,9 +228,9 @@ function getLocalizableMetaFromDynamicParams(
  * @public
  */
 export function switchLocalePath(
+  common: CommonComposableOptions,
   locale: Locale,
-  _route: RouteLocationNormalized | RouteLocationNormalizedLoaded | undefined,
-  common: CommonComposableOptions
+  _route?: RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
   const route = _route ?? common.router.currentRoute.value
   const name = getRouteBaseName(route)
@@ -244,7 +244,7 @@ export function switchLocalePath(
   const resolvedParams = getLocalizableMetaFromDynamicParams(route)[locale]
 
   const baseRoute = { ...routeCopy, name, params: { ...routeCopy.params, ...resolvedParams } }
-  const path = localePath(baseRoute, locale, common)
+  const path = localePath(common, baseRoute, locale)
 
   // custom locale path with interceptor
   return switchLocalePathIntercepter(path, locale)

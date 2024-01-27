@@ -58,12 +58,12 @@ export function localeHead(
     }
 
     metaObject.link.push(
-      ...getHreflangLinks(unref(locales) as LocaleObject[], idAttribute, common),
-      ...getCanonicalLink(idAttribute, seoAttributes, common)
+      ...getHreflangLinks(common, unref(locales) as LocaleObject[], idAttribute),
+      ...getCanonicalLink(common, idAttribute, seoAttributes)
     )
 
     metaObject.meta.push(
-      ...getOgUrl(idAttribute, seoAttributes, common),
+      ...getOgUrl(common, idAttribute, seoAttributes),
       ...getCurrentOgLocale(currentLocale, currentIso, idAttribute),
       ...getAlternateOgLocales(unref(locales) as LocaleObject[], currentIso, idAttribute)
     )
@@ -78,9 +78,9 @@ function getBaseUrl() {
 }
 
 export function getHreflangLinks(
+  common: CommonComposableOptions,
   locales: LocaleObject[],
-  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>,
-  common: CommonComposableOptions
+  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
   const baseUrl = getBaseUrl()
   const { defaultLocale, strategy } = nuxtI18nOptions
@@ -106,7 +106,7 @@ export function getHreflangLinks(
   }
 
   for (const [iso, mapLocale] of localeMap.entries()) {
-    const localePath = switchLocalePath(mapLocale.code, undefined, common)
+    const localePath = switchLocalePath(common, mapLocale.code)
     if (localePath) {
       links.push({
         [idAttribute]: `i18n-alt-${iso}`,
@@ -118,7 +118,7 @@ export function getHreflangLinks(
   }
 
   if (defaultLocale) {
-    const localePath = switchLocalePath(defaultLocale, undefined, common)
+    const localePath = switchLocalePath(common, defaultLocale)
     if (localePath) {
       links.push({
         [idAttribute]: 'i18n-xd',
@@ -133,12 +133,12 @@ export function getHreflangLinks(
 }
 
 export function getCanonicalUrl(
+  common: CommonComposableOptions,
   baseUrl: string,
-  seoAttributes: I18nHeadOptions['addSeoAttributes'],
-  common: CommonComposableOptions
+  seoAttributes: I18nHeadOptions['addSeoAttributes']
 ) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute({ ...route, name: getRouteBaseName(route) }, undefined, common)
+  const currentRoute = localeRoute(common, { ...route, name: getRouteBaseName(route) })
 
   if (!currentRoute) return ''
   let href = toAbsoluteUrl(currentRoute.path, baseUrl)
@@ -167,24 +167,24 @@ export function getCanonicalUrl(
 }
 
 export function getCanonicalLink(
+  common: CommonComposableOptions,
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>,
-  seoAttributes: I18nHeadOptions['addSeoAttributes'],
-  common: CommonComposableOptions
+  seoAttributes: I18nHeadOptions['addSeoAttributes']
 ) {
   const baseUrl = getBaseUrl()
-  const href = getCanonicalUrl(baseUrl, seoAttributes, common)
+  const href = getCanonicalUrl(common, baseUrl, seoAttributes)
   if (!href) return []
 
   return [{ [idAttribute]: 'i18n-can', rel: 'canonical', href }]
 }
 
 export function getOgUrl(
+  common: CommonComposableOptions,
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>,
-  seoAttributes: I18nHeadOptions['addSeoAttributes'],
-  common: CommonComposableOptions
+  seoAttributes: I18nHeadOptions['addSeoAttributes']
 ) {
   const baseUrl = getBaseUrl()
-  const href = getCanonicalUrl(baseUrl, seoAttributes, common)
+  const href = getCanonicalUrl(common, baseUrl, seoAttributes)
   if (!href) return []
 
   return [{ [idAttribute]: 'i18n-og-url', property: 'og:url', content: href }]

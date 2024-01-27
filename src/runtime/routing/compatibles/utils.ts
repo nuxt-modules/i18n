@@ -38,10 +38,10 @@ export function routeToObject(route: RouteLocationNormalizedLoaded) {
  * This will cause vue-router to issue a warning, so we can work-around by using `router.options.routes`.
  */
 export function resolve(
+  { router }: CommonComposableOptions,
   route: RouteLocationPathRaw,
   strategy: Strategies,
-  locale: Locale,
-  { router }: CommonComposableOptions
+  locale: Locale
 ) {
   if (strategy !== 'prefix') {
     return router.resolve(route)

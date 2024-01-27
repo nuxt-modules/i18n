@@ -80,7 +80,7 @@ export async function finalizePendingLocaleChange(i18n: I18n) {
 
 /**
  * Common options used internally by composable functions, these
- * are initialized when calling a composable wrapper function.
+ * are initialized when calling a wrapped composable function.
  *
  * @internal
  */
@@ -89,7 +89,7 @@ export type CommonComposableOptions = {
   i18n: I18n
   runtimeConfig: RuntimeConfig
 }
-export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
+export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
   return {
     i18n: i18n ?? useNuxtApp().$i18n,
     router: useRouter(),
@@ -256,7 +256,7 @@ export function detectRedirect({
   calledWithRouting?: boolean
 }): string {
   const nuxtApp = useNuxtApp()
-  const common = initComposableOptions()
+  const common = initCommonComposableOptions()
   const { strategy, differentDomains } = nuxtI18nOptions
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
@@ -301,7 +301,7 @@ export function detectRedirect({
      *  so, we don't call that function, and instead, we call `useSwitchLocalePath`,
      *  let it be processed by the route of the router middleware.
      */
-    const routePath = switchLocalePath(targetLocale, route.to, common)
+    const routePath = switchLocalePath(common, targetLocale, route.to)
     __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
     if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       redirectPath = routePath

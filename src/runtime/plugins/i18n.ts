@@ -34,7 +34,12 @@ import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
-import type { LocaleHeadFunction, LocalePathFunction, LocaleRouteFunction, SwitchLocalePathFunction } from '#i18n'
+import type {
+  LocaleHeadFunction,
+  LocalePathFunction,
+  LocaleRouteFunction,
+  SwitchLocalePathFunction
+} from '../composables'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',

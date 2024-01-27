@@ -3,7 +3,7 @@ import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { localeCodes, normalizedLocales, nuxtI18nOptions } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
-import { initComposableOptions, getNormalizedLocales } from '../utils'
+import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
 import {
   getAlternateOgLocales,
   getCanonicalLink,
@@ -23,10 +23,20 @@ import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocation, RouteLocationNormalizedLoaded, RouteLocationRaw, Router } from 'vue-router'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#build/i18n.options.mjs'
-import type { HeadParam } from '../utils'
+import type { CommonComposableOptions, HeadParam } from '../utils'
 
 export * from 'vue-i18n'
 export * from './shared'
+
+type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => any>(
+  fn: F,
+  common = initCommonComposableOptions()
+) {
+  return (...args: TailParameters<F>) => fn(common, ...args)
+}
 
 /**
  * Returns a function to set i18n params.
@@ -38,10 +48,8 @@ export * from './shared'
  * @public
  */
 export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
-export function useSetI18nParams(
-  seoAttributes?: SeoAttributesOptions,
-  common = initComposableOptions()
-): SetI18nParamsFunction {
+export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
+  const common = initCommonComposableOptions()
   const head = getActiveHead()
   const i18n = getComposer(common.i18n)
   const router = common.router
@@ -87,12 +95,12 @@ export function useSetI18nParams(
 
       // prettier-ignore
       metaObject.link.push(
-        ...getHreflangLinks(locales, idAttribute, common),
-        ...getCanonicalLink(idAttribute, seoAttributes, common)
+        ...getHreflangLinks(common, locales, idAttribute),
+        ...getCanonicalLink(common, idAttribute, seoAttributes)
       )
 
       metaObject.meta.push(
-        ...getOgUrl(idAttribute, seoAttributes, common),
+        ...getOgUrl(common, idAttribute, seoAttributes),
         ...getCurrentOgLocale(currentLocale, currentLocaleIso, idAttribute),
         ...getAlternateOgLocales(locales, currentLocaleIso, idAttribute)
       )
@@ -132,10 +140,12 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => ReturnType<typeof
  *
  * @public
  */
-export function useLocaleHead(
-  { addDirAttribute = false, addSeoAttributes = false, identifierAttribute = 'hid' }: I18nHeadOptions = {},
-  common = initComposableOptions()
-): Ref<I18nHeadMetaInfo> {
+export function useLocaleHead({
+  addDirAttribute = false,
+  addSeoAttributes = false,
+  identifierAttribute = 'hid'
+}: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
+  const common = initCommonComposableOptions()
   const metaObject: Ref<I18nHeadMetaInfo> = ref({
     htmlAttrs: {},
     link: [],
@@ -231,8 +241,8 @@ export type LocalePathFunction = (route: RouteLocation | RouteLocationRaw, local
  *
  * @public
  */
-export function useLocalePath(common = initComposableOptions()): LocalePathFunction {
-  return (route: RouteLocation | RouteLocationRaw, locale?: Locale) => localePath(route, locale, common)
+export function useLocalePath(): LocalePathFunction {
+  return wrapComposable(localePath)
 }
 
 /**
@@ -265,8 +275,8 @@ export type LocaleRouteFunction = (
  *
  * @public
  */
-export function useLocaleRoute(common = initComposableOptions()): LocaleRouteFunction {
-  return (route: RouteLocationRaw, locale?: Locale) => localeRoute(route, locale, common)
+export function useLocaleRoute(): LocaleRouteFunction {
+  return wrapComposable(localeRoute)
 }
 
 /**
@@ -296,8 +306,8 @@ export type LocaleLocationFunction = (route: RouteLocationRaw, locale?: Locale) 
  *
  * @public
  */
-export function useLocaleLocation(common = initComposableOptions()): LocaleLocationFunction {
-  return (route: RouteLocationRaw, locale?: Locale) => localeLocation(route, locale, common)
+export function useLocaleLocation(): LocaleLocationFunction {
+  return wrapComposable(localeLocation)
 }
 
 /**
@@ -326,8 +336,9 @@ export type SwitchLocalePathFunction = (locale: Locale) => string
  *
  * @public
  */
-export function useSwitchLocalePath(common = initComposableOptions()): SwitchLocalePathFunction {
-  return (locale: Locale) => switchLocalePath(locale, undefined, common)
+
+export function useSwitchLocalePath(): SwitchLocalePathFunction {
+  return wrapComposable(switchLocalePath)
 }
 
 /**
