@@ -78,6 +78,12 @@ export async function finalizePendingLocaleChange(i18n: I18n) {
   return callVueI18nInterfaces(i18n, 'finalizePendingLocaleChange')
 }
 
+/**
+ * Common options used internally by composable functions, these
+ * are initialized when calling a composable wrapper function.
+ *
+ * @internal
+ */
 export type CommonComposableOptions = {
   router: Router
   i18n: I18n
