@@ -7,6 +7,16 @@ export default defineAppConfig({
         left: 'text-sm text-gray-500 dark:text-gray-400',
         wrapper: 'border-t border-gray-200 dark:border-gray-800'
       }
+    },
+    content: {
+      prose: {
+        code: {
+          icon: {
+            '.env': 'vscode-icons:file-type-dotenv',
+            '.env.example': 'vscode-icons:file-type-dotenv'
+          }
+        }
+      }
     }
   },
   seo: {
