@@ -1,0 +1,68 @@
+title: 'Nuxt UI Pro - Docs template'
+description: 'Welcome to Nuxt UI Pro documentation template.'
+navigation: false
+hero:
+  title: 'Build your docs in seconds'
+  description: 'Create your documentation in seconds with this template!'
+  orientation: horizontal
+  headline:
+    label: Made with Nuxt UI Pro
+    to: https://ui.nuxt.com/pro
+    icon: i-heroicons-arrow-top-right-on-square-20-solid
+  links:
+    - label: Get started
+      icon: i-heroicons-arrow-right-20-solid
+      trailing: true
+      to: '/getting-started'
+      size: lg
+    - label: Use this template
+      icon: i-simple-icons-github
+      size: lg
+      color: gray
+      to: https://github.com/nuxt-ui-pro/docs
+      target: _blank
+  code: |
+    ```bash [Terminal]
+    npx nuxi init -t github:nuxt-ui-pro/docs
+    ```
+features:
+  title: 'All-in-one docs template'
+  links:
+    - label: 'Explore Nuxt UI Pro'
+      icon: 'i-simple-icons-nuxtdotjs'
+      trailingIcon: 'i-heroicons-arrow-right-20-solid'
+      color: 'gray'
+      to: 'https://ui.nuxt.com/pro'
+      target: '_blank'
+      size: lg
+  items:
+    - title: 'Nuxt 3'
+      description: 'Powered by Nuxt 3 for optimal performances and SEO.'
+      icon: 'i-simple-icons-nuxtdotjs'
+      to: 'https://nuxt.com'
+      target: '_blank'
+    - title: 'Markdown'
+      description: 'Write your pages with MDC thanks to Nuxt Content.'
+      icon: 'i-simple-icons-markdown'
+      to: 'https://content.nuxt.com'
+      target: '_blank'
+    - title: 'Nuxt UI'
+      description: 'Offers a very large set of full customizable components.'
+      icon: 'i-heroicons-sparkles-20-solid'
+      to: 'https://ui.nuxt.com'
+      target: '_blank'
+    - title: 'TypeScript'
+      description: 'A fully typed development experience.'
+      icon: 'i-simple-icons-typescript'
+      to: 'https://www.typescriptlang.org'
+      target: '_blank'
+    - title: 'Nuxt Studio'
+      description: 'Supported by Nuxt Studio for fast updates and previews.'
+      icon: 'i-simple-icons-nuxtdotjs'
+      to: 'https://nuxt.studio'
+      target: '_blank'
+    - title: 'Search'
+      description: 'A full-text search modal empowered by Fuse.js.'
+      icon: 'i-heroicons-magnifying-glass-20-solid'
+      to: 'https://ui.nuxt.com/pro/components/docs/docs-search'
+      target: '_blank'
