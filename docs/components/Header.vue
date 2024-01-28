@@ -1,28 +1,28 @@
 <script setup lang="ts">
 import type { NavItem } from '@nuxt/content/dist/runtime/types'
+import type { HeaderLink } from '#ui-pro/types'
 
-const navigation = inject<NavItem[]>('navigation', [])
+defineProps<{ links: HeaderLink[] }>()
 
 const { header } = useAppConfig()
+const { metaSymbol } = useShortcuts()
+const navigation = inject<NavItem[]>('navigation', [])
 </script>
 
 <template>
-  <UHeader>
+  <UHeader :links="links">
     <template #logo>
-      <template v-if="header?.logo?.dark || header?.logo?.light">
-        <UColorModeImage v-bind="{ class: 'h-6 w-auto', ...header?.logo }" />
-      </template>
-      <template v-else> Nuxt i18n </template>
-    </template>
-
-    <template v-if="header?.search" #center>
-      <UDocsSearchButton class="hidden lg:flex" />
+      <TheLogo class="w-auto h-8" />
     </template>
 
     <template #right>
-      <UDocsSearchButton v-if="header?.search" :label="null" class="lg:hidden" />
+      <UTooltip text="Search" :shortcuts="[metaSymbol, 'K']">
+        <UDocsSearchButton :label="null" />
+      </UTooltip>
 
-      <UColorModeButton v-if="header?.colorMode" />
+      <UTooltip text="Toggle Theme">
+        <UColorModeButton v-if="header?.colorMode" />
+      </UTooltip>
 
       <template v-if="header?.links">
         <UButton
