@@ -10,7 +10,7 @@ export default defineAppConfig({
     }
   },
   seo: {
-    siteName: 'Nuxt UI Pro - Docs template'
+    siteName: 'Internationalization for Nuxt Applications · @nuxtjs/i18n'
   },
   header: {
     logo: {
@@ -23,14 +23,14 @@ export default defineAppConfig({
     links: [
       {
         icon: 'i-simple-icons-github',
-        to: 'https://github.com/nuxt-ui-pro/docs',
+        to: 'https://github.com/nuxt-modules/i18n',
         target: '_blank',
-        'aria-label': 'Docs template on GitHub'
+        'aria-label': 'Nuxt i18n module'
       }
     ]
   },
   footer: {
-    credits: 'Copyright © 2023',
+    credits: `Copyright © ${new Date().getFullYear()}`,
     colorMode: false,
     links: [
       {
@@ -40,50 +40,17 @@ export default defineAppConfig({
         'aria-label': 'Nuxt Website'
       },
       {
-        icon: 'i-simple-icons-discord',
-        to: 'https://discord.com/invite/ps2h6QT',
-        target: '_blank',
-        'aria-label': 'Nuxt UI on Discord'
-      },
-      {
-        icon: 'i-simple-icons-x',
-        to: 'https://x.com/nuxt_js',
-        target: '_blank',
-        'aria-label': 'Nuxt on X'
-      },
-      {
         icon: 'i-simple-icons-github',
-        to: 'https://github.com/nuxt/ui',
+        to: 'https://github.com/nuxt-modules/i18n',
         target: '_blank',
-        'aria-label': 'Nuxt UI on GitHub'
+        'aria-label': 'Nuxt i18n module'
       }
     ]
   },
   toc: {
     title: 'Table of Contents',
     bottom: {
-      title: 'Community',
-      edit: 'https://github.com/nuxt-ui-pro/docs/edit/main/content',
-      links: [
-        {
-          icon: 'i-heroicons-star',
-          label: 'Star on GitHub',
-          to: 'https://github.com/nuxt/ui',
-          target: '_blank'
-        },
-        {
-          icon: 'i-heroicons-book-open',
-          label: 'Nuxt UI Pro docs',
-          to: 'https://ui.nuxt.com/pro/guide',
-          target: '_blank'
-        },
-        {
-          icon: 'i-simple-icons-nuxtdotjs',
-          label: 'Purchase a license',
-          to: 'https://ui.nuxt.com/pro/purchase',
-          target: '_blank'
-        }
-      ]
+      edit: 'https://github.com/nuxt-modules/i18n/docs/edit/main/content'
     }
   }
 })
