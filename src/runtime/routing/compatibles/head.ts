@@ -18,12 +18,12 @@ import type { CommonComposableOptions } from '../../utils'
  * @public
  */
 export function localeHead(
+  common: CommonComposableOptions,
   {
     addDirAttribute = false,
     addSeoAttributes: seoAttributes = true,
     identifierAttribute: idAttribute = 'hid'
-  }: I18nHeadOptions,
-  common: CommonComposableOptions
+  }: I18nHeadOptions
 ): I18nHeadMetaInfo {
   const { defaultDirection } = nuxtI18nOptions
   const i18n = getComposer(common.i18n)

@@ -161,10 +161,11 @@ export function useLocaleHead({
   }
 
   function updateMeta() {
-    metaObject.value = localeHead(
-      { addDirAttribute, addSeoAttributes, identifierAttribute },
-      common
-    ) as I18nHeadMetaInfo
+    metaObject.value = localeHead(common, {
+      addDirAttribute,
+      addSeoAttributes,
+      identifierAttribute
+    }) as I18nHeadMetaInfo
   }
 
   if (process.client) {
