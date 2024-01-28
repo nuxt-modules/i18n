@@ -1,68 +1,70 @@
-title: 'Nuxt UI Pro - Docs template'
-description: 'Welcome to Nuxt UI Pro documentation template.'
+title: 'Internationalization for Nuxt Applications · @nuxtjs/i18n'
+description: 'I18n (Internationalization) module for your Nuxt project powered by Vue I18n.'
 navigation: false
 hero:
-  title: 'Build your docs in seconds'
-  description: 'Create your documentation in seconds with this template!'
+  title: '[Internationalization]{.text-primary} for [Nuxt]{.text-primary} Apps'
+  description: 'I18n (Internationalization) module for your Nuxt project powered by Vue I18n.'
   orientation: horizontal
   headline:
-    label: Made with Nuxt UI Pro
-    to: https://ui.nuxt.com/pro
-    icon: i-heroicons-arrow-top-right-on-square-20-solid
+    label: v8 Stable!
   links:
-    - label: Get started
-      icon: i-heroicons-arrow-right-20-solid
-      trailing: true
+    - label: Get Started
+      trailingIcon: 'i-heroicons-arrow-right-20-solid'
       to: '/getting-started'
       size: lg
-    - label: Use this template
+    - label: Open in GitHub
       icon: i-simple-icons-github
       size: lg
-      color: gray
-      to: https://github.com/nuxt-ui-pro/docs
+      color: white
+      to: https://github.com/nuxt-modules/i18n
       target: _blank
   code: |
     ```bash [Terminal]
-    npx nuxi init -t github:nuxt-ui-pro/docs
+    npm install -D @nuxtjs/i18n
     ```
 features:
-  title: 'All-in-one docs template'
-  links:
-    - label: 'Explore Nuxt UI Pro'
-      icon: 'i-simple-icons-nuxtdotjs'
-      trailingIcon: 'i-heroicons-arrow-right-20-solid'
-      color: 'gray'
-      to: 'https://ui.nuxt.com/pro'
-      target: '_blank'
-      size: lg
+  title: 'Build i18n-ready apps in seconds!'
+  
   items:
-    - title: 'Nuxt 3'
+    - title: 'Vue I18n Integration'
       description: 'Powered by Nuxt 3 for optimal performances and SEO.'
-      icon: 'i-simple-icons-nuxtdotjs'
+      icon: 'i-simple-icons-i18next'
       to: 'https://nuxt.com'
       target: '_blank'
-    - title: 'Markdown'
-      description: 'Write your pages with MDC thanks to Nuxt Content.'
-      icon: 'i-simple-icons-markdown'
+
+    - title: 'Automatic Routes Generation'
+      description: 'Auto override of Nuxt default routes to add your locales prefixes to every URL.'
+      icon: 'i-heroicons-sparkles-20-solid'
       to: 'https://content.nuxt.com'
       target: '_blank'
-    - title: 'Nuxt UI'
-      description: 'Offers a very large set of full customizable components.'
-      icon: 'i-heroicons-sparkles-20-solid'
+
+    - title: 'Search Engine Optimization'
+      description: 'Composables to add SEO metadata based on current locale.'
+      icon: 'i-heroicons-presentation-chart-line'
       to: 'https://ui.nuxt.com'
       target: '_blank'
-    - title: 'TypeScript'
-      description: 'A fully typed development experience.'
-      icon: 'i-simple-icons-typescript'
+
+    - title: 'Messages Lazy-Loading'
+      description: 'Lazy-load only the language that the users selected instead of bundling all the messages.'
+      icon: 'i-heroicons-rocket-launch'
       to: 'https://www.typescriptlang.org'
       target: '_blank'
-    - title: 'Nuxt Studio'
-      description: 'Supported by Nuxt Studio for fast updates and previews.'
-      icon: 'i-simple-icons-nuxtdotjs'
+
+    - title: 'Locale-Aware Redirection'
+      description: 'Ready to use composables to redirect based on current locale.'
+      icon: 'i-heroicons-arrows-right-left'
       to: 'https://nuxt.studio'
       target: '_blank'
-    - title: 'Search'
-      description: 'A full-text search modal empowered by Fuse.js.'
-      icon: 'i-heroicons-magnifying-glass-20-solid'
+
+    - title: 'Locales Specific Domains'
+      description: 'Set a different domain name for each locale your app supports.'
+      icon: 'i-heroicons-globe-alt'
       to: 'https://ui.nuxt.com/pro/components/docs/docs-search'
       target: '_blank'
+
+  links:
+      - label: Get Started
+        trailingIcon: 'i-heroicons-arrow-right-20-solid'
+        to: '/getting-started'
+        size: lg
+        color: white
