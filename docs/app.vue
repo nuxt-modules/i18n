@@ -62,11 +62,9 @@ const links: PageLink[] = [
   <div>
     <Header :links="links" />
 
-    <UMain>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UMain>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
 
     <Footer />
 
