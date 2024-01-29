@@ -3,14 +3,15 @@ import { computed, effectScope, ref, watch } from '#imports'
 import { DEFAULT_BASE_URL } from '#build/i18n.options.mjs'
 import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
 import {
+  getRouteBaseName,
+  localeLocation,
   localePath,
   localeRoute,
-  localeLocation,
-  switchLocalePath,
-  getRouteBaseName,
   resolveRoute,
-  localeHead
+  switchLocalePath
 } from '../compatibles'
+import { useLocaleHead, wrapComposable } from '../../composables'
+import { initCommonComposableOptions } from '../../utils'
 
 import type { NuxtApp } from 'nuxt/app'
 import type {
@@ -138,16 +139,17 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     }
 
     if (pluginOptions.inject) {
+      const common = initCommonComposableOptions(i18n)
       // extend vue component instance
       vue.mixin({
         methods: {
           resolveRoute,
-          localePath,
-          localeRoute,
-          localeLocation,
-          switchLocalePath,
           getRouteBaseName,
-          localeHead
+          localePath: wrapComposable(localePath, common),
+          localeRoute: wrapComposable(localeRoute, common),
+          localeLocation: wrapComposable(localeLocation, common),
+          switchLocalePath: wrapComposable(switchLocalePath, common),
+          localeHead: useLocaleHead
         }
       })
     }

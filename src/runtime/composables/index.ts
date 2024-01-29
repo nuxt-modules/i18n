@@ -1,10 +1,9 @@
-import { useRoute, useRouter, useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
+import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage } from '../internal'
 import { localeCodes, normalizedLocales, nuxtI18nOptions } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
-import { useI18n } from 'vue-i18n'
-import { getNormalizedLocales } from '../utils'
+import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
 import {
   getAlternateOgLocales,
   getCanonicalLink,
@@ -18,16 +17,26 @@ import {
   localeRoute,
   switchLocalePath
 } from '../routing/compatibles'
-import { findBrowserLocale, getLocale, getLocales } from '../routing/utils'
+import { findBrowserLocale, getComposer, getLocale, getLocales } from '../routing/utils'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocation, RouteLocationNormalizedLoaded, RouteLocationRaw, Router } from 'vue-router'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#build/i18n.options.mjs'
-import type { HeadParam } from '../utils'
+import type { CommonComposableOptions, HeadParam } from '../utils'
 
 export * from 'vue-i18n'
 export * from './shared'
+
+type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => any>(
+  fn: F,
+  common = initCommonComposableOptions()
+) {
+  return (...args: TailParameters<F>) => fn(common, ...args)
+}
 
 /**
  * Returns a function to set i18n params.
@@ -40,28 +49,29 @@ export * from './shared'
  */
 export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
 export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
-  const route = useRoute()
+  const common = initCommonComposableOptions()
   const head = getActiveHead()
+  const i18n = getComposer(common.i18n)
+  const router = common.router
 
-  const i18n = useI18n()
   const locale = getLocale(i18n)
   const locales = getNormalizedLocales(getLocales(i18n))
   const _i18nParams = ref({})
 
   const i18nParams = computed({
     get() {
-      return route.meta.nuxtI18n ?? {}
+      return router.currentRoute.value.meta.nuxtI18n ?? {}
     },
     set(val) {
       _i18nParams.value = val
-      route.meta.nuxtI18n = val
+      router.currentRoute.value.meta.nuxtI18n = val
     }
   })
 
   const stop = watch(
-    () => route.fullPath,
+    () => router.currentRoute.value.fullPath,
     () => {
-      route.meta.nuxtI18n = _i18nParams.value
+      router.currentRoute.value.meta.nuxtI18n = _i18nParams.value
     }
   )
 
@@ -85,12 +95,12 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
 
       // prettier-ignore
       metaObject.link.push(
-        ...getHreflangLinks(locales, idAttribute),
-        ...getCanonicalLink(idAttribute, seoAttributes)
+        ...getHreflangLinks(common, locales, idAttribute),
+        ...getCanonicalLink(common, idAttribute, seoAttributes)
       )
 
       metaObject.meta.push(
-        ...getOgUrl(idAttribute, seoAttributes),
+        ...getOgUrl(common, idAttribute, seoAttributes),
         ...getCurrentOgLocale(currentLocale, currentLocaleIso, idAttribute),
         ...getAlternateOgLocales(locales, currentLocaleIso, idAttribute)
       )
@@ -106,9 +116,25 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
 }
 
 /**
+ * The `localeHead` function returns localized head properties for locale-related aspects.
+ *
+ * @remarks
+ * The parameter signature of this function is the same as {@link localeHead}.
+ *
+ * @param options - An options object, see {@link I18nHeadOptions}
+ *
+ * @returns the route object for a given route, the route object is resolved by vue-router rather than just a full route path.
+ *
+ * @see {@link localeHead}
+ *
+ * @public
+ */
+export type LocaleHeadFunction = (options: I18nHeadOptions) => ReturnType<typeof localeHead>
+
+/**
  * The `useLocaleHead` composable returns localized head properties for locale-related aspects.
  *
- * @param options - An options, see about details {@link I18nHeadOptions}
+ * @param options - An options object, see {@link I18nHeadOptions}
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties} with Vue `ref`.
  *
@@ -119,8 +145,7 @@ export function useLocaleHead({
   addSeoAttributes = false,
   identifierAttribute = 'hid'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
-  const router = useRouter()
-
+  const common = initCommonComposableOptions()
   const metaObject: Ref<I18nHeadMetaInfo> = ref({
     htmlAttrs: {},
     link: [],
@@ -136,12 +161,16 @@ export function useLocaleHead({
   }
 
   function updateMeta() {
-    metaObject.value = localeHead({ addDirAttribute, addSeoAttributes, identifierAttribute }) as I18nHeadMetaInfo
+    metaObject.value = localeHead(common, {
+      addDirAttribute,
+      addSeoAttributes,
+      identifierAttribute
+    }) as I18nHeadMetaInfo
   }
 
   if (process.client) {
     const stop = watch(
-      () => router.currentRoute.value,
+      () => common.router.currentRoute.value,
       () => {
         cleanMeta()
         updateMeta()
@@ -190,7 +219,7 @@ export function useRouteBaseName(): RouteBaseNameFunction {
  * The function that resolve locale path.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localePath}.
+ * The parameter signature of this function is same as {@link localePath}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
  * @param locale - A locale optional, if not specified, uses the current locale.
@@ -214,14 +243,14 @@ export type LocalePathFunction = (route: RouteLocation | RouteLocationRaw, local
  * @public
  */
 export function useLocalePath(): LocalePathFunction {
-  return localePath
+  return wrapComposable(localePath)
 }
 
 /**
  * The function that resolve route.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localeRoute}.
+ * The parameter signature of this function is same as {@link localeRoute}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
  * @param locale - A locale optinal, if not specified, uses the current locale.
@@ -248,14 +277,14 @@ export type LocaleRouteFunction = (
  * @public
  */
 export function useLocaleRoute(): LocaleRouteFunction {
-  return localeRoute
+  return wrapComposable(localeRoute)
 }
 
 /**
  * The function that resolve locale location.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link localeLocation}.
+ * The parameter signature of this function is same as {@link localeLocation}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
  * @param locale - A locale optional, if not specified, uses the current locale.
@@ -279,14 +308,14 @@ export type LocaleLocationFunction = (route: RouteLocationRaw, locale?: Locale) 
  * @public
  */
 export function useLocaleLocation(): LocaleLocationFunction {
-  return localeLocation
+  return wrapComposable(localeLocation)
 }
 
 /**
  * The functin that swtich locale path.
  *
  * @remarks
- * The parameter sygnatures of this function is same as {@link switchLocalePath}.
+ * The parameter signature of this function is same as {@link switchLocalePath}.
  *
  * @param locale - A locale optional, if not specified, uses the current locale.
  *
@@ -308,8 +337,9 @@ export type SwitchLocalePathFunction = (locale: Locale) => string
  *
  * @public
  */
+
 export function useSwitchLocalePath(): SwitchLocalePathFunction {
-  return switchLocalePath
+  return wrapComposable(switchLocalePath)
 }
 
 /**

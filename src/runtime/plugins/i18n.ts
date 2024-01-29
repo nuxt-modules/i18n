@@ -34,6 +34,12 @@ import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
+import type {
+  LocaleHeadFunction,
+  LocalePathFunction,
+  LocaleRouteFunction,
+  SwitchLocalePathFunction
+} from '../composables'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -414,12 +420,6 @@ export default defineNuxtPlugin({
   }
 })
 
-type GetRouteBaseName = typeof getRouteBaseName
-type LocalePath = typeof localePath
-type LocaleRoute = typeof localeRoute
-type LocaleHead = typeof localeHead
-type SwitchLocalePath = typeof switchLocalePath
-
 declare module '#app' {
   interface NuxtApp {
     /**
@@ -432,7 +432,7 @@ declare module '#app' {
      *
      * @returns The route base name. if cannot get, `undefined` is returned.
      */
-    $getRouteBaseName: (...args: Parameters<GetRouteBaseName>) => ReturnType<GetRouteBaseName>
+    $getRouteBaseName: (...args: Parameters<typeof getRouteBaseName>) => ReturnType<typeof getRouteBaseName>
     /**
      * Returns localized path for passed in route.
      *
@@ -444,7 +444,7 @@ declare module '#app' {
      *
      * @returns A path of the current route.
      */
-    $localePath: (...args: Parameters<LocalePath>) => ReturnType<LocalePath>
+    $localePath: (...args: Parameters<LocalePathFunction>) => ReturnType<typeof localePath>
     /**
      * Returns localized route for passed in `route` parameters.
      *
@@ -456,7 +456,7 @@ declare module '#app' {
      *
      * @returns A route. if cannot resolve, `undefined` is returned.
      */
-    $localeRoute: (...args: Parameters<LocaleRoute>) => ReturnType<LocaleRoute>
+    $localeRoute: (...args: Parameters<LocaleRouteFunction>) => ReturnType<typeof localeRoute>
     /**
      * Returns localized head properties for locale-related aspects.
      *
@@ -464,7 +464,7 @@ declare module '#app' {
      *
      * @returns The localized head properties.
      */
-    $localeHead: (...args: Parameters<LocaleHead>) => ReturnType<LocaleHead>
+    $localeHead: (...args: Parameters<LocaleHeadFunction>) => ReturnType<typeof localeHead>
     /**
      * Returns path of the current route for specified locale
      *
@@ -472,6 +472,6 @@ declare module '#app' {
      *
      * @returns A path of the current route
      */
-    $switchLocalePath: (...args: Parameters<SwitchLocalePath>) => ReturnType<SwitchLocalePath>
+    $switchLocalePath: (...args: Parameters<SwitchLocalePathFunction>) => ReturnType<typeof switchLocalePath>
   }
 }
