@@ -25,34 +25,17 @@ const { data: files } = useLazyFetch<ParsedContent[]>('/api/search.json', {
 // Header Links
 const links: PageLink[] = [
   {
-    label: 'Getting Started',
+    label: 'Docs',
     to: `/getting-started`,
     icon: 'i-heroicons-rocket-launch'
   },
-  {
-    label: 'Guide',
-    to: '/guide',
-    icon: 'i-heroicons-book-open'
-  },
-  {
-    label: 'Options',
-    to: '/options',
-    icon: 'i-heroicons-adjustments-horizontal'
-  },
-  {
-    label: 'API',
-    to: '/api',
-    icon: 'i-heroicons-code-bracket'
-  },
-
   {
     label: 'Roadmap',
     to: '/roadmap',
     icon: 'i-heroicons-map'
   },
-
   {
-    label: 'v7 Docs',
+    label: 'v7',
     to: '/v7',
     icon: 'i-heroicons-backward'
   }
