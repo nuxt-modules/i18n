@@ -13,6 +13,9 @@ export default defineNuxtConfig({
   ui: {
     icons: ['heroicons', 'simple-icons']
   },
+  uiPro: {
+    license: 'oss' // special license for nuxt & nuxt-modules orgs
+  },
   // Fonts
   fontMetrics: {
     fonts: ['DM Sans']
