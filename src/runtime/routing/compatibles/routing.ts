@@ -2,11 +2,11 @@
 import { isString, assign } from '@intlify/shared'
 import { parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
-import { unref, useNuxtApp, useRoute, useRouter } from '#imports'
+import { unref } from '#imports'
 
 import { resolve, routeToObject } from './utils'
-import { getComposer, getLocale, getLocaleRouteName, getRouteName } from '../utils'
-import { extendPrefixable, extendSwitchLocalePathIntercepter } from '../../utils'
+import { getLocale, getLocaleRouteName, getRouteName } from '../utils'
+import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
 import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '#build/i18n.options.mjs'
 import type { Locale } from 'vue-i18n'
@@ -71,10 +71,11 @@ export function getRouteBaseName(givenRoute?: RouteLocation): string | undefined
  * @public
  */
 export function localePath(
+  common: CommonComposableOptions,
   route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
 ): string {
-  const localizedRoute = resolveRoute(route, locale)
+  const localizedRoute = resolveRoute(common, route, locale)
   return localizedRoute == null ? '' : localizedRoute.redirectedFrom?.fullPath || localizedRoute.fullPath
 }
 
@@ -92,10 +93,11 @@ export function localePath(
  * @public
  */
 export function localeRoute(
+  common: CommonComposableOptions,
   route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
 ): ReturnType<Router['resolve']> | undefined {
-  const resolved = resolveRoute(route, locale)
+  const resolved = resolveRoute(common, route, locale)
   return resolved ?? undefined
 }
 
@@ -113,16 +115,16 @@ export function localeRoute(
  * @public
  */
 export function localeLocation(
+  common: CommonComposableOptions,
   route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
 ): Location | (RouteLocation & { href: string }) | undefined {
-  const resolved = resolveRoute(route, locale)
+  const resolved = resolveRoute(common, route, locale)
   return resolved ?? undefined
 }
 
-export function resolveRoute(route: RouteLocationRaw, locale?: Locale) {
-  const router = useRouter()
-  const i18n = getComposer(useNuxtApp().$i18n)
+export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
+  const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
   const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } = nuxtI18nOptions
   const prefixable = extendPrefixable()
@@ -148,7 +150,7 @@ export function resolveRoute(route: RouteLocationRaw, locale?: Locale) {
     'path' in val && !!val.path && !('name' in val)
 
   if (isRouteLocationPathRaw(localizedRoute)) {
-    const resolvedRoute = resolve(localizedRoute, strategy, _locale)
+    const resolvedRoute = resolve(common, localizedRoute, strategy, _locale)
 
     // @ts-ignore
     const resolvedRouteName = getRouteBaseName(resolvedRoute)
@@ -180,7 +182,7 @@ export function resolveRoute(route: RouteLocationRaw, locale?: Locale) {
     }
   } else {
     if (!localizedRoute.name && !('path' in localizedRoute)) {
-      localizedRoute.name = getRouteBaseName(useRoute())
+      localizedRoute.name = getRouteBaseName(router.currentRoute.value)
     }
 
     localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, {
@@ -226,10 +228,11 @@ function getLocalizableMetaFromDynamicParams(
  * @public
  */
 export function switchLocalePath(
+  common: CommonComposableOptions,
   locale: Locale,
   _route?: RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
-  const route = _route ?? useRoute()
+  const route = _route ?? common.router.currentRoute.value
   const name = getRouteBaseName(route)
 
   if (!name) {
@@ -241,7 +244,7 @@ export function switchLocalePath(
   const resolvedParams = getLocalizableMetaFromDynamicParams(route)[locale]
 
   const baseRoute = { ...routeCopy, name, params: { ...routeCopy.params, ...resolvedParams } }
-  const path = localePath(baseRoute, locale)
+  const path = localePath(common, baseRoute, locale)
 
   // custom locale path with interceptor
   return switchLocalePathIntercepter(path, locale)
