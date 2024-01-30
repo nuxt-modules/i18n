@@ -2,7 +2,6 @@ title: 'Internationalization for Nuxt Applications · @nuxtjs/i18n'
 description: 'I18n (Internationalization) module for your Nuxt project powered by Vue I18n.'
 navigation: false
 hero:
-  title: '[Internationalization]{.text-primary} for [Nuxt]{.text-primary} Apps'
   description: 'I18n (Internationalization) module for your Nuxt project powered by Vue I18n.'
   orientation: horizontal
   headline:

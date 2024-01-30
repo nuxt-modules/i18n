@@ -35,10 +35,15 @@ defineOgImage({
       </template>
 
       <template #title>
-        <MDC :value="page.hero.title" />
+        <p>
+          <span class="text-primary md:hidden">i18n</span>
+          <span class="text-primary hidden md:block">Internationalization</span>
+          for
+          <span class="text-primary">Nuxt</span> Apps
+        </p>
       </template>
 
-      <MDC :value="page.hero.code" tag="pre" class="prose prose-primary dark:prose-invert mx-auto" />
+      <MDC :value="page.hero.code" tag="pre" class="prose prose-primary dark:prose-invert mx-auto min-w-80" />
     </ULandingHero>
 
     <ULandingSection :title="page.features.title" :links="page.features.links">
