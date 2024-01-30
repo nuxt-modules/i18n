@@ -23,11 +23,6 @@ export default defineAppConfig({
     siteName: 'Internationalization for Nuxt Applications · @nuxtjs/i18n'
   },
   header: {
-    logo: {
-      alt: '',
-      light: '',
-      dark: ''
-    },
     search: true,
     colorMode: true,
     links: [
