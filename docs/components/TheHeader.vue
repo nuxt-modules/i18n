@@ -2,7 +2,7 @@
 import type { NavItem } from '@nuxt/content/dist/runtime/types'
 import type { HeaderLink } from '#ui-pro/types'
 
-defineProps<{ links: HeaderLink[] }>()
+defineProps<{ links?: HeaderLink[] }>()
 
 const { header } = useAppConfig()
 const { metaSymbol } = useShortcuts()
