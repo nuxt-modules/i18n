@@ -22,22 +22,19 @@ const { data: files } = useLazyFetch<ParsedContent[]>('/api/search.json', {
   server: false
 })
 
-// Header Links
+// Header
+const route = useRoute()
 const links: PageLink[] = [
   {
     label: 'Docs',
-    to: `/getting-started`,
-    icon: 'i-heroicons-rocket-launch'
+    to: `/docs/getting-started`,
+    icon: 'i-heroicons-rocket-launch',
+    active: route.path.startsWith('/docs')
   },
   {
     label: 'Roadmap',
     to: '/roadmap',
     icon: 'i-heroicons-map'
-  },
-  {
-    label: 'v7',
-    to: '/v7',
-    icon: 'i-heroicons-backward'
   }
 ]
 </script>
