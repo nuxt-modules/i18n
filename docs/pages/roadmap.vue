@@ -1,20 +1,7 @@
 <script setup>
-// SEO & OG
-const title = 'Roadmap'
-const description = 'Discover our Volta board for @nuxt/i18n development status.'
-
-useSeoMeta({
-  title,
-  ogTitle: title,
-  description,
-  ogDescription: description
-})
-
-defineOgImage({
-  component: 'Docs',
-  title,
-  description
-})
+// Page Metadata (SEO & OG)
+const { setPageMeta } = usePageMeta()
+setPageMeta({ title: 'Roadmap', description: 'Discover our Volta board for @nuxt/i18n development status.' })
 
 // Volta board
 const VOLTA_TOKEN =

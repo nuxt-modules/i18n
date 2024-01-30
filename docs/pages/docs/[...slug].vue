@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { withoutTrailingSlash } from 'ufo'
 
-definePageMeta({
-  layout: 'docs'
-})
-
+definePageMeta({ layout: 'docs' })
 const route = useRoute()
-const { toc, seo } = useAppConfig()
 
+// Main page data
 const { data: page } = await useAsyncData(route.path, () => queryContent(route.path).findOne())
-if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
-}
+if (!page.value) throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+const headline = computed(() => findPageHeadline(page.value))
 
+// Surrounding pages (Next & Prev)
 const { data: surround } = await useAsyncData(`${route.path}-surround`, () =>
   queryContent()
     .where({ _extension: 'md', navigation: { $ne: false } })
@@ -20,22 +17,16 @@ const { data: surround } = await useAsyncData(`${route.path}-surround`, () =>
     .findSurround(withoutTrailingSlash(route.path))
 )
 
-useSeoMeta({
-  title: page.value.title,
-  ogTitle: `${page.value.title} - ${seo?.siteName}`,
-  description: page.value.description,
-  ogDescription: page.value.description
-})
-
-const headline = computed(() => findPageHeadline(page.value))
-
-defineOgImage({
-  component: 'Docs',
+// Page Metadata (SEO & OG)
+const { setPageMeta } = usePageMeta()
+setPageMeta({
   title: page.value.title,
   description: page.value.description,
   headline: headline.value
 })
 
+// Right Side Links
+const { toc } = useAppConfig()
 const links = computed(() =>
   [
     toc?.bottom?.edit && {

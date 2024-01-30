@@ -1,18 +1,12 @@
 <script setup lang="ts">
 const { data: page } = await useAsyncData('index', () => queryContent('/').findOne())
 
-useSeoMeta({
-  title: page.value.title,
-  ogTitle: page.value.title,
-  description: page.value.description,
-  ogDescription: page.value.description
-})
-
-defineOgImage({
-  component: 'Docs',
+// Page Metadata (SEO & OG)
+const { setPageMeta } = usePageMeta()
+setPageMeta({
   title: page.value.title,
   description: page.value.description,
-  headline: page.value.hero.headline.label || ''
+  headline: page.value.hero.headline.label
 })
 </script>
 
