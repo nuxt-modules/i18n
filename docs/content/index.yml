@@ -10,7 +10,7 @@ hero:
   links:
     - label: Get Started
       trailingIcon: 'i-heroicons-arrow-right-20-solid'
-      to: '/getting-started'
+      to: '/docs/getting-started'
       size: lg
     - label: Open in GitHub
       icon: i-simple-icons-github
@@ -24,47 +24,40 @@ hero:
     ```
 features:
   title: 'Build i18n-ready apps in seconds!'
-  
+
   items:
     - title: 'Vue I18n Integration'
       description: 'Powered by Nuxt 3 for optimal performances and SEO.'
       icon: 'i-simple-icons-i18next'
-      to: 'https://nuxt.com'
-      target: '_blank'
 
     - title: 'Automatic Routes Generation'
       description: 'Auto override of Nuxt default routes to add your locales prefixes to every URL.'
       icon: 'i-heroicons-sparkles-20-solid'
-      to: 'https://content.nuxt.com'
-      target: '_blank'
+      to: '/docs/guide/routing-strategies'
 
     - title: 'Search Engine Optimization'
       description: 'Composables to add SEO metadata based on current locale.'
       icon: 'i-heroicons-presentation-chart-line'
-      to: 'https://ui.nuxt.com'
-      target: '_blank'
+      to: '/docs/guide/seo'
 
     - title: 'Messages Lazy-Loading'
       description: 'Lazy-load only the language that the users selected instead of bundling all the messages.'
       icon: 'i-heroicons-rocket-launch'
-      to: 'https://www.typescriptlang.org'
-      target: '_blank'
+      to: '/docs/guide/lazy-load-translations'
 
     - title: 'Locale-Aware Redirection'
       description: 'Ready to use composables to redirect based on current locale.'
       icon: 'i-heroicons-arrows-right-left'
-      to: 'https://nuxt.studio'
-      target: '_blank'
+      to: '/docs/api/components#nuxtlinklocale'
 
     - title: 'Locales Specific Domains'
       description: 'Set a different domain name for each locale your app supports.'
       icon: 'i-heroicons-globe-alt'
-      to: 'https://ui.nuxt.com/pro/components/docs/docs-search'
-      target: '_blank'
+      to: '/docs/guide/different-domains'
 
   links:
-      - label: Get Started
-        trailingIcon: 'i-heroicons-arrow-right-20-solid'
-        to: '/getting-started'
-        size: lg
-        color: white
+    - label: Get Started
+      trailingIcon: 'i-heroicons-arrow-right-20-solid'
+      to: '/docs/getting-started'
+      size: lg
+      color: white
