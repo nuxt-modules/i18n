@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-expect-error This is because we're using Nuxt Content v2.8.2 instead of the new version which includes these types. We're using the old version because the latest has issues with highlighting
 import type { NavItem } from '@nuxt/content/dist/runtime/types'
 import type { HeaderLink } from '#ui-pro/types'
 
