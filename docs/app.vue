@@ -41,13 +41,13 @@ const links: PageLink[] = [
 
 <template>
   <div>
-    <Header :links="links" />
+    <TheHeader :links="links" />
 
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
 
-    <Footer />
+    <TheFooter />
 
     <ClientOnly>
       <LazyUDocsSearch :files="files" :navigation="navigation" :links="links" />
