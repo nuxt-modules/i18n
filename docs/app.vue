@@ -5,11 +5,7 @@ import type { PageLink } from '#ui-pro/types'
 
 // Seo
 const { seo } = useAppConfig()
-useHead({
-  meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
-  link: [{ rel: 'icon', href: '/favicon.ico' }],
-  htmlAttrs: { lang: 'en' }
-})
+useHead({ htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', href: '/favicon.ico' }] })
 useSeoMeta({ ogSiteName: seo?.siteName, twitterCard: 'summary_large_image' })
 
 // Navigation Data
