@@ -19,9 +19,26 @@ hero:
       to: https://github.com/nuxt-modules/i18n
       target: _blank
   code: |
-    ```bash [Terminal]
+    ::code-group
+
+    ```bash [pnpm]
+    pnpm add -D @nuxtjs/i18n
+    ```
+
+    ```bash [yarn]
+    yarn add -D @nuxtjs/i18n
+    ```
+
+    ```bash [npm]
     npm install -D @nuxtjs/i18n
     ```
+
+    ```bash [bun]
+    bun add -D @nuxtjs/i18n
+    ```
+
+    ::
+
 features:
   title: 'Build i18n-ready apps in seconds!'
 
