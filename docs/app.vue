@@ -6,7 +6,11 @@ import type { PageLink } from '#ui-pro/types'
 // Seo
 const { seo } = useAppConfig()
 useHead({ htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', href: '/favicon.ico' }] })
-useSeoMeta({ ogSiteName: seo?.siteName, twitterCard: 'summary_large_image' })
+useSeoMeta({
+  titleTemplate: `%s - ${seo.siteName}`,
+  ogSiteName: seo.siteName,
+  twitterCard: 'summary_large_image'
+})
 
 // Navigation Data
 const { data: navigation } = await useAsyncData('navigation', () => fetchContentNavigation())

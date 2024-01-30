@@ -21,7 +21,6 @@ const { data: surround } = await useAsyncData(`${route.path}-surround`, () =>
 )
 
 useSeoMeta({
-  titleTemplate: `%s - ${seo?.siteName}`,
   title: page.value.title,
   ogTitle: `${page.value.title} - ${seo?.siteName}`,
   description: page.value.description,

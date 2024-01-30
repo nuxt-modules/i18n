@@ -4,7 +4,6 @@ const title = 'Roadmap'
 const description = 'Discover our Volta board for @nuxt/i18n development status.'
 
 useSeoMeta({
-  titleTemplate: '%s - Nuxt i18n',
   title,
   ogTitle: title,
   description,

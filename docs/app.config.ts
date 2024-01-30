@@ -19,9 +19,7 @@ export default defineAppConfig({
       }
     }
   },
-  seo: {
-    siteName: 'Internationalization for Nuxt Applications · @nuxtjs/i18n'
-  },
+  seo: { siteName: '@nuxtjs/i18n' },
   header: {
     search: true,
     colorMode: true,
