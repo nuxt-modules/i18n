@@ -28,13 +28,14 @@ useSeoMeta({
   ogDescription: page.value.description
 })
 
+const headline = computed(() => findPageHeadline(page.value))
+
 defineOgImage({
   component: 'Docs',
   title: page.value.title,
-  description: page.value.description
+  description: page.value.description,
+  headline: headline.value
 })
-
-const headline = computed(() => findPageHeadline(page.value))
 
 const links = computed(() =>
   [

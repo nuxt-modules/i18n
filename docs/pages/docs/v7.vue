@@ -31,7 +31,8 @@ useSeoMeta({
 defineOgImage({
   component: 'Docs',
   title: page.value.title,
-  description: page.value.description
+  description: page.value.description,
+  headline: 'v7'
 })
 
 const headline = computed(() => findPageHeadline(page.value))
