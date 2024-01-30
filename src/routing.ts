@@ -62,6 +62,10 @@ type LocalizeRouteParams = {
    */
   parent?: NuxtPage
   /**
+   * localized parent route
+   */
+  parentLocalized?: NuxtPage
+  /**
    * indicates whether this is a default route for 'prefix_and_default' strategy
    */
   extra?: boolean
@@ -82,7 +86,10 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     return routes
   }
 
-  function localizeRoute(route: NuxtPage, { locales = [], parent, extra = false }: LocalizeRouteParams): NuxtPage[] {
+  function localizeRoute(
+    route: NuxtPage,
+    { locales = [], parent, parentLocalized, extra = false }: LocalizeRouteParams
+  ): NuxtPage[] {
     // skip route localization
     if (route.redirect && !route.file) {
       return [route]
@@ -121,11 +128,6 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       // localize name if set
       localized.name &&= join(...nameSegments)
 
-      // localize child routes if set
-      localized.children &&= localized.children.flatMap(child =>
-        localizeRoute(child, { locales: [locale], parent: route, extra })
-      )
-
       // use custom path if found
       localized.path = componentOptions.paths?.[locale] ?? localized.path
 
@@ -139,6 +141,17 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       }
 
       localized.path &&= adjustRoutePathForTrailingSlash(localized, options.trailingSlash)
+
+      // remove parent path from child route
+      if (parentLocalized != null) {
+        localized.path = localized.path.replace(parentLocalized.path + '/', '')
+      }
+
+      // localize child routes if set
+      localized.children &&= localized.children.flatMap(child =>
+        localizeRoute(child, { locales: [locale], parent: route, parentLocalized: localized, extra })
+      )
+
       localizedRoutes.push(localized)
     }
 
