@@ -345,7 +345,7 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
     if (process.server) {
       const {
         node: { req }
-      } = useRequestEvent(nuxtApp)
+      } = useRequestEvent(nuxtApp)!
       protocol = req && isHTTPS(req) ? 'https:' : 'http:'
     } else {
       protocol = new URL(window.location.origin).protocol

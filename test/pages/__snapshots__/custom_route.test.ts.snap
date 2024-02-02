@@ -56,7 +56,7 @@ exports[`#1649 1`] = `
         "children": [],
         "file": "/path/to/1649/pages/account/addresses.vue",
         "name": "account-addresses___fr",
-        "path": "/fr/compte/adresses",
+        "path": "adresses",
       },
       {
         "children": [],
@@ -68,7 +68,7 @@ exports[`#1649 1`] = `
         "children": [],
         "file": "/path/to/1649/pages/account/profile.vue",
         "name": "account-profile___fr",
-        "path": "/fr/compte/profil",
+        "path": "profil",
       },
     ],
     "file": "/path/to/1649/pages/account.vue",
