@@ -16,6 +16,7 @@ import {
   type LocaleObject
 } from '#build/i18n.options.mjs'
 import {
+  wrapComposable,
   detectBrowserLanguage,
   getLocaleCookie,
   callVueI18nInterfaces,
@@ -26,10 +27,12 @@ import {
   DefaultDetectBrowserLanguageFromResult
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-import { useLocaleRoute, useSwitchLocalePath, useLocalePath, useLocaleHead } from '#i18n'
 import {
-  switchLocalePath,
+  localeHead,
+  localePath,
+  localeRoute,
   getRouteBaseName,
+  switchLocalePath,
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
 } from './routing/compatibles'
@@ -402,10 +405,10 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n | VueI18n | Composer
    */
   defineGetter(nuxt, '$i18n', getI18nTarget(i18n))
   defineGetter(nuxt, '$getRouteBaseName', getRouteBaseName)
-  defineGetter(nuxt, '$localePath', useLocalePath())
-  defineGetter(nuxt, '$localeRoute', useLocaleRoute())
-  defineGetter(nuxt, '$switchLocalePath', useSwitchLocalePath())
-  defineGetter(nuxt, '$localeHead', useLocaleHead())
+  defineGetter(nuxt, '$localePath', wrapComposable(localePath))
+  defineGetter(nuxt, '$localeRoute', wrapComposable(localeRoute))
+  defineGetter(nuxt, '$switchLocalePath', wrapComposable(switchLocalePath))
+  defineGetter(nuxt, '$localeHead', wrapComposable(localeHead))
 }
 
 // override prefix for route path, support domain
