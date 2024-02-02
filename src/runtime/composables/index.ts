@@ -1,6 +1,6 @@
 import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
-import { parseAcceptLanguage } from '../internal'
+import { parseAcceptLanguage, wrapComposable } from '../internal'
 import { localeCodes, normalizedLocales, nuxtI18nOptions } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
 import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
@@ -23,20 +23,10 @@ import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocation, RouteLocationNormalizedLoaded, RouteLocationRaw, Router } from 'vue-router'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#build/i18n.options.mjs'
-import type { CommonComposableOptions, HeadParam } from '../utils'
+import type { HeadParam } from '../utils'
 
 export * from 'vue-i18n'
 export * from './shared'
-
-type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => any>(
-  fn: F,
-  common = initCommonComposableOptions()
-) {
-  return (...args: TailParameters<F>) => fn(common, ...args)
-}
 
 /**
  * Returns a function to set i18n params.
