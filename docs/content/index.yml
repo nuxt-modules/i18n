@@ -49,7 +49,7 @@ features:
     - title: 'Automatic Routes Generation'
       description: 'Auto override of Nuxt default routes to add your locales prefixes to every URL.'
       icon: 'i-heroicons-sparkles-20-solid'
-      to: '/docs/guide/routing-strategies'
+      to: '/docs/guide'
 
     - title: 'Search Engine Optimization'
       description: 'Composables to add SEO metadata based on current locale.'
