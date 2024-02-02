@@ -20,6 +20,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex, getI18nTarget } from './routing/utils'
+import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
@@ -44,6 +45,15 @@ export function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): 
 
 export function defineGetter<K extends string | number | symbol, V>(obj: Record<K, V>, key: K, val: V) {
   Object.defineProperty(obj, key, { get: () => val })
+}
+
+type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => any>(
+  fn: F,
+  common = initCommonComposableOptions()
+) {
+  return (...args: TailParameters<F>) => fn(common, ...args)
 }
 
 /**
