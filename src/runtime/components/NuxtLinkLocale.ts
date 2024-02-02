@@ -8,7 +8,7 @@ import type { NuxtLinkProps } from 'nuxt/app'
 
 const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
 
-export default defineComponent<NuxtLinkProps & { locale?: string; to: NuxtLinkProps['to'] }>({
+export default defineComponent<NuxtLinkProps & { locale?: string }>({
   name: 'NuxtLinkLocale',
   props: {
     ...NuxtLinkLocale.props,
@@ -20,7 +20,18 @@ export default defineComponent<NuxtLinkProps & { locale?: string; to: NuxtLinkPr
   },
   setup(props, { slots }) {
     const localePath = useLocalePath()
-    const resolvedPath = computed(() => (props.to != null ? localePath(props.to, props.locale) : props.to))
+
+    // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
+    const checkPropConflicts = (props: NuxtLinkProps, main: keyof NuxtLinkProps, sub: keyof NuxtLinkProps): void => {
+      if (import.meta.dev && props[main] !== undefined && props[sub] !== undefined) {
+        console.warn(`[NuxtLinkLocale] \`${main}\` and \`${sub}\` cannot be used together. \`${sub}\` will be ignored.`)
+      }
+    }
+
+    const resolvedPath = computed(() => {
+      const destination = props.to ?? props.href
+      return destination != null ? localePath(destination, props.locale) : destination
+    })
 
     // Resolving link type
     const isExternal = computed<boolean>(() => {
@@ -34,12 +45,13 @@ export default defineComponent<NuxtLinkProps & { locale?: string; to: NuxtLinkPr
         return true
       }
 
+      const destination = props.to ?? props.href
       // When `to` is a route object then it's an internal link
-      if (typeof props.to === 'object') {
+      if (typeof destination === 'object') {
         return false
       }
 
-      return props.to === '' || props.to == null || hasProtocol(props.to, { acceptRelative: true })
+      return destination === '' || destination == null || hasProtocol(destination, { acceptRelative: true })
     })
 
     /**
@@ -54,6 +66,10 @@ export default defineComponent<NuxtLinkProps & { locale?: string; to: NuxtLinkPr
       if (!isExternal.value) {
         _props.to = resolvedPath.value
       }
+
+      // Warn when both properties are used, delete `href` to prevent warning by `NuxtLink`
+      checkPropConflicts(props, 'to', 'href')
+      delete _props.href
 
       // The locale attribute cannot be set for NuxtLink
       // @see https://github.com/nuxt-modules/i18n/issues/2498
