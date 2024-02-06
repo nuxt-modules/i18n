@@ -45,6 +45,11 @@ const localeRoute = useLocaleRoute()
 
       <!-- no define name -->
       <span class="undefined-name">{{ localePath('vue-i18n') }}</span>
+
+      <!-- external -->
+      <span class="external-link">{{ localePath('https://github.com') }}</span>
+      <span class="external-mail">{{ localePath('mailto:example@mail.com') }}</span>
+      <span class="external-phone">{{ localePath('tel:+31612345678') }}</span>
     </section>
     <ClientOnly>
       <section id="locale-route">
