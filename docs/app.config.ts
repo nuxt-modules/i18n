@@ -12,8 +12,7 @@ export default defineAppConfig({
       prose: {
         code: {
           icon: {
-            '.env': 'vscode-icons:file-type-dotenv',
-            '.env.example': 'vscode-icons:file-type-dotenv'
+            env: 'vscode-icons:file-type-dotenv'
           }
         }
       }
