@@ -385,6 +385,7 @@ export default defineNuxtPlugin({
         return () => {}
       }
     }
+    // @ts-ignore
     app.use(i18n, pluginOptions) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
 
     // inject for nuxt helpers

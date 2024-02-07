@@ -1,7 +1,7 @@
 import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
-import { localeCodes, normalizedLocales, nuxtI18nOptions } from '#build/i18n.options.mjs'
+import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
 import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
 import {
@@ -370,7 +370,7 @@ export function useCookieLocale(): Ref<string> {
   const detect = runtimeDetectBrowserLanguage()
 
   if (detect && detect.useCookie) {
-    const cookieKey = detect.cookieKey
+    const cookieKey = detect.cookieKey!
 
     let code: string | null = null
     if (process.client) {
