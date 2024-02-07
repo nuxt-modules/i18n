@@ -72,6 +72,7 @@
     "overrides": {
       "@nuxtjs/i18n": "link:.",
       "nitropack": "npm:nitropack-nightly",
+      "h3": "npm:h3-nightly",
       "nuxt": "^3.9.1",
       "consola": "^3"
     }
@@ -135,7 +136,7 @@
     "undici": "^6.0.1",
     "unhead": "^1.8.8",
     "vitest": "^1.0.0",
-    "vue": "^3.4.7"
+    "vue": "^3.4.15"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
