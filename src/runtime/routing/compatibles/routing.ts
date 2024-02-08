@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
-import { parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
+import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
@@ -75,6 +75,11 @@ export function localePath(
   route: RouteLocationRaw,
   locale?: Locale // TODO: locale should be more type inference (completion)
 ): string {
+  // return external url as is
+  if (typeof route === 'string' && hasProtocol(route, { acceptRelative: true })) {
+    return route
+  }
+
   const localizedRoute = resolveRoute(common, route, locale)
   return localizedRoute == null ? '' : localizedRoute.redirectedFrom?.fullPath || localizedRoute.fullPath
 }
