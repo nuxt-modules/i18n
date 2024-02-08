@@ -64,6 +64,11 @@ export async function localePathTests(strategy: Strategies) {
   // undefined name
   expect(await getText(page, '#locale-path .undefined-name')).toEqual('')
 
+  // external
+  expect(await getText(page, '#locale-path .external-link')).toEqual('https://github.com')
+  expect(await getText(page, '#locale-path .external-mail')).toEqual('mailto:example@mail.com')
+  expect(await getText(page, '#locale-path .external-phone')).toEqual('tel:+31612345678')
+
   // for vue-router deprecation
   // https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22
   expect(consoleLogs.find(log => log.text.includes('Discarded invalid param(s)'))).toBeFalsy()
