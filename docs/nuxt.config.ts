@@ -17,6 +17,9 @@ export default defineNuxtConfig({
     }
   },
 
+  // Nuxt Content
+  content: { highlight: { langs: ['jsonc'] } },
+
   // Fonts
   fontMetrics: { fonts: ['DM Sans'] },
   googleFonts: {
