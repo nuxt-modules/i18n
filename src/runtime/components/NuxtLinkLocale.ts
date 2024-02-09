@@ -16,6 +16,11 @@ export default defineComponent<NuxtLinkProps & { locale?: string }>({
       type: String as PropType<string>,
       default: undefined,
       required: false
+    },
+    name: {
+      type: String as PropType<string>,
+      default: undefined,
+      required: false
     }
   },
   setup(props, { slots }) {
@@ -29,6 +34,10 @@ export default defineComponent<NuxtLinkProps & { locale?: string }>({
     }
 
     const resolvedPath = computed(() => {
+      if (props.name) {
+        return localePath({name: props.name}, props.locale);
+      }
+      
       const destination = props.to ?? props.href
       return destination != null ? localePath(destination, props.locale) : destination
     })
