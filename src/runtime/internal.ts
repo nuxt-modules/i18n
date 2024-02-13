@@ -25,6 +25,7 @@ import { initCommonComposableOptions, type CommonComposableOptions } from './uti
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import type { CookieRef } from 'nuxt/app'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -93,7 +94,25 @@ export function getBrowserLocale(): string | undefined {
   return ret
 }
 
-export function getLocaleCookie(): string | undefined {
+export function getI18nCookie() {
+  const detect = nuxtI18nOptions.detectBrowserLanguage
+  const cookieKey = (detect && detect.cookieKey) || nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey
+  const date = new Date()
+  const cookieOptions: Record<string, any> = {
+    expires: new Date(date.setDate(date.getDate() + 365)),
+    path: '/',
+    sameSite: detect && detect.cookieCrossOrigin ? 'none' : 'lax',
+    secure: (detect && detect.cookieCrossOrigin) || (detect && detect.cookieSecure)
+  }
+
+  if (detect && detect.cookieDomain) {
+    cookieOptions.domain = detect.cookieDomain
+  }
+
+  return useNuxtCookie<string | undefined>(cookieKey, cookieOptions)
+}
+
+export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): string | undefined {
   const detect = nuxtI18nOptions.detectBrowserLanguage
 
   __DEBUG__ &&
@@ -107,8 +126,7 @@ export function getLocaleCookie(): string | undefined {
     return
   }
 
-  const localeCookie = useNuxtCookie(detect.cookieKey)
-  const localeCode: string | undefined = localeCookie.value ?? undefined
+  const localeCode: string | undefined = cookieRef.value ?? undefined
   __DEBUG__ && console.log(`getLocaleCookie cookie (${process.client ? 'client' : 'server'}) -`, localeCode)
 
   if (localeCode && localeCodes.includes(localeCode)) {
@@ -116,28 +134,14 @@ export function getLocaleCookie(): string | undefined {
   }
 }
 
-export function setLocaleCookie(locale: string) {
-  const { useCookie, cookieKey, cookieDomain, cookieSecure, cookieCrossOrigin } =
-    nuxtI18nOptions.detectBrowserLanguage || nuxtI18nOptionsDefault.detectBrowserLanguage
+export function setLocaleCookie(cookieRef: CookieRef<string | undefined>, locale: string) {
+  const { useCookie } = nuxtI18nOptions.detectBrowserLanguage || nuxtI18nOptionsDefault.detectBrowserLanguage
 
   if (!useCookie) {
     return
   }
 
-  const date = new Date()
-  const cookieOptions: Record<string, any> = {
-    expires: new Date(date.setDate(date.getDate() + 365)),
-    path: '/',
-    sameSite: cookieCrossOrigin ? 'none' : 'lax',
-    secure: cookieCrossOrigin || cookieSecure
-  }
-
-  if (cookieDomain) {
-    cookieOptions.domain = cookieDomain
-  }
-
-  const localeCookie = useNuxtCookie(cookieKey, cookieOptions)
-  localeCookie.value = locale
+  cookieRef.value = locale
 }
 
 export type DetectBrowserLanguageNotDetectReason =
@@ -160,6 +164,7 @@ export type DetectLocaleContext = {
   ssg: DetectLocaleForSSGStatus
   callType: DetectLocaleCallType
   firstAccess: boolean
+  localeCookie: CookieRef<string | undefined>
 }
 
 export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
@@ -176,7 +181,7 @@ export function detectBrowserLanguage(
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const { strategy } = nuxtI18nOptions
-  const { ssg, callType, firstAccess } = detectLocaleContext
+  const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
   __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
   // browser detection is ignored if it's a nuxt generate.
@@ -223,7 +228,7 @@ export function detectBrowserLanguage(
 
   // get preferred language from cookie if present and enabled
   if (useCookie) {
-    matchedLocale = cookieLocale = getLocaleCookie()
+    matchedLocale = cookieLocale = localeCookie.value
     localeFrom = 'cookie'
     __DEBUG__ && console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
   }

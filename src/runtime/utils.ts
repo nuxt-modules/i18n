@@ -18,7 +18,6 @@ import {
 import {
   wrapComposable,
   detectBrowserLanguage,
-  getLocaleCookie,
   callVueI18nInterfaces,
   getVueI18nPropertyValue,
   defineGetter,
@@ -179,7 +178,7 @@ export function detectLocale(
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
 
-  const { ssg, callType, firstAccess } = detectLocaleContext
+  const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
   __DEBUG__ && console.log('detectLocale: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
   const {
@@ -232,7 +231,7 @@ export function detectLocale(
       _detectBrowserLanguage
     )
   if (!finalLocale && _detectBrowserLanguage && _detectBrowserLanguage.useCookie) {
-    finalLocale = getLocaleCookie() || ''
+    finalLocale = localeCookie.value || ''
   }
 
   __DEBUG__ && console.log('detectLocale: finalLocale last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)
