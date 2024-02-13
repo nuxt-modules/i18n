@@ -4,9 +4,9 @@ import { URL } from 'node:url'
 import { setup, url } from '../utils'
 import { renderPage } from '../helper'
 
-describe('#2544', async () => {
+describe('#2554', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/issues/2544`, import.meta.url)),
+    rootDir: fileURLToPath(new URL(`../fixtures/issues/2554`, import.meta.url)),
     browser: true
   })
 
