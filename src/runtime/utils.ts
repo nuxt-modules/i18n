@@ -321,6 +321,7 @@ function isRootRedirectOptions(rootRedirect: unknown): rootRedirect is RootRedir
 const useRedirectState = () => useState<string>(NUXT_I18N_MODULE_ID + ':redirect', () => '')
 
 type NavigateArgs = {
+  nuxtApp: NuxtApp
   i18n: I18n
   redirectPath: string
   locale: string
@@ -328,6 +329,7 @@ type NavigateArgs = {
 }
 
 function _navigate(redirectPath: string, status: number) {
+  console.log(redirectPath, status)
   return navigateTo(redirectPath, { redirectCode: status })
 }
 
@@ -339,7 +341,7 @@ export async function navigate(
   const differentDomains = nuxtI18nOptions.differentDomains ?? nuxtI18nOptionsDefault.differentDomains
   const skipSettingLocaleOnNavigate =
     nuxtI18nOptions.skipSettingLocaleOnNavigate ?? nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
-  const { i18n, locale, route } = args
+  const { nuxtApp, i18n, locale, route } = args
   let { redirectPath } = args
 
   __DEBUG__ &&
@@ -360,6 +362,7 @@ export async function navigate(
       redirectPath = '/' + rootRedirect.path
       status = rootRedirect.statusCode
     }
+    redirectPath = nuxtApp.$localePath(redirectPath, locale)
     __DEBUG__ && console.log('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
     return _navigate(redirectPath, status)
   }
