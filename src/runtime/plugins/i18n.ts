@@ -162,21 +162,26 @@ export default defineNuxtPlugin({
               notInitialSetup = false
             }
 
-            const redirectPath = detectRedirect({
-              route: { to: route },
-              targetLocale: locale,
-              routeLocaleGetter: getLocaleFromRoute
-            })
+            const redirectPath = await nuxtContext.runWithContext(() =>
+              detectRedirect({
+                route: { to: route },
+                targetLocale: locale,
+                routeLocaleGetter: getLocaleFromRoute
+              })
+            )
             __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
 
-            await navigate(
-              {
-                i18n,
-                redirectPath,
-                locale,
-                route
-              },
-              { enableNavigate: true }
+            await nuxtContext.runWithContext(
+              async () =>
+                await navigate(
+                  {
+                    i18n,
+                    redirectPath,
+                    locale,
+                    route
+                  },
+                  { enableNavigate: true }
+                )
             )
           }
           composer.differentDomains = nuxtI18nOptions.differentDomains
@@ -403,17 +408,19 @@ export default defineNuxtPlugin({
           notInitialSetup = false
         }
 
-        const redirectPath = detectRedirect({
-          route: { to, from },
-          targetLocale: locale,
-          routeLocaleGetter: nuxtI18nOptions.strategy === 'no_prefix' ? () => locale : getLocaleFromRoute,
-          calledWithRouting: true
-        })
+        const redirectPath = await nuxtContext.runWithContext(() =>
+          detectRedirect({
+            route: { to, from },
+            targetLocale: locale,
+            routeLocaleGetter: nuxtI18nOptions.strategy === 'no_prefix' ? () => locale : getLocaleFromRoute,
+            calledWithRouting: true
+          })
+        )
         __DEBUG__ && console.log('redirectPath on locale-changing middleware', redirectPath)
 
         routeChangeCount++
 
-        return navigate({ i18n, redirectPath, locale, route: to })
+        return await nuxtContext.runWithContext(async () => navigate({ i18n, redirectPath, locale, route: to }))
       }),
       { global: true }
     )
