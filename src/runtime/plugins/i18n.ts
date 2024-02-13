@@ -25,7 +25,8 @@ import {
   getLocaleCookie as _getLocaleCookie,
   setLocaleCookie as _setLocaleCookie,
   detectBrowserLanguage,
-  DefaultDetectBrowserLanguageFromResult
+  DefaultDetectBrowserLanguageFromResult,
+  getI18nCookie
 } from '../internal'
 import { getComposer, getLocale, setLocale } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
@@ -68,6 +69,7 @@ export default defineNuxtPlugin({
     const getLocaleFromRoute = createLocaleFromRouteGetter()
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
 
+    const localeCookie = getI18nCookie()
     // detect initial locale
     let initialLocale = detectLocale(
       route,
@@ -77,7 +79,8 @@ export default defineNuxtPlugin({
       {
         ssg: isSSG && nuxtI18nOptions.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
         callType: 'setup',
-        firstAccess: true
+        firstAccess: true,
+        localeCookie
       }
     )
     __DEBUG__ && console.log('first detect initial locale', initialLocale)
@@ -124,7 +127,7 @@ export default defineNuxtPlugin({
           ? detectBrowserLanguage(
               route,
               vueI18nOptions.locale,
-              { ssg: 'ssg_setup', callType: 'setup', firstAccess: true },
+              { ssg: 'ssg_setup', callType: 'setup', firstAccess: true, localeCookie },
               initialLocale
             )
           : DefaultDetectBrowserLanguageFromResult
@@ -187,8 +190,8 @@ export default defineNuxtPlugin({
           composer.differentDomains = nuxtI18nOptions.differentDomains
           composer.defaultLocale = nuxtI18nOptions.defaultLocale
           composer.getBrowserLocale = () => _getBrowserLocale()
-          composer.getLocaleCookie = () => _getLocaleCookie()
-          composer.setLocaleCookie = (locale: string) => _setLocaleCookie(locale)
+          composer.getLocaleCookie = () => _getLocaleCookie(localeCookie)
+          composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale)
 
           composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
             nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context })
@@ -394,7 +397,8 @@ export default defineNuxtPlugin({
           {
             ssg: isSSGModeInitialSetup() && nuxtI18nOptions.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
             callType: 'routing',
-            firstAccess: routeChangeCount === 0
+            firstAccess: routeChangeCount === 0,
+            localeCookie
           }
         )
         __DEBUG__ && console.log('detect locale', locale)
