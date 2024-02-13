@@ -355,3 +355,7 @@ test('dynamic parameters', async () => {
   const product2dom = getDom(product2Html)
   expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('/products/red-mug')
 })
+
+test('(#2554) using `setLocale` in plugin should not throw an error', async () => {
+  await expect($fetch('/?pluginSetLocale')).resolves.to.not.toThrowError()
+})
