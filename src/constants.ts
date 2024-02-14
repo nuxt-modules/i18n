@@ -1,5 +1,3 @@
-import type { NuxtI18nOptionsDefault } from './options'
-
 export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n' as const
 export const VUE_I18N_PKG = 'vue-i18n' as const
 export const SHARED_PKG = '@intlify/shared' as const
@@ -24,25 +22,8 @@ export const STRATEGIES = {
   NO_PREFIX: STRATEGY_NO_PREFIX
 } as const
 
-export const DEFAULT_LOCALE = ''
-export const DEFAULT_STRATEGY = STRATEGIES.PREFIX_EXCEPT_DEFAULT
-export const DEFAULT_TRAILING_SLASH = false
-export const DEFAULT_ROUTES_NAME_SEPARATOR = '___'
-export const DEFAULT_LOCALE_ROUTE_NAME_SUFFIX = 'default'
-export const DEFAULT_DETECTION_DIRECTION = 'ltr'
-export const DEFAULT_BASE_URL = ''
 export const DEFAULT_DYNAMIC_PARAMS_KEY = 'nuxtI18n'
-
-const REDIRECT_ON_ALL = 'all'
-const REDIRECT_ON_ROOT = 'root'
-const REDIRECT_ON_NO_PREFIX = 'no prefix'
-export const REDIRECT_ON_OPTIONS = {
-  ALL: REDIRECT_ON_ALL,
-  ROOT: REDIRECT_ON_ROOT,
-  NO_PREFIX: REDIRECT_ON_NO_PREFIX
-} as const
-
-export const COMPONENT_OPTIONS_KEY = 'nuxtI18n'
+export const DEFAULT_COOKIE_KEY = 'i18n_redirected'
 
 export const DEFAULT_OPTIONS = {
   experimental: {
@@ -78,7 +59,7 @@ export const DEFAULT_OPTIONS = {
     alwaysRedirect: false,
     cookieCrossOrigin: false,
     cookieDomain: null,
-    cookieKey: 'i18n_redirected',
+    cookieKey: DEFAULT_COOKIE_KEY,
     cookieSecure: false,
     fallbackLocale: '',
     redirectOn: 'root',
