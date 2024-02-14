@@ -3,7 +3,6 @@ import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
-  nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
   isSSG,
   localeLoaders,
@@ -104,14 +103,10 @@ export async function loadAndSetLocale(
   i18n: I18n,
   initial: boolean = false
 ): Promise<[boolean, string]> {
-  const _differentDomains = nuxtI18nOptions.differentDomains ?? nuxtI18nOptionsDefault.differentDomains
-  const skipSettingLocaleOnNavigate =
-    nuxtI18nOptions.skipSettingLocaleOnNavigate ?? nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
-  const lazy = nuxtI18nOptions.lazy ?? nuxtI18nOptionsDefault.lazy
-  const useCookie =
-    (nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie) ??
-    nuxtI18nOptionsDefault.detectBrowserLanguage.useCookie
+  const { differentDomains, skipSettingLocaleOnNavigate, lazy, detectBrowserLanguage } = nuxtI18nOptions
+  const useCookie = detectBrowserLanguage && detectBrowserLanguage.useCookie
   const nuxtApp = useNuxtApp()
+
   let ret = false
   const oldLocale = getLocale(i18n)
   __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
@@ -120,7 +115,7 @@ export async function loadAndSetLocale(
   }
 
   // abort if different domains option enabled
-  if (!initial && _differentDomains) {
+  if (!initial && differentDomains) {
     return [ret, oldLocale]
   }
 
@@ -336,10 +331,7 @@ export async function navigate(
   args: NavigateArgs,
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
-  const rootRedirect = nuxtI18nOptions.rootRedirect ?? nuxtI18nOptionsDefault.rootRedirect
-  const differentDomains = nuxtI18nOptions.differentDomains ?? nuxtI18nOptionsDefault.differentDomains
-  const skipSettingLocaleOnNavigate =
-    nuxtI18nOptions.skipSettingLocaleOnNavigate ?? nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
+  const { rootRedirect, differentDomains, skipSettingLocaleOnNavigate } = nuxtI18nOptions
   const { nuxtApp, i18n, locale, route } = args
   let { redirectPath } = args
 

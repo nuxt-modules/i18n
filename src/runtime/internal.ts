@@ -12,8 +12,8 @@ import {
   unref
 } from '#imports'
 import {
-  nuxtI18nOptionsDefault,
   NUXT_I18N_MODULE_ID,
+  DEFAULT_COOKIE_KEY,
   isSSG,
   localeCodes,
   nuxtI18nOptions,
@@ -96,7 +96,7 @@ export function getBrowserLocale(): string | undefined {
 
 export function getI18nCookie() {
   const detect = nuxtI18nOptions.detectBrowserLanguage
-  const cookieKey = (detect && detect.cookieKey) || nuxtI18nOptionsDefault.detectBrowserLanguage.cookieKey
+  const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
   const date = new Date()
   const cookieOptions: Record<string, any> = {
     expires: new Date(date.setDate(date.getDate() + 365)),
@@ -135,7 +135,7 @@ export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): strin
 }
 
 export function setLocaleCookie(cookieRef: CookieRef<string | undefined>, locale: string) {
-  const { useCookie } = nuxtI18nOptions.detectBrowserLanguage || nuxtI18nOptionsDefault.detectBrowserLanguage
+  const useCookie = nuxtI18nOptions.detectBrowserLanguage && nuxtI18nOptions.detectBrowserLanguage.useCookie
 
   if (!useCookie) {
     return

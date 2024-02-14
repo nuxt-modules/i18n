@@ -1,5 +1,5 @@
 import { unref, useNuxtApp } from '#imports'
-import { nuxtI18nOptions, STRATEGIES } from '#build/i18n.options.mjs'
+import { nuxtI18nOptions } from '#build/i18n.options.mjs'
 
 import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
@@ -86,7 +86,7 @@ export function getHreflangLinks(
   const { defaultLocale, strategy } = nuxtI18nOptions
   const links: MetaAttrs[] = []
 
-  if (strategy === STRATEGIES.NO_PREFIX) return links
+  if (strategy === 'no_prefix') return links
 
   const localeMap = new Map<string, LocaleObject>()
   for (const locale of locales) {

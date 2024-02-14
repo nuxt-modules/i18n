@@ -1,6 +1,5 @@
 import { isObject, isFunction, assign } from '@intlify/shared'
 import { computed, effectScope, ref, watch } from '#imports'
-import { DEFAULT_BASE_URL } from '#build/i18n.options.mjs'
 import { resolveBaseUrl, isVueI18n, getComposer, inBrowser } from '../utils'
 import {
   getRouteBaseName,
@@ -71,7 +70,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
   {
     locales = [],
     localeCodes = [],
-    baseUrl = DEFAULT_BASE_URL,
+    baseUrl = '',
     hooks = {},
     context = {} as Context
   }: VueI18nExtendOptions<Context> = {}
