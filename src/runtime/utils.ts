@@ -329,7 +329,6 @@ type NavigateArgs = {
 }
 
 function _navigate(redirectPath: string, status: number) {
-  console.log(redirectPath, status)
   return navigateTo(redirectPath, { redirectCode: status })
 }
 
