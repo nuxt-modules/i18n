@@ -178,6 +178,7 @@ export default defineNuxtPlugin({
               async () =>
                 await navigate(
                   {
+                    nuxtApp: nuxtContext,
                     i18n,
                     redirectPath,
                     locale,
@@ -424,7 +425,9 @@ export default defineNuxtPlugin({
 
         routeChangeCount++
 
-        return await nuxtContext.runWithContext(async () => navigate({ i18n, redirectPath, locale, route: to }))
+        return await nuxtContext.runWithContext(async () =>
+          navigate({ nuxtApp: nuxtContext, i18n, redirectPath, locale, route: to })
+        )
       }),
       { global: true }
     )
