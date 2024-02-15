@@ -1,9 +1,10 @@
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
   modules: ['@nuxt/content', '@nuxt/ui', '@nuxtjs/fontaine', '@nuxtjs/google-fonts', 'nuxt-og-image'],
-  routeRules: {
-    '/api/search.json': { prerender: true }
-  },
+  routeRules: { '/api/search.json': { prerender: true } },
+
+  // SEO
+  site: { url: 'https://i18n.nuxtjs.org' },
 
   // Nuxt UI & UI Pro
   ui: { icons: ['heroicons', 'simple-icons'] },
