@@ -12,7 +12,7 @@ import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } 
 
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { File } from '@babel/types'
+import type { File, Identifier } from '@babel/types'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -150,27 +150,64 @@ function parseCode(code: string, path: string) {
 
 function scanProgram(program: File['program'] /*, calleeName: string*/) {
   let ret: false | 'object' | 'function' | 'arrow-function' = false
+  let variableDeclaration: Identifier | undefined
+
   for (const node of program.body) {
-    if (node.type === 'ExportDefaultDeclaration') {
-      if (node.declaration.type === 'ObjectExpression') {
-        ret = 'object'
+    if (node.type !== 'ExportDefaultDeclaration') continue
+
+    if (node.declaration.type === 'ObjectExpression') {
+      ret = 'object'
+      break
+    }
+
+    if (node.declaration.type === 'Identifier') {
+      variableDeclaration = node.declaration
+      break
+    }
+
+    if (node.declaration.type === 'CallExpression' && node.declaration.callee.type === 'Identifier') {
+      const [fnNode] = node.declaration.arguments
+      if (fnNode.type === 'FunctionExpression') {
+        ret = 'function'
         break
-      } else if (
-        node.declaration.type === 'CallExpression' &&
-        node.declaration.callee.type === 'Identifier' // &&
-        // node.declaration.callee.name === calleeName
-      ) {
-        const [fnNode] = node.declaration.arguments
-        if (fnNode.type === 'FunctionExpression') {
-          ret = 'function'
+      }
+
+      if (fnNode.type === 'ArrowFunctionExpression') {
+        ret = 'arrow-function'
+        break
+      }
+    }
+  }
+
+  if (variableDeclaration) {
+    for (const node of program.body) {
+      if (node.type !== 'VariableDeclaration') continue
+      for (const decl of node.declarations) {
+        if (decl.type !== 'VariableDeclarator') continue
+        if (decl.init == null) continue
+        if ('name' in decl.id === false || decl.id.name !== variableDeclaration!.name) continue
+
+        if (decl.init.type === 'ObjectExpression') {
+          ret = 'object'
           break
-        } else if (fnNode.type === 'ArrowFunctionExpression') {
-          ret = 'arrow-function'
-          break
+        }
+
+        if (decl.init.type === 'CallExpression' && decl.init.callee.type === 'Identifier') {
+          const [fnNode] = decl.init.arguments
+          if (fnNode.type === 'FunctionExpression') {
+            ret = 'function'
+            break
+          }
+
+          if (fnNode.type === 'ArrowFunctionExpression') {
+            ret = 'arrow-function'
+            break
+          }
         }
       }
     }
   }
+
   return ret
 }
 
