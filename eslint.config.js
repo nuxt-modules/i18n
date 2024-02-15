@@ -14,12 +14,7 @@ export default [
       'test/fixtures/**',
       'coverage/**',
       'src/runtime/templates/**',
-      'docs/.output/**',
-      'docs/.nuxt/**',
-      'docs/components/content/Logo.vue',
-      'docs/components/content/VoltaBoard.vue',
-      'docs/components/AppHeader.vue',
-      'docs/components/AppHeaderNavigation.vue'
+      'docs/**'
     ]
   },
 
