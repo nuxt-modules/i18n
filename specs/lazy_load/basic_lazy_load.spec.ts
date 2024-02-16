@@ -119,17 +119,7 @@ describe('basic lazy loading', async () => {
   })
 
   test('files with cache disabled bypass caching', async () => {
-    // const home = url('/')
-    // const page = await createPage()
-    // await page.goto(home)
     const { page, consoleLogs } = await renderPage('/')
-    // const messages: string[] = []
-    // page.on('console', msg => {
-    //   const content = msg.text()
-    //   if (content.includes('lazy-locale-')) {
-    //     messages.push(content)
-    //   }
-    // })
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
     expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
@@ -142,5 +132,12 @@ describe('basic lazy loading', async () => {
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
     expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
+  })
+
+  test('manually loaded messages can be used in translations', async () => {
+    const { page } = await renderPage('/manual-load')
+
+    expect(await getText(page, '#welcome-english')).toEqual('Welcome!')
+    expect(await getText(page, '#welcome-dutch')).toEqual('Welkom!')
   })
 })

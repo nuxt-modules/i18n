@@ -10,7 +10,7 @@ import {
   parallelPlugin,
   normalizedLocales
 } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions, loadInitialMessages } from '../messages'
+import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
 import {
   loadAndSetLocale,
   detectLocale,
@@ -18,7 +18,8 @@ import {
   navigate,
   injectNuxtHelpers,
   extendBaseUrl,
-  _setLocale
+  _setLocale,
+  mergeLocaleMessage
 } from '../utils'
 import {
   getBrowserLocale as _getBrowserLocale,
@@ -188,6 +189,11 @@ export default defineNuxtPlugin({
                 )
             )
           }
+          composer.loadLocaleMessages = async (locale: string) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
+            await loadLocale(locale, localeLoaders, setter)
+          }
           composer.differentDomains = nuxtI18nOptions.differentDomains
           composer.defaultLocale = nuxtI18nOptions.defaultLocale
           composer.getBrowserLocale = () => _getBrowserLocale()
@@ -297,6 +303,11 @@ export default defineNuxtPlugin({
             setLocale: {
               get() {
                 return async (locale: string) => Reflect.apply(composer.setLocale, composer, [locale])
+              }
+            },
+            loadLocaleMessages: {
+              get() {
+                return async (locale: string) => Reflect.apply(composer.loadLocaleMessages, composer, [locale])
               }
             },
             differentDomains: {
