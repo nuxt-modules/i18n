@@ -81,6 +81,12 @@ export interface ComposerCustomProperties<
    */
   setLocale: (locale: string) => Promise<void>
   /**
+   * Loads locale messages of the specified locale code.
+   *
+   * @param locale - A {@link Locale}
+   */
+  loadLocaleMessages: (locale: string) => Promise<void>
+  /**
    * Returns browser locale code filtered against the ones defined in options.
    *
    * @returns The browser locale.
