@@ -71,9 +71,7 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "nitropack": "npm:nitropack-nightly",
-      "h3": "npm:h3-nightly",
-      "nuxt": "^3.9.1",
+      "nuxt": "^3.10.3",
       "consola": "^3"
     }
   },
