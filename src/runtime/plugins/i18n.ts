@@ -81,7 +81,8 @@ export default defineNuxtPlugin({
         callType: 'setup',
         firstAccess: true,
         localeCookie
-      }
+      },
+      _detectBrowserLanguage
     )
     __DEBUG__ && console.log('first detect initial locale', initialLocale)
 
@@ -196,8 +197,8 @@ export default defineNuxtPlugin({
           composer.differentDomains = nuxtI18nOptions.differentDomains
           composer.defaultLocale = nuxtI18nOptions.defaultLocale
           composer.getBrowserLocale = () => _getBrowserLocale()
-          composer.getLocaleCookie = () => _getLocaleCookie(localeCookie)
-          composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale)
+          composer.getLocaleCookie = () => _getLocaleCookie(localeCookie, _detectBrowserLanguage)
+          composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
           composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
             nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context })
@@ -411,7 +412,8 @@ export default defineNuxtPlugin({
             callType: 'routing',
             firstAccess: routeChangeCount === 0,
             localeCookie
-          }
+          },
+          _detectBrowserLanguage
         )
         __DEBUG__ && console.log('detect locale', locale)
 

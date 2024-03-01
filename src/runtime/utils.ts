@@ -12,7 +12,8 @@ import {
   type PrefixableOptions,
   type SwitchLocalePathIntercepter,
   type BaseUrlResolveHandler,
-  type LocaleObject
+  type LocaleObject,
+  type DetectBrowserLanguageOptions
 } from '#build/i18n.options.mjs'
 import {
   wrapComposable,
@@ -104,7 +105,7 @@ export async function loadAndSetLocale(
   i18n: I18n,
   initial: boolean = false
 ): Promise<[boolean, string]> {
-  const { differentDomains, skipSettingLocaleOnNavigate, lazy, detectBrowserLanguage } = nuxtI18nOptions
+  const { differentDomains, skipSettingLocaleOnNavigate, lazy } = nuxtI18nOptions
   const opts = runtimeDetectBrowserLanguage()
   const nuxtApp = useNuxtApp()
 
@@ -167,10 +168,10 @@ export function detectLocale(
   routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
   vueI18nOptionsLocale: Locale | undefined,
   initialLocaleLoader: Locale | LocaleLoader,
-  detectLocaleContext: DetectLocaleContext
+  detectLocaleContext: DetectLocaleContext,
+  _detectBrowserLanguage: false | DetectBrowserLanguageOptions
 ) {
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions
-  const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
 
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
@@ -183,7 +184,7 @@ export function detectLocale(
     stat,
     reason,
     from
-  } = runtimeDetectBrowserLanguage()
+  } = _detectBrowserLanguage
     ? detectBrowserLanguage(route, vueI18nOptionsLocale, detectLocaleContext, initialLocale)
     : DefaultDetectBrowserLanguageFromResult
   __DEBUG__ &&

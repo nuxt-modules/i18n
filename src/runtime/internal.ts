@@ -112,9 +112,10 @@ export function getI18nCookie() {
   return useNuxtCookie<string | undefined>(cookieKey, cookieOptions)
 }
 
-export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): string | undefined {
-  const detect = runtimeDetectBrowserLanguage()
-
+export function getLocaleCookie(
+  cookieRef: CookieRef<string | undefined>,
+  detect: false | DetectBrowserLanguageOptions
+): string | undefined {
   __DEBUG__ &&
     console.log('getLocaleCookie', {
       useCookie: detect && detect.useCookie,
@@ -134,9 +135,11 @@ export function getLocaleCookie(cookieRef: CookieRef<string | undefined>): strin
   }
 }
 
-export function setLocaleCookie(cookieRef: CookieRef<string | undefined>, locale: string) {
-  const detect = runtimeDetectBrowserLanguage()
-
+export function setLocaleCookie(
+  cookieRef: CookieRef<string | undefined>,
+  locale: string,
+  detect: false | DetectBrowserLanguageOptions
+) {
   if (detect === false || !detect.useCookie) {
     return
   }
