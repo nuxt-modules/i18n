@@ -131,7 +131,6 @@ export type NuxtI18nOptions<
   skipSettingLocaleOnNavigate?: boolean
   types?: 'composition' | 'legacy'
   debug?: boolean
-  dynamicRouteParams?: boolean
   parallelPlugin?: boolean
   /**
    * The app's default locale

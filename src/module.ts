@@ -17,7 +17,7 @@ import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { generateI18nPageTypes, generateI18nTypes, generateLoaderOptions } from './gen'
+import { generateI18nTypes, generateLoaderOptions } from './gen'
 import {
   NUXT_I18N_MODULE_ID,
   DEFAULT_OPTIONS,
@@ -121,12 +121,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       )
     }
 
-    if (options.dynamicRouteParams) {
-      logger.warn(
-        'The `dynamicRouteParams` options is deprecated and will be removed in `v8.1`, use the `useSetI18nParams` composable instead.'
-      )
-    }
-
     /**
      * nuxt layers handling ...
      */
@@ -227,17 +221,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       write: true,
       getContents: () => genTemplate(false)
     })
-
-    /**
-     * `PageMeta` augmentation to add `nuxtI18n` property
-     * TODO: Remove in v8.1, `useSetI18nParams` should be used instead
-     */
-    if (!!options.dynamicRouteParams) {
-      addTypeTemplate({
-        filename: 'types/i18n-page-meta.d.ts',
-        getContents: () => generateI18nPageTypes()
-      })
-    }
 
     /**
      * `$i18n` type narrowing based on 'legacy' or 'composition'

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
 import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY, DEPRECATED_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
 import { resolve, routeToObject } from './utils'
@@ -219,8 +219,17 @@ export const DefaultSwitchLocalePathIntercepter: SwitchLocalePathIntercepter = (
 function getLocalizableMetaFromDynamicParams(
   route: RouteLocationNormalizedLoaded
 ): Record<Locale, Record<string, unknown>> {
-  const meta = route.meta || {}
-  return (unref(meta)?.[DEFAULT_DYNAMIC_PARAMS_KEY] || {}) as Record<Locale, any>
+  const meta = unref(route.meta || {})
+
+  // TODO: remove this warning in v9
+  if (process.dev && DEPRECATED_DYNAMIC_PARAMS_KEY in meta) {
+    console.warn(
+      // @ts-expect-error undocumented `__file` property?
+      `Setting \`nuxtI18n\` on \`definePageMeta\` is deprecated, use the \`useSetI18nParams\` composable instead.\nUsage found in ${route.matched?.[0].components?.default?.__file}`
+    )
+  }
+
+  return (meta?.[DEFAULT_DYNAMIC_PARAMS_KEY] || {}) as Record<Locale, any>
 }
 
 /**

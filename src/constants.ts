@@ -22,7 +22,8 @@ export const STRATEGIES = {
   NO_PREFIX: STRATEGY_NO_PREFIX
 } as const
 
-export const DEFAULT_DYNAMIC_PARAMS_KEY = 'nuxtI18n'
+export const DEFAULT_DYNAMIC_PARAMS_KEY = 'nuxtI18nInternal'
+export const DEPRECATED_DYNAMIC_PARAMS_KEY = 'nuxtI18n'
 export const DEFAULT_COOKIE_KEY = 'i18n_redirected'
 
 export const DEFAULT_OPTIONS = {
@@ -67,7 +68,6 @@ export const DEFAULT_OPTIONS = {
   },
   differentDomains: false,
   baseUrl: '',
-  dynamicRouteParams: false,
   customRoutes: 'page',
   pages: {},
   skipSettingLocaleOnNavigate: false,
