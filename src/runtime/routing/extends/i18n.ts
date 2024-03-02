@@ -78,6 +78,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
   const scope = effectScope()
 
   const orgInstall = i18n.install
+  // @ts-ignore
   i18n.install = (vue: NuxtApp['vueApp'], ...options: unknown[]) => {
     const pluginOptions = isPluginOptions(options[0]) ? assign({}, options[0]) : { inject: true }
     if (pluginOptions.inject == null) {
