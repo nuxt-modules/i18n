@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", ":prHourlyLimit4", ":semanticCommitTypeAll(chore)"],
+  "extends": ["config:recommended", ":prHourlyLimit4", ":semanticCommitTypeAll(chore)"],
   "baseBranches": ["$default", "v7"],
   "meteor": {
     "enabled": false
