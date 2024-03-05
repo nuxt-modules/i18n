@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
 import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-import { nuxtI18nOptions, DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
 import { resolve, routeToObject } from './utils'
@@ -47,8 +47,8 @@ export const DefaultPrefixable = prefixable
  * 
  * @public
  */
-export function getRouteBaseName(givenRoute?: RouteLocation): string | undefined {
-  const { routesNameSeparator } = nuxtI18nOptions
+export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: RouteLocation): string | undefined {
+  const { routesNameSeparator } = common.runtimeConfig.public.i18n
   const route = unref(givenRoute)
   if (route == null || !route.name) {
     return
@@ -131,8 +131,9 @@ export function localeLocation(
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
-  const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } = nuxtI18nOptions
-  const prefixable = extendPrefixable()
+  const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } =
+    common.runtimeConfig.public.i18n
+  const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw
   if (isString(route)) {
@@ -158,7 +159,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     const resolvedRoute = resolve(common, localizedRoute, strategy, _locale)
 
     // @ts-ignore
-    const resolvedRouteName = getRouteBaseName(resolvedRoute)
+    const resolvedRouteName = getRouteBaseName(common, resolvedRoute)
     if (isString(resolvedRouteName)) {
       localizedRoute = {
         name: getLocaleRouteName(resolvedRouteName, _locale, {
@@ -187,7 +188,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     }
   } else {
     if (!localizedRoute.name && !('path' in localizedRoute)) {
-      localizedRoute.name = getRouteBaseName(router.currentRoute.value)
+      localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
     }
 
     localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, {
@@ -238,13 +239,13 @@ export function switchLocalePath(
   _route?: RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
   const route = _route ?? common.router.currentRoute.value
-  const name = getRouteBaseName(route)
+  const name = getRouteBaseName(common, route)
 
   if (!name) {
     return ''
   }
 
-  const switchLocalePathIntercepter = extendSwitchLocalePathIntercepter()
+  const switchLocalePathIntercepter = extendSwitchLocalePathIntercepter(common.runtimeConfig)
   const routeCopy = routeToObject(route)
   const resolvedParams = getLocalizableMetaFromDynamicParams(route)[locale]
 

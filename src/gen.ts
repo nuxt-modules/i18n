@@ -32,7 +32,7 @@ const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, i
   )
 }
 
-function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
+export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
   const isLocaleObjectsArray = (locales?: string[] | LocaleObject[]) => locales?.some(x => typeof x !== 'string')
 
   const hasLocaleObjects =

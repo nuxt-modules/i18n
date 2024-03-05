@@ -11,14 +11,7 @@ import {
   useNuxtApp,
   unref
 } from '#imports'
-import {
-  NUXT_I18N_MODULE_ID,
-  DEFAULT_COOKIE_KEY,
-  isSSG,
-  localeCodes,
-  nuxtI18nOptions,
-  normalizedLocales
-} from '#build/i18n.options.mjs'
+import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex, getI18nTarget } from './routing/utils'
 import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
 
@@ -26,6 +19,7 @@ import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { CookieRef } from 'nuxt/app'
+import type { ModulePublicRuntimeConfig } from '../module'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -128,9 +122,14 @@ export function getLocaleCookie(
   }
 
   const localeCode: string | undefined = cookieRef.value ?? undefined
-  __DEBUG__ && console.log(`getLocaleCookie cookie (${process.client ? 'client' : 'server'}) -`, localeCode)
+  if (localeCode == null) {
+    __DEBUG__ && console.log(`getLocaleCookie (${process.client ? 'client' : 'server'}) - none`)
+    return
+  }
 
-  if (localeCode && localeCodes.includes(localeCode)) {
+  if (localeCodes.includes(localeCode)) {
+    __DEBUG__ &&
+      console.log(`getLocaleCookie (${process.client ? 'client' : 'server'}) - locale from cookie: `, localeCode)
     return localeCode
   }
 }
@@ -183,7 +182,7 @@ export function detectBrowserLanguage(
   detectLocaleContext: DetectLocaleContext,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
-  const { strategy } = nuxtI18nOptions
+  const { strategy } = useRuntimeConfig().public.i18n
   const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
   __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
@@ -376,8 +375,9 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export const runtimeDetectBrowserLanguage = () => {
-  const opts = useRuntimeConfig().public.i18n
+export const runtimeDetectBrowserLanguage = (
+  opts: ModulePublicRuntimeConfig['i18n'] = useRuntimeConfig().public.i18n
+) => {
   if (opts?.detectBrowserLanguage === false) return false
 
   return opts?.detectBrowserLanguage
