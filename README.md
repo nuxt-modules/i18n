@@ -14,7 +14,7 @@ The i18n module for Nuxt 3
 
 ## ✅ Status: v8
 
-If you would like to use the stable version for Nuxt 2, please see the [`v7` branch](https://github.com/nuxt-modules/i18n/tree/main)
+If you would like to use the stable version for Nuxt 2, please see the [`v7` branch](https://github.com/nuxt-modules/i18n/tree/v7)
 
 ## 🚀 Usage
 
@@ -30,7 +30,7 @@ npm install @nuxtjs/i18n --save-dev
 yarn add --dev @nuxtjs/i18n
 
 # Using pnpm
-pnpm install -D @nuxtjs/i18n
+pnpm add -D @nuxtjs/i18n
 ```
 
 2. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
@@ -86,7 +86,7 @@ Keep in mind that not all features are currently supported yet and some things m
 ## 🔗 Links
 
 - 📘 [Documentation for v8](https://i18n.nuxtjs.org/)
-- 📘 [Documentation for v7](https://i18n.nuxtjs.org/v7/setup)
+- 📘 [Documentation for v7](https://i18n.nuxtjs.org/docs/v7)
 - 🔖 [Release notes](./CHANGELOG.md)
 - 👥 [Community](https://discord.nuxtjs.org/) (`#i18n` channel)
 
