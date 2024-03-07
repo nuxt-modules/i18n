@@ -202,7 +202,7 @@ export type RouteBaseNameFunction = (givenRoute?: RouteLocationNormalizedLoaded)
  * @public
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
-  return getRouteBaseName
+  return wrapComposable(getRouteBaseName)
 }
 
 /**

@@ -17,7 +17,7 @@ import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { generateI18nPageTypes, generateI18nTypes, generateLoaderOptions } from './gen'
+import { generateI18nPageTypes, generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
 import {
   NUXT_I18N_MODULE_ID,
   DEFAULT_OPTIONS,
@@ -140,8 +140,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     // for public
+    // @ts-expect-error generated type
     nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
       baseUrl: options.baseUrl,
+      defaultLocale: options.defaultLocale,
+      defaultDirection: options.defaultDirection,
+      strategy: options.strategy,
+      lazy: options.lazy,
+      rootRedirect: options.rootRedirect,
+      routesNameSeparator: options.routesNameSeparator,
+      defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix,
+      skipSettingLocaleOnNavigate: options.skipSettingLocaleOnNavigate,
+      differentDomains: options.differentDomains,
+      trailingSlash: options.trailingSlash,
+      configLocales: options.locales,
       locales: options.locales.reduce(
         (obj, locale) => {
           if (typeof locale === 'string') {
@@ -222,6 +234,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
         parallelPlugin: options.parallelPlugin
       })
     }
+
+    // @ts-expect-error type error
+    nuxt.options.runtimeConfig.public.i18n.configLocales = simplifyLocaleOptions(nuxt, defu({}, options))
 
     addTemplate({
       filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
@@ -337,7 +352,20 @@ export default defineNuxtModule<NuxtI18nOptions>({
 export interface ModuleOptions extends NuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
-  i18n: Required<Pick<NuxtI18nOptions<unknown>, 'baseUrl' | 'detectBrowserLanguage'>>
+  i18n: Pick<NuxtI18nOptions<unknown>, 'baseUrl' | 'rootRedirect'> &
+    Pick<
+      Required<NuxtI18nOptions<unknown>>,
+      | 'differentDomains'
+      | 'skipSettingLocaleOnNavigate'
+      | 'defaultLocale'
+      | 'lazy'
+      | 'defaultDirection'
+      | 'detectBrowserLanguage'
+      | 'strategy'
+      | 'routesNameSeparator'
+      | 'defaultLocaleRouteNameSuffix'
+      | 'trailingSlash'
+    > & { configLocales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']> }
 }
 
 export interface ModuleHooks {
