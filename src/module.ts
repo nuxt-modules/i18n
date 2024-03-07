@@ -352,22 +352,78 @@ export default defineNuxtModule<NuxtI18nOptions>({
 export interface ModuleOptions extends NuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
-  i18n: Pick<NuxtI18nOptions<unknown>, 'baseUrl' | 'rootRedirect'> &
-    Pick<
-      Required<NuxtI18nOptions<unknown>>,
-      | 'differentDomains'
-      | 'skipSettingLocaleOnNavigate'
-      | 'defaultLocale'
-      | 'lazy'
-      | 'defaultDirection'
-      | 'detectBrowserLanguage'
-      | 'strategy'
-      | 'routesNameSeparator'
-      | 'defaultLocaleRouteNameSuffix'
-      | 'trailingSlash'
-    > & { configLocales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']> }
-}
+  i18n: {
+    baseUrl: NuxtI18nOptions['baseUrl']
+    rootRedirect: NuxtI18nOptions['rootRedirect']
 
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    configLocales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    differentDomains: Required<NuxtI18nOptions>['differentDomains']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    skipSettingLocaleOnNavigate: Required<NuxtI18nOptions>['skipSettingLocaleOnNavigate']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    defaultLocale: Required<NuxtI18nOptions>['defaultLocale']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    lazy: Required<NuxtI18nOptions>['lazy']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    defaultDirection: Required<NuxtI18nOptions>['defaultDirection']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    detectBrowserLanguage: Required<NuxtI18nOptions>['detectBrowserLanguage']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    strategy: Required<NuxtI18nOptions>['strategy']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    routesNameSeparator: Required<NuxtI18nOptions>['routesNameSeparator']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    defaultLocaleRouteNameSuffix: Required<NuxtI18nOptions>['defaultLocaleRouteNameSuffix']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    trailingSlash: Required<NuxtI18nOptions>['trailingSlash']
+  }
+}
 export interface ModuleHooks {
   'i18n:registerModule': (
     registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
