@@ -127,7 +127,7 @@ export type NuxtI18nOptions<
    * Do not use in projects
    */
   i18nModules?: { langDir?: string | null; locales?: NuxtI18nOptions<Context>['locales'] }[]
-  rootRedirect?: string | null | RootRedirectOptions
+  rootRedirect?: string | RootRedirectOptions
   skipSettingLocaleOnNavigate?: boolean
   types?: 'composition' | 'legacy'
   debug?: boolean

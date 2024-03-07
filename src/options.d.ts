@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { NuxtI18nOptions, VueI18nConfig } from './types'
-import type { NuxtI18nOptionsDefault } from './constants'
 import type { DeepRequired } from 'ts-essentials'
 
 export type * from './types'
@@ -30,5 +29,4 @@ export const NUXT_I18N_MODULE_ID = ''
 export const DEFAULT_DYNAMIC_PARAMS_KEY: string
 export const DEFAULT_COOKIE_KEY: string
 
-export { NuxtI18nOptionsDefault }
 export { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from './types'

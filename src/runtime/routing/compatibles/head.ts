@@ -1,5 +1,4 @@
-import { unref, useNuxtApp } from '#imports'
-import { nuxtI18nOptions } from '#build/i18n.options.mjs'
+import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
 import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
@@ -25,7 +24,7 @@ export function localeHead(
     identifierAttribute: idAttribute = 'hid'
   }: I18nHeadOptions
 ): I18nHeadMetaInfo {
-  const { defaultDirection } = nuxtI18nOptions
+  const { defaultDirection } = useRuntimeConfig().public.i18n
   const i18n = getComposer(common.i18n)
 
   const metaObject: Required<I18nHeadMetaInfo> = {
@@ -83,7 +82,7 @@ export function getHreflangLinks(
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
   const baseUrl = getBaseUrl()
-  const { defaultLocale, strategy } = nuxtI18nOptions
+  const { defaultLocale, strategy } = useRuntimeConfig().public.i18n
   const links: MetaAttrs[] = []
 
   if (strategy === 'no_prefix') return links
@@ -138,7 +137,7 @@ export function getCanonicalUrl(
   seoAttributes: I18nHeadOptions['addSeoAttributes']
 ) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute(common, { ...route, name: getRouteBaseName(route) })
+  const currentRoute = localeRoute(common, { ...route, name: getRouteBaseName(common, route) })
 
   if (!currentRoute) return ''
   let href = toAbsoluteUrl(currentRoute.path, baseUrl)

@@ -54,7 +54,7 @@ export const DEFAULT_OPTIONS = {
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
   langDir: null,
-  rootRedirect: null,
+  rootRedirect: undefined,
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,
@@ -87,5 +87,3 @@ export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
 export const EXECUTABLE_EXTENSIONS = [...JS_EXTENSIONS, ...TS_EXTENSIONS]
 
 export const NULL_HASH = '00000000' as const
-
-export type NuxtI18nOptionsDefault = typeof DEFAULT_OPTIONS
