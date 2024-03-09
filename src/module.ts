@@ -123,7 +123,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     if (options.dynamicRouteParams) {
       logger.warn(
-        'The `dynamicRouteParams` options is deprecated and will be removed in `v8.1`, use the `useSetI18nParams` composable instead.'
+        'The `dynamicRouteParams` options is deprecated and will be removed in `v9`, use the `useSetI18nParams` composable instead.'
       )
     }
 
@@ -246,7 +246,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     /**
      * `PageMeta` augmentation to add `nuxtI18n` property
-     * TODO: Remove in v8.1, `useSetI18nParams` should be used instead
+     * TODO: Remove in v9, `useSetI18nParams` should be used instead
      */
     if (!!options.dynamicRouteParams) {
       addTypeTemplate({
