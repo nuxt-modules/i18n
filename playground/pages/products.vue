@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 const { locale, locales } = useI18n()
 const localePath = useLocalePath()
-const switchLocalePath = useSwitchLocalePath()
 
 const { data } = await useAsyncData('products', () => $fetch(`/api/products`))
 definePageMeta({
@@ -21,7 +20,7 @@ definePageMeta({
   <div>
     <nav style="padding: 1em">
       <span v-for="locale in locales" :key="locale.code">
-        <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
+        <SwitchLocalePathLink :locale="locale.code">{{ locale.name }}</SwitchLocalePathLink> |
       </span>
     </nav>
     <NuxtLink

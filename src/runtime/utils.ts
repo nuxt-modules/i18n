@@ -38,6 +38,7 @@ import { getLocale, setLocale, getLocaleCodes, getI18nTarget } from './routing/u
 
 import type { I18n, Locale, FallbackLocale, Composer, VueI18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
+import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
@@ -90,12 +91,14 @@ export type CommonComposableOptions = {
   router: Router
   i18n: I18n
   runtimeConfig: RuntimeConfig
+  metaState: Ref<Record<Locale, any>>
 }
 export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
   return {
     i18n: i18n ?? useNuxtApp().$i18n,
     router: useRouter(),
-    runtimeConfig: useRuntimeConfig()
+    runtimeConfig: useRuntimeConfig(),
+    metaState: useState<Record<Locale, any>>('nuxt-i18n-meta', () => ({}))
   }
 }
 

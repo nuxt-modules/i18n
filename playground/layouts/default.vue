@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useSetI18nParams, useLocaleHead } from '#i18n'
-import { useHead } from '#imports'
+import { useLocaleHead } from '#i18n'
 
 const route = useRoute()
 const { t } = useI18n()

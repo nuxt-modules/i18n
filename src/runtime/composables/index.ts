@@ -47,12 +47,14 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
   const locale = getLocale(i18n)
   const locales = getNormalizedLocales(getLocales(i18n))
   const _i18nParams = ref({})
+  const experimentalSSR = common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR
 
   const i18nParams = computed({
     get() {
-      return router.currentRoute.value.meta.nuxtI18n ?? {}
+      return experimentalSSR ? common.metaState.value : router.currentRoute.value.meta.nuxtI18n ?? {}
     },
     set(val) {
+      common.metaState.value = val
       _i18nParams.value = val
       router.currentRoute.value.meta.nuxtI18n = val
     }
@@ -61,7 +63,7 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
   const stop = watch(
     () => router.currentRoute.value.fullPath,
     () => {
-      router.currentRoute.value.meta.nuxtI18n = _i18nParams.value
+      router.currentRoute.value.meta.nuxtI18n = experimentalSSR ? common.metaState.value : _i18nParams.value
     }
   )
 
