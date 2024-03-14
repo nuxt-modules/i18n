@@ -397,19 +397,22 @@ export default defineNuxtPlugin({
     if (runtimeI18n.experimental.switchLocalePathLinkSSR === true) {
       const switchLocalePath = useSwitchLocalePath()
 
-      const localeMatcherExpr = new RegExp(`data-${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}="(${localeCodes.join('|')})"`)
       const switchLocalePathLinkWrapperExpr = new RegExp(
-        `<!--${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->(.+?)<!--\/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->`,
+        [
+          `<!--${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-\\[(\\w+)\\]-->`,
+          `.+?`,
+          `<!--\/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->`
+        ].join(''),
         'g'
       )
 
       nuxt.hook('app:rendered', ctx => {
         if (ctx.renderResult?.html == null) return
 
-        ctx.renderResult.html = ctx.renderResult.html.replaceAll(switchLocalePathLinkWrapperExpr, (substr: string) => {
-          const matchedLocale = localeMatcherExpr.exec(substr)?.at(1)
-          return substr.replace(/href="([^"]+)"/, `href="${switchLocalePath(matchedLocale ?? '')}"`)
-        })
+        ctx.renderResult.html = ctx.renderResult.html.replaceAll(
+          switchLocalePathLinkWrapperExpr,
+          (match: string, p1: string) => match.replace(/href="([^"]+)"/, `href="${switchLocalePath(p1 ?? '')}"`)
+        )
       })
     }
 

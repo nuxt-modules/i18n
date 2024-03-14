@@ -20,16 +20,8 @@ export default defineComponent({
     const switchLocalePath = useSwitchLocalePath()
 
     return () => [
-      h(Comment, SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
-      h(
-        NuxtLink,
-        {
-          ...attrs,
-          to: switchLocalePath(props.locale),
-          [`data-${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}`]: props.locale
-        },
-        slots.default
-      ),
+      h(Comment, `${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-[${props.locale}]`),
+      h(NuxtLink, { ...attrs, to: switchLocalePath(props.locale) }, slots.default),
       h(Comment, `/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}`)
     ]
   }
