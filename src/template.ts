@@ -1,5 +1,10 @@
 import { generateLoaderOptions } from './gen'
-import { DEFAULT_DYNAMIC_PARAMS_KEY, DEFAULT_COOKIE_KEY, NUXT_I18N_MODULE_ID } from './constants'
+import {
+  DEFAULT_DYNAMIC_PARAMS_KEY,
+  DEFAULT_COOKIE_KEY,
+  NUXT_I18N_MODULE_ID,
+  SWITCH_LOCALE_PATH_LINK_IDENTIFIER
+} from './constants'
 import type { LocaleObject } from './types'
 
 export type TemplateNuxtI18nOptions = {
@@ -44,5 +49,6 @@ export const isSSG = ${options.isSSG}
 
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
+export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 `
 }
