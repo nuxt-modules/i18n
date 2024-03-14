@@ -7,9 +7,11 @@ import {
   isSSG,
   localeLoaders,
   parallelPlugin,
-  normalizedLocales
+  normalizedLocales,
+  SWITCH_LOCALE_PATH_LINK_IDENTIFIER
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
+import { useSwitchLocalePath } from '../composables'
 import {
   loadAndSetLocale,
   detectLocale,
@@ -390,6 +392,29 @@ export default defineNuxtPlugin({
 
     // inject for nuxt helpers
     injectNuxtHelpers(nuxtContext, i18n)
+
+    // Replace `SwitchLocalePathLink` href in rendered html for SSR support
+    if (runtimeI18n.experimental.switchLocalePathLinkSSR === true) {
+      const switchLocalePath = useSwitchLocalePath()
+
+      const switchLocalePathLinkWrapperExpr = new RegExp(
+        [
+          `<!--${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-\\[(\\w+)\\]-->`,
+          `.+?`,
+          `<!--\/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->`
+        ].join(''),
+        'g'
+      )
+
+      nuxt.hook('app:rendered', ctx => {
+        if (ctx.renderResult?.html == null) return
+
+        ctx.renderResult.html = ctx.renderResult.html.replaceAll(
+          switchLocalePathLinkWrapperExpr,
+          (match: string, p1: string) => match.replace(/href="([^"]+)"/, `href="${switchLocalePath(p1 ?? '')}"`)
+        )
+      })
+    }
 
     let routeChangeCount = 0
 

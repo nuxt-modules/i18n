@@ -28,5 +28,6 @@ export const parallelPlugin: boolean
 export const NUXT_I18N_MODULE_ID = ''
 export const DEFAULT_DYNAMIC_PARAMS_KEY: string
 export const DEFAULT_COOKIE_KEY: string
+export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER: string
 
 export { NuxtI18nOptions, DetectBrowserLanguageOptions, RootRedirectOptions } from './types'
