@@ -72,6 +72,7 @@ export type CustomRoutePages = {
 
 export interface ExperimentalFeatures {
   localeDetector?: string
+  switchLocalePathLinkSSR?: boolean
 }
 
 export interface BundleOptions

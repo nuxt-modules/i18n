@@ -27,7 +27,8 @@ export const DEFAULT_COOKIE_KEY = 'i18n_redirected'
 
 export const DEFAULT_OPTIONS = {
   experimental: {
-    localeDetector: ''
+    localeDetector: '',
+    switchLocalePathLinkSSR: false
   },
   bundle: {
     compositionOnly: true,

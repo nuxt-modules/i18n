@@ -1,11 +1,10 @@
 import { useSwitchLocalePath } from '#i18n'
-import { Fragment, defineComponent, h } from 'vue'
+import { Comment, defineComponent, h } from 'vue'
 import { defineNuxtLink } from '#imports'
 
 import type { PropType } from 'vue'
-import { Comment } from 'vue'
 
-const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
+const NuxtLink = defineNuxtLink({ componentName: 'NuxtLink' })
 
 export default defineComponent({
   name: 'SwitchLocalePathLink',
@@ -15,14 +14,14 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props, { slots }) {
+  inheritAttrs: false,
+  setup(props, { slots, attrs }) {
     const switchLocalePath = useSwitchLocalePath()
 
-    return () =>
-      h(Fragment, [
-        h(Comment, 'nuxt-i18n-swlp'),
-        h(NuxtLinkLocale, { to: switchLocalePath(props.locale), 'data-nuxt-i18n-swlp': props.locale }, slots.default),
-        h(Comment, 'nuxt-i18n-swlp-end')
-      ])
+    return () => [
+      h(Comment, 'nuxt-i18n-swlp'),
+      h(NuxtLink, { ...attrs, to: switchLocalePath(props.locale), 'data-nuxt-i18n-swlp': props.locale }, slots.default),
+      h(Comment, '/nuxt-i18n-swlp')
+    ]
   }
 })

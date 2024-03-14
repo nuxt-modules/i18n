@@ -107,7 +107,8 @@ export default defineNuxtConfig({
   // debug: true,
   i18n: {
     experimental: {
-      localeDetector: './localeDetector.ts'
+      localeDetector: './localeDetector.ts',
+      switchLocalePathLinkSSR: true
     },
     compilation: {
       // jit: false,

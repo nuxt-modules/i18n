@@ -1,24 +1,10 @@
 <script setup lang="ts">
-import { useSetI18nParams, useLocaleHead } from '#i18n'
-import { useHead } from '#imports'
-import SwitchLocalePathLink from '../../src/runtime/components/SwitchLocalePathLink'
+import { useLocaleHead } from '#i18n'
 
 const route = useRoute()
 const { t } = useI18n()
 const head = useLocaleHead({ addDirAttribute: true, addSeoAttributes: true })
 const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
-const nuxt = useNuxtApp()
-const switchLocalePath = useSwitchLocalePath()
-nuxt.hook('app:rendered', ctx => {
-  ctx.renderResult!.html = ctx.renderResult!.html.replaceAll(
-    /<!--nuxt-i18n-swlp-->(.+)<!--nuxt-i18n-swlp-end-->/g,
-    (substr: string) => {
-      const matchedLocale = /data-nuxt-i18n-swlp="([^"]+)"/.exec(substr)?.[0]
-      return substr.replace(/href="([^"]+)"/, `href="${switchLocalePath(matchedLocale ?? '')}"`)
-    }
-  )
-  // console.log(ctx.renderResult!.html.replace())
-})
 </script>
 
 <template>
@@ -35,12 +21,6 @@ nuxt.hook('app:rendered', ctx => {
       </Head>
       <Body>
         <slot />
-
-        <div>
-          <SwitchLocalePathLink locale="nl">To Dutch!</SwitchLocalePathLink>
-          <SwitchLocalePathLink locale="en">To English!</SwitchLocalePathLink>
-          <SwitchLocalePathLink locale="fr">To French!</SwitchLocalePathLink>
-        </div>
         <div>
           <h2>I18n Head</h2>
           <pre>{{ head }}</pre>

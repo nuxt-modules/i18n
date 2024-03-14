@@ -165,7 +165,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
         },
         {} as Record<string, { domain: string | undefined }>
       ),
-      detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage
+      detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
+      experimental: options.experimental
       // TODO: we should support more i18n module options. welcome PRs :-)
     })
 
@@ -361,6 +362,12 @@ export interface ModulePublicRuntimeConfig {
     baseUrl: NuxtI18nOptions['baseUrl']
     rootRedirect: NuxtI18nOptions['rootRedirect']
 
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    experimental: NonNullable<NuxtI18nOptions['experimental']>
     /**
      * Overwritten at build time, used to pass generated options to runtime
      *

@@ -218,8 +218,13 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
 export const DefaultSwitchLocalePathIntercepter: SwitchLocalePathIntercepter = (path: string) => path
 
 function getLocalizableMetaFromDynamicParams(
+  common: CommonComposableOptions,
   route: RouteLocationNormalizedLoaded
 ): Record<Locale, Record<string, unknown>> {
+  if (common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR) {
+    return unref(common.metaState.value) as Record<Locale, any>
+  }
+
   const meta = route.meta || {}
   return (unref(meta)?.[DEFAULT_DYNAMIC_PARAMS_KEY] || {}) as Record<Locale, any>
 }
@@ -247,7 +252,7 @@ export function switchLocalePath(
 
   const switchLocalePathIntercepter = extendSwitchLocalePathIntercepter(common.runtimeConfig)
   const routeCopy = routeToObject(route)
-  const resolvedParams = getLocalizableMetaFromDynamicParams(route)[locale]
+  const resolvedParams = getLocalizableMetaFromDynamicParams(common, route)[locale]
 
   const baseRoute = { ...routeCopy, name, params: { ...routeCopy.params, ...resolvedParams } }
   const path = localePath(common, baseRoute, locale)

@@ -10,6 +10,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
+import { useSwitchLocalePath } from '../composables'
 import {
   loadAndSetLocale,
   detectLocale,
@@ -390,6 +391,23 @@ export default defineNuxtPlugin({
 
     // inject for nuxt helpers
     injectNuxtHelpers(nuxtContext, i18n)
+
+    // Replace `SwitchLocalePathLink` href in rendered html for SSR support
+    if (runtimeI18n.experimental.switchLocalePathLinkSSR === true) {
+      const switchLocalePath = useSwitchLocalePath()
+      nuxt.hook('app:rendered', ctx => {
+        if (ctx.renderResult?.html == null) return
+
+        const localeMatcherExpr = new RegExp(`data-nuxt-i18n-swlp="(${localeCodes.join('|')})"`)
+        ctx.renderResult.html = ctx.renderResult.html.replaceAll(
+          /<!--nuxt-i18n-swlp-->(.+?)<!--\/nuxt-i18n-swlp-->/g,
+          (substr: string) => {
+            const matchedLocale = localeMatcherExpr.exec(substr)?.at(1)
+            return substr.replace(/href="([^"]+)"/, `href="${switchLocalePath(matchedLocale ?? '')}"`)
+          }
+        )
+      })
+    }
 
     let routeChangeCount = 0
 
