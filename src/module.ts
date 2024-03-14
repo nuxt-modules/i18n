@@ -308,6 +308,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filePath: resolve(runtimeDir, 'components/NuxtLinkLocale')
     })
 
+    await addComponent({
+      name: 'SwitchLocalePathLink',
+      filePath: resolve(runtimeDir, 'components/SwitchLocalePathLink')
+    })
+
     await addImports([
       { name: 'useI18n', from: vueI18nPath },
       ...[
