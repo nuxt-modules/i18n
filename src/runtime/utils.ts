@@ -233,7 +233,7 @@ export function detectLocale(
       _detectBrowserLanguage
     )
   if (!finalLocale && _detectBrowserLanguage && _detectBrowserLanguage.useCookie) {
-    finalLocale = localeCookie.value || ''
+    finalLocale = localeCookie || ''
   }
 
   __DEBUG__ && console.log('detectLocale: finalLocale last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)

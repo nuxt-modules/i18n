@@ -108,7 +108,8 @@ export function getI18nCookie() {
 
 export function getLocaleCookie(
   cookieRef: CookieRef<string | undefined>,
-  detect: false | DetectBrowserLanguageOptions
+  detect: false | DetectBrowserLanguageOptions,
+  defaultLocale: string
 ): string | undefined {
   __DEBUG__ &&
     console.log('getLocaleCookie', {
@@ -122,16 +123,29 @@ export function getLocaleCookie(
   }
 
   const localeCode: string | undefined = cookieRef.value ?? undefined
+  const env = process.client ? 'client' : 'server'
   if (localeCode == null) {
-    __DEBUG__ && console.log(`getLocaleCookie (${process.client ? 'client' : 'server'}) - none`)
+    __DEBUG__ && console.log(`getLocaleCookie (${env}) - none`)
     return
   }
 
   if (localeCodes.includes(localeCode)) {
-    __DEBUG__ &&
-      console.log(`getLocaleCookie (${process.client ? 'client' : 'server'}) - locale from cookie: `, localeCode)
+    __DEBUG__ && console.log(`getLocaleCookie (${env}) - locale from cookie: `, localeCode)
     return localeCode
   }
+
+  if (defaultLocale) {
+    __DEBUG__ &&
+      console.log(
+        `getLocaleCookie (${env}) - unknown locale cookie (${localeCode}), setting to defaultLocale (${defaultLocale})`
+      )
+    cookieRef.value = defaultLocale
+    return defaultLocale
+  }
+
+  __DEBUG__ && console.log(`getLocaleCookie (${env}) - unknown locale cookie (${localeCode}), unsetting cookie`)
+  cookieRef.value = undefined
+  return
 }
 
 export function setLocaleCookie(
@@ -166,7 +180,7 @@ export type DetectLocaleContext = {
   ssg: DetectLocaleForSSGStatus
   callType: DetectLocaleCallType
   firstAccess: boolean
-  localeCookie: CookieRef<string | undefined>
+  localeCookie: string | undefined
 }
 
 export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
@@ -230,7 +244,7 @@ export function detectBrowserLanguage(
 
   // get preferred language from cookie if present and enabled
   if (useCookie) {
-    matchedLocale = cookieLocale = localeCookie.value
+    matchedLocale = cookieLocale = localeCookie
     localeFrom = 'cookie'
     __DEBUG__ && console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
   }

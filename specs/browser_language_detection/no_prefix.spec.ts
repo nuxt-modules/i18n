@@ -59,6 +59,41 @@ test('detection with cookie', async () => {
   expect(await ctx.cookies()).toMatchObject([{ name: 'my_custom_cookie_name', value: 'en' }])
 })
 
+test('detection with cookie - overwrite unknown locale', async () => {
+  await startServerWithRuntimeConfig({
+    public: {
+      i18n: {
+        detectBrowserLanguage: {
+          useCookie: true,
+          cookieKey: 'my_custom_cookie_name',
+          redirectOn: 'root',
+          cookieCrossOrigin: true,
+          cookieSecure: true
+        }
+      }
+    }
+  })
+  const { page } = await renderPage('/', { locale: 'en' })
+  const ctx = page.context()
+  await page.locator('#set-locale-link-fr').click()
+
+  const localeCookie = (await ctx.cookies()).find(x => x.name === 'my_custom_cookie_name')
+  expect([localeCookie]).toMatchObject([{ name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }])
+
+  // update locale cookie to non-existent locale
+  localeCookie!.value = 'unknown_locale'
+  await ctx.addCookies([localeCookie!])
+  expect(await ctx.cookies()).toMatchObject([
+    { name: 'my_custom_cookie_name', value: 'unknown_locale', secure: true, sameSite: 'None' }
+  ])
+
+  // unknown locale cookie is overwritten to default locale
+  await gotoPath(page, '/')
+  expect(await ctx.cookies()).toMatchObject([
+    { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' }
+  ])
+})
+
 // browser
 test('detection with browser', async () => {
   await startServerWithRuntimeConfig({

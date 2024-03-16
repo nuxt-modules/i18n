@@ -82,7 +82,7 @@ export default defineNuxtPlugin({
         ssg: isSSG && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
         callType: 'setup',
         firstAccess: true,
-        localeCookie
+        localeCookie: _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
       },
       runtimeI18n
     )
@@ -130,7 +130,12 @@ export default defineNuxtPlugin({
           ? detectBrowserLanguage(
               route,
               vueI18nOptions.locale,
-              { ssg: 'ssg_setup', callType: 'setup', firstAccess: true, localeCookie },
+              {
+                ssg: 'ssg_setup',
+                callType: 'setup',
+                firstAccess: true,
+                localeCookie: _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+              },
               initialLocale
             )
           : DefaultDetectBrowserLanguageFromResult
@@ -198,7 +203,8 @@ export default defineNuxtPlugin({
           composer.differentDomains = runtimeI18n.differentDomains
           composer.defaultLocale = runtimeI18n.defaultLocale
           composer.getBrowserLocale = () => _getBrowserLocale()
-          composer.getLocaleCookie = () => _getLocaleCookie(localeCookie, _detectBrowserLanguage)
+          composer.getLocaleCookie = () =>
+            _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
           composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
           composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
@@ -435,7 +441,7 @@ export default defineNuxtPlugin({
             ssg: isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
             callType: 'routing',
             firstAccess: routeChangeCount === 0,
-            localeCookie
+            localeCookie: _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
           },
           runtimeI18n
         )
