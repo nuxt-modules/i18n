@@ -6,6 +6,7 @@ settings:
 
 overrides:
   '@nuxtjs/i18n': link:.
+  '@vue/compiler-sfc': ^3.4.21
   jiti: 1.21.0
   h3: 1.11.0
   nuxt: ^3.11.0
@@ -39,7 +40,7 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(rollup@3.29.4)
       '@vue/compiler-sfc':
-        specifier: ^3.3.4
+        specifier: ^3.4.21
         version: 3.4.21
       debug:
         specifier: ^4.3.4
