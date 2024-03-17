@@ -4,6 +4,11 @@ import ModuleExperimental from './module-experimental'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  // devLogs broken, should be resolved by https://github.com/nuxt/nuxt/commit/b3ced3d694c89344c8e77b804a2dc76434d27668
+  // remove after updating to Nuxt >3.11.0
+  features: {
+    devLogs: false
+  },
   experimental: {
     typedPages: true
   },
