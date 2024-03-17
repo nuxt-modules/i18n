@@ -6,7 +6,6 @@ import { isArray, isObject } from '@intlify/shared'
 
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'
 import type { CommonComposableOptions } from '../../utils'
-import type { RouteLocationRaw } from 'vue-router'
 
 /**
  * Returns localized head properties for locale-related aspects.
@@ -138,10 +137,11 @@ export function getCanonicalUrl(
   seoAttributes: I18nHeadOptions['addSeoAttributes']
 ) {
   const route = common.router.currentRoute.value
-  const baseRoute = getRouteBaseName(common, route)
-  const currentRoute = baseRoute
-    ? localeRoute(common, { ...route, name: baseRoute } as RouteLocationRaw)
-    : localeRoute(common, route)
+  const currentRoute = localeRoute(common, {
+    ...route,
+    path: undefined,
+    name: getRouteBaseName(common, route)
+  })
 
   if (!currentRoute) return ''
   let href = toAbsoluteUrl(currentRoute.path, baseUrl)

@@ -17,8 +17,7 @@ import type {
   RouteLocationPathRaw,
   RouteLocationNamedRaw,
   RouteLocationNormalizedLoaded,
-  RouteLocationNormalized,
-  RouteRecordName
+  RouteLocationNormalized
 } from 'vue-router'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
@@ -48,14 +47,11 @@ export const DefaultPrefixable = prefixable
  *
  * @public
  */
-export function getRouteBaseName(
-  common: CommonComposableOptions,
-  givenRoute?: RouteLocation
-): RouteRecordName | undefined {
+export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: RouteLocation): string | undefined {
   const { routesNameSeparator } = common.runtimeConfig.public.i18n
   const route = unref(givenRoute)
   if (route == null || !route.name) {
-    return undefined
+    return
   }
   const name = getRouteName(route.name)
   return name.split(routesNameSeparator)[0]

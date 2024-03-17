@@ -45,7 +45,6 @@ describe('basic lazy loading', async () => {
 
     // only default locales are fetched (en)
     await page.goto(home)
-    console.log(requests)
     expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
 
     // wait for request after navigation
