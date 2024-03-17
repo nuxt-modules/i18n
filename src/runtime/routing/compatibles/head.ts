@@ -137,7 +137,11 @@ export function getCanonicalUrl(
   seoAttributes: I18nHeadOptions['addSeoAttributes']
 ) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute(common, { ...route, name: getRouteBaseName(common, route) })
+  const currentRoute = localeRoute(common, {
+    ...route,
+    path: undefined,
+    name: getRouteBaseName(common, route)
+  })
 
   if (!currentRoute) return ''
   let href = toAbsoluteUrl(currentRoute.path, baseUrl)

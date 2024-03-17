@@ -37,14 +37,14 @@ export const DefaultPrefixable = prefixable
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.
- * 
+ *
  * @remarks
  * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
 
  * @param givenRoute - A route.
- * 
+ *
  * @returns The route base name. if cannot get, `undefined` is returned.
- * 
+ *
  * @public
  */
 export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: RouteLocation): string | undefined {
