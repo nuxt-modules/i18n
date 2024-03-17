@@ -67,11 +67,16 @@
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
-  "packageManager": "pnpm@8.8.0",
+  "packageManager": "pnpm@8.15.4",
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "nuxt": "^3.10.3",
+      "@vue/compiler-sfc": "^3.4.21",
+      "jiti": "1.21.0",
+      "h3": "1.11.0",
+      "nuxt": "^3.11.0",
+      "ufo": "^1.5.1",
+      "vue-router": "4.3.0",
       "consola": "^3"
     }
   },
@@ -110,7 +115,7 @@
     "bumpp": "^9.2.0",
     "changelogithub": "^0.13.0",
     "consola": "^3",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "execa": "^8.0.1",
     "get-port-please": "^3.1.1",
@@ -128,13 +133,13 @@
     "playwright": "^1.38.1",
     "prettier": "^3.0.3",
     "ts-essentials": "^9.4.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.2",
     "typescript-eslint": "^7.0.1",
     "unbuild": "^2.0.0",
     "undici": "^6.0.1",
     "unhead": "^1.8.8",
-    "vitest": "^1.0.0",
-    "vue": "^3.4.15"
+    "vitest": "^1.4.0",
+    "vue": "^3.4.21"
   },
   "lint-staged": {
     "*.{json,md,yml}": [

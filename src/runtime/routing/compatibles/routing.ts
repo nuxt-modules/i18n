@@ -17,7 +17,8 @@ import type {
   RouteLocationPathRaw,
   RouteLocationNamedRaw,
   RouteLocationNormalizedLoaded,
-  RouteLocationNormalized
+  RouteLocationNormalized,
+  RouteRecordName
 } from 'vue-router'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
@@ -37,21 +38,24 @@ export const DefaultPrefixable = prefixable
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.
- * 
+ *
  * @remarks
  * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
 
  * @param givenRoute - A route.
- * 
+ *
  * @returns The route base name. if cannot get, `undefined` is returned.
- * 
+ *
  * @public
  */
-export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: RouteLocation): string | undefined {
+export function getRouteBaseName(
+  common: CommonComposableOptions,
+  givenRoute?: RouteLocation
+): RouteRecordName | undefined {
   const { routesNameSeparator } = common.runtimeConfig.public.i18n
   const route = unref(givenRoute)
   if (route == null || !route.name) {
-    return
+    return undefined
   }
   const name = getRouteName(route.name)
   return name.split(routesNameSeparator)[0]
