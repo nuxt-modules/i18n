@@ -2,6 +2,21 @@ import i18nModule from './i18n-module'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  vite: {
+    optimizeDeps: {
+      include: ['@unhead/vue']
+    },
+    $client: {
+      build: {
+        rollupOptions: {
+          output: {
+            chunkFileNames: '_nuxt/[name].js',
+            entryFileNames: '_nuxt/[name].js'
+          }
+        }
+      }
+    }
+  },
   modules: [i18nModule, '@nuxtjs/i18n'],
   i18n: {
     baseUrl: 'http://localhost:3000',
