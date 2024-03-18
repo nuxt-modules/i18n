@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useLocaleHead } from '#i18n'
-import { navigateTo, useHead } from '#imports'
+import { navigateTo, useHead, useNuxtApp } from '#imports'
 import LangSwitcher from '../components/LangSwitcher.vue'
 import LocalScope from '../components/LocalScope.vue'
 
@@ -9,6 +9,11 @@ const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
 const appConfig = useAppConfig()
+
+if (useNuxtApp().$config.public.i18n.experimental.autoImportTranslationFunctions) {
+  console.log(`[autoImportTranslationFunctions][default]: ${$t('welcome')}`)
+  console.log(`[autoImportTranslationFunctions][fr]: ${$t('welcome', 1, { locale: 'fr' })}`)
+}
 
 const category = ref({
   title: 'Kirby',

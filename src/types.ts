@@ -73,6 +73,12 @@ export type CustomRoutePages = {
 export interface ExperimentalFeatures {
   localeDetector?: string
   switchLocalePathLinkSSR?: boolean
+  /**
+   * Makes `$t`, `$d` and `$n` functions available globally, equivalent to `const { t: $t, d: $d, n: $n } = useI18n({ useScope: 'global' })` in setup.
+   *
+   * @defaultValue `false`
+   */
+  autoImportTranslationFunctions?: boolean
 }
 
 export interface BundleOptions
