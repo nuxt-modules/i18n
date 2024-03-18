@@ -595,7 +595,7 @@ This release is for Nuxt3.
 
 This version is sitll **alpha**, the API might subject to breaking changes. We will make every effort to have the same I/F as v7.x, but Nuxt 3 is a major release, it might not be the same I/F.
 
-About details, please check the [v8 docs](https://v8.i18n.nuxtjs.org/).
+About details, please check the [v8 docs](https://i18n.nuxtjs.org/).
 
 v8 alpha or later does not support Nuxt Bridge.
 

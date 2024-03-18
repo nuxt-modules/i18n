@@ -1,4 +1,4 @@
-[![Nuxt i18n](./docs/public/cover.png)](https://v8.i18n.nuxtjs.org)
+[![Nuxt i18n](./docs/public/cover.png)](https://i18n.nuxtjs.org)
 
 [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
