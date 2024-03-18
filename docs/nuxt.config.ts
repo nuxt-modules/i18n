@@ -2,7 +2,18 @@ export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
   modules: ['@nuxt/content', '@nuxt/ui', '@nuxtjs/fontaine', '@nuxtjs/google-fonts', 'nuxt-og-image'],
   routeRules: { '/api/search.json': { prerender: true } },
-
+  vite: {
+    $client: {
+      build: {
+        rollupOptions: {
+          output: {
+            chunkFileNames: '_nuxt/[name]-[hash].js',
+            entryFileNames: '_nuxt/[name]-[hash].js'
+          }
+        }
+      }
+    }
+  },
   // SEO
   site: { url: 'https://i18n.nuxtjs.org' },
 
