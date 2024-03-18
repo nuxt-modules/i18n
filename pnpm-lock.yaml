@@ -310,15 +310,6 @@ importers:
         specifier: ^3.11.0
         version: 3.11.0(eslint@8.57.0)(rollup@3.29.4)(typescript@5.4.2)(vite@5.1.6)(vue-tsc@2.0.2)
 
-  specs/fixtures/switcher:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.11.0
-        version: 3.11.0(eslint@8.57.0)(rollup@3.29.4)(typescript@5.4.2)(vite@5.1.6)(vue-tsc@2.0.2)
-
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:

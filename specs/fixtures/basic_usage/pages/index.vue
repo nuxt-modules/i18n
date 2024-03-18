@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import { useLocaleHead } from '#i18n'
-import { navigateTo, useHead } from '#imports'
+import { useI18n, useLocaleHead, useLocalePath, useLocaleRoute, useSwitchLocalePath } from '#i18n'
+import {
+  computed,
+  navigateTo,
+  ref,
+  useAppConfig,
+  useAsyncData,
+  useHead,
+  useNuxtApp,
+  useRoute,
+  useRuntimeConfig,
+  watch
+} from '#imports'
 import LangSwitcher from '../components/LangSwitcher.vue'
 import LocalScope from '../components/LocalScope.vue'
 
-const { t, locale, locales, localeProperties } = useI18n()
+const { t, locale, locales, localeProperties, finalizePendingLocaleChange } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
@@ -32,6 +43,19 @@ const { data, refresh } = useAsyncData('home', () =>
   })
 )
 
+watch(locale, () => {
+  refresh()
+})
+const route = useRoute()
+route.meta.pageTransition = {
+  name: 'my',
+  mode: 'out-in',
+  onBeforeEnter: async () => {
+    if (useRuntimeConfig().public.i18n.skipSettingLocaleOnNavigate) {
+      await finalizePendingLocaleChange()
+    }
+  }
+}
 // @ts-ignore
 definePageMeta({
   title: 'home'
@@ -98,6 +122,12 @@ useHead({
         </li>
         <li class="path-about">
           <NuxtLink id="link-about" :to="localePath('/about')">{{ $t('about') }}</NuxtLink>
+        </li>
+        <li>
+          <NuxtLink id="link-post" :to="localePath({ name: 'post-id', params: { id: 'id' } })">Post</NuxtLink>
+        </li>
+        <li>
+          <NuxtLink id="link-greetings" :to="localePath('greetings')">Greetings</NuxtLink>
         </li>
         <li class="path-hash">
           <NuxtLink id="link-about-hash" :to="localePath('/about#my-hash')">{{ $t('about') }}</NuxtLink>
