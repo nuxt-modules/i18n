@@ -4,17 +4,7 @@ export default defineNuxtConfig({
   features: {
     devLogs: false
   },
-  modules: ['./layer-module', '../../../src'],
-  vite: {
-    // build: {
-    //   minify: false
-    // },
-    resolve: {
-      alias: {
-        '#i18n': '../src/runtime/composables/index.ts'
-      }
-    }
-  },
+  modules: ['./layer-module', '@nuxtjs/i18n'],
   runtimeConfig: {
     public: {
       runtimeValue: 'Hello from runtime config!'
@@ -29,9 +19,6 @@ export default defineNuxtConfig({
   plugins: [`../plugins/i18nHooks.ts`],
 
   i18n: {
-    experimental: {
-      autoImportTranslationFunctions: true
-    },
     vueI18n: './config/i18n.config.ts',
     locales: ['en', 'fr'],
     defaultLocale: 'en'
