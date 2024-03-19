@@ -1,7 +1,20 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['./layer-module', '@nuxtjs/i18n'],
+  features: {
+    devLogs: false
+  },
+  modules: ['./layer-module', '../../../src'],
+  vite: {
+    // build: {
+    //   minify: false
+    // },
+    resolve: {
+      alias: {
+        '#i18n': '../src/runtime/composables/index.ts'
+      }
+    }
+  },
   runtimeConfig: {
     public: {
       runtimeValue: 'Hello from runtime config!'
