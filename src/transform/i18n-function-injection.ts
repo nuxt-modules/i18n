@@ -11,6 +11,7 @@ import { walk } from 'estree-walker'
 import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
+import { parse as parseSFC } from '@vue/compiler-sfc'
 
 import type { CallExpression, Pattern } from 'estree'
 import type { Node } from 'estree-walker'
@@ -57,8 +58,15 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
     async transform(code, id) {
       debug('transform', id)
 
+      // only transform if translation functions are present
       const script = extractScriptContent(code)
       if (!script || !TRANSLATION_FUNCTIONS_RE.test(script)) {
+        return
+      }
+
+      // only transform <script setup>
+      const { descriptor } = parseSFC(code)
+      if (!descriptor.scriptSetup) {
         return
       }
 
