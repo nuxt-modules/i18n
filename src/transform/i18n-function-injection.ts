@@ -53,14 +53,14 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
         return
       }
 
-      // only transform <script setup>
-      const { descriptor } = parseSFC(code)
-      if (!descriptor.scriptSetup) {
+      // only transform <script setup> and if translation functions are present
+      const scriptSetup = parseSFC(code, { sourceMap: false }).descriptor.scriptSetup
+      if (!scriptSetup) {
         return
       }
 
       // strip types and typescript specific features for ast parsing
-      const scriptTransformed = transform(script, { transforms: ['typescript', 'jsx'], keepUnusedImports: true }).code
+      const scriptTransformed = transform(script, { transforms: ['typescript', 'jsx'] }).code
       const ast = this.parse(scriptTransformed, { sourceType: 'module', ecmaVersion: 'latest' }) as Node
 
       // collect variable and function declarations with scope info.
@@ -153,7 +153,7 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/pages/utils.ts#L138-L147
 const SFC_SCRIPT_RE = /<script\s*[^>]*>([\s\S]*?)<\/script\s*[^>]*>/i
-export function extractScriptContent(html: string) {
+function extractScriptContent(html: string) {
   const match = html.match(SFC_SCRIPT_RE)
 
   if (match && match[1]) {
