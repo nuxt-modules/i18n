@@ -14,6 +14,7 @@ import { parseQuery, parseURL } from 'ufo'
 
 import type { CallExpression, Pattern } from 'estree'
 import type { Node } from 'estree-walker'
+import { transform } from 'sucrase'
 
 export interface TransformI18nFunctionPluginOptions {
   sourcemap?: boolean
@@ -61,7 +62,9 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
         return
       }
 
-      const ast = this.parse(script, { sourceType: 'module', ecmaVersion: 'latest' }) as Node
+      // strip types and typescript specific features for ast parsing
+      const scriptTransformed = transform(script, { transforms: ['typescript', 'jsx'], keepUnusedImports: true }).code
+      const ast = this.parse(scriptTransformed, { sourceType: 'module', ecmaVersion: 'latest' }) as Node
 
       // collect variable and function declarations with scope info.
       let scopeTracker = new ScopeTracker()
