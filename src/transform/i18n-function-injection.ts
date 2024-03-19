@@ -8,14 +8,14 @@
 import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { walk } from 'estree-walker'
+import { transform } from 'sucrase'
 import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
 import { parseQuery, parseURL } from 'ufo'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 
-import type { CallExpression, Pattern } from 'estree'
 import type { Node } from 'estree-walker'
-import { transform } from 'sucrase'
+import type { CallExpression, Pattern } from 'estree'
 
 export interface TransformI18nFunctionPluginOptions {
   sourcemap?: boolean
