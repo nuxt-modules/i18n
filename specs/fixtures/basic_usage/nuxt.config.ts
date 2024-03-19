@@ -1,9 +1,6 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  features: {
-    devLogs: false
-  },
   modules: ['./layer-module', '@nuxtjs/i18n'],
   runtimeConfig: {
     public: {
