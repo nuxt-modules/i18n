@@ -19,7 +19,7 @@ declare global {
   var $rt: Composer['rt']
   var $n: Composer['n']
   var $d: Composer['d']
-  var $tm: Composer['te']
+  var $tm: Composer['tm']
   var $te: Composer['te']
 }
 
