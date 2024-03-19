@@ -173,17 +173,12 @@ export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
 
   const globalTranslationTypes = `
 declare global {
-  namespace NodeJS {
-    interface Global {
-      $t: (${i18nType})['t']
-      $n: (${i18nType})['n']
-      $d: (${i18nType})['d']
-    }
-  }
-
   var $t: (${i18nType})['t']
+  var $rt: (${i18nType})['rt']
   var $n: (${i18nType})['n']
   var $d: (${i18nType})['d']
+  var $tm: (${i18nType})['tm']
+  var $te: (${i18nType})['te']
 }`
 
   // prettier-ignore

@@ -15,17 +15,12 @@ declare module '#app' {
 }
 
 declare global {
-  namespace NodeJS {
-    interface Global {
-      $t: Composer['t']
-      $n: Composer['n']
-      $d: Composer['d']
-    }
-  }
-
   var $t: Composer['t']
+  var $rt: Composer['rt']
   var $n: Composer['n']
   var $d: Composer['d']
+  var $tm: Composer['te']
+  var $te: Composer['te']
 }
 
 export {}
