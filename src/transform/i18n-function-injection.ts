@@ -22,8 +22,10 @@ export interface TransformI18nFunctionPluginOptions {
 }
 
 const debug = createDebug('@nuxtjs/i18n:function:injection')
+
 const SCRIPT_RE = /<script[^>]*>/g
 const TRANSLATION_FUNCTIONS = ['$t', '$rt', '$d', '$n', '$tm', '$te']
+const TRANSLATION_FUNCTIONS_RE = /\$(t|rt|d|n|tm|te)\s*\(\s*/
 const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], string> = {
   $t: 't: $t',
   $rt: 'rt: $rt',
@@ -31,19 +33,6 @@ const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], 
   $n: 'n: $n',
   $tm: 'tm: $tm',
   $te: 'te: $te'
-}
-const TRANSLATION_FUNCTIONS_RE = /\$(t|rt|d|n|tm|te)\s*\(\s*/
-
-// from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/pages/utils.ts#L138-L147
-const SFC_SCRIPT_RE = /<script\s*[^>]*>([\s\S]*?)<\/script\s*[^>]*>/i
-export function extractScriptContent(html: string) {
-  const match = html.match(SFC_SCRIPT_RE)
-
-  if (match && match[1]) {
-    return match[1].trim()
-  }
-
-  return null
 }
 
 export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18nFunctionPluginOptions) => {
@@ -161,6 +150,18 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
     }
   }
 })
+
+// from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/pages/utils.ts#L138-L147
+const SFC_SCRIPT_RE = /<script\s*[^>]*>([\s\S]*?)<\/script\s*[^>]*>/i
+export function extractScriptContent(html: string) {
+  const match = html.match(SFC_SCRIPT_RE)
+
+  if (match && match[1]) {
+    return match[1].trim()
+  }
+
+  return null
+}
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/core/utils/plugins.ts#L4-L35
 function isVue(id: string, opts: { type?: Array<'template' | 'script' | 'style'> } = {}) {
