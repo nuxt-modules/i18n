@@ -23,7 +23,6 @@ export interface TransformI18nFunctionPluginOptions {
 
 const debug = createDebug('@nuxtjs/i18n:function:injection')
 
-const SCRIPT_RE = /<script[^>]*>/g
 const TRANSLATION_FUNCTIONS = ['$t', '$rt', '$d', '$n', '$tm', '$te']
 const TRANSLATION_FUNCTIONS_RE = /\$(t|rt|d|n|tm|te)\s*\(\s*/
 const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], string> = {
@@ -119,8 +118,8 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
       })
 
       const s = new MagicString(code)
-      if (code.match(SCRIPT_RE) && missingFunctionDeclarators.size > 0) {
-        debug(`Injecting ${Array.from(missingFunctionDeclarators).join(', ')} declaration to ${id}`)
+      if (missingFunctionDeclarators.size > 0) {
+        debug(`injecting ${Array.from(missingFunctionDeclarators).join(', ')} declaration to ${id}`)
 
         // only add variables when used without having been declared
         const assignments: string[] = []
@@ -130,12 +129,9 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
 
         // add variable declaration at the start of <script>, `autoImports` does the rest
         s.overwrite(
-          0,
-          code.length,
-          code.replaceAll(
-            SCRIPT_RE,
-            full => full + `\nconst { ${assignments.join(', ')} } = useI18n() // nuxtjs:i18n-function-injection\n`
-          )
+          scriptSetup.loc.start.offset,
+          scriptSetup.loc.end.offset,
+          `\nconst { ${assignments.join(', ')} } = useI18n()\n` + scriptSetup!.content
         )
       }
 
