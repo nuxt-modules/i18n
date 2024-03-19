@@ -70,7 +70,9 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
     addWebpackPlugin(ResourcePlugin.webpack(resourceOptions))
     addWebpackPlugin(MetaDeprecationPlugin.webpack(metaDeprecationOptions))
-    addWebpackPlugin(TransformI18nFunctionPlugin.webpack(i18nFunctionOptions))
+    if (nuxtOptions.experimental.autoImportTranslationFunctions) {
+      addWebpackPlugin(TransformI18nFunctionPlugin.webpack(i18nFunctionOptions))
+    }
 
     extendWebpackConfig(config => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
@@ -119,7 +121,9 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
   addVitePlugin(ResourcePlugin.vite(resourceOptions))
   addVitePlugin(MetaDeprecationPlugin.vite(metaDeprecationOptions))
-  addVitePlugin(TransformI18nFunctionPlugin.vite(i18nFunctionOptions))
+  if (nuxtOptions.experimental.autoImportTranslationFunctions) {
+    addVitePlugin(TransformI18nFunctionPlugin.vite(i18nFunctionOptions))
+  }
 
   extendViteConfig(config => {
     if (config.define) {

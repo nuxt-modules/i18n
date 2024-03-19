@@ -158,9 +158,6 @@ export default defineNuxtPlugin({
       localeCodes,
       baseUrl: runtimeI18n.baseUrl,
       context: nuxtContext,
-      experimental: {
-        autoImportTranslationFunctions: runtimeI18n.experimental.autoImportTranslationFunctions ?? false
-      },
       hooks: {
         onExtendComposer(composer: Composer) {
           composer.strategy = runtimeI18n.strategy

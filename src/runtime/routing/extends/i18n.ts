@@ -63,9 +63,6 @@ export type VueI18nExtendOptions<Context = unknown> = Pick<NuxtI18nOptions<Conte
   localeCodes?: string[]
   context?: Context
   hooks?: ExtendHooks
-  experimental?: {
-    autoImportTranslationFunctions: boolean
-  }
 }
 
 export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
@@ -75,10 +72,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     localeCodes = [],
     baseUrl = '',
     hooks = {},
-    context = {} as Context,
-    experimental = {
-      autoImportTranslationFunctions: false
-    }
+    context = {} as Context
   }: VueI18nExtendOptions<Context> = {}
 ) {
   const scope = effectScope()
@@ -124,20 +118,6 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     Reflect.apply(orgInstall, i18n, [vue, ...options])
 
     const globalComposer = getComposer(i18n)
-
-    if (experimental.autoImportTranslationFunctions) {
-      globalThis.$t = function (...args: unknown[]) {
-        return Reflect.apply(globalComposer.t, globalComposer, [...args])
-      }
-
-      globalThis.$d = function (...args: unknown[]) {
-        return Reflect.apply(globalComposer.d, globalComposer, [...args])
-      }
-
-      globalThis.$n = function (...args: unknown[]) {
-        return Reflect.apply(globalComposer.n, globalComposer, [...args])
-      }
-    }
 
     // extend global
     scope.run(() => {
