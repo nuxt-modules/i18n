@@ -74,7 +74,7 @@ export interface ExperimentalFeatures {
   localeDetector?: string
   switchLocalePathLinkSSR?: boolean
   /**
-   * Makes `$t`, `$d` and `$n` functions available globally, equivalent to `const { t: $t, d: $d, n: $n } = useI18n({ useScope: 'global' })` in setup.
+   * Automatically imports/initializes `$t`, `$rt`, `$d`, `$n`, `$tm` and `$te` functions in `<script setup>` when used.
    *
    * @defaultValue `false`
    */
