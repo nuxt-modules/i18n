@@ -144,7 +144,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
       // extend vue component instance
       vue.mixin({
         methods: {
-          getRouteBaseName,
+          getRouteBaseName: wrapComposable(getRouteBaseName, common),
           resolveRoute: wrapComposable(resolveRoute, common),
           localePath: wrapComposable(localePath, common),
           localeRoute: wrapComposable(localeRoute, common),
