@@ -12,6 +12,12 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true
   },
+  vite: {
+    // Prevent reload by optimizing dependency before discovery
+    optimizeDeps: {
+      include: ['@unhead/vue']
+    }
+  },
   extends: ['layers/i18n-layer'],
   modules: [
     (_, nuxt) => {
