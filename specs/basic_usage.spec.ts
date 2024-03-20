@@ -14,6 +14,7 @@ import {
   waitForTransition,
   waitForURL
 } from './helper'
+import { RouteLocation } from 'vue-router'
 
 describe('basic usage', async () => {
   await setup({
@@ -72,6 +73,64 @@ describe('basic usage', async () => {
     // await page.waitForURL('**/user/profile?foo=1')
     expect(await getText(page, '#profile-page')).toEqual('This is profile page')
     expect(await page.url()).include('/user/profile?foo=1')
+  })
+
+  test('nuxt context extension', async () => {
+    const { page } = await renderPage('/nuxt-context-extension')
+
+    expect(await getText(page, '#get-route-base-name')).toEqual('nuxt-context-extension')
+    expect(await getText(page, '#switch-locale-path')).toEqual('/ja/nuxt-context-extension')
+    expect(await getText(page, '#locale-path')).toEqual('/nl/nuxt-context-extension')
+
+    const localeRoute = JSON.parse(await getText(page, '#locale-route')) as RouteLocation
+    // remove absolute file path which differs where test is run
+    localeRoute.matched = localeRoute.matched.map(x => {
+      for (const component in x.components) {
+        // @ts-ignore
+        delete x.components[component].__file
+      }
+      return x
+    })
+    expect(localeRoute).toMatchInlineSnapshot(
+      `
+      {
+        "fullPath": "/nuxt-context-extension",
+        "hash": "",
+        "href": "/nuxt-context-extension",
+        "matched": [
+          {
+            "children": [],
+            "components": {
+              "default": {},
+            },
+            "enterCallbacks": {},
+            "instances": {},
+            "leaveGuards": {
+              "Set(0)": [],
+            },
+            "meta": {},
+            "name": "nuxt-context-extension___en",
+            "path": "/nuxt-context-extension",
+            "props": {
+              "default": false,
+            },
+            "updateGuards": {
+              "Set(0)": [],
+            },
+          },
+        ],
+        "meta": {},
+        "name": "nuxt-context-extension___en",
+        "params": {},
+        "path": "/nuxt-context-extension",
+        "query": {},
+      }
+    `
+    )
+
+    expect(await getText(page, '#locale-head')).toMatchInlineSnapshot(
+      `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "hid": "i18n-alt-en", "rel": "alternate", "href": "/nuxt-context-extension", "hreflang": "en" }, { "hid": "i18n-alt-fr", "rel": "alternate", "href": "/fr/nuxt-context-extension", "hreflang": "fr" }, { "hid": "i18n-alt-ja", "rel": "alternate", "href": "/ja/nuxt-context-extension", "hreflang": "ja" }, { "hid": "i18n-alt-ja-JP", "rel": "alternate", "href": "/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "hid": "i18n-alt-nl", "rel": "alternate", "href": "/nl/nuxt-context-extension", "hreflang": "nl" }, { "hid": "i18n-alt-nl-NL", "rel": "alternate", "href": "/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "hid": "i18n-alt-kr", "rel": "alternate", "href": "/kr/nuxt-context-extension", "hreflang": "kr" }, { "hid": "i18n-alt-kr-KO", "rel": "alternate", "href": "/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "hid": "i18n-xd", "rel": "alternate", "href": "/nuxt-context-extension", "hreflang": "x-default" }, { "hid": "i18n-can", "rel": "canonical", "href": "/nuxt-context-extension" } ], "meta": [ { "hid": "i18n-og-url", "property": "og:url", "content": "/nuxt-context-extension" }, { "hid": "i18n-og", "property": "og:locale", "content": "en" }, { "hid": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "hid": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "hid": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "hid": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
+    )
   })
 
   test('register module hook', async () => {
