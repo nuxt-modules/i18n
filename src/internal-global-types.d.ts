@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import type { Composer, ExportedGlobalComposer, VueI18n } from 'vue-i18n'
 import type { ComposerCustomProperties, NuxtI18nRoutingCustomProperties } from './runtime/types'
 
@@ -11,6 +12,15 @@ declare module '#app' {
   interface NuxtApp {
     $i18n: VueI18n & ExportedGlobalComposer & Composer & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties
   }
+}
+
+declare global {
+  var $t: Composer['t']
+  var $rt: Composer['rt']
+  var $n: Composer['n']
+  var $d: Composer['d']
+  var $tm: Composer['tm']
+  var $te: Composer['te']
 }
 
 export {}

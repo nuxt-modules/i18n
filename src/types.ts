@@ -73,6 +73,12 @@ export type CustomRoutePages = {
 export interface ExperimentalFeatures {
   localeDetector?: string
   switchLocalePathLinkSSR?: boolean
+  /**
+   * Automatically imports/initializes `$t`, `$rt`, `$d`, `$n`, `$tm` and `$te` functions in `<script setup>` when used.
+   *
+   * @defaultValue `false`
+   */
+  autoImportTranslationFunctions?: boolean
 }
 
 export interface BundleOptions
