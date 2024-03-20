@@ -404,7 +404,7 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n | VueI18n | Composer
    *  https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
    */
   defineGetter(nuxt, '$i18n', getI18nTarget(i18n))
-  defineGetter(nuxt, '$getRouteBaseName', getRouteBaseName)
+  defineGetter(nuxt, '$getRouteBaseName', wrapComposable(getRouteBaseName))
   defineGetter(nuxt, '$localePath', wrapComposable(localePath))
   defineGetter(nuxt, '$localeRoute', wrapComposable(localeRoute))
   defineGetter(nuxt, '$switchLocalePath', wrapComposable(switchLocalePath))
