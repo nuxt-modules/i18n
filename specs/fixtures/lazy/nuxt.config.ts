@@ -3,9 +3,12 @@ import i18nModule from './i18n-module'
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   vite: {
+    // Prevent reload by optimizing dependency before discovery
     optimizeDeps: {
       include: ['@unhead/vue']
     },
+    // https://nuxt.com/blog/v3-11#chunk-naming
+    // We change the chunk file name so we can detect file requests in our tests
     $client: {
       build: {
         rollupOptions: {
