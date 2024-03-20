@@ -29,7 +29,8 @@ export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = 'nuxt-i18n-slp'
 export const DEFAULT_OPTIONS = {
   experimental: {
     localeDetector: '',
-    switchLocalePathLinkSSR: false
+    switchLocalePathLinkSSR: false,
+    autoImportTranslationFunctions: false
   },
   bundle: {
     compositionOnly: true,

@@ -127,6 +127,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
       )
     }
 
+    if (options.experimental.autoImportTranslationFunctions && nuxt.options.imports.autoImport === false) {
+      logger.warn(
+        'Disabling `autoImports` in Nuxt is not compatible with `experimental.autoImportTranslationFunctions`, either enable `autoImports` or disable `experimental.autoImportTranslationFunctions`.'
+      )
+    }
+
     /**
      * nuxt layers handling ...
      */
