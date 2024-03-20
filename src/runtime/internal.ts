@@ -66,19 +66,31 @@ export function parseAcceptLanguage(input: string): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
-export function getBrowserLocale(): string | undefined {
+export function getBrowserLocale(
+  detect: false | Pick<DetectBrowserLanguageOptions, 'useLocalStorage'>
+): string | undefined {
   let ret: string | undefined
 
   if (process.client) {
-    if (navigator.languages) {
-      // get browser language either from navigator if running on client side, or from the headers
+    const useLocalStorage = detect && detect.useLocalStorage
+    const localStorageValue = useLocalStorage && localStorage.getItem(useLocalStorage)
+    if (localStorageValue) {
+      // get browser language either from localStorage, if configured
+      ret = localStorageValue
+
+      __DEBUG__ && console.log('getBrowserLocale (useLocalStorage, ret) -', useLocalStorage, localStorageValue)
+    } else if (navigator.languages) {
+      // get browser language either from navigator
       ret = findBrowserLocale(normalizedLocales, navigator.languages as string[])
+
       __DEBUG__ && console.log('getBrowserLocale (navigator.languages, ret) -', navigator.languages, ret)
     }
   } else if (process.server) {
+    //  detect language using request headers
     const header = useRequestHeaders(['accept-language'])
-    __DEBUG__ && console.log('getBrowserLocale accept-language', header)
     const accept = header['accept-language']
+
+    __DEBUG__ && console.log('getBrowserLocale accept-language', header)
     if (accept) {
       ret = findBrowserLocale(normalizedLocales, parseAcceptLanguage(accept))
       __DEBUG__ && console.log('getBrowserLocale ret', ret)
@@ -210,7 +222,7 @@ export function detectBrowserLanguage(
     return { locale: strategy === 'no_prefix' ? locale : '', stat: false, reason: 'first_access_only' }
   }
 
-  const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
+  const { redirectOn, alwaysRedirect, useCookie, useLocalStorage, fallbackLocale } =
     runtimeDetectBrowserLanguage() as DetectBrowserLanguageOptions
 
   const path = isString(route) ? route : route.path
@@ -250,7 +262,7 @@ export function detectBrowserLanguage(
   }
   // try to get locale from either navigator or header detection
   if (!matchedLocale) {
-    matchedLocale = getBrowserLocale()
+    matchedLocale = getBrowserLocale({ useLocalStorage })
     localeFrom = 'navigator_or_header'
     __DEBUG__ && console.log('detectBrowserLanguage: browserLocale', matchedLocale)
   }

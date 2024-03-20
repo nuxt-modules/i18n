@@ -15,6 +15,13 @@ export interface DetectBrowserLanguageOptions {
   fallbackLocale?: Locale | null
   redirectOn?: RedirectOnOptions
   useCookie?: boolean
+  /**
+   * When set to a string this is used as key to detect language stored in `localStorage`.
+   * This is useful when cookies are not an option but still want to store the locale from `Accept-Language` on server-side and cannot rely on `navigator.languages`
+   *
+   * @default undefined
+   */
+  useLocalStorage?: string
 }
 
 export type LocaleType = 'static' | 'dynamic' | 'unknown'

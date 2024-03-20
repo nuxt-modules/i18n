@@ -202,7 +202,7 @@ export default defineNuxtPlugin({
           }
           composer.differentDomains = runtimeI18n.differentDomains
           composer.defaultLocale = runtimeI18n.defaultLocale
-          composer.getBrowserLocale = () => _getBrowserLocale()
+          composer.getBrowserLocale = () => _getBrowserLocale(_detectBrowserLanguage)
           composer.getLocaleCookie = () =>
             _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
           composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
