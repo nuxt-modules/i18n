@@ -66,5 +66,8 @@ useHead(() => ({
       go to product foo
     </NuxtLink>
     <NuxtLink id="link-history" :to="localePath({ name: 'history' })">go to history</NuxtLink>
+    <NuxtLink id="link-define-i18n-route-false" exact :to="localePath('/define-i18n-route-false')">
+      go to defineI18nRoute(false)
+    </NuxtLink>
   </div>
 </template>
