@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { getText, getData, renderPage, waitForURL } from '../helper'
+import { getText, getData, renderPage, waitForURL, startServerWithRuntimeConfig } from '../helper'
 
 import type { Response } from 'playwright'
 
@@ -12,12 +12,23 @@ await setup({
   nuxtConfig: {
     i18n: {
       strategy: 'prefix',
-      defaultLocale: 'en'
+      defaultLocale: 'en',
+      // fixture uses `false` which cannot be overwritten using runtimeConfig
+      detectBrowserLanguage: {}
     }
   }
 })
 
 describe('strategy: prefix', async () => {
+  beforeEach(async () => {
+    // use original fixture `detectBrowserLanguage` value as default for tests, overwrite here needed
+    await startServerWithRuntimeConfig({
+      public: {
+        i18n: { detectBrowserLanguage: false }
+      }
+    })
+  })
+
   test.each([
     ['/', '/en'],
     ['/about', '/en/about'],
@@ -106,5 +117,39 @@ describe('strategy: prefix', async () => {
 
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  })
+
+  test('(#1889) navigation to page with `defineI18nRoute(false)`', async () => {
+    const restore = await startServerWithRuntimeConfig({
+      public: {
+        i18n: {
+          detectBrowserLanguage: {
+            useCookie: true,
+            alwaysRedirect: false,
+            redirectOn: 'root'
+          }
+        }
+      }
+    })
+
+    const { page } = await renderPage('/', { locale: 'en' })
+    await waitForURL(page, '/en')
+
+    // switch 'fr' locale
+    await page.locator('#lang-switcher-with-set-locale a').click()
+    await waitForURL(page, '/fr')
+    expect(await getText(page, '#home-header')).toEqual('Accueil')
+
+    // navigate to disabled route
+    await page.locator('#link-define-i18n-route-false').click()
+    await waitForURL(page, '/define-i18n-route-false')
+
+    expect(await getText(page, '#disable-route-text')).toEqual('Page with disabled localized route')
+
+    // back to home
+    await page.locator('#goto-home').click()
+    expect(await getText(page, '#home-header')).toEqual('Accueil')
+
+    await restore()
   })
 })
