@@ -4,7 +4,8 @@ export default defineNuxtConfig({
   modules: ['./layer-module', '@nuxtjs/i18n'],
   runtimeConfig: {
     public: {
-      runtimeValue: 'Hello from runtime config!'
+      runtimeValue: 'Hello from runtime config!',
+      longTextTest: false
     }
   },
   extends: [
@@ -14,7 +15,6 @@ export default defineNuxtConfig({
     `../layers/layer-vueI18n-options/layer-simple-secondary`
   ],
   plugins: [`../plugins/i18nHooks.ts`],
-
   i18n: {
     vueI18n: './config/i18n.config.ts',
     locales: ['en', 'fr'],
