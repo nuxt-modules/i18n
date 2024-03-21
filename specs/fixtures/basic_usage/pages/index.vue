@@ -233,6 +233,9 @@ useHead({
       <div id="module-layer-base-key-named">{{ $t('moduleLayerBaseKeyNamed', { name: 'bar' }) }}</div>
     </section>
     <section>
+      <div id="issue-2094">{{ $t('variableExportedI18nConfig') }}</div>
+    </section>
+    <section>
       <code id="global-scope-properties">{{ localeProperties }}</code>
       <LocalScope />
     </section>

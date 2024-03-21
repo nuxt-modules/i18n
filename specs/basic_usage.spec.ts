@@ -601,4 +601,10 @@ describe('basic usage', async () => {
 
     await restore()
   })
+
+  test('(#2094) vue-i18n messages are loaded from config exported as variable', async () => {
+    const { page } = await renderPage('/')
+
+    expect(await getText(page, '#issue-2094')).toEqual('Exporting using variable identifier works!')
+  })
 })
