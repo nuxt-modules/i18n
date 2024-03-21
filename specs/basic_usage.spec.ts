@@ -607,4 +607,14 @@ describe('basic usage', async () => {
 
     expect(await getText(page, '#issue-2094')).toEqual('Exporting using variable identifier works!')
   })
+
+  test('(#2726) composables correctly initialize common options, no internal server error', async () => {
+    const html = await $fetch('/composables')
+    const dom = getDom(html)
+
+    expect(dom.querySelector('head #locale-path').content).toEqual('/nested/test-route')
+    expect(dom.querySelector('head #locale-route').content).toEqual('/nested/test-route')
+    expect(dom.querySelector('head #switch-locale-path').content).toEqual('/fr/composables')
+    expect(dom.querySelector('head #route-base-name').content).toEqual('nested-test-route')
+  })
 })
