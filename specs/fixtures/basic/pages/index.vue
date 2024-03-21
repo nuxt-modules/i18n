@@ -69,5 +69,9 @@ useHead(() => ({
     <NuxtLink id="link-define-i18n-route-false" exact :to="localePath('/define-i18n-route-false')">
       go to defineI18nRoute(false)
     </NuxtLink>
+    <section>
+      <span id="issue-2020-existing">{{ localePath('/test-route?foo=bar') }}</span>
+      <span id="issue-2020-nonexistent">{{ localePath('/i-dont-exist?foo=bar') }}</span>
+    </section>
   </div>
 </template>

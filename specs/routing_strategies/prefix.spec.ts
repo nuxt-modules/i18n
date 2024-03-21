@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { getText, getData, renderPage, waitForURL, startServerWithRuntimeConfig } from '../helper'
+import { getText, getData, renderPage, waitForURL, startServerWithRuntimeConfig, gotoPath } from '../helper'
 
 import type { Response } from 'playwright'
 
@@ -151,5 +151,35 @@ describe('strategy: prefix', async () => {
     expect(await getText(page, '#home-header')).toEqual('Accueil')
 
     await restore()
+  })
+
+  test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
+    const restore = await startServerWithRuntimeConfig({
+      public: {
+        i18n: {
+          detectBrowserLanguage: {
+            useCookie: true,
+            cookieSecure: true,
+            fallbackLocale: 'en',
+            redirectOn: 'no prefix'
+          }
+        }
+      }
+    })
+
+    const { page } = await renderPage('/', { locale: 'fr' })
+    expect(await getText(page, '#home-header')).toEqual('Accueil')
+
+    await gotoPath(page, '/en')
+    expect(await getText(page, '#home-header')).toEqual('Homepage')
+
+    await restore()
+  })
+
+  test('(#2020) pass query parameter', async () => {
+    const { page } = await renderPage('/')
+
+    expect(await getText(page, '#issue-2020-existing')).toBe('/en/test-route?foo=bar')
+    expect(await getText(page, '#issue-2020-nonexistent')).toBe('/i-dont-exist?foo=bar')
   })
 })
