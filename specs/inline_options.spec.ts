@@ -22,4 +22,16 @@ describe('inline options are handled correctly', async () => {
     expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').getAttribute('href')).toEqual('/fr')
     expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-nl').getAttribute('href')).toEqual('/nl')
   })
+
+  test('(#2617) inline locale objects are utilized', async () => {
+    const { consoleLogs } = await renderPage('/')
+
+    expect(
+      consoleLogs.some(
+        log =>
+          log.type === 'warning' &&
+          log.text.includes('[nuxt-i18n-routing] Locale ISO code is required to generate alternate link')
+      )
+    ).toBe(false)
+  })
 })
