@@ -1,4 +1,7 @@
-export default {
+import type { I18nOptions } from 'vue-i18n'
+
+// (#2094) export using variable and typescript
+const config: I18nOptions = {
   fallbackLocale: 'en',
   messages: {
     fr: {
@@ -12,7 +15,8 @@ export default {
     en: {
       aboutSite: 'About this site',
       snakeCaseText: "@.snakeCase:{'aboutSite'}",
-      pascalCaseText: "@.pascalCase:{'aboutSite'}"
+      pascalCaseText: "@.pascalCase:{'aboutSite'}",
+      variableExportedI18nConfig: 'Exporting using variable identifier works!'
     }
   },
   modifiers: {
@@ -24,3 +28,5 @@ export default {
         .join('')
   }
 }
+
+export default config
