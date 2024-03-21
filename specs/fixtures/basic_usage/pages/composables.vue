@@ -25,7 +25,5 @@ useHead({
 </script>
 
 <template>
-  <div>
-    <NuxtPage />
-  </div>
+  <div>Tests composables using useHead</div>
 </template>
