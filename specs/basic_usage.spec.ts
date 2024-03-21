@@ -589,4 +589,16 @@ describe('basic usage', async () => {
       expect(await getText(page, '#per-component-hello')).toMatch('Hello!')
     })
   })
+
+  test('(#2000) Should be able to load large vue-i18n messages', async () => {
+    const restore = await startServerWithRuntimeConfig({
+      public: { longTextTest: true }
+    })
+
+    const { page } = await renderPage('/nl/long-text')
+
+    expect(await getText(page, '#long-text')).toEqual('hallo,'.repeat(8 * 500))
+
+    await restore()
+  })
 })
