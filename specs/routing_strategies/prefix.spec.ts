@@ -175,4 +175,11 @@ describe('strategy: prefix', async () => {
 
     await restore()
   })
+
+  test('(#2020) pass query parameter', async () => {
+    const { page } = await renderPage('/')
+
+    expect(await getText(page, '#issue-2020-existing')).toBe('/en/test-route?foo=bar')
+    expect(await getText(page, '#issue-2020-nonexistent')).toBe('/i-dont-exist?foo=bar')
+  })
 })
