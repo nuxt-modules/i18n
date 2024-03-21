@@ -341,7 +341,7 @@ export function getHost() {
 export function getLocaleDomain(
   locales: LocaleObject[],
   strategy: string,
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
+  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
   let host = getHost() || ''
   if (host) {
