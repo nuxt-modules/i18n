@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { getText, getData, renderPage, waitForURL, gotoPath } from '../helper'
+import { getText, getData, renderPage, waitForURL, gotoPath, startServerWithRuntimeConfig } from '../helper'
 
 import type { Response } from 'playwright'
 
@@ -12,12 +12,21 @@ await setup({
   nuxtConfig: {
     i18n: {
       strategy: 'no_prefix',
-      defaultLocale: 'en'
+      defaultLocale: 'en',
+      detectBrowserLanguage: {}
     }
   }
 })
 
 describe('strategy: no_prefix', async () => {
+  beforeAll(async () => {
+    await startServerWithRuntimeConfig({
+      public: {
+        i18n: { detectBrowserLanguage: false }
+      }
+    })
+  })
+
   test('cannot access with locale prefix: /ja', async () => {
     const home = url('/ja')
     const { page } = await renderPage(home)
@@ -103,5 +112,30 @@ describe('strategy: no_prefix', async () => {
     const res2 = await page.goto(url('/?pluginSetLocale=en'))
     expect(res2?.ok()).toBeTruthy()
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  })
+
+  test('(#2473) should respect `detectBrowserLanguage`', async () => {
+    await startServerWithRuntimeConfig({
+      public: {
+        i18n: {
+          detectBrowserLanguage: {
+            // fallback to defaultLocale
+            fallbackLocale: 'en'
+          }
+        }
+      }
+    })
+    const { page } = await renderPage('/', { locale: 'fr' })
+
+    expect(await getText(page, '#home-header')).toEqual(`Accueil`)
+
+    // change page
+    await page.locator('#link-about').click()
+    await waitForURL(page, '/about')
+    expect(await getText(page, '#about-header')).toEqual(`À propos`)
+
+    // one more change page
+    await page.locator('#link-home').click()
+    expect(await getText(page, '#home-header')).toEqual(`Accueil`)
   })
 })
