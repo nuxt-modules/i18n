@@ -92,4 +92,16 @@ describe('strategy: no_prefix', async () => {
 
     expect(page.url()).toEqual(url('/'))
   })
+
+  test('(#2554) should not throw an error when using `setLocale` from plugin', async () => {
+    const { page } = await renderPage('/')
+
+    const res1 = await page.goto(url('/?pluginSetLocale=fr'))
+    expect(res1?.ok()).toBeTruthy()
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+
+    const res2 = await page.goto(url('/?pluginSetLocale=en'))
+    expect(res2?.ok()).toBeTruthy()
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  })
 })
