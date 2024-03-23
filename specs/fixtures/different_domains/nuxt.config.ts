@@ -15,6 +15,12 @@ export default defineNuxtConfig({
         domain: 'en.nuxt-app.localhost'
       },
       {
+        code: 'no',
+        iso: 'no-NO',
+        name: 'Norwegian',
+        domain: 'no.nuxt-app.localhost'
+      },
+      {
         code: 'fr',
         iso: 'fr-FR',
         name: 'Français',

@@ -216,7 +216,7 @@ export function detectLocale(
 
   if (!finalLocale) {
     if (differentDomains) {
-      finalLocale = getLocaleDomain(normalizedLocales)
+      finalLocale = getLocaleDomain(normalizedLocales, strategy, route)
     } else if (strategy !== 'no_prefix') {
       finalLocale = routeLocaleGetter(route)
     } else {
@@ -414,6 +414,8 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n | VueI18n | Composer
 // override prefix for route path, support domain
 export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
   return (opts: PrefixableOptions): boolean => {
+    __DEBUG__ && console.log('extendPrefixable', DefaultPrefixable(opts))
+
     return DefaultPrefixable(opts) && !runtimeConfig.public.i18n.differentDomains
   }
 }

@@ -27,6 +27,19 @@ export default {
           article: 'This is blog article page'
         }
       }
+    },
+    no: {
+      welcome: 'Velkommen',
+      home: 'Hjemmeside',
+      profile: 'Profil',
+      about: 'Om oss',
+      posts: 'Artikkeler',
+      dynamic: 'Dynamic',
+      pages: {
+        blog: {
+          article: 'Dette er bloggartikkelsiden'
+        }
+      }
     }
   },
   fallbackLocale: 'en'

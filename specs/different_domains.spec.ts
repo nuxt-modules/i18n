@@ -41,6 +41,7 @@ await setup({
         }
       ],
       differentDomains: true,
+      strategy: 'no_prefix',
       detectBrowserLanguage: {
         useCookie: true
       }
