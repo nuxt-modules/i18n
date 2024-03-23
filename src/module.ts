@@ -114,13 +114,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       )
     }
 
-    if (options.strategy === 'no_prefix' && options.differentDomains) {
-      logger.warn(
-        '`differentDomains` option and `no_prefix` strategy are not compatible. ' +
-          'Change strategy or disable `differentDomains` option.'
-      )
-    }
-
     if (options.dynamicRouteParams) {
       logger.warn(
         'The `dynamicRouteParams` options is deprecated and will be removed in `v9`, use the `useSetI18nParams` composable instead.'
