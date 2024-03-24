@@ -38,6 +38,10 @@ test('detection with cookie', async () => {
   })
   const { page } = await renderPage('/', { locale: 'en' })
   const ctx = await page.context()
+  expect(await ctx.cookies()).toMatchObject([
+    { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' }
+  ])
+
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
   expect(await ctx.cookies()).toMatchObject([
