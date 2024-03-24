@@ -16,6 +16,7 @@ describe('#2262', async () => {
     const ctx = await page.context()
 
     expect(await getText(page, '#msg')).toEqual('Welcome')
+    expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
 
     // change to `fr`
     await page.locator('#fr').click()

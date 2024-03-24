@@ -107,39 +107,57 @@ export async function loadAndSetLocale(
   i18n: I18n,
   runtimeI18n: ModulePublicRuntimeConfig['i18n'],
   initial: boolean = false
-): Promise<[boolean, string]> {
+): Promise<boolean> {
   const { differentDomains, skipSettingLocaleOnNavigate, lazy } = runtimeI18n
   const opts = runtimeDetectBrowserLanguage(runtimeI18n)
   const nuxtApp = useNuxtApp()
 
-  let ret = false
   const oldLocale = getLocale(i18n)
-  __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
-  if (!newLocale) {
-    return [ret, oldLocale]
+  const localeCodes = getLocaleCodes(i18n)
+
+  // sets the locale cookie if unset or not up to date
+  function syncCookie(locale: Locale = oldLocale) {
+    if (opts === false || !opts.useCookie) return
+    if (skipSettingLocaleOnNavigate) return
+
+    setCookieLocale(i18n, locale)
   }
 
-  // abort if different domains option enabled
+  __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
+
+  // `newLocale` is unset or empty
+  if (!newLocale) {
+    syncCookie()
+    return false
+  }
+
+  // no change if different domains option enabled
   if (!initial && differentDomains) {
-    return [ret, oldLocale]
+    syncCookie()
+    return false
   }
 
   if (oldLocale === newLocale) {
-    return [ret, oldLocale]
+    syncCookie()
+    return false
   }
 
-  // call onBeforeLanguageSwitch
+  // call `onBeforeLanguageSwitch` which may return an override for `newLocale`
   const localeOverride = await onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, nuxtApp)
-  const localeCodes = getLocaleCodes(i18n)
-  if (localeOverride && localeCodes && localeCodes.includes(localeOverride)) {
-    if (localeOverride === oldLocale) {
-      return [ret, oldLocale]
+  if (localeOverride && localeCodes.includes(localeOverride)) {
+    // resolved `localeOverride` is already in use
+    if (oldLocale === localeOverride) {
+      syncCookie()
+      return false
     }
+
     newLocale = localeOverride
   }
 
-  const i18nFallbackLocales = getVueI18nPropertyValue<FallbackLocale>(i18n, 'fallbackLocale')
+  // load locale messages required by `newLocale`
   if (lazy) {
+    const i18nFallbackLocales = getVueI18nPropertyValue<FallbackLocale>(i18n, 'fallbackLocale')
+
     const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
     if (i18nFallbackLocales) {
       const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
@@ -149,19 +167,16 @@ export async function loadAndSetLocale(
   }
 
   if (skipSettingLocaleOnNavigate) {
-    return [ret, oldLocale]
+    return false
   }
 
-  // set the locale
-  if (opts !== false && opts.useCookie) {
-    setCookieLocale(i18n, newLocale)
-  }
+  // sync cookie and set the locale
+  syncCookie(newLocale)
   setLocale(i18n, newLocale)
 
   await onLanguageSwitched(i18n, oldLocale, newLocale)
 
-  ret = true
-  return [ret, oldLocale]
+  return true
 }
 
 type LocaleLoader = () => Locale

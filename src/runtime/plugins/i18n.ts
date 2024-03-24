@@ -166,7 +166,7 @@ export default defineNuxtPlugin({
           )
           composer.setLocale = async (locale: string) => {
             const localeSetup = isInitialLocaleSetup(locale)
-            const [modified] = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
+            const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
 
             if (modified && localeSetup) {
               notInitialSetup = false
@@ -450,7 +450,7 @@ export default defineNuxtPlugin({
         const localeSetup = isInitialLocaleSetup(locale)
         __DEBUG__ && console.log('localeSetup', localeSetup)
 
-        const [modified] = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
+        const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
 
         if (modified && localeSetup) {
           notInitialSetup = false
