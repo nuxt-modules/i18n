@@ -110,6 +110,7 @@ test('alwaysRedirect: no prefix', async () => {
 
   // detect locale from navigator language
   expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
 
   // click `fr` lang switch with nutlink
   await page.locator('#set-locale-link-fr').click()
