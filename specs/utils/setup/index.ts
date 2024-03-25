@@ -86,23 +86,6 @@ export async function setup(options: Partial<TestOptions> = {}) {
     options.nuxtConfig.i18n = { ...options.nuxtConfig.i18n, overrides: options.nuxtConfig.i18n }
   }
 
-  // https://nuxt.com/blog/v3-11#chunk-naming
-  // We change the chunk file name so we can detect file requests in our tests
-  if (options.nuxtConfig != null) {
-    options.nuxtConfig.vite = defu(options.nuxtConfig.vite, {
-      $client: {
-        build: {
-          rollupOptions: {
-            output: {
-              chunkFileNames: '_nuxt/[name].js',
-              entryFileNames: '_nuxt/[name].js'
-            }
-          }
-        }
-      }
-    })
-  }
-
   const hooks = createTest(options)
 
   const setupFn = setupMaps[hooks.ctx.options.runner]
