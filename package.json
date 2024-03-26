@@ -120,7 +120,7 @@
     "execa": "^8.0.1",
     "get-port-please": "^3.1.1",
     "gh-changelogen": "^0.2.8",
-    "globals": "^14.0.0",
+    "globals": "^15.0.0",
     "globby": "^14.0.0",
     "h3": "^1.10.1",
     "jiti": "^1.20.0",
