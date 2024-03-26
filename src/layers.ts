@@ -1,14 +1,21 @@
 import createDebug from 'debug'
-import { getLayerI18n, getProjectPath, mergeConfigLocales, resolveVueI18nConfigInfo, formatMessage } from './utils'
+import {
+  getLayerI18n,
+  getProjectPath,
+  mergeConfigLocales,
+  resolveVueI18nConfigInfo,
+  formatMessage,
+  getLocaleFiles
+} from './utils'
 
 import { useLogger } from '@nuxt/kit'
-import { isAbsolute, resolve } from 'pathe'
+import { isAbsolute, parse, resolve } from 'pathe'
 import { isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
+import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
@@ -60,6 +67,11 @@ export const checkLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   }
 }
 
+/**
+ * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
+ *
+ * This overwrites `options.locales`
+ */
 export const applyLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   const project = nuxt.options._layers[0]
   const layers = nuxt.options._layers
@@ -106,6 +118,32 @@ export const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
         projectLangDir
       }
     })
+
+  const localeObjects = options.locales.filter((x): x is LocaleObject => x !== 'string')
+  // locale `files` use absolute paths installed using `installModule`
+  const absoluteConfigMap = new Map<string, LocaleConfig>()
+  for (const localeObject of localeObjects) {
+    const absoluteConfigs = getLocaleFiles(localeObject)
+      .filter(file => isAbsolute(file.path))
+      .map(file => ({ locales: [localeObject], langDir: parse(file.path).dir, projectLangDir }))
+      .filter(absoluteConfig => configs.find(config => config.langDir === absoluteConfig.langDir) == null)
+
+    for (const absoluteConfig of absoluteConfigs) {
+      if (absoluteConfigMap.has(absoluteConfig.langDir)) {
+        const entry = absoluteConfigMap.get(absoluteConfig.langDir)
+
+        absoluteConfigMap.set(absoluteConfig.langDir, {
+          ...absoluteConfig,
+          locales: Array.from(new Set([...(entry!.locales! as LocaleObject[]), ...absoluteConfig!.locales]).values())
+        })
+        continue
+      }
+
+      absoluteConfigMap.set(absoluteConfig.langDir, absoluteConfig)
+    }
+  }
+
+  configs.push(...Array.from(absoluteConfigMap.values()))
 
   return mergeConfigLocales(configs)
 }
