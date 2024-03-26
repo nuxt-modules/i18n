@@ -186,7 +186,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * resolve vue-i18n config path
      */
 
-    const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(nuxt, nuxt.options.buildDir)
+    const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(options, nuxt, nuxt.options.buildDir)
     debug('VueI18nConfigPaths', vueI18nConfigPaths)
 
     /**
