@@ -160,7 +160,7 @@ export function useLocaleHead({
     }) as I18nHeadMetaInfo
   }
 
-  if (process.client) {
+  if (import.meta.client) {
     const stop = watch(
       () => common.router.currentRoute.value,
       () => {
@@ -349,7 +349,7 @@ export function useBrowserLocale(): string | null {
   return (
     findBrowserLocale(
       normalizedLocales,
-      process.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
+      import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
     ) || null
   )
 }
@@ -375,9 +375,9 @@ export function useCookieLocale(): Ref<string> {
     const cookieKey = detect.cookieKey!
 
     let code: string | null = null
-    if (process.client) {
+    if (import.meta.client) {
       code = useNuxtCookie<string>(cookieKey).value
-    } else if (process.server) {
+    } else if (import.meta.server) {
       const cookie = useRequestHeaders(['cookie'])
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       code = (cookie as any)[cookieKey]
@@ -428,7 +428,7 @@ export interface I18nRoute {
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function defineI18nRoute(route: I18nRoute | false): void {
-  if (process.dev) {
+  if (import.meta.dev) {
     warnRuntimeUsage('defineI18nRoute')
   }
 }

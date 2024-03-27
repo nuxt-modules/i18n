@@ -69,13 +69,13 @@ export function parseAcceptLanguage(input: string): string[] {
 export function getBrowserLocale(): string | undefined {
   let ret: string | undefined
 
-  if (process.client) {
+  if (import.meta.client) {
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(normalizedLocales, navigator.languages as string[])
       __DEBUG__ && console.log('getBrowserLocale (navigator.languages, ret) -', navigator.languages, ret)
     }
-  } else if (process.server) {
+  } else if (import.meta.server) {
     const header = useRequestHeaders(['accept-language'])
     __DEBUG__ && console.log('getBrowserLocale accept-language', header)
     const accept = header['accept-language']
@@ -123,7 +123,7 @@ export function getLocaleCookie(
   }
 
   const localeCode: string | undefined = cookieRef.value ?? undefined
-  const env = process.client ? 'client' : 'server'
+  const env = import.meta.client ? 'client' : 'server'
   if (localeCode == null) {
     __DEBUG__ && console.log(`getLocaleCookie (${env}) - none`)
     return
@@ -201,7 +201,7 @@ export function detectBrowserLanguage(
   __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
   // browser detection is ignored if it's a nuxt generate.
-  if (isSSG && strategy === 'no_prefix' && (process.server || ssg === 'ssg_ignore')) {
+  if (isSSG && strategy === 'no_prefix' && (import.meta.server || ssg === 'ssg_ignore')) {
     return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
   }
 
@@ -321,9 +321,9 @@ export function detectBrowserLanguage(
 
 export function getHost() {
   let host: string | undefined
-  if (process.client) {
+  if (import.meta.client) {
     host = window.location.host
-  } else if (process.server) {
+  } else if (import.meta.server) {
     const header = useRequestHeaders(['x-forwarded-host', 'host'])
 
     let detectedHost: string | undefined
@@ -432,7 +432,7 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
       return domain
     }
     let protocol
-    if (process.server) {
+    if (import.meta.server) {
       const {
         node: { req }
       } = useRequestEvent(nuxtApp)!
