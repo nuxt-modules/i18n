@@ -10,7 +10,7 @@ await setup({
     i18n: {
       defaultLocale: 'en',
       baseUrl: () => {
-        if (process.server) {
+        if (import.meta.server) {
           // @ts-ignore
           const headers = useRequestHeaders(['x-override-base-url'])
           const xOverrideBaseUrl = headers['x-override-base-url']

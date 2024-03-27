@@ -118,7 +118,7 @@ export default defineNuxtPlugin({
      * NOTE:
      *  avoid hydration mismatch for SSG mode
      */
-    if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && process.client) {
+    if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
       nuxt.hook('app:mounted', async () => {
         __DEBUG__ && console.log('hook app:mounted')
         const {
