@@ -19,38 +19,67 @@ await setup({
   }
 })
 
-test('(#2262) redirect with browser cookie with `alwaysRedirect: true`', async () => {
-  const restore = await startServerWithRuntimeConfig({
-    public: {
-      i18n: {
-        detectBrowserLanguage: {
-          useCookie: true,
-          redirectOn: 'root',
-          alwaysRedirect: true
+describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async () => {
+  test('(#2262) redirect using browser cookie with `alwaysRedirect: true`', async () => {
+    const restore = await startServerWithRuntimeConfig({
+      public: {
+        i18n: {
+          detectBrowserLanguage: {
+            useCookie: true,
+            redirectOn: 'root',
+            alwaysRedirect: true
+          }
         }
       }
-    }
+    })
+    const { page } = await renderPage('/', { locale: 'en' })
+    const ctx = page.context()
+
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+    expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
+
+    // change to `fr`
+    await page.locator('#nuxt-locale-link-fr').click()
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'fr' }])
+
+    // direct access to root `/`
+    await page.goto(url('/'))
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(page.url().endsWith('/fr'))
+
+    // change to `en`
+    await page.locator('#nuxt-locale-link-en').click()
+    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+    expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
+
+    await restore()
   })
-  const { page } = await renderPage('/', { locale: 'en' })
-  const ctx = page.context()
 
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
-  expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
+  describe('(#2255) detect browser language and redirect on root', async () => {
+    beforeEach(async () => {
+      await startServerWithRuntimeConfig({
+        public: {
+          i18n: {
+            detectBrowserLanguage: {
+              useCookie: true,
+              redirectOn: 'root'
+            }
+          }
+        }
+      })
+    })
 
-  // change to `fr`
-  await page.locator('#nuxt-locale-link-fr').click()
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
-  expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'fr' }])
+    test('redirect using browser language locale', async () => {
+      const { page } = await renderPage('/', { locale: 'fr' })
 
-  // direct access to root `/`
-  await page.goto(url('/'))
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
-  expect(page.url().endsWith('/fr'))
+      expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    })
 
-  // change to `en`
-  await page.locator('#nuxt-locale-link-en').click()
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
-  expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
+    test('redirect using `Accept-Language` header', async () => {
+      const { page } = await renderPage('/', { extraHTTPHeaders: { 'Accept-Language': 'fr' } })
 
-  await restore()
+      expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    })
+  })
 })
