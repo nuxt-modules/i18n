@@ -283,7 +283,7 @@ export function detectRedirect({
 
   let redirectPath = ''
   const { fullPath: toFullPath } = route.to
-  const isStaticGenerate = isSSG && process.server
+  const isStaticGenerate = isSSG && import.meta.server
 
   /**
    * decide whether we should redirect to a different route.
@@ -311,7 +311,7 @@ export function detectRedirect({
     }
   }
 
-  if ((differentDomains || (isSSG && process.client)) && routeLocaleGetter(route.to) !== targetLocale) {
+  if ((differentDomains || (isSSG && import.meta.client)) && routeLocaleGetter(route.to) !== targetLocale) {
     /**
      * `$router.currentRoute` does not yet reflect the `to` value,
      *  when the Router middleware handler is executed.
@@ -380,7 +380,7 @@ export async function navigate(
     return _navigate(redirectPath, status)
   }
 
-  if (process.client && skipSettingLocaleOnNavigate) {
+  if (import.meta.client && skipSettingLocaleOnNavigate) {
     i18n.__pendingLocale = locale
     i18n.__pendingLocalePromise = new Promise(resolve => {
       i18n.__resolvePendingLocalePromise = resolve
@@ -398,10 +398,10 @@ export async function navigate(
     const state = useRedirectState()
     __DEBUG__ && console.log('redirect state ->', state.value, 'redirectPath -> ', redirectPath)
     if (state.value && state.value !== redirectPath) {
-      if (process.client) {
+      if (import.meta.client) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
-      } else if (process.server) {
+      } else if (import.meta.server) {
         __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
         state.value = redirectPath // set redirect path
       }
