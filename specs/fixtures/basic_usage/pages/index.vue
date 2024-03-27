@@ -239,5 +239,9 @@ useHead({
       <code id="global-scope-properties">{{ localeProperties }}</code>
       <LocalScope />
     </section>
+    <section>
+      <div id="install-module-locale">{{ $t('installerModuleLocaleMessage') }}</div>
+      <div id="install-module-vue-i18n">{{ $t('installerModuleVueI18nMessage') }}</div>
+    </section>
   </div>
 </template>

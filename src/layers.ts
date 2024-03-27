@@ -1,14 +1,21 @@
 import createDebug from 'debug'
-import { getLayerI18n, getProjectPath, mergeConfigLocales, resolveVueI18nConfigInfo, formatMessage } from './utils'
+import {
+  getLayerI18n,
+  getProjectPath,
+  mergeConfigLocales,
+  resolveVueI18nConfigInfo,
+  formatMessage,
+  getLocaleFiles
+} from './utils'
 
 import { useLogger } from '@nuxt/kit'
-import { isAbsolute, resolve } from 'pathe'
+import { isAbsolute, parse, resolve } from 'pathe'
 import { isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
+import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
@@ -60,6 +67,11 @@ export const checkLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   }
 }
 
+/**
+ * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
+ *
+ * This overwrites `options.locales`
+ */
 export const applyLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   const project = nuxt.options._layers[0]
   const layers = nuxt.options._layers
@@ -107,6 +119,43 @@ export const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
       }
     })
 
+  const localeObjects = options.locales.filter((x): x is LocaleObject => x !== 'string')
+  const absoluteConfigMap = new Map<string, LocaleConfig>()
+  // locale `files` use absolute paths installed using `installModule`
+  const absoluteLocaleObjects = localeObjects.filter(localeObject => {
+    const files = getLocaleFiles(localeObject)
+    if (files.length === 0) return false
+    return files.every(
+      file => isAbsolute(file.path) && configs.find(config => config.langDir === parse(file.path).dir) == null
+    )
+  })
+
+  // filter layer locales
+  for (const absoluteLocaleObject of absoluteLocaleObjects) {
+    const files = getLocaleFiles(absoluteLocaleObject)
+    if (files.length === 0) continue
+    const langDir = parse(files[0].path).dir
+
+    if (absoluteConfigMap.has(langDir)) {
+      const entry = absoluteConfigMap.get(langDir)
+
+      absoluteConfigMap.set(langDir, {
+        langDir,
+        projectLangDir,
+        locales: [...(entry!.locales! as LocaleObject[]), absoluteLocaleObject]
+      })
+      continue
+    }
+
+    absoluteConfigMap.set(langDir, {
+      langDir,
+      projectLangDir,
+      locales: [absoluteLocaleObject]
+    })
+  }
+
+  configs.unshift(...Array.from(absoluteConfigMap.values()))
+
   return mergeConfigLocales(configs)
 }
 
@@ -126,7 +175,7 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
     }) as string[]
 }
 
-export async function resolveLayerVueI18nConfigInfo(nuxt: Nuxt, buildDir: string) {
+export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt: Nuxt, buildDir: string) {
   const logger = useLogger(NUXT_I18N_MODULE_ID)
   const layers = [...nuxt.options._layers]
   const project = layers.shift() as NuxtConfigLayer
@@ -157,6 +206,11 @@ export async function resolveLayerVueI18nConfigInfo(nuxt: Nuxt, buildDir: string
         return res
       })
   )
+
+  // use `vueI18n` passed by `installModule`
+  if (options.vueI18n && isAbsolute(options.vueI18n)) {
+    resolved.unshift(await resolveVueI18nConfigInfo({ vueI18n: options.vueI18n }, buildDir, parse(options.vueI18n).dir))
+  }
 
   return resolved.filter((x): x is Required<VueI18nConfigPathInfo> => x != null)
 }

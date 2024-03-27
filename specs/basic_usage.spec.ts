@@ -617,4 +617,11 @@ describe('basic usage', async () => {
     expect(dom.querySelector('head #switch-locale-path').content).toEqual('/fr/composables')
     expect(dom.querySelector('head #route-base-name').content).toEqual('nested-test-route')
   })
+
+  test('(#2874) options `locales` and `vueI18n` passed using `installModule` are not overridden', async () => {
+    const { page } = await renderPage('/')
+
+    expect(await getText(page, '#install-module-locale')).toEqual('Installer module locale works!')
+    expect(await getText(page, '#install-module-vue-i18n')).toEqual('Installer module vue-i18n works!')
+  })
 })
