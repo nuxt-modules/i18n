@@ -2,7 +2,7 @@
 import { navigateTo } from '#imports'
 import { useLocalePath, useSwitchLocalePath, useLocaleRoute, useI18n } from '#i18n'
 
-const { locale } = useI18n()
+const { locale, locales } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
@@ -34,6 +34,13 @@ function onClick() {
           <p id="welcome-message">{{ $t('welcome') }}</p>
         </form>
       </div>
+    </section>
+    <section id="configured-locales-list">
+      <ul>
+        <li v-for="locale in locales" :key="locale.code">
+          {{ locale.code }}
+        </li>
+      </ul>
     </section>
     <section id="locale-path-usages">
       <h3>localePath</h3>

@@ -1,13 +1,13 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch, undiciRequest } from './utils'
-import { getDom } from './helper'
+import { setup, $fetch, undiciRequest } from '../utils'
+import { getDom } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`./fixtures/different_domains`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/different_domains`, import.meta.url)),
   // overrides
   nuxtConfig: {
-    extends: [fileURLToPath(new URL(`./fixtures/layers/layer-domain`, import.meta.url))],
+    extends: [fileURLToPath(new URL(`../fixtures/layers/layer-domain`, import.meta.url))],
     runtimeConfig: {
       public: {
         i18n: {
@@ -20,6 +20,7 @@ await setup({
       }
     },
     i18n: {
+      baseUrl: 'http://localhost:3000',
       locales: [
         {
           code: 'en',

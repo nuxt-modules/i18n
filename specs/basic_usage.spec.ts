@@ -624,4 +624,14 @@ describe('basic usage', async () => {
     expect(await getText(page, '#install-module-locale')).toEqual('Installer module locale works!')
     expect(await getText(page, '#install-module-vue-i18n')).toEqual('Installer module vue-i18n works!')
   })
+
+  describe('experimental.autoImportTranslationFunctions', async () => {
+    test('can use `$t` in `<template>`', async () => {
+      const { consoleLogs } = await renderPage('/experimental/auto-import-translation-functions')
+
+      const logStrings = consoleLogs.map(x => x.text)
+      expect(logStrings).toContain('[autoImportTranslationFunctions][default]: Welcome')
+      expect(logStrings).toContain('[autoImportTranslationFunctions][fr]: Bienvenue')
+    })
+  })
 })
