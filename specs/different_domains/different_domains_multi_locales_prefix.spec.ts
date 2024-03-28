@@ -1,13 +1,14 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch, undiciRequest } from './utils'
-import { getDom } from './helper'
+import { setup, $fetch, undiciRequest } from '../utils'
+import { getDom } from '../helper'
 
 await setup({
-  rootDir: fileURLToPath(new URL(`./fixtures/different_domains`, import.meta.url)),
+  rootDir: fileURLToPath(new URL(`../fixtures/different_domains`, import.meta.url)),
   // overrides
   nuxtConfig: {
     i18n: {
+      baseUrl: 'http://localhost:3000',
       locales: [
         {
           code: 'en',
@@ -26,19 +27,11 @@ await setup({
           code: 'fr',
           iso: 'fr-FR',
           name: 'Français',
-          domain: 'fr.nuxt-app.localhost',
-          domainDefault: true
-        },
-        {
-          code: 'ja',
-          iso: 'jp-JA',
-          name: 'Japan',
-          domain: 'ja.nuxt-app.localhost',
-          domainDefault: true
+          domain: 'fr.nuxt-app.localhost'
         }
       ],
       differentDomains: true,
-      strategy: 'prefix_except_default',
+      strategy: 'prefix',
       detectBrowserLanguage: {
         useCookie: true
       }
@@ -48,11 +41,10 @@ await setup({
 
 describe('detection locale with host on server', () => {
   test.each([
-    ['/', 'en', 'nuxt-app.localhost', 'Homepage'],
-    ['/no', 'no', 'nuxt-app.localhost', 'Hjemmeside'],
-    ['/', 'fr', 'fr.nuxt-app.localhost', 'Accueil']
-  ])('%s host', async (path, locale, host, header) => {
-    const res = await undiciRequest(path, {
+    ['en', 'nuxt-app.localhost', 'Homepage'],
+    ['fr', 'fr.nuxt-app.localhost', 'Accueil']
+  ])('%s host', async (locale, host, header) => {
+    const res = await undiciRequest('/' + locale, {
       headers: {
         Host: host
       }
@@ -65,7 +57,7 @@ describe('detection locale with host on server', () => {
 })
 
 test('detection locale with x-forwarded-host on server', async () => {
-  const html = await $fetch('/', {
+  const html = await $fetch('/fr', {
     headers: {
       'X-Forwarded-Host': 'fr.nuxt-app.localhost'
     }
@@ -77,19 +69,19 @@ test('detection locale with x-forwarded-host on server', async () => {
 })
 
 test('pass `<NuxtLink> to props', async () => {
-  const res = await undiciRequest('/', {
+  const res = await undiciRequest('/fr', {
     headers: {
       Host: 'fr.nuxt-app.localhost'
     }
   })
   const dom = getDom(await res.body.text())
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
-    `http://nuxt-app.localhost`
+    `http://nuxt-app.localhost/en`
   )
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-no a').getAttribute('href')).toEqual(
     `http://nuxt-app.localhost/no`
   )
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
-    `http://fr.nuxt-app.localhost`
+    `http://fr.nuxt-app.localhost/fr`
   )
 })
