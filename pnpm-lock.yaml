@@ -25,8 +25,8 @@ importers:
         specifier: ^9.9.0
         version: 9.9.0
       '@intlify/unplugin-vue-i18n':
-        specifier: ^3.0.1
-        version: 3.0.1(rollup@3.29.4)(vue-i18n@9.9.0)
+        specifier: ^4.0.0
+        version: 4.0.0(rollup@3.29.4)(vue-i18n@9.9.0)
       '@intlify/utils':
         specifier: ^0.12.0
         version: 0.12.0
@@ -274,24 +274,6 @@ importers:
         version: 3.11.1(@unocss/reset@0.58.4)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@3.29.4)(typescript@5.4.2)(unocss@0.58.4)(vite@5.1.6)(vue-tsc@2.0.2)
 
   specs/fixtures/lazy:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.11.1
-        version: 3.11.1(@unocss/reset@0.58.4)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@3.29.4)(typescript@5.4.2)(unocss@0.58.4)(vite@5.1.6)(vue-tsc@2.0.2)
-
-  specs/fixtures/locale_codes:
-    devDependencies:
-      '@nuxtjs/i18n':
-        specifier: link:../../..
-        version: link:../../..
-      nuxt:
-        specifier: ^3.11.1
-        version: 3.11.1(@unocss/reset@0.58.4)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@3.29.4)(typescript@5.4.2)(unocss@0.58.4)(vite@5.1.6)(vue-tsc@2.0.2)
-
-  specs/fixtures/no_ssr:
     devDependencies:
       '@nuxtjs/i18n':
         specifier: link:../../..
@@ -1252,8 +1234,8 @@ packages:
       vue: 3.4.21(typescript@5.4.2)
     dev: true
 
-  /@intlify/bundle-utils@7.4.0(vue-i18n@9.9.0):
-    resolution: {integrity: sha512-AQfjBe2HUxzyN8ignIk3WhhSuVcSuirgzOzkd17nb337rCbI4Gv/t1R60UUyIqFoFdviLb/wLcDUzTD/xXjv9w==}
+  /@intlify/bundle-utils@8.0.0(vue-i18n@9.9.0):
+    resolution: {integrity: sha512-1B++zykRnMwQ+20SpsZI1JCnV/YJt9Oq7AGlEurzkWJOFtFAVqaGc/oV36PBRYeiKnTbY9VYfjBimr2Vt42wLQ==}
     engines: {node: '>= 14.16'}
     peerDependencies:
       petite-vue-i18n: '*'
@@ -1270,7 +1252,6 @@ packages:
       escodegen: 2.1.0
       estree-walker: 2.0.2
       jsonc-eslint-parser: 2.4.0
-      magic-string: 0.30.8
       mlly: 1.6.1
       source-map-js: 1.2.0
       vue-i18n: 9.9.0(vue@3.4.21)
@@ -1314,7 +1295,7 @@ packages:
     engines: {node: '>= 16'}
     dependencies:
       '@intlify/shared': 9.8.0
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
     dev: false
 
   /@intlify/message-compiler@9.9.0:
@@ -1322,7 +1303,7 @@ packages:
     engines: {node: '>= 16'}
     dependencies:
       '@intlify/shared': 9.9.0
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
     dev: false
 
   /@intlify/shared@9.8.0:
@@ -1335,8 +1316,8 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
-  /@intlify/unplugin-vue-i18n@3.0.1(rollup@3.29.4)(vue-i18n@9.9.0):
-    resolution: {integrity: sha512-q1zJhA/WpoLBzAAuKA5/AEp0e+bMOM10ll/HxT4g1VAw/9JhC4TTobP9KobKH90JMZ4U2daLFlYQfKNd29lpqw==}
+  /@intlify/unplugin-vue-i18n@4.0.0(rollup@3.29.4)(vue-i18n@9.9.0):
+    resolution: {integrity: sha512-q2Mhqa/mLi0tulfLFO4fMXXvEbkSZpI5yGhNNsLTNJJ41icEGUuyDe+j5zRZIKSkOJRgX6YbCyibTDJdRsukmw==}
     engines: {node: '>= 14.16'}
     peerDependencies:
       petite-vue-i18n: '*'
@@ -1350,7 +1331,7 @@ packages:
       vue-i18n-bridge:
         optional: true
     dependencies:
-      '@intlify/bundle-utils': 7.4.0(vue-i18n@9.9.0)
+      '@intlify/bundle-utils': 8.0.0(vue-i18n@9.9.0)
       '@intlify/shared': 9.9.0
       '@rollup/pluginutils': 5.1.0(rollup@3.29.4)
       '@vue/compiler-sfc': 3.4.21
@@ -5047,14 +5028,14 @@ packages:
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0'}
     dependencies:
       mdn-data: 2.0.28
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
 
   /css-tree@2.3.1:
     resolution: {integrity: sha512-6Fv1DV/TYw//QF5IzQdqsNDjx/wc8TrMBZsqjL9eW01tWb7R7k/mq+/VXfJCl7SoD5emsJop9cOByJZfs8hYIw==}
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
     dependencies:
       mdn-data: 2.0.30
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
 
   /css-what@6.1.0:
     resolution: {integrity: sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==}
@@ -7249,7 +7230,7 @@ packages:
     dependencies:
       '@babel/parser': 7.23.9
       '@babel/types': 7.23.9
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
 
   /make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
