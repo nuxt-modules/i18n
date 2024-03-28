@@ -18,7 +18,10 @@ export default defineNuxtConfig({
   i18n: {
     vueI18n: './config/i18n.config.ts',
     locales: ['en', 'fr'],
-    defaultLocale: 'en'
+    defaultLocale: 'en',
+    experimental: {
+      autoImportTranslationFunctions: true
+    }
     // debug: true,
   }
 })
