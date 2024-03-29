@@ -9,10 +9,9 @@ import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { walk } from 'estree-walker'
 import { transform } from 'sucrase'
-import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
-import { parseQuery, parseURL } from 'ufo'
 import { parse as parseSFC } from '@vue/compiler-sfc'
+import { isVue } from './utils'
 
 import type { Node } from 'estree-walker'
 import type { CallExpression, Pattern } from 'estree'
@@ -138,6 +137,7 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
       if (s.hasChanged()) {
         debug('transformed: id -> ', id)
         debug('transformed: code -> ', s.toString())
+
         return {
           code: s.toString(),
           map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
@@ -157,40 +157,6 @@ function extractScriptContent(html: string) {
   }
 
   return null
-}
-
-// from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/core/utils/plugins.ts#L4-L35
-function isVue(id: string, opts: { type?: Array<'template' | 'script' | 'style'> } = {}) {
-  // Bare `.vue` file (in Vite)
-  const { search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-  if (id.endsWith('.vue') && !search) {
-    return true
-  }
-
-  if (!search) {
-    return false
-  }
-
-  const query = parseQuery(search)
-
-  // Component async/lazy wrapper
-  if (query.nuxt_component) {
-    return false
-  }
-
-  // Macro
-  if (query.macro && (search === '?macro=true' || !opts.type || opts.type.includes('script'))) {
-    return true
-  }
-
-  // Non-Vue or Styles
-  const type = 'setup' in query ? 'script' : (query.type as 'script' | 'template' | 'style')
-  if (!('vue' in query) || (opts.type && !opts.type.includes(type))) {
-    return false
-  }
-
-  // Query `?vue&type=template` (in Webpack or external template)
-  return true
 }
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/vite/src/plugins/composable-keys.ts#L148-L184
