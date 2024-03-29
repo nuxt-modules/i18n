@@ -153,6 +153,13 @@ describe('strategy: prefix', async () => {
     await restore()
   })
 
+  test('should not transform `defineI18nRoute()` inside template', async () => {
+    const { page } = await renderPage('/', { locale: 'en' })
+    await waitForURL(page, '/en')
+
+    expect(await getText(page, '#link-define-i18n-route-false')).toEqual('go to defineI18nRoute(false)')
+  })
+
   test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
     const restore = await startServerWithRuntimeConfig({
       public: {
