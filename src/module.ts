@@ -198,6 +198,25 @@ export default defineNuxtModule<NuxtI18nOptions>({
     }
 
     /**
+     * ignore `/` during prerender when using prefixed routing
+     */
+
+    if (options.strategy === 'prefix' && nuxt.options._generate) {
+      const localizedEntryPages = normalizedLocales.map(x => ['/', x.code].join(''))
+      nuxt.hook('nitro:config', config => {
+        config.prerender ??= {}
+
+        // ignore `/` which is added by nitro by default
+        config.prerender.ignore ??= []
+        config.prerender.ignore.push(/^\/$/)
+
+        // add localized routes as entry pages for prerendering
+        config.prerender.routes ??= []
+        config.prerender.routes.push(...localizedEntryPages)
+      })
+    }
+
+    /**
      * setup module alias
      */
 
