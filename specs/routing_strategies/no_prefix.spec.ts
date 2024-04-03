@@ -164,6 +164,7 @@ describe('strategy: no_prefix', async () => {
 
     // click `ar` lang switch link
     await page.locator('#set-locale-link-ar').click()
+    await page.waitForFunction(() => document.querySelector('title')?.textContent === 'Homepage (Arabic)')
 
     // title tag
     expect(await getText(page, 'title')).toMatch('Homepage (Arabic)')
