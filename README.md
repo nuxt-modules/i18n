@@ -23,14 +23,7 @@ If you would like to use the stable version for Nuxt 2, please see the [`v7` bra
 1. Add the following line to the `devDependencies` with your package manager:
 
 ```sh
-# Using npm
-npm install @nuxtjs/i18n --save-dev
-
-# Using yarn
-yarn add --dev @nuxtjs/i18n
-
-# Using pnpm
-pnpm add -D @nuxtjs/i18n
+npx nuxi@latest module add i18n
 ```
 
 2. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
