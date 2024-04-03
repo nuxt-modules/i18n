@@ -1,7 +1,15 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { getText, getData, renderPage, waitForURL, gotoPath, startServerWithRuntimeConfig } from '../helper'
+import {
+  getText,
+  getData,
+  renderPage,
+  waitForURL,
+  gotoPath,
+  startServerWithRuntimeConfig,
+  assetLocaleHead
+} from '../helper'
 
 import type { Response } from 'playwright'
 
@@ -10,9 +18,11 @@ await setup({
   browser: true,
   // overrides
   nuxtConfig: {
+    extends: [fileURLToPath(new URL(`../fixtures/layers/layer-locale-arabic`, import.meta.url))],
     i18n: {
       strategy: 'no_prefix',
       defaultLocale: 'en',
+      defaultDirection: 'auto',
       detectBrowserLanguage: {}
     }
   }
@@ -52,12 +62,12 @@ describe('strategy: no_prefix', async () => {
     expect(await getText(page, '#link-about')).toEqual('About us')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('Français')
+    expect(await getText(page, '#nuxt-locale-link-fr')).toEqual('Français')
     expect(await getText(page, '#set-locale-link-fr')).toEqual('Français')
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
+    expect(await page.getAttribute('#nuxt-locale-link-fr', 'href')).toEqual('/')
 
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
@@ -67,7 +77,7 @@ describe('strategy: no_prefix', async () => {
      */
 
     // click `fr` lang switch link (`setLocale`)
-    await page.locator('#lang-switcher-with-set-locale a').click()
+    await page.locator('#set-locale-link-fr').click()
     await waitForURL(page, '/')
 
     // `fr` rendering
@@ -75,12 +85,12 @@ describe('strategy: no_prefix', async () => {
     expect(await getText(page, '#link-about')).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('English')
+    expect(await getText(page, '#nuxt-locale-link-en')).toEqual('English')
     expect(await getText(page, '#set-locale-link-en')).toEqual('English')
 
     // page path
     expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
+    expect(await page.getAttribute('#nuxt-locale-link-en', 'href')).toEqual('/')
 
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
@@ -137,5 +147,32 @@ describe('strategy: no_prefix', async () => {
     // one more change page
     await page.locator('#link-home').click()
     expect(await getText(page, '#home-header')).toEqual(`Accueil`)
+  })
+
+  test('render with useHead', async () => {
+    const { page } = await renderPage('/')
+
+    // title tag
+    expect(await getText(page, 'title')).toMatch('Homepage')
+
+    // html tag `lang` and `dir` attributes
+    expect(await page.getAttribute('html', 'lang')).toMatch('en')
+    expect(await page.getAttribute('html', 'dir')).toMatch('auto')
+
+    // rendering link tag and meta tag in head tag
+    await assetLocaleHead(page, '#home-use-locale-head')
+
+    // click `ar` lang switch link
+    await page.locator('#set-locale-link-ar').click()
+
+    // title tag
+    expect(await getText(page, 'title')).toMatch('Homepage (Arabic)')
+
+    // html tag `lang` and `dir` attributes
+    expect(await page.getAttribute('html', 'lang')).toMatch('ar')
+    expect(await page.getAttribute('html', 'dir')).toMatch('rtl')
+
+    // rendering link tag and meta tag in head tag
+    await assetLocaleHead(page, '#home-use-locale-head')
   })
 })
