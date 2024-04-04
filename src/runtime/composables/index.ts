@@ -161,8 +161,9 @@ export function useLocaleHead({
   }
 
   if (import.meta.client) {
+    const i18n = getComposer(common.i18n)
     const stop = watch(
-      () => common.router.currentRoute.value,
+      [() => common.router.currentRoute.value, i18n.locale],
       () => {
         cleanMeta()
         updateMeta()
