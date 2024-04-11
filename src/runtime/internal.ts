@@ -18,7 +18,7 @@ import { initCommonComposableOptions, type CommonComposableOptions } from './uti
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
-import type { CookieRef } from 'nuxt/app'
+import type { CookieRef, NuxtApp } from 'nuxt/app'
 import type { ModulePublicRuntimeConfig } from '../module'
 
 export function formatMessage(message: string) {
@@ -319,7 +319,7 @@ export function detectBrowserLanguage(
   return { locale: '', stat: false, reason: 'not_found_match' }
 }
 
-export function getHost() {
+export function getHost(nuxtApp: NuxtApp) {
   let host: string | undefined
   if (import.meta.client) {
     host = window.location.host
@@ -327,7 +327,9 @@ export function getHost() {
     const header = useRequestHeaders(['x-forwarded-host', 'host'])
 
     let detectedHost: string | undefined
-    if ('x-forwarded-host' in header) {
+    if (nuxtApp?.ssrContext?.event?.context.storeHost) {
+      detectedHost = nuxtApp?.ssrContext?.event?.context.storeHost
+    } else if ('x-forwarded-host' in header) {
       detectedHost = header['x-forwarded-host']
     } else if ('host' in header) {
       detectedHost = header['host']
@@ -341,9 +343,9 @@ export function getHost() {
 export function getLocaleDomain(
   locales: LocaleObject[],
   strategy: string,
-  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
+  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
-  let host = getHost() || ''
+  let host = getHost(useNuxtApp()) || ''
   if (host) {
     __DEBUG__ &&
       console.log(
@@ -360,6 +362,8 @@ export function getLocaleDomain(
           domain = locale.domain.replace(/(http|https):\/\//, '')
         }
         return domain === host
+      } else if (Array.isArray(locale?.domains)) {
+        return locale.domains.includes(host)
       }
       return false
     })
@@ -400,7 +404,9 @@ export function getLocaleDomain(
 
         if (!matchingLocale) {
           // Fall back to default language on this domain - if set
-          matchingLocale = matchingLocales.find(l => l.domainDefault)
+          matchingLocale = matchingLocales.find(l =>
+            Array.isArray(l.defaultForDomains) ? l.defaultForDomains.includes(host) : l.domainDefault
+          )
           __DEBUG__ &&
             console.log(
               `MultiDomainsMultiLocales: matching locale not found - trying to get default for this domain. MatchingLocale is now`,
@@ -422,10 +428,15 @@ export function getLocaleDomain(
 export function getDomainFromLocale(localeCode: Locale): string | undefined {
   const runtimeConfig = useRuntimeConfig()
   const nuxtApp = useNuxtApp()
+  const host = getHost(nuxtApp)
   // lookup the `differentDomain` origin associated with given locale.
   const config = runtimeConfig.public.i18n as { locales?: Record<Locale, { domain?: string }> }
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
-  const domain = config?.locales?.[localeCode]?.domain ?? lang?.domain
+  const domain =
+    config?.locales?.[localeCode]?.domain ||
+    lang?.domain ||
+    config?.locales?.[localeCode]?.domains?.find(v => v === host) ||
+    lang?.domains?.find(v => v === host)
 
   if (domain) {
     if (hasProtocol(domain, { strict: true })) {

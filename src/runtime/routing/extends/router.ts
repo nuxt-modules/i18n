@@ -4,9 +4,11 @@ import { localeCodes } from '#build/i18n.options.mjs'
 
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useRuntimeConfig } from 'nuxt/app'
-
+// _host: string, _configLocales: NonNullable<string[] | LocaleObject[]>
 export function createLocaleFromRouteGetter() {
   const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n
+  // const localeCodes = configLocales.filter(l => l.domains.includes(host)).map(l => l.code)
+  // const defaultLocale = configLocales.find(l => l.defaultForDomains?.includes(host))?.code ?? ''
   const localesPattern = `(${localeCodes.join('|')})`
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
   const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
