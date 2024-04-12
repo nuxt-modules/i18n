@@ -81,9 +81,10 @@ export default defineNuxtPlugin({
       const domainLocales = nuxtContext.$config.public.i18n.configLocales
         .filter(l => l.domains.includes(host))
         .map(l => l.code)
+      const routesNameSeparator = runtimeI18n.routesNameSeparator || '___'
       const router = useRouter()
       router.getRoutes().forEach(route => {
-        const locale = typeof route.name === 'string' && route.name?.slice(-2)
+        const locale = typeof route.name === 'string' && route.name.split(routesNameSeparator)[1]
         if (route.name && locale && !domainLocales.includes(locale)) {
           router.removeRoute(route.name)
         } else if (locale !== defaultLocale) {
