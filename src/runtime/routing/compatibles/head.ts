@@ -3,6 +3,7 @@ import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { isArray, isObject } from '@intlify/shared'
+import { joinURL } from 'ufo'
 
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'
 import type { CommonComposableOptions } from '../../utils'
@@ -72,8 +73,9 @@ export function localeHead(
 }
 
 function getBaseUrl() {
-  const i18n = getComposer(useNuxtApp().$i18n)
-  return unref(i18n.baseUrl)
+  const nuxtApp = useNuxtApp()
+  const i18n = getComposer(nuxtApp.$i18n)
+  return joinURL(unref(i18n.baseUrl), nuxtApp.$config.app.baseURL)
 }
 
 export function getHreflangLinks(
@@ -224,5 +226,5 @@ function hypenToUnderscore(str: string) {
 
 function toAbsoluteUrl(urlOrPath: string, baseUrl: string) {
   if (urlOrPath.match(/^https?:\/\//)) return urlOrPath
-  return baseUrl + urlOrPath
+  return joinURL(baseUrl, urlOrPath)
 }
