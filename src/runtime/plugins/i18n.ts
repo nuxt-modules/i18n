@@ -85,7 +85,8 @@ export default defineNuxtPlugin({
       const router = useRouter()
       router.getRoutes().forEach(route => {
         const locale = (typeof route.name === 'string' && route.name.split(routesNameSeparator)[1]) || undefined
-        if ((route.name && locale && !domainLocales.includes(locale)) || !locale) {
+        if (!locale) return
+        if (route.name && locale && !domainLocales.includes(locale)) {
           router.removeRoute(route.name)
         } else if (locale !== defaultLocale) {
           router.addRoute({
