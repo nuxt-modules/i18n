@@ -91,7 +91,7 @@ export async function switchLocalePathTests() {
   expect(await getText(page, '#switch-locale-path .ja')).toEqual('/ja/about?foo=1&test=2')
 
   await page.goto(url('/ja/about?foo=bär&four=四&foo=bar'))
-  await waitForURL(page, '/ja/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+  await waitForURL(page, '/ja/about?foo=b%C3%A4r&four=%E5%9B%9B&foo=bar')
   expect(await getText(page, '#switch-locale-path .ja')).toEqual('/ja/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
   expect(await getText(page, '#switch-locale-path .en')).toEqual('/en/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
 
@@ -119,7 +119,7 @@ export async function switchLocalePathTests() {
   expect(await getText(page, '#switch-locale-path .en')).toEqual('/en/count/三')
 
   await page.goto(url('/ja/count/三?foo=bär&four=四&foo=bar'))
-  await waitForURL(page, '/ja/count/%E4%B8%89?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+  await waitForURL(page, '/ja/count/%E4%B8%89?foo=b%C3%A4r&four=%E5%9B%9B&foo=bar')
   expect(await getText(page, '#switch-locale-path .ja')).toEqual('/ja/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
   expect(await getText(page, '#switch-locale-path .en')).toEqual('/en/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
 
