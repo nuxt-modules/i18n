@@ -343,7 +343,7 @@ export function getHost(nuxtApp: NuxtApp) {
 export function getLocaleDomain(
   locales: LocaleObject[],
   strategy: string,
-  route: string | Route | RouteLocationNormalized | RouteLocationNormalizedLoaded
+  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
   let host = getHost(useNuxtApp()) || ''
   if (host) {
@@ -430,13 +430,13 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
   const nuxtApp = useNuxtApp()
   const host = getHost(nuxtApp)
   // lookup the `differentDomain` origin associated with given locale.
-  const config = runtimeConfig.public.i18n as { locales?: Record<Locale, { domain?: string }> }
+  const config = runtimeConfig.public.i18n as { locales?: Record<Locale, { domain?: string; domains?: string[] }> }
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
   const domain =
     config?.locales?.[localeCode]?.domain ||
     lang?.domain ||
-    config?.locales?.[localeCode]?.domains?.find(v => v === host) ||
-    lang?.domains?.find(v => v === host)
+    config?.locales?.[localeCode]?.domains?.find((v: string) => v === host) ||
+    lang?.domains?.find((v: string) => v === host)
 
   if (domain) {
     if (hasProtocol(domain, { strict: true })) {
