@@ -191,6 +191,8 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
     }
 
+    // @ts-expect-error doesn't normally have `fullPath`
+    delete localizedRoute.fullPath
     localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, {
       defaultLocale,
       strategy,
