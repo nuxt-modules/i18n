@@ -63,15 +63,20 @@ export default defineNuxtPlugin({
     const nuxtContext = nuxt as unknown as NuxtApp
     const host = getHost(nuxtContext)
     const i18nConfig = nuxtContext.$config.public.i18n
+    const { configLocales } = i18nConfig
+    const hasDomains = configLocales.some((l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.domains))
+    const hasDefaultForDomains = configLocales.some(
+      (l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.defaultForDomains)
+    )
 
     let defaultLocale: string
     if (i18nConfig.defaultLocale) {
       defaultLocale = i18nConfig.defaultLocale
-    } else if (i18nConfig.configLocales.every(l => typeof l !== 'string')) {
+    } else if (hasDefaultForDomains) {
       defaultLocale =
-        i18nConfig.configLocales.find((l): l is LocaleObject => {
+        configLocales.find((l): l is LocaleObject => {
           if (typeof l === 'string') return false
-          return l.defaultForDomains!.includes(host as string)
+          return l.defaultForDomains!.includes(host ?? '')
         })?.code ?? ''
     } else {
       defaultLocale = ''
@@ -94,11 +99,11 @@ export default defineNuxtPlugin({
     const getLocaleFromRoute = createLocaleFromRouteGetter()
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
 
-    if (runtimeI18n.strategy === 'prefix_except_default' && runtimeI18n.differentDomains) {
-      const domainLocales = runtimeI18n.configLocales
+    if (runtimeI18n.strategy === 'prefix_except_default' && runtimeI18n.differentDomains && hasDomains) {
+      const domainLocales = configLocales
         .filter((l): l is LocaleObject => {
-          if (typeof l === 'string' || !l.domains) return false
-          return l.domains.includes(host ?? '')
+          if (typeof l === 'string') return false
+          return l.domains!.includes(host ?? '')
         })
         .map(l => l.code)
       const routesNameSeparator = runtimeI18n.routesNameSeparator || '___'
@@ -213,11 +218,6 @@ export default defineNuxtPlugin({
           composer.setLocale = async (locale: string) => {
             const localeSetup = isInitialLocaleSetup(locale)
             const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
-
-            if (!modified) {
-              notInitialSetup = false
-              return
-            }
 
             if (modified && localeSetup) {
               notInitialSetup = false
@@ -480,9 +480,6 @@ export default defineNuxtPlugin({
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       defineNuxtRouteMiddleware(async (to, from) => {
         __DEBUG__ && console.log('locale-changing middleware', to, from)
-        if (to.name === from.name) {
-          return
-        }
         const locale = detectLocale(
           to,
           getLocaleFromRoute,
