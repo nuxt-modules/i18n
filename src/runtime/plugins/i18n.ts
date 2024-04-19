@@ -75,7 +75,7 @@ export default defineNuxtPlugin({
     } else if (hasDefaultForDomains) {
       defaultLocale =
         configLocales.find((l): l is LocaleObject => {
-          if (typeof l === 'string') return false
+          if (typeof l === 'string' || !Array.isArray(l.defaultForDomains)) return false
           return l.defaultForDomains!.includes(host ?? '')
         })?.code ?? ''
     } else {
@@ -102,7 +102,7 @@ export default defineNuxtPlugin({
     if (runtimeI18n.strategy === 'prefix_except_default' && runtimeI18n.differentDomains && hasDomains) {
       const domainLocales = configLocales
         .filter((l): l is LocaleObject => {
-          if (typeof l === 'string') return false
+          if (typeof l === 'string' || !Array.isArray(l.domains)) return false
           return l.domains!.includes(host ?? '')
         })
         .map(l => l.code)
