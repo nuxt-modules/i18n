@@ -150,7 +150,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     _route = route
   }
 
-  let localizedRoute = assign({} as RouteLocationPathRaw | RouteLocationNamedRaw, _route)
+  let localizedRoute = assign({} as (RouteLocationPathRaw & { params: any }) | RouteLocationNamedRaw, _route)
 
   const isRouteLocationPathRaw = (val: RouteLocationPathRaw | RouteLocationNamedRaw): val is RouteLocationPathRaw =>
     'path' in val && !!val.path && !('name' in val)
@@ -174,6 +174,11 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         hash: resolvedRoute.hash
       } as RouteLocationNamedRaw
 
+      if (defaultLocale !== _locale && strategy === 'prefix_regexp') {
+        // @ts-ignore
+        localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
+      }
+
       // @ts-expect-error
       localizedRoute.state = (resolvedRoute as ResolveV4).state
     } else {
@@ -185,6 +190,11 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       localizedRoute.path = trailingSlash
         ? withTrailingSlash(localizedRoute.path, true)
         : withoutTrailingSlash(localizedRoute.path, true)
+
+      if (defaultLocale !== _locale && strategy === 'prefix_regexp') {
+        // @ts-ignore
+        localizedRoute.params = { ...resolvedRoute.params, ...{ locale: _locale } }
+      }
     }
   } else {
     if (!localizedRoute.name && !('path' in localizedRoute)) {
@@ -197,6 +207,11 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       routesNameSeparator,
       defaultLocaleRouteNameSuffix
     })
+
+    if (defaultLocale !== _locale && strategy === 'prefix_regexp') {
+      // @ts-ignore
+      localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
+    }
   }
 
   try {

@@ -88,6 +88,20 @@ describe('getLocaleRouteName', () => {
     })
   })
 
+  describe('strategy: prefix_regexp', () => {
+    it('should be `route1`', () => {
+      assert.equal(
+        utils.getLocaleRouteName('route1', 'en', {
+          defaultLocale: 'en',
+          strategy: 'prefix_regexp',
+          routesNameSeparator: '___',
+          defaultLocaleRouteNameSuffix: 'default'
+        }),
+        'route1'
+      )
+    })
+  })
+
   describe('irregular', () => {
     describe('route name is null', () => {
       it('should be ` (null)___en___default`', () => {

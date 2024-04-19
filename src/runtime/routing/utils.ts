@@ -104,6 +104,13 @@ export function getLocaleRouteName(
     defaultLocaleRouteNameSuffix
   }: { defaultLocale: string; strategy: Strategies; routesNameSeparator: string; defaultLocaleRouteNameSuffix: string }
 ) {
+  if (strategy === 'prefix_regexp') {
+    let name = getRouteName(routeName).replace(`${routesNameSeparator}locale`, '')
+    if (locale !== defaultLocale) {
+      name += `${routesNameSeparator}locale`
+    }
+    return name
+  }
   let name = getRouteName(routeName) + (strategy === 'no_prefix' ? '' : routesNameSeparator + locale)
   if (locale === defaultLocale && strategy === 'prefix_and_default') {
     name += routesNameSeparator + defaultLocaleRouteNameSuffix
