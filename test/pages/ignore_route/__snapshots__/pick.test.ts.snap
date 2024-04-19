@@ -63,6 +63,82 @@ exports[`Module configuration > nested complex route 1`] = `
 ]
 `;
 
+exports[`Module configuration > nested complex route 2`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "undefined___locale",
+    "path": "/:locale(ja)/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching",
+    "path": "/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching___locale",
+    "path": "/:locale(ja)/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app",
+    "path": "/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app___locale",
+    "path": "/:locale(ja)/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development",
+    "path": "/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development___locale",
+    "path": "/:locale(ja)/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website",
+    "path": "/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website___locale",
+    "path": "/:locale(ja)/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services",
+    "path": "/services",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services___locale",
+    "path": "/:locale()/services",
+  },
+]
+`;
+
 exports[`Module configuration > nested dynamic route 1`] = `
 [
   {
@@ -80,6 +156,23 @@ exports[`Module configuration > nested dynamic route 1`] = `
 ]
 `;
 
+exports[`Module configuration > nested dynamic route 2`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
+    "name": "nested-route",
+    "path": "/:nested/:route",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/[nested]/[route]/index.vue",
+    "name": "nested-route___locale",
+    "path": "/:locale(ja|fr)/:nested/:route",
+  },
+]
+`;
+
 exports[`Module configuration > nested static route 1`] = `
 [
   {
@@ -93,6 +186,23 @@ exports[`Module configuration > nested static route 1`] = `
     "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
     "name": "nested-route___fr",
     "path": "/fr/nested/route",
+  },
+]
+`;
+
+exports[`Module configuration > nested static route 2`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
+    "name": "nested-route",
+    "path": "/nested/route",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/nested/route/index.vue",
+    "name": "nested-route___locale",
+    "path": "/:locale(ja|fr)/nested/route",
   },
 ]
 `;
@@ -144,12 +254,69 @@ exports[`Module configuration > simple 1`] = `
 ]
 `;
 
+exports[`Module configuration > simple 2`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about___locale",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "undefined___locale",
+    "path": "/:locale(fr)/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___locale",
+    "path": "/:locale(ja|fr)",
+  },
+]
+`;
+
 exports[`Page components > dynamic route 1`] = `
 [
   {
     "children": [],
     "name": "articles-name___fr",
     "path": "/fr/articles/:name",
+  },
+]
+`;
+
+exports[`Page components > dynamic route 2`] = `
+[
+  {
+    "children": [],
+    "name": "articles-name",
+    "path": "/articles/:name",
+  },
+  {
+    "children": [],
+    "name": "articles-name___locale",
+    "path": "/:locale(fr)/articles/:name",
   },
 ]
 `;
@@ -163,6 +330,20 @@ exports[`Page components > simple 1`] = `
   {
     "children": [],
     "path": "/ja/about",
+  },
+]
+`;
+
+exports[`Page components > simple 2`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "name": "undefined___locale",
+    "path": "/:locale(fr|ja)/about",
   },
 ]
 `;

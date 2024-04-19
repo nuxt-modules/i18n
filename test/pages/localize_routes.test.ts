@@ -24,17 +24,29 @@ describe('localizeRoutes', function () {
         }
       ]
       const localeCodes = ['en', 'ja']
+
       const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes })
+
+      console.log(555, nuxtOptions, localizedRoutes)
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`
-          })
+      routes.forEach(route => {
+        // Добавляем проверку для дефолтной локали
+        expect(localizedRoutes).to.deep.include({
+          path: route.path,
+          name: route.name
         })
+
+        // Добавляем проверки для не-дефолтных локалей
+        localeCodes
+          .filter(locale => locale !== 'en')
+          .forEach(locale => {
+            expect(localizedRoutes).to.deep.include({
+              path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+              name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`
+            })
+          })
       })
     })
   })
@@ -132,7 +144,7 @@ describe('localizeRoutes', function () {
         routes.forEach(route => {
           expect(localizedRoutes).to.deep.include({
             path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${'__'}${locale}`
+            name: `${route.name}${'__'}locale`
           })
         })
       })

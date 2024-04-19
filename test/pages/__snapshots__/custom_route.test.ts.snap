@@ -95,6 +95,72 @@ exports[`#1649 1`] = `
 ]
 `;
 
+exports[`#1649 2`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/addresses.vue",
+        "name": "account-addresses",
+        "path": "addresses",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/index.vue",
+        "name": "account",
+        "path": "",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/profile.vue",
+        "name": "account-profile",
+        "path": "profile",
+      },
+    ],
+    "file": "/path/to/1649/pages/account.vue",
+    "path": "/account",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/addresses.vue",
+        "name": "account-addresses___locale",
+        "path": "addresses",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/index.vue",
+        "name": "account___locale",
+        "path": "",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/profile.vue",
+        "name": "account-profile___locale",
+        "path": "profile",
+      },
+    ],
+    "file": "/path/to/1649/pages/account.vue",
+    "name": "undefined___locale",
+    "path": "/:locale(ja|fr)/account",
+  },
+  {
+    "children": [],
+    "file": "/path/to/1649/pages/index.vue",
+    "name": "index",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "file": "/path/to/1649/pages/index.vue",
+    "name": "index___locale",
+    "path": "/:locale(ja|fr)",
+  },
+]
+`;
+
 exports[`Module configuration > dynamic parameters 1`] = `
 [
   {
@@ -118,6 +184,23 @@ exports[`Module configuration > dynamic parameters 1`] = `
 ]
 `;
 
+exports[`Module configuration > dynamic parameters 2`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/blog/[date]/[slug].vue",
+    "name": "blog-date-slug",
+    "path": "/blog/:date/:slug",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/blog/[date]/[slug].vue",
+    "name": "blog-date-slug___locale",
+    "path": "/:locale(ja|fr)/blog/:date/:slug",
+  },
+]
+`;
+
 exports[`Module configuration > simple 1`] = `
 [
   {
@@ -134,6 +217,22 @@ exports[`Module configuration > simple 1`] = `
     "children": [],
     "file": "/path/to/nuxt-app/pages/about.vue",
     "path": "/fr/a-propos",
+  },
+]
+`;
+
+exports[`Module configuration > simple 2`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "undefined___locale",
+    "path": "/:locale(ja|fr)/about",
   },
 ]
 `;
@@ -248,6 +347,82 @@ exports[`Module configuration > the part of URL 1`] = `
 ]
 `;
 
+exports[`Module configuration > the part of URL 2`] = `
+[
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "name": "undefined___locale",
+    "path": "/:locale(ja|fr)/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching",
+    "path": "/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/coaching.vue",
+    "name": "services-coaching___locale",
+    "path": "/:locale(ja|fr)/services/coaching",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app",
+    "path": "/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/app.vue",
+    "name": "services-development-app___locale",
+    "path": "/:locale(ja|fr)/services/development/app",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development",
+    "path": "/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/index.vue",
+    "name": "services-development___locale",
+    "path": "/:locale(ja|fr)/services/development",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website",
+    "path": "/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/development/website.vue",
+    "name": "services-development-website___locale",
+    "path": "/:locale(ja|fr)/services/development/website",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services",
+    "path": "/services",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/services/index.vue",
+    "name": "services___locale",
+    "path": "/:locale(ja|fr)/services",
+  },
+]
+`;
+
 exports[`Page components > JavaScript 1`] = `
 [
   {
@@ -261,6 +436,20 @@ exports[`Page components > JavaScript 1`] = `
   {
     "children": [],
     "path": "/fr/a-propos",
+  },
+]
+`;
+
+exports[`Page components > JavaScript 2`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "name": "undefined___locale",
+    "path": "/:locale(ja|fr)/about",
   },
 ]
 `;
@@ -285,6 +474,21 @@ exports[`Page components > dynamic route 1`] = `
 ]
 `;
 
+exports[`Page components > dynamic route 2`] = `
+[
+  {
+    "children": [],
+    "name": "articles-name",
+    "path": "/articles/:name",
+  },
+  {
+    "children": [],
+    "name": "articles-name___locale",
+    "path": "/:locale(ja|fr)/articles/:name",
+  },
+]
+`;
+
 exports[`Page components > simple 1`] = `
 [
   {
@@ -302,6 +506,20 @@ exports[`Page components > simple 1`] = `
 ]
 `;
 
+exports[`Page components > simple 2`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "name": "undefined___locale",
+    "path": "/:locale(ja|fr)/about",
+  },
+]
+`;
+
 exports[`Page components > with definePageMeta 1`] = `
 [
   {
@@ -315,6 +533,20 @@ exports[`Page components > with definePageMeta 1`] = `
   {
     "children": [],
     "path": "/fr/a-propos",
+  },
+]
+`;
+
+exports[`Page components > with definePageMeta 2`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "name": "undefined___locale",
+    "path": "/:locale(ja|fr)/about",
   },
 ]
 `;

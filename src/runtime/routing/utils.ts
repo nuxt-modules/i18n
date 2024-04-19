@@ -3,7 +3,7 @@
 import { isString, isSymbol, isFunction } from '@intlify/shared'
 import { isRef, unref } from '#imports'
 
-import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#build/i18n.options.mjs'
+import type { LocaleObject, BaseUrlResolveHandler } from '#build/i18n.options.mjs'
 import type { Composer, I18n, Locale, VueI18n } from 'vue-i18n'
 
 export const inBrowser = typeof window !== 'undefined'
@@ -97,16 +97,12 @@ export function getRouteName(routeName?: string | symbol | null) {
 export function getLocaleRouteName(
   routeName: symbol | string | null | undefined,
   locale: Locale,
-  {
-    defaultLocale,
-    strategy,
-    routesNameSeparator,
-    defaultLocaleRouteNameSuffix
-  }: { defaultLocale: string; strategy: Strategies; routesNameSeparator: string; defaultLocaleRouteNameSuffix: string }
+  defaultLocale: string,
+  routesNameSeparator: string
 ) {
-  let name = getRouteName(routeName) + (strategy === 'no_prefix' ? '' : routesNameSeparator + locale)
-  if (locale === defaultLocale && strategy === 'prefix_and_default') {
-    name += routesNameSeparator + defaultLocaleRouteNameSuffix
+  let name = getRouteName(routeName).replace(`${routesNameSeparator}locale`, '')
+  if (locale !== defaultLocale) {
+    name += `${routesNameSeparator}locale`
   }
   return name
 }

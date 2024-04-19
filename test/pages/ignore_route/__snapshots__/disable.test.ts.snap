@@ -97,6 +97,35 @@ exports[`Module configuration > simple 1`] = `
 ]
 `;
 
+exports[`Module configuration > simple 2`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/nuxt-app/pages/about/index.vue",
+        "name": "about",
+        "path": "",
+      },
+    ],
+    "file": "/path/to/nuxt-app/pages/about.vue",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "file": "/path/to/nuxt-app/pages/index.vue",
+    "name": "index___locale",
+    "path": "/:locale(ja|fr)",
+  },
+]
+`;
+
 exports[`Page components > basic 1`] = `
 [
   {

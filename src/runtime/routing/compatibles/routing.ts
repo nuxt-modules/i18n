@@ -131,8 +131,7 @@ export function localeLocation(
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
-  const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } =
-    common.runtimeConfig.public.i18n
+  const { defaultLocale, strategy, routesNameSeparator, trailingSlash } = common.runtimeConfig.public.i18n
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw
@@ -150,7 +149,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     _route = route
   }
 
-  let localizedRoute = assign({} as RouteLocationPathRaw | RouteLocationNamedRaw, _route)
+  let localizedRoute = assign({} as (RouteLocationPathRaw & { params: any }) | RouteLocationNamedRaw, _route)
 
   const isRouteLocationPathRaw = (val: RouteLocationPathRaw | RouteLocationNamedRaw): val is RouteLocationPathRaw =>
     'path' in val && !!val.path && !('name' in val)
@@ -162,17 +161,17 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     const resolvedRouteName = getRouteBaseName(common, resolvedRoute)
     if (isString(resolvedRouteName)) {
       localizedRoute = {
-        name: getLocaleRouteName(resolvedRouteName, _locale, {
-          defaultLocale,
-          strategy,
-          routesNameSeparator,
-          defaultLocaleRouteNameSuffix
-        }),
+        name: getLocaleRouteName(resolvedRouteName, _locale, defaultLocale, routesNameSeparator),
         // @ts-ignore
         params: resolvedRoute.params,
         query: resolvedRoute.query,
         hash: resolvedRoute.hash
       } as RouteLocationNamedRaw
+
+      if (defaultLocale !== _locale) {
+        // @ts-ignore
+        localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
+      }
 
       // @ts-expect-error
       localizedRoute.state = (resolvedRoute as ResolveV4).state
@@ -185,18 +184,21 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       localizedRoute.path = trailingSlash
         ? withTrailingSlash(localizedRoute.path, true)
         : withoutTrailingSlash(localizedRoute.path, true)
+
+      if (defaultLocale !== _locale) {
+        // @ts-ignore
+        localizedRoute.params = { ...resolvedRoute.params, ...{ locale: _locale } }
+      }
     }
   } else {
     if (!localizedRoute.name && !('path' in localizedRoute)) {
       localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
     }
 
-    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, {
-      defaultLocale,
-      strategy,
-      routesNameSeparator,
-      defaultLocaleRouteNameSuffix
-    })
+    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, defaultLocale, routesNameSeparator)
+    if (defaultLocale !== _locale) {
+      localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
+    }
   }
 
   try {
