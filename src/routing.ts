@@ -140,6 +140,18 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       return { ...child, ...{ name: child.name + options.routesNameSeparator + 'locale' } }
     })
 
+    for (const locale of componentOptions.locales) {
+      if (componentOptions.paths?.[locale]) {
+        const subRoute = { ...route }
+        subRoute.path = `/:locale(${locale})` + componentOptions.paths?.[locale]
+        subRoute.name = subRoute.name + options.routesNameSeparator + 'locale'
+        const subLocalized: LocalizedRoute = { ...subRoute, locale: locale, parent }
+
+        combinedLocalized.children = combinedLocalized.children ?? []
+        combinedLocalized.children.push(subLocalized)
+      }
+    }
+
     localizedRoutes.push(combinedLocalized)
 
     // remove properties used for localization process

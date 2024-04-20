@@ -27,8 +27,6 @@ describe('localizeRoutes', function () {
 
       const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes })
 
-      console.log(555, nuxtOptions, localizedRoutes)
-
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
       routes.forEach(route => {
@@ -39,14 +37,10 @@ describe('localizeRoutes', function () {
         })
 
         // Добавляем проверки для не-дефолтных локалей
-        localeCodes
-          .filter(locale => locale !== 'en')
-          .forEach(locale => {
-            expect(localizedRoutes).to.deep.include({
-              path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
-              name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`
-            })
-          })
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`
+        })
       })
     })
   })
@@ -76,16 +70,14 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(2)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`,
-            children: children.map(child => ({
-              path: child.path,
-              name: `${child.name}${nuxtOptions.routesNameSeparator}${locale}`
-            }))
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
+          children: children.map(child => ({
+            path: child.path,
+            name: `${child.name}${nuxtOptions.routesNameSeparator}locale`
+          }))
         })
       })
     })
@@ -108,12 +100,10 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}/`,
-            name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}/`,
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`
         })
       })
     })
@@ -140,12 +130,10 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${'__'}locale`
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+          name: `${route.name}${'__'}locale`
         })
       })
     })

@@ -109,7 +109,7 @@ describe('basic usage', async () => {
               "Set(0)": [],
             },
             "meta": {},
-            "name": "nuxt-context-extension___en",
+            "name": "nuxt-context-extension",
             "path": "/nuxt-context-extension",
             "props": {
               "default": false,
@@ -120,7 +120,7 @@ describe('basic usage', async () => {
           },
         ],
         "meta": {},
-        "name": "nuxt-context-extension___en",
+        "name": "nuxt-context-extension",
         "params": {},
         "path": "/nuxt-context-extension",
         "query": {},

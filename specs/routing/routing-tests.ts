@@ -135,7 +135,7 @@ export async function localeLocationTests() {
   expect(JSON.parse(await getText(page, '#locale-location .index'))).include({
     fullPath: '/en',
     path: '/en',
-    name: 'index___en',
+    name: 'index___locale',
     href: '/en'
   })
 

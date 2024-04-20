@@ -34,61 +34,7 @@ exports[`localizeRoutes > basic > should be localized routing 1`] = `
 ]
 `;
 
-exports[`localizeRoutes > basic > should be localized routing 2`] = `
-[
-  {
-    "name": "home",
-    "path": "/",
-  },
-  {
-    "name": "home___locale",
-    "path": "/:locale(en|ja)",
-  },
-  {
-    "name": "about",
-    "path": "/about",
-  },
-  {
-    "name": "about___locale",
-    "path": "/:locale(en|ja)/about",
-  },
-]
-`;
-
 exports[`localizeRoutes > has children > should be localized routing 1`] = `
-[
-  {
-    "children": [
-      {
-        "name": "user-profile",
-        "path": "profile",
-      },
-      {
-        "name": "user-posts",
-        "path": "posts",
-      },
-    ],
-    "name": "user",
-    "path": "/user/:id",
-  },
-  {
-    "children": [
-      {
-        "name": "user-profile___locale",
-        "path": "profile",
-      },
-      {
-        "name": "user-posts___locale",
-        "path": "posts",
-      },
-    ],
-    "name": "user___locale",
-    "path": "/:locale(en|ja)/user/:id",
-  },
-]
-`;
-
-exports[`localizeRoutes > has children > should be localized routing 2`] = `
 [
   {
     "children": [
@@ -128,7 +74,7 @@ exports[`localizeRoutes > route name separator > should be localized routing 1`]
     "path": "/",
   },
   {
-    "name": "home___locale",
+    "name": "home__locale",
     "path": "/:locale(en|ja)",
   },
   {
@@ -136,28 +82,7 @@ exports[`localizeRoutes > route name separator > should be localized routing 1`]
     "path": "/about",
   },
   {
-    "name": "about___locale",
-    "path": "/:locale(en|ja)/about",
-  },
-]
-`;
-
-exports[`localizeRoutes > route name separator > should be localized routing 2`] = `
-[
-  {
-    "name": "home",
-    "path": "/",
-  },
-  {
-    "name": "home___locale",
-    "path": "/:locale(en|ja)",
-  },
-  {
-    "name": "about",
-    "path": "/about",
-  },
-  {
-    "name": "about___locale",
+    "name": "about__locale",
     "path": "/:locale(en|ja)/about",
   },
 ]
@@ -260,27 +185,6 @@ exports[`localizeRoutes > strategy: "prefix_except_default" > should be localize
 `;
 
 exports[`localizeRoutes > trailing slash > should be localized routing 1`] = `
-[
-  {
-    "name": "home",
-    "path": "/",
-  },
-  {
-    "name": "home___locale",
-    "path": "/:locale(en|ja)/",
-  },
-  {
-    "name": "about",
-    "path": "/about",
-  },
-  {
-    "name": "about___locale",
-    "path": "/:locale(en|ja)/about/",
-  },
-]
-`;
-
-exports[`localizeRoutes > trailing slash > should be localized routing 2`] = `
 [
   {
     "name": "home",
