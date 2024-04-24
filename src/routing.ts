@@ -124,12 +124,12 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     const localeRegex = nonDefaultLocales.join('|')
 
     // Добавление роута для дефолтной локали
-    if (options.strategy !== 'prefix' || options.includeUnprefixedFallback) {
+    if ((options.strategy !== 'prefix' || options.includeUnprefixedFallback) && !parentLocalized) {
       const defaultLocalized: LocalizedRoute = { ...route, locale: defaultLocale, parent }
       localizedRoutes.push(defaultLocalized)
     }
 
-    if (options.strategy === 'prefix') {
+    if (options.strategy === 'prefix' && !parentLocalized) {
       const redirectLocalized: LocalizedRoute = {
         ...route,
         locale: `/`,
@@ -143,19 +143,24 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     // Добавление объединенного роута для всех не дефолтных локалей
     const combinedLocalized: LocalizedRoute = { ...route, locale: `/:locale(${localeRegex})`, parent }
     let routePath = combinedLocalized.path
-    if (parentLocalized != null) {
+    if (parentLocalized != null && parentLocalized.path.startsWith('/:locale')) {
       routePath = routePath.replace(parentLocalized.path + '/', '')
     }
     if (!routePath.startsWith('/')) {
       routePath = '/' + routePath
     }
-    combinedLocalized.path = `/:locale(${localeRegex})` + routePath
-    if (!parentLocalized) {
-      combinedLocalized.name = combinedLocalized.name + options.routesNameSeparator + 'locale'
+    if (parentLocalized != null) {
+      combinedLocalized.path = parentLocalized.path + routePath
+    } else {
+      combinedLocalized.path = `/:locale(${localeRegex})` + routePath
+    }
+
+    if (combinedLocalized.name) {
+      combinedLocalized.name = combinedLocalized.name.replace(`${options.routesNameSeparator}locale`, '')
+      combinedLocalized.name += options.routesNameSeparator + 'locale'
     }
 
     combinedLocalized.path &&= adjustRoutePathForTrailingSlash(combinedLocalized, options.trailingSlash)
-    combinedLocalized.path = componentOptions.paths?.[`/:locale(${localeRegex})`] ?? combinedLocalized.path
 
     combinedLocalized.children &&= combinedLocalized.children.flatMap(child =>
       localizeRoute(child, { locales: [...nonDefaultLocales], parent: route, parentLocalized: combinedLocalized })
@@ -165,10 +170,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       if (componentOptions.paths?.[locale]) {
         const subLocalized: LocalizedRoute = { ...route, locale: locale, parent }
 
-        let prefix = ``
-        if (!parentLocalized) {
-          prefix = `/:locale(${locale})`
-        }
+        let prefix = `/:locale(${locale})`
         if (options.strategy !== 'prefix' && locale === defaultLocale) {
           prefix = ''
           subLocalized.name = route.name + options.routesNameSeparator + locale

@@ -41,7 +41,7 @@ import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } f
 import { generateTemplateNuxtI18nOptions } from './template'
 
 import type { HookResult } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
+import type { CustomRoutePages, NuxtI18nOptions } from './types'
 
 export * from './types'
 
@@ -153,6 +153,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       differentDomains: options.differentDomains,
       trailingSlash: options.trailingSlash,
       configLocales: options.locales,
+      customPages: options.pages,
       locales: options.locales.reduce(
         (obj, locale) => {
           if (typeof locale === 'string') {
@@ -452,6 +453,12 @@ export interface ModulePublicRuntimeConfig {
      * @internal
      */
     trailingSlash: Required<NuxtI18nOptions>['trailingSlash']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    customPages: CustomRoutePages
   }
 }
 export interface ModuleHooks {
