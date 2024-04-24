@@ -100,7 +100,9 @@ export function getLocaleRouteName(
   defaultLocale: string,
   routesNameSeparator: string
 ) {
-  let name = getRouteName(routeName).replace(`${routesNameSeparator}locale`, '')
+  let name = getRouteName(routeName)
+    .replace(`${routesNameSeparator}${locale}`, '')
+    .replace(`${routesNameSeparator}locale`, '')
   if (locale !== defaultLocale) {
     name += `${routesNameSeparator}locale`
   }

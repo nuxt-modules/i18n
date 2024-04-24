@@ -4,7 +4,7 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
-    installModule('@nuxtjs/i18n', {
+    installModule('../../../dist', {
       langDir: resolve('./locales'),
       vueI18n: resolve('./i18n.config.ts'),
       locales: [

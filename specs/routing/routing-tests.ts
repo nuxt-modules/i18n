@@ -142,35 +142,35 @@ export async function localeLocationTests() {
   expect(JSON.parse(await getText(page, '#locale-location .index-name-ja'))).include({
     fullPath: '/ja',
     path: '/ja',
-    name: 'index___ja',
+    name: 'index___locale',
     href: '/ja'
   })
 
   expect(JSON.parse(await getText(page, '#locale-location .about-name'))).include({
     fullPath: '/en/about',
     path: '/en/about',
-    name: 'about___en',
+    name: 'about___locale',
     href: '/en/about'
   })
 
   expect(JSON.parse(await getText(page, '#locale-location .about-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
-    name: 'about___ja',
+    name: 'about___locale',
     href: '/ja/about'
   })
 
   expect(JSON.parse(await getText(page, '#locale-location .about-name-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
-    name: 'about___ja',
+    name: 'about___locale',
     href: '/ja/about'
   })
 
   expect(JSON.parse(await getText(page, '#locale-location .path-match-ja'))).include({
     fullPath: '/ja/:pathMatch(.*)*',
     path: '/ja/:pathMatch(.*)*',
-    name: 'pathMatch___ja',
+    name: 'pathMatch___locale',
     href: '/ja/:pathMatch(.*)*'
   })
 
@@ -178,14 +178,14 @@ export async function localeLocationTests() {
   expect(JSON.parse(await getText(page, '#locale-location .path-match-name'))).include({
     fullPath: '/en',
     path: '/en',
-    name: 'pathMatch___en',
+    name: 'pathMatch___locale',
     href: '/en'
   })
 
   expect(JSON.parse(await getText(page, '#locale-location .path-match-name-ja'))).include({
     fullPath: '/ja',
     path: '/ja',
-    name: 'pathMatch___ja',
+    name: 'pathMatch___locale',
     href: '/ja'
   })
 
@@ -193,7 +193,7 @@ export async function localeLocationTests() {
   expect(JSON.parse(await getText(page, '#locale-location .about-object-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
-    name: 'about___ja',
+    name: 'about___locale',
     href: '/ja/about'
   })
 
@@ -201,7 +201,7 @@ export async function localeLocationTests() {
   expect(JSON.parse(await getText(page, '#locale-location .undefined-path-ja'))).include({
     fullPath: '/ja/vue-i18n',
     path: '/ja/vue-i18n',
-    name: 'pathMatch___ja',
+    name: 'pathMatch___locale',
     href: '/ja/vue-i18n'
   })
 
@@ -215,42 +215,42 @@ export async function localeRouteTests() {
   expect(JSON.parse(await getText(page, '#locale-route .index'))).include({
     fullPath: '/en',
     path: '/en',
-    name: 'index___en',
+    name: 'index___locale',
     href: '/en'
   })
 
   expect(JSON.parse(await getText(page, '#locale-route .index-name-ja'))).include({
     fullPath: '/ja',
     path: '/ja',
-    name: 'index___ja',
+    name: 'index___locale',
     href: '/ja'
   })
 
   expect(JSON.parse(await getText(page, '#locale-route .about-name'))).include({
     fullPath: '/en/about',
     path: '/en/about',
-    name: 'about___en',
+    name: 'about___locale',
     href: '/en/about'
   })
 
   expect(JSON.parse(await getText(page, '#locale-route .about-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
-    name: 'about___ja',
+    name: 'about___locale',
     href: '/ja/about'
   })
 
   expect(JSON.parse(await getText(page, '#locale-route .about-name-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
-    name: 'about___ja',
+    name: 'about___locale',
     href: '/ja/about'
   })
 
   expect(JSON.parse(await getText(page, '#locale-route .path-match-ja'))).include({
     fullPath: '/ja/:pathMatch(.*)*',
     path: '/ja/:pathMatch(.*)*',
-    name: 'pathMatch___ja',
+    name: 'pathMatch___locale',
     href: '/ja/:pathMatch(.*)*'
   })
 
@@ -258,14 +258,14 @@ export async function localeRouteTests() {
   expect(JSON.parse(await getText(page, '#locale-route .path-match-name'))).include({
     fullPath: '/en',
     path: '/en',
-    name: 'pathMatch___en',
+    name: 'pathMatch___locale',
     href: '/en'
   })
 
   expect(JSON.parse(await getText(page, '#locale-route .path-match-name-ja'))).include({
     fullPath: '/ja',
     path: '/ja',
-    name: 'pathMatch___ja',
+    name: 'pathMatch___locale',
     href: '/ja'
   })
 
@@ -273,7 +273,7 @@ export async function localeRouteTests() {
   expect(JSON.parse(await getText(page, '#locale-route .about-object-ja'))).include({
     fullPath: '/ja/about',
     path: '/ja/about',
-    name: 'about___ja',
+    name: 'about___locale',
     href: '/ja/about'
   })
 
@@ -281,7 +281,7 @@ export async function localeRouteTests() {
   expect(JSON.parse(await getText(page, '#locale-route .undefined-path-ja'))).include({
     fullPath: '/ja/vue-i18n',
     path: '/ja/vue-i18n',
-    name: 'pathMatch___ja',
+    name: 'pathMatch___locale',
     href: '/ja/vue-i18n'
   })
 

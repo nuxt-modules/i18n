@@ -79,41 +79,6 @@ exports[`Module configuration > simple 1`] = `
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___en",
-    "path": "/",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___ja",
-    "path": "/ja",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___fr",
-    "path": "/fr",
-  },
-]
-`;
-
-exports[`Module configuration > simple 2`] = `
-[
-  {
-    "children": [
-      {
-        "children": [],
-        "file": "/path/to/nuxt-app/pages/about/index.vue",
-        "name": "about",
-        "path": "",
-      },
-    ],
-    "file": "/path/to/nuxt-app/pages/about.vue",
-    "path": "/about",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
     "name": "index",
     "path": "/",
   },

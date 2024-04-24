@@ -20,11 +20,11 @@ export declare interface ComputedRouteOptions {
 }
 
 export function prefixLocalizedRoute(
+  isDefaultLocale: boolean,
   localizeOptions: PrefixLocalizedRouteOptions,
   options: LocalizeRoutesParams,
   extra = false
 ): boolean {
-  const isDefaultLocale = localizeOptions.locale === (localizeOptions.defaultLocale ?? '')
   const isChildWithRelativePath = localizeOptions.parent != null && !localizeOptions.path.startsWith('/')
 
   // no need to add prefix if child's path is relative
@@ -92,7 +92,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     defaultLocales = defaultLocales.concat(domainDefaults)
   }
 
-  function localizeRoute(route: NuxtPage, { locales = [], parent }: LocalizeRouteParams): NuxtPage[] {
+  function localizeRoute(route: NuxtPage, { locales = [], parent, parentLocalized }: LocalizeRouteParams): NuxtPage[] {
     // skip route localization
     if (route.redirect && !route.file) {
       return [route]
@@ -116,6 +116,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     const defaultLocale = defaultLocales[0]
 
     let nonDefaultLocales = componentOptions.locales
+
     if (options.strategy !== 'prefix') {
       nonDefaultLocales = componentOptions.locales.filter(l => l !== defaultLocale)
     }
@@ -123,32 +124,68 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     const localeRegex = nonDefaultLocales.join('|')
 
     // Добавление роута для дефолтной локали
-    if (options.strategy !== 'prefix') {
+    if (options.strategy !== 'prefix' || options.includeUnprefixedFallback) {
       const defaultLocalized: LocalizedRoute = { ...route, locale: defaultLocale, parent }
       localizedRoutes.push(defaultLocalized)
     }
 
+    if (options.strategy === 'prefix') {
+      const redirectLocalized: LocalizedRoute = {
+        ...route,
+        locale: `/`,
+        name: 'index',
+        redirect: `/${defaultLocale}`,
+        parent
+      }
+      localizedRoutes.push(redirectLocalized)
+    }
+
     // Добавление объединенного роута для всех не дефолтных локалей
     const combinedLocalized: LocalizedRoute = { ...route, locale: `/:locale(${localeRegex})`, parent }
-    combinedLocalized.path = `/:locale(${localeRegex})` + combinedLocalized.path
-    combinedLocalized.name = combinedLocalized.name + options.routesNameSeparator + 'locale'
+    let routePath = combinedLocalized.path
+    if (parentLocalized != null) {
+      routePath = routePath.replace(parentLocalized.path + '/', '')
+    }
+    if (!routePath.startsWith('/')) {
+      routePath = '/' + routePath
+    }
+    combinedLocalized.path = `/:locale(${localeRegex})` + routePath
+    if (!parentLocalized) {
+      combinedLocalized.name = combinedLocalized.name + options.routesNameSeparator + 'locale'
+    }
 
     combinedLocalized.path &&= adjustRoutePathForTrailingSlash(combinedLocalized, options.trailingSlash)
     combinedLocalized.path = componentOptions.paths?.[`/:locale(${localeRegex})`] ?? combinedLocalized.path
 
-    combinedLocalized.children &&= combinedLocalized.children.flatMap(child => {
-      return { ...child, ...{ name: child.name + options.routesNameSeparator + 'locale' } }
-    })
+    combinedLocalized.children &&= combinedLocalized.children.flatMap(child =>
+      localizeRoute(child, { locales: [...nonDefaultLocales], parent: route, parentLocalized: combinedLocalized })
+    )
 
     for (const locale of componentOptions.locales) {
       if (componentOptions.paths?.[locale]) {
-        const subRoute = { ...route }
-        subRoute.path = `/:locale(${locale})` + componentOptions.paths?.[locale]
-        subRoute.name = subRoute.name + options.routesNameSeparator + 'locale'
-        const subLocalized: LocalizedRoute = { ...subRoute, locale: locale, parent }
+        const subLocalized: LocalizedRoute = { ...route, locale: locale, parent }
 
-        combinedLocalized.children = combinedLocalized.children ?? []
-        combinedLocalized.children.push(subLocalized)
+        let prefix = ``
+        if (!parentLocalized) {
+          prefix = `/:locale(${locale})`
+        }
+        if (options.strategy !== 'prefix' && locale === defaultLocale) {
+          prefix = ''
+          subLocalized.name = route.name + options.routesNameSeparator + locale
+        } else {
+          subLocalized.name = route.name + options.routesNameSeparator + 'locale' + options.routesNameSeparator + locale
+        }
+        subLocalized.path = prefix + componentOptions.paths[locale]
+
+        // subLocalized.children &&= subLocalized.children.flatMap(child => {
+        //   return { ...child, ...{ name: child.name + options.routesNameSeparator + 'locale' + options.routesNameSeparator + locale } }
+        // })
+
+        combinedLocalized.children &&= combinedLocalized.children.flatMap(child =>
+          localizeRoute(child, { locales: [locale], parent: route, parentLocalized: subLocalized })
+        )
+
+        localizedRoutes.push(subLocalized)
       }
     }
 
