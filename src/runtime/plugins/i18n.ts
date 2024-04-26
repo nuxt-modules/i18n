@@ -51,6 +51,7 @@ import type {
   LocaleHeadFunction,
   LocalePathFunction,
   LocaleRouteFunction,
+  RouteBaseNameFunction,
   SwitchLocalePathFunction
 } from '../composables'
 
@@ -539,7 +540,7 @@ declare module '#app' {
      *
      * @returns The route base name. if cannot get, `undefined` is returned.
      */
-    $getRouteBaseName: (...args: Parameters<typeof getRouteBaseName>) => ReturnType<typeof getRouteBaseName>
+    $getRouteBaseName: (...args: Parameters<RouteBaseNameFunction>) => ReturnType<typeof getRouteBaseName>
     /**
      * Returns localized path for passed in route.
      *
