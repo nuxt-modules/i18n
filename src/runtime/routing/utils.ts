@@ -98,12 +98,13 @@ export function getLocaleRouteName(
   routeName: symbol | string | null | undefined,
   locale: Locale,
   defaultLocale: string,
-  routesNameSeparator: string
+  routesNameSeparator: string,
+  strategy: string
 ) {
   let name = getRouteName(routeName)
     .replace(`${routesNameSeparator}${locale}`, '')
     .replace(`${routesNameSeparator}locale`, '')
-  if (locale !== defaultLocale) {
+  if (locale !== defaultLocale && strategy !== 'no_prefix') {
     name += `${routesNameSeparator}locale`
   }
   return name

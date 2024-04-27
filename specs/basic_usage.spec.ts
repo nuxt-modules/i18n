@@ -108,7 +108,9 @@ describe('basic usage', async () => {
             "leaveGuards": {
               "Set(0)": [],
             },
-            "meta": {},
+            "meta": {
+              "locale": true,
+            },
             "name": "nuxt-context-extension",
             "path": "/nuxt-context-extension",
             "props": {
@@ -119,7 +121,9 @@ describe('basic usage', async () => {
             },
           },
         ],
-        "meta": {},
+        "meta": {
+          "locale": true,
+        },
         "name": "nuxt-context-extension",
         "params": {},
         "path": "/nuxt-context-extension",

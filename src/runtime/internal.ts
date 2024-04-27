@@ -319,11 +319,15 @@ export function detectBrowserLanguage(
   return { locale: '', stat: false, reason: 'not_found_match' }
 }
 
-export function getHost() {
-  let host: string | undefined
+export function getHostName() {
+  let hostName: string | undefined
+
+  // Проверяем, выполняется ли код в клиентской части
   if (import.meta.client) {
-    host = window.location.host
-  } else if (import.meta.server) {
+    hostName = window.location.hostname // Получаем hostname без порта
+  }
+  // Проверяем, выполняется ли код в серверной части
+  else if (import.meta.server) {
     const header = useRequestHeaders(['x-forwarded-host', 'host'])
 
     let detectedHost: string | undefined
@@ -333,9 +337,14 @@ export function getHost() {
       detectedHost = header['host']
     }
 
-    host = isArray(detectedHost) ? detectedHost[0] : detectedHost
+    // Если значение в массиве, берём первый элемент, иначе используем как есть
+    detectedHost = isArray(detectedHost) ? detectedHost[0] : detectedHost
+
+    // Если detectedHost содержит порт, извлекаем только часть до двоеточия
+    hostName = detectedHost ? detectedHost.split(':')[0] : undefined
   }
-  return host
+
+  return hostName
 }
 
 export function getLocaleDomain(
@@ -343,7 +352,7 @@ export function getLocaleDomain(
   strategy: string,
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
-  let host = getHost() || ''
+  let host = getHostName() || ''
   if (host) {
     __DEBUG__ &&
       console.log(

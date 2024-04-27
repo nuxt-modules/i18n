@@ -68,7 +68,7 @@ export default defineNuxtPlugin({
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
 
-    const getLocaleFromRoute = createLocaleFromRouteGetter()
+    const getLocaleFromRoute = createLocaleFromRouteGetter(runtimeI18n.defaultLocale)
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
 
     const localeCookie = getI18nCookie()
@@ -172,13 +172,38 @@ export default defineNuxtPlugin({
               notInitialSetup = false
             }
 
+            const subRoute = {
+              name: route.name,
+              params: route.params,
+              meta: route.meta,
+              matched: route.matched,
+              path: route.path,
+              fullPath: route.fullPath,
+              hash: route.hash,
+              query: route.query,
+              redirectedFrom: route.redirectedFrom
+            }
+
+            const oldLocale = getLocaleFromRoute(subRoute)
+
+            if (
+              subRoute.name &&
+              (runtimeI18n.defaultLocale !== locale || runtimeI18n.strategy === 'prefix')
+              // || (getLocaleFromRoute(route) && runtimeI18n.strategy === 'prefix_and_default')
+            ) {
+              const newName = subRoute.name.toString().replace(runtimeI18n.routesNameSeparator + 'locale', '')
+              subRoute.name = newName + runtimeI18n.routesNameSeparator + 'locale'
+              subRoute.params = { ...subRoute.params, ...{ locale: locale } }
+            }
+
             const redirectPath = await nuxtContext.runWithContext(() =>
               detectRedirect({
-                route: { to: route },
+                route: { to: subRoute },
                 targetLocale: locale,
-                routeLocaleGetter: getLocaleFromRoute
+                oldLocale: oldLocale
               })
             )
+
             __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
 
             await nuxtContext.runWithContext(
@@ -456,11 +481,35 @@ export default defineNuxtPlugin({
           notInitialSetup = false
         }
 
+        const subRoute = {
+          name: to.name,
+          params: to.params,
+          meta: to.meta,
+          matched: to.matched,
+          path: to.path,
+          fullPath: to.fullPath,
+          hash: to.hash,
+          query: to.query,
+          redirectedFrom: to.redirectedFrom
+        }
+
+        const oldLocale = getLocaleFromRoute(subRoute)
+
+        if (
+          subRoute.name &&
+          (runtimeI18n.defaultLocale !== locale || runtimeI18n.strategy === 'prefix')
+          // || (getLocaleFromRoute(route) && runtimeI18n.strategy === 'prefix_and_default')
+        ) {
+          const newName = subRoute.name.toString().replace(runtimeI18n.routesNameSeparator + 'locale', '')
+          subRoute.name = newName + runtimeI18n.routesNameSeparator + 'locale'
+          subRoute.params = { ...subRoute.params, ...{ locale: locale } }
+        }
+
         const redirectPath = await nuxtContext.runWithContext(() =>
           detectRedirect({
-            route: { to, from },
+            route: { to: subRoute, from },
             targetLocale: locale,
-            routeLocaleGetter: runtimeI18n.strategy === 'no_prefix' ? () => locale : getLocaleFromRoute,
+            oldLocale: runtimeI18n.strategy === 'no_prefix' ? locale : oldLocale,
             calledWithRouting: true
           })
         )

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isString, assign } from '@intlify/shared'
 import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { DEFAULT_DYNAMIC_PARAMS_KEY, normalizedLocales } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
 import { resolve, routeToObject } from './utils'
@@ -47,6 +47,7 @@ export const DefaultPrefixable = prefixable
  * @remarks
  * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
 
+ * @param common
  * @param givenRoute - A route.
  *
  * @returns The route base name. if cannot get, `undefined` is returned.
@@ -141,7 +142,17 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
   if (!_locale || _locale === 'undefined') {
     return null
   }
-  const { defaultLocale, strategy, routesNameSeparator, trailingSlash, customPages } = common.runtimeConfig.public.i18n
+  const { strategy, routesNameSeparator, trailingSlash, customPages } = common.runtimeConfig.public.i18n
+  let { defaultLocale } = common.runtimeConfig.public.i18n
+
+  const lang = [...normalizedLocales].find(locale => locale.code === _locale)
+  if (lang?.domain) {
+    const defaultCode = lang?.code
+    if (defaultCode && !!locale && strategy !== 'prefix') {
+      defaultLocale = defaultCode.toString()
+    }
+  }
+
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw
@@ -173,14 +184,14 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     const resolvedRouteName = getRouteBaseName(common, resolvedRoute)
     if (isString(resolvedRouteName)) {
       localizedRoute = {
-        name: getLocaleRouteName(resolvedRouteName, _locale, defaultLocale, routesNameSeparator),
+        name: getLocaleRouteName(resolvedRouteName, _locale, defaultLocale, routesNameSeparator, strategy),
         // @ts-ignore
         params: resolvedRoute.params,
         query: resolvedRoute.query,
         hash: resolvedRoute.hash
       } as RouteLocationNamedRaw
 
-      if (defaultLocale !== _locale && strategy !== 'prefix') {
+      if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
         // @ts-ignore
         localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
       }
@@ -197,7 +208,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         ? withTrailingSlash(localizedRoute.path, true)
         : withoutTrailingSlash(localizedRoute.path, true)
 
-      if (defaultLocale !== _locale) {
+      if (defaultLocale !== _locale && strategy !== 'no_prefix') {
         // @ts-ignore
         localizedRoute.params = { ...resolvedRoute.params, ...{ locale: _locale } }
       }
@@ -207,8 +218,8 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
     }
 
-    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, defaultLocale, routesNameSeparator)
-    if (defaultLocale !== _locale) {
+    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, defaultLocale, routesNameSeparator, strategy)
+    if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
       localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
     }
   }
@@ -224,7 +235,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         }
       )
 
-      if (defaultLocale !== _locale && strategy !== 'prefix') {
+      if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
         subLocalizedRoute.params = { ...subLocalizedRoute.params, ...{ locale: _locale } }
       }
 
@@ -237,12 +248,30 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
   } catch (e) {}
 
   try {
-    const resolvedRoute = router.resolve(localizedRoute)
+    let resolvedRoute = router.resolve(localizedRoute)
     if (resolvedRoute.path) {
+      let checker = false
+      for (const i in resolvedRoute.matched) {
+        if (
+          resolvedRoute.matched[i].meta &&
+          resolvedRoute.matched[i].meta.locale &&
+          checkLocale(resolvedRoute.path, resolvedRoute.matched[i].path)
+        ) {
+          checker = true
+        }
+      }
+      if (!checker && localizedRoute.name) {
+        localizedRoute.name = localizedRoute.name.toString().replace(`${routesNameSeparator}locale`, '')
+        resolvedRoute = router.resolve(localizedRoute)
+      }
+
       const parts = resolvedRoute.path.split('/')
       const routePath = parts.slice(2).join('/')
 
-      const result: string | undefined = findValueByPath([routePath, _locale], customPages)
+      const result = findValueByPath([routePath, _locale], customPages)
+      if (result === null || result === false) {
+        return null
+      }
       if (result && _locale) {
         const localizedRoute = router.resolve({ path: '/' + _locale + result })
         // @ts-ignore
@@ -250,7 +279,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         localizedRoute.query = (_route.query ?? {}) as LocationQuery
         localizedRoute.hash = _route.hash ?? ''
 
-        if (defaultLocale !== _locale && strategy !== 'prefix') {
+        if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
           localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
         }
 
@@ -271,16 +300,28 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
   }
 }
 
-function findValueByPath(pathArray: string[], pagesObject: CustomRoutePages): string | undefined {
+function checkLocale(path: string, pattern: string) {
+  const localePatternMatch = pattern.match(/:locale\(([^)]+)\)/)
+  if (!localePatternMatch) {
+    return true
+  }
+
+  const allowedLocales = localePatternMatch[1].split('|')
+
+  const localeRegex = new RegExp('^/' + allowedLocales.join('|') + '(?:/|$)')
+
+  return localeRegex.test(path)
+}
+
+function findValueByPath(pathArray: string[], pagesObject: CustomRoutePages): string | undefined | null | false {
   let currentObject: any = pagesObject
   for (const key of pathArray) {
     if (currentObject[key] === undefined) {
-      return undefined // Если ключ не найден, возвращаем undefined
+      return undefined
     }
-    currentObject = currentObject[key] // Переход к следующему уровню вложенности
+    currentObject = currentObject[key]
   }
-  // Проверяем, является ли найденное значение строкой
-  return typeof currentObject === 'string' ? currentObject : undefined
+  return currentObject
 }
 
 export const DefaultSwitchLocalePathIntercepter: SwitchLocalePathIntercepter = (path: string) => path

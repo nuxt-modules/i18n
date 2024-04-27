@@ -88,7 +88,7 @@ test('pass `<NuxtLink> to props', async () => {
     `http://nuxt-app.localhost`
   )
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-no a').getAttribute('href')).toEqual(
-    `http://nuxt-app.localhost/no`
+    `http://nuxt-app.localhost` // fix undefined locale
   )
   expect(dom.querySelector('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
     `http://fr.nuxt-app.localhost`

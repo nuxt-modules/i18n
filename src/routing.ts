@@ -84,7 +84,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     return routes
   }
 
-  let defaultLocales = [options.defaultLocale ?? '']
+  let defaultLocales = options.defaultLocale ? [options.defaultLocale] : []
   if (options.differentDomains) {
     const domainDefaults = options.locales
       .filter(locale => (isObject(locale) ? locale.domainDefault : false))
@@ -112,29 +112,38 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       ...routeOptions
     }
 
+    route.meta = { ...route.meta, ...{ locale: true } }
+
     const localizedRoutes: (LocalizedRoute | NuxtPage)[] = []
     const defaultLocale = defaultLocales[0]
 
     let nonDefaultLocales = componentOptions.locales
 
-    if (options.strategy !== 'prefix') {
+    if (options.strategy !== 'prefix' && options.strategy !== 'prefix_and_default') {
       nonDefaultLocales = componentOptions.locales.filter(l => l !== defaultLocale)
     }
 
-    const localeRegex = nonDefaultLocales.join('|')
+    let localeRegex = nonDefaultLocales.join('|')
 
     // Добавление роута для дефолтной локали
     if ((options.strategy !== 'prefix' || options.includeUnprefixedFallback) && !parentLocalized) {
       const defaultLocalized: LocalizedRoute = { ...route, locale: defaultLocale, parent }
+      defaultLocalized.meta = { ...defaultLocalized.meta, ...{ locale: true } }
       localizedRoutes.push(defaultLocalized)
     }
 
-    if (options.strategy === 'prefix' && !parentLocalized) {
+    let detectBrowserLanguage = false
+    if (options.detectBrowserLanguage !== false) {
+      detectBrowserLanguage = !!options.detectBrowserLanguage?.useCookie
+    }
+
+    if (options.strategy === 'prefix' && !parentLocalized && !detectBrowserLanguage) {
       const redirectLocalized: LocalizedRoute = {
         ...route,
         locale: `/`,
         name: 'index',
         redirect: `/${defaultLocale}`,
+        meta: { ...route.meta, ...{ locale: true } },
         parent
       }
       localizedRoutes.push(redirectLocalized)
@@ -144,21 +153,22 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     const combinedLocalized: LocalizedRoute = { ...route, locale: `/:locale(${localeRegex})`, parent }
     let routePath = combinedLocalized.path
     if (parentLocalized != null && parentLocalized.path.startsWith('/:locale')) {
-      routePath = routePath.replace(parentLocalized.path + '/', '')
+      routePath = routePath.replace(`${parentLocalized.path}/`, '')
     }
     if (!routePath.startsWith('/')) {
-      routePath = '/' + routePath
+      routePath = `/${routePath}`
     }
     if (parentLocalized != null) {
-      combinedLocalized.path = parentLocalized.path + routePath
+      combinedLocalized.path = `${parentLocalized.path}${routePath}`
     } else {
-      combinedLocalized.path = `/:locale(${localeRegex})` + routePath
+      combinedLocalized.path = `/:locale(${localeRegex})${routePath}`
     }
 
     if (combinedLocalized.name) {
       combinedLocalized.name = combinedLocalized.name.replace(`${options.routesNameSeparator}locale`, '')
-      combinedLocalized.name += options.routesNameSeparator + 'locale'
+      combinedLocalized.name += `${options.routesNameSeparator}locale`
     }
+    combinedLocalized.meta = { ...combinedLocalized.meta, ...{ locale: true } }
 
     combinedLocalized.path &&= adjustRoutePathForTrailingSlash(combinedLocalized, options.trailingSlash)
 
@@ -167,21 +177,26 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     )
 
     for (const locale of componentOptions.locales) {
-      if (componentOptions.paths?.[locale]) {
+      if (componentOptions.paths?.[locale] !== undefined) {
+        if (!componentOptions.paths?.[locale]) {
+          nonDefaultLocales = nonDefaultLocales.filter(l => l !== locale)
+          localeRegex = nonDefaultLocales.join('|')
+          if (!parentLocalized) {
+            combinedLocalized.path = `/:locale(${localeRegex})${routePath}`
+          }
+          continue
+        }
         const subLocalized: LocalizedRoute = { ...route, locale: locale, parent }
 
         let prefix = `/:locale(${locale})`
         if (options.strategy !== 'prefix' && locale === defaultLocale) {
           prefix = ''
-          subLocalized.name = route.name + options.routesNameSeparator + locale
+          subLocalized.name = `${route.name}${options.routesNameSeparator}${locale}`
         } else {
-          subLocalized.name = route.name + options.routesNameSeparator + 'locale' + options.routesNameSeparator + locale
+          subLocalized.name = `${route.name}${options.routesNameSeparator}locale${options.routesNameSeparator}${locale}`
         }
-        subLocalized.path = prefix + componentOptions.paths[locale]
-
-        // subLocalized.children &&= subLocalized.children.flatMap(child => {
-        //   return { ...child, ...{ name: child.name + options.routesNameSeparator + 'locale' + options.routesNameSeparator + locale } }
-        // })
+        subLocalized.path = `${prefix}${componentOptions.paths[locale]}`
+        subLocalized.meta = { ...subLocalized.meta, ...{ locale: true } }
 
         combinedLocalized.children &&= combinedLocalized.children.flatMap(child =>
           localizeRoute(child, { locales: [locale], parent: route, parentLocalized: subLocalized })
@@ -191,7 +206,9 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       }
     }
 
-    localizedRoutes.push(combinedLocalized)
+    if (nonDefaultLocales.length) {
+      localizedRoutes.push(combinedLocalized)
+    }
 
     // remove properties used for localization process
     return localizedRoutes.flatMap((x: MarkOptional<LocalizedRoute, 'parent' | 'locale'>) => {

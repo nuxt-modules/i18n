@@ -4,7 +4,7 @@ import { localeCodes } from '#build/i18n.options.mjs'
 
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
-export function createLocaleFromRouteGetter() {
+export function createLocaleFromRouteGetter(defaultLocale: string) {
   const regexpPath = getLocalesRegex(localeCodes)
 
   /**
@@ -23,6 +23,9 @@ export function createLocaleFromRouteGetter() {
         if (matches && matches.length > 1) {
           return matches[1]
         }
+      }
+      if (route.name && route.meta && route.meta.locale) {
+        return defaultLocale // #1888
       }
     } else if (isString(route)) {
       const matches = route.match(regexpPath)
