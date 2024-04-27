@@ -46,39 +46,6 @@ exports[`localizeRoutes > basic > should be localized routing 1`] = `
 ]
 `;
 
-exports[`localizeRoutes > basic > should be localized routing 2`] = `
-[
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "home",
-    "path": "/",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "home___locale",
-    "path": "/:locale(en|ja)",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "about",
-    "path": "/about",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "about___locale",
-    "path": "/:locale(en|ja)/about",
-  },
-]
-`;
-
 exports[`localizeRoutes > has children > should be localized routing 1`] = `
 [
   {
@@ -130,91 +97,7 @@ exports[`localizeRoutes > has children > should be localized routing 1`] = `
 ]
 `;
 
-exports[`localizeRoutes > has children > should be localized routing 2`] = `
-[
-  {
-    "children": [
-      {
-        "meta": {
-          "locale": true,
-        },
-        "name": "user-profile",
-        "path": "profile",
-      },
-      {
-        "meta": {
-          "locale": true,
-        },
-        "name": "user-posts",
-        "path": "posts",
-      },
-    ],
-    "meta": {
-      "locale": true,
-    },
-    "name": "user",
-    "path": "/user/:id",
-  },
-  {
-    "children": [
-      {
-        "meta": {
-          "locale": true,
-        },
-        "name": "user-profile___locale",
-        "path": "/:locale(en|ja)/user/:id/profile",
-      },
-      {
-        "meta": {
-          "locale": true,
-        },
-        "name": "user-posts___locale",
-        "path": "/:locale(en|ja)/user/:id/posts",
-      },
-    ],
-    "meta": {
-      "locale": true,
-    },
-    "name": "user___locale",
-    "path": "/:locale(en|ja)/user/:id",
-  },
-]
-`;
-
 exports[`localizeRoutes > route name separator > should be localized routing 1`] = `
-[
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "home",
-    "path": "/",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "home__locale",
-    "path": "/:locale(en|ja)",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "about",
-    "path": "/about",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "about__locale",
-    "path": "/:locale(en|ja)/about",
-  },
-]
-`;
-
-exports[`localizeRoutes > route name separator > should be localized routing 2`] = `
 [
   {
     "meta": {
@@ -422,39 +305,6 @@ exports[`localizeRoutes > strategy: "prefix_except_default" > should be localize
 `;
 
 exports[`localizeRoutes > trailing slash > should be localized routing 1`] = `
-[
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "home",
-    "path": "/",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "home___locale",
-    "path": "/:locale(en|ja)/",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "about",
-    "path": "/about",
-  },
-  {
-    "meta": {
-      "locale": true,
-    },
-    "name": "about___locale",
-    "path": "/:locale(en|ja)/about/",
-  },
-]
-`;
-
-exports[`localizeRoutes > trailing slash > should be localized routing 2`] = `
 [
   {
     "meta": {
