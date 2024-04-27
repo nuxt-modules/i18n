@@ -92,7 +92,10 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     defaultLocales = defaultLocales.concat(domainDefaults)
   }
 
-  function localizeRoute(route: NuxtPage, { locales = [], parent, parentLocalized }: LocalizeRouteParams): NuxtPage[] {
+  function localizeRoute(
+    route: NuxtPage,
+    { locales = [], parent, parentLocalized, extra = false }: LocalizeRouteParams
+  ): NuxtPage[] {
     // skip route localization
     if (route.redirect && !route.file) {
       return [route]
@@ -158,7 +161,10 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     if (!routePath.startsWith('/')) {
       routePath = `/${routePath}`
     }
-    if (parentLocalized != null) {
+
+    if (extra && parentLocalized != null) {
+      combinedLocalized.path = parentLocalized.path + routePath.replace(/\/:locale\(.+\)/, '')
+    } else if (parentLocalized != null) {
       combinedLocalized.path = `${parentLocalized.path}${routePath}`
     } else {
       combinedLocalized.path = `/:locale(${localeRegex})${routePath}`
@@ -198,9 +204,12 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
         subLocalized.path = `${prefix}${componentOptions.paths[locale]}`
         subLocalized.meta = { ...subLocalized.meta, ...{ locale: true } }
 
-        combinedLocalized.children &&= combinedLocalized.children.flatMap(child =>
-          localizeRoute(child, { locales: [locale], parent: route, parentLocalized: subLocalized })
-        )
+        if (combinedLocalized.children) {
+          const localizedChildren = combinedLocalized.children.flatMap(child =>
+            localizeRoute(child, { locales: [locale], parent: route, parentLocalized: subLocalized, extra: true })
+          )
+          localizedRoutes.push(...localizedChildren)
+        }
 
         localizedRoutes.push(subLocalized)
       }
