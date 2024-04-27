@@ -104,7 +104,7 @@ export function getLocaleRouteName(
   let name = getRouteName(routeName)
     .replace(`${routesNameSeparator}${locale}`, '')
     .replace(`${routesNameSeparator}locale`, '')
-  if (locale !== defaultLocale && strategy !== 'no_prefix') {
+  if ((locale !== defaultLocale && strategy !== 'no_prefix') || strategy === 'prefix') {
     name += `${routesNameSeparator}locale`
   }
   return name

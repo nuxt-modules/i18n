@@ -298,9 +298,6 @@ export function detectRedirect({
     (calledWithRouting || strategy !== 'no_prefix') &&
     oldLocale !== targetLocale
   ) {
-    console.log('switchLocalePath, localePath', targetLocale, toFullPath)
-    console.log('switchLocalePath, localePath', nuxtApp.$switchLocalePath(targetLocale))
-    console.log('switchLocalePath, localePath', nuxtApp.$localePath(toFullPath, targetLocale))
     // the current route could be 404 in which case attempt to find matching route using the full path
     const routePath = nuxtApp.$switchLocalePath(targetLocale) || nuxtApp.$localePath(toFullPath, targetLocale)
     __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, toFullPath)

@@ -33,13 +33,15 @@ describe('localizeRoutes', function () {
         // Добавляем проверку для дефолтной локали
         expect(localizedRoutes).to.deep.include({
           path: route.path,
-          name: route.name
+          name: route.name,
+          meta: { locale: true }
         })
 
         // Добавляем проверки для не-дефолтных локалей
         expect(localizedRoutes).to.deep.include({
           path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
-          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
+          meta: { locale: true }
         })
       })
     })
@@ -75,9 +77,11 @@ describe('localizeRoutes', function () {
           path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
           name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
           children: children.map(child => ({
-            path: child.path,
-            name: `${child.name}${nuxtOptions.routesNameSeparator}locale`
-          }))
+            path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}/${child.path}`,
+            name: `${child.name}${nuxtOptions.routesNameSeparator}locale`,
+            meta: { locale: true }
+          })),
+          meta: { locale: true }
         })
       })
     })
@@ -103,7 +107,8 @@ describe('localizeRoutes', function () {
       routes.forEach(route => {
         expect(localizedRoutes).to.deep.include({
           path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}/`,
-          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
+          meta: { locale: true }
         })
       })
     })
@@ -133,7 +138,8 @@ describe('localizeRoutes', function () {
       routes.forEach(route => {
         expect(localizedRoutes).to.deep.include({
           path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
-          name: `${route.name}${'__'}locale`
+          name: `${route.name}${'__'}locale`,
+          meta: { locale: true }
         })
       })
     })

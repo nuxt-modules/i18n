@@ -208,7 +208,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         ? withTrailingSlash(localizedRoute.path, true)
         : withoutTrailingSlash(localizedRoute.path, true)
 
-      if (defaultLocale !== _locale && strategy !== 'no_prefix') {
+      if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
         // @ts-ignore
         localizedRoute.params = { ...resolvedRoute.params, ...{ locale: _locale } }
       }

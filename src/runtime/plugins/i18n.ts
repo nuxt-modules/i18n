@@ -68,7 +68,7 @@ export default defineNuxtPlugin({
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
 
-    const getLocaleFromRoute = createLocaleFromRouteGetter(runtimeI18n.defaultLocale)
+    const getLocaleFromRoute = createLocaleFromRouteGetter(runtimeI18n.defaultLocale, runtimeI18n.strategy)
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
 
     const localeCookie = getI18nCookie()

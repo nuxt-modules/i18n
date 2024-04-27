@@ -1,10 +1,10 @@
 import { isString, isObject } from '@intlify/shared'
 import { getLocalesRegex } from '../utils'
-import { localeCodes } from '#build/i18n.options.mjs'
+import { localeCodes, type Strategies } from '#build/i18n.options.mjs'
 
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 
-export function createLocaleFromRouteGetter(defaultLocale: string) {
+export function createLocaleFromRouteGetter(defaultLocale: string, strategy: Strategies) {
   const regexpPath = getLocalesRegex(localeCodes)
 
   /**
@@ -24,7 +24,7 @@ export function createLocaleFromRouteGetter(defaultLocale: string) {
           return matches[1]
         }
       }
-      if (route.name && route.meta && route.meta.locale) {
+      if (route.name && route.meta && route.meta.locale && strategy !== 'prefix') {
         return defaultLocale // #1888
       }
     } else if (isString(route)) {
