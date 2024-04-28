@@ -30,14 +30,12 @@ describe('localizeRoutes', function () {
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
       routes.forEach(route => {
-        // Добавляем проверку для дефолтной локали
         expect(localizedRoutes).to.deep.include({
           path: route.path,
           name: route.name,
           meta: { locale: true }
         })
 
-        // Добавляем проверки для не-дефолтных локалей
         expect(localizedRoutes).to.deep.include({
           path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
           name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
