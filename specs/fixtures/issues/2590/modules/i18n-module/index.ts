@@ -18,7 +18,7 @@ export default defineNuxtModule({
       })
     )
 
-    await installModule('../../../dist', {
+    await installModule('@nuxtjs/i18n', {
       lazy: true,
       defaultLocale: 'en',
       experimental: {

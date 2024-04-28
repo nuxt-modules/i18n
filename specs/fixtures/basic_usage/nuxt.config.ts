@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['./layer-module', './installer-module', '../../../dist'],
+  modules: ['./layer-module', './installer-module', '@nuxtjs/i18n'],
   runtimeConfig: {
     public: {
       runtimeValue: 'Hello from runtime config!',
