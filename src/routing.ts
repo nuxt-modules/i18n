@@ -128,7 +128,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
 
     let localeRegex = nonDefaultLocales.join('|')
 
-    // Добавление роута для дефолтной локали
+    // Adding a route for the default locale
     if ((options.strategy !== 'prefix' || options.includeUnprefixedFallback) && !parentLocalized) {
       const defaultLocalized: LocalizedRoute = { ...route, locale: defaultLocale, parent }
       defaultLocalized.meta = { ...defaultLocalized.meta, ...{ locale: true } }
@@ -152,7 +152,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       localizedRoutes.push(redirectLocalized)
     }
 
-    // Добавление объединенного роута для всех не дефолтных локалей
+    // Adding a combined route for all non-default locales
     const combinedLocalized: LocalizedRoute = { ...route, locale: `/:locale(${localeRegex})`, parent }
     let routePath = combinedLocalized.path
     if (parentLocalized != null && parentLocalized.path.startsWith('/:locale')) {

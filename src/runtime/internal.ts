@@ -322,11 +322,11 @@ export function detectBrowserLanguage(
 export function getHostName() {
   let hostName: string | undefined
 
-  // Проверяем, выполняется ли код в клиентской части
+  // Check if the code is running on the client-side
   if (import.meta.client) {
-    hostName = window.location.hostname // Получаем hostname без порта
+    hostName = window.location.hostname // Get the hostname without the port
   }
-  // Проверяем, выполняется ли код в серверной части
+  // Check if the code is running on the server-side
   else if (import.meta.server) {
     const header = useRequestHeaders(['x-forwarded-host', 'host'])
 
@@ -337,10 +337,10 @@ export function getHostName() {
       detectedHost = header['host']
     }
 
-    // Если значение в массиве, берём первый элемент, иначе используем как есть
+    // If the value is an array, take the first element, otherwise use as is
     detectedHost = isArray(detectedHost) ? detectedHost[0] : detectedHost
 
-    // Если detectedHost содержит порт, извлекаем только часть до двоеточия
+    // If detectedHost includes a port, extract only the part before the colon
     hostName = detectedHost ? detectedHost.split(':')[0] : undefined
   }
 
