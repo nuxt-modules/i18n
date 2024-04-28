@@ -365,6 +365,10 @@ export function switchLocalePath(
 
   const baseRoute = { ...routeCopy, name, params: { ...routeCopy.params, ...resolvedParams } }
 
+  if (baseRoute.params) {
+    delete baseRoute.params.locale
+  }
+
   const path = localePath(common, baseRoute, locale)
 
   // custom locale path with interceptor

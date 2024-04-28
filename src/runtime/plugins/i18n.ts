@@ -172,6 +172,7 @@ export default defineNuxtPlugin({
               notInitialSetup = false
             }
 
+            // don't use routeToObject. it's make memory leak
             const subRoute = {
               name: route.name,
               params: route.params,
@@ -185,16 +186,6 @@ export default defineNuxtPlugin({
             }
 
             const oldLocale = getLocaleFromRoute(subRoute)
-
-            if (
-              subRoute.name &&
-              (runtimeI18n.defaultLocale !== locale || runtimeI18n.strategy === 'prefix')
-              // || (getLocaleFromRoute(route) && runtimeI18n.strategy === 'prefix_and_default')
-            ) {
-              const newName = subRoute.name.toString().replace(runtimeI18n.routesNameSeparator + 'locale', '')
-              subRoute.name = newName + runtimeI18n.routesNameSeparator + 'locale'
-              subRoute.params = { ...subRoute.params, ...{ locale: locale } }
-            }
 
             const redirectPath = await nuxtContext.runWithContext(() =>
               detectRedirect({
@@ -481,6 +472,7 @@ export default defineNuxtPlugin({
           notInitialSetup = false
         }
 
+        // don't use routeToObject. is's make memory leak
         const subRoute = {
           name: to.name,
           params: to.params,
@@ -494,16 +486,6 @@ export default defineNuxtPlugin({
         }
 
         const oldLocale = getLocaleFromRoute(subRoute)
-
-        if (
-          subRoute.name &&
-          (runtimeI18n.defaultLocale !== locale || runtimeI18n.strategy === 'prefix')
-          // || (getLocaleFromRoute(route) && runtimeI18n.strategy === 'prefix_and_default')
-        ) {
-          const newName = subRoute.name.toString().replace(runtimeI18n.routesNameSeparator + 'locale', '')
-          subRoute.name = newName + runtimeI18n.routesNameSeparator + 'locale'
-          subRoute.params = { ...subRoute.params, ...{ locale: locale } }
-        }
 
         const redirectPath = await nuxtContext.runWithContext(() =>
           detectRedirect({
