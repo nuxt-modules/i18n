@@ -142,7 +142,8 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
   if (!_locale || _locale === 'undefined') {
     return null
   }
-  const { strategy, routesNameSeparator, trailingSlash, customPages } = common.runtimeConfig.public.i18n
+  const { strategy, routesNameSeparator, routesNameSuffix, trailingSlash, customPages } =
+    common.runtimeConfig.public.i18n
   let { defaultLocale } = common.runtimeConfig.public.i18n
 
   const lang = [...normalizedLocales].find(locale => locale.code === _locale)
@@ -184,7 +185,14 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     const resolvedRouteName = getRouteBaseName(common, resolvedRoute)
     if (isString(resolvedRouteName)) {
       localizedRoute = {
-        name: getLocaleRouteName(resolvedRouteName, _locale, defaultLocale, routesNameSeparator, strategy),
+        name: getLocaleRouteName(
+          resolvedRouteName,
+          _locale,
+          defaultLocale,
+          routesNameSeparator,
+          routesNameSuffix,
+          strategy
+        ),
         // @ts-ignore
         params: resolvedRoute.params,
         query: resolvedRoute.query,
@@ -218,7 +226,14 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
     }
 
-    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, defaultLocale, routesNameSeparator, strategy)
+    localizedRoute.name = getLocaleRouteName(
+      localizedRoute.name,
+      _locale,
+      defaultLocale,
+      routesNameSeparator,
+      routesNameSuffix,
+      strategy
+    )
     if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
       localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
     }
@@ -261,7 +276,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         }
       }
       if (!checker && localizedRoute.name) {
-        localizedRoute.name = localizedRoute.name.toString().replace(`${routesNameSeparator}locale`, '')
+        localizedRoute.name = localizedRoute.name.toString().replace(`${routesNameSeparator}${routesNameSuffix}`, '')
         resolvedRoute = router.resolve(localizedRoute)
       }
 

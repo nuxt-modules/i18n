@@ -43,7 +43,7 @@ function adjustRoutePathForTrailingSlash(localized: LocalizedRoute, trailingSlas
 
 export type LocalizeRoutesParams = MarkRequired<
   NuxtI18nOptions,
-  'strategy' | 'locales' | 'routesNameSeparator' | 'trailingSlash' | 'defaultLocaleRouteNameSuffix'
+  'strategy' | 'locales' | 'routesNameSeparator' | 'routesNameSuffix' | 'trailingSlash' | 'defaultLocaleRouteNameSuffix'
 > & {
   includeUnprefixedFallback?: boolean
   optionsResolver?: RouteOptionsResolver
@@ -171,8 +171,11 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     }
 
     if (combinedLocalized.name) {
-      combinedLocalized.name = combinedLocalized.name.replace(`${options.routesNameSeparator}locale`, '')
-      combinedLocalized.name += `${options.routesNameSeparator}locale`
+      combinedLocalized.name = combinedLocalized.name.replace(
+        `${options.routesNameSeparator}${options.routesNameSuffix}`,
+        ''
+      )
+      combinedLocalized.name += `${options.routesNameSeparator}${options.routesNameSuffix}`
     }
     combinedLocalized.meta = { ...combinedLocalized.meta, ...{ locale: true } }
 
@@ -199,7 +202,7 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
           prefix = ''
           subLocalized.name = `${route.name}${options.routesNameSeparator}${locale}`
         } else {
-          subLocalized.name = `${route.name}${options.routesNameSeparator}locale${options.routesNameSeparator}${locale}`
+          subLocalized.name = `${route.name}${options.routesNameSeparator}${options.routesNameSuffix}${options.routesNameSeparator}${locale}`
         }
         subLocalized.path = `${prefix}${componentOptions.paths[locale]}`
         subLocalized.meta = { ...subLocalized.meta, ...{ locale: true } }

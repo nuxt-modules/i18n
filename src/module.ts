@@ -148,6 +148,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       lazy: options.lazy,
       rootRedirect: options.rootRedirect,
       routesNameSeparator: options.routesNameSeparator,
+      routesNameSuffix: options.routesNameSuffix,
       defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix,
       skipSettingLocaleOnNavigate: options.skipSettingLocaleOnNavigate,
       differentDomains: options.differentDomains,
@@ -441,6 +442,12 @@ export interface ModulePublicRuntimeConfig {
      * @internal
      */
     routesNameSeparator: Required<NuxtI18nOptions>['routesNameSeparator']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    routesNameSuffix: Required<NuxtI18nOptions>['routesNameSuffix']
     /**
      * Overwritten at build time, used to pass generated options to runtime
      *

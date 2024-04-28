@@ -52,6 +52,7 @@ export const DEFAULT_OPTIONS = {
   defaultLocale: '',
   defaultDirection: 'ltr',
   routesNameSeparator: '___',
+  routesNameSuffix: 'locale',
   trailingSlash: false,
   defaultLocaleRouteNameSuffix: 'default',
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
