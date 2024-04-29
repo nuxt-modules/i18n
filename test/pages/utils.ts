@@ -10,7 +10,7 @@ export function getNuxtOptions(
   defaultLocale = 'en'
 ): MarkRequired<
   NuxtI18nOptions,
-  'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'routesNameSeparator'
+  'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'routesNameSeparator' | 'routesNameSuffix'
 > {
   return {
     customRoutes,

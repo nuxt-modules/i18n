@@ -48,32 +48,32 @@ describe('adjustRouteDefinitionForTrailingSlash', function () {
 describe('getLocaleRouteName', () => {
   describe('strategy: prefix_and_default', () => {
     it('should be `route1___en___default`', () => {
-      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'prefix_and_default'), 'route1')
+      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'locale', 'prefix_and_default'), 'route1')
     })
   })
 
   describe('strategy: prefix_except_default', () => {
     it('should be `route1___en`', () => {
-      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'prefix_except_default'), 'route1')
+      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'locale', 'prefix_except_default'), 'route1')
     })
   })
 
   describe('strategy: no_prefix', () => {
     it('should be `route1`', () => {
-      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'no_prefix'), 'route1')
+      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'locale', 'no_prefix'), 'route1')
     })
   })
 
   describe('strategy: prefix_regexp', () => {
     it('should be `route1`', () => {
-      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'prefix_regexp'), 'route1')
+      assert.equal(utils.getLocaleRouteName('route1', 'en', 'en', '___', 'locale', 'prefix_regexp'), 'route1')
     })
   })
 
   describe('irregular', () => {
     describe('route name is null', () => {
       it('should be ` (null)___en___default`', () => {
-        assert.equal(utils.getLocaleRouteName(null, 'en', 'en', '___', 'prefix_regexp'), '(null)')
+        assert.equal(utils.getLocaleRouteName(null, 'en', 'en', '___', 'locale', 'prefix_regexp'), '(null)')
       })
     })
   })
