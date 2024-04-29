@@ -194,7 +194,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
           strategy
         ),
         // @ts-ignore
-        params: resolvedRoute.params,
+        params: { ...resolvedRoute.params },
         query: resolvedRoute.query,
         hash: resolvedRoute.hash
       } as RouteLocationNamedRaw
@@ -216,6 +216,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         ? withTrailingSlash(localizedRoute.path, true)
         : withoutTrailingSlash(localizedRoute.path, true)
 
+      localizedRoute.params = { ...localizedRoute.params }
       if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
         // @ts-ignore
         localizedRoute.params = { ...resolvedRoute.params, ...{ locale: _locale } }
@@ -234,6 +235,8 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       routesNameSuffix,
       strategy
     )
+
+    localizedRoute.params = { ...localizedRoute.params }
     if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
       localizedRoute.params = { ...localizedRoute.params, ...{ locale: _locale } }
     }
@@ -250,6 +253,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
         }
       )
 
+      subLocalizedRoute.params = { ...subLocalizedRoute.params }
       if ((defaultLocale !== _locale && strategy !== 'no_prefix') || strategy === 'prefix') {
         subLocalizedRoute.params = { ...subLocalizedRoute.params, ...{ locale: _locale } }
       }
@@ -290,7 +294,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       if (result && _locale) {
         const localizedRoute = router.resolve({ path: '/' + _locale + result })
         // @ts-ignore
-        localizedRoute.params = _route.params
+        localizedRoute.params = { ..._route.params }
         localizedRoute.query = (_route.query ?? {}) as LocationQuery
         localizedRoute.hash = _route.hash ?? ''
 
