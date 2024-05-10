@@ -30,6 +30,9 @@ importers:
       '@intlify/utils':
         specifier: ^0.12.0
         version: 0.12.0
+      '@intlify/vue-i18n-extensions':
+        specifier: ^5.0.1
+        version: 5.0.1(vue-i18n@9.9.0)(vue@3.4.21)
       '@miyaneee/rollup-plugin-json5':
         specifier: ^1.1.2
         version: 1.1.2(rollup@3.29.4)
@@ -1353,6 +1356,20 @@ packages:
   /@intlify/utils@0.12.0:
     resolution: {integrity: sha512-yCBNcuZQ49iInqmWC2xfW0rgEQyNtCM8C8KcWKTXxyscgUE1+48gjLgZZqP75MjhlApxwph7ZMWLqyABkSgxQA==}
     engines: {node: '>= 18'}
+    dev: false
+
+  /@intlify/vue-i18n-extensions@5.0.1(vue-i18n@9.9.0)(vue@3.4.21):
+    resolution: {integrity: sha512-bS07jIt9nFXfUUpQLqdog7O1Gi8rSCgTyEzabiho5nrrVFmaIbDRr7LSNBPA8fakPdAuY8V1lJa6xmkI33+n8w==}
+    engines: {node: '>= 14.18'}
+    peerDependencies:
+      vue: ^3.0.0
+      vue-i18n: ^9.0.0
+    dependencies:
+      '@babel/parser': 7.23.9
+      '@intlify/shared': 9.9.0
+      '@vue/compiler-dom': 3.4.21
+      vue: 3.4.21(typescript@5.4.2)
+      vue-i18n: 9.9.0(vue@3.4.21)
     dev: false
 
   /@ioredis/commands@1.2.0:

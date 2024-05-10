@@ -12,6 +12,7 @@ import {
   useLogger
 } from '@nuxt/kit'
 import { resolve, relative } from 'pathe'
+import { transformVTDirective } from '@intlify/vue-i18n-extensions'
 import { defu } from 'defu'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
@@ -360,7 +361,16 @@ export default defineNuxtModule<NuxtI18nOptions>({
     ])
 
     /**
-     * transpile @nuxtjs/i18n
+     * Directive transformation for `v-t` SSR
+     */
+
+    // Use `legacy` as global injections are prefixed (`$t`)
+    const transformVT = transformVTDirective({ mode: 'legacy' })
+    nuxt.options.vue.compilerOptions.directiveTransforms ??= {}
+    nuxt.options.vue.compilerOptions.directiveTransforms.t = transformVT
+
+    /**
+     * Transpile @nuxtjs/i18n
      */
 
     // https://github.com/nuxt/framework/issues/5257
