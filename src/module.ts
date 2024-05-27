@@ -460,7 +460,7 @@ export interface ModuleHooks {
   ) => HookResult
 }
 
-export interface RuntimeModuleHooks {
+export interface ModuleRuntimeHooks {
   // NOTE: To make type inference work the function signature returns `HookResult`
   // Should return `string | void`
   'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
@@ -475,7 +475,7 @@ export interface RuntimeModuleHooks {
 
 // Used by module for type inference in source code
 declare module '#app' {
-  interface RuntimeNuxtHooks extends RuntimeModuleHooks {}
+  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
 }
 
 declare module '@nuxt/schema' {
