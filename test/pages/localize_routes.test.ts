@@ -24,16 +24,22 @@ describe('localizeRoutes', function () {
         }
       ]
       const localeCodes = ['en', 'ja']
+
       const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: route.path,
+          name: route.name,
+          meta: { locale: true }
+        })
+
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
+          meta: { locale: true }
         })
       })
     })
@@ -64,16 +70,16 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(2)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`,
-            children: children.map(child => ({
-              path: child.path,
-              name: `${child.name}${nuxtOptions.routesNameSeparator}${locale}`
-            }))
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
+          children: children.map(child => ({
+            path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}/${child.path}`,
+            name: `${child.name}${nuxtOptions.routesNameSeparator}locale`,
+            meta: { locale: true }
+          })),
+          meta: { locale: true }
         })
       })
     })
@@ -96,12 +102,11 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}/`,
-            name: `${route.name}${nuxtOptions.routesNameSeparator}${locale}`
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}/`,
+          name: `${route.name}${nuxtOptions.routesNameSeparator}locale`,
+          meta: { locale: true }
         })
       })
     })
@@ -128,12 +133,11 @@ describe('localizeRoutes', function () {
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
-      localeCodes.forEach(locale => {
-        routes.forEach(route => {
-          expect(localizedRoutes).to.deep.include({
-            path: `/${locale}${route.path === '/' ? '' : route.path}`,
-            name: `${route.name}${'__'}${locale}`
-          })
+      routes.forEach(route => {
+        expect(localizedRoutes).to.deep.include({
+          path: `/:locale(${localeCodes.join('|')})${route.path === '/' ? '' : route.path}`,
+          name: `${route.name}${'__'}locale`,
+          meta: { locale: true }
         })
       })
     })

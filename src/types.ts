@@ -187,6 +187,13 @@ export type NuxtI18nOptions<
    */
   routesNameSeparator?: string
   /**
+   * Suffix added to the generated route names for each locale to distinguish them based on language or regional settings.
+   * This suffix is appended to the base route name to create a unique name for each localized version of a route.
+   *
+   * @defaultValue 'locale'
+   */
+  routesNameSuffix?: string
+  /**
    * Internal suffix added to generated route names for default locale
    *
    * @remarks

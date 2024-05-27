@@ -7,6 +7,9 @@ export default defineConfig({
     restoreMocks: true,
     testTimeout: 300000,
     retry: 1,
+    chaiConfig: {
+      truncateThreshold: 0
+    },
     server: {
       deps: {
         inline: [/@nuxt\/test-utils/]

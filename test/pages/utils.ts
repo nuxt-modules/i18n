@@ -10,7 +10,7 @@ export function getNuxtOptions(
   defaultLocale = 'en'
 ): MarkRequired<
   NuxtI18nOptions,
-  'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'routesNameSeparator'
+  'strategy' | 'defaultLocaleRouteNameSuffix' | 'trailingSlash' | 'routesNameSeparator' | 'routesNameSuffix'
 > {
   return {
     customRoutes,
@@ -20,6 +20,7 @@ export function getNuxtOptions(
     defaultLocaleRouteNameSuffix: 'default',
     trailingSlash: false,
     routesNameSeparator: '___',
+    routesNameSuffix: 'locale',
     locales: [
       { code: 'en', iso: 'en-US', file: 'en.json', name: 'English' },
       { code: 'ja', iso: 'ja-JP', file: 'ja.json', name: 'Japanses' },

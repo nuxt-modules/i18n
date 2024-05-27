@@ -263,7 +263,7 @@ export function detectLocale(
 export function detectRedirect({
   route,
   targetLocale,
-  routeLocaleGetter,
+  oldLocale,
   calledWithRouting = false
 }: {
   route: {
@@ -271,7 +271,7 @@ export function detectRedirect({
     from?: RouteLocationNormalized | RouteLocationNormalizedLoaded
   }
   targetLocale: Locale
-  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>
+  oldLocale: string
   calledWithRouting?: boolean
 }): string {
   const nuxtApp = useNuxtApp()
@@ -279,7 +279,7 @@ export function detectRedirect({
   const { strategy, differentDomains } = common.runtimeConfig.public.i18n
   __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
   __DEBUG__ && console.log('detectRedirect: route -> ', route)
-  __DEBUG__ && console.log('detectRedirect: calledWithRouting -> ', calledWithRouting, routeLocaleGetter(route.to))
+  __DEBUG__ && console.log('detectRedirect: calledWithRouting -> ', calledWithRouting, oldLocale)
 
   let redirectPath = ''
   const { fullPath: toFullPath } = route.to
@@ -296,7 +296,7 @@ export function detectRedirect({
     !isStaticGenerate &&
     !differentDomains &&
     (calledWithRouting || strategy !== 'no_prefix') &&
-    routeLocaleGetter(route.to) !== targetLocale
+    oldLocale !== targetLocale
   ) {
     // the current route could be 404 in which case attempt to find matching route using the full path
     const routePath = nuxtApp.$switchLocalePath(targetLocale) || nuxtApp.$localePath(toFullPath, targetLocale)
@@ -311,7 +311,7 @@ export function detectRedirect({
     }
   }
 
-  if ((differentDomains || (isSSG && import.meta.client)) && routeLocaleGetter(route.to) !== targetLocale) {
+  if ((differentDomains || (isSSG && import.meta.client)) && oldLocale !== targetLocale) {
     /**
      * `$router.currentRoute` does not yet reflect the `to` value,
      *  when the Router middleware handler is executed.

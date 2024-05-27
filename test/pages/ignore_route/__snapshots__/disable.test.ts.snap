@@ -79,20 +79,20 @@ exports[`Module configuration > simple 1`] = `
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___en",
+    "meta": {
+      "locale": true,
+    },
+    "name": "index",
     "path": "/",
   },
   {
     "children": [],
     "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___ja",
-    "path": "/ja",
-  },
-  {
-    "children": [],
-    "file": "/path/to/nuxt-app/pages/index.vue",
-    "name": "index___fr",
-    "path": "/fr",
+    "meta": {
+      "locale": true,
+    },
+    "name": "index___locale",
+    "path": "/:locale(ja|fr)",
   },
 ]
 `;

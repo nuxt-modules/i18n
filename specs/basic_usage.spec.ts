@@ -108,8 +108,10 @@ describe('basic usage', async () => {
             "leaveGuards": {
               "Set(0)": [],
             },
-            "meta": {},
-            "name": "nuxt-context-extension___en",
+            "meta": {
+              "locale": true,
+            },
+            "name": "nuxt-context-extension",
             "path": "/nuxt-context-extension",
             "props": {
               "default": false,
@@ -119,8 +121,10 @@ describe('basic usage', async () => {
             },
           },
         ],
-        "meta": {},
-        "name": "nuxt-context-extension___en",
+        "meta": {
+          "locale": true,
+        },
+        "name": "nuxt-context-extension",
         "params": {},
         "path": "/nuxt-context-extension",
         "query": {},

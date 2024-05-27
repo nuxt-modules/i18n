@@ -41,7 +41,7 @@ import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } f
 import { generateTemplateNuxtI18nOptions } from './template'
 
 import type { HookResult } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
+import type { CustomRoutePages, NuxtI18nOptions } from './types'
 
 export * from './types'
 
@@ -148,11 +148,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
       lazy: options.lazy,
       rootRedirect: options.rootRedirect,
       routesNameSeparator: options.routesNameSeparator,
+      routesNameSuffix: options.routesNameSuffix,
       defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix,
       skipSettingLocaleOnNavigate: options.skipSettingLocaleOnNavigate,
       differentDomains: options.differentDomains,
       trailingSlash: options.trailingSlash,
       configLocales: options.locales,
+      customPages: options.pages,
       locales: options.locales.reduce(
         (obj, locale) => {
           if (typeof locale === 'string') {
@@ -445,6 +447,12 @@ export interface ModulePublicRuntimeConfig {
      *
      * @internal
      */
+    routesNameSuffix: Required<NuxtI18nOptions>['routesNameSuffix']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
     defaultLocaleRouteNameSuffix: Required<NuxtI18nOptions>['defaultLocaleRouteNameSuffix']
     /**
      * Overwritten at build time, used to pass generated options to runtime
@@ -452,6 +460,12 @@ export interface ModulePublicRuntimeConfig {
      * @internal
      */
     trailingSlash: Required<NuxtI18nOptions>['trailingSlash']
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
+    customPages: CustomRoutePages
   }
 }
 export interface ModuleHooks {
