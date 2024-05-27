@@ -108,7 +108,7 @@
     "@babel/parser": "^7.23.0",
     "@babel/plugin-syntax-import-assertions": "^7.22.5",
     "@babel/types": "^7.23.0",
-    "@nuxt/module-builder": "^0.7.0",
+    "@nuxt/module-builder": "^0.6.0",
     "@nuxt/schema": "^3.10.3",
     "@types/debug": "^4.1.9",
     "@unhead/vue": "^1.8.8",
