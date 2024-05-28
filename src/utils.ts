@@ -621,3 +621,7 @@ export const applyOptionOverrides = (options: NuxtI18nOptions, nuxt: Nuxt) => {
     Object.assign(options, defu(overrides, mergedOptions))
   }
 }
+
+export function toArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value]
+}
