@@ -18,10 +18,16 @@ const debug = createDebug('@nuxtjs/i18n:pages')
 
 export type AnalyzedNuxtPageMeta = {
   inRoot: boolean
+  /**
+   * Analyzed path used to retrieve configured custom paths
+   */
   path: string
 }
 
 export type NuxtPageAnalyzeContext = {
+  /**
+   * Array of paths to track current route depth
+   */
   stack: string[]
   srcDir: string
   pagesDir: string
@@ -87,26 +93,25 @@ function analyzePagePath(pagePath: string, parents = 0) {
  * Construct the map of full paths from NuxtPage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
-export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages: NuxtPage[], pageDirOverride?: string): void {
+export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages?: NuxtPage[], pageDirOverride?: string): void {
+  if (pages == null || pages.length === 0) return
+
   const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
-    if (page.file == null) {
-      continue
-    }
+    if (page.file == null) continue
 
     const splits = page.file.split(pagesPath)
-    if (splits.length === 2 && splits[1]) {
-      const path = analyzePagePath(splits[1], ctx.stack.length)
-      const p: AnalyzedNuxtPageMeta = { path, inRoot: ctx.stack.length === 0 }
+    const filePath = splits.at(1)
+    if (filePath == null) continue
 
-      ctx.pages.set(page, p)
+    ctx.pages.set(page, {
+      path: analyzePagePath(filePath, ctx.stack.length),
+      inRoot: ctx.stack.length === 0
+    })
 
-      if (page.children && page.children.length > 0) {
-        ctx.stack.push(page.path)
-        analyzeNuxtPages(ctx, page.children, pageDirOverride)
-        ctx.stack.pop()
-      }
-    }
+    ctx.stack.push(page.path)
+    analyzeNuxtPages(ctx, page.children, pageDirOverride)
+    ctx.stack.pop()
   }
 }
 
