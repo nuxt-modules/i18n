@@ -299,66 +299,53 @@ function readComponent(target: string) {
   return options
 }
 
-function logUnexpectedTypeMessage(path: string, expected: string, received: string = 'undefined') {
-  return console.warn(formatMessage(`Expected \`${path}\` value to be ${expected}, received ${received} instead`))
-}
-
 function verifyObjectValue(properties: ObjectExpression['properties']) {
   let ret = true
   for (const prop of properties) {
-    if (prop.type !== 'ObjectProperty') {
+    if (prop.type === 'ObjectProperty') {
+      if (
+        (prop.key.type === 'Identifier' && prop.key.name === 'locales') ||
+        (prop.key.type === 'StringLiteral' && prop.key.value === 'locales')
+      ) {
+        if (prop.value.type === 'ArrayExpression') {
+          ret = verifyLocalesArrayExpression(prop.value.elements)
+        } else {
+          console.warn(formatMessage(`'locale' value is required array`))
+          ret = false
+        }
+      } else if (
+        (prop.key.type === 'Identifier' && prop.key.name === 'paths') ||
+        (prop.key.type === 'StringLiteral' && prop.key.value === 'paths')
+      ) {
+        if (prop.value.type === 'ObjectExpression') {
+          ret = verifyPathsObjectExpress(prop.value.properties)
+        } else {
+          console.warn(formatMessage(`'paths' value is required object`))
+          ret = false
+        }
+      }
+    } else {
+      console.warn(formatMessage(`'defineI18nRoute' is required object`))
       ret = false
-      logUnexpectedTypeMessage('defineI18nRoute', 'an object', prop.type)
-      continue
-    }
-
-    if (
-      (prop.key.type === 'Identifier' && prop.key.name === 'locales') ||
-      (prop.key.type === 'StringLiteral' && prop.key.value === 'locales')
-    ) {
-      if (prop.value.type !== 'ArrayExpression') {
-        ret = false
-        logUnexpectedTypeMessage('locale', 'an array', prop.value.type)
-        continue
-      }
-
-      ret = verifyLocalesArrayExpression(prop.value.elements)
-    }
-
-    if (
-      (prop.key.type === 'Identifier' && prop.key.name === 'paths') ||
-      (prop.key.type === 'StringLiteral' && prop.key.value === 'paths')
-    ) {
-      if (prop.value.type !== 'ObjectExpression') {
-        ret = false
-        logUnexpectedTypeMessage('paths', 'an object', prop.value.type)
-        continue
-      }
-
-      ret = verifyPathsObjectExpress(prop.value.properties)
     }
   }
-
   return ret
 }
 
 function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
   let ret = true
   for (const prop of properties) {
-    if (prop.type !== 'ObjectProperty') {
+    if (prop.type === 'ObjectProperty') {
+      if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
+        console.warn(formatMessage(`'paths.${prop.key.name}' value is required string literal`))
+        ret = false
+      } else if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
+        console.warn(formatMessage(`'paths.${prop.key.value}' value is required string literal`))
+        ret = false
+      }
+    } else {
+      console.warn(formatMessage(`'paths' is required object`))
       ret = false
-      logUnexpectedTypeMessage('paths', 'an object', prop.type)
-      continue
-    }
-
-    if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
-      ret = false
-      logUnexpectedTypeMessage(`paths.${prop.key.name}`, 'a string literal', prop.value.type)
-    }
-
-    if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
-      ret = false
-      logUnexpectedTypeMessage(`paths.${prop.key.value}`, 'a string literal', prop.value.type)
     }
   }
   return ret
@@ -368,7 +355,7 @@ function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
   let ret = true
   for (const element of elements) {
     if (element?.type !== 'StringLiteral') {
-      logUnexpectedTypeMessage(`locales`, 'a string literal', element?.type)
+      console.warn(formatMessage(`required 'locales' value string literal`))
       ret = false
     }
   }
