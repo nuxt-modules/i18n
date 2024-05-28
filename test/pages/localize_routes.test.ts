@@ -251,6 +251,30 @@ describe('localizeRoutes', function () {
     })
   })
 
+  describe('strategy: "prefix_regexp"', function () {
+    it('should be localized routing', function () {
+      const routes: NuxtPage[] = [
+        {
+          path: '/',
+          name: 'home'
+        },
+        {
+          path: '/about',
+          name: 'about'
+        }
+      ]
+      const localeCodes = ['en', 'ja']
+      const localizedRoutes = localizeRoutes(routes, {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_regexp',
+        locales: localeCodes
+      })
+
+      expect(localizedRoutes).toMatchSnapshot()
+    })
+  })
+
   describe('Route options resolver: routing disable', () => {
     it('should be disabled routing', () => {
       const routes: NuxtPage[] = [

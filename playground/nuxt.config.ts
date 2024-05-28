@@ -72,6 +72,7 @@ export default defineNuxtConfig({
         // strategy: 'no_prefix',
         // strategy: 'prefix',
         // strategy: 'prefix_and_default',
+        // strategy: 'prefix_regexp',
         strategy: 'prefix_except_default',
         // rootRedirect: '/ja/about-ja',
         dynamicRouteParams: true,

@@ -5,7 +5,7 @@ import { localeCodes } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useRuntimeConfig } from 'nuxt/app'
 
-export function createLocaleFromRouteGetter() {
+export function createLocaleFromRouteGetter(strategy: string) {
   const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n
   const localesPattern = `(${localeCodes.join('|')})`
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
@@ -20,13 +20,18 @@ export function createLocaleFromRouteGetter() {
   const getLocaleFromRoute = (route: RouteLocationNormalizedLoaded | RouteLocationNormalized | string): string => {
     // extract from route name
     if (isObject(route)) {
-      if (route.name) {
+      if (strategy === 'prefix_regexp') {
+        if (route.params.locale) {
+          return route.params.locale.toString()
+        }
+      } else if (route.name) {
         const name = isString(route.name) ? route.name : route.name.toString()
         const matches = name.match(regexpName)
         if (matches && matches.length > 1) {
           return matches[1]
         }
-      } else if (route.path) {
+      }
+      if (route.path) {
         // Extract from path
         const matches = route.path.match(regexpPath)
         if (matches && matches.length > 1) {

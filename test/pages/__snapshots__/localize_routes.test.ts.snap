@@ -222,6 +222,27 @@ exports[`localizeRoutes > strategy: "prefix_except_default" > should be localize
 ]
 `;
 
+exports[`localizeRoutes > strategy: "prefix_regexp" > should be localized routing 1`] = `
+[
+  {
+    "name": "home",
+    "path": "/",
+  },
+  {
+    "name": "home___locale",
+    "path": "/:locale(ja)",
+  },
+  {
+    "name": "about",
+    "path": "/about",
+  },
+  {
+    "name": "about___locale",
+    "path": "/:locale(ja)/about",
+  },
+]
+`;
+
 exports[`localizeRoutes > trailing slash > should be localized routing 1`] = `
 [
   {

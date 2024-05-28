@@ -118,53 +118,76 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     }
 
     const localizedRoutes: (LocalizedRoute | NuxtPage)[] = []
-    for (const locale of componentOptions.locales) {
-      const localized: LocalizedRoute = { ...route, locale, parent }
-      const isDefaultLocale = defaultLocales.includes(locale)
-      const addDefaultTree = isDefaultLocale && options.strategy === 'prefix_and_default' && parent == null && !extra
 
-      // localize route again for strategy `prefix_and_default`
-      if (addDefaultTree && parent == null && !extra) {
-        localizedRoutes.push(...localizeRoute(route, { locales: [locale], extra: true }))
-      }
+    if (options.strategy === 'prefix_regexp') {
+      const defaultLocale = defaultLocales[0]
+      const nonDefaultLocales = componentOptions.locales.filter(l => l !== defaultLocale)
+      const localeRegex = nonDefaultLocales.join('|')
+      const defaultLocalized: LocalizedRoute = { ...route, locale: defaultLocale, parent }
 
-      const nameSegments = [localized.name, options.routesNameSeparator, locale]
-      if (extra) {
-        nameSegments.push(options.routesNameSeparator, options.defaultLocaleRouteNameSuffix)
-      }
+      localizedRoutes.push(defaultLocalized)
 
-      // localize name if set
-      localized.name &&= join(...nameSegments)
+      const combinedLocalized: LocalizedRoute = { ...route, locale: `/:locale(${localeRegex})`, parent }
 
-      // use custom path if found
-      localized.path = componentOptions.paths?.[locale] ?? localized.path
+      combinedLocalized.path = `/:locale(${localeRegex})` + combinedLocalized.path
+      combinedLocalized.name &&= combinedLocalized.name + options.routesNameSeparator + 'locale'
+      combinedLocalized.path &&= adjustRoutePathForTrailingSlash(combinedLocalized, options.trailingSlash)
+      combinedLocalized.path = componentOptions.paths?.[`/:locale(${localeRegex})`] ?? combinedLocalized.path
 
-      const localePrefixable = prefixLocalizedRoute(
-        { defaultLocale: isDefaultLocale ? locale : options.defaultLocale, ...localized },
-        options,
-        extra
-      )
-      if (localePrefixable) {
-        localized.path = join('/', locale, localized.path)
+      combinedLocalized.children &&= combinedLocalized.children.flatMap(child => {
+        return { ...child, ...{ name: child.name + options.routesNameSeparator + 'locale' } }
+      })
 
-        if (isDefaultLocale && options.strategy === 'prefix' && options.includeUnprefixedFallback) {
-          localizedRoutes.push({ ...route, locale, parent })
+      localizedRoutes.push(combinedLocalized)
+    } else {
+      for (const locale of componentOptions.locales) {
+        const localized: LocalizedRoute = { ...route, locale, parent }
+        const isDefaultLocale = defaultLocales.includes(locale)
+        const addDefaultTree = isDefaultLocale && options.strategy === 'prefix_and_default' && parent == null && !extra
+
+        // localize route again for strategy `prefix_and_default`
+        if (addDefaultTree && parent == null && !extra) {
+          localizedRoutes.push(...localizeRoute(route, { locales: [locale], extra: true }))
         }
+
+        const nameSegments = [localized.name, options.routesNameSeparator, locale]
+        if (extra) {
+          nameSegments.push(options.routesNameSeparator, options.defaultLocaleRouteNameSuffix)
+        }
+
+        // localize name if set
+        localized.name &&= join(...nameSegments)
+
+        // use custom path if found
+        localized.path = componentOptions.paths?.[locale] ?? localized.path
+
+        const localePrefixable = prefixLocalizedRoute(
+          { defaultLocale: isDefaultLocale ? locale : options.defaultLocale, ...localized },
+          options,
+          extra
+        )
+        if (localePrefixable) {
+          localized.path = join('/', locale, localized.path)
+
+          if (isDefaultLocale && options.strategy === 'prefix' && options.includeUnprefixedFallback) {
+            localizedRoutes.push({ ...route, locale, parent })
+          }
+        }
+
+        localized.path &&= adjustRoutePathForTrailingSlash(localized, options.trailingSlash)
+
+        // remove parent path from child route
+        if (parentLocalized != null) {
+          localized.path = localized.path.replace(parentLocalized.path + '/', '')
+        }
+
+        // localize child routes if set
+        localized.children &&= localized.children.flatMap(child =>
+          localizeRoute(child, { locales: [locale], parent: route, parentLocalized: localized, extra })
+        )
+
+        localizedRoutes.push(localized)
       }
-
-      localized.path &&= adjustRoutePathForTrailingSlash(localized, options.trailingSlash)
-
-      // remove parent path from child route
-      if (parentLocalized != null) {
-        localized.path = localized.path.replace(parentLocalized.path + '/', '')
-      }
-
-      // localize child routes if set
-      localized.children &&= localized.children.flatMap(child =>
-        localizeRoute(child, { locales: [locale], parent: route, parentLocalized: localized, extra })
-      )
-
-      localizedRoutes.push(localized)
     }
 
     // remove properties used for localization process
