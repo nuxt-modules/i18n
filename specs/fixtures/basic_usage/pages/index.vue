@@ -58,7 +58,8 @@ route.meta.pageTransition = {
 }
 // @ts-ignore
 definePageMeta({
-  title: 'home'
+  title: 'home',
+  alias: ['/aliased-home-path']
 })
 
 const i18nHead = useLocaleHead({

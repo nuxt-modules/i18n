@@ -18,10 +18,16 @@ const debug = createDebug('@nuxtjs/i18n:pages')
 
 export type AnalyzedNuxtPageMeta = {
   inRoot: boolean
+  /**
+   * Analyzed path used to retrieve configured custom paths
+   */
   path: string
 }
 
 export type NuxtPageAnalyzeContext = {
+  /**
+   * Array of paths to track current route depth
+   */
   stack: string[]
   srcDir: string
   pagesDir: string
@@ -71,42 +77,47 @@ export function setupPages(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
 }
 
 /**
+ * Analyze page path
+ */
+function analyzePagePath(pagePath: string, parents = 0) {
+  const { dir, name } = parsePath(pagePath)
+
+  if (parents > 0 || dir !== '/') {
+    return `${dir.slice(1, dir.length)}/${name}`
+  }
+
+  return name
+}
+
+/**
  * Construct the map of full paths from NuxtPage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
-export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages: NuxtPage[], pageDirOverride?: string): void {
+export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages?: NuxtPage[], pageDirOverride?: string): void {
+  if (pages == null || pages.length === 0) return
+
   const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
-    if (page.file == null) {
-      continue
-    }
-    const splits = page.file.split(pagesPath)
-    if (splits.length === 2 && splits[1]) {
-      const { dir, name } = parsePath(splits[1])
-      let path = ''
-      if (ctx.stack.length > 0) {
-        path += `${dir.slice(1, dir.length)}/${name}`
-      } else {
-        if (dir !== '/') {
-          path += `${dir.slice(1, dir.length)}/`
-        }
-        path += name
-      }
-      const p: AnalyzedNuxtPageMeta = {
-        inRoot: ctx.stack.length === 0,
-        path
-      }
-      ctx.pages.set(page, p)
+    if (page.file == null) continue
 
-      if (page.children && page.children.length > 0) {
-        ctx.stack.push(page.path)
-        analyzeNuxtPages(ctx, page.children, pageDirOverride)
-        ctx.stack.pop()
-      }
-    }
+    const splits = page.file.split(pagesPath)
+    const filePath = splits.at(1)
+    if (filePath == null) continue
+
+    ctx.pages.set(page, {
+      path: analyzePagePath(filePath, ctx.stack.length),
+      inRoot: ctx.stack.length === 0
+    })
+
+    ctx.stack.push(page.path)
+    analyzeNuxtPages(ctx, page.children, pageDirOverride)
+    ctx.stack.pop()
   }
 }
 
+/**
+ * Function factory, returns a function based on the `customRoutes` option property
+ */
 export function getRouteOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
   options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'customRoutes'>
@@ -132,6 +143,9 @@ function resolveRoutePath(path: string): string {
   return routePath
 }
 
+/**
+ * Retrieve custom routes from i18n config `pages` property
+ */
 function getRouteOptionsFromPages(
   ctx: NuxtPageAnalyzeContext,
   route: NuxtPage,
@@ -189,6 +203,9 @@ function getRouteOptionsFromPages(
   return options
 }
 
+/**
+ * Retrieve custom routes by parsing page components and extracting argument passed to `defineI18nRoute()`
+ */
 function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
   debug('getRouteOptionsFromComponent', route)
   const file = route.file
@@ -227,6 +244,9 @@ function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
   return options
 }
 
+/**
+ * Parse page component at `target` and extract argument passed to `defineI18nRoute()`
+ */
 function readComponent(target: string) {
   let options: ComputedRouteOptions | false | undefined = undefined
 
