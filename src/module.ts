@@ -126,6 +126,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
       )
     }
 
+    if (nuxt.options.experimental.scanPageMeta === false) {
+      logger.warn(
+        "Route localization features (e.g. custom name, prefixed aliases) require Nuxt's `experimental.scanPageMeta` to be enabled.\nThis feature will be enabled in future Nuxt versions (https://github.com/nuxt/nuxt/pull/27134), check out the docs for more details: https://nuxt.com/docs/guide/going-further/experimental-features#scanpagemeta"
+      )
+    }
+
     /**
      * nuxt layers handling ...
      */
@@ -460,7 +466,7 @@ export interface ModuleHooks {
   ) => HookResult
 }
 
-export interface RuntimeModuleHooks {
+export interface ModuleRuntimeHooks {
   // NOTE: To make type inference work the function signature returns `HookResult`
   // Should return `string | void`
   'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
@@ -475,7 +481,7 @@ export interface RuntimeModuleHooks {
 
 // Used by module for type inference in source code
 declare module '#app' {
-  interface RuntimeNuxtHooks extends RuntimeModuleHooks {}
+  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
 }
 
 declare module '@nuxt/schema' {

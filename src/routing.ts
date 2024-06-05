@@ -1,4 +1,4 @@
-import { getNormalizedLocales } from './utils'
+import { getNormalizedLocales, toArray } from './utils'
 import { isObject } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
@@ -156,6 +156,35 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
         if (isDefaultLocale && options.strategy === 'prefix' && options.includeUnprefixedFallback) {
           localizedRoutes.push({ ...route, locale, parent })
         }
+      }
+
+      // TODO: alias custom paths?
+      // add prefixes to aliases where applicable
+      if (localized.alias) {
+        const aliases = toArray(localized.alias)
+        const localizedAliases: string | string[] | undefined = []
+
+        for (const alias of aliases) {
+          const aliasPrefixable = prefixLocalizedRoute(
+            { defaultLocale: isDefaultLocale ? locale : options.defaultLocale, ...localized, path: alias },
+            options,
+            extra
+          )
+
+          let localizedAlias = alias
+          if (aliasPrefixable) {
+            localizedAlias = join('/', locale, localizedAlias)
+          }
+
+          localizedAlias &&= adjustRoutePathForTrailingSlash(
+            { ...localized, path: localizedAlias },
+            options.trailingSlash
+          )
+
+          localizedAliases.push(localizedAlias)
+        }
+
+        localized.alias = localizedAliases
       }
 
       localized.path &&= adjustRoutePathForTrailingSlash(localized, options.trailingSlash)
