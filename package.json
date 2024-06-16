@@ -117,7 +117,7 @@
     "consola": "^3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
-    "execa": "^8.0.1",
+    "execa": "^9.2.0",
     "get-port-please": "^3.1.1",
     "gh-changelogen": "^0.2.8",
     "globals": "^15.0.0",
