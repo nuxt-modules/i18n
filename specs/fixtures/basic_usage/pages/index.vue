@@ -98,6 +98,10 @@ useHead({
       >:
       <code id="home-use-locale-head">{{ i18nHead }}</code>
     </section>
+    <section id="t-directive">
+      <p id="t-directive-path" v-t="'welcome'"></p>
+      <p id="t-directive-argument" v-t="{ path: 'helloMessage', args: { name: 'directive' } }"></p>
+    </section>
     <section id="locale-path-usages">
       <h3>localePath</h3>
       <ul>

@@ -55,9 +55,10 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
       allowDynamic: true,
       runtimeOnly: nuxtOptions.bundle.runtimeOnly,
       compositionOnly: nuxtOptions.bundle.compositionOnly,
-      jitCompilation: nuxtOptions.compilation.jit,
+      // jitCompilation: nuxtOptions.compilation.jit,
       onlyLocales: nuxtOptions.bundle.onlyLocales,
       dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false,
+      optimizeTranslationDirective: true,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml
     }
@@ -106,9 +107,10 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     compositionOnly: nuxtOptions.bundle.compositionOnly,
     fullInstall: nuxtOptions.bundle.fullInstall,
     onlyLocales: nuxtOptions.bundle.onlyLocales,
-    jitCompilation: nuxtOptions.compilation.jit,
+    // jitCompilation: nuxtOptions.compilation.jit,
     dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false,
     strictMessage: nuxtOptions.compilation.strictMessage,
+    optimizeTranslationDirective: true,
     escapeHtml: nuxtOptions.compilation.escapeHtml,
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
     globalSFCScope: nuxtOptions.customBlocks.globalSFCScope

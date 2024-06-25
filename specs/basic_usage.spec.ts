@@ -75,6 +75,18 @@ describe('basic usage', async () => {
     expect(await page.url()).include('/user/profile?foo=1')
   })
 
+  test('`v-t` directive SSR', async () => {
+    const pageHTML = await $fetch('/')
+    const pageDOM = getDom(pageHTML)
+    expect(pageDOM.querySelector('#t-directive #t-directive-path')?.textContent).toEqual('Welcome')
+    expect(pageDOM.querySelector('#t-directive #t-directive-argument')?.textContent).toEqual('Hello directive!')
+
+    const pageHTMLFrench = await $fetch('/fr')
+    const pageDOMFrench = getDom(pageHTMLFrench)
+    expect(pageDOMFrench.querySelector('#t-directive #t-directive-path')?.textContent).toEqual('Bienvenue')
+    expect(pageDOMFrench.querySelector('#t-directive #t-directive-argument')?.textContent).toEqual('Bonjour directive!')
+  })
+
   test('nuxt context extension', async () => {
     const { page } = await renderPage('/nuxt-context-extension')
 
