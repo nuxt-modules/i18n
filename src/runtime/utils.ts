@@ -126,7 +126,7 @@ export async function loadAndSetLocale(
   __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
 
   // `newLocale` is unset or empty
-  if (!newLocale) {
+  if (!newLocale || oldLocale === newLocale) {
     syncCookie()
     return false
   }

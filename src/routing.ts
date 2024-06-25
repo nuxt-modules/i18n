@@ -26,7 +26,13 @@ export function prefixLocalizedRoute(
   options: LocalizeRoutesParams,
   extra = false
 ): boolean {
-  const isDefaultLocale = localizeOptions.locale === (localizeOptions.defaultLocale ?? '')
+  const domainDefaults = options.differentDomains
+    ? options.locales
+        .filter(locale => (isObject(locale) ? locale.domainDefault : false))
+        .map(locale => (isObject(locale) ? locale.code : ''))
+    : []
+  const isDefaultLocale =
+    localizeOptions.locale === (localizeOptions.defaultLocale ?? '') || domainDefaults.includes(localizeOptions.locale)
   const isChildWithRelativePath = localizeOptions.parent != null && !localizeOptions.path.startsWith('/')
 
   // no need to add prefix if child's path is relative
