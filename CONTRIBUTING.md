@@ -18,6 +18,12 @@ pnpm i
 
 Note: This project is using `pnpm`.
 
+- Setup type generation
+
+```sh
+pnpm dev:prepare
+```
+
 - Create a new branch for your changes:
 
 ```sh
@@ -25,12 +31,13 @@ git checkout -b my-new-feature
 ```
 
 - Code, code, code!
-- Run ESLint and Vitest
+- Run ESLint, Prettier and Vitest
 
 ```sh
-pnpm fix
-pnpm test:unit
-pnpm test:e2e
+pnpm lint # lint and format check
+pnpm fix  # auto fix for lint and format
+pnpm test:unit # unit tests
+pnpm test:spec # e2e tests
 ```
 
 - Commit and push your changes
