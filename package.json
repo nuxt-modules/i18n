@@ -67,7 +67,7 @@
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
-  "packageManager": "pnpm@8.15.4",
+  "packageManager": "pnpm@9.4.0",
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
