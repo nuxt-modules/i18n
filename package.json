@@ -60,8 +60,6 @@
     "fix": "run-s \"fix:*\"",
     "fix:prettier": "prettier . --write",
     "fix:eslint": "pnpm lint:eslint --fix",
-    "format": "prettier --config .prettierrc.mjs --ignore-path .prettierignore --list-different '**/*.{js,json,html,md}'",
-    "format:fix": "pnpm format --write",
     "lint": "run-p \"lint:* {@}\" --",
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint .",
