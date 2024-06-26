@@ -75,7 +75,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     }
 
     extendWebpackConfig(config => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
       config.plugins!.push(
         new webpack.DefinePlugin(
           assign(

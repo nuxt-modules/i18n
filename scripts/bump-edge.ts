@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { promises as fsp } from 'node:fs'
 import { execSync } from 'node:child_process'
 import { resolve } from 'pathe'
@@ -16,8 +17,8 @@ async function loadPackage(dir: string) {
       if (!data[type]) {
         continue
       }
-      for (const e of Object.entries(data[type])) {
-        const dep: Dep = { name: e[0], range: e[1] as string, type }
+      for (const e of Object.entries(data[type] as Record<string, string>)) {
+        const dep: Dep = { name: e[0], range: e[1], type }
         delete data[type][dep.name]
         const updated = reviver(dep) || dep
         data[updated.type] = data[updated.type] || {}
@@ -40,7 +41,7 @@ type Package = ThenArg<ReturnType<typeof loadPackage>>
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function loadWorkspace(dir: string) {
   const workspacePkg = await loadPackage(dir)
-  let pkgDirs = await globby(workspacePkg.data.workspaces || [], { onlyDirectories: true })
+  let pkgDirs = await globby((workspacePkg.data.workspaces as string[]) || [], { onlyDirectories: true })
   // filter
   pkgDirs = pkgDirs.map(dir => (!dir.startsWith('specs/fixtures') ? dir : undefined)).filter(Boolean) as string[]
   console.log('pkgDirs', pkgDirs)
@@ -73,6 +74,7 @@ async function loadWorkspace(dir: string) {
       })
     }
     // Update resolutions field in the root package.json.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, no-prototype-builtins
     if (workspacePkg.data.resolutions?.hasOwnProperty(from)) {
       workspacePkg.data.resolutions[to] = workspacePkg.data.resolutions[from]
       delete workspacePkg.data.resolutions[from]
@@ -127,3 +129,5 @@ main().catch(err => {
   console.error(err)
   process.exit(1)
 })
+
+/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */

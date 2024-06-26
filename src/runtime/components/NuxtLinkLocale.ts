@@ -10,6 +10,7 @@ const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
 
 export default defineComponent<NuxtLinkProps & { locale?: string }>({
   name: 'NuxtLinkLocale',
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
   props: {
     ...NuxtLinkLocale.props,
     locale: {

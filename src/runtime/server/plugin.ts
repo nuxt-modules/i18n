@@ -7,17 +7,19 @@ import { localeDetector as _localeDetector } from '#internal/i18n/locale.detecto
 import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadAndSetLocaleMessages } from '../messages'
 
 import type { H3Event } from 'h3'
-import type { Locale, FallbackLocale, DefineLocaleMessage } from 'vue-i18n'
+import type { Locale, DefineLocaleMessage } from 'vue-i18n'
 import type { CoreContext } from '@intlify/h3'
 import type { NuxtApp } from 'nuxt/app'
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 const nuxtMock: { runWithContext: NuxtApp['runWithContext'] } = { runWithContext: async fn => await fn() }
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 export default defineNitroPlugin(async nitro => {
   // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue-i18n options
-  const options = (await loadVueI18nOptions(vueI18nConfigs, nuxtMock)) as any // eslint-disable-line @typescript-eslint/no-explicit-any
+  const options = await loadVueI18nOptions(vueI18nConfigs, nuxtMock)
   options.messages = options.messages || {}
-  const fallbackLocale = (options.fallbackLocale = options.fallbackLocale ?? false) as FallbackLocale
+  const fallbackLocale = (options.fallbackLocale = options.fallbackLocale ?? false)
 
   const runtimeI18n = useRuntimeConfig().public.i18n
   const initialLocale = runtimeI18n.defaultLocale || options.locale || 'en-US'
@@ -35,7 +37,11 @@ export default defineNitroPlugin(async nitro => {
     event: H3Event,
     i18nContext: CoreContext<string, DefineLocaleMessage>
   ): Promise<Locale> => {
-    const locale = _localeDetector(event, { defaultLocale: initialLocale, fallbackLocale: options.fallbackLocale })
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const locale = _localeDetector(event, {
+      defaultLocale: initialLocale,
+      fallbackLocale: options.fallbackLocale
+    }) as Locale
     if (runtimeI18n.lazy) {
       if (fallbackLocale) {
         const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
@@ -51,7 +57,7 @@ export default defineNitroPlugin(async nitro => {
   const { onRequest, onAfterResponse } = defineI18nMiddleware({
     ...options,
     locale: localeDetector
-  })
+  } as any) // eslint-disable-line @typescript-eslint/no-explicit-any -- FIXME: option type should be exported `@intlify/h3`
 
   nitro.hooks.hook('request', onRequest)
   nitro.hooks.hook('afterResponse', onAfterResponse)

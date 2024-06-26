@@ -231,7 +231,7 @@ test('toCode: function (arrow)', async () => {
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
   const localeInfo = LOCALE_INFO.map(locale => ({
     ...locale,
-    testFunc: (prop: unknown) => {
+    testFunc: (prop: string) => {
       return `Hello ${prop}`
     }
   }))
@@ -253,7 +253,7 @@ test('toCode: function (named)', async () => {
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
   const localeInfo = LOCALE_INFO.map(locale => ({
     ...locale,
-    testFunc(prop: unknown) {
+    testFunc(prop: string) {
       return `Hello ${prop}`
     }
   }))

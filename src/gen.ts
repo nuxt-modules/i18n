@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import createDebug from 'debug'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 import { genImport, genDynamicImport } from 'knitwork'
@@ -40,7 +38,7 @@ export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
     options?.i18nModules?.some(module => isLocaleObjectsArray(module?.locales))
 
   const locales = (options.locales ?? []) as LocaleObject[]
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   return locales.map(({ meta, ...locale }) => {
     if (!hasLocaleObjects) {
       return locale.code
@@ -209,5 +207,3 @@ ${options.experimental?.autoImportTranslationFunctions && globalTranslationTypes
 
 export {}`
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */

@@ -41,6 +41,7 @@ export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
   const target = getI18nTarget(i18n)
 
   if (isComposer(target)) return target
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (isVueI18n(target)) return (target as any).__composer as Composer
 
   return target
@@ -233,7 +234,7 @@ export function findBrowserLocale(
   locales: LocaleObject[],
   browserLocales: string[],
   { matcher = DefaultBrowserLocaleMatcher, comparer = DefaultBrowerLocaleComparer }: FindBrowserLocaleOptions = {}
-): string | '' {
+): string {
   const normalizedLocales = []
   for (const l of locales) {
     const { code } = l

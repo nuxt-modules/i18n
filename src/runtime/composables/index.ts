@@ -157,7 +157,7 @@ export function useLocaleHead({
       addDirAttribute,
       addSeoAttributes,
       identifierAttribute
-    }) as I18nHeadMetaInfo
+    })
   }
 
   if (import.meta.client) {
@@ -380,7 +380,7 @@ export function useCookieLocale(): Ref<string> {
       code = useNuxtCookie<string>(cookieKey).value
     } else if (import.meta.server) {
       const cookie = useRequestHeaders(['cookie'])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       code = (cookie as any)[cookieKey]
     }
 

@@ -36,7 +36,11 @@ export type LocaleInfo = {
   paths?: string[]
   hashes?: string[]
   types?: LocaleType[]
-} & Omit<LocaleObject, 'file' | 'files'> & { files: LocaleFile[]; meta?: (FileMeta & { file: LocaleFile })[] }
+} & Omit<LocaleObject, 'file' | 'files'> & {
+    code: Locale
+    files: LocaleFile[]
+    meta?: (FileMeta & { file: LocaleFile })[]
+  }
 
 export type FileMeta = {
   path: string

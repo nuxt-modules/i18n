@@ -42,7 +42,7 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
       return isVue(id, { type: ['script'] })
     },
 
-    async transform(code, id) {
+    transform(code, id) {
       debug('transform', id)
 
       // only transform if translation functions are present
@@ -130,7 +130,7 @@ export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18
         s.overwrite(
           scriptSetup.loc.start.offset,
           scriptSetup.loc.end.offset,
-          `\nconst { ${assignments.join(', ')} } = useI18n()\n` + scriptSetup!.content
+          `\nconst { ${assignments.join(', ')} } = useI18n()\n` + scriptSetup.content
         )
       }
 

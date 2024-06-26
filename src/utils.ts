@@ -79,7 +79,6 @@ export async function resolveLocales(
   const find = (f: string) => files.find(file => file === resolve(path, f))
   const localesResolved: LocaleInfo[] = []
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const { file, ...locale } of locales) {
     const resolved: LocaleInfo = { ...locale, files: [], meta: undefined }
     const files = getLocaleFiles(locale)
@@ -135,7 +134,6 @@ const PARSE_CODE_CACHES = new Map<string, ReturnType<typeof _parseCode>>()
 
 function parseCode(code: string, path: string) {
   if (PARSE_CODE_CACHES.has(path)) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return PARSE_CODE_CACHES.get(path)!
   }
 
@@ -185,7 +183,7 @@ function scanProgram(program: File['program'] /*, calleeName: string*/) {
       for (const decl of node.declarations) {
         if (decl.type !== 'VariableDeclarator') continue
         if (decl.init == null) continue
-        if ('name' in decl.id === false || decl.id.name !== variableDeclaration!.name) continue
+        if ('name' in decl.id === false || decl.id.name !== variableDeclaration.name) continue
 
         if (decl.init.type === 'ObjectExpression') {
           ret = 'object'
@@ -244,7 +242,7 @@ export async function isExists(path: string) {
   try {
     await fs.access(path, FS_CONSTANTS.F_OK)
     return true
-  } catch (e) {
+  } catch (_e) {
     return false
   }
 }
@@ -314,7 +312,9 @@ export function toCode(code: any): string {
     return code.toString()
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (isFunction(code) && code.toString) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     return `(${code.toString().replace(new RegExp(`^${code.name}`), 'function ')})`
   }
 
@@ -460,14 +460,13 @@ export const resolveRelativeLocales = (
   locale: LocaleObject | string,
   merged: LocaleObject | undefined
 ) => {
-  if (typeof locale === 'string') return merged ?? { iso: locale, code: locale }
+  if (isString(locale)) return merged ?? { iso: locale, code: locale }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { file, files, ...entry } = locale
 
   const fileEntries = getLocaleFiles(locale)
   const relativeFiles = relativeFileResolver(fileEntries)
-  const mergedLocaleObject = typeof merged === 'string' ? undefined : merged
+  const mergedLocaleObject = isString(merged) ? undefined : merged
   return {
     ...entry,
     ...mergedLocaleObject,
@@ -478,11 +477,11 @@ export const resolveRelativeLocales = (
 
 export const getLocalePaths = (locale: LocaleObject): string[] => {
   if (locale.file != null) {
-    return [locale.file as unknown as LocaleFile].map(x => (typeof x === 'string' ? x : x.path))
+    return [locale.file as unknown as LocaleFile].map(x => (isString(x) ? x : x.path))
   }
 
   if (locale.files != null) {
-    return [...locale.files].map(x => (typeof x === 'string' ? x : x.path))
+    return [...locale.files].map(x => (isString(x) ? x : x.path))
   }
 
   return []
@@ -490,12 +489,11 @@ export const getLocalePaths = (locale: LocaleObject): string[] => {
 
 export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
   if (locale.file != null) {
-    // @ts-ignore
-    return [locale.file].map(x => (typeof x === 'string' ? { path: x, cache: undefined } : x))
+    return [locale.file].map(x => (isString(x) ? { path: x, cache: undefined } : (x as LocaleFile)))
   }
 
   if (locale.files != null) {
-    return [...locale.files].map(x => (typeof x === 'string' ? { path: x, cache: undefined } : x))
+    return [...locale.files].map(x => (isString(x) ? { path: x, cache: undefined } : x))
   }
 
   return []
@@ -528,7 +526,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
   const mergedLocales = new Map<string, LocaleObject>()
   baseLocales.forEach(locale => mergedLocales.set(locale.code, locale))
 
-  const getLocaleCode = (val: string | LocaleObject) => (typeof val === 'string' ? val : val.code)
+  const getLocaleCode = (val: string | LocaleObject) => (isString(val) ? val : val.code)
 
   for (const { locales, langDir, projectLangDir } of configs) {
     if (locales == null) continue
