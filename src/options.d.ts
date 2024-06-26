@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { NuxtI18nOptions, VueI18nConfig } from './types'
+import type { NuxtI18nOptions, VueI18nConfig, LocaleObject } from './types'
 import type { DeepRequired } from 'ts-essentials'
 
 export type * from './types'

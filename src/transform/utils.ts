@@ -3,8 +3,8 @@ import { parseQuery, parseURL } from 'ufo'
 
 import type { UnpluginContextMeta } from 'unplugin'
 
-export const VIRTUAL_PREFIX = '\0' as const
-export const VIRTUAL_PREFIX_HEX = '\x00' as const
+export const VIRTUAL_PREFIX = '\0'
+export const VIRTUAL_PREFIX_HEX = '\x00'
 
 export function getVirtualId(id: string, framework: UnpluginContextMeta['framework'] = 'vite') {
   // prettier-ignore

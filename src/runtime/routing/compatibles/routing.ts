@@ -169,12 +169,14 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
           defaultLocaleRouteNameSuffix
         }),
         // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
         params: resolvedRoute.params,
         query: resolvedRoute.query,
         hash: resolvedRoute.hash
       } as RouteLocationNamedRaw
 
       // @ts-expect-error
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access -- FIXME
       localizedRoute.state = (resolvedRoute as ResolveV4).state
     } else {
       // if route has a path defined but no name, resolve full route using the path
@@ -222,7 +224,7 @@ function getLocalizableMetaFromDynamicParams(
   route: RouteLocationNormalizedLoaded
 ): Record<Locale, Record<string, unknown>> {
   if (common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR) {
-    return unref(common.metaState.value) as Record<Locale, any>
+    return unref(common.metaState.value)
   }
 
   const meta = route.meta || {}

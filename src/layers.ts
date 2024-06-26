@@ -19,7 +19,7 @@ import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './typ
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
-export const checkLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
+export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
   const logger = useLogger(NUXT_I18N_MODULE_ID)
   const project = nuxt.options._layers[0]
   const layers = nuxt.options._layers
@@ -113,7 +113,7 @@ export const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
       const i18n = getLayerI18n(layer)
       return {
         ...i18n,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
         langDir: resolve(layer.config.srcDir, i18n?.langDir ?? layer.config.srcDir),
         projectLangDir
       }
@@ -172,7 +172,7 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
       const i18n = getLayerI18n(layer)
       // @ts-ignore
       return resolve(layer.config.srcDir, i18n.langDir)
-    }) as string[]
+    })
 }
 
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt: Nuxt, buildDir: string) {

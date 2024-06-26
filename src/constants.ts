@@ -1,14 +1,14 @@
-export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n' as const
-export const VUE_I18N_PKG = 'vue-i18n' as const
-export const SHARED_PKG = '@intlify/shared' as const
-export const MESSAGE_COMPILER_PKG = '@intlify/message-compiler' as const
-export const CORE_PKG = '@intlify/core' as const
-export const CORE_BASE_PKG = '@intlify/core-base' as const
-export const H3_PKG = '@intlify/h3' as const
-export const UTILS_PKG = '@intlify/utils' as const
-export const UTILS_H3_PKG = '@intlify/utils/h3' as const
-export const UFO_PKG = 'ufo' as const
-export const IS_HTTPS_PKG = 'is-https' as const
+export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n'
+export const VUE_I18N_PKG = 'vue-i18n'
+export const SHARED_PKG = '@intlify/shared'
+export const MESSAGE_COMPILER_PKG = '@intlify/message-compiler'
+export const CORE_PKG = '@intlify/core'
+export const CORE_BASE_PKG = '@intlify/core-base'
+export const H3_PKG = '@intlify/h3'
+export const UTILS_PKG = '@intlify/utils'
+export const UTILS_H3_PKG = '@intlify/utils/h3'
+export const UFO_PKG = 'ufo'
+export const IS_HTTPS_PKG = 'is-https'
 
 // Options
 const STRATEGY_PREFIX = 'prefix'
@@ -79,14 +79,14 @@ export const DEFAULT_OPTIONS = {
   parallelPlugin: false
 } as const
 
-export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs' as const
-export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute' as const
-export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale' as const
-export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig' as const
-export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR = 'defineI18nLocaleDetector' as const
+export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs'
+export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute'
+export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale'
+export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig'
+export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR = 'defineI18nLocaleDetector'
 
 export const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
 export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
 export const EXECUTABLE_EXTENSIONS = [...JS_EXTENSIONS, ...TS_EXTENSIONS]
 
-export const NULL_HASH = '00000000' as const
+export const NULL_HASH = '00000000'

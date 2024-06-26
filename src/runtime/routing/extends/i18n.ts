@@ -77,6 +77,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
 ) {
   const scope = effectScope()
 
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const orgInstall = i18n.install
   // @ts-ignore
   i18n.install = (vue: NuxtApp['vueApp'], ...options: unknown[]) => {
@@ -128,7 +129,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
     })
 
     // extend vue component instance for Vue 3
-    const app = vue as NuxtApp['vueApp']
+    const app = vue
 
     // prettier-ignore
     const exported = i18n.mode === 'composition'
@@ -157,6 +158,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
 
     // dispose when app will be unmounting
     if (app.unmount) {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       const unmountApp = app.unmount
       app.unmount = () => {
         scope.stop()

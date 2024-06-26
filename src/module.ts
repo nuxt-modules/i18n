@@ -200,7 +200,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     if (options.strategy !== 'no_prefix' && localeCodes.length) {
-      await setupPages(options, nuxt)
+      setupPages(options, nuxt)
     }
 
     /**
@@ -273,7 +273,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * `PageMeta` augmentation to add `nuxtI18n` property
      * TODO: Remove in v9, `useSetI18nParams` should be used instead
      */
-    if (!!options.dynamicRouteParams) {
+    if (options.dynamicRouteParams) {
       addTypeTemplate({
         filename: 'types/i18n-page-meta.d.ts',
         getContents: () => generateI18nPageTypes()
@@ -310,7 +310,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend bundler
      */
 
-    await extendBundler(nuxt, options as Required<NuxtI18nOptions>)
+    await extendBundler(nuxt, options)
 
     /**
      * setup nitro
@@ -338,7 +338,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filePath: resolve(runtimeDir, 'components/SwitchLocalePathLink')
     })
 
-    await addImports([
+    addImports([
       { name: 'useI18n', from: vueI18nPath },
       ...[
         'useRouteBaseName',

@@ -113,7 +113,7 @@ describe.each([
     ]
   }
 ])('Module configuration', ({ case: _case, options, pages }) => {
-  test(_case, async () => {
+  test(_case, () => {
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
     const srcDir = '/path/to/nuxt-app'
@@ -183,7 +183,7 @@ describe.each([
     ]
   }
 ])('Page components', ({ case: _case, options, pages }) => {
-  test(_case, async () => {
+  test(_case, () => {
     const srcDir = '/path/to/nuxt-app'
     const pagesDir = 'pages'
     const ctx: NuxtPageAnalyzeContext = {
@@ -203,7 +203,7 @@ describe.each([
   })
 })
 
-test('#1649', async () => {
+test('#1649', () => {
   const pages = [
     {
       path: '/account',

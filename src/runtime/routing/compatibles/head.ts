@@ -5,6 +5,7 @@ import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { isArray, isObject } from '@intlify/shared'
 import { joinURL } from 'ufo'
 
+import type { I18n } from 'vue-i18n'
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'
 import type { CommonComposableOptions } from '../../utils'
 
@@ -74,7 +75,7 @@ export function localeHead(
 
 function getBaseUrl() {
   const nuxtApp = useNuxtApp()
-  const i18n = getComposer(nuxtApp.$i18n)
+  const i18n = getComposer(nuxtApp.$i18n as I18n)
   return joinURL(unref(i18n.baseUrl), nuxtApp.$config.app.baseURL)
 }
 

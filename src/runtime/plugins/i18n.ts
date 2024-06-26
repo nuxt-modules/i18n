@@ -120,7 +120,7 @@ export default defineNuxtPlugin({
      *  avoid hydration mismatch for SSG mode
      */
     if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
-      nuxt.hook('app:mounted', async () => {
+      nuxt.hook('app:mounted', () => {
         __DEBUG__ && console.log('hook app:mounted')
         const {
           locale: browserLocale,
@@ -209,9 +209,11 @@ export default defineNuxtPlugin({
           composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
           composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
-            nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context })
+            nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context }) as Promise<
+              string | void
+            >
           composer.onLanguageSwitched = (oldLocale, newLocale) =>
-            nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale })
+            nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
 
           composer.finalizePendingLocaleChange = async () => {
             if (!i18n.__pendingLocale) {
@@ -219,6 +221,7 @@ export default defineNuxtPlugin({
             }
             setLocale(i18n, i18n.__pendingLocale)
             if (i18n.__resolvePendingLocalePromise) {
+              // eslint-disable-next-line @typescript-eslint/await-thenable -- FIXME: `__resolvePendingLocalePromise` should be `Promise<void>`
               await i18n.__resolvePendingLocalePromise()
             }
             i18n.__pendingLocale = undefined
@@ -273,7 +276,6 @@ export default defineNuxtPlugin({
             },
             onBeforeLanguageSwitch: {
               get() {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
                   Reflect.apply(g.onBeforeLanguageSwitch, g, [oldLocale, newLocale, initialSetup, context])
               }
@@ -345,7 +347,6 @@ export default defineNuxtPlugin({
             },
             onBeforeLanguageSwitch: {
               get() {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
                   Reflect.apply(composer.onBeforeLanguageSwitch, composer, [
                     oldLocale,
@@ -408,7 +409,7 @@ export default defineNuxtPlugin({
         [
           `<!--${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-\\[(\\w+)\\]-->`,
           `.+?`,
-          `<!--\/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->`
+          `<!--/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->`
         ].join(''),
         'g'
       )
@@ -427,7 +428,7 @@ export default defineNuxtPlugin({
 
     addRouteMiddleware(
       'locale-changing',
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       defineNuxtRouteMiddleware(async (to, from) => {
         __DEBUG__ && console.log('locale-changing middleware', to, from)
 

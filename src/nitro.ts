@@ -33,19 +33,21 @@ export async function setupNitro(
   nuxtOptions: Required<NuxtI18nOptions>,
   additionalParams: AdditionalSetupNitroParams
 ) {
-  const { resolve } = createResolver(import.meta.url)
+  const resolver = createResolver(import.meta.url)
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
   nuxt.hook('nitro:config', async nitroConfig => {
     if (enableServerIntegration) {
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {}, {
-        inline: [resolve('./runtime')]
+        inline: [resolver.resolve('./runtime')]
       })
 
       // install server resource transform plugin for yaml / json5 format
       nitroConfig.rollupConfig = nitroConfig.rollupConfig || {}
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- FIXME
       nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- FIXME
       nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
         ? nitroConfig.rollupConfig.plugins
         : [nitroConfig.rollupConfig.plugins]
@@ -83,18 +85,18 @@ export { localeDetector }
             ...h3UtilsExports.map(key => ({
               name: key,
               as: key,
-              from: resolve(nuxt.options.alias[UTILS_H3_PKG])
+              from: resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
             })),
             ...[NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
               name: key,
               as: key,
-              from: resolve('runtime/composables/shared')
+              from: resolver.resolve('runtime/composables/shared')
             })),
             ...[
               {
                 name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
                 as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
-                from: resolve('runtime/composables/server')
+                from: resolver.resolve('runtime/composables/server')
               }
             ]
           ]
@@ -124,7 +126,7 @@ export { localeDetector }
 
   // add nitro plugin
   if (enableServerIntegration) {
-    await addServerPlugin(resolve('runtime/server/plugin'))
+    addServerPlugin(resolver.resolve('runtime/server/plugin'))
   }
 }
 
@@ -136,7 +138,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
 
   if (serverI18nLayer != null) {
     const pathTo = resolve(serverI18nLayer.config.rootDir, serverI18nLayer.config.i18n!.experimental!.localeDetector!)
-    const localeDetectorPath = await resolvePath(pathTo!, {
+    const localeDetectorPath = await resolvePath(pathTo, {
       cwd: nuxt.options.rootDir,
       extensions: EXECUTABLE_EXTENSIONS
     })
