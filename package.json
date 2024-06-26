@@ -115,7 +115,7 @@
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
     "consola": "^3",
-    "eslint": "^8.57.0",
+    "eslint": "^9.5.0",
     "eslint-config-prettier": "^9.0.0",
     "execa": "^9.3.0",
     "get-port-please": "^3.1.1",
