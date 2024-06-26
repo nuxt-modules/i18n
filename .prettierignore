@@ -4,3 +4,4 @@ coverage
 .output
 docs/content
 .vscode/settings.json
+pnpm-lock.yaml
