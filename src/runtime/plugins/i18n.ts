@@ -1,15 +1,8 @@
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
-import {
-  localeCodes,
-  vueI18nConfigs,
-  isSSG,
-  localeLoaders,
-  parallelPlugin,
-  normalizedLocales
-} from '#build/i18n.options.mjs'
-import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
+import { localeCodes, vueI18nConfigs, isSSG, localeLoaders, parallelPlugin } from '#build/i18n.options.mjs'
+import { loadVueI18nOptions, loadInitialMessages } from '../messages'
 import {
   loadAndSetLocale,
   detectLocale,
@@ -17,24 +10,20 @@ import {
   navigate,
   injectNuxtHelpers,
   extendBaseUrl,
-  _setLocale,
-  mergeLocaleMessage
+  _setLocale
 } from '../utils'
 import {
-  getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
-  setLocaleCookie as _setLocaleCookie,
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult,
   getI18nCookie,
   runtimeDetectBrowserLanguage
 } from '../internal'
-import { getComposer, getLocale, setLocale } from '../routing/utils'
+import { getLocale } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 
-import type { Composer, Locale, I18nOptions } from 'vue-i18n'
+import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
 import type {
   LocaleHeadFunction,
@@ -107,8 +96,8 @@ export default defineNuxtPlugin({
     // create i18n instance
     const i18n = createI18n({ ...vueI18nOptions, locale: initialLocale })
 
-    let notInitialSetup = true
-    const isInitialLocaleSetup = (locale: Locale) => initialLocale !== locale && notInitialSetup
+    const notInitialSetup = ref(true)
+    const isInitialLocaleSetup = (locale: Locale) => initialLocale !== locale && notInitialSetup.value
 
     let ssgModeInitialSetup = true
     const isSSGModeInitialSetup = () => isSSG && ssgModeInitialSetup
@@ -153,248 +142,16 @@ export default defineNuxtPlugin({
 
     // extend i18n instance
     extendI18n(i18n, {
-      locales: runtimeI18n.configLocales,
+      runtimeI18n,
+      notInitialSetup,
+      isInitialLocaleSetup,
+      _detectBrowserLanguage,
+      localeCookie,
       localeCodes,
-      baseUrl: runtimeI18n.baseUrl,
-      context: nuxtContext,
-      hooks: {
-        onExtendComposer(composer: Composer) {
-          composer.strategy = runtimeI18n.strategy
-          composer.localeProperties = computed(
-            () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
-          )
-          composer.setLocale = async (locale: string) => {
-            const localeSetup = isInitialLocaleSetup(locale)
-            const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
-
-            if (modified && localeSetup) {
-              notInitialSetup = false
-            }
-
-            const redirectPath = await nuxtContext.runWithContext(() =>
-              detectRedirect({
-                route: { to: route },
-                targetLocale: locale,
-                routeLocaleGetter: getLocaleFromRoute
-              })
-            )
-            __DEBUG__ && console.log('redirectPath on setLocale', redirectPath)
-
-            await nuxtContext.runWithContext(
-              async () =>
-                await navigate(
-                  {
-                    nuxtApp: nuxtContext,
-                    i18n,
-                    redirectPath,
-                    locale,
-                    route
-                  },
-                  { enableNavigate: true }
-                )
-            )
-          }
-          composer.loadLocaleMessages = async (locale: string) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
-            await loadLocale(locale, localeLoaders, setter)
-          }
-          composer.differentDomains = runtimeI18n.differentDomains
-          composer.defaultLocale = runtimeI18n.defaultLocale
-          composer.getBrowserLocale = () => _getBrowserLocale()
-          composer.getLocaleCookie = () =>
-            _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
-          composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
-
-          composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
-            nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context }) as Promise<
-              string | void
-            >
-          composer.onLanguageSwitched = (oldLocale, newLocale) =>
-            nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
-
-          composer.finalizePendingLocaleChange = async () => {
-            if (!i18n.__pendingLocale) {
-              return
-            }
-            setLocale(i18n, i18n.__pendingLocale)
-            if (i18n.__resolvePendingLocalePromise) {
-              // eslint-disable-next-line @typescript-eslint/await-thenable -- FIXME: `__resolvePendingLocalePromise` should be `Promise<void>`
-              await i18n.__resolvePendingLocalePromise()
-            }
-            i18n.__pendingLocale = undefined
-          }
-          composer.waitForPendingLocaleChange = async () => {
-            if (i18n.__pendingLocale && i18n.__pendingLocalePromise) {
-              await i18n.__pendingLocalePromise
-            }
-          }
-        },
-        onExtendExportedGlobal(g: Composer): ExtendPropertyDescriptors {
-          return {
-            strategy: {
-              get() {
-                return g.strategy
-              }
-            },
-            localeProperties: {
-              get() {
-                return g.localeProperties.value
-              }
-            },
-            setLocale: {
-              get() {
-                return async (locale: string) => Reflect.apply(g.setLocale, g, [locale])
-              }
-            },
-            differentDomains: {
-              get() {
-                return g.differentDomains
-              }
-            },
-            defaultLocale: {
-              get() {
-                return g.defaultLocale
-              }
-            },
-            getBrowserLocale: {
-              get() {
-                return () => Reflect.apply(g.getBrowserLocale, g, [])
-              }
-            },
-            getLocaleCookie: {
-              get() {
-                return () => Reflect.apply(g.getLocaleCookie, g, [])
-              }
-            },
-            setLocaleCookie: {
-              get() {
-                return (locale: string) => Reflect.apply(g.setLocaleCookie, g, [locale])
-              }
-            },
-            onBeforeLanguageSwitch: {
-              get() {
-                return (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
-                  Reflect.apply(g.onBeforeLanguageSwitch, g, [oldLocale, newLocale, initialSetup, context])
-              }
-            },
-            onLanguageSwitched: {
-              get() {
-                return (oldLocale: string, newLocale: string) =>
-                  Reflect.apply(g.onLanguageSwitched, g, [oldLocale, newLocale])
-              }
-            },
-            finalizePendingLocaleChange: {
-              get() {
-                return () => Reflect.apply(g.finalizePendingLocaleChange, g, [])
-              }
-            },
-            waitForPendingLocaleChange: {
-              get() {
-                return () => Reflect.apply(g.waitForPendingLocaleChange, g, [])
-              }
-            }
-          }
-        },
-        onExtendVueI18n(composer: Composer): ExtendPropertyDescriptors {
-          return {
-            strategy: {
-              get() {
-                return composer.strategy
-              }
-            },
-            localeProperties: {
-              get() {
-                return composer.localeProperties.value
-              }
-            },
-            setLocale: {
-              get() {
-                return async (locale: string) => Reflect.apply(composer.setLocale, composer, [locale])
-              }
-            },
-            loadLocaleMessages: {
-              get() {
-                return async (locale: string) => Reflect.apply(composer.loadLocaleMessages, composer, [locale])
-              }
-            },
-            differentDomains: {
-              get() {
-                return composer.differentDomains
-              }
-            },
-            defaultLocale: {
-              get() {
-                return composer.defaultLocale
-              }
-            },
-            getBrowserLocale: {
-              get() {
-                return () => Reflect.apply(composer.getBrowserLocale, composer, [])
-              }
-            },
-            getLocaleCookie: {
-              get() {
-                return () => Reflect.apply(composer.getLocaleCookie, composer, [])
-              }
-            },
-            setLocaleCookie: {
-              get() {
-                return (locale: string) => Reflect.apply(composer.setLocaleCookie, composer, [locale])
-              }
-            },
-            onBeforeLanguageSwitch: {
-              get() {
-                return (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
-                  Reflect.apply(composer.onBeforeLanguageSwitch, composer, [
-                    oldLocale,
-                    newLocale,
-                    initialSetup,
-                    context
-                  ])
-              }
-            },
-            onLanguageSwitched: {
-              get() {
-                return (oldLocale: string, newLocale: string) =>
-                  Reflect.apply(composer.onLanguageSwitched, composer, [oldLocale, newLocale])
-              }
-            },
-            finalizePendingLocaleChange: {
-              get() {
-                return () => Reflect.apply(composer.finalizePendingLocaleChange, composer, [])
-              }
-            },
-            waitForPendingLocaleChange: {
-              get() {
-                return () => Reflect.apply(composer.waitForPendingLocaleChange, composer, [])
-              }
-            }
-          }
-        }
-      }
+      nuxtContext
     })
 
-    // vue-i18n installation
-    const pluginOptions: VueI18nRoutingPluginOptions = {
-      __composerExtend: (c: Composer) => {
-        const g = getComposer(i18n)
-        c.strategy = g.strategy
-        c.localeProperties = computed(() => g.localeProperties.value)
-        c.setLocale = g.setLocale
-        c.differentDomains = g.differentDomains
-        c.getBrowserLocale = g.getBrowserLocale
-        c.getLocaleCookie = g.getLocaleCookie
-        c.setLocaleCookie = g.setLocaleCookie
-        c.onBeforeLanguageSwitch = g.onBeforeLanguageSwitch
-        c.onLanguageSwitched = g.onLanguageSwitched
-        c.finalizePendingLocaleChange = g.finalizePendingLocaleChange
-        c.waitForPendingLocaleChange = g.waitForPendingLocaleChange
-        return () => {}
-      }
-    }
-    // @ts-ignore
-    app.use(i18n, pluginOptions) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
+    app.use(i18n) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
 
     // inject for nuxt helpers
     injectNuxtHelpers(nuxtContext, i18n)
@@ -430,7 +187,7 @@ export default defineNuxtPlugin({
         const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
 
         if (modified && localeSetup) {
-          notInitialSetup = false
+          notInitialSetup.value = false
         }
 
         const redirectPath = await nuxtContext.runWithContext(() =>
