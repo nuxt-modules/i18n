@@ -111,10 +111,9 @@ export { localeDetector }
       nitroConfig.replace = assign(
         nitroConfig.replace,
         getFeatureFlags({
-          jit: nuxtOptions.compilation.jit,
           compositionOnly: nuxtOptions.bundle.compositionOnly,
           fullInstall: nuxtOptions.bundle.fullInstall,
-          dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false
+          dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler
         })
       )
     }

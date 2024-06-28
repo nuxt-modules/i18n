@@ -94,7 +94,6 @@ export interface BundleOptions
 export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang' | 'globalSFCScope'> {}
 
 export interface LocaleMessageCompilationOptions {
-  jit?: boolean
   strictMessage?: boolean
   escapeHtml?: boolean
 }
