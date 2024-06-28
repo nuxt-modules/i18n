@@ -197,12 +197,12 @@ function extendComposer(
     watch(
       composer.locale,
       () => {
-        _baseUrl.value = resolveBaseUrl(runtimeI18n.baseUrl!, nuxtContext!)
+        _baseUrl.value = resolveBaseUrl(runtimeI18n.baseUrl!, nuxtContext)
       },
       { immediate: true }
     )
   } else {
-    _baseUrl.value = resolveBaseUrl(runtimeI18n.baseUrl!, nuxtContext!)
+    _baseUrl.value = resolveBaseUrl(runtimeI18n.baseUrl!, nuxtContext)
   }
 
   composer.strategy = runtimeI18n.strategy
@@ -252,8 +252,10 @@ function extendComposer(
   composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
   composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     nuxtContext.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context })
   composer.onLanguageSwitched = (oldLocale, newLocale) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     nuxtContext.callHook('i18n:localeSwitched', { oldLocale, newLocale })
 
   composer.finalizePendingLocaleChange = async () => {
@@ -262,6 +264,7 @@ function extendComposer(
     }
     setLocale(i18n, i18n.__pendingLocale)
     if (i18n.__resolvePendingLocalePromise) {
+      // eslint-disable-next-line @typescript-eslint/await-thenable
       await i18n.__resolvePendingLocalePromise()
     }
     i18n.__pendingLocale = undefined
@@ -327,7 +330,6 @@ function extendExportedGlobal(exported: ExportedGlobalComposer, g: Composer) {
         get: () => (locale: string) => Reflect.apply(g.setLocaleCookie, g, [locale])
       },
       onBeforeLanguageSwitch: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         get: () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
           Reflect.apply(g.onBeforeLanguageSwitch, g, [oldLocale, newLocale, initialSetup, context])
       },
@@ -379,11 +381,8 @@ function extendVueI18n(vueI18n: VueI18n): void {
         get: () => (locale: string) => Reflect.apply(composer.setLocaleCookie, composer, [locale])
       },
       onBeforeLanguageSwitch: {
-        get:
-          () =>
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
-            Reflect.apply(composer.onBeforeLanguageSwitch, composer, [oldLocale, newLocale, initialSetup, context])
+        get: () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
+          Reflect.apply(composer.onBeforeLanguageSwitch, composer, [oldLocale, newLocale, initialSetup, context])
       },
       onLanguageSwitched: {
         get: () => (oldLocale: string, newLocale: string) =>
