@@ -1,4 +1,5 @@
 import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
+import { createRequire } from 'node:module'
 import { createHash } from 'node:crypto'
 import { resolvePath } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
@@ -500,8 +501,14 @@ export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] 
 }
 
 export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string = '', files: LocaleFile[] = []) => {
-  const absoluteFiles = files.map(file => ({ path: resolve(layerLangDir, file.path), cache: file.cache }))
-  const relativeFiles = absoluteFiles.map(file => ({ path: relative(projectLangDir, file.path), cache: file.cache }))
+  const require = createRequire(import.meta.url)
+  const absoluteFiles = files.map(file => {
+    if (file.external) {
+      return { ...file, path: require.resolve(file.path) }
+    }
+    return { ...file, path: resolve(layerLangDir, file.path) }
+  })
+  const relativeFiles = absoluteFiles.map(file => ({ ...file, path: relative(projectLangDir, file.path) }))
 
   return relativeFiles
 }

@@ -287,6 +287,9 @@ importers:
       nuxt:
         specifier: ^3.11.1
         version: 3.12.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.0)(terser@5.31.1)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.0.22(typescript@5.5.2))
+      sit-onyx:
+        specifier: 1.0.0-alpha.154
+        version: 1.0.0-alpha.154(@fontsource-variable/source-code-pro@5.0.19)(@fontsource-variable/source-sans-3@5.0.21)(@sit-onyx/icons@0.1.0-alpha.2)(typescript@5.5.2)(vue@3.4.30(typescript@5.5.2))
 
   specs/fixtures/routing:
     devDependencies:
@@ -973,6 +976,12 @@ packages:
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
+
+  '@fontsource-variable/source-code-pro@5.0.19':
+    resolution: {integrity: sha512-mmeEykZsLRuFsklfamKVwahnWNpdAzpvGcOPPiFUydSnrd/9aEXy/HzOSYCOOTCP667L4nio9rB7wO3KVO5J/w==}
+
+  '@fontsource-variable/source-sans-3@5.0.21':
+    resolution: {integrity: sha512-HG2YLa3xs6+wrQrJoiborhX3q5spamGR1xe2QFkEbhD1QEKQ6goXKa+wccybDUrCBrKVOOeNqZQr5DkW0bqb1g==}
 
   '@grpc/grpc-js@1.10.10':
     resolution: {integrity: sha512-HPa/K5NX6ahMoeBv15njAc/sfF4/jmiXLar9UlC2UfHFKZzsCVLc3wbe7+7qua7w9VPh2/L6EBxyAV7/E8Wftg==}
@@ -1845,6 +1854,9 @@ packages:
   '@sindresorhus/merge-streams@4.0.0':
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
+
+  '@sit-onyx/icons@0.1.0-alpha.2':
+    resolution: {integrity: sha512-TTTmQmlpGbIF3V4VGshy3uwxMboeCsgaubv9cwDseBlqFeHigT0EB+aDZohdVXrSGixwJfsVF8g/zHi+9DCPKA==}
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
@@ -5467,6 +5479,15 @@ packages:
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
 
+  sit-onyx@1.0.0-alpha.154:
+    resolution: {integrity: sha512-Pgu3Ldr+8gRXFm2ZpQnPUo5I/0Hn+TUnYJm4M1zQMK+mjYpcX6dXiUg+M6mEEIKoYE9Qivicfdg94iyd6tKdtA==}
+    peerDependencies:
+      '@fontsource-variable/source-code-pro': '>= 5'
+      '@fontsource-variable/source-sans-3': '>= 5'
+      '@sit-onyx/icons': ^0.1.0-alpha.2
+      typescript: '>= 5.2.2'
+      vue: '>= 3'
+
   site-config-stack@1.6.7:
     resolution: {integrity: sha512-LcZAAaMo4t/LKcePG6eghCt5oG+0JS1fhWG/8dHbfRuD3yWKmijKy2wd0/rcvTxDBEp5Pn2lAqe92jeAHRNjQA==}
     peerDependencies:
@@ -7034,6 +7055,10 @@ snapshots:
 
   '@fastify/busboy@2.1.1': {}
 
+  '@fontsource-variable/source-code-pro@5.0.19': {}
+
+  '@fontsource-variable/source-sans-3@5.0.21': {}
+
   '@grpc/grpc-js@1.10.10':
     dependencies:
       '@grpc/proto-loader': 0.7.13
@@ -8581,6 +8606,8 @@ snapshots:
   '@sindresorhus/merge-streams@2.3.0': {}
 
   '@sindresorhus/merge-streams@4.0.0': {}
+
+  '@sit-onyx/icons@0.1.0-alpha.2': {}
 
   '@socket.io/component-emitter@3.1.2': {}
 
@@ -13374,6 +13401,14 @@ snapshots:
       totalist: 3.0.1
 
   sisteransi@1.0.5: {}
+
+  sit-onyx@1.0.0-alpha.154(@fontsource-variable/source-code-pro@5.0.19)(@fontsource-variable/source-sans-3@5.0.21)(@sit-onyx/icons@0.1.0-alpha.2)(typescript@5.5.2)(vue@3.4.30(typescript@5.5.2)):
+    dependencies:
+      '@fontsource-variable/source-code-pro': 5.0.19
+      '@fontsource-variable/source-sans-3': 5.0.21
+      '@sit-onyx/icons': 0.1.0-alpha.2
+      typescript: 5.5.2
+      vue: 3.4.30(typescript@5.5.2)
 
   site-config-stack@1.6.7(vue@3.4.30(typescript@5.5.2)):
     dependencies:

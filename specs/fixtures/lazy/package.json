@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "latest",
-    "nuxt": "latest"
+    "nuxt": "latest",
+    "sit-onyx": "1.0.0-alpha.154"
   }
 }

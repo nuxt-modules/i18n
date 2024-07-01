@@ -50,6 +50,12 @@ export default defineNuxtConfig({
         iso: 'fr-FR',
         file: { path: 'lazy-locale-fr.json5', cache: false },
         name: 'Français'
+      },
+      {
+        code: 'de',
+        iso: 'de-DE',
+        file: { path: 'sit-onyx/locales/de-DE.json', external: true },
+        name: 'Deutsch'
       }
     ]
   }

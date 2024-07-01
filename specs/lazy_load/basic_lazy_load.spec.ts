@@ -140,4 +140,10 @@ describe('basic lazy loading', async () => {
     expect(await getText(page, '#welcome-english')).toEqual('Welcome!')
     expect(await getText(page, '#welcome-dutch')).toEqual('Welkom!')
   })
+
+  test('loads file from external package', async () => {
+    const { page } = await renderPage('/de')
+
+    expect(await getText(page, '#external-message')).toEqual('(optional)')
+  })
 })
