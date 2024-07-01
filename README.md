@@ -81,7 +81,7 @@ Keep in mind that not all features are currently supported yet and some things m
 - 📘 [Documentation for v8](https://i18n.nuxtjs.org/)
 - 📘 [Documentation for v7](https://i18n.nuxtjs.org/docs/v7)
 - 🔖 [Release notes](./CHANGELOG.md)
-- 👥 [Community](https://discord.nuxtjs.org/) (`#i18n` channel)
+- 👥 [Community](https://discord.nuxtjs.org/) (`🗨️❓ help` support forum)
 
 ## ©️ License
 
