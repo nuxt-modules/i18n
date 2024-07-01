@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '#i18n'
-import { useRuntimeConfig } from 'nuxt/app'
+import { useRuntimeConfig } from '#imports'
 
 const { finalizePendingLocaleChange } = useI18n()
 
