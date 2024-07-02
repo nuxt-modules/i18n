@@ -6,19 +6,27 @@ import ModuleExperimental from './module-experimental'
 export default defineNuxtConfig({
   // devLogs broken, should be resolved by https://github.com/nuxt/nuxt/commit/b3ced3d694c89344c8e77b804a2dc76434d27668
   // remove after updating to Nuxt >3.11.0
+  future: {
+    compatibilityVersion: 4
+  },
+
   features: {
     devLogs: false
   },
+
   experimental: {
     typedPages: true
   },
+
   vite: {
     // Prevent reload by optimizing dependency before discovery
     optimizeDeps: {
       include: ['@unhead/vue']
     }
   },
+
   extends: ['layers/i18n-layer'],
+
   modules: [
     (_, nuxt) => {
       console.log(nuxt.options._installedModules)
@@ -101,6 +109,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxt/devtools'
   ],
+
   vite: {
     build: {
       minify: false
@@ -194,5 +203,7 @@ export default defineNuxtConfig({
     //   // redirectOn: 'root'
     // },
     vueI18n: './vue-i18n.options.ts'
-  }
+  },
+
+  compatibilityDate: '2024-07-02'
 })

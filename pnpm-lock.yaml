@@ -95,8 +95,8 @@ importers:
         specifier: ^0.6.0
         version: 0.6.0(@nuxt/kit-nightly@4.0.0-28669566.0047c6a1(magicast@0.3.4)(rollup@3.29.4))(nuxi@3.12.0)(typescript@5.5.2)(vue-tsc@2.0.22(typescript@5.5.2))
       '@nuxt/schema':
-        specifier: ^3.12.3
-        version: 3.12.3(rollup@3.29.4)
+        specifier: npm:@nuxt/schema-nightly@latest
+        version: '@nuxt/schema-nightly@4.0.0-28669566.0047c6a1(rollup@3.29.4)'
       '@types/debug':
         specifier: ^4.1.9
         version: 4.1.12
