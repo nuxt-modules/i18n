@@ -72,8 +72,7 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "jiti": "1.21.0",
-      "consola": "^3"
+      "nuxt": "npm:nuxt-nightly@latest"
     }
   },
   "dependencies": {
@@ -82,7 +81,7 @@
     "@intlify/unplugin-vue-i18n": "^5.0.0-beta.3",
     "@intlify/utils": "^0.12.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
-    "@nuxt/kit": "^3.12.3",
+    "@nuxt/kit": "npm:@nuxt/kit-nightly@latest",
     "@rollup/plugin-yaml": "^4.1.2",
     "@vue/compiler-sfc": "^3.4.31",
     "debug": "^4.3.5",
