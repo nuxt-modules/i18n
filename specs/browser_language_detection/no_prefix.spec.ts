@@ -9,7 +9,7 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      debug: true,
+      // debug: true,
       strategy: 'no_prefix',
       detectBrowserLanguage: {
         useCookie: true,
