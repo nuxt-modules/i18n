@@ -16,7 +16,8 @@ export default defineI18nConfig(() => {
         snakeCaseText: "@.snakeCase:{'aboutSite'}",
         pascalCaseText: "@.pascalCase:{'aboutSite'}",
         hello: 'Bonjour le monde!',
-        modifier: "@.snakeCase:{'hello'}"
+        modifier: "@.snakeCase:{'hello'}",
+        helloMessage: 'Bonjour {name}!'
       },
       en: {
         home: 'Homepage',
@@ -28,7 +29,8 @@ export default defineI18nConfig(() => {
         hello: 'Hello world!',
         modifier: "@.snakeCase:{'hello'}",
         fallbackMessage: 'This is the fallback message!',
-        runtimeKey: config.public.runtimeValue
+        runtimeKey: config.public.runtimeValue,
+        helloMessage: 'Hello {name}!'
       },
       nl: {
         aboutSite: 'Over deze site',
