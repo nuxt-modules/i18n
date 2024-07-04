@@ -19,7 +19,7 @@ export interface DetectBrowserLanguageOptions {
 
 export type LocaleType = 'static' | 'dynamic' | 'unknown'
 
-export type LocaleFile = { path: string; cache?: boolean }
+export type LocaleFile = { path: string; cache?: boolean; external?: boolean }
 
 export type LocaleInfo = {
   /**
