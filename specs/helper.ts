@@ -16,6 +16,7 @@ export async function getData(page: Page, selector: string, options?: Parameters
 }
 
 export async function waitForTransition(page: Page, selector: string = '#nuxt-page.my-leave-active') {
+  await page.locator(selector).waitFor()
   return await page.locator(selector).waitFor({ state: 'detached' })
 }
 
