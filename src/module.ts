@@ -217,6 +217,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     // for core plugin
     addPlugin(resolve(runtimeDir, 'plugins/i18n'))
+    addPlugin(resolve(runtimeDir, 'plugins/switch-locale-path-ssr'))
 
     // for composables
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.mjs')
