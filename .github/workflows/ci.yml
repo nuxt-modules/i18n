@@ -40,6 +40,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Setup develoment
+        run: pnpm dev:prepare
+
       - name: Linting
         run: pnpm lint
 

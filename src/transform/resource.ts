@@ -52,8 +52,7 @@ export const ResourcePlugin = createUnplugin((options: ResourcePluginOptions) =>
       const matches = code.matchAll(new RegExp(`\\b${pattern}\\s*`, 'g'))
 
       for (const match of matches) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        s.remove(match.index!, match.index! + match[0].length)
+        s.remove(match.index, match.index + match[0].length)
       }
 
       return result()

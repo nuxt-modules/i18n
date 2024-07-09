@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, createPage, url } from '../utils'
-import { getText } from '../helper'
+import { getText, waitForURL } from '../helper'
 
 describe('#2226', async () => {
   await setup({
@@ -17,13 +17,16 @@ describe('#2226', async () => {
     expect(await getText(page, '#default-locale')).include(`Default locale: false`)
 
     await page.locator('#goto-about').click()
+    await waitForURL(page, '/de/about')
     expect(await getText(page, '#content')).include(`This is about page. To home page`)
 
     await page.locator('#goto-index').click()
+    await waitForURL(page, '/de')
     expect(await getText(page, '#content')).include(`This is home page. To about pag`)
 
     await page.locator('#lang-switch').click()
     await page.locator('#goto-about').click()
+    await waitForURL(page, '/about')
     expect(await getText(page, '#content')).include(`This is about page. To home page`)
   })
 })

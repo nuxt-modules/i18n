@@ -71,7 +71,7 @@ export function setupPages(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
     }
 
     pages.splice(0, pages.length)
-    pages.unshift(...(localizedPages as NuxtPage[]))
+    pages.unshift(...localizedPages)
     debug('... made pages', pages)
   })
 }
@@ -266,7 +266,7 @@ function readComponent(target: string) {
     if (genericSetupAst) {
       const s = new MagicString(desc.loc.source)
       genericSetupAst.forEach(ast => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
         walk(ast as any, {
           enter(_node) {
             const node = _node as Node
@@ -364,8 +364,9 @@ function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
 
 function evalValue(value: string) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval
     return new Function(`return (${value})`)() as ComputedRouteOptions | false
-  } catch (e) {
+  } catch (_e) {
     console.error(formatMessage(`Cannot evaluate value: ${value}`))
     return
   }

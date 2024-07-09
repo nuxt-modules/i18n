@@ -1,37 +1,68 @@
 import globals from 'globals'
-import tseslint from 'typescript-eslint'
+import js from '@eslint/js'
+import ts from 'typescript-eslint'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
+/**
+ * @typedef {import("eslint").Linter.FlatConfig[]} FlatConfigs
+ */
+
+/** @type { FlatConfigs } */
 export default [
-  // Ignores
+  // ignores
   {
-    ignores: [
-      '.eslintcache/**',
-      'dist/**',
-      'playground/**',
-      'specs/fixtures/**',
-      'specs/utils/**',
-      'test/fixtures/**',
-      'coverage/**',
-      'src/runtime/templates/**',
-      'docs/**'
-    ]
+    ignores: ['.nuxt', 'dist', 'playground', 'specs', 'test/fixtures', 'coverage', 'src/runtime/templates/**', 'docs']
   },
 
-  // Globals
+  // for global and envrionment
   {
-    files: ['**/*.js', '**/*.ts', '**/*.vue', '**/*.json'],
     languageOptions: {
-      globals: globals.node,
-      parserOptions: { sourceType: 'module' }
+      globals: {
+        ...globals.node,
+        ...globals.browser
+      }
     }
   },
 
-  // Extends
-  ...tseslint.configs.recommended,
+  // eslint built-in
+  js.configs.recommended,
+
+  // typescript-eslint
+  ...ts.configs.recommendedTypeChecked,
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+    languageOptions: {
+      parser: ts.parser,
+      parserOptions: {
+        sourceType: 'module',
+        project: true,
+        tsconfigRootDir: import.meta.dirname
+      }
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true
+        }
+      ]
+    }
+  },
+  {
+    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+    ...ts.configs.disableTypeChecked
+  },
+
+  // prettier
   eslintConfigPrettier,
 
-  // Rules
+  // override rules
   {
     rules: { '@typescript-eslint/ban-ts-comment': 'off' }
   }

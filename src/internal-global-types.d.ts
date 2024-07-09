@@ -1,4 +1,4 @@
-/* eslint-disable no-var */
+/* eslint-disable no-var, @typescript-eslint/no-redundant-type-constituents */
 import type { Composer, ExportedGlobalComposer, VueI18n } from 'vue-i18n'
 import type { ComposerCustomProperties, NuxtI18nRoutingCustomProperties } from './runtime/types'
 
@@ -24,3 +24,5 @@ declare global {
 }
 
 export {}
+
+/* eslint-enable no-var, @typescript-eslint/no-redundant-type-constituents */

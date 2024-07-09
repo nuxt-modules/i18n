@@ -55,9 +55,9 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
       allowDynamic: true,
       runtimeOnly: nuxtOptions.bundle.runtimeOnly,
       compositionOnly: nuxtOptions.bundle.compositionOnly,
-      jitCompilation: nuxtOptions.compilation.jit,
       onlyLocales: nuxtOptions.bundle.onlyLocales,
-      dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false,
+      dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
+      optimizeTranslationDirective: true,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml
     }
@@ -75,15 +75,13 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     }
 
     extendWebpackConfig(config => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- `config.plugins` is safe, so it's assigned with nuxt!
       config.plugins!.push(
         new webpack.DefinePlugin(
           assign(
             getFeatureFlags({
-              jit: nuxtOptions.compilation.jit,
               compositionOnly: nuxtOptions.bundle.compositionOnly,
               fullInstall: nuxtOptions.bundle.fullInstall,
-              dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false
+              dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler
             }),
             {
               __DEBUG__: String(nuxtOptions.debug)
@@ -106,8 +104,8 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     compositionOnly: nuxtOptions.bundle.compositionOnly,
     fullInstall: nuxtOptions.bundle.fullInstall,
     onlyLocales: nuxtOptions.bundle.onlyLocales,
-    jitCompilation: nuxtOptions.compilation.jit,
-    dropMessageCompiler: nuxtOptions.compilation.jit ? nuxtOptions.bundle.dropMessageCompiler : false,
+    dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
+    optimizeTranslationDirective: true,
     strictMessage: nuxtOptions.compilation.strictMessage,
     escapeHtml: nuxtOptions.compilation.escapeHtml,
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
@@ -137,17 +135,11 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   })
 }
 
-export function getFeatureFlags({
-  jit = true,
-  compositionOnly = true,
-  fullInstall = true,
-  dropMessageCompiler = false
-}) {
+export function getFeatureFlags({ compositionOnly = true, fullInstall = true, dropMessageCompiler = false }) {
   return {
     __VUE_I18N_FULL_INSTALL__: String(fullInstall),
     __VUE_I18N_LEGACY_API__: String(!compositionOnly),
     __INTLIFY_PROD_DEVTOOLS__: 'false',
-    __INTLIFY_JIT_COMPILATION__: String(jit),
     __INTLIFY_DROP_MESSAGE_COMPILER__: String(dropMessageCompiler)
   }
 }

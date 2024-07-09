@@ -52,7 +52,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     name: NUXT_I18N_MODULE_ID,
     configKey: 'i18n',
     compatibility: {
-      nuxt: '^3.0.0-rc.11',
+      nuxt: '>=3.0.0-rc.11',
       bridge: false
     }
   },
@@ -63,14 +63,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const options = i18nOptions as Required<NuxtI18nOptions>
     applyOptionOverrides(options, nuxt)
     debug('options', options)
-
-    if (!options.compilation.jit) {
-      logger.warn(
-        'Opt-out JIT compilation. ' +
-          `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
-          `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
-      )
-    }
 
     /**
      * Check versions
@@ -102,15 +94,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
           '`bundle.compositionOnly` option and `types` option is conflicting: ' +
             `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
         )
-      )
-    }
-
-    if (options.bundle.runtimeOnly && options.compilation.jit) {
-      logger.warn(
-        '`bundle.runtimeOnly` option and `compilation.jit` option is conflicting: ' +
-          `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
-            options.compilation.jit
-          )}`
       )
     }
 
@@ -200,7 +183,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
 
     if (options.strategy !== 'no_prefix' && localeCodes.length) {
-      await setupPages(options, nuxt)
+      setupPages(options, nuxt)
     }
 
     /**
@@ -273,7 +256,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * `PageMeta` augmentation to add `nuxtI18n` property
      * TODO: Remove in v9, `useSetI18nParams` should be used instead
      */
-    if (!!options.dynamicRouteParams) {
+    if (options.dynamicRouteParams) {
       addTypeTemplate({
         filename: 'types/i18n-page-meta.d.ts',
         getContents: () => generateI18nPageTypes()
@@ -310,7 +293,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * extend bundler
      */
 
-    await extendBundler(nuxt, options as Required<NuxtI18nOptions>)
+    await extendBundler(nuxt, options)
 
     /**
      * setup nitro
@@ -338,7 +321,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filePath: resolve(runtimeDir, 'components/SwitchLocalePathLink')
     })
 
-    await addImports([
+    addImports([
       { name: 'useI18n', from: vueI18nPath },
       ...[
         'useRouteBaseName',
