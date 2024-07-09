@@ -246,6 +246,9 @@ export interface LocaleObject extends Record<string, any> {
   name?: string
   dir?: Directions
   domain?: string
+  domains?: string[]
+  domainDefault?: boolean
+  defaultForDomains?: string[]
   file?: string | LocaleFile
   files?: string[] | LocaleFile[]
   isCatchallLocale?: boolean

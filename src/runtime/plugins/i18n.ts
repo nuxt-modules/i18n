@@ -1,43 +1,50 @@
+import {
+  isSSG,
+  localeCodes,
+  localeLoaders,
+  normalizedLocales,
+  parallelPlugin,
+  SWITCH_LOCALE_PATH_LINK_IDENTIFIER,
+  vueI18nConfigs,
+  type LocaleObject
+} from '#build/i18n.options.mjs'
+import {
+  addRouteMiddleware,
+  defineNuxtPlugin,
+  defineNuxtRouteMiddleware,
+  useNuxtApp,
+  useRoute,
+  useRouter
+} from '#imports'
 import { computed } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
-import {
-  localeCodes,
-  vueI18nConfigs,
-  isSSG,
-  localeLoaders,
-  parallelPlugin,
-  normalizedLocales,
-  SWITCH_LOCALE_PATH_LINK_IDENTIFIER
-} from '#build/i18n.options.mjs'
-import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
 import { useSwitchLocalePath } from '../composables'
-import {
-  loadAndSetLocale,
-  detectLocale,
-  detectRedirect,
-  navigate,
-  injectNuxtHelpers,
-  extendBaseUrl,
-  _setLocale,
-  mergeLocaleMessage
-} from '../utils'
 import {
   getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
   setLocaleCookie as _setLocaleCookie,
-  detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult,
+  detectBrowserLanguage,
+  getHost,
   getI18nCookie,
   runtimeDetectBrowserLanguage
 } from '../internal'
+import { loadInitialMessages, loadLocale, loadVueI18nOptions } from '../messages'
+import { createLocaleFromRouteGetter, extendI18n } from '../routing/extends'
 import { getComposer, getLocale, setLocale } from '../routing/utils'
-import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
+import {
+  _setLocale,
+  detectLocale,
+  detectRedirect,
+  extendBaseUrl,
+  injectNuxtHelpers,
+  loadAndSetLocale,
+  mergeLocaleMessage,
+  navigate
+} from '../utils'
 
-import type { Composer, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
-import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
+import type { Composer, I18nOptions, Locale } from 'vue-i18n'
 import type {
   LocaleHeadFunction,
   LocalePathFunction,
@@ -45,6 +52,8 @@ import type {
   RouteBaseNameFunction,
   SwitchLocalePathFunction
 } from '../composables'
+import type { getRouteBaseName, localeHead, localePath, localeRoute, switchLocalePath } from '../routing/compatibles'
+import type { ExtendPropertyDescriptors, VueI18nRoutingPluginOptions } from '../routing/extends'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -53,9 +62,28 @@ export default defineNuxtPlugin({
     const route = useRoute()
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
+    const host = getHost(nuxtContext)
+    const i18nConfig = nuxtContext.$config.public.i18n
+    const { configLocales } = i18nConfig
+    const hasDomains = configLocales.some((l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.domains))
+    const hasDefaultForDomains = configLocales.some(
+      (l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.defaultForDomains)
+    )
 
+    let defaultLocale: string
+    if (i18nConfig.defaultLocale) {
+      defaultLocale = i18nConfig.defaultLocale
+    } else if (hasDefaultForDomains) {
+      defaultLocale =
+        configLocales.find((l): l is LocaleObject => {
+          if (typeof l === 'string' || !Array.isArray(l.defaultForDomains)) return false
+          return l.defaultForDomains.includes(host ?? '')
+        })?.code ?? ''
+    } else {
+      defaultLocale = ''
+    }
     // Fresh copy per request to prevent reusing mutated options
-    const runtimeI18n = { ...nuxtContext.$config.public.i18n }
+    const runtimeI18n = { ...nuxtContext.$config.public.i18n, defaultLocale }
     // @ts-expect-error type incompatible
     runtimeI18n.baseUrl = extendBaseUrl()
 
@@ -71,6 +99,29 @@ export default defineNuxtPlugin({
 
     const getLocaleFromRoute = createLocaleFromRouteGetter()
     const getDefaultLocale = (defaultLocale: string) => defaultLocale || vueI18nOptions.locale || 'en-US'
+
+    if (runtimeI18n.strategy === 'prefix_except_default' && runtimeI18n.differentDomains && hasDomains) {
+      const domainLocales = configLocales
+        .filter((l): l is LocaleObject => {
+          if (typeof l === 'string' || !Array.isArray(l.domains)) return false
+          return l.domains.includes(host ?? '')
+        })
+        .map(l => l.code)
+      const routesNameSeparator = runtimeI18n.routesNameSeparator || '___'
+      const router = useRouter()
+      router.getRoutes().forEach(route => {
+        const locale = (typeof route.name === 'string' && route.name.split(routesNameSeparator)[1]) || undefined
+        if (!locale) return
+        if (route.name && locale && !domainLocales.includes(locale)) {
+          router.removeRoute(route.name)
+        } else if (locale !== defaultLocale) {
+          router.addRoute({
+            ...route,
+            path: `/${locale}${route.path}`
+          })
+        }
+      })
+    }
 
     const localeCookie = getI18nCookie()
     // detect initial locale
@@ -431,7 +482,6 @@ export default defineNuxtPlugin({
 
       defineNuxtRouteMiddleware(async (to, from) => {
         __DEBUG__ && console.log('locale-changing middleware', to, from)
-
         const locale = detectLocale(
           to,
           getLocaleFromRoute,
