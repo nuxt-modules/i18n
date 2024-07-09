@@ -7,7 +7,7 @@ import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/k
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getFeatureFlags } from './bundler'
-import { isExists } from './utils'
+import { getLayerI18n, isExists } from './utils'
 import {
   H3_PKG,
   UTILS_H3_PKG,
@@ -130,13 +130,16 @@ export { localeDetector }
 }
 
 async function resolveLocaleDetectorPath(nuxt: Nuxt) {
-  const serverI18nLayer = nuxt.options._layers.find(
-    l => l.config.i18n?.experimental?.localeDetector != null && l.config.i18n?.experimental?.localeDetector !== ''
-  )
+  const serverI18nLayer = nuxt.options._layers.find(l => {
+    const layerI18n = getLayerI18n(l)
+    return layerI18n?.experimental?.localeDetector != null && layerI18n?.experimental?.localeDetector !== ''
+  })
+
   let enableServerIntegration = serverI18nLayer != null
 
   if (serverI18nLayer != null) {
-    const pathTo = resolve(serverI18nLayer.config.rootDir, serverI18nLayer.config.i18n!.experimental!.localeDetector!)
+    const serverI18nLayerConfig = getLayerI18n(serverI18nLayer)
+    const pathTo = resolve(serverI18nLayer.config.rootDir, serverI18nLayerConfig!.experimental!.localeDetector!)
     const localeDetectorPath = await resolvePath(pathTo, {
       cwd: nuxt.options.rootDir,
       extensions: EXECUTABLE_EXTENSIONS

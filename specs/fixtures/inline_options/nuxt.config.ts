@@ -19,7 +19,10 @@ export default defineNuxtConfig({
             file: 'locale-file-en.json',
             name: 'English'
           }
-        ]
+        ],
+        experimental: {
+          localeDetector: './locale-detector.ts'
+        }
       }
     ]
   ],
