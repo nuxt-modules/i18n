@@ -9,12 +9,7 @@ import {
   resolveRoute,
   switchLocalePath
 } from '../compatibles'
-import {
-  wrapComposable,
-  getBrowserLocale as _getBrowserLocale,
-  getLocaleCookie as _getLocaleCookie,
-  setLocaleCookie as _setLocaleCookie
-} from '../../internal'
+import { wrapComposable } from '../../internal'
 import { initCommonComposableOptions } from '../../utils'
 
 import type { NuxtApp } from 'nuxt/app'
@@ -45,7 +40,7 @@ type VueI18nExtendOptions = {
   extendComposerInstance: (instance: VueI18n | ExportedGlobalComposer, composer: Composer) => void
 }
 
-export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
+export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance }: VueI18nExtendOptions) {
   const scope = effectScope()
 
   const installI18n = i18n.install.bind(i18n)
@@ -77,7 +72,7 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
 
     if (i18n.mode === 'legacy') {
       pluginOptions.__vueI18nExtend = (vueI18n: VueI18n) => {
-        extendOptions.extendComposerInstance(vueI18n, getComposer(vueI18n))
+        extendComposerInstance(vueI18n, getComposer(vueI18n))
         return () => {}
       }
     }
@@ -90,15 +85,15 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
 
     // extend global
     scope.run(() => {
-      extendOptions.extendComposer(globalComposer)
+      extendComposer(globalComposer)
       if (i18n.mode === 'legacy' && isVueI18n(i18n.global)) {
-        extendOptions.extendComposerInstance(i18n.global, getComposer(i18n.global))
+        extendComposerInstance(i18n.global, getComposer(i18n.global))
       }
     })
 
     // extend vue component instance for Vue 3
-    if (i18n.mode === 'composition') {
-      extendOptions.extendComposerInstance(app.config.globalProperties.$i18n, globalComposer)
+    if (i18n.mode === 'composition' && app.config.globalProperties.$i18n != null) {
+      extendComposerInstance(app.config.globalProperties.$i18n, globalComposer)
     }
 
     // extend vue component instance
