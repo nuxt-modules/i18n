@@ -107,8 +107,8 @@ export default defineNuxtPlugin({
     // create i18n instance
     const i18n = createI18n({ ...vueI18nOptions, locale: initialLocale })
 
-    const notInitialSetup = ref(true)
-    const isInitialLocaleSetup = (locale: Locale) => initialLocale !== locale && notInitialSetup.value
+    let notInitialSetup = true
+    const isInitialLocaleSetup = (locale: Locale) => initialLocale !== locale && notInitialSetup
 
     let ssgModeInitialSetup = true
     const isSSGModeInitialSetup = () => isSSG && ssgModeInitialSetup
@@ -155,7 +155,6 @@ export default defineNuxtPlugin({
     extendI18n(i18n, {
       extendComposer: (composer: Composer) => {
         const route = useRoute()
-        const getLocaleFromRoute = createLocaleFromRouteGetter()
         const _locales = ref<string[] | LocaleObject[]>(runtimeI18n.configLocales)
         const _localeCodes = ref<string[]>(localeCodes)
         const _baseUrl = ref<string>('')
@@ -185,7 +184,7 @@ export default defineNuxtPlugin({
           const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
 
           if (modified && localeSetup) {
-            notInitialSetup.value = false
+            notInitialSetup = false
           }
 
           const redirectPath = await nuxtContext.runWithContext(() =>
@@ -345,7 +344,7 @@ export default defineNuxtPlugin({
         const modified = await loadAndSetLocale(locale, i18n, runtimeI18n, localeSetup)
 
         if (modified && localeSetup) {
-          notInitialSetup.value = false
+          notInitialSetup = false
         }
 
         const redirectPath = await nuxtContext.runWithContext(() =>
