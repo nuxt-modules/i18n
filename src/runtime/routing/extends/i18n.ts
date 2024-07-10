@@ -40,32 +40,39 @@ type VueI18nExtendOptions = {
   extendComposerInstance: (instance: VueI18n | ExportedGlobalComposer, composer: Composer) => void
 }
 
+/**
+ * Extend the Vue I18n plugin installation
+ *
+ * This extends the Composer or Vue I18n (legacy) instance with additional
+ * properties and methods, and injects methods into Vue components.
+ */
 export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance }: VueI18nExtendOptions) {
   const scope = effectScope()
 
   const installI18n = i18n.install.bind(i18n)
-  i18n.install = (app: NuxtApp['vueApp'], ...options: unknown[]) => {
-    const pluginOptions: VueI18nInternalPluginOptions = Object.assign({ inject: true }, options[0])
+  i18n.install = (app: NuxtApp['vueApp'], ...options: VueI18nInternalPluginOptions[]) => {
+    const pluginOptions = Object.assign({}, options[0])
     pluginOptions.inject ??= true
 
     pluginOptions.__composerExtend = (c: Composer) => {
       const g = getComposer(i18n)
 
+      c.strategy = g.strategy
+      c.differentDomains = g.differentDomains
+
+      c.baseUrl = computed(() => g.baseUrl.value)
       c.locales = computed(() => g.locales.value)
       c.localeCodes = computed(() => g.localeCodes.value)
-      c.baseUrl = computed(() => g.baseUrl.value)
-
-      c.strategy = g.strategy
       c.localeProperties = computed(() => g.localeProperties.value)
+
       c.setLocale = g.setLocale
-      c.differentDomains = g.differentDomains
       c.getBrowserLocale = g.getBrowserLocale
       c.getLocaleCookie = g.getLocaleCookie
       c.setLocaleCookie = g.setLocaleCookie
       c.onBeforeLanguageSwitch = g.onBeforeLanguageSwitch
       c.onLanguageSwitched = g.onLanguageSwitched
-      c.finalizePendingLocaleChange = g.finalizePendingLocaleChange
       c.waitForPendingLocaleChange = g.waitForPendingLocaleChange
+      c.finalizePendingLocaleChange = g.finalizePendingLocaleChange
 
       return () => {}
     }
@@ -78,8 +85,7 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
     }
 
     // install vue-i18n
-    options[0] = pluginOptions
-    Reflect.apply(installI18n, i18n, [app, ...options])
+    Reflect.apply(installI18n, i18n, [app, pluginOptions])
 
     const globalComposer = getComposer(i18n)
 
@@ -112,7 +118,7 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
       })
     }
 
-    // dispose when app will be unmounting
+    // dispose effectScope during app unmount
     if (app.unmount) {
       const unmountApp = app.unmount.bind(app)
       app.unmount = () => {
