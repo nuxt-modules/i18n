@@ -10,16 +10,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
-import {
-  loadAndSetLocale,
-  detectLocale,
-  detectRedirect,
-  navigate,
-  injectNuxtHelpers,
-  extendBaseUrl,
-  _setLocale,
-  mergeLocaleMessage
-} from '../utils'
+import { loadAndSetLocale, detectLocale, detectRedirect, navigate, injectNuxtHelpers, extendBaseUrl } from '../utils'
 import {
   getBrowserLocale as _getBrowserLocale,
   getLocaleCookie as _getLocaleCookie,
@@ -29,7 +20,7 @@ import {
   getI18nCookie,
   runtimeDetectBrowserLanguage
 } from '../internal'
-import { getLocale, inBrowser, resolveBaseUrl, setLocale } from '../routing/utils'
+import { getI18nTarget, getLocale, inBrowser, resolveBaseUrl, setLocale } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 
 import type { LocaleObject } from '#build/i18n.options.mjs'
@@ -118,7 +109,7 @@ export default defineNuxtPlugin({
      *  avoid hydration mismatch for SSG mode
      */
     if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
-      nuxt.hook('app:mounted', () => {
+      nuxt.hook('app:mounted', async () => {
         __DEBUG__ && console.log('hook app:mounted')
         const {
           locale: browserLocale,
@@ -146,7 +137,7 @@ export default defineNuxtPlugin({
             reason,
             from
           )
-        _setLocale(i18n, browserLocale)
+        await getI18nTarget(i18n).setLocale(browserLocale)
         ssgModeInitialSetup = false
       })
     }
@@ -211,8 +202,7 @@ export default defineNuxtPlugin({
           )
         }
         composer.loadLocaleMessages = async (locale: string) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
+          const setter = getI18nTarget(i18n).mergeLocaleMessage
           await loadLocale(locale, localeLoaders, setter)
         }
         composer.differentDomains = runtimeI18n.differentDomains
