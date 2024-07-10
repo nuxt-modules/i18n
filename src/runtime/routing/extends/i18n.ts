@@ -84,7 +84,7 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
       }
     }
 
-    // install vue-i18n
+    // install Vue I18n
     Reflect.apply(installI18n, i18n, [app, pluginOptions])
 
     const globalComposer = getComposer(i18n)
@@ -97,12 +97,12 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
       }
     })
 
-    // extend vue component instance for Vue 3
+    // extend Vue component instance for Vue 3
     if (i18n.mode === 'composition' && app.config.globalProperties.$i18n != null) {
       extendComposerInstance(app.config.globalProperties.$i18n, globalComposer)
     }
 
-    // extend vue component instance
+    // extend Vue component instance
     if (pluginOptions.inject) {
       const common = initCommonComposableOptions(i18n)
       app.mixin({

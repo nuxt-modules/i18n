@@ -7,7 +7,6 @@ import {
   isSSG,
   localeLoaders,
   parallelPlugin,
-  type LocaleObject,
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
@@ -33,6 +32,7 @@ import {
 import { getLocale, inBrowser, resolveBaseUrl, setLocale } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 
+import type { LocaleObject } from '#build/i18n.options.mjs'
 import type { Locale, I18nOptions, Composer, ExportedGlobalComposer, VueI18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
