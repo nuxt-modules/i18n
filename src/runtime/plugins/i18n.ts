@@ -223,11 +223,14 @@ export default defineNuxtPlugin({
         composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
         composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          nuxtContext.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context })
+          nuxtContext.callHook('i18n:beforeLocaleSwitch', {
+            oldLocale,
+            newLocale,
+            initialSetup,
+            context
+          }) as Promise<void>
         composer.onLanguageSwitched = (oldLocale, newLocale) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          nuxtContext.callHook('i18n:localeSwitched', { oldLocale, newLocale })
+          nuxtContext.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
 
         composer.finalizePendingLocaleChange = async () => {
           if (!i18n.__pendingLocale) {
@@ -235,7 +238,7 @@ export default defineNuxtPlugin({
           }
           setLocale(i18n, i18n.__pendingLocale)
           if (i18n.__resolvePendingLocalePromise) {
-            // eslint-disable-next-line @typescript-eslint/await-thenable
+            // eslint-disable-next-line @typescript-eslint/await-thenable -- FIXME: `__resolvePendingLocalePromise` should be `Promise<void>`
             await i18n.__resolvePendingLocalePromise()
           }
           i18n.__pendingLocale = undefined
