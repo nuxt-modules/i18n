@@ -72,8 +72,7 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "jiti": "1.21.0",
-      "consola": "^3"
+      "nuxt": "npm:nuxt-nightly@latest"
     }
   },
   "dependencies": {
@@ -82,7 +81,7 @@
     "@intlify/unplugin-vue-i18n": "^5.0.0-beta.3",
     "@intlify/utils": "^0.12.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
-    "@nuxt/kit": "^3.12.3",
+    "@nuxt/kit": "npm:@nuxt/kit-nightly@latest",
     "@rollup/plugin-yaml": "^4.1.2",
     "@vue/compiler-sfc": "^3.4.31",
     "debug": "^4.3.5",
@@ -106,7 +105,7 @@
     "@babel/types": "^7.24.7",
     "@eslint/js": "9.5.0",
     "@nuxt/module-builder": "^0.6.0",
-    "@nuxt/schema": "^3.12.3",
+    "@nuxt/schema": "npm:@nuxt/schema-nightly@latest",
     "@types/debug": "^4.1.9",
     "@types/eslint": "^8.56.6",
     "@unhead/vue": "^1.8.8",
@@ -126,7 +125,7 @@
     "lint-staged": "^15.2.7",
     "nitropack": "^2.9.7",
     "npm-run-all2": "^6.2.0",
-    "nuxt": "^3.12.3",
+    "nuxt": "npm:nuxt-nightly@latest",
     "ofetch": "^1.3.4",
     "playwright": "^1.38.1",
     "prettier": "^3.3.2",

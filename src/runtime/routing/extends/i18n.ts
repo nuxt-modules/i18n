@@ -133,7 +133,7 @@ export function extendI18n<Context = unknown, TI18n extends I18n = I18n>(
 
     // prettier-ignore
     const exported = i18n.mode === 'composition'
-      ? app.config.globalProperties.$i18n
+      ? app.config.globalProperties.$i18n as ExportedGlobalComposer
       // for legacy mode
       : null
     if (exported) {
