@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup } from './utils'
+import { setup, url, $fetch } from './utils'
 import { renderPage } from './helper'
 
 await setup({
@@ -33,5 +33,10 @@ describe('inline options are handled correctly', async () => {
           log.text.includes('[nuxt-i18n-routing] Locale ISO code is required to generate alternate link')
       )
     ).toBe(false)
+  })
+
+  test('(#2721) server integration from inline configuration', async () => {
+    const res = await $fetch(url('/api/translate'))
+    expect(res).toEqual('Homepage')
   })
 })
