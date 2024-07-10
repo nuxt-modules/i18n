@@ -42,9 +42,9 @@ import { loadLocale } from '../../messages'
 import { createLocaleFromRouteGetter } from './router'
 
 /**
- * Options of Vue I18n Routing Plugin
+ * Internal options for the Vue I18n plugin.
  */
-interface VueI18nRoutingPluginOptions {
+interface VueI18nInternalPluginOptions {
   /**
    * Whether to inject some option APIs style methods into Vue instance
    *
@@ -73,9 +73,9 @@ type VueI18nExtendOptions = {
 export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
   const scope = effectScope()
 
-  const orgInstall = i18n.install.bind(i18n)
-  i18n.install = (vue: NuxtApp['vueApp'], ...options: unknown[]) => {
-    const pluginOptions: VueI18nRoutingPluginOptions = Object.assign({ inject: true }, options[0])
+  const installI18n = i18n.install.bind(i18n)
+  i18n.install = (app: NuxtApp['vueApp'], ...options: unknown[]) => {
+    const pluginOptions: VueI18nInternalPluginOptions = Object.assign({ inject: true }, options[0])
     pluginOptions.inject ??= true
 
     pluginOptions.__composerExtend = (c: Composer) => {
@@ -102,13 +102,14 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
 
     if (i18n.mode === 'legacy') {
       pluginOptions.__vueI18nExtend = (vueI18n: VueI18n) => {
-        extendExportedI18n(vueI18n, getComposer(vueI18n))
+        extendComposerInstance(vueI18n, getComposer(vueI18n))
         return () => {}
       }
     }
 
+    // install vue-i18n
     options[0] = pluginOptions
-    Reflect.apply(orgInstall, i18n, [vue, ...options])
+    Reflect.apply(installI18n, i18n, [app, ...options])
 
     const globalComposer = getComposer(i18n)
 
@@ -116,25 +117,19 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
     scope.run(() => {
       extendComposer(globalComposer, extendOptions, i18n)
       if (i18n.mode === 'legacy' && isVueI18n(i18n.global)) {
-        extendExportedI18n(i18n.global, getComposer(i18n.global))
+        extendComposerInstance(i18n.global, getComposer(i18n.global))
       }
     })
 
     // extend vue component instance for Vue 3
-    const app = vue
-
-    // prettier-ignore
-    const exported = i18n.mode === 'composition'
-      ? app.config.globalProperties.$i18n
-      : null // for legacy mode
-    if (exported) {
-      extendExportedI18n(exported, globalComposer)
+    if (i18n.mode === 'composition') {
+      extendComposerInstance(app.config.globalProperties.$i18n, globalComposer)
     }
 
+    // extend vue component instance
     if (pluginOptions.inject) {
       const common = initCommonComposableOptions(i18n)
-      // extend vue component instance
-      vue.mixin({
+      app.mixin({
         methods: {
           getRouteBaseName: wrapComposable(getRouteBaseName, common),
           resolveRoute: wrapComposable(resolveRoute, common),
@@ -271,7 +266,13 @@ interface ExtendPropertyDescriptors {
   [key: string]: Pick<PropertyDescriptor, 'get'>
 }
 
-function extendExportedI18n(i18n: ExportedGlobalComposer, c: Composer) {
+/**
+ * Extends the VueI18n or Composer instance properties with those from the provided composer instance.
+ *
+ * @param instance - The VueI18n or Composer instance to extend.
+ * @param c - The composer instance containing the additional properties and methods.
+ */
+function extendComposerInstance(instance: VueI18n | ExportedGlobalComposer, c: Composer) {
   const properties: ExtendPropertyDescriptors = {
     locales: {
       get: () => c.locales.value
@@ -326,6 +327,6 @@ function extendExportedI18n(i18n: ExportedGlobalComposer, c: Composer) {
   }
 
   for (const [key, descriptor] of Object.entries(properties)) {
-    Object.defineProperty(i18n, key, descriptor)
+    Object.defineProperty(instance, key, descriptor)
   }
 }
