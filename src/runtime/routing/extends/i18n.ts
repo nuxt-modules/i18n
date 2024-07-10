@@ -61,11 +61,6 @@ interface VueI18nRoutingPluginOptions {
   __vueI18nExtend?: VueI18nExtender
 }
 
-interface ExtendPropertyDescriptors {
-  [key: string]: Pick<PropertyDescriptor, 'get'>
-}
-type ExtendComposerHook = (composer: Composer) => ExtendPropertyDescriptors
-
 type VueI18nExtendOptions = {
   isInitialLocaleSetup: (locale: string) => boolean
   notInitialSetup: Ref<boolean>
@@ -78,9 +73,7 @@ type VueI18nExtendOptions = {
 export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
   const scope = effectScope()
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const orgInstall = i18n.install
-  // @ts-ignore
+  const orgInstall = i18n.install.bind(i18n)
   i18n.install = (vue: NuxtApp['vueApp'], ...options: unknown[]) => {
     const pluginOptions: VueI18nRoutingPluginOptions = Object.assign({ inject: true }, options[0])
     pluginOptions.inject ??= true
@@ -109,7 +102,7 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
 
     if (i18n.mode === 'legacy') {
       pluginOptions.__vueI18nExtend = (vueI18n: VueI18n) => {
-        extendVueI18n(vueI18n)
+        extendExportedI18n(vueI18n, getComposer(vueI18n))
         return () => {}
       }
     }
@@ -123,7 +116,7 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
     scope.run(() => {
       extendComposer(globalComposer, extendOptions, i18n)
       if (i18n.mode === 'legacy' && isVueI18n(i18n.global)) {
-        extendVueI18n(i18n.global)
+        extendExportedI18n(i18n.global, getComposer(i18n.global))
       }
     })
 
@@ -133,10 +126,9 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
     // prettier-ignore
     const exported = i18n.mode === 'composition'
       ? app.config.globalProperties.$i18n
-      // for legacy mode
-      : null
+      : null // for legacy mode
     if (exported) {
-      extendExportedGlobal(exported, globalComposer)
+      extendExportedI18n(exported, globalComposer)
     }
 
     if (pluginOptions.inject) {
@@ -157,8 +149,7 @@ export function extendI18n(i18n: I18n, extendOptions: VueI18nExtendOptions) {
 
     // dispose when app will be unmounting
     if (app.unmount) {
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      const unmountApp = app.unmount
+      const unmountApp = app.unmount.bind(app)
       app.unmount = () => {
         scope.stop()
         unmountApp()
@@ -276,125 +267,65 @@ function extendComposer(
   }
 }
 
-function extendPropertyDescriptors(
-  composer: Composer,
-  exported: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  hook?: ExtendComposerHook
-): void {
-  const properties: ExtendPropertyDescriptors[] = [
-    {
-      locales: {
-        get: () => composer.locales.value
-      },
-      localeCodes: {
-        get: () => composer.localeCodes.value
-      },
-      baseUrl: {
-        get: () => composer.baseUrl.value
-      }
-    }
-  ]
-  hook && properties.push(hook(composer))
-  for (const property of properties) {
-    for (const [key, descriptor] of Object.entries(property)) {
-      Object.defineProperty(exported, key, descriptor)
-    }
-  }
+interface ExtendPropertyDescriptors {
+  [key: string]: Pick<PropertyDescriptor, 'get'>
 }
 
-function extendExportedGlobal(exported: ExportedGlobalComposer, g: Composer) {
-  function hook(g: Composer): ExtendPropertyDescriptors {
-    return {
-      strategy: {
-        get: () => g.strategy
-      },
-      localeProperties: {
-        get: () => g.localeProperties.value
-      },
-      setLocale: {
-        get: () => async (locale: string) => Reflect.apply(g.setLocale, g, [locale])
-      },
-      differentDomains: {
-        get: () => g.differentDomains
-      },
-      defaultLocale: {
-        get: () => g.defaultLocale
-      },
-      getBrowserLocale: {
-        get: () => () => Reflect.apply(g.getBrowserLocale, g, [])
-      },
-      getLocaleCookie: {
-        get: () => () => Reflect.apply(g.getLocaleCookie, g, [])
-      },
-      setLocaleCookie: {
-        get: () => (locale: string) => Reflect.apply(g.setLocaleCookie, g, [locale])
-      },
-      onBeforeLanguageSwitch: {
-        get: () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
-          Reflect.apply(g.onBeforeLanguageSwitch, g, [oldLocale, newLocale, initialSetup, context])
-      },
-      onLanguageSwitched: {
-        get: () => (oldLocale: string, newLocale: string) =>
-          Reflect.apply(g.onLanguageSwitched, g, [oldLocale, newLocale])
-      },
-      finalizePendingLocaleChange: {
-        get: () => () => Reflect.apply(g.finalizePendingLocaleChange, g, [])
-      },
-      waitForPendingLocaleChange: {
-        get: () => () => Reflect.apply(g.waitForPendingLocaleChange, g, [])
-      }
+function extendExportedI18n(i18n: ExportedGlobalComposer, c: Composer) {
+  const properties: ExtendPropertyDescriptors = {
+    locales: {
+      get: () => c.locales.value
+    },
+    localeCodes: {
+      get: () => c.localeCodes.value
+    },
+    baseUrl: {
+      get: () => c.baseUrl.value
+    },
+    strategy: {
+      get: () => c.strategy
+    },
+    localeProperties: {
+      get: () => c.localeProperties.value
+    },
+    setLocale: {
+      get: () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])
+    },
+    loadLocaleMessages: {
+      get: () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])
+    },
+    differentDomains: {
+      get: () => c.differentDomains
+    },
+    defaultLocale: {
+      get: () => c.defaultLocale
+    },
+    getBrowserLocale: {
+      get: () => () => Reflect.apply(c.getBrowserLocale, c, [])
+    },
+    getLocaleCookie: {
+      get: () => () => Reflect.apply(c.getLocaleCookie, c, [])
+    },
+    setLocaleCookie: {
+      get: () => (locale: string) => Reflect.apply(c.setLocaleCookie, c, [locale])
+    },
+    onBeforeLanguageSwitch: {
+      get: () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
+        Reflect.apply(c.onBeforeLanguageSwitch, c, [oldLocale, newLocale, initialSetup, context])
+    },
+    onLanguageSwitched: {
+      get: () => (oldLocale: string, newLocale: string) =>
+        Reflect.apply(c.onLanguageSwitched, c, [oldLocale, newLocale])
+    },
+    finalizePendingLocaleChange: {
+      get: () => () => Reflect.apply(c.finalizePendingLocaleChange, c, [])
+    },
+    waitForPendingLocaleChange: {
+      get: () => () => Reflect.apply(c.waitForPendingLocaleChange, c, [])
     }
   }
-  extendPropertyDescriptors(g, exported, hook)
-}
 
-function extendVueI18n(vueI18n: VueI18n): void {
-  const c = getComposer(vueI18n)
-
-  function hook(composer: Composer): ExtendPropertyDescriptors {
-    return {
-      strategy: {
-        get: () => composer.strategy
-      },
-      localeProperties: {
-        get: () => composer.localeProperties.value
-      },
-      setLocale: {
-        get: () => async (locale: string) => Reflect.apply(composer.setLocale, composer, [locale])
-      },
-      loadLocaleMessages: {
-        get: () => async (locale: string) => Reflect.apply(composer.loadLocaleMessages, composer, [locale])
-      },
-      differentDomains: {
-        get: () => composer.differentDomains
-      },
-      defaultLocale: {
-        get: () => composer.defaultLocale
-      },
-      getBrowserLocale: {
-        get: () => () => Reflect.apply(composer.getBrowserLocale, composer, [])
-      },
-      getLocaleCookie: {
-        get: () => () => Reflect.apply(composer.getLocaleCookie, composer, [])
-      },
-      setLocaleCookie: {
-        get: () => (locale: string) => Reflect.apply(composer.setLocaleCookie, composer, [locale])
-      },
-      onBeforeLanguageSwitch: {
-        get: () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
-          Reflect.apply(composer.onBeforeLanguageSwitch, composer, [oldLocale, newLocale, initialSetup, context])
-      },
-      onLanguageSwitched: {
-        get: () => (oldLocale: string, newLocale: string) =>
-          Reflect.apply(composer.onLanguageSwitched, composer, [oldLocale, newLocale])
-      },
-      finalizePendingLocaleChange: {
-        get: () => () => Reflect.apply(composer.finalizePendingLocaleChange, composer, [])
-      },
-      waitForPendingLocaleChange: {
-        get: () => () => Reflect.apply(composer.waitForPendingLocaleChange, composer, [])
-      }
-    }
+  for (const [key, descriptor] of Object.entries(properties)) {
+    Object.defineProperty(i18n, key, descriptor)
   }
-  extendPropertyDescriptors(c, vueI18n, hook)
 }
