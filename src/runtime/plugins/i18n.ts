@@ -33,7 +33,7 @@ import { getLocale, inBrowser, resolveBaseUrl, setLocale } from '../routing/util
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 
 import type { LocaleObject } from '#build/i18n.options.mjs'
-import type { Locale, I18nOptions, Composer, ExportedGlobalComposer, VueI18n } from 'vue-i18n'
+import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { getRouteBaseName, localePath, localeRoute, switchLocalePath, localeHead } from '../routing/compatibles'
 import type {
@@ -153,7 +153,7 @@ export default defineNuxtPlugin({
 
     // extend i18n instance
     extendI18n(i18n, {
-      extendComposer: (composer: Composer) => {
+      extendComposer(composer) {
         const route = useRoute()
         const _locales = ref<string[] | LocaleObject[]>(runtimeI18n.configLocales)
         const _localeCodes = ref<string[]>(localeCodes)
@@ -246,7 +246,7 @@ export default defineNuxtPlugin({
           }
         }
       },
-      extendComposerInstance: (instance: VueI18n | ExportedGlobalComposer, c: Composer) => {
+      extendComposerInstance(instance, c) {
         type ExtendPropertyDescriptors = { [key: string]: Pick<PropertyDescriptor, 'get'> }
 
         const properties: ExtendPropertyDescriptors = {

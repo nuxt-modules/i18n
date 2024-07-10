@@ -1,4 +1,4 @@
-import { computed, effectScope } from '#imports'
+import { effectScope } from '#imports'
 import { isVueI18n, getComposer } from '../utils'
 import {
   getRouteBaseName,
@@ -37,7 +37,7 @@ interface VueI18nInternalPluginOptions {
 
 type VueI18nExtendOptions = {
   extendComposer: (composer: Composer) => void
-  extendComposerInstance: (instance: VueI18n | ExportedGlobalComposer, composer: Composer) => void
+  extendComposerInstance: (instance: Composer | VueI18n | ExportedGlobalComposer, composer: Composer) => void
 }
 
 /**
@@ -55,25 +55,7 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
     pluginOptions.inject ??= true
 
     pluginOptions.__composerExtend = (c: Composer) => {
-      const g = getComposer(i18n)
-
-      c.strategy = g.strategy
-      c.differentDomains = g.differentDomains
-
-      c.baseUrl = computed(() => g.baseUrl.value)
-      c.locales = computed(() => g.locales.value)
-      c.localeCodes = computed(() => g.localeCodes.value)
-      c.localeProperties = computed(() => g.localeProperties.value)
-
-      c.setLocale = g.setLocale
-      c.getBrowserLocale = g.getBrowserLocale
-      c.getLocaleCookie = g.getLocaleCookie
-      c.setLocaleCookie = g.setLocaleCookie
-      c.onBeforeLanguageSwitch = g.onBeforeLanguageSwitch
-      c.onLanguageSwitched = g.onLanguageSwitched
-      c.waitForPendingLocaleChange = g.waitForPendingLocaleChange
-      c.finalizePendingLocaleChange = g.finalizePendingLocaleChange
-
+      extendComposerInstance(c, getComposer(i18n))
       return () => {}
     }
 
