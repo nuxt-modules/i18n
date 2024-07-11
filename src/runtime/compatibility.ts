@@ -1,11 +1,13 @@
 /**
- * Compatibility utilities to support both VueI18n and Composer instances
+ * Utility functions to support both VueI18n and Composer instances
  */
 
-import { isRef, unref, type UnwrapRef } from 'vue'
-import type { Composer, I18n, Locale, VueI18n } from 'vue-i18n'
-import type { LocaleObject } from '#build/i18n.options.mjs'
+import { isRef, unref } from 'vue'
+
 import type { NuxtApp } from '#app'
+import type { LocaleObject } from '#build/i18n.options.mjs'
+import type { Composer, I18n, Locale, VueI18n } from 'vue-i18n'
+import type { UnwrapRef } from 'vue'
 
 function isI18nInstance(i18n: I18n | VueI18n | Composer): i18n is I18n {
   return i18n != null && 'global' in i18n && 'mode' in i18n
@@ -32,6 +34,9 @@ export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
   return target
 }
 
+/**
+ * Extract the value of a property on a VueI18n or Composer instance
+ */
 function extractI18nProperty<T extends ReturnType<typeof getI18nTarget>, K extends keyof T>(
   i18n: T,
   key: K
@@ -39,23 +44,30 @@ function extractI18nProperty<T extends ReturnType<typeof getI18nTarget>, K exten
   return unref(i18n[key]) as UnwrapRef<T[K]>
 }
 
+/**
+ * Typesafe access to property of a VueI18n or Composer instance
+ */
 export function getI18nProperty<K extends keyof ReturnType<typeof getI18nTarget>>(i18n: I18n, property: K) {
   return extractI18nProperty(getI18nTarget(i18n), property)
 }
 
-export function getLocale(i18n: I18n): Locale {
-  return getI18nProperty(i18n, 'locale')
-}
 /**
- * Set a locale
+ * Sets the value of the locale property on VueI18n or Composer instance
+ *
+ * This differs from the instance `setLocale` method in that it sets the
+ * locale property directly without triggering other side effects
  */
-export function setLocale(i18n: I18n, locale: Locale): void {
+export function setLocaleProperty(i18n: I18n, locale: Locale): void {
   const target = getI18nTarget(i18n)
   if (isRef(target.locale)) {
     target.locale.value = locale
   } else {
     target.locale = locale
   }
+}
+
+export function getLocale(i18n: I18n): Locale {
+  return getI18nProperty(i18n, 'locale')
 }
 
 export function getLocales(i18n: I18n): string[] | LocaleObject[] {
@@ -96,6 +108,7 @@ export function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: str
 declare module 'vue-i18n' {
   interface VueI18n {
     /**
+     * This is not exposed in VueI18n's types, but it's used internally
      * @internal
      */
     __composer: Composer

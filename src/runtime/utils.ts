@@ -2,17 +2,7 @@
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
-import {
-  NUXT_I18N_MODULE_ID,
-  isSSG,
-  localeLoaders,
-  normalizedLocales,
-  type RootRedirectOptions,
-  type PrefixableOptions,
-  type SwitchLocalePathIntercepter,
-  type BaseUrlResolveHandler,
-  type LocaleObject
-} from '#build/i18n.options.mjs'
+import { NUXT_I18N_MODULE_ID, isSSG, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import {
   wrapComposable,
   detectBrowserLanguage,
@@ -32,6 +22,17 @@ import {
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
 } from './routing/compatibles'
+import {
+  getI18nProperty,
+  getI18nTarget,
+  getLocale,
+  getLocaleCodes,
+  mergeLocaleMessage,
+  onBeforeLanguageSwitch,
+  onLanguageSwitched,
+  setLocaleProperty,
+  setLocaleCookie
+} from './compatibility'
 
 import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -43,17 +44,13 @@ import type { GetLocaleFromRouteFunction } from './routing/extends/router'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from '@nuxt/schema'
 import type { ModulePublicRuntimeConfig } from '../module'
-import {
-  getI18nProperty,
-  getI18nTarget,
-  getLocale,
-  getLocaleCodes,
-  mergeLocaleMessage,
-  onBeforeLanguageSwitch,
-  onLanguageSwitched,
-  setLocale,
-  setLocaleCookie
-} from './compatibility'
+import type {
+  RootRedirectOptions,
+  PrefixableOptions,
+  SwitchLocalePathIntercepter,
+  BaseUrlResolveHandler,
+  LocaleObject
+} from '#build/i18n.options.mjs'
 
 /**
  * Common options used internally by composable functions, these
@@ -146,7 +143,7 @@ export async function loadAndSetLocale(
 
   // sync cookie and set the locale
   syncCookie(newLocale)
-  setLocale(i18n, newLocale)
+  setLocaleProperty(i18n, newLocale)
 
   await onLanguageSwitched(i18n, oldLocale, newLocale)
 

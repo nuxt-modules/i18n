@@ -34,7 +34,7 @@ import type {
   RouteBaseNameFunction,
   SwitchLocalePathFunction
 } from '../composables'
-import { _setLocale, getLocale, mergeLocaleMessage, setLocale } from '../compatibility'
+import { _setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -222,7 +222,7 @@ export default defineNuxtPlugin({
           if (!i18n.__pendingLocale) {
             return
           }
-          setLocale(i18n, i18n.__pendingLocale)
+          setLocaleProperty(i18n, i18n.__pendingLocale)
           if (i18n.__resolvePendingLocalePromise) {
             // eslint-disable-next-line @typescript-eslint/await-thenable -- FIXME: `__resolvePendingLocalePromise` should be `Promise<void>`
             await i18n.__resolvePendingLocalePromise()

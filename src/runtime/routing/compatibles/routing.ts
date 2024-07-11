@@ -4,6 +4,7 @@ import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingS
 import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
+import { getLocale } from '../../compatibility'
 import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
@@ -19,7 +20,6 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
-import { getLocale } from '../../compatibility'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
