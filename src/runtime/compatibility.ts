@@ -78,7 +78,7 @@ export function getLocaleCodes(i18n: I18n): string[] {
   return getI18nProperty(i18n, 'localeCodes')
 }
 
-export function _setLocale(i18n: I18n, locale: Locale) {
+export function setLocale(i18n: I18n, locale: Locale) {
   return getI18nTarget(i18n).setLocale(locale)
 }
 

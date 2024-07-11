@@ -22,6 +22,7 @@ import {
 } from '../internal'
 import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
+import { setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
 
 import type { LocaleObject } from '#build/i18n.options.mjs'
 import type { Locale, I18nOptions } from 'vue-i18n'
@@ -34,7 +35,6 @@ import type {
   RouteBaseNameFunction,
   SwitchLocalePathFunction
 } from '../composables'
-import { _setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -138,7 +138,7 @@ export default defineNuxtPlugin({
             reason,
             from
           )
-        await _setLocale(i18n, browserLocale)
+        await setLocale(i18n, browserLocale)
         ssgModeInitialSetup = false
       })
     }
