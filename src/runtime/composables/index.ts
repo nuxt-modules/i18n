@@ -3,7 +3,7 @@ import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
-import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
+import { getNormalizedLocales, initCommonComposableOptions, getLocale, getLocales } from '../utils'
 import {
   getAlternateOgLocales,
   getCanonicalLink,
@@ -17,7 +17,7 @@ import {
   localeRoute,
   switchLocalePath
 } from '../routing/compatibles'
-import { findBrowserLocale, getComposer, getLocale, getLocales } from '../routing/utils'
+import { findBrowserLocale, getComposer } from '../routing/utils'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
@@ -44,8 +44,8 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
   const i18n = getComposer(common.i18n)
   const router = common.router
 
-  const locale = getLocale(i18n)
-  const locales = getNormalizedLocales(getLocales(i18n))
+  const locale = getLocale(common.i18n)
+  const locales = getNormalizedLocales(getLocales(common.i18n))
   const _i18nParams = ref({})
   const experimentalSSR = common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR
 

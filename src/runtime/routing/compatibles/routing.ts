@@ -5,8 +5,13 @@ import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
 import { resolve, routeToObject } from './utils'
-import { getLocale, getLocaleRouteName, getRouteName } from '../utils'
-import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
+import { getLocaleRouteName, getRouteName } from '../utils'
+import {
+  extendPrefixable,
+  extendSwitchLocalePathIntercepter,
+  getLocale,
+  type CommonComposableOptions
+} from '../../utils'
 
 import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '#build/i18n.options.mjs'
 import type { Locale } from 'vue-i18n'
