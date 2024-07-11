@@ -6,9 +6,14 @@ import type { DeepRequired } from 'ts-essentials'
 import type { VueI18nConfig, NuxtI18nOptions } from '../types'
 import type { CoreContext } from '@intlify/h3'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type LocaleLoader = { key: string; load: () => Promise<any>; cache: boolean }
+type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
+type MessageLoaderResult<T, Result = MessageLoaderFunction<T> | LocaleMessages<T>> = { default: Result } | Result
 
+export type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
+  key: string
+  load: () => Promise<MessageLoaderResult<T>>
+  cache: boolean
+}
 const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 export async function loadVueI18nOptions(
@@ -73,21 +78,18 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && console.log('loadMessage: (locale) -', locale)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- FIXME
-    const getter = await load().then(r => r.default || r)
+    const getter = await load().then(r => ('default' in r ? r.default : r))
     if (isFunction(getter)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- FIXME
       message = await getter(locale)
       __DEBUG__ && console.log('loadMessage: dynamic load', message)
     } else {
-      message = getter as LocaleMessages<DefineLocaleMessage>
+      message = getter
       if (message != null && cacheMessages) {
         cacheMessages.set(key, message)
       }
       __DEBUG__ && console.log('loadMessage: load', message)
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Failed locale loading: ' + (e as Error).message)
   }
   return message
@@ -126,20 +128,17 @@ export async function loadLocale(
   setter(locale, targetMessage)
 }
 
-type LocaleLoaderMessages = CoreContext['messages'] | LocaleMessages<DefineLocaleMessage>
+type LocaleLoaderMessages =
+  | CoreContext<Locale, DefineLocaleMessage>['messages']
+  | LocaleMessages<DefineLocaleMessage, Locale>
 export async function loadAndSetLocaleMessages(
   locale: Locale,
   localeLoaders: Record<Locale, LocaleLoader[]>,
   messages: LocaleLoaderMessages
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const setter = (locale: Locale, message: Record<string, any>) => {
-    // @ts-expect-error should be able to use `locale` as index
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
+  const setter = (locale: Locale, message: LocaleMessages<DefineLocaleMessage, Locale>) => {
     const base = messages[locale] || {}
     deepCopy(message, base)
-    // @ts-expect-error should be able to use `locale` as index
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
     messages[locale] = base
   }
 
