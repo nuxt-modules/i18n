@@ -3,7 +3,7 @@ import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
-import { getNormalizedLocales, initCommonComposableOptions, getLocale, getLocales } from '../utils'
+import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
 import {
   getAlternateOgLocales,
   getCanonicalLink,
@@ -17,7 +17,8 @@ import {
   localeRoute,
   switchLocalePath
 } from '../routing/compatibles'
-import { findBrowserLocale, getComposer } from '../routing/utils'
+import { findBrowserLocale } from '../routing/utils'
+import { getLocale, getLocales, getComposer } from '../compatibility'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'

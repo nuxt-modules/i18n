@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isObject } from '@intlify/shared'
-import { isRef, navigateTo, unref, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
+import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
   NUXT_I18N_MODULE_ID,
   isSSG,
@@ -32,7 +32,6 @@ import {
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
 } from './routing/compatibles'
-import { getI18nTarget } from './routing/utils'
 
 import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -44,70 +43,17 @@ import type { GetLocaleFromRouteFunction } from './routing/extends/router'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from '@nuxt/schema'
 import type { ModulePublicRuntimeConfig } from '../module'
-import type { UnwrapRef } from 'vue'
-
-function extractI18nProperty<T extends ReturnType<typeof getI18nTarget>, K extends keyof T>(
-  i18n: T,
-  key: K
-): UnwrapRef<T[K]> {
-  return unref(i18n[key]) as UnwrapRef<T[K]>
-}
-
-export function getI18nProperty<K extends keyof ReturnType<typeof getI18nTarget>>(i18n: I18n, property: K) {
-  return extractI18nProperty(getI18nTarget(i18n), property)
-}
-
-export function getLocale(i18n: I18n): Locale {
-  return getI18nProperty(i18n, 'locale')
-}
-/**
- * Set a locale
- *
- * @param i18n - An [I18n](https://vue-i18n.intlify.dev/api/general.html#i18n) instance or a [Composer](https://vue-i18n.intlify.dev/api/composition.html#composer) instance
- * @param locale - A target locale
- */
-export function setLocale(i18n: I18n, locale: Locale): void {
-  const target = getI18nTarget(i18n)
-  if (isRef(target.locale)) {
-    target.locale.value = locale
-  } else {
-    target.locale = locale
-  }
-}
-
-export function getLocales(i18n: I18n): string[] | LocaleObject[] {
-  return getI18nProperty(i18n, 'locales')
-}
-
-export function getLocaleCodes(i18n: I18n): string[] {
-  return getI18nProperty(i18n, 'localeCodes')
-}
-
-export function _setLocale(i18n: I18n, locale: Locale) {
-  return getI18nTarget(i18n).setLocale(locale)
-}
-
-export function setLocaleCookie(i18n: I18n, locale: Locale) {
-  return getI18nTarget(i18n).setLocaleCookie(locale)
-}
-
-export function mergeLocaleMessage(i18n: I18n, locale: Locale, messages: Record<string, any>) {
-  return getI18nTarget(i18n).mergeLocaleMessage(locale, messages)
-}
-
-async function onBeforeLanguageSwitch(
-  i18n: I18n,
-  oldLocale: string,
-  newLocale: string,
-  initial: boolean,
-  context: NuxtApp
-) {
-  return getI18nTarget(i18n).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
-}
-
-function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string) {
-  return getI18nTarget(i18n).onLanguageSwitched(oldLocale, newLocale)
-}
+import {
+  getI18nProperty,
+  getI18nTarget,
+  getLocale,
+  getLocaleCodes,
+  mergeLocaleMessage,
+  onBeforeLanguageSwitch,
+  onLanguageSwitched,
+  setLocale,
+  setLocaleCookie
+} from './compatibility'
 
 /**
  * Common options used internally by composable functions, these

@@ -10,18 +10,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
-import {
-  loadAndSetLocale,
-  detectLocale,
-  detectRedirect,
-  navigate,
-  injectNuxtHelpers,
-  extendBaseUrl,
-  _setLocale,
-  mergeLocaleMessage,
-  getLocale,
-  setLocale
-} from '../utils'
+import { loadAndSetLocale, detectLocale, detectRedirect, navigate, injectNuxtHelpers, extendBaseUrl } from '../utils'
 import {
   getBrowserLocale,
   getLocaleCookie,
@@ -45,6 +34,7 @@ import type {
   RouteBaseNameFunction,
   SwitchLocalePathFunction
 } from '../composables'
+import { _setLocale, getLocale, mergeLocaleMessage, setLocale } from '../compatibility'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',

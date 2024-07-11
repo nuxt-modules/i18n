@@ -6,12 +6,7 @@ import { unref } from '#imports'
 
 import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
-import {
-  extendPrefixable,
-  extendSwitchLocalePathIntercepter,
-  getLocale,
-  type CommonComposableOptions
-} from '../../utils'
+import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
 import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '#build/i18n.options.mjs'
 import type { Locale } from 'vue-i18n'
@@ -24,6 +19,7 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
+import { getLocale } from '../../compatibility'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 

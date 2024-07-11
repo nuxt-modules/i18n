@@ -1,13 +1,14 @@
 import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
-import { getComposer, getNormalizedLocales } from '../utils'
+import { getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { isArray, isObject } from '@intlify/shared'
 import { joinURL } from 'ufo'
 
 import type { I18n } from 'vue-i18n'
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'
-import { getLocale, getLocales, type CommonComposableOptions } from '../../utils'
+import { type CommonComposableOptions } from '../../utils'
+import { getComposer, getLocale, getLocales } from '../../compatibility'
 
 /**
  * Returns localized head properties for locale-related aspects.

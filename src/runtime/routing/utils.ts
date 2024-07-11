@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { isString, isSymbol, isFunction } from '@intlify/shared'
-import { isRef } from '#imports'
 
 import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#build/i18n.options.mjs'
-import type { Composer, I18n, Locale, VueI18n } from 'vue-i18n'
+import type { Locale } from 'vue-i18n'
 
 export const inBrowser = typeof window !== 'undefined'
 
@@ -19,32 +16,6 @@ export function getNormalizedLocales(locales: string[] | LocaleObject[]): Locale
     }
   }
   return normalized
-}
-
-function isI18nInstance(i18n: I18n | VueI18n | Composer): i18n is I18n {
-  return i18n != null && 'global' in i18n && 'mode' in i18n
-}
-
-function isComposer(target: I18n | VueI18n | Composer): target is Composer {
-  return target != null && !('__composer' in target) && 'locale' in target && isRef(target.locale)
-}
-
-export function isVueI18n(target: I18n | VueI18n | Composer): target is VueI18n {
-  return target != null && '__composer' in target
-}
-
-export function getI18nTarget(i18n: I18n | VueI18n | Composer) {
-  return isI18nInstance(i18n) ? i18n.global : i18n
-}
-
-export function getComposer(i18n: I18n | VueI18n | Composer): Composer {
-  const target = getI18nTarget(i18n)
-
-  if (isComposer(target)) return target
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (isVueI18n(target)) return (target as any).__composer as Composer
-
-  return target
 }
 
 export function adjustRoutePathForTrailingSlash(
@@ -222,5 +193,3 @@ export function findBrowserLocale(
 export function getLocalesRegex(localeCodes: string[]) {
   return new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`, 'i')
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */

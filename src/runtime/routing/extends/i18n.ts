@@ -1,5 +1,5 @@
 import { effectScope } from '#imports'
-import { isVueI18n, getComposer } from '../utils'
+import { isVueI18n, getComposer } from '../../compatibility'
 import {
   getRouteBaseName,
   localeHead,
