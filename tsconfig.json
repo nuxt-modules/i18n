@@ -38,7 +38,8 @@
       "#i18n": ["./src/runtime/composables/index.ts"],
       "#vue-router": ["./node_modules/vue-router"],
       "#build/i18n.options.mjs": ["./src/options.d.ts"],
-      "#internal/i18n/options.mjs": ["./src/options.d.ts"]
+      "#internal/i18n/options.mjs": ["./src/options.d.ts"],
+      "#internal/i18n/locale.detector.mjs": ["./src/server.d.ts"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like `./node_modules/@types`. */
