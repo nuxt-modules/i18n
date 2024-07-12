@@ -2,22 +2,10 @@
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
-import {
-  NUXT_I18N_MODULE_ID,
-  isSSG,
-  localeLoaders,
-  normalizedLocales,
-  type RootRedirectOptions,
-  type PrefixableOptions,
-  type SwitchLocalePathIntercepter,
-  type BaseUrlResolveHandler,
-  type LocaleObject
-} from '#build/i18n.options.mjs'
+import { NUXT_I18N_MODULE_ID, isSSG, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import {
   wrapComposable,
   detectBrowserLanguage,
-  callVueI18nInterfaces,
-  getVueI18nPropertyValue,
   defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
@@ -34,66 +22,35 @@ import {
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
 } from './routing/compatibles'
-import { getLocale, setLocale, getLocaleCodes, getI18nTarget } from './routing/utils'
+import {
+  getI18nProperty,
+  getI18nTarget,
+  getLocale,
+  getLocaleCodes,
+  mergeLocaleMessage,
+  onBeforeLanguageSwitch,
+  onLanguageSwitched,
+  setLocaleProperty,
+  setLocaleCookie
+} from './compatibility'
 
-import type { I18n, Locale, FallbackLocale, Composer, VueI18n } from 'vue-i18n'
+import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
-import type { createLocaleFromRouteGetter } from './routing/extends/router'
+import type { GetLocaleFromRouteFunction } from './routing/extends/router'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from '@nuxt/schema'
 import type { ModulePublicRuntimeConfig } from '../module'
-
-export function _setLocale(i18n: I18n, locale: Locale): ReturnType<typeof callVueI18nInterfaces> {
-  return callVueI18nInterfaces(i18n, 'setLocale', locale)
-}
-
-export function setCookieLocale(i18n: I18n, locale: Locale): ReturnType<typeof callVueI18nInterfaces> {
-  return callVueI18nInterfaces(i18n, 'setLocaleCookie', locale)
-}
-
-export function setLocaleMessage(
-  i18n: I18n,
-  locale: Locale,
-  messages: Record<string, any>
-): ReturnType<typeof callVueI18nInterfaces> {
-  return callVueI18nInterfaces(i18n, 'setLocaleMessage', locale, messages)
-}
-
-export function mergeLocaleMessage(
-  i18n: I18n,
-  locale: Locale,
-  messages: Record<string, any>
-): ReturnType<typeof callVueI18nInterfaces> {
-  return callVueI18nInterfaces(i18n, 'mergeLocaleMessage', locale, messages)
-}
-
-// eslint-disable-next-line @typescript-eslint/require-await
-async function onBeforeLanguageSwitch(
-  i18n: I18n,
-  oldLocale: string,
-  newLocale: string,
-  initial: boolean,
-  context: NuxtApp
-): Promise<string> {
-  return callVueI18nInterfaces<string>(i18n, 'onBeforeLanguageSwitch', oldLocale, newLocale, initial, context)
-}
-
-export function onLanguageSwitched(
-  i18n: I18n,
-  oldLocale: string,
-  newLocale: string
-): ReturnType<typeof callVueI18nInterfaces> {
-  return callVueI18nInterfaces(i18n, 'onLanguageSwitched', oldLocale, newLocale)
-}
-
-// eslint-disable-next-line @typescript-eslint/require-await
-export async function finalizePendingLocaleChange(i18n: I18n): Promise<ReturnType<typeof callVueI18nInterfaces>> {
-  return callVueI18nInterfaces(i18n, 'finalizePendingLocaleChange')
-}
+import type {
+  RootRedirectOptions,
+  PrefixableOptions,
+  SwitchLocalePathIntercepter,
+  BaseUrlResolveHandler,
+  LocaleObject
+} from '#build/i18n.options.mjs'
 
 /**
  * Common options used internally by composable functions, these
@@ -134,7 +91,7 @@ export async function loadAndSetLocale(
     if (opts === false || !opts.useCookie) return
     if (skipSettingLocaleOnNavigate) return
 
-    setCookieLocale(i18n, locale)
+    setLocaleCookie(i18n, locale)
   }
 
   __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
@@ -170,10 +127,9 @@ export async function loadAndSetLocale(
 
   // load locale messages required by `newLocale`
   if (lazy) {
-    const i18nFallbackLocales = getVueI18nPropertyValue<FallbackLocale>(i18n, 'fallbackLocale')
+    const i18nFallbackLocales = getI18nProperty(i18n, 'fallbackLocale')
 
-    const setter = (locale: Locale, message: Record<string, any>): ReturnType<typeof mergeLocaleMessage> =>
-      mergeLocaleMessage(i18n, locale, message)
+    const setter = mergeLocaleMessage.bind(null, i18n)
     if (i18nFallbackLocales) {
       const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
       await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter)))
@@ -187,7 +143,7 @@ export async function loadAndSetLocale(
 
   // sync cookie and set the locale
   syncCookie(newLocale)
-  setLocale(i18n, newLocale)
+  setLocaleProperty(i18n, newLocale)
 
   await onLanguageSwitched(i18n, oldLocale, newLocale)
 
@@ -198,7 +154,7 @@ type LocaleLoader = () => Locale
 
 export function detectLocale(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>,
+  routeLocaleGetter: GetLocaleFromRouteFunction,
   vueI18nOptionsLocale: Locale | undefined,
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext,
@@ -286,7 +242,7 @@ export function detectRedirect({
     from?: RouteLocationNormalized | RouteLocationNormalizedLoaded
   }
   targetLocale: Locale
-  routeLocaleGetter: ReturnType<typeof createLocaleFromRouteGetter>
+  routeLocaleGetter: GetLocaleFromRouteFunction
   calledWithRouting?: boolean
 }): string {
   const nuxtApp = useNuxtApp()
@@ -424,7 +380,7 @@ export async function navigate(
   }
 }
 
-export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n | VueI18n | Composer) {
+export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
   /**
    * NOTE:
    *  we will inject `i18n.global` to **nuxt app instance only**

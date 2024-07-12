@@ -10,27 +10,19 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
+import { loadAndSetLocale, detectLocale, detectRedirect, navigate, injectNuxtHelpers, extendBaseUrl } from '../utils'
 import {
-  loadAndSetLocale,
-  detectLocale,
-  detectRedirect,
-  navigate,
-  injectNuxtHelpers,
-  extendBaseUrl,
-  _setLocale,
-  mergeLocaleMessage
-} from '../utils'
-import {
-  getBrowserLocale as _getBrowserLocale,
-  getLocaleCookie as _getLocaleCookie,
-  setLocaleCookie as _setLocaleCookie,
+  getBrowserLocale,
+  getLocaleCookie,
+  setLocaleCookie,
   detectBrowserLanguage,
   DefaultDetectBrowserLanguageFromResult,
   getI18nCookie,
   runtimeDetectBrowserLanguage
 } from '../internal'
-import { getLocale, inBrowser, resolveBaseUrl, setLocale } from '../routing/utils'
+import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
+import { setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
 
 import type { LocaleObject } from '#build/i18n.options.mjs'
 import type { Locale, I18nOptions } from 'vue-i18n'
@@ -81,7 +73,7 @@ export default defineNuxtPlugin({
         ssg: isSSG && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
         callType: 'setup',
         firstAccess: true,
-        localeCookie: _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+        localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
       },
       runtimeI18n
     )
@@ -118,7 +110,7 @@ export default defineNuxtPlugin({
      *  avoid hydration mismatch for SSG mode
      */
     if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
-      nuxt.hook('app:mounted', () => {
+      nuxt.hook('app:mounted', async () => {
         __DEBUG__ && console.log('hook app:mounted')
         const {
           locale: browserLocale,
@@ -133,7 +125,7 @@ export default defineNuxtPlugin({
                 ssg: 'ssg_setup',
                 callType: 'setup',
                 firstAccess: true,
-                localeCookie: _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+                localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
               },
               initialLocale
             )
@@ -146,7 +138,7 @@ export default defineNuxtPlugin({
             reason,
             from
           )
-        _setLocale(i18n, browserLocale)
+        await setLocale(i18n, browserLocale)
         ssgModeInitialSetup = false
       })
     }
@@ -211,16 +203,15 @@ export default defineNuxtPlugin({
           )
         }
         composer.loadLocaleMessages = async (locale: string) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const setter = (locale: Locale, message: Record<string, any>) => mergeLocaleMessage(i18n, locale, message)
+          const setter = mergeLocaleMessage.bind(null, i18n)
           await loadLocale(locale, localeLoaders, setter)
         }
         composer.differentDomains = runtimeI18n.differentDomains
         composer.defaultLocale = runtimeI18n.defaultLocale
-        composer.getBrowserLocale = () => _getBrowserLocale()
+        composer.getBrowserLocale = () => getBrowserLocale()
         composer.getLocaleCookie = () =>
-          _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
-        composer.setLocaleCookie = (locale: string) => _setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
+          getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+        composer.setLocaleCookie = (locale: string) => setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
         composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
           nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context }) as Promise<void>
@@ -231,7 +222,7 @@ export default defineNuxtPlugin({
           if (!i18n.__pendingLocale) {
             return
           }
-          setLocale(i18n, i18n.__pendingLocale)
+          setLocaleProperty(i18n, i18n.__pendingLocale)
           if (i18n.__resolvePendingLocalePromise) {
             // eslint-disable-next-line @typescript-eslint/await-thenable -- FIXME: `__resolvePendingLocalePromise` should be `Promise<void>`
             await i18n.__resolvePendingLocalePromise()
@@ -330,7 +321,7 @@ export default defineNuxtPlugin({
             ssg: isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
             callType: 'routing',
             firstAccess: routeChangeCount === 0,
-            localeCookie: _getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+            localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
           },
           runtimeI18n
         )

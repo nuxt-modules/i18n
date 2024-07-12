@@ -2,7 +2,6 @@ import { useRuntimeConfig } from '#imports'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { localeCodes, vueI18nConfigs, localeLoaders } from '#internal/i18n/options.mjs'
 import { defineNitroPlugin } from 'nitropack/dist/runtime/plugin'
-// @ts-ignore
 import { localeDetector as _localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadAndSetLocaleMessages } from '../messages'
 
@@ -37,11 +36,10 @@ export default defineNitroPlugin(async nitro => {
     event: H3Event,
     i18nContext: CoreContext<string, DefineLocaleMessage>
   ): Promise<Locale> => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const locale = _localeDetector(event, {
       defaultLocale: initialLocale,
       fallbackLocale: options.fallbackLocale
-    }) as Locale
+    })
     if (runtimeI18n.lazy) {
       if (fallbackLocale) {
         const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])

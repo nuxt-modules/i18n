@@ -1,9 +1,10 @@
+import { joinURL } from 'ufo'
+import { isArray, isObject } from '@intlify/shared'
 import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
-import { getComposer, getLocale, getLocales, getNormalizedLocales } from '../utils'
+import { getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
-import { isArray, isObject } from '@intlify/shared'
-import { joinURL } from 'ufo'
+import { getComposer, getLocale, getLocales } from '../../compatibility'
 
 import type { I18n } from 'vue-i18n'
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'

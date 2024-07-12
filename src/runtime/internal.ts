@@ -3,19 +3,12 @@
 import { isArray, isString, isObject } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-import {
-  useRequestHeaders,
-  useRequestEvent,
-  useCookie as useNuxtCookie,
-  useRuntimeConfig,
-  useNuxtApp,
-  unref
-} from '#imports'
+import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp } from '#imports'
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { findBrowserLocale, getLocalesRegex, getI18nTarget } from './routing/utils'
+import { findBrowserLocale, getLocalesRegex } from './routing/utils'
 import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
 
-import type { Locale, I18n } from 'vue-i18n'
+import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { CookieRef } from 'nuxt/app'
@@ -23,21 +16,6 @@ import type { ModulePublicRuntimeConfig } from '../module'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
-}
-
-export function callVueI18nInterfaces<Return = any>(i18n: any, name: string, ...args: any[]): Return {
-  const target = getI18nTarget(i18n as unknown as I18n)
-  // prettier-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/ban-types
-  const [obj, method] = [target, (target as any)[name] as Function]
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  return Reflect.apply(method, obj, [...args]) as Return
-}
-
-export function getVueI18nPropertyValue<Return = any>(i18n: any, name: string): Return {
-  const target = getI18nTarget(i18n as unknown as I18n)
-  // @ts-expect-error name should be typed instead of string
-  return unref(target[name]) as Return
 }
 
 export function defineGetter<K extends string | number | symbol, V>(obj: Record<K, V>, key: K, val: V) {
