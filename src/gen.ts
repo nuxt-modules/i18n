@@ -4,7 +4,7 @@ import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
 import { resolve, relative, join } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getLayerI18n, getLocalePaths, toCode } from './utils'
+import { getLayerI18n, getLocalePaths, getNormalizedLocales, toCode } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PrerenderTarget } from './utils'
@@ -165,7 +165,8 @@ export {}`
 export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
   const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
-  const resolvedLocaleType = typeof generatedLocales === 'string' ? 'string[]' : 'LocaleObject[]'
+  const resolvedLocaleType = typeof generatedLocales === 'string' ? 'Locale[]' : 'LocaleObject[]'
+  const localeCodeStrings = getNormalizedLocales(options.locales).map(x => x.code)
 
   const i18nType = `${vueI18nTypes.join(' & ')} & NuxtI18nRoutingCustomProperties<${resolvedLocaleType}>`
 
@@ -195,7 +196,11 @@ declare module 'vue-i18n' {
   interface ComposerCustom extends ComposerCustomProperties<${resolvedLocaleType}> {}
   interface ExportedGlobalComposer extends NuxtI18nRoutingCustomProperties<${resolvedLocaleType}> {}
   interface VueI18n extends NuxtI18nRoutingCustomProperties<${resolvedLocaleType}> {}
+
+  // generated based on configure locales
+  type Locale = ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
 }
+
 
 declare module '#app' {
   interface NuxtApp {
@@ -203,7 +208,7 @@ declare module '#app' {
   }
 }
 
-${options.experimental?.autoImportTranslationFunctions && globalTranslationTypes || ''}
+${(options.experimental?.autoImportTranslationFunctions && globalTranslationTypes) || ''}
 
 export {}`
 }
