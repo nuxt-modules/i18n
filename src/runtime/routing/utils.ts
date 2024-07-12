@@ -5,7 +5,7 @@ import type { Locale } from 'vue-i18n'
 
 export const inBrowser = typeof window !== 'undefined'
 
-export function getNormalizedLocales(locales: string[] | LocaleObject[]): LocaleObject[] {
+export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): LocaleObject[] {
   locales = locales || []
   const normalized: LocaleObject[] = []
   for (const locale of locales) {

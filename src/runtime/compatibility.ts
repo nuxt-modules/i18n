@@ -70,11 +70,11 @@ export function getLocale(i18n: I18n): Locale {
   return getI18nProperty(i18n, 'locale')
 }
 
-export function getLocales(i18n: I18n): string[] | LocaleObject[] {
+export function getLocales(i18n: I18n): Locale[] | LocaleObject[] {
   return getI18nProperty(i18n, 'locales')
 }
 
-export function getLocaleCodes(i18n: I18n): string[] {
+export function getLocaleCodes(i18n: I18n): Locale[] {
   return getI18nProperty(i18n, 'localeCodes')
 }
 
@@ -93,15 +93,15 @@ export function mergeLocaleMessage(i18n: I18n, locale: Locale, messages: Record<
 
 export async function onBeforeLanguageSwitch(
   i18n: I18n,
-  oldLocale: string,
-  newLocale: string,
+  oldLocale: Locale,
+  newLocale: Locale,
   initial: boolean,
   context: NuxtApp
 ) {
   return getI18nTarget(i18n).onBeforeLanguageSwitch(oldLocale, newLocale, initial, context)
 }
 
-export function onLanguageSwitched(i18n: I18n, oldLocale: string, newLocale: string) {
+export function onLanguageSwitched(i18n: I18n, oldLocale: Locale, newLocale: Locale) {
   return getI18nTarget(i18n).onLanguageSwitched(oldLocale, newLocale)
 }
 

@@ -153,7 +153,7 @@ export type NuxtI18nOptions<
    *
    * @defaultValue '' (empty string)
    */
-  defaultLocale?: string
+  defaultLocale?: Locale
   /**
    * List of locales supported by your app
    *
@@ -241,8 +241,8 @@ export type Directions = 'ltr' | 'rtl' | 'auto'
  * @public
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface LocaleObject extends Record<string, any> {
-  code: Locale
+export interface LocaleObject<T = Locale> extends Record<string, any> {
+  code: T
   name?: string
   dir?: Directions
   domain?: string
@@ -267,8 +267,8 @@ export type BaseUrlResolveHandler<Context = any> = (context: Context) => string
  * @public
  */
 export interface ComputedRouteOptions {
-  locales: readonly string[]
-  paths: Record<string, string>
+  locales: readonly Locale[]
+  paths: Record<Locale, string>
 }
 
 /**
@@ -276,7 +276,7 @@ export interface ComputedRouteOptions {
  *
  * @public
  */
-export type RouteOptionsResolver = (route: NuxtPage, localeCodes: string[]) => ComputedRouteOptions | undefined
+export type RouteOptionsResolver = (route: NuxtPage, localeCodes: Locale[]) => ComputedRouteOptions | undefined
 
 /**
  * Localize route path prefix judgment options used in {@link LocalizeRoutesPrefixable}

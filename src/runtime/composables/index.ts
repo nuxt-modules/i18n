@@ -38,7 +38,7 @@ export * from './shared'
  *
  * @public
  */
-export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
+export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
 export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
   const head = getActiveHead()
@@ -102,7 +102,7 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
     head?.push(metaObject)
   }
 
-  return function (params: Record<string, unknown>) {
+  return function (params: Partial<Record<Locale, unknown>>) {
     i18nParams.value = { ...params }
     setMeta()
   }
@@ -416,11 +416,11 @@ export interface I18nRoute {
    *
    * @description You can specify static and dynamic paths for vue-router.
    */
-  paths?: Record<Locale, string>
+  paths?: Partial<Record<Locale, string>>
   /**
    * Some locales to which the page component should be localized.
    */
-  locales?: string[]
+  locales?: Locale[]
 }
 
 /**

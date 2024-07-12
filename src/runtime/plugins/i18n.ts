@@ -214,7 +214,12 @@ export default defineNuxtPlugin({
         composer.setLocaleCookie = (locale: string) => setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
         composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
-          nuxt.callHook('i18n:beforeLocaleSwitch', { oldLocale, newLocale, initialSetup, context }) as Promise<void>
+          nuxt.callHook('i18n:beforeLocaleSwitch', {
+            oldLocale,
+            newLocale,
+            initialSetup,
+            context
+          }) as Promise<Locale | void>
         composer.onLanguageSwitched = (oldLocale, newLocale) =>
           nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
 

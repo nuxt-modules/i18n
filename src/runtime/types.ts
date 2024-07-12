@@ -17,11 +17,11 @@ import type { Locale } from 'vue-i18n'
  * @returns The new locale to switch, or `undefined` to keep the new locale.
  */
 type BeforeLanguageSwitchHandler = (
-  oldLocale: string,
-  newLocale: string,
+  oldLocale: Locale,
+  newLocale: Locale,
   initialSetup: boolean,
   context: NuxtApp
-) => Promise<string | void>
+) => Promise<Locale | void>
 
 /**
  * Called after the app's locale is switched.
@@ -29,10 +29,10 @@ type BeforeLanguageSwitchHandler = (
  * @param oldLocale - The app's locale before the switch
  * @param newLocale - The app's locale after the switch.
  */
-type LanguageSwitchedHandler = (oldLocale: string, newLocale: string) => Promise<void>
+type LanguageSwitchedHandler = (oldLocale: Locale, newLocale: Locale) => Promise<void>
 
 export interface ComposerCustomProperties<
-  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
 > {
   /**
    * List of locales
@@ -44,7 +44,7 @@ export interface ComposerCustomProperties<
   /**
    * List of locale codes
    */
-  localeCodes: ComputedRef<string[]>
+  localeCodes: ComputedRef<Locale[]>
   /**
    * Base URL that is used in generating canonical links
    */
@@ -79,13 +79,13 @@ export interface ComposerCustomProperties<
    *
    * @param locale - A {@link Locale}
    */
-  setLocale: (locale: string) => Promise<void>
+  setLocale: (locale: Locale) => Promise<void>
   /**
    * Loads locale messages of the specified locale code.
    *
    * @param locale - A {@link Locale}
    */
-  loadLocaleMessages: (locale: string) => Promise<void>
+  loadLocaleMessages: (locale: Locale) => Promise<void>
   /**
    * Returns browser locale code filtered against the ones defined in options.
    *
@@ -106,7 +106,7 @@ export interface ComposerCustomProperties<
    *
    * @param locale - A {@link Locale}
    */
-  setLocaleCookie: (locale: string) => void
+  setLocaleCookie: (locale: Locale) => void
   /**
    * Called before the app's locale is switched.
    *
@@ -139,7 +139,7 @@ export interface ComposerCustomProperties<
 }
 
 export interface NuxtI18nRoutingCustomProperties<
-  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
 > {
   /**
    * List of locales
@@ -151,7 +151,7 @@ export interface NuxtI18nRoutingCustomProperties<
   /**
    * List of locale codes
    */
-  readonly localeCodes: string[]
+  readonly localeCodes: Locale[]
   /**
    * Base URL that is used in generating canonical links
    */
@@ -186,7 +186,7 @@ export interface NuxtI18nRoutingCustomProperties<
    *
    * @param locale - A {@link Locale}
    */
-  setLocale: (locale: string) => Promise<void>
+  setLocale: (locale: Locale) => Promise<void>
   /**
    * Returns browser locale code filtered against the ones defined in options.
    *
@@ -207,7 +207,7 @@ export interface NuxtI18nRoutingCustomProperties<
    *
    * @param locale - A {@link Locale}
    */
-  setLocaleCookie: (locale: string) => void
+  setLocaleCookie: (locale: Locale) => void
   /**
    * Called before the app's locale is switched.
    *

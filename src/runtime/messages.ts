@@ -33,7 +33,7 @@ export async function loadVueI18nOptions(
 }
 
 export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): Locale[] {
-  let fallbackLocales: string[] = []
+  let fallbackLocales: Locale[] = []
   if (isArray(fallback)) {
     fallbackLocales = fallback
   } else if (isObject(fallback)) {

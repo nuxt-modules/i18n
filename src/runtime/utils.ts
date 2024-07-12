@@ -74,7 +74,7 @@ export function initCommonComposableOptions(i18n?: I18n): CommonComposableOption
 }
 
 export async function loadAndSetLocale(
-  newLocale: string,
+  newLocale: Locale,
   i18n: I18n,
   runtimeI18n: ModulePublicRuntimeConfig['i18n'],
   initial: boolean = false
