@@ -200,6 +200,9 @@ declare module 'vue-i18n' {
 
   // generated based on configure locales
   type Locale = ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
+  interface ComposerGeneratedTypeConfig { 
+    locale: ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
+  }
 }
 
 
