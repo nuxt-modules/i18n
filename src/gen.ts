@@ -197,10 +197,11 @@ declare module 'vue-i18n' {
   interface ComposerCustom extends ComposerCustomProperties<${resolvedLocaleType}> {}
   interface ExportedGlobalComposer extends NuxtI18nRoutingCustomProperties<${resolvedLocaleType}> {}
   interface VueI18n extends NuxtI18nRoutingCustomProperties<${resolvedLocaleType}> {}
+}
 
-  // generated based on configure locales
-  type Locale = ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
-  interface ComposerGeneratedTypeConfig { 
+declare module '@intlify/core' {
+  // generated based on configured locales
+  interface IntlifyGeneratedTypeConfig { 
     locale: ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
   }
 }
