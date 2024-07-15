@@ -201,7 +201,7 @@ declare module 'vue-i18n' {
 
 declare module '@intlify/core' {
   // generated based on configured locales
-  interface IntlifyGeneratedTypeConfig { 
+  interface GeneratedTypeConfig { 
     locale: ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
   }
 }
