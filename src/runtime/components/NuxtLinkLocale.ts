@@ -1,4 +1,4 @@
-import { useLocalePath } from '#i18n'
+import { useLocalePath, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
 import { defineNuxtLink } from '#imports'
 import { hasProtocol } from 'ufo'
@@ -8,13 +8,13 @@ import type { NuxtLinkProps } from 'nuxt/app'
 
 const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
 
-export default defineComponent<NuxtLinkProps & { locale?: string }>({
+export default defineComponent<NuxtLinkProps & { locale?: Locale }>({
   name: 'NuxtLinkLocale',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
   props: {
     ...NuxtLinkLocale.props,
     locale: {
-      type: String as PropType<string>,
+      type: String as PropType<Locale>,
       default: undefined,
       required: false
     }
