@@ -199,7 +199,7 @@ declare module 'vue-i18n' {
   interface VueI18n extends NuxtI18nRoutingCustomProperties<${resolvedLocaleType}> {}
 }
 
-declare module '@intlify/core' {
+declare module '@intlify/core-base' {
   // generated based on configured locales
   interface GeneratedTypeConfig { 
     locale: ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
