@@ -49,7 +49,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     name: NUXT_I18N_MODULE_ID,
     configKey: 'i18n',
     compatibility: {
-      nuxt: '>=4.0.0'
+      nuxt: '>=3.0.0-rc.11'
     }
   },
   defaults: DEFAULT_OPTIONS,
