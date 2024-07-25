@@ -121,6 +121,12 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
   })
 
   if (path) {
+    /**
+     * Nuxt uses `gotoPath` here, ths would throw errors as the given `path` can differ
+     * from the final path due to language detection and redirects.
+     */
+    // gotoPath(page, path)
+
     await page.goto(url(path))
     await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
   }
