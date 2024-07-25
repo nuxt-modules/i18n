@@ -5,7 +5,7 @@ import { expect } from 'vitest'
 import { getBrowser, startServer, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
 
-import { errors, type BrowserContextOptions, type Page } from 'playwright'
+import { errors, type BrowserContextOptions, type Page } from 'playwright-core'
 
 export async function getText(page: Page, selector: string, options?: Parameters<Page['locator']>[1]) {
   return page.locator(selector, options).innerText()
@@ -121,8 +121,14 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
   })
 
   if (path) {
-    await page.goto(url(path), { waitUntil: 'networkidle' })
-    await page.waitForFunction(() => window.useNuxtApp?.())
+    /**
+     * Nuxt uses `gotoPath` here, ths would throw errors as the given `path` can differ
+     * from the final path due to language detection and redirects.
+     */
+    // gotoPath(page, path)
+
+    await page.goto(url(path))
+    await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
   }
 
   return {
@@ -158,11 +164,15 @@ export async function gotoPath(page: Page, path: string) {
 
 export async function waitForURL(page: Page, path: string) {
   try {
-    await page.waitForFunction(path => window.useNuxtApp?.()._route.fullPath === path, path)
+    await page.waitForFunction(
+      path => window.useNuxtApp?.()._route.fullPath === path && !window.useNuxtApp?.().isHydrating,
+      path
+    )
   } catch (err) {
     if (err instanceof errors.TimeoutError) {
       const currentPath = await page.evaluate(() => window.useNuxtApp?.()._route.fullPath)
-      err.message += `\nWaited for URL to be ${path} but got stuck on ${currentPath}`
+      const isHydrating = await page.evaluate(() => window.useNuxtApp?.().isHydrating)
+      err.message += `\nWaited for URL to be ${path} but got stuck on ${currentPath} with isHydrating: ${isHydrating}`
 
       const arr = err.stack?.split('\n')
       arr?.splice(1, 1)

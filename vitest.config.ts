@@ -6,7 +6,7 @@ export default defineConfig({
     clearMocks: true,
     restoreMocks: true,
     testTimeout: 300000,
-    retry: 1,
+    retry: process.env.CI ? 1 : 0,
     server: {
       deps: {
         inline: [/@nuxt\/test-utils/]
