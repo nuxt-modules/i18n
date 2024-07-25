@@ -49,7 +49,7 @@ const resolveRootDir = () => {
 export async function loadFixture(testContext: VitestContext) {
   const ctx = useTestContext()
 
-  const rootDir = (ctx.options.rootDir = resolveRootDir())
+  ctx.options.rootDir = resolveRootDir()
 
   if (!ctx.options.dev) {
     // NOTE: the following code is original code
@@ -61,7 +61,7 @@ export async function loadFixture(testContext: VitestContext) {
     const buildDir = resolve(ctx.options.rootDir, '.nuxt', testKey)
     const outputDir = ctx.options.prerender
       ? resolve(buildDir, 'output', testKey)
-      : resolve(rootDir, '.output', testKey)
+      : resolve(ctx.options.rootDir, '.output', testKey)
 
     ctx.options.nuxtConfig = defu(ctx.options.nuxtConfig, {
       buildDir,

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
 import { getText, getData, renderPage, waitForURL } from '../helper'
 
-import type { Response } from 'playwright'
+import type { Response } from 'playwright-core'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),

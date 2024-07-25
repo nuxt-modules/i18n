@@ -1,6 +1,6 @@
 import type { Nuxt, NuxtConfig } from '@nuxt/schema'
-import type { ExecaChildProcess } from 'execa'
-import type { Browser, LaunchOptions } from 'playwright'
+import type { Subprocess } from 'execa'
+import type { Browser, LaunchOptions } from 'playwright-core'
 import type { NuxtI18nOptions } from '../../src/types'
 import type { Suite, File } from 'vitest'
 
@@ -34,7 +34,7 @@ export interface TestContext {
   nuxt?: Nuxt
   browser?: Browser
   url?: string
-  serverProcess?: ExecaChildProcess
+  serverProcess?: Subprocess
   // eslint-disable-next-line @typescript-eslint/ban-types
   mockFn?: Function
 }
