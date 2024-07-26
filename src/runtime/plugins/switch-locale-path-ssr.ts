@@ -25,7 +25,8 @@ export default defineNuxtPlugin({
 
       ctx.renderResult.html = ctx.renderResult.html.replaceAll(
         switchLocalePathLinkWrapperExpr,
-        (match: string, p1: string) => match.replace(/href="([^"]+)"/, `href="${switchLocalePath(p1 ?? '')}"`)
+        (match: string, p1: string) =>
+          match.replace(/href="([^"]+)"/, `href="${encodeURI(switchLocalePath(p1 ?? ''))}"`)
       )
     })
   }
