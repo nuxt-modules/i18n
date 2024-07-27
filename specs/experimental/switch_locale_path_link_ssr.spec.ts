@@ -55,4 +55,14 @@ describe('experimental.switchLocalePathLinkSSR', async () => {
     expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('/products/red-mug')
     expect(product2dom.querySelector('#switch-locale-path-link-en').href).toEqual('/products/red-mug')
   })
+
+  test('encode localized path to prevent XSS', async () => {
+    const url = `/experimental//"><script>console.log('xss')</script><`
+
+    const html = await $fetch(url)
+    const dom = getDom(html)
+
+    // the localized should be the same as encoded
+    expect(dom.querySelector('#slp-xss a').href).toEqual(encodeURI('/nl' + url))
+  })
 })
