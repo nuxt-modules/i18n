@@ -1,16 +1,16 @@
 <script setup lang="ts">
 const route = useRoute()
 const { locale, locales } = useI18n()
+const setI18nParams = useSetI18nParams()
+const switchLocalePath = useSwitchLocalePath()
 
 const availableLocales = computed(() => {
   return locales.value.filter(i => i.code !== locale.value)
 })
 
-definePageMeta({
-  nuxtI18n: {
-    en: { id: 'english' },
-    ja: { id: 'japanese' }
-  }
+setI18nParams({
+  en: { id: 'english' },
+  ja: { id: 'japanese' }
 })
 </script>
 
