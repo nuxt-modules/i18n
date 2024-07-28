@@ -15,7 +15,6 @@ import type { NuxtI18nOptions } from './types'
 import type { TransformMacroPluginOptions } from './transform/macros'
 import type { ResourcePluginOptions } from './transform/resource'
 import type { TransformI18nFunctionPluginOptions } from './transform/i18n-function-injection'
-import { MetaDeprecationPlugin, type MetaDeprecationPluginOptions } from './transform/meta-deprecation'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -36,9 +35,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
-  const metaDeprecationOptions: MetaDeprecationPluginOptions = {
-    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
-  }
   const i18nFunctionOptions: TransformI18nFunctionPluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
@@ -69,7 +65,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
     addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
     addWebpackPlugin(ResourcePlugin.webpack(resourceOptions))
-    addWebpackPlugin(MetaDeprecationPlugin.webpack(metaDeprecationOptions))
     if (nuxtOptions.experimental.autoImportTranslationFunctions) {
       addWebpackPlugin(TransformI18nFunctionPlugin.webpack(i18nFunctionOptions))
     }
@@ -118,7 +113,6 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
   addVitePlugin(TransformMacroPlugin.vite(macroOptions))
   addVitePlugin(ResourcePlugin.vite(resourceOptions))
-  addVitePlugin(MetaDeprecationPlugin.vite(metaDeprecationOptions))
   if (nuxtOptions.experimental.autoImportTranslationFunctions) {
     addVitePlugin(TransformI18nFunctionPlugin.vite(i18nFunctionOptions))
   }
