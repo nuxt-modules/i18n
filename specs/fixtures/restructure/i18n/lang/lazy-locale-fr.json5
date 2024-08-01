@@ -1,0 +1,7 @@
+{
+  home: 'Accueil',
+  about: 'À propos',
+  posts: 'Articles',
+  dynamic: 'Dynamique',
+  dynamicTime: 'Not dynamic'
+}
