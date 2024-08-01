@@ -1,11 +1,11 @@
 import createDebug from 'debug'
 import {
   getLayerI18n,
-  getProjectPath,
   mergeConfigLocales,
   resolveVueI18nConfigInfo,
   formatMessage,
-  getLocaleFiles
+  getLocaleFiles,
+  getProjectPath
 } from './utils'
 
 import { useLogger } from '@nuxt/kit'
@@ -128,16 +128,17 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
     const i18n = getLayerI18n(layer)
     if (i18n?.locales == null) continue
 
-    configs.push({ ...i18n, langDir: resolveLayerLangDir(layer, i18n, nuxt), projectLangDir: projectLangDir })
+    configs.push({ ...i18n, langDir: resolveLayerLangDir(layer, i18n, nuxt), projectLangDir })
   }
 
-  const localeObjects = options.locales.filter((x): x is LocaleObject => x !== 'string')
   const absoluteConfigMap = new Map<string, LocaleConfig>()
+  const absoluteLocaleObjects: LocaleObject[] = []
 
   // locale `files` use absolute paths installed using `installModule`
-  const absoluteLocaleObjects: LocaleObject[] = []
-  outer: for (const localeObject of localeObjects) {
-    const files = getLocaleFiles(localeObject)
+  outer: for (const locale of options.locales) {
+    if (typeof locale === 'string') continue
+
+    const files = getLocaleFiles(locale)
     if (files.length === 0) continue
 
     // check if all files are absolute and not present in configs
@@ -146,31 +147,18 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
       if (configs.find(config => config.langDir === parse(file.path).dir) != null) continue outer
     }
 
-    absoluteLocaleObjects.push(localeObject)
+    absoluteLocaleObjects.push(locale)
   }
 
   // filter layer locales
   for (const absoluteLocaleObject of absoluteLocaleObjects) {
     const files = getLocaleFiles(absoluteLocaleObject)
     if (files.length === 0) continue
+
     const langDir = parse(files[0].path).dir
-
-    if (absoluteConfigMap.has(langDir)) {
-      const entry = absoluteConfigMap.get(langDir)
-
-      absoluteConfigMap.set(langDir, {
-        langDir,
-        projectLangDir,
-        locales: [...(entry!.locales! as LocaleObject[]), absoluteLocaleObject]
-      })
-      continue
-    }
-
-    absoluteConfigMap.set(langDir, {
-      langDir,
-      projectLangDir,
-      locales: [absoluteLocaleObject]
-    })
+    const locales = (absoluteConfigMap.get(langDir)?.locales ?? []) as LocaleObject[]
+    locales.push(absoluteLocaleObject)
+    absoluteConfigMap.set(langDir, { langDir, projectLangDir, locales })
   }
 
   configs.unshift(...Array.from(absoluteConfigMap.values()))

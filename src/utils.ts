@@ -71,36 +71,38 @@ function convertToImportId(file: string) {
 
 export async function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): Promise<LocaleInfo[]> {
   const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(srcDir, x)))
-
   const find = (f: string) => files.find(file => file === resolve(srcDir, f))
+
   const localesResolved: LocaleInfo[] = []
 
   for (const { file, ...locale } of locales) {
-    const resolved: LocaleInfo = { ...locale, files: [], meta: undefined }
-    const files = getLocaleFiles(locale)
+    const resolved: LocaleInfo = { ...locale, files: [], meta: [] }
 
-    resolved.meta = files.map(file => {
-      const filePath = find(file.path) ?? ''
-      const isCached = filePath ? getLocaleType(filePath) !== 'dynamic' : true
+    const files = getLocaleFiles(locale)
+    for (const f of files) {
+      const filePath = find(f.path) ?? ''
+      const localeType = getLocaleType(filePath)
+      const isCached = filePath ? localeType !== 'dynamic' : true
       const parsed = parsePath(filePath)
       const importKey = join(parsed.root, parsed.dir, parsed.base)
       const key = genSafeVariableName(`locale_${convertToImportId(importKey)}`)
 
-      return {
+      const metaFile = {
         path: filePath,
         loadPath: relative(buildDir, filePath),
-        type: getLocaleType(filePath),
+        type: localeType,
         hash: getHash(filePath),
         parsed,
         key,
         file: {
-          path: file.path,
-          cache: file.cache ?? isCached
+          path: f.path,
+          cache: f.cache ?? isCached
         }
       }
-    })
 
-    resolved.files = resolved.meta.map(meta => meta.file)
+      resolved.meta!.push(metaFile)
+      resolved.files.push(metaFile.file)
+    }
 
     localesResolved.push(resolved)
   }
@@ -452,15 +454,7 @@ export function parseSegment(segment: string) {
 }
 
 export const getLocalePaths = (locale: LocaleObject): string[] => {
-  if (locale.file != null) {
-    return [locale.file as unknown as LocaleFile].map(x => (isString(x) ? x : x.path))
-  }
-
-  if (locale.files != null) {
-    return [...locale.files].map(x => (isString(x) ? x : x.path))
-  }
-
-  return []
+  return getLocaleFiles(locale).map(x => x.path)
 }
 
 export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
@@ -475,43 +469,18 @@ export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] 
   return []
 }
 
-export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string = '', files: LocaleFile[] = []) => {
-  const absoluteFiles = files.map(file => ({ path: resolve(layerLangDir, file.path), cache: file.cache }))
-  const relativeFiles = absoluteFiles.map(file => ({ path: relative(projectLangDir, file.path), cache: file.cache }))
-
-  return relativeFiles
-}
-
 export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
   const projectLayer = nuxt.options._layers[0]
   return resolve(projectLayer.config.rootDir, ...target)
 }
 
-function resolveRelativeLocales(merged: LocaleObject | undefined, locale: string | LocaleObject, config: LocaleConfig) {
-  if (isString(locale)) return merged ?? { iso: locale, code: locale }
-
+function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
   const fileEntries = getLocaleFiles(locale)
 
-  const relativeFiles: LocaleFile[] = []
-  for (const file of fileEntries) {
-    const absolutePath = resolve(config.langDir ?? '', file.path)
-    // console.log({
-    //   absolutePath,
-    //   langDir: config.langDir,
-    //   projectLangDir: config.projectLangDir,
-    //   resolved: resolve(config.projectLangDir, absolutePath)
-    // })
-    relativeFiles.push({ path: resolve(config.projectLangDir, absolutePath), cache: file.cache })
-  }
-
-  const mergedLocaleObject = isString(merged) ? undefined : merged
-
-  const { file, files, ...entry } = locale
-  return {
-    ...entry,
-    ...mergedLocaleObject,
-    files: [...(relativeFiles ?? []), ...((mergedLocaleObject?.files ?? []) as LocaleFile[])]
-  }
+  return fileEntries.map(file => ({
+    path: resolve(config.projectLangDir, resolve(config.langDir ?? '', file.path)),
+    cache: file.cache
+  })) as LocaleFile[]
 }
 
 export type LocaleConfig = {
@@ -537,8 +506,30 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
 
     for (const locale of config.locales) {
       const code = isString(locale) ? locale : locale.code
-      const resolvedLocale = resolveRelativeLocales(mergedLocales.get(code), locale, config)
-      if (resolvedLocale != null) mergedLocales.set(code, resolvedLocale)
+      const merged = mergedLocales.get(code)
+
+      // set normalized locale or to existing entry
+      if (typeof locale === 'string') {
+        mergedLocales.set(code, merged ?? { iso: code, code })
+        continue
+      }
+
+      const resolvedFiles = resolveRelativeLocales(locale, config)
+      delete locale.file
+
+      // merge locale and files with existing entry
+      if (merged != null) {
+        merged.files ??= [] as LocaleFile[]
+        // @ts-ignore
+        merged.files.unshift(...resolvedFiles)
+        mergedLocales.set(code, {
+          ...locale,
+          ...merged
+        })
+        continue
+      }
+
+      mergedLocales.set(code, { ...locale, files: resolvedFiles })
     }
   }
 
