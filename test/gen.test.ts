@@ -66,7 +66,7 @@ const makeNuxtOptions = (localeInfo: LocaleInfo[]) => {
 
 test('basic', async () => {
   const { generateLoaderOptions } = await import('../src/gen')
-  const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '..')
+  const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '/test/.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
@@ -79,7 +79,7 @@ test('basic', async () => {
 })
 
 test('lazy', async () => {
-  const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '..')
+  const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '/test/.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
@@ -112,7 +112,7 @@ test('multiple files', async () => {
         }
       ]
     ],
-    '..'
+    '/test/.nuxt'
   )
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
 
@@ -147,7 +147,7 @@ test('files with cache configuration', async () => {
         }
       ]
     ],
-    '..'
+    '/test/.nuxt'
   )
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
 
@@ -181,7 +181,7 @@ test('locale file in nested', async () => {
         paths: ['/path/to/fr.json']
       }
     ],
-    '..'
+    '/test/.nuxt'
   )
 
   const vueI18nConfig = await resolveVueI18nConfigInfo({ vueI18n: NUXT_I18N_VUE_I18N_CONFIG.relative }, '.nuxt', '.')
@@ -196,7 +196,7 @@ test('locale file in nested', async () => {
 })
 
 test('vueI18n option', async () => {
-  const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '..')
+  const localeInfo = await resolveLocales('/test/srcDir', LOCALE_INFO, '/test/.nuxt')
   const vueI18nConfigs = await Promise.all(
     [
       NUXT_I18N_VUE_I18N_CONFIG,

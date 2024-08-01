@@ -20,6 +20,7 @@ import {
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
+import { resolveI18nDir } from './layers'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
@@ -139,7 +140,8 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
 
   if (serverI18nLayer != null) {
     const serverI18nLayerConfig = getLayerI18n(serverI18nLayer)
-    const pathTo = resolve(serverI18nLayer.config.rootDir, serverI18nLayerConfig!.experimental!.localeDetector!)
+    const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, nuxt, true)
+    const pathTo = resolve(i18nDir, serverI18nLayerConfig!.experimental!.localeDetector!)
     const localeDetectorPath = await resolvePath(pathTo, {
       cwd: nuxt.options.rootDir,
       extensions: EXECUTABLE_EXTENSIONS

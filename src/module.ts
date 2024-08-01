@@ -165,11 +165,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     const normalizedLocales = getNormalizedLocales(options.locales)
     const localeCodes = normalizedLocales.map(locale => locale.code)
-    const localeInfo = await resolveLocales(
-      resolve(nuxt.options.srcDir),
-      normalizedLocales,
-      relative(nuxt.options.buildDir, nuxt.options.srcDir)
-    )
+    console.log(nuxt.options.srcDir)
+    const localeInfo = await resolveLocales(nuxt.options.srcDir, normalizedLocales, nuxt.options.buildDir)
     debug('localeInfo', localeInfo)
 
     /**
@@ -279,7 +276,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     nuxt.hook('build:manifest', manifest => {
       if (options.lazy) {
-        const langFiles = localeInfo.flatMap(locale => getLocaleFiles(locale)).map(x => x.path)
+        const langFiles = localeInfo
+          .flatMap(locale => getLocaleFiles(locale))
+          .map(x => relative(nuxt.options.srcDir, x.path))
         const langPaths = [...new Set(langFiles)]
 
         for (const key in manifest) {

@@ -109,6 +109,8 @@ export type NuxtI18nOptions<
    */
   vueI18n?: string
   experimental?: ExperimentalFeatures
+  restructure?: boolean
+  rootDir?: string
   bundle?: BundleOptions
   compilation?: LocaleMessageCompilationOptions
   customBlocks?: CustomBlocksOptions

@@ -27,6 +27,8 @@ export const DEFAULT_COOKIE_KEY = 'i18n_redirected'
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = 'nuxt-i18n-slp'
 
 export const DEFAULT_OPTIONS = {
+  restructure: false,
+  rootDir: 'i18n',
   experimental: {
     localeDetector: '',
     switchLocalePathLinkSSR: false,

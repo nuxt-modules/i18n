@@ -26,6 +26,7 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
 
   for (const layer of layers) {
     const layerI18n = getLayerI18n(layer)
+    // const resolveFrom = isNuxtMajorVersion(4, nuxt) ? layer.config.rootDir : layer.config.srcDir
     if (layerI18n == null) continue
 
     const configLocation = project.config.rootDir === layer.config.rootDir ? 'project layer' : 'extended layer'
@@ -33,16 +34,21 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
 
     try {
       // check `lazy` and `langDir` option
-      if (layerI18n.lazy && !layerI18n.langDir) {
-        throw new Error('When using the `lazy` option you must also set the `langDir` option.')
-      }
+      // if (layerI18n.lazy && !layerI18n.langDir) {
+      //   throw new Error('When using the `lazy` option you must also set the `langDir` option.')
+      // }
 
       // check `langDir` option
       if (layerI18n.langDir) {
-        const locales = layerI18n.locales || []
-        if (!locales.length || locales.some(locale => isString(locale))) {
-          throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
-        }
+        // const locales = layerI18n.locales || []
+
+        // let langDir = resolve(layer.config.srcDir, layerI18n?.langDir ?? layer.config.srcDir)
+        // if (layerI18n.restructure) {
+        //   langDir = resolve(resolveFrom, layerI18n.rootDir ?? 'i18n', layerI18n.langDir ?? 'locales')
+        // }
+        // if (!locales.length || locales.some(locale => isString(locale))) {
+        //   throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
+        // }
 
         if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
           logger.warn(
@@ -51,14 +57,14 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
           )
         }
 
-        for (const locale of locales) {
-          if (isString(locale) || !(locale.file || locale.files)) {
-            throw new Error(
-              'All locales must have the `file` or `files` property set when using `langDir`.\n' +
-                `Found none in:\n${JSON.stringify(locale, null, 2)}.`
-            )
-          }
-        }
+        // for (const locale of locales) {
+        //   if (isString(locale) || !(locale.file || locale.files)) {
+        //     throw new Error(
+        //       'All locales must have the `file` or `files` property set when using `langDir`.\n' +
+        //         `Found none in:\n${JSON.stringify(locale, null, 2)}.`
+        //     )
+        //   }
+        // }
       }
     } catch (err) {
       if (!(err instanceof Error)) throw err
@@ -99,36 +105,49 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
   }
 }
 
-export const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
+export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, _nuxt: Nuxt, _server: boolean = false) {
+  if (i18n.restructure) {
+    return resolve(layer.config.rootDir, i18n.rootDir ?? 'i18n')
+  }
+
+  return resolve(layer.config.rootDir, _server ? '' : layer.config.srcDir)
+}
+
+export function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, nuxt: Nuxt) {
+  return resolve(nuxt.options.rootDir, resolveI18nDir(layer, i18n, nuxt), i18n?.langDir ?? 'locales')
+}
+
+const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   debug('project layer `lazy` option', options.lazy)
   const projectLangDir = getProjectPath(nuxt, nuxt.options.srcDir)
   options.locales ??= []
 
-  const configs: LocaleConfig[] = nuxt.options._layers
-    .filter(layer => {
-      const i18n = getLayerI18n(layer)
-      return i18n?.locales != null
-    })
-    .map(layer => {
-      const i18n = getLayerI18n(layer)
-      return {
-        ...i18n,
+  const configs: LocaleConfig[] = []
 
-        langDir: resolve(layer.config.srcDir, i18n?.langDir ?? layer.config.srcDir),
-        projectLangDir
-      }
-    })
+  for (const layer of nuxt.options._layers) {
+    const i18n = getLayerI18n(layer)
+    if (i18n?.locales == null) continue
+
+    configs.push({ ...i18n, langDir: resolveLayerLangDir(layer, i18n, nuxt), projectLangDir: projectLangDir })
+  }
 
   const localeObjects = options.locales.filter((x): x is LocaleObject => x !== 'string')
   const absoluteConfigMap = new Map<string, LocaleConfig>()
+
   // locale `files` use absolute paths installed using `installModule`
-  const absoluteLocaleObjects = localeObjects.filter(localeObject => {
+  const absoluteLocaleObjects: LocaleObject[] = []
+  outer: for (const localeObject of localeObjects) {
     const files = getLocaleFiles(localeObject)
-    if (files.length === 0) return false
-    return files.every(
-      file => isAbsolute(file.path) && configs.find(config => config.langDir === parse(file.path).dir) == null
-    )
-  })
+    if (files.length === 0) continue
+
+    // check if all files are absolute and not present in configs
+    for (const file of files) {
+      if (!isAbsolute(file.path)) continue outer
+      if (configs.find(config => config.langDir === parse(file.path).dir) != null) continue outer
+    }
+
+    absoluteLocaleObjects.push(localeObject)
+  }
 
   // filter layer locales
   for (const absoluteLocaleObject of absoluteLocaleObjects) {
@@ -163,49 +182,38 @@ export const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
  * Returns an array of absolute paths to each layers `langDir`
  */
 export const getLayerLangPaths = (nuxt: Nuxt) => {
-  return nuxt.options._layers
-    .filter(layer => {
-      const i18n = getLayerI18n(layer)
-      return i18n?.langDir != null
-    })
-    .map(layer => {
-      const i18n = getLayerI18n(layer)
-      // @ts-ignore
-      return resolve(layer.config.srcDir, i18n.langDir)
-    })
+  const langPaths: string[] = []
+
+  for (const layer of nuxt.options._layers) {
+    const i18n = getLayerI18n(layer)
+    if (i18n?.langDir == null) continue
+
+    langPaths.push(resolveLayerLangDir(layer, i18n, nuxt))
+  }
+
+  return langPaths
 }
 
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt: Nuxt, buildDir: string) {
   const logger = useLogger(NUXT_I18N_MODULE_ID)
-  const layers = [...nuxt.options._layers]
-  const project = layers.shift() as NuxtConfigLayer
-  const i18nLayers = [project, ...layers.filter(layer => getLayerI18n(layer))]
 
-  const resolved = await Promise.all(
-    i18nLayers
-      .map(layer => {
-        const i18n = getLayerI18n(layer) as NuxtI18nOptions
+  const resolveArr = nuxt.options._layers.map(async layer => {
+    const i18n = getLayerI18n(layer)
+    if (i18n == null) return undefined
 
-        return [layer, i18n, resolveVueI18nConfigInfo(i18n || {}, buildDir, layer.config.rootDir)] as [
-          NuxtConfigLayer,
-          NuxtI18nOptions,
-          Promise<VueI18nConfigPathInfo | undefined>
-        ]
-      })
-      .map(async ([layer, i18n, resolver]) => {
-        const res = await resolver
+    const res = await resolveVueI18nConfigInfo(i18n || {}, buildDir, resolveI18nDir(layer, i18n, nuxt, true))
 
-        if (res == null && i18n?.vueI18n != null) {
-          logger.warn(
-            `Ignore Vue I18n configuration file does not exist at ${i18n.vueI18n} in ${layer.config.rootDir}. Skipping...`
-          )
+    if (res == null && i18n?.vueI18n != null) {
+      logger.warn(
+        `Ignore Vue I18n configuration file does not exist at ${i18n.vueI18n} in ${layer.config.rootDir}. Skipping...`
+      )
+      return undefined
+    }
 
-          return undefined
-        }
+    return res
+  })
 
-        return res
-      })
-  )
+  const resolved = await Promise.all(resolveArr)
 
   // use `vueI18n` passed by `installModule`
   if (options.vueI18n && isAbsolute(options.vueI18n)) {
