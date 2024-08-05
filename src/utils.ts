@@ -1,6 +1,6 @@
 import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { resolvePath } from '@nuxt/kit'
+import { resolvePath, useNuxt } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
@@ -245,10 +245,14 @@ export async function isExists(path: string) {
   }
 }
 
-export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDir: string, rootDir: string) {
+export async function resolveVueI18nConfigInfo(
+  rootDir: string,
+  configPath: string = 'i18n.config',
+  buildDir = useNuxt().options.buildDir
+) {
   const configPathInfo: Required<VueI18nConfigPathInfo> = {
     relativeBase: relative(buildDir, rootDir),
-    relative: options.vueI18n ?? 'i18n.config',
+    relative: configPath,
     absolute: '',
     rootDir,
     hash: NULL_HASH,
@@ -469,22 +473,16 @@ export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] 
   return []
 }
 
-export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
-  const projectLayer = nuxt.options._layers[0]
-  return resolve(projectLayer.config.rootDir, ...target)
-}
-
 function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
   const fileEntries = getLocaleFiles(locale)
 
   return fileEntries.map(file => ({
-    path: resolve(config.projectLangDir, resolve(config.langDir ?? '', file.path)),
+    path: resolve(useNuxt().options.rootDir, resolve(config.langDir ?? '', file.path)),
     cache: file.cache
   })) as LocaleFile[]
 }
 
 export type LocaleConfig = {
-  projectLangDir: string
   langDir?: string | null
   locales?: string[] | LocaleObject[]
 }
@@ -559,10 +557,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
       baseLocales.push({ ...locale, file: undefined, files: getLocaleFiles(locale) })
     }
 
-    const mergedLocales = mergeConfigLocales(
-      modules.map(x => ({ ...x, projectLangDir: nuxt.options.rootDir })),
-      baseLocales
-    )
+    const mergedLocales = mergeConfigLocales(modules, baseLocales)
 
     options.locales = mergedLocales
   }

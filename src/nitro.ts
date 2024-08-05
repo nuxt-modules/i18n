@@ -140,7 +140,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
 
   if (serverI18nLayer != null) {
     const serverI18nLayerConfig = getLayerI18n(serverI18nLayer)
-    const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, nuxt, true)
+    const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, true)
     const pathTo = resolve(i18nDir, serverI18nLayerConfig!.experimental!.localeDetector!)
     const localeDetectorPath = await resolvePath(pathTo, {
       cwd: nuxt.options.rootDir,
