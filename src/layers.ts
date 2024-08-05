@@ -19,12 +19,12 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
 
   for (const layer of layers) {
     const layerI18n = getLayerI18n(layer)
-    const isNuxt4 = nuxt.options.future.compatibilityVersion === 4
+    const isNuxt4 = layer.config.future?.compatibilityVersion === 4
     if (layerI18n == null) continue
 
     const configLocation = project.config.rootDir === layer.config.rootDir ? 'project layer' : 'extended layer'
     const layerHint = `In ${configLocation} (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
-    const langDir = isNuxt4 && layerI18n.restructure ? layerI18n.langDir ?? 'locales' : layerI18n.langDir
+    const langDir = isNuxt4 && layerI18n.restructure !== false ? layerI18n.langDir ?? 'locales' : layerI18n.langDir
 
     try {
       // check `lazy` and `langDir` option
