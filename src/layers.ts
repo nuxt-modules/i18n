@@ -19,45 +19,42 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
 
   for (const layer of layers) {
     const layerI18n = getLayerI18n(layer)
-    // const resolveFrom = isNuxtMajorVersion(4, nuxt) ? layer.config.rootDir : layer.config.srcDir
+    const isNuxt4 = nuxt.options.future.compatibilityVersion === 4
     if (layerI18n == null) continue
 
     const configLocation = project.config.rootDir === layer.config.rootDir ? 'project layer' : 'extended layer'
     const layerHint = `In ${configLocation} (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
+    const langDir = isNuxt4 && layerI18n.restructure ? layerI18n.langDir ?? 'locales' : layerI18n.langDir
 
     try {
       // check `lazy` and `langDir` option
-      // if (layerI18n.lazy && !layerI18n.langDir) {
-      //   throw new Error('When using the `lazy` option you must also set the `langDir` option.')
-      // }
+      if (layerI18n.lazy && !langDir) {
+        throw new Error('When using the `lazy` option you must also set the `langDir` option.')
+      }
 
       // check `langDir` option
-      if (layerI18n.langDir) {
-        // const locales = layerI18n.locales || []
+      if (langDir) {
+        const locales = layerI18n.locales || []
 
-        // let langDir = resolve(layer.config.srcDir, layerI18n?.langDir ?? layer.config.srcDir)
-        // if (layerI18n.restructure) {
-        //   langDir = resolve(resolveFrom, layerI18n.rootDir ?? 'i18n', layerI18n.langDir ?? 'locales')
-        // }
-        // if (!locales.length || locales.some(locale => isString(locale))) {
-        //   throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
-        // }
-
-        if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
+        if (isString(layerI18n.langDir) && isAbsolute(langDir)) {
           logger.warn(
-            `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
+            `${layerHint} \`langDir\` is set to an absolute path (\`${langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
               `Absolute paths will not work in production, see https://i18n.nuxtjs.org/options/lazy#langdir for more details.`
           )
         }
 
-        // for (const locale of locales) {
-        //   if (isString(locale) || !(locale.file || locale.files)) {
-        //     throw new Error(
-        //       'All locales must have the `file` or `files` property set when using `langDir`.\n' +
-        //         `Found none in:\n${JSON.stringify(locale, null, 2)}.`
-        //     )
-        //   }
-        // }
+        for (const locale of locales) {
+          if (isString(locale)) {
+            throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
+          }
+
+          if (!(locale.file || locale.files)) {
+            throw new Error(
+              'All locales must have the `file` or `files` property set when using `langDir`.\n' +
+                `Found none in:\n${JSON.stringify(locale, null, 2)}.`
+            )
+          }
+        }
       }
     } catch (err) {
       if (!(err instanceof Error)) throw err
