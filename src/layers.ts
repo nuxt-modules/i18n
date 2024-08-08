@@ -19,26 +19,19 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
 
   for (const layer of layers) {
     const layerI18n = getLayerI18n(layer)
-    const isNuxt4 = layer.config.future?.compatibilityVersion === 4
     if (layerI18n == null) continue
 
     const configLocation = project.config.rootDir === layer.config.rootDir ? 'project layer' : 'extended layer'
     const layerHint = `In ${configLocation} (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
-    const langDir = isNuxt4 && layerI18n.restructure !== false ? layerI18n.langDir ?? 'locales' : layerI18n.langDir
 
     try {
-      // check `lazy` and `langDir` option
-      if (layerI18n.lazy && !langDir) {
-        throw new Error('When using the `lazy` option you must also set the `langDir` option.')
-      }
-
       // check `langDir` option
-      if (langDir) {
+      if (layerI18n.langDir) {
         const locales = layerI18n.locales || []
 
-        if (isString(layerI18n.langDir) && isAbsolute(langDir)) {
+        if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
           logger.warn(
-            `${layerHint} \`langDir\` is set to an absolute path (\`${langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
+            `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
               `Absolute paths will not work in production, see https://i18n.nuxtjs.org/options/lazy#langdir for more details.`
           )
         }
@@ -96,15 +89,16 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
 }
 
 export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, fromRootDir: boolean = false) {
-  if (i18n.restructure) {
-    return resolve(layer.config.rootDir, i18n.rootDir ?? 'i18n')
+  if (i18n.restructureDir) {
+    return resolve(layer.config.rootDir, i18n.restructureDir)
   }
 
   return resolve(layer.config.rootDir, fromRootDir ? '' : layer.config.srcDir)
 }
 
 export function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
-  return resolve(resolveI18nDir(layer, i18n), i18n?.langDir ?? 'locales')
+  const langDir = i18n.langDir ?? (i18n.restructureDir ? 'locales' : '')
+  return resolve(resolveI18nDir(layer, i18n), langDir)
 }
 
 const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
@@ -158,7 +152,7 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
 
   for (const layer of nuxt.options._layers) {
     const i18n = getLayerI18n(layer)
-    if (i18n?.langDir == null) continue
+    if (!i18n?.restructureDir && i18n?.langDir == null) continue
 
     langPaths.push(resolveLayerLangDir(layer, i18n))
   }
