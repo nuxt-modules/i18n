@@ -171,8 +171,8 @@ describe('findBrowserLocale', () => {
 
   test('matches ISO locale code', () => {
     const locales = [
-      { code: 'cn', iso: 'zh-CN' },
-      { code: 'en', iso: 'en-US' }
+      { code: 'cn', language: 'zh-CN' },
+      { code: 'en', language: 'en-US' }
     ]
     const browserLocales = ['zh', 'zh-CN']
 
@@ -181,8 +181,8 @@ describe('findBrowserLocale', () => {
 
   test('matches full ISO code', () => {
     const locales = [
-      { code: 'us', iso: 'en-US' },
-      { code: 'gb', iso: 'en-GB' }
+      { code: 'us', language: 'en-US' },
+      { code: 'gb', language: 'en-GB' }
     ]
     const browserLocales = ['en-GB', 'en']
 
@@ -203,7 +203,7 @@ describe('findBrowserLocale', () => {
         const matchedLocales = [] as utils.BrowserLocale[]
         for (const [index, browserCode] of browserLocales.entries()) {
           const languageCode = browserCode.split('-')[0].toLowerCase()
-          const matchedLocale = locales.find(l => l.iso.split('-')[0].toLowerCase() === languageCode)
+          const matchedLocale = locales.find(l => l.language.split('-')[0].toLowerCase() === languageCode)
           if (matchedLocale) {
             matchedLocales.push({ code: matchedLocale.code, score: 1 * index })
             break

@@ -91,7 +91,7 @@ export interface BrowserLocale {
  * @remarks
  * This type is used by {@link BrowserLocaleMatcher} first argument
  */
-export type TargetLocale = Required<Pick<LocaleObject, 'code' | 'iso'>>
+export type TargetLocale = Required<Pick<LocaleObject, 'code' | 'language'>>
 
 /**
  * The browser locale matcher
@@ -119,7 +119,7 @@ function matchBrowserLocale(locales: TargetLocale[], browserLocales: string[]): 
 
   // first pass: match exact locale.
   for (const [index, browserCode] of browserLocales.entries()) {
-    const matchedLocale = locales.find(l => l.iso.toLowerCase() === browserCode.toLowerCase())
+    const matchedLocale = locales.find(l => l.language.toLowerCase() === browserCode.toLowerCase())
     if (matchedLocale) {
       matchedLocales.push({ code: matchedLocale.code, score: 1 - index / browserLocales.length })
       break
@@ -129,7 +129,7 @@ function matchBrowserLocale(locales: TargetLocale[], browserLocales: string[]): 
   // second pass: match only locale code part of the browser locale (not including country).
   for (const [index, browserCode] of browserLocales.entries()) {
     const languageCode = browserCode.split('-')[0].toLowerCase()
-    const matchedLocale = locales.find(l => l.iso.split('-')[0].toLowerCase() === languageCode)
+    const matchedLocale = locales.find(l => l.language.split('-')[0].toLowerCase() === languageCode)
     if (matchedLocale) {
       // deduct a thousandth for being non-exact match.
       matchedLocales.push({ code: matchedLocale.code, score: 0.999 - index / browserLocales.length })
@@ -175,8 +175,8 @@ export function findBrowserLocale(
   const normalizedLocales = []
   for (const l of locales) {
     const { code } = l
-    const iso = l.iso || code
-    normalizedLocales.push({ code, iso })
+    const language = l.language || code
+    normalizedLocales.push({ code, language })
   }
 
   // finding!
