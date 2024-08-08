@@ -1,0 +1,9 @@
+{
+  "home": "Homepage",
+  "about": "About us",
+  "posts": "Posts",
+  "dynamic": "Dynamic",
+  "html": "<span>This is the danger</span>",
+  "dynamicTime": "Not dynamic",
+  "welcome": "Welcome!"
+}

@@ -3,9 +3,9 @@ import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
 import { getText, getData, waitForMs, renderPage, waitForURL } from '../helper'
 
-describe('basic lazy loading', async () => {
+describe('basic lazy loading (restructure)', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
+    rootDir: fileURLToPath(new URL(`../fixtures/restructure`, import.meta.url)),
     browser: true,
     nuxtConfig: {
       i18n: {
