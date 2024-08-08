@@ -3,9 +3,9 @@
 exports[`basic 1`] = `
 {
   "importStrings": [
-    "import locale__test_srcDir_en_json from "../en.json";",
-    "import locale__test_srcDir_ja_json from "../ja.json";",
-    "import locale__test_srcDir_fr_json from "../fr.json";",
+    "import locale__test_srcDir_en_json from "../srcDir/en.json";",
+    "import locale__test_srcDir_ja_json from "../srcDir/ja.json";",
+    "import locale__test_srcDir_fr_json from "../srcDir/fr.json";",
   ],
   "localeLoaders": [
     [
@@ -13,7 +13,7 @@ exports[`basic 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../en.json"",
+          "key": ""../srcDir/en.json"",
           "load": "() => Promise.resolve(locale__test_srcDir_en_json)",
         },
       ],
@@ -23,7 +23,7 @@ exports[`basic 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../ja.json"",
+          "key": ""../srcDir/ja.json"",
           "load": "() => Promise.resolve(locale__test_srcDir_ja_json)",
         },
       ],
@@ -33,7 +33,7 @@ exports[`basic 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../fr.json"",
+          "key": ""../srcDir/fr.json"",
           "load": "() => Promise.resolve(locale__test_srcDir_fr_json)",
         },
       ],
@@ -59,8 +59,8 @@ exports[`files with cache configuration 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../en.json"",
-          "load": "() => import("../en.json" /* webpackChunkName: "locale__test_srcDir_en_json" */)",
+          "key": ""../srcDir/en.json"",
+          "load": "() => import("../srcDir/en.json" /* webpackChunkName: "locale__test_srcDir_en_json" */)",
         },
       ],
     ],
@@ -69,8 +69,8 @@ exports[`files with cache configuration 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../ja.json"",
-          "load": "() => import("../ja.json" /* webpackChunkName: "locale__test_srcDir_ja_json" */)",
+          "key": ""../srcDir/ja.json"",
+          "load": "() => import("../srcDir/ja.json" /* webpackChunkName: "locale__test_srcDir_ja_json" */)",
         },
       ],
     ],
@@ -79,8 +79,8 @@ exports[`files with cache configuration 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../fr.json"",
-          "load": "() => import("../fr.json" /* webpackChunkName: "locale__test_srcDir_fr_json" */)",
+          "key": ""../srcDir/fr.json"",
+          "load": "() => import("../srcDir/fr.json" /* webpackChunkName: "locale__test_srcDir_fr_json" */)",
         },
       ],
     ],
@@ -89,8 +89,8 @@ exports[`files with cache configuration 1`] = `
       [
         {
           "cache": "false",
-          "key": ""../es.json"",
-          "load": "() => import("../es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
+          "key": ""../srcDir/es.json"",
+          "load": "() => import("../srcDir/es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
         },
       ],
     ],
@@ -99,13 +99,13 @@ exports[`files with cache configuration 1`] = `
       [
         {
           "cache": "false",
-          "key": ""../es.json"",
-          "load": "() => import("../es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
+          "key": ""../srcDir/es.json"",
+          "load": "() => import("../srcDir/es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
         },
         {
           "cache": "true",
-          "key": ""../es-AR.json"",
-          "load": "() => import("../es-AR.json" /* webpackChunkName: "locale__test_srcDir_es_AR_json" */)",
+          "key": ""../srcDir/es-AR.json"",
+          "load": "() => import("../srcDir/es-AR.json" /* webpackChunkName: "locale__test_srcDir_es_AR_json" */)",
         },
       ],
     ],
@@ -130,8 +130,8 @@ exports[`lazy 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../en.json"",
-          "load": "() => import("../en.json" /* webpackChunkName: "locale__test_srcDir_en_json" */)",
+          "key": ""../srcDir/en.json"",
+          "load": "() => import("../srcDir/en.json" /* webpackChunkName: "locale__test_srcDir_en_json" */)",
         },
       ],
     ],
@@ -140,8 +140,8 @@ exports[`lazy 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../ja.json"",
-          "load": "() => import("../ja.json" /* webpackChunkName: "locale__test_srcDir_ja_json" */)",
+          "key": ""../srcDir/ja.json"",
+          "load": "() => import("../srcDir/ja.json" /* webpackChunkName: "locale__test_srcDir_ja_json" */)",
         },
       ],
     ],
@@ -150,8 +150,8 @@ exports[`lazy 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../fr.json"",
-          "load": "() => import("../fr.json" /* webpackChunkName: "locale__test_srcDir_fr_json" */)",
+          "key": ""../srcDir/fr.json"",
+          "load": "() => import("../srcDir/fr.json" /* webpackChunkName: "locale__test_srcDir_fr_json" */)",
         },
       ],
     ],
@@ -176,8 +176,8 @@ exports[`locale file in nested 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../en/main.json"",
-          "load": "() => import("../en/main.json" /* webpackChunkName: "locale__test_srcDir_en_main_json" */)",
+          "key": ""../srcDir/en/main.json"",
+          "load": "() => import("../srcDir/en/main.json" /* webpackChunkName: "locale__test_srcDir_en_main_json" */)",
         },
       ],
     ],
@@ -186,8 +186,8 @@ exports[`locale file in nested 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../ja/main.json"",
-          "load": "() => import("../ja/main.json" /* webpackChunkName: "locale__test_srcDir_ja_main_json" */)",
+          "key": ""../srcDir/ja/main.json"",
+          "load": "() => import("../srcDir/ja/main.json" /* webpackChunkName: "locale__test_srcDir_ja_main_json" */)",
         },
       ],
     ],
@@ -196,8 +196,8 @@ exports[`locale file in nested 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../fr/main.json"",
-          "load": "() => import("../fr/main.json" /* webpackChunkName: "locale__test_srcDir_fr_main_json" */)",
+          "key": ""../srcDir/fr/main.json"",
+          "load": "() => import("../srcDir/fr/main.json" /* webpackChunkName: "locale__test_srcDir_fr_main_json" */)",
         },
       ],
     ],
@@ -222,8 +222,8 @@ exports[`multiple files 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../en.json"",
-          "load": "() => import("../en.json" /* webpackChunkName: "locale__test_srcDir_en_json" */)",
+          "key": ""../srcDir/en.json"",
+          "load": "() => import("../srcDir/en.json" /* webpackChunkName: "locale__test_srcDir_en_json" */)",
         },
       ],
     ],
@@ -232,8 +232,8 @@ exports[`multiple files 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../ja.json"",
-          "load": "() => import("../ja.json" /* webpackChunkName: "locale__test_srcDir_ja_json" */)",
+          "key": ""../srcDir/ja.json"",
+          "load": "() => import("../srcDir/ja.json" /* webpackChunkName: "locale__test_srcDir_ja_json" */)",
         },
       ],
     ],
@@ -242,8 +242,8 @@ exports[`multiple files 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../fr.json"",
-          "load": "() => import("../fr.json" /* webpackChunkName: "locale__test_srcDir_fr_json" */)",
+          "key": ""../srcDir/fr.json"",
+          "load": "() => import("../srcDir/fr.json" /* webpackChunkName: "locale__test_srcDir_fr_json" */)",
         },
       ],
     ],
@@ -252,8 +252,8 @@ exports[`multiple files 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../es.json"",
-          "load": "() => import("../es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
+          "key": ""../srcDir/es.json"",
+          "load": "() => import("../srcDir/es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
         },
       ],
     ],
@@ -262,13 +262,13 @@ exports[`multiple files 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../es.json"",
-          "load": "() => import("../es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
+          "key": ""../srcDir/es.json"",
+          "load": "() => import("../srcDir/es.json" /* webpackChunkName: "locale__test_srcDir_es_json" */)",
         },
         {
           "cache": "true",
-          "key": ""../es-AR.json"",
-          "load": "() => import("../es-AR.json" /* webpackChunkName: "locale__test_srcDir_es_AR_json" */)",
+          "key": ""../srcDir/es-AR.json"",
+          "load": "() => import("../srcDir/es-AR.json" /* webpackChunkName: "locale__test_srcDir_es_AR_json" */)",
         },
       ],
     ],
@@ -379,9 +379,9 @@ exports[`toCode: function (named) 1`] = `
 exports[`vueI18n option 1`] = `
 {
   "importStrings": [
-    "import locale__test_srcDir_en_json from "../en.json";",
-    "import locale__test_srcDir_ja_json from "../ja.json";",
-    "import locale__test_srcDir_fr_json from "../fr.json";",
+    "import locale__test_srcDir_en_json from "../srcDir/en.json";",
+    "import locale__test_srcDir_ja_json from "../srcDir/ja.json";",
+    "import locale__test_srcDir_fr_json from "../srcDir/fr.json";",
   ],
   "localeLoaders": [
     [
@@ -389,7 +389,7 @@ exports[`vueI18n option 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../en.json"",
+          "key": ""../srcDir/en.json"",
           "load": "() => Promise.resolve(locale__test_srcDir_en_json)",
         },
       ],
@@ -399,7 +399,7 @@ exports[`vueI18n option 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../ja.json"",
+          "key": ""../srcDir/ja.json"",
           "load": "() => Promise.resolve(locale__test_srcDir_ja_json)",
         },
       ],
@@ -409,7 +409,7 @@ exports[`vueI18n option 1`] = `
       [
         {
           "cache": "true",
-          "key": ""../fr.json"",
+          "key": ""../srcDir/fr.json"",
           "load": "() => Promise.resolve(locale__test_srcDir_fr_json)",
         },
       ],

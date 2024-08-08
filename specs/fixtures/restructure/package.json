@@ -1,0 +1,15 @@
+{
+  "name": "nuxt3-test-lazy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "start": "node .output/server/index.mjs"
+  },
+  "devDependencies": {
+    "@nuxtjs/i18n": "latest",
+    "nuxt": "latest"
+  }
+}

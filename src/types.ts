@@ -109,6 +109,12 @@ export type NuxtI18nOptions<
    */
   vueI18n?: string
   experimental?: ExperimentalFeatures
+  /**
+   * This can be set to a directory name to opt into the directory restructure for v9 which will have a default of 'i18n'.
+   *
+   * @defaultValue `undefined` (v8) or `'i18n'` (v9 release)
+   */
+  restructureDir?: string
   bundle?: BundleOptions
   compilation?: LocaleMessageCompilationOptions
   customBlocks?: CustomBlocksOptions

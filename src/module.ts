@@ -165,18 +165,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     const normalizedLocales = getNormalizedLocales(options.locales)
     const localeCodes = normalizedLocales.map(locale => locale.code)
-    const localeInfo = await resolveLocales(
-      resolve(nuxt.options.srcDir),
-      normalizedLocales,
-      relative(nuxt.options.buildDir, nuxt.options.srcDir)
-    )
+    const localeInfo = await resolveLocales(nuxt.options.srcDir, normalizedLocales, nuxt.options.buildDir)
     debug('localeInfo', localeInfo)
 
     /**
      * resolve vue-i18n config path
      */
 
-    const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(options, nuxt, nuxt.options.buildDir)
+    const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(options)
     debug('VueI18nConfigPaths', vueI18nConfigPaths)
 
     /**
@@ -279,7 +275,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     nuxt.hook('build:manifest', manifest => {
       if (options.lazy) {
-        const langFiles = localeInfo.flatMap(locale => getLocaleFiles(locale)).map(x => x.path)
+        const langFiles = localeInfo
+          .flatMap(locale => getLocaleFiles(locale))
+          .map(x => relative(nuxt.options.srcDir, x.path))
         const langPaths = [...new Set(langFiles)]
 
         for (const key in manifest) {

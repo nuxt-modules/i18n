@@ -1,7 +1,7 @@
 import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { resolvePath } from '@nuxt/kit'
-import { parse as parsePath, resolve, relative, normalize, join } from 'pathe'
+import { resolvePath, useNuxt } from '@nuxt/kit'
+import { parse as parsePath, resolve, relative, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
 import { genSafeVariableName } from 'knitwork'
@@ -69,42 +69,40 @@ function convertToImportId(file: string) {
   return id
 }
 
-export async function resolveLocales(
-  path: string,
-  locales: LocaleObject[],
-  relativeBase: string
-): Promise<LocaleInfo[]> {
-  const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(path, x)))
+export async function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): Promise<LocaleInfo[]> {
+  const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(srcDir, x)))
+  const find = (f: string) => files.find(file => file === resolve(srcDir, f))
 
-  const find = (f: string) => files.find(file => file === resolve(path, f))
   const localesResolved: LocaleInfo[] = []
 
   for (const { file, ...locale } of locales) {
-    const resolved: LocaleInfo = { ...locale, files: [], meta: undefined }
-    const files = getLocaleFiles(locale)
+    const resolved: LocaleInfo = { ...locale, files: [], meta: [] }
 
-    resolved.meta = files.map(file => {
-      const filePath = find(file.path) ?? ''
-      const isCached = filePath ? getLocaleType(filePath) !== 'dynamic' : true
+    const files = getLocaleFiles(locale)
+    for (const f of files) {
+      const filePath = find(f.path) ?? ''
+      const localeType = getLocaleType(filePath)
+      const isCached = filePath ? localeType !== 'dynamic' : true
       const parsed = parsePath(filePath)
       const importKey = join(parsed.root, parsed.dir, parsed.base)
       const key = genSafeVariableName(`locale_${convertToImportId(importKey)}`)
 
-      return {
+      const metaFile = {
         path: filePath,
-        loadPath: normalize(`${relativeBase}/${file.path}`),
-        type: getLocaleType(filePath),
+        loadPath: relative(buildDir, filePath),
+        type: localeType,
         hash: getHash(filePath),
         parsed,
         key,
         file: {
-          path: file.path,
-          cache: file.cache ?? isCached
+          path: f.path,
+          cache: f.cache ?? isCached
         }
       }
-    })
 
-    resolved.files = resolved.meta.map(meta => meta.file)
+      resolved.meta!.push(metaFile)
+      resolved.files.push(metaFile.file)
+    }
 
     localesResolved.push(resolved)
   }
@@ -247,10 +245,14 @@ export async function isExists(path: string) {
   }
 }
 
-export async function resolveVueI18nConfigInfo(options: NuxtI18nOptions, buildDir: string, rootDir: string) {
+export async function resolveVueI18nConfigInfo(
+  rootDir: string,
+  configPath: string = 'i18n.config',
+  buildDir = useNuxt().options.buildDir
+) {
   const configPathInfo: Required<VueI18nConfigPathInfo> = {
     relativeBase: relative(buildDir, rootDir),
-    relative: options.vueI18n ?? 'i18n.config',
+    relative: configPath,
     absolute: '',
     rootDir,
     hash: NULL_HASH,
@@ -455,36 +457,8 @@ export function parseSegment(segment: string) {
   return tokens
 }
 
-export const resolveRelativeLocales = (
-  relativeFileResolver: (files: LocaleFile[]) => LocaleFile[],
-  locale: LocaleObject | string,
-  merged: LocaleObject | undefined
-) => {
-  if (isString(locale)) return merged ?? { iso: locale, code: locale }
-
-  const { file, files, ...entry } = locale
-
-  const fileEntries = getLocaleFiles(locale)
-  const relativeFiles = relativeFileResolver(fileEntries)
-  const mergedLocaleObject = isString(merged) ? undefined : merged
-  return {
-    ...entry,
-    ...mergedLocaleObject,
-    // @ts-ignore
-    files: [...(relativeFiles ?? []), ...((mergedLocaleObject?.files ?? []) as LocaleObject)]
-  }
-}
-
 export const getLocalePaths = (locale: LocaleObject): string[] => {
-  if (locale.file != null) {
-    return [locale.file as unknown as LocaleFile].map(x => (isString(x) ? x : x.path))
-  }
-
-  if (locale.files != null) {
-    return [...locale.files].map(x => (isString(x) ? x : x.path))
-  }
-
-  return []
+  return getLocaleFiles(locale).map(x => x.path)
 }
 
 export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
@@ -499,23 +473,20 @@ export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] 
   return []
 }
 
-export const localeFilesToRelative = (projectLangDir: string, layerLangDir: string = '', files: LocaleFile[] = []) => {
-  const absoluteFiles = files.map(file => ({ path: resolve(layerLangDir, file.path), cache: file.cache }))
-  const relativeFiles = absoluteFiles.map(file => ({ path: relative(projectLangDir, file.path), cache: file.cache }))
+function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
+  const fileEntries = getLocaleFiles(locale)
 
-  return relativeFiles
-}
-
-export const getProjectPath = (nuxt: Nuxt, ...target: string[]) => {
-  const projectLayer = nuxt.options._layers[0]
-  return resolve(projectLayer.config.rootDir, ...target)
+  return fileEntries.map(file => ({
+    path: resolve(useNuxt().options.rootDir, resolve(config.langDir ?? '', file.path)),
+    cache: file.cache
+  })) as LocaleFile[]
 }
 
 export type LocaleConfig = {
-  projectLangDir: string
   langDir?: string | null
   locales?: string[] | LocaleObject[]
 }
+
 /**
  * Generically merge LocaleObject locales
  *
@@ -524,18 +495,39 @@ export type LocaleConfig = {
  */
 export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
   const mergedLocales = new Map<string, LocaleObject>()
-  baseLocales.forEach(locale => mergedLocales.set(locale.code, locale))
+  for (const locale of baseLocales) {
+    mergedLocales.set(locale.code, locale)
+  }
 
-  const getLocaleCode = (val: string | LocaleObject) => (isString(val) ? val : val.code)
+  for (const config of configs) {
+    if (config.locales == null) continue
 
-  for (const { locales, langDir, projectLangDir } of configs) {
-    if (locales == null) continue
+    for (const locale of config.locales) {
+      const code = isString(locale) ? locale : locale.code
+      const merged = mergedLocales.get(code)
 
-    for (const locale of locales) {
-      const code = getLocaleCode(locale)
-      const filesResolver = (files: LocaleFile[]) => localeFilesToRelative(projectLangDir, langDir ?? '', files)
-      const resolvedLocale = resolveRelativeLocales(filesResolver, locale, mergedLocales.get(code))
-      if (resolvedLocale != null) mergedLocales.set(code, resolvedLocale)
+      // set normalized locale or to existing entry
+      if (typeof locale === 'string') {
+        mergedLocales.set(code, merged ?? { iso: code, code })
+        continue
+      }
+
+      const resolvedFiles = resolveRelativeLocales(locale, config)
+      delete locale.file
+
+      // merge locale and files with existing entry
+      if (merged != null) {
+        merged.files ??= [] as LocaleFile[]
+        // @ts-ignore
+        merged.files.unshift(...resolvedFiles)
+        mergedLocales.set(code, {
+          ...locale,
+          ...merged
+        })
+        continue
+      }
+
+      mergedLocales.set(code, { ...locale, files: resolvedFiles })
     }
   }
 
@@ -555,7 +547,6 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
 
   await nuxt.callHook('i18n:registerModule', registerI18nModule)
   const modules = options?.i18nModules ?? []
-  const projectLangDir = getProjectPath(nuxt, nuxt.options.rootDir)
 
   if (modules.length > 0) {
     const baseLocales: LocaleObject[] = []
@@ -566,10 +557,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
       baseLocales.push({ ...locale, file: undefined, files: getLocaleFiles(locale) })
     }
 
-    const mergedLocales = mergeConfigLocales(
-      modules.map(x => ({ ...x, projectLangDir })),
-      baseLocales
-    )
+    const mergedLocales = mergeConfigLocales(modules, baseLocales)
 
     options.locales = mergedLocales
   }

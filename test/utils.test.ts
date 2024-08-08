@@ -54,132 +54,178 @@ test('resolveLocales', async () => {
       files: ['nl.js']
     }
   ] as LocaleObject[]
-  const resolvedLocales = await resolveLocales('/path/to/project/locales', locales, '..')
-  expect(resolvedLocales).toEqual([
-    {
-      code: 'en',
-      files: [{ path: 'en.json', cache: true }],
-      meta: [
-        {
-          path: '/path/to/project/locales/en.json',
-          loadPath: '../en.json',
-          type: 'static',
-          hash: '18f36abf',
-          parsed: {
-            root: '/',
-            dir: '/path/to/project/locales',
-            base: 'en.json',
-            ext: '.json',
-            name: 'en'
+  const resolvedLocales = await resolveLocales('/path/to/project', locales, '/path/to/project/.nuxt')
+  expect(resolvedLocales).toMatchInlineSnapshot(`
+    [
+      {
+        "code": "en",
+        "files": [
+          {
+            "cache": true,
+            "path": "en.json",
           },
-          key: 'locale__path_to_project_locales_en_json',
-          file: { path: 'en.json', cache: true }
-        }
-      ]
-    },
-    {
-      code: 'ja',
-      files: [{ path: 'ja.json', cache: true }],
-      meta: [
-        {
-          path: '/path/to/project/locales/ja.json',
-          loadPath: '../ja.json',
-          type: 'static',
-          hash: '147c88eb',
-          parsed: {
-            root: '/',
-            dir: '/path/to/project/locales',
-            base: 'ja.json',
-            ext: '.json',
-            name: 'ja'
+        ],
+        "meta": [
+          {
+            "file": {
+              "cache": true,
+              "path": "en.json",
+            },
+            "hash": "5c407b7f",
+            "key": "locale__path_to_project_en_json",
+            "loadPath": "../en.json",
+            "parsed": {
+              "base": "en.json",
+              "dir": "/path/to/project",
+              "ext": ".json",
+              "name": "en",
+              "root": "/",
+            },
+            "path": "/path/to/project/en.json",
+            "type": "static",
           },
-          key: 'locale__path_to_project_locales_ja_json',
-          file: { path: 'ja.json', cache: true }
-        }
-      ]
-    },
-    {
-      code: 'es',
-      files: [{ path: 'es.json', cache: true }],
-      meta: [
-        {
-          path: '/path/to/project/locales/es.json',
-          loadPath: '../es.json',
-          type: 'static',
-          hash: 'f4490d2c',
-          parsed: {
-            root: '/',
-            dir: '/path/to/project/locales',
-            base: 'es.json',
-            ext: '.json',
-            name: 'es'
+        ],
+      },
+      {
+        "code": "ja",
+        "files": [
+          {
+            "cache": true,
+            "path": "ja.json",
           },
-          key: 'locale__path_to_project_locales_es_json',
-          file: { path: 'es.json', cache: true }
-        }
-      ]
-    },
-    {
-      code: 'es-AR',
-      files: [
-        { path: 'es.json', cache: true },
-        { path: 'es-AR.json', cache: true }
-      ],
-      meta: [
-        {
-          path: '/path/to/project/locales/es.json',
-          loadPath: '../es.json',
-          type: 'static',
-          hash: 'f4490d2c',
-          parsed: {
-            root: '/',
-            dir: '/path/to/project/locales',
-            base: 'es.json',
-            ext: '.json',
-            name: 'es'
+        ],
+        "meta": [
+          {
+            "file": {
+              "cache": true,
+              "path": "ja.json",
+            },
+            "hash": "0e1b8bd4",
+            "key": "locale__path_to_project_ja_json",
+            "loadPath": "../ja.json",
+            "parsed": {
+              "base": "ja.json",
+              "dir": "/path/to/project",
+              "ext": ".json",
+              "name": "ja",
+              "root": "/",
+            },
+            "path": "/path/to/project/ja.json",
+            "type": "static",
           },
-          key: 'locale__path_to_project_locales_es_json',
-          file: { path: 'es.json', cache: true }
-        },
-        {
-          path: '/path/to/project/locales/es-AR.json',
-          loadPath: '../es-AR.json',
-          type: 'static',
-          hash: '96ad3952',
-          parsed: {
-            root: '/',
-            dir: '/path/to/project/locales',
-            base: 'es-AR.json',
-            ext: '.json',
-            name: 'es-AR'
+        ],
+      },
+      {
+        "code": "es",
+        "files": [
+          {
+            "cache": true,
+            "path": "es.json",
           },
-          key: 'locale__path_to_project_locales_es_AR_json',
-          file: { path: 'es-AR.json', cache: true }
-        }
-      ]
-    },
-    {
-      code: 'nl',
-      files: [{ path: 'nl.js', cache: false }],
-      meta: [
-        {
-          path: '/path/to/project/locales/nl.js',
-          loadPath: '../nl.js',
-          type: 'dynamic',
-          hash: '68b1a130',
-          parsed: {
-            root: '/',
-            dir: '/path/to/project/locales',
-            base: 'nl.js',
-            ext: '.js',
-            name: 'nl'
+        ],
+        "meta": [
+          {
+            "file": {
+              "cache": true,
+              "path": "es.json",
+            },
+            "hash": "c78280fb",
+            "key": "locale__path_to_project_es_json",
+            "loadPath": "../es.json",
+            "parsed": {
+              "base": "es.json",
+              "dir": "/path/to/project",
+              "ext": ".json",
+              "name": "es",
+              "root": "/",
+            },
+            "path": "/path/to/project/es.json",
+            "type": "static",
           },
-          key: 'locale__path_to_project_locales_nl_js',
-          file: { path: 'nl.js', cache: false }
-        }
-      ]
-    }
-  ])
+        ],
+      },
+      {
+        "code": "es-AR",
+        "files": [
+          {
+            "cache": true,
+            "path": "es.json",
+          },
+          {
+            "cache": true,
+            "path": "es-AR.json",
+          },
+        ],
+        "meta": [
+          {
+            "file": {
+              "cache": true,
+              "path": "es.json",
+            },
+            "hash": "c78280fb",
+            "key": "locale__path_to_project_es_json",
+            "loadPath": "../es.json",
+            "parsed": {
+              "base": "es.json",
+              "dir": "/path/to/project",
+              "ext": ".json",
+              "name": "es",
+              "root": "/",
+            },
+            "path": "/path/to/project/es.json",
+            "type": "static",
+          },
+          {
+            "file": {
+              "cache": true,
+              "path": "es-AR.json",
+            },
+            "hash": "65220c0a",
+            "key": "locale__path_to_project_es_AR_json",
+            "loadPath": "../es-AR.json",
+            "parsed": {
+              "base": "es-AR.json",
+              "dir": "/path/to/project",
+              "ext": ".json",
+              "name": "es-AR",
+              "root": "/",
+            },
+            "path": "/path/to/project/es-AR.json",
+            "type": "static",
+          },
+        ],
+      },
+      {
+        "code": "nl",
+        "files": [
+          {
+            "cache": false,
+            "path": "nl.js",
+          },
+        ],
+        "meta": [
+          {
+            "file": {
+              "cache": false,
+              "path": "nl.js",
+            },
+            "hash": "b7971e5b",
+            "key": "locale__path_to_project_nl_js",
+            "loadPath": "../nl.js",
+            "parsed": {
+              "base": "nl.js",
+              "dir": "/path/to/project",
+              "ext": ".js",
+              "name": "nl",
+              "root": "/",
+            },
+            "path": "/path/to/project/nl.js",
+            "type": "dynamic",
+          },
+        ],
+      },
+    ]
+  `)
 })
 
 test('parseSegment', () => {
