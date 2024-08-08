@@ -45,7 +45,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   const normalized: LocaleObject[] = []
   for (const locale of locales) {
     if (isString(locale)) {
-      normalized.push({ code: locale, iso: locale })
+      normalized.push({ code: locale, language: locale })
     } else {
       normalized.push(locale)
     }
@@ -508,7 +508,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
 
       // set normalized locale or to existing entry
       if (typeof locale === 'string') {
-        mergedLocales.set(code, merged ?? { iso: code, code })
+        mergedLocales.set(code, merged ?? { language: code, code })
         continue
       }
 

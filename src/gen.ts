@@ -45,6 +45,14 @@ export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
       return locale.code
     }
 
+    // TODO: remove in v9 release
+    if (locale.iso) {
+      console.warn(
+        `Locale ${locale.iso} uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
+      )
+      locale.language = locale.iso
+    }
+
     if (locale.file || (locale.files?.length ?? 0) > 0) {
       locale.files = getLocalePaths(locale)
     } else {
