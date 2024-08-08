@@ -1,5 +1,9 @@
 export default {
   legacy: false,
-  messages: {},
+  messages: {
+    en: {
+      test: 'testing'
+    }
+  },
   fallbackLocale: 'en'
 }

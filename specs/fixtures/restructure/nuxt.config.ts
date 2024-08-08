@@ -1,10 +1,7 @@
-import i18nModule from './app/i18n-module'
+import i18nModule from './i18n-module'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  future: {
-    compatibilityVersion: 4
-  },
   vite: {
     // Prevent reload by optimizing dependency before discovery
     optimizeDeps: {
@@ -34,9 +31,8 @@ export default defineNuxtConfig({
     compilation: {
       strictMessage: false
     },
-    restructure: true,
+    restructureDir: 'i18n',
     defaultLocale: 'en',
-    langDir: 'lang',
     lazy: true,
     locales: [
       {
