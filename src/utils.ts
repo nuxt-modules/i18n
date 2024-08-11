@@ -45,7 +45,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   const normalized: LocaleObject[] = []
   for (const locale of locales) {
     if (isString(locale)) {
-      normalized.push({ code: locale, iso: locale })
+      normalized.push({ code: locale, language: locale })
     } else {
       normalized.push(locale)
     }
@@ -508,12 +508,20 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
 
       // set normalized locale or to existing entry
       if (typeof locale === 'string') {
-        mergedLocales.set(code, merged ?? { iso: code, code })
+        mergedLocales.set(code, merged ?? { language: code, code })
         continue
       }
 
       const resolvedFiles = resolveRelativeLocales(locale, config)
       delete locale.file
+
+      if (locale.iso) {
+        console.warn(
+          `Locale ${locale.iso} uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
+        )
+        locale.language = locale.iso
+        delete locale.iso
+      }
 
       // merge locale and files with existing entry
       if (merged != null) {

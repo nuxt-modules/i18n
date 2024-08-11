@@ -256,7 +256,11 @@ export interface LocaleObject extends Record<string, any> {
   file?: string | LocaleFile
   files?: string[] | LocaleFile[]
   isCatchallLocale?: boolean
+  /**
+   * @deprecated in v9, use `language` instead
+   */
   iso?: string
+  language?: string
 }
 
 /**
