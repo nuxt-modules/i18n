@@ -515,6 +515,14 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
       const resolvedFiles = resolveRelativeLocales(locale, config)
       delete locale.file
 
+      if (locale.iso) {
+        console.warn(
+          `Locale ${locale.iso} uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
+        )
+        locale.language = locale.iso
+        delete locale.iso
+      }
+
       // merge locale and files with existing entry
       if (merged != null) {
         merged.files ??= [] as LocaleFile[]
