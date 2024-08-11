@@ -73,7 +73,7 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
   })
 
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
-  const currentLocaleIso = currentLocale.iso
+  const currentLocaleLanguage = currentLocale.language
 
   const setMeta = () => {
     const metaObject: HeadParam = {
@@ -94,8 +94,8 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
 
       metaObject.meta.push(
         ...getOgUrl(common, idAttribute, seoAttributes),
-        ...getCurrentOgLocale(currentLocale, currentLocaleIso, idAttribute),
-        ...getAlternateOgLocales(locales, currentLocaleIso, idAttribute)
+        ...getCurrentOgLocale(currentLocale, currentLocaleLanguage, idAttribute),
+        ...getAlternateOgLocales(locales, currentLocaleLanguage, idAttribute)
       )
     }
 

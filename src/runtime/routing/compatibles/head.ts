@@ -45,7 +45,7 @@ export function localeHead(
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || {
     code: locale
   }
-  const currentIso = currentLocale.iso
+  const currentLanguage = currentLocale.language
   const currentDir = currentLocale.dir || defaultDirection
 
   // Adding Direction Attribute
@@ -55,8 +55,8 @@ export function localeHead(
 
   // Adding SEO Meta
   if (seoAttributes && locale && unref(i18n.locales)) {
-    if (currentIso) {
-      metaObject.htmlAttrs.lang = currentIso
+    if (currentLanguage) {
+      metaObject.htmlAttrs.lang = currentLanguage
     }
 
     metaObject.link.push(
@@ -66,8 +66,8 @@ export function localeHead(
 
     metaObject.meta.push(
       ...getOgUrl(common, idAttribute, seoAttributes),
-      ...getCurrentOgLocale(currentLocale, currentIso, idAttribute),
-      ...getAlternateOgLocales(unref(locales) as LocaleObject[], currentIso, idAttribute)
+      ...getCurrentOgLocale(currentLocale, currentLanguage, idAttribute),
+      ...getAlternateOgLocales(unref(locales) as LocaleObject[], currentLanguage, idAttribute)
     )
   }
 
@@ -93,29 +93,29 @@ export function getHreflangLinks(
 
   const localeMap = new Map<string, LocaleObject>()
   for (const locale of locales) {
-    const localeIso = locale.iso
+    const localeLanguage = locale.language
 
-    if (!localeIso) {
-      console.warn('Locale ISO code is required to generate alternate link')
+    if (!localeLanguage) {
+      console.warn('Locale `language` ISO code is required to generate alternate link')
       continue
     }
 
-    const [language, region] = localeIso.split('-')
+    const [language, region] = localeLanguage.split('-')
     if (language && region && (locale.isCatchallLocale || !localeMap.has(language))) {
       localeMap.set(language, locale)
     }
 
-    localeMap.set(localeIso, locale)
+    localeMap.set(localeLanguage, locale)
   }
 
-  for (const [iso, mapLocale] of localeMap.entries()) {
+  for (const [language, mapLocale] of localeMap.entries()) {
     const localePath = switchLocalePath(common, mapLocale.code)
     if (localePath) {
       links.push({
-        [idAttribute]: `i18n-alt-${iso}`,
+        [idAttribute]: `i18n-alt-${language}`,
         rel: 'alternate',
         href: toAbsoluteUrl(localePath, baseUrl),
-        hreflang: iso
+        hreflang: language
       })
     }
   }
@@ -199,26 +199,26 @@ export function getOgUrl(
 
 export function getCurrentOgLocale(
   currentLocale: LocaleObject,
-  currentIso: string | undefined,
+  currentLanguage: string | undefined,
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
-  if (!currentLocale || !currentIso) return []
+  if (!currentLocale || !currentLanguage) return []
 
   // Replace dash with underscore as defined in spec: language_TERRITORY
-  return [{ [idAttribute]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentIso) }]
+  return [{ [idAttribute]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentLanguage) }]
 }
 
 export function getAlternateOgLocales(
   locales: LocaleObject[],
-  currentIso: string | undefined,
+  currentLanguage: string | undefined,
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
-  const alternateLocales = locales.filter(locale => locale.iso && locale.iso !== currentIso)
+  const alternateLocales = locales.filter(locale => locale.language && locale.language !== currentLanguage)
 
   return alternateLocales.map(locale => ({
-    [idAttribute]: `i18n-og-alt-${locale.iso}`,
+    [idAttribute]: `i18n-og-alt-${locale.language}`,
     property: 'og:locale:alternate',
-    content: hypenToUnderscore(locale.iso!)
+    content: hypenToUnderscore(locale.language!)
   }))
 }
 
