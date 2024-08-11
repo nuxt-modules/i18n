@@ -96,7 +96,7 @@ export function getHreflangLinks(
     const localeLanguage = locale.language
 
     if (!localeLanguage) {
-      console.warn('Locale ISO code is required to generate alternate link')
+      console.warn('Locale `language` ISO code is required to generate alternate link')
       continue
     }
 
@@ -108,14 +108,14 @@ export function getHreflangLinks(
     localeMap.set(localeLanguage, locale)
   }
 
-  for (const [iso, mapLocale] of localeMap.entries()) {
+  for (const [language, mapLocale] of localeMap.entries()) {
     const localePath = switchLocalePath(common, mapLocale.code)
     if (localePath) {
       links.push({
-        [idAttribute]: `i18n-alt-${iso}`,
+        [idAttribute]: `i18n-alt-${language}`,
         rel: 'alternate',
         href: toAbsoluteUrl(localePath, baseUrl),
-        hreflang: iso
+        hreflang: language
       })
     }
   }
@@ -199,21 +199,21 @@ export function getOgUrl(
 
 export function getCurrentOgLocale(
   currentLocale: LocaleObject,
-  currentIso: string | undefined,
+  currentLanguage: string | undefined,
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
-  if (!currentLocale || !currentIso) return []
+  if (!currentLocale || !currentLanguage) return []
 
   // Replace dash with underscore as defined in spec: language_TERRITORY
-  return [{ [idAttribute]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentIso) }]
+  return [{ [idAttribute]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentLanguage) }]
 }
 
 export function getAlternateOgLocales(
   locales: LocaleObject[],
-  currentIso: string | undefined,
+  currentLanguage: string | undefined,
   idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
 ) {
-  const alternateLocales = locales.filter(locale => locale.language && locale.language !== currentIso)
+  const alternateLocales = locales.filter(locale => locale.language && locale.language !== currentLanguage)
 
   return alternateLocales.map(locale => ({
     [idAttribute]: `i18n-og-alt-${locale.language}`,
