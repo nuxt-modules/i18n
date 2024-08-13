@@ -66,7 +66,8 @@ export const DEFAULT_OPTIONS = {
     cookieSecure: false,
     fallbackLocale: '',
     redirectOn: 'root',
-    useCookie: true
+    useCookie: true,
+    httpOnly: false,
   },
   differentDomains: false,
   baseUrl: '',

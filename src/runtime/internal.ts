@@ -99,7 +99,8 @@ export function getI18nCookie() {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
     sameSite: detect && detect.cookieCrossOrigin ? 'none' : 'lax',
-    secure: (detect && detect.cookieCrossOrigin) || (detect && detect.cookieSecure)
+    secure: (detect && detect.cookieCrossOrigin) || (detect && detect.cookieSecure),
+    httpOnly: detect && detect.httpOnly ? true : false
   }
 
   if (detect && detect.cookieDomain) {

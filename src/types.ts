@@ -14,7 +14,8 @@ export interface DetectBrowserLanguageOptions {
   cookieSecure?: boolean
   fallbackLocale?: Locale | null
   redirectOn?: RedirectOnOptions
-  useCookie?: boolean
+  useCookie?: boolean,
+  httpOnly?: boolean
 }
 
 export type LocaleType = 'static' | 'dynamic' | 'unknown'
