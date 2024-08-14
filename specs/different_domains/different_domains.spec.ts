@@ -45,6 +45,15 @@ await setup({
       strategy: 'no_prefix',
       detectBrowserLanguage: {
         useCookie: true
+      },
+      customRoutes: 'config',
+      pages: {
+        'localized-route': {
+          en: '/localized-in-english',
+          fr: '/localized-in-french',
+          ja: '/localized-in-japanese',
+          nl: '/localized-in-dutch'
+        }
       }
     }
   }
@@ -151,4 +160,28 @@ test('(#2374) detect with x-forwarded-host on server', async () => {
   const dom = getDom(html)
 
   expect(dom.querySelector('#welcome-text').textContent).toEqual('Bienvenue')
+})
+
+test("supports custom routes with `strategy: 'no_prefix'`", async () => {
+  const res = await undiciRequest('/localized-in-french', {
+    headers: {
+      host: 'fr.nuxt-app.localhost'
+    }
+  })
+  const resBody = await res.body.text()
+  const dom = getDom(resBody)
+
+  // `en` link uses project domain configuration, overrides layer
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
+    `http://en.nuxt-app.localhost/localized-in-english`
+  )
+
+  // `nl` link uses layer domain configuration
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-nl a').getAttribute('href')).toEqual(
+    `http://layer-nl.example.com/localized-in-dutch`
+  )
+  // `ja` link uses layer domain configuration
+  expect(dom.querySelector('#switch-locale-path-usages .switch-to-ja a').getAttribute('href')).toEqual(
+    `http://layer-ja.example.com/localized-in-japanese`
+  )
 })

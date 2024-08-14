@@ -53,7 +53,8 @@ describe('getLocaleRouteName', () => {
           defaultLocale: 'en',
           strategy: 'prefix_and_default',
           routesNameSeparator: '___',
-          defaultLocaleRouteNameSuffix: 'default'
+          defaultLocaleRouteNameSuffix: 'default',
+          differentDomains: false
         }),
         'route1___en___default'
       )
@@ -67,7 +68,8 @@ describe('getLocaleRouteName', () => {
           defaultLocale: 'en',
           strategy: 'prefix_except_default',
           routesNameSeparator: '___',
-          defaultLocaleRouteNameSuffix: 'default'
+          defaultLocaleRouteNameSuffix: 'default',
+          differentDomains: false
         }),
         'route1___en'
       )
@@ -81,7 +83,8 @@ describe('getLocaleRouteName', () => {
           defaultLocale: 'en',
           strategy: 'no_prefix',
           routesNameSeparator: '___',
-          defaultLocaleRouteNameSuffix: 'default'
+          defaultLocaleRouteNameSuffix: 'default',
+          differentDomains: false
         }),
         'route1'
       )
@@ -96,7 +99,8 @@ describe('getLocaleRouteName', () => {
             defaultLocale: 'en',
             strategy: 'prefix_and_default',
             routesNameSeparator: '___',
-            defaultLocaleRouteNameSuffix: 'default'
+            defaultLocaleRouteNameSuffix: 'default',
+            differentDomains: false
           }),
           '(null)___en___default'
         )
