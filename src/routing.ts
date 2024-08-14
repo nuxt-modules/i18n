@@ -108,6 +108,8 @@ type LocalizeRouteParams = {
  * @public
  */
 export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams): NuxtPage[] {
+  if (!shouldLocalizeRoutes(options)) return routes
+
   let defaultLocales = [options.defaultLocale ?? '']
   if (options.differentDomains) {
     const domainDefaults = options.locales
