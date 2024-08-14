@@ -33,6 +33,7 @@ export function prefixLocalizedRoute(
   return (
     !extra &&
     !isChildWithRelativePath &&
+    options.strategy !== 'no_prefix' &&
     // skip default locale if strategy is 'prefix_except_default'
     !(isDefaultLocale && options.strategy === 'prefix_except_default')
   )
@@ -49,6 +50,31 @@ export type LocalizeRoutesParams = MarkRequired<
 > & {
   includeUnprefixedFallback?: boolean
   optionsResolver?: RouteOptionsResolver
+}
+
+export function shouldLocalizeRoutes(options: NuxtI18nOptions) {
+  if (options.strategy === 'no_prefix') {
+    // no_prefix is only supported when using a separate domain per locale
+    if (!options.differentDomains) return false
+
+    // check if domains are used multiple times
+    const domains = new Set<string>()
+    for (const locale of options.locales || []) {
+      if (typeof locale === 'string') continue
+      if (locale.domain) {
+        if (domains.has(locale.domain)) {
+          console.error(
+            `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain - found multiple entries with ${locale.domain}`
+          )
+          return false
+        }
+
+        domains.add(locale.domain)
+      }
+    }
+  }
+
+  return true
 }
 
 type LocalizedRoute = NuxtPage & { locale: Locale; parent: NuxtPage | undefined }
@@ -82,10 +108,6 @@ type LocalizeRouteParams = {
  * @public
  */
 export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams): NuxtPage[] {
-  if (options.strategy === 'no_prefix') {
-    return routes
-  }
-
   let defaultLocales = [options.defaultLocale ?? '']
   if (options.differentDomains) {
     const domainDefaults = options.locales

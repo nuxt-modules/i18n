@@ -37,6 +37,7 @@ import {
   filterLocales
 } from './utils'
 import { distDir, runtimeDir } from './dirs'
+import { shouldLocalizeRoutes } from './routing'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 import { generateTemplateNuxtI18nOptions } from './template'
 
@@ -179,7 +180,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nuxt/pages
      */
 
-    if (options.strategy !== 'no_prefix' && localeCodes.length) {
+    if (localeCodes.length && shouldLocalizeRoutes(options)) {
       setupPages(options, nuxt)
     }
 
