@@ -195,7 +195,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nuxt/pages
      */
 
-    if (options.strategy !== 'no_prefix' && localeCodes.length) {
+    if (localeCodes.length) {
       setupPages(options, nuxt)
     }
 

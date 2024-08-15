@@ -131,8 +131,7 @@ export function localeLocation(
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
-  const { routesNameSeparator, defaultLocale, defaultLocaleRouteNameSuffix, strategy, trailingSlash } =
-    common.runtimeConfig.public.i18n
+  const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public.i18n
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw
@@ -162,12 +161,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     const resolvedRouteName = getRouteBaseName(common, resolvedRoute)
     if (isString(resolvedRouteName)) {
       localizedRoute = {
-        name: getLocaleRouteName(resolvedRouteName, _locale, {
-          defaultLocale,
-          strategy,
-          routesNameSeparator,
-          defaultLocaleRouteNameSuffix
-        }),
+        name: getLocaleRouteName(resolvedRouteName, _locale, common.runtimeConfig.public.i18n),
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
         params: resolvedRoute.params,
@@ -193,12 +187,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
       localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
     }
 
-    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, {
-      defaultLocale,
-      strategy,
-      routesNameSeparator,
-      defaultLocaleRouteNameSuffix
-    })
+    localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, common.runtimeConfig.public.i18n)
   }
 
   try {

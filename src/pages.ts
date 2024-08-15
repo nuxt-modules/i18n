@@ -70,8 +70,12 @@ export function setupPages(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
       localizedPages.unshift(indexPage)
     }
 
-    pages.splice(0, pages.length)
-    pages.unshift(...localizedPages)
+    // do not mutate pages if localization is skipped
+    if (pages !== localizedPages) {
+      pages.splice(0, pages.length)
+      pages.unshift(...localizedPages)
+    }
+
     debug('... made pages', pages)
   })
 }

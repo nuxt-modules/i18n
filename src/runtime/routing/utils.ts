@@ -102,10 +102,18 @@ export function getLocaleRouteName(
     defaultLocale,
     strategy,
     routesNameSeparator,
-    defaultLocaleRouteNameSuffix
-  }: { defaultLocale: string; strategy: Strategies; routesNameSeparator: string; defaultLocaleRouteNameSuffix: string }
+    defaultLocaleRouteNameSuffix,
+    differentDomains
+  }: {
+    defaultLocale: string
+    strategy: Strategies
+    routesNameSeparator: string
+    defaultLocaleRouteNameSuffix: string
+    differentDomains: boolean
+  }
 ) {
-  let name = getRouteName(routeName) + (strategy === 'no_prefix' ? '' : routesNameSeparator + locale)
+  const localizedRoutes = strategy !== 'no_prefix' || differentDomains
+  let name = getRouteName(routeName) + (localizedRoutes ? routesNameSeparator + locale : '')
   if (locale === defaultLocale && strategy === 'prefix_and_default') {
     name += routesNameSeparator + defaultLocaleRouteNameSuffix
   }
