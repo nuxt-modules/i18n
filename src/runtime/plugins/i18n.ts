@@ -67,7 +67,6 @@ export default defineNuxtPlugin({
     let initialLocale = detectLocale(
       route,
       getLocaleFromRoute,
-      vueI18nOptions.locale,
       getDefaultLocale(runtimeI18n.defaultLocale),
       {
         ssg: isSSG && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
@@ -112,15 +111,9 @@ export default defineNuxtPlugin({
     if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
       nuxt.hook('app:mounted', async () => {
         __DEBUG__ && console.log('hook app:mounted')
-        const {
-          locale: browserLocale,
-          stat,
-          reason,
-          from
-        } = _detectBrowserLanguage
+        const detected = _detectBrowserLanguage
           ? detectBrowserLanguage(
               route,
-              vueI18nOptions.locale,
               {
                 ssg: 'ssg_setup',
                 callType: 'setup',
@@ -130,15 +123,8 @@ export default defineNuxtPlugin({
               initialLocale
             )
           : DefaultDetectBrowserLanguageFromResult
-        __DEBUG__ &&
-          console.log(
-            'app:mounted: detectBrowserLanguage (browserLocale, stat, reason, from) -',
-            browserLocale,
-            stat,
-            reason,
-            from
-          )
-        await setLocale(i18n, browserLocale)
+        __DEBUG__ && console.log('app:mounted: detectBrowserLanguage (locale, reason, from) -', Object.values(detected))
+        await setLocale(i18n, detected.locale)
         ssgModeInitialSetup = false
       })
     }
@@ -318,7 +304,6 @@ export default defineNuxtPlugin({
         const locale = detectLocale(
           to,
           getLocaleFromRoute,
-          vueI18nOptions.locale,
           () => {
             return getLocale(i18n) || getDefaultLocale(runtimeI18n.defaultLocale)
           },

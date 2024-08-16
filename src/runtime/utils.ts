@@ -10,7 +10,8 @@ import {
   getLocaleDomain,
   getDomainFromLocale,
   DefaultDetectBrowserLanguageFromResult,
-  runtimeDetectBrowserLanguage
+  runtimeDetectBrowserLanguage,
+  DetectFailure
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
 import {
@@ -155,79 +156,58 @@ type LocaleLoader = () => Locale
 export function detectLocale(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   routeLocaleGetter: GetLocaleFromRouteFunction,
-  vueI18nOptionsLocale: Locale | undefined,
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext,
   runtimeI18n: ModulePublicRuntimeConfig['i18n']
 ) {
   const { strategy, defaultLocale, differentDomains } = runtimeI18n
   const _detectBrowserLanguage = runtimeDetectBrowserLanguage(runtimeI18n)
+  const log = (...args: unknown[]) => console.log('detectLocale:', ...args)
 
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
-  __DEBUG__ && console.log('detectLocale: initialLocale -', initialLocale)
+  __DEBUG__ && log('initialLocale -', initialLocale)
 
   const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
-  __DEBUG__ && console.log('detectLocale: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
+  __DEBUG__ && log('(ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
-  const {
-    locale: browserLocale,
-    stat,
-    reason,
-    from
-  } = _detectBrowserLanguage
-    ? detectBrowserLanguage(route, vueI18nOptionsLocale, detectLocaleContext, initialLocale)
+  const detected = _detectBrowserLanguage
+    ? detectBrowserLanguage(route, detectLocaleContext, initialLocale)
     : DefaultDetectBrowserLanguageFromResult
-  __DEBUG__ &&
-    console.log(
-      'detectLocale: detectBrowserLanguage (browserLocale, stat, reason, from) -',
-      browserLocale,
-      stat,
-      reason,
-      from
-    )
+  __DEBUG__ && log('detectBrowserLanguage (locale, stat, reason, from) -', Object.values(detected))
 
-  if (reason === 'detect_ignore_on_ssg') {
+  if (detected.reason === DetectFailure.SSG_IGNORE) {
     return initialLocale
   }
 
   /**
    * respect the locale detected by `detectBrowserLanguage`
    */
-  if ((from === 'navigator_or_header' || from === 'cookie' || from === 'fallback') && browserLocale) {
-    return browserLocale
+  if (detected.locale && detected.from != null) {
+    return detected.locale
   }
 
-  let finalLocale: string = browserLocale
-  __DEBUG__ && console.log('detectLocale: finaleLocale first (finaleLocale, strategy) -', finalLocale, strategy)
+  let finalLocale: string = detected.locale
+  __DEBUG__ && log('first (finalLocale, strategy) -', finalLocale, strategy)
 
-  if (!finalLocale) {
-    if (differentDomains) {
-      finalLocale = getLocaleDomain(normalizedLocales, strategy, route)
-    } else if (strategy !== 'no_prefix') {
-      finalLocale = routeLocaleGetter(route)
-    } else {
-      if (!_detectBrowserLanguage) {
-        finalLocale = initialLocale
-      }
+  if (differentDomains) {
+    finalLocale ||= getLocaleDomain(normalizedLocales, strategy, route)
+  } else if (strategy !== 'no_prefix') {
+    finalLocale ||= routeLocaleGetter(route)
+  } else {
+    if (!_detectBrowserLanguage) {
+      finalLocale ||= initialLocale
     }
   }
 
-  __DEBUG__ &&
-    console.log(
-      'detectLocale: finaleLocale second (finaleLocale, detectBrowserLanguage) -',
-      finalLocale,
-      _detectBrowserLanguage
-    )
-  if (!finalLocale && _detectBrowserLanguage && _detectBrowserLanguage.useCookie) {
-    finalLocale = localeCookie || ''
+  __DEBUG__ && log('second (finalLocale, detectBrowserLanguage) -', finalLocale, _detectBrowserLanguage)
+  if (_detectBrowserLanguage && _detectBrowserLanguage.useCookie) {
+    finalLocale ||= localeCookie || ''
   }
 
-  __DEBUG__ && console.log('detectLocale: finalLocale last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)
-  if (!finalLocale) {
-    finalLocale = defaultLocale || ''
-  }
+  __DEBUG__ && log('last (finalLocale, defaultLocale) -', finalLocale, defaultLocale)
+  finalLocale ||= defaultLocale || ''
 
-  __DEBUG__ && console.log('detectLocale: finalLocale -', finalLocale)
+  __DEBUG__ && log('finalLocale -', finalLocale)
   return finalLocale
 }
 

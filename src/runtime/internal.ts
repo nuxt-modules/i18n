@@ -141,19 +141,24 @@ export function setLocaleCookie(
   cookieRef.value = locale
 }
 
-export type DetectBrowserLanguageNotDetectReason =
-  | 'unknown'
-  | 'not_found_match'
-  | 'first_access_only'
-  | 'not_redirect_on_root'
-  | 'not_redirect_on_no_prefix'
-  | 'detect_ignore_on_ssg'
-export type DetectBrowserLanguageFrom = 'unknown' | 'cookie' | 'navigator_or_header' | 'fallback'
+export const enum DetectFailure {
+  NOT_FOUND = 'not_found_match',
+  FIRST_ACCESS = 'first_access_only',
+  NO_REDIRECT_ROOT = 'not_redirect_on_root',
+  NO_REDIRECT_NO_PREFIX = 'not_redirect_on_no_prefix',
+  SSG_IGNORE = 'detect_ignore_on_ssg'
+}
+
+export const enum DetectFrom {
+  COOKIE = 'cookie',
+  NAVIGATOR_HEADER = 'navigator_or_header',
+  FALLBACK = 'fallback'
+}
+
 export type DetectBrowserLanguageFromResult = {
   locale: string
-  stat: boolean
-  reason?: DetectBrowserLanguageNotDetectReason
-  from?: DetectBrowserLanguageFrom
+  from?: DetectFrom
+  reason?: DetectFailure
 }
 export type DetectLocaleForSSGStatus = 'ssg_ignore' | 'ssg_setup' | 'normal'
 export type DetectLocaleCallType = 'setup' | 'routing'
@@ -164,31 +169,28 @@ export type DetectLocaleContext = {
   localeCookie: string | undefined
 }
 
-export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
-  locale: '',
-  stat: false,
-  reason: 'unknown',
-  from: 'unknown'
-}
+export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = { locale: '' }
 
 export function detectBrowserLanguage(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  vueI18nOptionsLocale: Locale | undefined,
   detectLocaleContext: DetectLocaleContext,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
+  const log = (...args: unknown[]) => console.log('detectBrowserLanguage:', ...args)
+
   const { strategy } = useRuntimeConfig().public.i18n
   const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
-  __DEBUG__ && console.log('detectBrowserLanguage: (ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
+
+  __DEBUG__ && log('(ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
   // browser detection is ignored if it's a nuxt generate.
   if (isSSG && strategy === 'no_prefix' && (import.meta.server || ssg === 'ssg_ignore')) {
-    return { locale: '', stat: true, reason: 'detect_ignore_on_ssg' }
+    return { locale: '', reason: DetectFailure.SSG_IGNORE }
   }
 
   // browser locale detection happens during first access only
   if (!firstAccess) {
-    return { locale: strategy === 'no_prefix' ? locale : '', stat: false, reason: 'first_access_only' }
+    return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
   }
 
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
@@ -196,108 +198,47 @@ export function detectBrowserLanguage(
 
   const path = isString(route) ? route : route.path
   __DEBUG__ &&
-    console.log(
-      'detectBrowserLanguage: (path, strategy, alwaysRedirect, redirectOn, locale) -',
-      path,
-      strategy,
-      alwaysRedirect,
-      redirectOn,
-      locale
-    )
+    log('(path, strategy, alwaysRedirect, redirectOn, locale) -', path, strategy, alwaysRedirect, redirectOn, locale)
 
   if (strategy !== 'no_prefix') {
-    if (redirectOn === 'root') {
-      if (path !== '/') {
-        __DEBUG__ && console.log('detectBrowserLanguage: not root')
-        return { locale: '', stat: false, reason: 'not_redirect_on_root' }
-      }
-    } else if (redirectOn === 'no prefix') {
-      __DEBUG__ && console.log('detectBrowserLanguage: no prefix (path) -', path)
-      if (!alwaysRedirect && path.match(getLocalesRegex(localeCodes))) {
-        return { locale: '', stat: false, reason: 'not_redirect_on_no_prefix' }
-      }
+    if (redirectOn === 'root' && path !== '/') {
+      __DEBUG__ && log('not root')
+      return { locale: '', reason: DetectFailure.NO_REDIRECT_ROOT }
+    }
+
+    __DEBUG__ && redirectOn === 'no prefix' && log('no prefix (path) -', path)
+
+    if (redirectOn === 'no prefix' && !alwaysRedirect && path.match(getLocalesRegex(localeCodes))) {
+      return { locale: '', reason: DetectFailure.NO_REDIRECT_NO_PREFIX }
     }
   }
 
-  let localeFrom: DetectBrowserLanguageFrom = 'unknown'
-  let cookieLocale: string | undefined
-  let matchedLocale: string | undefined
+  // track detection match source
+  let from: DetectFrom | undefined
 
-  // get preferred language from cookie if present and enabled
+  // match locale from cookie if enabled and present
+  const cookieMatch = (useCookie && localeCookie) || undefined
   if (useCookie) {
-    matchedLocale = cookieLocale = localeCookie
-    localeFrom = 'cookie'
-    __DEBUG__ && console.log('detectBrowserLanguage: cookieLocale', cookieLocale)
+    from = DetectFrom.COOKIE
   }
-  // try to get locale from either navigator or header detection
-  if (!matchedLocale) {
-    matchedLocale = getBrowserLocale()
-    localeFrom = 'navigator_or_header'
-    __DEBUG__ && console.log('detectBrowserLanguage: browserLocale', matchedLocale)
-  }
-  __DEBUG__ &&
-    console.log(
-      'detectBrowserLanguage: (matchedLocale, cookieLocale, localeFrom) -',
-      matchedLocale,
-      cookieLocale,
-      localeFrom
-    )
 
-  // set fallback locale if that is not matched locale
-  const finalLocale = matchedLocale || fallbackLocale
+  // match locale from either navigator or header detection
+  const browserMatch = getBrowserLocale()
+  if (!cookieMatch) {
+    from = DetectFrom.NAVIGATOR_HEADER
+  }
+
+  const matchedLocale = cookieMatch || browserMatch
+
+  // use fallback locale when no locale matched
+  const resolved = matchedLocale || fallbackLocale || ''
   if (!matchedLocale && fallbackLocale) {
-    localeFrom = 'fallback'
-  }
-  __DEBUG__ &&
-    console.log(
-      'detectBrowserLanguage: first finaleLocale (finaleLocale, cookieLocale, localeFrom) -',
-      finalLocale,
-      cookieLocale,
-      localeFrom
-    )
-
-  const vueI18nLocale = locale || vueI18nOptionsLocale
-  __DEBUG__ && console.log('detectBrowserLanguage: vueI18nLocale', vueI18nLocale)
-
-  // handle cookie option to prevent multiple redirects
-  if (finalLocale && (!useCookie || alwaysRedirect || !cookieLocale)) {
-    if (strategy === 'no_prefix') {
-      return { locale: finalLocale, stat: true, from: localeFrom }
-    } else {
-      if (callType === 'setup') {
-        if (finalLocale !== vueI18nLocale) {
-          __DEBUG__ && console.log('detectBrowserLanguage: finalLocale !== vueI18nLocale', finalLocale)
-          return { locale: finalLocale, stat: true, from: localeFrom }
-        }
-      }
-
-      if (alwaysRedirect) {
-        const redirectOnRoot = path === '/'
-        const redirectOnAll = redirectOn === 'all'
-        const redirectOnNoPrefix = redirectOn === 'no prefix' && !path.match(getLocalesRegex(localeCodes))
-        __DEBUG__ &&
-          console.log(
-            'detectBrowserLanguage: (redirectOnRoot, redirectOnAll, redirectOnNoPrefix) - ',
-            redirectOnRoot,
-            redirectOnAll,
-            redirectOnNoPrefix
-          )
-        if (redirectOnRoot || redirectOnAll || redirectOnNoPrefix) {
-          return { locale: finalLocale, stat: true, from: localeFrom }
-        }
-      }
-    }
+    from = DetectFrom.FALLBACK
   }
 
-  if (ssg === 'ssg_setup' && finalLocale) {
-    return { locale: finalLocale, stat: true, from: localeFrom }
-  }
+  __DEBUG__ && log('(resolved, cookieMatch, browserMatch, from) -', resolved, cookieMatch, browserMatch, from)
 
-  if ((localeFrom === 'navigator_or_header' || localeFrom === 'cookie') && finalLocale) {
-    return { locale: finalLocale, stat: true, from: localeFrom }
-  }
-
-  return { locale: '', stat: false, reason: 'not_found_match' }
+  return { locale: resolved, from }
 }
 
 export function getHost() {
