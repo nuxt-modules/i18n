@@ -177,6 +177,12 @@ export function detectBrowserLanguage(
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const log = (...args: unknown[]) => console.log('detectBrowserLanguage:', ...args)
+  const _detect = runtimeDetectBrowserLanguage()
+
+  // feature is disabled
+  if (!_detect) {
+    return DefaultDetectBrowserLanguageFromResult
+  }
 
   const { strategy } = useRuntimeConfig().public.i18n
   const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
@@ -193,8 +199,7 @@ export function detectBrowserLanguage(
     return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
   }
 
-  const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } =
-    runtimeDetectBrowserLanguage() as DetectBrowserLanguageOptions
+  const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = _detect
 
   const path = isString(route) ? route : route.path
   __DEBUG__ &&

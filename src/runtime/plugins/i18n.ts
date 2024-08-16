@@ -16,7 +16,6 @@ import {
   getLocaleCookie,
   setLocaleCookie,
   detectBrowserLanguage,
-  DefaultDetectBrowserLanguageFromResult,
   getI18nCookie,
   runtimeDetectBrowserLanguage
 } from '../internal'
@@ -111,18 +110,16 @@ export default defineNuxtPlugin({
     if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
       nuxt.hook('app:mounted', async () => {
         __DEBUG__ && console.log('hook app:mounted')
-        const detected = _detectBrowserLanguage
-          ? detectBrowserLanguage(
-              route,
-              {
-                ssg: 'ssg_setup',
-                callType: 'setup',
-                firstAccess: true,
-                localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
-              },
-              initialLocale
-            )
-          : DefaultDetectBrowserLanguageFromResult
+        const detected = detectBrowserLanguage(
+          route,
+          {
+            ssg: 'ssg_setup',
+            callType: 'setup',
+            firstAccess: true,
+            localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+          },
+          initialLocale
+        )
         __DEBUG__ && console.log('app:mounted: detectBrowserLanguage (locale, reason, from) -', Object.values(detected))
         await setLocale(i18n, detected.locale)
         ssgModeInitialSetup = false

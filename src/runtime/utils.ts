@@ -9,7 +9,6 @@ import {
   defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
-  DefaultDetectBrowserLanguageFromResult,
   runtimeDetectBrowserLanguage,
   DetectFailure
 } from './internal'
@@ -170,9 +169,7 @@ export function detectLocale(
   const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
   __DEBUG__ && log('(ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
 
-  const detected = _detectBrowserLanguage
-    ? detectBrowserLanguage(route, detectLocaleContext, initialLocale)
-    : DefaultDetectBrowserLanguageFromResult
+  const detected = detectBrowserLanguage(route, detectLocaleContext, initialLocale)
   __DEBUG__ && log('detectBrowserLanguage (locale, stat, reason, from) -', Object.values(detected))
 
   if (detected.reason === DetectFailure.SSG_IGNORE) {
