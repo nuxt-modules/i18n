@@ -157,9 +157,9 @@ type LocaleLoader = () => Locale
  */
 export function createLogger(label: string) {
   return {
-    log: (...args: unknown[]) => console.log(`${label}:`, ...args)
+    log: console.log.bind(console, `${label}:`)
     // change to this after implementing logger across runtime code
-    // log: (...args: unknown[]) => console.log(`[i18n:${label}]`, ...args)
+    // log: console.log.bind(console, `[i18n:${label}]`)
   }
 }
 
