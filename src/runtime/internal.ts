@@ -6,7 +6,7 @@ import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp } from '#imports'
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex } from './routing/utils'
-import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
+import { createLogger, initCommonComposableOptions, type CommonComposableOptions } from './utils'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
@@ -149,13 +149,13 @@ export const enum DetectFailure {
   SSG_IGNORE = 'detect_ignore_on_ssg'
 }
 
-export const enum DetectFrom {
+const enum DetectFrom {
   COOKIE = 'cookie',
   NAVIGATOR_HEADER = 'navigator_or_header',
   FALLBACK = 'fallback'
 }
 
-export type DetectBrowserLanguageFromResult = {
+type DetectBrowserLanguageFromResult = {
   locale: string
   from?: DetectFrom
   reason?: DetectFailure
@@ -176,7 +176,7 @@ export function detectBrowserLanguage(
   detectLocaleContext: DetectLocaleContext,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
-  const log = (...args: unknown[]) => console.log('detectBrowserLanguage:', ...args)
+  const logger = createLogger('detectBrowserLanguage')
   const _detect = runtimeDetectBrowserLanguage()
 
   // feature is disabled
@@ -187,14 +187,14 @@ export function detectBrowserLanguage(
   const { strategy } = useRuntimeConfig().public.i18n
   const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
 
-  __DEBUG__ && log('(ssg, callType, firstAccess) - ', ssg, callType, firstAccess)
+  __DEBUG__ && logger.log({ ssg, callType, firstAccess })
 
-  // browser detection is ignored if it's a nuxt generate.
+  // detection ignored during nuxt generate
   if (isSSG && strategy === 'no_prefix' && (import.meta.server || ssg === 'ssg_ignore')) {
     return { locale: '', reason: DetectFailure.SSG_IGNORE }
   }
 
-  // browser locale detection happens during first access only
+  // detection only on first access
   if (!firstAccess) {
     return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
   }
@@ -202,17 +202,18 @@ export function detectBrowserLanguage(
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = _detect
 
   const path = isString(route) ? route : route.path
-  __DEBUG__ &&
-    log('(path, strategy, alwaysRedirect, redirectOn, locale) -', path, strategy, alwaysRedirect, redirectOn, locale)
+  __DEBUG__ && logger.log({ locale, path, strategy, alwaysRedirect, redirectOn })
 
   if (strategy !== 'no_prefix') {
+    // detection only on root
     if (redirectOn === 'root' && path !== '/') {
-      __DEBUG__ && log('not root')
+      __DEBUG__ && logger.log('not root', { path })
       return { locale: '', reason: DetectFailure.NO_REDIRECT_ROOT }
     }
 
-    __DEBUG__ && redirectOn === 'no prefix' && log('no prefix (path) -', path)
+    __DEBUG__ && redirectOn === 'no prefix' && logger.log('no prefix -', { path })
 
+    // detection only on unprefixed route
     if (redirectOn === 'no prefix' && !alwaysRedirect && path.match(getLocalesRegex(localeCodes))) {
       return { locale: '', reason: DetectFailure.NO_REDIRECT_NO_PREFIX }
     }
@@ -241,7 +242,7 @@ export function detectBrowserLanguage(
     from = DetectFrom.FALLBACK
   }
 
-  __DEBUG__ && log('(resolved, cookieMatch, browserMatch, from) -', resolved, cookieMatch, browserMatch, from)
+  __DEBUG__ && logger.log({ locale: resolved, cookieMatch, browserMatch, from })
 
   return { locale: resolved, from }
 }
