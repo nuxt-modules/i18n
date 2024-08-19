@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { type Locale } from 'vue-i18n'
 
 const route = useRoute()
 const {
@@ -19,8 +18,6 @@ const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const getRouteBaseName = useRouteBaseName()
 
-switchLocalePath(locale.value)
-setLocale(locale.value)
 // route.meta.pageTransition.onBeforeEnter = async () => {
 //   await finalizePendingLocaleChange()
 // }

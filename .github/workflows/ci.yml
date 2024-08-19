@@ -7,10 +7,10 @@ env:
 on:
   push:
     branches:
-      - v8
+      - main
   pull_request:
     branches:
-      - v8
+      - main
 
 jobs:
   lint:
