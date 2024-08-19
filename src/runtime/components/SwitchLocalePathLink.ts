@@ -1,5 +1,5 @@
 import { SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from '#build/i18n.options.mjs'
-import { useSwitchLocalePath } from '#i18n'
+import { useSwitchLocalePath, type Locale } from '#i18n'
 import { defineNuxtLink } from '#imports'
 import { Comment, defineComponent, h } from 'vue'
 
@@ -11,7 +11,7 @@ export default defineComponent({
   name: 'SwitchLocalePathLink',
   props: {
     locale: {
-      type: String as PropType<string>,
+      type: String as PropType<Locale>,
       required: true
     }
   },

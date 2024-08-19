@@ -17,7 +17,8 @@ import {
   localeRoute,
   switchLocalePath
 } from '../routing/compatibles'
-import { findBrowserLocale, getComposer, getLocale, getLocales } from '../routing/utils'
+import { findBrowserLocale } from '../routing/utils'
+import { getLocale, getLocales, getComposer } from '../compatibility'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
@@ -37,21 +38,21 @@ export * from './shared'
  *
  * @public
  */
-export type SetI18nParamsFunction = (params: Record<string, unknown>) => void
+export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
 export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
   const head = getActiveHead()
   const i18n = getComposer(common.i18n)
   const router = common.router
 
-  const locale = getLocale(i18n)
-  const locales = getNormalizedLocales(getLocales(i18n))
+  const locale = getLocale(common.i18n)
+  const locales = getNormalizedLocales(getLocales(common.i18n))
   const _i18nParams = ref({})
   const experimentalSSR = common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR
 
   const i18nParams = computed({
     get() {
-      return experimentalSSR ? common.metaState.value : (router.currentRoute.value.meta.nuxtI18n ?? {})
+      return experimentalSSR ? common.metaState.value : router.currentRoute.value.meta.nuxtI18n ?? {}
     },
     set(val) {
       common.metaState.value = val
@@ -101,7 +102,7 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
     head?.push(metaObject)
   }
 
-  return function (params: Record<string, unknown>) {
+  return function (params: Partial<Record<Locale, unknown>>) {
     i18nParams.value = { ...params }
     setMeta()
   }
@@ -415,11 +416,11 @@ export interface I18nRoute {
    *
    * @description You can specify static and dynamic paths for vue-router.
    */
-  paths?: Record<Locale, string>
+  paths?: Partial<Record<Locale, string>>
   /**
    * Some locales to which the page component should be localized.
    */
-  locales?: string[]
+  locales?: Locale[]
 }
 
 /**

@@ -49,7 +49,7 @@ export async function runTests(opts: RunTestOptions) {
       test: {
         dir: opts.rootDir,
         deps: {
-          inline: [distDir, '@nuxt/test-utils', '@nuxt/test-utils-edge']
+          inline: [distDir, '@nuxt/test-utils', '@nuxt/test-utils-nightly', '@nuxt/test-utils-edge']
         },
         globals: true,
         globalSetup: [...(opts.globalSetup ? [resolve(distDir, './runtime/global-setup')] : [])]

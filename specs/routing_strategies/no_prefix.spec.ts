@@ -11,7 +11,7 @@ import {
   assetLocaleHead
 } from '../helper'
 
-import type { Response } from 'playwright'
+import type { Response } from 'playwright-core'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),

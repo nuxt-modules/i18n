@@ -4,11 +4,12 @@ import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
 import { resolve, relative, join } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getLayerI18n, getLocalePaths, toCode } from './utils'
+import { getLayerI18n, getLocalePaths, getNormalizedLocales, toCode } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PrerenderTarget } from './utils'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta, LocaleObject } from './types'
+import type { Locale } from 'vue-i18n'
 
 export type LoaderOptions = {
   vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
@@ -31,7 +32,7 @@ const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, i
 }
 
 export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
-  const isLocaleObjectsArray = (locales?: string[] | LocaleObject[]) => locales?.some(x => typeof x !== 'string')
+  const isLocaleObjectsArray = (locales?: Locale[] | LocaleObject[]) => locales?.some(x => typeof x !== 'string')
 
   const hasLocaleObjects =
     nuxt.options._layers.some(layer => isLocaleObjectsArray(getLayerI18n(layer)?.locales)) ||
@@ -64,7 +65,7 @@ export function generateLoaderOptions(
   const importMapper = new Map<string, { key: string; load: string; cache: string }>()
   const importStrings: string[] = []
 
-  function generateLocaleImports(locale: string, meta: NonNullable<LocaleInfo['meta']>[number], isServer = false) {
+  function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number], isServer = false) {
     if (importMapper.has(meta.key)) return
     const importSpecifier = genImportSpecifier({ ...meta, isServer }, 'locale', { locale })
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
@@ -165,7 +166,8 @@ export {}`
 export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
   const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
-  const resolvedLocaleType = typeof generatedLocales === 'string' ? 'string[]' : 'LocaleObject[]'
+  const resolvedLocaleType = typeof generatedLocales === 'string' ? 'Locale[]' : 'LocaleObject[]'
+  const localeCodeStrings = getNormalizedLocales(options.locales).map(x => x.code)
 
   const i18nType = `${vueI18nTypes.join(' & ')} & NuxtI18nRoutingCustomProperties<${resolvedLocaleType}>`
 
@@ -197,13 +199,21 @@ declare module 'vue-i18n' {
   interface VueI18n extends NuxtI18nRoutingCustomProperties<${resolvedLocaleType}> {}
 }
 
+declare module '@intlify/core-base' {
+  // generated based on configured locales
+  interface GeneratedTypeConfig { 
+    locale: ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
+  }
+}
+
+
 declare module '#app' {
   interface NuxtApp {
     $i18n: ${i18nType}
   }
 }
 
-${options.experimental?.autoImportTranslationFunctions && globalTranslationTypes || ''}
+${(options.experimental?.autoImportTranslationFunctions && globalTranslationTypes) || ''}
 
 export {}`
 }

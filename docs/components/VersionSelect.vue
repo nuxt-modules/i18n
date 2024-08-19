@@ -4,7 +4,13 @@ const versions = [
     id: '8',
     label: 'v8',
     to: '/docs/getting-started',
-    latest: true
+    tag: 'latest'
+  },
+  {
+    id: '9',
+    label: 'v9',
+    to: '/docs/v9',
+    tag: 'alpha'
   },
   {
     id: '7',
@@ -14,7 +20,9 @@ const versions = [
 ]
 
 const route = useRoute()
-const selectedVersion = computed(() => (route.path.includes('/v7') ? versions[1] : versions[0]))
+const selectedVersion = computed(() =>
+  route.path.includes('/v9') ? versions[1] : route.path.includes('/v7') ? versions[2] : versions[0]
+)
 function changeVersion(newVersion) {
   return navigateTo(newVersion.to)
 }
@@ -31,13 +39,13 @@ function changeVersion(newVersion) {
     >
       <template #label>
         {{ selectedVersion.label }}
-        <UBadge v-if="selectedVersion.latest" variant="subtle" label="latest" size="xs" />
+        <UBadge v-if="selectedVersion.tag" variant="subtle" :label="selectedVersion.tag" size="xs" />
       </template>
 
       <template #option="{ option: version }">
         <div @click="changeVersion(version)" class="w-full">
           {{ version.label }}
-          <UBadge v-if="version.latest" variant="subtle" label="latest" />
+          <UBadge v-if="version.tag" variant="subtle" :label="version.tag" />
         </div>
       </template>
     </USelectMenu>

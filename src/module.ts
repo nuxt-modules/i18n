@@ -41,7 +41,8 @@ import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } f
 import { generateTemplateNuxtI18nOptions } from './template'
 
 import type { HookResult } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
+import type { LocaleObject, NuxtI18nOptions } from './types'
+import type { Locale } from 'vue-i18n'
 
 export * from './types'
 
@@ -63,14 +64,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const options = i18nOptions as Required<NuxtI18nOptions>
     applyOptionOverrides(options, nuxt)
     debug('options', options)
-
-    if (!options.compilation.jit) {
-      logger.warn(
-        'Opt-out JIT compilation. ' +
-          `It's necessary to pre-compile locale messages that are not managed by the nuxt i18n module (e.g. in the case of importing from a specific URL, you will need to precompile them yourself.) ` +
-          `And also, you need to understand that you cannot support use cases where you dynamically compose locale messages from the back-end via an API.`
-      )
-    }
 
     /**
      * Check versions
@@ -102,15 +95,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
           '`bundle.compositionOnly` option and `types` option is conflicting: ' +
             `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
         )
-      )
-    }
-
-    if (options.bundle.runtimeOnly && options.compilation.jit) {
-      logger.warn(
-        '`bundle.runtimeOnly` option and `compilation.jit` option is conflicting: ' +
-          `bundle.runtimeOnly: ${options.bundle.runtimeOnly}, compilation.jit: ${JSON.stringify(
-            options.compilation.jit
-          )}`
       )
     }
 
@@ -378,8 +362,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
   }
 })
 
+// Prevent type errors while configuring locale codes, as generated types will conflict with changes
+type UserNuxtI18nOptions = Omit<NuxtI18nOptions, 'locales'> & { locales?: string[] | LocaleObject<string>[] }
+
 // Used by nuxt/module-builder for `types.d.ts` generation
-export interface ModuleOptions extends NuxtI18nOptions {}
+export interface ModuleOptions extends UserNuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
   i18n: {
@@ -471,13 +458,13 @@ export interface ModuleRuntimeHooks {
   // NOTE: To make type inference work the function signature returns `HookResult`
   // Should return `string | void`
   'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
-    oldLocale: string
-    newLocale: string
+    oldLocale: Locale
+    newLocale: Locale
     initialSetup: boolean
     context: Context
   }) => HookResult
 
-  'i18n:localeSwitched': (params: { oldLocale: string; newLocale: string }) => HookResult
+  'i18n:localeSwitched': (params: { oldLocale: Locale; newLocale: Locale }) => HookResult
 }
 
 // Used by module for type inference in source code
@@ -487,10 +474,10 @@ declare module '#app' {
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
-    ['i18n']?: Partial<ModuleOptions>
+    ['i18n']?: Partial<UserNuxtI18nOptions>
   }
   interface NuxtOptions {
-    ['i18n']?: ModuleOptions
+    ['i18n']?: UserNuxtI18nOptions
   }
   interface NuxtHooks extends ModuleHooks {}
   interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
