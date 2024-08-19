@@ -1,0 +1,13 @@
+{
+  "home": "Accueil",
+  "about": "À propos",
+  "blog": "Blog",
+  "posts": "Articles",
+  "dynamic": "Dynamique",
+  "welcome": "Bienvenue",
+  "pages": {
+    "blog": {
+      "article": "Cette page d'article de blog"
+    }
+  }
+}
