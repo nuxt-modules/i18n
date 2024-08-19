@@ -169,7 +169,10 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
         extra
       )
       if (localePrefixable) {
-        if (options.multiDomainLocales) {
+        if (
+          options.multiDomainLocales &&
+          (options.strategy === 'prefix_except_default' || options.strategy === 'prefix_and_default')
+        ) {
           localizedRoutes.push({
             ...localized,
             name: `${localized.name}___default`

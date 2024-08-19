@@ -370,7 +370,7 @@ export async function navigate(
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
   const { nuxtApp, i18n, locale, route } = args
-  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, configLocales } =
+  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, configLocales, strategy } =
     nuxtApp.$config.public.i18n
   let { redirectPath } = args
 
@@ -407,7 +407,7 @@ export async function navigate(
     }
   }
 
-  if (multiDomainLocales) {
+  if (multiDomainLocales && strategy === 'prefix_except_default') {
     const host = getHost()
     const currentDomain = configLocales.find(locale => {
       if (typeof locale !== 'string') {
