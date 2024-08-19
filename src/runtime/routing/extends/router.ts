@@ -5,6 +5,9 @@ import { localeCodes } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useRuntimeConfig } from '#imports'
 
+export type GetLocaleFromRouteFunction = (
+  route: RouteLocationNormalizedLoaded | RouteLocationNormalized | string
+) => string
 export function createLocaleFromRouteGetter() {
   const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n
   const localesPattern = `(${localeCodes.join('|')})`
