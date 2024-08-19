@@ -55,7 +55,7 @@ export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(nuxt) {
-    const logger = createLogger('plugin:i18n')
+    const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const route = useRoute()
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp

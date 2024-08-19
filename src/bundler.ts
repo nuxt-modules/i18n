@@ -84,7 +84,8 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
               dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler
             }),
             {
-              __DEBUG__: String(nuxtOptions.debug)
+              __DEBUG__: String(!!nuxtOptions.debug),
+              __DEBUG_VERBOSE__: String(nuxtOptions.debug === 'verbose')
             }
           )
         )
@@ -125,10 +126,12 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
 
   extendViteConfig(config => {
     if (config.define) {
-      config.define['__DEBUG__'] = JSON.stringify(nuxtOptions.debug)
+      config.define['__DEBUG__'] = JSON.stringify(!!nuxtOptions.debug)
+      config.define['__DEBUG_VERBOSE__'] = JSON.stringify(nuxtOptions.debug === 'verbose')
     } else {
       config.define = {
-        __DEBUG__: JSON.stringify(nuxtOptions.debug)
+        __DEBUG__: JSON.stringify(!!nuxtOptions.debug),
+        __DEBUG_VERBOSE__: JSON.stringify(nuxtOptions.debug === 'verbose')
       }
     }
     debug('vite.config.define', config.define)

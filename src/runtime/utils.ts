@@ -80,7 +80,7 @@ export async function loadAndSetLocale(
   runtimeI18n: ModulePublicRuntimeConfig['i18n'],
   initial: boolean = false
 ): Promise<boolean> {
-  const logger = createLogger('loadAndSetLocale')
+  const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const { differentDomains, skipSettingLocaleOnNavigate, lazy } = runtimeI18n
   const opts = runtimeDetectBrowserLanguage(runtimeI18n)
   const nuxtApp = useNuxtApp()
@@ -173,7 +173,7 @@ export function detectLocale(
   const { strategy, defaultLocale, differentDomains, multiDomainLocales } = runtimeI18n
   const { localeCookie } = detectLocaleContext
   const _detectBrowserLanguage = runtimeDetectBrowserLanguage(runtimeI18n)
-  const logger = createLogger('detectLocale')
+  const logger = /*#__PURE__*/ createLogger('detectLocale')
 
   const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
   __DEBUG__ && logger.log({ initialLocale })
@@ -226,7 +226,7 @@ export function detectRedirect({
 }): string {
   const nuxtApp = useNuxtApp()
   const common = initCommonComposableOptions()
-  const logger = createLogger('detectRedirect')
+  const logger = /*#__PURE__*/ createLogger('detectRedirect')
   const { strategy, differentDomains } = common.runtimeConfig.public.i18n
   __DEBUG__ && logger.log({ route })
   __DEBUG__ && logger.log({ targetLocale, calledWithRouting, routeLocaleGetter: routeLocaleGetter(route.to) })
@@ -306,7 +306,7 @@ export async function navigate(
   const { nuxtApp, i18n, locale, route } = args
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, configLocales, strategy } =
     nuxtApp.$config.public.i18n
-  const logger = createLogger('navigate')
+  const logger = /*#__PURE__*/ createLogger('navigate')
   let { redirectPath } = args
 
   __DEBUG__ &&
@@ -408,7 +408,7 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
 
 // override prefix for route path, support domain
 export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
-  const logger = createLogger('extendPrefixable')
+  const logger = /*#__PURE__*/ createLogger('extendPrefixable')
   return (opts: PrefixableOptions): boolean => {
     __DEBUG__ && logger.log(DefaultPrefixable(opts))
 
@@ -418,7 +418,7 @@ export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
 
 // override switch locale path intercepter, support domain
 export function extendSwitchLocalePathIntercepter(runtimeConfig = useRuntimeConfig()): SwitchLocalePathIntercepter {
-  const logger = createLogger('extendSwitchLocalePathIntercepter')
+  const logger = /*#__PURE__*/ createLogger('extendSwitchLocalePathIntercepter')
   return (path: string, locale: Locale): string => {
     if (runtimeConfig.public.i18n.differentDomains) {
       const domain = getDomainFromLocale(locale)
@@ -435,7 +435,7 @@ export function extendSwitchLocalePathIntercepter(runtimeConfig = useRuntimeConf
 }
 
 export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
-  const logger = createLogger('extendBaseUrl')
+  const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   return (): string => {
     const ctx = useNuxtApp()
     const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n

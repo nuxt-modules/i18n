@@ -120,7 +120,8 @@ export { localeDetector }
     }
 
     // setup debug flag
-    nitroConfig.replace['__DEBUG__'] = String(nuxtOptions.debug)
+    nitroConfig.replace['__DEBUG__'] = String(!!nuxtOptions.debug)
+    nitroConfig.replace['__DEBUG_VERBOSE__'] = String(nuxtOptions.debug === 'verbose')
     debug('nitro.replace', nitroConfig.replace)
   })
 

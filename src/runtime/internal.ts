@@ -49,7 +49,7 @@ export function parseAcceptLanguage(input: string): string[] {
 
 export function getBrowserLocale(): string | undefined {
   let ret: string | undefined
-  const logger = createLogger('getBrowserLocale')
+  const logger = /*#__PURE__*/ createLogger('getBrowserLocale')
 
   if (import.meta.client) {
     if (navigator.languages) {
@@ -94,7 +94,7 @@ export function getLocaleCookie(
   defaultLocale: string
 ): string | undefined {
   const env = import.meta.client ? 'client' : 'server'
-  const logger = createLogger(`getLocaleCookie:${env}`)
+  const logger = /*#__PURE__*/ createLogger(`getLocaleCookie:${env}`)
   __DEBUG__ &&
     logger.log({
       useCookie: detect && detect.useCookie,
@@ -175,7 +175,7 @@ export function detectBrowserLanguage(
   detectLocaleContext: DetectLocaleContext,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
-  const logger = createLogger('detectBrowserLanguage')
+  const logger = /*#__PURE__*/ createLogger('detectBrowserLanguage')
   const _detect = runtimeDetectBrowserLanguage()
 
   // feature is disabled
@@ -270,7 +270,7 @@ export function getLocaleDomain(
   strategy: string,
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
-  const logger = createLogger(`getLocaleDomain`)
+  const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   let host = getHost() || ''
   const routePath = isObject(route) ? route.path : isString(route) ? route : ''
 

@@ -88,20 +88,20 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
 }
 
 async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
-  const logger = createLogger('loadMessage')
+  const logger = /*#__PURE__*/ createLogger('loadMessage')
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && logger.log({ locale })
     const getter = await load().then(r => ('default' in r ? r.default : r))
     if (isFunction(getter)) {
       message = await getter(locale)
-      __DEBUG__ && logger.log('dynamic load', __DEBUG__ === 'verbose' ? message : '')
+      __DEBUG__ && logger.log('dynamic load', __DEBUG_VERBOSE__ ? message : '')
     } else {
       message = getter
       if (message != null && cacheMessages) {
         cacheMessages.set(key, message)
       }
-      __DEBUG__ && logger.log('loaded', __DEBUG__ === 'verbose' ? message : '')
+      __DEBUG__ && logger.log('loaded', __DEBUG_VERBOSE__ ? message : '')
     }
   } catch (e: unknown) {
     console.error('Failed locale loading: ' + (e as Error).message)
@@ -114,7 +114,7 @@ export async function loadLocale(
   localeLoaders: Record<Locale, LocaleLoader[]>,
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
-  const logger = createLogger('loadLocale')
+  const logger = /*#__PURE__*/ createLogger('loadLocale')
   const loaders = localeLoaders[locale]
 
   if (loaders == null) {
