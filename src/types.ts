@@ -128,6 +128,15 @@ export type NuxtI18nOptions<
    * @defaultValue `false`
    */
   differentDomains?: boolean
+  /**
+   * Enable when using different domains with different locales
+   *
+   * @remarks
+   * If enabled, `locales` must be configured as an array of `LocaleObject` objects with the `domains` and `defaultForDomains` property set.
+   *
+   * @defaultValue `false`
+   */
+  multiDomainLocales?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
   lazy?: boolean
@@ -252,6 +261,8 @@ export interface LocaleObject<T = Locale> extends Record<string, any> {
   name?: string
   dir?: Directions
   domain?: string
+  domains?: string[]
+  defaultForDomains?: string[]
   file?: string | LocaleFile
   files?: string[] | LocaleFile[]
   isCatchallLocale?: boolean
