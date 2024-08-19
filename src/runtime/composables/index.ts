@@ -51,7 +51,7 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
 
   const i18nParams = computed({
     get() {
-      return experimentalSSR ? common.metaState.value : router.currentRoute.value.meta.nuxtI18n ?? {}
+      return experimentalSSR ? common.metaState.value : (router.currentRoute.value.meta.nuxtI18n ?? {})
     },
     set(val) {
       common.metaState.value = val
