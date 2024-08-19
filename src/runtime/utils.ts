@@ -80,6 +80,7 @@ export async function loadAndSetLocale(
   runtimeI18n: ModulePublicRuntimeConfig['i18n'],
   initial: boolean = false
 ): Promise<boolean> {
+  const logger = createLogger('loadAndSetLocale')
   const { differentDomains, skipSettingLocaleOnNavigate, lazy } = runtimeI18n
   const opts = runtimeDetectBrowserLanguage(runtimeI18n)
   const nuxtApp = useNuxtApp()
@@ -95,7 +96,7 @@ export async function loadAndSetLocale(
     setLocaleCookie(i18n, locale)
   }
 
-  __DEBUG__ && console.log('setLocale: new -> ', newLocale, ' old -> ', oldLocale, ' initial -> ', initial)
+  __DEBUG__ && logger.log({ newLocale, oldLocale, initial })
 
   // `newLocale` is unset or empty
   if (!newLocale) {
@@ -158,9 +159,7 @@ type LocaleLoader = () => Locale
  */
 export function createLogger(label: string) {
   return {
-    log: console.log.bind(console, `${label}:`)
-    // change to this after implementing logger across runtime code
-    // log: console.log.bind(console, `[i18n:${label}]`)
+    log: console.log.bind(console, `[i18n:${label}]`)
   }
 }
 
@@ -227,10 +226,10 @@ export function detectRedirect({
 }): string {
   const nuxtApp = useNuxtApp()
   const common = initCommonComposableOptions()
+  const logger = createLogger('detectRedirect')
   const { strategy, differentDomains } = common.runtimeConfig.public.i18n
-  __DEBUG__ && console.log('detectRedirect: targetLocale -> ', targetLocale)
-  __DEBUG__ && console.log('detectRedirect: route -> ', route)
-  __DEBUG__ && console.log('detectRedirect: calledWithRouting -> ', calledWithRouting, routeLocaleGetter(route.to))
+  __DEBUG__ && logger.log({ route })
+  __DEBUG__ && logger.log({ targetLocale, calledWithRouting, routeLocaleGetter: routeLocaleGetter(route.to) })
 
   let redirectPath = ''
   const { fullPath: toFullPath } = route.to
@@ -251,7 +250,7 @@ export function detectRedirect({
   ) {
     // the current route could be 404 in which case attempt to find matching route using the full path
     const routePath = nuxtApp.$switchLocalePath(targetLocale) || nuxtApp.$localePath(toFullPath, targetLocale)
-    __DEBUG__ && console.log('detectRedirect: calculate routePath -> ', routePath, toFullPath)
+    __DEBUG__ && logger.log('calculate routePath', { routePath, toFullPath })
     if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       /**
        * NOTE: for #1889, #2226
@@ -272,7 +271,7 @@ export function detectRedirect({
      *  let it be processed by the route of the router middleware.
      */
     const routePath = switchLocalePath(common, targetLocale, route.to)
-    __DEBUG__ && console.log('detectRedirect: calculate domain or ssg routePath -> ', routePath)
+    __DEBUG__ && logger.log('calculate domain or ssg routePath', { routePath })
     if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
       redirectPath = routePath
     }
@@ -307,18 +306,18 @@ export async function navigate(
   const { nuxtApp, i18n, locale, route } = args
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, configLocales, strategy } =
     nuxtApp.$config.public.i18n
+  const logger = createLogger('navigate')
   let { redirectPath } = args
 
   __DEBUG__ &&
-    console.log(
-      'navigate options ',
+    logger.log('options', {
       status,
       rootRedirect,
       differentDomains,
       skipSettingLocaleOnNavigate,
-      enableNavigate
-    )
-  __DEBUG__ && console.log('navigate isSSG', isSSG)
+      enableNavigate,
+      isSSG
+    })
 
   if (route.path === '/' && rootRedirect) {
     if (isString(rootRedirect)) {
@@ -328,7 +327,7 @@ export async function navigate(
       status = rootRedirect.statusCode
     }
     redirectPath = nuxtApp.$localePath(redirectPath, locale)
-    __DEBUG__ && console.log('navigate: rootRedirect mode redirectPath -> ', redirectPath, ' status -> ', status)
+    __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, status })
     return _navigate(redirectPath, status)
   }
 
@@ -377,13 +376,13 @@ export async function navigate(
     }
   } else {
     const state = useRedirectState()
-    __DEBUG__ && console.log('redirect state ->', state.value, 'redirectPath -> ', redirectPath)
+    __DEBUG__ && logger.log('redirect', { state: state.value, redirectPath })
     if (state.value && state.value !== redirectPath) {
       if (import.meta.client) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
       } else if (import.meta.server) {
-        __DEBUG__ && console.log('differentDomains servermode ', redirectPath)
+        __DEBUG__ && logger.log('differentDomains servermode', { redirectPath })
         state.value = redirectPath // set redirect path
       }
     }
@@ -409,8 +408,9 @@ export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
 
 // override prefix for route path, support domain
 export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
+  const logger = createLogger('extendPrefixable')
   return (opts: PrefixableOptions): boolean => {
-    __DEBUG__ && console.log('extendPrefixable', DefaultPrefixable(opts))
+    __DEBUG__ && logger.log(DefaultPrefixable(opts))
 
     return DefaultPrefixable(opts) && !runtimeConfig.public.i18n.differentDomains
   }
@@ -418,10 +418,11 @@ export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
 
 // override switch locale path intercepter, support domain
 export function extendSwitchLocalePathIntercepter(runtimeConfig = useRuntimeConfig()): SwitchLocalePathIntercepter {
+  const logger = createLogger('extendSwitchLocalePathIntercepter')
   return (path: string, locale: Locale): string => {
     if (runtimeConfig.public.i18n.differentDomains) {
       const domain = getDomainFromLocale(locale)
-      __DEBUG__ && console.log('extendSwitchLocalePathIntercepter: domain -> ', domain, ' path -> ', path)
+      __DEBUG__ && logger.log({ domain, path })
       if (domain) {
         return joinURL(domain, path)
       } else {
@@ -434,13 +435,14 @@ export function extendSwitchLocalePathIntercepter(runtimeConfig = useRuntimeConf
 }
 
 export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
+  const logger = createLogger('extendBaseUrl')
   return (): string => {
     const ctx = useNuxtApp()
     const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n
 
     if (isFunction(baseUrl)) {
       const baseUrlResult = baseUrl(ctx)
-      __DEBUG__ && console.log('baseUrl: using localeLoader function -', baseUrlResult)
+      __DEBUG__ && logger.log('using localeLoader function -', { baseUrlResult })
       return baseUrlResult
     }
 
@@ -448,13 +450,13 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode)
       if (domain) {
-        __DEBUG__ && console.log('baseUrl: using differentDomains -', domain)
+        __DEBUG__ && logger.log('using differentDomains -', { domain })
         return domain
       }
     }
 
     if (baseUrl) {
-      __DEBUG__ && console.log('baseUrl: using runtimeConfig -', baseUrl)
+      __DEBUG__ && logger.log('using runtimeConfig -', { baseUrl })
       return baseUrl
     }
 

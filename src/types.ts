@@ -155,7 +155,7 @@ export type NuxtI18nOptions<
   rootRedirect?: string | RootRedirectOptions
   skipSettingLocaleOnNavigate?: boolean
   types?: 'composition' | 'legacy'
-  debug?: boolean
+  debug?: boolean | 'verbose'
   dynamicRouteParams?: boolean
   parallelPlugin?: boolean
   /**
