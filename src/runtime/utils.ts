@@ -22,6 +22,7 @@ import {
   getLocaleDomain,
   getDomainFromLocale,
   runtimeDetectBrowserLanguage,
+  getHost,
   DetectFailure
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
@@ -214,7 +215,7 @@ export function detectLocale(
   detectLocaleContext: DetectLocaleContext,
   runtimeI18n: ModulePublicRuntimeConfig['i18n']
 ) {
-  const { strategy, defaultLocale, differentDomains } = runtimeI18n
+  const { strategy, defaultLocale, differentDomains, multiDomainLocales } = runtimeI18n
   const { localeCookie } = detectLocaleContext
   const _detectBrowserLanguage = runtimeDetectBrowserLanguage(runtimeI18n)
   const logger = createLogger('detectLocale')
@@ -238,7 +239,7 @@ export function detectLocale(
   __DEBUG__ && logger.log('1/3', { detected, strategy })
 
   // detect locale by route
-  if (differentDomains) {
+  if (differentDomains || multiDomainLocales) {
     detected ||= getLocaleDomain(normalizedLocales, strategy, route)
   } else if (strategy !== 'no_prefix') {
     detected ||= routeLocaleGetter(route)
@@ -348,7 +349,8 @@ export async function navigate(
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
   const { nuxtApp, i18n, locale, route } = args
-  const { rootRedirect, differentDomains, skipSettingLocaleOnNavigate } = nuxtApp.$config.public.i18n
+  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, configLocales, strategy } =
+    nuxtApp.$config.public.i18n
   let { redirectPath } = args
 
   __DEBUG__ &&
@@ -382,6 +384,35 @@ export async function navigate(
     if (!enableNavigate) {
       return
     }
+  }
+
+  if (multiDomainLocales && strategy === 'prefix_except_default') {
+    const host = getHost()
+    const currentDomain = configLocales.find(locale => {
+      if (typeof locale !== 'string') {
+        return locale.defaultForDomains?.find(domain => domain === host)
+      }
+
+      return false
+    })
+    const defaultLocaleForDomain = typeof currentDomain !== 'string' ? currentDomain?.code : undefined
+
+    if (route.path.startsWith(`/${defaultLocaleForDomain}`)) {
+      return _navigate(route.path.replace(`/${defaultLocaleForDomain}`, ''), status)
+    } else if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
+      const getLocaleFromRoute = createLocaleFromRouteGetter()
+      const oldLocale = getLocaleFromRoute(route.path)
+
+      if (oldLocale !== '') {
+        return _navigate(`/${locale + route.path.replace(`/${oldLocale}`, '')}`, status)
+      } else {
+        return _navigate(`/${locale + (route.path === '/' ? '' : route.path)}`, status)
+      }
+    } else if (redirectPath && route.path !== redirectPath) {
+      return _navigate(redirectPath, status)
+    }
+
+    return
   }
 
   if (!differentDomains) {
