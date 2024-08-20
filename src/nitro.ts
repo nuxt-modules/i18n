@@ -21,6 +21,7 @@ import {
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleInfo } from './types'
 import { resolveI18nDir } from './layers'
+import { i18nVirtualLoggerPlugin } from './virtual-logger'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
@@ -52,6 +53,9 @@ export async function setupNitro(
       nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
         ? nitroConfig.rollupConfig.plugins
         : [nitroConfig.rollupConfig.plugins]
+
+      nitroConfig.rollupConfig.plugins.push(i18nVirtualLoggerPlugin(nuxtOptions.debug))
+
       const yamlPaths = getResourcePaths(additionalParams.localeInfo, /\.ya?ml$/)
       if (yamlPaths.length > 0) {
         // @ts-ignore NOTE: A type error occurs due to a mismatch between the version of rollup on the nitro side (v4.x) and the version of rollup that `@rollup/plugin-yaml` depends on (v3.x). We ignore this type error because `@rollup/plugin-yaml` is rollup version compatible.
@@ -121,7 +125,6 @@ export { localeDetector }
 
     // setup debug flag
     nitroConfig.replace['__DEBUG__'] = String(!!nuxtOptions.debug)
-    nitroConfig.replace['__DEBUG_VERBOSE__'] = String(nuxtOptions.debug === 'verbose')
     debug('nitro.replace', nitroConfig.replace)
   })
 

@@ -18,15 +18,7 @@ import {
   type LocaleObject
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
-import {
-  loadAndSetLocale,
-  detectLocale,
-  detectRedirect,
-  navigate,
-  injectNuxtHelpers,
-  extendBaseUrl,
-  createLogger
-} from '../utils'
+import { loadAndSetLocale, detectLocale, detectRedirect, navigate, injectNuxtHelpers, extendBaseUrl } from '../utils'
 import {
   getBrowserLocale,
   getLocaleCookie,
@@ -39,6 +31,7 @@ import {
 import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 import { setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
+import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'

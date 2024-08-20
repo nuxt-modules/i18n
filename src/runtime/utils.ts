@@ -34,7 +34,7 @@ import {
   setLocaleProperty,
   setLocaleCookie
 } from './compatibility'
-import { createConsola } from 'consola'
+import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -468,12 +468,4 @@ export function getNormalizedLocales(locales: string[] | LocaleObject[]): Locale
     normalized.push(locale)
   }
   return normalized
-}
-
-/**
- * Used for runtime debug logs only
- */
-const debugLogger = /*#__PURE__*/ createConsola({ level: __DEBUG_VERBOSE__ ? 999 : 4 }).withTag('i18n')
-export function createLogger(label: string) {
-  return /*#__PURE__*/ debugLogger.withTag(label)
 }
