@@ -1,4 +1,5 @@
 import { deepCopy, isFunction, isArray, isObject, isString } from '@intlify/shared'
+import { createConsola } from 'consola'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -21,10 +22,9 @@ export type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
  *
  * NOTE: We could export the logger from a virtual file instead
  */
+const debugLogger = /*#__PURE__*/ createConsola({ level: __DEBUG_VERBOSE__ ? 999 : 4 }).withTag('i18n')
 function createLogger(label: string) {
-  return {
-    log: console.log.bind(console, `[i18n:${label}]`)
-  }
+  return /*#__PURE__*/ debugLogger.withTag(label)
 }
 
 const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
@@ -95,13 +95,13 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
     const getter = await load().then(r => ('default' in r ? r.default : r))
     if (isFunction(getter)) {
       message = await getter(locale)
-      __DEBUG__ && logger.log('dynamic load', __DEBUG_VERBOSE__ ? message : '')
+      __DEBUG__ && logger.log('dynamic load', logger.level > 999 ? message : '')
     } else {
       message = getter
       if (message != null && cacheMessages) {
         cacheMessages.set(key, message)
       }
-      __DEBUG__ && logger.log('loaded', __DEBUG_VERBOSE__ ? message : '')
+      __DEBUG__ && logger.log('loaded', logger.level > 999 ? message : '')
     }
   } catch (e: unknown) {
     console.error('Failed locale loading: ' + (e as Error).message)
