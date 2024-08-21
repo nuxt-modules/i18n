@@ -1,4 +1,5 @@
 import { deepCopy, isFunction, isArray, isObject, isString } from '@intlify/shared'
+import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -14,6 +15,7 @@ export type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
   load: () => Promise<MessageLoaderResult<T>>
   cache: boolean
 }
+
 const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 export async function loadVueI18nOptions(
@@ -75,19 +77,20 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
 }
 
 async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
+  const logger = /*#__PURE__*/ createLogger('loadMessage')
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
-    __DEBUG__ && console.log('loadMessage: (locale) -', locale)
+    __DEBUG__ && logger.log({ locale })
     const getter = await load().then(r => ('default' in r ? r.default : r))
     if (isFunction(getter)) {
       message = await getter(locale)
-      __DEBUG__ && console.log('loadMessage: dynamic load', message)
+      __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
     } else {
       message = getter
       if (message != null && cacheMessages) {
         cacheMessages.set(key, message)
       }
-      __DEBUG__ && console.log('loadMessage: load', message)
+      __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
     }
   } catch (e: unknown) {
     console.error('Failed locale loading: ' + (e as Error).message)
@@ -100,6 +103,7 @@ export async function loadLocale(
   localeLoaders: Record<Locale, LocaleLoader[]>,
   setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
 ) {
+  const logger = /*#__PURE__*/ createLogger('loadLocale')
   const loaders = localeLoaders[locale]
 
   if (loaders == null) {
@@ -112,11 +116,11 @@ export async function loadLocale(
     let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
 
     if (cacheMessages && cacheMessages.has(loader.key) && loader.cache) {
-      __DEBUG__ && console.log(loader.key + ' is already loaded')
+      __DEBUG__ && logger.log(loader.key + ' is already loaded')
       message = cacheMessages.get(loader.key)
     } else {
-      __DEBUG__ && !loader.cache && console.log(loader.key + ' bypassing cache!')
-      __DEBUG__ && console.log(loader.key + ' is loading ...')
+      __DEBUG__ && !loader.cache && logger.log(loader.key + ' bypassing cache!')
+      __DEBUG__ && logger.log(loader.key + ' is loading ...')
       message = await loadMessage(locale, loader)
     }
 

@@ -39,6 +39,7 @@ import {
 import { distDir, runtimeDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 import { generateTemplateNuxtI18nOptions } from './template'
+import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from './virtual-logger'
 
 import type { HookResult } from '@nuxt/schema'
 import type { LocaleObject, NuxtI18nOptions } from './types'
@@ -220,6 +221,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // for composables
     nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.mjs')
     nuxt.options.build.transpile.push('#i18n')
+    nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
     const genTemplate = (isServer: boolean, lazy?: boolean) => {
       const nuxtI18nOptions = defu({}, options)
@@ -249,6 +251,16 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
       write: true,
       getContents: () => genTemplate(false)
+    })
+
+    nuxt.options.imports.transform ??= {}
+    nuxt.options.imports.transform.include ??= []
+    nuxt.options.imports.transform.include.push(new RegExp(`${RESOLVED_VIRTUAL_NUXT_I18N_LOGGER}$`))
+
+    nuxt.hook('vite:extendConfig', cfg => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      cfg.plugins ||= []
+      cfg.plugins.push(i18nVirtualLoggerPlugin(options.debug))
     })
 
     /**

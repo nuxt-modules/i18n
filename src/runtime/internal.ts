@@ -6,7 +6,8 @@ import isHTTPS from 'is-https'
 import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp } from '#imports'
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex } from './routing/utils'
-import { createLogger, initCommonComposableOptions, type CommonComposableOptions } from './utils'
+import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
+import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
@@ -49,20 +50,21 @@ export function parseAcceptLanguage(input: string): string[] {
 
 export function getBrowserLocale(): string | undefined {
   let ret: string | undefined
+  const logger = /*#__PURE__*/ createLogger('getBrowserLocale')
 
   if (import.meta.client) {
     if (navigator.languages) {
       // get browser language either from navigator if running on client side, or from the headers
       ret = findBrowserLocale(normalizedLocales, navigator.languages as string[])
-      __DEBUG__ && console.log('getBrowserLocale (navigator.languages, ret) -', navigator.languages, ret)
+      __DEBUG__ && logger.log('(navigator.languages, ret) -', navigator.languages, ret)
     }
   } else if (import.meta.server) {
     const header = useRequestHeaders(['accept-language'])
-    __DEBUG__ && console.log('getBrowserLocale accept-language', header)
+    __DEBUG__ && logger.log('accept-language', header)
     const accept = header['accept-language']
     if (accept) {
       ret = findBrowserLocale(normalizedLocales, parseAcceptLanguage(accept))
-      __DEBUG__ && console.log('getBrowserLocale ret', ret)
+      __DEBUG__ && logger.log('ret', ret)
     }
   }
 
@@ -92,8 +94,10 @@ export function getLocaleCookie(
   detect: false | DetectBrowserLanguageOptions,
   defaultLocale: string
 ): string | undefined {
+  const env = import.meta.client ? 'client' : 'server'
+  const logger = /*#__PURE__*/ createLogger(`getLocaleCookie:${env}`)
   __DEBUG__ &&
-    console.log('getLocaleCookie', {
+    logger.log({
       useCookie: detect && detect.useCookie,
       cookieKey: detect && detect.cookieKey,
       localeCodes
@@ -104,27 +108,23 @@ export function getLocaleCookie(
   }
 
   const localeCode: string | undefined = cookieRef.value ?? undefined
-  const env = import.meta.client ? 'client' : 'server'
   if (localeCode == null) {
-    __DEBUG__ && console.log(`getLocaleCookie (${env}) - none`)
+    __DEBUG__ && logger.log(`none`)
     return
   }
 
   if (localeCodes.includes(localeCode)) {
-    __DEBUG__ && console.log(`getLocaleCookie (${env}) - locale from cookie: `, localeCode)
+    __DEBUG__ && logger.log(`locale from cookie: `, localeCode)
     return localeCode
   }
 
   if (defaultLocale) {
-    __DEBUG__ &&
-      console.log(
-        `getLocaleCookie (${env}) - unknown locale cookie (${localeCode}), setting to defaultLocale (${defaultLocale})`
-      )
+    __DEBUG__ && logger.log(`unknown locale cookie (${localeCode}), setting to defaultLocale (${defaultLocale})`)
     cookieRef.value = defaultLocale
     return defaultLocale
   }
 
-  __DEBUG__ && console.log(`getLocaleCookie (${env}) - unknown locale cookie (${localeCode}), unsetting cookie`)
+  __DEBUG__ && logger.log(`unknown locale cookie (${localeCode}), unsetting cookie`)
   cookieRef.value = undefined
   return
 }
@@ -176,7 +176,7 @@ export function detectBrowserLanguage(
   detectLocaleContext: DetectLocaleContext,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
-  const logger = createLogger('detectBrowserLanguage')
+  const logger = /*#__PURE__*/ createLogger('detectBrowserLanguage')
   const _detect = runtimeDetectBrowserLanguage()
 
   // feature is disabled
@@ -271,15 +271,13 @@ export function getLocaleDomain(
   strategy: string,
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
 ): string {
+  const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   let host = getHost() || ''
+  const routePath = isObject(route) ? route.path : isString(route) ? route : ''
+
   if (host) {
-    __DEBUG__ &&
-      console.log(
-        `MultiDomainsMultiLocales: locating domain for host: `,
-        host,
-        strategy,
-        isObject(route) ? route.path : route
-      )
+    __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path: routePath })
+
     let matchingLocale: LocaleObject | undefined
     const matchingLocales = locales.filter(locale => {
       if (locale && locale.domain) {
@@ -296,8 +294,7 @@ export function getLocaleDomain(
 
     if (matchingLocales.length === 1) {
       matchingLocale = matchingLocales[0]
-      __DEBUG__ &&
-        console.log(`MultiDomainsMultiLocales: found only one matching domain: `, host, matchingLocales[0].code)
+      __DEBUG__ && logger.log(`found one matching domain`, { host, matchedLocale: matchingLocales[0].code })
     } else if (matchingLocales.length > 1) {
       if (strategy === 'no_prefix') {
         console.warn(
@@ -310,20 +307,13 @@ export function getLocaleDomain(
       } else {
         // get prefix from route
         if (route) {
-          const routePath = isObject(route) ? route.path : isString(route) ? route : ''
-
-          __DEBUG__ &&
-            console.log(`MultiDomainsMultiLocales: Check in matched domain for locale match in path: `, routePath, host)
+          __DEBUG__ && logger.log(`check matched domain for locale match`, { path: routePath, host })
 
           if (routePath && routePath !== '') {
             const matches = routePath.match(getLocalesRegex(matchingLocales.map(l => l.code)))
             if (matches && matches.length > 1) {
               matchingLocale = matchingLocales.find(l => l.code === matches[1])
-              __DEBUG__ &&
-                console.log(
-                  `MultiDomainsMultiLocales: Found matching locale from path. MatchingLocale is now`,
-                  matchingLocale?.code
-                )
+              __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchingLocale?.code })
             }
           }
         }
@@ -334,10 +324,7 @@ export function getLocaleDomain(
             Array.isArray(l.defaultForDomains) ? l.defaultForDomains.includes(host) : l.domainDefault
           )
           __DEBUG__ &&
-            console.log(
-              `MultiDomainsMultiLocales: matching locale not found - trying to get default for this domain. MatchingLocale is now`,
-              matchingLocale?.code
-            )
+            logger.log(`no locale matched - using default for this domain`, { matchedLocale: matchingLocale?.code })
         }
       }
     }
