@@ -35,6 +35,7 @@ import {
   setLocaleCookie
 } from './compatibility'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLocaleFromRouteGetter } from './routing/extends/router'
 
 import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -42,7 +43,6 @@ import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
-import { createLocaleFromRouteGetter, type GetLocaleFromRouteFunction } from './routing/extends/router'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from '@nuxt/schema'
 import type { ModulePublicRuntimeConfig } from '../module'
@@ -51,7 +51,8 @@ import type {
   PrefixableOptions,
   SwitchLocalePathIntercepter,
   BaseUrlResolveHandler,
-  LocaleObject
+  LocaleObject,
+  Strategies
 } from '#build/i18n.options.mjs'
 
 /**
@@ -157,7 +158,7 @@ type LocaleLoader = () => Locale
 
 export function detectLocale(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  routeLocaleGetter: GetLocaleFromRouteFunction,
+  routeLocale: string,
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext,
   runtimeI18n: ModulePublicRuntimeConfig['i18n']
@@ -189,7 +190,7 @@ export function detectLocale(
   if (differentDomains || multiDomainLocales) {
     detected ||= getLocaleDomain(normalizedLocales, strategy, route)
   } else if (strategy !== 'no_prefix') {
-    detected ||= routeLocaleGetter(route)
+    detected ||= routeLocale
   }
 
   __DEBUG__ && logger.log('2/3', { detected, detectBrowserLanguage: _detectBrowserLanguage })
@@ -202,71 +203,56 @@ export function detectLocale(
   return detected
 }
 
-export function detectRedirect({
-  route,
-  targetLocale,
-  routeLocaleGetter,
-  calledWithRouting = false
-}: {
+type DetectRedirectOptions = {
   route: {
     to: RouteLocationNormalized | RouteLocationNormalizedLoaded
     from?: RouteLocationNormalized | RouteLocationNormalizedLoaded
   }
-  targetLocale: Locale
-  routeLocaleGetter: GetLocaleFromRouteFunction
-  calledWithRouting?: boolean
-}): string {
-  const nuxtApp = useNuxtApp()
-  const common = initCommonComposableOptions()
-  const logger = /*#__PURE__*/ createLogger('detectRedirect')
-  const { strategy, differentDomains } = common.runtimeConfig.public.i18n
-  __DEBUG__ && logger.log({ route })
-  __DEBUG__ && logger.log({ targetLocale, calledWithRouting, routeLocaleGetter: routeLocaleGetter(route.to) })
-
-  let redirectPath = ''
-  const { fullPath: toFullPath } = route.to
-  const isStaticGenerate = isSSG && import.meta.server
-
   /**
-   * decide whether we should redirect to a different route.
-   *
-   * NOTE: #2288
-   * If this function is called directly (e.g setLocale) than routing,
-   * it must be processed regardless of the strategy. because the route is not switched.
+   * The locale we want to navigate to
    */
-  if (
-    !isStaticGenerate &&
-    !differentDomains &&
-    (calledWithRouting || strategy !== 'no_prefix') &&
-    routeLocaleGetter(route.to) !== targetLocale
-  ) {
-    // the current route could be 404 in which case attempt to find matching route using the full path
-    const routePath = nuxtApp.$switchLocalePath(targetLocale) || nuxtApp.$localePath(toFullPath, targetLocale)
-    __DEBUG__ && logger.log('calculate routePath', { routePath, toFullPath })
-    if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
-      /**
-       * NOTE: for #1889, #2226
-       * If it's the same as the previous route path, respect the current route without redirecting.
-       * (If an empty string is set, the current route is respected. after this function return, it's pass navigate function)
-       */
-      redirectPath = !(route.from && route.from.fullPath === routePath) ? routePath : ''
-    }
+  locale: Locale
+  /**
+   * Locale detected from route
+   */
+  routeLocale: string
+  strategy: Strategies
+}
+
+/**
+ * Returns a localized path to redirect to, or an empty string if no redirection should occur
+ *
+ * @param inMiddleware - whether this is called during navigation middleware
+ */
+export function detectRedirect(
+  { route, locale, routeLocale, strategy }: DetectRedirectOptions,
+  inMiddleware = false
+): string {
+  // no locale change detected from routing
+  if (routeLocale === locale || strategy === 'no_prefix') {
+    return ''
   }
 
-  if ((differentDomains || (isSSG && import.meta.client)) && routeLocaleGetter(route.to) !== targetLocale) {
-    /**
-     * `$router.currentRoute` does not yet reflect the `to` value,
-     *  when the Router middleware handler is executed.
-     *  if `$switchLocalePath` is called, the intended path cannot be obtained,
-     *  because it is processed by previso's route.
-     *  so, we don't call that function, and instead, we call `useSwitchLocalePath`,
-     *  let it be processed by the route of the router middleware.
-     */
-    const routePath = switchLocalePath(common, targetLocale, route.to)
-    __DEBUG__ && logger.log('calculate domain or ssg routePath', { routePath })
-    if (isString(routePath) && routePath && !isEqual(routePath, toFullPath) && !routePath.startsWith('//')) {
-      redirectPath = routePath
-    }
+  /**
+   * `$switchLocalePath` and `$localePath` functions internally use `$router.currentRoute`
+   * instead we use composable internals which allows us to pass the `to` route from navigation middleware.
+   */
+  const common = initCommonComposableOptions()
+  const logger = /*#__PURE__*/ createLogger('detectRedirect')
+
+  __DEBUG__ && logger.log({ route })
+  __DEBUG__ && logger.log({ locale, routeLocale, inMiddleware })
+
+  let redirectPath = switchLocalePath(common, locale, route.to)
+
+  // if current route is a 404 we attempt to find a matching route using the full path
+  if (inMiddleware && !redirectPath) {
+    redirectPath = localePath(common, route.to.fullPath, locale)
+  }
+
+  // NOTE: #1889, #2226 if resolved route is the same as current route, skip redirection by returning empty string value
+  if (isEqual(redirectPath, route.to.fullPath) || (route.from && isEqual(redirectPath, route.from.fullPath))) {
+    return ''
   }
 
   return redirectPath
