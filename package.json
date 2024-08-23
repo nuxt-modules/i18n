@@ -105,7 +105,7 @@
     "@babel/plugin-syntax-import-assertions": "^7.24.7",
     "@babel/types": "^7.24.7",
     "@eslint/js": "9.5.0",
-    "@nuxt/module-builder": "^0.6.0",
+    "@nuxt/module-builder": "^0.8.3",
     "@nuxt/schema": "^3.12.3",
     "@types/debug": "^4.1.9",
     "@types/eslint": "^8.56.6",
