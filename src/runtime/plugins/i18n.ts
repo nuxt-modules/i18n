@@ -109,7 +109,7 @@ export default defineNuxtPlugin({
     // detect initial locale
     let initialLocale = detectLocale(
       route,
-      getLocaleFromRoute,
+      getLocaleFromRoute(route),
       getDefaultLocale(runtimeI18n.defaultLocale),
       {
         ssg: isSSG && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
@@ -209,8 +209,9 @@ export default defineNuxtPlugin({
           const redirectPath = await nuxtContext.runWithContext(() =>
             detectRedirect({
               route: { to: route },
-              targetLocale: locale,
-              routeLocaleGetter: getLocaleFromRoute
+              locale,
+              routeLocale: getLocaleFromRoute(route),
+              strategy: runtimeI18n.strategy
             })
           )
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
@@ -342,12 +343,11 @@ export default defineNuxtPlugin({
       defineNuxtRouteMiddleware(async (to, from) => {
         __DEBUG__ && logger.log('locale-changing middleware', to, from)
 
+        const routeLocale = getLocaleFromRoute(to)
         const locale = detectLocale(
           to,
-          getLocaleFromRoute,
-          () => {
-            return getLocale(i18n) || getDefaultLocale(runtimeI18n.defaultLocale)
-          },
+          routeLocale,
+          () => getLocale(i18n) || getDefaultLocale(runtimeI18n.defaultLocale),
           {
             ssg: isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
             callType: 'routing',
@@ -368,12 +368,7 @@ export default defineNuxtPlugin({
         }
 
         const redirectPath = await nuxtContext.runWithContext(() =>
-          detectRedirect({
-            route: { to, from },
-            targetLocale: locale,
-            routeLocaleGetter: runtimeI18n.strategy === 'no_prefix' ? () => locale : getLocaleFromRoute,
-            calledWithRouting: true
-          })
+          detectRedirect({ route: { to, from }, locale, routeLocale, strategy: runtimeI18n.strategy }, true)
         )
         __DEBUG__ && logger.log('redirectPath on locale-changing middleware', redirectPath)
 
