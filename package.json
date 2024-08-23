@@ -31,7 +31,7 @@
     "./package.json": "./package.json"
   },
   "imports": {
-    "#i18n": "./dist/runtime/composables/index.mjs"
+    "#i18n": "./dist/runtime/composables/index.js"
   },
   "main": "./dist/module.cjs",
   "module": "./dist/module.mjs",
