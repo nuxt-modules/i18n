@@ -1,4 +1,12 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["**/.nuxt/**", "**/*/dist/*", "docs/**", "playground/**", "specs/**", "src/runtime/templates/**"]
+  "exclude": [
+    "**/.nuxt/**",
+    "**/*/dist/*",
+    "dist/**",
+    "docs/**",
+    "playground/**",
+    "specs/**",
+    "src/runtime/templates/**"
+  ]
 }
