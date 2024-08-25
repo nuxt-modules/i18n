@@ -31,7 +31,7 @@
     "./package.json": "./package.json"
   },
   "imports": {
-    "#i18n": "./dist/runtime/composables/index.mjs"
+    "#i18n": "./dist/runtime/composables/index.js"
   },
   "main": "./dist/module.cjs",
   "module": "./dist/module.mjs",
@@ -107,7 +107,7 @@
     "@babel/plugin-syntax-import-assertions": "^7.24.7",
     "@babel/types": "^7.24.7",
     "@eslint/js": "9.5.0",
-    "@nuxt/module-builder": "^0.6.0",
+    "@nuxt/module-builder": "^0.8.3",
     "@nuxt/schema": "^3.12.4",
     "@types/debug": "^4.1.9",
     "@types/eslint": "^8.56.6",

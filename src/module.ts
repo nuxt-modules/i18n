@@ -234,7 +234,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     addPlugin(resolve(runtimeDir, 'plugins/switch-locale-path-ssr'))
 
     // for composables
-    nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.mjs')
+    nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.js')
     nuxt.options.build.transpile.push('#i18n')
 
     const genTemplate = (isServer: boolean, lazy?: boolean) => {
