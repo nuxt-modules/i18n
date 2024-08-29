@@ -537,12 +537,12 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
 
       mergedLocales.set(code, { ...locale, files: resolvedFiles })
     }
+  }
 
-    if(deprecatedIsolocales.size) {
-      console.warn(
-        `Locales ${ [...deprecatedIsolocales].join(', ') } uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
-      )
-    }
+  if(deprecatedIsolocales.size) {
+    console.warn(
+      `Locales ${ [...deprecatedIsolocales].join(', ') } uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
+    )
   }
 
   return Array.from(mergedLocales.values())
