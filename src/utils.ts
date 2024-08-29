@@ -496,14 +496,14 @@ export type LocaleConfig = {
 export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
   const mergedLocales = new Map<string, LocaleObject>()
   const deprecatedIsolocales = new Set<string>()
-  
+
   for (const locale of baseLocales) {
     mergedLocales.set(locale.code, locale)
   }
 
   for (const config of configs) {
     if (config.locales == null) continue
-    
+
     for (const locale of config.locales) {
       const code = isString(locale) ? locale : locale.code
       const merged = mergedLocales.get(code)
