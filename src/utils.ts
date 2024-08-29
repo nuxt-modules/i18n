@@ -495,13 +495,15 @@ export type LocaleConfig = {
  */
 export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
   const mergedLocales = new Map<string, LocaleObject>()
+  const deprecatedIsolocales = new Set<string>()
+  
   for (const locale of baseLocales) {
     mergedLocales.set(locale.code, locale)
   }
 
   for (const config of configs) {
     if (config.locales == null) continue
-
+    
     for (const locale of config.locales) {
       const code = isString(locale) ? locale : locale.code
       const merged = mergedLocales.get(code)
@@ -516,9 +518,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
       delete locale.file
 
       if (locale.iso) {
-        console.warn(
-          `Locale ${locale.iso} uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
-        )
+        deprecatedIsolocales.set(locale.iso)
         locale.language = locale.iso
         delete locale.iso
       }
@@ -536,6 +536,12 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
       }
 
       mergedLocales.set(code, { ...locale, files: resolvedFiles })
+    }
+
+    if(deprecatedIsolocales.size) {
+      console.warn(
+        `Locales ${ [...deprecatedIsolocales].join(', ') } uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
+      )
     }
   }
 
