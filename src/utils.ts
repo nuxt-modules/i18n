@@ -518,7 +518,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
       delete locale.file
 
       if (locale.iso) {
-        deprecatedIsolocales.set(locale.iso)
+        deprecatedIsolocales.add(locale.iso)
         locale.language = locale.iso
         delete locale.iso
       }
