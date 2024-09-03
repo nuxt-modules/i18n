@@ -1,0 +1,13 @@
+{
+  "name": "@nuxtjs/i18n",
+  "configKey": "i18n",
+  "compatibility": {
+    "nuxt": ">=3.0.0-rc.11",
+    "bridge": false
+  },
+  "version": "9.0.0-alpha.2",
+  "builder": {
+    "@nuxt/module-builder": "0.8.3",
+    "unbuild": "2.0.0"
+  }
+}
