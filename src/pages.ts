@@ -1,5 +1,4 @@
 import createDebug from 'debug'
-import { extendPages } from '@nuxt/kit'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
@@ -45,7 +44,9 @@ export function setupPages(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
   const srcDir = nuxt.options.srcDir
   debug(`pagesDir: ${pagesDir}, srcDir: ${srcDir}, trailingSlash: ${options.trailingSlash}`)
 
-  extendPages(pages => {
+  process.env.EXPERIMENTAL_HOOK && console.log('using `pages:resolved`!')
+  // @ts-ignore
+  nuxt.hook(process.env.EXPERIMENTAL_HOOK ? 'pages:resolved' : 'pages:extend', (pages: NuxtPage[]) => {
     debug('pages making ...', pages)
     const ctx: NuxtPageAnalyzeContext = {
       stack: [],
