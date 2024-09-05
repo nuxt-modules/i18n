@@ -152,6 +152,7 @@ export default defineNuxtPlugin({
      *  avoid hydration mismatch for SSG mode
      */
     if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
+      const initialLocaleCookie = localeCookie.value
       nuxt.hook('app:mounted', async () => {
         __DEBUG__ && logger.log('hook app:mounted')
         const detected = detectBrowserLanguage(
@@ -160,7 +161,7 @@ export default defineNuxtPlugin({
             ssg: 'ssg_setup',
             callType: 'setup',
             firstAccess: true,
-            localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
+            localeCookie: initialLocaleCookie
           },
           initialLocale
         )
