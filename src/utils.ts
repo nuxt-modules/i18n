@@ -539,9 +539,9 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
     }
   }
 
-  if(deprecatedIsolocales.size) {
+  if (deprecatedIsolocales.size) {
     console.warn(
-      `Locales ${ [...deprecatedIsolocales].join(', ') } uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
+      `Locales ${[...deprecatedIsolocales].join(', ')} uses deprecated \`iso\` property, this will be replaced with \`language\` in v9`
     )
   }
 
