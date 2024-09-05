@@ -27,8 +27,7 @@ export const DEFAULT_COOKIE_KEY = 'i18n_redirected'
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = 'nuxt-i18n-slp'
 
 export const DEFAULT_OPTIONS = {
-  // TODO: set to default 'i18n' before v9 release
-  restructureDir: undefined,
+  restructureDir: 'i18n',
   experimental: {
     localeDetector: '',
     switchLocalePathLinkSSR: false,
@@ -58,8 +57,7 @@ export const DEFAULT_OPTIONS = {
   defaultLocaleRouteNameSuffix: 'default',
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   lazy: false,
-  // TODO: set to default 'locales' before v9 release
-  langDir: null,
+  langDir: 'locales',
   rootRedirect: undefined,
   detectBrowserLanguage: {
     alwaysRedirect: false,
