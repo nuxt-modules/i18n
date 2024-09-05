@@ -11,7 +11,7 @@ export function createTestContext(options: Partial<TestOptions>): TestContext {
     configFile: 'nuxt.config',
     setupTimeout: 120 * 1000,
     dev: !!JSON.parse(process.env.NUXT_TEST_DEV || 'false'),
-    prerender: false,
+    prerender: options.prerender ?? false,
     logLevel: 1,
     server: true,
     build: options.browser !== false || options.server !== false,

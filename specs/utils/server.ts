@@ -49,28 +49,23 @@ export async function startServer(env: Record<string, unknown> = {}) {
     ctx.serverProcess.kill()
     throw lastError || new Error('Timeout waiting for dev server!')
   } else if (ctx.options.prerender) {
-    const command = `npx serve -s ./dist -p ${port}`
+    const command = `npx serve -s ${ctx.nuxt!.options.nitro!.output?.publicDir} -l tcp://${host}:${port} --no-port-switching`
+    // ; (await import('consola')).consola.restoreConsole()
     const [_command, ...commandArgs] = command.split(' ')
+
     ctx.serverProcess = execa(_command, commandArgs, {
-      cwd: ctx.nuxt!.options.rootDir,
+      //@ts-ignore
       env: {
+        ...process.env,
+        PORT: String(port),
+        HOST: host,
         ...env
       }
-      // stdio: 'inherit'
     })
-    await waitForPort(port, { retries: 32 })
-    for (let i = 0; i < 50; i++) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-      try {
-        const res = await $fetch(ctx.nuxt!.options.app.baseURL)
-        if (!res.includes('__NUXT_LOADING__')) {
-          return
-        }
-      } catch {}
-    }
-    ctx.serverProcess.kill()
-    throw new Error('Timeout waiting for ssg preview!')
+
+    await waitForPort(port, { retries: 32, host, delay: 1000 })
   } else {
+    //@ts-ignore
     ctx.serverProcess = execa('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
       stdio: 'inherit',
       env: {
