@@ -54,6 +54,7 @@ export async function setupNitro(
         ? nitroConfig.rollupConfig.plugins
         : [nitroConfig.rollupConfig.plugins]
 
+      // @ts-ignore NOTE: A type error occurs due to a mismatch between Vite plugins and those of Rollup
       nitroConfig.rollupConfig.plugins.push(i18nVirtualLoggerPlugin(nuxtOptions.debug))
 
       const yamlPaths = getResourcePaths(additionalParams.localeInfo, /\.ya?ml$/)

@@ -260,6 +260,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.hook('vite:extendConfig', cfg => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       cfg.plugins ||= []
+      // @ts-ignore NOTE: A type error occurs due to a mismatch between Vite plugins and those of Rollup
       cfg.plugins.push(i18nVirtualLoggerPlugin(options.debug))
     })
 
