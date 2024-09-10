@@ -89,6 +89,8 @@ describe('basic usage', async () => {
         // @ts-ignore
         delete x.components[component].__file
       }
+      // @ts-ignore
+      delete x.mods
       return x
     })
     expect(localeRoute).toMatchInlineSnapshot(
