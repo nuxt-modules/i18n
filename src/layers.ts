@@ -166,9 +166,7 @@ export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions) {
 
   const resolveArr = nuxt.options._layers.map(async layer => {
     const i18n = getLayerI18n(layer)
-    if (i18n == null) return undefined
-
-    const res = await resolveVueI18nConfigInfo(resolveI18nDir(layer, i18n, true), i18n.vueI18n)
+    const res = await resolveVueI18nConfigInfo(resolveI18nDir(layer, i18n || {}, true), i18n?.vueI18n)
 
     if (res == null && i18n?.vueI18n != null) {
       logger.warn(
