@@ -101,6 +101,8 @@ describe('basic usage', async () => {
         // @ts-ignore
         delete x.components[component].__file
       }
+      // @ts-ignore
+      delete x.mods
       return x
     })
     expect(localeRoute).toMatchInlineSnapshot(
@@ -113,22 +115,20 @@ describe('basic usage', async () => {
           {
             "children": [],
             "components": {
-              "default": {},
+              "default": {
+                "__name": "nuxt-context-extension",
+              },
             },
             "enterCallbacks": {},
             "instances": {},
-            "leaveGuards": {
-              "Set(0)": [],
-            },
+            "leaveGuards": {},
             "meta": {},
             "name": "nuxt-context-extension___en",
             "path": "/nuxt-context-extension",
             "props": {
               "default": false,
             },
-            "updateGuards": {
-              "Set(0)": [],
-            },
+            "updateGuards": {},
           },
         ],
         "meta": {},
