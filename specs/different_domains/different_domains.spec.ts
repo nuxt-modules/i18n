@@ -11,7 +11,7 @@ await setup({
     runtimeConfig: {
       public: {
         i18n: {
-          locales: {
+          domainLocales: {
             kr: {
               domain: 'kr.staging.nuxt-app.localhost'
             }

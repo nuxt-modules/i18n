@@ -343,13 +343,9 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
   const nuxtApp = useNuxtApp()
   const host = getHost()
   // lookup the `differentDomain` origin associated with given locale.
-  const config = runtimeConfig.public.i18n as { locales?: Record<Locale, { domain?: string; domains?: string[] }> }
+  const config = runtimeConfig.public.i18n
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
-  const domain =
-    config?.locales?.[localeCode]?.domain ||
-    lang?.domain ||
-    config?.locales?.[localeCode]?.domains?.find((v: string) => v === host) ||
-    lang?.domains?.find((v: string) => v === host)
+  const domain = config?.domainLocales?.[localeCode]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
 
   if (domain) {
     if (hasProtocol(domain, { strict: true })) {
