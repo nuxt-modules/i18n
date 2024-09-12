@@ -53,32 +53,32 @@ const localeRoute = useLocaleRoute()
     </section>
     <ClientOnly>
       <section id="locale-route">
-        <span class="index">{{ localeRoute('/') }}</span>
-        <span class="index-name-ja">{{ localeRoute('index', 'ja') }}</span>
-        <span class="about-name">{{ localeRoute('about') }}</span>
-        <span class="about-ja">{{ localeRoute('/about', 'ja') }}</span>
-        <span class="about-name-ja">{{ localeRoute('about', 'ja') }}</span>
-        <span class="about-object-ja">{{ localeRoute({ name: 'about' }, 'ja') }}</span>
-        <span class="path-match-ja">{{ localeRoute('/:pathMatch(.*)*', 'ja') }}</span>
-        <span class="path-match-name">{{ localeRoute('pathMatch') }}</span>
-        <span class="path-match-name-ja">{{ localeRoute('pathMatch', 'ja') }}</span>
-        <span class="undefined-path-ja">{{ localeRoute('/vue-i18n', 'ja') }}</span>
-        <span class="undefined-name-ja">{{ localeRoute('vue-i18n', 'ja') }}</span>
+        <span class="index">{{ JSON.stringify(localeRoute('/')) }}</span>
+        <span class="index-name-ja">{{ JSON.stringify(localeRoute('index', 'ja')) }}</span>
+        <span class="about-name">{{ JSON.stringify(localeRoute('about')) }}</span>
+        <span class="about-ja">{{ JSON.stringify(localeRoute('/about', 'ja')) }}</span>
+        <span class="about-name-ja">{{ JSON.stringify(localeRoute('about', 'ja')) }}</span>
+        <span class="about-object-ja">{{ JSON.stringify(localeRoute({ name: 'about' }, 'ja')) }}</span>
+        <span class="path-match-ja">{{ JSON.stringify(localeRoute('/:pathMatch(.*)*', 'ja')) }}</span>
+        <span class="path-match-name">{{ JSON.stringify(localeRoute('pathMatch')) }}</span>
+        <span class="path-match-name-ja">{{ JSON.stringify(localeRoute('pathMatch', 'ja')) }}</span>
+        <span class="undefined-path-ja">{{ JSON.stringify(localeRoute('/vue-i18n', 'ja')) }}</span>
+        <span class="undefined-name-ja">{{ JSON.stringify(localeRoute('vue-i18n', 'ja')) }}</span>
       </section>
     </ClientOnly>
     <ClientOnly>
       <section id="locale-location">
-        <span class="index">{{ localeLocation('/') }}</span>
-        <span class="index-name-ja">{{ localeLocation('index', 'ja') }}</span>
-        <span class="about-name">{{ localeLocation('about') }}</span>
-        <span class="about-ja">{{ localeLocation('/about', 'ja') }}</span>
-        <span class="about-name-ja">{{ localeLocation('about', 'ja') }}</span>
-        <span class="about-object-ja">{{ localeLocation({ name: 'about' }, 'ja') }}</span>
-        <span class="path-match-ja">{{ localeLocation('/:pathMatch(.*)*', 'ja') }}</span>
-        <span class="path-match-name">{{ localeLocation('pathMatch') }}</span>
-        <span class="path-match-name-ja">{{ localeLocation('pathMatch', 'ja') }}</span>
-        <span class="undefined-path-ja">{{ localeRoute('/vue-i18n', 'ja') }}</span>
-        <span class="undefined-name-ja">{{ localeRoute('vue-i18n', 'ja') }}</span>
+        <span class="index">{{ JSON.stringify(localeLocation('/')) }}</span>
+        <span class="index-name-ja">{{ JSON.stringify(localeLocation('index', 'ja')) }}</span>
+        <span class="about-name">{{ JSON.stringify(localeLocation('about')) }}</span>
+        <span class="about-ja">{{ JSON.stringify(localeLocation('/about', 'ja')) }}</span>
+        <span class="about-name-ja">{{ JSON.stringify(localeLocation('about', 'ja')) }}</span>
+        <span class="about-object-ja">{{ JSON.stringify(localeLocation({ name: 'about' }, 'ja')) }}</span>
+        <span class="path-match-ja">{{ JSON.stringify(localeLocation('/:pathMatch(.*)*', 'ja')) }}</span>
+        <span class="path-match-name">{{ JSON.stringify(localeLocation('pathMatch')) }}</span>
+        <span class="path-match-name-ja">{{ JSON.stringify(localeLocation('pathMatch', 'ja')) }}</span>
+        <span class="undefined-path-ja">{{ JSON.stringify(localeRoute('/vue-i18n', 'ja')) }}</span>
+        <span class="undefined-name-ja">{{ JSON.stringify(localeRoute('vue-i18n', 'ja')) }}</span>
       </section>
     </ClientOnly>
   </div>
