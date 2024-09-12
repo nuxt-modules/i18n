@@ -6,7 +6,7 @@ import LangSwitcher from '../components/LangSwitcher.vue'
 
 const { t } = useI18n()
 const localePath = useLocalePath()
-const i18nHead = useLocaleHead({ addSeoAttributes: { canonicalQueries: ['page'] } })
+const i18nHead = useLocaleHead({ addLangAttribute: true, addSeoAttributes: { canonicalQueries: ['page'] } })
 const { data, refresh } = useAsyncData('home', () =>
   Promise.resolve({
     aboutPath: localePath('about'),

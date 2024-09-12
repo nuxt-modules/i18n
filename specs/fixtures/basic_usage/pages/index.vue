@@ -64,6 +64,7 @@ definePageMeta({
 
 const i18nHead = useLocaleHead({
   addDirAttribute: true,
+  addLangAttribute: true,
   identifierAttribute: 'id',
   addSeoAttributes: { canonicalQueries: ['page'] }
 })

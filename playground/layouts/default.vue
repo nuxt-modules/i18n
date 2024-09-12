@@ -3,7 +3,7 @@ import { useLocaleHead } from '#i18n'
 
 const route = useRoute()
 const { t } = useI18n()
-const head = useLocaleHead({ addDirAttribute: true, addSeoAttributes: true })
+const head = useLocaleHead({ addLangAttribute: true, addDirAttribute: true, addSeoAttributes: true })
 const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 </script>
 

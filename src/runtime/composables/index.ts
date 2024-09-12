@@ -135,6 +135,7 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => ReturnType<typeof
  */
 export function useLocaleHead({
   addDirAttribute = false,
+  addLangAttribute = false,
   addSeoAttributes = false,
   identifierAttribute = 'hid'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
@@ -156,6 +157,7 @@ export function useLocaleHead({
   function updateMeta() {
     metaObject.value = localeHead(common, {
       addDirAttribute,
+      addLangAttribute,
       addSeoAttributes,
       identifierAttribute
     })

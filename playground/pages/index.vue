@@ -99,7 +99,7 @@ definePageMeta({
     <div v-for="item in items">
       <p>{{ item }}</p>
     </div>
-    <div>v-t directive: <code v-t="{ path: 'hello', args: { name: 'v-t' } }"></code></div>
+    <!-- <div>v-t directive: <code v-t="{ path: 'hello', args: { name: 'v-t' } }"></code></div> -->
   </div>
 </template>
 
