@@ -95,11 +95,11 @@ describe('basic usage', async () => {
     expect(await getText(page, '#locale-path')).toEqual('/nl/nuxt-context-extension')
 
     const localeRoute = JSON.parse(await getText(page, '#locale-route')) as RouteLocation
-    // remove absolute file path which differs where test is run
+    // remove properties that vary based on test environment and vue-router version
+    // we only need to know if the correct route (object) is returned
     localeRoute.matched = localeRoute.matched.map(x => {
       for (const component in x.components) {
-        // @ts-ignore
-        delete x.components[component].__file
+        x.components[component] = {}
       }
       // @ts-ignore
       delete x.mods
@@ -115,9 +115,7 @@ describe('basic usage', async () => {
           {
             "children": [],
             "components": {
-              "default": {
-                "__name": "nuxt-context-extension",
-              },
+              "default": {},
             },
             "enterCallbacks": {},
             "instances": {},
