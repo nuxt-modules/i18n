@@ -23,6 +23,7 @@ export function localeHead(
   common: CommonComposableOptions,
   {
     addDirAttribute = false,
+    addLangAttribute = false,
     addSeoAttributes: seoAttributes = true,
     identifierAttribute: idAttribute = 'hid'
   }: I18nHeadOptions
@@ -36,6 +37,7 @@ export function localeHead(
     meta: []
   }
 
+  // skip if no locales or baseUrl is set
   if (unref(i18n.locales) == null || unref(i18n.baseUrl) == null) {
     return metaObject
   }
@@ -53,12 +55,12 @@ export function localeHead(
     metaObject.htmlAttrs.dir = currentDir
   }
 
+  if (addLangAttribute && currentLanguage) {
+    metaObject.htmlAttrs.lang = currentLanguage
+  }
+
   // Adding SEO Meta
   if (seoAttributes && locale && unref(i18n.locales)) {
-    if (currentLanguage) {
-      metaObject.htmlAttrs.lang = currentLanguage
-    }
-
     metaObject.link.push(
       ...getHreflangLinks(common, unref(locales) as LocaleObject[], idAttribute),
       ...getCanonicalLink(common, idAttribute, seoAttributes)

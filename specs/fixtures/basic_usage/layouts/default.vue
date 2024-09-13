@@ -7,6 +7,7 @@ const route = useRoute()
 const { t } = useI18n()
 const head = useLocaleHead({
   addDirAttribute: true,
+  addLangAttribute: true,
   identifierAttribute: 'id',
   addSeoAttributes: { canonicalQueries: ['page'] }
 })

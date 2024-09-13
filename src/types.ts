@@ -344,6 +344,12 @@ export interface SeoAttributesOptions {
  */
 export interface I18nHeadOptions {
   /**
+   * Adds a `lang` attribute to the HTML element.
+   *
+   * @defaultValue false
+   */
+  addLangAttribute?: boolean
+  /**
    * Adds a `dir` attribute to the HTML element.
    *
    * @defaultValue false
