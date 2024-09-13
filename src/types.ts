@@ -346,27 +346,27 @@ export interface I18nHeadOptions {
   /**
    * Adds a `lang` attribute to the HTML element.
    *
-   * @defaultValue false
+   * @defaultValue true
    */
-  addLangAttribute?: boolean
+  lang?: boolean
   /**
    * Adds a `dir` attribute to the HTML element.
    *
-   * @defaultValue false
+   * @defaultValue true
    */
-  addDirAttribute?: boolean
+  dir?: boolean
   /**
-   * Adds various SEO attributes.
+   * Adds various SEO tags.
    *
-   * @defaultValue false
+   * @defaultValue true
    */
-  addSeoAttributes?: boolean | SeoAttributesOptions
+  seo?: boolean | SeoAttributesOptions
   /**
    * Identifier attribute of `<meta>` tag
    *
    * @defaultValue 'hid'
    */
-  identifierAttribute?: string
+  key?: string
 }
 
 /**

@@ -39,7 +39,7 @@ export * from './shared'
  * @public
  */
 export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
-export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nParamsFunction {
+export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
   const head = getActiveHead()
   const i18n = getComposer(common.i18n)
@@ -84,18 +84,18 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
     // Adding SEO Meta
     if (locale && i18n.locales) {
       // Hard code to 'id', this is used to replace payload before ssr response
-      const idAttribute = 'id'
+      const key = 'id'
 
       // prettier-ignore
       metaObject.link.push(
-        ...getHreflangLinks(common, locales, idAttribute),
-        ...getCanonicalLink(common, idAttribute, seoAttributes)
+        ...getHreflangLinks(common, locales, key),
+        ...getCanonicalLink(common, key, seo)
       )
 
       metaObject.meta.push(
-        ...getOgUrl(common, idAttribute, seoAttributes),
-        ...getCurrentOgLocale(currentLocale, currentLocaleLanguage, idAttribute),
-        ...getAlternateOgLocales(locales, currentLocaleLanguage, idAttribute)
+        ...getOgUrl(common, key, seo),
+        ...getCurrentOgLocale(currentLocale, currentLocaleLanguage, key),
+        ...getAlternateOgLocales(locales, currentLocaleLanguage, key)
       )
     }
 
@@ -134,10 +134,10 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => ReturnType<typeof
  * @public
  */
 export function useLocaleHead({
-  addDirAttribute = false,
-  addLangAttribute = false,
-  addSeoAttributes = false,
-  identifierAttribute = 'hid'
+  dir = true,
+  lang = true,
+  seo = true,
+  key = 'hid'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
   const common = initCommonComposableOptions()
   const metaObject: Ref<I18nHeadMetaInfo> = ref({
@@ -155,12 +155,7 @@ export function useLocaleHead({
   }
 
   function updateMeta() {
-    metaObject.value = localeHead(common, {
-      addDirAttribute,
-      addLangAttribute,
-      addSeoAttributes,
-      identifierAttribute
-    })
+    metaObject.value = localeHead(common, { dir, lang, seo, key })
   }
 
   if (import.meta.client) {
