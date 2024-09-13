@@ -89,13 +89,13 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
       const common = initCommonComposableOptions(i18n)
       app.mixin({
         methods: {
-          getRouteBaseName: wrapComposable(getRouteBaseName, common),
-          resolveRoute: wrapComposable(resolveRoute, common),
-          localePath: wrapComposable(localePath, common),
-          localeRoute: wrapComposable(localeRoute, common),
-          localeLocation: wrapComposable(localeLocation, common),
-          switchLocalePath: wrapComposable(switchLocalePath, common),
-          localeHead: wrapComposable(localeHead, common)
+          $getRouteBaseName: wrapComposable(getRouteBaseName, common),
+          $resolveRoute: wrapComposable(resolveRoute, common),
+          $localePath: wrapComposable(localePath, common),
+          $localeRoute: wrapComposable(localeRoute, common),
+          $localeLocation: wrapComposable(localeLocation, common),
+          $switchLocalePath: wrapComposable(switchLocalePath, common),
+          $localeHead: wrapComposable(localeHead, common)
         }
       })
     }
