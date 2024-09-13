@@ -19,7 +19,7 @@ definePageMeta({
     <p>This is cateory page on '{{ route.params.id }}'</p>
     <nav>
       <span v-for="locale in availableLocales" :key="locale.code">
-        <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
+        <NuxtLink :to="$switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
       </span>
       <i18n-t keypath="hello">
         <template #name>nuxtjs/i18n</template>

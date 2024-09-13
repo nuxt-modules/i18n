@@ -19,7 +19,7 @@ definePageMeta({
     <p>This page is catch all: '{{ route.params }}'</p>
     <nav>
       <span v-for="locale in availableLocales" :key="locale.code">
-        <NuxtLink :to="switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
+        <NuxtLink :to="$switchLocalePath(locale.code) || ''">{{ locale.name }}</NuxtLink> |
       </span>
     </nav>
   </div>
