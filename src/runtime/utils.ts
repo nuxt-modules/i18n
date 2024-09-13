@@ -282,7 +282,7 @@ export async function navigate(
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
   const { nuxtApp, i18n, locale, route } = args
-  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, configLocales, strategy } =
+  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } =
     nuxtApp.$config.public.i18n
   const logger = /*#__PURE__*/ createLogger('navigate')
   let { redirectPath } = args
@@ -304,6 +304,9 @@ export async function navigate(
       redirectPath = '/' + rootRedirect.path
       status = rootRedirect.statusCode
     }
+
+    // TODO: resolve type errors for nuxt context extensions
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     redirectPath = nuxtApp.$localePath(redirectPath, locale)
     __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, status })
     return _navigate(redirectPath, status)
@@ -321,7 +324,7 @@ export async function navigate(
 
   if (multiDomainLocales && strategy === 'prefix_except_default') {
     const host = getHost()
-    const currentDomain = configLocales.find(locale => {
+    const currentDomain = locales.find(locale => {
       if (typeof locale !== 'string') {
         return locale.defaultForDomains?.find(domain => domain === host)
       }

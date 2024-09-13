@@ -53,9 +53,9 @@ export default defineNuxtPlugin({
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
     const host = getHost()
-    const { configLocales, defaultLocale, multiDomainLocales, strategy } = nuxtContext.$config.public.i18n
+    const { locales, defaultLocale, multiDomainLocales, strategy } = nuxtContext.$config.public.i18n
 
-    const hasDefaultForDomains = configLocales.some(
+    const hasDefaultForDomains = locales.some(
       (l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.defaultForDomains)
     )
 
@@ -63,7 +63,7 @@ export default defineNuxtPlugin({
     if (defaultLocale) {
       defaultLocaleDomain = defaultLocale
     } else if (hasDefaultForDomains) {
-      const findDefaultLocale = configLocales.find((l): l is LocaleObject =>
+      const findDefaultLocale = locales.find((l): l is LocaleObject =>
         typeof l === 'string' || !Array.isArray(l.defaultForDomains) ? false : l.defaultForDomains.includes(host ?? '')
       )
 
@@ -175,7 +175,7 @@ export default defineNuxtPlugin({
     extendI18n(i18n, {
       extendComposer(composer) {
         const route = useRoute()
-        const _locales = ref<string[] | LocaleObject[]>(runtimeI18n.configLocales)
+        const _locales = ref<string[] | LocaleObject[]>(runtimeI18n.locales)
         const _localeCodes = ref<string[]>(localeCodes)
         const _baseUrl = ref<string>('')
 

@@ -143,18 +143,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       skipSettingLocaleOnNavigate: options.skipSettingLocaleOnNavigate,
       differentDomains: options.differentDomains,
       trailingSlash: options.trailingSlash,
-      configLocales: options.locales,
-      locales: options.locales.reduce(
-        (obj, locale) => {
-          if (typeof locale === 'string') {
-            obj[locale] = { domain: undefined }
-          } else {
-            obj[locale.code] = { domain: locale.domain }
-          }
-          return obj
-        },
-        {} as Record<string, { domain: string | undefined }>
-      ),
+      locales: options.locales,
       detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
       experimental: options.experimental,
       multiDomainLocales: options.multiDomainLocales
@@ -245,7 +234,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     }
 
     // @ts-expect-error type error
-    nuxt.options.runtimeConfig.public.i18n.configLocales = simplifyLocaleOptions(nuxt, defu({}, options))
+    nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, defu({}, options))
 
     addTemplate({
       filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
@@ -392,13 +381,20 @@ export interface ModulePublicRuntimeConfig {
      *
      * @internal
      */
+    domainLocales: { [key: Locale]: { domain: string | undefined } }
+
+    /**
+     * Overwritten at build time, used to pass generated options to runtime
+     *
+     * @internal
+     */
     experimental: NonNullable<NuxtI18nOptions['experimental']>
     /**
      * Overwritten at build time, used to pass generated options to runtime
      *
      * @internal
      */
-    configLocales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>
+    locales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>
     /**
      * Overwritten at build time, used to pass generated options to runtime
      *
