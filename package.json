@@ -78,13 +78,13 @@
   },
   "dependencies": {
     "@intlify/h3": "^0.5.0",
-    "@intlify/shared": "^10.0.0-beta.1",
-    "@intlify/unplugin-vue-i18n": "^5.0.0-beta.3",
-    "@intlify/utils": "^0.12.0",
+    "@intlify/shared": "^10.0.1",
+    "@intlify/unplugin-vue-i18n": "^5.0.0",
+    "@intlify/utils": "^0.13.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
-    "@nuxt/kit": "^3.12.3",
+    "@nuxt/kit": "^3.13.1",
     "@rollup/plugin-yaml": "^4.1.2",
-    "@vue/compiler-sfc": "^3.4.31",
+    "@vue/compiler-sfc": "^3.5.5",
     "debug": "^4.3.5",
     "defu": "^6.1.2",
     "estree-walker": "^3.0.3",
@@ -97,8 +97,8 @@
     "sucrase": "^3.35.0",
     "ufo": "^1.3.1",
     "unplugin": "^1.10.1",
-    "vue-i18n": "^10.0.0-beta.4",
-    "vue-router": "^4.4.0"
+    "vue-i18n": "^10.0.1",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@babel/parser": "^7.24.7",
@@ -106,7 +106,7 @@
     "@babel/types": "^7.24.7",
     "@eslint/js": "9.5.0",
     "@nuxt/module-builder": "^0.8.3",
-    "@nuxt/schema": "^3.12.3",
+    "@nuxt/schema": "^3.13.1",
     "@types/debug": "^4.1.9",
     "@types/eslint": "^8.56.6",
     "@unhead/vue": "^1.8.8",
@@ -126,7 +126,7 @@
     "lint-staged": "^15.2.7",
     "nitropack": "^2.9.7",
     "npm-run-all2": "^6.2.0",
-    "nuxt": "^3.12.3",
+    "nuxt": "^3.12.4",
     "ofetch": "^1.3.4",
     "pkg-pr-new": "^0.0.20",
     "playwright-core": "^1.45.3",
@@ -138,7 +138,7 @@
     "undici": "^6.19.2",
     "unhead": "^1.8.8",
     "vitest": "^2.0.4",
-    "vue": "^3.4.31"
+    "vue": "^3.5.5"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
