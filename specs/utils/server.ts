@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { execa } from 'execa'
+import { exec } from 'tinyexec'
 import { getRandomPort, waitForPort } from 'get-port-please'
 import type { FetchOptions } from 'ofetch'
 import { $fetch as _$fetch, fetch as _fetch } from 'ofetch'
@@ -21,16 +21,18 @@ export async function startServer(env: Record<string, unknown> = {}) {
   ctx.url = `http://${host}:${port}`
   if (ctx.options.dev) {
     const nuxiCLI = await kit.resolvePath('nuxi/cli')
-    ctx.serverProcess = execa(nuxiCLI, ['_dev'], {
-      cwd: ctx.nuxt!.options.rootDir,
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        _PORT: String(port), // Used by internal _dev command
-        PORT: String(port),
-        HOST: host,
-        NODE_ENV: 'development',
-        ...env
+    ctx.serverProcess = exec(nuxiCLI, ['_dev'], {
+      nodeOptions: {
+        cwd: ctx.nuxt!.options.rootDir,
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          _PORT: String(port), // Used by internal _dev command
+          PORT: String(port),
+          HOST: host,
+          NODE_ENV: 'development',
+          ...env
+        }
       }
     })
     await waitForPort(port, { retries: 32, host }).catch(() => {})
@@ -53,27 +55,28 @@ export async function startServer(env: Record<string, unknown> = {}) {
     // ; (await import('consola')).consola.restoreConsole()
     const [_command, ...commandArgs] = command.split(' ')
 
-    ctx.serverProcess = execa(_command, commandArgs, {
-      //@ts-ignore
-      env: {
-        ...process.env,
-        PORT: String(port),
-        HOST: host,
-        ...env
+    ctx.serverProcess = exec(_command, commandArgs, {
+      nodeOptions: {
+        env: {
+          ...process.env,
+          PORT: String(port),
+          HOST: host,
+          ...env
+        }
       }
     })
 
     await waitForPort(port, { retries: 32, host, delay: 1000 })
   } else {
-    //@ts-ignore
-    ctx.serverProcess = execa('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        PORT: String(port),
-        HOST: host,
-        NODE_ENV: 'test',
-        ...env
+    ctx.serverProcess = exec('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
+      nodeOptions: {
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          PORT: String(port),
+          HOST: host,
+          ...env
+        }
       }
     })
     await waitForPort(port, { retries: 20, host })
