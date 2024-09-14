@@ -1,7 +1,7 @@
 import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
-import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
+import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
 import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
 import {
@@ -52,19 +52,21 @@ export function useSetI18nParams(seoAttributes?: SeoAttributesOptions): SetI18nP
 
   const i18nParams = computed({
     get() {
-      return experimentalSSR ? common.metaState.value : router.currentRoute.value.meta.nuxtI18n ?? {}
+      return experimentalSSR ? common.metaState.value : router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] ?? {}
     },
     set(val) {
       common.metaState.value = val
       _i18nParams.value = val
-      router.currentRoute.value.meta.nuxtI18n = val
+      router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] = val
     }
   })
 
   const stop = watch(
     () => router.currentRoute.value.fullPath,
     () => {
-      router.currentRoute.value.meta.nuxtI18n = experimentalSSR ? common.metaState.value : _i18nParams.value
+      router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] = experimentalSSR
+        ? common.metaState.value
+        : _i18nParams.value
     }
   )
 
