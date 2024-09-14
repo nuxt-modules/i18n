@@ -29,7 +29,7 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(rollup@3.29.4)
       '@nuxt/kit':
-        specifier: ~3.12.1
+        specifier: ~3.12.4
         version: 3.12.4(magicast@0.3.5)(rollup@3.29.4)(webpack-sources@3.2.3)
       '@rollup/plugin-yaml':
         specifier: ^4.1.2
@@ -96,7 +96,7 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3(@nuxt/kit@3.12.4(magicast@0.3.5)(rollup@3.29.4)(webpack-sources@3.2.3))(nuxi@3.13.1)(typescript@5.5.2)(vue-tsc@2.0.22(typescript@5.5.2))(webpack-sources@3.2.3)
       '@nuxt/schema':
-        specifier: ~3.12.1
+        specifier: ~3.12.4
         version: 3.12.4(rollup@3.29.4)(webpack-sources@3.2.3)
       '@types/debug':
         specifier: ^4.1.9
