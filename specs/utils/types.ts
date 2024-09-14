@@ -1,5 +1,5 @@
 import type { Nuxt, NuxtConfig } from '@nuxt/schema'
-import type { Subprocess } from 'execa'
+import type { exec } from 'tinyexec'
 import type { Browser, LaunchOptions } from 'playwright-core'
 import type { NuxtI18nOptions } from '../../src/types'
 import type { Suite, File } from 'vitest'
@@ -34,7 +34,7 @@ export interface TestContext {
   nuxt?: Nuxt
   browser?: Browser
   url?: string
-  serverProcess?: Subprocess
+  serverProcess?: ReturnType<typeof exec>
   // eslint-disable-next-line @typescript-eslint/ban-types
   mockFn?: Function
 }
