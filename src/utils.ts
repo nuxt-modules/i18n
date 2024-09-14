@@ -1,5 +1,5 @@
 import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
-import { createHash } from 'node:crypto'
+import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, join } from 'pathe'
 import { parse as _parseCode } from '@babel/parser'
@@ -592,7 +592,7 @@ export function getRoutePath(tokens: SegmentToken[]): string {
   }, '/')
 }
 
-export function getHash(text: Buffer | string): string {
+export function getHash(text: BinaryLike): string {
   return createHash('sha256').update(text).digest('hex').substring(0, 8)
 }
 
