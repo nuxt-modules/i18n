@@ -7,7 +7,6 @@ import {
   useAppConfig,
   useAsyncData,
   useHead,
-  useNuxtApp,
   useRoute,
   useRuntimeConfig,
   watch
@@ -62,12 +61,7 @@ definePageMeta({
   alias: ['/aliased-home-path']
 })
 
-const i18nHead = useLocaleHead({
-  addDirAttribute: true,
-  addLangAttribute: true,
-  identifierAttribute: 'id',
-  addSeoAttributes: { canonicalQueries: ['page'] }
-})
+const i18nHead = useLocaleHead({ key: 'id', seo: { canonicalQueries: ['page'] } })
 useHead({
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang

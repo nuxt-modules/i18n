@@ -21,12 +21,7 @@ import type { CommonComposableOptions } from '../../utils'
  */
 export function localeHead(
   common: CommonComposableOptions,
-  {
-    addDirAttribute = false,
-    addLangAttribute = false,
-    addSeoAttributes: seoAttributes = true,
-    identifierAttribute: idAttribute = 'hid'
-  }: I18nHeadOptions
+  { dir = true, lang = true, seo = true, key = 'hid' }: I18nHeadOptions
 ): I18nHeadMetaInfo {
   const { defaultDirection } = useRuntimeConfig().public.i18n
   const i18n = getComposer(common.i18n)
@@ -51,25 +46,25 @@ export function localeHead(
   const currentDir = currentLocale.dir || defaultDirection
 
   // Adding Direction Attribute
-  if (addDirAttribute) {
+  if (dir) {
     metaObject.htmlAttrs.dir = currentDir
   }
 
-  if (addLangAttribute && currentLanguage) {
+  if (lang && currentLanguage) {
     metaObject.htmlAttrs.lang = currentLanguage
   }
 
   // Adding SEO Meta
-  if (seoAttributes && locale && unref(i18n.locales)) {
+  if (seo && locale && unref(i18n.locales)) {
     metaObject.link.push(
-      ...getHreflangLinks(common, unref(locales) as LocaleObject[], idAttribute),
-      ...getCanonicalLink(common, idAttribute, seoAttributes)
+      ...getHreflangLinks(common, unref(locales) as LocaleObject[], key),
+      ...getCanonicalLink(common, key, seo)
     )
 
     metaObject.meta.push(
-      ...getOgUrl(common, idAttribute, seoAttributes),
-      ...getCurrentOgLocale(currentLocale, currentLanguage, idAttribute),
-      ...getAlternateOgLocales(unref(locales) as LocaleObject[], currentLanguage, idAttribute)
+      ...getOgUrl(common, key, seo),
+      ...getCurrentOgLocale(currentLocale, currentLanguage, key),
+      ...getAlternateOgLocales(unref(locales) as LocaleObject[], currentLanguage, key)
     )
   }
 
@@ -85,7 +80,7 @@ function getBaseUrl() {
 export function getHreflangLinks(
   common: CommonComposableOptions,
   locales: LocaleObject[],
-  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
+  key: NonNullable<I18nHeadOptions['key']>
 ) {
   const baseUrl = getBaseUrl()
   const { defaultLocale, strategy } = useRuntimeConfig().public.i18n
@@ -114,7 +109,7 @@ export function getHreflangLinks(
     const localePath = switchLocalePath(common, mapLocale.code)
     if (localePath) {
       links.push({
-        [idAttribute]: `i18n-alt-${language}`,
+        [key]: `i18n-alt-${language}`,
         rel: 'alternate',
         href: toAbsoluteUrl(localePath, baseUrl),
         hreflang: language
@@ -126,7 +121,7 @@ export function getHreflangLinks(
     const localePath = switchLocalePath(common, defaultLocale)
     if (localePath) {
       links.push({
-        [idAttribute]: 'i18n-xd',
+        [key]: 'i18n-xd',
         rel: 'alternate',
         href: toAbsoluteUrl(localePath, baseUrl),
         hreflang: 'x-default'
@@ -137,11 +132,7 @@ export function getHreflangLinks(
   return links
 }
 
-export function getCanonicalUrl(
-  common: CommonComposableOptions,
-  baseUrl: string,
-  seoAttributes: I18nHeadOptions['addSeoAttributes']
-) {
+export function getCanonicalUrl(common: CommonComposableOptions, baseUrl: string, seo: I18nHeadOptions['seo']) {
   const route = common.router.currentRoute.value
   const currentRoute = localeRoute(common, {
     ...route,
@@ -152,7 +143,7 @@ export function getCanonicalUrl(
   if (!currentRoute) return ''
   let href = toAbsoluteUrl(currentRoute.path, baseUrl)
 
-  const canonicalQueries = (isObject(seoAttributes) && seoAttributes.canonicalQueries) || []
+  const canonicalQueries = (isObject(seo) && seo.canonicalQueries) || []
   const currentRouteQueryParams = currentRoute.query
   const params = new URLSearchParams()
   for (const queryParamName of canonicalQueries) {
@@ -177,48 +168,48 @@ export function getCanonicalUrl(
 
 export function getCanonicalLink(
   common: CommonComposableOptions,
-  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>,
-  seoAttributes: I18nHeadOptions['addSeoAttributes']
+  key: NonNullable<I18nHeadOptions['key']>,
+  seo: I18nHeadOptions['seo']
 ) {
   const baseUrl = getBaseUrl()
-  const href = getCanonicalUrl(common, baseUrl, seoAttributes)
+  const href = getCanonicalUrl(common, baseUrl, seo)
   if (!href) return []
 
-  return [{ [idAttribute]: 'i18n-can', rel: 'canonical', href }]
+  return [{ [key]: 'i18n-can', rel: 'canonical', href }]
 }
 
 export function getOgUrl(
   common: CommonComposableOptions,
-  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>,
-  seoAttributes: I18nHeadOptions['addSeoAttributes']
+  key: NonNullable<I18nHeadOptions['key']>,
+  seo: I18nHeadOptions['seo']
 ) {
   const baseUrl = getBaseUrl()
-  const href = getCanonicalUrl(common, baseUrl, seoAttributes)
+  const href = getCanonicalUrl(common, baseUrl, seo)
   if (!href) return []
 
-  return [{ [idAttribute]: 'i18n-og-url', property: 'og:url', content: href }]
+  return [{ [key]: 'i18n-og-url', property: 'og:url', content: href }]
 }
 
 export function getCurrentOgLocale(
   currentLocale: LocaleObject,
   currentLanguage: string | undefined,
-  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
+  key: NonNullable<I18nHeadOptions['key']>
 ) {
   if (!currentLocale || !currentLanguage) return []
 
   // Replace dash with underscore as defined in spec: language_TERRITORY
-  return [{ [idAttribute]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentLanguage) }]
+  return [{ [key]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentLanguage) }]
 }
 
 export function getAlternateOgLocales(
   locales: LocaleObject[],
   currentLanguage: string | undefined,
-  idAttribute: NonNullable<I18nHeadOptions['identifierAttribute']>
+  key: NonNullable<I18nHeadOptions['key']>
 ) {
   const alternateLocales = locales.filter(locale => locale.language && locale.language !== currentLanguage)
 
   return alternateLocales.map(locale => ({
-    [idAttribute]: `i18n-og-alt-${locale.language}`,
+    [key]: `i18n-og-alt-${locale.language}`,
     property: 'og:locale:alternate',
     content: hypenToUnderscore(locale.language!)
   }))

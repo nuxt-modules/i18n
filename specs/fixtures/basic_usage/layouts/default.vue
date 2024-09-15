@@ -5,12 +5,7 @@ import { useI18n, useLocaleHead } from '#i18n'
 
 const route = useRoute()
 const { t } = useI18n()
-const head = useLocaleHead({
-  addDirAttribute: true,
-  addLangAttribute: true,
-  identifierAttribute: 'id',
-  addSeoAttributes: { canonicalQueries: ['page'] }
-})
+const head = useLocaleHead({ key: 'id', seo: { canonicalQueries: ['page'] } })
 const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 </script>
 

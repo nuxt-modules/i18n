@@ -7,15 +7,9 @@
 <script setup lang="ts">
 const { locale, locales, setLocale } = useI18n()
 
-const head = useLocaleHead({
-  addDirAttribute: true,
-  addLangAttribute: true,
-  addSeoAttributes: true
-})
+const head = useLocaleHead()
 
-useHead({
-  htmlAttrs: head.value.htmlAttrs
-})
+useHead({ htmlAttrs: head.value.htmlAttrs })
 
 console.log(head.value.htmlAttrs)
 
