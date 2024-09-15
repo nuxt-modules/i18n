@@ -1,7 +1,13 @@
 {
   "name": "@nuxtjs/i18n",
-  "description": "i18n for Nuxt",
   "version": "8.5.4",
+  "description": "Internationalization for Nuxt",
+  "keywords": [
+    "nuxt",
+    "i18n",
+    "internationalization",
+    "nuxt-module"
+  ],
   "homepage": "https://i18n.nuxtjs.org",
   "bugs": {
     "url": "https://github.com/nuxt-modules/i18n/issues"
@@ -20,6 +26,9 @@
     },
     {
       "name": "Kazuya Kawaguchi (@kazupon)"
+    },
+    {
+      "name": "Bobbie Goede (@BobbieGoede)"
     }
   ],
   "exports": {

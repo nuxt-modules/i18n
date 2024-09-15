@@ -1,50 +1,59 @@
 [![Nuxt i18n](./docs/public/cover.png)](https://i18n.nuxtjs.org)
 
 [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
-[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
+[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n-edge/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n-edge)
 [![](https://img.shields.io/npm/dt/%40nuxtjs%2Fi18n.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-modules/i18n)
 <a href="https://volta.net/nuxt-modules/i18n?utm_source=nuxt_i18n_readme"><img src="https://user-images.githubusercontent.com/904724/209143798-32345f6c-3cf8-4e06-9659-f4ace4a6acde.svg" alt="Volta board"></a>
 
 # Nuxt I18n
 
-> I18n module for Nuxt
+Internationalization (i18n) for Nuxt apps.
 
-The i18n module for Nuxt 3
+[📖 Read documentation](https://i18n.nuxtjs.org/)
 
-## ✅ Status: v8
+## Features
 
-If you would like to use the stable version for Nuxt 2, please see the [`v7` branch](https://github.com/nuxt-modules/i18n/tree/v7)
+- Integration with `vue-i18n`
+- Route localization (static & dynamic)
+- Lazy load translations
+- SEO tag localization
+- Layer support
 
 ## 🚀 Usage
 
 ### Install
 
-1. Add the following line to the `devDependencies` with your package manager:
+1. Install the `@nuxtjs/i18n` module to your project
 
 ```sh
 npx nuxi@latest module add i18n
 ```
 
-2. Add `@nuxtjs/i18n` to the `modules` section of `nuxt.config.ts`
+2. Configure the module using the `i18n` key in `nuxt.config.ts`
 
 ```ts
 {
   modules: [
     '@nuxtjs/i18n',
   ],
+  i18n: {
+    locales: [
+      { code: 'en', iso: 'en-US' },
+      { code: 'fr', iso: 'fr-FR' }
+    ]
+    defaultLocale: 'en',
+  }
 }
 ```
 
 ## Edge Release Channel
 
-We provide [the Edge Release Channel nuxt i18n module, like Nuxt3](https://nuxt.com/docs/guide/going-further/edge-channel#edge-release-channel)
+Nuxt I18n lands commits, improvements and bug fixes every day, you can opt in to test these before their release using the edge release channel.
 
-Nuxt i18n module is undergoing commits, improvements and bug fixes. You can opt-in to be the first to test it before the next release.
+### Opting In
 
-### Opting Into the Edge Channel
-
-Update nuxt i18n module dependency inside `package.json`:
+Update `@nuxtjs/i18n` dependency inside `package.json`:
 
 ```diff
 {
@@ -57,9 +66,9 @@ Update nuxt i18n module dependency inside `package.json`:
 
 Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
 
-### Opting Out From the Edge Channel
+### Opting Out
 
-Update nuxt i18n module dependency inside `package.json`:
+Update `@nuxtjs/i18n` dependency inside `package.json`:
 
 ```diff
 {
@@ -70,16 +79,16 @@ Update nuxt i18n module dependency inside `package.json`:
 }
 ```
 
-## 📖 Documentation
+Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
 
-[Read more v8 documentation](https://i18n.nuxtjs.org/).
+## Nuxt 2
 
-Keep in mind that not all features are currently supported yet and some things might be broken.
+Since Nuxt 2 has reached [its end-of-life (EOL) date](https://v2.nuxt.com/lts/) we are not actively maintaining support for this version, the last version to support Nuxt 2 is `v7`.
+
+The codebase for this version can be found on the [`v7` branch](https://github.com/nuxt-modules/i18n/tree/v7) and its documentation [here](https://i18n.nuxtjs.org/docs/v7).
 
 ## 🔗 Links
 
-- 📘 [Documentation for v8](https://i18n.nuxtjs.org/)
-- 📘 [Documentation for v7](https://i18n.nuxtjs.org/docs/v7)
 - 🔖 [Release notes](./CHANGELOG.md)
 - 👥 [Community](https://discord.nuxtjs.org/) (`#i18n` channel)
 
