@@ -97,8 +97,10 @@ export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, fr
 }
 
 export function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
-  const langDir = i18n.langDir ?? (i18n.restructureDir ? 'locales' : '')
-  return resolve(resolveI18nDir(layer, i18n), langDir)
+  i18n.restructureDir ??= 'i18n'
+  i18n.langDir ??= i18n.restructureDir !== false ? 'locales' : ''
+  console.log(i18n.langDir, i18n.restructureDir)
+  return resolve(resolveI18nDir(layer, i18n), i18n.langDir)
 }
 
 const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
