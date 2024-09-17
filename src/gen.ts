@@ -156,7 +156,8 @@ export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
   const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
   const resolvedLocaleType = typeof generatedLocales === 'string' ? 'Locale[]' : 'LocaleObject[]'
-  const localeCodeStrings = getNormalizedLocales(options.locales).map(x => x.code)
+  const localeCodeStrings = getNormalizedLocales(options.locales).map(x => JSON.stringify(x.code))
+  const narrowedLocaleType = localeCodeStrings.join(' | ') || 'string'
 
   const i18nType = `${vueI18nTypes.join(' & ')} & NuxtI18nRoutingCustomProperties<${resolvedLocaleType}>`
 
@@ -191,7 +192,7 @@ declare module 'vue-i18n' {
 declare module '@intlify/core-base' {
   // generated based on configured locales
   interface GeneratedTypeConfig { 
-    locale: ${localeCodeStrings.map(x => JSON.stringify(x)).join(' | ')}
+    locale: ${narrowedLocaleType}
   }
 }
 
