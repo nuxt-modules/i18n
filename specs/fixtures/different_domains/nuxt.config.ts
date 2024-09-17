@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   modules: [CustomModule, '@nuxtjs/i18n'],
 
   i18n: {
+    restructureDir: false,
     lazy: false,
     locales: [
       {

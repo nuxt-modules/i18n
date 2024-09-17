@@ -28,6 +28,7 @@ export default defineNuxtConfig({
   ],
   debug: false,
   i18n: {
+    restructureDir: false,
     locales: [
       {
         code: 'ja',

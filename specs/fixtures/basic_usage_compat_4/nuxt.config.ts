@@ -18,6 +18,7 @@ export default defineNuxtConfig({
   ],
   plugins: [`../plugins/i18nHooks.ts`],
   i18n: {
+    restructureDir: false,
     vueI18n: './config/i18n.config.ts',
     defaultLocale: 'en',
     experimental: {
