@@ -1,0 +1,5 @@
+{
+  "moduleLayerText": "This is a merged module layer locale key",
+  "moduleLayerBaseKey": "Layer base key overwritten!",
+  "moduleLayerBaseKeyNamed": "Layer base key overwritten, greetings {name}!"
+}
