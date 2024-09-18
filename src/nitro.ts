@@ -46,9 +46,9 @@ export async function setupNitro(
 
       // install server resource transform plugin for yaml / json5 format
       nitroConfig.rollupConfig = nitroConfig.rollupConfig || {}
-
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- FIXME
       nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
-
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- FIXME
       nitroConfig.rollupConfig.plugins = Array.isArray(nitroConfig.rollupConfig.plugins)
         ? nitroConfig.rollupConfig.plugins
         : [nitroConfig.rollupConfig.plugins]

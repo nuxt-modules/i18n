@@ -306,7 +306,7 @@ export async function navigate(
     }
 
     // TODO: resolve type errors for nuxt context extensions
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     redirectPath = nuxtApp.$localePath(redirectPath, locale)
     __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, status })
     return _navigate(redirectPath, status)
