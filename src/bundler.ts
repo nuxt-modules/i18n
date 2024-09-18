@@ -1,20 +1,20 @@
 import createDebug from 'debug'
 import { resolve } from 'pathe'
-import { extendWebpackConfig, extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
+import { extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
-import { assign } from '@intlify/shared'
 import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
-import type { TransformMacroPluginOptions } from './transform/macros'
-import type { ResourcePluginOptions } from './transform/resource'
-import type { TransformI18nFunctionPluginOptions } from './transform/i18n-function-injection'
+
+interface TransformPluginOptions {
+  sourcemap?: boolean
+}
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -25,17 +25,9 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     nuxtOptions?.i18nModules?.map(module => resolve(nuxt.options._layers[0].config.rootDir, module.langDir ?? '')) ?? []
   debug('i18nModulePaths -', i18nModulePaths)
   const localePaths = [...langPaths, ...i18nModulePaths]
+  const localeIncludePaths = localePaths.map(x => resolve(x, './**'))
 
-  // extract macros from components
-  const macroOptions: TransformMacroPluginOptions = {
-    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
-  }
-
-  const resourceOptions: ResourcePluginOptions = {
-    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
-  }
-
-  const i18nFunctionOptions: TransformI18nFunctionPluginOptions = {
+  const sourceMapOptions: TransformPluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
@@ -55,36 +47,22 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
       dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
       optimizeTranslationDirective: true,
       strictMessage: nuxtOptions.compilation.strictMessage,
-      escapeHtml: nuxtOptions.compilation.escapeHtml
-    }
-
-    if (localePaths.length > 0) {
-      webpackPluginOptions.include = localePaths.map(x => resolve(x, './**'))
+      escapeHtml: nuxtOptions.compilation.escapeHtml,
+      include: localeIncludePaths
     }
 
     addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
-    addWebpackPlugin(TransformMacroPlugin.webpack(macroOptions))
-    addWebpackPlugin(ResourcePlugin.webpack(resourceOptions))
+    addWebpackPlugin(TransformMacroPlugin.webpack(sourceMapOptions))
+    addWebpackPlugin(ResourcePlugin.webpack(sourceMapOptions))
     if (nuxtOptions.experimental.autoImportTranslationFunctions) {
-      addWebpackPlugin(TransformI18nFunctionPlugin.webpack(i18nFunctionOptions))
+      addWebpackPlugin(TransformI18nFunctionPlugin.webpack(sourceMapOptions))
     }
-
-    extendWebpackConfig(config => {
-      config.plugins!.push(
-        new webpack.DefinePlugin(
-          assign(
-            getFeatureFlags({
-              compositionOnly: nuxtOptions.bundle.compositionOnly,
-              fullInstall: nuxtOptions.bundle.fullInstall,
-              dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler
-            }),
-            {
-              __DEBUG__: String(!!nuxtOptions.debug)
-            }
-          )
-        )
-      )
-    })
+    addWebpackPlugin(
+      new webpack.DefinePlugin({
+        ...getFeatureFlags(nuxtOptions.bundle),
+        __DEBUG__: String(!!nuxtOptions.debug)
+      })
+    )
   } catch (e: unknown) {
     debug((e as Error).message)
   }
@@ -104,27 +82,21 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
     strictMessage: nuxtOptions.compilation.strictMessage,
     escapeHtml: nuxtOptions.compilation.escapeHtml,
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
-    globalSFCScope: nuxtOptions.customBlocks.globalSFCScope
-  }
-  if (localePaths.length > 0) {
-    vitePluginOptions.include = localePaths.map(x => resolve(x, './**'))
+    globalSFCScope: nuxtOptions.customBlocks.globalSFCScope,
+    include: localeIncludePaths
   }
 
   addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
-  addVitePlugin(TransformMacroPlugin.vite(macroOptions))
-  addVitePlugin(ResourcePlugin.vite(resourceOptions))
+  addVitePlugin(TransformMacroPlugin.vite(sourceMapOptions))
+  addVitePlugin(ResourcePlugin.vite(sourceMapOptions))
   if (nuxtOptions.experimental.autoImportTranslationFunctions) {
-    addVitePlugin(TransformI18nFunctionPlugin.vite(i18nFunctionOptions))
+    addVitePlugin(TransformI18nFunctionPlugin.vite(sourceMapOptions))
   }
 
   extendViteConfig(config => {
-    if (config.define) {
-      config.define['__DEBUG__'] = JSON.stringify(!!nuxtOptions.debug)
-    } else {
-      config.define = {
-        __DEBUG__: JSON.stringify(!!nuxtOptions.debug)
-      }
-    }
+    config.define ??= {}
+    config.define['__DEBUG__'] = JSON.stringify(!!nuxtOptions.debug)
+
     debug('vite.config.define', config.define)
   })
 }
