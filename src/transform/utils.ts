@@ -52,3 +52,7 @@ export function isVue(id: string, opts: { type?: Array<'template' | 'script' | '
   // Query `?vue&type=template` (in Webpack or external template)
   return true
 }
+
+export type BundlerPluginOptions = {
+  sourcemap?: boolean
+}

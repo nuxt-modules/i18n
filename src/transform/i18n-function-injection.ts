@@ -15,10 +15,7 @@ import { isVue } from './utils'
 
 import type { Node } from 'estree-walker'
 import type { CallExpression, Pattern } from 'estree'
-
-export interface TransformI18nFunctionPluginOptions {
-  sourcemap?: boolean
-}
+import type { BundlerPluginOptions } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:function:injection')
 
@@ -33,7 +30,7 @@ const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], 
   $te: 'te: $te'
 }
 
-export const TransformI18nFunctionPlugin = createUnplugin((options: TransformI18nFunctionPluginOptions) => {
+export const TransformI18nFunctionPlugin = createUnplugin((options: BundlerPluginOptions) => {
   return {
     name: 'nuxtjs:i18n-function-injection',
     enforce: 'pre',

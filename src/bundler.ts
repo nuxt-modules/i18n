@@ -11,10 +11,7 @@ import { getLayerLangPaths } from './layers'
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtI18nOptions } from './types'
-
-interface TransformPluginOptions {
-  sourcemap?: boolean
-}
+import type { BundlerPluginOptions } from './transform/utils'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -27,7 +24,7 @@ export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOp
   const localePaths = [...langPaths, ...i18nModulePaths]
   const localeIncludePaths = localePaths.map(x => resolve(x, './**'))
 
-  const sourceMapOptions: TransformPluginOptions = {
+  const sourceMapOptions: BundlerPluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
