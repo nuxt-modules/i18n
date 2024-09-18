@@ -1,13 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import {
-  defineNuxtPlugin,
-  useRoute,
-  addRouteMiddleware,
-  defineNuxtRouteMiddleware,
-  useNuxtApp,
-  useRouter
-} from '#imports'
+import { defineNuxtPlugin, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
 import {
   localeCodes,
   vueI18nConfigs,
@@ -26,7 +19,8 @@ import {
   detectBrowserLanguage,
   getI18nCookie,
   runtimeDetectBrowserLanguage,
-  getHost
+  getDefaultLocaleForDomain,
+  setupMultiDomainLocales
 } from '../internal'
 import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
@@ -58,40 +52,9 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     const route = useRoute()
     const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
-    const host = getHost()
-    const { locales, defaultLocale, multiDomainLocales, strategy } = nuxtContext.$config.public.i18n
 
-    const hasDefaultForDomains = locales.some(
-      (l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.defaultForDomains)
-    )
-
-    let defaultLocaleDomain: string
-    if (defaultLocale) {
-      defaultLocaleDomain = defaultLocale
-    } else if (hasDefaultForDomains) {
-      const findDefaultLocale = locales.find((l): l is LocaleObject =>
-        typeof l === 'string' || !Array.isArray(l.defaultForDomains) ? false : l.defaultForDomains.includes(host ?? '')
-      )
-
-      defaultLocaleDomain = findDefaultLocale?.code ?? ''
-    } else {
-      defaultLocaleDomain = ''
-    }
-
-    if (multiDomainLocales && (strategy === 'prefix_except_default' || strategy === 'prefix_and_default')) {
-      const router = useRouter()
-      router.getRoutes().forEach(route => {
-        if (route.name?.toString().includes('___default')) {
-          const routeNameLocale = route.name.toString().split('___')[1]
-          if (routeNameLocale !== defaultLocaleDomain) {
-            router.removeRoute(route.name)
-          } else {
-            const newRouteName = route.name.toString().replace('___default', '')
-            route.name = newRouteName
-          }
-        }
-      })
-    }
+    const defaultLocaleDomain = getDefaultLocaleForDomain(nuxtContext)
+    setupMultiDomainLocales(nuxtContext, defaultLocaleDomain)
 
     // Fresh copy per request to prevent reusing mutated options
     const runtimeI18n = { ...nuxtContext.$config.public.i18n, defaultLocale: defaultLocaleDomain }
