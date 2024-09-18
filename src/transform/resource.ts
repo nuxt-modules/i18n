@@ -6,13 +6,11 @@ import MagicString from 'magic-string'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
 
-export interface ResourcePluginOptions {
-  sourcemap?: boolean
-}
+import type { BundlerPluginOptions } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:transform:resource')
 
-export const ResourcePlugin = createUnplugin((options: ResourcePluginOptions) => {
+export const ResourcePlugin = createUnplugin((options: BundlerPluginOptions) => {
   debug('options', options)
 
   return {

@@ -13,9 +13,7 @@ import { parse as parseSFC } from '@vue/compiler-sfc'
 import { VIRTUAL_PREFIX_HEX, isVue } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from '../constants'
 
-export interface TransformMacroPluginOptions {
-  sourcemap?: boolean
-}
+import type { BundlerPluginOptions } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:transform:macros')
 
@@ -25,7 +23,7 @@ const debug = createDebug('@nuxtjs/i18n:transform:macros')
  *  ref: https://github.com/posva/unplugin-vue-router
  */
 
-export const TransformMacroPlugin = createUnplugin((options: TransformMacroPluginOptions) => {
+export const TransformMacroPlugin = createUnplugin((options: BundlerPluginOptions) => {
   return {
     name: 'nuxtjs:i18n-macros-transform',
     enforce: 'pre',

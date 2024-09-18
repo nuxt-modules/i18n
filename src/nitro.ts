@@ -1,5 +1,4 @@
 import createDebug from 'debug'
-import { assign, isArray } from '@intlify/shared'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
@@ -50,7 +49,7 @@ export async function setupNitro(
       // eslint-disable-next-line @typescript-eslint/no-floating-promises -- FIXME
       nitroConfig.rollupConfig.plugins = (await nitroConfig.rollupConfig.plugins) || []
       // eslint-disable-next-line @typescript-eslint/no-floating-promises -- FIXME
-      nitroConfig.rollupConfig.plugins = isArray(nitroConfig.rollupConfig.plugins)
+      nitroConfig.rollupConfig.plugins = Array.isArray(nitroConfig.rollupConfig.plugins)
         ? nitroConfig.rollupConfig.plugins
         : [nitroConfig.rollupConfig.plugins]
 
@@ -114,14 +113,10 @@ export { localeDetector }
 
     if (nuxt.options.ssr) {
       // vue-i18n feature flags configuration for server-side (server api, server middleware, etc...)
-      nitroConfig.replace = assign(
-        nitroConfig.replace,
-        getFeatureFlags({
-          compositionOnly: nuxtOptions.bundle.compositionOnly,
-          fullInstall: nuxtOptions.bundle.fullInstall,
-          dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler
-        })
-      )
+      nitroConfig.replace = {
+        ...nitroConfig.replace,
+        ...getFeatureFlags(nuxtOptions.bundle)
+      }
     }
 
     // setup debug flag
