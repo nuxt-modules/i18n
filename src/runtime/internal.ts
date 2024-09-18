@@ -3,16 +3,23 @@
 import { isArray, isString, isObject } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
-import { useRequestHeaders, useRequestEvent, useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp } from '#imports'
+import {
+  useRequestHeaders,
+  useRequestEvent,
+  useCookie as useNuxtCookie,
+  useRuntimeConfig,
+  useNuxtApp,
+  useRouter
+} from '#imports'
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { findBrowserLocale, getLocalesRegex } from './routing/utils'
+import { findBrowserLocale, getLocalesRegex, getRouteName } from './routing/utils'
 import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
-import type { CookieRef } from 'nuxt/app'
+import type { CookieRef, NuxtApp } from 'nuxt/app'
 import type { ModulePublicRuntimeConfig } from '../module'
 
 export function formatMessage(message: string) {
@@ -372,6 +379,68 @@ export const runtimeDetectBrowserLanguage = (
   if (opts?.detectBrowserLanguage === false) return false
 
   return opts?.detectBrowserLanguage
+}
+
+/**
+ * Removes default routes depending on domain
+ */
+export function setupMultiDomainLocales(nuxtContext: NuxtApp, defaultLocaleDomain: string) {
+  const { multiDomainLocales, strategy, routesNameSeparator, defaultLocaleRouteNameSuffix } =
+    nuxtContext.$config.public.i18n
+
+  // feature disabled
+  if (!multiDomainLocales) return
+
+  // incompatible strategy
+  if (!(strategy === 'prefix_except_default' || strategy === 'prefix_and_default')) return
+
+  const router = useRouter()
+  const defaultRouteSuffix = [routesNameSeparator, defaultLocaleRouteNameSuffix].join('')
+
+  // remove or rename default routes if not applicable for domain
+  for (const route of router.getRoutes()) {
+    const routeName = getRouteName(route.name)
+
+    if (!routeName.includes(defaultRouteSuffix)) continue
+
+    const routeNameLocale = routeName.split(routesNameSeparator)[1]
+    if (routeNameLocale === defaultLocaleDomain) {
+      route.name = routeName.replace(defaultRouteSuffix, '')
+      continue
+    }
+
+    // use `route.name` directly as `routeName` stringifies `Symbol`
+    // @ts-expect-error type mismatch
+    router.removeRoute(route.name)
+  }
+}
+
+/**
+ * Returns default locale for the current domain, returns `defaultLocale` by default
+ */
+export function getDefaultLocaleForDomain(nuxtContext: NuxtApp) {
+  const { locales, defaultLocale, multiDomainLocales } = nuxtContext.$config.public.i18n
+
+  let defaultLocaleDomain: string = defaultLocale || ''
+
+  if (!multiDomainLocales) {
+    return defaultLocaleDomain
+  }
+
+  const host = getHost()
+  const hasDefaultForDomains = locales.some(
+    (l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.defaultForDomains)
+  )
+
+  if (hasDefaultForDomains) {
+    const findDefaultLocale = locales.find((l): l is LocaleObject =>
+      typeof l === 'string' || !Array.isArray(l.defaultForDomains) ? false : l.defaultForDomains.includes(host ?? '')
+    )
+
+    defaultLocaleDomain = findDefaultLocale?.code ?? ''
+  }
+
+  return defaultLocaleDomain
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
