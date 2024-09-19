@@ -1,5 +1,6 @@
 import { parseSegment, getRoutePath, resolveLocales } from '../src/utils'
 import type { LocaleObject } from '../src/types'
+import { vi, beforeEach, afterEach, test, expect } from 'vitest'
 
 vi.mock('pathe', async () => {
   const mod = await vi.importActual<typeof import('pathe')>('pathe')

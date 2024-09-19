@@ -1,9 +1,9 @@
-import { vi, test, expect } from 'vitest'
 import fs from 'node:fs'
 import { resolve } from 'node:path'
 import { localizeRoutes } from '../../src/routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from './utils'
+import { vi, afterAll, describe, test, expect } from 'vitest'
 
 import type { NuxtPage } from '@nuxt/schema'
 import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
