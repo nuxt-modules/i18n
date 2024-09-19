@@ -187,7 +187,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     const resolver = createResolver(import.meta.url)
     // for composables
-    nuxt.options.alias['#i18n'] = resolver.resolve('./runtime/composables/index')
+    nuxt.options.alias['#i18n'] = resolver.resolve('./runtime/composables/index.js')
     nuxt.options.build.transpile.push('#i18n')
     nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
