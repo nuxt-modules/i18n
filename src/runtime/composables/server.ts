@@ -18,7 +18,7 @@ export type LocaleConfig = {
    * @remarks
    * That is set by `fallbackLocale` option that is loaded with `vueI18n` option (i18n.config). If these do not resolve the fallback locale, use as default `false
    */
-  fallbackLocale: FallbackLocale
+  fallbackLocale?: FallbackLocale
 }
 
 /**

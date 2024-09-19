@@ -7,7 +7,7 @@ import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer, getLocale, getLocales } from '../../compatibility'
 
 import type { I18n } from 'vue-i18n'
-import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#build/i18n.options.mjs'
+import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '../../../types'
 import type { CommonComposableOptions } from '../../utils'
 
 /**
@@ -73,7 +73,7 @@ export function localeHead(
 
 function getBaseUrl() {
   const nuxtApp = useNuxtApp()
-  const i18n = getComposer(nuxtApp.$i18n as I18n)
+  const i18n = getComposer(nuxtApp.$i18n as unknown as I18n)
   return joinURL(unref(i18n.baseUrl), nuxtApp.$config.app.baseURL)
 }
 
@@ -211,11 +211,11 @@ export function getAlternateOgLocales(
   return alternateLocales.map(locale => ({
     [key]: `i18n-og-alt-${locale.language}`,
     property: 'og:locale:alternate',
-    content: hypenToUnderscore(locale.language!)
+    content: hypenToUnderscore(locale.language)
   }))
 }
 
-function hypenToUnderscore(str: string) {
+function hypenToUnderscore(str?: string) {
   return (str || '').replace(/-/g, '_')
 }
 

@@ -1,12 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": [
-    "**/.nuxt/**",
-    "**/*/dist/*",
-    "dist/**",
-    "docs/**",
-    "playground/**",
-    "specs/**",
-    "src/runtime/templates/**"
-  ]
+  "compilerOptions": {
+    "types": ["vitest/globals"]
+  },
+  "exclude": ["**/*/dist/*", "dist/**", "docs/**", "playground/**", "specs/**", "src/runtime/templates/**"]
 }

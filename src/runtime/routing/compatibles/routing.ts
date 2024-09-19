@@ -9,7 +9,7 @@ import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
-import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '#build/i18n.options.mjs'
+import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '../../../types'
 import type { Locale } from 'vue-i18n'
 import type {
   RouteLocation,
@@ -20,6 +20,7 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
+import type { ModulePublicRuntimeConfig } from '~/src/module'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
@@ -132,7 +133,8 @@ export function localeLocation(
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
-  const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public.i18n
+  const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public
+    .i18n as ModulePublicRuntimeConfig['i18n']
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw

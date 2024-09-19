@@ -44,16 +44,16 @@ import type { Router } from '#vue-router'
 import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
-import type { RuntimeConfig } from '@nuxt/schema'
+import type { RuntimeConfig } from 'nuxt/schema'
 import type { ModulePublicRuntimeConfig } from '../module'
 import type {
   RootRedirectOptions,
   PrefixableOptions,
   SwitchLocalePathIntercepter,
   BaseUrlResolveHandler,
-  LocaleObject,
-  Strategies
-} from '#build/i18n.options.mjs'
+  Strategies,
+  LocaleObject
+} from '../types'
 
 /**
  * Common options used internally by composable functions, these
@@ -64,14 +64,14 @@ import type {
 export type CommonComposableOptions = {
   router: Router
   i18n: I18n
-  runtimeConfig: RuntimeConfig
+  runtimeConfig: RuntimeConfig & { public: { i18n: ModulePublicRuntimeConfig['i18n'] } }
   metaState: Ref<Record<Locale, any>>
 }
 export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
   return {
-    i18n: i18n ?? (useNuxtApp().$i18n as I18n),
+    i18n: i18n ?? (useNuxtApp().$i18n as unknown as I18n),
     router: useRouter(),
-    runtimeConfig: useRuntimeConfig(),
+    runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: ModulePublicRuntimeConfig['i18n'] } },
     metaState: useState<Record<Locale, any>>('nuxt-i18n-meta', () => ({}))
   }
 }
@@ -282,8 +282,8 @@ export async function navigate(
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
   const { nuxtApp, i18n, locale, route } = args
-  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } =
-    nuxtApp.$config.public.i18n
+  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxtApp
+    .$config.public.i18n as ModulePublicRuntimeConfig['i18n']
   const logger = /*#__PURE__*/ createLogger('navigate')
   let { redirectPath } = args
 
@@ -419,7 +419,7 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   return (): string => {
     const ctx = useNuxtApp()
-    const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n
+    const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n as ModulePublicRuntimeConfig['i18n']
 
     if (isFunction(baseUrl)) {
       const baseUrlResult = baseUrl(ctx)
@@ -441,7 +441,8 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
       return baseUrl
     }
 
-    return baseUrl!
+    // @ts-expect-error all cases are already handled
+    return baseUrl
   }
 }
 

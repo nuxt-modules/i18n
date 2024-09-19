@@ -37,6 +37,9 @@
       "require": "./dist/module.cjs",
       "types": "./dist/types.d.ts"
     },
+    "./internals": {
+      "types": "./internals.d.ts"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
@@ -47,17 +50,18 @@
   "types": "./dist/types.d.ts",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "internals.d.ts"
   ],
   "scripts": {
     "prepare": "git config --local core.hooksPath .githooks",
-    "build": "nuxi build-module .",
-    "stub": "nuxi build-module --stub .",
+    "build": "nuxt-module-build build .",
+    "stub": "nuxt-module-build build --stub .",
     "prepack": "pnpm build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
     "changelog": "gh-changelogen --repo=nuxt-community/i18n-module",
     "dev": "pnpm dev:prepare && pnpm build --sourcemap && nuxi dev playground",
-    "dev:prepare": "nuxi prepare",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "dev:build": "nuxi build playground",
     "dev:generate": "nuxi generate playground",
     "dev:preview": "nuxi preview playground",
