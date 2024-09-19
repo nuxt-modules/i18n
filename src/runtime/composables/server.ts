@@ -35,7 +35,7 @@ export type LocaleDetector = (event: H3Event, config: LocaleConfig) => string
  * Define locale detector for server-side locale detection
  *
  * @remarks
- * The locale detector fucntion is used to detect the locale on server-side. It's called per request on the server.
+ * The locale detector function is used to detect the locale on server-side. It's called per request on the server.
  *
  * @param detector - The {@link LocaleDetector | locale detector}
  *

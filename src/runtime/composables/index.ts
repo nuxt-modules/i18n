@@ -246,7 +246,7 @@ export function useLocalePath(): LocalePathFunction {
  * The parameter signature of this function is same as {@link localeRoute}.
  *
  * @param route - A route location. The path or name of the route or an object for more complex routes.
- * @param locale - A locale optinal, if not specified, uses the current locale.
+ * @param locale - A locale optional, if not specified, uses the current locale.
  *
  * @returns the route object for a given route, the route object is resolved by vue-router rather than just a full route path.
  *
@@ -305,7 +305,7 @@ export function useLocaleLocation(): LocaleLocationFunction {
 }
 
 /**
- * The functin that swtich locale path.
+ * The function that switch locale path.
  *
  * @remarks
  * The parameter signature of this function is same as {@link switchLocalePath}.
