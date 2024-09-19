@@ -55,7 +55,7 @@
   ],
   "scripts": {
     "prepare": "git config --local core.hooksPath .githooks",
-    "build": "nuxt-module-build build .",
+    "build": "nuxt-module-build prepare && nuxt-module-build build .",
     "stub": "nuxt-module-build build --stub .",
     "prepack": "pnpm build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
