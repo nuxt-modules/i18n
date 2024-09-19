@@ -11,10 +11,10 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 export default [
   // ignores
   {
-    ignores: ['.nuxt', 'dist', 'playground', 'specs', 'test/fixtures', 'coverage', 'src/runtime/templates/**', 'docs']
+    ignores: ['.nuxt', 'dist', 'playground', 'specs', 'test', 'coverage', 'src/runtime/templates/**', 'docs']
   },
 
-  // for global and envrionment
+  // for global and environment
   {
     languageOptions: {
       globals: {
