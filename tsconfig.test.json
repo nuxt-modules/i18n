@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["vitest/globals"]
   },
-  "include": ["test/**", "specs/**"],
-  "exclude": ["**/*/dist/*", "dist/**", "docs/**", "playground/**", "src/runtime/templates/**"]
+  "include": ["test/**/*"],
+  "exclude": ["docs/**", "playground/**", "src/runtime/templates/**"]
 }
