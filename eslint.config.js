@@ -11,7 +11,19 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 export default [
   // ignores
   {
-    ignores: ['.nuxt', 'dist', 'playground', 'specs', 'test', 'coverage', 'src/runtime/templates/**', 'docs']
+    ignores: [
+      '.nuxt',
+      'dist',
+      'playground',
+      'specs',
+      'test',
+      'coverage',
+      'docs',
+      // TODO: figure out how to get eslint to work in these files
+      // eslint parsing errors in these files, possibly due to generated tsconfig in .nuxt?
+      'src/runtime/server',
+      'src/runtime/composables/server.ts'
+    ]
   },
 
   // for global and environment
