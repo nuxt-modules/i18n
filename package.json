@@ -61,7 +61,7 @@
     "release": "bumpp --commit \"release: v%s\" --push --tag",
     "changelog": "gh-changelogen --repo=nuxt-community/i18n-module",
     "dev": "pnpm dev:prepare && pnpm build --sourcemap && nuxi dev playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare",
     "dev:build": "nuxi build playground",
     "dev:generate": "nuxi generate playground",
     "dev:preview": "nuxi preview playground",
@@ -77,7 +77,7 @@
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint .",
     "test": "pnpm dev:prepare && run-s test:types test:unit test:spec",
-    "test:types": "tsc --noEmit --project tsconfig.test.json",
+    "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },

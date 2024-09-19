@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["vitest/globals"]
-  },
-  "include": ["test/**/*"],
-  "exclude": ["docs/**", "playground/**", "src/runtime/templates/**"]
-}
