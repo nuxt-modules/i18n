@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup develoment
+      - name: Setup development
         run: pnpm dev:prepare
 
       - name: Linting
