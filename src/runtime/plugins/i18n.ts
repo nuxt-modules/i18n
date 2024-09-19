@@ -148,10 +148,11 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     extendI18n(i18n, {
       extendComposer(composer) {
         const route = useRoute()
-        const _locales = ref<string[] | LocaleObject[]>(runtimeI18n.locales)
-        const _localeCodes = ref<string[]>(localeCodes)
+        const _locales = ref<Locale[] | LocaleObject[]>(runtimeI18n.locales)
+        const _localeCodes = ref<Locale[]>(localeCodes)
         const _baseUrl = ref<string>('')
 
+        // @ts-expect-error type mismatch
         composer.locales = computed(() => _locales.value)
         composer.localeCodes = computed(() => _localeCodes.value)
         composer.baseUrl = computed(() => _baseUrl.value)
