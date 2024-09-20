@@ -1,4 +1,4 @@
-import type { I18nNuxtContext } from './context'
+import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
 
 export function prepareStrategy({ options, isSSG, normalizedLocales }: I18nNuxtContext, nuxt: Nuxt) {

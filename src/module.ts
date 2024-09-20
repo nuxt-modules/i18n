@@ -8,14 +8,16 @@ import type { HookResult } from '@nuxt/schema'
 import type { LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
 import { createContext } from './context'
-import { prepareOptions } from './prepare-options'
-import { resolveLocaleInfo } from './resolve-locale-info'
-import { prepareRuntime } from './prepare-runtime'
-import { prepareRuntimeConfig } from './prepare-runtime-config'
-import { prepareAutoImports } from './prepare-auto-imports'
-import { prepareBuildManifest } from './prepare-build-manifest'
-import { prepareStrategy } from './prepare-strategy'
-import { prepareLayers } from './prepare-layers'
+import { prepareOptions } from './prepare/options'
+import { resolveLocaleInfo } from './prepare/locale-info'
+import { prepareRuntime } from './prepare/runtime'
+import { prepareRuntimeConfig } from './prepare/runtime-config'
+import { prepareAutoImports } from './prepare/auto-imports'
+import { prepareBuildManifest } from './prepare/build-manifest'
+import { prepareStrategy } from './prepare/strategy'
+import { prepareLayers } from './prepare/layers'
+import { prepareTranspile } from './prepare/transpile'
+import { prepareVite } from './prepare/vite'
 
 export * from './types'
 
@@ -98,19 +100,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * transpile @nuxtjs/i18n
      */
-
-    // https://github.com/nuxt/framework/issues/5257
-    nuxt.options.build.transpile.push('@nuxtjs/i18n')
-    nuxt.options.build.transpile.push('@nuxtjs/i18n-edge')
+    prepareTranspile(nuxt)
 
     /**
      * Optimize deps
      */
-
-    // Optimize vue-i18n to ensure we share the same symbol
-    nuxt.options.vite.optimizeDeps = nuxt.options.vite.optimizeDeps || {}
-    nuxt.options.vite.optimizeDeps.exclude = nuxt.options.vite.optimizeDeps.exclude || []
-    nuxt.options.vite.optimizeDeps.exclude.push('vue-i18n')
+    prepareVite(nuxt)
   }
 })
 

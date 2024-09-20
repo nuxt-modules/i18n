@@ -1,11 +1,11 @@
 import type { Nuxt } from '@nuxt/schema'
-import type { I18nNuxtContext } from './context'
-import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from './virtual-logger'
+import type { I18nNuxtContext } from '../context'
+import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
 import { defu } from 'defu'
 import { addPlugin, addTemplate, addTypeTemplate } from '@nuxt/kit'
-import { generateTemplateNuxtI18nOptions } from './template'
-import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
-import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from './constants'
+import { generateTemplateNuxtI18nOptions } from '../template'
+import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from '../gen'
+import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
 
 export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { isDev: dev, isSSG, localeCodes, localeInfo, normalizedLocales, options, resolver, vueI18nConfigPaths } = ctx

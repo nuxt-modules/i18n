@@ -4,11 +4,11 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
   NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
   VUE_I18N_PKG
-} from './constants'
+} from '../constants'
 import { addComponent, addImports } from '@nuxt/kit'
 import { resolve } from 'pathe'
-import { runtimeDir } from './dirs'
-import type { I18nNuxtContext } from './context'
+import { runtimeDir } from '../dirs'
+import type { I18nNuxtContext } from '../context'
 
 export async function prepareAutoImports({ debug }: I18nNuxtContext, nuxt: Nuxt) {
   const vueI18nPath = nuxt.options.alias[VUE_I18N_PKG]

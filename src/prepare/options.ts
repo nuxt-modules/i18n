@@ -1,7 +1,7 @@
-import type { I18nNuxtContext } from './context'
+import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { applyOptionOverrides, formatMessage } from './utils'
-import { checkLayerOptions } from './layers'
+import { applyOptionOverrides, formatMessage } from '../utils'
+import { checkLayerOptions } from '../layers'
 
 export function prepareOptions({ debug, logger, options }: I18nNuxtContext, nuxt: Nuxt) {
   applyOptionOverrides(options, nuxt)

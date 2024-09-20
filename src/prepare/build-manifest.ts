@@ -1,6 +1,6 @@
-import type { I18nNuxtContext } from './context'
+import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { getLocaleFiles } from './utils'
+import { getLocaleFiles } from '../utils'
 import { relative } from 'pathe'
 
 export function prepareBuildManifest({ options, localeInfo }: I18nNuxtContext, nuxt: Nuxt) {

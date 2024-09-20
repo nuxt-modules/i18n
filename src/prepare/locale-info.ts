@@ -1,7 +1,7 @@
-import type { I18nNuxtContext } from './context'
+import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { getNormalizedLocales, resolveLocales } from './utils'
-import { resolveLayerVueI18nConfigInfo } from './layers'
+import { getNormalizedLocales, resolveLocales } from '../utils'
+import { resolveLayerVueI18nConfigInfo } from '../layers'
 
 export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { options, debug } = ctx
