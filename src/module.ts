@@ -1,14 +1,9 @@
-import { defineNuxtModule, addTypeTemplate } from '@nuxt/kit'
-import { relative } from 'pathe'
+import { defineNuxtModule } from '@nuxt/kit'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { generateI18nTypes } from './gen'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
-import { mergeI18nModules, getLocaleFiles, filterLocales } from './utils'
-import { applyLayerOptions } from './layers'
-import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER } from './virtual-logger'
 import type { HookResult } from '@nuxt/schema'
 import type { LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
@@ -18,6 +13,9 @@ import { resolveLocaleInfo } from './resolve-locale-info'
 import { prepareRuntime } from './prepare-runtime'
 import { prepareRuntimeConfig } from './prepare-runtime-config'
 import { prepareAutoImports } from './prepare-auto-imports'
+import { prepareBuildManifest } from './prepare-build-manifest'
+import { prepareStrategy } from './prepare-strategy'
+import { prepareLayers } from './prepare-layers'
 
 export * from './types'
 
@@ -34,8 +32,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
   async setup(i18nOptions, nuxt) {
     const ctx = createContext(i18nOptions, nuxt)
 
-    const { isSSG, options } = ctx
-
     /**
      * Prepare options
      */
@@ -44,9 +40,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * nuxt layers handling ...
      */
-    applyLayerOptions(options, nuxt)
-    await mergeI18nModules(options, nuxt)
-    filterLocales(options, nuxt)
+    await prepareLayers(ctx, nuxt)
 
     /**
      * setup runtime config
@@ -59,32 +53,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     await resolveLocaleInfo(ctx, nuxt)
 
-    const { normalizedLocales, localeInfo, localeCodes } = ctx
-
     /**
      * setup nuxt/pages
      */
-    if (localeCodes.length) {
-      setupPages(ctx, nuxt)
-    }
+    setupPages(ctx, nuxt)
 
     /**
      * ignore `/` during prerender when using prefixed routing
      */
-    if (options.strategy === 'prefix' && isSSG) {
-      const localizedEntryPages = normalizedLocales.map(x => ['/', x.code].join(''))
-      nuxt.hook('nitro:config', config => {
-        config.prerender ??= {}
-
-        // ignore `/` which is added by nitro by default
-        config.prerender.ignore ??= []
-        config.prerender.ignore.push(/^\/$/)
-
-        // add localized routes as entry pages for prerendering
-        config.prerender.routes ??= []
-        config.prerender.routes.push(...localizedEntryPages)
-      })
-    }
+    prepareStrategy(ctx, nuxt)
 
     /**
      * setup module alias
@@ -96,59 +73,22 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     prepareRuntime(ctx, nuxt)
 
-    nuxt.options.imports.transform ??= {}
-    nuxt.options.imports.transform.include ??= []
-    nuxt.options.imports.transform.include.push(new RegExp(`${RESOLVED_VIRTUAL_NUXT_I18N_LOGGER}$`))
-
-    nuxt.hook('vite:extendConfig', cfg => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      cfg.plugins ||= []
-      // @ts-ignore NOTE: A type error occurs due to a mismatch between Vite plugins and those of Rollup
-      cfg.plugins.push(i18nVirtualLoggerPlugin(options.debug))
-    })
-
-    /**
-     * `$i18n` type narrowing based on 'legacy' or 'composition'
-     * `locales` type narrowing based on generated configuration
-     */
-    addTypeTemplate({
-      filename: 'types/i18n-plugin.d.ts',
-      getContents: () => generateI18nTypes(nuxt, i18nOptions)
-    })
-
     /**
      * disable preloading/prefetching lazy loaded locales
      */
-    nuxt.hook('build:manifest', manifest => {
-      if (options.lazy) {
-        const langFiles = localeInfo
-          .flatMap(locale => getLocaleFiles(locale))
-          .map(x => relative(nuxt.options.srcDir, x.path))
-        const langPaths = [...new Set(langFiles)]
-
-        for (const key in manifest) {
-          if (langPaths.some(x => key.startsWith(x))) {
-            manifest[key].prefetch = false
-            manifest[key].preload = false
-          }
-        }
-      }
-    })
+    prepareBuildManifest(ctx, nuxt)
 
     /**
      * extend bundler
      */
 
-    await extendBundler(nuxt, options)
+    await extendBundler(ctx, nuxt)
 
     /**
      * setup nitro
      */
 
-    await setupNitro(ctx, nuxt, {
-      optionsCode: ctx.genTemplate(true, true),
-      localeInfo
-    })
+    await setupNitro(ctx, nuxt)
 
     /**
      * auto imports

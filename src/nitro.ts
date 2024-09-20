@@ -31,14 +31,17 @@ type AdditionalSetupNitroParams = {
 }
 
 export async function setupNitro(
-  { isSSR, resolver, options: nuxtOptions }: I18nNuxtContext,
-  nuxt: Nuxt,
-  additionalParams: AdditionalSetupNitroParams
+  { genTemplate, isSSR, localeInfo, resolver, options: nuxtOptions }: I18nNuxtContext,
+  nuxt: Nuxt
 ) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
   nuxt.hook('nitro:config', async nitroConfig => {
     if (enableServerIntegration) {
+      const additionalParams: AdditionalSetupNitroParams = {
+        optionsCode: genTemplate(true, true),
+        localeInfo
+      }
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {}, {
         inline: [resolver.resolve('./runtime')]

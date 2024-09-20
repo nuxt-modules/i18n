@@ -35,7 +35,9 @@ export type NuxtPageAnalyzeContext = {
   pages: Map<NuxtPage, AnalyzedNuxtPageMeta>
 }
 
-export function setupPages({ options, isSSR }: I18nNuxtContext, nuxt: Nuxt) {
+export function setupPages({ localeCodes, options, isSSR }: I18nNuxtContext, nuxt: Nuxt) {
+  if (!localeCodes.length) return
+
   let includeUnprefixedFallback = !isSSR
   nuxt.hook('nitro:init', () => {
     debug('enable includeUprefixedFallback')
