@@ -6,7 +6,6 @@ settings:
 
 overrides:
   '@nuxtjs/i18n': link:.
-  jiti: 1.21.0
   consola: ^3
 
 importers:
@@ -138,7 +137,7 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
       jiti:
-        specifier: 1.21.0
+        specifier: ^1.20.0
         version: 1.21.0
       jsdom:
         specifier: ^24.1.0
@@ -4506,6 +4505,10 @@ packages:
     resolution: {integrity: sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==}
     hasBin: true
 
+  jiti@1.21.6:
+    resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
+    hasBin: true
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -8632,7 +8635,7 @@ snapshots:
       globby: 14.0.2
       hash-sum: 2.0.0
       ignore: 5.3.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       mlly: 1.7.1
@@ -8660,7 +8663,7 @@ snapshots:
       globby: 14.0.2
       hash-sum: 2.0.0
       ignore: 5.3.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       mlly: 1.7.1
@@ -8688,7 +8691,7 @@ snapshots:
       globby: 14.0.2
       hash-sum: 2.0.0
       ignore: 5.3.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       mlly: 1.7.1
@@ -8716,7 +8719,7 @@ snapshots:
       globby: 14.0.2
       hash-sum: 2.0.0
       ignore: 5.3.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       mlly: 1.7.1
@@ -8744,7 +8747,7 @@ snapshots:
       globby: 14.0.2
       hash-sum: 2.0.0
       ignore: 5.3.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       mlly: 1.7.1
@@ -8888,7 +8891,7 @@ snapshots:
       dotenv: 16.4.5
       git-url-parse: 14.0.0
       is-docker: 3.0.0
-      jiti: 1.21.0
+      jiti: 1.21.6
       mri: 1.2.0
       nanoid: 5.0.7
       ofetch: 1.3.4
@@ -8913,7 +8916,7 @@ snapshots:
       dotenv: 16.4.5
       git-url-parse: 15.0.0
       is-docker: 3.0.0
-      jiti: 1.21.0
+      jiti: 1.21.6
       mri: 1.2.0
       nanoid: 5.0.7
       ofetch: 1.3.4
@@ -8939,7 +8942,7 @@ snapshots:
       dotenv: 16.4.5
       git-url-parse: 15.0.0
       is-docker: 3.0.0
-      jiti: 1.21.0
+      jiti: 1.21.6
       mri: 1.2.0
       nanoid: 5.0.7
       ofetch: 1.3.4
@@ -11098,7 +11101,7 @@ snapshots:
       defu: 6.1.4
       dotenv: 16.4.5
       giget: 1.2.3
-      jiti: 1.21.0
+      jiti: 1.21.6
       mlly: 1.7.1
       ohash: 1.1.3
       pathe: 1.1.2
@@ -11115,7 +11118,7 @@ snapshots:
       defu: 6.1.4
       dotenv: 16.4.5
       giget: 1.2.3
-      jiti: 1.21.0
+      jiti: 1.21.6
       mlly: 1.7.1
       ohash: 1.1.4
       pathe: 1.1.2
@@ -12677,6 +12680,8 @@ snapshots:
 
   jiti@1.21.0: {}
 
+  jiti@1.21.6: {}
+
   js-tokens@4.0.0: {}
 
   js-tokens@9.0.0: {}
@@ -12880,7 +12885,7 @@ snapshots:
       get-port-please: 3.1.2
       h3: 1.12.0
       http-shutdown: 1.2.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       mlly: 1.7.1
       node-forge: 1.3.1
       pathe: 1.1.2
@@ -13379,7 +13384,7 @@ snapshots:
       defu: 6.1.4
       esbuild: 0.23.1
       fast-glob: 3.3.2
-      jiti: 1.21.0
+      jiti: 1.21.6
       mlly: 1.7.1
       pathe: 1.1.2
       pkg-types: 1.2.0
@@ -13465,7 +13470,7 @@ snapshots:
       hookable: 5.5.3
       httpxy: 0.1.5
       ioredis: 5.4.1
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       listhen: 1.7.2
@@ -13754,7 +13759,7 @@ snapshots:
       h3: 1.12.0
       hookable: 5.5.3
       ignore: 5.3.1
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       magic-string: 0.30.11
@@ -13865,7 +13870,7 @@ snapshots:
       hookable: 5.5.3
       ignore: 5.3.2
       impound: 0.1.0(rollup@3.29.4)(webpack-sources@3.2.3)
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       magic-string: 0.30.11
@@ -13979,7 +13984,7 @@ snapshots:
       hookable: 5.5.3
       ignore: 5.3.2
       impound: 0.1.0(rollup@4.21.2)(webpack-sources@3.2.3)
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       magic-string: 0.30.11
@@ -14093,7 +14098,7 @@ snapshots:
       hookable: 5.5.3
       ignore: 5.3.2
       impound: 0.1.0(rollup@4.21.2)(webpack-sources@3.2.3)
-      jiti: 1.21.0
+      jiti: 1.21.6
       klona: 2.0.6
       knitwork: 1.1.0
       magic-string: 0.30.11
@@ -16091,7 +16096,7 @@ snapshots:
       '@babel/standalone': 7.24.7
       '@babel/types': 7.25.2
       defu: 6.1.4
-      jiti: 1.21.0
+      jiti: 1.21.6
       mri: 1.2.0
       scule: 1.3.0
     transitivePeerDependencies:

@@ -85,7 +85,6 @@
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",
-      "jiti": "1.21.0",
       "consola": "^3"
     }
   },
