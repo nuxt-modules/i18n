@@ -4,11 +4,11 @@
   "version": "8.5.4",
   "homepage": "https://i18n.nuxtjs.org",
   "bugs": {
-    "url": "https://github.com/nuxt-community/i18n-module/issues"
+    "url": "https://github.com/nuxt-modules/i18n/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nuxt-community/i18n-module.git"
+    "url": "git+https://github.com/nuxt-modules/i18n.git"
   },
   "license": "MIT",
   "contributors": [
