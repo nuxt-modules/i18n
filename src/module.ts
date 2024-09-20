@@ -1,51 +1,25 @@
-import createDebug from 'debug'
-import {
-  defineNuxtModule,
-  addComponent,
-  addPlugin,
-  addTemplate,
-  addTypeTemplate,
-  addImports,
-  useLogger,
-  createResolver
-} from '@nuxt/kit'
-import { resolve, relative } from 'pathe'
-import { defu } from 'defu'
+import { defineNuxtModule, addTypeTemplate } from '@nuxt/kit'
+import { relative } from 'pathe'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
-import {
-  NUXT_I18N_MODULE_ID,
-  DEFAULT_OPTIONS,
-  NUXT_I18N_TEMPLATE_OPTIONS_KEY,
-  NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
-  VUE_I18N_PKG
-} from './constants'
-import {
-  formatMessage,
-  getNormalizedLocales,
-  resolveLocales,
-  mergeI18nModules,
-  applyOptionOverrides,
-  getLocaleFiles,
-  filterLocales
-} from './utils'
-import { runtimeDir } from './dirs'
-import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { generateTemplateNuxtI18nOptions } from './template'
-import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from './virtual-logger'
-
+import { generateI18nTypes } from './gen'
+import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
+import { mergeI18nModules, getLocaleFiles, filterLocales } from './utils'
+import { applyLayerOptions } from './layers'
+import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER } from './virtual-logger'
 import type { HookResult } from '@nuxt/schema'
 import type { LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
+import { createContext } from './context'
+import { prepareOptions } from './prepare-options'
+import { resolveLocaleInfo } from './resolve-locale-info'
+import { prepareRuntime } from './prepare-runtime'
+import { prepareRuntimeConfig } from './prepare-runtime-config'
+import { prepareAutoImports } from './prepare-auto-imports'
 
 export * from './types'
-
-const debug = createDebug('@nuxtjs/i18n:module')
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
@@ -58,47 +32,18 @@ export default defineNuxtModule<NuxtI18nOptions>({
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
-    const logger = useLogger(NUXT_I18N_MODULE_ID)
+    const ctx = createContext(i18nOptions, nuxt)
 
-    nuxt.hook('prepare:types', ({ references }) => {
-      references.push({ types: `${NUXT_I18N_MODULE_ID}/internals` })
-    })
-
-    const options = i18nOptions as Required<NuxtI18nOptions>
-    applyOptionOverrides(options, nuxt)
-    debug('options', options)
-
-    checkLayerOptions(options, nuxt)
+    const { isSSG, options } = ctx
 
     /**
-     * Check conflicting options
+     * Prepare options
      */
-
-    if (options.bundle.compositionOnly && options.types === 'legacy') {
-      throw new Error(
-        formatMessage(
-          '`bundle.compositionOnly` option and `types` option is conflicting: ' +
-            `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
-        )
-      )
-    }
-
-    if (options.experimental.autoImportTranslationFunctions && nuxt.options.imports.autoImport === false) {
-      logger.warn(
-        'Disabling `autoImports` in Nuxt is not compatible with `experimental.autoImportTranslationFunctions`, either enable `autoImports` or disable `experimental.autoImportTranslationFunctions`.'
-      )
-    }
-
-    if (nuxt.options.experimental.scanPageMeta === false) {
-      logger.warn(
-        "Route localization features (e.g. custom name, prefixed aliases) require Nuxt's `experimental.scanPageMeta` to be enabled.\nThis feature will be enabled in future Nuxt versions (https://github.com/nuxt/nuxt/pull/27134), check out the docs for more details: https://nuxt.com/docs/guide/going-further/experimental-features#scanpagemeta"
-      )
-    }
+    prepareOptions(ctx, nuxt)
 
     /**
      * nuxt layers handling ...
      */
-
     applyLayerOptions(options, nuxt)
     await mergeI18nModules(options, nuxt)
     filterLocales(options, nuxt)
@@ -106,57 +51,27 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * setup runtime config
      */
-
     // for public
-    // @ts-expect-error generated type
-    nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
-      baseUrl: options.baseUrl,
-      defaultLocale: options.defaultLocale,
-      defaultDirection: options.defaultDirection,
-      strategy: options.strategy,
-      lazy: options.lazy,
-      rootRedirect: options.rootRedirect,
-      routesNameSeparator: options.routesNameSeparator,
-      defaultLocaleRouteNameSuffix: options.defaultLocaleRouteNameSuffix,
-      skipSettingLocaleOnNavigate: options.skipSettingLocaleOnNavigate,
-      differentDomains: options.differentDomains,
-      trailingSlash: options.trailingSlash,
-      locales: options.locales,
-      detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
-      experimental: options.experimental,
-      multiDomainLocales: options.multiDomainLocales
-      // TODO: we should support more i18n module options. welcome PRs :-)
-    })
+    prepareRuntimeConfig(ctx, nuxt)
 
     /**
-     * resolve locale info
+     * resolve locale info and vue-i18n config path
      */
+    await resolveLocaleInfo(ctx, nuxt)
 
-    const normalizedLocales = getNormalizedLocales(options.locales)
-    const localeCodes = normalizedLocales.map(locale => locale.code)
-    const localeInfo = await resolveLocales(nuxt.options.srcDir, normalizedLocales, nuxt.options.buildDir)
-    debug('localeInfo', localeInfo)
-
-    /**
-     * resolve vue-i18n config path
-     */
-
-    const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(options)
-    debug('VueI18nConfigPaths', vueI18nConfigPaths)
+    const { normalizedLocales, localeInfo, localeCodes } = ctx
 
     /**
      * setup nuxt/pages
      */
-
     if (localeCodes.length) {
-      setupPages(options, nuxt)
+      setupPages(ctx, nuxt)
     }
 
     /**
      * ignore `/` during prerender when using prefixed routing
      */
-
-    if (options.strategy === 'prefix' && nuxt.options._generate) {
+    if (options.strategy === 'prefix' && isSSG) {
       const localizedEntryPages = normalizedLocales.map(x => ['/', x.code].join(''))
       nuxt.hook('nitro:config', config => {
         config.prerender ??= {}
@@ -174,51 +89,12 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * setup module alias
      */
-
-    await setupAlias(nuxt, options)
+    await setupAlias(ctx, nuxt)
 
     /**
      * add plugin and templates
      */
-
-    // for core plugin
-    addPlugin(resolve(runtimeDir, 'plugins/i18n'))
-    addPlugin(resolve(runtimeDir, 'plugins/switch-locale-path-ssr'))
-
-    const resolver = createResolver(import.meta.url)
-    // for composables
-    nuxt.options.alias['#i18n'] = resolver.resolve('./runtime/composables/index')
-    nuxt.options.build.transpile.push('#i18n')
-    nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
-
-    const genTemplate = (isServer: boolean, lazy?: boolean) => {
-      const nuxtI18nOptions = defu({}, options)
-      // override `lazy` options
-      if (lazy != null) {
-        nuxtI18nOptions.lazy = lazy
-      }
-      return generateTemplateNuxtI18nOptions({
-        ...generateLoaderOptions(nuxt, {
-          vueI18nConfigPaths,
-          localeInfo,
-          nuxtI18nOptions,
-          isServer
-        }),
-        localeCodes,
-        normalizedLocales,
-        dev: nuxt.options.dev,
-        isSSG: nuxt.options._generate,
-        parallelPlugin: options.parallelPlugin
-      })
-    }
-
-    nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, defu({}, options))
-
-    addTemplate({
-      filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
-      write: true,
-      getContents: () => genTemplate(false)
-    })
+    prepareRuntime(ctx, nuxt)
 
     nuxt.options.imports.transform ??= {}
     nuxt.options.imports.transform.include ??= []
@@ -269,48 +145,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup nitro
      */
 
-    await setupNitro(nuxt, options, {
-      optionsCode: genTemplate(true, true),
+    await setupNitro(ctx, nuxt, {
+      optionsCode: ctx.genTemplate(true, true),
       localeInfo
     })
 
     /**
      * auto imports
      */
-
-    const vueI18nPath = nuxt.options.alias[VUE_I18N_PKG]
-    debug('vueI18nPath for auto-import', vueI18nPath)
-
-    await addComponent({
-      name: 'NuxtLinkLocale',
-      filePath: resolve(runtimeDir, 'components/NuxtLinkLocale')
-    })
-
-    await addComponent({
-      name: 'SwitchLocalePathLink',
-      filePath: resolve(runtimeDir, 'components/SwitchLocalePathLink')
-    })
-
-    addImports([
-      { name: 'useI18n', from: vueI18nPath },
-      ...[
-        'useRouteBaseName',
-        'useLocalePath',
-        'useLocaleRoute',
-        'useSwitchLocalePath',
-        'useLocaleHead',
-        'useBrowserLocale',
-        'useCookieLocale',
-        'useSetI18nParams',
-        NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-        NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-        NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
-      ].map(key => ({
-        name: key,
-        as: key,
-        from: resolve(runtimeDir, 'composables/index')
-      }))
-    ])
+    await prepareAutoImports(ctx, nuxt)
 
     /**
      * transpile @nuxtjs/i18n
