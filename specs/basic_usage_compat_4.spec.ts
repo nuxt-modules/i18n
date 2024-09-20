@@ -14,7 +14,7 @@ import {
   waitForTransition,
   waitForURL
 } from './helper'
-import { RouteLocation } from 'vue-router'
+import type { RouteLocation } from 'vue-router'
 
 describe('basic usage - compatibilityVersion: 4', async () => {
   await setup({

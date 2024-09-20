@@ -1,5 +1,6 @@
 import { generateLoaderOptions } from '../src/gen'
 import { resolveLocales, resolveVueI18nConfigInfo } from '../src/utils'
+import { vi, beforeEach, afterEach, test, expect } from 'vitest'
 
 import type { LocaleInfo, NuxtI18nOptions, VueI18nConfigPathInfo } from '../src/types'
 import type { Nuxt } from '@nuxt/schema'
@@ -61,7 +62,7 @@ const makeNuxtOptions = (localeInfo: LocaleInfo[]) => {
         }
       ]
     }
-  } as Nuxt
+  } as unknown as Nuxt
 }
 
 test('basic', async () => {

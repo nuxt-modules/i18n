@@ -17,7 +17,7 @@ import { initCommonComposableOptions, type CommonComposableOptions } from './uti
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale } from 'vue-i18n'
-import type { DetectBrowserLanguageOptions, LocaleObject } from '#build/i18n.options.mjs'
+import type { DetectBrowserLanguageOptions, LocaleObject } from '../types'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { CookieRef, NuxtApp } from 'nuxt/app'
 import type { ModulePublicRuntimeConfig } from '../module'
@@ -350,7 +350,7 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
   const nuxtApp = useNuxtApp()
   const host = getHost()
   // lookup the `differentDomain` origin associated with given locale.
-  const config = runtimeConfig.public.i18n
+  const config = runtimeConfig.public.i18n as ModulePublicRuntimeConfig['i18n']
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
   const domain = config?.domainLocales?.[localeCode]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
 
@@ -374,7 +374,7 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
 }
 
 export const runtimeDetectBrowserLanguage = (
-  opts: ModulePublicRuntimeConfig['i18n'] = useRuntimeConfig().public.i18n
+  opts: ModulePublicRuntimeConfig['i18n'] = useRuntimeConfig().public.i18n as ModulePublicRuntimeConfig['i18n']
 ) => {
   if (opts?.detectBrowserLanguage === false) return false
 
@@ -385,8 +385,8 @@ export const runtimeDetectBrowserLanguage = (
  * Removes default routes depending on domain
  */
 export function setupMultiDomainLocales(nuxtContext: NuxtApp, defaultLocaleDomain: string) {
-  const { multiDomainLocales, strategy, routesNameSeparator, defaultLocaleRouteNameSuffix } =
-    nuxtContext.$config.public.i18n
+  const { multiDomainLocales, strategy, routesNameSeparator, defaultLocaleRouteNameSuffix } = nuxtContext.$config.public
+    .i18n as ModulePublicRuntimeConfig['i18n']
 
   // feature disabled
   if (!multiDomainLocales) return
@@ -419,7 +419,8 @@ export function setupMultiDomainLocales(nuxtContext: NuxtApp, defaultLocaleDomai
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
 export function getDefaultLocaleForDomain(nuxtContext: NuxtApp) {
-  const { locales, defaultLocale, multiDomainLocales } = nuxtContext.$config.public.i18n
+  const { locales, defaultLocale, multiDomainLocales } = nuxtContext.$config.public
+    .i18n as ModulePublicRuntimeConfig['i18n']
 
   let defaultLocaleDomain: string = defaultLocale || ''
 

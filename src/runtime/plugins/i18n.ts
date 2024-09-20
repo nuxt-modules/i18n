@@ -7,8 +7,7 @@ import {
   isSSG,
   localeLoaders,
   parallelPlugin,
-  normalizedLocales,
-  type LocaleObject
+  normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, loadLocale } from '../messages'
 import { loadAndSetLocale, detectLocale, detectRedirect, navigate, injectNuxtHelpers, extendBaseUrl } from '../utils'
@@ -30,6 +29,8 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
+import type { LocaleObject } from '../../types'
+import type { ModulePublicRuntimeConfig } from '../../module'
 
 // from https://github.com/nuxt/nuxt/blob/2466af53b0331cdb8b17c2c3b08675c5985deaf3/packages/nuxt/src/core/templates.ts#L152
 type Decorate<T extends Record<string, unknown>> = { [K in keyof T as K extends string ? `$${K}` : never]: T[K] }
@@ -57,7 +58,10 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     setupMultiDomainLocales(nuxtContext, defaultLocaleDomain)
 
     // Fresh copy per request to prevent reusing mutated options
-    const runtimeI18n = { ...nuxtContext.$config.public.i18n, defaultLocale: defaultLocaleDomain }
+    const runtimeI18n = {
+      ...(nuxtContext.$config.public.i18n as ModulePublicRuntimeConfig['i18n']),
+      defaultLocale: defaultLocaleDomain
+    }
     // @ts-expect-error type incompatible
     runtimeI18n.baseUrl = extendBaseUrl()
 
@@ -144,10 +148,11 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     extendI18n(i18n, {
       extendComposer(composer) {
         const route = useRoute()
-        const _locales = ref<string[] | LocaleObject[]>(runtimeI18n.locales)
-        const _localeCodes = ref<string[]>(localeCodes)
+        const _locales = ref<Locale[] | LocaleObject[]>(runtimeI18n.locales)
+        const _localeCodes = ref<Locale[]>(localeCodes)
         const _baseUrl = ref<string>('')
 
+        // @ts-expect-error type mismatch
         composer.locales = computed(() => _locales.value)
         composer.localeCodes = computed(() => _localeCodes.value)
         composer.baseUrl = computed(() => _baseUrl.value)

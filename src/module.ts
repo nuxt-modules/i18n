@@ -6,7 +6,8 @@ import {
   addTemplate,
   addTypeTemplate,
   addImports,
-  useLogger
+  useLogger,
+  createResolver
 } from '@nuxt/kit'
 import { resolve, relative } from 'pathe'
 import { defu } from 'defu'
@@ -33,7 +34,7 @@ import {
   getLocaleFiles,
   filterLocales
 } from './utils'
-import { distDir, runtimeDir } from './dirs'
+import { runtimeDir } from './dirs'
 import { applyLayerOptions, checkLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from './virtual-logger'
@@ -58,6 +59,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
     const logger = useLogger(NUXT_I18N_MODULE_ID)
+
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({ types: `${NUXT_I18N_MODULE_ID}/internals` })
+    })
 
     const options = i18nOptions as Required<NuxtI18nOptions>
     applyOptionOverrides(options, nuxt)
@@ -180,8 +185,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
     addPlugin(resolve(runtimeDir, 'plugins/i18n'))
     addPlugin(resolve(runtimeDir, 'plugins/switch-locale-path-ssr'))
 
+    const resolver = createResolver(import.meta.url)
     // for composables
-    nuxt.options.alias['#i18n'] = resolve(distDir, 'runtime/composables/index.js')
+    nuxt.options.alias['#i18n'] = resolver.resolve('./runtime/composables/index')
     nuxt.options.build.transpile.push('#i18n')
     nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
@@ -206,7 +212,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       })
     }
 
-    // @ts-expect-error type error
     nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, defu({}, options))
 
     addTemplate({
@@ -448,7 +453,7 @@ declare module '@nuxt/schema' {
     ['i18n']?: Partial<UserNuxtI18nOptions>
   }
   interface NuxtOptions {
-    ['i18n']?: UserNuxtI18nOptions
+    ['i18n']: UserNuxtI18nOptions
   }
   interface NuxtHooks extends ModuleHooks {}
   interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
