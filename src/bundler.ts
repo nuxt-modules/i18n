@@ -7,6 +7,7 @@ import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { getLayerLangPaths } from './layers'
+// import { I18nVirtualLoggerPlugin } from './virtual-logger'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
@@ -42,12 +43,13 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
       compositionOnly: nuxtOptions.bundle.compositionOnly,
       onlyLocales: nuxtOptions.bundle.onlyLocales,
       dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-      optimizeTranslationDirective: true,
+      optimizeTranslationDirective: false,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml,
       include: localeIncludePaths
     }
 
+    // addWebpackPlugin(I18nVirtualLoggerPlugin.webpack({ debug: nuxt.options.debug }))
     addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
     addWebpackPlugin(TransformMacroPlugin.webpack(sourceMapOptions))
     addWebpackPlugin(ResourcePlugin.webpack(sourceMapOptions))
@@ -83,6 +85,7 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
     include: localeIncludePaths
   }
 
+  // addVitePlugin(I18nVirtualLoggerPlugin.vite({ debug: nuxt.options.debug }))
   addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
   addVitePlugin(TransformMacroPlugin.vite(sourceMapOptions))
   addVitePlugin(ResourcePlugin.vite(sourceMapOptions))

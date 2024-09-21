@@ -34,7 +34,7 @@ import {
   setLocaleProperty,
   setLocaleCookie
 } from './compatibility'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '~nuxt-i18n/logger'
 import { createLocaleFromRouteGetter } from './routing/extends/router'
 
 import type { I18n, Locale } from 'vue-i18n'

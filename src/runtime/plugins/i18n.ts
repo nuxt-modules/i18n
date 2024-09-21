@@ -24,7 +24,7 @@ import {
 import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
 import { setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '~nuxt-i18n/logger'
 
 import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions } from 'vue-i18n'
