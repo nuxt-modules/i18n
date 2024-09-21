@@ -13,7 +13,7 @@ import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { NuxtI18nOptions, CustomRoutePages, ComputedRouteOptions, RouteOptionsResolver } from './types'
 import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
-import type { I18nNuxtContext } from '~/src/context'
+import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
 
