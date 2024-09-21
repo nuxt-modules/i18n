@@ -1,22 +1,9 @@
 {
   "name": "@nuxtjs/i18n",
-  "description": "Internationalization for Nuxt",
-  "keywords": [
-    "nuxt",
-    "i18n",
-    "internationalization",
-    "nuxt-module"
-  ],
+  "type": "module",
   "version": "9.0.0-alpha.3",
-  "homepage": "https://i18n.nuxtjs.org",
-  "bugs": {
-    "url": "https://github.com/nuxt-modules/i18n/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nuxt-modules/i18n.git"
-  },
-  "license": "MIT",
+  "packageManager": "pnpm@9.4.0",
+  "description": "Internationalization for Nuxt",
   "contributors": [
     {
       "name": "Paul Gascou-Vaillancourt (@paulgv)"
@@ -31,24 +18,33 @@
       "name": "Bobbie Goede (@BobbieGoede)"
     }
   ],
+  "license": "MIT",
+  "homepage": "https://i18n.nuxtjs.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuxt-modules/i18n.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nuxt-modules/i18n/issues"
+  },
+  "keywords": [
+    "nuxt",
+    "i18n",
+    "internationalization",
+    "nuxt-module"
+  ],
   "exports": {
     ".": {
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs",
-      "types": "./dist/types.d.ts"
-    },
-    "./internals": {
-      "types": "./internals.d.ts"
+      "types": "./dist/types.d.mts",
+      "import": "./dist/module.mjs"
     },
     "./package.json": "./package.json"
   },
   "imports": {
     "#i18n": "./dist/runtime/composables/index.js"
   },
-  "main": "./dist/module.cjs",
-  "module": "./dist/module.mjs",
+  "main": "./dist/module.mjs",
   "types": "./dist/types.d.ts",
-  "type": "module",
   "files": [
     "dist",
     "internals.d.ts"
@@ -81,7 +77,6 @@
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
   },
-  "packageManager": "pnpm@9.4.0",
   "pnpm": {
     "overrides": {
       "@nuxtjs/i18n": "link:.",

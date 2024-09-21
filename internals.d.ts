@@ -1,12 +1,8 @@
 declare module '#build/i18n.options.mjs' {
   import type { DeepRequired } from 'ts-essentials'
-  /**
-   * stub type definition for @nuxtjs/i18n internally
-   */
+  import type { LocaleObject, NuxtI18nOptions, VueI18nConfig } from '@nuxtjs/i18n'
 
-  type VueI18nConfig = import('./dist/types').VueI18nConfig
-  type NuxtI18nOptions = import('./dist/types').NuxtI18nOptions
-  type LocaleObject = import('./dist/types').LocaleObject
+  export type { LocaleObject }
 
   type LocaleLoader = {
     key: string
@@ -33,14 +29,7 @@ declare module '#build/i18n.options.mjs' {
 
 declare module '#internal/i18n/options.mjs' {
   import type { DeepRequired } from 'ts-essentials'
-
-  type VueI18nConfig = import('./dist/types').VueI18nConfig
-  type NuxtI18nOptions = import('./dist/types').NuxtI18nOptions
-  type LocaleObject = import('./dist/types').LocaleObject
-
-  /**
-   * stub type definition for @nuxtjs/i18n internally
-   */
+  import type { LocaleObject, NuxtI18nOptions, VueI18nConfig } from '@nuxtjs/i18n'
 
   type LocaleLoader = {
     key: string
@@ -66,7 +55,9 @@ declare module '#internal/i18n/options.mjs' {
 }
 
 declare module '#internal/i18n/locale.detector.mjs' {
-  export const localeDetector: import('./dist/runtime/composables/server').LocaleDetector
+  import type { LocaleDetector } from '@nuxtjs/i18n/dist/runtime/composables/server'
+
+  export const localeDetector: LocaleDetector
 }
 
 declare module 'virtual:nuxt-i18n-logger' {
