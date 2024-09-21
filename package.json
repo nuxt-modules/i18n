@@ -7,7 +7,7 @@
     "internationalization",
     "nuxt-module"
   ],
-  "version": "9.0.0-alpha.2",
+  "version": "9.0.0-alpha.3",
   "homepage": "https://i18n.nuxtjs.org",
   "bugs": {
     "url": "https://github.com/nuxt-modules/i18n/issues"
