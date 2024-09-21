@@ -9,7 +9,7 @@ import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
-import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '../../../types'
+import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '../../shared-types'
 import type { Locale } from 'vue-i18n'
 import type {
   RouteLocation,
@@ -20,7 +20,7 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
-import type { ModulePublicRuntimeConfig } from '../../../module'
+import type { I18nPublicRuntimeConfig } from '../../shared-types'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
@@ -114,6 +114,7 @@ export function localeRoute(
  * @remarks
  * If `locale` is not specified, uses current locale.
  *
+ * @param common - Common options used internally by composable functions.
  * @param route - A route.
  * @param locale - A locale, optional.
  *
@@ -133,8 +134,7 @@ export function localeLocation(
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
   const _locale = locale || getLocale(i18n)
-  const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public
-    .i18n as ModulePublicRuntimeConfig['i18n']
+  const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public.i18n as I18nPublicRuntimeConfig
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
   let _route: RouteLocationPathRaw | RouteLocationNamedRaw
