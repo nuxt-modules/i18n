@@ -45,7 +45,7 @@ import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
-import type { ModulePublicRuntimeConfig } from '../module'
+import type { I18nPublicRuntimeConfig } from './shared-types'
 import type {
   RootRedirectOptions,
   PrefixableOptions,
@@ -53,7 +53,7 @@ import type {
   BaseUrlResolveHandler,
   Strategies,
   LocaleObject
-} from '../types'
+} from './shared-types'
 
 /**
  * Common options used internally by composable functions, these
@@ -64,14 +64,14 @@ import type {
 export type CommonComposableOptions = {
   router: Router
   i18n: I18n
-  runtimeConfig: RuntimeConfig & { public: { i18n: ModulePublicRuntimeConfig['i18n'] } }
+  runtimeConfig: RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } }
   metaState: Ref<Record<Locale, any>>
 }
 export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
   return {
     i18n: i18n ?? (useNuxtApp().$i18n as unknown as I18n),
     router: useRouter(),
-    runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: ModulePublicRuntimeConfig['i18n'] } },
+    runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } },
     metaState: useState<Record<Locale, any>>('nuxt-i18n-meta', () => ({}))
   }
 }
@@ -79,7 +79,7 @@ export function initCommonComposableOptions(i18n?: I18n): CommonComposableOption
 export async function loadAndSetLocale(
   newLocale: Locale,
   i18n: I18n,
-  runtimeI18n: ModulePublicRuntimeConfig['i18n'],
+  runtimeI18n: I18nPublicRuntimeConfig,
   initial: boolean = false
 ): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
@@ -161,7 +161,7 @@ export function detectLocale(
   routeLocale: string,
   initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext,
-  runtimeI18n: ModulePublicRuntimeConfig['i18n']
+  runtimeI18n: I18nPublicRuntimeConfig
 ) {
   const { strategy, defaultLocale, differentDomains, multiDomainLocales } = runtimeI18n
   const { localeCookie } = detectLocaleContext
@@ -283,7 +283,7 @@ export async function navigate(
 ) {
   const { nuxtApp, i18n, locale, route } = args
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxtApp
-    .$config.public.i18n as ModulePublicRuntimeConfig['i18n']
+    .$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
   let { redirectPath } = args
 
@@ -419,7 +419,7 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   return (): string => {
     const ctx = useNuxtApp()
-    const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n as ModulePublicRuntimeConfig['i18n']
+    const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n as I18nPublicRuntimeConfig
 
     if (isFunction(baseUrl)) {
       const baseUrlResult = baseUrl(ctx)

@@ -7,12 +7,13 @@ import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer, getLocale, getLocales } from '../../compatibility'
 
 import type { I18n } from 'vue-i18n'
-import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '../../../types'
+import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '../../shared-types'
 import type { CommonComposableOptions } from '../../utils'
 
 /**
  * Returns localized head properties for locale-related aspects.
  *
+ * @param common - Common options used internally by composable functions.
  * @param options - An options, see about details {@link I18nHeadOptions}.
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties}.
