@@ -20,7 +20,7 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
-import type { ModulePublicRuntimeConfig } from '~/src/module'
+import type { ModulePublicRuntimeConfig } from '../../../module'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 

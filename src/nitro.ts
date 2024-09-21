@@ -21,7 +21,7 @@ import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
 import { resolveI18nDir } from './layers'
 import { i18nVirtualLoggerPlugin } from './virtual-logger'
-import type { I18nNuxtContext } from '~/src/context'
+import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
