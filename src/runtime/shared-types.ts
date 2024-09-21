@@ -4,10 +4,10 @@ import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
 
 // Options
-const STRATEGY_PREFIX = 'prefix'
-const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
-const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
-const STRATEGY_NO_PREFIX = 'no_prefix'
+export const STRATEGY_PREFIX = 'prefix'
+export const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
+export const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
+export const STRATEGY_NO_PREFIX = 'no_prefix'
 export const STRATEGIES = {
   PREFIX: STRATEGY_PREFIX,
   PREFIX_EXCEPT_DEFAULT: STRATEGY_PREFIX_EXCEPT_DEFAULT,
