@@ -14,16 +14,16 @@ import {
 } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions } from './types'
+import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:alias')
 
-export async function setupAlias(nuxt: Nuxt, options: NuxtI18nOptions) {
+export async function setupAlias({ userOptions: options, isDev, isPrepare }: I18nNuxtContext, nuxt: Nuxt) {
   const runtimeOnly = options.bundle?.runtimeOnly
   const modules: Record<string, string> = {}
 
   modules[VUE_I18N_PKG] =
-    nuxt.options.dev || nuxt.options._prepare
+    isDev || isPrepare
       ? `${VUE_I18N_PKG}/dist/vue-i18n.mjs`
       : `${VUE_I18N_PKG}/dist/vue-i18n${runtimeOnly ? '.runtime' : ''}.mjs`
   modules[SHARED_PKG] = `${SHARED_PKG}/dist/shared.mjs`

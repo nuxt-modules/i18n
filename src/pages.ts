@@ -13,6 +13,7 @@ import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { NuxtI18nOptions, CustomRoutePages, ComputedRouteOptions, RouteOptionsResolver } from './types'
 import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
+import type { I18nNuxtContext } from '~/src/context'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
 
@@ -34,8 +35,10 @@ export type NuxtPageAnalyzeContext = {
   pages: Map<NuxtPage, AnalyzedNuxtPageMeta>
 }
 
-export function setupPages(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
-  let includeUnprefixedFallback = nuxt.options.ssr === false
+export function setupPages({ localeCodes, options, isSSR }: I18nNuxtContext, nuxt: Nuxt) {
+  if (!localeCodes.length) return
+
+  let includeUnprefixedFallback = !isSSR
   nuxt.hook('nitro:init', () => {
     debug('enable includeUprefixedFallback')
     includeUnprefixedFallback = options.strategy !== 'prefix'

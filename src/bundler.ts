@@ -10,12 +10,12 @@ import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
-import type { NuxtI18nOptions } from './types'
 import type { BundlerPluginOptions } from './transform/utils'
+import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
-export async function extendBundler(nuxt: Nuxt, nuxtOptions: Required<NuxtI18nOptions>) {
+export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, nuxt: Nuxt) {
   const langPaths = getLayerLangPaths(nuxt)
   debug('langPaths -', langPaths)
   const i18nModulePaths =

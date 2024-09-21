@@ -2,7 +2,7 @@ import createDebug from 'debug'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
-import { addServerPlugin, createResolver, resolvePath, useLogger } from '@nuxt/kit'
+import { addServerPlugin, resolvePath, useLogger } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getFeatureFlags } from './bundler'
@@ -18,9 +18,10 @@ import {
 } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleInfo } from './types'
+import type { LocaleInfo } from './types'
 import { resolveI18nDir } from './layers'
 import { i18nVirtualLoggerPlugin } from './virtual-logger'
+import type { I18nNuxtContext } from '~/src/context'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
@@ -30,15 +31,17 @@ type AdditionalSetupNitroParams = {
 }
 
 export async function setupNitro(
-  nuxt: Nuxt,
-  nuxtOptions: Required<NuxtI18nOptions>,
-  additionalParams: AdditionalSetupNitroParams
+  { genTemplate, isSSR, localeInfo, resolver, options: nuxtOptions }: I18nNuxtContext,
+  nuxt: Nuxt
 ) {
-  const resolver = createResolver(import.meta.url)
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
   nuxt.hook('nitro:config', async nitroConfig => {
     if (enableServerIntegration) {
+      const additionalParams: AdditionalSetupNitroParams = {
+        optionsCode: genTemplate(true, true),
+        localeInfo
+      }
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(typeof nitroConfig.externals === 'object' ? nitroConfig.externals : {}, {
         inline: [resolver.resolve('./runtime')]
@@ -111,7 +114,7 @@ export { localeDetector }
 
     nitroConfig.replace = nitroConfig.replace || {}
 
-    if (nuxt.options.ssr) {
+    if (isSSR) {
       // vue-i18n feature flags configuration for server-side (server api, server middleware, etc...)
       nitroConfig.replace = {
         ...nitroConfig.replace,
