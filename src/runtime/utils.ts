@@ -14,15 +14,15 @@ import {
   DetectFailure
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
+import { localeHead } from './routing/compatibles/head'
 import {
-  localeHead,
   localePath,
   localeRoute,
   getRouteBaseName,
   switchLocalePath,
   DefaultPrefixable,
   DefaultSwitchLocalePathIntercepter
-} from './routing/compatibles'
+} from './routing/compatibles/routing'
 import {
   getI18nProperty,
   getI18nTarget,

@@ -10,13 +10,15 @@ import {
   getCurrentOgLocale,
   getHreflangLinks,
   getOgUrl,
+  localeHead
+} from '../routing/compatibles/head'
+import {
   getRouteBaseName,
-  localeHead,
   localeLocation,
   localePath,
   localeRoute,
   switchLocalePath
-} from '../routing/compatibles'
+} from '../routing/compatibles/routing'
 import { findBrowserLocale } from '../routing/utils'
 import { getLocale, getLocales, getComposer } from '../compatibility'
 
