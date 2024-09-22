@@ -1,14 +1,14 @@
 import { effectScope } from '#imports'
 import { isVueI18n, getComposer } from '../../compatibility'
+import { localeHead } from '../compatibles/head'
 import {
   getRouteBaseName,
-  localeHead,
   localeLocation,
   localePath,
   localeRoute,
   resolveRoute,
   switchLocalePath
-} from '../compatibles'
+} from '../compatibles/routing'
 import { wrapComposable } from '../../internal'
 import { initCommonComposableOptions } from '../../utils'
 

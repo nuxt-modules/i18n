@@ -22,7 +22,8 @@ import {
   setupMultiDomainLocales
 } from '../internal'
 import { inBrowser, resolveBaseUrl } from '../routing/utils'
-import { extendI18n, createLocaleFromRouteGetter } from '../routing/extends'
+import { extendI18n } from '../routing/extends/i18n'
+import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { setLocale, getLocale, mergeLocaleMessage, setLocaleProperty } from '../compatibility'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 

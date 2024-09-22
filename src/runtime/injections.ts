@@ -5,13 +5,8 @@ import type {
   RouteBaseNameFunction,
   SwitchLocalePathFunction
 } from '#i18n'
-import type {
-  getRouteBaseName,
-  localeHead,
-  localePath,
-  localeRoute,
-  switchLocalePath
-} from './routing/compatibles/index'
+import type { localeHead } from './routing/compatibles/head'
+import type { getRouteBaseName, localePath, localeRoute, switchLocalePath } from './routing/compatibles/routing'
 
 export type NuxtI18nPluginInjections = {
   /**
