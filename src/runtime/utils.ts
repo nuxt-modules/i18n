@@ -20,8 +20,7 @@ import {
   localeRoute,
   getRouteBaseName,
   switchLocalePath,
-  DefaultPrefixable,
-  DefaultSwitchLocalePathIntercepter
+  DefaultPrefixable
 } from './routing/compatibles/routing'
 import {
   getI18nProperty,
@@ -400,18 +399,15 @@ export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
 // override switch locale path intercepter, support domain
 export function extendSwitchLocalePathIntercepter(runtimeConfig = useRuntimeConfig()): SwitchLocalePathIntercepter {
   const logger = /*#__PURE__*/ createLogger('extendSwitchLocalePathIntercepter')
+
   return (path: string, locale: Locale): string => {
-    if (runtimeConfig.public.i18n.differentDomains) {
-      const domain = getDomainFromLocale(locale)
-      __DEBUG__ && logger.log({ domain, path })
-      if (domain) {
-        return joinURL(domain, path)
-      } else {
-        return path
-      }
-    } else {
-      return DefaultSwitchLocalePathIntercepter(path, locale)
+    if (!runtimeConfig.public.i18n.differentDomains) {
+      return path
     }
+
+    const domain = getDomainFromLocale(locale)
+    __DEBUG__ && logger.log({ domain, path })
+    return (domain && joinURL(domain, path)) || path
   }
 }
 
