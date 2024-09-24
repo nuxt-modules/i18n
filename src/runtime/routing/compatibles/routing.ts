@@ -9,7 +9,7 @@ import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
-import type { Strategies, PrefixableOptions, SwitchLocalePathIntercepter } from '../../shared-types'
+import type { Strategies, PrefixableOptions } from '../../shared-types'
 import type { Locale } from 'vue-i18n'
 import type {
   RouteLocation,
@@ -208,8 +208,6 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     }
   }
 }
-
-export const DefaultSwitchLocalePathIntercepter: SwitchLocalePathIntercepter = (path: string) => path
 
 function getLocalizableMetaFromDynamicParams(
   common: CommonComposableOptions,
