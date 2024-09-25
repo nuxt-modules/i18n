@@ -8,6 +8,7 @@ await setup({
   browser: true,
   // overrides
   nuxtConfig: {
+    extends: [fileURLToPath(new URL(`../fixtures/layers/layer-pages-custom-src-dir`, import.meta.url))],
     i18n: {
       defaultLocale: 'en',
       customRoutes: 'config',
@@ -72,10 +73,10 @@ test('can not access to pick route path', async () => {
   await page.locator('#lang-switcher-with-nuxt-link a').click()
   await waitForURL(page, '/fr')
 
-  // disalbe href with <NuxtLink>
+  // disable href with <NuxtLink>
   expect(await page.locator('#link-history').getAttribute('href')).toBe(null)
 
-  // disalbe direct url access
+  // disable direct url access
   let res: Response | (Error & { status: () => number }) | null = null
   try {
     res = await page.goto(url('/fr/history'))
@@ -93,10 +94,10 @@ test('can not access to disable route path', async () => {
   await page.locator('#lang-switcher-with-nuxt-link a').click()
   await waitForURL(page, '/fr')
 
-  // disalbe href with <NuxtLink>
+  // disable href with <NuxtLink>
   expect(await page.locator('#link-category').getAttribute('href')).toBe(null)
 
-  // disalbe direct url access
+  // disable direct url access
   let res: Response | (Error & { status: () => number }) | null = null
   try {
     res = await page.goto(url('/fr/category/test'))
@@ -105,4 +106,13 @@ test('can not access to disable route path', async () => {
   }
   // 404
   expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+})
+
+test('#3076 - layer with custom `srcDir`', async () => {
+  const { page } = await renderPage('/custom-layer/custom')
+
+  await page.click(`#nuxt-locale-link-fr`)
+  await waitForURL(page, '/fr/custom-layer-french/custom')
+
+  expect(await page.url()).include('/fr/custom-layer-french/custom')
 })

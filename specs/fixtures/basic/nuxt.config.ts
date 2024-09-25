@@ -4,6 +4,7 @@ import CustomModule from './module'
 export default defineNuxtConfig({
   modules: [CustomModule, '@nuxtjs/i18n'],
 
+  srcDir: '.',
   i18n: {
     restructureDir: false,
     lazy: false,
