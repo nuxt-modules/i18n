@@ -82,7 +82,7 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
   if (layers.length === 1) return
 
   for (const l of layers) {
-    const lPath = resolve(project.config.rootDir, l.config.rootDir, l.config.dir?.pages ?? 'pages')
+    const lPath = resolve(project.config.rootDir, l.config.srcDir, l.config.dir?.pages ?? 'pages')
     debug('mergeLayerPages: path ->', lPath)
     analyzer(lPath)
   }
