@@ -11,8 +11,8 @@ const allNavigationTree = computed(() =>
 
 // Detect if we're on the not v8 docs
 const route = useRoute()
-const isV7Docs = computed(() => route.path.includes('/v7'))
-const isV9Docs = computed(() => route.path.includes('/v9'))
+const isV7Docs = computed(() => route.path.includes('/docs/v7'))
+const isV9Docs = computed(() => route.path.includes('/docs/v9'))
 
 // Redirect to getting-started, if we're on the `/docs/v9`
 watch(
@@ -21,7 +21,8 @@ watch(
     if (newPath.endsWith('/v9')) {
       navigateTo('/docs/v9/getting-started')
     }
-  }
+  },
+  { immediate: true }
 )
 
 // Exclude the not v8 docs from the navigation tree if we're not on the not v8 docs, and vice versa
@@ -48,7 +49,7 @@ const activeNavigationTree = computed(() =>
         <UAside>
           <VersionSelect />
           <UDivider type="dashed" class="mb-6" />
-          <UNavigationTree :links="mapContentNavigation(activeNavigationTree)" default-open :multiple="false" />
+          <UNavigationTree :links="mapContentNavigation(activeNavigationTree) || []" default-open :multiple="false" />
         </UAside>
       </template>
 

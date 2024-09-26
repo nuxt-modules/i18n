@@ -42,7 +42,7 @@ provide('navigation', navigation)
     <TheFooter />
 
     <ClientOnly>
-      <LazyUDocsSearch :files="files" :navigation="navigation" />
+      <LazyUContentSearch :files="files" :navigation="navigation" />
     </ClientOnly>
 
     <UNotifications />
