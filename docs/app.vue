@@ -50,7 +50,7 @@ const links: PageLink[] = [
     <TheFooter />
 
     <ClientOnly>
-      <LazyUDocsSearch :files="files" :navigation="navigation" :links="links" />
+      <LazyUContentSearch :files="files" :navigation="navigation" :links="links" />
     </ClientOnly>
 
     <UNotifications />

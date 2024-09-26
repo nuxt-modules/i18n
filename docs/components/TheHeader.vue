@@ -18,7 +18,7 @@ const navigation = inject<NavItem[]>('navigation', [])
 
     <template #right>
       <UTooltip text="Search" :shortcuts="[metaSymbol, 'K']">
-        <UDocsSearchButton :label="null" />
+        <UContentSearchButton :label="null" />
       </UTooltip>
 
       <UTooltip text="Toggle Theme">
