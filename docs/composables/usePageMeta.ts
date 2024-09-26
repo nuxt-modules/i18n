@@ -4,11 +4,11 @@ type PageMeta = {
   headline: string
 }
 
-export default function () {
-  function setPageMeta(newPageMeta: PageMeta) {
-    const { title = '', description = '', headline = '' } = newPageMeta
+export default function usePageMeta() {
+  const route = useRoute()
+  function setPageMeta({ title = '', description = '', headline = '' }: PageMeta) {
     useSeoMeta({ title, ogTitle: title, description, ogDescription: description })
-    defineOgImage({ component: 'Docs', title, description, headline })
+    defineOgImageComponent(route.path.includes('/docs/v9') ? 'DocsV9' : 'Docs', { title, description, headline })
   }
 
   return { setPageMeta }

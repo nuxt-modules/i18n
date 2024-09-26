@@ -19,13 +19,23 @@ const versions = [
   }
 ]
 
-const route = useRoute()
-const selectedVersion = computed(() =>
-  route.path.includes('/v9') ? versions[1] : route.path.includes('/v7') ? versions[2] : versions[0]
-)
+const router = useRouter()
+const selectedVersion = computed(() => {
+  const path = router.currentRoute.value.path
+
+  if (path.includes('/v9')) return versions[1]
+  if (path.includes('/v7')) return versions[2]
+
+  return versions[0]
+})
+
 function changeVersion(newVersion) {
   return navigateTo(newVersion.to)
 }
+
+watch(selectedVersion, val => {
+  changeVersion(val)
+})
 </script>
 
 <template>
@@ -43,7 +53,8 @@ function changeVersion(newVersion) {
       </template>
 
       <template #option="{ option: version }">
-        <div @click="changeVersion(version)" class="w-full">
+        <div class="absolute inset-0" @click="() => changeVersion(version)"></div>
+        <div class="w-full">
           {{ version.label }}
           <UBadge v-if="version.tag" variant="subtle" :label="version.tag" />
         </div>
