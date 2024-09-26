@@ -1,4 +1,16 @@
 export default defineAppConfig({
+  default: {
+    ui: {
+      primary: 'green',
+      gray: 'slate'
+    }
+  },
+  v9: {
+    ui: {
+      primary: 'green',
+      gray: 'zinc'
+    }
+  },
   ui: {
     primary: 'green',
     gray: 'slate',

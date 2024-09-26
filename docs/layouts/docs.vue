@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// @ts-expect-error This is because we're using Nuxt Content v2.8.2 instead of the new version which includes these types. We're using the old version because the latest has issues with highlighting
-import type { NavItem } from '@nuxt/content/dist/runtime/types'
+import type { NavItem } from '@nuxt/content'
 
 // Get navigation tree relative to the '/content/docs'
 const navigation = inject<Ref<NavItem[]>>('navigation')
@@ -9,37 +8,40 @@ const allNavigationTree = computed(() =>
   mapContentNavigation(navPageFromPath('/docs', navigation.value)?.children || [])
 )
 
-// Detect if we're on the not v8 docs
-const route = useRoute()
-const isV7Docs = computed(() => route.path.includes('/docs/v7'))
-const isV9Docs = computed(() => route.path.includes('/docs/v9'))
+const router = useRouter()
+const appConfig = useAppConfig()
 
-// Redirect to getting-started, if we're on the `/docs/v9`
+const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
+const isV9Docs = computed(() => router.currentRoute.value.path.includes('/docs/v9'))
+
 watch(
-  () => route.path,
-  (newPath, _oldPath) => {
-    if (newPath.endsWith('/v9')) {
-      navigateTo('/docs/v9/getting-started')
-    }
+  () => router.currentRoute.value.path,
+  (val, _oldVal) => {
+    const versionTheme = isV9Docs.value ? 'v9' : 'default'
+
+    appConfig.ui.primary = appConfig[versionTheme].ui.primary
+    appConfig.ui.gray = appConfig[versionTheme].ui.gray
   },
   { immediate: true }
 )
 
-// Exclude the not v8 docs from the navigation tree if we're not on the not v8 docs, and vice versa
-const v7DocsNavItemIndex = computed(() => allNavigationTree.value.findIndex(el => el.to.toString().includes('/v7')))
-const v9DocsNavItemIndex = computed(() => allNavigationTree.value.findIndex(el => el.to.toString().includes('/v9')))
+const v7DocsRE = /^\/docs\/v7/
+const v9DocsRE = /^\/docs\/v9/
 
-const activeNavigationTree = computed(() =>
-  allNavigationTree.value.filter((_el, index) => {
-    if (isV7Docs.value) {
-      return index === v7DocsNavItemIndex.value
-    } else if (isV9Docs.value) {
-      return index === v9DocsNavItemIndex.value
-    } else {
-      return index !== v7DocsNavItemIndex.value && index !== v9DocsNavItemIndex.value
-    }
+const navigationV7 = computed(() => allNavigationTree.value.filter(x => v7DocsRE.test(String(x.to))))
+const navigationV9 = computed(() => allNavigationTree.value.filter(x => v9DocsRE.test(String(x.to))))
+const navigationV8 = computed(() =>
+  allNavigationTree.value.filter(x => {
+    const to = String(x.to)
+    return !v9DocsRE.test(to) && !v7DocsRE.test(to)
   })
 )
+
+const currentVersionNavigation = computed(() => {
+  if (isV7Docs.value) return navigationV7.value
+  if (isV9Docs.value) return navigationV9.value
+  return navigationV8.value
+})
 </script>
 
 <template>
@@ -49,7 +51,7 @@ const activeNavigationTree = computed(() =>
         <UAside>
           <VersionSelect />
           <UDivider type="dashed" class="mb-6" />
-          <UNavigationTree :links="mapContentNavigation(activeNavigationTree) || []" default-open :multiple="false" />
+          <UNavigationTree :links="currentVersionNavigation" default-open :multiple="false" />
         </UAside>
       </template>
 
