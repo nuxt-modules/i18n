@@ -24,8 +24,13 @@ import { getLocale, getLocales, getComposer } from '../compatibility'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
-import type { RouteLocation, RouteLocationNormalizedLoaded, RouteLocationRaw, Router } from 'vue-router'
-import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '../shared-types'
+import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '../shared-types'
+import type {
+  RouteLocationAsPathI18n,
+  RouteLocationAsRelativeI18n,
+  RouteLocationResolvedI18n,
+  RouteMapI18n
+} from 'vue-router'
 import type { HeadParam } from '../utils'
 
 export * from 'vue-i18n'
@@ -194,7 +199,18 @@ export function useLocaleHead({
  *
  * @public
  */
-export type RouteBaseNameFunction = (givenRoute?: RouteLocationNormalizedLoaded) => string | undefined
+export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
+  givenRoute:
+    | Name
+    /**
+     * Note: disabled route path string autocompletion, this can break depending on `strategy`
+     * this can be enabled again after route resolve has been improved.
+     */
+    // | RouteLocationAsStringI18n
+    | RouteLocationAsRelativeI18n
+    | RouteLocationAsPathI18n,
+  locale?: Locale
+) => string
 
 /**
  * The `useRouteBaseName` composable returns a function which returns the route base name.
@@ -207,6 +223,7 @@ export type RouteBaseNameFunction = (givenRoute?: RouteLocationNormalizedLoaded)
  * @public
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
+  // @ts-expect-error - generated types conflict with the generic types we accept
   return wrapComposable(getRouteBaseName)
 }
 
@@ -225,7 +242,19 @@ export function useRouteBaseName(): RouteBaseNameFunction {
  *
  * @public
  */
-export type LocalePathFunction = (route: RouteLocation | RouteLocationRaw, locale?: Locale) => string
+
+export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
+  route:
+    | Name
+    /**
+     * Note: disabled route path string autocompletion, this can break depending on `strategy`
+     * this can be enabled again after route resolve has been improved.
+     */
+    // | RouteLocationAsStringI18n
+    | RouteLocationAsRelativeI18n
+    | RouteLocationAsPathI18n,
+  locale?: Locale
+) => string
 
 /**
  * The `useLocalePath` composable returns function  that resolve the locale path.
@@ -238,6 +267,7 @@ export type LocalePathFunction = (route: RouteLocation | RouteLocationRaw, local
  * @public
  */
 export function useLocalePath(): LocalePathFunction {
+  // @ts-expect-error - generated types conflict with the generic types we accept
   return wrapComposable(localePath)
 }
 
@@ -256,11 +286,18 @@ export function useLocalePath(): LocalePathFunction {
  *
  * @public
  */
-export type LocaleRouteFunction = (
-  route: RouteLocationRaw,
+export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
+  route:
+    | Name
+    /**
+     * Note: disabled route path string autocompletion, this can break depending on `strategy`
+     * this can be enabled again after route resolve has been improved.
+     */
+    // | RouteLocationAsStringI18n
+    | RouteLocationAsRelativeI18n
+    | RouteLocationAsPathI18n,
   locale?: Locale
-) => ReturnType<Router['resolve']> | undefined
-
+) => RouteLocationResolvedI18n<Name> | undefined
 /**
  * The `useLocaleRoute` composable returns function that resolve the locale route.
  *
@@ -272,6 +309,7 @@ export type LocaleRouteFunction = (
  * @public
  */
 export function useLocaleRoute(): LocaleRouteFunction {
+  // @ts-expect-error - generated types conflict with the generic types we accept
   return wrapComposable(localeRoute)
 }
 
@@ -290,7 +328,18 @@ export function useLocaleRoute(): LocaleRouteFunction {
  *
  * @public
  */
-export type LocaleLocationFunction = (route: RouteLocationRaw, locale?: Locale) => Location | RouteLocation | undefined
+export type LocaleLocationFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
+  route:
+    | Name
+    /**
+     * Note: disabled route path string autocompletion, this can break depending on `strategy`
+     * this can be enabled again after route resolve has been improved.
+     */
+    // | RouteLocationAsStringI18n
+    | RouteLocationAsRelativeI18n
+    | RouteLocationAsPathI18n,
+  locale?: Locale
+) => RouteLocationResolvedI18n<Name> | undefined
 
 /**
  * The `useLocaleLocation` composable returns function that resolve the locale location.
@@ -303,6 +352,7 @@ export type LocaleLocationFunction = (route: RouteLocationRaw, locale?: Locale) 
  * @public
  */
 export function useLocaleLocation(): LocaleLocationFunction {
+  // @ts-expect-error - generated types conflict with the generic types we accept
   return wrapComposable(localeLocation)
 }
 
@@ -351,7 +401,8 @@ export function useBrowserLocale(): string | null {
   const headers = useRequestHeaders(['accept-language'])
   return (
     findBrowserLocale(
-      normalizedLocales,
+       
+      normalizedLocales as LocaleObject[],
       import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
     ) || null
   )

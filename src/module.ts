@@ -58,7 +58,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * setup nuxt/pages
      */
-    setupPages(ctx, nuxt)
+    await setupPages(ctx, nuxt)
 
     /**
      * ignore `/` during prerender when using prefixed routing

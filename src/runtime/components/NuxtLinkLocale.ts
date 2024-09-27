@@ -5,10 +5,11 @@ import { hasProtocol } from 'ufo'
 
 import type { PropType } from 'vue'
 import type { NuxtLinkProps } from 'nuxt/app'
+import type { RouteLocationRawI18n } from 'vue-router'
 
 const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
 
-export default defineComponent<NuxtLinkProps & { locale?: Locale }>({
+export default defineComponent<Omit<NuxtLinkProps, 'to'> & { to?: RouteLocationRawI18n; locale?: Locale }>({
   name: 'NuxtLinkLocale',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
   props: {
