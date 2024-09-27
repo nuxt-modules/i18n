@@ -401,7 +401,6 @@ export function useBrowserLocale(): string | null {
   const headers = useRequestHeaders(['accept-language'])
   return (
     findBrowserLocale(
-      // prettier-ignore
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       normalizedLocales as LocaleObject[],
       import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
