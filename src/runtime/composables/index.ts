@@ -401,7 +401,6 @@ export function useBrowserLocale(): string | null {
   const headers = useRequestHeaders(['accept-language'])
   return (
     findBrowserLocale(
-       
       normalizedLocales as LocaleObject[],
       import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
     ) || null
@@ -468,7 +467,7 @@ export interface I18nRoute {
    *
    * @description You can specify static and dynamic paths for vue-router.
    */
-  paths?: Partial<Record<Locale, string>>
+  paths?: Partial<Record<Locale, `/${string}`>>
   /**
    * Some locales to which the page component should be localized.
    */
