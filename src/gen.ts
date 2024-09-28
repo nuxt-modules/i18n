@@ -263,7 +263,7 @@ declare module 'vue-router' {
   /**
    * Helper to generate a type safe version of the {@link RouteLocationAsRelative} type.
    */
-  export interface RouteLocationAsRelativeTyped<
+  export interface RouteLocationAsRelativeTypedI18n<
     RouteMapI18n extends RouteMapGeneric = RouteMapGeneric,
     Name extends keyof RouteMapI18n = keyof RouteMapI18n
   > extends RouteLocationAsRelativeGeneric {
