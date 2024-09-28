@@ -23,6 +23,18 @@ declare module '#app' {
 //   }
 // }
 
+/**
+ * The same is generated in gen.ts
+ *
+ * From vuejs/router
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/typed-routes/route-map.ts
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/typed-routes/route-location.ts
+ *
+ * Depends on `TypesConfig`
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/config.ts#L14
+ * Depends on the same mechanism of `RouteNamedMap
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/vue-router-auto.d.ts#L4
+ */
 declare module 'vue-router' {
   export type RouteMapI18n =
     TypesConfig extends Record<'RouteNamedMapI18n', infer RouteNamedMap> ? RouteNamedMap : RouteMapGeneric
