@@ -68,7 +68,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
     mergeLayerPages(analyzer, nuxt)
 
     if (typedRouter) {
-      await typedRouter.createTypedRouterContext(pages).scanPages(false)
+      await typedRouter.createContext(pages).scanPages(false)
     }
 
     const localizedPages = localizeRoutes(pages, {
@@ -117,7 +117,7 @@ async function setupExperimentalTypedRoutes(userOptions: NuxtI18nOptions, nuxt: 
    * Typed route generation from Nuxt with modifications
    * https://github.com/nuxt/nuxt/blob/781d8c4174c410a7aff6b809817b15eae85d3ba8/packages/nuxt/src/pages/module.ts#L160-L208
    */
-  function createTypedRouterContext(pages: NuxtPage[]) {
+  function createContext(pages: NuxtPage[]) {
     const typedRouteroptions: TypedRouterOptions = {
       routesFolder: [],
       dts: dtsFile,
@@ -194,11 +194,9 @@ export {}`
     references.push({ types: './types/i18n-generated-route-types.d.ts' })
   })
 
-  await createTypedRouterContext(nuxt.apps.default?.pages ?? []).scanPages(false)
+  await createContext(nuxt.apps.default?.pages ?? []).scanPages(false)
 
-  return {
-    createTypedRouterContext
-  }
+  return { createContext }
 }
 
 /**
