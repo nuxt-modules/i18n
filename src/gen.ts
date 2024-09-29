@@ -207,11 +207,6 @@ declare module 'vue-router' {
       ? string
       : _LiteralUnion<RouteLocationAsStringTypedList<RouteMapI18n>[Name], string>
 
-  export type RouteLocationAsStringI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
-    RouteMapGeneric extends RouteMapI18n
-      ? string
-      : _LiteralUnion<RouteLocationAsStringTypedList<RouteMapI18n>[Name], string>
-
   export type RouteLocationAsRelativeI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
     RouteMapGeneric extends RouteMapI18n
       ? RouteLocationAsRelativeGeneric
