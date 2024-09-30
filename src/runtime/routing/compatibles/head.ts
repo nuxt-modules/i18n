@@ -33,8 +33,13 @@ export function localeHead(
     meta: []
   }
 
+  const i18nBaseUrl = unref(i18n.baseUrl)
+  if (!i18nBaseUrl) {
+    console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
+  }
+
   // skip if no locales or baseUrl is set
-  if (unref(i18n.locales) == null || unref(i18n.baseUrl) == null) {
+  if (unref(i18n.locales) == null || i18nBaseUrl == null) {
     return metaObject
   }
 
