@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useLocalePath, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
 import { defineNuxtLink } from '#imports'
@@ -8,11 +9,14 @@ import type { NuxtLinkProps } from 'nuxt/app'
 
 const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
 
-export default defineComponent<
-  Omit<NuxtLinkProps, 'to'> & { to?: import('vue-router').RouteLocationNamedI18n; locale?: Locale }
->({
+type NuxtLinkLocaleProps = Omit<NuxtLinkProps, 'to'> & {
+  to?: import('vue-router').RouteLocationNamedI18n
+  locale?: Locale
+}
+
+export default defineComponent<NuxtLinkLocaleProps>({
   name: 'NuxtLinkLocale',
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- FIXME
+
   props: {
     ...NuxtLinkLocale.props,
     locale: {
@@ -25,7 +29,11 @@ export default defineComponent<
     const localePath = useLocalePath()
 
     // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
-    const checkPropConflicts = (props: NuxtLinkProps, main: keyof NuxtLinkProps, sub: keyof NuxtLinkProps): void => {
+    const checkPropConflicts = (
+      props: NuxtLinkLocaleProps,
+      main: keyof NuxtLinkLocaleProps,
+      sub: keyof NuxtLinkProps
+    ): void => {
       if (import.meta.dev && props[main] !== undefined && props[sub] !== undefined) {
         console.warn(`[NuxtLinkLocale] \`${main}\` and \`${sub}\` cannot be used together. \`${sub}\` will be ignored.`)
       }
@@ -33,7 +41,7 @@ export default defineComponent<
 
     const resolvedPath = computed(() => {
       const destination = props.to ?? props.href
-      return destination != null ? localePath(destination, props.locale) : destination
+      return (destination != null ? localePath(destination, props.locale) : destination) as string
     })
 
     // Resolving link type
@@ -54,7 +62,7 @@ export default defineComponent<
         return false
       }
 
-      return destination === '' || destination == null || hasProtocol(destination, { acceptRelative: true })
+      return destination === '' || destination == null || hasProtocol(destination as string, { acceptRelative: true })
     })
 
     /**
@@ -78,7 +86,7 @@ export default defineComponent<
       // @see https://github.com/nuxt-modules/i18n/issues/2498
       delete _props.locale
 
-      return _props
+      return _props as NuxtLinkProps
     }
 
     return () => h(NuxtLinkLocale, getNuxtLinkProps(), slots.default)

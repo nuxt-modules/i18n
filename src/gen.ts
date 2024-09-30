@@ -176,7 +176,7 @@ declare module 'vue-router' {
   // Prefer named resolution for i18n
   export type RouteLocationNamedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
       | Name
-      | RouteLocationAsRelativeI18n
+      | Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }
       /**
        * Note: disabled route path string autocompletion, this can break depending on \`strategy\`
        * this can be enabled again after route resolve has been improved.

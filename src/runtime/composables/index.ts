@@ -195,7 +195,7 @@ export function useLocaleHead({
  * @public
  */
 export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationAsRelativeI18n,
+  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
   /**
    * Note: disabled route path string autocompletion, this can break depending on `strategy`
    * this can be enabled again after route resolve has been improved.
@@ -237,7 +237,7 @@ export function useRouteBaseName(): RouteBaseNameFunction {
  */
 
 export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationAsRelativeI18n,
+  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
   /**
    * Note: disabled route path string autocompletion, this can break depending on `strategy`
    * this can be enabled again after route resolve has been improved.
@@ -278,7 +278,7 @@ export function useLocalePath(): LocalePathFunction {
  * @public
  */
 export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationAsRelativeI18n,
+  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
   /**
    * Note: disabled route path string autocompletion, this can break depending on `strategy`
    * this can be enabled again after route resolve has been improved.
@@ -318,7 +318,7 @@ export function useLocaleRoute(): LocaleRouteFunction {
  * @public
  */
 export type LocaleLocationFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationAsRelativeI18n,
+  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
   /**
    * Note: disabled route path string autocompletion, this can break depending on `strategy`
    * this can be enabled again after route resolve has been improved.
