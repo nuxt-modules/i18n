@@ -25,12 +25,7 @@ import { getLocale, getLocales, getComposer } from '../compatibility'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '../shared-types'
-import type {
-  RouteLocationAsPathI18n,
-  RouteLocationAsRelativeI18n,
-  RouteLocationResolvedI18n,
-  RouteMapI18n
-} from 'vue-router'
+import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 import type { HeadParam } from '../utils'
 
 export * from 'vue-i18n'
@@ -200,15 +195,13 @@ export function useLocaleHead({
  * @public
  */
 export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  givenRoute:
-    | Name
-    /**
-     * Note: disabled route path string autocompletion, this can break depending on `strategy`
-     * this can be enabled again after route resolve has been improved.
-     */
-    // | RouteLocationAsStringI18n
-    | RouteLocationAsRelativeI18n
-    | RouteLocationAsPathI18n,
+  route: Name | RouteLocationAsRelativeI18n,
+  /**
+   * Note: disabled route path string autocompletion, this can break depending on `strategy`
+   * this can be enabled again after route resolve has been improved.
+   */
+  // | RouteLocationAsStringI18n
+  // | RouteLocationAsPathI18n
   locale?: Locale
 ) => string
 
@@ -244,15 +237,13 @@ export function useRouteBaseName(): RouteBaseNameFunction {
  */
 
 export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route:
-    | Name
-    /**
-     * Note: disabled route path string autocompletion, this can break depending on `strategy`
-     * this can be enabled again after route resolve has been improved.
-     */
-    // | RouteLocationAsStringI18n
-    | RouteLocationAsRelativeI18n
-    | RouteLocationAsPathI18n,
+  route: Name | RouteLocationAsRelativeI18n,
+  /**
+   * Note: disabled route path string autocompletion, this can break depending on `strategy`
+   * this can be enabled again after route resolve has been improved.
+   */
+  // | RouteLocationAsStringI18n
+  // | RouteLocationAsPathI18n
   locale?: Locale
 ) => string
 
@@ -287,15 +278,13 @@ export function useLocalePath(): LocalePathFunction {
  * @public
  */
 export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route:
-    | Name
-    /**
-     * Note: disabled route path string autocompletion, this can break depending on `strategy`
-     * this can be enabled again after route resolve has been improved.
-     */
-    // | RouteLocationAsStringI18n
-    | RouteLocationAsRelativeI18n
-    | RouteLocationAsPathI18n,
+  route: Name | RouteLocationAsRelativeI18n,
+  /**
+   * Note: disabled route path string autocompletion, this can break depending on `strategy`
+   * this can be enabled again after route resolve has been improved.
+   */
+  // | RouteLocationAsStringI18n
+  // | RouteLocationAsPathI18n
   locale?: Locale
 ) => RouteLocationResolvedI18n<Name> | undefined
 /**
@@ -329,15 +318,13 @@ export function useLocaleRoute(): LocaleRouteFunction {
  * @public
  */
 export type LocaleLocationFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route:
-    | Name
-    /**
-     * Note: disabled route path string autocompletion, this can break depending on `strategy`
-     * this can be enabled again after route resolve has been improved.
-     */
-    // | RouteLocationAsStringI18n
-    | RouteLocationAsRelativeI18n
-    | RouteLocationAsPathI18n,
+  route: Name | RouteLocationAsRelativeI18n,
+  /**
+   * Note: disabled route path string autocompletion, this can break depending on `strategy`
+   * this can be enabled again after route resolve has been improved.
+   */
+  // | RouteLocationAsStringI18n
+  // | RouteLocationAsPathI18n
   locale?: Locale
 ) => RouteLocationResolvedI18n<Name> | undefined
 
@@ -401,7 +388,6 @@ export function useBrowserLocale(): string | null {
   const headers = useRequestHeaders(['accept-language'])
   return (
     findBrowserLocale(
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       normalizedLocales as LocaleObject[],
       import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
     ) || null
