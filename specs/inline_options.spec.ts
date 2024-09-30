@@ -30,7 +30,7 @@ describe('inline options are handled correctly', async () => {
       consoleLogs.some(
         log =>
           log.type === 'warning' &&
-          log.text.includes('[nuxt-i18n-routing] Locale ISO code is required to generate alternate link')
+          log.text.includes('[nuxt-i18n-routing] Locale `language` ISO code is required to generate alternate link')
       )
     ).toBe(false)
   })

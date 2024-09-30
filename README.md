@@ -39,8 +39,8 @@ npx nuxi@latest module add i18n
   ],
   i18n: {
     locales: [
-      { code: 'en', iso: 'en-US' },
-      { code: 'fr', iso: 'fr-FR' }
+      { code: 'en', language: 'en-US' },
+      { code: 'fr', language: 'fr-FR' }
     ]
     defaultLocale: 'en',
   }

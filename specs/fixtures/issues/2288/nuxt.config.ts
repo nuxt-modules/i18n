@@ -8,7 +8,7 @@ export default defineNuxtConfig({
       {
         code: 'en',
         country: '',
-        iso: 'en',
+        language: 'en',
         lang: 'en',
         file: 'en-en.js',
         dir: 'ltr'
@@ -16,7 +16,7 @@ export default defineNuxtConfig({
       {
         code: 'ar',
         country: '',
-        iso: 'ar',
+        language: 'ar',
         lang: 'ar',
         file: 'ar-ar.js',
         dir: 'rtl'

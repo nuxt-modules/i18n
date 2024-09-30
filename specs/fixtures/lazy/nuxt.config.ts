@@ -36,19 +36,19 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
+        language: 'en-US',
         file: 'lazy-locale-en.json',
         name: 'English'
       },
       {
         code: 'en-GB',
-        iso: 'en-GB',
+        language: 'en-GB',
         files: ['lazy-locale-en.json', 'lazy-locale-en-GB.js', 'lazy-locale-en-GB.ts'],
         name: 'English (UK)'
       },
       {
         code: 'fr',
-        iso: 'fr-FR',
+        language: 'fr-FR',
         file: { path: 'lazy-locale-fr.json5', cache: false },
         name: 'Français'
       }

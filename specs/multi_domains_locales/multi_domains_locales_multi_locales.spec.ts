@@ -14,27 +14,27 @@ await setup({
       locales: [
         {
           code: 'en',
-          iso: 'en',
+          language: 'en',
           name: 'English',
           domains: i18nDomains,
           defaultForDomains: ['nuxt-app.localhost']
         },
         {
           code: 'no',
-          iso: 'no-NO',
+          language: 'no-NO',
           name: 'Norwegian',
           domains: i18nDomains
         },
         {
           code: 'fr',
-          iso: 'fr-FR',
+          language: 'fr-FR',
           name: 'Français',
           domains: i18nDomains,
           defaultForDomains: ['fr.nuxt-app.localhost']
         },
         {
           code: 'ja',
-          iso: 'jp-JA',
+          language: 'jp-JA',
           name: 'Japan',
           domains: i18nDomains,
           defaultForDomains: ['ja.nuxt-app.localhost']

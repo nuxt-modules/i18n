@@ -10,7 +10,7 @@ export default defineNuxtModule({
         locales: [
           {
             code: 'en',
-            iso: 'en-US',
+            language: 'en-US',
             file: 'en-US.ts',
             name: 'English'
           }

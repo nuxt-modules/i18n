@@ -10,19 +10,19 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en',
+        language: 'en',
         name: 'English',
         domain: 'en.nuxt-app.localhost'
       },
       {
         code: 'no',
-        iso: 'no-NO',
+        language: 'no-NO',
         name: 'Norwegian',
         domain: 'no.nuxt-app.localhost'
       },
       {
         code: 'fr',
-        iso: 'fr-FR',
+        language: 'fr-FR',
         name: 'Français',
         domain: 'fr.nuxt-app.localhost'
       }

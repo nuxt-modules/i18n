@@ -10,7 +10,7 @@ describe('#2590', async () => {
     browser: true
   })
 
-  test('Locale ISO code is required to generate alternate link', async () => {
+  test('Locale `language` ISO code is required to generate alternate link', async () => {
     const { page } = await renderPage('/')
 
     // html tag `lang` attribute

@@ -40,27 +40,27 @@ export default defineNuxtConfig({
         locales: [
           {
             code: 'en',
-            iso: 'en-US',
+            language: 'en-US',
             file: 'en.json',
             // domain: 'localhost',
             name: 'English'
           },
           {
             code: 'en-GB',
-            iso: 'en-GB',
+            language: 'en-GB',
             files: ['en.json', 'en-GB.js', 'en-KK.js'],
             name: 'English (UK)'
           },
           {
             code: 'ja',
-            iso: 'ja-JP',
+            language: 'ja-JP',
             file: 'ja.ts',
             domain: 'mydomain.com',
             name: 'Japanses'
           },
           {
             code: 'fr',
-            iso: 'fr-FR',
+            language: 'fr-FR',
             file: 'fr.json',
             domain: 'mydomain.fr',
             name: 'Français'
@@ -138,27 +138,27 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
+        language: 'en-US',
         file: 'en.json',
         // domain: 'localhost',
         name: 'English'
       },
       {
         code: 'en-GB',
-        iso: 'en-GB',
+        language: 'en-GB',
         files: ['en.json', 'en-GB.js', 'en-KK.js', 'en-US.yaml', 'en-CA.json5'],
         name: 'English (UK)'
       },
       {
         code: 'ja',
-        iso: 'ja-JP',
+        language: 'ja-JP',
         file: 'ja.ts',
         domain: 'mydomain.com',
         name: 'Japanses'
       },
       {
         code: 'fr',
-        iso: 'fr-FR',
+        language: 'fr-FR',
         file: 'fr.json',
         domain: 'project-fr.example.com',
         name: 'Français'

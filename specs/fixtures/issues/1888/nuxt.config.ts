@@ -7,15 +7,15 @@ export default defineNuxtConfig({
       {
         code: 'en',
         flag: 'us',
-        iso: 'en-US',
+        language: 'en-US',
         file: 'en.json',
         name: 'English'
       },
-      { code: 'pl', flag: 'pl', iso: 'pl-PL', file: 'pl.json', name: 'Polski' },
+      { code: 'pl', flag: 'pl', language: 'pl-PL', file: 'pl.json', name: 'Polski' },
       {
         code: 'fr',
         flag: 'fr',
-        iso: 'fr-FR',
+        language: 'fr-FR',
         file: 'fr.json',
         name: 'Français'
       }

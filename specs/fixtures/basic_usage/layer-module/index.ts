@@ -9,19 +9,19 @@ export default defineNuxtModule({
         locales: [
           {
             code: 'en',
-            iso: 'en-US',
+            language: 'en-US',
             files: ['en-base.json', 'en.json'],
             name: 'English'
           },
           {
             code: 'fr',
-            iso: 'fr-FR',
+            language: 'fr-FR',
             file: 'fr.json',
             name: 'Francais'
           },
           {
             code: 'nl',
-            iso: 'nl-NL',
+            language: 'nl-NL',
             file: 'nl.ts',
             name: 'Nederlands'
           }
