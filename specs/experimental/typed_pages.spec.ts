@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url } from '../utils'
+import { setup } from '../utils'
 import fs from 'node:fs/promises'
 
 await setup({
