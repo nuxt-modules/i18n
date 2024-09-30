@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted, unref } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
@@ -79,6 +79,10 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
   const currentLocaleLanguage = currentLocale.language
+
+  if (!unref(i18n.baseUrl)) {
+    console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
+  }
 
   const setMeta = () => {
     const metaObject: HeadParam = {
