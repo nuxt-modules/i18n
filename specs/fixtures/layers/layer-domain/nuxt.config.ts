@@ -10,21 +10,21 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
+        language: 'en-US',
         file: 'en.json',
         domain: 'layer-en.example.com',
         name: 'English'
       },
       {
         code: 'nl',
-        iso: 'nl-NL',
+        language: 'nl-NL',
         file: 'nl.json',
         domain: 'layer-nl.example.com',
         name: 'Nederlands'
       },
       {
         code: 'ja',
-        iso: 'ja',
+        language: 'ja',
         file: 'ja.json',
         domain: 'layer-ja.example.com',
         name: 'Japanese'

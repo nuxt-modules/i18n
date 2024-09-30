@@ -10,7 +10,7 @@ export default defineNuxtModule({
       locales: [
         {
           code: 'en',
-          iso: 'en',
+          language: 'en',
           files: [resolve('./locales/en.json')],
           name: 'English'
         }

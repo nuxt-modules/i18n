@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'ar',
-        iso: 'ar',
+        language: 'ar',
         file: 'ar.json',
         name: 'Arabic',
         dir: 'rtl'

@@ -9,7 +9,7 @@ export default defineNuxtModule({
         locales: [
           {
             code: 'nl',
-            iso: 'nl-NL',
+            language: 'nl-NL',
             file: 'lazy-locale-module-nl.ts',
             name: 'Nederlands'
           }

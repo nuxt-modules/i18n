@@ -12,13 +12,13 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en',
+        language: 'en',
         name: 'English',
         file: 'en.js'
       },
       {
         code: 'ja',
-        iso: 'ja-JP',
+        language: 'ja-JP',
         name: '日本語',
         file: 'ja.js'
       }

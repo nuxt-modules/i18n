@@ -21,12 +21,12 @@ export default defineNuxtModule<ModuleOptions>({
         locales: [
           {
             code: 'de',
-            iso: 'de-DE',
+            language: 'de-DE',
             file: 'de.ts'
           },
           {
             code: 'en',
-            iso: 'en-US',
+            language: 'en-US',
             file: 'en.ts'
           }
         ]

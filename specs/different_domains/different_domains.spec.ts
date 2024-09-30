@@ -24,19 +24,19 @@ await setup({
       locales: [
         {
           code: 'en',
-          iso: 'en',
+          language: 'en',
           name: 'English',
           domain: 'en.nuxt-app.localhost'
         },
         {
           code: 'fr',
-          iso: 'fr-FR',
+          language: 'fr-FR',
           name: 'Français',
           domain: 'fr.nuxt-app.localhost'
         },
         {
           code: 'kr',
-          iso: 'ko-KR',
+          language: 'ko-KR',
           name: '한국어',
           domain: 'kr.nuxt-app.localhost'
         }

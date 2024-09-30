@@ -21,9 +21,9 @@ export function getNuxtOptions(
     trailingSlash: false,
     routesNameSeparator: '___',
     locales: [
-      { code: 'en', iso: 'en-US', file: 'en.json', name: 'English' },
-      { code: 'ja', iso: 'ja-JP', file: 'ja.json', name: 'Japanses' },
-      { code: 'fr', iso: 'fr-FR', file: 'fr.json', name: 'Français' }
+      { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+      { code: 'ja', language: 'ja-JP', file: 'ja.json', name: 'Japanses' },
+      { code: 'fr', language: 'fr-FR', file: 'fr.json', name: 'Français' }
     ] as LocaleObject[]
   }
 }

@@ -173,7 +173,7 @@ describe('findBrowserLocale', () => {
     assert.ok(utils.findBrowserLocale(locales, browserLocales) === 'en-gb')
   })
 
-  test('matches ISO locale code', () => {
+  test('matches `language` locale code', () => {
     const locales = [
       { code: 'cn', language: 'zh-CN' },
       { code: 'en', language: 'en-US' }
@@ -183,7 +183,7 @@ describe('findBrowserLocale', () => {
     assert.ok(utils.findBrowserLocale(locales, browserLocales) === 'cn')
   })
 
-  test('matches full ISO code', () => {
+  test('matches full `language` code', () => {
     const locales = [
       { code: 'us', language: 'en-US' },
       { code: 'gb', language: 'en-GB' }

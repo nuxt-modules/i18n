@@ -82,7 +82,7 @@ describe('basic lazy loading', async () => {
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
 
-    // html tag `lang` attriute with iso code
+    // html tag `lang` attribute with language code
     expect(await page.getAttribute('html', 'lang')).toEqual('en-US')
   })
 
@@ -103,7 +103,7 @@ describe('basic lazy loading', async () => {
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
 
-    // html tag `lang` attriute with iso code
+    // html tag `lang` attribute with language code
     expect(await page.getAttribute('html', 'lang')).toEqual('fr-FR')
   })
 
