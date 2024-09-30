@@ -172,6 +172,17 @@ declare module 'vue-router' {
 
   export type RouteMapI18n =
     TypesConfig extends Record<'RouteNamedMapI18n', infer RouteNamedMap> ? RouteNamedMap : RouteMapGeneric
+    
+  // Prefer named resolution for i18n
+  export type RouteLocationNamedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+      | Name
+      | RouteLocationAsRelativeI18n
+      /**
+       * Note: disabled route path string autocompletion, this can break depending on \`strategy\`
+       * this can be enabled again after route resolve has been improved.
+      */
+      // | RouteLocationAsStringI18n
+      // | RouteLocationAsPathI18n
 
   export type RouteLocationRawI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
     RouteMapGeneric extends RouteMapI18n
