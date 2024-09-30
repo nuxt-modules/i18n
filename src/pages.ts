@@ -107,7 +107,7 @@ const declarationFile = './types/typed-router-i18n.d.ts'
  * Setup experiment typed routes feature if enabled
  */
 async function setupExperimentalTypedRoutes(userOptions: NuxtI18nOptions, nuxt: Nuxt) {
-  if (!nuxt.options.experimental.typedPages || !userOptions.experimental?.typedPages) {
+  if (!nuxt.options.experimental.typedPages || userOptions.experimental?.typedPages === false) {
     return undefined
   }
 

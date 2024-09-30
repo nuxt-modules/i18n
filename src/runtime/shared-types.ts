@@ -96,7 +96,7 @@ export interface ExperimentalFeatures {
   /**
    * Generates types for i18n routing helper
    *
-   * @defaultValue `false`
+   * @defaultValue `true`
    */
   typedPages?: boolean
 }

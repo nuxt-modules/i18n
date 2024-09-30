@@ -30,7 +30,7 @@ export const DEFAULT_OPTIONS = {
     localeDetector: '',
     switchLocalePathLinkSSR: false,
     autoImportTranslationFunctions: false,
-    typedPages: false
+    typedPages: true
   },
   bundle: {
     compositionOnly: true,
