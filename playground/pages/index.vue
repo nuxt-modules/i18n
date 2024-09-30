@@ -71,7 +71,8 @@ definePageMeta({
     <p>{{ $t('bar.buz', { name: 'buz' }) }}</p>
     <h2>Pages</h2>
     <nav>
-      <NuxtLink :to="localePath('/')">Home</NuxtLink> | <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
+      <NuxtLink :to="localePath('index')">Home</NuxtLink> |
+      <NuxtLink :to="localePath({ name: 'about' })">About</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'blog' })">Blog</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'server' })">Server</NuxtLink> |
       <NuxtLink :to="localePath({ name: 'category-id', params: { id: 'foo' } })">Category</NuxtLink> |

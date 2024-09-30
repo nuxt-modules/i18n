@@ -152,6 +152,92 @@ function genImportSpecifier(
   return getLoadPath()
 }
 
+/**
+ * From vuejs/router
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/typed-routes/route-map.ts
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/typed-routes/route-location.ts
+ *
+ * Depends on `TypesConfig`
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/config.ts#L14
+ * Depends on the same mechanism of `RouteNamedMap
+ * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/vue-router-auto.d.ts#L4
+ */
+const typedRouterAugmentations = `
+declare module 'vue-router' {
+  import type { RouteNamedMapI18n } from 'vue-router/auto-routes'
+
+  export interface TypesConfig {
+    RouteNamedMapI18n: RouteNamedMapI18n
+  }
+
+  export type RouteMapI18n =
+    TypesConfig extends Record<'RouteNamedMapI18n', infer RouteNamedMap> ? RouteNamedMap : RouteMapGeneric
+    
+  // Prefer named resolution for i18n
+  export type RouteLocationNamedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+      | Name
+      | Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }
+      /**
+       * Note: disabled route path string autocompletion, this can break depending on \`strategy\`
+       * this can be enabled again after route resolve has been improved.
+      */
+      // | RouteLocationAsStringI18n
+      // | RouteLocationAsPathI18n
+
+  export type RouteLocationRawI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+    RouteMapGeneric extends RouteMapI18n
+      ? RouteLocationAsStringI18n | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric
+      :
+          | _LiteralUnion<RouteLocationAsStringTypedList<RouteMapI18n>[Name], string>
+          | RouteLocationAsRelativeTypedList<RouteMapI18n>[Name]
+
+  export type RouteLocationResolvedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+    RouteMapGeneric extends RouteMapI18n
+      ? RouteLocationResolvedGeneric
+      : RouteLocationResolvedTypedList<RouteMapI18n>[Name]
+
+  export interface RouteLocationNormalizedLoadedTypedI18n<
+    RouteMapI18n extends RouteMapGeneric = RouteMapGeneric,
+    Name extends keyof RouteMapI18n = keyof RouteMapI18n
+  > extends RouteLocationNormalizedLoadedGeneric {
+    name: Extract<Name, string | symbol>
+    params: RouteMapI18n[Name]['params']
+  }
+  export type RouteLocationNormalizedLoadedTypedListI18n<RouteMapOriginal extends RouteMapGeneric = RouteMapGeneric> = {
+    [N in keyof RouteMapOriginal]: RouteLocationNormalizedLoadedTypedI18n<RouteMapOriginal, N>
+  }
+  export type RouteLocationNormalizedLoadedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+    RouteMapGeneric extends RouteMapI18n
+      ? RouteLocationNormalizedLoadedGeneric
+      : RouteLocationNormalizedLoadedTypedListI18n<RouteMapI18n>[Name]
+
+  type _LiteralUnion<LiteralType, BaseType extends string = string> = LiteralType | (BaseType & Record<never, never>)
+
+  export type RouteLocationAsStringI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+    RouteMapGeneric extends RouteMapI18n
+      ? string
+      : _LiteralUnion<RouteLocationAsStringTypedList<RouteMapI18n>[Name], string>
+
+  export type RouteLocationAsRelativeI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+    RouteMapGeneric extends RouteMapI18n
+      ? RouteLocationAsRelativeGeneric
+      : RouteLocationAsRelativeTypedList<RouteMapI18n>[Name]
+
+  export type RouteLocationAsPathI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+    RouteMapGeneric extends RouteMapI18n ? RouteLocationAsPathGeneric : RouteLocationAsPathTypedList<RouteMapI18n>[Name]
+
+  /**
+   * Helper to generate a type safe version of the {@link RouteLocationAsRelative} type.
+   */
+  export interface RouteLocationAsRelativeTypedI18n<
+    RouteMapI18n extends RouteMapGeneric = RouteMapGeneric,
+    Name extends keyof RouteMapI18n = keyof RouteMapI18n
+  > extends RouteLocationAsRelativeGeneric {
+    name?: Extract<Name, string | symbol>
+    params?: RouteMapI18n[Name]['paramsRaw']
+  }
+}`
+
 export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
   const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
@@ -202,6 +288,8 @@ declare module '#app' {
     $i18n: ${i18nType}
   }
 }
+
+${typedRouterAugmentations}
 
 ${(options.experimental?.autoImportTranslationFunctions && globalTranslationTypes) || ''}
 

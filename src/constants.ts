@@ -29,7 +29,8 @@ export const DEFAULT_OPTIONS = {
   experimental: {
     localeDetector: '',
     switchLocalePathLinkSSR: false,
-    autoImportTranslationFunctions: false
+    autoImportTranslationFunctions: false,
+    typedPages: true
   },
   bundle: {
     compositionOnly: true,
