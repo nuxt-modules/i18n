@@ -3,15 +3,12 @@ import { defineI18nMiddleware } from '@intlify/h3'
 import { localeCodes, vueI18nConfigs, localeLoaders } from '#internal/i18n/options.mjs'
 import { defineNitroPlugin } from 'nitropack/dist/runtime/plugin'
 import { localeDetector as _localeDetector } from '#internal/i18n/locale.detector.mjs'
+import { nuxtMock } from './utils'
 import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadAndSetLocaleMessages } from '../messages'
 
 import type { H3Event } from 'h3'
 import type { Locale, DefineLocaleMessage } from 'vue-i18n'
 import type { CoreContext } from '@intlify/h3'
-import type { NuxtApp } from 'nuxt/app'
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-const nuxtMock: { runWithContext: NuxtApp['runWithContext'] } = { runWithContext: async fn => await fn() }
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 export default defineNitroPlugin(async nitro => {

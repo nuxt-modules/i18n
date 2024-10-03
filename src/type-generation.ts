@@ -1,6 +1,7 @@
 import { addServerHandler, addTypeTemplate, createResolver, updateTemplates, useNitro } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
+import type { I18nOptions } from 'vue-i18n'
 import type { I18nNuxtContext } from './context'
 
 /**
@@ -46,11 +47,7 @@ export function enableVueI18nTypeGeneration(
     handler: resolver.resolve('./runtime/server/api/merged.get')
   })
 
-  let res: {
-    messages: Record<string, string>
-    numberFormats: Record<string, string>
-    dateFormats: Record<string, string>
-  }
+  let res: Pick<I18nOptions, 'messages' | 'numberFormats' | 'datetimeFormats'>
 
   /**
    * We're using a runtime server endpoint to retrieve and merge options,
@@ -83,7 +80,7 @@ interface GeneratedLocaleMessage {
 }
 
 interface GeneratedDateTimeFormat {
-  ${Object.keys(res.dateFormats || {})
+  ${Object.keys(res.datetimeFormats || {})
     .map(k => `${k}: DateTimeFormatOptions;`)
     .join(`\n  `)}
 }
