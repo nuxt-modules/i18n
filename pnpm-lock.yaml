@@ -115,9 +115,6 @@ importers:
       changelogithub:
         specifier: ^0.13.7
         version: 0.13.7(magicast@0.3.5)
-      confbox:
-        specifier: ^0.1.7
-        version: 0.1.7
       consola:
         specifier: ^3
         version: 3.2.3

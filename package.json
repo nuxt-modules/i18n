@@ -120,7 +120,6 @@
     "@unhead/vue": "^1.8.8",
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
-    "confbox": "^0.1.7",
     "consola": "^3",
     "eslint": "^9.5.0",
     "eslint-config-prettier": "^9.1.0",
