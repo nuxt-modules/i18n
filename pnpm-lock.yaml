@@ -140,8 +140,8 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
       jiti:
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: ^1.20.0
+        version: 1.21.6
       jsdom:
         specifier: ^24.1.0
         version: 24.1.0
@@ -234,13 +234,13 @@ importers:
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
-        version: 1.4.2(rollup@4.21.2)(vite@5.4.3(@types/node@20.14.9)(terser@5.31.1))(vue@3.5.5(typescript@5.6.2))(webpack-sources@3.2.3)
+        version: 1.4.2(rollup@4.21.2)(vite@5.4.5(@types/node@20.14.9)(terser@5.31.1))(vue@3.5.5(typescript@5.6.2))(webpack-sources@3.2.3)
       '@nuxtjs/i18n':
         specifier: link:..
         version: link:..
       nuxt:
         specifier: latest
-        version: 3.13.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.21.2)(terser@5.31.1)(typescript@5.6.2)(vite@5.4.3(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.1.6(typescript@5.6.2))(webpack-sources@3.2.3)
+        version: 3.13.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.21.2)(terser@5.31.1)(typescript@5.6.2)(vite@5.4.5(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.1.6(typescript@5.6.2))(webpack-sources@3.2.3)
 
   specs/fixtures/basic:
     devDependencies:
@@ -4356,10 +4356,6 @@ packages:
 
   jiti@1.21.6:
     resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
-    hasBin: true
-
-  jiti@2.0.0:
-    resolution: {integrity: sha512-CJ7e7Abb779OTRv3lomfp7Mns/Sy1+U4pcAx5VbjxCZD5ZM/VJaXPpPjNKjtSvWQy/H86E49REXR34dl1JEz9w==}
     hasBin: true
 
   js-tokens@4.0.0:
@@ -12268,8 +12264,6 @@ snapshots:
       supports-color: 8.1.1
 
   jiti@1.21.6: {}
-
-  jiti@2.0.0: {}
 
   js-tokens@4.0.0: {}
 
