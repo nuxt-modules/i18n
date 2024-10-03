@@ -3,7 +3,7 @@ import { deepCopy } from '@intlify/shared'
 import { defineEventHandler } from '#imports'
 import { vueI18nConfigs, localeLoaders } from '#internal/i18n/options.mjs'
 
-import type { I18nOptions, Locale, LocaleMessages } from 'vue-i18n'
+import type { Locale, LocaleMessages } from 'vue-i18n'
 import { loadLocale, loadVueI18nOptions } from '../../messages'
 import { nuxtMock } from '../utils'
 import type { DefineLocaleMessage } from '@intlify/h3'
@@ -16,9 +16,9 @@ export default defineEventHandler(async () => {
   const vueI18nConfig = await loadVueI18nOptions(vueI18nConfigs, nuxtMock)
   for (const locale in vueI18nConfig.messages) {
     deepCopy(vueI18nConfig.messages[locale] || {}, messages)
+    deepCopy(vueI18nConfig.numberFormats?.[locale] || {}, numberFormats)
+    deepCopy(vueI18nConfig.datetimeFormats?.[locale] || {}, datetimeFormats)
   }
-  deepCopy(vueI18nConfig.numberFormats || {}, numberFormats)
-  deepCopy(vueI18nConfig.datetimeFormats || {}, datetimeFormats)
 
   // @ts-ignore
   const _defineI18nLocale = globalThis.defineI18nLocale
