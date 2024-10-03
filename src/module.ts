@@ -5,7 +5,7 @@ import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import type { HookResult } from '@nuxt/schema'
-import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
+import type { I18nPublicRuntimeConfig, LocaleInfo, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
 import { createContext } from './context'
 import { prepareOptions } from './prepare/options'
@@ -18,6 +18,7 @@ import { prepareStrategy } from './prepare/strategy'
 import { prepareLayers } from './prepare/layers'
 import { prepareTranspile } from './prepare/transpile'
 import { prepareVite } from './prepare/vite'
+import { enableVueI18nTypeGeneration } from './type-generation'
 
 export * from './types'
 
@@ -74,6 +75,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add plugin and templates
      */
     prepareRuntime(ctx, nuxt)
+
+    enableVueI18nTypeGeneration(ctx, nuxt)
 
     /**
      * disable preloading/prefetching lazy loaded locales
@@ -148,6 +151,12 @@ declare module '@nuxt/schema' {
   }
   interface NuxtOptions {
     ['i18n']: UserNuxtI18nOptions
+    /**
+     * @internal
+     */
+    _i18n: {
+      locales: LocaleInfo[]
+    }
   }
   interface NuxtHooks extends ModuleHooks {}
   interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
