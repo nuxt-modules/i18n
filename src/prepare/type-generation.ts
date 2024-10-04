@@ -1,3 +1,4 @@
+import { relative, resolve } from 'pathe'
 import { addServerHandler, addTypeTemplate, createResolver, updateTemplates, useNitro } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -50,21 +51,22 @@ export function prepareTypeGeneration({ options, localeInfo, vueI18nConfigPaths 
   const fetchMergedOptions = () => fetch(nuxt.options.devServer.url + MERGED_OPTIONS_ENDPOINT, { cache: 'no-cache' })
 
   /**
-   * We're using a runtime server endpoint to retrieve and merge options,
-   * this way we can (mostly) rely on existing loading logic
+   * We use a runtime server endpoint to retrieve and merge options,
+   * to reuse existing options/message loading logic
    *
-   * So far these hooks have been the most reliable way to fetch when the endpoint is ready to be used
+   * These hooks have been the most reliable way to fetch on startup when the endpoint is ready
    */
   nuxt.hooks.hookOnce('vite:serverCreated', () => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    useNitro().hooks.afterEach(async e => {
+    const afterEachFn = useNitro().hooks.afterEach(async e => {
       if (e.name === 'dev:reload') {
         try {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           res = await (await fetchMergedOptions()).json()
           await updateTemplates({ filter: template => template.filename === 'types/i18n-messages.d.ts' })
+          afterEachFn()
         } catch {
-          // console.log('fetch failed')
+          // console.log('fetching merged options endpoint failed')
         }
       }
     })
@@ -110,9 +112,14 @@ export {}`
   })
 
   // watch locale files for changes and update template
-  const paths = localeInfo.flatMap(x => x.files.map(f => f.path))
+  // TODO: consider conditionally checking absolute paths for Nuxt 4
+  const localePaths = localeInfo.flatMap(x => x.files.map(f => relative(nuxt.options.srcDir, f.path)))
   nuxt.hook('builder:watch', async (_, path) => {
-    if (!paths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
+    // compatibility see https://nuxt.com/docs/getting-started/upgrade#absolute-watch-paths-in-builderwatch
+    // TODO: consider conditionally checking absolute paths for Nuxt 4
+    path = relative(nuxt.options.srcDir, resolve(nuxt.options.srcDir, path))
+
+    if (!localePaths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     res = await (await fetchMergedOptions()).json()
