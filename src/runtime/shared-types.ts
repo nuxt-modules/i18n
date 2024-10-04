@@ -99,6 +99,13 @@ export interface ExperimentalFeatures {
    * @defaultValue `true`
    */
   typedPages?: boolean
+
+  /**
+   * Generates types for vue-i18n and messages
+   *
+   * @defaultValue `false`
+   */
+  typedOptionsAndMessages?: boolean
 }
 
 export interface BundleOptions

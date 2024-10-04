@@ -2,7 +2,7 @@ import { addServerHandler, addTypeTemplate, createResolver, updateTemplates, use
 
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nOptions } from 'vue-i18n'
-import type { I18nNuxtContext } from './context'
+import type { I18nNuxtContext } from '../context'
 
 /**
  * Simplifies messages object to properties of an interface
@@ -32,22 +32,27 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
   return str
 }
 
-export function enableVueI18nTypeGeneration(
+const MERGED_OPTIONS_ENDPOINT = '__nuxt_i18n/merged'
+
+export function prepareTypeGeneration(
   { options: _options, localeInfo, vueI18nConfigPaths }: I18nNuxtContext,
   nuxt: Nuxt
 ) {
+  if (_options.experimental.typedOptionsAndMessages === false) return
   // TODO: check if this is actually necessary
   nuxt.options._i18n = { locales: localeInfo }
 
   const resolver = createResolver(import.meta.url)
 
   addServerHandler({
-    route: '/api/merged',
+    route: '/' + MERGED_OPTIONS_ENDPOINT,
     // @ts-ignore
-    handler: resolver.resolve('./runtime/server/api/merged.get')
+    handler: resolver.resolve('../runtime/server/api/merged-options.get')
   })
 
   let res: Pick<I18nOptions, 'messages' | 'numberFormats' | 'datetimeFormats'>
+
+  const fetchMergedOptions = () => fetch(nuxt.options.devServer.url + MERGED_OPTIONS_ENDPOINT, { cache: 'no-cache' })
 
   /**
    * We're using a runtime server endpoint to retrieve and merge options,
@@ -61,7 +66,7 @@ export function enableVueI18nTypeGeneration(
       if (e.name === 'dev:reload') {
         try {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          res = await (await fetch(nuxt.options.devServer.url + 'api/merged', { cache: 'no-cache' })).json()
+          res = await (await fetchMergedOptions()).json()
           await updateTemplates({ filter: template => template.filename === 'types/i18n-messages.d.ts' })
         } catch {
           // console.log('fetch failed')
@@ -115,7 +120,7 @@ export {}`
     if (!paths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    res = await (await fetch(nuxt.options.devServer.url + 'api/merged', { cache: 'no-cache' })).json()
+    res = await (await fetchMergedOptions()).json()
     await updateTemplates({ filter: template => template.filename === 'types/i18n-messages.d.ts' })
   })
 }
