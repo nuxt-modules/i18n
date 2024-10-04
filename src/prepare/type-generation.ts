@@ -34,13 +34,8 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
 
 const MERGED_OPTIONS_ENDPOINT = '__nuxt_i18n/merged'
 
-export function prepareTypeGeneration(
-  { options: _options, localeInfo, vueI18nConfigPaths }: I18nNuxtContext,
-  nuxt: Nuxt
-) {
-  if (_options.experimental.typedOptionsAndMessages === false) return
-  // TODO: check if this is actually necessary
-  nuxt.options._i18n = { locales: localeInfo }
+export function prepareTypeGeneration({ options, localeInfo, vueI18nConfigPaths }: I18nNuxtContext, nuxt: Nuxt) {
+  if (options.experimental.typedOptionsAndMessages === false) return
 
   const resolver = createResolver(import.meta.url)
 
@@ -115,8 +110,8 @@ export {}`
   })
 
   // watch locale files for changes and update template
+  const paths = localeInfo.flatMap(x => x.files.map(f => f.path))
   nuxt.hook('builder:watch', async (_, path) => {
-    const paths = nuxt.options._i18n.locales.flatMap(x => x.files.map(f => f.path))
     if (!paths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
