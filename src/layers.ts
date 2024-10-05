@@ -153,9 +153,9 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
 
   for (const layer of nuxt.options._layers) {
     const i18n = getLayerI18n(layer)
-    if (!i18n?.restructureDir && i18n?.langDir == null) continue
+    if (i18n?.restructureDir === false && i18n?.langDir == null) continue
 
-    langPaths.push(resolveLayerLangDir(layer, i18n))
+    langPaths.push(resolveLayerLangDir(layer, i18n || {}))
   }
 
   return langPaths
