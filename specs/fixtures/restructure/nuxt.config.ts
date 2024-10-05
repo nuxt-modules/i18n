@@ -1,4 +1,3 @@
-// import { fileURLToPath } from 'mlly'
 import i18nModule from './i18n-module'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
@@ -22,21 +21,14 @@ export default defineNuxtConfig({
     }
   },
 
-  // alias: {
-  //   '@nuxtjs/i18n': fileURLToPath(new URL('../../../src/module', import.meta.url))
-  // },
-
   modules: [i18nModule, '@nuxtjs/i18n'],
 
   i18n: {
     baseUrl: 'http://localhost:3000',
-    // langDir: 'lang',
-    // defaultLocale: 'fr',
     detectBrowserLanguage: false,
     compilation: {
       strictMessage: false
     },
-    // restructureDir: 'i18n',
     defaultLocale: 'en',
     lazy: true,
     locales: [
