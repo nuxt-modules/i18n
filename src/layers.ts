@@ -89,8 +89,8 @@ export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: 
 }
 
 export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, fromRootDir: boolean = false) {
-  if (i18n.restructureDir) {
-    return resolve(layer.config.rootDir, i18n.restructureDir)
+  if (i18n.restructureDir !== false) {
+    return resolve(layer.config.rootDir, i18n.restructureDir ?? 'i18n')
   }
 
   return resolve(layer.config.rootDir, fromRootDir ? '' : layer.config.srcDir)
@@ -153,9 +153,9 @@ export const getLayerLangPaths = (nuxt: Nuxt) => {
 
   for (const layer of nuxt.options._layers) {
     const i18n = getLayerI18n(layer)
-    if (!i18n?.restructureDir && i18n?.langDir == null) continue
+    if (i18n?.restructureDir === false && i18n?.langDir == null) continue
 
-    langPaths.push(resolveLayerLangDir(layer, i18n))
+    langPaths.push(resolveLayerLangDir(layer, i18n || {}))
   }
 
   return langPaths

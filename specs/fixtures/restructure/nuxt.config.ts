@@ -24,15 +24,11 @@ export default defineNuxtConfig({
   modules: [i18nModule, '@nuxtjs/i18n'],
 
   i18n: {
-    restructureDir: false,
     baseUrl: 'http://localhost:3000',
-    // langDir: 'lang',
-    // defaultLocale: 'fr',
     detectBrowserLanguage: false,
     compilation: {
       strictMessage: false
     },
-    restructureDir: 'i18n',
     defaultLocale: 'en',
     lazy: true,
     locales: [
