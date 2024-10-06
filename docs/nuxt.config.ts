@@ -13,8 +13,8 @@ export default defineNuxtConfig({
     '/docs': { redirect: '/docs/getting-started' },
     '/api/search.json': { prerender: true },
 
-    // v9
-    '/docs/v9': { redirect: '/docs/v9/getting-started' }
+    // v8
+    '/docs/v8': { redirect: '/docs/v8/getting-started' }
   },
 
   vite: {

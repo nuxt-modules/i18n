@@ -12,12 +12,12 @@ const router = useRouter()
 const appConfig = useAppConfig()
 
 const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
-const isV9Docs = computed(() => router.currentRoute.value.path.includes('/docs/v9'))
+const isV8Docs = computed(() => router.currentRoute.value.path.includes('/docs/v8'))
 
 watch(
   () => router.currentRoute.value.path,
-  (val, _oldVal) => {
-    const versionTheme = isV9Docs.value ? 'v9' : 'default'
+  () => {
+    const versionTheme = isV8Docs.value || isV7Docs.value ? 'legacy' : 'default'
 
     appConfig.ui.primary = appConfig[versionTheme].ui.primary
     appConfig.ui.gray = appConfig[versionTheme].ui.gray
@@ -26,21 +26,21 @@ watch(
 )
 
 const v7DocsRE = /^\/docs\/v7/
-const v9DocsRE = /^\/docs\/v9/
+const v8DocsRE = /^\/docs\/v8/
 
 const navigationV7 = computed(() => allNavigationTree.value.filter(x => v7DocsRE.test(String(x.to))))
-const navigationV9 = computed(() => allNavigationTree.value.filter(x => v9DocsRE.test(String(x.to))))
-const navigationV8 = computed(() =>
+const navigationV8 = computed(() => allNavigationTree.value.filter(x => v8DocsRE.test(String(x.to))))
+const navigationDefault = computed(() =>
   allNavigationTree.value.filter(x => {
     const to = String(x.to)
-    return !v9DocsRE.test(to) && !v7DocsRE.test(to)
+    return !v8DocsRE.test(to) && !v7DocsRE.test(to)
   })
 )
 
 const currentVersionNavigation = computed(() => {
   if (isV7Docs.value) return navigationV7.value
-  if (isV9Docs.value) return navigationV9.value
-  return navigationV8.value
+  if (isV8Docs.value) return navigationV8.value
+  return navigationDefault.value
 })
 </script>
 

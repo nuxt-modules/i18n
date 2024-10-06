@@ -1,16 +1,16 @@
 <script setup lang="ts">
 const versions = [
   {
-    id: '8',
-    label: 'v8',
-    to: '/docs/getting-started',
-    tag: 'latest'
-  },
-  {
     id: '9',
     label: 'v9',
-    to: '/docs/v9',
-    tag: 'alpha'
+    to: '/docs/getting-started',
+    tag: 'rc'
+  },
+  {
+    id: '8',
+    label: 'v8',
+    to: '/docs/v8',
+    tag: 'stable'
   },
   {
     id: '7',
@@ -23,7 +23,7 @@ const router = useRouter()
 const selectedVersion = computed(() => {
   const path = router.currentRoute.value.path
 
-  if (path.includes('/v9')) return versions[1]
+  if (path.includes('/v8')) return versions[1]
   if (path.includes('/v7')) return versions[2]
 
   return versions[0]

@@ -2,18 +2,18 @@ export default defineAppConfig({
   default: {
     ui: {
       primary: 'green',
-      gray: 'slate'
+      gray: 'zinc'
     }
   },
-  v9: {
+  legacy: {
     ui: {
       primary: 'green',
-      gray: 'zinc'
+      gray: 'slate'
     }
   },
   ui: {
     primary: 'green',
-    gray: 'slate',
+    gray: 'zinc',
     footer: {
       bottom: {
         left: 'text-sm text-gray-500 dark:text-gray-400',
