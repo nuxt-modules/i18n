@@ -1,5 +1,5 @@
 import { relative, resolve } from 'pathe'
-import { addServerHandler, addTypeTemplate, createResolver, updateTemplates, useNitro } from '@nuxt/kit'
+import { addServerHandler, addTypeTemplate, updateTemplates, useNitro } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nOptions } from 'vue-i18n'
@@ -35,15 +35,16 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
 
 const MERGED_OPTIONS_ENDPOINT = '__nuxt_i18n/merged'
 
-export function prepareTypeGeneration({ options, localeInfo, vueI18nConfigPaths }: I18nNuxtContext, nuxt: Nuxt) {
-  if (options.experimental.typedOptionsAndMessages === false) return
-
-  const resolver = createResolver(import.meta.url)
+export function prepareTypeGeneration(
+  { resolver, options, localeInfo, vueI18nConfigPaths, isDev }: I18nNuxtContext,
+  nuxt: Nuxt
+) {
+  if (options.experimental.typedOptionsAndMessages === false || !isDev) return
 
   addServerHandler({
     route: '/' + MERGED_OPTIONS_ENDPOINT,
     // @ts-ignore
-    handler: resolver.resolve('../runtime/server/api/merged-options.get')
+    handler: resolver.resolve('./runtime/server/api/merged-options.get')
   })
 
   let res: Pick<I18nOptions, 'messages' | 'numberFormats' | 'datetimeFormats'>

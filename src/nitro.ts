@@ -31,13 +31,13 @@ type AdditionalSetupNitroParams = {
 }
 
 export async function setupNitro(
-  { genTemplate, isSSR, localeInfo, resolver, options: nuxtOptions }: I18nNuxtContext,
+  { genTemplate, isSSR, localeInfo, resolver, options: nuxtOptions, isDev }: I18nNuxtContext,
   nuxt: Nuxt
 ) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
   nuxt.hook('nitro:config', async nitroConfig => {
-    if (enableServerIntegration || nuxtOptions.experimental.typedOptionsAndMessages) {
+    if (enableServerIntegration || (nuxtOptions.experimental.typedOptionsAndMessages && isDev)) {
       const additionalParams: AdditionalSetupNitroParams = {
         optionsCode: genTemplate(true, true),
         localeInfo
