@@ -5,7 +5,7 @@ import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
 import type { HookResult } from '@nuxt/schema'
-import type { I18nPublicRuntimeConfig, LocaleInfo, LocaleObject, NuxtI18nOptions } from './types'
+import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
 import { createContext } from './context'
 import { prepareOptions } from './prepare/options'
@@ -154,12 +154,6 @@ declare module '@nuxt/schema' {
   }
   interface NuxtOptions {
     ['i18n']: UserNuxtI18nOptions
-    /**
-     * @internal
-     */
-    _i18n: {
-      locales: LocaleInfo[]
-    }
   }
   interface NuxtHooks extends ModuleHooks {}
   interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
