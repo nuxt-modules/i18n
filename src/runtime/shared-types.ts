@@ -99,6 +99,16 @@ export interface ExperimentalFeatures {
    * @defaultValue `true`
    */
   typedPages?: boolean
+
+  /**
+   * Generates types for vue-i18n and messages
+   *
+   * @defaultValue `false`
+   *
+   * @remark `'default'` to generate types based on `defaultLocale`
+   * @remark `'all'` to generate types based on all locales
+   */
+  typedOptionsAndMessages?: false | 'default' | 'all'
 }
 
 export interface BundleOptions

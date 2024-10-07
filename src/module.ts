@@ -18,6 +18,7 @@ import { prepareStrategy } from './prepare/strategy'
 import { prepareLayers } from './prepare/layers'
 import { prepareTranspile } from './prepare/transpile'
 import { prepareVite } from './prepare/vite'
+import { prepareTypeGeneration } from './prepare/type-generation'
 
 export * from './types'
 
@@ -74,6 +75,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * add plugin and templates
      */
     prepareRuntime(ctx, nuxt)
+
+    /**
+     * generate vue-i18n and messages types using runtime server endpoint
+     */
+    prepareTypeGeneration(ctx, nuxt)
 
     /**
      * disable preloading/prefetching lazy loaded locales
