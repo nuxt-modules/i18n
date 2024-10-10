@@ -33,7 +33,7 @@ export default defineEventHandler(async event => {
   locales['en-GB'].id = new Date().toISOString()
   locales['ja'].id = new Date().toISOString()
 
-  await new Promise(resolve => setTimeout(resolve, 5000))
+  await new Promise(resolve => setTimeout(resolve, 200))
   if (locale == null) {
     return {}
   }
