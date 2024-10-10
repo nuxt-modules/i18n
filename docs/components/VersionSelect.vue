@@ -1,32 +1,42 @@
 <script setup lang="ts">
-const versions = [
-  {
-    id: '8',
-    label: 'v8',
-    to: '/docs/getting-started',
-    tag: 'latest'
-  },
-  {
-    id: '9',
-    label: 'v9',
-    to: '/docs/v9',
-    tag: 'alpha'
-  },
-  {
-    id: '7',
-    label: 'v7',
-    to: '/docs/v7'
-  }
-]
+const versions = computed(() => {
+  const items = [
+    {
+      id: '8',
+      label: 'v8',
+      to: '/docs/getting-started',
+      tag: 'latest',
+      click: () => {}
+    },
+    {
+      id: '9',
+      label: 'v9',
+      to: '/docs/v9',
+      tag: 'rc',
+      click: () => {}
+    },
+    {
+      id: '7',
+      label: 'v7',
+      to: '/docs/v7',
+      click: () => {}
+    }
+  ]
+
+  return items.map(x => {
+    x.click = () => changeVersion(x)
+    return x
+  })
+})
 
 const router = useRouter()
 const selectedVersion = computed(() => {
   const path = router.currentRoute.value.path
 
-  if (path.includes('/v9')) return versions[1]
-  if (path.includes('/v7')) return versions[2]
+  if (path.includes('/v9')) return versions.value[1]
+  if (path.includes('/v7')) return versions.value[2]
 
-  return versions[0]
+  return versions.value[0]
 })
 
 function changeVersion(newVersion) {
@@ -44,6 +54,7 @@ watch(selectedVersion, val => {
       :model-value="selectedVersion"
       :options="versions"
       :ui="{ base: '!cursor-pointer' }"
+      :popper="{ placement: 'bottom-start' }"
       :uiMenu="{ option: { base: '!cursor-pointer', container: 'w-full' } }"
       color="gray"
     >
@@ -52,11 +63,11 @@ watch(selectedVersion, val => {
         <UBadge v-if="selectedVersion.tag" variant="subtle" :label="selectedVersion.tag" size="xs" />
       </template>
 
-      <template #option="{ option: version }">
-        <div class="absolute inset-0" @click="() => changeVersion(version)"></div>
+      <template #option="{ option }">
+        <div class="absolute inset-0" @click="option.click"></div>
         <div class="w-full">
-          {{ version.label }}
-          <UBadge v-if="version.tag" variant="subtle" :label="version.tag" />
+          {{ option.label }}
+          <UBadge v-if="option.tag" variant="subtle" :label="option.tag" />
         </div>
       </template>
     </USelectMenu>

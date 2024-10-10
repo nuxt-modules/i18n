@@ -11,10 +11,11 @@ hero:
       trailingIcon: 'i-heroicons-arrow-right-20-solid'
       to: '/docs/getting-started'
       size: lg
-    - label: Open in GitHub
+    - label: Star on GitHub
       icon: i-simple-icons-github
       size: lg
-      color: white
+      variant: ghost
+      color: gray
       to: https://github.com/nuxt-modules/i18n
       target: _blank
   code: |

@@ -16,10 +16,33 @@ useSeoMeta({
 const { data: navigation } = await useAsyncData('navigation', () => fetchContentNavigation())
 provide('navigation', navigation)
 
+const router = useRouter()
+
+const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
+const isV9Docs = computed(() => router.currentRoute.value.path.includes('/docs/v9'))
+
 // Search
 const { data: files } = useLazyFetch<ParsedContent[]>('/api/search.json', {
   default: () => [],
   server: false
+})
+
+const v7DocsRE = /^\/docs\/v7/
+const v9DocsRE = /^\/docs\/v9/
+
+const navigationV7 = computed(() => navigation.value?.[0].children.filter(x => v7DocsRE.test(String(x._path))))
+const navigationV9 = computed(() => navigation.value?.[0].children.filter(x => v9DocsRE.test(String(x._path))))
+const navigationV8 = computed(() =>
+  navigation.value?.[0].children.filter(x => {
+    const to = String(x._path)
+    return !v9DocsRE.test(to) && !v7DocsRE.test(to)
+  })
+)
+
+const currentVersionNavigation = computed(() => {
+  if (isV7Docs.value) return navigationV7.value
+  if (isV9Docs.value) return navigationV9.value
+  return navigationV8.value
 })
 
 // Header
@@ -50,9 +73,15 @@ const links: PageLink[] = [
     <TheFooter />
 
     <ClientOnly>
-      <LazyUContentSearch :files="files" :navigation="navigation" :links="links" />
+      <LazyUContentSearch :files="files" :navigation="currentVersionNavigation" :links="links" />
     </ClientOnly>
 
     <UNotifications />
   </div>
 </template>
+
+<style>
+body {
+  font-family: 'Inter var experimental', 'Inter var', 'Inter', sans-serif;
+}
+</style>
