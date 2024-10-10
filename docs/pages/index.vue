@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useClipboard } from '@vueuse/core'
 const { data: page } = await useAsyncData('index', () => queryContent('/').findOne())
 
 // Page Metadata (SEO & OG)
@@ -8,11 +9,21 @@ setPageMeta({
   description: page.value.description,
   headline: page.value.hero.headline.label
 })
+const source = ref('npx nuxi module add i18n')
+const { copy, copied } = useClipboard({ source })
 </script>
 
 <template>
   <div>
-    <ULandingHero v-if="page.hero" v-bind="page.hero">
+    <ULandingHero
+      v-if="page.hero"
+      v-bind="page.hero"
+      :ui="{
+        container: 'overflow-hidden py-10 flex flex-row items-center  gap-1',
+        links: 'flex items-center gap-2',
+        description: 'text-gray-500 dark:text-gray-400 text-xl max-w-2xl leading-normal mb-10'
+      }"
+    >
       <template #headline>
         <UBadge v-if="page.hero.headline" variant="subtle" size="lg" class="relative rounded-full font-semibold">
           <NuxtLink :to="page.hero.headline.to" target="_blank" class="focus:outline-none" tabindex="-1">
@@ -29,19 +40,46 @@ setPageMeta({
         </UBadge>
       </template>
 
+      <template #description>
+        {{ page.hero.description }}
+      </template>
+
       <template #title>
         <p>
-          <span class="text-primary md:hidden">i18n</span>
-          <span class="text-primary hidden md:block">Internationalization</span>
+          <span class="text-white md:hidden">i18n</span>
+          <span class="text-white hidden md:block">Internationalization</span>
           for
-          <span class="text-primary">Nuxt</span> Apps
+          <span class="text-primary">Nuxt Applications</span>
         </p>
       </template>
 
-      <MDC :value="page.hero.code" tag="pre" class="prose prose-primary dark:prose-invert mx-auto min-w-80" />
+      <UInput
+        aria-label="Copy code to get started"
+        :model-value="source"
+        name="get-started"
+        class="mx-auto"
+        disabled
+        autocomplete="off"
+        size="lg"
+        :ui="{ base: 'w-[300px] disabled:cursor-default', icon: { trailing: { pointer: '' } } }"
+      >
+        <template #leading>
+          <UIcon name="i-ph-terminal" />
+        </template>
+        <template #trailing>
+          <UButton
+            aria-label="Copy Code"
+            :color="copied ? 'green' : 'gray'"
+            variant="ghost"
+            :padded="false"
+            :icon="copied ? 'i-ph-check' : 'i-ph-copy'"
+            @click="copy(source)"
+          />
+        </template>
+      </UInput>
     </ULandingHero>
 
-    <ULandingSection :title="page.features.title" :links="page.features.links">
+    <ULandingSection :title="page.features.title">
       <UPageGrid>
         <ULandingCard v-for="(item, index) of page.features.items" :key="index" v-bind="item" />
       </UPageGrid>

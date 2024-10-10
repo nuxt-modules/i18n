@@ -5,7 +5,7 @@ export default <Partial<Config>>{
   theme: {
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'DM Sans fallback', ...defaultTheme.fontFamily.sans]
+        sans: ['Inter var experimental', 'Inter var', 'Inter']
       },
       colors: {
         green: {

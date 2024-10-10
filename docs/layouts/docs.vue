@@ -28,8 +28,8 @@ watch(
 const v7DocsRE = /^\/docs\/v7/
 const v9DocsRE = /^\/docs\/v9/
 
-const navigationV7 = computed(() => allNavigationTree.value.filter(x => v7DocsRE.test(String(x.to))))
-const navigationV9 = computed(() => allNavigationTree.value.filter(x => v9DocsRE.test(String(x.to))))
+const navigationV7 = computed(() => allNavigationTree.value.filter(x => v7DocsRE.test(String(x.to)))[0].children!)
+const navigationV9 = computed(() => allNavigationTree.value.filter(x => v9DocsRE.test(String(x.to)))[0].children!)
 const navigationV8 = computed(() =>
   allNavigationTree.value.filter(x => {
     const to = String(x.to)
@@ -51,7 +51,7 @@ const currentVersionNavigation = computed(() => {
         <UAside>
           <VersionSelect />
           <UDivider type="dashed" class="mb-6" />
-          <UNavigationTree :links="currentVersionNavigation" default-open :multiple="false" />
+          <UNavigationTree :links="currentVersionNavigation" :multiple="true" />
         </UAside>
       </template>
 

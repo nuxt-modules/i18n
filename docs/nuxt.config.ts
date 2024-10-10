@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
-  modules: ['@nuxt/content', '@nuxt/ui', '@nuxtjs/fontaine', '@nuxtjs/google-fonts', 'nuxt-og-image'],
+  modules: ['@nuxt/content', '@nuxt/ui', '@nuxtjs/fontaine', '@nuxtjs/google-fonts', 'nuxt-og-image', '@nuxt/fonts'],
   routeRules: {
     // v7
     '/docs/v7/callbacks': { prerender: true, ssr: false },
