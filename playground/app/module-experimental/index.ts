@@ -20,6 +20,7 @@ export default defineNuxtModule<ModuleOptions>({
         langDir: resolver.resolve('./lang'),
         locales: [
           {
+            name: 'Deutsch',
             code: 'de',
             language: 'de-DE',
             file: 'de.ts'

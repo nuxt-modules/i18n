@@ -36,26 +36,6 @@ export default defineNuxtConfig({
         // domain: 'localhost',
         name: 'Nederlands'
       }
-      //   {
-      //     code: 'en-GB',
-      //     language: 'en-GB',
-      //     files: ['en.json', 'en-GB.json'],
-      //     name: 'English (UK)'
-      //   },
-      //   {
-      //     code: 'ja',
-      //     language: 'ja-JP',
-      //     file: 'ja.json',
-      //     domain: 'mydomain.com',
-      //     name: 'Japanses'
-      //   },
-      //   {
-      //     code: 'fr',
-      //     language: 'fr-FR',
-      //     file: 'fr.json',
-      //     domain: 'mydomain.fr',
-      //     name: 'Français'
-      //   }
     ]
   }
 })

@@ -1,136 +1,51 @@
-import Module1 from './module1'
-import LayerModule from './layer-module'
-import ModuleExperimental from './module-experimental'
+import Module1 from './app/module1'
+import LayerModule from './app/layer-module'
+import ModuleExperimental from './app/module-experimental'
+import { fileURLToPath } from 'mlly'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  // devLogs broken, should be resolved by https://github.com/nuxt/nuxt/commit/b3ced3d694c89344c8e77b804a2dc76434d27668
-  // remove after updating to Nuxt >3.11.0
-  features: {
-    devLogs: false
-  },
   experimental: {
     typedPages: true
   },
+
+  future: {
+    compatibilityVersion: 4
+  },
+
+  alias: {
+    '@nuxtjs/i18n': fileURLToPath(new URL('../src/module', import.meta.url))
+  },
+
   vite: {
     // Prevent reload by optimizing dependency before discovery
     optimizeDeps: {
       include: ['@unhead/vue']
-    }
-  },
-  extends: ['layers/i18n-layer'],
-  modules: [
-    (_, nuxt) => {
-      console.log(nuxt.options._installedModules)
     },
-    Module1,
-    ModuleExperimental,
-    LayerModule,
-    /*
-    [
-      '@nuxtjs/i18n',
-      {
-        compilation: {
-          strictMessage: false,
-          escapeHtml: true
-        },
-        langDir: 'locales',
-        lazy: true,
-        baseUrl: 'http://localhost:3000',
-        locales: [
-          {
-            code: 'en',
-            language: 'en-US',
-            file: 'en.json',
-            // domain: 'localhost',
-            name: 'English'
-          },
-          {
-            code: 'en-GB',
-            language: 'en-GB',
-            files: ['en.json', 'en-GB.js', 'en-KK.js'],
-            name: 'English (UK)'
-          },
-          {
-            code: 'ja',
-            language: 'ja-JP',
-            file: 'ja.ts',
-            domain: 'mydomain.com',
-            name: 'Japanses'
-          },
-          {
-            code: 'fr',
-            language: 'fr-FR',
-            file: 'fr.json',
-            domain: 'mydomain.fr',
-            name: 'Français'
-          }
-        ],
-        // trailingSlash: true,
-        debug: false,
-        defaultLocale: 'en',
-        // strategy: 'no_prefix',
-        // strategy: 'prefix',
-        // strategy: 'prefix_and_default',
-        strategy: 'prefix_except_default',
-        // rootRedirect: '/ja/about-ja',
-        dynamicRouteParams: true,
-        // customRoutes: 'config',
-        pages: {
-          history: {
-            ja: '/history-ja'
-          },
-          about: {
-            ja: '/about-ja'
-          }
-        },
-        // differentDomains: true,
-        // skipSettingLocaleOnNavigate: true,
-        // detectBrowserLanguage: false,
-        detectBrowserLanguage: {
-          useCookie: true
-          // alwaysRedirect: true
-          // cookieKey: 'i18n_redirected',
-          // // cookieKey: 'my_custom_cookie_name',
-          // redirectOn: 'root'
-        },
-        vueI18n: './vue-i18n.options.ts'
-      }
-    ],
-  */
-    '@nuxtjs/i18n',
-    '@nuxt/devtools'
-  ],
-  vite: {
     build: {
       minify: false
     }
   },
 
-  // app: {
-  //   pageTransition: {
-  //     name: 'foo',
-  //     onBeforeEnter: async (...args: unknown[]) => {
-  //       console.log('global onBeforeEnter', ...args)
-  //     }
-  //   }
-  // },
-  // debug: true,
+  extends: ['layers/i18n-layer'],
+
+  modules: [Module1, ModuleExperimental, LayerModule, '@nuxtjs/i18n', '@nuxt/devtools'],
+
+  // debug: false,
+
   i18n: {
-    restructureDir: false,
+    debug: false,
+    // restructureDir: 'i18n',
     experimental: {
       localeDetector: './localeDetector.ts',
       switchLocalePathLinkSSR: true,
       autoImportTranslationFunctions: true,
-      typedPages: true
+      typedPages: true,
+      typedOptionsAndMessages: 'default'
     },
     compilation: {
-      // jit: false,
       strictMessage: false,
       escapeHtml: true
-    },
-    bundle: {
-      // dropMessageCompiler: true
     },
     langDir: 'locales',
     lazy: true,
@@ -154,7 +69,7 @@ export default defineNuxtConfig({
         language: 'ja-JP',
         file: 'ja.ts',
         domain: 'mydomain.com',
-        name: 'Japanses'
+        name: 'Japanese'
       },
       {
         code: 'fr',
@@ -164,19 +79,7 @@ export default defineNuxtConfig({
         name: 'Français'
       }
     ],
-    // bundle: {
-    //   runtimeOnly: true
-    // },
-    // trailingSlash: true,
-    debug: true,
     defaultLocale: 'en',
-    // strategy: 'no_prefix',
-    // strategy: 'prefix',
-    // strategy: 'prefix_and_default',
-    // strategy: 'prefix_except_default',
-    // rootRedirect: '/ja/about-ja',
-    dynamicRouteParams: true,
-    // customRoutes: 'config',
     pages: {
       history: {
         ja: '/history-ja'
@@ -185,7 +88,6 @@ export default defineNuxtConfig({
         ja: '/about-ja'
       }
     },
-    // differentDomains: true,
     skipSettingLocaleOnNavigate: true,
     detectBrowserLanguage: false,
     // detectBrowserLanguage: {
@@ -195,6 +97,6 @@ export default defineNuxtConfig({
     //   // // cookieKey: 'my_custom_cookie_name',
     //   // redirectOn: 'root'
     // },
-    vueI18n: './vue-i18n.options.ts'
+    vueI18n: 'vue-i18n.options.ts'
   }
 })

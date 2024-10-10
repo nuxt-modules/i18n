@@ -40,7 +40,7 @@ export default defineComponent({
 <template>
   <div>
     <nav>
-      <NuxtLink :to="$localePath('/')">Back to Home</NuxtLink>
+      <NuxtLink :to="$localePath('index')">Back to Home</NuxtLink>
     </nav>
     <nav>
       <span v-for="locale in availableLocales" :key="locale.code">
@@ -54,6 +54,6 @@ export default defineComponent({
       </span>
     </nav>
     <p>{{ switchableLocale }}</p>
-    <p>{{ $localeHead({ addSeoAttributes: true }) }}</p>
+    <p>{{ $localeHead({}) }}</p>
   </div>
 </template>
