@@ -20,7 +20,7 @@ import {
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
 import { resolveI18nDir } from './layers'
-import { i18nVirtualLoggerPlugin } from './virtual-logger'
+import { I18nVirtualLoggerPlugin } from './virtual-logger'
 import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
@@ -57,7 +57,7 @@ export async function setupNitro(
         : [nitroConfig.rollupConfig.plugins]
 
       // @ts-ignore NOTE: A type error occurs due to a mismatch between Vite plugins and those of Rollup
-      nitroConfig.rollupConfig.plugins.push(i18nVirtualLoggerPlugin(nuxtOptions.debug))
+      nitroConfig.rollupConfig.plugins.push(I18nVirtualLoggerPlugin.rollup({ debug: nuxtOptions.debug }))
 
       const yamlPaths = getResourcePaths(additionalParams.localeInfo, /\.ya?ml$/)
       if (yamlPaths.length > 0) {
