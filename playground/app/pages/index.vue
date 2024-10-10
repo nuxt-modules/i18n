@@ -1,34 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const route = useRoute()
-const {
-  t,
-  rt,
-  tm,
-  strategy,
-  locale,
-  locales,
-  localeProperties,
-  setLocale,
-  defaultLocale,
-  finalizePendingLocaleChange
-} = useI18n()
+const { t, rt, tm, strategy, locale, locales, setLocale } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
-const getRouteBaseName = useRouteBaseName()
-
-// route.meta.pageTransition.onBeforeEnter = async () => {
-//   await finalizePendingLocaleChange()
-// }
-
-// console.log('route base name', getRouteBaseName())
-// console.log('useBrowserLocale', useBrowserLocale())
-console.log('localeProperties', localeProperties)
-console.log('foo', t('foo'))
-console.log('message if local layer merged:', t('layerText'))
-console.log('message if github layer merged:', t('layer-test-key'))
-console.log('experimental module', t('goodDay'))
 
 function getLocaleName(code: string) {
   const locale = locales.value.find(i => i.code === code)
@@ -40,23 +15,16 @@ const availableLocales = computed(() => {
 })
 
 const i = tm('items') || []
-console.log('items via tm', i, typeof i)
 const items = i.map(item => rt(item?.name ?? ''))
-console.log('items items', items)
 
 definePageMeta({
   title: 'pages.title.top',
-  // middleware: () => {
-  //   const localePath2 = useLocalePath()
-  //   console.log('middleware', localePath2({ name: 'blog' }))
-  // },
   pageTransition: {
     name: 'page',
     mode: 'out-in',
     onBeforeEnter: async () => {
       const { finalizePendingLocaleChange } = useNuxtApp().$i18n
       await finalizePendingLocaleChange()
-      // console.log('onBeforeEnter')
     }
   }
 })
