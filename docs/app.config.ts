@@ -64,7 +64,7 @@ export default defineAppConfig({
   toc: {
     title: 'Table of Contents',
     bottom: {
-      edit: 'https://github.com/nuxt-modules/i18n/docs/edit/main/content'
+      edit: 'https://github.com/nuxt-modules/i18n/edit/main/docs/content'
     }
   }
 })
