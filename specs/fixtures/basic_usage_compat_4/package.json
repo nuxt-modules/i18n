@@ -13,6 +13,6 @@
     "nuxt": "latest"
   },
   "dependencies": {
-    "@nuxt/devtools": "^1.4.2"
+    "@nuxt/devtools": "^1.6.0"
   }
 }
