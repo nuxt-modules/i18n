@@ -3,11 +3,12 @@ import { useLocalePath, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
 import { defineNuxtLink } from '#imports'
 import { hasProtocol } from 'ufo'
+import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
 
 import type { PropType } from 'vue'
 import type { NuxtLinkProps } from 'nuxt/app'
 
-const NuxtLinkLocale = defineNuxtLink({ componentName: 'NuxtLinkLocale' })
+const NuxtLinkLocale = defineNuxtLink({ ...nuxtLinkDefaults, componentName: 'NuxtLinkLocale' })
 
 type NuxtLinkLocaleProps = Omit<NuxtLinkProps, 'to'> & {
   to?: import('vue-router').RouteLocationNamedI18n
