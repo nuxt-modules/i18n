@@ -54,9 +54,13 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
 
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
 
+  // @ts-expect-error needs nuxt 3.14.0
   const pagesHook: Parameters<(typeof nuxt)['hook']>[0] =
+    // @ts-expect-error needs nuxt 3.14.0
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend'
-  nuxt.hook(pagesHook, async pages => {
+
+  // TODO: remove with the release of 3.14.0
+  nuxt.hook(pagesHook as 'pages:extend', async pages => {
     debug('pages making ...', pages)
     const ctx: NuxtPageAnalyzeContext = {
       stack: [],
