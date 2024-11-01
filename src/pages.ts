@@ -1,5 +1,5 @@
 import createDebug from 'debug'
-import { addTemplate, extendPages } from '@nuxt/kit'
+import { addTemplate } from '@nuxt/kit'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
@@ -54,7 +54,9 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
 
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
 
-  extendPages(async pages => {
+  const pagesHook: Parameters<(typeof nuxt)['hook']>[0] =
+    nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend'
+  nuxt.hook(pagesHook, async pages => {
     debug('pages making ...', pages)
     const ctx: NuxtPageAnalyzeContext = {
       stack: [],
