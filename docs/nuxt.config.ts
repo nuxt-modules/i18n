@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     '/api/search.json': { prerender: true },
 
     // v9
-    '/docs/v9': { redirect: '/docs/v9/getting-started' }
+    '/docs/v8': { redirect: '/docs/v8/getting-started' }
   },
 
   vite: {
