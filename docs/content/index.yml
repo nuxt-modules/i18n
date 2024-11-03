@@ -49,7 +49,7 @@ features:
     - title: 'Locale-Aware Redirection'
       description: 'Ready to use composables to redirect based on current locale.'
       icon: 'i-heroicons-arrows-right-left'
-      to: '/docs/api/components#nuxtlinklocale'
+      to: '/docs/components/nuxt-link-locale'
 
     - title: 'Locales Specific Domains'
       description: 'Set a different domain name for each locale your app supports.'

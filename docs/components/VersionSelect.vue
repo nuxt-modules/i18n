@@ -2,23 +2,23 @@
 const versions = computed(() => {
   const items = [
     {
-      id: '8',
-      label: 'v8',
+      id: '9',
+      label: 'v9',
       to: '/docs/getting-started',
       tag: 'latest',
       click: () => {}
     },
     {
-      id: '9',
-      label: 'v9',
-      to: '/docs/v9',
-      tag: 'rc',
+      id: '8',
+      label: 'v8',
+      to: '/docs/v8',
       click: () => {}
     },
     {
       id: '7',
       label: 'v7',
       to: '/docs/v7',
+      tag: 'legacy',
       click: () => {}
     }
   ]
@@ -33,7 +33,7 @@ const router = useRouter()
 const selectedVersion = computed(() => {
   const path = router.currentRoute.value.path
 
-  if (path.includes('/v9')) return versions.value[1]
+  if (path.includes('/v8')) return versions.value[1]
   if (path.includes('/v7')) return versions.value[2]
 
   return versions.value[0]
