@@ -4,8 +4,6 @@ navigation: false
 hero:
   description: 'I18n (Internationalization) module for your Nuxt project powered by Vue I18n.'
   orientation: horizontal
-  headline:
-    label: v8 Stable!
   links:
     - label: Get Started
       trailingIcon: 'i-heroicons-arrow-right-20-solid'

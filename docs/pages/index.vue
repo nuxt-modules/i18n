@@ -7,7 +7,7 @@ const { setPageMeta } = usePageMeta()
 setPageMeta({
   title: page.value.title,
   description: page.value.description,
-  headline: page.value.hero.headline.label
+  headline: page.value.hero.headline?.label
 })
 const source = ref('npx nuxi module add i18n')
 const { copy, copied } = useClipboard({ source })
@@ -30,7 +30,7 @@ const { copy, copied } = useClipboard({ source })
             <span class="absolute inset-0" aria-hidden="true" />
           </NuxtLink>
 
-          {{ page.hero.headline.label }}
+          {{ page.hero.headline?.label }}
 
           <UIcon
             v-if="page.hero.headline.icon"
