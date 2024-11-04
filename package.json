@@ -145,7 +145,7 @@
     "undici": "^6.19.2",
     "unhead": "^1.8.8",
     "vitest": "^2.1.1",
-    "vue": "^3.5.5"
+    "vue": "^3.5.12"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
