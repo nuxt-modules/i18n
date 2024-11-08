@@ -351,14 +351,16 @@ enum SegmentParserState {
   static,
   dynamic,
   optional,
-  catchall
+  catchall,
+  group
 }
 
 enum SegmentTokenType {
   static,
   dynamic,
   optional,
-  catchall
+  catchall,
+  group
 }
 
 interface SegmentToken {
@@ -366,7 +368,7 @@ interface SegmentToken {
   value: string
 }
 
-const PARAM_CHAR_RE = /[\w\d_.]/
+const PARAM_CHAR_RE = /[\w.]/
 
 export function parseSegment(segment: string) {
   let state: SegmentParserState = SegmentParserState.initial
@@ -391,7 +393,9 @@ export function parseSegment(segment: string) {
             ? SegmentTokenType.dynamic
             : state === SegmentParserState.optional
               ? SegmentTokenType.optional
-              : SegmentTokenType.catchall,
+              : state === SegmentParserState.catchall
+                ? SegmentTokenType.catchall
+                : SegmentTokenType.group,
       value: buffer
     })
 
@@ -406,6 +410,8 @@ export function parseSegment(segment: string) {
         buffer = ''
         if (c === '[') {
           state = SegmentParserState.dynamic
+        } else if (c === '(') {
+          state = SegmentParserState.group
         } else {
           i--
           state = SegmentParserState.static
@@ -416,6 +422,9 @@ export function parseSegment(segment: string) {
         if (c === '[') {
           consumeBuffer()
           state = SegmentParserState.dynamic
+        } else if (c === '(') {
+          consumeBuffer()
+          state = SegmentParserState.group
         } else {
           buffer += c
         }
@@ -424,6 +433,7 @@ export function parseSegment(segment: string) {
       case SegmentParserState.catchall:
       case SegmentParserState.dynamic:
       case SegmentParserState.optional:
+      case SegmentParserState.group:
         if (buffer === '...') {
           buffer = ''
           state = SegmentParserState.catchall
@@ -438,7 +448,14 @@ export function parseSegment(segment: string) {
             consumeBuffer()
           }
           state = SegmentParserState.initial
-        } else if (PARAM_CHAR_RE.test(c)) {
+        } else if (c === ')' && state === SegmentParserState.group) {
+          if (!buffer) {
+            throw new Error('Empty group')
+          } else {
+            consumeBuffer()
+          }
+          state = SegmentParserState.initial
+        } else if (c && PARAM_CHAR_RE.test(c)) {
           buffer += c
         } else {
           // console.debug(`[pages]Ignored character "${c}" while building param "${buffer}" from "segment"`)
@@ -564,6 +581,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
   }
 }
 
+const COLON_RE = /:/g
 export function getRoutePath(tokens: SegmentToken[]): string {
   return tokens.reduce((path, token) => {
     return (
@@ -574,7 +592,9 @@ export function getRoutePath(tokens: SegmentToken[]): string {
           ? `:${token.value}()`
           : token.type === SegmentTokenType.catchall
             ? `:${token.value}(.*)*`
-            : encodePath(token.value).replace(/:/g, '\\:'))
+            : token.type === SegmentTokenType.group
+              ? ''
+              : encodePath(token.value).replace(COLON_RE, '\\:'))
     )
   }, '/')
 }
