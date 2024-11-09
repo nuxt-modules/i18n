@@ -41,9 +41,6 @@
     "./types": {
       "types": "./dist/module.d.mts"
     },
-    "./types": {
-      "types": "./dist/module.d.mts"
-    },
     "./package.json": "./package.json"
   },
   "imports": {
