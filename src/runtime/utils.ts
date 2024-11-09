@@ -187,7 +187,6 @@ export function detectLocale(
 
   // detect locale by route
   if (differentDomains || multiDomainLocales) {
-     
     detected ||= getLocaleDomain(normalizedLocales, strategy, route)
   } else if (strategy !== 'no_prefix') {
     detected ||= routeLocale
