@@ -39,7 +39,7 @@
       "default": "./dist/module.mjs"
     },
     "./types": {
-      "types": "./dist/runtime/shared-types.d.mts"
+      "types": "./dist/runtime/shared-types.d.ts"
     },
     "./package.json": "./package.json"
   },
