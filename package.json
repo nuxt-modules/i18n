@@ -36,7 +36,10 @@
   "exports": {
     ".": {
       "types": "./dist/types.d.mts",
-      "import": "./dist/module.mjs"
+      "default": "./dist/module.mjs"
+    },
+    "./types": {
+      "types": "./dist/module.d.mts"
     },
     "./package.json": "./package.json"
   },
@@ -45,6 +48,13 @@
   },
   "main": "./dist/module.mjs",
   "types": "./dist/types.d.ts",
+  "typesVersions": {
+    "*": {
+      "types": [
+        "./dist/module.d.ts"
+      ]
+    }
+  },
   "files": [
     "dist",
     "internals.d.ts"
