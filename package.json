@@ -35,11 +35,8 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/types.d.mts",
+      "types": "./dist/module.d.mts",
       "default": "./dist/module.mjs"
-    },
-    "./types": {
-      "types": "./dist/runtime/shared-types.d.ts"
     },
     "./package.json": "./package.json"
   },
@@ -47,14 +44,7 @@
     "#i18n": "./dist/runtime/composables/index.js"
   },
   "main": "./dist/module.mjs",
-  "types": "./dist/types.d.ts",
-  "typesVersions": {
-    "*": {
-      "types": [
-        "./dist/runtime/shared-types.d.ts"
-      ]
-    }
-  },
+  "types": "./dist/module.d.ts",
   "files": [
     "dist",
     "internals.d.ts"
