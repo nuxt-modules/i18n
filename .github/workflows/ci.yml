@@ -38,10 +38,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup development
-        run: pnpm dev:prepare
-
-      # we need to build the module since we're using link:. in package.json
       - name: Building
         run: pnpm build
 

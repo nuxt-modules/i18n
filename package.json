@@ -72,7 +72,7 @@
     "lint": "run-p \"lint:* {@}\" --",
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint .",
-    "test": "pnpm dev:prepare && pnpm build && run-s test:types test:unit test:spec",
+    "test": "pnpm build && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"
