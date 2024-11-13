@@ -35,7 +35,7 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/types.d.mts",
+      "types": "./dist/module.d.mts",
       "default": "./dist/module.mjs"
     },
     "./package.json": "./package.json"
@@ -44,7 +44,7 @@
     "#i18n": "./dist/runtime/composables/index.js"
   },
   "main": "./dist/module.mjs",
-  "types": "./dist/types.d.ts",
+  "types": "./dist/module.d.ts",
   "files": [
     "dist",
     "internals.d.ts"
