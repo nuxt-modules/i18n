@@ -1,5 +1,6 @@
-import { relative, resolve } from 'pathe'
-import { addServerHandler, addTypeTemplate, updateTemplates, useNitro } from '@nuxt/kit'
+import { normalize, relative, resolve } from 'pathe'
+import { addServerHandler, addTypeTemplate, isIgnored, updateTemplates, useNitro } from '@nuxt/kit'
+import { watch as chokidarWatch } from 'chokidar'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nOptions } from 'vue-i18n'
@@ -111,6 +112,20 @@ declare module '@intlify/core' {
 export {}`
     }
   })
+
+  // setup watcher when using restructureDir - folders outside srcDir are not watched
+  const watcher = chokidarWatch(
+    localeInfo.flatMap(x => x.files.map(f => resolve(nuxt.options.srcDir, f.path))),
+    {
+      awaitWriteFinish: true,
+      ignoreInitial: true,
+      ignored: [isIgnored, 'node_modules']
+    }
+  )
+
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  watcher.on('all', (event, path) => nuxt.callHook('builder:watch', event, normalize(path)))
+  nuxt.hook('close', () => watcher?.close())
 
   // watch locale files for changes and update template
   // TODO: consider conditionally checking absolute paths for Nuxt 4
