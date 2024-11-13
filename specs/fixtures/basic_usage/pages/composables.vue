@@ -15,13 +15,13 @@ const metaTestEntries = computed(() => [
   { id: 'route-base-name', content: routeBaseName(localeRoute('/nested/test-route', 'fr')) ?? '' }
 ])
 
-useHead({
+useHead(() => ({
   htmlAttrs: {
     ...localeHead.value.htmlAttrs
   },
-  link: () => [...(localeHead.value.link ?? [])],
-  meta: () => [...(localeHead.value.meta ?? []), ...metaTestEntries.value]
-})
+  link: [...(localeHead.value.link || [])],
+  meta: [...(localeHead.value.meta || []), ...metaTestEntries.value]
+}))
 </script>
 
 <template>
