@@ -16,7 +16,7 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
     if (!Object.prototype.hasOwnProperty.call(obj, key)) continue
 
     if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-      str += `${indent}${key}: {\n`
+      str += `${indent}"${key}": {\n`
       str += generateInterface(obj[key] as Record<string, unknown>, indentLevel + 1)
       str += `${indent}};\n`
     } else {
@@ -27,7 +27,7 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
       if (propertyType === 'function') {
         propertyType = '() => string'
       }
-      str += `${indent}${key}: ${propertyType};\n`
+      str += `${indent}"${key}": ${propertyType};\n`
     }
   }
   return str
