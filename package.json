@@ -36,7 +36,7 @@
   "exports": {
     ".": {
       "types": "./dist/types.d.mts",
-      "import": "./dist/module.mjs"
+      "default": "./dist/module.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -72,7 +72,7 @@
     "lint": "run-p \"lint:* {@}\" --",
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint .",
-    "test": "pnpm dev:prepare && run-s test:types test:unit test:spec",
+    "test": "pnpm build && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test",
     "test:spec": "vitest run specs"

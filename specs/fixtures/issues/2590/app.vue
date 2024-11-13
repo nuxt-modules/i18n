@@ -9,9 +9,9 @@ const { locale, locales, setLocale } = useI18n()
 
 const head = useLocaleHead()
 
-useHead(() => {
+useHead(() => ({
   htmlAttrs: head.value.htmlAttrs
-})
+}))
 
 console.log(head.value.htmlAttrs)
 

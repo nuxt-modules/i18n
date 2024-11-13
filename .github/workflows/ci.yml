@@ -38,8 +38,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup development
-        run: pnpm dev:prepare
+      - name: Building
+        run: pnpm build
 
       - name: Linting
         run: pnpm lint
