@@ -20,7 +20,42 @@ import { prepareTranspile } from './prepare/transpile'
 import { prepareVite } from './prepare/vite'
 import { prepareTypeGeneration } from './prepare/type-generation'
 
-export * from './types'
+export {
+  type BaseUrlResolveHandler,
+  type BundleOptions,
+  type ComputedRouteOptions,
+  type CustomBlocksOptions,
+  type CustomRoutePages,
+  type DetectBrowserLanguageOptions,
+  type Directions,
+  type ExperimentalFeatures,
+  type FileMeta,
+  type I18nHeadMetaInfo,
+  type I18nHeadOptions,
+  type I18nPublicRuntimeConfig,
+  type LocaleFile,
+  type LocaleInfo,
+  type LocaleMessageCompilationOptions,
+  type LocaleObject,
+  type LocaleType,
+  type MetaAttrs,
+  type NuxtI18nOptions,
+  type PrefixLocalizedRouteOptions,
+  type PrefixableOptions,
+  type RedirectOnOptions,
+  type RootRedirectOptions,
+  type RouteOptionsResolver,
+  type STRATEGIES,
+  type STRATEGY_NO_PREFIX,
+  type STRATEGY_PREFIX,
+  type STRATEGY_PREFIX_AND_DEFAULT,
+  type STRATEGY_PREFIX_EXCEPT_DEFAULT,
+  type SeoAttributesOptions,
+  type Strategies,
+  type SwitchLocalePathIntercepter,
+  type VueI18nConfig,
+  type VueI18nConfigPathInfo
+} from './types'
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
