@@ -18,7 +18,7 @@ watchEffect(() => {
   refresh()
 })
 
-useHead({
+useHead(() => {
   title: t('home'),
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang
