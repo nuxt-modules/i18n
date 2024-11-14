@@ -153,6 +153,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         const _localeCodes = ref<Locale[]>(localeCodes)
         const _baseUrl = ref<string>('')
 
+        // @ts-expect-error type mismatch
         composer.locales = computed(() => _locales.value)
         composer.localeCodes = computed(() => _localeCodes.value)
         composer.baseUrl = computed(() => _baseUrl.value)
