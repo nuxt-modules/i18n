@@ -114,18 +114,20 @@ export {}`
   })
 
   // setup watcher when using restructureDir - folders outside srcDir are not watched
-  const watcher = chokidarWatch(
-    localeInfo.flatMap(x => x.files.map(f => resolve(nuxt.options.srcDir, f.path))),
-    {
-      awaitWriteFinish: true,
-      ignoreInitial: true,
-      ignored: [isIgnored, 'node_modules']
-    }
-  )
+  if (nuxt.options.future?.compatibilityVersion === 4 || options.restructureDir === false) {
+    const watcher = chokidarWatch(
+      localeInfo.flatMap(x => x.files.map(f => resolve(nuxt.options.srcDir, f.path))),
+      {
+        awaitWriteFinish: true,
+        ignoreInitial: true,
+        ignored: [isIgnored, 'node_modules']
+      }
+    )
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  watcher.on('all', (event, path) => nuxt.callHook('builder:watch', event, normalize(path)))
-  nuxt.hook('close', () => watcher?.close())
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    watcher.on('all', (event, path) => nuxt.callHook('builder:watch', event, normalize(path)))
+    nuxt.hook('close', () => watcher?.close())
+  }
 
   // watch locale files for changes and update template
   // TODO: consider conditionally checking absolute paths for Nuxt 4
