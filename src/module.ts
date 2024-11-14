@@ -20,42 +20,35 @@ import { prepareTranspile } from './prepare/transpile'
 import { prepareVite } from './prepare/vite'
 import { prepareTypeGeneration } from './prepare/type-generation'
 
-export {
-  type BaseUrlResolveHandler,
-  type BundleOptions,
-  type ComputedRouteOptions,
-  type CustomBlocksOptions,
-  type CustomRoutePages,
-  type DetectBrowserLanguageOptions,
-  type Directions,
-  type ExperimentalFeatures,
-  type FileMeta,
-  type I18nHeadMetaInfo,
-  type I18nHeadOptions,
-  type I18nPublicRuntimeConfig,
-  type LocaleFile,
-  type LocaleInfo,
-  type LocaleMessageCompilationOptions,
-  type LocaleObject,
-  type LocaleType,
-  type MetaAttrs,
-  type NuxtI18nOptions,
-  type PrefixLocalizedRouteOptions,
-  type PrefixableOptions,
-  type RedirectOnOptions,
-  type RootRedirectOptions,
-  type RouteOptionsResolver,
-  type STRATEGIES,
-  type STRATEGY_NO_PREFIX,
-  type STRATEGY_PREFIX,
-  type STRATEGY_PREFIX_AND_DEFAULT,
-  type STRATEGY_PREFIX_EXCEPT_DEFAULT,
-  type SeoAttributesOptions,
-  type Strategies,
-  type SwitchLocalePathIntercepter,
-  type VueI18nConfig,
-  type VueI18nConfigPathInfo
-} from './types'
+export * from './types'
+
+// Prevent type errors while configuring locale codes, as generated types will conflict with changes
+type UserNuxtI18nOptions = Omit<NuxtI18nOptions, 'locales'> & { locales?: string[] | LocaleObject<string>[] }
+
+// Used by nuxt/module-builder for `types.d.ts` generation
+export interface ModuleOptions extends UserNuxtI18nOptions {}
+
+export interface ModulePublicRuntimeConfig {
+  i18n: I18nPublicRuntimeConfig
+}
+export interface ModuleHooks {
+  'i18n:registerModule': (
+    registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
+  ) => HookResult
+}
+
+export interface ModuleRuntimeHooks {
+  // NOTE: To make type inference work the function signature returns `HookResult`
+  // Should return `string | void`
+  'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
+    oldLocale: Locale
+    newLocale: Locale
+    initialSetup: boolean
+    context: Context
+  }) => HookResult
+
+  'i18n:localeSwitched': (params: { oldLocale: Locale; newLocale: Locale }) => HookResult
+}
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
@@ -149,34 +142,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     prepareVite(nuxt)
   }
 })
-
-// Prevent type errors while configuring locale codes, as generated types will conflict with changes
-type UserNuxtI18nOptions = Omit<NuxtI18nOptions, 'locales'> & { locales?: string[] | LocaleObject<string>[] }
-
-// Used by nuxt/module-builder for `types.d.ts` generation
-export interface ModuleOptions extends UserNuxtI18nOptions {}
-
-export interface ModulePublicRuntimeConfig {
-  i18n: I18nPublicRuntimeConfig
-}
-export interface ModuleHooks {
-  'i18n:registerModule': (
-    registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
-  ) => HookResult
-}
-
-export interface ModuleRuntimeHooks {
-  // NOTE: To make type inference work the function signature returns `HookResult`
-  // Should return `string | void`
-  'i18n:beforeLocaleSwitch': <Context = unknown>(params: {
-    oldLocale: Locale
-    newLocale: Locale
-    initialSetup: boolean
-    context: Context
-  }) => HookResult
-
-  'i18n:localeSwitched': (params: { oldLocale: Locale; newLocale: Locale }) => HookResult
-}
 
 // Used by module for type inference in source code
 declare module '#app' {
