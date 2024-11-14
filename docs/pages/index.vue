@@ -46,8 +46,8 @@ const { copy, copied } = useClipboard({ source })
 
       <template #title>
         <p>
-          <span class="text-white md:hidden">i18n</span>
-          <span class="text-white hidden md:block">Internationalization</span>
+          <span class="md:hidden">i18n</span>
+          <span class="hidden md:block">Internationalization</span>
           for
           <span class="text-primary">Nuxt Applications</span>
         </p>
