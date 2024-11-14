@@ -4,7 +4,7 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { DeepRequired } from 'ts-essentials'
-import type { VueI18nConfig, NuxtI18nOptions } from './shared-types'
+import type { VueI18nConfig, NuxtI18nOptions } from '#i18n-shared-types'
 import type { CoreContext } from '@intlify/h3'
 
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>

@@ -9,7 +9,7 @@ import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
-import type { Strategies, PrefixableOptions } from '../../shared-types'
+import type { Strategies, PrefixableOptions } from '#i18n-shared-types'
 import type { Locale } from 'vue-i18n'
 import type {
   RouteLocation,
@@ -20,7 +20,7 @@ import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalized
 } from 'vue-router'
-import type { I18nPublicRuntimeConfig } from '../../shared-types'
+import type { I18nPublicRuntimeConfig } from '#i18n-shared-types'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 

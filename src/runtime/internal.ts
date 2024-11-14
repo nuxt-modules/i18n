@@ -17,10 +17,10 @@ import { initCommonComposableOptions, type CommonComposableOptions } from './uti
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale } from 'vue-i18n'
-import type { DetectBrowserLanguageOptions, LocaleObject } from './shared-types'
+import type { DetectBrowserLanguageOptions, LocaleObject } from '#i18n-shared-types'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { CookieRef, NuxtApp } from 'nuxt/app'
-import type { I18nPublicRuntimeConfig } from './shared-types'
+import type { I18nPublicRuntimeConfig } from '#i18n-shared-types'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message

@@ -30,8 +30,8 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { LocaleObject } from '../shared-types'
-import type { I18nPublicRuntimeConfig } from '../shared-types'
+import type { LocaleObject } from '#i18n-shared-types'
+import type { I18nPublicRuntimeConfig } from '#i18n-shared-types'
 
 // from https://github.com/nuxt/nuxt/blob/2466af53b0331cdb8b17c2c3b08675c5985deaf3/packages/nuxt/src/core/templates.ts#L152
 type Decorate<T extends Record<string, unknown>> = { [K in keyof T as K extends string ? `$${K}` : never]: T[K] }
@@ -153,7 +153,6 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         const _localeCodes = ref<Locale[]>(localeCodes)
         const _baseUrl = ref<string>('')
 
-        // @ts-expect-error type mismatch
         composer.locales = computed(() => _locales.value)
         composer.localeCodes = computed(() => _localeCodes.value)
         composer.baseUrl = computed(() => _baseUrl.value)
