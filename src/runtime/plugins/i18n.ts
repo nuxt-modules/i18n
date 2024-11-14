@@ -30,8 +30,8 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { LocaleObject } from '../shared-types'
-import type { I18nPublicRuntimeConfig } from '../shared-types'
+import type { LocaleObject } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 // from https://github.com/nuxt/nuxt/blob/2466af53b0331cdb8b17c2c3b08675c5985deaf3/packages/nuxt/src/core/templates.ts#L152
 type Decorate<T extends Record<string, unknown>> = { [K in keyof T as K extends string ? `$${K}` : never]: T[K] }

@@ -44,7 +44,7 @@ import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
 import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
-import type { I18nPublicRuntimeConfig } from './shared-types'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type {
   RootRedirectOptions,
   PrefixableOptions,
@@ -52,7 +52,7 @@ import type {
   BaseUrlResolveHandler,
   Strategies,
   LocaleObject
-} from './shared-types'
+} from '#internal-i18n-types'
 
 /**
  * Common options used internally by composable functions, these

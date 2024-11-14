@@ -9,16 +9,16 @@ export const UTILS_PKG = '@intlify/utils'
 export const UTILS_H3_PKG = '@intlify/utils/h3'
 export const UFO_PKG = 'ufo'
 export const IS_HTTPS_PKG = 'is-https'
-import {
-  STRATEGIES,
-  STRATEGY_PREFIX,
-  STRATEGY_PREFIX_EXCEPT_DEFAULT,
-  STRATEGY_PREFIX_AND_DEFAULT,
-  STRATEGY_NO_PREFIX
-} from './runtime/shared-types'
-
-// Options
-export { STRATEGIES, STRATEGY_PREFIX, STRATEGY_PREFIX_EXCEPT_DEFAULT, STRATEGY_PREFIX_AND_DEFAULT, STRATEGY_NO_PREFIX }
+export const STRATEGY_PREFIX = 'prefix'
+export const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
+export const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
+export const STRATEGY_NO_PREFIX = 'no_prefix'
+export const STRATEGIES = {
+  PREFIX: STRATEGY_PREFIX,
+  PREFIX_EXCEPT_DEFAULT: STRATEGY_PREFIX_EXCEPT_DEFAULT,
+  PREFIX_AND_DEFAULT: STRATEGY_PREFIX_AND_DEFAULT,
+  NO_PREFIX: STRATEGY_NO_PREFIX
+} as const
 
 export const DEFAULT_DYNAMIC_PARAMS_KEY = 'nuxtI18nInternal'
 export const DEFAULT_COOKIE_KEY = 'i18n_redirected'

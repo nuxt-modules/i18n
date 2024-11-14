@@ -1,6 +1,6 @@
 import { isString, isSymbol, isFunction } from '@intlify/shared'
 
-import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '../shared-types'
+import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
 
 export const inBrowser = typeof window !== 'undefined'

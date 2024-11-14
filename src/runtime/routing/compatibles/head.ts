@@ -7,7 +7,7 @@ import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer, getLocale, getLocales } from '../../compatibility'
 
 import type { I18n } from 'vue-i18n'
-import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '../../shared-types'
+import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#internal-i18n-types'
 import type { CommonComposableOptions } from '../../utils'
 
 /**

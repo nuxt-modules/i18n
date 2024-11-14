@@ -24,7 +24,7 @@ import { getLocale, getLocales, getComposer } from '../compatibility'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
-import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '../shared-types'
+import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 import type { HeadParam } from '../utils'
 
@@ -392,7 +392,7 @@ export function useBrowserLocale(): string | null {
   const headers = useRequestHeaders(['accept-language'])
   return (
     findBrowserLocale(
-      normalizedLocales as LocaleObject[],
+      normalizedLocales,
       import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
     ) || null
   )

@@ -2,7 +2,7 @@ import { assign } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationNormalizedLoaded, RouteLocationPathRaw } from 'vue-router'
-import type { Strategies } from '../../shared-types'
+import type { Strategies } from '#internal-i18n-types'
 import type { CommonComposableOptions } from '../../utils'
 
 function split(str: string, index: number) {
