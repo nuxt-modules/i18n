@@ -115,6 +115,9 @@ importers:
       changelogithub:
         specifier: ^0.13.7
         version: 0.13.7(magicast@0.3.5)
+      chokidar:
+        specifier: ^4.0.1
+        version: 4.0.1
       consola:
         specifier: ^3
         version: 3.2.3
@@ -237,13 +240,13 @@ importers:
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
-        version: 1.4.2(rollup@4.24.4)(vite@5.4.3(@types/node@20.14.9)(terser@5.31.1))(vue@3.5.12(typescript@5.6.2))(webpack-sources@3.2.3)
+        version: 1.4.2(rollup@4.24.4)(vite@5.4.5(@types/node@20.14.9)(terser@5.31.1))(vue@3.5.12(typescript@5.6.2))(webpack-sources@3.2.3)
       '@nuxtjs/i18n':
         specifier: link:..
         version: link:..
       nuxt:
         specifier: latest
-        version: 3.13.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.4)(terser@5.31.1)(typescript@5.6.2)(vite@5.4.3(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.1.6(typescript@5.6.2))(webpack-sources@3.2.3)
+        version: 3.13.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.4)(terser@5.31.1)(typescript@5.6.2)(vite@5.4.5(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.1.6(typescript@5.6.2))(webpack-sources@3.2.3)
 
   specs/fixtures/basic:
     devDependencies:
@@ -252,7 +255,7 @@ importers:
         version: link:../../..
       nuxt:
         specifier: latest
-        version: 3.13.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.4)(terser@5.31.1)(typescript@5.6.2)(vite@5.4.5(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.1.6(typescript@5.6.2))(webpack-sources@3.2.3)
+        version: 3.13.2(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.5.0)(ioredis@5.4.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.4)(terser@5.31.1)(typescript@5.6.2)(vite@5.4.10(@types/node@20.14.9)(terser@5.31.1))(vue-tsc@2.1.6(typescript@5.6.2))(webpack-sources@3.2.3)
 
   specs/fixtures/basic_usage:
     dependencies:
@@ -1492,10 +1495,6 @@ packages:
     resolution: {integrity: sha512-tWBm92pYLT+T2H5I2Uwz0dnylX1uRKuS6/n9CV4eTW43r/iAN2q07b0sY2cvgT61KYDetomY1pVRkzA2Rftv5g==}
     engines: {node: '>= 18'}
 
-  '@intlify/message-compiler@10.0.0':
-    resolution: {integrity: sha512-OcaWc63NC/9p1cMdgoNKBj4d61BH8sUW1Hfs6YijTd9656ZR4rNqXAlRnBrfS5ABq0vjQjpa8VnyvH9hK49yBw==}
-    engines: {node: '>= 16'}
-
   '@intlify/message-compiler@10.0.3':
     resolution: {integrity: sha512-KC2fG8nCzSYmXjHptEt6i/xM3k6S2szsPaHDCRgWKEYAbeHe6JFm6X4KRw3Csy112A8CxpavMi1dh3h7khwV5w==}
     engines: {node: '>= 16'}
@@ -1504,8 +1503,8 @@ packages:
     resolution: {integrity: sha512-AFbhEo10DP095/45EauinQJ5hJ3rJUmuuqltGguvc3WsvezZN+g8qNHLGWKu60FHQVizMrQY7VJ+zVlBXlQQkQ==}
     engines: {node: '>= 16'}
 
-  '@intlify/shared@10.0.0':
-    resolution: {integrity: sha512-6ngLfI7DOTew2dcF9WMJx+NnMWghMBhIiHbGg+wRvngpzD5KZJZiJVuzMsUQE1a5YebEmtpTEfUrDp/NqVGdiw==}
+  '@intlify/message-compiler@11.0.0-beta.0':
+    resolution: {integrity: sha512-HWHv6jj7wJmHY5I73k80lBffDfnpqjx5vvn965YJB4lLvo0zkP3H15WGkwrLa/OR6fyYoP0DJVUKj9g2q7QJCA==}
     engines: {node: '>= 16'}
 
   '@intlify/shared@10.0.3':
@@ -1514,6 +1513,10 @@ packages:
 
   '@intlify/shared@10.0.4':
     resolution: {integrity: sha512-ukFn0I01HsSgr3VYhYcvkTCLS7rGa0gw4A4AMpcy/A9xx/zRJy7PS2BElMXLwUazVFMAr5zuiTk3MQeoeGXaJg==}
+    engines: {node: '>= 16'}
+
+  '@intlify/shared@11.0.0-beta.0':
+    resolution: {integrity: sha512-v/IAS+BBeaWIKPI4CgSKsil2vJ64naIUUENha3e7jfhq1CxinXQquQYUM2GcCC86USxzTGgu67nafbaYzHS3vA==}
     engines: {node: '>= 16'}
 
   '@intlify/unplugin-vue-i18n@5.3.1':
@@ -8792,8 +8795,8 @@ snapshots:
 
   '@intlify/bundle-utils@9.0.0(vue-i18n@10.0.3(vue@3.5.12(typescript@5.6.2)))':
     dependencies:
-      '@intlify/message-compiler': 10.0.0
-      '@intlify/shared': 10.0.0
+      '@intlify/message-compiler': 11.0.0-beta.0
+      '@intlify/shared': 11.0.0-beta.0
       acorn: 8.14.0
       escodegen: 2.1.0
       estree-walker: 2.0.2
@@ -8824,11 +8827,6 @@ snapshots:
       '@intlify/core': 10.0.4
       '@intlify/utils': 0.13.0
 
-  '@intlify/message-compiler@10.0.0':
-    dependencies:
-      '@intlify/shared': 10.0.0
-      source-map-js: 1.2.1
-
   '@intlify/message-compiler@10.0.3':
     dependencies:
       '@intlify/shared': 10.0.3
@@ -8839,11 +8837,16 @@ snapshots:
       '@intlify/shared': 10.0.4
       source-map-js: 1.2.1
 
-  '@intlify/shared@10.0.0': {}
+  '@intlify/message-compiler@11.0.0-beta.0':
+    dependencies:
+      '@intlify/shared': 11.0.0-beta.0
+      source-map-js: 1.2.1
 
   '@intlify/shared@10.0.3': {}
 
   '@intlify/shared@10.0.4': {}
+
+  '@intlify/shared@11.0.0-beta.0': {}
 
   '@intlify/unplugin-vue-i18n@5.3.1(@vue/compiler-dom@3.5.12)(eslint@9.5.0)(rollup@3.29.4)(typescript@5.6.2)(vue-i18n@10.0.3(vue@3.5.12(typescript@5.6.2)))(vue@3.5.12(typescript@5.6.2))(webpack-sources@3.2.3)':
     dependencies:
