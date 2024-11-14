@@ -124,7 +124,7 @@ export {}`
       }
     )
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises, @typescript-eslint/no-unsafe-argument
     watcher.on('all', (event, path) => nuxt.callHook('builder:watch', event, normalize(path)))
     nuxt.hook('close', () => watcher?.close())
   }
