@@ -15,9 +15,9 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
   // for composables
   nuxt.options.alias['#i18n'] = resolver.resolve('./runtime/composables/index')
-  nuxt.options.alias['#i18n-shared-types'] = resolver.resolve('./types')
+  nuxt.options.alias['#internal-i18n-types'] = resolver.resolve('./types')
   nuxt.options.build.transpile.push('#i18n')
-  nuxt.options.build.transpile.push('#i18n-shared-types')
+  nuxt.options.build.transpile.push('#internal-i18n-types')
   nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
   const genTemplate = (isServer: boolean, lazy?: boolean) => {
