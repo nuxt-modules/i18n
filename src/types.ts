@@ -117,6 +117,16 @@ export interface ExperimentalFeatures {
    * @remark `'all'` to generate types based on all locales
    */
   typedOptionsAndMessages?: false | 'default' | 'all'
+
+  /**
+   * Locale file paths can be formatted differently to prevent exposing sensitive paths in production.
+   *
+   * @defaultValue `'absolute'`
+   *
+   * @remark `'absolute'` locale file paths contain the full absolute path
+   * @remark `'relative'` locale file paths are relative to the `rootDir`
+   */
+  generatedLocaleFilePathFormat?: 'absolute' | 'relative'
 }
 
 export interface BundleOptions

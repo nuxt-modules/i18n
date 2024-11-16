@@ -41,7 +41,8 @@ export default defineNuxtConfig({
       switchLocalePathLinkSSR: true,
       autoImportTranslationFunctions: true,
       typedPages: true,
-      typedOptionsAndMessages: 'default'
+      typedOptionsAndMessages: 'default',
+      generatedLocaleFilePathFormat: 'relative'
     },
     compilation: {
       strictMessage: false,

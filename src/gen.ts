@@ -39,6 +39,7 @@ export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
     options?.i18nModules?.some(module => isLocaleObjectsArray(module?.locales))
 
   const locales = (options.locales ?? []) as LocaleObject[]
+  const pathFormat = options.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
   return locales.map(({ meta, ...locale }) => {
     if (!hasLocaleObjects) {
@@ -46,7 +47,11 @@ export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
     }
 
     if (locale.file || (locale.files?.length ?? 0) > 0) {
-      locale.files = getLocalePaths(locale).map(x => relative(nuxt.options.rootDir, x))
+      locale.files = getLocalePaths(locale)
+
+      if (pathFormat === 'relative') {
+        locale.files = locale.files.map(x => relative(nuxt.options.rootDir, x))
+      }
     } else {
       delete locale.files
     }
