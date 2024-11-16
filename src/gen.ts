@@ -46,7 +46,7 @@ export function simplifyLocaleOptions(nuxt: Nuxt, options: NuxtI18nOptions) {
     }
 
     if (locale.file || (locale.files?.length ?? 0) > 0) {
-      locale.files = getLocalePaths(locale)
+      locale.files = getLocalePaths(locale).map(x => relative(nuxt.options.rootDir, x))
     } else {
       delete locale.files
     }
