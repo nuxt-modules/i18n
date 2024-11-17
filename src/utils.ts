@@ -490,7 +490,7 @@ export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] 
   return []
 }
 
-function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
+export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
   const fileEntries = getLocaleFiles(locale)
 
   return fileEntries.map(file => ({
