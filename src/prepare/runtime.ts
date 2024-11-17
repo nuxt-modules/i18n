@@ -31,10 +31,10 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
         vueI18nConfigPaths,
         localeInfo,
         nuxtI18nOptions,
-        isServer
+        isServer,
+        normalizedLocales
       }),
       localeCodes,
-      normalizedLocales,
       dev,
       isSSG,
       parallelPlugin: options.parallelPlugin
