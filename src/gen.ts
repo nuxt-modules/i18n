@@ -109,17 +109,26 @@ export function generateLoaderOptions(
     .map(config => generateVueI18nConfiguration(config, isServer))
 
   const localeLoaders = localeInfo.map(locale => [locale.code, locale.meta?.map(meta => importMapper.get(meta.key))])
+  const pathFormat = nuxtI18nOptions.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
   const generatedNuxtI18nOptions = {
     ...nuxtI18nOptions,
-    locales: simplifyLocaleOptions(nuxt, nuxtI18nOptions)
+    locales: simplifyLocaleOptions(nuxt, nuxtI18nOptions),
+    i18nModules:
+      nuxtI18nOptions.i18nModules?.map(x => {
+        if (pathFormat === 'absolute') return x
+        if (x.langDir == null) return x
+        return {
+          ...x,
+          langDir: relative(nuxt.options.rootDir, x.langDir)
+        }
+      }) ?? []
   }
   delete nuxtI18nOptions.vueI18n
 
   /**
    * Process locale file paths in `normalizedLocales`
    */
-  const pathFormat = nuxtI18nOptions.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
   const processedNormalizedLocales = normalizedLocales.map(x => {
     if (pathFormat === 'absolute') return x
     if (x.files == null) return x

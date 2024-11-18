@@ -119,12 +119,12 @@ export interface ExperimentalFeatures {
   typedOptionsAndMessages?: false | 'default' | 'all'
 
   /**
-   * Locale file paths can be formatted differently to prevent exposing sensitive paths in production.
+   * Locale file and langDir paths can be formatted differently to prevent exposing sensitive paths in production.
    *
    * @defaultValue `'absolute'`
    *
-   * @remark `'absolute'` locale file paths contain the full absolute path
-   * @remark `'relative'` locale file paths are relative to the `rootDir`
+   * @remark `'absolute'` locale file and langDir paths contain the full absolute path
+   * @remark `'relative'` locale file and langDir paths are converted to be relative to the `rootDir`
    */
   generatedLocaleFilePathFormat?: 'absolute' | 'relative'
 }
