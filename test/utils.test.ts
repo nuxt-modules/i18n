@@ -1,4 +1,5 @@
-import { parseSegment, getRoutePath, resolveLocales } from '../src/utils'
+import { resolveLocales } from '../src/utils'
+import { parseSegment, getRoutePath } from '../src/utils/route-parsing'
 import type { LocaleObject } from '../src/types'
 import { vi, beforeEach, afterEach, test, expect } from 'vitest'
 
