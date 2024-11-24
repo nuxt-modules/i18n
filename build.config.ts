@@ -9,6 +9,7 @@ export default defineBuildConfig({
     '@babel/parser',
     'unplugin-vue-router',
     'unplugin-vue-router/options',
-    'chokidar'
+    'chokidar',
+    'confbox'
   ]
 })
