@@ -81,7 +81,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     // Create an array of file arrays grouped by their LocaleType
     for (const l of ctx.localeInfo) {
       processed[l.code] ??= []
-      for (const f of l?.meta ?? []) {
+      if (l.meta == null) continue
+
+      for (let fileIndex = 0; fileIndex < l.meta.length; fileIndex++) {
+        const f = l.meta[fileIndex]
+
         if (processed[l.code].length === 0 || processed[l.code].at(-1)!.type !== f.type) {
           processed[l.code].push({ type: f.type, files: [] })
         }
@@ -97,71 +101,78 @@ export default defineNuxtModule<NuxtI18nOptions>({
       for (let entryIndex = 0; entryIndex < localeChains.length; entryIndex++) {
         const entry = localeChains[entryIndex]
         if (entry.type !== 'static') continue
-        const msg = {}
+        const merged = {}
 
-        for (let i = 0; i < entry.files.length; i++) {
-          const f = entry.files[i]
+        const messages = await Promise.all(
+          entry.files.map(async f => {
+            const fileCode = await readFile(f.path)
+            let contents: unknown
 
-          const fileCode = await readFile(f.path)
-          let contents: unknown
+            if (/ya?ml/.test(f.parsed.ext)) {
+              contents = await parseYAML(fileCode)
+            }
 
-          if (/ya?ml/.test(f.parsed.ext)) {
-            contents = await parseYAML(fileCode)
-          }
+            if (/json5/.test(f.parsed.ext)) {
+              contents = await parseJSON5(fileCode)
+            }
 
-          if (/json5/.test(f.parsed.ext)) {
-            contents = await parseJSON5(fileCode)
-          }
+            if (/json$/.test(f.parsed.ext)) {
+              contents = await parseJSON(fileCode)
+            }
 
-          if (/json$/.test(f.parsed.ext)) {
-            contents = await parseJSON(fileCode)
-          }
+            if (/js$/.test(f.parsed.ext)) {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+              contents = await import(f.path).then(r => ('default' in r ? r.default : r))
+            }
 
-          if (contents != null) {
-            deepCopy(contents, msg)
+            return contents
+          })
+        )
+
+        for (const message of messages) {
+          if (message != null) {
+            deepCopy(message, merged)
           }
         }
 
-        if (entry.type === 'static') {
-          const staticFile = resolve(nuxt.options.buildDir, `i18n/${code}-static-${entryIndex}.json`)
+        const staticFile = resolve(nuxt.options.buildDir, `i18n/${code}-static-${entryIndex}.json`)
 
-          addTemplate({
-            filename: `i18n/${code}-static-${entryIndex}.json`,
-            write: true,
-            getContents() {
-              return JSON.stringify(msg, null, 2)
-            }
-          })
+        addTemplate({
+          filename: `i18n/${code}-static-${entryIndex}.json`,
+          write: true,
+          getContents() {
+            return JSON.stringify(merged, null, 2)
+          }
+        })
 
-          const currentLocaleInfo = ctx.localeInfo.find(localInfoEntry => localInfoEntry.code === code)!
+        const currentLocaleInfo = ctx.localeInfo.find(localInfoEntry => localInfoEntry.code === code)!
 
-          // Find and replace source static files with generated merged file
-          let start = 0
-          let end = 0
-          for (let lFileIndex = 0; lFileIndex < currentLocaleInfo.files.length; lFileIndex++) {
-            if (entry.files.at(0)!.path === currentLocaleInfo.files[lFileIndex].path) {
-              start = lFileIndex
-            }
-
-            if (entry.files.at(-1)!.path === currentLocaleInfo.files[lFileIndex].path) {
-              end = lFileIndex
-            }
+        // Find and replace source static files with generated merged file
+        let start = 0
+        let end = 0
+        for (let lFileIndex = 0; lFileIndex < currentLocaleInfo.files.length; lFileIndex++) {
+          if (entry.files.at(0)!.path === currentLocaleInfo.files[lFileIndex].path) {
+            start = lFileIndex
           }
 
-          const staticFilePath = resolve(nuxt.options.buildDir, staticFile)
-          const processedStaticFile = { path: staticFilePath, cache: true }
-
-          currentLocaleInfo.files.splice(start, end + 1, processedStaticFile)
-          currentLocaleInfo.meta!.splice(start, end + 1, {
-            path: staticFilePath,
-            loadPath: relative(nuxt.options.buildDir, staticFilePath),
-            file: processedStaticFile,
-            hash: getHash(staticFilePath),
-            key: genSafeVariableName(`locale_${convertToImportId(relative(nuxt.options.buildDir, staticFilePath))}`),
-            parsed: parsePath(staticFilePath),
-            type: 'static'
-          })
+          if (entry.files.at(-1)!.path === currentLocaleInfo.files[lFileIndex].path) {
+            end = lFileIndex
+          }
         }
+
+        const staticFilePath = resolve(nuxt.options.buildDir, staticFile)
+        const processedStaticFile = { path: staticFilePath, cache: true }
+
+        currentLocaleInfo.files.splice(start, end + 1, processedStaticFile)
+        currentLocaleInfo.meta!.splice(start, end + 1, {
+          path: staticFilePath,
+          loadPath: relative(nuxt.options.buildDir, staticFilePath),
+          file: processedStaticFile,
+          hash: getHash(staticFilePath),
+          key: genSafeVariableName(`locale_${convertToImportId(relative(nuxt.options.buildDir, staticFilePath))}`),
+          parsed: parsePath(staticFilePath),
+          type: 'static'
+        })
       }
     }
 
