@@ -397,21 +397,22 @@ export function setupMultiDomainLocales(nuxtContext: NuxtApp, defaultLocaleDomai
   const router = useRouter()
   const defaultRouteSuffix = [routesNameSeparator, defaultLocaleRouteNameSuffix].join('')
 
-  // remove or rename default routes if not applicable for domain
+  // Adjust routes to match the domain's locale and structure
   for (const route of router.getRoutes()) {
     const routeName = getRouteName(route.name)
 
-    if (!routeName.includes(defaultRouteSuffix)) continue
-
-    const routeNameLocale = routeName.split(routesNameSeparator)[1]
-    if (routeNameLocale === defaultLocaleDomain) {
-      route.name = routeName.replace(defaultRouteSuffix, '')
+    if (routeName.endsWith(defaultRouteSuffix)) {
+      router.removeRoute(routeName)
       continue
     }
 
-    // use `route.name` directly as `routeName` stringifies `Symbol`
-    // @ts-expect-error type mismatch
-    router.removeRoute(route.name)
+    const routeNameLocale = routeName.split(routesNameSeparator)[1]
+    if (routeNameLocale === defaultLocaleDomain) {
+      router.addRoute({
+        ...route,
+        path: route.path === `/${routeNameLocale}` ? '/' : route.path.replace(`/${routeNameLocale}`, '')
+      })
+    }
   }
 }
 
