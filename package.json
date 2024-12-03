@@ -91,7 +91,7 @@
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
     "@nuxt/kit": "^3.14.0",
     "@rollup/plugin-yaml": "^4.1.2",
-    "@vue/compiler-sfc": "^3.5.5",
+    "@vue/compiler-sfc": "^3.5.13",
     "debug": "^4.3.5",
     "defu": "^6.1.2",
     "estree-walker": "^3.0.3",
@@ -106,7 +106,7 @@
     "unplugin": "^1.10.1",
     "unplugin-vue-router": "^0.10.8",
     "vue-i18n": "^10.0.3",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@babel/parser": "^7.24.7",
@@ -146,7 +146,7 @@
     "undici": "^6.19.2",
     "unhead": "^1.8.8",
     "vitest": "^2.1.1",
-    "vue": "^3.5.12"
+    "vue": "^3.5.13"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
