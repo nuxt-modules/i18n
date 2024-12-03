@@ -13,6 +13,12 @@ export default {
         blog: {
           article: "Cette page d'article de blog"
         }
+      },
+      parent: {
+        text: 'Test de la voie parentale',
+        child: {
+          text: 'Test de parcours pour enfants'
+        }
       }
     },
     en: {
@@ -26,6 +32,12 @@ export default {
         blog: {
           article: 'This is blog article page'
         }
+      },
+      parent: {
+        text: 'Parent route test',
+        child: {
+          text: 'Child route test'
+        }
       }
     },
     no: {
@@ -38,6 +50,12 @@ export default {
       pages: {
         blog: {
           article: 'Dette er bloggartikkelsiden'
+        }
+      },
+      parent: {
+        text: 'Forældrerutetest',
+        child: {
+          text: 'Børns rute test'
         }
       }
     }

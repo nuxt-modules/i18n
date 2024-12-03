@@ -81,3 +81,21 @@ test('detection locale with x-forwarded-host on server', async () => {
   expect(dom.querySelector('#lang-switcher-current-locale code').textContent).toEqual('fr')
   expect(dom.querySelector('#home-header').textContent).toEqual('Accueil')
 })
+
+describe('detection locale with child routes', () => {
+  test.each([
+    ['/parent/child', 'nuxt-app.localhost', 'Parent route test', 'Child route test'],
+    ['/no/parent/child', 'nuxt-app.localhost', 'Forældrerutetest', 'Børns rute test'],
+    ['/fr/parent/child', 'nuxt-app.localhost', 'Test de la voie parentale', 'Test de parcours pour enfants']
+  ])('%s host', async (path, host, parentText, childText) => {
+    const res = await undiciRequest(path, {
+      headers: {
+        Host: host
+      }
+    })
+    const dom = getDom(await res.body.text())
+
+    expect(dom.querySelector('#parent-text').textContent).toEqual(parentText)
+    expect(dom.querySelector('#child-text').textContent).toEqual(childText)
+  })
+})
