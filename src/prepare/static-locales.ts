@@ -137,7 +137,7 @@ export async function prepareStaticLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
       currentLocaleInfo.files.splice(start, end + 1, processedStaticFile)
       currentLocaleInfo.meta!.splice(start, end + 1, {
         path: staticFilePath,
-        loadPath: relative(nuxt.options.buildDir, staticFilePath),
+        loadPath: './' + relative(nuxt.options.buildDir, staticFilePath),
         file: processedStaticFile,
         hash: getHash(staticFilePath),
         key: genSafeVariableName(`locale_${convertToImportId(relative(nuxt.options.buildDir, staticFilePath))}`),
