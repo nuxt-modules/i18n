@@ -3,6 +3,7 @@ import { defineBuildConfig } from 'unbuild'
 export default defineBuildConfig({
   entries: ['src/module'],
   externals: [
+    'jiti',
     'node:fs',
     'node:url',
     'webpack',

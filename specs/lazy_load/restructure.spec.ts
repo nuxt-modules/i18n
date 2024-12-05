@@ -123,15 +123,19 @@ describe('basic lazy loading (restructure)', async () => {
     const { page, consoleLogs } = await renderPage('/')
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await waitForMs(10)
     expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
+    await waitForMs(10)
     expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await waitForMs(10)
     expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(2)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
+    await waitForMs(10)
     expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
   })
 

@@ -1,3 +1,4 @@
+import createJiti from 'jiti'
 import { addTemplate, defineNuxtModule } from '@nuxt/kit'
 import { setupAlias } from './alias'
 import { setupPages } from './pages'
@@ -22,10 +23,37 @@ import { prepareTypeGeneration } from './prepare/type-generation'
 import { deepCopy } from '@intlify/shared'
 import { parseJSON, parseJSON5, parseYAML } from 'confbox'
 import { convertToImportId, getHash, readFile } from './utils'
-import { relative, resolve, parse as parsePath } from 'pathe'
+import { relative, resolve, parse as parsePath, extname } from 'pathe'
 import { genSafeVariableName } from 'knitwork'
 
 export * from './types'
+
+// https://github.com/unjs/c12/blob/main/src/loader.ts#L26
+const PARSERS = {
+  '.yaml': () => import('confbox/yaml').then(r => r.parseYAML),
+  '.yml': () => import('confbox/yaml').then(r => r.parseYAML),
+  '.jsonc': () => import('confbox/jsonc').then(r => r.parseJSONC),
+  '.json5': () => import('confbox/json5').then(r => r.parseJSON5),
+  '.toml': () => import('confbox/toml').then(r => r.parseTOML),
+  '.json': () => JSON.parse
+} as const
+
+const SUPPORTED_EXTENSIONS = [
+  // with jiti
+  '.js',
+  '.ts',
+  '.mjs',
+  '.cjs',
+  '.mts',
+  '.cts',
+  '.json',
+  // with confbox
+  '.jsonc',
+  '.json5',
+  '.yaml',
+  '.yml',
+  '.toml'
+] as const
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
@@ -76,7 +104,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     await setupAlias(ctx, nuxt)
 
-    const processed: Record<string, { type: LocaleType; files: NonNullable<LocaleInfo['meta']> }[]> = {}
+    const processed: Record<string, { type: LocaleType; cache?: boolean; files: NonNullable<LocaleInfo['meta']> }[]> =
+      {}
 
     // Create an array of file arrays grouped by their LocaleType
     for (const l of ctx.localeInfo) {
@@ -86,11 +115,41 @@ export default defineNuxtModule<NuxtI18nOptions>({
       for (let fileIndex = 0; fileIndex < l.meta.length; fileIndex++) {
         const f = l.meta[fileIndex]
 
-        if (processed[l.code].length === 0 || processed[l.code].at(-1)!.type !== f.type) {
-          processed[l.code].push({ type: f.type, files: [] })
+        if (processed[l.code].length === 0 || processed[l.code].at(-1)!.type !== f.type || f.file.cache === false) {
+          processed[l.code].push({ type: f.type, cache: f.file.cache, files: [] })
         }
 
         processed[l.code].at(-1)!.files.push(f)
+      }
+    }
+
+    const jiti = createJiti(nuxt.options.rootDir, {
+      interopDefault: true,
+      extensions: [...SUPPORTED_EXTENSIONS]
+    })
+
+    async function loadTarget(absPath: string, args: unknown[] = []) {
+      try {
+        const configFileExt = extname(absPath) || ''
+        let result
+        const contents = await readFile(absPath)
+        if (configFileExt in PARSERS) {
+          const asyncLoader = await PARSERS[configFileExt as keyof typeof PARSERS]()
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          result = asyncLoader(contents)
+        } else {
+          result = await jiti.import(absPath, {})
+        }
+
+        if (result instanceof Function) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          return (await result.call(undefined, ...args)) as unknown
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return result
+      } catch (err) {
+        console.log(err)
+        return undefined
       }
     }
 
@@ -100,7 +159,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
       for (let entryIndex = 0; entryIndex < localeChains.length; entryIndex++) {
         const entry = localeChains[entryIndex]
-        if (entry.type !== 'static') continue
+        if (entry.type !== 'static' || entry.cache === false) continue
         const merged = {}
 
         const messages = await Promise.all(
@@ -120,9 +179,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
               contents = await parseJSON(fileCode)
             }
 
-            if (/js$/.test(f.parsed.ext)) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-              contents = await import(f.path).then(r => ('default' in r ? r.default : r))
+            if (/[cm]?[jt]s$/.test(f.parsed.ext)) {
+              contents = await loadTarget(f.path)
             }
 
             return contents
