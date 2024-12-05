@@ -42,7 +42,7 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
       compositionOnly: nuxtOptions.bundle.compositionOnly,
       onlyLocales: nuxtOptions.bundle.onlyLocales,
       dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-      optimizeTranslationDirective: true,
+      optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective,
       strictMessage: nuxtOptions.compilation.strictMessage,
       escapeHtml: nuxtOptions.compilation.escapeHtml,
       include: localeIncludePaths
@@ -75,7 +75,7 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
     fullInstall: nuxtOptions.bundle.fullInstall,
     onlyLocales: nuxtOptions.bundle.onlyLocales,
     dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-    optimizeTranslationDirective: true,
+    optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective,
     strictMessage: nuxtOptions.compilation.strictMessage,
     escapeHtml: nuxtOptions.compilation.escapeHtml,
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,

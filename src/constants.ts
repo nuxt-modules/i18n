@@ -38,7 +38,8 @@ export const DEFAULT_OPTIONS = {
     compositionOnly: true,
     runtimeOnly: false,
     fullInstall: true,
-    dropMessageCompiler: false
+    dropMessageCompiler: false,
+    optimizeTranslationDirective: true
   },
   compilation: {
     jit: true,
