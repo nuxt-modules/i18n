@@ -21,7 +21,7 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
   const i18nModulePaths =
     nuxtOptions?.i18nModules?.map(module => resolve(nuxt.options._layers[0].config.rootDir, module.langDir ?? '')) ?? []
   debug('i18nModulePaths -', i18nModulePaths)
-  const localePaths = [...langPaths, ...i18nModulePaths]
+  const localePaths = [...langPaths, ...i18nModulePaths, resolve(nuxt.options.buildDir, 'i18n')]
   const localeIncludePaths = localePaths.length ? localePaths.map(x => resolve(x, './**')) : undefined
 
   const sourceMapOptions: BundlerPluginOptions = {

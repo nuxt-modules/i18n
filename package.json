@@ -122,6 +122,7 @@
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
     "chokidar": "^4.0.1",
+    "confbox": "^0.1.8",
     "consola": "^3",
     "eslint": "^9.5.0",
     "eslint-config-prettier": "^9.1.0",

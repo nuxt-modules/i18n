@@ -19,6 +19,7 @@ import { prepareLayers } from './prepare/layers'
 import { prepareTranspile } from './prepare/transpile'
 import { prepareVite } from './prepare/vite'
 import { prepareTypeGeneration } from './prepare/type-generation'
+import { prepareStaticLocales } from './prepare/static-locales'
 
 export * from './types'
 
@@ -70,6 +71,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * setup module alias
      */
     await setupAlias(ctx, nuxt)
+
+    await prepareStaticLocales(ctx, nuxt)
 
     /**
      * add plugin and templates
