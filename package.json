@@ -81,7 +81,7 @@
     "overrides": {
       "@nuxtjs/i18n": "link:.",
       "consola": "^3",
-      "tinyglobby": "https://pkg.pr.new/tinyglobby@d51e2b9"
+      "unimport": "3.13.4"
     }
   },
   "dependencies": {
