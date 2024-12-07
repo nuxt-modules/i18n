@@ -20,7 +20,7 @@
     "@nuxt/ui-pro": "^1.4.3",
     "@nuxtjs/fontaine": "^0.4.3",
     "@nuxtjs/google-fonts": "^3.2.0",
-    "nuxt": "^3.14.0",
+    "nuxt": "^3.14.1592",
     "nuxt-hydration": "^0.6.4",
     "nuxt-og-image": "^3.0.8",
     "vue-tsc": "^2.1.6"
