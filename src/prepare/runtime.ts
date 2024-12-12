@@ -34,6 +34,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
         isServer,
         normalizedLocales
       }),
+      hasPages: nuxt.options.pages,
       localeCodes,
       dev,
       isSSG,

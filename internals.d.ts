@@ -19,6 +19,7 @@ declare module '#build/i18n.options.mjs' {
   export const nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>
   export const normalizedLocales: LocaleObject[]
   export const isSSG = false
+  export const hasPages: boolean
   export const parallelPlugin: boolean
 
   export const NUXT_I18N_MODULE_ID = ''
@@ -46,6 +47,7 @@ declare module '#internal/i18n/options.mjs' {
   export const nuxtI18nOptions: DeepRequired<NuxtI18nOptions<Context>>
   export const normalizedLocales: LocaleObject[]
   export const isSSG = false
+  export const hasPages: boolean
   export const parallelPlugin: boolean
 
   export const NUXT_I18N_MODULE_ID = ''

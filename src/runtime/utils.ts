@@ -2,7 +2,7 @@
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
-import { NUXT_I18N_MODULE_ID, isSSG, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
+import { NUXT_I18N_MODULE_ID, isSSG, localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import {
   wrapComposable,
   detectBrowserLanguage,
@@ -10,8 +10,7 @@ import {
   getLocaleDomain,
   getDomainFromLocale,
   runtimeDetectBrowserLanguage,
-  getHost,
-  DetectFailure
+  getHost
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
 import { localeHead } from './routing/compatibles/head'
@@ -82,7 +81,7 @@ export async function loadAndSetLocale(
   initial: boolean = false
 ): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
-  const { differentDomains, skipSettingLocaleOnNavigate, lazy } = runtimeI18n
+  const { differentDomains, skipSettingLocaleOnNavigate } = runtimeI18n
   const opts = runtimeDetectBrowserLanguage(runtimeI18n)
   const nuxtApp = useNuxtApp()
 
@@ -129,16 +128,16 @@ export async function loadAndSetLocale(
   }
 
   // load locale messages required by `newLocale`
-  if (lazy) {
-    const i18nFallbackLocales = getI18nProperty(i18n, 'fallbackLocale')
+  // if (lazy) {
+  const i18nFallbackLocales = getI18nProperty(i18n, 'fallbackLocale')
 
-    const setter = mergeLocaleMessage.bind(null, i18n)
-    if (i18nFallbackLocales) {
-      const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter)))
-    }
-    await loadLocale(newLocale, localeLoaders, setter)
+  const setter = mergeLocaleMessage.bind(null, i18n)
+  if (i18nFallbackLocales) {
+    const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
+    await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter)))
   }
+  await loadLocale(newLocale, localeLoaders, setter)
+  // }
 
   if (skipSettingLocaleOnNavigate) {
     return false
@@ -153,37 +152,38 @@ export async function loadAndSetLocale(
   return true
 }
 
-type LocaleLoader = () => Locale
+// type LocaleLoader = () => Locale
 
 export function detectLocale(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   routeLocale: string,
-  initialLocaleLoader: Locale | LocaleLoader,
   detectLocaleContext: DetectLocaleContext,
   runtimeI18n: I18nPublicRuntimeConfig
 ) {
   const { strategy, defaultLocale, differentDomains, multiDomainLocales } = runtimeI18n
   const { localeCookie } = detectLocaleContext
   const _detectBrowserLanguage = runtimeDetectBrowserLanguage(runtimeI18n)
+  // const e = useRequestEvent()
+  // console.log(e?.headers?.get('cookie'), e?.path)
   const logger = /*#__PURE__*/ createLogger('detectLocale')
 
-  const initialLocale = isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader
-  __DEBUG__ && logger.log({ initialLocale })
-
-  const detectedBrowser = detectBrowserLanguage(route, detectLocaleContext, initialLocale)
+  const detectedBrowser = detectBrowserLanguage(route, detectLocaleContext)
   __DEBUG__ && logger.log({ detectBrowserLanguage: detectedBrowser })
+  console.log({ detectBrowserLanguage: detectedBrowser })
 
-  if (detectedBrowser.reason === DetectFailure.SSG_IGNORE) {
-    return initialLocale
-  }
+  // if (detectedBrowser.reason === DetectFailure.SSG_IGNORE) {
+  //   return initialLocale
+  // }
 
   // detected browser language
-  if (detectedBrowser.locale && detectedBrowser.from != null) {
+  if (detectedBrowser.locale && detectedBrowser.from != null && localeCodes.includes(detectedBrowser.locale)) {
+    // console.log(localeCodes)
     return detectedBrowser.locale
   }
 
   let detected: string = ''
   __DEBUG__ && logger.log('1/3', { detected, strategy })
+  console.log('1/3', { detected, strategy })
 
   // detect locale by route
   if (differentDomains || multiDomainLocales) {
@@ -193,11 +193,17 @@ export function detectLocale(
   }
 
   __DEBUG__ && logger.log('2/3', { detected, detectBrowserLanguage: _detectBrowserLanguage })
+  console.log('2/3', { detected, detectBrowserLanguage: _detectBrowserLanguage })
 
-  const cookieLocale = _detectBrowserLanguage && _detectBrowserLanguage.useCookie && localeCookie
-  detected ||= cookieLocale || initialLocale || defaultLocale || ''
+  const cookieLocale =
+    (localeCodes.includes(detectedBrowser.locale) || (localeCookie && localeCodes.includes(localeCookie))) &&
+    _detectBrowserLanguage &&
+    _detectBrowserLanguage.useCookie &&
+    localeCookie
+  detected ||= cookieLocale || defaultLocale || ''
 
-  __DEBUG__ && logger.log('3/3', { detected, cookieLocale, initialLocale, defaultLocale })
+  __DEBUG__ && logger.log('3/3', { detected, cookieLocale, defaultLocale, localeCookie })
+  console.log('3/3', { detected, cookieLocale, defaultLocale, localeCookie })
 
   return detected
 }

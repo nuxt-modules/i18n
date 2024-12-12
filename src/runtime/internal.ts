@@ -202,9 +202,9 @@ export function detectBrowserLanguage(
   }
 
   // detection only on first access
-  if (!firstAccess) {
-    return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
-  }
+  // if (!firstAccess) {
+  //   return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
+  // }
 
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = _detect
 

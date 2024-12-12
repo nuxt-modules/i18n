@@ -237,6 +237,8 @@ export interface NuxtI18nRoutingCustomProperties<
    * Returns a promise that will be resolved once the pending locale is set.
    */
   waitForPendingLocaleChange: () => Promise<void>
+
+  loadLocaleMessages: (locale: Locale) => Promise<void>
 }
 
 declare module 'vue-i18n' {
