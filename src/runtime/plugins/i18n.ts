@@ -41,18 +41,12 @@ declare module '#app' {
   interface NuxtApp extends Decorate<NuxtI18nPluginInjections> {}
 }
 
-// declare module 'vue' {
-//   interface ComponentCustomProperties extends Decorate<NuxtI18nPluginInjections> {}
-// }
-
 // `NuxtI18nPluginInjections` should not have properties prefixed with `$`
 export default defineNuxtPlugin<NuxtI18nPluginInjections>({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(nuxt) {
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
-    // const route = useRoute()
-    const { vueApp: app } = nuxt
     const nuxtContext = nuxt as unknown as NuxtApp
 
     const defaultLocaleDomain = getDefaultLocaleForDomain(nuxtContext)
@@ -82,29 +76,6 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     // create i18n instance
     const i18n = createI18n({ ...vueI18nOptions, locale: 'en' })
 
-    /**
-     * NOTE:
-     *  avoid hydration mismatch for SSG mode
-     */
-    // if (isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' && import.meta.client) {
-    //   const initialLocaleCookie = localeCookie.value
-    //   nuxt.hook('app:mounted', async () => {
-    //     __DEBUG__ && logger.log('hook app:mounted')
-    //     const detected = detectBrowserLanguage(
-    //       route,
-    //       {
-    //         ssg: 'ssg_setup',
-    //         callType: 'setup',
-    //         firstAccess: true,
-    //         localeCookie: initialLocaleCookie
-    //       },
-    //       'en'
-    //     )
-    //     __DEBUG__ && logger.log('app:mounted: detectBrowserLanguage (locale, reason, from) -', Object.values(detected))
-    //     await setLocale(i18n, detected.locale)
-    //     ssgModeInitialSetup = false
-    //   })
-    // }
     let firstAccessHandled = false
 
     // extend i18n instance
@@ -266,15 +237,14 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
       }
     })
 
-    app.use(i18n) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
+    nuxt.vueApp.use(i18n) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
 
     // inject for nuxt helpers
     injectNuxtHelpers(nuxtContext, i18n)
 
-    const currentRoute = nuxtContext.$router.currentRoute
-
-    // router is disabled / project has no pages
+    // router is enabled and project has pages
     if (!hasPages) {
+      const currentRoute = nuxtContext.$router.currentRoute
       const detected = detectLocale(
         // @ts-expect-error type conflict
         currentRoute.value,
@@ -288,8 +258,10 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         },
         runtimeI18n
       )
+
       await loadAndSetLocale(detected, i18n, runtimeI18n, true)
       await getI18nTarget(i18n).loadLocaleMessages(detected)
+
       return
     }
 
@@ -319,7 +291,6 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
           setLocaleProperty(i18n, locale)
           await getI18nTarget(i18n).loadLocaleMessages(locale)
         }
-        console.log('detect locale', { routeLocale, locale })
 
         const _modified = await loadAndSetLocale(locale, i18n, runtimeI18n, !firstAccessHandled)
         if (_modified) {
