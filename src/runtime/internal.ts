@@ -153,7 +153,8 @@ export const enum DetectFailure {
   FIRST_ACCESS = 'first_access_only',
   NO_REDIRECT_ROOT = 'not_redirect_on_root',
   NO_REDIRECT_NO_PREFIX = 'not_redirect_on_no_prefix',
-  SSG_IGNORE = 'detect_ignore_on_ssg'
+  SSG_IGNORE = 'detect_ignore_on_ssg',
+  DISABLED = 'disabled'
 }
 
 const enum DetectFrom {
@@ -176,7 +177,10 @@ export type DetectLocaleContext = {
   localeCookie: string | undefined
 }
 
-export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = { locale: '' }
+export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
+  locale: '',
+  reason: DetectFailure.DISABLED
+}
 
 export function detectBrowserLanguage(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
@@ -202,9 +206,9 @@ export function detectBrowserLanguage(
   }
 
   // detection only on first access
-  // if (!firstAccess) {
-  //   return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
-  // }
+  if (!firstAccess) {
+    return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
+  }
 
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = _detect
 

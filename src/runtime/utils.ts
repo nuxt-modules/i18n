@@ -157,33 +157,34 @@ export async function loadAndSetLocale(
 export function detectLocale(
   route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
   routeLocale: string,
+  currentLocale: string | undefined,
   detectLocaleContext: DetectLocaleContext,
   runtimeI18n: I18nPublicRuntimeConfig
 ) {
   const { strategy, defaultLocale, differentDomains, multiDomainLocales } = runtimeI18n
   const { localeCookie } = detectLocaleContext
   const _detectBrowserLanguage = runtimeDetectBrowserLanguage(runtimeI18n)
-  // const e = useRequestEvent()
-  // console.log(e?.headers?.get('cookie'), e?.path)
   const logger = /*#__PURE__*/ createLogger('detectLocale')
 
-  const detectedBrowser = detectBrowserLanguage(route, detectLocaleContext)
+  const detectedBrowser = detectBrowserLanguage(route, detectLocaleContext, currentLocale)
   __DEBUG__ && logger.log({ detectBrowserLanguage: detectedBrowser })
-  console.log({ detectBrowserLanguage: detectedBrowser })
 
   // if (detectedBrowser.reason === DetectFailure.SSG_IGNORE) {
   //   return initialLocale
   // }
 
   // detected browser language
-  if (detectedBrowser.locale && detectedBrowser.from != null && localeCodes.includes(detectedBrowser.locale)) {
-    // console.log(localeCodes)
+  if (
+    detectedBrowser.locale &&
+    detectedBrowser.from != null &&
+    localeCodes.includes(detectedBrowser.locale)
+    // !(callType === 'routing' && routeLocale)
+  ) {
     return detectedBrowser.locale
   }
 
   let detected: string = ''
   __DEBUG__ && logger.log('1/3', { detected, strategy })
-  console.log('1/3', { detected, strategy })
 
   // detect locale by route
   if (differentDomains || multiDomainLocales) {
@@ -193,17 +194,15 @@ export function detectLocale(
   }
 
   __DEBUG__ && logger.log('2/3', { detected, detectBrowserLanguage: _detectBrowserLanguage })
-  console.log('2/3', { detected, detectBrowserLanguage: _detectBrowserLanguage })
 
   const cookieLocale =
     (localeCodes.includes(detectedBrowser.locale) || (localeCookie && localeCodes.includes(localeCookie))) &&
     _detectBrowserLanguage &&
     _detectBrowserLanguage.useCookie &&
     localeCookie
-  detected ||= cookieLocale || defaultLocale || ''
+  detected ||= cookieLocale || currentLocale || defaultLocale || ''
 
   __DEBUG__ && logger.log('3/3', { detected, cookieLocale, defaultLocale, localeCookie })
-  console.log('3/3', { detected, cookieLocale, defaultLocale, localeCookie })
 
   return detected
 }
