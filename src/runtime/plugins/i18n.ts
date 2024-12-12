@@ -1,14 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import {
-  defineNuxtPlugin,
-  useRoute,
-  addRouteMiddleware,
-  defineNuxtRouteMiddleware,
-  useNuxtApp,
-  useRouter,
-  useState
-} from '#imports'
+import { defineNuxtPlugin, useRoute, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
 import {
   localeCodes,
   vueI18nConfigs,
@@ -279,14 +271,16 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     // inject for nuxt helpers
     injectNuxtHelpers(nuxtContext, i18n)
 
-    const currentRoute = useRouter().currentRoute
+    const currentRoute = nuxtContext.$router.currentRoute
 
+    // router is disabled / project has no pages
     if (!hasPages) {
       const detected = detectLocale(
+        // @ts-expect-error type conflict
         currentRoute.value,
+        // @ts-expect-error type conflict
         getLocaleFromRoute(currentRoute.value),
         undefined,
-        // @ts-expect-error type conflict
         {
           callType: 'setup',
           firstAccess: true,
@@ -294,14 +288,10 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         },
         runtimeI18n
       )
-      // console.log('no pages')
       await loadAndSetLocale(detected, i18n, runtimeI18n, true)
       await getI18nTarget(i18n).loadLocaleMessages(detected)
       return
     }
-
-    // nuxtContext.hook('app:mounted', () => (firstAccess = false))
-    const redirections = useState('i18n-redirections', () => 0)
 
     addRouteMiddleware(
       'locale-changing',
@@ -343,10 +333,6 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         firstAccessHandled ||= true
 
         __DEBUG__ && logger.log('redirectPath on locale-changing middleware', redirectPath)
-
-        if (redirectPath) {
-          redirections.value = redirections.value + 1
-        }
 
         return await nuxtContext.runWithContext(
           async () => await navigate({ nuxtApp: nuxtContext, i18n, redirectPath, locale: locale, route: to })
