@@ -21,17 +21,10 @@ import {
   switchLocalePath,
   DefaultPrefixable
 } from './routing/compatibles/routing'
-import {
-  getI18nProperty,
-  getI18nTarget,
-  getLocale,
-  getLocaleCodes,
-  onBeforeLanguageSwitch,
-  onLanguageSwitched,
-  setLocaleCookie
-} from './compatibility'
+import { getI18nTarget } from './compatibility'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { createLocaleFromRouteGetter } from './routing/extends/router'
+import { unref } from 'vue'
 
 import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -74,7 +67,6 @@ export function initCommonComposableOptions(i18n?: I18n): CommonComposableOption
 
 export async function loadAndSetLocale(
   newLocale: Locale,
-  i18n: I18n,
   runtimeI18n: I18nPublicRuntimeConfig,
   initial: boolean = false
 ): Promise<boolean> {
@@ -83,15 +75,15 @@ export async function loadAndSetLocale(
   const opts = runtimeDetectBrowserLanguage(runtimeI18n)
   const nuxtApp = useNuxtApp()
 
-  const oldLocale = getLocale(i18n)
-  const localeCodes = getLocaleCodes(i18n)
+  const oldLocale = unref(nuxtApp.$i18n.locale)
+  const localeCodes = unref(nuxtApp.$i18n.localeCodes)
 
   // sets the locale cookie if unset or not up to date
   function syncCookie(locale: Locale = oldLocale) {
     if (opts === false || !opts.useCookie) return
     if (skipSettingLocaleOnNavigate) return
 
-    setLocaleCookie(i18n, locale)
+    nuxtApp.$i18n.setLocaleCookie(locale)
   }
 
   __DEBUG__ && logger.log({ newLocale, oldLocale, initial })
@@ -114,7 +106,7 @@ export async function loadAndSetLocale(
   }
 
   // call `onBeforeLanguageSwitch` which may return an override for `newLocale`
-  const localeOverride = await onBeforeLanguageSwitch(i18n, oldLocale, newLocale, initial, nuxtApp)
+  const localeOverride = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initial, nuxtApp)
   if (localeOverride && localeCodes.includes(localeOverride)) {
     // resolved `localeOverride` is already in use
     if (oldLocale === localeOverride) {
@@ -127,7 +119,7 @@ export async function loadAndSetLocale(
 
   // load locale messages required by `newLocale`
   // if (lazy) {
-  const i18nFallbackLocales = getI18nProperty(i18n, 'fallbackLocale')
+  const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
 
   const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
   if (i18nFallbackLocales) {
@@ -145,7 +137,7 @@ export async function loadAndSetLocale(
   syncCookie(newLocale)
   nuxtApp.$i18n.__setLocale(newLocale)
 
-  await onLanguageSwitched(i18n, oldLocale, newLocale)
+  await nuxtApp.$i18n.onLanguageSwitched(oldLocale, newLocale)
 
   return true
 }

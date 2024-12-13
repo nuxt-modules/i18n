@@ -108,9 +108,9 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
-          await loadAndSetLocale(locale, i18n, runtimeI18n, firstAccess)
+          await loadAndSetLocale(locale, runtimeI18n, firstAccess)
 
-          if (runtimeI18n.strategy === 'no_prefix' || !hasPages) {
+          if (composer.strategy === 'no_prefix' || !hasPages) {
             await composer.loadLocaleMessages(locale)
             composer.__setLocale(locale)
             return
@@ -121,7 +121,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
               route: { to: currentRoute.value },
               locale,
               routeLocale: getLocaleFromRoute(currentRoute.value),
-              strategy: runtimeI18n.strategy
+              strategy: composer.strategy
             })
           )
 
@@ -263,7 +263,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         await nuxtApp.$i18n.loadLocaleMessages(detected)
       }
 
-      const modified = await nuxtApp.runWithContext(() => loadAndSetLocale(detected, i18n, runtimeI18n, firstAccess))
+      const modified = await nuxtApp.runWithContext(() => loadAndSetLocale(detected, runtimeI18n, firstAccess))
       if (modified) {
         detected = unref(nuxtApp.$i18n.locale)
       }
