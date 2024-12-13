@@ -26,10 +26,8 @@ import {
   getI18nTarget,
   getLocale,
   getLocaleCodes,
-  mergeLocaleMessage,
   onBeforeLanguageSwitch,
   onLanguageSwitched,
-  setLocaleProperty,
   setLocaleCookie
 } from './compatibility'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
@@ -131,7 +129,7 @@ export async function loadAndSetLocale(
   // if (lazy) {
   const i18nFallbackLocales = getI18nProperty(i18n, 'fallbackLocale')
 
-  const setter = mergeLocaleMessage.bind(null, i18n)
+  const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
   if (i18nFallbackLocales) {
     const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
     await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter)))
@@ -145,14 +143,12 @@ export async function loadAndSetLocale(
 
   // sync cookie and set the locale
   syncCookie(newLocale)
-  setLocaleProperty(i18n, newLocale)
+  nuxtApp.$i18n.__setLocale(newLocale)
 
   await onLanguageSwitched(i18n, oldLocale, newLocale)
 
   return true
 }
-
-// type LocaleLoader = () => Locale
 
 export function detectLocale(
   route: string | CompatRoute,

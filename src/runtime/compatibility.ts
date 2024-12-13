@@ -51,21 +51,6 @@ export function getI18nProperty<K extends keyof ReturnType<typeof getI18nTarget>
   return extractI18nProperty(getI18nTarget(i18n), property)
 }
 
-/**
- * Sets the value of the locale property on VueI18n or Composer instance
- *
- * This differs from the instance `setLocale` method in that it sets the
- * locale property directly without triggering other side effects
- */
-export function setLocaleProperty(i18n: I18n, locale: Locale): void {
-  const target = getI18nTarget(i18n)
-  if (isRef(target.locale)) {
-    target.locale.value = locale
-  } else {
-    target.locale = locale
-  }
-}
-
 export function getLocale(i18n: I18n): Locale {
   return getI18nProperty(i18n, 'locale')
 }
