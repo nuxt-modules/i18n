@@ -26,7 +26,7 @@ export async function loadVueI18nOptions(
   for (const configFile of vueI18nConfigs) {
     const { default: resolver } = await configFile()
 
-    const resolved = isFunction(resolver) ? await nuxt.runWithContext(async () => await resolver()) : resolver
+    const resolved = isFunction(resolver) ? await nuxt.runWithContext(() => resolver()) : resolver
 
     deepCopy(resolved, vueI18nOptions)
   }
