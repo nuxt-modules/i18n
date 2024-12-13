@@ -39,7 +39,6 @@ import type {
   PrefixableOptions,
   SwitchLocalePathIntercepter,
   BaseUrlResolveHandler,
-  Strategies,
   LocaleObject
 } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
@@ -196,10 +195,8 @@ export function detectLocale(
 }
 
 type DetectRedirectOptions = {
-  route: {
-    to: CompatRoute
-    from?: CompatRoute
-  }
+  to: CompatRoute
+  from?: CompatRoute
   /**
    * The locale we want to navigate to
    */
@@ -208,7 +205,6 @@ type DetectRedirectOptions = {
    * Locale detected from route
    */
   routeLocale: string
-  strategy: Strategies
 }
 
 /**
@@ -216,12 +212,9 @@ type DetectRedirectOptions = {
  *
  * @param inMiddleware - whether this is called during navigation middleware
  */
-export function detectRedirect(
-  { route, locale, routeLocale, strategy }: DetectRedirectOptions,
-  inMiddleware = false
-): string {
+export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirectOptions, inMiddleware = false): string {
   // no locale change detected from routing
-  if (routeLocale === locale || strategy === 'no_prefix') {
+  if (routeLocale === locale || useNuxtApp().$i18n.strategy === 'no_prefix') {
     return ''
   }
 
@@ -232,18 +225,18 @@ export function detectRedirect(
   const common = initCommonComposableOptions()
   const logger = /*#__PURE__*/ createLogger('detectRedirect')
 
-  __DEBUG__ && logger.log({ route })
+  __DEBUG__ && logger.log({ to, from })
   __DEBUG__ && logger.log({ locale, routeLocale, inMiddleware })
 
-  let redirectPath = switchLocalePath(common, locale, route.to)
+  let redirectPath = switchLocalePath(common, locale, to)
 
   // if current route is a 404 we attempt to find a matching route using the full path
   if (inMiddleware && !redirectPath) {
-    redirectPath = localePath(common, route.to.fullPath, locale)
+    redirectPath = localePath(common, to.fullPath, locale)
   }
 
   // NOTE: #1889, #2226 if resolved route is the same as current route, skip redirection by returning empty string value
-  if (isEqual(redirectPath, route.to.fullPath) || (route.from && isEqual(redirectPath, route.from.fullPath))) {
+  if (isEqual(redirectPath, to.fullPath) || (from && isEqual(redirectPath, from.fullPath))) {
     return ''
   }
 

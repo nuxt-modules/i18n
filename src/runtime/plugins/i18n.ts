@@ -71,7 +71,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
 
-    const getLocaleFromRoute = createLocaleFromRouteGetter()
+    const getRouteLocale = createLocaleFromRouteGetter()
     const localeCookie = getI18nCookie()
 
     // create i18n instance
@@ -116,19 +116,15 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
             return
           }
 
+          const route = currentRoute.value
           const redirectPath = await nuxtApp.runWithContext(() =>
-            detectRedirect({
-              route: { to: currentRoute.value },
-              locale,
-              routeLocale: getLocaleFromRoute(currentRoute.value),
-              strategy: composer.strategy
-            })
+            detectRedirect({ to: route, locale, routeLocale: getRouteLocale(route) })
           )
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
 
           await nuxtApp.runWithContext(() =>
-            navigate({ nuxtApp, i18n, redirectPath, locale, route: currentRoute.value }, { enableNavigate: true })
+            navigate({ nuxtApp, i18n, redirectPath, locale, route }, { enableNavigate: true })
           )
         }
         composer.loadLocaleMessages = async (locale: string) => {
@@ -246,11 +242,10 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     async function handleRouteDetect(to: CompatRoute) {
       let detected = detectLocale(
         to,
-        getLocaleFromRoute(to),
+        getRouteLocale(to),
         unref(nuxtApp.$i18n.locale),
         {
           ssg: isSSG && firstAccess && nuxtApp.$i18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
-          callType: !hasPages ? 'setup' : 'routing',
           firstAccess,
           localeCookie: nuxtApp.$i18n.getLocaleCookie()
         },
@@ -284,9 +279,8 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
 
         const locale = await nuxtApp.runWithContext(() => handleRouteDetect(to))
 
-        const routeLocale = getLocaleFromRoute(to)
         const redirectPath = await nuxtApp.runWithContext(() =>
-          detectRedirect({ route: { to, from }, locale, routeLocale, strategy: nuxtApp.$i18n.strategy }, true)
+          detectRedirect({ to, from, locale, routeLocale: getRouteLocale(to) }, true)
         )
 
         firstAccess = false
