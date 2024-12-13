@@ -11,16 +11,9 @@ import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposa
 
 import type { Strategies, PrefixableOptions } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
-import type {
-  RouteLocation,
-  RouteLocationRaw,
-  Router,
-  RouteLocationPathRaw,
-  RouteLocationNamedRaw,
-  RouteLocationNormalizedLoaded,
-  RouteLocationNormalized
-} from 'vue-router'
+import type { RouteLocation, RouteLocationRaw, Router, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { CompatRoute } from '../../types'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
@@ -211,7 +204,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
 
 function getLocalizableMetaFromDynamicParams(
   common: CommonComposableOptions,
-  route: RouteLocationNormalizedLoaded
+  route: CompatRoute
 ): Record<Locale, Record<string, unknown>> {
   if (common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR) {
     return unref(common.metaState.value)
@@ -230,11 +223,7 @@ function getLocalizableMetaFromDynamicParams(
  *
  * @public
  */
-export function switchLocalePath(
-  common: CommonComposableOptions,
-  locale: Locale,
-  _route?: RouteLocationNormalized | RouteLocationNormalizedLoaded
-): string {
+export function switchLocalePath(common: CommonComposableOptions, locale: Locale, _route?: CompatRoute): string {
   const route = _route ?? common.router.currentRoute.value
   const name = getRouteBaseName(common, route)
 

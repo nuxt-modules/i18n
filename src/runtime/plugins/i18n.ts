@@ -110,11 +110,20 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(locale, i18n, runtimeI18n, !firstAccessHandled)
 
-          if (!hasPages) return
+          if (!hasPages) {
+            return
+          }
+
+          if (runtimeI18n.strategy === 'no_prefix') {
+            await getI18nTarget(i18n).loadLocaleMessages(locale)
+            setLocaleProperty(i18n, locale)
+            return
+          }
+
           const redirectPath = await nuxtContext.runWithContext(() =>
             detectRedirect({
-              route: { to: route },
-              locale: locale,
+              route: { to: nuxtContext.$router.currentRoute.value },
+              locale,
               routeLocale: getLocaleFromRoute(route),
               strategy: runtimeI18n.strategy
             })
@@ -130,7 +139,6 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
                   i18n,
                   redirectPath,
                   locale: locale,
-                  // @ts-expect-error type conflict
                   route: nuxtContext.$router.currentRoute.value
                 },
                 { enableNavigate: true }
@@ -246,12 +254,11 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     if (!hasPages) {
       const currentRoute = nuxtContext.$router.currentRoute
       const detected = detectLocale(
-        // @ts-expect-error type conflict
         currentRoute.value,
-        // @ts-expect-error type conflict
         getLocaleFromRoute(currentRoute.value),
         undefined,
         {
+          ssg: 'normal',
           callType: 'setup',
           firstAccess: true,
           localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)
@@ -277,8 +284,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
           routeLocale,
           getLocale(i18n),
           {
-            // ssg: isSSGModeInitialSetup() && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
-            ssg: 'normal',
+            ssg: isSSG && !firstAccessHandled && runtimeI18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
             callType: 'routing',
             firstAccess: !firstAccessHandled,
             localeCookie: getLocaleCookie(localeCookie, _detectBrowserLanguage, runtimeI18n.defaultLocale)

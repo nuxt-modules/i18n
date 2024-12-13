@@ -2,6 +2,11 @@ import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
+import type { RouteLocationNormalizedGeneric, RouteRecordNameGeneric } from 'vue-router'
+
+export type CompatRoute = Omit<RouteLocationNormalizedGeneric, 'name'> & {
+  name: RouteRecordNameGeneric | null
+}
 
 /**
  * Called before the app's locale is switched.

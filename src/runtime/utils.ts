@@ -41,7 +41,6 @@ import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type {
@@ -52,6 +51,7 @@ import type {
   Strategies,
   LocaleObject
 } from '#internal-i18n-types'
+import type { CompatRoute } from './types'
 
 /**
  * Common options used internally by composable functions, these
@@ -155,7 +155,7 @@ export async function loadAndSetLocale(
 // type LocaleLoader = () => Locale
 
 export function detectLocale(
-  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: string | CompatRoute,
   routeLocale: string,
   currentLocale: string | undefined,
   detectLocaleContext: DetectLocaleContext,
@@ -209,8 +209,8 @@ export function detectLocale(
 
 type DetectRedirectOptions = {
   route: {
-    to: RouteLocationNormalized | RouteLocationNormalizedLoaded
-    from?: RouteLocationNormalized | RouteLocationNormalizedLoaded
+    to: CompatRoute
+    from?: CompatRoute
   }
   /**
    * The locale we want to navigate to
@@ -274,7 +274,7 @@ type NavigateArgs = {
   i18n: I18n
   redirectPath: string
   locale: string
-  route: RouteLocationNormalized | RouteLocationNormalizedLoaded
+  route: CompatRoute
 }
 
 function _navigate(redirectPath: string, status: number) {

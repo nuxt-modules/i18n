@@ -18,9 +18,9 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#internal-i18n-types'
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { CookieRef, NuxtApp } from 'nuxt/app'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { CompatRoute } from './types'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -183,7 +183,7 @@ export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromRe
 }
 
 export function detectBrowserLanguage(
-  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
+  route: string | CompatRoute,
   detectLocaleContext: DetectLocaleContext,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
@@ -277,11 +277,7 @@ export function getHost() {
   return host
 }
 
-export function getLocaleDomain(
-  locales: LocaleObject[],
-  strategy: string,
-  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
-): string {
+export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   let host = getHost() || ''
   const routePath = isObject(route) ? route.path : isString(route) ? route : ''
