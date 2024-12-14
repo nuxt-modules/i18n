@@ -161,12 +161,7 @@ export function detectLocale(
   // }
 
   // detected browser language
-  if (
-    detectedBrowser.locale &&
-    detectedBrowser.from != null &&
-    localeCodes.includes(detectedBrowser.locale)
-    // !(callType === 'routing' && routeLocale)
-  ) {
+  if (detectedBrowser.locale && detectedBrowser.from != null && localeCodes.includes(detectedBrowser.locale)) {
     return detectedBrowser.locale
   }
 

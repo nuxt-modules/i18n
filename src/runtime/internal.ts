@@ -148,7 +148,7 @@ export function setLocaleCookie(
   cookieRef.value = locale
 }
 
-export const enum DetectFailure {
+const enum DetectFailure {
   NOT_FOUND = 'not_found_match',
   FIRST_ACCESS = 'first_access_only',
   NO_REDIRECT_ROOT = 'not_redirect_on_root',
@@ -168,13 +168,12 @@ type DetectBrowserLanguageFromResult = {
   from?: DetectFrom
   reason?: DetectFailure
 }
-export type DetectLocaleCallType = 'setup' | 'routing'
 export type DetectLocaleContext = {
   firstAccess: boolean
   localeCookie: string | undefined
 }
 
-export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
+const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
   locale: '',
   reason: DetectFailure.DISABLED
 }
