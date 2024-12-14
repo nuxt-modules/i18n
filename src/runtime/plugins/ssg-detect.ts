@@ -7,6 +7,7 @@ import type { NuxtApp } from '#app'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:ssg-detect',
+  dependsOn: ['i18n:plugin'],
   enforce: 'post',
   setup(nuxt) {
     if (!isSSG || (nuxt as NuxtApp).$i18n.strategy !== 'no_prefix') return
@@ -19,7 +20,7 @@ export default defineNuxtPlugin({
       __DEBUG__ && logger.log('hook app:mounted')
       const detected = detectBrowserLanguage(
         nuxtApp.$router.currentRoute.value,
-        { firstAccess: true, localeCookie },
+        localeCookie,
         localeCookie || unref(nuxtApp.$i18n.defaultLocale)
       )
       __DEBUG__ && logger.log('app:mounted: detectBrowserLanguage (locale, reason, from) -', Object.values(detected))

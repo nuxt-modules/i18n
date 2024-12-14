@@ -268,6 +268,7 @@ declare module 'vue-i18n' {
   interface I18n {
     __pendingLocale?: string
     __pendingLocalePromise?: Promise<void>
+    __firstAccess: boolean
     __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
     loadLocaleMessages: (locale: Locale) => Promise<void>
   }

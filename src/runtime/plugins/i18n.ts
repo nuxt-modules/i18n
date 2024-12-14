@@ -1,6 +1,6 @@
-import { computed, isRef, ref, unref, watch } from 'vue'
+import { computed, isRef, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, addRouteMiddleware, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
+import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import {
   localeCodes,
   vueI18nConfigs,
@@ -11,7 +11,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
-import { loadAndSetLocale, detectLocale, detectRedirect, navigate, injectNuxtHelpers, extendBaseUrl } from '../utils'
+import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl, injectNuxtHelpers } from '../utils'
 import {
   getBrowserLocale,
   getLocaleCookie,
@@ -27,18 +27,19 @@ import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { NuxtI18nPluginInjections } from '../injections'
-import type { Locale, I18nOptions, Composer } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CompatRoute } from '../types'
 
 // from https://github.com/nuxt/nuxt/blob/2466af53b0331cdb8b17c2c3b08675c5985deaf3/packages/nuxt/src/core/templates.ts#L152
 type Decorate<T extends Record<string, unknown>> = { [K in keyof T as K extends string ? `$${K}` : never]: T[K] }
 
 // TODO: use @nuxt/module-builder to stub/prepare types
 declare module '#app' {
-  interface NuxtApp extends Decorate<NuxtI18nPluginInjections> {}
+  interface NuxtApp extends Decorate<NuxtI18nPluginInjections> {
+    _vueI18n: I18n
+  }
 }
 
 // `NuxtI18nPluginInjections` should not have properties prefixed with `$`
@@ -58,6 +59,8 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
       ...(nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig),
       defaultLocale: defaultLocaleDomain
     }
+
+    nuxtApp.$config.public.i18n.defaultLocale = defaultLocaleDomain
     // @ts-expect-error type incompatible
     runtimeI18n.baseUrl = extendBaseUrl()
 
@@ -70,14 +73,17 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
     vueI18nOptions.messages = vueI18nOptions.messages || {}
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
+    if (defaultLocaleDomain) {
+      vueI18nOptions.locale = defaultLocaleDomain
+    }
 
     const getRouteLocale = createLocaleFromRouteGetter()
     const localeCookie = getI18nCookie()
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
-
-    let firstAccess = true
+    i18n.__firstAccess = true
+    nuxtApp._vueI18n = i18n
 
     // extend i18n instance
     extendI18n(i18n, {
@@ -108,7 +114,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
-          await loadAndSetLocale(locale, runtimeI18n, firstAccess)
+          await loadAndSetLocale(locale, i18n.__firstAccess)
 
           if (composer.strategy === 'no_prefix' || !hasPages) {
             await composer.loadLocaleMessages(locale)
@@ -124,7 +130,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
 
           await nuxtApp.runWithContext(() =>
-            navigate({ nuxtApp, i18n, redirectPath, locale, route }, { enableNavigate: true })
+            navigate({ nuxtApp, redirectPath, locale, route }, { enableNavigate: true })
           )
         }
         composer.loadLocaleMessages = async (locale: string) => {
@@ -209,54 +215,5 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
 
     // inject for nuxt helpers
     injectNuxtHelpers(nuxtApp, i18n)
-
-    async function handleRouteDetect(to: CompatRoute) {
-      let detected = detectLocale(
-        to,
-        getRouteLocale(to),
-        unref(nuxtApp.$i18n.locale),
-        { firstAccess, localeCookie: nuxtApp.$i18n.getLocaleCookie() },
-        runtimeI18n
-      )
-      __DEBUG__ && logger.log('detect locale', detected)
-
-      if (firstAccess) {
-        nuxtApp.$i18n.__setLocale(detected)
-        await nuxtApp.$i18n.loadLocaleMessages(detected)
-      }
-
-      const modified = await nuxtApp.runWithContext(() => loadAndSetLocale(detected, runtimeI18n, firstAccess))
-      if (modified) {
-        detected = unref(nuxtApp.$i18n.locale)
-      }
-
-      return detected
-    }
-
-    // router is enabled and project has pages
-    if (!hasPages) {
-      await handleRouteDetect(currentRoute.value)
-      return
-    }
-
-    addRouteMiddleware(
-      'locale-changing',
-      defineNuxtRouteMiddleware(async (to, from) => {
-        __DEBUG__ && logger.log('locale-changing middleware', to, from)
-
-        const locale = await nuxtApp.runWithContext(() => handleRouteDetect(to))
-
-        const redirectPath = await nuxtApp.runWithContext(() =>
-          detectRedirect({ to, from, locale, routeLocale: getRouteLocale(to) }, true)
-        )
-
-        firstAccess = false
-
-        __DEBUG__ && logger.log('redirectPath on locale-changing middleware', redirectPath)
-
-        return await nuxtApp.runWithContext(() => navigate({ nuxtApp, i18n, redirectPath, locale, route: to }))
-      }),
-      { global: true }
-    )
   }
 })

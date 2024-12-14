@@ -168,10 +168,6 @@ type DetectBrowserLanguageFromResult = {
   from?: DetectFrom
   reason?: DetectFailure
 }
-export type DetectLocaleContext = {
-  firstAccess: boolean
-  localeCookie: string | undefined
-}
 
 const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
   locale: '',
@@ -180,7 +176,7 @@ const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = 
 
 export function detectBrowserLanguage(
   route: string | CompatRoute,
-  detectLocaleContext: DetectLocaleContext,
+  localeCookie: string | undefined,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const logger = /*#__PURE__*/ createLogger('detectBrowserLanguage')
@@ -191,8 +187,9 @@ export function detectBrowserLanguage(
     return DefaultDetectBrowserLanguageFromResult
   }
 
-  const strategy = useNuxtApp().$i18n.strategy
-  const { firstAccess, localeCookie } = detectLocaleContext
+  const nuxtApp = useNuxtApp()
+  const strategy = nuxtApp.$i18n.strategy
+  const firstAccess = nuxtApp._vueI18n.__firstAccess
 
   __DEBUG__ && logger.log({ firstAccess })
 

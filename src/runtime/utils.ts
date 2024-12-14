@@ -26,11 +26,10 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { createLocaleFromRouteGetter } from './routing/extends/router'
 import { unref } from 'vue'
 
-import type { I18n, Locale } from 'vue-i18n'
+import { type I18n, type Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
-import type { DetectLocaleContext } from './internal'
 import type { HeadSafe } from '@unhead/vue'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
@@ -64,15 +63,11 @@ export function initCommonComposableOptions(i18n?: I18n): CommonComposableOption
   }
 }
 
-export async function loadAndSetLocale(
-  newLocale: Locale,
-  runtimeI18n: I18nPublicRuntimeConfig,
-  initial: boolean = false
-): Promise<boolean> {
+export async function loadAndSetLocale(newLocale: Locale, initial: boolean = false): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
-  const { differentDomains, skipSettingLocaleOnNavigate } = runtimeI18n
-  const opts = runtimeDetectBrowserLanguage(runtimeI18n)
   const nuxtApp = useNuxtApp()
+  const { differentDomains, skipSettingLocaleOnNavigate } = nuxtApp.$config.public.i18n
+  const opts = runtimeDetectBrowserLanguage()
 
   const oldLocale = unref(nuxtApp.$i18n.locale)
   const localeCodes = unref(nuxtApp.$i18n.localeCodes)
@@ -145,15 +140,14 @@ export function detectLocale(
   route: string | CompatRoute,
   routeLocale: string,
   currentLocale: string | undefined,
-  detectLocaleContext: DetectLocaleContext,
-  runtimeI18n: I18nPublicRuntimeConfig
+  localeCookie: string | undefined
 ) {
-  const { strategy, defaultLocale, differentDomains, multiDomainLocales } = runtimeI18n
-  const { localeCookie } = detectLocaleContext
-  const _detectBrowserLanguage = runtimeDetectBrowserLanguage(runtimeI18n)
+  const nuxtApp = useNuxtApp()
+  const { strategy, defaultLocale, differentDomains, multiDomainLocales } = nuxtApp.$config.public.i18n
+  const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
   const logger = /*#__PURE__*/ createLogger('detectLocale')
 
-  const detectedBrowser = detectBrowserLanguage(route, detectLocaleContext, currentLocale)
+  const detectedBrowser = detectBrowserLanguage(route, localeCookie, currentLocale)
   __DEBUG__ && logger.log({ detectBrowserLanguage: detectedBrowser })
 
   // if (detectedBrowser.reason === DetectFailure.SSG_IGNORE) {
@@ -247,7 +241,6 @@ const useRedirectState = () => useState<string>(NUXT_I18N_MODULE_ID + ':redirect
 
 type NavigateArgs = {
   nuxtApp: NuxtApp
-  i18n: I18n
   redirectPath: string
   locale: string
   route: CompatRoute
@@ -261,7 +254,7 @@ export async function navigate(
   args: NavigateArgs,
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
-  const { nuxtApp, i18n, locale, route } = args
+  const { nuxtApp, locale, route } = args
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxtApp
     .$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
@@ -293,9 +286,9 @@ export async function navigate(
   }
 
   if (import.meta.client && skipSettingLocaleOnNavigate) {
-    i18n.__pendingLocale = locale
-    i18n.__pendingLocalePromise = new Promise(resolve => {
-      i18n.__resolvePendingLocalePromise = resolve
+    nuxtApp._vueI18n.__pendingLocale = locale
+    nuxtApp._vueI18n.__pendingLocalePromise = new Promise(resolve => {
+      nuxtApp._vueI18n.__resolvePendingLocalePromise = resolve
     })
     if (!enableNavigate) {
       return
