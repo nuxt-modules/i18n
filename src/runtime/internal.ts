@@ -168,10 +168,8 @@ type DetectBrowserLanguageFromResult = {
   from?: DetectFrom
   reason?: DetectFailure
 }
-export type DetectLocaleForSSGStatus = 'ssg_ignore' | 'ssg_setup' | 'normal'
 export type DetectLocaleCallType = 'setup' | 'routing'
 export type DetectLocaleContext = {
-  ssg: DetectLocaleForSSGStatus
   firstAccess: boolean
   localeCookie: string | undefined
 }
@@ -194,13 +192,13 @@ export function detectBrowserLanguage(
     return DefaultDetectBrowserLanguageFromResult
   }
 
-  const { strategy } = useRuntimeConfig().public.i18n
-  const { ssg, firstAccess, localeCookie } = detectLocaleContext
+  const strategy = useNuxtApp().$i18n.strategy
+  const { firstAccess, localeCookie } = detectLocaleContext
 
-  __DEBUG__ && logger.log({ ssg, firstAccess })
+  __DEBUG__ && logger.log({ firstAccess })
 
   // detection ignored during nuxt generate
-  if (isSSG && strategy === 'no_prefix' && (import.meta.server || ssg === 'ssg_ignore')) {
+  if (isSSG && firstAccess && strategy === 'no_prefix' && import.meta.server) {
     return { locale: '', reason: DetectFailure.SSG_IGNORE }
   }
 

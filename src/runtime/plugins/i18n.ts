@@ -215,11 +215,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         to,
         getRouteLocale(to),
         unref(nuxtApp.$i18n.locale),
-        {
-          ssg: isSSG && firstAccess && nuxtApp.$i18n.strategy === 'no_prefix' ? 'ssg_ignore' : 'normal',
-          firstAccess,
-          localeCookie: nuxtApp.$i18n.getLocaleCookie()
-        },
+        { firstAccess, localeCookie: nuxtApp.$i18n.getLocaleCookie() },
         runtimeI18n
       )
       __DEBUG__ && logger.log('detect locale', detected)
