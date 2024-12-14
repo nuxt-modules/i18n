@@ -27,7 +27,7 @@ import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { NuxtI18nPluginInjections } from '../injections'
-import type { Locale, I18nOptions } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
@@ -171,65 +171,36 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         }
       },
       extendComposerInstance(instance, c) {
-        type ExtendPropertyDescriptors = { [key: string]: Pick<PropertyDescriptor, 'get'> }
-
-        instance.__setLocale = c.__setLocale
-
-        const properties: ExtendPropertyDescriptors = {
-          locales: {
-            get: () => c.locales.value
-          },
-          localeCodes: {
-            get: () => c.localeCodes.value
-          },
-          baseUrl: {
-            get: () => c.baseUrl.value
-          },
-          strategy: {
-            get: () => c.strategy
-          },
-          localeProperties: {
-            get: () => c.localeProperties.value
-          },
-          setLocale: {
-            get: () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])
-          },
-          loadLocaleMessages: {
-            get: () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])
-          },
-          differentDomains: {
-            get: () => c.differentDomains
-          },
-          defaultLocale: {
-            get: () => c.defaultLocale
-          },
-          getBrowserLocale: {
-            get: () => () => Reflect.apply(c.getBrowserLocale, c, [])
-          },
-          getLocaleCookie: {
-            get: () => () => Reflect.apply(c.getLocaleCookie, c, [])
-          },
-          setLocaleCookie: {
-            get: () => (locale: string) => Reflect.apply(c.setLocaleCookie, c, [locale])
-          },
-          onBeforeLanguageSwitch: {
-            get: () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
+        const props: [keyof Composer, PropertyDescriptor['get']][] = [
+          ['locales', () => c.locales.value],
+          ['localeCodes', () => c.localeCodes.value],
+          ['baseUrl', () => c.baseUrl.value],
+          ['strategy', () => c.strategy],
+          ['localeProperties', () => c.localeProperties.value],
+          ['__setLocale', () => (locale: string) => Reflect.apply(c.__setLocale, c, [locale])],
+          ['setLocale', () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
+          ['loadLocaleMessages', () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
+          ['differentDomains', () => c.differentDomains],
+          ['defaultLocale', () => c.defaultLocale],
+          ['getBrowserLocale', () => () => Reflect.apply(c.getBrowserLocale, c, [])],
+          ['getLocaleCookie', () => () => Reflect.apply(c.getLocaleCookie, c, [])],
+          ['setLocaleCookie', () => (locale: string) => Reflect.apply(c.setLocaleCookie, c, [locale])],
+          [
+            'onBeforeLanguageSwitch',
+            () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
               Reflect.apply(c.onBeforeLanguageSwitch, c, [oldLocale, newLocale, initialSetup, context])
-          },
-          onLanguageSwitched: {
-            get: () => (oldLocale: string, newLocale: string) =>
+          ],
+          [
+            'onLanguageSwitched',
+            () => (oldLocale: string, newLocale: string) =>
               Reflect.apply(c.onLanguageSwitched, c, [oldLocale, newLocale])
-          },
-          finalizePendingLocaleChange: {
-            get: () => () => Reflect.apply(c.finalizePendingLocaleChange, c, [])
-          },
-          waitForPendingLocaleChange: {
-            get: () => () => Reflect.apply(c.waitForPendingLocaleChange, c, [])
-          }
-        }
+          ],
+          ['finalizePendingLocaleChange', () => () => Reflect.apply(c.finalizePendingLocaleChange, c, [])],
+          ['waitForPendingLocaleChange', () => () => Reflect.apply(c.waitForPendingLocaleChange, c, [])]
+        ]
 
-        for (const [key, descriptor] of Object.entries(properties)) {
-          Object.defineProperty(instance, key, descriptor)
+        for (const [key, get] of props) {
+          Object.defineProperty(instance, key, { get })
         }
       }
     })
