@@ -233,7 +233,7 @@ export function detectBrowserLanguage(
   }
 
   // match locale from either navigator or header detection
-  const browserMatch = getBrowserLocale()
+  const browserMatch = nuxtApp.$i18n.getBrowserLocale()
   if (!cookieMatch) {
     from = DetectFrom.NAVIGATOR_HEADER
   }

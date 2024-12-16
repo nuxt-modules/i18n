@@ -21,7 +21,7 @@ export default defineNuxtPlugin({
       let detected = detectLocale(to, getRouteLocale(to), unref(nuxtApp.$i18n.locale), nuxtApp.$i18n.getLocaleCookie())
 
       if (nuxtApp._vueI18n.__firstAccess) {
-        nuxtApp.$i18n.__setLocale(detected)
+        nuxtApp._vueI18n.__setLocale(detected)
         await nuxtApp.$i18n.loadLocaleMessages(detected)
       }
 

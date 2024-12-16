@@ -129,7 +129,7 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
   // sync cookie and set the locale
   syncCookie(newLocale)
-  nuxtApp.$i18n.__setLocale(newLocale)
+  nuxtApp._vueI18n.__setLocale(newLocale)
 
   await nuxtApp.$i18n.onLanguageSwitched(oldLocale, newLocale)
 
@@ -251,14 +251,12 @@ function _navigate(redirectPath: string, status: number) {
 }
 
 export async function navigate(
-  args: NavigateArgs,
+  { nuxtApp, locale, route, redirectPath }: NavigateArgs,
   { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
 ) {
-  const { nuxtApp, locale, route } = args
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxtApp
     .$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
-  let { redirectPath } = args
 
   __DEBUG__ &&
     logger.log('options', {
@@ -288,7 +286,7 @@ export async function navigate(
   if (import.meta.client && skipSettingLocaleOnNavigate) {
     nuxtApp._vueI18n.__pendingLocale = locale
     nuxtApp._vueI18n.__pendingLocalePromise = new Promise(resolve => {
-      nuxtApp._vueI18n.__resolvePendingLocalePromise = resolve
+      nuxtApp._vueI18n.__resolvePendingLocalePromise = () => resolve()
     })
     if (!enableNavigate) {
       return

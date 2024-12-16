@@ -7,8 +7,6 @@ import type { CompatRoute } from '../../types'
 const localesPattern = `(${localeCodes.join('|')})`
 const regexpPath = getLocalesRegex(localeCodes)
 
-export type GetLocaleFromRouteFunction = (route: string | CompatRoute) => string
-
 export function createLocaleFromRouteGetter() {
   const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n
   const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
@@ -17,7 +15,7 @@ export function createLocaleFromRouteGetter() {
   /**
    * extract locale code from route name or path
    */
-  const getLocaleFromRoute: GetLocaleFromRouteFunction = route => {
+  const getLocaleFromRoute = (route: string | CompatRoute) => {
     let matches: RegExpMatchArray | null = null
 
     if (typeof route === 'string') {

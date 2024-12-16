@@ -141,15 +141,6 @@ export interface ComposerCustomProperties<
    * Returns a promise that will be resolved once the pending locale is set.
    */
   waitForPendingLocaleChange: () => Promise<void>
-
-  /**
-   * Sets the value of the locale property on VueI18n or Composer instance
-   *
-   * This differs from the instance `setLocale` method in that it sets the
-   * locale property directly without triggering other side effects
-   * @internal
-   */
-  __setLocale: (locale: string) => void
 }
 
 export interface NuxtI18nRoutingCustomProperties<
@@ -253,15 +244,6 @@ export interface NuxtI18nRoutingCustomProperties<
   waitForPendingLocaleChange: () => Promise<void>
 
   loadLocaleMessages: (locale: Locale) => Promise<void>
-
-  /**
-   * Sets the value of the locale property on VueI18n or Composer instance
-   *
-   * This differs from the instance `setLocale` method in that it sets the
-   * locale property directly without triggering other side effects
-   * @internal
-   */
-  __setLocale: (locale: string) => void
 }
 
 declare module 'vue-i18n' {
@@ -269,7 +251,15 @@ declare module 'vue-i18n' {
     __pendingLocale?: string
     __pendingLocalePromise?: Promise<void>
     __firstAccess: boolean
-    __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
+    /**
+     * Sets the value of the locale property on VueI18n or Composer instance
+     *
+     * This differs from the instance `setLocale` method in that it sets the
+     * locale property directly without triggering other side effects
+     * @internal
+     */
+    __setLocale: (locale: string) => void
+    __resolvePendingLocalePromise?: () => void
     loadLocaleMessages: (locale: Locale) => Promise<void>
   }
 }

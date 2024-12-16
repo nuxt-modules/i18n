@@ -25,6 +25,7 @@ import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/extends/i18n'
 import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { getI18nTarget } from '../compatibility'
 
 import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
@@ -82,7 +83,17 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
+
     i18n.__firstAccess = true
+    i18n.__setLocale = (locale: string) => {
+      const i = getI18nTarget(i18n)
+      if (isRef(i.locale)) {
+        i.locale.value = locale
+      } else {
+        i.locale = locale
+      }
+    }
+
     nuxtApp._vueI18n = i18n
 
     // extend i18n instance
@@ -118,7 +129,7 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
 
           if (composer.strategy === 'no_prefix' || !hasPages) {
             await composer.loadLocaleMessages(locale)
-            composer.__setLocale(locale)
+            i18n.__setLocale(locale)
             return
           }
 
@@ -133,19 +144,11 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
             navigate({ nuxtApp, redirectPath, locale, route }, { enableNavigate: true })
           )
         }
-        composer.loadLocaleMessages = async (locale: string) => {
+        composer.loadLocaleMessages = async (locale: string) =>
           await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer))
-        }
         composer.differentDomains = runtimeI18n.differentDomains
         composer.defaultLocale = runtimeI18n.defaultLocale
         composer.getBrowserLocale = () => getBrowserLocale()
-        composer.__setLocale = (locale: string) => {
-          if (isRef(composer.locale)) {
-            composer.locale.value = locale
-          } else {
-            ;(composer.locale as string) = locale
-          }
-        }
         composer.getLocaleCookie = () => getLocaleCookie(localeCookie, _detectBrowserLanguage, composer.defaultLocale)
         composer.setLocaleCookie = (locale: string) => setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
 
@@ -159,15 +162,12 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
         composer.onLanguageSwitched = (oldLocale, newLocale) =>
           nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
 
+        // eslint-disable-next-line @typescript-eslint/require-await --- TODO: breaking - signature should be synchronous
         composer.finalizePendingLocaleChange = async () => {
-          if (!i18n.__pendingLocale) {
-            return
-          }
-          composer.__setLocale(i18n.__pendingLocale)
-          if (i18n.__resolvePendingLocalePromise) {
-            // eslint-disable-next-line @typescript-eslint/await-thenable -- FIXME: `__resolvePendingLocalePromise` should be `Promise<void>`
-            await i18n.__resolvePendingLocalePromise()
-          }
+          if (!i18n.__pendingLocale) return
+
+          i18n.__setLocale(i18n.__pendingLocale)
+          i18n.__resolvePendingLocalePromise?.()
           i18n.__pendingLocale = undefined
         }
         composer.waitForPendingLocaleChange = async () => {
@@ -183,7 +183,6 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
           ['baseUrl', () => c.baseUrl.value],
           ['strategy', () => c.strategy],
           ['localeProperties', () => c.localeProperties.value],
-          ['__setLocale', () => (locale: string) => Reflect.apply(c.__setLocale, c, [locale])],
           ['setLocale', () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
           ['loadLocaleMessages', () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
           ['differentDomains', () => c.differentDomains],
