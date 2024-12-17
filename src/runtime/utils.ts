@@ -26,7 +26,7 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { createLocaleFromRouteGetter } from './routing/extends/router'
 import { unref } from 'vue'
 
-import { type I18n, type Locale } from 'vue-i18n'
+import type { I18n, Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
@@ -149,10 +149,6 @@ export function detectLocale(
 
   const detectedBrowser = detectBrowserLanguage(route, localeCookie, currentLocale)
   __DEBUG__ && logger.log({ detectBrowserLanguage: detectedBrowser })
-
-  // if (detectedBrowser.reason === DetectFailure.SSG_IGNORE) {
-  //   return initialLocale
-  // }
 
   // detected browser language
   if (detectedBrowser.locale && detectedBrowser.from != null && localeCodes.includes(detectedBrowser.locale)) {
