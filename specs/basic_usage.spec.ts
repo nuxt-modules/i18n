@@ -11,7 +11,6 @@ import {
   gotoPath,
   renderPage,
   startServerWithRuntimeConfig,
-  waitForMs,
   waitForTransition,
   waitForURL
 } from './helper'
