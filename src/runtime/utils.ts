@@ -80,6 +80,18 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
     nuxtApp.$i18n.setLocaleCookie(locale)
   }
 
+  // call `onBeforeLanguageSwitch` which may return an override for `newLocale`
+  const localeOverride = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initial, nuxtApp)
+  if (localeOverride && localeCodes.includes(localeOverride)) {
+    // resolved `localeOverride` is already in use
+    if (oldLocale === localeOverride) {
+      syncCookie()
+      return false
+    }
+
+    newLocale = localeOverride
+  }
+
   __DEBUG__ && logger.log({ newLocale, oldLocale, initial })
 
   // `newLocale` is unset or empty
@@ -97,18 +109,6 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   if (oldLocale === newLocale) {
     syncCookie()
     return false
-  }
-
-  // call `onBeforeLanguageSwitch` which may return an override for `newLocale`
-  const localeOverride = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initial, nuxtApp)
-  if (localeOverride && localeCodes.includes(localeOverride)) {
-    // resolved `localeOverride` is already in use
-    if (oldLocale === localeOverride) {
-      syncCookie()
-      return false
-    }
-
-    newLocale = localeOverride
   }
 
   // load locale messages required by `newLocale`

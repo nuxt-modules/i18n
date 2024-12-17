@@ -2,10 +2,16 @@ import { defineNuxtPlugin } from '#imports'
 
 export default defineNuxtPlugin(nuxtApp => {
   nuxtApp.hook('i18n:beforeLocaleSwitch', ({ oldLocale, newLocale, initialSetup }) => {
-    console.log('onBeforeLanguageSwitch', oldLocale, newLocale, initialSetup)
+    let overrideLocale = newLocale
 
     if (newLocale === 'kr') {
-      return 'fr'
+      overrideLocale = 'fr'
+    }
+
+    console.log('onBeforeLanguageSwitch', oldLocale, overrideLocale, initialSetup)
+
+    if (overrideLocale !== newLocale) {
+      return overrideLocale
     }
   })
 
