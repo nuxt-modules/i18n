@@ -56,7 +56,7 @@ const IMPORT_ID_CACHES = new Map<string, string>()
 
 export const normalizeWithUnderScore = (name: string) => name.replace(/-/g, '_').replace(/\./g, '_').replace(/\//g, '_')
 
-function convertToImportId(file: string) {
+export function convertToImportId(file: string) {
   if (IMPORT_ID_CACHES.has(file)) {
     return IMPORT_ID_CACHES.get(file)
   }
