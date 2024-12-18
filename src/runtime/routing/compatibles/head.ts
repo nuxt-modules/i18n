@@ -4,7 +4,7 @@ import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
 import { getNormalizedLocales } from '../utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
-import { getComposer, getLocale, getLocales } from '../../compatibility'
+import { getComposer } from '../../compatibility'
 
 import type { I18n } from 'vue-i18n'
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#internal-i18n-types'
@@ -25,7 +25,7 @@ export function localeHead(
   { dir = true, lang = true, seo = true, key = 'hid' }: I18nHeadOptions
 ): I18nHeadMetaInfo {
   const { defaultDirection } = useRuntimeConfig().public.i18n
-  const i18n = getComposer(common.i18n)
+  const nuxtApp = useNuxtApp()
 
   const metaObject: Required<I18nHeadMetaInfo> = {
     htmlAttrs: {},
@@ -33,18 +33,18 @@ export function localeHead(
     meta: []
   }
 
-  const i18nBaseUrl = unref(i18n.baseUrl)
+  const i18nBaseUrl = unref(nuxtApp.$i18n.baseUrl)
   if (!i18nBaseUrl) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
   }
 
   // skip if no locales or baseUrl is set
-  if (unref(i18n.locales) == null || i18nBaseUrl == null) {
+  if (unref(nuxtApp.$i18n.locales) == null || i18nBaseUrl == null) {
     return metaObject
   }
 
-  const locale = getLocale(common.i18n)
-  const locales = getLocales(common.i18n)
+  const locale = unref(nuxtApp.$i18n.locale)
+  const locales = unref(nuxtApp.$i18n.locales)
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || {
     code: locale
   }
@@ -61,16 +61,13 @@ export function localeHead(
   }
 
   // Adding SEO Meta
-  if (seo && locale && unref(i18n.locales)) {
-    metaObject.link.push(
-      ...getHreflangLinks(common, unref(locales) as LocaleObject[], key),
-      ...getCanonicalLink(common, key, seo)
-    )
+  if (seo && locale && unref(nuxtApp.$i18n.locales)) {
+    metaObject.link.push(...getHreflangLinks(common, locales, key), ...getCanonicalLink(common, key, seo))
 
     metaObject.meta.push(
       ...getOgUrl(common, key, seo),
       ...getCurrentOgLocale(currentLocale, currentLanguage, key),
-      ...getAlternateOgLocales(unref(locales) as LocaleObject[], currentLanguage, key)
+      ...getAlternateOgLocales(locales, currentLanguage, key)
     )
   }
 

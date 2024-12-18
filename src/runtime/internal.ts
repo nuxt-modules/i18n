@@ -18,9 +18,9 @@ import { createLogger } from 'virtual:nuxt-i18n-logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#internal-i18n-types'
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import type { CookieRef, NuxtApp } from 'nuxt/app'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { CompatRoute } from './types'
 
 export function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -148,12 +148,13 @@ export function setLocaleCookie(
   cookieRef.value = locale
 }
 
-export const enum DetectFailure {
+const enum DetectFailure {
   NOT_FOUND = 'not_found_match',
   FIRST_ACCESS = 'first_access_only',
   NO_REDIRECT_ROOT = 'not_redirect_on_root',
   NO_REDIRECT_NO_PREFIX = 'not_redirect_on_no_prefix',
-  SSG_IGNORE = 'detect_ignore_on_ssg'
+  SSG_IGNORE = 'detect_ignore_on_ssg',
+  DISABLED = 'disabled'
 }
 
 const enum DetectFrom {
@@ -167,20 +168,15 @@ type DetectBrowserLanguageFromResult = {
   from?: DetectFrom
   reason?: DetectFailure
 }
-export type DetectLocaleForSSGStatus = 'ssg_ignore' | 'ssg_setup' | 'normal'
-export type DetectLocaleCallType = 'setup' | 'routing'
-export type DetectLocaleContext = {
-  ssg: DetectLocaleForSSGStatus
-  callType: DetectLocaleCallType
-  firstAccess: boolean
-  localeCookie: string | undefined
+
+const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
+  locale: '',
+  reason: DetectFailure.DISABLED
 }
 
-export const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = { locale: '' }
-
 export function detectBrowserLanguage(
-  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded,
-  detectLocaleContext: DetectLocaleContext,
+  route: string | CompatRoute,
+  localeCookie: string | undefined,
   locale: Locale = ''
 ): DetectBrowserLanguageFromResult {
   const logger = /*#__PURE__*/ createLogger('detectBrowserLanguage')
@@ -191,13 +187,14 @@ export function detectBrowserLanguage(
     return DefaultDetectBrowserLanguageFromResult
   }
 
-  const { strategy } = useRuntimeConfig().public.i18n
-  const { ssg, callType, firstAccess, localeCookie } = detectLocaleContext
+  const nuxtApp = useNuxtApp()
+  const strategy = nuxtApp.$i18n.strategy
+  const firstAccess = nuxtApp._vueI18n.__firstAccess
 
-  __DEBUG__ && logger.log({ ssg, callType, firstAccess })
+  __DEBUG__ && logger.log({ firstAccess })
 
   // detection ignored during nuxt generate
-  if (isSSG && strategy === 'no_prefix' && (import.meta.server || ssg === 'ssg_ignore')) {
+  if (isSSG && firstAccess && strategy === 'no_prefix' && import.meta.server) {
     return { locale: '', reason: DetectFailure.SSG_IGNORE }
   }
 
@@ -236,7 +233,7 @@ export function detectBrowserLanguage(
   }
 
   // match locale from either navigator or header detection
-  const browserMatch = getBrowserLocale()
+  const browserMatch = nuxtApp.$i18n.getBrowserLocale()
   if (!cookieMatch) {
     from = DetectFrom.NAVIGATOR_HEADER
   }
@@ -273,11 +270,7 @@ export function getHost() {
   return host
 }
 
-export function getLocaleDomain(
-  locales: LocaleObject[],
-  strategy: string,
-  route: string | RouteLocationNormalized | RouteLocationNormalizedLoaded
-): string {
+export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   let host = getHost() || ''
   const routePath = isObject(route) ? route.path : isString(route) ? route : ''

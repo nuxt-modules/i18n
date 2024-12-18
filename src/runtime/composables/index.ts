@@ -1,4 +1,4 @@
-import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
+import { useRequestHeaders, useCookie as useNuxtCookie, useNuxtApp } from '#imports'
 import { ref, computed, watch, onUnmounted, unref } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
@@ -20,7 +20,7 @@ import {
   switchLocalePath
 } from '../routing/compatibles/routing'
 import { findBrowserLocale } from '../routing/utils'
-import { getLocale, getLocales, getComposer } from '../compatibility'
+import { getComposer } from '../compatibility'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
@@ -43,12 +43,12 @@ export * from './shared'
 export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
+  const nuxtApp = useNuxtApp()
   const head = getActiveHead()
-  const i18n = getComposer(common.i18n)
   const router = common.router
 
-  const locale = getLocale(common.i18n)
-  const locales = getNormalizedLocales(getLocales(common.i18n))
+  const locale = unref(nuxtApp.$i18n.locale)
+  const locales = getNormalizedLocales(unref(nuxtApp.$i18n.locales))
   const _i18nParams = ref({})
   const experimentalSSR = common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR
 
@@ -79,7 +79,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
   const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
   const currentLocaleLanguage = currentLocale.language
 
-  if (!unref(i18n.baseUrl)) {
+  if (!unref(nuxtApp.$i18n.baseUrl)) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
   }
 
@@ -90,7 +90,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
     }
 
     // Adding SEO Meta
-    if (locale && i18n.locales) {
+    if (locale && unref(nuxtApp.$i18n.locales)) {
       // Hard code to 'id', this is used to replace payload before ssr response
       const key = 'id'
 

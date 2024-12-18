@@ -2,14 +2,10 @@ import { getLocalesRegex, getRouteName } from '../utils'
 import { localeCodes } from '#build/i18n.options.mjs'
 import { useRuntimeConfig } from '#imports'
 
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import type { CompatRoute } from '../../types'
 
 const localesPattern = `(${localeCodes.join('|')})`
 const regexpPath = getLocalesRegex(localeCodes)
-
-export type GetLocaleFromRouteFunction = (
-  route: RouteLocationNormalizedLoaded | RouteLocationNormalized | string
-) => string
 
 export function createLocaleFromRouteGetter() {
   const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n
@@ -19,7 +15,7 @@ export function createLocaleFromRouteGetter() {
   /**
    * extract locale code from route name or path
    */
-  const getLocaleFromRoute: GetLocaleFromRouteFunction = route => {
+  const getLocaleFromRoute = (route: string | CompatRoute) => {
     let matches: RegExpMatchArray | null = null
 
     if (typeof route === 'string') {

@@ -1,9 +1,10 @@
 import { assign } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
-import type { RouteLocationNormalizedLoaded, RouteLocationPathRaw } from 'vue-router'
+import type { RouteLocationPathRaw } from 'vue-router'
 import type { Strategies } from '#internal-i18n-types'
 import type { CommonComposableOptions } from '../../utils'
+import type { CompatRoute } from '../../types'
 
 function split(str: string, index: number) {
   const result = [str.slice(0, index), str.slice(index)]
@@ -15,7 +16,7 @@ function split(str: string, index: number) {
  * Nuxt route uses a proxy with getters for performance reasons (https://github.com/nuxt/nuxt/pull/21957).
  * Spreading will result in an empty object, so we make a copy of the route by accessing each getter property by name.
  */
-export function routeToObject(route: RouteLocationNormalizedLoaded) {
+export function routeToObject(route: CompatRoute) {
   const { fullPath, query, hash, name, path, params, meta, redirectedFrom, matched } = route
   return {
     fullPath,

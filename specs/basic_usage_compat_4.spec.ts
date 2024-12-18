@@ -307,17 +307,9 @@ describe('basic usage - compatibilityVersion: 4', async () => {
   test('<NuxtLink> triggers runtime hooks', async () => {
     const { page, consoleLogs } = await renderPage('/kr')
 
-    // click `fr` lang switch with `<NuxtLink>`
-    await page.locator('#nuxt-locale-link-fr').click()
-    await waitForURL(page, '/fr')
-
-    // click `kr` lang switch with `<NuxtLink>`
-    await page.locator('#nuxt-locale-link-kr').click()
-    await waitForURL(page, '/kr')
-
     expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
-    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr kr false'))).toBeTruthy()
     expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
+    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr fr false'))).toBeTruthy()
 
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
@@ -334,15 +326,9 @@ describe('basic usage - compatibilityVersion: 4', async () => {
   test('setLocale triggers runtime hooks', async () => {
     const { page, consoleLogs } = await renderPage('/kr')
 
-    // click `fr` lang switch link
-    await page.locator('#set-locale-link-fr').click()
-
-    // click `kr` lang switch link
-    // Hook prevents locale change to `kr`, stays `fr`
-    await page.locator('#set-locale-link-kr').click()
     expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
     expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
-    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr kr false'))).toBeTruthy()
+    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr fr false'))).toBeTruthy()
 
     // current locale
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')

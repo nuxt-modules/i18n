@@ -12,6 +12,7 @@ export type TemplateNuxtI18nOptions = {
   normalizedLocales: LocaleObject[]
   dev: boolean
   isSSG: boolean
+  hasPages: boolean
   parallelPlugin: boolean
 } & ReturnType<typeof generateLoaderOptions>
 
@@ -50,6 +51,7 @@ export const normalizedLocales = ${JSON.stringify(options.normalizedLocales, nul
 export const NUXT_I18N_MODULE_ID = "${NUXT_I18N_MODULE_ID}"
 export const parallelPlugin = ${options.parallelPlugin}
 export const isSSG = ${options.isSSG}
+export const hasPages = ${options.hasPages}
 
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}

@@ -2,6 +2,11 @@ import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
+import type { RouteLocationNormalizedGeneric, RouteRecordNameGeneric } from 'vue-router'
+
+export type CompatRoute = Omit<RouteLocationNormalizedGeneric, 'name'> & {
+  name: RouteRecordNameGeneric | null
+}
 
 /**
  * Called before the app's locale is switched.
@@ -237,12 +242,24 @@ export interface NuxtI18nRoutingCustomProperties<
    * Returns a promise that will be resolved once the pending locale is set.
    */
   waitForPendingLocaleChange: () => Promise<void>
+
+  loadLocaleMessages: (locale: Locale) => Promise<void>
 }
 
 declare module 'vue-i18n' {
   interface I18n {
     __pendingLocale?: string
     __pendingLocalePromise?: Promise<void>
-    __resolvePendingLocalePromise?: (value: void | PromiseLike<void>) => void
+    __firstAccess: boolean
+    /**
+     * Sets the value of the locale property on VueI18n or Composer instance
+     *
+     * This differs from the instance `setLocale` method in that it sets the
+     * locale property directly without triggering other side effects
+     * @internal
+     */
+    __setLocale: (locale: string) => void
+    __resolvePendingLocalePromise?: () => void
+    loadLocaleMessages: (locale: Locale) => Promise<void>
   }
 }

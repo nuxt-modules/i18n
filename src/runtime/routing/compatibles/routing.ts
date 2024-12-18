@@ -4,23 +4,16 @@ import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingS
 import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
-import { getLocale } from '../../compatibility'
+import { getI18nTarget } from '../../compatibility'
 import { resolve, routeToObject } from './utils'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
 import type { Strategies, PrefixableOptions } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
-import type {
-  RouteLocation,
-  RouteLocationRaw,
-  Router,
-  RouteLocationPathRaw,
-  RouteLocationNamedRaw,
-  RouteLocationNormalizedLoaded,
-  RouteLocationNormalized
-} from 'vue-router'
+import type { RouteLocation, RouteLocationRaw, Router, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { CompatRoute } from '../../types'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
@@ -133,7 +126,7 @@ export function localeLocation(
 
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
   const { router, i18n } = common
-  const _locale = locale || getLocale(i18n)
+  const _locale = locale || unref(getI18nTarget(i18n).locale)
   const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public.i18n as I18nPublicRuntimeConfig
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
@@ -211,7 +204,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
 
 function getLocalizableMetaFromDynamicParams(
   common: CommonComposableOptions,
-  route: RouteLocationNormalizedLoaded
+  route: CompatRoute
 ): Record<Locale, Record<string, unknown>> {
   if (common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR) {
     return unref(common.metaState.value)
@@ -230,11 +223,7 @@ function getLocalizableMetaFromDynamicParams(
  *
  * @public
  */
-export function switchLocalePath(
-  common: CommonComposableOptions,
-  locale: Locale,
-  _route?: RouteLocationNormalized | RouteLocationNormalizedLoaded
-): string {
+export function switchLocalePath(common: CommonComposableOptions, locale: Locale, _route?: CompatRoute): string {
   const route = _route ?? common.router.currentRoute.value
   const name = getRouteBaseName(common, route)
 
