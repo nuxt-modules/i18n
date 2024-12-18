@@ -117,7 +117,7 @@
     "@nuxt/module-builder": "^0.8.4",
     "@nuxt/schema": "^3.14.1592",
     "@types/debug": "^4.1.9",
-    "@types/eslint": "^8.56.6",
+    "@types/eslint": "^9.6.1",
     "@unhead/vue": "^1.8.8",
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
