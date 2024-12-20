@@ -2,7 +2,7 @@ import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
 import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
 import { defu } from 'defu'
-import { addPlugin, addTemplate, addTypeTemplate } from '@nuxt/kit'
+import { addBuildPlugin, addPlugin, addTemplate, addTypeTemplate } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from '../gen'
 import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
@@ -58,12 +58,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.imports.transform.include ??= []
   nuxt.options.imports.transform.include.push(new RegExp(`${RESOLVED_VIRTUAL_NUXT_I18N_LOGGER}$`))
 
-  nuxt.hook('vite:extendConfig', cfg => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    cfg.plugins ||= []
-    // @ts-ignore NOTE: A type error occurs due to a mismatch between Vite plugins and those of Rollup
-    cfg.plugins.push(i18nVirtualLoggerPlugin(options.debug))
-  })
+  addBuildPlugin(i18nVirtualLoggerPlugin(options.debug))
 
   /**
    * `$i18n` type narrowing based on 'legacy' or 'composition'
