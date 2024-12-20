@@ -11,7 +11,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
-import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl, injectNuxtHelpers } from '../utils'
+import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl } from '../utils'
 import {
   getBrowserLocale,
   getLocaleCookie,
@@ -19,13 +19,24 @@ import {
   getI18nCookie,
   runtimeDetectBrowserLanguage,
   getDefaultLocaleForDomain,
-  setupMultiDomainLocales
+  setupMultiDomainLocales,
+  wrapComposable,
+  defineGetter
 } from '../internal'
 import { inBrowser, resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/extends/i18n'
 import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
+import {
+  getRouteBaseName,
+  localeLocation,
+  localePath,
+  localeRoute,
+  resolveRoute,
+  switchLocalePath
+} from '../routing/compatibles/routing'
+import { localeHead } from '../routing/compatibles/head'
 
 import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
@@ -33,18 +44,14 @@ import type { NuxtApp } from '#app'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
-// from https://github.com/nuxt/nuxt/blob/2466af53b0331cdb8b17c2c3b08675c5985deaf3/packages/nuxt/src/core/templates.ts#L152
-type Decorate<T extends Record<string, unknown>> = { [K in keyof T as K extends string ? `$${K}` : never]: T[K] }
-
 // TODO: use @nuxt/module-builder to stub/prepare types
 declare module '#app' {
-  interface NuxtApp extends Decorate<NuxtI18nPluginInjections> {
+  interface NuxtApp {
     _vueI18n: I18n
   }
 }
 
-// `NuxtI18nPluginInjections` should not have properties prefixed with `$`
-export default defineNuxtPlugin<NuxtI18nPluginInjections>({
+export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(nuxt) {
@@ -209,9 +216,29 @@ export default defineNuxtPlugin<NuxtI18nPluginInjections>({
       }
     })
 
-    nuxt.vueApp.use(i18n) // TODO: should implement `{ inject: false } via `nuxtjs/i18n` configuration
+    nuxt.vueApp.use(i18n)
 
-    // inject for nuxt helpers
-    injectNuxtHelpers(nuxtApp, i18n)
+    /**
+     * We inject `i18n.global` to **nuxt app instance only** as vue-i18n has already been injected into vue
+     * from https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
+     */
+    defineGetter(nuxtApp, '$i18n', getI18nTarget(i18n))
+
+    return {
+      provide: {
+        /**
+         * TODO: remove type assertions while type narrowing based on generated types
+         */
+        localeHead: wrapComposable(localeHead) as NuxtI18nPluginInjections['localeHead'],
+        localePath: wrapComposable(localePath) as NuxtI18nPluginInjections['localePath'],
+        localeRoute: wrapComposable(localeRoute) as NuxtI18nPluginInjections['localeRoute'],
+        getRouteBaseName: wrapComposable(getRouteBaseName) as NuxtI18nPluginInjections['getRouteBaseName'],
+        switchLocalePath: wrapComposable(switchLocalePath) as NuxtI18nPluginInjections['switchLocalePath'],
+        // TODO: remove in v10
+        resolveRoute: wrapComposable(resolveRoute) as NuxtI18nPluginInjections['resolveRoute'],
+        // TODO: remove in v10
+        localeLocation: wrapComposable(localeLocation) as NuxtI18nPluginInjections['localeLocation']
+      }
+    }
   }
 })

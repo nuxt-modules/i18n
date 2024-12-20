@@ -6,7 +6,13 @@ import type {
   SwitchLocalePathFunction
 } from '#i18n'
 import type { localeHead } from './routing/compatibles/head'
-import type { getRouteBaseName, localePath, localeRoute, switchLocalePath } from './routing/compatibles/routing'
+import type {
+  getRouteBaseName,
+  localeLocation,
+  localePath,
+  localeRoute,
+  switchLocalePath
+} from './routing/compatibles/routing'
 
 export type NuxtI18nPluginInjections = {
   /**
@@ -60,4 +66,12 @@ export type NuxtI18nPluginInjections = {
    * @returns A path of the current route
    */
   switchLocalePath: (...args: Parameters<SwitchLocalePathFunction>) => ReturnType<typeof switchLocalePath>
+  /**
+   * @deprecated use {@link localePath} or {@link localeRoute} instead
+   */
+  resolveRoute: (...args: Parameters<LocaleRouteFunction>) => ReturnType<typeof localeRoute>
+  /**
+   * @deprecated use {@link localeRoute} instead
+   */
+  localeLocation: (...args: Parameters<LocaleRouteFunction>) => ReturnType<typeof localeLocation>
 }

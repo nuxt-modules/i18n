@@ -4,24 +4,14 @@ import { isString, isFunction, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import { NUXT_I18N_MODULE_ID, isSSG, localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import {
-  wrapComposable,
   detectBrowserLanguage,
-  defineGetter,
   getLocaleDomain,
   getDomainFromLocale,
   runtimeDetectBrowserLanguage,
   getHost
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-import { localeHead } from './routing/compatibles/head'
-import {
-  localePath,
-  localeRoute,
-  getRouteBaseName,
-  switchLocalePath,
-  DefaultPrefixable
-} from './routing/compatibles/routing'
-import { getI18nTarget } from './compatibility'
+import { localePath, switchLocalePath, DefaultPrefixable } from './routing/compatibles/routing'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { createLocaleFromRouteGetter } from './routing/extends/router'
 import { unref } from 'vue'
@@ -335,23 +325,6 @@ export async function navigate(
       }
     }
   }
-}
-
-export function injectNuxtHelpers(nuxt: NuxtApp, i18n: I18n) {
-  /**
-   * NOTE:
-   *  we will inject `i18n.global` to **nuxt app instance only**
-   *  as vue-i18n has already been injected into vue,
-   *
-   *  implementation borrowed from
-   *  https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
-   */
-  defineGetter(nuxt, '$i18n', getI18nTarget(i18n))
-  defineGetter(nuxt, '$getRouteBaseName', wrapComposable(getRouteBaseName))
-  defineGetter(nuxt, '$localePath', wrapComposable(localePath))
-  defineGetter(nuxt, '$localeRoute', wrapComposable(localeRoute))
-  defineGetter(nuxt, '$switchLocalePath', wrapComposable(switchLocalePath))
-  defineGetter(nuxt, '$localeHead', wrapComposable(localeHead))
 }
 
 // override prefix for route path, support domain
