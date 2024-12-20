@@ -1,6 +1,6 @@
 import createDebug from 'debug'
 import { resolve } from 'pathe'
-import { extendViteConfig, addWebpackPlugin, addVitePlugin } from '@nuxt/kit'
+import { extendViteConfig, addWebpackPlugin, addVitePlugin, addBuildPlugin } from '@nuxt/kit'
 import VueI18nWebpackPlugin from '@intlify/unplugin-vue-i18n/webpack'
 import VueI18nVitePlugin from '@intlify/unplugin-vue-i18n/vite'
 import { TransformMacroPlugin } from './transform/macros'
@@ -28,32 +28,26 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
+  const vueI18nPluginOptions: PluginOptions = {
+    allowDynamic: true,
+    runtimeOnly: nuxtOptions.bundle.runtimeOnly,
+    compositionOnly: nuxtOptions.bundle.compositionOnly,
+    onlyLocales: nuxtOptions.bundle.onlyLocales,
+    dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
+    optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective,
+    strictMessage: nuxtOptions.compilation.strictMessage,
+    escapeHtml: nuxtOptions.compilation.escapeHtml,
+    include: localeIncludePaths
+  }
+
   /**
    * webpack plugin
    */
-
   try {
     // @ts-ignore NOTE: use webpack which is installed by nuxt
     const webpack = await import('webpack').then(m => m.default || m)
 
-    const webpackPluginOptions: PluginOptions = {
-      allowDynamic: true,
-      runtimeOnly: nuxtOptions.bundle.runtimeOnly,
-      compositionOnly: nuxtOptions.bundle.compositionOnly,
-      onlyLocales: nuxtOptions.bundle.onlyLocales,
-      dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-      optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective,
-      strictMessage: nuxtOptions.compilation.strictMessage,
-      escapeHtml: nuxtOptions.compilation.escapeHtml,
-      include: localeIncludePaths
-    }
-
-    addWebpackPlugin(VueI18nWebpackPlugin(webpackPluginOptions))
-    addWebpackPlugin(TransformMacroPlugin.webpack(sourceMapOptions))
-    addWebpackPlugin(ResourcePlugin.webpack(sourceMapOptions))
-    if (nuxtOptions.experimental.autoImportTranslationFunctions) {
-      addWebpackPlugin(TransformI18nFunctionPlugin.webpack(sourceMapOptions))
-    }
+    addWebpackPlugin(VueI18nWebpackPlugin(vueI18nPluginOptions))
     addWebpackPlugin(
       new webpack.DefinePlugin({
         ...getFeatureFlags(nuxtOptions.bundle),
@@ -67,35 +61,29 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
   /**
    * vite plugin
    */
-
-  const vitePluginOptions: PluginOptions = {
-    allowDynamic: true,
-    runtimeOnly: nuxtOptions.bundle.runtimeOnly,
-    compositionOnly: nuxtOptions.bundle.compositionOnly,
-    fullInstall: nuxtOptions.bundle.fullInstall,
-    onlyLocales: nuxtOptions.bundle.onlyLocales,
-    dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-    optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective,
-    strictMessage: nuxtOptions.compilation.strictMessage,
-    escapeHtml: nuxtOptions.compilation.escapeHtml,
-    defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
-    globalSFCScope: nuxtOptions.customBlocks.globalSFCScope,
-    include: localeIncludePaths
-  }
-
-  addVitePlugin(VueI18nVitePlugin(vitePluginOptions))
-  addVitePlugin(TransformMacroPlugin.vite(sourceMapOptions))
-  addVitePlugin(ResourcePlugin.vite(sourceMapOptions))
-  if (nuxtOptions.experimental.autoImportTranslationFunctions) {
-    addVitePlugin(TransformI18nFunctionPlugin.vite(sourceMapOptions))
-  }
-
+  addVitePlugin(
+    VueI18nVitePlugin({
+      ...vueI18nPluginOptions,
+      fullInstall: nuxtOptions.bundle.fullInstall,
+      defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
+      globalSFCScope: nuxtOptions.customBlocks.globalSFCScope
+    })
+  )
   extendViteConfig(config => {
     config.define ??= {}
     config.define['__DEBUG__'] = JSON.stringify(!!nuxtOptions.debug)
 
     debug('vite.config.define', config.define)
   })
+
+  /**
+   * shared plugins
+   */
+  addBuildPlugin(TransformMacroPlugin(sourceMapOptions))
+  addBuildPlugin(ResourcePlugin(sourceMapOptions))
+  if (nuxtOptions.experimental.autoImportTranslationFunctions) {
+    addBuildPlugin(TransformI18nFunctionPlugin(sourceMapOptions))
+  }
 }
 
 export function getFeatureFlags({ compositionOnly = true, fullInstall = true, dropMessageCompiler = false }) {
