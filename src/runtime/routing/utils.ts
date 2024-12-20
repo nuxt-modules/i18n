@@ -164,7 +164,7 @@ function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
 /**
  * The default browser locale comparer
  */
-export const DefaultBrowerLocaleComparer = compareBrowserLocale
+export const DefaultBrowserLocaleComparer = compareBrowserLocale
 
 /**
  * Find the browser locale
@@ -178,7 +178,7 @@ export const DefaultBrowerLocaleComparer = compareBrowserLocale
 export function findBrowserLocale(
   locales: LocaleObject[],
   browserLocales: string[],
-  { matcher = DefaultBrowserLocaleMatcher, comparer = DefaultBrowerLocaleComparer }: FindBrowserLocaleOptions = {}
+  { matcher = DefaultBrowserLocaleMatcher, comparer = DefaultBrowserLocaleComparer }: FindBrowserLocaleOptions = {}
 ): string {
   const normalizedLocales = []
   for (const l of locales) {

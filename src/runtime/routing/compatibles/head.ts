@@ -201,7 +201,7 @@ export function getCurrentOgLocale(
   if (!currentLocale || !currentLanguage) return []
 
   // Replace dash with underscore as defined in spec: language_TERRITORY
-  return [{ [key]: 'i18n-og', property: 'og:locale', content: hypenToUnderscore(currentLanguage) }]
+  return [{ [key]: 'i18n-og', property: 'og:locale', content: hyphenToUnderscore(currentLanguage) }]
 }
 
 export function getAlternateOgLocales(
@@ -214,11 +214,11 @@ export function getAlternateOgLocales(
   return alternateLocales.map(locale => ({
     [key]: `i18n-og-alt-${locale.language}`,
     property: 'og:locale:alternate',
-    content: hypenToUnderscore(locale.language)
+    content: hyphenToUnderscore(locale.language)
   }))
 }
 
-function hypenToUnderscore(str?: string) {
+function hyphenToUnderscore(str?: string) {
   return (str || '').replace(/-/g, '_')
 }
 
