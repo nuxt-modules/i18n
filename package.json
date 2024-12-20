@@ -82,7 +82,8 @@
       "@nuxtjs/i18n": "link:.",
       "consola": "^3",
       "unimport": "3.13.4",
-      "@intlify/core": "^10.0.5"
+      "@intlify/core": "^10.0.5",
+      "rollup": "4.28.1"
     }
   },
   "dependencies": {
