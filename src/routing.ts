@@ -4,22 +4,9 @@ import { isObject } from '@intlify/shared'
 import type { Locale } from 'vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
 import type { MarkRequired, MarkOptional } from 'ts-essentials'
-import type { NuxtI18nOptions, PrefixLocalizedRouteOptions, RouteOptionsResolver } from './types'
+import type { ComputedRouteOptions, NuxtI18nOptions, PrefixLocalizedRouteOptions, RouteOptionsResolver } from './types'
 
 const join = (...args: (string | undefined)[]) => args.filter(Boolean).join('')
-
-/**
- * Options to compute route localizing
- *
- * @remarks
- * The route options that is compute the route to be localized on {@link localizeRoutes}
- *
- * @public
- */
-export declare interface ComputedRouteOptions {
-  locales: readonly string[]
-  paths: Record<string, string>
-}
 
 export function prefixLocalizedRoute(
   localizeOptions: PrefixLocalizedRouteOptions,
@@ -104,8 +91,6 @@ type LocalizeRouteParams = {
  * @param options - An options
  *
  * @returns Localized routes
- *
- * @public
  */
 export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams): NuxtPage[] {
   if (!shouldLocalizeRoutes(options)) return routes

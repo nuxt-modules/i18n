@@ -26,15 +26,8 @@ export const localeCodes =  ${JSON.stringify(options.localeCodes, null, 2)}
 export const localeLoaders = {
 ${options.localeLoaders
   .map(([key, val]) => {
-    // @ts-expect-error -- FIXME
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-call -- FIXME
     return `  "${key}": [${val
-      // @ts-expect-error -- FIXME
-      .map(
-        (entry: { key: string; load: string; cache: boolean }) =>
-          `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`
-      )
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- FIXME
+      .map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`)
       .join(',\n')}]`
   })
   .join(',\n')}

@@ -23,7 +23,7 @@ import {
   wrapComposable,
   defineGetter
 } from '../internal'
-import { inBrowser, resolveBaseUrl } from '../routing/utils'
+import { resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/extends/i18n'
 import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
@@ -114,7 +114,7 @@ export default defineNuxtPlugin({
         composer.localeCodes = computed(() => _localeCodes.value)
         composer.baseUrl = computed(() => _baseUrl.value)
 
-        if (inBrowser) {
+        if (import.meta.client) {
           watch(
             composer.locale,
             () => {

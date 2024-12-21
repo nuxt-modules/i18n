@@ -17,8 +17,6 @@ import type { CommonComposableOptions } from '../../utils'
  * @param options - An options, see about details {@link I18nHeadOptions}.
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties}.
- *
- * @public
  */
 export function localeHead(
   common: CommonComposableOptions,

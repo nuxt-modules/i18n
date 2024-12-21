@@ -32,11 +32,10 @@ export function defineGetter<K extends string | number | symbol, V>(obj: Record<
 
 type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
 
-export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => any>(
+export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => ReturnType<F>>(
   fn: F,
   common = initCommonComposableOptions()
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- FIXME
   return (...args: TailParameters<F>) => fn(common, ...args)
 }
 

@@ -65,13 +65,15 @@ export function simplifyLocaleOptions(
   })
 }
 
+type LocaleLoaderData = { key: string; load: string; cache: string }
+
 export function generateLoaderOptions(
   nuxt: Nuxt,
   { nuxtI18nOptions, vueI18nConfigPaths, localeInfo, isServer, normalizedLocales }: LoaderOptions
 ) {
   debug('generateLoaderOptions: lazy', nuxtI18nOptions.lazy)
 
-  const importMapper = new Map<string, { key: string; load: string; cache: string }>()
+  const importMapper = new Map<string, LocaleLoaderData>()
   const importStrings: string[] = []
 
   function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number], isServer = false) {
@@ -108,7 +110,10 @@ export function generateLoaderOptions(
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config, isServer))
 
-  const localeLoaders = localeInfo.map(locale => [locale.code, locale.meta?.map(meta => importMapper.get(meta.key))])
+  const localeLoaders: [string, LocaleLoaderData[]][] = localeInfo.map(locale => [
+    locale.code,
+    locale.meta!.map(meta => importMapper.get(meta.key)!)
+  ])
   const pathFormat = nuxtI18nOptions.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
   const generatedNuxtI18nOptions = {
@@ -199,7 +204,7 @@ function genImportSpecifier(
  *
  * Depends on `TypesConfig`
  * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/config.ts#L14
- * Depends on the same mechanism of `RouteNamedMap
+ * Depends on the same mechanism of `RouteNamedMap`
  * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/vue-router-auto.d.ts#L4
  */
 const typedRouterAugmentations = `

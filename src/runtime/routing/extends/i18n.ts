@@ -8,13 +8,7 @@ import type { Composer, ComposerExtender, ExportedGlobalComposer, I18n, VueI18n,
  * Internal options for the Vue I18n plugin.
  */
 interface VueI18nInternalPluginOptions {
-  /**
-   * @internal
-   */
   __composerExtend?: ComposerExtender
-  /**
-   * @internal
-   */
   __vueI18nExtend?: VueI18nExtender
 }
 
