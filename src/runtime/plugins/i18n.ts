@@ -23,9 +23,8 @@ import {
   wrapComposable,
   defineGetter
 } from '../internal'
-import { resolveBaseUrl } from '../routing/utils'
+import { resolveBaseUrl, createLocaleFromRouteGetter } from '../routing/utils'
 import { extendI18n } from '../routing/extends/i18n'
-import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
 import {
@@ -39,17 +38,9 @@ import {
 import { localeHead } from '../routing/compatibles/head'
 
 import type { NuxtI18nPluginInjections } from '../injections'
-import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { LocaleObject } from '#internal-i18n-types'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-
-// TODO: use @nuxt/module-builder to stub/prepare types
-declare module '#app' {
-  interface NuxtApp {
-    _vueI18n: I18n
-  }
-}
+import type { LocaleObject, I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',

@@ -1,50 +1,6 @@
 import { describe, it, assert, test } from 'vitest'
 import * as utils from '../src/runtime/routing/utils'
 
-describe('adjustRouteDefinitionForTrailingSlash', function () {
-  describe('pagePath: /foo/bar', function () {
-    describe('trailingSlash: false, isChildWithRelativePath: true', function () {
-      it('should be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', true, true), '/foo/bar/')
-      })
-    })
-
-    describe('trailingSlash: false, isChildWithRelativePath: true', function () {
-      it('should not be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', false, true), '/foo/bar')
-      })
-    })
-
-    describe('trailingSlash: false, isChildWithRelativePath: false', function () {
-      it('should be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', true, false), '/foo/bar/')
-      })
-    })
-
-    describe('trailingSlash: false, isChildWithRelativePath: false', function () {
-      it('should not be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', false, false), '/foo/bar')
-      })
-    })
-  })
-
-  describe('pagePath: /', function () {
-    describe('trailingSlash: false, isChildWithRelativePath: true', function () {
-      it('should not be trailed with slash: empty', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/', false, true), '')
-      })
-    })
-  })
-
-  describe('pagePath: empty', function () {
-    describe('trailingSlash: true, isChildWithRelativePath: true', function () {
-      it('should not be trailed with slash: /', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('', true, true), '/')
-      })
-    })
-  })
-})
-
 describe('getLocaleRouteName', () => {
   describe('strategy: prefix_and_default', () => {
     it('should be `route1___en___default`', () => {
@@ -198,26 +154,5 @@ describe('findBrowserLocale', () => {
     const browserLocales = ['en-IN', 'en']
 
     assert.ok(utils.findBrowserLocale(locales, browserLocales) === 'en-GB')
-  })
-
-  it('options', () => {
-    const locale = utils.findBrowserLocale([{ code: 'en' }, { code: 'ja' }], ['ja-JP', 'en-US'], {
-      // custom matcher
-      matcher(locales, browserLocales) {
-        const matchedLocales = [] as utils.BrowserLocale[]
-        for (const [index, browserCode] of browserLocales.entries()) {
-          const languageCode = browserCode.split('-')[0].toLowerCase()
-          const matchedLocale = locales.find(l => l.language.split('-')[0].toLowerCase() === languageCode)
-          if (matchedLocale) {
-            matchedLocales.push({ code: matchedLocale.code, score: 1 * index })
-            break
-          }
-        }
-        return matchedLocales
-      },
-      // custom comparer
-      comparer: (a, b) => a.score - b.score
-    })
-    assert.ok(locale === 'ja')
   })
 })

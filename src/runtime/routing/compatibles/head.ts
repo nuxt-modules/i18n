@@ -43,9 +43,7 @@ export function localeHead(
 
   const locale = unref(nuxtApp.$i18n.locale)
   const locales = unref(nuxtApp.$i18n.locales)
-  const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || {
-    code: locale
-  }
+  const currentLocale: LocaleObject = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
   const currentLanguage = currentLocale.language
   const currentDir = currentLocale.dir || defaultDirection
 
@@ -59,7 +57,7 @@ export function localeHead(
   }
 
   // Adding SEO Meta
-  if (seo && locale && unref(nuxtApp.$i18n.locales)) {
+  if (seo && locale && locales) {
     metaObject.link.push(...getHreflangLinks(common, locales, key), ...getCanonicalLink(common, key, seo))
 
     metaObject.meta.push(

@@ -24,7 +24,7 @@ import { getComposer } from '../compatibility'
 
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
-import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
+import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '#internal-i18n-types'
 import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 import type { HeadParam } from '../utils'
 
@@ -76,7 +76,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
     stop()
   })
 
-  const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
+  const currentLocale: LocaleObject = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
   const currentLocaleLanguage = currentLocale.language
 
   if (!unref(nuxtApp.$i18n.baseUrl)) {
@@ -444,12 +444,6 @@ const warnRuntimeUsage = (method: string) =>
   )
 
 /**
- * TODO:
- *  `paths`, `locales` completions like `unplugin-vue-router`
- *  ref: https://github.com/posva/unplugin-vue-router
- */
-
-/**
  * The i18n custom route for page components
  */
 export interface I18nRoute {
@@ -460,7 +454,7 @@ export interface I18nRoute {
    */
   paths?: Partial<Record<Locale, `/${string}`>>
   /**
-   * Some locales to which the page component should be localized.
+   * Locales in which the page component should be localized.
    */
   locales?: Locale[]
 }

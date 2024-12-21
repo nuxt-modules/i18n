@@ -13,7 +13,7 @@ import {
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
 import { localePath, switchLocalePath, DefaultPrefixable } from './routing/compatibles/routing'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
-import { createLocaleFromRouteGetter } from './routing/extends/router'
+import { createLocaleFromRouteGetter } from './routing/utils'
 import { unref } from 'vue'
 
 import type { I18n, Locale } from 'vue-i18n'

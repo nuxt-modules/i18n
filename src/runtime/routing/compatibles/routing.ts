@@ -53,7 +53,7 @@ export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: R
  * @param route - A route.
  * @param locale - A locale, optional.
  *
- * @returns A path of the current route.
+ * @returns Localized equivalent of passed route
  */
 export function localePath(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale): string {
   // return external url as is
