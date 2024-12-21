@@ -126,35 +126,30 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
 
   let enableServerIntegration = serverI18nLayer != null
 
-  if (serverI18nLayer != null) {
-    const serverI18nLayerConfig = getLayerI18n(serverI18nLayer)
-    const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, true)
-    const pathTo = resolve(i18nDir, serverI18nLayerConfig!.experimental!.localeDetector!)
-    const localeDetectorPath = await resolvePath(pathTo, {
-      cwd: nuxt.options.rootDir,
-      extensions: EXECUTABLE_EXTENSIONS
-    })
-    const hasLocaleDetector = await isExists(localeDetectorPath)
-    if (!hasLocaleDetector) {
-      const logger = useLogger(NUXT_I18N_MODULE_ID)
-      logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
-      enableServerIntegration = false
-    }
-    return [enableServerIntegration, localeDetectorPath]
-  } else {
+  if (serverI18nLayer == null) {
     return [enableServerIntegration, '']
   }
+
+  const serverI18nLayerConfig = getLayerI18n(serverI18nLayer)
+  const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, true)
+  const pathTo = resolve(i18nDir, serverI18nLayerConfig!.experimental!.localeDetector!)
+  const localeDetectorPath = await resolvePath(pathTo, { cwd: nuxt.options.rootDir, extensions: EXECUTABLE_EXTENSIONS })
+  const hasLocaleDetector = await isExists(localeDetectorPath)
+  if (!hasLocaleDetector) {
+    const logger = useLogger(NUXT_I18N_MODULE_ID)
+    logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
+    enableServerIntegration = false
+  }
+
+  return [enableServerIntegration, localeDetectorPath]
 }
 
 function getResourcePaths(localeInfo: LocaleInfo[], extPattern: RegExp): string[] {
   return localeInfo.reduce((acc, locale) => {
-    if (locale.meta) {
-      const collected = locale.meta
-        .map(meta => (extPattern.test(meta.path) ? meta.path : undefined))
-        .filter(Boolean) as string[]
-      return [...acc, ...collected]
-    } else {
-      return acc
-    }
+    if (!locale.meta) return acc
+    const collected = locale.meta
+      .map(meta => (extPattern.test(meta.path) ? meta.path : undefined))
+      .filter(Boolean) as string[]
+    return [...acc, ...collected]
   }, [] as string[])
 }
