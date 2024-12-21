@@ -8,6 +8,7 @@ overrides:
   '@nuxtjs/i18n': link:.
   consola: ^3
   unimport: 3.13.4
+  '@intlify/core': ^10.0.5
 
 importers:
 
@@ -88,7 +89,7 @@ importers:
         version: 7.24.7
       '@babel/plugin-syntax-import-assertions':
         specifier: ^7.24.7
-        version: 7.24.7(@babel/core@7.24.7)
+        version: 7.24.7(@babel/core@7.26.0)
       '@babel/types':
         specifier: ^7.24.7
         version: 7.24.7
@@ -1524,25 +1525,17 @@ packages:
       vue-i18n:
         optional: true
 
-  '@intlify/core-base@10.0.4':
-    resolution: {integrity: sha512-GG428DkrrWCMhxRMRQZjuS7zmSUzarYcaHJqG9VB8dXAxw4iQDoKVQ7ChJRB6ZtsCsX3Jse1PEUlHrJiyQrOTg==}
-    engines: {node: '>= 16'}
-
   '@intlify/core-base@10.0.5':
     resolution: {integrity: sha512-F3snDTQs0MdvnnyzTDTVkOYVAZOE/MHwRvF7mn7Jw1yuih4NrFYLNYIymGlLmq4HU2iIdzYsZ7f47bOcwY73XQ==}
     engines: {node: '>= 16'}
 
-  '@intlify/core@10.0.4':
-    resolution: {integrity: sha512-YVb0Hk0vgulAhC/uq5CMUXLMcmDL+24FWcjRk2RMn2EF8ZrM3ZV9+8dGOKextntN1/RtjK3RvoHicF48vMyYkA==}
+  '@intlify/core@10.0.5':
+    resolution: {integrity: sha512-wvjsNSpjulznpPs24ZmwvmcomUP6qvBvRt5YAplx5zaCqM7n5KbiZk4mlPl2GjPVYUIOLlyZb0CUFQ5UJB/DMA==}
     engines: {node: '>= 16'}
 
   '@intlify/h3@0.6.0':
     resolution: {integrity: sha512-tWBm92pYLT+T2H5I2Uwz0dnylX1uRKuS6/n9CV4eTW43r/iAN2q07b0sY2cvgT61KYDetomY1pVRkzA2Rftv5g==}
     engines: {node: '>= 18'}
-
-  '@intlify/message-compiler@10.0.4':
-    resolution: {integrity: sha512-AFbhEo10DP095/45EauinQJ5hJ3rJUmuuqltGguvc3WsvezZN+g8qNHLGWKu60FHQVizMrQY7VJ+zVlBXlQQkQ==}
-    engines: {node: '>= 16'}
 
   '@intlify/message-compiler@10.0.5':
     resolution: {integrity: sha512-6GT1BJ852gZ0gItNZN2krX5QAmea+cmdjMvsWohArAZ3GmHdnNANEcF9JjPXAMRtQ6Ux5E269ymamg/+WU6tQA==}
@@ -1550,10 +1543,6 @@ packages:
 
   '@intlify/message-compiler@11.0.0-rc.1':
     resolution: {integrity: sha512-TGw2uBfuTFTegZf/BHtUQBEKxl7Q/dVGLoqRIdw8lFsp9g/53sYn5iD+0HxIzdYjbWL6BTJMXCPUHp9PxDTRPw==}
-    engines: {node: '>= 16'}
-
-  '@intlify/shared@10.0.4':
-    resolution: {integrity: sha512-ukFn0I01HsSgr3VYhYcvkTCLS7rGa0gw4A4AMpcy/A9xx/zRJy7PS2BElMXLwUazVFMAr5zuiTk3MQeoeGXaJg==}
     engines: {node: '>= 16'}
 
   '@intlify/shared@10.0.5':
@@ -8413,9 +8402,9 @@ snapshots:
       '@babel/core': 7.26.0
       '@babel/helper-plugin-utils': 7.24.7
 
-  '@babel/plugin-syntax-import-assertions@7.24.7(@babel/core@7.24.7)':
+  '@babel/plugin-syntax-import-assertions@7.24.7(@babel/core@7.26.0)':
     dependencies:
-      '@babel/core': 7.24.7
+      '@babel/core': 7.26.0
       '@babel/helper-plugin-utils': 7.24.7
 
   '@babel/plugin-syntax-import-attributes@7.24.7(@babel/core@7.24.7)':
@@ -9072,30 +9061,20 @@ snapshots:
     optionalDependencies:
       vue-i18n: 10.0.5(vue@3.5.13(typescript@5.6.2))
 
-  '@intlify/core-base@10.0.4':
-    dependencies:
-      '@intlify/message-compiler': 10.0.4
-      '@intlify/shared': 10.0.4
-
   '@intlify/core-base@10.0.5':
     dependencies:
       '@intlify/message-compiler': 10.0.5
       '@intlify/shared': 10.0.5
 
-  '@intlify/core@10.0.4':
+  '@intlify/core@10.0.5':
     dependencies:
-      '@intlify/core-base': 10.0.4
-      '@intlify/shared': 10.0.4
+      '@intlify/core-base': 10.0.5
+      '@intlify/shared': 10.0.5
 
   '@intlify/h3@0.6.0':
     dependencies:
-      '@intlify/core': 10.0.4
+      '@intlify/core': 10.0.5
       '@intlify/utils': 0.13.0
-
-  '@intlify/message-compiler@10.0.4':
-    dependencies:
-      '@intlify/shared': 10.0.4
-      source-map-js: 1.2.1
 
   '@intlify/message-compiler@10.0.5':
     dependencies:
@@ -9106,8 +9085,6 @@ snapshots:
     dependencies:
       '@intlify/shared': 11.0.0-rc.1
       source-map-js: 1.2.1
-
-  '@intlify/shared@10.0.4': {}
 
   '@intlify/shared@10.0.5': {}
 
