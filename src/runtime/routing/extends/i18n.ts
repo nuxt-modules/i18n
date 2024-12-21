@@ -1,16 +1,5 @@
 import { effectScope } from '#imports'
 import { isVueI18n, getComposer } from '../../compatibility'
-import { localeHead } from '../compatibles/head'
-import {
-  getRouteBaseName,
-  localeLocation,
-  localePath,
-  localeRoute,
-  resolveRoute,
-  switchLocalePath
-} from '../compatibles/routing'
-import { wrapComposable } from '../../internal'
-import { initCommonComposableOptions } from '../../utils'
 
 import type { NuxtApp } from 'nuxt/app'
 import type { Composer, ComposerExtender, ExportedGlobalComposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'
@@ -19,12 +8,6 @@ import type { Composer, ComposerExtender, ExportedGlobalComposer, I18n, VueI18n,
  * Internal options for the Vue I18n plugin.
  */
 interface VueI18nInternalPluginOptions {
-  /**
-   * Whether to inject some option APIs style methods into Vue instance
-   *
-   * @defaultValue `true`
-   */
-  inject?: boolean
   /**
    * @internal
    */
@@ -52,7 +35,6 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
   const installI18n = i18n.install.bind(i18n)
   i18n.install = (app: NuxtApp['vueApp'], ...options: VueI18nInternalPluginOptions[]) => {
     const pluginOptions = Object.assign({}, options[0])
-    pluginOptions.inject ??= true
 
     pluginOptions.__composerExtend = (c: Composer) => {
       extendComposerInstance(c, getComposer(i18n))
@@ -82,22 +64,6 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
     // extend Vue component instance for Vue 3
     if (i18n.mode === 'composition' && app.config.globalProperties.$i18n != null) {
       extendComposerInstance(app.config.globalProperties.$i18n, globalComposer)
-    }
-
-    // extend Vue component instance
-    if (pluginOptions.inject) {
-      const common = initCommonComposableOptions(i18n)
-      app.mixin({
-        methods: {
-          $getRouteBaseName: wrapComposable(getRouteBaseName, common),
-          $resolveRoute: wrapComposable(resolveRoute, common),
-          $localePath: wrapComposable(localePath, common),
-          $localeRoute: wrapComposable(localeRoute, common),
-          $localeLocation: wrapComposable(localeLocation, common),
-          $switchLocalePath: wrapComposable(switchLocalePath, common),
-          $localeHead: wrapComposable(localeHead, common)
-        }
-      })
     }
 
     // dispose effectScope during app unmount
