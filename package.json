@@ -74,7 +74,7 @@
     "lint:eslint": "eslint .",
     "test": "pnpm build && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
-    "test:unit": "vitest run test",
+    "test:unit": "vitest run test -c vitest.config.test.ts",
     "test:spec": "vitest run specs"
   },
   "pnpm": {
