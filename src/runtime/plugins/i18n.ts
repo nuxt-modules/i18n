@@ -27,28 +27,14 @@ import { resolveBaseUrl, createLocaleFromRouteGetter } from '../routing/utils'
 import { extendI18n } from '../routing/extends/i18n'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
-import {
-  getRouteBaseName,
-  localeLocation,
-  localePath,
-  localeRoute,
-  resolveRoute,
-  switchLocalePath
-} from '../routing/compatibles/routing'
+import { resolveRoute } from '../routing/compatibles/routing'
 import { localeHead } from '../routing/compatibles/head'
+import { useLocalePath, useLocaleRoute, useRouteBaseName, useLocaleLocation, useSwitchLocalePath } from '../composables'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type {
-  LocaleHeadFunction,
-  LocaleLocationFunction,
-  LocalePathFunction,
-  LocaleRouteFunction,
-  ResolveRouteFunction,
-  RouteBaseNameFunction,
-  SwitchLocalePathFunction
-} from '../composables'
+import type { LocaleHeadFunction, ResolveRouteFunction } from '../composables'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -229,14 +215,14 @@ export default defineNuxtPlugin({
          * TODO: remove type assertions while type narrowing based on generated types
          */
         localeHead: wrapComposable(localeHead) as LocaleHeadFunction,
-        localePath: wrapComposable(localePath) as LocalePathFunction,
-        localeRoute: wrapComposable(localeRoute) as LocaleRouteFunction,
-        getRouteBaseName: wrapComposable(getRouteBaseName) as RouteBaseNameFunction,
-        switchLocalePath: wrapComposable(switchLocalePath) as SwitchLocalePathFunction,
+        localePath: useLocalePath(),
+        localeRoute: useLocaleRoute(),
+        getRouteBaseName: useRouteBaseName(),
+        switchLocalePath: useSwitchLocalePath(),
         // TODO: remove in v10
         resolveRoute: wrapComposable(resolveRoute) as ResolveRouteFunction,
         // TODO: remove in v10
-        localeLocation: wrapComposable(localeLocation) as LocaleLocationFunction
+        localeLocation: useLocaleLocation()
       }
     }
   }
