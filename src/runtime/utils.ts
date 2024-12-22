@@ -11,7 +11,7 @@ import {
   getHost
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-import { localePath, switchLocalePath, DefaultPrefixable } from './routing/compatibles/routing'
+import { localePath, switchLocalePath } from './routing/compatibles/routing'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { createLocaleFromRouteGetter } from './routing/utils'
 import { unref } from 'vue'
@@ -327,13 +327,22 @@ export async function navigate(
   }
 }
 
+function prefixable({ currentLocale, defaultLocale, strategy }: PrefixableOptions): boolean {
+  return (
+    // strategy has no prefixes
+    strategy !== 'no_prefix' &&
+    // strategy should not prefix default locale
+    !(currentLocale === defaultLocale && (strategy === 'prefix_and_default' || strategy === 'prefix_except_default'))
+  )
+}
+
 // override prefix for route path, support domain
 export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
   const logger = /*#__PURE__*/ createLogger('extendPrefixable')
   return (opts: PrefixableOptions): boolean => {
-    __DEBUG__ && logger.log(DefaultPrefixable(opts))
+    __DEBUG__ && logger.log(prefixable(opts))
 
-    return DefaultPrefixable(opts) && !runtimeConfig.public.i18n.differentDomains
+    return prefixable(opts) && !runtimeConfig.public.i18n.differentDomains
   }
 }
 

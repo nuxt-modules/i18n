@@ -7,22 +7,11 @@ import { getI18nTarget } from '../../compatibility'
 import { getLocaleRouteName, getRouteName } from '../utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
 
-import type { Strategies, PrefixableOptions } from '#internal-i18n-types'
+import type { Strategies } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocation, RouteLocationRaw, Router, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CompatRoute } from '../../types'
-
-function prefixable({ currentLocale, defaultLocale, strategy }: PrefixableOptions): boolean {
-  return (
-    // no prefix for any language
-    strategy !== 'no_prefix' &&
-    // don't prefix default locale
-    !(currentLocale === defaultLocale && (strategy === 'prefix_and_default' || strategy === 'prefix_except_default'))
-  )
-}
-
-export const DefaultPrefixable = prefixable
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.
