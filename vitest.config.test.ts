@@ -8,7 +8,7 @@ export default defineConfig({
     ...vitestConfig.test,
     alias: {
       ...(vitestConfig.test?.alias ?? {}),
-      '#build/i18n.options.mjs': resolve('./test/options-mock.ts'),
+      '#build/i18n.options.mjs': resolve('./test/mocks/i18n.options.ts'),
       '#app': 'nuxt'
     }
   }
