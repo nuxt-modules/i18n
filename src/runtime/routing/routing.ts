@@ -3,15 +3,15 @@ import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingS
 import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
-import { getI18nTarget } from '../../compatibility'
-import { getLocaleRouteName, getRouteName } from '../utils'
-import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
+import { getI18nTarget } from '../compatibility'
+import { getLocaleRouteName, getRouteName } from './utils'
+import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../utils'
 
 import type { Strategies } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocation, RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CompatRoute } from '../../types'
+import type { CompatRoute } from '../types'
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.

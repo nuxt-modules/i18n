@@ -11,7 +11,7 @@ import {
   getHost
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-import { localePath, switchLocalePath } from './routing/compatibles/routing'
+import { localePath, switchLocalePath } from './routing/routing'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { createLocaleFromRouteGetter } from './routing/utils'
 import { unref } from 'vue'

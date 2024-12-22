@@ -2,13 +2,13 @@ import { joinURL } from 'ufo'
 import { isArray, isObject } from '@intlify/shared'
 import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
-import { getNormalizedLocales } from '../utils'
+import { getNormalizedLocales } from './utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
-import { getComposer } from '../../compatibility'
+import { getComposer } from '../compatibility'
 
 import type { I18n } from 'vue-i18n'
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#internal-i18n-types'
-import type { CommonComposableOptions } from '../../utils'
+import type { CommonComposableOptions } from '../utils'
 
 /**
  * Returns localized head properties for locale-related aspects.

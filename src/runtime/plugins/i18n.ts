@@ -24,11 +24,11 @@ import {
   defineGetter
 } from '../internal'
 import { resolveBaseUrl, createLocaleFromRouteGetter } from '../routing/utils'
-import { extendI18n } from '../routing/extends/i18n'
+import { extendI18n } from '../routing/i18n'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
-import { resolveRoute } from '../routing/compatibles/routing'
-import { localeHead } from '../routing/compatibles/head'
+import { resolveRoute } from '../routing/routing'
+import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useLocaleLocation, useSwitchLocalePath } from '../composables'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
