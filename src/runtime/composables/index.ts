@@ -12,13 +12,7 @@ import {
   getOgUrl,
   localeHead
 } from '../routing/compatibles/head'
-import {
-  getRouteBaseName,
-  localeLocation,
-  localePath,
-  localeRoute,
-  switchLocalePath
-} from '../routing/compatibles/routing'
+import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/compatibles/routing'
 import { findBrowserLocale } from '../routing/utils'
 import { getComposer } from '../compatibility'
 import type { Ref } from 'vue'
@@ -290,8 +284,9 @@ export type LocaleLocationFunction = <Name extends keyof RouteMapI18n = keyof Ro
  * @deprecated use {@link useLocaleRoute} instead
  */
 export function useLocaleLocation(): LocaleLocationFunction {
+  // we wrap `localeRoute` as the implementation is identical
   // @ts-expect-error - generated types conflict with the generic types we accept
-  return wrapComposable(localeLocation)
+  return wrapComposable(localeRoute)
 }
 
 /**

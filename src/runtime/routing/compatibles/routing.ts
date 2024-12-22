@@ -9,7 +9,7 @@ import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposa
 
 import type { Strategies } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
-import type { RouteLocation, RouteLocationRaw, Router, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
+import type { RouteLocation, RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CompatRoute } from '../../types'
 
@@ -24,13 +24,12 @@ import type { CompatRoute } from '../../types'
  * @returns The route base name. if cannot get, `undefined` is returned.
  */
 export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: RouteLocation): string | undefined {
-  const { routesNameSeparator } = common.runtimeConfig.public.i18n
   const route = unref(givenRoute)
   if (route == null || !route.name) {
     return
   }
   const name = getRouteName(route.name)
-  return name.split(routesNameSeparator)[0]
+  return name.split(common.runtimeConfig.public.i18n.routesNameSeparator)[0]
 }
 
 /**
@@ -55,49 +54,15 @@ export function localePath(common: CommonComposableOptions, route: RouteLocation
 }
 
 /**
- * Returns localized route for passed in `route` parameters.
- *
- * @remarks
- * If `locale` is not specified, uses current locale.
- *
- * @param route - A route.
- * @param locale - A locale, optional.
- *
- * @returns A route. if cannot resolve, `undefined` is returned.
+ * Resolves a localized variant of the passed route.
  */
-export function localeRoute(
-  common: CommonComposableOptions,
-  route: RouteLocationRaw,
-  locale?: Locale
-): ReturnType<Router['resolve']> | undefined {
+export function localeRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
   const resolved = resolveRoute(common, route, locale)
   return resolved ?? undefined
 }
 
-/**
- * Returns localized location for passed in route parameters.
- *
- * @remarks
- * If `locale` is not specified, uses current locale.
- *
- * @param common - Common options used internally by composable functions.
- * @param route - A route.
- * @param locale - A locale, optional.
- *
- * @returns A route location. if cannot resolve, `undefined` is returned.
- */
-export function localeLocation(
-  common: CommonComposableOptions,
-  route: RouteLocationRaw,
-  locale?: Locale
-): Location | (RouteLocation & { href: string }) | undefined {
-  const resolved = resolveRoute(common, route, locale)
-  return resolved ?? undefined
-}
-
-export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale: Locale | undefined) {
-  const { router, i18n } = common
-  const _locale = locale || unref(getI18nTarget(i18n).locale)
+export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
+  const _locale = locale || unref(getI18nTarget(common.i18n).locale)
   const { defaultLocale, strategy, trailingSlash } = common.runtimeConfig.public.i18n as I18nPublicRuntimeConfig
   const prefixable = extendPrefixable(common.runtimeConfig)
   // if route parameter is a string, check if it's a path or name of route.
@@ -151,20 +116,20 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
     }
   } else {
     if (!localizedRoute.name && !('path' in localizedRoute)) {
-      localizedRoute.name = getRouteBaseName(common, router.currentRoute.value)
+      localizedRoute.name = getRouteBaseName(common, common.router.currentRoute.value)
     }
 
     localizedRoute.name = getLocaleRouteName(localizedRoute.name, _locale, common.runtimeConfig.public.i18n)
   }
 
   try {
-    const resolvedRoute = router.resolve(localizedRoute)
+    const resolvedRoute = common.router.resolve(localizedRoute)
     if (resolvedRoute.name) {
       return resolvedRoute
     }
 
     // if didn't resolve to an existing route then just return resolved route based on original input.
-    return router.resolve(route)
+    return common.router.resolve(route)
   } catch (e: unknown) {
     // `1` is No match
     if (typeof e === 'object' && 'type' in e! && e.type === 1) {
@@ -186,11 +151,7 @@ function getLocalizableMetaFromDynamicParams(
 }
 
 /**
- * Returns path of the current route for specified locale.
- *
- * @param locale - A locale
- *
- * @returns A path of the current route.
+ * Resolve the localized path of the current route.
  */
 export function switchLocalePath(common: CommonComposableOptions, locale: Locale, _route?: CompatRoute): string {
   const route = _route ?? common.router.currentRoute.value
