@@ -37,10 +37,18 @@ import {
 } from '../routing/compatibles/routing'
 import { localeHead } from '../routing/compatibles/head'
 
-import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type {
+  LocaleHeadFunction,
+  LocaleLocationFunction,
+  LocalePathFunction,
+  LocaleRouteFunction,
+  ResolveRouteFunction,
+  RouteBaseNameFunction,
+  SwitchLocalePathFunction
+} from '../composables'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -220,15 +228,15 @@ export default defineNuxtPlugin({
         /**
          * TODO: remove type assertions while type narrowing based on generated types
          */
-        localeHead: wrapComposable(localeHead) as NuxtI18nPluginInjections['localeHead'],
-        localePath: wrapComposable(localePath) as NuxtI18nPluginInjections['localePath'],
-        localeRoute: wrapComposable(localeRoute) as NuxtI18nPluginInjections['localeRoute'],
-        getRouteBaseName: wrapComposable(getRouteBaseName) as NuxtI18nPluginInjections['getRouteBaseName'],
-        switchLocalePath: wrapComposable(switchLocalePath) as NuxtI18nPluginInjections['switchLocalePath'],
+        localeHead: wrapComposable(localeHead) as LocaleHeadFunction,
+        localePath: wrapComposable(localePath) as LocalePathFunction,
+        localeRoute: wrapComposable(localeRoute) as LocaleRouteFunction,
+        getRouteBaseName: wrapComposable(getRouteBaseName) as RouteBaseNameFunction,
+        switchLocalePath: wrapComposable(switchLocalePath) as SwitchLocalePathFunction,
         // TODO: remove in v10
-        resolveRoute: wrapComposable(resolveRoute) as NuxtI18nPluginInjections['resolveRoute'],
+        resolveRoute: wrapComposable(resolveRoute) as ResolveRouteFunction,
         // TODO: remove in v10
-        localeLocation: wrapComposable(localeLocation) as NuxtI18nPluginInjections['localeLocation']
+        localeLocation: wrapComposable(localeLocation) as LocaleLocationFunction
       }
     }
   }
