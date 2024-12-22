@@ -114,7 +114,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 }
 
 /**
- * Returns localized head properties for locale-related tags.
+ * Returns localized head properties for locale-related aspects.
  *
  * @param options - An options object, see {@link I18nHeadOption}.
  *
@@ -200,12 +200,12 @@ export type ResolveRouteFunction = (route: RouteLocationRaw, locale?: Locale) =>
  *
  * @param route - a route name or route object.
  *
- * @returns Route base name (without localization suffix) or `null` if no name was found.
+ * @returns Route base name (without localization suffix) or `undefined` if no name was found.
  */
 export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
   route: Name | RouteLocationI18nGenericPath,
   locale?: Locale
-) => string
+) => string | undefined
 
 /**
  * Returns a {@link RouteBaseNameFunction} used get the base name of a route.

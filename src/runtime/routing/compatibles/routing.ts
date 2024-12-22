@@ -18,30 +18,18 @@ import type { CompatRoute } from '../../types'
  *
  * @remarks
  * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
-
- * @param givenRoute - A route.
- *
- * @returns The route base name. if cannot get, `undefined` is returned.
  */
-export function getRouteBaseName(common: CommonComposableOptions, givenRoute?: RouteLocation): string | undefined {
-  const route = unref(givenRoute)
-  if (route == null || !route.name) {
+export function getRouteBaseName(common: CommonComposableOptions, route?: RouteLocation): string | undefined {
+  const _route = unref(route)
+  if (_route == null || !_route.name) {
     return
   }
-  const name = getRouteName(route.name)
+  const name = getRouteName(_route.name)
   return name.split(common.runtimeConfig.public.i18n.routesNameSeparator)[0]
 }
 
 /**
- * Returns localized path for passed in route.
- *
- * @remarks
- * If locale is not specified, uses current locale.
- *
- * @param route - A route.
- * @param locale - A locale, optional.
- *
- * @returns Localized equivalent of passed route
+ * Resolves a localized path of the passed in route.
  */
 export function localePath(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale): string {
   // return external url as is
