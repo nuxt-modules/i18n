@@ -10,50 +10,51 @@ import type { BundlerPluginOptions } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:transform:resource')
 
-export const ResourcePlugin = createUnplugin((options: BundlerPluginOptions) => {
-  debug('options', options)
+export const ResourcePlugin = (options: BundlerPluginOptions) =>
+  createUnplugin(() => {
+    debug('options', options)
 
-  return {
-    name: 'nuxtjs:i18n-resource',
-    enforce: 'post',
+    return {
+      name: 'nuxtjs:i18n-resource',
+      enforce: 'post',
 
-    transformInclude(id) {
-      debug('transformInclude', id)
+      transformInclude(id) {
+        debug('transformInclude', id)
 
-      if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
-        return false
-      }
+        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
+          return false
+        }
 
-      const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-      const query = parseQuery(search)
-      return /\.([c|m]?[j|t]s)$/.test(pathname) && (!!query.locale || !!query.config)
-    },
+        const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
+        const query = parseQuery(search)
+        return /\.([c|m]?[j|t]s)$/.test(pathname) && (!!query.locale || !!query.config)
+      },
 
-    transform(code, id) {
-      debug('transform', id)
+      transform(code, id) {
+        debug('transform', id)
 
-      const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-      const query = parseQuery(search)
+        const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
+        const query = parseQuery(search)
 
-      const s = new MagicString(code)
+        const s = new MagicString(code)
 
-      function result() {
-        if (s.hasChanged()) {
-          return {
-            code: s.toString(),
-            map: options.sourcemap && !/\.([c|m]?ts)$/.test(pathname) ? s.generateMap({ hires: true }) : null
+        function result() {
+          if (s.hasChanged()) {
+            return {
+              code: s.toString(),
+              map: options.sourcemap && !/\.([c|m]?ts)$/.test(pathname) ? s.generateMap({ hires: true }) : null
+            }
           }
         }
+
+        const pattern = query.locale ? NUXT_I18N_COMPOSABLE_DEFINE_LOCALE : NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+        const matches = code.matchAll(new RegExp(`\\b${pattern}\\s*`, 'g'))
+
+        for (const match of matches) {
+          s.remove(match.index, match.index + match[0].length)
+        }
+
+        return result()
       }
-
-      const pattern = query.locale ? NUXT_I18N_COMPOSABLE_DEFINE_LOCALE : NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
-      const matches = code.matchAll(new RegExp(`\\b${pattern}\\s*`, 'g'))
-
-      for (const match of matches) {
-        s.remove(match.index, match.index + match[0].length)
-      }
-
-      return result()
     }
-  }
-})
+  })
