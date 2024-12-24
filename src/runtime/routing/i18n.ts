@@ -1,5 +1,5 @@
 import { effectScope } from '#imports'
-import { isVueI18n, getComposer } from '../../compatibility'
+import { isVueI18n, getComposer } from '../compatibility'
 
 import type { NuxtApp } from 'nuxt/app'
 import type { Composer, ComposerExtender, ExportedGlobalComposer, I18n, VueI18n, VueI18nExtender } from 'vue-i18n'

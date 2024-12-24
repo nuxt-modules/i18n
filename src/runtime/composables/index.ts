@@ -11,13 +11,13 @@ import {
   getHreflangLinks,
   getOgUrl,
   localeHead
-} from '../routing/compatibles/head'
-import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/compatibles/routing'
+} from '../routing/head'
+import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import { findBrowserLocale } from '../routing/utils'
 import { getComposer } from '../compatibility'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
-import type { resolveRoute } from '../routing/compatibles/routing'
+import type { resolveRoute } from '../routing/routing'
 import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '#internal-i18n-types'
 import type { HeadParam } from '../utils'
 import type { RouteLocationAsRelativeI18n, RouteLocationRaw, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'

@@ -11,9 +11,8 @@ import {
   getHost
 } from './internal'
 import { loadLocale, makeFallbackLocaleCodes } from './messages'
-import { localePath, switchLocalePath, DefaultPrefixable } from './routing/compatibles/routing'
+import { localePath, switchLocalePath, DefaultPrefixable } from './routing/routing'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
-import { createLocaleFromRouteGetter } from './routing/extends/router'
 import { unref } from 'vue'
 
 import type { I18n, Locale } from 'vue-i18n'
@@ -31,6 +30,7 @@ import type {
   LocaleObject
 } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
+import { createLocaleFromRouteGetter } from './routing/utils'
 
 /**
  * Common options used internally by composable functions, these
