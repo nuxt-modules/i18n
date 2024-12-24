@@ -96,7 +96,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
 const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
 /**
- * Attempts to
+ * Prepares a route object to be resolved as a localized route
  */
 function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, locale: Locale) {
   const runtimeI18n = common.runtimeConfig.public.i18n as I18nPublicRuntimeConfig
