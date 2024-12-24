@@ -18,14 +18,6 @@ export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): Locale
   return normalized
 }
 
-export function adjustRoutePathForTrailingSlash(
-  pagePath: string,
-  trailingSlash: boolean,
-  isChildWithRelativePath: boolean
-) {
-  return pagePath.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
-}
-
 export function getRouteName(routeName?: string | symbol | null) {
   if (isString(routeName)) return routeName
   if (isSymbol(routeName)) return routeName.toString()
