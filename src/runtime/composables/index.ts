@@ -12,35 +12,33 @@ import {
   getOgUrl,
   localeHead
 } from '../routing/compatibles/head'
-import {
-  getRouteBaseName,
-  localeLocation,
-  localePath,
-  localeRoute,
-  switchLocalePath
-} from '../routing/compatibles/routing'
+import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/compatibles/routing'
 import { findBrowserLocale } from '../routing/utils'
 import { getComposer } from '../compatibility'
-
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
-import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
+import type { resolveRoute } from '../routing/compatibles/routing'
+import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '#internal-i18n-types'
 import type { HeadParam } from '../utils'
+import type { RouteLocationAsRelativeI18n, RouteLocationRaw, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 
 export * from 'vue-i18n'
 export * from './shared'
 
 /**
- * Returns a function to set i18n params.
+ * Used to set i18n params for the current route.
+ *
+ * @params params - an object with {@link Locale} keys with localized parameters
+ */
+export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
+
+/**
+ * Returns a {@link SetI18nParamsFunction} used to set i18n params for the current route.
  *
  * @param options - An options object, see {@link SeoAttributesOptions}.
  *
  * @returns a {@link SetI18nParamsFunction}.
- *
- * @public
  */
-export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
   const nuxtApp = useNuxtApp()
@@ -76,8 +74,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
     stop()
   })
 
-  const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
-  const currentLocaleLanguage = currentLocale.language
+  const currentLocale: LocaleObject = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
 
   if (!unref(nuxtApp.$i18n.baseUrl)) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
@@ -96,14 +93,14 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 
       // prettier-ignore
       metaObject.link.push(
-        ...getHreflangLinks(common, locales, key),
-        ...getCanonicalLink(common, key, seo)
-      )
+				...getHreflangLinks(common, locales, key),
+				...getCanonicalLink(common, key, seo)
+			)
 
       metaObject.meta.push(
         ...getOgUrl(common, key, seo),
-        ...getCurrentOgLocale(currentLocale, currentLocaleLanguage, key),
-        ...getAlternateOgLocales(locales, currentLocaleLanguage, key)
+        ...getCurrentOgLocale(currentLocale, currentLocale.language, key),
+        ...getAlternateOgLocales(locales, currentLocale.language, key)
       )
     }
 
@@ -117,29 +114,20 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 }
 
 /**
- * The `localeHead` function returns localized head properties for locale-related aspects.
+ * Returns localized head properties for locale-related aspects.
  *
- * @remarks
- * The parameter signature of this function is the same as {@link localeHead}.
+ * @param options - An options object, see {@link I18nHeadOptions}.
  *
- * @param options - An options object, see {@link I18nHeadOptions}
- *
- * @returns the route object for a given route, the route object is resolved by vue-router rather than just a full route path.
- *
- * @see {@link localeHead}
- *
- * @public
+ * @returns The localized head properties.
  */
 export type LocaleHeadFunction = (options: I18nHeadOptions) => ReturnType<typeof localeHead>
 
 /**
- * The `useLocaleHead` composable returns localized head properties for locale-related aspects.
+ * Returns localized head properties for locale-related aspects.
  *
  * @param options - An options object, see {@link I18nHeadOptions}
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties} with Vue `ref`.
- *
- * @public
  */
 export function useLocaleHead({
   dir = true,
@@ -185,39 +173,41 @@ export function useLocaleHead({
 }
 
 /**
- * The function that resolves the route base name.
+ * NOTE: regarding composables accepting narrowed route arguments
+ * route path string autocompletion is disabled as this can break depending on `strategy`
+ * if route resolve is improved to work regardless of strategy this can be enabled again
  *
- * @remarks
- * The parameter signatures of this function is the same as {@link getRouteBaseName}.
- *
- * @param givenRoute - A route location. The path or name of the route or an object for more complex routes.
- *
- * @returns The route base name, if route name is not defined, return `null`.
- *
- * @see {@link useRouteBaseName}
- *
- * @public
+ * the following would be the complete narrowed type
+ * route: Name | RouteLocationAsRelativeI18n | RouteLocationAsStringI18n | RouteLocationAsPathI18n
  */
-export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
-  /**
-   * Note: disabled route path string autocompletion, this can break depending on `strategy`
-   * this can be enabled again after route resolve has been improved.
-   */
-  // | RouteLocationAsStringI18n
-  // | RouteLocationAsPathI18n
-  locale?: Locale
-) => string
+
+type RouteLocationI18nGenericPath = Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }
 
 /**
- * The `useRouteBaseName` composable returns a function which returns the route base name.
+ * Revoles a localized route object for the passed route.
  *
- * @remarks
- * The function returned by `useRouteBaseName` is the wrapper function with the same signature as {@link getRouteBaseName}.
+ * @param route - a route name or route object.
+ * @param locale - (default: current locale).
  *
- * @returns A {@link RouteBaseNameFunction}.
+ * @returns Localized route object
  *
- * @public
+ * @deprecated use {@link useLocalePath}/{@link LocalePathFunction $localePath} or {@link useLocaleRoute}/{@link LocaleRouteFunction $localeRoute} instead
+ */
+export type ResolveRouteFunction = (route: RouteLocationRaw, locale?: Locale) => ReturnType<typeof resolveRoute>
+
+/**
+ * Resolves the route base name for the given route.
+ *
+ * @param route - a route name or route object.
+ *
+ * @returns Route base name (without localization suffix) or `undefined` if no name was found.
+ */
+export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
+  route: Name | RouteLocationI18nGenericPath
+) => string | undefined
+
+/**
+ * Returns a {@link RouteBaseNameFunction} used get the base name of a route.
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
   // @ts-expect-error - generated types conflict with the generic types we accept
@@ -225,41 +215,20 @@ export function useRouteBaseName(): RouteBaseNameFunction {
 }
 
 /**
- * The function that resolve locale path.
+ * Resolves a localized path for the given route.
  *
- * @remarks
- * The parameter signature of this function is same as {@link localePath}.
- *
- * @param route - A route location. The path or name of the route or an object for more complex routes.
- * @param locale - A locale optional, if not specified, uses the current locale.
+ * @param route - a route name or route object.
+ * @param locale - (default: current locale).
  *
  * @returns Returns the localized URL for a given route.
- *
- * @see {@link useLocalePath}
- *
- * @public
  */
-
 export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
-  /**
-   * Note: disabled route path string autocompletion, this can break depending on `strategy`
-   * this can be enabled again after route resolve has been improved.
-   */
-  // | RouteLocationAsStringI18n
-  // | RouteLocationAsPathI18n
+  route: Name | RouteLocationI18nGenericPath,
   locale?: Locale
 ) => string
 
 /**
- * The `useLocalePath` composable returns function  that resolve the locale path.
- *
- * @remarks
- * The function returned by `useLocalePath` is the wrapper function with the same signature as {@link localePath}.
- *
- * @returns A {@link LocalePathFunction}.
- *
- * @public
+ * Returns a {@link LocalePathFunction} used to resolve a localized path.
  */
 export function useLocalePath(): LocalePathFunction {
   // @ts-expect-error - generated types conflict with the generic types we accept
@@ -267,39 +236,20 @@ export function useLocalePath(): LocalePathFunction {
 }
 
 /**
- * The function that resolve route.
+ * Resolves a localized route object for the given route.
  *
- * @remarks
- * The parameter signature of this function is same as {@link localeRoute}.
+ * @param route - a route name or route object.
+ * @param locale - (default: current locale).
  *
- * @param route - A route location. The path or name of the route or an object for more complex routes.
- * @param locale - A locale optional, if not specified, uses the current locale.
- *
- * @returns the route object for a given route, the route object is resolved by vue-router rather than just a full route path.
- *
- * @see {@link useLocaleRoute}
- *
- * @public
+ * @returns A route. if cannot resolve, `undefined` is returned.
  */
 export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
-  /**
-   * Note: disabled route path string autocompletion, this can break depending on `strategy`
-   * this can be enabled again after route resolve has been improved.
-   */
-  // | RouteLocationAsStringI18n
-  // | RouteLocationAsPathI18n
+  route: Name | RouteLocationI18nGenericPath,
   locale?: Locale
 ) => RouteLocationResolvedI18n<Name> | undefined
+
 /**
- * The `useLocaleRoute` composable returns function that resolve the locale route.
- *
- * @remarks
- * The function returned by `useLocaleRoute` is the wrapper function with the same signature as {@link localeRoute}.
- *
- * @returns A {@link LocaleRouteFunction}.
- *
- * @public
+ * Returns a {@link LocaleRouteFunction} used to resolve localized route objects.
  */
 export function useLocaleRoute(): LocaleRouteFunction {
   // @ts-expect-error - generated types conflict with the generic types we accept
@@ -307,86 +257,49 @@ export function useLocaleRoute(): LocaleRouteFunction {
 }
 
 /**
- * The function that resolve locale location.
+ * Resolves a localized variant of the passed route.
  *
- * @remarks
- * The parameter signature of this function is same as {@link localeLocation}.
+ * @param route - a route name or route object.
+ * @param locale - (default: current locale).
  *
- * @param route - A route location. The path or name of the route or an object for more complex routes.
- * @param locale - A locale optional, if not specified, uses the current locale.
+ * @returns A resolved route object
  *
- * @returns the location object for a given route, the location object is resolved by vue-router rather than just a full route path.
- *
- * @see {@link useLocaleLocation}
- *
- * @public
+ * @deprecated use {@link useLocaleRoute}/{@link LocaleRouteFunction $localeRoute} instead
  */
 export type LocaleLocationFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | (Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }),
-  /**
-   * Note: disabled route path string autocompletion, this can break depending on `strategy`
-   * this can be enabled again after route resolve has been improved.
-   */
-  // | RouteLocationAsStringI18n
-  // | RouteLocationAsPathI18n
+  route: Name | RouteLocationI18nGenericPath,
   locale?: Locale
 ) => RouteLocationResolvedI18n<Name> | undefined
 
 /**
- * The `useLocaleLocation` composable returns function that resolve the locale location.
+ * Returns a {@link LocaleLocationFunction} used to resolve localized route objects.
  *
- * @remarks
- * The function returned by `useLocaleLocation` is the wrapper function with the same signature as {@link localeLocation}.
- *
- * @returns A {@link LocaleLocationFunction}.
- *
- * @public
+ * @deprecated use {@link useLocaleRoute}/{@link LocaleRouteFunction $localeRoute} instead
  */
 export function useLocaleLocation(): LocaleLocationFunction {
+  // we wrap `localeRoute` as the implementation is identical
   // @ts-expect-error - generated types conflict with the generic types we accept
-  return wrapComposable(localeLocation)
+  return wrapComposable(localeRoute)
 }
 
 /**
- * The function that switch locale path.
+ * Resolves a localized variant of the current path.
  *
- * @remarks
- * The parameter signature of this function is same as {@link switchLocalePath}.
- *
- * @param locale - A locale optional, if not specified, uses the current locale.
- *
- * @returns A link to the current route in another language.
- *
- * @see {@link useSwitchLocalePath}
- *
- * @public
+ * @param locale - (default: current locale).
  */
 export type SwitchLocalePathFunction = (locale: Locale) => string
 
 /**
- * The `useSwitchLocalePath` composable returns function that resolve the locale location.
- *
- * @remarks
- * The function returned by `useSwitchLocalePath` is the wrapper function with the same signature as {@link switchLocalePath}.
- *
- * @returns A {@link SwitchLocalePathFunction}.
- *
- * @public
+ * Returns a {@link SwitchLocalePathFunction} used to resolve a localized variant of the current path.
  */
-
 export function useSwitchLocalePath(): SwitchLocalePathFunction {
   return wrapComposable(switchLocalePath)
 }
 
 /**
- * The `useBrowserLocale` composable returns the browser locale.
- *
- * @remarks
- * if this composable function is called on client-side, it detects the locale from the value of `navigator.languages`. Else on the server side, the locale is detected from the value of `accept-language` header.
+ * Return the browser locale based on `navigator.languages` (client-side) or `accept-language` header (server-side).
  *
  * @returns the browser locale, if not detected, return `null`.
- *
- * @public
  */
 export function useBrowserLocale(): string | null {
   const headers = useRequestHeaders(['accept-language'])
@@ -399,19 +312,14 @@ export function useBrowserLocale(): string | null {
 }
 
 /**
- * The `useCookieLocale` composable returns the cookie locale.
+ * Returns the locale cookie based on `document.cookie` (client-side) or `cookie` header (server-side).
  *
- * @remarks
- * If this composable function is called client-side, it detects the locale from the value of `document.cookie` via `useCookie`. Otherwise when used server-side, it detects the locale from the value of the `cookie` header.
+ * @remark
+ * If `detectBrowserLanguage.useCookie` is `false` this will always return an empty string.
  *
- * Note that if the value of `detectBrowserLanguage.useCookie` is `false`, an empty string is always returned.
- *
- * @returns the cookie locale with Vue `ref`. if not detected, return **empty string** with `ref`.
- *
- * @public
+ * @returns a `Ref<string>` with the detected cookie or an empty string if none is detected.
  */
 export function useCookieLocale(): Ref<string> {
-  // Support for importing from `#imports` is generated by auto `imports` nuxt module, so `ref` is imported from `vue`
   const locale: Ref<string> = ref('')
   const detect = runtimeDetectBrowserLanguage()
 
@@ -444,12 +352,6 @@ const warnRuntimeUsage = (method: string) =>
   )
 
 /**
- * TODO:
- *  `paths`, `locales` completions like `unplugin-vue-router`
- *  ref: https://github.com/posva/unplugin-vue-router
- */
-
-/**
  * The i18n custom route for page components
  */
 export interface I18nRoute {
@@ -460,7 +362,7 @@ export interface I18nRoute {
    */
   paths?: Partial<Record<Locale, `/${string}`>>
   /**
-   * Some locales to which the page component should be localized.
+   * Locales in which the page component should be localized.
    */
   locales?: Locale[]
 }
