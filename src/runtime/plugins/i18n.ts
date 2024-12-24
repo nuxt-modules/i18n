@@ -23,13 +23,12 @@ import {
   wrapComposable,
   defineGetter
 } from '../internal'
-import { inBrowser, resolveBaseUrl } from '../routing/utils'
-import { extendI18n } from '../routing/extends/i18n'
-import { createLocaleFromRouteGetter } from '../routing/extends/router'
+import { createLocaleFromRouteGetter, resolveBaseUrl } from '../routing/utils'
+import { extendI18n } from '../routing/i18n'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
-import { resolveRoute } from '../routing/compatibles/routing'
-import { localeHead } from '../routing/compatibles/head'
+import { resolveRoute } from '../routing/routing'
+import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocaleLocation } from '../composables'
 
 import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
@@ -108,7 +107,7 @@ export default defineNuxtPlugin({
         composer.localeCodes = computed(() => _localeCodes.value)
         composer.baseUrl = computed(() => _baseUrl.value)
 
-        if (inBrowser) {
+        if (import.meta.client) {
           watch(
             composer.locale,
             () => {
