@@ -1,26 +1,18 @@
-import { isString, isSymbol, isFunction } from '@intlify/shared'
+import { isFunction } from '@intlify/shared'
+import { localeCodes } from '#build/i18n.options.mjs'
+import { useRuntimeConfig } from '#app'
 
-import type { LocaleObject, Strategies, BaseUrlResolveHandler } from '#internal-i18n-types'
+import type { LocaleObject, BaseUrlResolveHandler, I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
-
-export const inBrowser = typeof window !== 'undefined'
+import type { CompatRoute } from '../types'
 
 export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): LocaleObject[] {
-  locales = locales || []
-  const normalized: LocaleObject[] = []
-  for (const locale of locales) {
-    if (isString(locale)) {
-      normalized.push({ code: locale })
-    } else {
-      normalized.push(locale)
-    }
-  }
-  return normalized
+  return locales.map(x => (typeof x === 'string' ? { code: x } : x))
 }
 
 export function getRouteName(routeName?: string | symbol | null) {
-  if (isString(routeName)) return routeName
-  if (isSymbol(routeName)) return routeName.toString()
+  if (typeof routeName === 'string') return routeName
+  if (routeName != null) return routeName.toString()
   return '(null)'
 }
 
@@ -33,13 +25,7 @@ export function getLocaleRouteName(
     routesNameSeparator,
     defaultLocaleRouteNameSuffix,
     differentDomains
-  }: {
-    defaultLocale: string
-    strategy: Strategies
-    routesNameSeparator: string
-    defaultLocaleRouteNameSuffix: string
-    differentDomains: boolean
-  }
+  }: I18nPublicRuntimeConfig
 ) {
   const localizedRoutes = strategy !== 'no_prefix' || differentDomains
   let name = getRouteName(routeName) + (localizedRoutes ? routesNameSeparator + locale : '')
@@ -71,7 +57,7 @@ export function resolveBaseUrl<Context = unknown>(baseUrl: string | BaseUrlResol
  * @remarks
  * This type is used by {@link FindBrowserLocaleOptions#sorter | sorter} in {@link findBrowserLocale} function
  */
-export interface BrowserLocale {
+interface BrowserLocale {
   /**
    * The locale code, such as BCP 47 (e.g `en-US`), or `ja`
    */
@@ -91,7 +77,7 @@ export interface BrowserLocale {
  * @remarks
  * This type is used by {@link BrowserLocaleMatcher} first argument
  */
-export type TargetLocale = Required<Pick<LocaleObject, 'code' | 'language'>>
+type TargetLocale = { code: string; language: string }
 
 /**
  * The browser locale matcher
@@ -104,15 +90,8 @@ export type TargetLocale = Required<Pick<LocaleObject, 'code' | 'language'>>
  *
  * @returns The matched {@link BrowserLocale | locale info}
  */
-export type BrowserLocaleMatcher = (locales: TargetLocale[], browserLocales: string[]) => BrowserLocale[]
-
-/**
- * The options for {@link findBrowserLocale} function
- */
-export interface FindBrowserLocaleOptions {
-  matcher?: BrowserLocaleMatcher
-  comparer?: (a: BrowserLocale, b: BrowserLocale) => number
-}
+type BrowserLocaleMatcher = (locales: TargetLocale[], browserLocales: string[]) => BrowserLocale[]
+type LocaleComparer = (a: BrowserLocale, b: BrowserLocale) => number
 
 function matchBrowserLocale(locales: TargetLocale[], browserLocales: string[]): BrowserLocale[] {
   const matchedLocales = [] as BrowserLocale[]
@@ -140,11 +119,6 @@ function matchBrowserLocale(locales: TargetLocale[], browserLocales: string[]): 
   return matchedLocales
 }
 
-/**
- * The default browser locale matcher
- */
-export const DefaultBrowserLocaleMatcher = matchBrowserLocale
-
 function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
   if (a.score === b.score) {
     // if scores are equal then pick more specific (longer) code.
@@ -154,14 +128,9 @@ function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
 }
 
 /**
- * The default browser locale comparer
- */
-export const DefaultBrowserLocaleComparer = compareBrowserLocale
-
-/**
  * Find the browser locale
  *
- * @param locales - The target {@link LocaleObject | locale} list
+ * @param locales - The target {@link LocaleObject} list
  * @param browserLocales - The locale code list that is used in browser
  * @param options - The options for {@link findBrowserLocale} function
  *
@@ -170,7 +139,10 @@ export const DefaultBrowserLocaleComparer = compareBrowserLocale
 export function findBrowserLocale(
   locales: LocaleObject[],
   browserLocales: string[],
-  { matcher = DefaultBrowserLocaleMatcher, comparer = DefaultBrowserLocaleComparer }: FindBrowserLocaleOptions = {}
+  {
+    matcher = matchBrowserLocale,
+    comparer = compareBrowserLocale
+  }: { matcher?: BrowserLocaleMatcher; comparer?: LocaleComparer } = {}
 ): string {
   const normalizedLocales = []
   for (const l of locales) {
@@ -182,14 +154,51 @@ export function findBrowserLocale(
   // finding!
   const matchedLocales = matcher(normalizedLocales, browserLocales)
 
-  // sort!
+  if (matchedLocales.length === 0) {
+    return ''
+  }
+
   if (matchedLocales.length > 1) {
+    // sort!
     matchedLocales.sort(comparer)
   }
 
-  return matchedLocales.length ? matchedLocales[0].code : ''
+  return matchedLocales[0].code
 }
 
 export function getLocalesRegex(localeCodes: string[]) {
   return new RegExp(`^/(${localeCodes.join('|')})(?:/|$)`, 'i')
+}
+
+const localesPattern = `(${localeCodes.join('|')})`
+const regexpPath = getLocalesRegex(localeCodes)
+
+export function createLocaleFromRouteGetter() {
+  const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n
+  const defaultSuffixPattern = `(?:${routesNameSeparator}${defaultLocaleRouteNameSuffix})?`
+  const regexpName = new RegExp(`${routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
+
+  /**
+   * extract locale code from route name or path
+   */
+  const getLocaleFromRoute = (route: string | CompatRoute) => {
+    let matches: RegExpMatchArray | null = null
+
+    if (typeof route === 'string') {
+      matches = route.match(regexpPath)
+      return matches?.[1] ?? ''
+    }
+
+    if (route.name) {
+      // extract from route name
+      matches = getRouteName(route.name).match(regexpName)
+    } else if (route.path) {
+      // extract from path
+      matches = route.path.match(regexpPath)
+    }
+
+    return matches?.[1] ?? ''
+  }
+
+  return getLocaleFromRoute
 }
