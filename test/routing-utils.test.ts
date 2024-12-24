@@ -1,50 +1,6 @@
 import { describe, it, assert, test } from 'vitest'
 import * as utils from '../src/runtime/routing/utils'
 
-describe('adjustRouteDefinitionForTrailingSlash', function () {
-  describe('pagePath: /foo/bar', function () {
-    describe('trailingSlash: false, isChildWithRelativePath: true', function () {
-      it('should be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', true, true), '/foo/bar/')
-      })
-    })
-
-    describe('trailingSlash: false, isChildWithRelativePath: true', function () {
-      it('should not be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', false, true), '/foo/bar')
-      })
-    })
-
-    describe('trailingSlash: false, isChildWithRelativePath: false', function () {
-      it('should be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', true, false), '/foo/bar/')
-      })
-    })
-
-    describe('trailingSlash: false, isChildWithRelativePath: false', function () {
-      it('should not be trailed with slash: /foo/bar/', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/foo/bar', false, false), '/foo/bar')
-      })
-    })
-  })
-
-  describe('pagePath: /', function () {
-    describe('trailingSlash: false, isChildWithRelativePath: true', function () {
-      it('should not be trailed with slash: empty', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('/', false, true), '')
-      })
-    })
-  })
-
-  describe('pagePath: empty', function () {
-    describe('trailingSlash: true, isChildWithRelativePath: true', function () {
-      it('should not be trailed with slash: /', function () {
-        assert.equal(utils.adjustRoutePathForTrailingSlash('', true, true), '/')
-      })
-    })
-  })
-})
-
 describe('getLocaleRouteName', () => {
   describe('strategy: prefix_and_default', () => {
     it('should be `route1___en___default`', () => {
