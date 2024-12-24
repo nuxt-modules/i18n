@@ -44,6 +44,24 @@ export function localePath(common: CommonComposableOptions, route: RouteLocation
   return localizedRoute.redirectedFrom?.fullPath || localizedRoute.fullPath
 }
 
+export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
+  try {
+    const _locale = locale || unref(getI18nTarget(common.i18n).locale)
+    const normalized = normalizeRawLocation(route)
+    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale))
+    if (resolved.name) {
+      return resolved
+    }
+
+    // if didn't resolve to an existing route then just return resolved route based on original input.
+    return common.router.resolve(route)
+  } catch (e: unknown) {
+    if (isNavigationFailure(e, 1 /* No match */)) {
+      return null
+    }
+  }
+}
+
 /**
  * Resolves a localized variant of the passed route.
  */
@@ -53,7 +71,10 @@ export function localeRoute(common: CommonComposableOptions, route: RouteLocatio
 
 type RouteLike = (RouteLocationPathRaw & { name?: string }) | (RouteLocationNamedRaw & { path?: string })
 
-function normalizeRouteToObject(route: RouteLocationRaw): RouteLike {
+/**
+ * Copy and normalizes a raw route argument into a `RouteLike` object
+ */
+function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
   // return a copy of the object
   if (typeof route !== 'string') {
     return Object.assign({}, route)
@@ -67,30 +88,6 @@ function normalizeRouteToObject(route: RouteLocationRaw): RouteLike {
 
   // route name
   return { name: route }
-}
-
-export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
-  try {
-    const _locale = locale || unref(getI18nTarget(common.i18n).locale)
-    const resolved = common.router.resolve(
-      resolveRouteObject(
-        common,
-        // copy and normalize route argument to a route object
-        normalizeRouteToObject(route),
-        _locale
-      )
-    )
-    if (resolved.name) {
-      return resolved
-    }
-
-    // if didn't resolve to an existing route then just return resolved route based on original input.
-    return common.router.resolve(route)
-  } catch (e: unknown) {
-    if (isNavigationFailure(e, 1 /* No match */)) {
-      return null
-    }
-  }
 }
 
 const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
