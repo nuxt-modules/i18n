@@ -28,21 +28,15 @@ import { extendI18n } from '../routing/extends/i18n'
 import { createLocaleFromRouteGetter } from '../routing/extends/router'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
-import {
-  getRouteBaseName,
-  localeLocation,
-  localePath,
-  localeRoute,
-  resolveRoute,
-  switchLocalePath
-} from '../routing/compatibles/routing'
+import { resolveRoute } from '../routing/compatibles/routing'
 import { localeHead } from '../routing/compatibles/head'
+import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocaleLocation } from '../composables'
 
-import type { NuxtI18nPluginInjections } from '../injections'
 import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { LocaleHeadFunction, ResolveRouteFunction } from '../composables'
 
 // TODO: use @nuxt/module-builder to stub/prepare types
 declare module '#app' {
@@ -229,15 +223,15 @@ export default defineNuxtPlugin({
         /**
          * TODO: remove type assertions while type narrowing based on generated types
          */
-        localeHead: wrapComposable(localeHead) as NuxtI18nPluginInjections['localeHead'],
-        localePath: wrapComposable(localePath) as NuxtI18nPluginInjections['localePath'],
-        localeRoute: wrapComposable(localeRoute) as NuxtI18nPluginInjections['localeRoute'],
-        getRouteBaseName: wrapComposable(getRouteBaseName) as NuxtI18nPluginInjections['getRouteBaseName'],
-        switchLocalePath: wrapComposable(switchLocalePath) as NuxtI18nPluginInjections['switchLocalePath'],
+        localeHead: wrapComposable(localeHead) as LocaleHeadFunction,
+        localePath: useLocalePath(),
+        localeRoute: useLocaleRoute(),
+        getRouteBaseName: useRouteBaseName(),
+        switchLocalePath: useSwitchLocalePath(),
         // TODO: remove in v10
-        resolveRoute: wrapComposable(resolveRoute) as NuxtI18nPluginInjections['resolveRoute'],
+        resolveRoute: wrapComposable(resolveRoute) as ResolveRouteFunction,
         // TODO: remove in v10
-        localeLocation: wrapComposable(localeLocation) as NuxtI18nPluginInjections['localeLocation']
+        localeLocation: useLocaleLocation()
       }
     }
   }
