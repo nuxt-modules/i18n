@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { isArray, isString, isObject } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
 import isHTTPS from 'is-https'
@@ -32,7 +30,7 @@ export function defineGetter<K extends string | number | symbol, V>(obj: Record<
 
 type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
 
-export function wrapComposable<F extends (common: CommonComposableOptions, ...args: any[]) => ReturnType<F>>(
+export function wrapComposable<F extends (common: CommonComposableOptions, ...args: never[]) => ReturnType<F>>(
   fn: F,
   common = initCommonComposableOptions()
 ) {
@@ -81,7 +79,7 @@ export function getI18nCookie() {
   const detect = runtimeDetectBrowserLanguage()
   const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
   const date = new Date()
-  const cookieOptions: Record<string, any> = {
+  const cookieOptions: Record<string, unknown> = {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
     sameSite: detect && detect.cookieCrossOrigin ? 'none' : 'lax',
@@ -435,5 +433,3 @@ export function getDefaultLocaleForDomain(nuxtContext: NuxtApp) {
 
   return defaultLocaleDomain
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */
