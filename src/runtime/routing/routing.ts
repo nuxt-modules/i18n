@@ -4,16 +4,15 @@ import { hasProtocol, parsePath, parseQuery, withTrailingSlash, withoutTrailingS
 import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { unref } from '#imports'
 
-import { getI18nTarget } from '../../compatibility'
-import { resolve, routeToObject } from './utils'
-import { getLocaleRouteName, getRouteName } from '../utils'
-import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../../utils'
+import { getI18nTarget } from '../compatibility'
+import { getLocaleRouteName, getRouteName } from './utils'
+import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../utils'
 
 import type { Strategies, PrefixableOptions } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocation, RouteLocationRaw, Router, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CompatRoute } from '../../types'
+import type { CompatRoute } from '../types'
 
 const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
 
@@ -240,4 +239,63 @@ export function switchLocalePath(common: CommonComposableOptions, locale: Locale
 
   // custom locale path with interceptor
   return switchLocalePathIntercepter(path, locale)
+}
+
+function split(str: string, index: number) {
+  const result = [str.slice(0, index), str.slice(index)]
+  return result
+}
+
+/**
+ * NOTE:
+ * Nuxt route uses a proxy with getters for performance reasons (https://github.com/nuxt/nuxt/pull/21957).
+ * Spreading will result in an empty object, so we make a copy of the route by accessing each getter property by name.
+ */
+export function routeToObject(route: CompatRoute) {
+  const { fullPath, query, hash, name, path, params, meta, redirectedFrom, matched } = route
+  return {
+    fullPath,
+    params,
+    query,
+    hash,
+    name,
+    path,
+    meta,
+    matched,
+    redirectedFrom
+  }
+}
+
+/**
+ * NOTE:
+ * vue-router v4.x `router.resolve` for a non exists path will output a warning.
+ * `router.hasRoute`, which checks for the route can only be a named route.
+ * When using the `prefix` strategy, the path specified by `localePath` is specified as a path not prefixed with a locale.
+ * This will cause vue-router to issue a warning, so we can work-around by using `router.options.routes`.
+ */
+export function resolve(
+  { router }: CommonComposableOptions,
+  route: RouteLocationPathRaw,
+  strategy: Strategies,
+  locale: Locale
+) {
+  if (strategy !== 'prefix') {
+    return router.resolve(route)
+  }
+
+  // if (isArray(route.matched) && route.matched.length > 0) {
+  //   return route.matched[0]
+  // }
+
+  const [rootSlash, restPath] = split(route.path, 1)
+  const targetPath = `${rootSlash}${locale}${restPath === '' ? restPath : `/${restPath}`}`
+  const _route = router.options?.routes?.find(r => r.path === targetPath)
+
+  if (_route == null) {
+    return route
+  }
+
+  const _resolvableRoute = assign({}, route, _route)
+  _resolvableRoute.path = targetPath
+  return router.resolve(_resolvableRoute)
 }

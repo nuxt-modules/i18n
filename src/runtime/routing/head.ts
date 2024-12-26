@@ -2,13 +2,13 @@ import { joinURL } from 'ufo'
 import { isArray, isObject } from '@intlify/shared'
 import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
-import { getNormalizedLocales } from '../utils'
+import { getNormalizedLocales } from './utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
-import { getComposer } from '../../compatibility'
+import { getComposer } from '../compatibility'
 
 import type { I18n } from 'vue-i18n'
 import type { I18nHeadMetaInfo, MetaAttrs, LocaleObject, I18nHeadOptions } from '#internal-i18n-types'
-import type { CommonComposableOptions } from '../../utils'
+import type { CommonComposableOptions } from '../utils'
 
 /**
  * Returns localized head properties for locale-related aspects.
@@ -45,7 +45,7 @@ export function localeHead(
 
   const locale = unref(nuxtApp.$i18n.locale)
   const locales = unref(nuxtApp.$i18n.locales)
-  const currentLocale = getNormalizedLocales(locales).find(l => l.code === locale) || {
+  const currentLocale: LocaleObject = getNormalizedLocales(locales).find(l => l.code === locale) || {
     code: locale
   }
   const currentLanguage = currentLocale.language
