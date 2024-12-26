@@ -9,23 +9,8 @@ import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposa
 
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw, RouteRecordNameGeneric } from 'vue-router'
-import type { I18nPublicRuntimeConfig, PrefixableOptions, Strategies } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CompatRoute } from '../types'
-
-const RESOLVED_PREFIXED = new Set<Strategies>(['prefix_and_default', 'prefix_except_default'])
-
-function prefixable(options: PrefixableOptions): boolean {
-  const { currentLocale, defaultLocale, strategy } = options
-  const isDefaultLocale = currentLocale === defaultLocale
-  // don't prefix default locale
-  return (
-    !(isDefaultLocale && RESOLVED_PREFIXED.has(strategy)) &&
-    // no prefix for any language
-    !(strategy === 'no_prefix')
-  )
-}
-
-export const DefaultPrefixable = prefixable
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.

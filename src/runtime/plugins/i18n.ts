@@ -31,18 +31,11 @@ import { resolveRoute } from '../routing/routing'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocaleLocation } from '../composables'
 
-import type { Locale, I18nOptions, Composer, I18n } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { LocaleHeadFunction, ResolveRouteFunction } from '../composables'
-
-// TODO: use @nuxt/module-builder to stub/prepare types
-declare module '#app' {
-  interface NuxtApp {
-    _vueI18n: I18n
-  }
-}
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
