@@ -1,4 +1,3 @@
-/* eslint-disable no-var, @typescript-eslint/no-redundant-type-constituents */
 import type { Composer, ExportedGlobalComposer, VueI18n } from 'vue-i18n'
 import type { ComposerCustomProperties, NuxtI18nRoutingCustomProperties } from './runtime/types'
 
@@ -10,10 +9,11 @@ declare module 'vue-i18n' {
 
 declare module '#app' {
   interface NuxtApp {
-    $i18n: VueI18n & ExportedGlobalComposer & Composer & NuxtI18nRoutingCustomProperties & I18nRoutingCustomProperties
+    $i18n: VueI18n & ExportedGlobalComposer & Composer & NuxtI18nRoutingCustomProperties
   }
 }
 
+/* eslint-disable no-var */
 declare global {
   var $t: Composer['t']
   var $rt: Composer['rt']
@@ -22,7 +22,6 @@ declare global {
   var $tm: Composer['tm']
   var $te: Composer['te']
 }
+/* eslint-enable no-var */
 
 export {}
-
-/* eslint-enable no-var, @typescript-eslint/no-redundant-type-constituents */
