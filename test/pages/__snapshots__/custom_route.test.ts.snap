@@ -318,3 +318,98 @@ exports[`Page components > with definePageMeta 1`] = `
   },
 ]
 `;
+
+exports[`pages config using route name 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/addresses.vue",
+        "name": "account-addresses___en",
+        "path": "addresses",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/index.vue",
+        "name": "account___en",
+        "path": "",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/profile.vue",
+        "name": "account-profile___en",
+        "path": "profile",
+      },
+    ],
+    "file": "/path/to/1649/pages/account.vue",
+    "path": "/account",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/addresses.vue",
+        "name": "account-addresses___ja",
+        "path": "addresses",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/index.vue",
+        "name": "account___ja",
+        "path": "",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/profile.vue",
+        "name": "account-profile___ja",
+        "path": "profile",
+      },
+    ],
+    "file": "/path/to/1649/pages/account.vue",
+    "path": "/ja/account",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/addresses.vue",
+        "name": "account-addresses___fr",
+        "path": "adresses",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/index.vue",
+        "name": "account___fr",
+        "path": "",
+      },
+      {
+        "children": [],
+        "file": "/path/to/1649/pages/account/profile.vue",
+        "name": "account-profile___fr",
+        "path": "profil",
+      },
+    ],
+    "file": "/path/to/1649/pages/account.vue",
+    "path": "/fr/compte",
+  },
+  {
+    "children": [],
+    "file": "/path/to/1649/pages/index.vue",
+    "name": "index___en",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "file": "/path/to/1649/pages/index.vue",
+    "name": "index___ja",
+    "path": "/ja",
+  },
+  {
+    "children": [],
+    "file": "/path/to/1649/pages/index.vue",
+    "name": "index___fr",
+    "path": "/fr",
+  },
+]
+`;

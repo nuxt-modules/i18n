@@ -28,6 +28,7 @@ export type AnalyzedNuxtPageMeta = {
    * Analyzed path used to retrieve configured custom paths
    */
   path: string
+  name?: string
 }
 
 export type NuxtPageAnalyzeContext = {
@@ -233,6 +234,8 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages?: NuxtPage[]
 
     ctx.pages.set(page, {
       path: analyzePagePath(filePath, ctx.stack.length),
+      // if route has an index child the parent will not have a name
+      name: page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name,
       inRoot: ctx.stack.length === 0
     })
 
@@ -296,7 +299,8 @@ function getRouteOptionsFromPages(
     return options
   }
 
-  const pageOptions = pageMeta.path ? pages[pageMeta.path] : undefined
+  const valueByName = pageMeta.name ? pages[pageMeta.name] : undefined
+  const pageOptions = valueByName ?? pages[pageMeta.path]
 
   // routing disabled
   if (pageOptions === false) {

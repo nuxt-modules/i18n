@@ -269,3 +269,69 @@ test('#1649', () => {
 
   expect(localizedPages).toMatchSnapshot()
 })
+
+test('pages config using route name', () => {
+  const pages = [
+    {
+      path: '/account',
+      file: '/path/to/1649/pages/account.vue',
+      children: [
+        {
+          name: 'account-addresses',
+          path: 'addresses',
+          file: '/path/to/1649/pages/account/addresses.vue',
+          children: []
+        },
+        {
+          name: 'account',
+          path: '',
+          file: '/path/to/1649/pages/account/index.vue',
+          children: []
+        },
+        {
+          name: 'account-profile',
+          path: 'profile',
+          file: '/path/to/1649/pages/account/profile.vue',
+          children: []
+        }
+      ]
+    },
+    {
+      name: 'index',
+      path: '/',
+      file: '/path/to/1649/pages/index.vue',
+      children: []
+    }
+  ]
+
+  const options = getNuxtOptions({
+    account: {
+      fr: '/compte'
+    },
+    'account-profile': {
+      fr: '/compte/profil'
+    },
+    'account-addresses': {
+      fr: '/compte/adresses'
+    }
+  })
+
+  vi.spyOn(fs, 'readFileSync').mockReturnValue('')
+
+  const srcDir = '/path/to/1649'
+  const pagesDir = 'pages'
+  const ctx: NuxtPageAnalyzeContext = {
+    stack: [],
+    srcDir,
+    pagesDir,
+    pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
+  }
+
+  analyzeNuxtPages(ctx, pages)
+  const localizedPages = localizeRoutes(pages, {
+    ...options,
+    includeUnprefixedFallback: false,
+    optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
+  } as Parameters<typeof localizeRoutes>[1])
+  expect(localizedPages).toMatchSnapshot()
+})

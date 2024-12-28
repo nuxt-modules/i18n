@@ -220,6 +220,11 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
       // remove parent path from child route
       if (parentLocalized != null) {
         localized.path = localized.path.replace(parentLocalized.path + '/', '')
+
+        // handle parent/index
+        if (localized.path === parentLocalized.path) {
+          localized.path = ''
+        }
       }
 
       // localize child routes if set
