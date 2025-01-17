@@ -28,6 +28,18 @@
       "groupName": "Docs dependencies",
       "matchFiles": ["docs/package.json"],
       "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "groupName": "Nuxt & Vue dependencies",
+      "matchFiles": ["package.json", "docs/package.json"],
+      "matchPackageNames": ["nuxt", "@nuxt/**", "vue", "vue-router"],
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "groupName": "Intlify dependencies",
+      "matchFiles": ["package.json"],
+      "matchPackageNames": ["vue-i18n", "@intlify/**"],
+      "matchUpdateTypes": ["minor", "patch"]
     }
   ]
 }
