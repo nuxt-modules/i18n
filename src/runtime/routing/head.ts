@@ -62,7 +62,7 @@ export function localeHead(
 
   // Adding SEO Meta
   if (seo && locale && unref(nuxtApp.$i18n.locales)) {
-    metaObject.link.push(...getHreflangLinks(common, locales, key), ...getCanonicalLink(common, key, seo))
+    metaObject.link.push(...getHreflangLinks(common, locales, key, seo), ...getCanonicalLink(common, key, seo))
 
     metaObject.meta.push(
       ...getOgUrl(common, key, seo),
@@ -83,7 +83,8 @@ function getBaseUrl() {
 export function getHreflangLinks(
   common: CommonComposableOptions,
   locales: LocaleObject[],
-  key: NonNullable<I18nHeadOptions['key']>
+  key: NonNullable<I18nHeadOptions['key']>,
+  seo: I18nHeadOptions['seo']
 ) {
   const baseUrl = getBaseUrl()
   const { defaultLocale, strategy } = useRuntimeConfig().public.i18n
@@ -110,11 +111,17 @@ export function getHreflangLinks(
 
   for (const [language, mapLocale] of localeMap.entries()) {
     const localePath = switchLocalePath(common, mapLocale.code)
+    const canonicalQueryParams = getCanonicalQueryParams(common, seo)
+    let href = toAbsoluteUrl(localePath, baseUrl)
+    if (canonicalQueryParams) {
+      href = `${href}?${canonicalQueryParams}`
+    }
+
     if (localePath) {
       links.push({
         [key]: `i18n-alt-${language}`,
         rel: 'alternate',
-        href: toAbsoluteUrl(localePath, baseUrl),
+        href: href,
         hreflang: language
       })
     }
@@ -122,11 +129,17 @@ export function getHreflangLinks(
 
   if (defaultLocale) {
     const localePath = switchLocalePath(common, defaultLocale)
+    const canonicalQueryParams = getCanonicalQueryParams(common, seo)
+    let href = toAbsoluteUrl(localePath, baseUrl)
+    if (canonicalQueryParams) {
+      href = `${href}?${canonicalQueryParams}`
+    }
+
     if (localePath) {
       links.push({
         [key]: 'i18n-xd',
         rel: 'alternate',
-        href: toAbsoluteUrl(localePath, baseUrl),
+        href: href,
         hreflang: 'x-default'
       })
     }
@@ -146,24 +159,9 @@ export function getCanonicalUrl(common: CommonComposableOptions, baseUrl: string
   if (!currentRoute) return ''
   let href = toAbsoluteUrl(currentRoute.path, baseUrl)
 
-  const canonicalQueries = (isObject(seo) && seo.canonicalQueries) || []
-  const currentRouteQueryParams = currentRoute.query
-  const params = new URLSearchParams()
-  for (const queryParamName of canonicalQueries) {
-    if (queryParamName in currentRouteQueryParams) {
-      const queryParamValue = currentRouteQueryParams[queryParamName]
-
-      if (isArray(queryParamValue)) {
-        queryParamValue.forEach(v => params.append(queryParamName, v || ''))
-      } else {
-        params.append(queryParamName, queryParamValue || '')
-      }
-    }
-  }
-
-  const queryString = params.toString()
-  if (queryString) {
-    href = `${href}?${queryString}`
+  const canonicalQueryParams = getCanonicalQueryParams(common, seo)
+  if (canonicalQueryParams) {
+    href = `${href}?${canonicalQueryParams}`
   }
 
   return href
@@ -179,6 +177,32 @@ export function getCanonicalLink(
   if (!href) return []
 
   return [{ [key]: 'i18n-can', rel: 'canonical', href }]
+}
+
+export function getCanonicalQueryParams(common: CommonComposableOptions, seo: I18nHeadOptions['seo']) {
+  const route = common.router.currentRoute.value
+  const currentRoute = localeRoute(common, {
+    ...route,
+    path: undefined,
+    name: getRouteBaseName(common, route)
+  })
+
+  const canonicalQueries = (isObject(seo) && seo.canonicalQueries) || []
+  const currentRouteQueryParams = currentRoute?.query || {}
+  const params = new URLSearchParams()
+  for (const queryParamName of canonicalQueries) {
+    if (queryParamName in currentRouteQueryParams) {
+      const queryParamValue = currentRouteQueryParams[queryParamName]
+
+      if (isArray(queryParamValue)) {
+        queryParamValue.forEach(v => params.append(queryParamName, v || ''))
+      } else {
+        params.append(queryParamName, queryParamValue || '')
+      }
+    }
+  }
+
+  return params.toString() || undefined
 }
 
 export function getOgUrl(
