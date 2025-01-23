@@ -150,6 +150,10 @@ describe('strategy: prefix', async () => {
     await page.locator('#goto-home').click()
     expect(await getText(page, '#home-header')).toEqual('Accueil')
 
+    // does not redirect to prefixed route for routes with disabled localization
+    await page.goto(url('/ignore-routes/disable'))
+    await waitForURL(page, '/ignore-routes/disable')
+
     await restore()
   })
 
