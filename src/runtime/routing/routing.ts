@@ -97,7 +97,12 @@ function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, l
 
   // if name is falsy fallback to current route name
   route.name ||= getRouteBaseName(common, common.router.currentRoute.value)
-  route.name = getLocaleRouteName(route.name, locale, runtimeI18n)
+
+  const localizedName = getLocaleRouteName(route.name, locale, runtimeI18n)
+  // route localization may be disabled, check if localized variant exists
+  if (common.router.hasRoute(localizedName)) {
+    route.name = localizedName
+  }
 
   return route
 }

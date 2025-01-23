@@ -77,10 +77,14 @@ test('can not access to disable route path', async () => {
   // disable direct url access
   let res: Response | (Error & { status: () => number }) | null = null
   try {
-    res = await page.goto(url('/fr/ignore-routes/disable'))
+    // attempting to goto /fr/disable instead of /fr/ignore-routes/disable since
+    // that route has a catch all that would succeed
+    res = await page.goto(url('/fr/disable'))
   } catch (error: unknown) {
     res = error as Error & { status: () => number }
   }
+
+  console.log(res)
   // 404
   expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
 })
