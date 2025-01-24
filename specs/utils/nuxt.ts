@@ -69,7 +69,7 @@ export async function loadFixture(testContext: VitestContext) {
         ...(ctx.options.prerender ? { static: true } : {}),
         output: {
           dir: outputDir,
-          ...(ctx.options.prerender ? { publicDir: outputDir + '/public' } : {})
+          ...(ctx.options.prerender ? { publicDir: resolve(outputDir, 'public') } : {})
         }
       }
     })

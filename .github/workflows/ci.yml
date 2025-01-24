@@ -85,10 +85,10 @@ jobs:
     strategy:
       matrix:
         node-version: [18]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     timeout-minutes: 25
 
-    name: Test on Node.js ${{ matrix.node-version }}
+    name: Test on Node.js ${{ matrix.node-version }} (${{ matrix.os }})
     steps:
       - name: Checkout codes
         uses: actions/checkout@v4
