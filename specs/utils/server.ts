@@ -51,7 +51,7 @@ export async function startServer(env: Record<string, unknown> = {}) {
     ctx.serverProcess.kill()
     throw lastError || new Error('Timeout waiting for dev server!')
   } else if (ctx.options.prerender) {
-    const command = `npx serve ${ctx.nuxt!.options.nitro!.output?.publicDir} -l tcp://${host}:${port} --no-port-switching`
+    const command = `pnpx serve ${ctx.nuxt!.options.nitro!.output?.publicDir} -l tcp://${host}:${port} --no-port-switching`
     // ; (await import('consola')).consola.restoreConsole()
     const [_command, ...commandArgs] = command.split(' ')
 
