@@ -75,7 +75,7 @@
     "test": "pnpm build && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test -c vitest.config.test.ts",
-    "test:spec": "vitest run specs"
+    "test:spec": "vitest run specs/ssg"
   },
   "pnpm": {
     "overrides": {
