@@ -33,9 +33,10 @@ export default defineNuxtPlugin({
       return detected
     }
 
-    // router is enabled and project has pages
+    await handleRouteDetect(currentRoute.value)
+
+    // app has no pages - do not register route middleware
     if (!hasPages) {
-      await handleRouteDetect(currentRoute.value)
       return
     }
 
