@@ -140,4 +140,17 @@ describe('default strategy: prefix_except_default', async () => {
     // rendering link tag and meta tag in head tag
     await assetLocaleHead(page, '#home-use-locale-head')
   })
+
+  test('(#3330) locale detected server-side', async () => {
+    const { page } = await renderPage('/')
+
+    // @ts-expect-error runtime evaluation
+    const detectPathDefault = await page.evaluate(() => window.useNuxtApp().payload.serverDetectedLocale)
+    expect(detectPathDefault).toEqual('en')
+
+    await page.goto(url('/fr'))
+    // @ts-expect-error runtime evaluation
+    const detectPathFr = await page.evaluate(() => window.useNuxtApp().payload.serverDetectedLocale)
+    expect(detectPathFr).toEqual('fr')
+  })
 })
