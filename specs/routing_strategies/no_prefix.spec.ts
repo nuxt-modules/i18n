@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, beforeAll } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
 import {

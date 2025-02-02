@@ -11,16 +11,7 @@ await setup({
   nuxtConfig: {
     i18n: {
       customRoutes: 'config',
-      pages: {
-        // 'categories/[id]': {
-        //   en: 'categories/english',
-        //   ja: 'categories/japanese'
-        // }
-        // '[...pathMatch]': {
-        //   en: { pathMatch: 'not-found-english' },
-        //   ja: { pathMatch: 'not-found-japanese' }
-        // }
-      }
+      pages: {}
     }
   }
 })

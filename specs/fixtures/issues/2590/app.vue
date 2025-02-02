@@ -13,8 +13,6 @@ useHead(() => ({
   htmlAttrs: head.value.htmlAttrs
 }))
 
-console.log(head.value.htmlAttrs)
-
 const availableLocales = computed(() => {
   return (locales.value as LocaleObject[])
     .filter(item => {

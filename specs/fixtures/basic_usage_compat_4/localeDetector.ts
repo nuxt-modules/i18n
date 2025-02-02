@@ -1,6 +1,5 @@
 // Detect based on query, cookie, header
 export default defineI18nLocaleDetector((event, { defaultLocale }) => {
-  console.log('hello')
   const query = tryQueryLocale(event, { lang: '' })
   if (query) {
     return query.toString()

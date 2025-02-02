@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach } from 'vitest'
+import { describe, test, expect, beforeEach, beforeAll } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch, setup } from './utils'
 import {
@@ -26,7 +26,7 @@ describe('basic usage', async () => {
       runtimeConfig: {
         public: {
           i18n: {
-            baseUrl: '',
+            baseUrl: 'http://localhost:3000',
             skipSettingLocaleOnNavigate: undefined,
             detectBrowserLanguage: undefined
           }
@@ -139,7 +139,7 @@ describe('basic usage', async () => {
     )
 
     expect(await getText(page, '#locale-head')).toMatchInlineSnapshot(
-      `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "hid": "i18n-alt-en", "rel": "alternate", "href": "/nuxt-context-extension", "hreflang": "en" }, { "hid": "i18n-alt-fr", "rel": "alternate", "href": "/fr/nuxt-context-extension", "hreflang": "fr" }, { "hid": "i18n-alt-ja", "rel": "alternate", "href": "/ja/nuxt-context-extension", "hreflang": "ja" }, { "hid": "i18n-alt-ja-JP", "rel": "alternate", "href": "/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "hid": "i18n-alt-nl", "rel": "alternate", "href": "/nl/nuxt-context-extension", "hreflang": "nl" }, { "hid": "i18n-alt-nl-NL", "rel": "alternate", "href": "/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "hid": "i18n-alt-kr", "rel": "alternate", "href": "/kr/nuxt-context-extension", "hreflang": "kr" }, { "hid": "i18n-alt-kr-KO", "rel": "alternate", "href": "/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "hid": "i18n-xd", "rel": "alternate", "href": "/nuxt-context-extension", "hreflang": "x-default" }, { "hid": "i18n-can", "rel": "canonical", "href": "/nuxt-context-extension" } ], "meta": [ { "hid": "i18n-og-url", "property": "og:url", "content": "/nuxt-context-extension" }, { "hid": "i18n-og", "property": "og:locale", "content": "en" }, { "hid": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "hid": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "hid": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "hid": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
+      `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "hid": "i18n-alt-en", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "en" }, { "hid": "i18n-alt-fr", "rel": "alternate", "href": "http://localhost:3000/fr/nuxt-context-extension", "hreflang": "fr" }, { "hid": "i18n-alt-ja", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja" }, { "hid": "i18n-alt-ja-JP", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "hid": "i18n-alt-nl", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl" }, { "hid": "i18n-alt-nl-NL", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "hid": "i18n-alt-kr", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr" }, { "hid": "i18n-alt-kr-KO", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "hid": "i18n-xd", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "x-default" }, { "hid": "i18n-can", "rel": "canonical", "href": "http://localhost:3000/nuxt-context-extension" } ], "meta": [ { "hid": "i18n-og-url", "property": "og:url", "content": "http://localhost:3000/nuxt-context-extension" }, { "hid": "i18n-og", "property": "og:locale", "content": "en" }, { "hid": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "hid": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "hid": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "hid": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
     )
   })
 
@@ -463,11 +463,11 @@ describe('basic usage', async () => {
     // head tags - alt links are updated server side
     const product1Html = await $fetch('/products/big-chair')
     const product1Dom = getDom(product1Html)
-    expect(product1Dom.querySelector('#i18n-alt-nl').href).toEqual('/nl/products/grote-stoel')
+    expect(product1Dom.querySelector('#i18n-alt-nl').href).toEqual('http://localhost:3000/nl/products/grote-stoel')
 
     const product2Html = await $fetch('/nl/products/rode-mok')
     const product2dom = getDom(product2Html)
-    expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('/products/red-mug')
+    expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('http://localhost:3000/products/red-mug')
   })
 
   describe('language switching', async () => {

@@ -18,10 +18,6 @@ describe('basic lazy loading', async () => {
   test('dynamic locale files are not cached', async () => {
     const { page } = await renderPage('/nl')
 
-    page.on('domcontentloaded', () => {
-      console.log('domcontentload triggered!')
-    })
-
     // capture dynamicTime - simulates changing api response
     const dynamicTime = await getText(page, '#dynamic-time')
 
@@ -46,7 +42,6 @@ describe('basic lazy loading', async () => {
 
     // only default locales are fetched (en)
     await page.goto(home)
-    console.log(setFromRequests())
     expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
 
     // wait for request after navigation
@@ -90,8 +85,6 @@ describe('basic lazy loading', async () => {
   test('can access to prefix locale: /fr', async () => {
     const { page } = await renderPage('/fr')
 
-    console.log(page.url())
-
     // `fr` rendering
     expect(await getText(page, '#home-header')).toEqual('Accueil')
     expect(await getText(page, 'title')).toEqual('Accueil')
@@ -110,7 +103,7 @@ describe('basic lazy loading', async () => {
     expect(await page.getAttribute('html', 'lang')).toEqual('fr-FR')
   })
 
-  test('mutiple lazy loading', async () => {
+  test('multiple lazy loading', async () => {
     const { page } = await renderPage('/en-GB')
 
     // `en` base rendering

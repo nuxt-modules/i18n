@@ -14,7 +14,6 @@ await setup({
           // @ts-ignore
           const headers = useRequestHeaders(['x-override-base-url'])
           const xOverrideBaseUrl = headers['x-override-base-url']
-          console.log('xOverrideBaseUrl', xOverrideBaseUrl)
           if (Array.isArray(xOverrideBaseUrl)) {
             return xOverrideBaseUrl[0]
           }

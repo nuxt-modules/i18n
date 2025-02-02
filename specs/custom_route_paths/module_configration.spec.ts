@@ -77,7 +77,7 @@ test('can not access to pick route path', async () => {
   expect(await page.locator('#link-history').getAttribute('href')).toBe(null)
 
   // disable direct url access
-  let res: Response | (Error & { status: () => number }) | null = null
+  let res: Awaited<ReturnType<typeof page.goto>> | (Error & { status: () => number }) | null = null
   try {
     res = await page.goto(url('/fr/history'))
   } catch (error: unknown) {
@@ -98,7 +98,7 @@ test('can not access to disable route path', async () => {
   expect(await page.locator('#link-category').getAttribute('href')).toBe(null)
 
   // disable direct url access
-  let res: Response | (Error & { status: () => number }) | null = null
+  let res: Awaited<ReturnType<typeof page.goto>> | (Error & { status: () => number }) | null = null
   try {
     res = await page.goto(url('/fr/category/test'))
   } catch (error: unknown) {
