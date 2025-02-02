@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, beforeAll } from 'vitest'
+import { describe, test, expect, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch, setup } from './utils'
 import {
