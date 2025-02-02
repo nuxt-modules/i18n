@@ -20,7 +20,11 @@ interface VueI18nInternalPluginOptions {
 
 type VueI18nExtendOptions = {
   extendComposer: (composer: Composer) => void
-  extendComposerInstance: (instance: Composer | VueI18n | ExportedGlobalComposer, composer: Composer) => void
+  extendComposerInstance: (
+    instance: Composer | VueI18n | ExportedGlobalComposer,
+    composer: Composer,
+    unwrap?: boolean
+  ) => void
 }
 
 /**
@@ -57,13 +61,13 @@ export function extendI18n(i18n: I18n, { extendComposer, extendComposerInstance 
     scope.run(() => {
       extendComposer(globalComposer)
       if (i18n.mode === 'legacy' && isVueI18n(i18n.global)) {
-        extendComposerInstance(i18n.global, getComposer(i18n.global))
+        extendComposerInstance(i18n.global, getComposer(i18n.global), true)
       }
     })
 
     // extend Vue component instance for Vue 3
     if (i18n.mode === 'composition' && app.config.globalProperties.$i18n != null) {
-      extendComposerInstance(app.config.globalProperties.$i18n, globalComposer)
+      extendComposerInstance(app.config.globalProperties.$i18n, globalComposer, true)
     }
 
     // dispose effectScope during app unmount

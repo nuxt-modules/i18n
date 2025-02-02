@@ -36,7 +36,31 @@ type BeforeLanguageSwitchHandler = (
  */
 type LanguageSwitchedHandler = (oldLocale: Locale, newLocale: Locale) => Promise<void>
 
-interface SharedProperties {
+type MaybeWrapped<Unwrap, T> = Unwrap extends undefined ? T | ComputedRef<T> : Unwrap extends true ? T : ComputedRef<T>
+
+export interface ComposerCustomProperties<
+  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[],
+  UnwrapProperties extends boolean | undefined = false
+> {
+  /**
+   * List of locales
+   *
+   * @remarks
+   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
+   */
+  locales: MaybeWrapped<UnwrapProperties, ConfiguredLocaleType>
+  /**
+   * List of locale codes
+   */
+  localeCodes: MaybeWrapped<UnwrapProperties, Locale[]>
+  /**
+   * Base URL that is used in generating canonical links
+   */
+  baseUrl: MaybeWrapped<UnwrapProperties, string>
+  /**
+   * Current locale properties.
+   */
+  localeProperties: MaybeWrapped<UnwrapProperties, LocaleObject>
   /**
    * Routing strategy.
    */
@@ -120,54 +144,6 @@ interface SharedProperties {
    * Returns a promise that will be resolved once the pending locale is set.
    */
   waitForPendingLocaleChange: () => Promise<void>
-}
-
-export interface ComposerCustomProperties<
-  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
-> extends SharedProperties {
-  /**
-   * List of locales
-   *
-   * @remarks
-   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
-   */
-  locales: ComputedRef<ConfiguredLocaleType>
-  /**
-   * List of locale codes
-   */
-  localeCodes: ComputedRef<Locale[]>
-  /**
-   * Base URL that is used in generating canonical links
-   */
-  baseUrl: ComputedRef<string>
-  /**
-   * Current locale properties.
-   */
-  localeProperties: ComputedRef<LocaleObject>
-}
-
-export interface NuxtI18nRoutingCustomProperties<
-  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
-> extends SharedProperties {
-  /**
-   * List of locales
-   *
-   * @remarks
-   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
-   */
-  readonly locales: ConfiguredLocaleType
-  /**
-   * List of locale codes
-   */
-  readonly localeCodes: Locale[]
-  /**
-   * Base URL that is used in generating canonical links
-   */
-  baseUrl: string
-  /**
-   * Current locale properties.
-   */
-  localeProperties: LocaleObject
 }
 
 declare module '#app' {

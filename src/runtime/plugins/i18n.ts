@@ -168,14 +168,14 @@ export default defineNuxtPlugin({
           }
         }
       },
-      extendComposerInstance(instance, c) {
-        // Set the extended properties on local scope composer instance
+      extendComposerInstance(instance, c, unwrap = false) {
+        // Set the extended properties on local scope composer instance or custom component properties
         const props: [keyof Composer, PropertyDescriptor['get']][] = [
-          ['locales', () => c.locales],
-          ['localeCodes', () => c.localeCodes],
-          ['baseUrl', () => c.baseUrl],
+          ['locales', unwrap ? () => c.locales.value : () => c.locales],
+          ['localeCodes', unwrap ? () => c.localeCodes.value : () => c.localeCodes],
+          ['baseUrl', unwrap ? () => c.baseUrl.value : () => c.baseUrl],
           ['strategy', () => c.strategy],
-          ['localeProperties', () => c.localeProperties],
+          ['localeProperties', unwrap ? () => c.localeProperties.value : () => c.localeProperties],
           ['setLocale', () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
           ['loadLocaleMessages', () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
           ['differentDomains', () => c.differentDomains],
