@@ -127,4 +127,28 @@ describe('strategy: prefix_and_default', async () => {
     // navigation URL
     expect(await page.url()).toEqual(url('/fr'))
   })
+
+  test('(#2226) navigation works while `locale === defaultLocale`', async () => {
+    const { page } = await renderPage(url('/'))
+
+    await page.locator('#lang-switcher-with-nuxt-link a').click()
+    expect(await getText(page, '#lang-switcher-default-locale')).include(`Default Locale: en`)
+    expect(await getText(page, '#lang-switcher-current-locale')).include(`Current Locale: fr`)
+
+    await page.locator('#link-about').click()
+    await waitForURL(page, '/fr/about')
+    expect(await getText(page, '#about-header')).include(`À propos`)
+
+    await page.locator('#link-home').click()
+    await waitForURL(page, '/fr')
+    expect(await getText(page, '#home-header')).toEqual('Accueil')
+
+    await page.locator('#lang-switcher-with-nuxt-link a').click()
+    expect(await getText(page, '#lang-switcher-default-locale')).include(`Default Locale: en`)
+    expect(await getText(page, '#lang-switcher-current-locale')).include(`Current Locale: en`)
+
+    await page.locator('#link-about').click()
+    await waitForURL(page, '/about')
+    expect(await getText(page, '#about-header')).include(`About us`)
+  })
 })
