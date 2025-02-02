@@ -90,8 +90,17 @@ export { localeDetector }
     debug('nitro.replace', nitroConfig.replace)
   })
 
+  // `defineI18nLocale` and `defineI18nConfig`
+  addServerImports([
+    ...[NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
+      name: key,
+      as: key,
+      from: resolver.resolve('runtime/composables/shared')
+    }))
+  ])
+
   if (enableServerIntegration) {
-    // `@intlify/utils/h3`, `defineI18nLocale` and `defineI18nConfig`
+    // `@intlify/utils/h3` and `defineLocaleDetector
     const h3UtilsExports = await resolveModuleExportNames(UTILS_H3_PKG, { url: import.meta.url })
     addServerImports([
       ...h3UtilsExports.map(key => ({
@@ -99,21 +108,14 @@ export { localeDetector }
         as: key,
         from: resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
       })),
-      ...[NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
-        name: key,
-        as: key,
-        from: resolver.resolve('runtime/composables/shared')
-      })),
       {
         name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
         as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
         from: resolver.resolve('runtime/composables/server')
       }
     ])
-  }
 
-  // add nitro plugin
-  if (enableServerIntegration) {
+    // add nitro plugin
     addServerPlugin(resolver.resolve('runtime/server/plugin'))
   }
 }
