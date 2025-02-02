@@ -2,7 +2,7 @@
 import { useI18n, useSwitchLocalePath } from '#i18n'
 import { useRoute } from '#imports'
 
-const { locales, locale, setLocale } = useI18n()
+const { locales, locale, setLocale, defaultLocale } = useI18n()
 const route = useRoute()
 const switchLocalePath = useSwitchLocalePath()
 
@@ -40,6 +40,11 @@ const localesExcludingCurrent = computed(() => {
     <section id="lang-switcher-current-locale">
       <strong
         >Current Locale: <code>{{ locale }}</code></strong
+      >:
+    </section>
+    <section id="lang-switcher-default-locale">
+      <strong
+        >Default Locale: <code>{{ defaultLocale }}</code></strong
       >:
     </section>
     <section>

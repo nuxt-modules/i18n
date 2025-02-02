@@ -108,16 +108,16 @@ describe('default strategy: prefix_except_default', async () => {
     const { page } = await renderPage('/')
 
     /**
-     * defautl locale
+     * default locale
      */
 
     // title tag
     expect(await getText(page, 'title')).toMatch('Homepage')
 
-    // html tag `lang` attriute
+    // html tag `lang` attribute
     expect(await page.getAttribute('html', 'lang')).toMatch('en')
 
-    // html tag `dir` attriute
+    // html tag `dir` attribute
     expect(await page.getAttribute('html', 'dir')).toMatch('auto')
 
     // rendering link tag and meta tag in head tag
@@ -134,7 +134,7 @@ describe('default strategy: prefix_except_default', async () => {
     // title tag
     expect(await getText(page, 'title')).toMatch('Accueil')
 
-    // html tag `lang` attriute
+    // html tag `lang` attribute
     expect(await page.getAttribute('html', 'lang')).toMatch('fr-FR')
 
     // rendering link tag and meta tag in head tag
