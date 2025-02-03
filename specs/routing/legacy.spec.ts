@@ -12,16 +12,7 @@ await setup({
     i18n: {
       vueI18n: 'i18n-legacy.config.ts',
       customRoutes: 'config',
-      pages: {
-        // 'categories/[id]': {
-        //   en: 'categories/english',
-        //   ja: 'categories/japanese'
-        // }
-        // '[...pathMatch]': {
-        //   en: { pathMatch: 'not-found-english' },
-        //   ja: { pathMatch: 'not-found-japanese' }
-        // }
-      }
+      pages: {}
     }
   }
 })

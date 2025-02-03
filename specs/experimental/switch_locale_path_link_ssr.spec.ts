@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest'
+import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch, setup } from '../utils'
 import { getDom, gotoPath, renderPage, waitForURL } from '../helper'

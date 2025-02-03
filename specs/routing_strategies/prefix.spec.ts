@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
 import { getText, getData, renderPage, waitForURL, startServerWithRuntimeConfig, gotoPath } from '../helper'

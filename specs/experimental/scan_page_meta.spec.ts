@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest'
+import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
 import { getText, renderPage } from '../helper'
