@@ -1,27 +1,3 @@
 {
-  "layouts": {
-    "title": "Page - {title}"
-  },
-  "pages": {
-    "title": {
-      "top": "Top",
-      "about": "About this site"
-    }
-  },
-  "snakeCaseText": "@.snakeCase:{'pages.title.about'}",
-  "pascalCaseText": "@.pascalCase:{'pages.title.about'}",
-  "welcome": "Welcome",
-  "hello": "Hello {name} !",
-  "tag": "<p>Tag</p>",
-  "items": [
-    {
-      "name": "apple"
-    },
-    {
-      "name": "banana"
-    },
-    {
-      "name": "strawberry"
-    }
-  ]
+  "welcome": "Welcome"
 }
