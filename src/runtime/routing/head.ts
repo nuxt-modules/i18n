@@ -109,8 +109,9 @@ export function getHreflangLinks(
     localeMap.set(localeLanguage, locale)
   }
 
+  const routeWithoutQuery = common.router.resolve({ query: {} })
   for (const [language, mapLocale] of localeMap.entries()) {
-    const localePath = switchLocalePath(common, mapLocale.code)
+    const localePath = switchLocalePath(common, mapLocale.code, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, seo)
     let href = toAbsoluteUrl(localePath, baseUrl)
     if (canonicalQueryParams) {
@@ -128,7 +129,7 @@ export function getHreflangLinks(
   }
 
   if (defaultLocale) {
-    const localePath = switchLocalePath(common, defaultLocale)
+    const localePath = switchLocalePath(common, defaultLocale, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, seo)
     let href = toAbsoluteUrl(localePath, baseUrl)
     if (canonicalQueryParams) {
