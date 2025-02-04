@@ -66,6 +66,12 @@ export default defineNuxtPlugin({
 
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
     vueI18nOptions.messages = vueI18nOptions.messages || {}
+
+    // initialize locale objects to make vue-i18n aware of available locales
+    for (const l of localeCodes) {
+      vueI18nOptions.messages[l] ??= {}
+    }
+
     vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain

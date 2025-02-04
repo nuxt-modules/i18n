@@ -75,6 +75,21 @@ describe('basic usage', async () => {
     expect(await page.url()).include('/user/profile?foo=1')
   })
 
+  test('(#3344) `availableLocales` includes all configured locales', async () => {
+    const { page } = await renderPage('/')
+
+    // @ts-expect-error runtime types
+    expect(await page.evaluate(() => window.useNuxtApp?.().$i18n.availableLocales)).toMatchInlineSnapshot(`
+      [
+        "en",
+        "fr",
+        "ja",
+        "kr",
+        "nl",
+      ]
+    `)
+  })
+
   test('`v-t` directive SSR', async () => {
     const pageHTML = await $fetch('/')
     const pageDOM = getDom(pageHTML)
