@@ -121,7 +121,7 @@ export function getHreflangLinks(
     const localePath = switchLocalePath(common, mapLocale.code, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, seo)
     let href = toAbsoluteUrl(localePath, baseUrl)
-    if (canonicalQueryParams) {
+    if (canonicalQueryParams && strictCanonicals) {
       href = `${href}?${canonicalQueryParams}`
     }
 
@@ -139,7 +139,7 @@ export function getHreflangLinks(
     const localePath = switchLocalePath(common, defaultLocale, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, seo)
     let href = toAbsoluteUrl(localePath, baseUrl)
-    if (canonicalQueryParams) {
+    if (canonicalQueryParams && strictCanonicals) {
       href = `${href}?${canonicalQueryParams}`
     }
 
