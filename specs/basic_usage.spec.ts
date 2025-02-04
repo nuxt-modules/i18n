@@ -28,7 +28,10 @@ describe('basic usage', async () => {
           i18n: {
             baseUrl: 'http://localhost:3000',
             skipSettingLocaleOnNavigate: undefined,
-            detectBrowserLanguage: undefined
+            detectBrowserLanguage: undefined,
+            experimental: {
+              alternateLinkCanonicalQueries: false
+            }
           }
         }
       }
@@ -415,13 +418,35 @@ describe('basic usage', async () => {
       }
     })
 
-    const html = await $fetch('/?noncanonical')
+    const html = await $fetch('/?noncanonical&canonical')
     const dom = getDom(html)
     await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
 
     const links = getDataFromDom(dom, '#home-use-locale-head').link
     const i18nCan = links.find(x => x.id === 'i18n-can')
     expect(i18nCan.href).toContain(configDomain)
+    expect(dom.querySelector('#i18n-alt-fr').href).toEqual(
+      'https://runtime-config-domain.com/fr?noncanonical&canonical'
+    )
+
+    await restore()
+  })
+
+  test('render seo tags with `experimental.alternateLinkCanonicalQueries`', async () => {
+    const restore = await startServerWithRuntimeConfig({
+      public: {
+        i18n: {
+          experimental: {
+            alternateLinkCanonicalQueries: true
+          }
+        }
+      }
+    })
+
+    // head tags - alt links are updated server side
+    const html = await $fetch('/?noncanonical&canonical')
+    const dom = getDom(html)
+    expect(dom.querySelector('#i18n-alt-fr').href).toEqual('http://localhost:3000/fr?canonical=')
 
     await restore()
   })
@@ -468,8 +493,10 @@ describe('basic usage', async () => {
 
     // Translated params are not lost on query changes
     await page.locator('#params-add-query').click()
-    await waitForURL(page, '/nl/products/rode-mok?test=123')
-    expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual('/products/red-mug?test=123')
+    await waitForURL(page, '/nl/products/rode-mok?test=123&canonical=123')
+    expect(await page.locator('#nuxt-locale-link-en').getAttribute('href')).toEqual(
+      '/products/red-mug?test=123&canonical=123'
+    )
 
     await page.locator('#params-remove-query').click()
     await waitForURL(page, '/nl/products/rode-mok')
