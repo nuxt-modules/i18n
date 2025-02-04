@@ -127,6 +127,13 @@ export interface ExperimentalFeatures {
    * @remark `'relative'` locale file and langDir paths are converted to be relative to the `rootDir`
    */
   generatedLocaleFilePathFormat?: 'absolute' | 'relative'
+
+  /**
+   * Removes non-canonical query parameters from alternate link meta tags
+   *
+   * @defaultValue `false`
+   */
+  alternateLinkCanonicalQueries?: boolean
 }
 
 export interface BundleOptions

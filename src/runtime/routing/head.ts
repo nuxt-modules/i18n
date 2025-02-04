@@ -109,7 +109,14 @@ export function getHreflangLinks(
     localeMap.set(localeLanguage, locale)
   }
 
-  const routeWithoutQuery = common.router.resolve({ query: {} })
+  const strictCanonicals = common.runtimeConfig.public.i18n.experimental.alternateLinkCanonicalQueries === true
+  const routeWithoutQuery = strictCanonicals ? common.router.resolve({ query: {} }) : undefined
+
+  // set meta property which is lost on router.resolve
+  if (!common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR && strictCanonicals) {
+    routeWithoutQuery!.meta = common.router.currentRoute.value.meta
+  }
+
   for (const [language, mapLocale] of localeMap.entries()) {
     const localePath = switchLocalePath(common, mapLocale.code, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, seo)
