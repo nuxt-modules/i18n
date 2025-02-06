@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch, setup } from '../utils'
-import { getDom, gotoPath, renderPage, waitForURL } from '../helper'
+import { getDom, gotoPath, renderPage, startServerWithRuntimeConfig, waitForURL } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic_usage`, import.meta.url)),
@@ -12,13 +12,15 @@ await setup({
     runtimeConfig: {
       public: {
         i18n: {
-          baseUrl: ''
+          baseUrl: '',
+          alternateLinkCanonicalQueries: false
         }
       }
     },
     i18n: {
       experimental: {
-        switchLocalePathLinkSSR: true
+        switchLocalePathLinkSSR: true,
+        alternateLinkCanonicalQueries: false
       }
     }
   }
@@ -35,12 +37,43 @@ describe('experimental.switchLocalePathLinkSSR', async () => {
 
     // Translated params are not lost on query changes
     await page.locator('#params-add-query').click()
-    await waitForURL(page, '/nl/products/rode-mok?test=123')
-    expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug?test=123')
+    await waitForURL(page, '/nl/products/rode-mok?test=123&canonical=123')
+    expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
+      '/products/red-mug?test=123&canonical=123'
+    )
 
     await page.locator('#params-remove-query').click()
     await waitForURL(page, '/nl/products/rode-mok')
     expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
+  })
+
+  test('respects `experimental.alternateLinkCanonicalQueries`', async () => {
+    const restore = await startServerWithRuntimeConfig({
+      public: {
+        i18n: {
+          experimental: {
+            switchLocalePathLinkSSR: true,
+            alternateLinkCanonicalQueries: true
+          }
+        }
+      }
+    })
+
+    // head tags - alt links are updated server side
+    const product1Html = await $fetch('/products/big-chair?test=123&canonical=123')
+    const product1Dom = getDom(product1Html)
+    expect(product1Dom.querySelector('#i18n-alt-nl').href).toEqual('/nl/products/grote-stoel?canonical=123')
+    expect(product1Dom.querySelector('#switch-locale-path-link-nl').href).toEqual(
+      '/nl/products/grote-stoel?test=123&canonical=123'
+    )
+
+    const product2Html = await $fetch('/nl/products/rode-mok?test=123&canonical=123')
+    const product2dom = getDom(product2Html)
+    expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('/products/red-mug?canonical=123')
+    expect(product2dom.querySelector('#switch-locale-path-link-en').href).toEqual(
+      '/products/red-mug?test=123&canonical=123'
+    )
+    await restore()
   })
 
   test('dynamic parameters rendered correctly during SSR', async () => {

@@ -32,7 +32,8 @@ export const DEFAULT_OPTIONS = {
     autoImportTranslationFunctions: false,
     typedPages: true,
     typedOptionsAndMessages: false,
-    generatedLocaleFilePathFormat: 'absolute'
+    generatedLocaleFilePathFormat: 'absolute',
+    alternateLinkCanonicalQueries: false
   },
   bundle: {
     compositionOnly: true,

@@ -93,7 +93,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 
       // prettier-ignore
       metaObject.link.push(
-        ...getHreflangLinks(common, locales, key),
+        ...getHreflangLinks(common, locales, key, seo),
         ...getCanonicalLink(common, key, seo)
       )
 

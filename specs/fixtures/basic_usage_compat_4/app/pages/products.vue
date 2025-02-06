@@ -16,7 +16,9 @@ onMounted(async () => {
     <LangSwitcher />
     <ul>
       <li>
-        <NuxtLink id="params-add-query" :to="localePath({ query: { test: '123' } })">Add query</NuxtLink>
+        <NuxtLink id="params-add-query" :to="localePath({ query: { test: '123', canonical: '123' } })"
+          >Add query</NuxtLink
+        >
       </li>
       <li>
         <NuxtLink id="params-remove-query" :to="localePath({ query: undefined })">Remove query</NuxtLink>
