@@ -2,8 +2,9 @@ import { unref } from 'vue'
 import { hasPages } from '#build/i18n.options.mjs'
 import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware } from '#imports'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
-import { detectLocale, detectRedirect, loadAndSetLocale, navigate } from '../utils'
+import { makeFallbackLocaleCodes } from '../messages'
 import { createLocaleFromRouteGetter } from '../routing/utils'
+import { detectLocale, detectRedirect, loadAndSetLocale, navigate } from '../utils'
 
 import type { NuxtApp } from '#app'
 import type { CompatRoute } from '../types'
@@ -22,6 +23,8 @@ export default defineNuxtPlugin({
 
       if (nuxtApp._vueI18n.__firstAccess) {
         nuxtApp._vueI18n.__setLocale(detected)
+        const fallbackLocales = makeFallbackLocaleCodes(unref(nuxtApp._vueI18n.global.fallbackLocale), [detected])
+        await Promise.all(fallbackLocales.map(x => nuxtApp.$i18n.loadLocaleMessages(x)))
         await nuxtApp.$i18n.loadLocaleMessages(detected)
       }
 
