@@ -1,10 +1,11 @@
-import { useRequestHeaders, useCookie as useNuxtCookie, useNuxtApp } from '#imports'
-import { ref, computed, watch, onUnmounted, unref } from 'vue'
+import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { getActiveHead } from 'unhead'
-import { getNormalizedLocales, initCommonComposableOptions } from '../utils'
+import { initCommonComposableOptions } from '../utils'
 import {
+  creatHeadContext,
   getAlternateOgLocales,
   getCanonicalLink,
   getCurrentOgLocale,
@@ -18,7 +19,7 @@ import { getComposer } from '../compatibility'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { resolveRoute } from '../routing/routing'
-import type { I18nHeadMetaInfo, I18nHeadOptions, LocaleObject, SeoAttributesOptions } from '#internal-i18n-types'
+import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { HeadParam } from '../utils'
 import type { RouteLocationAsRelativeI18n, RouteLocationRaw, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 
@@ -41,12 +42,12 @@ export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) =
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
-  const nuxtApp = useNuxtApp()
   const head = getActiveHead()
   const router = common.router
 
-  const locale = unref(nuxtApp.$i18n.locale)
-  const locales = getNormalizedLocales(unref(nuxtApp.$i18n.locales))
+  // @ts-expect-error accepts more
+  // Hard code to 'id', this is used to replace payload before ssr response
+  const ctx = creatHeadContext({ key: 'id', seo })
   const _i18nParams = ref({})
   const experimentalSSR = common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR
 
@@ -74,9 +75,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
     stop()
   })
 
-  const currentLocale: LocaleObject = getNormalizedLocales(locales).find(l => l.code === locale) || { code: locale }
-
-  if (!unref(nuxtApp.$i18n.baseUrl)) {
+  if (!ctx.baseUrl) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
   }
 
@@ -87,20 +86,18 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
     }
 
     // Adding SEO Meta
-    if (locale && unref(nuxtApp.$i18n.locales)) {
-      // Hard code to 'id', this is used to replace payload before ssr response
-      const key = 'id'
-
+    if (ctx.locale && ctx.locales) {
       // prettier-ignore
       metaObject.link.push(
-        ...getHreflangLinks(common, locales, key, seo),
-        ...getCanonicalLink(common, key, seo)
+        ...getHreflangLinks(common, ctx),
+        ...getCanonicalLink(common, ctx)
       )
 
+      // prettier-ignore
       metaObject.meta.push(
-        ...getOgUrl(common, key, seo),
-        ...getCurrentOgLocale(currentLocale, currentLocale.language, key),
-        ...getAlternateOgLocales(locales, currentLocale.language, key)
+        ...getOgUrl(common, ctx),
+        ...getCurrentOgLocale(ctx),
+        ...getAlternateOgLocales(ctx)
       )
     }
 
