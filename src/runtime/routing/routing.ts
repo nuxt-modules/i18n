@@ -67,17 +67,9 @@ export function applyRouteResolutionEnhancement(common: CommonComposableOptions)
       return originalResolve(to, currentLocation)
     }
 
-    const _locale = (typeof options?.locale === 'string' && options?.locale) || unref(getI18nTarget(common.i18n).locale)
-    const normalized = normalizeRawLocation(to)
-    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale), currentLocation, {
-      locale: false
-    })
-    if (resolved.name) {
-      return resolved
-    }
-
-    // if didn't resolve to an existing route then just return resolved route based on original input.
-    return common.router.resolve(to, currentLocation, { locale: false })
+    // resolve to string | undefined
+    const _locale = (typeof options?.locale === 'string' && options?.locale) || undefined
+    return _resolveRoute(common, to, _locale)
   }
 }
 
@@ -139,19 +131,26 @@ function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, l
   return route
 }
 
+function _resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
+  const _locale = locale || unref(getI18nTarget(common.i18n).locale)
+  const normalized = normalizeRawLocation(route)
+  const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale), undefined, {
+    locale: false
+  })
+  if (resolved.name) {
+    return resolved
+  }
+
+  // if didn't resolve to an existing route then just return resolved route based on original input.
+  return common.router.resolve(route, undefined, { locale: false })
+}
+
+/**
+ * Resolve route but catch Vue Router's no match resolution error
+ */
 export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
   try {
-    const _locale = locale || unref(getI18nTarget(common.i18n).locale)
-    const normalized = normalizeRawLocation(route)
-    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale), undefined, {
-      locale: false
-    })
-    if (resolved.name) {
-      return resolved
-    }
-
-    // if didn't resolve to an existing route then just return resolved route based on original input.
-    return common.router.resolve(route, undefined, { locale: false })
+    return _resolveRoute(common, route, locale)
   } catch (e: unknown) {
     if (isNavigationFailure(e, 1 /* No match */)) {
       return null
