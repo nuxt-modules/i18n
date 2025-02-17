@@ -177,6 +177,22 @@ declare module '#app' {
   }
 }
 
+declare module 'vue-router' {
+  interface Router {
+    _resolve: Router['resolve']
+    resolve<Name extends keyof RouteMap = keyof RouteMap>(
+      to: RouteLocationAsRelativeTyped<RouteMap, Name>,
+      currentLocation?: RouteLocationNormalizedLoaded,
+      options?: { locale?: Locale | boolean }
+    ): RouteLocationResolved<Name>
+    resolve(
+      to: RouteLocationAsString | RouteLocationAsRelative | RouteLocationAsPath,
+      currentLocation?: RouteLocationNormalizedLoaded,
+      options?: { locale?: Locale | boolean }
+    ): RouteLocationResolved
+  }
+}
+
 declare module 'vue-i18n' {
   interface I18n {
     __pendingLocale?: string

@@ -11,7 +11,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
-import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl } from '../utils'
+import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl, initCommonComposableOptions } from '../utils'
 import {
   getBrowserLocale,
   getLocaleCookie,
@@ -27,7 +27,7 @@ import { createLocaleFromRouteGetter, resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/i18n'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { getI18nTarget } from '../compatibility'
-import { resolveRoute } from '../routing/routing'
+import { applyRouteResolutionEnhancement, resolveRoute } from '../routing/routing'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocaleLocation } from '../composables'
 
@@ -216,6 +216,10 @@ export default defineNuxtPlugin({
      * from https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
      */
     defineGetter(nuxtApp, '$i18n', getI18nTarget(i18n))
+
+    if (nuxt.$config.public.i18n.experimental.routeResolutionEnhancement) {
+      applyRouteResolutionEnhancement(initCommonComposableOptions(i18n))
+    }
 
     return {
       provide: {

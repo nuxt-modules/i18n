@@ -48,6 +48,38 @@ export function localeRoute(common: CommonComposableOptions, route: RouteLocatio
 }
 
 type RouteLike = (RouteLocationPathRaw & { name?: string }) | (RouteLocationNamedRaw & { path?: string })
+type ResolverParams = Parameters<import('#vue-router').Router['resolve']>
+
+export function applyRouteResolutionEnhancement(common: CommonComposableOptions) {
+  const originalResolve = common.router.resolve.bind(common.router)
+
+  const implicitEnhancement =
+    (common.runtimeConfig.public.i18n.experimental.routeResolutionEnhancement as false | 'explicit' | 'implicit') ===
+    'implicit'
+
+  common.router.resolve = (
+    to: ResolverParams[0],
+    currentLocation: ResolverParams[1],
+    options?: { locale?: Locale | boolean }
+  ) => {
+    // disable enhancement
+    if ((!implicitEnhancement && options?.locale == null) || options?.locale === false) {
+      return originalResolve(to, currentLocation)
+    }
+
+    const _locale = (typeof options?.locale === 'string' && options?.locale) || unref(getI18nTarget(common.i18n).locale)
+    const normalized = normalizeRawLocation(to)
+    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale), currentLocation, {
+      locale: false
+    })
+    if (resolved.name) {
+      return resolved
+    }
+
+    // if didn't resolve to an existing route then just return resolved route based on original input.
+    return common.router.resolve(to, currentLocation, { locale: false })
+  }
+}
 
 /**
  * Copy and normalizes a raw route argument into a `RouteLike` object
@@ -111,13 +143,15 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
   try {
     const _locale = locale || unref(getI18nTarget(common.i18n).locale)
     const normalized = normalizeRawLocation(route)
-    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale))
+    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale), undefined, {
+      locale: false
+    })
     if (resolved.name) {
       return resolved
     }
 
     // if didn't resolve to an existing route then just return resolved route based on original input.
-    return common.router.resolve(route)
+    return common.router.resolve(route, undefined, { locale: false })
   } catch (e: unknown) {
     if (isNavigationFailure(e, 1 /* No match */)) {
       return null
@@ -186,7 +220,7 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
   }
 
   if (common.runtimeConfig.public.i18n.strategy !== 'prefix') {
-    return common.router.resolve(route)
+    return common.router.resolve(route, undefined, { locale: false })
   }
 
   // if (isArray(route.matched) && route.matched.length > 0) {
@@ -201,5 +235,5 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
     return route
   }
 
-  return common.router.resolve(Object.assign({}, route, _route, { path: targetPath }))
+  return common.router.resolve(Object.assign({}, route, _route, { path: targetPath }), undefined, { locale: false })
 }

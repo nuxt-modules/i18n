@@ -134,6 +134,16 @@ export interface ExperimentalFeatures {
    * @defaultValue `false`
    */
   alternateLinkCanonicalQueries?: boolean
+
+  /**
+   * Enhance Vue Router's route resolution with localization
+   *
+   * @defaultValue `false`
+   *
+   * @remark `'explicit'` - resolve localized routes when passing `{ locale: Locale | true }` as third argument to router.resolve.
+   * @remark `'implicit'` - resolve localized routes by default
+   */
+  routeResolutionEnhancement?: false | 'explicit' | 'implicit'
 }
 
 export interface BundleOptions
