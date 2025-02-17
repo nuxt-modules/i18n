@@ -336,6 +336,21 @@ declare module '#app' {
 
 ${typedRouterAugmentations}
 
+declare module 'vue-router' {
+  interface Router {
+    resolve<Name extends keyof RouteMap = keyof RouteMap>(
+      to: RouteLocationAsRelativeTyped<RouteMap, Name>,
+      currentLocation?: RouteLocationNormalizedLoaded,
+      options?: { locale?: Locale | boolean }
+    ): RouteLocationResolved<Name>
+    resolve(
+      to: RouteLocationAsString | RouteLocationAsRelative | RouteLocationAsPath,
+      currentLocation?: RouteLocationNormalizedLoaded,
+      options?: { locale?: Locale | boolean }
+    ): RouteLocationResolved
+  }
+}
+
 ${(options.experimental?.autoImportTranslationFunctions && globalTranslationTypes) || ''}
 
 export {}`
