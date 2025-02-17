@@ -179,7 +179,6 @@ declare module '#app' {
 
 declare module 'vue-router' {
   interface Router {
-    _resolve: Router['resolve']
     resolve<Name extends keyof RouteMap = keyof RouteMap>(
       to: RouteLocationAsRelativeTyped<RouteMap, Name>,
       currentLocation?: RouteLocationNormalizedLoaded,
