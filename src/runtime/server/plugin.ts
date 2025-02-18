@@ -21,13 +21,18 @@ export default defineNitroPlugin(async nitro => {
   const initialLocale = runtimeI18n.defaultLocale || options.locale || 'en-US'
 
   // load initial locale messages for intlify/h3
-  options.messages = await loadInitialMessages(options.messages, localeLoaders, {
-    localeCodes,
-    initialLocale,
-    lazy: runtimeI18n.lazy,
-    defaultLocale: runtimeI18n.defaultLocale,
-    fallbackLocale: options.fallbackLocale
-  })
+  options.messages = await loadInitialMessages(
+    options.messages,
+    localeLoaders,
+    {
+      localeCodes,
+      initialLocale,
+      lazy: runtimeI18n.lazy,
+      defaultLocale: runtimeI18n.defaultLocale,
+      fallbackLocale: options.fallbackLocale
+    },
+    nuxtMock
+  )
 
   const localeDetector = async (
     event: H3Event,
@@ -41,10 +46,10 @@ export default defineNitroPlugin(async nitro => {
       if (fallbackLocale) {
         const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
         await Promise.all(
-          fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages))
+          fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages, nuxtMock))
         )
       }
-      await loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages)
+      await loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages, nuxtMock)
     }
     return locale
   }
