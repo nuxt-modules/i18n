@@ -65,7 +65,7 @@ export function simplifyLocaleOptions(
   })
 }
 
-type LocaleLoaderData = { key: string; load: string; cache: string }
+type LocaleLoaderData = { key: string; load: string; cache: string; specifier: string; metaKey: string }
 
 export function generateLoaderOptions(
   nuxt: Nuxt,
@@ -91,7 +91,9 @@ export function generateLoaderOptions(
     importMapper.set(meta.key, {
       key: toCode(importer?.key),
       load: importer?.load,
-      cache: toCode(importer?.cache)
+      cache: toCode(importer?.cache),
+      specifier: importSpecifier,
+      metaKey: meta.key
     })
   }
 

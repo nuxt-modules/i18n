@@ -49,5 +49,18 @@ export const hasPages = ${options.hasPages}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
+
+if(import.meta.hot) {
+  ${options.localeLoaders
+    .flatMap(([k, val]) =>
+      val.map(
+        (entry, i) => `import.meta.hot.accept("${entry.specifier}", async mod => { 
+    localeLoaders["${k}"][${i}].load = () => Promise.resolve(mod.default)
+    await useNuxtApp().$i18n.loadLocaleMessages("${k}")
+  })\n`
+      )
+    )
+    .join('\n  ')}
+}
 `
 }
