@@ -136,4 +136,34 @@ describe('basic lazy loading', async () => {
     expect(await getText(page, '#welcome-english')).toEqual('Welcome!')
     expect(await getText(page, '#welcome-dutch')).toEqual('Welkom!')
   })
+
+  test('(#3359) runtime config accessible in locale function', async () => {
+    const { page, pageErrors, consoleLogs } = await renderPage('/')
+
+    // wait for request after navigation
+    const localeRequestNl = page.waitForRequest(/runtime-config-translation/)
+    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await localeRequestNl
+    // await updated text
+    await page.waitForFunction(
+      () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
+      {},
+      { timeout: 2000 }
+    )
+    expect(await getText(page, '#runtime-config-key')).toEqual('runtime-config-value')
+
+    // trigger server-side locale loading
+    await page.reload()
+    // @ts-ignore
+    await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
+    // await updated text
+    await page.waitForFunction(
+      () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
+      {},
+      { timeout: 2000 }
+    )
+
+    expect(consoleLogs.filter(x => x.type === 'error').length).toEqual(0)
+    expect(await getText(page, '#runtime-config-key')).toEqual('runtime-config-value')
+  })
 })
