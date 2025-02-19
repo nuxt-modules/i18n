@@ -10,7 +10,7 @@ import {
   parallelPlugin,
   normalizedLocales
 } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions, loadLocale } from '../messages'
+import { loadVueI18nOptions, loadLocale, loadAndSetLocaleMessages } from '../messages'
 import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl } from '../utils'
 import {
   getBrowserLocale,
@@ -149,6 +149,21 @@ export default defineNuxtPlugin({
         composer.getBrowserLocale = () => getBrowserLocale()
         composer.getLocaleCookie = () => getLocaleCookie(localeCookie, _detectBrowserLanguage, composer.defaultLocale)
         composer.setLocaleCookie = (locale: string) => setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
+        // @ts-expect-error untyped internal function
+        composer.resetVueI18nConfigs = async () => {
+          const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
+
+          const messageKeys = Array.from(
+            new Set(Object.keys(vueI18nOptions.messages || {}).concat(Object.keys(composer.messages.value)))
+          )
+
+          for (const k of messageKeys) {
+            const current = vueI18nOptions.messages?.[k] || {}
+            await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
+            // @ts-expect-error type mismatch
+            composer.messages.value[k] = current
+          }
+        }
 
         composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
           nuxt.callHook('i18n:beforeLocaleSwitch', {
