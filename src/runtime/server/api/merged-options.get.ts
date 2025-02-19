@@ -40,7 +40,7 @@ export default defineEventHandler(async () => {
       deepCopy(message, messages)
     }
 
-    await loadLocale(locale, localeLoaders, setter)
+    await loadLocale(locale, localeLoaders, setter, nuxtMock)
   }
 
   // @ts-ignore

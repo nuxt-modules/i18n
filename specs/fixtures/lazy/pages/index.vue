@@ -47,5 +47,6 @@ useHead(() => ({
     <p id="profile-ts">{{ $t('settings_nest_foo_bar_profile') }}</p>
     <p id="html-message" v-html="$t('html')"></p>
     <p id="dynamic-time">{{ $t('dynamicTime') }}</p>
+    <p id="runtime-config-key">{{ $t('runtimeConfigKey') }}</p>
   </div>
 </template>

@@ -62,7 +62,8 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
     initialLocale: Locale
     fallbackLocale: FallbackLocale
     localeCodes: string[]
-  }
+  },
+  nuxt: { runWithContext: NuxtApp['runWithContext'] }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<Record<string, any>> {
   const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
@@ -70,24 +71,28 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   // load fallback messages
   if (lazy && fallbackLocale) {
     const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
-    await Promise.all(fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, messages)))
+    await Promise.all(fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, messages, nuxt)))
   }
 
   // load initial messages
   const locales = lazy ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
-  await Promise.all(locales.map((locale: Locale) => loadAndSetLocaleMessages(locale, localeLoaders, messages)))
+  await Promise.all(locales.map((locale: Locale) => loadAndSetLocaleMessages(locale, localeLoaders, messages, nuxt)))
 
   return messages
 }
 
-async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
+async function loadMessage(
+  locale: Locale,
+  { key, load }: LocaleLoader,
+  nuxt: { runWithContext: NuxtApp['runWithContext'] }
+) {
   const logger = /*#__PURE__*/ createLogger('loadMessage')
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && logger.log({ locale })
     const getter = await load().then(r => ('default' in r ? r.default : r))
     if (isFunction(getter)) {
-      message = await getter(locale)
+      message = await nuxt.runWithContext(() => getter(locale))
       __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
     } else {
       message = getter
@@ -105,7 +110,8 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader) {
 export async function loadLocale(
   locale: Locale,
   localeLoaders: Record<Locale, LocaleLoader[]>,
-  setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void
+  setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void,
+  nuxt: { runWithContext: NuxtApp['runWithContext'] }
 ) {
   const logger = /*#__PURE__*/ createLogger('loadLocale')
   const loaders = localeLoaders[locale]
@@ -125,7 +131,7 @@ export async function loadLocale(
     } else {
       __DEBUG__ && !loader.cache && logger.log(loader.key + ' bypassing cache!')
       __DEBUG__ && logger.log(loader.key + ' is loading ...')
-      message = await loadMessage(locale, loader)
+      message = await nuxt.runWithContext(() => loadMessage(locale, loader, nuxt))
     }
 
     if (message != null) {
@@ -142,7 +148,8 @@ type LocaleLoaderMessages =
 export async function loadAndSetLocaleMessages(
   locale: Locale,
   localeLoaders: Record<Locale, LocaleLoader[]>,
-  messages: LocaleLoaderMessages
+  messages: LocaleLoaderMessages,
+  nuxt: { runWithContext: NuxtApp['runWithContext'] }
 ) {
   const setter = (locale: Locale, message: LocaleMessages<DefineLocaleMessage, Locale>) => {
     const base = messages[locale] || {}
@@ -150,5 +157,5 @@ export async function loadAndSetLocaleMessages(
     messages[locale] = base
   }
 
-  await loadLocale(locale, localeLoaders, setter)
+  await loadLocale(locale, localeLoaders, setter, nuxt)
 }

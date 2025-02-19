@@ -20,6 +20,12 @@ export default defineNuxtConfig({
       }
     }
   },
+
+  runtimeConfig: {
+    public: {
+      myKey: 'runtime-config-value'
+    }
+  },
   modules: [i18nModule, '@nuxtjs/i18n'],
   i18n: {
     restructureDir: false,
@@ -43,7 +49,7 @@ export default defineNuxtConfig({
       {
         code: 'en-GB',
         language: 'en-GB',
-        files: ['lazy-locale-en.json', 'lazy-locale-en-GB.js', 'lazy-locale-en-GB.ts'],
+        files: ['lazy-locale-en.json', 'lazy-locale-en-GB.js', 'lazy-locale-en-GB.ts', 'runtime-config-translation.js'],
         name: 'English (UK)'
       },
       {

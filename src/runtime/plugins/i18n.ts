@@ -143,7 +143,7 @@ export default defineNuxtPlugin({
           )
         }
         composer.loadLocaleMessages = async (locale: string) =>
-          await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer))
+          await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer), nuxtApp)
         composer.differentDomains = runtimeI18n.differentDomains
         composer.defaultLocale = runtimeI18n.defaultLocale
         composer.getBrowserLocale = () => getBrowserLocale()
