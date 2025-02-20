@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { useLocalePath, type Locale } from '#i18n'
+import { useLocaleRoute, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
 import { defineNuxtLink } from '#imports'
 import { hasProtocol } from 'ufo'
@@ -27,7 +27,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
     }
   },
   setup(props, { slots }) {
-    const localePath = useLocalePath()
+    const localeRoute = useLocaleRoute()
 
     // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
     const checkPropConflicts = (
@@ -42,7 +42,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
 
     const resolvedPath = computed(() => {
       const destination = props.to ?? props.href
-      return (destination != null ? localePath(destination, props.locale) : destination) as string
+      return destination != null ? localeRoute(destination, props.locale) : destination
     })
 
     // Resolving link type
@@ -76,6 +76,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
       }
 
       if (!isExternal.value) {
+        // @ts-expect-error type needs to expanded to allow route objects/paths as NuxtLinkProps
         _props.to = resolvedPath.value
       }
 

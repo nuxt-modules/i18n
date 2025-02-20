@@ -33,7 +33,8 @@ export const DEFAULT_OPTIONS = {
     typedPages: true,
     typedOptionsAndMessages: false,
     generatedLocaleFilePathFormat: 'absolute',
-    alternateLinkCanonicalQueries: false
+    alternateLinkCanonicalQueries: false,
+    routeResolutionEnhancement: false as false | 'explicit' | 'implicit'
   },
   bundle: {
     compositionOnly: true,
