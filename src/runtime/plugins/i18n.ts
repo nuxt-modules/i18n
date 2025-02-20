@@ -150,7 +150,7 @@ export default defineNuxtPlugin({
         composer.getLocaleCookie = () => getLocaleCookie(localeCookie, _detectBrowserLanguage, composer.defaultLocale)
         composer.setLocaleCookie = (locale: string) => setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
         // @ts-expect-error untyped internal function
-        composer.resetVueI18nConfigs = async () => {
+        composer.resetVueI18nConfigs = async (locale?: string) => {
           const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
 
           const messageKeys = Array.from(
@@ -158,6 +158,7 @@ export default defineNuxtPlugin({
           )
 
           for (const k of messageKeys) {
+            if (locale && k !== locale) continue
             const current = vueI18nOptions.messages?.[k] || {}
             await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
             // @ts-expect-error type mismatch

@@ -17,20 +17,15 @@ export type TemplateNuxtI18nOptions = {
 } & ReturnType<typeof generateLoaderOptions>
 
 export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
-  const serverHMR =
-    `  import.meta.hot.accept(() => import.meta.hot.invalidate())\n\n` +
-    `${options.vueI18nConfigSpecifiers
-      .map(x => `  import.meta.hot.accept("${x}", mod => import.meta.hot.invalidate())`)
-      .join('\n  ')}`
-
-  const clientHMR =
+  const codeHMR =
     `${options.localeLoaders
       .flatMap(([k, val]) =>
         val.map((entry, i) =>
           [
             `  import.meta.hot.accept("${entry.specifier}", async mod => {`,
             `    localeLoaders["${k}"][${i}].load = () => Promise.resolve(mod.default)`,
-            `    await useNuxtApp().$i18n.loadLocaleMessages("${k}")`,
+            `    await useNuxtApp().$i18n.resetVueI18nConfigs("${k}")`,
+            // `    await useNuxtApp().$i18n.loadLocaleMessages("${k}")`,
             `  })`
           ].join('\n')
         )
@@ -47,6 +42,7 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
         ].join('\n')
       )
       .join('\n\n')}`
+
   return `
 // @ts-nocheck
 ${options.importStrings.length > 0 ? options.importStrings.join('\n') + '\n' : ''}
@@ -81,6 +77,6 @@ export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 
 if(import.meta.hot) {
-${options.isServer ? serverHMR : clientHMR}
+${codeHMR}
 }`
 }

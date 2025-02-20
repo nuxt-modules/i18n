@@ -124,25 +124,24 @@ export {}`
   addVitePlugin(
     {
       name: 'i18n:type-generation-hmr',
-      configureServer() {
-        const nitro = useNitro()
-
-        // generate on nitro server start
-        nitro.hooks.hookOnce('dev:reload', fetchAndUpdateTypes)
-
-        // watch locale and vue-i18n config file changes
-        nuxt.hook('builder:watch', (_, path) => {
-          // compatibility see https://nuxt.com/docs/getting-started/upgrade#absolute-watch-paths-in-builderwatch
-          // TODO: consider conditionally checking absolute paths for Nuxt 4
+      enforce: 'post',
+      // watch locale and vue-i18n config file changes
+      watchChange(path) {
+        // fetch and update types when nitro server is ready
+        useNitro().hooks.hookOnce('dev:reload', async () => {
           path = relative(nuxt.options.srcDir, resolve(nuxt.options.srcDir, path))
 
           if (!localePaths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
 
-          // fetch and update types when nitro server is ready
-          nitro.hooks.hookOnce('dev:reload', fetchAndUpdateTypes)
+          await fetchAndUpdateTypes()
         })
+      },
+
+      configureServer() {
+        // generate on nitro server start
+        useNitro().hooks.hookOnce('dev:reload', fetchAndUpdateTypes)
       }
     },
-    { client: false }
+    { dev: true, server: true, client: false }
   )
 }
