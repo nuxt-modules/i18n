@@ -168,7 +168,8 @@ export function generateLoaderOptions(
     vueI18nConfigs: vueI18nConfigImports,
     normalizedLocales: processedNormalizedLocales,
     vueI18nConfigSpecifiers,
-    isServer
+    isServer,
+    hmr: !!nuxtI18nOptions.experimental?.hmr
   }
 
   debug('generate code', generated)

@@ -22,22 +22,24 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.build.transpile.push('#internal-i18n-types')
   nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
-  addVitePlugin({
-    name: 'i18n:options-hmr',
-    configureServer(server) {
-      const reloadClient = () => server.ws.send({ type: 'full-reload' })
+  if (dev && options.experimental.hmr) {
+    addVitePlugin({
+      name: 'i18n:options-hmr',
+      configureServer(server) {
+        const reloadClient = () => server.ws.send({ type: 'full-reload' })
 
-      server.ws.on('i18n:options-complex-invalidation', () => {
-        // await dev reload if type generation is enabled
-        if (ctx.options.experimental.typedOptionsAndMessages) {
-          useNitro().hooks.hookOnce('dev:reload', reloadClient)
-          return
-        }
+        server.ws.on('i18n:options-complex-invalidation', () => {
+          // await dev reload if type generation is enabled
+          if (ctx.options.experimental.typedOptionsAndMessages) {
+            useNitro().hooks.hookOnce('dev:reload', reloadClient)
+            return
+          }
 
-        reloadClient()
-      })
-    }
-  })
+          reloadClient()
+        })
+      }
+    })
+  }
 
   const genTemplate = (isServer: boolean, lazy?: boolean) => {
     const nuxtI18nOptions = defu({}, options)

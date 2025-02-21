@@ -432,7 +432,12 @@ export function createNuxtI18nDev() {
   const nuxtApp = useNuxtApp()
   const composer = getComposer(nuxtApp._vueI18n)
 
-  async function resetVueI18nConfigs(locale?: string) {
+  /**
+   * Triggers a reload of vue-i18n configs (if needed) and locale message files in the correct order
+   *
+   * @param locale only passed when a locale file has been changed, if `undefined` indicates a vue-i18n config change
+   */
+  async function resetI18nProperties(locale?: string) {
     const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtApp)
 
     const messageLocales = uniqueKeys(opts.messages || {}, composer.messages.value)
@@ -458,5 +463,5 @@ export function createNuxtI18nDev() {
     }
   }
 
-  return { resetVueI18nConfigs }
+  return { resetI18nProperties }
 }

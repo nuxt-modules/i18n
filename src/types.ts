@@ -134,6 +134,13 @@ export interface ExperimentalFeatures {
    * @defaultValue `false`
    */
   alternateLinkCanonicalQueries?: boolean
+
+  /**
+   * Hot module replacement for locale message files and vue-i18n configuration in dev mode.
+   *
+   * @defaultValue `true`
+   */
+  hmr?: boolean
 }
 
 export interface BundleOptions

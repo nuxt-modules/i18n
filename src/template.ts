@@ -76,6 +76,7 @@ async function loadCfg(config) {
 
 export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
   const codeHMR =
+    `if(import.meta.hot) {\n` +
     deepEqualFn +
     loadConfigsFn +
     `${options.localeLoaders
@@ -111,7 +112,8 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
           `  })`
         ].join('\n')
       )
-      .join('\n\n')}`
+      .join('\n\n')}` +
+    '\n}'
 
   return `
 // @ts-nocheck
@@ -146,7 +148,5 @@ export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAM
 export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 
-if(import.meta.hot) {
-${codeHMR}
-}`
+${(options.dev && options.hmr && codeHMR) || ''}`
 }
