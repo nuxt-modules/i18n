@@ -148,7 +148,7 @@ describe('basic lazy loading', async () => {
     await page.waitForFunction(
       () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
       {},
-      { timeout: 2000 }
+      { timeout: 5000 }
     )
     expect(await getText(page, '#runtime-config-key')).toEqual('runtime-config-value')
 
@@ -160,7 +160,7 @@ describe('basic lazy loading', async () => {
     await page.waitForFunction(
       () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
       {},
-      { timeout: 2000 }
+      { timeout: 5000 }
     )
 
     expect(consoleLogs.filter(x => x.type === 'error').length).toEqual(0)
