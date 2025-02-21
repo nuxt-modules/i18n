@@ -2,6 +2,7 @@
 
 exports[`basic 1`] = `
 {
+  "hmr": false,
   "importStrings": [
     "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
     "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
@@ -92,6 +93,7 @@ exports[`basic 1`] = `
 
 exports[`files with cache configuration (relative) 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [
@@ -234,6 +236,7 @@ exports[`files with cache configuration (relative) 1`] = `
 
 exports[`files with cache configuration 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [
@@ -373,6 +376,7 @@ exports[`files with cache configuration 1`] = `
 
 exports[`lazy 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [
@@ -459,6 +463,7 @@ exports[`lazy 1`] = `
 
 exports[`locale file in nested 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [
@@ -545,6 +550,7 @@ exports[`locale file in nested 1`] = `
 
 exports[`multiple files 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [
@@ -684,6 +690,7 @@ exports[`multiple files 1`] = `
 
 exports[`toCode: function (arrow) 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [],
@@ -727,6 +734,7 @@ exports[`toCode: function (arrow) 1`] = `
 
 exports[`toCode: function (named) 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
   "isServer": false,
   "localeLoaders": [],
@@ -770,6 +778,7 @@ exports[`toCode: function (named) 1`] = `
 
 exports[`vueI18n option 1`] = `
 {
+  "hmr": false,
   "importStrings": [
     "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
     "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
