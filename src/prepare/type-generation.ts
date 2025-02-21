@@ -130,8 +130,7 @@ export {}`
         useNitro().hooks.hookOnce('dev:reload', async () => {
           path = relative(nuxt.options.srcDir, resolve(nuxt.options.srcDir, path))
 
-          if (!localePaths.includes(path)) return
-          if (!vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
+          if (!localePaths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
 
           await fetchAndUpdateTypes()
         })
