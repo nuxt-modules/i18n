@@ -71,49 +71,63 @@ async function loadCfg(config) {
   const nuxt = useNuxtApp()
   const { default: resolver } = await config()
   return typeof resolver === 'function' ? await nuxt.runWithContext(() => resolver()) : resolver
-}
-  `
+}\n`
+function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders']) {
+  const statements: string[] = []
 
-export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
-  const codeHMR =
-    `if(import.meta.hot) {\n` +
-    deepEqualFn +
-    loadConfigsFn +
-    `${options.localeLoaders
-      .flatMap(([k, val]) =>
-        val.map((entry, i) =>
-          [
-            `  import.meta.hot.accept("${entry.specifier}", async mod => {`,
-            `    // replace locale loader`,
-            `    localeLoaders["${k}"][${i}].load = () => Promise.resolve(mod.default)`,
-            `    // trigger locale messages reload for '${k}'`,
-            `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${k}")`,
-            // `    await useNuxtApp().$i18n.loadLocaleMessages("${k}")`,
-            `  })`
-          ].join('\n')
-        )
-      )
-      .join('\n\n')}` +
-    `\n\n` +
-    `${options.vueI18nConfigSpecifiers
-      .map((entry, i) =>
+  for (const [locale, loaders] of localeLoaders) {
+    for (let i = 0; i < loaders.length; i++) {
+      const loader = loaders[i]
+      statements.push(
         [
-          `  import.meta.hot.accept("${entry}", async mod => {`,
-          `    // load configs before replacing loader`,
-          `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
-          `    // replace config loader`,
-          `    vueI18nConfigs[${i}] = () => Promise.resolve(mod)`,
-          `    // compare data - reload configs if _only_ replaceable properties have changed`,
-          `    if(deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
-          `      return await useNuxtApp()._nuxtI18nDev.resetI18nProperties()`,
-          `    }`,
-          `    // communicate to vite plugin to trigger a page load`,
-          `    import.meta.hot.send('i18n:options-complex-invalidation', {})`,
+          `  import.meta.hot.accept("${loader.specifier}", async mod => {`,
+          //   replace locale loader
+          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
+          //   trigger locale messages reload for locale
+          `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${locale}")`,
           `  })`
         ].join('\n')
       )
-      .join('\n\n')}` +
-    '\n}'
+    }
+  }
+
+  return statements.join('\n\n')
+}
+
+function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigSpecifiers']) {
+  const statements: string[] = []
+
+  for (let i = 0; i < configs.length; i++) {
+    statements.push(
+      [
+        `  import.meta.hot.accept("${configs[i]}", async mod => {`,
+        //   load configs before replacing loader
+        `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
+        //   replace config loader
+        `    vueI18nConfigs[${i}] = () => Promise.resolve(mod)`,
+        //   compare data - reload configs if _only_ replaceable properties have changed
+        `    if(deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
+        `      return await useNuxtApp()._nuxtI18nDev.resetI18nProperties()`,
+        `    }`,
+        //   communicate to vite plugin to trigger a page load
+        `    import.meta.hot.send('i18n:options-complex-invalidation', {})`,
+        `  })`
+      ].join('\n')
+    )
+  }
+
+  return statements.join('\n\n')
+}
+
+export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
+  const codeHMR = [
+    `if(import.meta.hot) {`,
+    deepEqualFn,
+    loadConfigsFn,
+    genLocaleLoaderHMR(options.localeLoaders),
+    genVueI18nConfigHMR(options.vueI18nConfigSpecifiers),
+    '}'
+  ].join('\n\n')
 
   return `
 // @ts-nocheck
