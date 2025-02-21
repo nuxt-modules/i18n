@@ -87,7 +87,7 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
             `    // replace locale loader`,
             `    localeLoaders["${k}"][${i}].load = () => Promise.resolve(mod.default)`,
             `    // trigger locale messages reload for '${k}'`,
-            `    await useNuxtApp()._nuxtI18nDev.resetVueI18nConfigs("${k}")`,
+            `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${k}")`,
             // `    await useNuxtApp().$i18n.loadLocaleMessages("${k}")`,
             `  })`
           ].join('\n')
@@ -105,7 +105,7 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
           `    vueI18nConfigs[${i}] = () => Promise.resolve(mod)`,
           `    // compare data - reload configs if _only_ replaceable properties have changed`,
           `    if(deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
-          `      return await useNuxtApp()._nuxtI18nDev.resetVueI18nConfigs()`,
+          `      return await useNuxtApp()._nuxtI18nDev.resetI18nProperties()`,
           `    }`,
           `    // communicate to vite plugin to trigger a page load`,
           `    import.meta.hot.send('i18n:options-complex-invalidation', {})`,
