@@ -124,19 +124,18 @@ export {}`
   addVitePlugin(
     {
       name: 'i18n:type-generation-hmr',
-      enforce: 'post',
       // watch locale and vue-i18n config file changes
       watchChange(path) {
         // fetch and update types when nitro server is ready
         useNitro().hooks.hookOnce('dev:reload', async () => {
           path = relative(nuxt.options.srcDir, resolve(nuxt.options.srcDir, path))
 
-          if (!localePaths.includes(path) && !vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
+          if (!localePaths.includes(path)) return
+          if (!vueI18nConfigPaths.some(x => x.absolute.includes(path))) return
 
           await fetchAndUpdateTypes()
         })
       },
-
       configureServer() {
         // generate on nitro server start
         useNitro().hooks.hookOnce('dev:reload', fetchAndUpdateTypes)

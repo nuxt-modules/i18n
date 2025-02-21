@@ -149,20 +149,47 @@ export default defineNuxtPlugin({
         composer.getBrowserLocale = () => getBrowserLocale()
         composer.getLocaleCookie = () => getLocaleCookie(localeCookie, _detectBrowserLanguage, composer.defaultLocale)
         composer.setLocaleCookie = (locale: string) => setLocaleCookie(localeCookie, locale, _detectBrowserLanguage)
-        // @ts-expect-error untyped internal function
-        composer.resetVueI18nConfigs = async (locale?: string) => {
-          const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
 
-          const messageKeys = Array.from(
-            new Set(Object.keys(vueI18nOptions.messages || {}).concat(Object.keys(composer.messages.value)))
-          )
+        // helper for HMR
+        if (import.meta.dev) {
+          // @ts-expect-error untyped internal HMR function
+          composer.resetVueI18nConfigs = async (locale?: string) => {
+            const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
 
-          for (const k of messageKeys) {
-            if (locale && k !== locale) continue
-            const current = vueI18nOptions.messages?.[k] || {}
-            await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
-            // @ts-expect-error type mismatch
-            composer.messages.value[k] = current
+            // collect unique keys of both objects to ensure resetting deleted properties
+            function getUniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
+              const keySet = new Set<string>()
+
+              for (const obj of objects) {
+                for (const key of Object.keys(obj)) {
+                  keySet.add(key)
+                }
+              }
+
+              return Array.from(keySet)
+            }
+
+            const messageLocales = getUniqueKeys(opts.messages || {}, composer.messages.value)
+            for (const k of messageLocales) {
+              if (locale && k !== locale) continue
+              const current = opts.messages?.[k] || {}
+              // override config messages with locale files in correct order
+              await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
+              composer.setLocaleMessage(k, current)
+            }
+
+            // skip the rest if locale specific reset
+            if (locale != null) return
+
+            const numberFormatLocales = getUniqueKeys(opts.numberFormats || {}, composer.numberFormats.value)
+            for (const k of numberFormatLocales) {
+              composer.setNumberFormat(k, opts.numberFormats?.[k] || {})
+            }
+
+            const datetimeFormatsLocales = getUniqueKeys(opts.datetimeFormats || {}, composer.datetimeFormats.value)
+            for (const k of datetimeFormatsLocales) {
+              composer.setDateTimeFormat(k, opts.datetimeFormats?.[k] || {})
+            }
           }
         }
 

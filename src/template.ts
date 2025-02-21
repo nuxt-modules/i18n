@@ -16,14 +16,76 @@ export type TemplateNuxtI18nOptions = {
   parallelPlugin: boolean
 } & ReturnType<typeof generateLoaderOptions>
 
+// used to compare vue-i18n config replacement
+const deepEqualFn = `function deepEqual(a, b, ignoreKeys = []) {
+  // Same reference?
+  if (a === b) return true
+
+  // Check if either is null or not an object
+  if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') {
+    return false
+  }
+
+  // Get top-level keys, excluding ignoreKeys
+  const keysA = Object.keys(a).filter(k => !ignoreKeys.includes(k))
+  const keysB = Object.keys(b).filter(k => !ignoreKeys.includes(k))
+
+  // Must have the same number of keys (after ignoring)
+  if (keysA.length !== keysB.length) {
+    return false
+  }
+
+  // Check each property
+  for (const key of keysA) {
+    if (!keysB.includes(key)) {
+      return false
+    }
+
+    const valA = a[key]
+    const valB = b[key]
+
+    // Compare functions stringified
+    if (typeof valA === 'function' && typeof valB === 'function') {
+      if (valA.toString() !== valB.toString()) {
+        return false
+      }
+    }
+    // If nested, do a normal recursive check (no ignoring at deeper levels)
+    else if (typeof valA === 'object' && typeof valB === 'object') {
+      if (!deepEqual(valA, valB)) {
+        return false
+      }
+    }
+    // Compare primitive values
+    else if (valA !== valB) {
+      return false
+    }
+  }
+
+  return true
+}
+`
+
+const loadConfigsFn = `
+async function loadCfg(config) {
+  const nuxt = useNuxtApp()
+  const { default: resolver } = await config()
+  return typeof resolver === 'function' ? await nuxt.runWithContext(() => resolver()) : resolver
+}
+  `
+
 export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
   const codeHMR =
+    deepEqualFn +
+    loadConfigsFn +
     `${options.localeLoaders
       .flatMap(([k, val]) =>
         val.map((entry, i) =>
           [
             `  import.meta.hot.accept("${entry.specifier}", async mod => {`,
+            `    // replace locale loader`,
             `    localeLoaders["${k}"][${i}].load = () => Promise.resolve(mod.default)`,
+            `    // trigger locale messages reload for '${k}'`,
             `    await useNuxtApp().$i18n.resetVueI18nConfigs("${k}")`,
             // `    await useNuxtApp().$i18n.loadLocaleMessages("${k}")`,
             `  })`
@@ -36,8 +98,16 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
       .map((entry, i) =>
         [
           `  import.meta.hot.accept("${entry}", async mod => {`,
+          `    // load configs before replacing loader`,
+          `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
+          `    // replace config loader`,
           `    vueI18nConfigs[${i}] = () => Promise.resolve(mod)`,
-          `    await useNuxtApp().$i18n.resetVueI18nConfigs()`,
+          `    // compare data - reload configs if _only_ replaceable properties have changed`,
+          `    if(deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
+          `      return await useNuxtApp().$i18n.resetVueI18nConfigs()`,
+          `    }`,
+          `    // communicate to vite plugin to trigger a page load`,
+          `    import.meta.hot.send('i18n:options-complex-invalidation', {})`,
           `  })`
         ].join('\n')
       )
