@@ -1,5 +1,4 @@
 import { deepCopy } from '@intlify/shared'
-// @ts-expect-error virtual file
 import { vueI18nConfigs, localeLoaders, nuxtI18nOptions, normalizedLocales } from '#internal/i18n/options.mjs'
 // @ts-expect-error virtual file
 import { dtsFile } from '#internal/i18n-type-generation-options'
