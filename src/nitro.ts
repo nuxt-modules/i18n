@@ -3,7 +3,7 @@ import createDebug from 'debug'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
-import { addServerImports, addServerPlugin, resolvePath, useLogger } from '@nuxt/kit'
+import { addServerImports, addServerPlugin, addServerTemplate, resolvePath, useLogger } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getFeatureFlags } from './bundler'
@@ -37,10 +37,23 @@ export async function setupNitro(
 ) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
-  nuxt.hook('nitro:config', async nitroConfig => {
-    if (enableServerIntegration || (nuxtOptions.experimental.typedOptionsAndMessages && isDev)) {
-      const additionalParams: AdditionalSetupNitroParams = { optionsCode: genTemplate(true, true), localeInfo }
+  const additionalParams: AdditionalSetupNitroParams = { optionsCode: genTemplate(true, true), localeInfo }
+  const setupServer = enableServerIntegration || (nuxtOptions.experimental.typedOptionsAndMessages && isDev)
+  if (setupServer) {
+    addServerTemplate({
+      filename: '#internal/i18n/options.mjs',
+      getContents: () => additionalParams.optionsCode
+    })
 
+    addServerTemplate({
+      filename: '#internal/i18n/locale.detector.mjs',
+      getContents: () =>
+        [`import localeDetector from ${JSON.stringify(localeDetectionPath)}`, `export { localeDetector }`].join('\n')
+    })
+  }
+
+  nuxt.hook('nitro:config', async nitroConfig => {
+    if (setupServer) {
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [resolver.resolve('./runtime')] })
 
@@ -59,13 +72,6 @@ export async function setupNitro(
       if (json5Paths.length > 0) {
         nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: json5Paths }))
       }
-
-      nitroConfig.virtual ||= {}
-      nitroConfig.virtual['#internal/i18n/options.mjs'] = () => additionalParams.optionsCode
-      nitroConfig.virtual['#internal/i18n/locale.detector.mjs'] = () => `
-import localeDetector from ${JSON.stringify(localeDetectionPath)}
-export { localeDetector }
-`
 
       // auto import for server-side
       if (nitroConfig.imports) {

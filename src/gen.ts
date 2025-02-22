@@ -23,13 +23,17 @@ const debug = createDebug('@nuxtjs/i18n:gen')
 
 const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, isServer = false): string => {
   return genDynamicImport(
-    genImportSpecifier({ ...config.meta, isServer }, 'config'),
+    generateVueI18nImportSpecifier(config, isServer),
     !isServer
       ? {
           comment: `webpackChunkName: "${config.meta.key}"`
         }
       : {}
   )
+}
+
+const generateVueI18nImportSpecifier = (config: Required<VueI18nConfigPathInfo>, isServer = false): string => {
+  return genImportSpecifier({ ...config.meta, isServer }, 'config')
 }
 
 export function simplifyLocaleOptions(
@@ -65,7 +69,7 @@ export function simplifyLocaleOptions(
   })
 }
 
-type LocaleLoaderData = { key: string; load: string; cache: string }
+type LocaleLoaderData = { key: string; load: string; cache: string; specifier: string; metaKey: string }
 
 export function generateLoaderOptions(
   nuxt: Nuxt,
@@ -91,7 +95,9 @@ export function generateLoaderOptions(
     importMapper.set(meta.key, {
       key: toCode(importer?.key),
       load: importer?.load,
-      cache: toCode(importer?.cache)
+      cache: toCode(importer?.cache),
+      specifier: importSpecifier,
+      metaKey: meta.key
     })
   }
 
@@ -109,6 +115,10 @@ export function generateLoaderOptions(
     .reverse()
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config, isServer))
+  const vueI18nConfigSpecifiers = [...vueI18nConfigPaths]
+    .reverse()
+    .filter(config => config.absolute !== '')
+    .map(config => generateVueI18nImportSpecifier(config, isServer))
 
   const localeLoaders: [string, LocaleLoaderData[]][] = localeInfo.map(locale => [
     locale.code,
@@ -156,7 +166,10 @@ export function generateLoaderOptions(
     localeLoaders,
     nuxtI18nOptions: generatedNuxtI18nOptions,
     vueI18nConfigs: vueI18nConfigImports,
-    normalizedLocales: processedNormalizedLocales
+    normalizedLocales: processedNormalizedLocales,
+    vueI18nConfigSpecifiers,
+    isServer,
+    hmr: !!nuxtI18nOptions.experimental?.hmr
   }
 
   debug('generate code', generated)

@@ -2,7 +2,7 @@ import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
 import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
 import { defu } from 'defu'
-import { addBuildPlugin, addPlugin, addTemplate, addTypeTemplate } from '@nuxt/kit'
+import { addBuildPlugin, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from '../gen'
 import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
@@ -21,6 +21,25 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.build.transpile.push('#i18n')
   nuxt.options.build.transpile.push('#internal-i18n-types')
   nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
+
+  if (dev && options.experimental.hmr) {
+    addVitePlugin({
+      name: 'i18n:options-hmr',
+      configureServer(server) {
+        const reloadClient = () => server.ws.send({ type: 'full-reload' })
+
+        server.ws.on('i18n:options-complex-invalidation', () => {
+          // await dev reload if type generation is enabled
+          if (ctx.options.experimental.typedOptionsAndMessages) {
+            useNitro().hooks.hookOnce('dev:reload', reloadClient)
+            return
+          }
+
+          reloadClient()
+        })
+      }
+    })
+  }
 
   const genTemplate = (isServer: boolean, lazy?: boolean) => {
     const nuxtI18nOptions = defu({}, options)

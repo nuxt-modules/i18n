@@ -11,7 +11,7 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
-import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl } from '../utils'
+import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl, createNuxtI18nDev } from '../utils'
 import {
   getBrowserLocale,
   getLocaleCookie,
@@ -94,6 +94,11 @@ export default defineNuxtPlugin({
     }
 
     nuxtApp._vueI18n = i18n
+
+    // HMR helper functionality
+    if (import.meta.dev) {
+      nuxtApp._nuxtI18nDev = createNuxtI18nDev()
+    }
 
     // extend i18n instance
     extendI18n(i18n, {

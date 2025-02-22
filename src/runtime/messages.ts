@@ -96,7 +96,7 @@ async function loadMessage(
       __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
     } else {
       message = getter
-      if (message != null && cacheMessages) {
+      if (message != null && cacheMessages && !import.meta.dev) {
         cacheMessages.set(key, message)
       }
       __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')

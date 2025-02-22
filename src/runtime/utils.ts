@@ -2,7 +2,14 @@
 import { joinURL, isEqual } from 'ufo'
 import { isString, isFunction, isObject } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
-import { NUXT_I18N_MODULE_ID, isSSG, localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
+import {
+  NUXT_I18N_MODULE_ID,
+  isSSG,
+  localeCodes,
+  localeLoaders,
+  normalizedLocales,
+  vueI18nConfigs
+} from '#build/i18n.options.mjs'
 import {
   detectBrowserLanguage,
   getLocaleDomain,
@@ -10,12 +17,12 @@ import {
   runtimeDetectBrowserLanguage,
   getHost
 } from './internal'
-import { loadLocale, makeFallbackLocaleCodes } from './messages'
+import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import { localePath, switchLocalePath } from './routing/routing'
 import { createLogger } from 'virtual:nuxt-i18n-logger'
 import { unref } from 'vue'
 
-import type { I18n, Locale } from 'vue-i18n'
+import type { I18n, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
@@ -31,6 +38,7 @@ import type {
 } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 import { createLocaleFromRouteGetter } from './routing/utils'
+import { getComposer } from './compatibility'
 
 /**
  * Common options used internally by composable functions, these
@@ -404,4 +412,56 @@ export function getNormalizedLocales(locales: string[] | LocaleObject[]): Locale
     normalized.push(locale)
   }
   return normalized
+}
+
+// collect unique keys of passed objects
+export function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
+  const keySet = new Set<string>()
+
+  for (const obj of objects) {
+    for (const key of Object.keys(obj)) {
+      keySet.add(key)
+    }
+  }
+
+  return Array.from(keySet)
+}
+
+// HMR helper functionality
+export function createNuxtI18nDev() {
+  const nuxtApp = useNuxtApp()
+  const composer = getComposer(nuxtApp._vueI18n)
+
+  /**
+   * Triggers a reload of vue-i18n configs (if needed) and locale message files in the correct order
+   *
+   * @param locale only passed when a locale file has been changed, if `undefined` indicates a vue-i18n config change
+   */
+  async function resetI18nProperties(locale?: string) {
+    const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtApp)
+
+    const messageLocales = uniqueKeys(opts.messages || {}, composer.messages.value)
+    for (const k of messageLocales) {
+      if (locale && k !== locale) continue
+      const current = opts.messages?.[k] || {}
+      // override config messages with locale files in correct order
+      await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
+      composer.setLocaleMessage(k, current)
+    }
+
+    // skip vue-i18n config properties if locale is passed (locale file HMR)
+    if (locale != null) return
+
+    const numberFormatLocales = uniqueKeys(opts.numberFormats || {}, composer.numberFormats.value)
+    for (const k of numberFormatLocales) {
+      composer.setNumberFormat(k, opts.numberFormats?.[k] || {})
+    }
+
+    const datetimeFormatsLocales = uniqueKeys(opts.datetimeFormats || {}, composer.datetimeFormats.value)
+    for (const k of datetimeFormatsLocales) {
+      composer.setDateTimeFormat(k, opts.datetimeFormats?.[k] || {})
+    }
+  }
+
+  return { resetI18nProperties }
 }

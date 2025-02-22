@@ -2,11 +2,13 @@
 
 exports[`basic 1`] = `
 {
+  "hmr": false,
   "importStrings": [
     "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
     "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
     "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
   ],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -15,6 +17,8 @@ exports[`basic 1`] = `
           "cache": "true",
           "key": ""srcDir/en.json"",
           "load": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
+          "metaKey": "locale_srcDir_srcDir_en_json",
+          "specifier": "srcDir/en.json",
         },
       ],
     ],
@@ -25,6 +29,8 @@ exports[`basic 1`] = `
           "cache": "true",
           "key": ""srcDir/ja.json"",
           "load": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
+          "metaKey": "locale_srcDir_srcDir_ja_json",
+          "specifier": "srcDir/ja.json",
         },
       ],
     ],
@@ -35,6 +41,8 @@ exports[`basic 1`] = `
           "cache": "true",
           "key": ""srcDir/fr.json"",
           "load": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
+          "metaKey": "locale_srcDir_srcDir_fr_json",
+          "specifier": "srcDir/fr.json",
         },
       ],
     ],
@@ -74,6 +82,9 @@ exports[`basic 1`] = `
     "lazy": false,
     "locales": [],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -82,7 +93,9 @@ exports[`basic 1`] = `
 
 exports[`files with cache configuration (relative) 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -91,6 +104,8 @@ exports[`files with cache configuration (relative) 1`] = `
           "cache": "true",
           "key": ""srcDir/test/locales/en.json"",
           "load": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_en_json",
+          "specifier": "srcDir/test/locales/en.json",
         },
       ],
     ],
@@ -101,6 +116,8 @@ exports[`files with cache configuration (relative) 1`] = `
           "cache": "true",
           "key": ""srcDir/test/locales/ja.json"",
           "load": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_ja_json",
+          "specifier": "srcDir/test/locales/ja.json",
         },
       ],
     ],
@@ -111,6 +128,8 @@ exports[`files with cache configuration (relative) 1`] = `
           "cache": "true",
           "key": ""srcDir/test/locales/fr.json"",
           "load": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_fr_json",
+          "specifier": "srcDir/test/locales/fr.json",
         },
       ],
     ],
@@ -121,6 +140,8 @@ exports[`files with cache configuration (relative) 1`] = `
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
           "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
+          "specifier": "srcDir/test/locales/es.json",
         },
       ],
     ],
@@ -131,11 +152,15 @@ exports[`files with cache configuration (relative) 1`] = `
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
           "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
+          "specifier": "srcDir/test/locales/es.json",
         },
         {
           "cache": "true",
           "key": ""srcDir/test/locales/es-AR.json"",
           "load": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_es_AR_json",
+          "specifier": "srcDir/test/locales/es-AR.json",
         },
       ],
     ],
@@ -200,6 +225,9 @@ exports[`files with cache configuration (relative) 1`] = `
     "lazy": true,
     "locales": [],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -208,7 +236,9 @@ exports[`files with cache configuration (relative) 1`] = `
 
 exports[`files with cache configuration 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -217,6 +247,8 @@ exports[`files with cache configuration 1`] = `
           "cache": "true",
           "key": ""srcDir/test/locales/en.json"",
           "load": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_en_json",
+          "specifier": "srcDir/test/locales/en.json",
         },
       ],
     ],
@@ -227,6 +259,8 @@ exports[`files with cache configuration 1`] = `
           "cache": "true",
           "key": ""srcDir/test/locales/ja.json"",
           "load": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_ja_json",
+          "specifier": "srcDir/test/locales/ja.json",
         },
       ],
     ],
@@ -237,6 +271,8 @@ exports[`files with cache configuration 1`] = `
           "cache": "true",
           "key": ""srcDir/test/locales/fr.json"",
           "load": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_fr_json",
+          "specifier": "srcDir/test/locales/fr.json",
         },
       ],
     ],
@@ -247,6 +283,8 @@ exports[`files with cache configuration 1`] = `
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
           "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
+          "specifier": "srcDir/test/locales/es.json",
         },
       ],
     ],
@@ -257,11 +295,15 @@ exports[`files with cache configuration 1`] = `
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
           "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
+          "specifier": "srcDir/test/locales/es.json",
         },
         {
           "cache": "true",
           "key": ""srcDir/test/locales/es-AR.json"",
           "load": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
+          "metaKey": "locale_srcDir_srcDir_test_locales_es_AR_json",
+          "specifier": "srcDir/test/locales/es-AR.json",
         },
       ],
     ],
@@ -323,6 +365,9 @@ exports[`files with cache configuration 1`] = `
     "lazy": true,
     "locales": [],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -331,7 +376,9 @@ exports[`files with cache configuration 1`] = `
 
 exports[`lazy 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -340,6 +387,8 @@ exports[`lazy 1`] = `
           "cache": "true",
           "key": ""srcDir/en.json"",
           "load": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
+          "metaKey": "locale_srcDir_srcDir_en_json",
+          "specifier": "srcDir/en.json",
         },
       ],
     ],
@@ -350,6 +399,8 @@ exports[`lazy 1`] = `
           "cache": "true",
           "key": ""srcDir/ja.json"",
           "load": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
+          "metaKey": "locale_srcDir_srcDir_ja_json",
+          "specifier": "srcDir/ja.json",
         },
       ],
     ],
@@ -360,6 +411,8 @@ exports[`lazy 1`] = `
           "cache": "true",
           "key": ""srcDir/fr.json"",
           "load": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
+          "metaKey": "locale_srcDir_srcDir_fr_json",
+          "specifier": "srcDir/fr.json",
         },
       ],
     ],
@@ -399,6 +452,9 @@ exports[`lazy 1`] = `
     "lazy": true,
     "locales": [],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -407,7 +463,9 @@ exports[`lazy 1`] = `
 
 exports[`locale file in nested 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -416,6 +474,8 @@ exports[`locale file in nested 1`] = `
           "cache": "true",
           "key": ""srcDir/en/main.json"",
           "load": "() => import("srcDir/en/main.json" /* webpackChunkName: "locale_srcDir_srcDir_en_main_json" */)",
+          "metaKey": "locale_srcDir_srcDir_en_main_json",
+          "specifier": "srcDir/en/main.json",
         },
       ],
     ],
@@ -426,6 +486,8 @@ exports[`locale file in nested 1`] = `
           "cache": "true",
           "key": ""srcDir/ja/main.json"",
           "load": "() => import("srcDir/ja/main.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_main_json" */)",
+          "metaKey": "locale_srcDir_srcDir_ja_main_json",
+          "specifier": "srcDir/ja/main.json",
         },
       ],
     ],
@@ -436,6 +498,8 @@ exports[`locale file in nested 1`] = `
           "cache": "true",
           "key": ""srcDir/fr/main.json"",
           "load": "() => import("srcDir/fr/main.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_main_json" */)",
+          "metaKey": "locale_srcDir_srcDir_fr_main_json",
+          "specifier": "srcDir/fr/main.json",
         },
       ],
     ],
@@ -475,6 +539,9 @@ exports[`locale file in nested 1`] = `
     "lazy": true,
     "locales": [],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -483,7 +550,9 @@ exports[`locale file in nested 1`] = `
 
 exports[`multiple files 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -492,6 +561,8 @@ exports[`multiple files 1`] = `
           "cache": "true",
           "key": ""srcDir/en.json"",
           "load": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
+          "metaKey": "locale_srcDir_srcDir_en_json",
+          "specifier": "srcDir/en.json",
         },
       ],
     ],
@@ -502,6 +573,8 @@ exports[`multiple files 1`] = `
           "cache": "true",
           "key": ""srcDir/ja.json"",
           "load": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
+          "metaKey": "locale_srcDir_srcDir_ja_json",
+          "specifier": "srcDir/ja.json",
         },
       ],
     ],
@@ -512,6 +585,8 @@ exports[`multiple files 1`] = `
           "cache": "true",
           "key": ""srcDir/fr.json"",
           "load": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
+          "metaKey": "locale_srcDir_srcDir_fr_json",
+          "specifier": "srcDir/fr.json",
         },
       ],
     ],
@@ -522,6 +597,8 @@ exports[`multiple files 1`] = `
           "cache": "true",
           "key": ""srcDir/es.json"",
           "load": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
+          "metaKey": "locale_srcDir_srcDir_es_json",
+          "specifier": "srcDir/es.json",
         },
       ],
     ],
@@ -532,11 +609,15 @@ exports[`multiple files 1`] = `
           "cache": "true",
           "key": ""srcDir/es.json"",
           "load": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
+          "metaKey": "locale_srcDir_srcDir_es_json",
+          "specifier": "srcDir/es.json",
         },
         {
           "cache": "true",
           "key": ""srcDir/es-AR.json"",
           "load": "() => import("srcDir/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_es_AR_json" */)",
+          "metaKey": "locale_srcDir_srcDir_es_AR_json",
+          "specifier": "srcDir/es-AR.json",
         },
       ],
     ],
@@ -598,6 +679,9 @@ exports[`multiple files 1`] = `
     "lazy": true,
     "locales": [],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -606,7 +690,9 @@ exports[`multiple files 1`] = `
 
 exports[`toCode: function (arrow) 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [],
   "normalizedLocales": [],
   "nuxtI18nOptions": {
@@ -637,6 +723,9 @@ exports[`toCode: function (arrow) 1`] = `
       },
     ],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -645,7 +734,9 @@ exports[`toCode: function (arrow) 1`] = `
 
 exports[`toCode: function (named) 1`] = `
 {
+  "hmr": false,
   "importStrings": [],
+  "isServer": false,
   "localeLoaders": [],
   "normalizedLocales": [],
   "nuxtI18nOptions": {
@@ -676,6 +767,9 @@ exports[`toCode: function (named) 1`] = `
       },
     ],
   },
+  "vueI18nConfigSpecifiers": [
+    "/test/i18n.config.ts?hash=6354e9fa&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
   ],
@@ -684,11 +778,13 @@ exports[`toCode: function (named) 1`] = `
 
 exports[`vueI18n option 1`] = `
 {
+  "hmr": false,
   "importStrings": [
     "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
     "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
     "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
   ],
+  "isServer": false,
   "localeLoaders": [
     [
       "en",
@@ -697,6 +793,8 @@ exports[`vueI18n option 1`] = `
           "cache": "true",
           "key": ""srcDir/en.json"",
           "load": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
+          "metaKey": "locale_srcDir_srcDir_en_json",
+          "specifier": "srcDir/en.json",
         },
       ],
     ],
@@ -707,6 +805,8 @@ exports[`vueI18n option 1`] = `
           "cache": "true",
           "key": ""srcDir/ja.json"",
           "load": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
+          "metaKey": "locale_srcDir_srcDir_ja_json",
+          "specifier": "srcDir/ja.json",
         },
       ],
     ],
@@ -717,6 +817,8 @@ exports[`vueI18n option 1`] = `
           "cache": "true",
           "key": ""srcDir/fr.json"",
           "load": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
+          "metaKey": "locale_srcDir_srcDir_fr_json",
+          "specifier": "srcDir/fr.json",
         },
       ],
     ],
@@ -756,6 +858,11 @@ exports[`vueI18n option 1`] = `
     "locales": [],
     "vueI18n": "vue-i18n.config.ts",
   },
+  "vueI18nConfigSpecifiers": [
+    "/path/foo/layer2/vue-i18n.options.js?hash=84df1640&config=1",
+    "/path/layer1/i18n.custom.ts?hash=faa288dc&config=1",
+    "/path/to/i18n.config.ts?hash=42902d1e&config=1",
+  ],
   "vueI18nConfigs": [
     "() => import("/path/foo/layer2/vue-i18n.options.js?hash=84df1640&config=1" /* webpackChunkName: "vue_i18n_options_js_84df1640" */)",
     "() => import("/path/layer1/i18n.custom.ts?hash=faa288dc&config=1" /* webpackChunkName: "i18n_custom_ts_faa288dc" */)",

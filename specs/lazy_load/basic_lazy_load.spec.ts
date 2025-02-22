@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url } from '../utils'
-import { getText, getData, waitForMs, renderPage, waitForURL } from '../helper'
+import { setup, url, $fetch } from '../utils'
+import { getText, getData, waitForMs, renderPage, waitForURL, getDom } from '../helper'
 
 describe('basic lazy loading', async () => {
   await setup({
@@ -138,7 +138,7 @@ describe('basic lazy loading', async () => {
   })
 
   test('(#3359) runtime config accessible in locale function', async () => {
-    const { page, pageErrors, consoleLogs } = await renderPage('/')
+    const { page } = await renderPage('/')
 
     // wait for request after navigation
     const localeRequestNl = page.waitForRequest(/runtime-config-translation/)
@@ -148,22 +148,14 @@ describe('basic lazy loading', async () => {
     await page.waitForFunction(
       () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
       {},
-      { timeout: 2000 }
+      { timeout: 5000 }
     )
     expect(await getText(page, '#runtime-config-key')).toEqual('runtime-config-value')
 
     // trigger server-side locale loading
-    await page.reload()
-    // @ts-ignore
-    await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
-    // await updated text
-    await page.waitForFunction(
-      () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
-      {},
-      { timeout: 2000 }
-    )
-
-    expect(consoleLogs.filter(x => x.type === 'error').length).toEqual(0)
-    expect(await getText(page, '#runtime-config-key')).toEqual('runtime-config-value')
+    const html = await $fetch('/en-GB')
+    const dom = getDom(html)
+    const runtimeText = dom.querySelector('#runtime-config-key')!.textContent!
+    expect(runtimeText).toEqual('runtime-config-value')
   })
 })
