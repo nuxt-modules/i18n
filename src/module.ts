@@ -79,7 +79,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * generate vue-i18n and messages types using runtime server endpoint
      */
-    prepareTypeGeneration(ctx, nuxt)
+    await prepareTypeGeneration(ctx, nuxt)
 
     /**
      * disable preloading/prefetching lazy loaded locales
