@@ -59,7 +59,12 @@ const links = computed<unknown[]>(() => [
     <Footer />
 
     <ClientOnly>
-      <LazyUContentSearch :files="files" :navigation="currentVersionNavigation" :multiple="true" />
+      <LazyUContentSearch
+        :files="files"
+        :navigation="currentVersionNavigation"
+        :multiple="true"
+        :kbds="['meta', 'K']"
+      />
     </ClientOnly>
   </UApp>
 </template>

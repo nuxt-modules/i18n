@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { findPageBreadcrumb, mapContentNavigation } from '#ui-pro/utils/content'
 import type { ContentNavigationItem, DocsCollectionItem } from '@nuxt/content'
 
 definePageMeta({ layout: 'docs' })
@@ -12,13 +11,9 @@ const { data } = await useAsyncData(
   () =>
     Promise.all([
       queryCollection('docs').path(route.path).first(),
-      queryCollectionItemSurroundings('docs', route.path, {
-        fields: ['title', 'description']
-      })
+      queryCollectionItemSurroundings('docs', route.path, { fields: ['title', 'description'] })
     ]),
-  {
-    transform: ([page, surround]) => ({ page, surround })
-  }
+  { transform: ([page, surround]) => ({ page, surround }) }
 )
 
 // from https://github.com/nuxt/ui-pro/blob/07b9768fedf0a728c1235473873d3cfeed1160b2/src/runtime/utils/content.ts#L36
