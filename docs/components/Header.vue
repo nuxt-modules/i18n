@@ -1,21 +1,12 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, NavigationMenuItem } from '#ui/types'
-import type { ContentNavigationItem } from '@nuxt/content'
 
 const props = defineProps<{ links?: NavigationMenuItem[] }>()
 
-const { header } = useAppConfig()
+const appConfig = useAppConfig()
 const config = useRuntimeConfig()
-const navigation = inject<Ref<ContentNavigationItem[]>>('currentVersionNavigation')
-const route = useRoute()
+const { $currentDocsVersion, $currentDocsVersionNavigation } = useNuxtApp()
 
-function versionActive(version: number) {
-  if (version === 9) return route.fullPath.search(/docs\/v7|8/) === -1
-  if (version === 8) return route.fullPath.search(/docs\/v8/) >= 0
-  return route.fullPath.search(/docs\/v7/) >= 0
-}
-
-const items = computed(() => props.links.map(({ icon, ...link }) => link))
 const processed = computed<DropdownMenuItem[]>(() => {
   const items = [
     { label: `v${config.public.version}`, version: 9, to: '/docs' },
@@ -23,13 +14,16 @@ const processed = computed<DropdownMenuItem[]>(() => {
     { label: 'v7.x', version: 7, to: '/docs/v7' }
   ]
 
-  return items.map(x => ({
-    ...x,
-    color: (versionActive(x.version) && 'primary') || undefined,
-    active: versionActive(x.version),
-    checked: versionActive(x.version),
-    type: (versionActive(x.version) && 'checkbox') || undefined
-  }))
+  return items.map(x => {
+    const isActive = $currentDocsVersion.value === x.version
+    return {
+      ...x,
+      color: (isActive && 'primary') || undefined,
+      active: isActive,
+      checked: isActive,
+      type: (isActive && 'checkbox') || undefined
+    }
+  })
 })
 </script>
 
@@ -40,7 +34,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
         to="/"
         class="flex items-end gap-2 font-bold text-xl text-(--ui-text-highlighted) min-w-0 focus-visible:outline-(--ui-primary) shrink-0"
       >
-        <TheLogo class="w-auto h-8 shrink-0" />
+        <Logo class="w-auto h-8 shrink-0" />
       </NuxtLink>
       <UDropdownMenu
         v-slot="{ open }"
@@ -50,7 +44,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
         size="xs"
       >
         <UButton
-          :label="versionActive(9) ? `v${config.public.version}` : versionActive(8) ? `v8.x` : `v7.x`"
+          :label="$currentDocsVersion === 9 ? `v${config.public.version}` : `v${$currentDocsVersion}.x`"
           variant="subtle"
           trailing-icon="i-lucide-chevron-down"
           size="xs"
@@ -65,7 +59,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
       </UDropdownMenu>
     </template>
 
-    <UNavigationMenu class="z-10" :items="items" variant="link" />
+    <UNavigationMenu class="z-10" :items="links" variant="link" />
 
     <template #right>
       <UTooltip text="Search" :kbds="['meta', 'K']">
@@ -74,9 +68,9 @@ const processed = computed<DropdownMenuItem[]>(() => {
 
       <UColorModeButton />
 
-      <template v-if="header?.links">
+      <template v-if="appConfig.header?.links">
         <UButton
-          v-for="(link, index) of header.links"
+          v-for="(link, index) of appConfig.header.links"
           :key="index"
           v-bind="{ color: 'neutral', variant: 'ghost', ...link }"
         />
@@ -88,7 +82,11 @@ const processed = computed<DropdownMenuItem[]>(() => {
 
       <USeparator type="dashed" class="mt-4 mb-6" />
 
-      <UContentNavigation :navigation="navigation" highlight :ui="{ linkTrailingBadge: 'font-semibold uppercase' }">
+      <UContentNavigation
+        :navigation="$currentDocsVersionNavigation"
+        highlight
+        :ui="{ linkTrailingBadge: 'font-semibold uppercase' }"
+      >
         <template #link-title="{ link }">
           <span class="inline-flex items-center gap-0.5">
             {{ link.title }}

@@ -25,49 +25,18 @@ const nav = computed<ContentNavigationItem[]>(
 )
 provide('navigation', nav)
 
-const router = useRouter()
-const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
-const isV8Docs = computed(() => router.currentRoute.value.path.includes('/docs/v8'))
-const isV9Docs = computed(() => !(isV8Docs.value || isV7Docs.value))
-provide('isV7Docs', isV7Docs)
-provide('isV8Docs', isV8Docs)
-provide('isV9Docs', isV9Docs)
-
 // Search
 const { data: files } = useAsyncData('/api/search.json', () => queryCollectionSearchSections('docs'), { server: false })
 
-const v7DocsRE = /^\/docs\/v7/
-const v8DocsRE = /^\/docs\/v8/
-
-const navigationV7 = computed(() => nav.value.filter(x => v7DocsRE.test(String(x.path)))[0].children!)
-const navigationV8 = computed(() => nav.value.filter(x => v8DocsRE.test(String(x.path)))[0].children!)
-
-const navigationV9 = computed(
-  () => nav.value
-  // nav.value.filter(x => {
-  //   const to = String(x.path)
-  //   return !v8DocsRE.test(to) && !v7DocsRE.test(to)
-  // })
-)
-
-const currentVersionNavigation = computed(() => {
-  if (isV7Docs.value) return navigationV7.value
-  if (isV8Docs.value) return navigationV8.value
-  return navigationV9.value
-})
-
-provide('navigationV7', navigationV7)
-provide('navigationV8', navigationV8)
-provide('navigationV9', navigationV9)
-provide('currentVersionNavigation', currentVersionNavigation)
+const currentVersionNavigation = useNuxtApp().$currentDocsVersionNavigation
 
 // // Header
 const route = useRoute()
-const links: unknown[] = [
+const links = computed<unknown[]>(() => [
   {
     label: 'Docs',
     to: `/docs/getting-started`,
-    icon: 'i-heroicons-rocket-launch',
+    icon: 'i-heroicons-book-open',
     active: route.path.startsWith('/docs')
   },
   {
@@ -75,19 +44,19 @@ const links: unknown[] = [
     to: '/roadmap',
     icon: 'i-heroicons-map'
   }
-]
+])
 </script>
 
 <template>
   <UApp>
     <NuxtLoadingIndicator />
-    <TheHeader :links="links" />
+    <Header :links="links" />
 
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
 
-    <TheFooter />
+    <Footer />
 
     <ClientOnly>
       <LazyUContentSearch :files="files" :navigation="currentVersionNavigation" :multiple="true" />

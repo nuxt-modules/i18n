@@ -27,15 +27,6 @@ export default defineAppConfig({
         wrapper: 'border-t border-gray-200 dark:border-gray-800'
       }
     }
-    // content: {
-    //   prose: {
-    //     code: {
-    //       icon: {
-    //         env: 'vscode-icons:file-type-dotenv'
-    //       }
-    //     }
-    //   }
-    // }
   },
   seo: { siteName: '@nuxtjs/i18n' },
   header: {

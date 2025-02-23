@@ -4,7 +4,8 @@ import type { ContentNavigationItem, DocsCollectionItem } from '@nuxt/content'
 
 definePageMeta({ layout: 'docs' })
 const route = useRoute()
-const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
+const { $currentDocsVersionNavigation } = useNuxtApp()
+
 // Main page data
 const { data } = await useAsyncData(
   route.path,
@@ -45,7 +46,7 @@ function findPageHeadline(navigation?: ContentNavigationItem[], page?: DocsColle
 if (!data.value) throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
 const page = computed(() => data.value?.page)
 const surround = computed(() => data.value?.surround)
-const headline = computed(() => findPageHeadline(navigation.value, page.value))
+const headline = computed(() => findPageHeadline($currentDocsVersionNavigation.value, page.value))
 
 // Page Metadata (SEO & OG)
 const { setPageMeta } = usePageMeta()
@@ -54,9 +55,12 @@ setPageMeta({
   description: page.value.description,
   headline: headline.value
 })
-const breadcrumb = computed(() =>
-  mapContentNavigation(findPageBreadcrumb(navigation?.value, page.value)).map(({ icon, ...link }) => link)
-)
+// const breadcrumb = computed(() =>
+//   mapContentNavigation(findPageBreadcrumb($currentDocsVersionNavigation?.value, page.value)).map(
+//     ({ icon, ...link }) => link
+//   )
+// )
+
 // Right Side Links
 const { toc } = useAppConfig()
 const links = computed(() =>

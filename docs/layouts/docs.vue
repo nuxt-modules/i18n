@@ -1,23 +1,18 @@
 <script setup lang="ts">
-import type { ContentNavigationItem } from '@nuxt/content'
-
 const router = useRouter()
 const appConfig = useAppConfig()
-
-const isV9Docs = inject<ComputedRef<boolean>>('isV9Docs')
+const { $currentDocsVersion, $currentDocsVersionNavigation } = useNuxtApp()
 
 watch(
   () => router.currentRoute.value.path,
-  (val, _oldVal) => {
-    const versionTheme = !isV9Docs.value ? 'legacy' : 'default'
+  () => {
+    const versionTheme = $currentDocsVersion.value === 9 ? 'default' : 'legacy'
 
     appConfig.ui.colors.primary = appConfig[versionTheme].ui.primary
     appConfig.ui.colors.neutral = appConfig[versionTheme].ui.neutral
   },
   { immediate: true }
 )
-
-const currentVersionNavigation = inject<ContentNavigationItem[]>('currentVersionNavigation')
 </script>
 
 <template>
@@ -27,7 +22,7 @@ const currentVersionNavigation = inject<ContentNavigationItem[]>('currentVersion
         <template #left>
           <UPageAside>
             <UContentNavigation
-              :navigation="currentVersionNavigation"
+              :navigation="$currentDocsVersionNavigation"
               highlight
               :ui="{ linkTrailingBadge: 'font-semibold uppercase' }"
             >
