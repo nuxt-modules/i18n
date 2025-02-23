@@ -244,7 +244,7 @@ importers:
   playground:
     devDependencies:
       '@nuxt/devtools':
-        specifier: ^2.1.0
+        specifier: latest
         version: 2.1.0(rollup@4.30.1)(vite@6.0.11(@types/node@20.14.9)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.31.1)(yaml@2.7.0))(vue@3.5.13(typescript@5.7.3))
       '@nuxtjs/i18n':
         specifier: link:..
@@ -9373,7 +9373,7 @@ snapshots:
       vite-plugin-inspect: 10.3.0(@nuxt/kit@3.15.4(magicast@0.3.5)(rollup@4.30.1))(vite@6.0.11(@types/node@20.14.9)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.31.1)(yaml@2.7.0))
       vite-plugin-vue-inspector: 5.3.1(vite@6.0.11(@types/node@20.14.9)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.31.1)(yaml@2.7.0))
       which: 5.0.0
-      ws: 8.18.0
+      ws: 8.18.1
     transitivePeerDependencies:
       - bufferutil
       - rollup
@@ -10628,7 +10628,7 @@ snapshots:
 
   '@swc/helpers@0.4.14':
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   '@swc/helpers@0.4.36':
     dependencies:
@@ -13988,7 +13988,7 @@ snapshots:
       acorn: 8.14.0
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
-      semver: 7.6.3
+      semver: 7.7.1
 
   jsonfile@6.1.0:
     dependencies:
@@ -18218,7 +18218,7 @@ snapshots:
       acorn-import-attributes: 1.9.5(acorn@8.14.0)
       browserslist: 4.24.2
       chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.17.1
+      enhanced-resolve: 5.18.1
       es-module-lexer: 1.6.0
       eslint-scope: 5.1.1
       events: 3.3.0
