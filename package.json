@@ -86,7 +86,14 @@
       "rollup": "4.30.1",
       "tailwindcss": "4.0.7",
       "@tailwindcss/vite": "4.0.7"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "protobufjs",
+      "vue-demi",
+      "esbuild",
+      "sharp"
+    ]
   },
   "dependencies": {
     "@intlify/h3": "^0.6.1",
