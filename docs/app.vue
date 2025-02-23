@@ -1,42 +1,53 @@
 <script setup lang="ts">
-// @ts-expect-error This is because we're using Nuxt Content v2.8.2 instead of the new version which includes these types. We're using the old version because the latest has issues with highlighting
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
-import type { PageLink } from '#ui-pro/types'
+import { mapContentNavigation } from '@nuxt/ui-pro/runtime/utils/content.js'
+import type { ContentNavigationItem } from '@nuxt/content'
 
-// Seo
-const { seo } = useAppConfig()
-useHead({ htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', href: '/favicon.ico' }] })
+const appConfig = useAppConfig()
+const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius}rem; }`)
+
+useHead({
+  htmlAttrs: { lang: 'en' },
+  meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+  link: [{ rel: 'icon', href: '/favicon.ico' }],
+  style: [{ innerHTML: radius, id: 'nuxt-ui-radius', tagPriority: -2 }]
+})
+
 useSeoMeta({
-  titleTemplate: `%s - ${seo.siteName}`,
-  ogSiteName: seo.siteName,
+  titleTemplate: `%s - ${appConfig.seo.siteName}`,
+  ogSiteName: appConfig.seo.siteName,
   twitterCard: 'summary_large_image'
 })
 
 // Navigation Data
-const { data: navigation } = await useAsyncData('navigation', () => fetchContentNavigation())
-provide('navigation', navigation)
+const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
+const nav = computed<ContentNavigationItem[]>(
+  () => mapContentNavigation(navigation.value).at(0).children as ContentNavigationItem[]
+)
+provide('navigation', nav)
 
 const router = useRouter()
-
 const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
 const isV8Docs = computed(() => router.currentRoute.value.path.includes('/docs/v8'))
+const isV9Docs = computed(() => !(isV8Docs.value || isV7Docs.value))
+provide('isV7Docs', isV7Docs)
+provide('isV8Docs', isV8Docs)
+provide('isV9Docs', isV9Docs)
 
 // Search
-const { data: files } = useLazyFetch<ParsedContent[]>('/api/search.json', {
-  default: () => [],
-  server: false
-})
+const { data: files } = useAsyncData('/api/search.json', () => queryCollectionSearchSections('docs'), { server: false })
 
 const v7DocsRE = /^\/docs\/v7/
 const v8DocsRE = /^\/docs\/v8/
 
-const navigationV7 = computed(() => navigation.value?.[0].children.filter(x => v7DocsRE.test(String(x._path))))
-const navigationV8 = computed(() => navigation.value?.[0].children.filter(x => v8DocsRE.test(String(x._path))))
-const navigationV9 = computed(() =>
-  navigation.value?.[0].children.filter(x => {
-    const to = String(x._path)
-    return !v8DocsRE.test(to) && !v7DocsRE.test(to)
-  })
+const navigationV7 = computed(() => nav.value.filter(x => v7DocsRE.test(String(x.path)))[0].children!)
+const navigationV8 = computed(() => nav.value.filter(x => v8DocsRE.test(String(x.path)))[0].children!)
+
+const navigationV9 = computed(
+  () => nav.value
+  // nav.value.filter(x => {
+  //   const to = String(x.path)
+  //   return !v8DocsRE.test(to) && !v7DocsRE.test(to)
+  // })
 )
 
 const currentVersionNavigation = computed(() => {
@@ -45,9 +56,14 @@ const currentVersionNavigation = computed(() => {
   return navigationV9.value
 })
 
-// Header
+provide('navigationV7', navigationV7)
+provide('navigationV8', navigationV8)
+provide('navigationV9', navigationV9)
+provide('currentVersionNavigation', currentVersionNavigation)
+
+// // Header
 const route = useRoute()
-const links: PageLink[] = [
+const links: unknown[] = [
   {
     label: 'Docs',
     to: `/docs/getting-started`,
@@ -63,7 +79,8 @@ const links: PageLink[] = [
 </script>
 
 <template>
-  <div>
+  <UApp>
+    <NuxtLoadingIndicator />
     <TheHeader :links="links" />
 
     <NuxtLayout>
@@ -73,15 +90,9 @@ const links: PageLink[] = [
     <TheFooter />
 
     <ClientOnly>
-      <LazyUContentSearch :files="files" :navigation="currentVersionNavigation" :links="links" />
+      <LazyUContentSearch :files="files" :navigation="currentVersionNavigation" :multiple="true" />
     </ClientOnly>
-
-    <UNotifications />
-  </div>
+  </UApp>
 </template>
 
-<style>
-body {
-  font-family: 'Inter var experimental', 'Inter var', 'Inter', sans-serif;
-}
-</style>
+<style></style>

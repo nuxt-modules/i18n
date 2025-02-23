@@ -1,61 +1,47 @@
 <script setup lang="ts">
-import type { NavItem } from '@nuxt/content'
-
-// Get navigation tree relative to the '/content/docs'
-const navigation = inject<Ref<NavItem[]>>('navigation')
-const { navPageFromPath } = useContentHelpers()
-const allNavigationTree = computed(() =>
-  mapContentNavigation(navPageFromPath('/docs', navigation.value)?.children || [])
-)
+import type { ContentNavigationItem } from '@nuxt/content'
 
 const router = useRouter()
 const appConfig = useAppConfig()
 
-const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
-const isV8Docs = computed(() => router.currentRoute.value.path.includes('/docs/v8'))
+const isV9Docs = inject<ComputedRef<boolean>>('isV9Docs')
 
 watch(
   () => router.currentRoute.value.path,
   (val, _oldVal) => {
-    const versionTheme = isV8Docs.value || isV7Docs.value ? 'legacy' : 'default'
+    const versionTheme = !isV9Docs.value ? 'legacy' : 'default'
 
-    appConfig.ui.primary = appConfig[versionTheme].ui.primary
-    appConfig.ui.gray = appConfig[versionTheme].ui.gray
+    appConfig.ui.colors.primary = appConfig[versionTheme].ui.primary
+    appConfig.ui.colors.neutral = appConfig[versionTheme].ui.neutral
   },
   { immediate: true }
 )
 
-const v7DocsRE = /^\/docs\/v7/
-const v8DocsRE = /^\/docs\/v8/
-
-const navigationV7 = computed(() => allNavigationTree.value.filter(x => v7DocsRE.test(String(x.to)))[0].children!)
-const navigationV8 = computed(() => allNavigationTree.value.filter(x => v8DocsRE.test(String(x.to)))[0].children!)
-const navigationDefault = computed(() =>
-  allNavigationTree.value.filter(x => {
-    const to = String(x.to)
-    return !v8DocsRE.test(to) && !v7DocsRE.test(to)
-  })
-)
-
-const currentVersionNavigation = computed(() => {
-  if (isV7Docs.value) return navigationV7.value
-  if (isV8Docs.value) return navigationV8.value
-  return navigationDefault.value
-})
+const currentVersionNavigation = inject<ContentNavigationItem[]>('currentVersionNavigation')
 </script>
 
 <template>
-  <UContainer>
-    <UPage>
-      <template #left>
-        <UAside>
-          <VersionSelect />
-          <UDivider type="dashed" class="mb-6" />
-          <UNavigationTree :links="currentVersionNavigation" :multiple="true" />
-        </UAside>
-      </template>
+  <UMain>
+    <UContainer>
+      <UPage>
+        <template #left>
+          <UPageAside>
+            <UContentNavigation
+              :navigation="currentVersionNavigation"
+              highlight
+              :ui="{ linkTrailingBadge: 'font-semibold uppercase' }"
+            >
+              <template #link-title="{ link }">
+                <span class="inline-flex items-center gap-0.5">
+                  {{ link.title }}
+                </span>
+              </template>
+            </UContentNavigation>
+          </UPageAside>
+        </template>
 
-      <slot />
-    </UPage>
-  </UContainer>
+        <slot />
+      </UPage>
+    </UContainer>
+  </UMain>
 </template>

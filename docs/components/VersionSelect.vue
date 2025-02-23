@@ -50,26 +50,28 @@ watch(selectedVersion, val => {
 
 <template>
   <div class="mb-3 lg:mb-6">
-    <USelectMenu
-      :model-value="selectedVersion"
-      :options="versions"
-      :ui="{ base: '!cursor-pointer' }"
-      :popper="{ placement: 'bottom-start' }"
-      :uiMenu="{ option: { base: '!cursor-pointer', container: 'w-full' } }"
-      color="gray"
-    >
-      <template #label>
-        {{ selectedVersion.label }}
-        <UBadge v-if="selectedVersion.tag" variant="subtle" :label="selectedVersion.tag" size="xs" />
-      </template>
+    <ClientOnly>
+      <USelectMenu
+        :model-value="selectedVersion"
+        :options="versions"
+        :ui="{ base: '!cursor-pointer' }"
+        :popper="{ placement: 'bottom-start' }"
+        :uiMenu="{ option: { base: '!cursor-pointer', container: 'w-full' } }"
+        color="gray"
+      >
+        <template #label>
+          {{ selectedVersion.label }}
+          <UBadge v-if="selectedVersion.tag" variant="subtle" :label="selectedVersion.tag" size="xs" />
+        </template>
 
-      <template #option="{ option }">
-        <div class="absolute inset-0" @click="option.click"></div>
-        <div class="w-full">
-          {{ option.label }}
-          <UBadge v-if="option.tag" variant="subtle" :label="option.tag" />
-        </div>
-      </template>
-    </USelectMenu>
+        <template #option="{ option }">
+          <div class="absolute inset-0" @click="option.click"></div>
+          <div class="w-full">
+            {{ option.label }}
+            <UBadge v-if="option.tag" variant="subtle" :label="option.tag" />
+          </div>
+        </template>
+      </USelectMenu>
+    </ClientOnly>
   </div>
 </template>

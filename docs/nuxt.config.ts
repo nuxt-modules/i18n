@@ -1,19 +1,17 @@
+import pkg from '../package.json'
+
 export default defineNuxtConfig({
-  extends: ['@nuxt/ui-pro'],
-  modules: ['@nuxt/content', '@nuxt/ui', '@nuxtjs/fontaine', '@nuxtjs/google-fonts', 'nuxt-og-image', '@nuxt/fonts'],
+  modules: ['@nuxt/ui-pro', '@nuxt/content', '@nuxtjs/google-fonts', '@nuxt/fonts', 'nuxt-og-image'],
   routeRules: {
     // v7
-    '/docs/v7/callbacks': { prerender: true, ssr: false },
-    '/docs/v7/callbacks/': { prerender: true, ssr: false },
-    '/docs/v7': { prerender: true, ssr: false },
-    '/docs/v7/': { prerender: true, ssr: false },
+    '/docs/v7': { redirect: '/docs/v7/setup' },
 
     // default
     '/': { prerender: true },
     '/docs': { redirect: '/docs/getting-started' },
     '/api/search.json': { prerender: true },
 
-    // v9
+    // v8
     '/docs/v8': { redirect: '/docs/v8/getting-started' }
   },
 
@@ -26,6 +24,7 @@ export default defineNuxtConfig({
             entryFileNames: '_nuxt/[name]-[hash].js'
           }
         }
+        // minify: false
       }
     }
   },
@@ -39,34 +38,36 @@ export default defineNuxtConfig({
     }
   },
 
+  runtimeConfig: {
+    public: {
+      version: pkg.version
+    }
+  },
+
   // Nuxt UI & UI Pro
   ui: { icons: ['heroicons', 'simple-icons'] },
 
   // special license for nuxt & nuxt-modules orgs
   uiPro: { license: 'oss' },
 
-  hooks: {
-    'components:extend': components => {
-      // Define `@nuxt/ui` components as global to use them in `.md` (feel free to add those you need)
-      const globals = components.filter(c => ['UButton', 'UIcon'].includes(c.pascalName))
-
-      for (const comp of globals) {
-        comp.global = true
-      }
-
-      // Related to https://github.com/nuxt/nuxt/pull/22558
-      // Adding all global components to the main entry
-      // To avoid lagging during page navigation on client-side
-      for (const comp of components) {
-        if (comp.global) {
-          comp.global = 'sync'
+  // Nuxt Content
+  content: {
+    build: {
+      markdown: {
+        highlight: {
+          langs: ['bash', 'ts', 'typescript', 'diff', 'vue', 'json', 'jsonc', 'yml', 'css', 'mdc']
         }
       }
     }
   },
 
-  // Nuxt Content
-  content: { highlight: { langs: ['jsonc'] } },
+  mdc: {
+    highlight: {
+      noApiRoute: false
+    }
+  },
+
+  css: ['~/assets/css/main.css'],
 
   // Fonts
   fontMetrics: { fonts: ['DM Sans'] },
