@@ -102,10 +102,8 @@ const links = computed(() =>
     <template v-if="page.body.toc.links.length" #right>
       <UContentToc :title="toc?.title" :links="page.body?.toc?.links">
         <template v-if="toc?.bottom" #bottom>
-          <div class="hidden lg:block space-y-6" :class="{ '!mt-6': page.body?.toc?.links?.length }">
-            <USeparator v-if="page.body?.toc?.links?.length" type="dashed" />
-            <UPageLinks title="Community" :links="links" />
-          </div>
+          <USeparator v-if="page.body?.toc?.links?.length" type="dashed" />
+          <UPageLinks title="Community" :links="links" />
         </template>
       </UContentToc>
     </template>
