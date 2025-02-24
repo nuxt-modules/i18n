@@ -11,12 +11,12 @@ const appConfig = useAppConfig()
 
 const voltaBoardSrc = computed(() => {
   const voltaBaseUrl = `https://volta.net/embed/${VOLTA_TOKEN}`
-  return `${voltaBaseUrl}?theme=${colorMode.value}&primary=${appConfig.ui.primary}&gray=${appConfig.ui.gray}`
+  return `${voltaBaseUrl}?theme=${colorMode.value}&primary=${appConfig.ui.colors.primary}&gray=${appConfig.ui.colors.neutral}`
 })
 </script>
 
 <template>
-  <div class="h-[calc(100vh-var(--header-height)-var(--header-height)-1px)]">
+  <div class="h-[calc(100vh-var(--ui-header-height))]">
     <ClientOnly>
       <iframe :src="voltaBoardSrc" width="100%" height="100%" />
     </ClientOnly>
