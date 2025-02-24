@@ -5,17 +5,17 @@ import { relative } from 'pathe'
 
 export function prepareBuildManifest({ options, localeInfo }: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.hook('build:manifest', manifest => {
-    if (options.lazy) {
-      const langFiles = localeInfo
-        .flatMap(locale => getLocaleFiles(locale))
-        .map(x => relative(nuxt.options.srcDir, x.path))
-      const langPaths = [...new Set(langFiles)]
+    if (!options.lazy) return
 
-      for (const key in manifest) {
-        if (langPaths.some(x => key.startsWith(x))) {
-          manifest[key].prefetch = false
-          manifest[key].preload = false
-        }
+    const langFiles = localeInfo
+      .flatMap(locale => getLocaleFiles(locale))
+      .map(x => relative(nuxt.options.srcDir, x.path))
+    const langPaths = [...new Set(langFiles)]
+
+    for (const key in manifest) {
+      if (langPaths.some(x => key.startsWith(x))) {
+        manifest[key].prefetch = false
+        manifest[key].preload = false
       }
     }
   })

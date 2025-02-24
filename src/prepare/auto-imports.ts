@@ -6,24 +6,22 @@ import {
   VUE_I18N_PKG
 } from '../constants'
 import { addComponent, addImports } from '@nuxt/kit'
-import { resolve } from 'pathe'
 import { runtimeDir } from '../dirs'
 import type { I18nNuxtContext } from '../context'
 
-export async function prepareAutoImports({ debug }: I18nNuxtContext, nuxt: Nuxt) {
+export function prepareAutoImports({ debug, resolver }: I18nNuxtContext, nuxt: Nuxt) {
   const vueI18nPath = nuxt.options.alias[VUE_I18N_PKG]
   debug('vueI18nPath for auto-import', vueI18nPath)
 
-  await Promise.all([
-    addComponent({
-      name: 'NuxtLinkLocale',
-      filePath: resolve(runtimeDir, 'components/NuxtLinkLocale')
-    }),
-    addComponent({
-      name: 'SwitchLocalePathLink',
-      filePath: resolve(runtimeDir, 'components/SwitchLocalePathLink')
-    })
-  ])
+  addComponent({
+    name: 'NuxtLinkLocale',
+    filePath: resolver.resolve(runtimeDir, 'components/NuxtLinkLocale')
+  })
+
+  addComponent({
+    name: 'SwitchLocalePathLink',
+    filePath: resolver.resolve(runtimeDir, 'components/SwitchLocalePathLink')
+  })
 
   addImports([
     { name: 'useI18n', from: vueI18nPath },
@@ -42,7 +40,7 @@ export async function prepareAutoImports({ debug }: I18nNuxtContext, nuxt: Nuxt)
     ].map(key => ({
       name: key,
       as: key,
-      from: resolve(runtimeDir, 'composables/index')
+      from: resolver.resolve(runtimeDir, 'composables/index')
     }))
   ])
 }

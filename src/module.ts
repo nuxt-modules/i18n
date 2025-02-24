@@ -101,7 +101,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * auto imports
      */
-    await prepareAutoImports(ctx, nuxt)
+    prepareAutoImports(ctx, nuxt)
 
     /**
      * transpile @nuxtjs/i18n

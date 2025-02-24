@@ -41,7 +41,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
     })
   }
 
-  const genTemplate = (isServer: boolean, lazy?: boolean) => {
+  ctx.genTemplate = (isServer: boolean, lazy?: boolean) => {
     const nuxtI18nOptions = defu({}, options)
     // override `lazy` options
     if (lazy != null) {
@@ -63,14 +63,12 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
     })
   }
 
-  ctx.genTemplate = genTemplate
-
   nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, defu({}, options))
 
   addTemplate({
     filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
     write: true,
-    getContents: () => genTemplate(false)
+    getContents: () => ctx.genTemplate(false)
   })
 
   nuxt.options.imports.transform ??= {}
