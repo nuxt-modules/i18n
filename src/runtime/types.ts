@@ -1,7 +1,7 @@
 import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
-import type { I18n, Locale } from 'vue-i18n'
+import type { I18n, Locale, Composer, VueI18n, ExportedGlobalComposer } from 'vue-i18n'
 import type { RouteLocationNormalizedGeneric, RouteRecordNameGeneric } from 'vue-router'
 
 export type CompatRoute = Omit<RouteLocationNormalizedGeneric, 'name'> & {
@@ -120,6 +120,8 @@ interface SharedProperties {
    * Returns a promise that will be resolved once the pending locale is set.
    */
   waitForPendingLocaleChange: () => Promise<void>
+
+  __extendComposer: (instance: Composer | VueI18n | ExportedGlobalComposer) => void
 }
 
 export interface ComposerCustomProperties<

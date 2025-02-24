@@ -6,7 +6,7 @@ import { parse as _parseCode } from '@babel/parser'
 import { defu } from 'defu'
 import { genSafeVariableName } from 'knitwork'
 import { transform as stripType } from 'sucrase'
-import { isString, isRegExp, isFunction, isArray, isObject } from '@intlify/shared'
+import { isString, isArray } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleObject } from './types'
@@ -17,12 +17,8 @@ export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
-export function castArray<T>(value: T | T[]): T[] {
-  return Array.isArray(value) ? value : [value]
-}
-
 export function normalizeIncludingLocales(locales?: string | string[]) {
-  return (castArray(locales) ?? []).filter(isString)
+  return (toArray(locales) ?? []).filter(isString)
 }
 
 export function filterLocales(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
@@ -293,48 +289,6 @@ export async function resolveVueI18nConfigInfo(
 export type PrerenderTarget = {
   type: 'locale' | 'config'
   path: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function toCode(code: any): string {
-  if (code === null) {
-    return `null`
-  }
-
-  if (code === undefined) {
-    return `undefined`
-  }
-
-  if (isString(code)) {
-    return JSON.stringify(code)
-  }
-
-  if (isRegExp(code) && code.toString) {
-    return code.toString()
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (isFunction(code) && code.toString) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    return `(${code.toString().replace(new RegExp(`^${code.name}`), 'function ')})`
-  }
-
-  if (isArray(code)) {
-    return `[${code.map(c => toCode(c)).join(`,`)}]`
-  }
-
-  if (isObject(code)) {
-    return stringifyObj(code)
-  }
-
-  return code + ``
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function stringifyObj(obj: Record<string, any>): string {
-  return `Object({${Object.entries(obj)
-    .map(([key, value]) => `${JSON.stringify(key)}:${toCode(value)}`)
-    .join(`,`)}})`
 }
 
 export const getLocalePaths = (locale: LocaleObject): string[] => {

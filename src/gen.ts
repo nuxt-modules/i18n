@@ -4,7 +4,7 @@ import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
 import { resolve, relative, join } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getLayerI18n, getLocalePaths, getNormalizedLocales, toCode } from './utils'
+import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PrerenderTarget } from './utils'
@@ -93,9 +93,9 @@ export function generateLoaderOptions(
     }
 
     importMapper.set(meta.key, {
-      key: toCode(importer?.key),
+      key: JSON.stringify(importer?.key),
       load: importer?.load,
-      cache: toCode(importer?.cache),
+      cache: JSON.stringify(importer?.cache),
       specifier: importSpecifier,
       metaKey: meta.key
     })
