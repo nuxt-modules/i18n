@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
-// @ts-expect-error This is because we're using Nuxt Content v2.8.2 instead of the new version which includes these types. We're using the old version because the latest has issues with highlighting
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
 
 useSeoMeta({
   title: 'Page not found',
@@ -18,33 +16,57 @@ useHead({
   }
 })
 
-const { data: navigation } = await useAsyncData('navigation', () => fetchContentNavigation())
-const { data: files } = useLazyFetch<ParsedContent[]>('/api/search.json', {
-  default: () => [],
-  server: false
+const appConfig = useAppConfig()
+const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius}rem; }`)
+
+useHead({
+  htmlAttrs: { lang: 'en' },
+  meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+  link: [{ rel: 'icon', href: '/favicon.ico' }],
+  style: [{ innerHTML: radius, id: 'nuxt-ui-radius', tagPriority: -2 }]
 })
 
-provide('navigation', navigation)
+useSeoMeta({
+  titleTemplate: `%s - ${appConfig.seo.siteName}`,
+  ogSiteName: appConfig.seo.siteName,
+  twitterCard: 'summary_large_image'
+})
+
+const { $currentDocsVersionNavigation } = useNuxtApp()
+
+// // Search
+const { data: files } = useAsyncData('/api/search.json', () => queryCollectionSearchSections('docs'), { server: false })
+
+// // Header
+const route = useRoute()
+const links = computed<unknown[]>(() => [
+  {
+    label: 'Docs',
+    to: `/docs/getting-started`,
+    icon: 'i-heroicons-book-open',
+    active: route.path.startsWith('/docs')
+  },
+  {
+    label: 'Roadmap',
+    to: '/roadmap',
+    icon: 'i-heroicons-map'
+  }
+])
 </script>
 
 <template>
   <div>
-    <TheHeader />
+    <NuxtLoadingIndicator />
+    <Header :links="links" />
 
-    <UMain>
-      <UContainer>
-        <UPage>
-          <UPageError :error="error" />
-        </UPage>
-      </UContainer>
-    </UMain>
+    <NuxtLayout>
+      <UError :error="error" />
+    </NuxtLayout>
 
-    <TheFooter />
+    <!-- <TheFooter /> -->
 
     <ClientOnly>
-      <LazyUContentSearch :files="files" :navigation="navigation" />
+      <LazyUContentSearch :files="files" :navigation="$currentDocsVersionNavigation" :multiple="true" />
     </ClientOnly>
-
-    <UNotifications />
   </div>
 </template>

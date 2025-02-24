@@ -2,31 +2,29 @@ export default defineAppConfig({
   legacy: {
     ui: {
       primary: 'green',
-      gray: 'slate'
+      neutral: 'slate'
     }
   },
   default: {
     ui: {
       primary: 'green',
-      gray: 'zinc'
+      neutral: 'zinc'
     }
   },
+  theme: {
+    radius: 0.25
+  },
   ui: {
-    primary: 'green',
-    gray: 'zinc',
+    colors: {
+      primary: 'green',
+      neutral: 'zinc'
+    }
+  },
+  uiPro: {
     footer: {
       bottom: {
         left: 'text-sm text-gray-500 dark:text-gray-400',
         wrapper: 'border-t border-gray-200 dark:border-gray-800'
-      }
-    },
-    content: {
-      prose: {
-        code: {
-          icon: {
-            env: 'vscode-icons:file-type-dotenv'
-          }
-        }
       }
     }
   },
@@ -62,7 +60,7 @@ export default defineAppConfig({
     ]
   },
   toc: {
-    title: 'Table of Contents',
+    title: 'On this page',
     bottom: {
       edit: 'https://github.com/nuxt-modules/i18n/edit/main/docs/content'
     }

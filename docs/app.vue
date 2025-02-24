@@ -1,57 +1,42 @@
 <script setup lang="ts">
-// @ts-expect-error This is because we're using Nuxt Content v2.8.2 instead of the new version which includes these types. We're using the old version because the latest has issues with highlighting
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
-import type { PageLink } from '#ui-pro/types'
+import { mapContentNavigation } from '@nuxt/ui-pro/runtime/utils/content.js'
+import type { ContentNavigationItem } from '@nuxt/content'
 
-// Seo
-const { seo } = useAppConfig()
-useHead({ htmlAttrs: { lang: 'en' }, link: [{ rel: 'icon', href: '/favicon.ico' }] })
+const appConfig = useAppConfig()
+const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius}rem; }`)
+
+useHead({
+  htmlAttrs: { lang: 'en' },
+  meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+  link: [{ rel: 'icon', href: '/favicon.ico' }],
+  style: [{ innerHTML: radius, id: 'nuxt-ui-radius', tagPriority: -2 }]
+})
+
 useSeoMeta({
-  titleTemplate: `%s - ${seo.siteName}`,
-  ogSiteName: seo.siteName,
+  titleTemplate: `%s - ${appConfig.seo.siteName}`,
+  ogSiteName: appConfig.seo.siteName,
   twitterCard: 'summary_large_image'
 })
 
 // Navigation Data
-const { data: navigation } = await useAsyncData('navigation', () => fetchContentNavigation())
-provide('navigation', navigation)
-
-const router = useRouter()
-
-const isV7Docs = computed(() => router.currentRoute.value.path.includes('/docs/v7'))
-const isV8Docs = computed(() => router.currentRoute.value.path.includes('/docs/v8'))
+const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
+const nav = computed<ContentNavigationItem[]>(
+  () => mapContentNavigation(navigation.value).at(0).children as ContentNavigationItem[]
+)
+provide('navigation', nav)
 
 // Search
-const { data: files } = useLazyFetch<ParsedContent[]>('/api/search.json', {
-  default: () => [],
-  server: false
-})
+const { data: files } = useAsyncData('/api/search.json', () => queryCollectionSearchSections('docs'), { server: false })
 
-const v7DocsRE = /^\/docs\/v7/
-const v8DocsRE = /^\/docs\/v8/
+const currentVersionNavigation = useNuxtApp().$currentDocsVersionNavigation
 
-const navigationV7 = computed(() => navigation.value?.[0].children.filter(x => v7DocsRE.test(String(x._path))))
-const navigationV8 = computed(() => navigation.value?.[0].children.filter(x => v8DocsRE.test(String(x._path))))
-const navigationV9 = computed(() =>
-  navigation.value?.[0].children.filter(x => {
-    const to = String(x._path)
-    return !v8DocsRE.test(to) && !v7DocsRE.test(to)
-  })
-)
-
-const currentVersionNavigation = computed(() => {
-  if (isV7Docs.value) return navigationV7.value
-  if (isV8Docs.value) return navigationV8.value
-  return navigationV9.value
-})
-
-// Header
+// // Header
 const route = useRoute()
-const links: PageLink[] = [
+const links = computed<unknown[]>(() => [
   {
     label: 'Docs',
     to: `/docs/getting-started`,
-    icon: 'i-heroicons-rocket-launch',
+    icon: 'i-heroicons-book-open',
     active: route.path.startsWith('/docs')
   },
   {
@@ -59,29 +44,29 @@ const links: PageLink[] = [
     to: '/roadmap',
     icon: 'i-heroicons-map'
   }
-]
+])
 </script>
 
 <template>
-  <div>
-    <TheHeader :links="links" />
+  <UApp>
+    <NuxtLoadingIndicator />
+    <Header :links="links" />
 
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
 
-    <TheFooter />
+    <Footer />
 
     <ClientOnly>
-      <LazyUContentSearch :files="files" :navigation="currentVersionNavigation" :links="links" />
+      <LazyUContentSearch
+        :files="files"
+        :navigation="currentVersionNavigation"
+        :multiple="true"
+        :kbds="['meta', 'K']"
+      />
     </ClientOnly>
-
-    <UNotifications />
-  </div>
+  </UApp>
 </template>
 
-<style>
-body {
-  font-family: 'Inter var experimental', 'Inter var', 'Inter', sans-serif;
-}
-</style>
+<style></style>
