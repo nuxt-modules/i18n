@@ -12,18 +12,15 @@
     "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
-    "@iconify-json/heroicons": "^1.1.19",
-    "@iconify-json/simple-icons": "^1.1.89",
-    "@nuxt/content": "^3.2.1",
-    "@nuxt/fonts": "^0.10.3",
+    "@iconify-json/logos": "^1.2.4",
+    "@iconify-json/lucide": "^1.2.26",
+    "@iconify-json/simple-icons": "^1.2.25",
+    "@iconify-json/vscode-icons": "^1.2.15",
+    "@nuxt/content": "^3.2.2",
     "@nuxt/image": "^1.9.0",
     "@nuxt/ui-pro": "^3.0.0-alpha.13",
-    "@nuxtjs/fontaine": "^0.4.3",
-    "@nuxtjs/google-fonts": "^3.2.0",
     "nuxt": "^3.15.4",
-    "nuxt-hydration": "^0.6.4",
-    "nuxt-og-image": "^3.0.8",
-    "shiki-transformer-color-highlight": "^0.2.0",
-    "vue-tsc": "^2.1.6"
+    "nuxt-og-image": "^4.1.4",
+    "shiki-transformer-color-highlight": "^0.2.0"
   }
 }
