@@ -1,5 +1,4 @@
 import createDebug from 'debug'
-import { EXECUTABLE_EXTENSIONS } from './constants'
 import { genImport, genDynamicImport } from 'knitwork'
 import { withQuery } from 'ufo'
 import { resolve, relative, join } from 'pathe'
@@ -7,7 +6,6 @@ import { distDir, runtimeDir } from './dirs'
 import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { PrerenderTarget } from './utils'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta, LocaleObject, LocaleFile } from './types'
 import type { Locale } from 'vue-i18n'
 
@@ -21,19 +19,14 @@ export type LoaderOptions = {
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
-const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>, isServer = false): string => {
-  return genDynamicImport(
-    generateVueI18nImportSpecifier(config, isServer),
-    !isServer
-      ? {
-          comment: `webpackChunkName: "${config.meta.key}"`
-        }
-      : {}
-  )
+const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): string => {
+  return genDynamicImport(generateVueI18nImportSpecifier(config), {
+    comment: `webpackChunkName: "${config.meta.key}"`
+  })
 }
 
-const generateVueI18nImportSpecifier = (config: Required<VueI18nConfigPathInfo>, isServer = false): string => {
-  return genImportSpecifier({ ...config.meta, isServer }, 'config')
+const generateVueI18nImportSpecifier = (config: Required<VueI18nConfigPathInfo>): string => {
+  return genImportSpecifier(config.meta, { config: '1' })
 }
 
 export function simplifyLocaleOptions(
@@ -82,7 +75,7 @@ export function generateLoaderOptions(
 
   function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number], isServer = false) {
     if (importMapper.has(meta.key)) return
-    const importSpecifier = genImportSpecifier({ ...meta, isServer }, 'locale', { locale })
+    const importSpecifier = genImportSpecifier(meta, meta.type === 'dynamic' ? { locale, hash: meta.hash } : {})
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
     if (nuxtI18nOptions.lazy) {
@@ -114,11 +107,11 @@ export function generateLoaderOptions(
   const vueI18nConfigImports = [...vueI18nConfigPaths]
     .reverse()
     .filter(config => config.absolute !== '')
-    .map(config => generateVueI18nConfiguration(config, isServer))
+    .map(config => generateVueI18nConfiguration(config))
   const vueI18nConfigSpecifiers = [...vueI18nConfigPaths]
     .reverse()
     .filter(config => config.absolute !== '')
-    .map(config => generateVueI18nImportSpecifier(config, isServer))
+    .map(config => generateVueI18nImportSpecifier(config))
 
   const localeLoaders: [string, LocaleLoaderData[]][] = localeInfo.map(locale => [
     locale.code,
@@ -177,37 +170,16 @@ export function generateLoaderOptions(
   return generated
 }
 
-function genImportSpecifier(
-  {
-    loadPath,
-    path,
-    parsed,
-    hash,
-    type,
-    isServer
-  }: Pick<FileMeta, 'loadPath' | 'path' | 'parsed' | 'hash' | 'type'> & { isServer?: boolean },
-  resourceType: PrerenderTarget['type'] | undefined,
-  query: Record<string, string> = {}
-) {
-  const getLoadPath = () => (!isServer ? loadPath : path)
+function genImportSpecifier({ path, type }: Pick<FileMeta, 'path' | 'type'>, query: Record<string, string> = {}) {
+  // if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) {
+  //   return path
+  // }
 
-  if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) {
-    return getLoadPath()
-  }
-
-  if (resourceType != null && type === 'unknown') {
+  if (type === 'unknown') {
     throw new Error(`'unknown' type in '${path}'.`)
   }
 
-  if (resourceType === 'locale') {
-    return !isServer ? withQuery(getLoadPath(), type === 'dynamic' ? { hash, ...query } : {}) : getLoadPath()
-  }
-
-  if (resourceType === 'config') {
-    return !isServer ? withQuery(getLoadPath(), { hash, ...query, ...{ config: 1 } }) : getLoadPath()
-  }
-
-  return getLoadPath()
+  return withQuery(path, query)
 }
 
 /**

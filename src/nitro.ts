@@ -22,6 +22,9 @@ import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
 import { resolveI18nDir } from './layers'
 import { i18nVirtualLoggerPlugin } from './virtual-logger'
+import { VIRTUAL_PREFIX_HEX } from './transform/utils'
+import { parseURL, parseQuery } from 'ufo'
+import { pathToFileURL } from 'node:url'
 import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
@@ -49,14 +52,30 @@ export async function setupNitro(
   }
 
   nuxt.hook('nitro:config', async nitroConfig => {
+    nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
+    nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
+
+    nitroConfig.rollupConfig!.plugins.push({
+      name: 'nuxt-i18n:nitro-locale-file-resolver',
+      resolveId(id) {
+        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
+          return
+        }
+
+        const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
+        const query = parseQuery(search)
+        if ((!!query.locale || !!query.config) && /\.([c|m]?[j|t]s)$/.test(pathname)) {
+          console.log(id, pathname)
+          return pathname
+        }
+      }
+    })
+
     if (setupServer) {
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [resolver.resolve('./runtime')] })
 
       // install server resource transform plugin for yaml / json5 format
-      nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
-      nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
-
       nitroConfig.rollupConfig!.plugins.push(i18nVirtualLoggerPlugin(options.debug).rollup())
 
       const yamlPaths = getResourcePaths(localeInfo, /\.ya?ml$/)

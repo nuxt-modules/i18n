@@ -4,10 +4,14 @@ export default defineNuxtConfig({
 
   i18n: {
     locales: [
-      { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+      { code: 'en', language: 'en-US', file: 'en.ts', name: 'English' },
       { code: 'ja', language: 'ja-JP', file: 'ja.json', name: 'Japanese' }
     ],
+    lazy: true,
     defaultLocale: 'en'
+    // experimental: {
+    //   typedOptionsAndMessages: 'all'
+    // }
   },
 
   compatibilityDate: '2025-02-04'
