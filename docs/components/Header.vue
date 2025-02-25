@@ -62,9 +62,9 @@ const processed = computed<DropdownMenuItem[]>(() => {
     <UNavigationMenu class="z-10" :items="links" variant="link" />
 
     <template #right>
-      <UTooltip text="Search" :kbds="['meta', 'K']">
-        <UContentSearchButton :label="null" />
-      </UTooltip>
+      <!-- <UTooltip text="Search" :kbds="['meta', 'K']"> -->
+      <UContentSearchButton :label="null" />
+      <!-- </UTooltip> -->
 
       <UColorModeButton />
 

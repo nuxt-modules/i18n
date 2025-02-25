@@ -31,7 +31,7 @@ const { copy, copied } = useClipboard({ source })
             class="absolute z-[-1] rounded-full bg-(--ui-primary) blur-[300px] size-60 sm:size-80 transform -translate-x-1/2 left-1/2 -translate-y-80"
           />
           <div
-            class="absolute -z-10 inset-0 h-full w-full bg-[radial-gradient(circle,var(--ui-color-primary-950)_1px,transparent_1px)] bg-[size:20px_20px]"
+            class="absolute -z-10 inset-0 h-full w-full bg-[radial-gradient(circle,var(--ui-color-primary-900)_1px,transparent_1px)] bg-[size:20px_20px]"
           />
         </template>
 

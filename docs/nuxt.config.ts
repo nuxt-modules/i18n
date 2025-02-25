@@ -1,7 +1,7 @@
 import pkg from '../package.json'
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui-pro', '@nuxt/content', '@nuxtjs/google-fonts', '@nuxt/fonts', 'nuxt-og-image'],
+  modules: ['@nuxt/ui-pro', '@nuxt/content', 'nuxt-og-image'],
   routeRules: {
     // v7
     '/docs/v7': { redirect: '/docs/v7/setup' },
@@ -13,20 +13,6 @@ export default defineNuxtConfig({
 
     // v8
     '/docs/v8': { redirect: '/docs/v8/getting-started' }
-  },
-
-  vite: {
-    $client: {
-      build: {
-        rollupOptions: {
-          output: {
-            chunkFileNames: '_nuxt/[name]-[hash].js',
-            entryFileNames: '_nuxt/[name]-[hash].js'
-          }
-        }
-        // minify: false
-      }
-    }
   },
 
   // SEO
@@ -68,15 +54,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-
-  // Fonts
-  fontMetrics: { fonts: ['DM Sans'] },
-
-  googleFonts: {
-    display: 'swap',
-    download: true,
-    families: { 'DM+Sans': [400, 500, 600, 700] }
-  },
 
   devtools: { enabled: true },
   typescript: { strict: false },
