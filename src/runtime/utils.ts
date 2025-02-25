@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { joinURL, isEqual } from 'ufo'
-import { isString, isFunction, isObject } from '@intlify/shared'
+import { isFunction } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
   NUXT_I18N_MODULE_ID,
@@ -30,7 +30,6 @@ import type { HeadSafe } from '@unhead/vue'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type {
-  RootRedirectOptions,
   PrefixableOptions,
   SwitchLocalePathIntercepter,
   BaseUrlResolveHandler,
@@ -226,10 +225,6 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
   return redirectPath
 }
 
-function isRootRedirectOptions(rootRedirect: unknown): rootRedirect is RootRedirectOptions {
-  return isObject(rootRedirect) && 'path' in rootRedirect && 'statusCode' in rootRedirect
-}
-
 // composable function for redirect loop avoiding
 const useRedirectState = () => useState<string>(NUXT_I18N_MODULE_ID + ':redirect', () => '')
 
@@ -240,41 +235,26 @@ type NavigateArgs = {
   route: CompatRoute
 }
 
-function _navigate(redirectPath: string, status: number) {
-  return navigateTo(redirectPath, { redirectCode: status })
-}
-
-export async function navigate(
-  { nuxtApp, locale, route, redirectPath }: NavigateArgs,
-  { status = 302, enableNavigate = false }: { status?: number; enableNavigate?: boolean } = {}
-) {
+export async function navigate({ nuxtApp, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxtApp
     .$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
 
   __DEBUG__ &&
-    logger.log('options', {
-      status,
-      rootRedirect,
-      differentDomains,
-      skipSettingLocaleOnNavigate,
-      enableNavigate,
-      isSSG
-    })
+    logger.log('options', { rootRedirect, differentDomains, skipSettingLocaleOnNavigate, enableNavigate, isSSG })
 
   if (route.path === '/' && rootRedirect) {
-    if (isString(rootRedirect)) {
+    let redirectCode = 302
+    if (typeof rootRedirect === 'string') {
       redirectPath = '/' + rootRedirect
-    } else if (isRootRedirectOptions(rootRedirect)) {
+    } else {
       redirectPath = '/' + rootRedirect.path
-      status = rootRedirect.statusCode
+      redirectCode = rootRedirect.statusCode
     }
 
-    // TODO: resolve type errors for nuxt context extensions
-
     redirectPath = nuxtApp.$localePath(redirectPath, locale)
-    __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, status })
-    return _navigate(redirectPath, status)
+    __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, redirectCode })
+    return navigateTo(redirectPath, { redirectCode })
   }
 
   if (import.meta.client && skipSettingLocaleOnNavigate) {
@@ -290,48 +270,49 @@ export async function navigate(
   if (multiDomainLocales && strategy === 'prefix_except_default') {
     const host = getHost()
     const currentDomain = locales.find(locale => {
-      if (typeof locale !== 'string') {
-        return locale.defaultForDomains?.find(domain => domain === host)
-      }
-
-      return false
+      if (typeof locale === 'string') return
+      return locale.defaultForDomains?.find(domain => domain === host)
     })
+
     const defaultLocaleForDomain = typeof currentDomain !== 'string' ? currentDomain?.code : undefined
 
     if (route.path.startsWith(`/${defaultLocaleForDomain}`)) {
-      return _navigate(route.path.replace(`/${defaultLocaleForDomain}`, ''), status)
-    } else if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
+      return navigateTo(route.path.replace(`/${defaultLocaleForDomain}`, ''))
+    }
+
+    if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
       const getLocaleFromRoute = createLocaleFromRouteGetter()
       const oldLocale = getLocaleFromRoute(route.path)
 
       if (oldLocale !== '') {
-        return _navigate(`/${locale + route.path.replace(`/${oldLocale}`, '')}`, status)
-      } else {
-        return _navigate(`/${locale + (route.path === '/' ? '' : route.path)}`, status)
+        return navigateTo(`/${locale + route.path.replace(`/${oldLocale}`, '')}`)
       }
-    } else if (redirectPath && route.path !== redirectPath) {
-      return _navigate(redirectPath, status)
+
+      return navigateTo(`/${locale + (route.path === '/' ? '' : route.path)}`)
+    }
+
+    if (redirectPath && route.path !== redirectPath) {
+      return navigateTo(redirectPath)
     }
 
     return
   }
 
-  if (!differentDomains) {
-    if (redirectPath) {
-      return _navigate(redirectPath, status)
-    }
-  } else {
+  if (differentDomains) {
     const state = useRedirectState()
     __DEBUG__ && logger.log('redirect', { state: state.value, redirectPath })
     if (state.value && state.value !== redirectPath) {
       if (import.meta.client) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
-      } else if (import.meta.server) {
+      }
+      if (import.meta.server) {
         __DEBUG__ && logger.log('differentDomains servermode', { redirectPath })
         state.value = redirectPath // set redirect path
       }
     }
+  } else if (redirectPath) {
+    return navigateTo(redirectPath)
   }
 }
 
@@ -348,9 +329,9 @@ function prefixable({ currentLocale, defaultLocale, strategy }: PrefixableOption
 export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
   const logger = /*#__PURE__*/ createLogger('extendPrefixable')
   return (opts: PrefixableOptions): boolean => {
-    __DEBUG__ && logger.log(prefixable(opts))
-
-    return prefixable(opts) && !runtimeConfig.public.i18n.differentDomains
+    const _prefixable = prefixable(opts)
+    __DEBUG__ && logger.log(_prefixable)
+    return _prefixable && !runtimeConfig.public.i18n.differentDomains
   }
 }
 
@@ -405,7 +386,7 @@ export type HeadParam = Required<Pick<HeadSafe, 'meta' | 'link'>>
 export function getNormalizedLocales(locales: string[] | LocaleObject[]): LocaleObject[] {
   const normalized: LocaleObject[] = []
   for (const locale of locales) {
-    if (isString(locale)) {
+    if (typeof locale === 'string') {
       normalized.push({ code: locale })
       continue
     }

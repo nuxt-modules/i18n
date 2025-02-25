@@ -143,9 +143,7 @@ export default defineNuxtPlugin({
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
 
-          await nuxtApp.runWithContext(() =>
-            navigate({ nuxtApp, redirectPath, locale, route }, { enableNavigate: true })
-          )
+          await nuxtApp.runWithContext(() => navigate({ nuxtApp, redirectPath, locale, route }, true))
         }
         composer.loadLocaleMessages = async (locale: string) =>
           await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer), nuxtApp)
