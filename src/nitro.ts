@@ -17,20 +17,18 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR
 } from './constants'
-
-import type { Nuxt } from '@nuxt/schema'
-import type { LocaleInfo } from './types'
 import { resolveI18nDir } from './layers'
 import { i18nVirtualLoggerPlugin } from './virtual-logger'
 import { VIRTUAL_PREFIX_HEX } from './transform/utils'
-import { parseURL, parseQuery } from 'ufo'
-import { pathToFileURL } from 'node:url'
+
+import type { Nuxt } from '@nuxt/schema'
+import type { LocaleInfo } from './types'
 import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:nitro')
 
 export async function setupNitro(
-  { genTemplate, isSSR, localeInfo, resolver, options, isDev }: I18nNuxtContext,
+  { genTemplate, isSSR, localeInfo, resolver, options, isDev, vueI18nConfigPaths }: I18nNuxtContext,
   nuxt: Nuxt
 ) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
@@ -44,12 +42,15 @@ export async function setupNitro(
 
     addServerTemplate({
       filename: '#internal/i18n/locale.detector.mjs',
-      getContents: () =>
-        // prettier-ignore
-        `import localeDetector from ${JSON.stringify(localeDetectionPath)}\n` +
-        `export { localeDetector }`
+      getContents: () => `import localeDetector from ${JSON.stringify(localeDetectionPath)}
+export { localeDetector }`
     })
   }
+
+  const i18nPathSet = new Set([
+    ...localeInfo.flatMap(x => x.meta!.map(m => m.path)),
+    ...vueI18nConfigPaths.map(x => x.absolute)
+  ])
 
   nuxt.hook('nitro:config', async nitroConfig => {
     nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
@@ -58,14 +59,12 @@ export async function setupNitro(
     nitroConfig.rollupConfig!.plugins.push({
       name: 'nuxt-i18n:nitro-locale-file-resolver',
       resolveId(id) {
-        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
+        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith('../')) {
           return
         }
 
-        const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-        const query = parseQuery(search)
-        if ((!!query.locale || !!query.config) && /\.([c|m]?[j|t]s)$/.test(pathname)) {
-          console.log(id, pathname)
+        const pathname = resolver.resolve(nuxt.options.buildDir, id).split('?')[0]
+        if (i18nPathSet.has(pathname)) {
           return pathname
         }
       }

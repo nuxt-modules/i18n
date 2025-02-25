@@ -87,7 +87,6 @@ export async function resolveLocales(srcDir: string, locales: LocaleObject[], bu
         loadPath: relative(buildDir, filePath),
         type: localeType,
         hash: getHash(filePath),
-        parsed,
         key,
         file: {
           path: f.path,
@@ -257,15 +256,13 @@ export async function resolveVueI18nConfigInfo(
       loadPath: '',
       type: 'unknown',
       hash: NULL_HASH,
-      key: '',
-      parsed: { base: '', dir: '', ext: '', name: '', root: '' }
+      key: ''
     }
   }
 
   const absolutePath = await resolvePath(configPathInfo.relative, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
   if (!(await isExists(absolutePath))) return undefined
 
-  const parsed = parsePath(absolutePath)
   const loadPath = join(configPathInfo.relativeBase, relative(rootDir, absolutePath))
 
   configPathInfo.absolute = absolutePath
@@ -279,7 +276,6 @@ export async function resolveVueI18nConfigInfo(
     type: configPathInfo.type,
     hash: configPathInfo.hash,
     loadPath,
-    parsed,
     key
   }
 

@@ -168,7 +168,6 @@ test('files with cache configuration', async () => {
 
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
-  console.log(getNormalizedLocales(locales))
 
   const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
@@ -200,11 +199,8 @@ test('files with cache configuration (relative)', async () => {
     // @ts-ignore
     l.files = resolveRelativeLocales(l, { langDir: 'locales' })
   }
-  // console.log(JSON.stringify(getMockLocales(), null, 2))
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
-
-  console.log(getNormalizedLocales(locales))
 
   const code = generateLoaderOptions(
     { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } },

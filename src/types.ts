@@ -1,5 +1,4 @@
 import type { Locale, I18nOptions } from 'vue-i18n'
-import type { ParsedPath } from 'path'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
 import type { RouteMapGeneric, RouteMapI18n } from 'vue-router'
@@ -67,7 +66,6 @@ export type FileMeta = {
   loadPath: string
   hash: string
   type: LocaleType
-  parsed: ParsedPath
   key: string
 }
 

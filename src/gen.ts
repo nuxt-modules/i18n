@@ -170,16 +170,12 @@ export function generateLoaderOptions(
   return generated
 }
 
-function genImportSpecifier({ path, type }: Pick<FileMeta, 'path' | 'type'>, query: Record<string, string> = {}) {
-  // if (!EXECUTABLE_EXTENSIONS.includes(parsed.ext)) {
-  //   return path
-  // }
-
-  if (type === 'unknown') {
-    throw new Error(`'unknown' type in '${path}'.`)
+function genImportSpecifier(data: Pick<FileMeta, 'loadPath' | 'type'>, query: Record<string, string>) {
+  if (data.type === 'unknown') {
+    throw new Error(`'unknown' type in '${data.loadPath}'.`)
   }
 
-  return withQuery(path, query)
+  return withQuery(data.loadPath, query)
 }
 
 /**
