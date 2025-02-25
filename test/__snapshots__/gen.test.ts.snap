@@ -82,11 +82,11 @@ exports[`basic 1`] = `
     "lazy": false,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -225,11 +225,11 @@ exports[`files with cache configuration (relative) 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -365,11 +365,11 @@ exports[`files with cache configuration 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -452,11 +452,11 @@ exports[`lazy 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -539,11 +539,11 @@ exports[`locale file in nested 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -679,11 +679,11 @@ exports[`multiple files 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -723,11 +723,11 @@ exports[`toCode: function (arrow) 1`] = `
       },
     ],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -767,11 +767,11 @@ exports[`toCode: function (named) 1`] = `
       },
     ],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
   ],
 }
 `;
@@ -858,15 +858,19 @@ exports[`vueI18n option 1`] = `
     "locales": [],
     "vueI18n": "vue-i18n.config.ts",
   },
-  "vueI18nConfigSpecifiers": [
-    "/path/foo/layer2/vue-i18n.options.js?config=1",
-    "/path/layer1/i18n.custom.ts?config=1",
-    "/path/to/i18n.config.ts?config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/path/foo/layer2/vue-i18n.options.js?config=1" /* webpackChunkName: "vue_i18n_options_js_84df1640" */)",
-    "() => import("/path/layer1/i18n.custom.ts?config=1" /* webpackChunkName: "i18n_custom_ts_faa288dc" */)",
-    "() => import("/path/to/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_42902d1e" */)",
+    {
+      "importer": "() => import("/path/foo/layer2/vue-i18n.options.js?config=1" /* webpackChunkName: "vue_i18n_options_js_84df1640" */)",
+      "specifier": "/path/foo/layer2/vue-i18n.options.js?config=1",
+    },
+    {
+      "importer": "() => import("/path/layer1/i18n.custom.ts?config=1" /* webpackChunkName: "i18n_custom_ts_faa288dc" */)",
+      "specifier": "/path/layer1/i18n.custom.ts?config=1",
+    },
+    {
+      "importer": "() => import("/path/to/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_42902d1e" */)",
+      "specifier": "/path/to/i18n.config.ts?config=1",
+    },
   ],
 }
 `;

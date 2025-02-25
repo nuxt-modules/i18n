@@ -94,13 +94,13 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
   return statements.join('\n\n')
 }
 
-function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigSpecifiers']) {
+function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs']) {
   const statements: string[] = []
 
   for (let i = 0; i < configs.length; i++) {
     statements.push(
       [
-        `  import.meta.hot.accept("${configs[i]}", async mod => {`,
+        `  import.meta.hot.accept("${configs[i].specifier}", async mod => {`,
         //   load configs before replacing loader
         `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
         //   replace config loader
@@ -125,7 +125,7 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
     deepEqualFn,
     loadConfigsFn,
     genLocaleLoaderHMR(options.localeLoaders),
-    genVueI18nConfigHMR(options.vueI18nConfigSpecifiers),
+    genVueI18nConfigHMR(options.vueI18nConfigs),
     '}'
   ].join('\n\n')
 
@@ -146,7 +146,7 @@ ${options.localeLoaders
 }
 
 export const vueI18nConfigs = [
-  ${options.vueI18nConfigs.length > 0 ? options.vueI18nConfigs.join(',\n  ') : ''}
+  ${options.vueI18nConfigs.map(x => x.importer).join(',\n  ')}
 ]
 
 export const nuxtI18nOptions = ${JSON.stringify(options.nuxtI18nOptions, null, 2)}

@@ -19,14 +19,13 @@ export type LoaderOptions = {
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 
-const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>): string => {
-  return genDynamicImport(generateVueI18nImportSpecifier(config), {
-    comment: `webpackChunkName: "${config.meta.key}"`
-  })
-}
+const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>) => {
+  const specifier = genImportSpecifier(config.meta, { config: '1' })
 
-const generateVueI18nImportSpecifier = (config: Required<VueI18nConfigPathInfo>): string => {
-  return genImportSpecifier(config.meta, { config: '1' })
+  return {
+    specifier,
+    importer: genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
+  }
 }
 
 export function simplifyLocaleOptions(
@@ -108,10 +107,6 @@ export function generateLoaderOptions(
     .reverse()
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config))
-  const vueI18nConfigSpecifiers = [...vueI18nConfigPaths]
-    .reverse()
-    .filter(config => config.absolute !== '')
-    .map(config => generateVueI18nImportSpecifier(config))
 
   const localeLoaders: [string, LocaleLoaderData[]][] = localeInfo.map(locale => [
     locale.code,
@@ -160,7 +155,6 @@ export function generateLoaderOptions(
     nuxtI18nOptions: generatedNuxtI18nOptions,
     vueI18nConfigs: vueI18nConfigImports,
     normalizedLocales: processedNormalizedLocales,
-    vueI18nConfigSpecifiers,
     isServer,
     hmr: !!nuxtI18nOptions.experimental?.hmr
   }
