@@ -47,32 +47,31 @@ export { localeDetector }`
     })
   }
 
-  const i18nPathSet = new Set([
-    ...localeInfo.flatMap(x => x.meta!.map(m => m.path)),
-    ...vueI18nConfigPaths.map(x => x.absolute)
-  ])
-
   nuxt.hook('nitro:config', async nitroConfig => {
-    nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
-    nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
-
-    nitroConfig.rollupConfig!.plugins.push({
-      name: 'nuxt-i18n:nitro-locale-file-resolver',
-      resolveId(id) {
-        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith('../')) {
-          return
-        }
-
-        const pathname = resolver.resolve(nuxt.options.buildDir, id).split('?')[0]
-        if (i18nPathSet.has(pathname)) {
-          return pathname
-        }
-      }
-    })
-
     if (setupServer) {
       // inline module runtime in Nitro bundle
       nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [resolver.resolve('./runtime')] })
+
+      nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
+      nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
+
+      const i18nPathSet = new Set([
+        ...localeInfo.flatMap(x => x.meta!.map(m => m.path)),
+        ...vueI18nConfigPaths.map(x => x.absolute)
+      ])
+      nitroConfig.rollupConfig!.plugins.push({
+        name: 'nuxt-i18n:nitro-locale-file-resolver',
+        resolveId(id) {
+          if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith('../')) {
+            return
+          }
+
+          const pathname = resolver.resolve(nuxt.options.buildDir, id).split('?')[0]
+          if (i18nPathSet.has(pathname)) {
+            return pathname
+          }
+        }
+      })
 
       // install server resource transform plugin for yaml / json5 format
       nitroConfig.rollupConfig!.plugins.push(i18nVirtualLoggerPlugin(options.debug).rollup())
