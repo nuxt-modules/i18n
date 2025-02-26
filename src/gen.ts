@@ -13,7 +13,6 @@ export type LoaderOptions = {
   vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
   localeInfo: LocaleInfo[]
   nuxtI18nOptions: NuxtI18nOptions
-  isServer: boolean
   normalizedLocales: LocaleObject<string>[]
 }
 
@@ -65,20 +64,20 @@ type LocaleLoaderData = { key: string; load: string; cache: string; specifier: s
 
 export function generateLoaderOptions(
   nuxt: Nuxt,
-  { nuxtI18nOptions, vueI18nConfigPaths, localeInfo, isServer, normalizedLocales }: LoaderOptions
+  { nuxtI18nOptions, vueI18nConfigPaths, localeInfo, normalizedLocales }: LoaderOptions
 ) {
   debug('generateLoaderOptions: lazy', nuxtI18nOptions.lazy)
 
   const importMapper = new Map<string, LocaleLoaderData>()
   const importStrings: string[] = []
 
-  function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number], isServer = false) {
+  function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number]) {
     if (importMapper.has(meta.key)) return
     const importSpecifier = genImportSpecifier(meta, meta.type === 'dynamic' ? { locale, hash: meta.hash } : {})
     const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
 
     if (nuxtI18nOptions.lazy) {
-      importer.load = genDynamicImport(importSpecifier, !isServer ? { comment: `webpackChunkName: "${meta.key}"` } : {})
+      importer.load = genDynamicImport(importSpecifier, { comment: `webpackChunkName: "${meta.key}"` })
     } else {
       importStrings.push(genImport(importSpecifier, meta.key))
       importer.load = `() => Promise.resolve(${meta.key})`
@@ -97,7 +96,7 @@ export function generateLoaderOptions(
    * Prepare locale file imports
    */
   for (const locale of localeInfo) {
-    locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta, isServer))
+    locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta))
   }
 
   /**
@@ -154,9 +153,7 @@ export function generateLoaderOptions(
     localeLoaders,
     nuxtI18nOptions: generatedNuxtI18nOptions,
     vueI18nConfigs: vueI18nConfigImports,
-    normalizedLocales: processedNormalizedLocales,
-    isServer,
-    hmr: !!nuxtI18nOptions.experimental?.hmr
+    normalizedLocales: processedNormalizedLocales
   }
 
   debug('generate code', generated)

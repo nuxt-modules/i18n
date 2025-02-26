@@ -34,7 +34,8 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   if (setupServer) {
     addServerTemplate({
       filename: '#internal/i18n/options.mjs',
-      getContents: () => ctx.genTemplate(true, true)
+      getContents: () =>
+        nuxt.vfs['#build/i18n.options.mjs']?.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
     })
 
     addServerTemplate({

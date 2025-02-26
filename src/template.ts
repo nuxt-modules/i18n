@@ -161,6 +161,7 @@ export const hasPages = ${options.hasPages}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
-
-${(options.dev && options.hmr && !options.isServer && codeHMR) || ''}`
+/** client **/
+${(options.dev && options.nuxtI18nOptions.experimental!.hmr && codeHMR) || ''}
+/** client-end **/`
 }

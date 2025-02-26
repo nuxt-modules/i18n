@@ -17,7 +17,6 @@ export interface I18nNuxtContext {
   isSSG: boolean
   isBuild: boolean
   isTest: boolean
-  genTemplate: (isServer: boolean, lazy?: boolean) => string
   normalizedLocales: LocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
@@ -42,7 +41,6 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     isSSG: nuxt.options._generate,
     isBuild: nuxt.options._build,
     isTest: nuxt.options.test,
-    genTemplate: undefined!,
     normalizedLocales: undefined!,
     localeCodes: undefined!,
     localeInfo: undefined!,

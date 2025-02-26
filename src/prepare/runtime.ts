@@ -41,34 +41,26 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
     })
   }
 
-  ctx.genTemplate = (isServer: boolean, lazy?: boolean) => {
-    const nuxtI18nOptions = defu({}, options)
-    // override `lazy` options
-    if (lazy != null) {
-      nuxtI18nOptions.lazy = lazy
-    }
-    return generateTemplateNuxtI18nOptions({
-      ...generateLoaderOptions(nuxt, {
-        vueI18nConfigPaths,
-        localeInfo,
-        nuxtI18nOptions,
-        isServer,
-        normalizedLocales
-      }),
-      hasPages: nuxt.options.pages,
-      localeCodes,
-      dev,
-      isSSG,
-      parallelPlugin: options.parallelPlugin
-    })
-  }
-
   nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, defu({}, options))
 
   addTemplate({
     filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
     write: true,
-    getContents: () => ctx.genTemplate(false)
+    getContents: () => {
+      return generateTemplateNuxtI18nOptions({
+        ...generateLoaderOptions(nuxt, {
+          vueI18nConfigPaths,
+          localeInfo,
+          nuxtI18nOptions: options,
+          normalizedLocales
+        }),
+        hasPages: nuxt.options.pages,
+        localeCodes,
+        dev,
+        isSSG,
+        parallelPlugin: options.parallelPlugin
+      })
+    }
   })
 
   nuxt.options.imports.transform ??= {}
