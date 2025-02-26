@@ -93,8 +93,7 @@ test('basic', async () => {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
     normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: false },
-    isServer: false
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: false }
   })
 
   expect(code).toMatchSnapshot()
@@ -108,8 +107,7 @@ test('lazy', async () => {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
     normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-    isServer: false
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
   })
 
   expect(code).toMatchSnapshot()
@@ -139,8 +137,7 @@ test('multiple files', async () => {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
     nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-    normalizedLocales: getNormalizedLocales(locales),
-    isServer: false
+    normalizedLocales: getNormalizedLocales(locales)
   })
 
   expect(code).toMatchSnapshot()
@@ -173,8 +170,7 @@ test('files with cache configuration', async () => {
     vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
     localeInfo,
     normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-    isServer: false
+    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
   })
 
   expect(code).toMatchSnapshot()
@@ -214,8 +210,7 @@ test('files with cache configuration (relative)', async () => {
         experimental: {
           generatedLocaleFilePathFormat: 'relative'
         }
-      },
-      isServer: false
+      }
     }
   )
 
@@ -246,8 +241,7 @@ test('locale file in nested', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-      isServer: false
+      nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true }
     }
   )
 
@@ -281,8 +275,7 @@ test('vueI18n option', async () => {
     nuxtI18nOptions: {
       vueI18n: 'vue-i18n.config.ts',
       lazy: false
-    },
-    isServer: false
+    }
   })
 
   expect(code).toMatchSnapshot()
@@ -304,8 +297,7 @@ test('toCode: function (arrow)', async () => {
       ...NUXT_I18N_OPTIONS,
       lazy: false,
       locales: localeInfo
-    },
-    isServer: false
+    }
   })
 
   expect(code).toMatchSnapshot()
@@ -327,8 +319,7 @@ test('toCode: function (named)', async () => {
       ...NUXT_I18N_OPTIONS,
       lazy: false,
       locales: localeInfo
-    },
-    isServer: false
+    }
   })
 
   expect(code).toMatchSnapshot()

@@ -6,7 +6,7 @@ import { distDir, runtimeDir } from './dirs'
 import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, FileMeta, LocaleObject, LocaleFile } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
 import type { Locale } from 'vue-i18n'
 
 export type LoaderOptions = {
@@ -19,7 +19,7 @@ export type LoaderOptions = {
 const debug = createDebug('@nuxtjs/i18n:gen')
 
 const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>) => {
-  const specifier = genImportSpecifier(config.meta, { config: '1' })
+  const specifier = withQuery(config.meta.loadPath, { config: '1' })
 
   return {
     specifier,
@@ -60,7 +60,7 @@ export function simplifyLocaleOptions(
   })
 }
 
-type LocaleLoaderData = { key: string; load: string; cache: string; specifier: string; metaKey: string }
+type LocaleLoaderData = { key: string; sync: string; async: string; cache: string; specifier: string }
 
 export function generateLoaderOptions(
   nuxt: Nuxt,
@@ -72,31 +72,31 @@ export function generateLoaderOptions(
   const importStrings: string[] = []
 
   function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number]) {
-    if (importMapper.has(meta.key)) return
-    const importSpecifier = genImportSpecifier(meta, meta.type === 'dynamic' ? { locale, hash: meta.hash } : {})
-    const importer = { code: locale, key: meta.loadPath, load: '', cache: meta.file.cache ?? true }
+    if (importMapper.has(meta.key)) {
+      return importMapper.get(meta.key)!
+    }
+    const specifier = withQuery(meta.loadPath, meta.type === 'dynamic' ? { locale, hash: meta.hash } : {})
 
-    if (nuxtI18nOptions.lazy) {
-      importer.load = genDynamicImport(importSpecifier, { comment: `webpackChunkName: "${meta.key}"` })
-    } else {
-      importStrings.push(genImport(importSpecifier, meta.key))
-      importer.load = `() => Promise.resolve(${meta.key})`
+    importStrings.push(genImport(specifier, meta.key))
+
+    const importer = {
+      specifier,
+      key: JSON.stringify(meta.loadPath),
+      cache: JSON.stringify(meta.file.cache ?? true),
+      sync: `() => Promise.resolve(${meta.key})`,
+      async: genDynamicImport(specifier, { comment: `webpackChunkName: "${meta.key}"` })
     }
 
-    importMapper.set(meta.key, {
-      key: JSON.stringify(importer?.key),
-      load: importer?.load,
-      cache: JSON.stringify(importer?.cache),
-      specifier: importSpecifier,
-      metaKey: meta.key
-    })
+    importMapper.set(meta.key, importer)
+    return importer
   }
 
   /**
    * Prepare locale file imports
    */
+  const localeLoaders: [string, LocaleLoaderData[]][] = []
   for (const locale of localeInfo) {
-    locale?.meta?.forEach(meta => generateLocaleImports(locale.code, meta))
+    localeLoaders.push([locale.code, (locale?.meta ?? []).map(meta => generateLocaleImports(locale.code, meta))])
   }
 
   /**
@@ -107,24 +107,19 @@ export function generateLoaderOptions(
     .filter(config => config.absolute !== '')
     .map(config => generateVueI18nConfiguration(config))
 
-  const localeLoaders: [string, LocaleLoaderData[]][] = localeInfo.map(locale => [
-    locale.code,
-    locale.meta!.map(meta => importMapper.get(meta.key)!)
-  ])
   const pathFormat = nuxtI18nOptions.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
   const generatedNuxtI18nOptions = {
     ...nuxtI18nOptions,
     locales: simplifyLocaleOptions(nuxt, nuxtI18nOptions),
-    i18nModules:
-      nuxtI18nOptions.i18nModules?.map(x => {
-        if (pathFormat === 'absolute') return x
-        if (x.langDir == null) return x
-        return {
-          ...x,
-          langDir: relative(nuxt.options.rootDir, x.langDir)
-        }
-      }) ?? []
+    i18nModules: (nuxtI18nOptions.i18nModules ?? []).map(x => {
+      if (pathFormat === 'absolute') return x
+      if (x.langDir == null) return x
+      return {
+        ...x,
+        langDir: relative(nuxt.options.rootDir, x.langDir)
+      }
+    })
   }
   delete nuxtI18nOptions.vueI18n
 
@@ -159,14 +154,6 @@ export function generateLoaderOptions(
   debug('generate code', generated)
 
   return generated
-}
-
-function genImportSpecifier(data: Pick<FileMeta, 'loadPath' | 'type'>, query: Record<string, string>) {
-  if (data.type === 'unknown') {
-    throw new Error(`'unknown' type in '${data.loadPath}'.`)
-  }
-
-  return withQuery(data.loadPath, query)
 }
 
 /**

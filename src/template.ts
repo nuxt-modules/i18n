@@ -128,10 +128,10 @@ export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions
     genVueI18nConfigHMR(options.vueI18nConfigs),
     '}'
   ].join('\n\n')
-
+  const lazy = options.nuxtI18nOptions.lazy!
   return `
 // @ts-nocheck
-${options.importStrings.length > 0 ? options.importStrings.join('\n') + '\n' : ''}
+${!lazy ? options.importStrings.join('\n') + '\n' : ''}
 
 export const localeCodes =  ${JSON.stringify(options.localeCodes, null, 2)}
 
@@ -139,7 +139,7 @@ export const localeLoaders = {
 ${options.localeLoaders
   .map(([key, val]) => {
     return `  "${key}": [${val
-      .map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`)
+      .map(entry => `{ key: ${entry.key}, load: ${lazy ? entry.async : entry.sync}, cache: ${entry.cache} }`)
       .join(',\n')}]`
   })
   .join(',\n')}

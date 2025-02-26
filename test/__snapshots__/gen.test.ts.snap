@@ -12,11 +12,11 @@ exports[`basic 1`] = `
       "en",
       [
         {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
           "cache": "true",
           "key": ""srcDir/en.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
           "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
         },
       ],
     ],
@@ -24,11 +24,11 @@ exports[`basic 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
           "cache": "true",
           "key": ""srcDir/ja.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
           "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
         },
       ],
     ],
@@ -36,11 +36,11 @@ exports[`basic 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
           "cache": "true",
           "key": ""srcDir/fr.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
           "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
         },
       ],
     ],
@@ -91,17 +91,23 @@ exports[`basic 1`] = `
 
 exports[`files with cache configuration (relative) 1`] = `
 {
-  "importStrings": [],
+  "importStrings": [
+    "import locale_srcDir_srcDir_test_locales_en_json from "srcDir/test/locales/en.json";",
+    "import locale_srcDir_srcDir_test_locales_ja_json from "srcDir/test/locales/ja.json";",
+    "import locale_srcDir_srcDir_test_locales_fr_json from "srcDir/test/locales/fr.json";",
+    "import locale_srcDir_srcDir_test_locales_es_json from "srcDir/test/locales/es.json";",
+    "import locale_srcDir_srcDir_test_locales_es_AR_json from "srcDir/test/locales/es-AR.json";",
+  ],
   "localeLoaders": [
     [
       "en",
       [
         {
+          "async": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/en.json"",
-          "load": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_en_json",
           "specifier": "srcDir/test/locales/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_en_json)",
         },
       ],
     ],
@@ -109,11 +115,11 @@ exports[`files with cache configuration (relative) 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/ja.json"",
-          "load": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_ja_json",
           "specifier": "srcDir/test/locales/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_ja_json)",
         },
       ],
     ],
@@ -121,11 +127,11 @@ exports[`files with cache configuration (relative) 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/fr.json"",
-          "load": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_fr_json",
           "specifier": "srcDir/test/locales/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_fr_json)",
         },
       ],
     ],
@@ -133,11 +139,11 @@ exports[`files with cache configuration (relative) 1`] = `
       "es",
       [
         {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
           "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
         },
       ],
     ],
@@ -145,18 +151,18 @@ exports[`files with cache configuration (relative) 1`] = `
       "es-AR",
       [
         {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
           "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
         },
         {
+          "async": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/es-AR.json"",
-          "load": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_AR_json",
           "specifier": "srcDir/test/locales/es-AR.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_AR_json)",
         },
       ],
     ],
@@ -232,17 +238,23 @@ exports[`files with cache configuration (relative) 1`] = `
 
 exports[`files with cache configuration 1`] = `
 {
-  "importStrings": [],
+  "importStrings": [
+    "import locale_srcDir_srcDir_test_locales_en_json from "srcDir/test/locales/en.json";",
+    "import locale_srcDir_srcDir_test_locales_ja_json from "srcDir/test/locales/ja.json";",
+    "import locale_srcDir_srcDir_test_locales_fr_json from "srcDir/test/locales/fr.json";",
+    "import locale_srcDir_srcDir_test_locales_es_json from "srcDir/test/locales/es.json";",
+    "import locale_srcDir_srcDir_test_locales_es_AR_json from "srcDir/test/locales/es-AR.json";",
+  ],
   "localeLoaders": [
     [
       "en",
       [
         {
+          "async": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/en.json"",
-          "load": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_en_json",
           "specifier": "srcDir/test/locales/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_en_json)",
         },
       ],
     ],
@@ -250,11 +262,11 @@ exports[`files with cache configuration 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/ja.json"",
-          "load": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_ja_json",
           "specifier": "srcDir/test/locales/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_ja_json)",
         },
       ],
     ],
@@ -262,11 +274,11 @@ exports[`files with cache configuration 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/fr.json"",
-          "load": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_fr_json",
           "specifier": "srcDir/test/locales/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_fr_json)",
         },
       ],
     ],
@@ -274,11 +286,11 @@ exports[`files with cache configuration 1`] = `
       "es",
       [
         {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
           "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
         },
       ],
     ],
@@ -286,18 +298,18 @@ exports[`files with cache configuration 1`] = `
       "es-AR",
       [
         {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
           "cache": "false",
           "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
           "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
         },
         {
+          "async": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
           "cache": "true",
           "key": ""srcDir/test/locales/es-AR.json"",
-          "load": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_AR_json",
           "specifier": "srcDir/test/locales/es-AR.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_AR_json)",
         },
       ],
     ],
@@ -370,17 +382,21 @@ exports[`files with cache configuration 1`] = `
 
 exports[`lazy 1`] = `
 {
-  "importStrings": [],
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
+    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
+    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
+  ],
   "localeLoaders": [
     [
       "en",
       [
         {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
           "cache": "true",
           "key": ""srcDir/en.json"",
-          "load": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
           "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
         },
       ],
     ],
@@ -388,11 +404,11 @@ exports[`lazy 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
           "cache": "true",
           "key": ""srcDir/ja.json"",
-          "load": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
           "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
         },
       ],
     ],
@@ -400,11 +416,11 @@ exports[`lazy 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
           "cache": "true",
           "key": ""srcDir/fr.json"",
-          "load": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
           "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
         },
       ],
     ],
@@ -455,17 +471,21 @@ exports[`lazy 1`] = `
 
 exports[`locale file in nested 1`] = `
 {
-  "importStrings": [],
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_main_json from "srcDir/en/main.json";",
+    "import locale_srcDir_srcDir_ja_main_json from "srcDir/ja/main.json";",
+    "import locale_srcDir_srcDir_fr_main_json from "srcDir/fr/main.json";",
+  ],
   "localeLoaders": [
     [
       "en",
       [
         {
+          "async": "() => import("srcDir/en/main.json" /* webpackChunkName: "locale_srcDir_srcDir_en_main_json" */)",
           "cache": "true",
           "key": ""srcDir/en/main.json"",
-          "load": "() => import("srcDir/en/main.json" /* webpackChunkName: "locale_srcDir_srcDir_en_main_json" */)",
-          "metaKey": "locale_srcDir_srcDir_en_main_json",
           "specifier": "srcDir/en/main.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_main_json)",
         },
       ],
     ],
@@ -473,11 +493,11 @@ exports[`locale file in nested 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/ja/main.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_main_json" */)",
           "cache": "true",
           "key": ""srcDir/ja/main.json"",
-          "load": "() => import("srcDir/ja/main.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_main_json" */)",
-          "metaKey": "locale_srcDir_srcDir_ja_main_json",
           "specifier": "srcDir/ja/main.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_main_json)",
         },
       ],
     ],
@@ -485,11 +505,11 @@ exports[`locale file in nested 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/fr/main.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_main_json" */)",
           "cache": "true",
           "key": ""srcDir/fr/main.json"",
-          "load": "() => import("srcDir/fr/main.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_main_json" */)",
-          "metaKey": "locale_srcDir_srcDir_fr_main_json",
           "specifier": "srcDir/fr/main.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_main_json)",
         },
       ],
     ],
@@ -540,17 +560,23 @@ exports[`locale file in nested 1`] = `
 
 exports[`multiple files 1`] = `
 {
-  "importStrings": [],
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
+    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
+    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
+    "import locale_srcDir_srcDir_es_json from "srcDir/es.json";",
+    "import locale_srcDir_srcDir_es_AR_json from "srcDir/es-AR.json";",
+  ],
   "localeLoaders": [
     [
       "en",
       [
         {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
           "cache": "true",
           "key": ""srcDir/en.json"",
-          "load": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
           "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
         },
       ],
     ],
@@ -558,11 +584,11 @@ exports[`multiple files 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
           "cache": "true",
           "key": ""srcDir/ja.json"",
-          "load": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
           "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
         },
       ],
     ],
@@ -570,11 +596,11 @@ exports[`multiple files 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
           "cache": "true",
           "key": ""srcDir/fr.json"",
-          "load": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
           "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
         },
       ],
     ],
@@ -582,11 +608,11 @@ exports[`multiple files 1`] = `
       "es",
       [
         {
+          "async": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
           "cache": "true",
           "key": ""srcDir/es.json"",
-          "load": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_es_json",
           "specifier": "srcDir/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_es_json)",
         },
       ],
     ],
@@ -594,18 +620,18 @@ exports[`multiple files 1`] = `
       "es-AR",
       [
         {
+          "async": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
           "cache": "true",
           "key": ""srcDir/es.json"",
-          "load": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_es_json",
           "specifier": "srcDir/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_es_json)",
         },
         {
+          "async": "() => import("srcDir/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_es_AR_json" */)",
           "cache": "true",
           "key": ""srcDir/es-AR.json"",
-          "load": "() => import("srcDir/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_es_AR_json" */)",
-          "metaKey": "locale_srcDir_srcDir_es_AR_json",
           "specifier": "srcDir/es-AR.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_es_AR_json)",
         },
       ],
     ],
@@ -772,11 +798,11 @@ exports[`vueI18n option 1`] = `
       "en",
       [
         {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
           "cache": "true",
           "key": ""srcDir/en.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
           "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
         },
       ],
     ],
@@ -784,11 +810,11 @@ exports[`vueI18n option 1`] = `
       "ja",
       [
         {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
           "cache": "true",
           "key": ""srcDir/ja.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
           "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
         },
       ],
     ],
@@ -796,11 +822,11 @@ exports[`vueI18n option 1`] = `
       "fr",
       [
         {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
           "cache": "true",
           "key": ""srcDir/fr.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
           "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
         },
       ],
     ],
