@@ -20,7 +20,6 @@ import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { resolveRoute } from '../routing/routing'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { HeadParam } from '../utils'
 import type { RouteLocationAsRelativeI18n, RouteLocationRaw, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 
 export * from 'vue-i18n'
@@ -88,15 +87,8 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 
     // Adding SEO Meta
     head?.patch({
-      link: [
-        ...getHreflangLinks(common, ctx),
-        ...getCanonicalLink(common, ctx)
-      ],
-      meta: [
-        ...getOgUrl(common, ctx),
-        ...getCurrentOgLocale(ctx),
-        ...getAlternateOgLocales(ctx)
-      ]
+      link: [...getHreflangLinks(common, ctx), ...getCanonicalLink(common, ctx)],
+      meta: [...getOgUrl(common, ctx), ...getCurrentOgLocale(ctx), ...getAlternateOgLocales(ctx)]
     })
   }
 
