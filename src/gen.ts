@@ -6,7 +6,7 @@ import { distDir, runtimeDir } from './dirs'
 import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
 import type { Locale } from 'vue-i18n'
 
 export type LoaderOptions = {
@@ -129,7 +129,7 @@ export function generateLoaderOptions(
       files: x.files.map(f => {
         if (typeof f === 'string') return relative(nuxt.options.rootDir, f)
         return { ...f, path: relative(nuxt.options.rootDir, f.path) }
-      })
+      }) as string[] | LocaleFile[]
     }
   })
 
