@@ -2,7 +2,7 @@ import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { getActiveHead } from 'unhead'
+import { useHead } from '#imports'
 import { initCommonComposableOptions } from '../utils'
 import {
   creatHeadContext,
@@ -20,7 +20,6 @@ import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { resolveRoute } from '../routing/routing'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { HeadParam } from '../utils'
 import type { RouteLocationAsRelativeI18n, RouteLocationRaw, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
 
 export * from 'vue-i18n'
@@ -42,7 +41,7 @@ export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) =
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
-  const head = getActiveHead()
+  const head = useHead({})
   const router = common.router
 
   // @ts-expect-error accepts more
@@ -80,28 +79,17 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
   }
 
   const setMeta = () => {
-    const metaObject: HeadParam = {
-      link: [],
-      meta: []
+    // Reset SEO Meta
+    if (!ctx.locale || !ctx.locales) {
+      head?.patch({})
+      return
     }
 
     // Adding SEO Meta
-    if (ctx.locale && ctx.locales) {
-      // prettier-ignore
-      metaObject.link.push(
-        ...getHreflangLinks(common, ctx),
-        ...getCanonicalLink(common, ctx)
-      )
-
-      // prettier-ignore
-      metaObject.meta.push(
-        ...getOgUrl(common, ctx),
-        ...getCurrentOgLocale(ctx),
-        ...getAlternateOgLocales(ctx)
-      )
-    }
-
-    head?.push(metaObject)
+    head?.patch({
+      link: [...getHreflangLinks(common, ctx), ...getCanonicalLink(common, ctx)],
+      meta: [...getOgUrl(common, ctx), ...getCurrentOgLocale(ctx), ...getAlternateOgLocales(ctx)]
+    })
   }
 
   return function (params: Partial<Record<Locale, unknown>>) {
