@@ -6,7 +6,7 @@ import { distDir, runtimeDir } from './dirs'
 import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
+import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject } from './types'
 import type { Locale } from 'vue-i18n'
 
 export type LoaderOptions = {
@@ -17,15 +17,6 @@ export type LoaderOptions = {
 }
 
 const debug = createDebug('@nuxtjs/i18n:gen')
-
-const generateVueI18nConfiguration = (config: Required<VueI18nConfigPathInfo>) => {
-  const specifier = withQuery(config.meta.loadPath, { config: '1' })
-
-  return {
-    specifier,
-    importer: genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
-  }
-}
 
 export function simplifyLocaleOptions(
   nuxt: Nuxt,
@@ -102,10 +93,17 @@ export function generateLoaderOptions(
   /**
    * Prepare Vue I18n config imports
    */
-  const vueI18nConfigImports = [...vueI18nConfigPaths]
-    .reverse()
-    .filter(config => config.absolute !== '')
-    .map(config => generateVueI18nConfiguration(config))
+  const vueI18nConfigImports = []
+  for (let i = vueI18nConfigPaths.length - 1; i >= 0; i--) {
+    const config = vueI18nConfigPaths[i]
+    if (config.absolute === '') continue
+
+    const specifier = withQuery(config.meta.loadPath, { config: '1' })
+    vueI18nConfigImports.push({
+      specifier,
+      importer: genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
+    })
+  }
 
   const pathFormat = nuxtI18nOptions.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
@@ -113,12 +111,8 @@ export function generateLoaderOptions(
     ...nuxtI18nOptions,
     locales: simplifyLocaleOptions(nuxt, nuxtI18nOptions),
     i18nModules: (nuxtI18nOptions.i18nModules ?? []).map(x => {
-      if (pathFormat === 'absolute') return x
-      if (x.langDir == null) return x
-      return {
-        ...x,
-        langDir: relative(nuxt.options.rootDir, x.langDir)
-      }
+      if (pathFormat === 'absolute' || x.langDir == null) return x
+      return { ...x, langDir: relative(nuxt.options.rootDir, x.langDir) }
     })
   }
   delete nuxtI18nOptions.vueI18n
@@ -134,12 +128,8 @@ export function generateLoaderOptions(
       ...x,
       files: x.files.map(f => {
         if (typeof f === 'string') return relative(nuxt.options.rootDir, f)
-
-        return {
-          ...f,
-          path: relative(nuxt.options.rootDir, f.path)
-        }
-      }) as string[] | LocaleFile[]
+        return { ...f, path: relative(nuxt.options.rootDir, f.path) }
+      })
     }
   })
 
