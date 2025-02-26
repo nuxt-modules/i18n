@@ -2,7 +2,7 @@ import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { getActiveHead } from 'unhead'
+import { useHead } from '#imports'
 import { initCommonComposableOptions } from '../utils'
 import {
   creatHeadContext,
@@ -42,7 +42,7 @@ export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) =
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
   const common = initCommonComposableOptions()
-  const head = getActiveHead()
+  const head = useHead({})
   const router = common.router
 
   // @ts-expect-error accepts more
@@ -101,7 +101,7 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
       )
     }
 
-    head?.push(metaObject)
+    head?.patch(metaObject)
   }
 
   return function (params: Partial<Record<Locale, unknown>>) {
