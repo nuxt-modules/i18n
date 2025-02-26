@@ -7,16 +7,35 @@ import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
 
 import type { BundlerPluginOptions } from './utils'
+import type { I18nNuxtContext } from '../context'
+import type { Nuxt } from '@nuxt/schema'
 
 const debug = createDebug('@nuxtjs/i18n:transform:resource')
 
-export const ResourcePlugin = (options: BundlerPluginOptions) =>
+export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, nuxt: Nuxt) =>
   createUnplugin(() => {
     debug('options', options)
-
+    const i18nPathSet = new Set([
+      ...ctx.localeInfo.flatMap(x => x.meta!.map(m => m.path)),
+      ...ctx.vueI18nConfigPaths.map(x => x.absolute)
+    ])
     return {
       name: 'nuxtjs:i18n-resource',
       enforce: 'post',
+
+      // nitro support to resolve relative locale files with query parameters to absolute
+      rollup: {
+        resolveId(id) {
+          if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith('../')) {
+            return
+          }
+
+          const pathname = ctx.resolver.resolve(nuxt.options.buildDir, id).split('?')[0]
+          if (i18nPathSet.has(pathname)) {
+            return pathname
+          }
+        }
+      },
 
       transformInclude(id) {
         debug('transformInclude', id)

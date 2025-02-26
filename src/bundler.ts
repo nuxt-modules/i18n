@@ -14,7 +14,8 @@ import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
-export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, nuxt: Nuxt) {
+export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
+  const { options: nuxtOptions } = ctx
   const langPaths = getLayerLangPaths(nuxt)
   debug('langPaths -', langPaths)
   const i18nModulePaths =
@@ -50,7 +51,7 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(sourceMapOptions))
-  addBuildPlugin(ResourcePlugin(sourceMapOptions))
+  addBuildPlugin(ResourcePlugin(sourceMapOptions, ctx, nuxt))
   if (nuxtOptions.experimental.autoImportTranslationFunctions) {
     addBuildPlugin(TransformI18nFunctionPlugin(sourceMapOptions))
   }
