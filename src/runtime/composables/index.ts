@@ -80,28 +80,24 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
   }
 
   const setMeta = () => {
-    const metaObject: HeadParam = {
-      link: [],
-      meta: []
+    // Reset SEO Meta
+    if (!ctx.locale || !ctx.locales) {
+      head?.patch({})
+      return
     }
 
     // Adding SEO Meta
-    if (ctx.locale && ctx.locales) {
-      // prettier-ignore
-      metaObject.link.push(
+    head?.patch({
+      link: [
         ...getHreflangLinks(common, ctx),
         ...getCanonicalLink(common, ctx)
-      )
-
-      // prettier-ignore
-      metaObject.meta.push(
+      ],
+      meta: [
         ...getOgUrl(common, ctx),
         ...getCurrentOgLocale(ctx),
         ...getAlternateOgLocales(ctx)
-      )
-    }
-
-    head?.patch(metaObject)
+      ]
+    })
   }
 
   return function (params: Partial<Record<Locale, unknown>>) {
