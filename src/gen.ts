@@ -8,6 +8,7 @@ import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
 import type { Locale } from 'vue-i18n'
+import type { I18nNuxtContext } from './context'
 
 export type LoaderOptions = {
   vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
@@ -54,10 +55,10 @@ export function simplifyLocaleOptions(
 type LocaleLoaderData = { key: string; sync: string; async: string; cache: string; specifier: string }
 
 export function generateLoaderOptions(
-  nuxt: Nuxt,
-  { nuxtI18nOptions, vueI18nConfigPaths, localeInfo, normalizedLocales }: LoaderOptions
+  { options, vueI18nConfigPaths, localeInfo, normalizedLocales }: I18nNuxtContext,
+  nuxt: Nuxt
 ) {
-  debug('generateLoaderOptions: lazy', nuxtI18nOptions.lazy)
+  debug('generateLoaderOptions: lazy', options.lazy)
 
   const importMapper = new Map<string, LocaleLoaderData>()
   const importStrings: string[] = []
@@ -105,17 +106,17 @@ export function generateLoaderOptions(
     })
   }
 
-  const pathFormat = nuxtI18nOptions.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
+  const pathFormat = options.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
   const generatedNuxtI18nOptions = {
-    ...nuxtI18nOptions,
-    locales: simplifyLocaleOptions(nuxt, nuxtI18nOptions),
-    i18nModules: (nuxtI18nOptions.i18nModules ?? []).map(x => {
+    ...options,
+    locales: simplifyLocaleOptions(nuxt, options),
+    i18nModules: (options.i18nModules ?? []).map(x => {
       if (pathFormat === 'absolute' || x.langDir == null) return x
       return { ...x, langDir: relative(nuxt.options.rootDir, x.langDir) }
     })
   }
-  delete nuxtI18nOptions.vueI18n
+  // delete options.vueI18n
 
   /**
    * Process locale file paths in `normalizedLocales`

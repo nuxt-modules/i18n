@@ -5,16 +5,10 @@ import {
   NUXT_I18N_MODULE_ID,
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER
 } from './constants'
-import type { LocaleObject } from './types'
+import type { I18nNuxtContext } from './context'
+import type { Nuxt } from '@nuxt/schema'
 
-export type TemplateNuxtI18nOptions = {
-  localeCodes: string[]
-  normalizedLocales: LocaleObject[]
-  dev: boolean
-  isSSG: boolean
-  hasPages: boolean
-  parallelPlugin: boolean
-} & ReturnType<typeof generateLoaderOptions>
+export type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
 // used to compare vue-i18n config replacement
 const deepEqualFn = `function deepEqual(a, b, ignoreKeys = []) {
@@ -119,24 +113,28 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
   return statements.join('\n\n')
 }
 
-export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
+export function generateTemplateNuxtI18nOptions(
+  ctx: I18nNuxtContext,
+  nuxt: Nuxt,
+  opts: TemplateNuxtI18nOptions
+): string {
   const codeHMR = [
     `if(import.meta.hot) {`,
     deepEqualFn,
     loadConfigsFn,
-    genLocaleLoaderHMR(options.localeLoaders),
-    genVueI18nConfigHMR(options.vueI18nConfigs),
+    genLocaleLoaderHMR(opts.localeLoaders),
+    genVueI18nConfigHMR(opts.vueI18nConfigs),
     '}'
   ].join('\n\n')
-  const lazy = options.nuxtI18nOptions.lazy!
+  const lazy = ctx.options.lazy
   return `
 // @ts-nocheck
-${!lazy ? options.importStrings.join('\n') + '\n' : ''}
+${!lazy ? opts.importStrings.join('\n') + '\n' : ''}
 
-export const localeCodes =  ${JSON.stringify(options.localeCodes, null, 2)}
+export const localeCodes =  ${JSON.stringify(ctx.localeCodes, null, 2)}
 
 export const localeLoaders = {
-${options.localeLoaders
+${opts.localeLoaders
   .map(([key, val]) => {
     return `  "${key}": [${val
       .map(entry => `{ key: ${entry.key}, load: ${lazy ? entry.async : entry.sync}, cache: ${entry.cache} }`)
@@ -146,22 +144,22 @@ ${options.localeLoaders
 }
 
 export const vueI18nConfigs = [
-  ${options.vueI18nConfigs.map(x => x.importer).join(',\n  ')}
+  ${opts.vueI18nConfigs.map(x => x.importer).join(',\n  ')}
 ]
 
-export const nuxtI18nOptions = ${JSON.stringify(options.nuxtI18nOptions, null, 2)}
+export const nuxtI18nOptions = ${JSON.stringify(opts.nuxtI18nOptions, null, 2)}
 
-export const normalizedLocales = ${JSON.stringify(options.normalizedLocales, null, 2)}
+export const normalizedLocales = ${JSON.stringify(opts.normalizedLocales, null, 2)}
 
 export const NUXT_I18N_MODULE_ID = "${NUXT_I18N_MODULE_ID}"
-export const parallelPlugin = ${options.parallelPlugin}
-export const isSSG = ${options.isSSG}
-export const hasPages = ${options.hasPages}
+export const parallelPlugin = ${ctx.options.parallelPlugin}
+export const isSSG = ${ctx.isSSG}
+export const hasPages = ${nuxt.options.pages}
 
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 /** client **/
-${(options.dev && options.nuxtI18nOptions.experimental!.hmr && codeHMR) || ''}
+${(ctx.isDev && opts.nuxtI18nOptions.experimental.hmr && codeHMR) || ''}
 /** client-end **/`
 }

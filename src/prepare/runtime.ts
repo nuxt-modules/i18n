@@ -8,7 +8,7 @@ import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from 
 import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
 
 export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  const { isDev: dev, isSSG, localeCodes, localeInfo, normalizedLocales, options, resolver, vueI18nConfigPaths } = ctx
+  const { options, resolver } = ctx
   // for core plugin
   addPlugin(resolver.resolve('./runtime/plugins/i18n'))
   addPlugin(resolver.resolve('./runtime/plugins/route-locale-detect'))
@@ -22,7 +22,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.build.transpile.push('#internal-i18n-types')
   nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
-  if (dev && options.experimental.hmr) {
+  if (ctx.isDev && options.experimental.hmr) {
     addVitePlugin({
       name: 'i18n:options-hmr',
       configureServer(server) {
@@ -46,21 +46,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   addTemplate({
     filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
     write: true,
-    getContents: () => {
-      return generateTemplateNuxtI18nOptions({
-        ...generateLoaderOptions(nuxt, {
-          vueI18nConfigPaths,
-          localeInfo,
-          nuxtI18nOptions: options,
-          normalizedLocales
-        }),
-        hasPages: nuxt.options.pages,
-        localeCodes,
-        dev,
-        isSSG,
-        parallelPlugin: options.parallelPlugin
-      })
-    }
+    getContents: () => generateTemplateNuxtI18nOptions(ctx, nuxt, generateLoaderOptions(ctx, nuxt))
   })
 
   nuxt.options.imports.transform ??= {}

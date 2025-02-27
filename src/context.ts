@@ -1,6 +1,6 @@
 import type { Resolver } from '@nuxt/kit'
 import type { LocaleInfo, LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
-import type { Nuxt } from '@nuxt/schema'
+import type { Nuxt, NuxtOptions } from '@nuxt/schema'
 import { createResolver, useLogger } from '@nuxt/kit'
 import { NUXT_I18N_MODULE_ID } from './constants'
 import createDebug from 'debug'
@@ -17,6 +17,7 @@ export interface I18nNuxtContext {
   isSSG: boolean
   isBuild: boolean
   isTest: boolean
+  pages: NuxtOptions['pages']
   normalizedLocales: LocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
@@ -41,6 +42,7 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     isSSG: nuxt.options._generate,
     isBuild: nuxt.options._build,
     isTest: nuxt.options.test,
+    pages: nuxt.options.pages,
     normalizedLocales: undefined!,
     localeCodes: undefined!,
     localeInfo: undefined!,
