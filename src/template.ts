@@ -126,10 +126,13 @@ export function generateTemplateNuxtI18nOptions(
     genVueI18nConfigHMR(opts.vueI18nConfigs),
     '}'
   ].join('\n\n')
+
   const lazy = ctx.options.lazy
+  const importStrings = opts.localeLoaders.map(([_, val]) => val.flatMap(x => x.importString)).join('\n')
+
   return `
 // @ts-nocheck
-${!lazy ? opts.importStrings.join('\n') + '\n' : ''}
+${(!lazy && importStrings) || ''}
 
 export const localeCodes =  ${JSON.stringify(ctx.localeCodes, null, 2)}
 

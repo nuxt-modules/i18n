@@ -52,7 +52,14 @@ export function simplifyLocaleOptions(
   })
 }
 
-type LocaleLoaderData = { key: string; sync: string; async: string; cache: string; specifier: string }
+type LocaleLoaderData = {
+  key: string
+  sync: string
+  async: string
+  cache: string
+  specifier: string
+  importString: string
+}
 
 export function generateLoaderOptions(
   {
@@ -66,22 +73,19 @@ export function generateLoaderOptions(
   debug('generateLoaderOptions: lazy', options.lazy)
 
   const importMapper = new Map<string, LocaleLoaderData>()
-  const importStrings: string[] = []
-
   function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number]) {
     if (importMapper.has(meta.key)) {
       return importMapper.get(meta.key)!
     }
     const specifier = withQuery(meta.loadPath, meta.type === 'dynamic' ? { locale, hash: meta.hash } : {})
 
-    importStrings.push(genImport(specifier, meta.key))
-
     const importer = {
       specifier,
       key: JSON.stringify(meta.loadPath),
       cache: JSON.stringify(meta.file.cache ?? true),
       sync: `() => Promise.resolve(${meta.key})`,
-      async: genDynamicImport(specifier, { comment: `webpackChunkName: "${meta.key}"` })
+      async: genDynamicImport(specifier, { comment: `webpackChunkName: "${meta.key}"` }),
+      importString: genImport(specifier, meta.key)
     }
 
     importMapper.set(meta.key, importer)
@@ -141,7 +145,6 @@ export function generateLoaderOptions(
   })
 
   const generated = {
-    importStrings,
     localeLoaders,
     nuxtI18nOptions: generatedNuxtI18nOptions,
     vueI18nConfigs: vueI18nConfigImports,
