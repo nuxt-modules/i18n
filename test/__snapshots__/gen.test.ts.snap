@@ -1,0 +1,884 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`basic 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
+    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
+    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
+          "cache": "true",
+          "key": ""srcDir/en.json"",
+          "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
+          "cache": "true",
+          "key": ""srcDir/ja.json"",
+          "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
+          "cache": "true",
+          "key": ""srcDir/fr.json"",
+          "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "en.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "ja.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "fr.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": false,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`files with cache configuration (relative) 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_test_locales_en_json from "srcDir/test/locales/en.json";",
+    "import locale_srcDir_srcDir_test_locales_ja_json from "srcDir/test/locales/ja.json";",
+    "import locale_srcDir_srcDir_test_locales_fr_json from "srcDir/test/locales/fr.json";",
+    "import locale_srcDir_srcDir_test_locales_es_json from "srcDir/test/locales/es.json";",
+    "import locale_srcDir_srcDir_test_locales_es_AR_json from "srcDir/test/locales/es-AR.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/en.json"",
+          "specifier": "srcDir/test/locales/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/ja.json"",
+          "specifier": "srcDir/test/locales/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/fr.json"",
+          "specifier": "srcDir/test/locales/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_fr_json)",
+        },
+      ],
+    ],
+    [
+      "es",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "cache": "false",
+          "key": ""srcDir/test/locales/es.json"",
+          "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
+        },
+      ],
+    ],
+    [
+      "es-AR",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "cache": "false",
+          "key": ""srcDir/test/locales/es.json"",
+          "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
+        },
+        {
+          "async": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/es-AR.json"",
+          "specifier": "srcDir/test/locales/es-AR.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_AR_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "locales/en.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "locales/ja.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "locales/fr.json",
+        },
+      ],
+    },
+    {
+      "code": "es",
+      "files": [
+        {
+          "cache": false,
+          "path": "locales/es.json",
+        },
+      ],
+    },
+    {
+      "code": "es-AR",
+      "files": [
+        {
+          "cache": false,
+          "path": "locales/es.json",
+        },
+        {
+          "cache": true,
+          "path": "locales/es-AR.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "experimental": {
+      "generatedLocaleFilePathFormat": "relative",
+    },
+    "i18nModules": [],
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`files with cache configuration 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_test_locales_en_json from "srcDir/test/locales/en.json";",
+    "import locale_srcDir_srcDir_test_locales_ja_json from "srcDir/test/locales/ja.json";",
+    "import locale_srcDir_srcDir_test_locales_fr_json from "srcDir/test/locales/fr.json";",
+    "import locale_srcDir_srcDir_test_locales_es_json from "srcDir/test/locales/es.json";",
+    "import locale_srcDir_srcDir_test_locales_es_AR_json from "srcDir/test/locales/es-AR.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/en.json"",
+          "specifier": "srcDir/test/locales/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/ja.json"",
+          "specifier": "srcDir/test/locales/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/fr.json"",
+          "specifier": "srcDir/test/locales/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_fr_json)",
+        },
+      ],
+    ],
+    [
+      "es",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "cache": "false",
+          "key": ""srcDir/test/locales/es.json"",
+          "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
+        },
+      ],
+    ],
+    [
+      "es-AR",
+      [
+        {
+          "async": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
+          "cache": "false",
+          "key": ""srcDir/test/locales/es.json"",
+          "specifier": "srcDir/test/locales/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_json)",
+        },
+        {
+          "async": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
+          "cache": "true",
+          "key": ""srcDir/test/locales/es-AR.json"",
+          "specifier": "srcDir/test/locales/es-AR.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_test_locales_es_AR_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "/test/locales/en.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "/test/locales/ja.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "/test/locales/fr.json",
+        },
+      ],
+    },
+    {
+      "code": "es",
+      "files": [
+        {
+          "cache": false,
+          "path": "/test/locales/es.json",
+        },
+      ],
+    },
+    {
+      "code": "es-AR",
+      "files": [
+        {
+          "cache": false,
+          "path": "/test/locales/es.json",
+        },
+        {
+          "cache": true,
+          "path": "/test/locales/es-AR.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`lazy 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
+    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
+    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
+          "cache": "true",
+          "key": ""srcDir/en.json"",
+          "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
+          "cache": "true",
+          "key": ""srcDir/ja.json"",
+          "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
+          "cache": "true",
+          "key": ""srcDir/fr.json"",
+          "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "en.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "ja.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "fr.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`locale file in nested 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_main_json from "srcDir/en/main.json";",
+    "import locale_srcDir_srcDir_ja_main_json from "srcDir/ja/main.json";",
+    "import locale_srcDir_srcDir_fr_main_json from "srcDir/fr/main.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/en/main.json" /* webpackChunkName: "locale_srcDir_srcDir_en_main_json" */)",
+          "cache": "true",
+          "key": ""srcDir/en/main.json"",
+          "specifier": "srcDir/en/main.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_main_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/ja/main.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_main_json" */)",
+          "cache": "true",
+          "key": ""srcDir/ja/main.json"",
+          "specifier": "srcDir/ja/main.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_main_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/fr/main.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_main_json" */)",
+          "cache": "true",
+          "key": ""srcDir/fr/main.json"",
+          "specifier": "srcDir/fr/main.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_main_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "en/main.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "ja/main.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "fr/main.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`multiple files 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
+    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
+    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
+    "import locale_srcDir_srcDir_es_json from "srcDir/es.json";",
+    "import locale_srcDir_srcDir_es_AR_json from "srcDir/es-AR.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
+          "cache": "true",
+          "key": ""srcDir/en.json"",
+          "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
+          "cache": "true",
+          "key": ""srcDir/ja.json"",
+          "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
+          "cache": "true",
+          "key": ""srcDir/fr.json"",
+          "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
+        },
+      ],
+    ],
+    [
+      "es",
+      [
+        {
+          "async": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
+          "cache": "true",
+          "key": ""srcDir/es.json"",
+          "specifier": "srcDir/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_es_json)",
+        },
+      ],
+    ],
+    [
+      "es-AR",
+      [
+        {
+          "async": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
+          "cache": "true",
+          "key": ""srcDir/es.json"",
+          "specifier": "srcDir/es.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_es_json)",
+        },
+        {
+          "async": "() => import("srcDir/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_es_AR_json" */)",
+          "cache": "true",
+          "key": ""srcDir/es-AR.json"",
+          "specifier": "srcDir/es-AR.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_es_AR_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "en.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "ja.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "fr.json",
+        },
+      ],
+    },
+    {
+      "code": "es",
+      "files": [
+        {
+          "cache": true,
+          "path": "es.json",
+        },
+      ],
+    },
+    {
+      "code": "es-AR",
+      "files": [
+        {
+          "cache": true,
+          "path": "es.json",
+        },
+        {
+          "cache": true,
+          "path": "es-AR.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`toCode: function (arrow) 1`] = `
+{
+  "importStrings": [],
+  "localeLoaders": [],
+  "normalizedLocales": [],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": false,
+    "locales": [
+      {
+        "code": "en",
+        "files": [
+          "en.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "ja",
+        "files": [
+          "ja.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "fr",
+        "files": [
+          "fr.json",
+        ],
+        "testFunc": [Function],
+      },
+    ],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`toCode: function (named) 1`] = `
+{
+  "importStrings": [],
+  "localeLoaders": [],
+  "normalizedLocales": [],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "i18nModules": [],
+    "lazy": false,
+    "locales": [
+      {
+        "code": "en",
+        "files": [
+          "en.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "ja",
+        "files": [
+          "ja.json",
+        ],
+        "testFunc": [Function],
+      },
+      {
+        "code": "fr",
+        "files": [
+          "fr.json",
+        ],
+        "testFunc": [Function],
+      },
+    ],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/test/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+      "specifier": "/test/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;
+
+exports[`vueI18n option 1`] = `
+{
+  "importStrings": [
+    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
+    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
+    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
+  ],
+  "localeLoaders": [
+    [
+      "en",
+      [
+        {
+          "async": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
+          "cache": "true",
+          "key": ""srcDir/en.json"",
+          "specifier": "srcDir/en.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
+        },
+      ],
+    ],
+    [
+      "ja",
+      [
+        {
+          "async": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
+          "cache": "true",
+          "key": ""srcDir/ja.json"",
+          "specifier": "srcDir/ja.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
+        },
+      ],
+    ],
+    [
+      "fr",
+      [
+        {
+          "async": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
+          "cache": "true",
+          "key": ""srcDir/fr.json"",
+          "specifier": "srcDir/fr.json",
+          "sync": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
+        },
+      ],
+    ],
+  ],
+  "normalizedLocales": [
+    {
+      "code": "en",
+      "files": [
+        {
+          "cache": true,
+          "path": "en.json",
+        },
+      ],
+    },
+    {
+      "code": "ja",
+      "files": [
+        {
+          "cache": true,
+          "path": "ja.json",
+        },
+      ],
+    },
+    {
+      "code": "fr",
+      "files": [
+        {
+          "cache": true,
+          "path": "fr.json",
+        },
+      ],
+    },
+  ],
+  "nuxtI18nOptions": {
+    "i18nModules": [],
+    "lazy": false,
+    "locales": [],
+    "vueI18n": "vue-i18n.config.ts",
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("/path/foo/layer2/vue-i18n.options.js?config=1" /* webpackChunkName: "vue_i18n_options_js_84df1640" */)",
+      "specifier": "/path/foo/layer2/vue-i18n.options.js?config=1",
+    },
+    {
+      "importer": "() => import("/path/layer1/i18n.custom.ts?config=1" /* webpackChunkName: "i18n_custom_ts_faa288dc" */)",
+      "specifier": "/path/layer1/i18n.custom.ts?config=1",
+    },
+    {
+      "importer": "() => import("/path/to/i18n.config.ts?config=1" /* webpackChunkName: "i18n_config_ts_42902d1e" */)",
+      "specifier": "/path/to/i18n.config.ts?config=1",
+    },
+  ],
+}
+`;

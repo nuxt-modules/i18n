@@ -55,7 +55,12 @@ export function simplifyLocaleOptions(
 type LocaleLoaderData = { key: string; sync: string; async: string; cache: string; specifier: string }
 
 export function generateLoaderOptions(
-  { options, vueI18nConfigPaths, localeInfo, normalizedLocales }: I18nNuxtContext,
+  {
+    options,
+    vueI18nConfigPaths,
+    localeInfo,
+    normalizedLocales
+  }: Pick<I18nNuxtContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales'>,
   nuxt: Nuxt
 ) {
   debug('generateLoaderOptions: lazy', options.lazy)
@@ -116,7 +121,8 @@ export function generateLoaderOptions(
       return { ...x, langDir: relative(nuxt.options.rootDir, x.langDir) }
     })
   }
-  // delete options.vueI18n
+  // @ts-expect-error is required
+  delete options.vueI18n
 
   /**
    * Process locale file paths in `normalizedLocales`
