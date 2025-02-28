@@ -128,7 +128,7 @@ export function generateTemplateNuxtI18nOptions(
   ].join('\n\n')
 
   const lazy = ctx.options.lazy
-  const importStrings = opts.localeLoaders.map(([_, val]) => val.flatMap(x => x.importString)).join('\n')
+  const importStrings = opts.localeLoaders.map(([_, val]) => val.flatMap(x => x.importString).join('\n')).join('\n')
 
   return `
 // @ts-nocheck
