@@ -91,9 +91,9 @@ export function generateLoaderOptions(
   /**
    * Prepare locale file imports
    */
-  const localeLoaders: [string, LocaleLoaderData[]][] = []
+  const localeLoaders: Record<string, LocaleLoaderData[]> = {}
   for (const locale of ctx.localeInfo) {
-    localeLoaders.push([locale.code, (locale?.meta ?? []).map(meta => generateLocaleImports(meta))])
+    localeLoaders[locale.code] = (locale?.meta ?? []).map(meta => generateLocaleImports(meta))
   }
 
   /**

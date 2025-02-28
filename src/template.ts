@@ -69,9 +69,9 @@ async function loadCfg(config) {
 function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders']) {
   const statements: string[] = []
 
-  for (const [locale, loaders] of localeLoaders) {
-    for (let i = 0; i < loaders.length; i++) {
-      const loader = loaders[i]
+  for (const locale in localeLoaders) {
+    for (let i = 0; i < localeLoaders[locale].length; i++) {
+      const loader = localeLoaders[locale][i]
       statements.push(
         [
           `  import.meta.hot.accept("${loader.relative}", async mod => {`,
@@ -127,22 +127,24 @@ export function generateTemplateNuxtI18nOptions(
     '}'
   ].join('\n\n')
 
-  const lazy = ctx.options.lazy
-  const importStrings = opts.localeLoaders.map(([_, val]) => val.flatMap(x => x.importString).join('\n')).join('\n')
+  const importStrings: string[] = []
+  const localeLoaderEntries: string[] = []
+  for (const locale in opts.localeLoaders) {
+    const val = opts.localeLoaders[locale]
+    importStrings.push(val.flatMap(x => x.importString).join('\n'))
+    localeLoaderEntries.push(
+      `  "${locale}": [${val.map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`).join(',\n')}]`
+    )
+  }
 
   return `
 // @ts-nocheck
-${(!lazy && importStrings) || ''}
+${(!ctx.options.lazy && importStrings.join('\n')) || ''}
 
 export const localeCodes =  ${JSON.stringify(ctx.localeCodes, null, 2)}
 
 export const localeLoaders = {
-${opts.localeLoaders
-  .map(
-    ([key, val]) =>
-      `  "${key}": [${val.map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`).join(',\n')}]`
-  )
-  .join(',\n')}
+${localeLoaderEntries.join(',\n')}
 }
 
 export const vueI18nConfigs = [
