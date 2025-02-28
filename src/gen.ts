@@ -54,6 +54,7 @@ export function simplifyLocaleOptions(
 type LocaleLoaderData = {
   key: string
   sync: string
+  relative: string
   async: string
   cache: string
   specifier: string
@@ -69,11 +70,12 @@ export function generateLoaderOptions(
   const importMapper = new Map<string, LocaleLoaderData>()
   function generateLocaleImports(meta: NonNullable<LocaleInfo['meta']>[number]) {
     if (importMapper.has(meta.key)) return importMapper.get(meta.key)!
-    const specifier = getHash(meta.path)
+    const specifier = `virtual:nuxt-i18n-${getHash(meta.path)}`
 
     importMapper.set(meta.key, {
       specifier,
       key: JSON.stringify(meta.loadPath),
+      relative: meta.loadPath,
       cache: JSON.stringify(meta.file.cache ?? true),
       sync: `() => Promise.resolve(${meta.key})`,
       async: genDynamicImport(specifier, { comment: `webpackChunkName: "${meta.key}"` }),
@@ -98,9 +100,9 @@ export function generateLoaderOptions(
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
     const config = ctx.vueI18nConfigPaths[i]
     if (config.absolute === '') continue
-    const specifier = getHash(config.meta.path)
+    const specifier = `virtual:nuxt-i18n-${getHash(config.meta.path)}`
     const importer = genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
-    vueI18nConfigs.push({ specifier, importer })
+    vueI18nConfigs.push({ specifier, importer, relative: config.meta.loadPath })
   }
 
   const pathFormat = ctx.options.experimental?.generatedLocaleFilePathFormat ?? 'absolute'

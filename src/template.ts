@@ -74,7 +74,7 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
       const loader = loaders[i]
       statements.push(
         [
-          `  import.meta.hot.accept("${loader.specifier}", async mod => {`,
+          `  import.meta.hot.accept("${loader.relative}", async mod => {`,
           //   replace locale loader
           `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
           //   trigger locale messages reload for locale
@@ -94,7 +94,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
   for (let i = 0; i < configs.length; i++) {
     statements.push(
       [
-        `  import.meta.hot.accept("${configs[i].specifier}", async mod => {`,
+        `  import.meta.hot.accept("${configs[i].relative}", async mod => {`,
         //   load configs before replacing loader
         `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
         //   replace config loader

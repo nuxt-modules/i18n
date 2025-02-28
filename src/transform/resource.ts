@@ -24,7 +24,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
     const i18nFileHashSet = new Map<string, string>()
 
     for (const f of Array.from(i18nPathSet)) {
-      i18nFileHashSet.set(getHash(f), f)
+      i18nFileHashSet.set(`virtual:nuxt-i18n-${getHash(f)}`, f)
     }
 
     function inI18nMap(id: string) {
