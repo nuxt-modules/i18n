@@ -118,16 +118,24 @@ describe('basic lazy loading (restructure)', async () => {
     const { page, consoleLogs } = await renderPage('/')
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
+    expect(
+      [...consoleLogs].filter(log => log.text.includes('locale_lazy_45locale_45en_45GB_46js_d8338cd0 bypassing cache!'))
+    ).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(1)
+    expect(
+      [...consoleLogs].filter(log => log.text.includes('locale_lazy_45locale_45fr_46json5_c2aa2b69 bypassing cache!'))
+    ).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(2)
+    expect(
+      [...consoleLogs].filter(log => log.text.includes('locale_lazy_45locale_45en_45GB_46js_d8338cd0 bypassing cache!'))
+    ).toHaveLength(2)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
+    expect(
+      [...consoleLogs].filter(log => log.text.includes('locale_lazy_45locale_45fr_46json5_c2aa2b69 bypassing cache!'))
+    ).toHaveLength(2)
   })
 
   test('manually loaded messages can be used in translations', async () => {

@@ -2,8 +2,12 @@ import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
 import { getHash } from '../utils'
-import { VIRTUAL_PREFIX_HEX } from './utils'
-import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
+import { asI18nVirtual, VIRTUAL_PREFIX_HEX } from './utils'
+import {
+  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
+  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
+  NUXT_I18N_VIRTUAL_PREFIX
+} from '../constants'
 
 import type { BundlerPluginOptions } from './utils'
 import type { I18nNuxtContext } from '../context'
@@ -25,7 +29,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
     const i18nFileHashSet = new Map<string, string>()
 
     for (const path of Array.from(i18nPathSet)) {
-      i18nFileHashSet.set(`virtual:nuxt-i18n-${getHash(path)}`, path)
+      i18nFileHashSet.set(asI18nVirtual(getHash(path)), path)
     }
 
     return {
@@ -33,7 +37,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
       enforce: 'pre',
 
       resolveId(id) {
-        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith('virtual:nuxt-i18n-')) {
+        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith(NUXT_I18N_VIRTUAL_PREFIX)) {
           return
         }
 

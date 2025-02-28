@@ -1,8 +1,9 @@
 import createDebug from 'debug'
-import { genImport, genDynamicImport } from 'knitwork'
-import { resolve, relative, join } from 'pathe'
+import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
+import { resolve, relative, join, basename } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
 import { getHash, getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
+import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
@@ -53,9 +54,8 @@ export function simplifyLocaleOptions(
 
 type LocaleLoaderData = {
   key: string
-  sync: string
+  load: string
   relative: string
-  async: string
   cache: string
   specifier: string
   importString: string
@@ -70,16 +70,19 @@ export function generateLoaderOptions(
   const importMapper = new Map<string, LocaleLoaderData>()
   function generateLocaleImports(meta: NonNullable<LocaleInfo['meta']>[number]) {
     if (importMapper.has(meta.key)) return importMapper.get(meta.key)!
-    const specifier = `virtual:nuxt-i18n-${getHash(meta.path)}`
+    const hash = getHash(meta.path)
+    const key = `locale_${genSafeVariableName(basename(meta.path))}_${hash}`
+    const specifier = asI18nVirtual(hash)
+    const async = genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` })
+    const sync = `() => Promise.resolve(${key})`
 
     importMapper.set(meta.key, {
       specifier,
-      key: JSON.stringify(meta.loadPath),
+      key: genString(key),
       relative: meta.loadPath,
       cache: JSON.stringify(meta.file.cache ?? true),
-      sync: `() => Promise.resolve(${meta.key})`,
-      async: genDynamicImport(specifier, { comment: `webpackChunkName: "${meta.key}"` }),
-      importString: genImport(specifier, meta.key)
+      load: ctx.options.lazy ? async : sync,
+      importString: genImport(specifier, key)
     })
 
     return importMapper.get(meta.key)!
@@ -100,8 +103,10 @@ export function generateLoaderOptions(
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
     const config = ctx.vueI18nConfigPaths[i]
     if (config.absolute === '') continue
-    const specifier = `virtual:nuxt-i18n-${getHash(config.meta.path)}`
-    const importer = genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
+    const hash = getHash(config.meta.path)
+    const key = genString(`config_${genSafeVariableName(basename(config.meta.path))}_${hash}`)
+    const specifier = asI18nVirtual(hash)
+    const importer = genDynamicImport(specifier, { comment: `webpackChunkName: ${key}` })
     vueI18nConfigs.push({ specifier, importer, relative: config.meta.loadPath })
   }
 
@@ -134,11 +139,7 @@ export function generateLoaderOptions(
     }
   })
 
-  const generated = { localeLoaders, nuxtI18nOptions, vueI18nConfigs, normalizedLocales }
-
-  debug('generate code', generated)
-
-  return generated
+  return { localeLoaders, nuxtI18nOptions, vueI18nConfigs, normalizedLocales }
 }
 
 /**

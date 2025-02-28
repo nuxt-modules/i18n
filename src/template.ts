@@ -138,11 +138,10 @@ export const localeCodes =  ${JSON.stringify(ctx.localeCodes, null, 2)}
 
 export const localeLoaders = {
 ${opts.localeLoaders
-  .map(([key, val]) => {
-    return `  "${key}": [${val
-      .map(entry => `{ key: ${entry.key}, load: ${lazy ? entry.async : entry.sync}, cache: ${entry.cache} }`)
-      .join(',\n')}]`
-  })
+  .map(
+    ([key, val]) =>
+      `  "${key}": [${val.map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`).join(',\n')}]`
+  )
   .join(',\n')}
 }
 

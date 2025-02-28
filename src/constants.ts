@@ -89,6 +89,7 @@ export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute'
 export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale'
 export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig'
 export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR = 'defineI18nLocaleDetector'
+export const NUXT_I18N_VIRTUAL_PREFIX = 'virtual:nuxt-i18n'
 
 export const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
 export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
