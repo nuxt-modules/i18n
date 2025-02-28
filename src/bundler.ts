@@ -46,12 +46,12 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * shared plugins
    */
+  addBuildPlugin(ResourcePlugin(sourceMapOptions, ctx, nuxt))
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(sourceMapOptions))
-  addBuildPlugin(ResourcePlugin(sourceMapOptions, ctx, nuxt))
   if (nuxtOptions.experimental.autoImportTranslationFunctions) {
     addBuildPlugin(TransformI18nFunctionPlugin(sourceMapOptions))
   }
