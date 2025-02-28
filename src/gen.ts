@@ -1,9 +1,8 @@
 import createDebug from 'debug'
 import { genImport, genDynamicImport } from 'knitwork'
-import { withQuery } from 'ufo'
 import { resolve, relative, join } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
+import { getHash, getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
@@ -68,23 +67,20 @@ export function generateLoaderOptions(
   debug('generateLoaderOptions: lazy', ctx.options.lazy)
 
   const importMapper = new Map<string, LocaleLoaderData>()
-  function generateLocaleImports(locale: Locale, meta: NonNullable<LocaleInfo['meta']>[number]) {
-    if (importMapper.has(meta.key)) {
-      return importMapper.get(meta.key)!
-    }
-    const specifier = withQuery(meta.loadPath, meta.type === 'dynamic' ? { locale, hash: meta.hash } : {})
+  function generateLocaleImports(meta: NonNullable<LocaleInfo['meta']>[number]) {
+    if (importMapper.has(meta.key)) return importMapper.get(meta.key)!
+    const specifier = getHash(meta.path)
 
-    const importer = {
+    importMapper.set(meta.key, {
       specifier,
       key: JSON.stringify(meta.loadPath),
       cache: JSON.stringify(meta.file.cache ?? true),
       sync: `() => Promise.resolve(${meta.key})`,
       async: genDynamicImport(specifier, { comment: `webpackChunkName: "${meta.key}"` }),
       importString: genImport(specifier, meta.key)
-    }
+    })
 
-    importMapper.set(meta.key, importer)
-    return importer
+    return importMapper.get(meta.key)!
   }
 
   /**
@@ -92,7 +88,7 @@ export function generateLoaderOptions(
    */
   const localeLoaders: [string, LocaleLoaderData[]][] = []
   for (const locale of ctx.localeInfo) {
-    localeLoaders.push([locale.code, (locale?.meta ?? []).map(meta => generateLocaleImports(locale.code, meta))])
+    localeLoaders.push([locale.code, (locale?.meta ?? []).map(meta => generateLocaleImports(meta))])
   }
 
   /**
@@ -102,12 +98,9 @@ export function generateLoaderOptions(
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
     const config = ctx.vueI18nConfigPaths[i]
     if (config.absolute === '') continue
-
-    const specifier = withQuery(config.meta.loadPath, { config: '1' })
-    vueI18nConfigs.push({
-      specifier,
-      importer: genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
-    })
+    const specifier = getHash(config.meta.path)
+    const importer = genDynamicImport(specifier, { comment: `webpackChunkName: "${config.meta.key}"` })
+    vueI18nConfigs.push({ specifier, importer })
   }
 
   const pathFormat = ctx.options.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
@@ -139,12 +132,7 @@ export function generateLoaderOptions(
     }
   })
 
-  const generated = {
-    localeLoaders,
-    nuxtI18nOptions,
-    vueI18nConfigs,
-    normalizedLocales
-  }
+  const generated = { localeLoaders, nuxtI18nOptions, vueI18nConfigs, normalizedLocales }
 
   debug('generate code', generated)
 

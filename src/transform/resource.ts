@@ -1,8 +1,9 @@
 import createDebug from 'debug'
+import MagicString from 'magic-string'
 import { pathToFileURL } from 'node:url'
 import { createUnplugin } from 'unplugin'
-import { parseQuery, parseURL } from 'ufo'
-import MagicString from 'magic-string'
+import { parseURL } from 'ufo'
+import { getHash } from '../utils'
 import { VIRTUAL_PREFIX_HEX } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG } from '../constants'
 
@@ -12,28 +13,41 @@ import type { Nuxt } from '@nuxt/schema'
 
 const debug = createDebug('@nuxtjs/i18n:transform:resource')
 
-export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, nuxt: Nuxt) =>
+export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, _nuxt: Nuxt) =>
   createUnplugin(() => {
     debug('options', options)
     const i18nPathSet = new Set([
       ...ctx.localeInfo.flatMap(x => x.meta!.map(m => m.path)),
       ...ctx.vueI18nConfigPaths.map(x => x.absolute)
     ])
+
+    const i18nFileHashSet = new Map<string, string>()
+
+    for (const f of Array.from(i18nPathSet)) {
+      i18nFileHashSet.set(getHash(f), f)
+    }
+
+    function inI18nMap(id: string) {
+      if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
+        return
+      }
+      if (i18nFileHashSet.has(id)) {
+        return i18nFileHashSet.get(id)
+      }
+    }
+
     return {
       name: 'nuxtjs:i18n-resource',
-      enforce: 'post',
+      enforce: 'pre',
 
-      // nitro support to resolve relative locale files with query parameters to absolute
-      rollup: {
-        resolveId(id) {
-          if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith('../')) {
-            return
-          }
+      resolveId(id) {
+        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
+          return
+        }
 
-          const pathname = ctx.resolver.resolve(nuxt.options.buildDir, id).split('?')[0]
-          if (i18nPathSet.has(pathname)) {
-            return pathname
-          }
+        const r = inI18nMap(id)
+        if (r) {
+          return r
         }
       },
 
@@ -44,16 +58,20 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           return false
         }
 
-        const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-        const query = parseQuery(search)
-        return /\.([c|m]?[j|t]s)$/.test(pathname) && (!!query.locale || !!query.config)
+        if (i18nPathSet.has(id) || i18nFileHashSet.has(id)) {
+          return true
+        }
+
+        const r = inI18nMap(id)
+        if (r) {
+          return /\.([c|m]?[j|t]s)$/.test(r)
+        }
       },
 
       transform(code, id) {
         debug('transform', id)
 
-        const { pathname, search } = parseURL(decodeURIComponent(pathToFileURL(id).href))
-        const query = parseQuery(search)
+        const { pathname } = parseURL(decodeURIComponent(pathToFileURL(id).href))
 
         const s = new MagicString(code)
 
@@ -66,7 +84,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           }
         }
 
-        const pattern = query.locale ? NUXT_I18N_COMPOSABLE_DEFINE_LOCALE : NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+        const pattern = [NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].join('|')
         const matches = code.matchAll(new RegExp(`\\b${pattern}\\s*`, 'g'))
 
         for (const match of matches) {
