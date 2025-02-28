@@ -27,15 +27,6 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
       i18nFileHashSet.set(`virtual:nuxt-i18n-${getHash(f)}`, f)
     }
 
-    function inI18nMap(id: string) {
-      if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
-        return
-      }
-      if (i18nFileHashSet.has(id)) {
-        return i18nFileHashSet.get(id)
-      }
-    }
-
     return {
       name: 'nuxtjs:i18n-resource',
       enforce: 'pre',
@@ -45,9 +36,8 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           return
         }
 
-        const r = inI18nMap(id)
-        if (r) {
-          return r
+        if (i18nFileHashSet.has(id)) {
+          return i18nFileHashSet.get(id)
         }
       },
 
@@ -58,13 +48,12 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           return false
         }
 
-        if (i18nPathSet.has(id) || i18nFileHashSet.has(id)) {
-          return true
+        if (i18nPathSet.has(id)) {
+          return /\.([c|m]?[j|t]s)$/.test(id)
         }
 
-        const r = inI18nMap(id)
-        if (r) {
-          return /\.([c|m]?[j|t]s)$/.test(r)
+        if (i18nFileHashSet.has(id)) {
+          return /\.([c|m]?[j|t]s)$/.test(i18nFileHashSet.get(id)!)
         }
       },
 
@@ -84,11 +73,13 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           }
         }
 
+        /**
+         * Match and replace `defineI18nX(<content>)` with its `<content>`
+         */
         const pattern = [NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].join('|')
-        const matches = code.matchAll(new RegExp(`\\b${pattern}\\s*`, 'g'))
-
+        const matches = code.matchAll(new RegExp(`\\b(${pattern})\\((.+)\\)`, 'gms'))
         for (const match of matches) {
-          s.remove(match.index, match.index + match[0].length)
+          s.overwrite(match.index, match.index + match[0].length, match[2])
         }
 
         return result()
