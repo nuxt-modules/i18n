@@ -7,6 +7,7 @@ import {
 } from './constants'
 import type { I18nNuxtContext } from './context'
 import type { Nuxt } from '@nuxt/schema'
+import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 
 export type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
@@ -128,41 +129,35 @@ export function generateTemplateNuxtI18nOptions(
   ].join('\n\n')
 
   const importStrings: string[] = []
-  const localeLoaderEntries: string[] = []
+  const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
     const val = opts.localeLoaders[locale]
-    importStrings.push(val.flatMap(x => x.importString).join('\n'))
-    localeLoaderEntries.push(
-      `  "${locale}": [${val.map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`).join(',\n')}]`
-    )
+    importStrings.push(...val.flatMap(x => x.importString))
+    localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
   return `
 // @ts-nocheck
 ${(!ctx.options.lazy && importStrings.join('\n')) || ''}
 
-export const localeCodes =  ${JSON.stringify(ctx.localeCodes, null, 2)}
+export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 
-export const localeLoaders = {
-${localeLoaderEntries.join(',\n')}
-}
+export const localeLoaders = ${genObjectFromRaw(localeLoaderEntries)}
 
-export const vueI18nConfigs = [
-  ${opts.vueI18nConfigs.map(x => x.importer).join(',\n  ')}
-]
+export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => x.importer))}
 
-export const nuxtI18nOptions = ${JSON.stringify(opts.nuxtI18nOptions, null, 2)}
+export const nuxtI18nOptions = ${genObjectFromValues(opts.nuxtI18nOptions)}
 
-export const normalizedLocales = ${JSON.stringify(opts.normalizedLocales, null, 2)}
+export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x => genObjectFromValues(x, '  ')))}
 
-export const NUXT_I18N_MODULE_ID = "${NUXT_I18N_MODULE_ID}"
+export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
 export const parallelPlugin = ${ctx.options.parallelPlugin}
 export const isSSG = ${ctx.isSSG}
 export const hasPages = ${nuxt.options.pages}
 
-export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
-export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
-export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
+export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
+export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
+export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${genString(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 /** client **/
 ${(ctx.isDev && opts.nuxtI18nOptions.experimental.hmr && codeHMR) || ''}
 /** client-end **/`

@@ -56,7 +56,7 @@ type LocaleLoaderData = {
   key: string
   load: string
   relative: string
-  cache: string
+  cache: boolean
   specifier: string
   importString: string
 }
@@ -80,7 +80,7 @@ export function generateLoaderOptions(
       specifier,
       key: genString(key),
       relative: meta.loadPath,
-      cache: JSON.stringify(meta.file.cache ?? true),
+      cache: meta.file.cache ?? true,
       load: ctx.options.lazy ? async : sync,
       importString: genImport(specifier, key)
     })
