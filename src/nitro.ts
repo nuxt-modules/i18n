@@ -18,8 +18,6 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR
 } from './constants'
 import { resolveI18nDir } from './layers'
-import { i18nVirtualLoggerPlugin } from './virtual-logger'
-import { ResourcePlugin } from './transform/resource'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
@@ -53,13 +51,7 @@ export { localeDetector }`
       nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
       nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
 
-      nitroConfig.rollupConfig!.plugins.push(
-        ResourcePlugin({ sourcemap: !!nuxt.options.sourcemap.server }, ctx, nuxt).rollup()
-      )
-
       // install server resource transform plugin for yaml / json5 format
-      nitroConfig.rollupConfig!.plugins.push(i18nVirtualLoggerPlugin(ctx.options.debug).rollup())
-
       const yamlPaths = getResourcePaths(ctx.localeInfo, /\.ya?ml$/)
       if (yamlPaths.length > 0) {
         nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: yamlPaths }))

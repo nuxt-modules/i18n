@@ -1,8 +1,8 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
-import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
+import { RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
 import { defu } from 'defu'
-import { addBuildPlugin, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
+import { addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from '../gen'
 import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
@@ -52,8 +52,6 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.imports.transform ??= {}
   nuxt.options.imports.transform.include ??= []
   nuxt.options.imports.transform.include.push(new RegExp(`${RESOLVED_VIRTUAL_NUXT_I18N_LOGGER}$`))
-
-  addBuildPlugin(i18nVirtualLoggerPlugin(options.debug))
 
   /**
    * `$i18n` type narrowing based on 'legacy' or 'composition'
