@@ -21,7 +21,7 @@ export function asVirtualId(id: string, framework: UnpluginContextMeta['framewor
 }
 
 export function asI18nVirtual(val: string) {
-  return NUXT_I18N_VIRTUAL_PREFIX + '-' + val
+  return NUXT_I18N_VIRTUAL_PREFIX + '/' + val
 }
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/core/utils/plugins.ts#L4-L35
