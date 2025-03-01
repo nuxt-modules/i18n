@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import createDebug from 'debug'
 import { resolve } from 'pathe'
-import { extendViteConfig, addWebpackPlugin, addBuildPlugin } from '@nuxt/kit'
+import { extendViteConfig, addWebpackPlugin, addBuildPlugin, addTemplate, addRspackPlugin } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
 import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
-import { i18nVirtualLoggerPlugin } from './virtual-logger'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
+import { asI18nVirtual } from './transform/utils'
 import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -31,20 +31,38 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
+  addTemplate({
+    write: true,
+    filename: 'nuxt-i18n-logger.mjs',
+    getContents() {
+      if (!ctx.options.debug) {
+        return `export function createLogger() {}`
+      }
+
+      return `
+import { createConsola } from 'consola'
+
+const debugLogger = createConsola({ level: ${ctx.options.debug === 'verbose' ? 999 : 4} }).withTag('i18n')
+
+export function createLogger(label) {
+  return debugLogger.withTag(label)
+}`
+    }
+  })
+
+  nuxt.options.alias[asI18nVirtual('logger')] = ctx.resolver.resolve(nuxt.options.buildDir, './nuxt-i18n-logger.mjs')
+
   /**
    * shared plugins (nuxt/nitro)
    */
-  const loggerPlugin = i18nVirtualLoggerPlugin(ctx.options.debug)
   const resourcePlugin = ResourcePlugin(sourceMapOptions, ctx)
 
-  addBuildPlugin(loggerPlugin)
   addBuildPlugin(resourcePlugin)
 
   nuxt.hook('nitro:config', async cfg => {
     cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
     cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
 
-    cfg.rollupConfig!.plugins.push(loggerPlugin.rollup())
     cfg.rollupConfig!.plugins.push(resourcePlugin.rollup())
   })
 
@@ -82,6 +100,22 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
     addWebpackPlugin(
       new webpack.DefinePlugin({
+        ...getFeatureFlags(nuxtOptions.bundle),
+        __DEBUG__: String(!!nuxtOptions.debug)
+      })
+    )
+  } catch (e: unknown) {
+    debug((e as Error).message)
+  }
+
+  /**
+   * rspack plugin
+   */
+  try {
+    const { rspack } = await import('@rspack/core')
+
+    addRspackPlugin(
+      new rspack.DefinePlugin({
         ...getFeatureFlags(nuxtOptions.bundle),
         __DEBUG__: String(!!nuxtOptions.debug)
       })

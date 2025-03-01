@@ -19,7 +19,7 @@ import {
 } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import { localePath, switchLocalePath } from './routing/routing'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '#nuxt-i18n/logger'
 import { unref } from 'vue'
 
 import type { I18n, Locale, I18nOptions } from 'vue-i18n'
