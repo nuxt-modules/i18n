@@ -56,8 +56,9 @@ function getMockLocales(additionalLocales?: LocaleObject[]) {
 }
 
 const NUXT_I18N_OPTIONS = {
-  defaultLocale: 'en'
-} as NuxtI18nOptions
+  defaultLocale: 'en',
+  vueI18n: ''
+} as Required<NuxtI18nOptions>
 
 const NUXT_I18N_VUE_I18N_CONFIG = {
   absolute: '/path/to/i18n.config.ts',
@@ -89,13 +90,15 @@ test('basic', async () => {
   const locales = getMockLocales()
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
-    vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
-    localeInfo,
-    normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: false },
-    isServer: false
-  })
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo,
+      normalizedLocales: getNormalizedLocales(locales),
+      options: { ...NUXT_I18N_OPTIONS, lazy: false }
+    },
+    makeNuxtOptions(localeInfo)
+  )
 
   expect(code).toMatchSnapshot()
 })
@@ -104,13 +107,15 @@ test('lazy', async () => {
   const locales = getMockLocales()
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
-    vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
-    localeInfo,
-    normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-    isServer: false
-  })
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo,
+      normalizedLocales: getNormalizedLocales(locales),
+      options: { ...NUXT_I18N_OPTIONS, lazy: true }
+    },
+    makeNuxtOptions(localeInfo)
+  )
 
   expect(code).toMatchSnapshot()
 })
@@ -135,13 +140,15 @@ test('multiple files', async () => {
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
 
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
-    vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
-    localeInfo,
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-    normalizedLocales: getNormalizedLocales(locales),
-    isServer: false
-  })
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo,
+      options: { ...NUXT_I18N_OPTIONS, lazy: true },
+      normalizedLocales: getNormalizedLocales(locales)
+    },
+    makeNuxtOptions(localeInfo)
+  )
 
   expect(code).toMatchSnapshot()
 })
@@ -168,15 +175,16 @@ test('files with cache configuration', async () => {
 
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
-  console.log(getNormalizedLocales(locales))
 
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
-    vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
-    localeInfo,
-    normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-    isServer: false
-  })
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo,
+      normalizedLocales: getNormalizedLocales(locales),
+      options: { ...NUXT_I18N_OPTIONS, lazy: true }
+    },
+    makeNuxtOptions(localeInfo)
+  )
 
   expect(code).toMatchSnapshot()
 })
@@ -200,27 +208,23 @@ test('files with cache configuration (relative)', async () => {
     // @ts-ignore
     l.files = resolveRelativeLocales(l, { langDir: 'locales' })
   }
-  // console.log(JSON.stringify(getMockLocales(), null, 2))
   const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
 
-  console.log(getNormalizedLocales(locales))
-
   const code = generateLoaderOptions(
-    { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } },
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      nuxtI18nOptions: {
+      options: {
         ...NUXT_I18N_OPTIONS,
         lazy: true,
         experimental: {
           generatedLocaleFilePathFormat: 'relative'
         }
-      },
-      isServer: false
-    }
+      }
+    },
+    { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } }
   )
 
   expect(code).toMatchSnapshot()
@@ -245,14 +249,13 @@ test('locale file in nested', async () => {
 
   const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.relative, '.nuxt')
   const code = generateLoaderOptions(
-    { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } },
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      nuxtI18nOptions: { ...NUXT_I18N_OPTIONS, lazy: true },
-      isServer: false
-    }
+      options: { ...NUXT_I18N_OPTIONS, lazy: true }
+    },
+    { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } }
   )
 
   expect(code).toMatchSnapshot()
@@ -278,16 +281,18 @@ test('vueI18n option', async () => {
       }
     ].map(x => resolveVueI18nConfigInfo(x.rootDir, x.relative, '.nuxt'))
   )
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo), {
-    vueI18nConfigPaths: vueI18nConfigs as Required<VueI18nConfigPathInfo>[],
-    localeInfo,
-    normalizedLocales: getNormalizedLocales(locales),
-    nuxtI18nOptions: {
-      vueI18n: 'vue-i18n.config.ts',
-      lazy: false
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: vueI18nConfigs as Required<VueI18nConfigPathInfo>[],
+      localeInfo,
+      normalizedLocales: getNormalizedLocales(locales),
+      options: {
+        vueI18n: 'vue-i18n.config.ts',
+        lazy: false
+      } as Required<NuxtI18nOptions>
     },
-    isServer: false
-  })
+    makeNuxtOptions(localeInfo)
+  )
 
   expect(code).toMatchSnapshot()
 })
@@ -300,17 +305,19 @@ test('toCode: function (arrow)', async () => {
       return `Hello ${prop}`
     }
   }))
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo as LocaleInfo[]), {
-    vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
-    localeInfo: [],
-    normalizedLocales: [],
-    nuxtI18nOptions: {
-      ...NUXT_I18N_OPTIONS,
-      lazy: false,
-      locales: localeInfo
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo: [],
+      normalizedLocales: [],
+      options: {
+        ...NUXT_I18N_OPTIONS,
+        lazy: false,
+        locales: localeInfo
+      }
     },
-    isServer: false
-  })
+    makeNuxtOptions(localeInfo as LocaleInfo[])
+  )
 
   expect(code).toMatchSnapshot()
 })
@@ -323,17 +330,19 @@ test('toCode: function (named)', async () => {
       return `Hello ${prop}`
     }
   }))
-  const code = generateLoaderOptions(makeNuxtOptions(localeInfo as LocaleInfo[]), {
-    vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
-    localeInfo: [],
-    normalizedLocales: [],
-    nuxtI18nOptions: {
-      ...NUXT_I18N_OPTIONS,
-      lazy: false,
-      locales: localeInfo
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo: [],
+      normalizedLocales: [],
+      options: {
+        ...NUXT_I18N_OPTIONS,
+        lazy: false,
+        locales: localeInfo
+      }
     },
-    isServer: false
-  })
+    makeNuxtOptions(localeInfo as LocaleInfo[])
+  )
 
   expect(code).toMatchSnapshot()
 })

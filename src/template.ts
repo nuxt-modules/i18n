@@ -1,20 +1,14 @@
 import { generateLoaderOptions } from './gen'
+import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import {
   DEFAULT_DYNAMIC_PARAMS_KEY,
   DEFAULT_COOKIE_KEY,
   NUXT_I18N_MODULE_ID,
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER
 } from './constants'
-import type { LocaleObject } from './types'
+import type { I18nNuxtContext } from './context'
 
-export type TemplateNuxtI18nOptions = {
-  localeCodes: string[]
-  normalizedLocales: LocaleObject[]
-  dev: boolean
-  isSSG: boolean
-  hasPages: boolean
-  parallelPlugin: boolean
-} & ReturnType<typeof generateLoaderOptions>
+export type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
 // used to compare vue-i18n config replacement
 const deepEqualFn = `function deepEqual(a, b, ignoreKeys = []) {
@@ -75,12 +69,12 @@ async function loadCfg(config) {
 function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders']) {
   const statements: string[] = []
 
-  for (const [locale, loaders] of localeLoaders) {
-    for (let i = 0; i < loaders.length; i++) {
-      const loader = loaders[i]
+  for (const locale in localeLoaders) {
+    for (let i = 0; i < localeLoaders[locale].length; i++) {
+      const loader = localeLoaders[locale][i]
       statements.push(
         [
-          `  import.meta.hot.accept("${loader.specifier}", async mod => {`,
+          `  import.meta.hot.accept("${loader.relative}", async mod => {`,
           //   replace locale loader
           `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
           //   trigger locale messages reload for locale
@@ -94,13 +88,13 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
   return statements.join('\n\n')
 }
 
-function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigSpecifiers']) {
+function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs']) {
   const statements: string[] = []
 
   for (let i = 0; i < configs.length; i++) {
     statements.push(
       [
-        `  import.meta.hot.accept("${configs[i]}", async mod => {`,
+        `  import.meta.hot.accept("${configs[i].relative}", async mod => {`,
         //   load configs before replacing loader
         `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
         //   replace config loader
@@ -119,48 +113,47 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigSpec
   return statements.join('\n\n')
 }
 
-export function generateTemplateNuxtI18nOptions(options: TemplateNuxtI18nOptions): string {
+export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: TemplateNuxtI18nOptions): string {
   const codeHMR = [
     `if(import.meta.hot) {`,
     deepEqualFn,
     loadConfigsFn,
-    genLocaleLoaderHMR(options.localeLoaders),
-    genVueI18nConfigHMR(options.vueI18nConfigSpecifiers),
+    genLocaleLoaderHMR(opts.localeLoaders),
+    genVueI18nConfigHMR(opts.vueI18nConfigs),
     '}'
   ].join('\n\n')
 
+  const importStrings: string[] = []
+  const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
+  for (const locale in opts.localeLoaders) {
+    const val = opts.localeLoaders[locale]
+    importStrings.push(...val.flatMap(x => x.importString))
+    localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
+  }
+
   return `
 // @ts-nocheck
-${options.importStrings.length > 0 ? options.importStrings.join('\n') + '\n' : ''}
+${(!ctx.options.lazy && importStrings.join('\n')) || ''}
 
-export const localeCodes =  ${JSON.stringify(options.localeCodes, null, 2)}
+export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 
-export const localeLoaders = {
-${options.localeLoaders
-  .map(([key, val]) => {
-    return `  "${key}": [${val
-      .map(entry => `{ key: ${entry.key}, load: ${entry.load}, cache: ${entry.cache} }`)
-      .join(',\n')}]`
-  })
-  .join(',\n')}
-}
+export const localeLoaders = ${genObjectFromRaw(localeLoaderEntries)}
 
-export const vueI18nConfigs = [
-  ${options.vueI18nConfigs.length > 0 ? options.vueI18nConfigs.join(',\n  ') : ''}
-]
+export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => x.importer))}
 
-export const nuxtI18nOptions = ${JSON.stringify(options.nuxtI18nOptions, null, 2)}
+export const nuxtI18nOptions = ${genObjectFromValues(opts.nuxtI18nOptions)}
 
-export const normalizedLocales = ${JSON.stringify(options.normalizedLocales, null, 2)}
+export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x => genObjectFromValues(x, '  ')))}
 
-export const NUXT_I18N_MODULE_ID = "${NUXT_I18N_MODULE_ID}"
-export const parallelPlugin = ${options.parallelPlugin}
-export const isSSG = ${options.isSSG}
-export const hasPages = ${options.hasPages}
+export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
+export const parallelPlugin = ${ctx.options.parallelPlugin}
+export const isSSG = ${ctx.isSSG}
+export const hasPages = ${ctx.pages}
 
-export const DEFAULT_DYNAMIC_PARAMS_KEY = ${JSON.stringify(DEFAULT_DYNAMIC_PARAMS_KEY)}
-export const DEFAULT_COOKIE_KEY = ${JSON.stringify(DEFAULT_COOKIE_KEY)}
-export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
-
-${(options.dev && options.hmr && !options.isServer && codeHMR) || ''}`
+export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
+export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
+export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${genString(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
+/** client **/
+${(ctx.isDev && opts.nuxtI18nOptions.experimental.hmr && codeHMR) || ''}
+/** client-end **/`
 }

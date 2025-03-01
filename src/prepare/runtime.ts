@@ -1,14 +1,14 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
-import { i18nVirtualLoggerPlugin, RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
+import { RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
 import { defu } from 'defu'
-import { addBuildPlugin, addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
+import { addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from '../gen'
 import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
 
 export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  const { isDev: dev, isSSG, localeCodes, localeInfo, normalizedLocales, options, resolver, vueI18nConfigPaths } = ctx
+  const { options, resolver } = ctx
   // for core plugin
   addPlugin(resolver.resolve('./runtime/plugins/i18n'))
   addPlugin(resolver.resolve('./runtime/plugins/route-locale-detect'))
@@ -22,7 +22,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.build.transpile.push('#internal-i18n-types')
   nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
-  if (dev && options.experimental.hmr) {
+  if (ctx.isDev && options.experimental.hmr) {
     addVitePlugin({
       name: 'i18n:options-hmr',
       configureServer(server) {
@@ -41,44 +41,17 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
     })
   }
 
-  ctx.genTemplate = (isServer: boolean, lazy?: boolean) => {
-    const nuxtI18nOptions = defu({}, options)
-    // override `lazy` options
-    if (lazy != null) {
-      nuxtI18nOptions.lazy = lazy
-    }
-    return generateTemplateNuxtI18nOptions({
-      ...generateLoaderOptions(nuxt, {
-        vueI18nConfigPaths,
-        localeInfo,
-        nuxtI18nOptions,
-        isServer,
-        normalizedLocales
-      }),
-      hasPages:
-        nuxt.options.pages === true ||
-        // @ts-expect-error
-        (nuxt.options.pages && nuxt.options.pages?.enabled === true),
-      localeCodes,
-      dev,
-      isSSG,
-      parallelPlugin: options.parallelPlugin
-    })
-  }
-
   nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, defu({}, options))
 
   addTemplate({
     filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
     write: true,
-    getContents: () => ctx.genTemplate(false)
+    getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt))
   })
 
   nuxt.options.imports.transform ??= {}
   nuxt.options.imports.transform.include ??= []
   nuxt.options.imports.transform.include.push(new RegExp(`${RESOLVED_VIRTUAL_NUXT_I18N_LOGGER}$`))
-
-  addBuildPlugin(i18nVirtualLoggerPlugin(options.debug))
 
   /**
    * `$i18n` type narrowing based on 'legacy' or 'composition'

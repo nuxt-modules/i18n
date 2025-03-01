@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import createDebug from 'debug'
 import { resolve } from 'pathe'
 import { extendViteConfig, addWebpackPlugin, addBuildPlugin } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
+import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
+import { i18nVirtualLoggerPlugin } from './virtual-logger'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { getLayerLangPaths } from './layers'
 
@@ -14,7 +17,8 @@ import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
-export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, nuxt: Nuxt) {
+export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
+  const { options: nuxtOptions } = ctx
   const langPaths = getLayerLangPaths(nuxt)
   debug('langPaths -', langPaths)
   const i18nModulePaths =
@@ -27,6 +31,26 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
   }
 
+  /**
+   * shared plugins (nuxt/nitro)
+   */
+  const loggerPlugin = i18nVirtualLoggerPlugin(ctx.options.debug)
+  const resourcePlugin = ResourcePlugin(sourceMapOptions, ctx)
+
+  addBuildPlugin(loggerPlugin)
+  addBuildPlugin(resourcePlugin)
+
+  nuxt.hook('nitro:config', async cfg => {
+    cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
+    cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
+
+    cfg.rollupConfig!.plugins.push(loggerPlugin.rollup())
+    cfg.rollupConfig!.plugins.push(resourcePlugin.rollup())
+  })
+
+  /**
+   * shared plugins (webpack/vite)
+   */
   const vueI18nPluginOptions: PluginOptions = {
     allowDynamic: true,
     include: localeIncludePaths,
@@ -41,16 +65,11 @@ export async function extendBundler({ options: nuxtOptions }: I18nNuxtContext, n
     dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
     optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective
   }
-
-  /**
-   * shared plugins
-   */
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(sourceMapOptions))
-  addBuildPlugin(ResourcePlugin(sourceMapOptions))
   if (nuxtOptions.experimental.autoImportTranslationFunctions) {
     addBuildPlugin(TransformI18nFunctionPlugin(sourceMapOptions))
   }

@@ -2,51 +2,38 @@
 
 exports[`basic 1`] = `
 {
-  "hmr": false,
-  "importStrings": [
-    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
-    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
-    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
-  ],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/en.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
-          "specifier": "srcDir/en.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_ff503de3 from "virtual:nuxt-i18n-ff503de3";",
+        "key": ""locale_en_46json_ff503de3"",
+        "load": "() => Promise.resolve(locale_en_46json_ff503de3)",
+        "relative": "srcDir/en.json",
+        "specifier": "virtual:nuxt-i18n-ff503de3",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/ja.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
-          "specifier": "srcDir/ja.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_3da2909c from "virtual:nuxt-i18n-3da2909c";",
+        "key": ""locale_fr_46json_3da2909c"",
+        "load": "() => Promise.resolve(locale_fr_46json_3da2909c)",
+        "relative": "srcDir/fr.json",
+        "specifier": "virtual:nuxt-i18n-3da2909c",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/fr.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
-          "specifier": "srcDir/fr.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_3369e867 from "virtual:nuxt-i18n-3369e867";",
+        "key": ""locale_ja_46json_3369e867"",
+        "load": "() => Promise.resolve(locale_ja_46json_3369e867)",
+        "relative": "srcDir/ja.json",
+        "specifier": "virtual:nuxt-i18n-3369e867",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -82,89 +69,78 @@ exports[`basic 1`] = `
     "lazy": false,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`files with cache configuration (relative) 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/en.json"",
-          "load": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_en_json",
-          "specifier": "srcDir/test/locales/en.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_e9231b3b from "virtual:nuxt-i18n-e9231b3b";",
+        "key": ""locale_en_46json_e9231b3b"",
+        "load": "() => import("virtual:nuxt-i18n-e9231b3b" /* webpackChunkName: "locale_en_46json_e9231b3b" */)",
+        "relative": "srcDir/test/locales/en.json",
+        "specifier": "virtual:nuxt-i18n-e9231b3b",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/ja.json"",
-          "load": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_ja_json",
-          "specifier": "srcDir/test/locales/ja.json",
-        },
-      ],
+    "es": [
+      {
+        "cache": false,
+        "importString": "import locale_es_46json_4fad0583 from "virtual:nuxt-i18n-4fad0583";",
+        "key": ""locale_es_46json_4fad0583"",
+        "load": "() => import("virtual:nuxt-i18n-4fad0583" /* webpackChunkName: "locale_es_46json_4fad0583" */)",
+        "relative": "srcDir/test/locales/es.json",
+        "specifier": "virtual:nuxt-i18n-4fad0583",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/fr.json"",
-          "load": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_fr_json",
-          "specifier": "srcDir/test/locales/fr.json",
-        },
-      ],
+    "es-AR": [
+      {
+        "cache": false,
+        "importString": "import locale_es_46json_4fad0583 from "virtual:nuxt-i18n-4fad0583";",
+        "key": ""locale_es_46json_4fad0583"",
+        "load": "() => import("virtual:nuxt-i18n-4fad0583" /* webpackChunkName: "locale_es_46json_4fad0583" */)",
+        "relative": "srcDir/test/locales/es.json",
+        "specifier": "virtual:nuxt-i18n-4fad0583",
+      },
+      {
+        "cache": true,
+        "importString": "import locale_es_45AR_46json_5c77b60d from "virtual:nuxt-i18n-5c77b60d";",
+        "key": ""locale_es_45AR_46json_5c77b60d"",
+        "load": "() => import("virtual:nuxt-i18n-5c77b60d" /* webpackChunkName: "locale_es_45AR_46json_5c77b60d" */)",
+        "relative": "srcDir/test/locales/es-AR.json",
+        "specifier": "virtual:nuxt-i18n-5c77b60d",
+      },
     ],
-    [
-      "es",
-      [
-        {
-          "cache": "false",
-          "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
-          "specifier": "srcDir/test/locales/es.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_5627016f from "virtual:nuxt-i18n-5627016f";",
+        "key": ""locale_fr_46json_5627016f"",
+        "load": "() => import("virtual:nuxt-i18n-5627016f" /* webpackChunkName: "locale_fr_46json_5627016f" */)",
+        "relative": "srcDir/test/locales/fr.json",
+        "specifier": "virtual:nuxt-i18n-5627016f",
+      },
     ],
-    [
-      "es-AR",
-      [
-        {
-          "cache": "false",
-          "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
-          "specifier": "srcDir/test/locales/es.json",
-        },
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/es-AR.json"",
-          "load": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_AR_json",
-          "specifier": "srcDir/test/locales/es-AR.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_354e4128 from "virtual:nuxt-i18n-354e4128";",
+        "key": ""locale_ja_46json_354e4128"",
+        "load": "() => import("virtual:nuxt-i18n-354e4128" /* webpackChunkName: "locale_ja_46json_354e4128" */)",
+        "relative": "srcDir/test/locales/ja.json",
+        "specifier": "virtual:nuxt-i18n-354e4128",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -225,89 +201,78 @@ exports[`files with cache configuration (relative) 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`files with cache configuration 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/en.json"",
-          "load": "() => import("srcDir/test/locales/en.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_en_json",
-          "specifier": "srcDir/test/locales/en.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_e9231b3b from "virtual:nuxt-i18n-e9231b3b";",
+        "key": ""locale_en_46json_e9231b3b"",
+        "load": "() => import("virtual:nuxt-i18n-e9231b3b" /* webpackChunkName: "locale_en_46json_e9231b3b" */)",
+        "relative": "srcDir/test/locales/en.json",
+        "specifier": "virtual:nuxt-i18n-e9231b3b",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/ja.json"",
-          "load": "() => import("srcDir/test/locales/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_ja_json",
-          "specifier": "srcDir/test/locales/ja.json",
-        },
-      ],
+    "es": [
+      {
+        "cache": false,
+        "importString": "import locale_es_46json_4fad0583 from "virtual:nuxt-i18n-4fad0583";",
+        "key": ""locale_es_46json_4fad0583"",
+        "load": "() => import("virtual:nuxt-i18n-4fad0583" /* webpackChunkName: "locale_es_46json_4fad0583" */)",
+        "relative": "srcDir/test/locales/es.json",
+        "specifier": "virtual:nuxt-i18n-4fad0583",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/fr.json"",
-          "load": "() => import("srcDir/test/locales/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_fr_json",
-          "specifier": "srcDir/test/locales/fr.json",
-        },
-      ],
+    "es-AR": [
+      {
+        "cache": false,
+        "importString": "import locale_es_46json_4fad0583 from "virtual:nuxt-i18n-4fad0583";",
+        "key": ""locale_es_46json_4fad0583"",
+        "load": "() => import("virtual:nuxt-i18n-4fad0583" /* webpackChunkName: "locale_es_46json_4fad0583" */)",
+        "relative": "srcDir/test/locales/es.json",
+        "specifier": "virtual:nuxt-i18n-4fad0583",
+      },
+      {
+        "cache": true,
+        "importString": "import locale_es_45AR_46json_5c77b60d from "virtual:nuxt-i18n-5c77b60d";",
+        "key": ""locale_es_45AR_46json_5c77b60d"",
+        "load": "() => import("virtual:nuxt-i18n-5c77b60d" /* webpackChunkName: "locale_es_45AR_46json_5c77b60d" */)",
+        "relative": "srcDir/test/locales/es-AR.json",
+        "specifier": "virtual:nuxt-i18n-5c77b60d",
+      },
     ],
-    [
-      "es",
-      [
-        {
-          "cache": "false",
-          "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
-          "specifier": "srcDir/test/locales/es.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_5627016f from "virtual:nuxt-i18n-5627016f";",
+        "key": ""locale_fr_46json_5627016f"",
+        "load": "() => import("virtual:nuxt-i18n-5627016f" /* webpackChunkName: "locale_fr_46json_5627016f" */)",
+        "relative": "srcDir/test/locales/fr.json",
+        "specifier": "virtual:nuxt-i18n-5627016f",
+      },
     ],
-    [
-      "es-AR",
-      [
-        {
-          "cache": "false",
-          "key": ""srcDir/test/locales/es.json"",
-          "load": "() => import("srcDir/test/locales/es.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_json",
-          "specifier": "srcDir/test/locales/es.json",
-        },
-        {
-          "cache": "true",
-          "key": ""srcDir/test/locales/es-AR.json"",
-          "load": "() => import("srcDir/test/locales/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_test_locales_es_AR_json" */)",
-          "metaKey": "locale_srcDir_srcDir_test_locales_es_AR_json",
-          "specifier": "srcDir/test/locales/es-AR.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_354e4128 from "virtual:nuxt-i18n-354e4128";",
+        "key": ""locale_ja_46json_354e4128"",
+        "load": "() => import("virtual:nuxt-i18n-354e4128" /* webpackChunkName: "locale_ja_46json_354e4128" */)",
+        "relative": "srcDir/test/locales/ja.json",
+        "specifier": "virtual:nuxt-i18n-354e4128",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -365,58 +330,50 @@ exports[`files with cache configuration 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`lazy 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/en.json"",
-          "load": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
-          "specifier": "srcDir/en.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_ff503de3 from "virtual:nuxt-i18n-ff503de3";",
+        "key": ""locale_en_46json_ff503de3"",
+        "load": "() => import("virtual:nuxt-i18n-ff503de3" /* webpackChunkName: "locale_en_46json_ff503de3" */)",
+        "relative": "srcDir/en.json",
+        "specifier": "virtual:nuxt-i18n-ff503de3",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/ja.json"",
-          "load": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
-          "specifier": "srcDir/ja.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_3da2909c from "virtual:nuxt-i18n-3da2909c";",
+        "key": ""locale_fr_46json_3da2909c"",
+        "load": "() => import("virtual:nuxt-i18n-3da2909c" /* webpackChunkName: "locale_fr_46json_3da2909c" */)",
+        "relative": "srcDir/fr.json",
+        "specifier": "virtual:nuxt-i18n-3da2909c",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/fr.json"",
-          "load": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
-          "specifier": "srcDir/fr.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_3369e867 from "virtual:nuxt-i18n-3369e867";",
+        "key": ""locale_ja_46json_3369e867"",
+        "load": "() => import("virtual:nuxt-i18n-3369e867" /* webpackChunkName: "locale_ja_46json_3369e867" */)",
+        "relative": "srcDir/ja.json",
+        "specifier": "virtual:nuxt-i18n-3369e867",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -452,58 +409,50 @@ exports[`lazy 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`locale file in nested 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/en/main.json"",
-          "load": "() => import("srcDir/en/main.json" /* webpackChunkName: "locale_srcDir_srcDir_en_main_json" */)",
-          "metaKey": "locale_srcDir_srcDir_en_main_json",
-          "specifier": "srcDir/en/main.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_main_46json_0f29fe58 from "virtual:nuxt-i18n-0f29fe58";",
+        "key": ""locale_main_46json_0f29fe58"",
+        "load": "() => import("virtual:nuxt-i18n-0f29fe58" /* webpackChunkName: "locale_main_46json_0f29fe58" */)",
+        "relative": "srcDir/en/main.json",
+        "specifier": "virtual:nuxt-i18n-0f29fe58",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/ja/main.json"",
-          "load": "() => import("srcDir/ja/main.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_main_json" */)",
-          "metaKey": "locale_srcDir_srcDir_ja_main_json",
-          "specifier": "srcDir/ja/main.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_main_46json_a4c1f89d from "virtual:nuxt-i18n-a4c1f89d";",
+        "key": ""locale_main_46json_a4c1f89d"",
+        "load": "() => import("virtual:nuxt-i18n-a4c1f89d" /* webpackChunkName: "locale_main_46json_a4c1f89d" */)",
+        "relative": "srcDir/fr/main.json",
+        "specifier": "virtual:nuxt-i18n-a4c1f89d",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/fr/main.json"",
-          "load": "() => import("srcDir/fr/main.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_main_json" */)",
-          "metaKey": "locale_srcDir_srcDir_fr_main_json",
-          "specifier": "srcDir/fr/main.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_main_46json_c0b7f14e from "virtual:nuxt-i18n-c0b7f14e";",
+        "key": ""locale_main_46json_c0b7f14e"",
+        "load": "() => import("virtual:nuxt-i18n-c0b7f14e" /* webpackChunkName: "locale_main_46json_c0b7f14e" */)",
+        "relative": "srcDir/ja/main.json",
+        "specifier": "virtual:nuxt-i18n-c0b7f14e",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -539,89 +488,78 @@ exports[`locale file in nested 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`multiple files 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/en.json"",
-          "load": "() => import("srcDir/en.json" /* webpackChunkName: "locale_srcDir_srcDir_en_json" */)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
-          "specifier": "srcDir/en.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_ff503de3 from "virtual:nuxt-i18n-ff503de3";",
+        "key": ""locale_en_46json_ff503de3"",
+        "load": "() => import("virtual:nuxt-i18n-ff503de3" /* webpackChunkName: "locale_en_46json_ff503de3" */)",
+        "relative": "srcDir/en.json",
+        "specifier": "virtual:nuxt-i18n-ff503de3",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/ja.json"",
-          "load": "() => import("srcDir/ja.json" /* webpackChunkName: "locale_srcDir_srcDir_ja_json" */)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
-          "specifier": "srcDir/ja.json",
-        },
-      ],
+    "es": [
+      {
+        "cache": true,
+        "importString": "import locale_es_46json_ece193f7 from "virtual:nuxt-i18n-ece193f7";",
+        "key": ""locale_es_46json_ece193f7"",
+        "load": "() => import("virtual:nuxt-i18n-ece193f7" /* webpackChunkName: "locale_es_46json_ece193f7" */)",
+        "relative": "srcDir/es.json",
+        "specifier": "virtual:nuxt-i18n-ece193f7",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/fr.json"",
-          "load": "() => import("srcDir/fr.json" /* webpackChunkName: "locale_srcDir_srcDir_fr_json" */)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
-          "specifier": "srcDir/fr.json",
-        },
-      ],
+    "es-AR": [
+      {
+        "cache": true,
+        "importString": "import locale_es_46json_ece193f7 from "virtual:nuxt-i18n-ece193f7";",
+        "key": ""locale_es_46json_ece193f7"",
+        "load": "() => import("virtual:nuxt-i18n-ece193f7" /* webpackChunkName: "locale_es_46json_ece193f7" */)",
+        "relative": "srcDir/es.json",
+        "specifier": "virtual:nuxt-i18n-ece193f7",
+      },
+      {
+        "cache": true,
+        "importString": "import locale_es_45AR_46json_2a25cb46 from "virtual:nuxt-i18n-2a25cb46";",
+        "key": ""locale_es_45AR_46json_2a25cb46"",
+        "load": "() => import("virtual:nuxt-i18n-2a25cb46" /* webpackChunkName: "locale_es_45AR_46json_2a25cb46" */)",
+        "relative": "srcDir/es-AR.json",
+        "specifier": "virtual:nuxt-i18n-2a25cb46",
+      },
     ],
-    [
-      "es",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/es.json"",
-          "load": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_es_json",
-          "specifier": "srcDir/es.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_3da2909c from "virtual:nuxt-i18n-3da2909c";",
+        "key": ""locale_fr_46json_3da2909c"",
+        "load": "() => import("virtual:nuxt-i18n-3da2909c" /* webpackChunkName: "locale_fr_46json_3da2909c" */)",
+        "relative": "srcDir/fr.json",
+        "specifier": "virtual:nuxt-i18n-3da2909c",
+      },
     ],
-    [
-      "es-AR",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/es.json"",
-          "load": "() => import("srcDir/es.json" /* webpackChunkName: "locale_srcDir_srcDir_es_json" */)",
-          "metaKey": "locale_srcDir_srcDir_es_json",
-          "specifier": "srcDir/es.json",
-        },
-        {
-          "cache": "true",
-          "key": ""srcDir/es-AR.json"",
-          "load": "() => import("srcDir/es-AR.json" /* webpackChunkName: "locale_srcDir_srcDir_es_AR_json" */)",
-          "metaKey": "locale_srcDir_srcDir_es_AR_json",
-          "specifier": "srcDir/es-AR.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_3369e867 from "virtual:nuxt-i18n-3369e867";",
+        "key": ""locale_ja_46json_3369e867"",
+        "load": "() => import("virtual:nuxt-i18n-3369e867" /* webpackChunkName: "locale_ja_46json_3369e867" */)",
+        "relative": "srcDir/ja.json",
+        "specifier": "virtual:nuxt-i18n-3369e867",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -679,21 +617,19 @@ exports[`multiple files 1`] = `
     "lazy": true,
     "locales": [],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`toCode: function (arrow) 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [],
+  "localeLoaders": {},
   "normalizedLocales": [],
   "nuxtI18nOptions": {
     "defaultLocale": "en",
@@ -723,21 +659,19 @@ exports[`toCode: function (arrow) 1`] = `
       },
     ],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`toCode: function (named) 1`] = `
 {
-  "hmr": false,
-  "importStrings": [],
-  "isServer": false,
-  "localeLoaders": [],
+  "localeLoaders": {},
   "normalizedLocales": [],
   "nuxtI18nOptions": {
     "defaultLocale": "en",
@@ -767,62 +701,50 @@ exports[`toCode: function (named) 1`] = `
       },
     ],
   },
-  "vueI18nConfigSpecifiers": [
-    "/test/i18n.config.ts?hash=6354e9fa&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/test/i18n.config.ts?hash=6354e9fa&config=1" /* webpackChunkName: "i18n_config_ts_6354e9fa" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-6354e9fa",
+    },
   ],
 }
 `;
 
 exports[`vueI18n option 1`] = `
 {
-  "hmr": false,
-  "importStrings": [
-    "import locale_srcDir_srcDir_en_json from "srcDir/en.json";",
-    "import locale_srcDir_srcDir_ja_json from "srcDir/ja.json";",
-    "import locale_srcDir_srcDir_fr_json from "srcDir/fr.json";",
-  ],
-  "isServer": false,
-  "localeLoaders": [
-    [
-      "en",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/en.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_en_json)",
-          "metaKey": "locale_srcDir_srcDir_en_json",
-          "specifier": "srcDir/en.json",
-        },
-      ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_ff503de3 from "virtual:nuxt-i18n-ff503de3";",
+        "key": ""locale_en_46json_ff503de3"",
+        "load": "() => Promise.resolve(locale_en_46json_ff503de3)",
+        "relative": "srcDir/en.json",
+        "specifier": "virtual:nuxt-i18n-ff503de3",
+      },
     ],
-    [
-      "ja",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/ja.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_ja_json)",
-          "metaKey": "locale_srcDir_srcDir_ja_json",
-          "specifier": "srcDir/ja.json",
-        },
-      ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_3da2909c from "virtual:nuxt-i18n-3da2909c";",
+        "key": ""locale_fr_46json_3da2909c"",
+        "load": "() => Promise.resolve(locale_fr_46json_3da2909c)",
+        "relative": "srcDir/fr.json",
+        "specifier": "virtual:nuxt-i18n-3da2909c",
+      },
     ],
-    [
-      "fr",
-      [
-        {
-          "cache": "true",
-          "key": ""srcDir/fr.json"",
-          "load": "() => Promise.resolve(locale_srcDir_srcDir_fr_json)",
-          "metaKey": "locale_srcDir_srcDir_fr_json",
-          "specifier": "srcDir/fr.json",
-        },
-      ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_3369e867 from "virtual:nuxt-i18n-3369e867";",
+        "key": ""locale_ja_46json_3369e867"",
+        "load": "() => Promise.resolve(locale_ja_46json_3369e867)",
+        "relative": "srcDir/ja.json",
+        "specifier": "virtual:nuxt-i18n-3369e867",
+      },
     ],
-  ],
+  },
   "normalizedLocales": [
     {
       "code": "en",
@@ -856,17 +778,23 @@ exports[`vueI18n option 1`] = `
     "i18nModules": [],
     "lazy": false,
     "locales": [],
-    "vueI18n": "vue-i18n.config.ts",
   },
-  "vueI18nConfigSpecifiers": [
-    "/path/foo/layer2/vue-i18n.options.js?hash=84df1640&config=1",
-    "/path/layer1/i18n.custom.ts?hash=faa288dc&config=1",
-    "/path/to/i18n.config.ts?hash=42902d1e&config=1",
-  ],
   "vueI18nConfigs": [
-    "() => import("/path/foo/layer2/vue-i18n.options.js?hash=84df1640&config=1" /* webpackChunkName: "vue_i18n_options_js_84df1640" */)",
-    "() => import("/path/layer1/i18n.custom.ts?hash=faa288dc&config=1" /* webpackChunkName: "i18n_custom_ts_faa288dc" */)",
-    "() => import("/path/to/i18n.config.ts?hash=42902d1e&config=1" /* webpackChunkName: "i18n_config_ts_42902d1e" */)",
+    {
+      "importer": "() => import("virtual:nuxt-i18n-84df1640" /* webpackChunkName: "config_vue_45i18n_46options_46js_84df1640" */)",
+      "relative": "/path/foo/layer2/vue-i18n.options.js",
+      "specifier": "virtual:nuxt-i18n-84df1640",
+    },
+    {
+      "importer": "() => import("virtual:nuxt-i18n-faa288dc" /* webpackChunkName: "config_i18n_46custom_46ts_faa288dc" */)",
+      "relative": "/path/layer1/i18n.custom.ts",
+      "specifier": "virtual:nuxt-i18n-faa288dc",
+    },
+    {
+      "importer": "() => import("virtual:nuxt-i18n-42902d1e" /* webpackChunkName: "config_i18n_46config_46ts_42902d1e" */)",
+      "relative": "/path/to/i18n.config.ts",
+      "specifier": "virtual:nuxt-i18n-42902d1e",
+    },
   ],
 }
 `;

@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url } from '../utils'
-import { getText, getData, waitForMs, renderPage, waitForURL } from '../helper'
+import { setup, url, useTestContext } from '../utils'
+import { getText, getData, waitForMs, renderPage, waitForURL, localeLoaderHelpers } from '../helper'
 
 describe('basic lazy loading', async () => {
   await setup({
@@ -116,19 +116,21 @@ describe('basic lazy loading', async () => {
   })
 
   test('files with cache disabled bypass caching', async () => {
-    const { page, consoleLogs } = await renderPage('/')
+    const { page, consoleLogs: logs } = await renderPage('/')
+
+    const { findKey } = await localeLoaderHelpers()
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(1)
+    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(1)
+    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-en-GB.js bypassing cache!'))).toHaveLength(2)
+    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect([...consoleLogs].filter(log => log.text.includes('lazy-locale-fr.json5 bypassing cache!'))).toHaveLength(2)
+    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
   })
 
   test('manually loaded messages can be used in translations', async () => {

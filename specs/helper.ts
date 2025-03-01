@@ -220,3 +220,14 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>)
   await startServer(converted)
   return async () => startServer()
 }
+
+export async function localeLoaderHelpers() {
+  const ctx = useTestContext()
+  const opts = await import(ctx.nuxt?.options.buildDir + '/i18n.options.mjs')
+
+  function findKey(code: string, ext: string, cache: boolean = false): string {
+    return opts.localeLoaders[code].find(x => x.cache === cache && x.key.includes(ext + '_'))!.key
+  }
+
+  return { findKey }
+}

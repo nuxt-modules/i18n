@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url'
 import { parseQuery, parseURL } from 'ufo'
+import { NUXT_I18N_VIRTUAL_PREFIX } from '../constants'
 
 import type { UnpluginContextMeta } from 'unplugin'
 
@@ -17,6 +18,10 @@ export function getVirtualId(id: string, framework: UnpluginContextMeta['framewo
 
 export function asVirtualId(id: string, framework: UnpluginContextMeta['framework'] = 'vite') {
   return framework === 'vite' ? VIRTUAL_PREFIX + id : id
+}
+
+export function asI18nVirtual(val: string) {
+  return NUXT_I18N_VIRTUAL_PREFIX + '-' + val
 }
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/core/utils/plugins.ts#L4-L35

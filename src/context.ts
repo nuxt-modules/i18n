@@ -17,7 +17,7 @@ export interface I18nNuxtContext {
   isSSG: boolean
   isBuild: boolean
   isTest: boolean
-  genTemplate: (isServer: boolean, lazy?: boolean) => string
+  pages: boolean
   normalizedLocales: LocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
@@ -42,7 +42,11 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     isSSG: nuxt.options._generate,
     isBuild: nuxt.options._build,
     isTest: nuxt.options.test,
-    genTemplate: undefined!,
+    // pages is initially undefined - has correct value when writing i18n.options template
+    get pages() {
+      // @ts-expect-error
+      return nuxt.options.pages === true || (nuxt.options.pages && nuxt.options.pages?.enabled === true)
+    },
     normalizedLocales: undefined!,
     localeCodes: undefined!,
     localeInfo: undefined!,
