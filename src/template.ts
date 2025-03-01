@@ -1,4 +1,5 @@
 import { generateLoaderOptions } from './gen'
+import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import {
   DEFAULT_DYNAMIC_PARAMS_KEY,
   DEFAULT_COOKIE_KEY,
@@ -6,8 +7,6 @@ import {
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER
 } from './constants'
 import type { I18nNuxtContext } from './context'
-import type { Nuxt } from '@nuxt/schema'
-import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 
 export type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
@@ -114,11 +113,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
   return statements.join('\n\n')
 }
 
-export function generateTemplateNuxtI18nOptions(
-  ctx: I18nNuxtContext,
-  _nuxt: Nuxt,
-  opts: TemplateNuxtI18nOptions
-): string {
+export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: TemplateNuxtI18nOptions): string {
   const codeHMR = [
     `if(import.meta.hot) {`,
     deepEqualFn,

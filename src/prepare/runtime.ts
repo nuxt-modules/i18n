@@ -46,7 +46,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   addTemplate({
     filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
     write: true,
-    getContents: () => generateTemplateNuxtI18nOptions(ctx, nuxt, generateLoaderOptions(ctx, nuxt))
+    getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt))
   })
 
   nuxt.options.imports.transform ??= {}
