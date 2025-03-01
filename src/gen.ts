@@ -121,7 +121,7 @@ export function generateLoaderOptions(
     })
   }
   // @ts-expect-error is required
-  delete ctx.options.vueI18n
+  delete nuxtI18nOptions.vueI18n
 
   /**
    * Process locale file paths in `normalizedLocales`

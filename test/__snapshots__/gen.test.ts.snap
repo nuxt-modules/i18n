@@ -68,7 +68,6 @@ exports[`basic 1`] = `
     "i18nModules": [],
     "lazy": false,
     "locales": [],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -201,7 +200,6 @@ exports[`files with cache configuration (relative) 1`] = `
     "i18nModules": [],
     "lazy": true,
     "locales": [],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -331,7 +329,6 @@ exports[`files with cache configuration 1`] = `
     "i18nModules": [],
     "lazy": true,
     "locales": [],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -411,7 +408,6 @@ exports[`lazy 1`] = `
     "i18nModules": [],
     "lazy": true,
     "locales": [],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -491,7 +487,6 @@ exports[`locale file in nested 1`] = `
     "i18nModules": [],
     "lazy": true,
     "locales": [],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -621,7 +616,6 @@ exports[`multiple files 1`] = `
     "i18nModules": [],
     "lazy": true,
     "locales": [],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -664,7 +658,6 @@ exports[`toCode: function (arrow) 1`] = `
         "testFunc": [Function],
       },
     ],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -707,7 +700,6 @@ exports[`toCode: function (named) 1`] = `
         "testFunc": [Function],
       },
     ],
-    "vueI18n": "",
   },
   "vueI18nConfigs": [
     {
@@ -786,7 +778,6 @@ exports[`vueI18n option 1`] = `
     "i18nModules": [],
     "lazy": false,
     "locales": [],
-    "vueI18n": "vue-i18n.config.ts",
   },
   "vueI18nConfigs": [
     {
