@@ -116,29 +116,21 @@ describe('basic lazy loading', async () => {
   })
 
   test('files with cache disabled bypass caching', async () => {
-    const { page, consoleLogs } = await renderPage('/')
+    const { page, consoleLogs: logs } = await renderPage('/')
 
     const { findKey } = await localeLoaderHelpers()
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect(
-      [...consoleLogs].filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))
-    ).toHaveLength(1)
+    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect(
-      [...consoleLogs].filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))
-    ).toHaveLength(1)
+    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    expect(
-      [...consoleLogs].filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))
-    ).toHaveLength(2)
+    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    expect(
-      [...consoleLogs].filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))
-    ).toHaveLength(2)
+    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
   })
 
   test('manually loaded messages can be used in translations', async () => {
