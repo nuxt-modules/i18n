@@ -1,7 +1,7 @@
 import { unref } from 'vue'
 import { isSSG } from '#build/i18n.options.mjs'
 import { defineNuxtPlugin } from '#imports'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '#nuxt-i18n/logger'
 import { detectBrowserLanguage } from '../internal'
 import type { NuxtApp } from '#app'
 

@@ -1,7 +1,7 @@
 import { unref } from 'vue'
 import { hasPages } from '#build/i18n.options.mjs'
 import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware } from '#imports'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '#nuxt-i18n/logger'
 import { makeFallbackLocaleCodes } from '../messages'
 import { createLocaleFromRouteGetter } from '../routing/utils'
 import { detectLocale, detectRedirect, loadAndSetLocale, navigate } from '../utils'
