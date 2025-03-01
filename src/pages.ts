@@ -126,7 +126,7 @@ async function setupExperimentalTypedRoutes(userOptions: NuxtI18nOptions, nuxt: 
     const typedRouteroptions: TypedRouterOptions = {
       routesFolder: [],
       dts: dtsFile,
-      logs: nuxt.options.debug,
+      logs: !!nuxt.options.debug,
       watch: false,
       // eslint-disable-next-line @typescript-eslint/require-await
       async beforeWriteFiles(rootPage) {
