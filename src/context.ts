@@ -42,7 +42,8 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     isSSG: nuxt.options._generate,
     isBuild: nuxt.options._build,
     isTest: nuxt.options.test,
-    pages: nuxt.options.pages,
+    // @ts-expect-error
+    pages: nuxt.options.pages === true || (nuxt.options.pages && nuxt.options.pages?.enabled === true),
     normalizedLocales: undefined!,
     localeCodes: undefined!,
     localeInfo: undefined!,

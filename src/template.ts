@@ -116,7 +116,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
 
 export function generateTemplateNuxtI18nOptions(
   ctx: I18nNuxtContext,
-  nuxt: Nuxt,
+  _nuxt: Nuxt,
   opts: TemplateNuxtI18nOptions
 ): string {
   const codeHMR = [
@@ -153,7 +153,7 @@ export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x 
 export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
 export const parallelPlugin = ${ctx.options.parallelPlugin}
 export const isSSG = ${ctx.isSSG}
-export const hasPages = ${nuxt.options.pages}
+export const hasPages = ${ctx.pages}
 
 export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
