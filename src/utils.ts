@@ -2,16 +2,15 @@ import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANT
 import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, join } from 'pathe'
-import { parse as _parseCode } from '@babel/parser'
+import { parseSync } from 'oxc-parser'
 import { defu } from 'defu'
 import { genSafeVariableName } from 'knitwork'
-import { transform as stripType } from 'sucrase'
 import { isString, isArray } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID, TS_EXTENSIONS, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
+import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
 
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { File, Identifier } from '@babel/types'
+import type { IdentifierName, Program } from 'oxc-parser'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -107,8 +106,7 @@ export async function resolveLocales(srcDir: string, locales: LocaleObject[], bu
 function getLocaleType(path: string): LocaleType {
   const ext = parsePath(path).ext
   if (EXECUTABLE_EXTENSIONS.includes(ext)) {
-    const code = readCode(path, ext)
-    const parsed = parseCode(code, path)
+    const parsed = parseSync(path, readFileSync(path))
     const analyzed = scanProgram(parsed.program)
     if (analyzed === 'object') {
       return 'static'
@@ -122,25 +120,9 @@ function getLocaleType(path: string): LocaleType {
   }
 }
 
-const PARSE_CODE_CACHES = new Map<string, ReturnType<typeof _parseCode>>()
-
-function parseCode(code: string, path: string) {
-  if (PARSE_CODE_CACHES.has(path)) {
-    return PARSE_CODE_CACHES.get(path)!
-  }
-
-  const parsed = _parseCode(code, {
-    allowImportExportEverywhere: true,
-    sourceType: 'module'
-  })
-
-  PARSE_CODE_CACHES.set(path, parsed)
-  return parsed
-}
-
-function scanProgram(program: File['program'] /*, calleeName: string*/) {
+function scanProgram(program: Program) {
   let ret: false | 'object' | 'function' | 'arrow-function' = false
-  let variableDeclaration: Identifier | undefined
+  let variableDeclaration: IdentifierName | undefined
 
   for (const node of program.body) {
     if (node.type !== 'ExportDefaultDeclaration') continue
@@ -199,18 +181,6 @@ function scanProgram(program: File['program'] /*, calleeName: string*/) {
   }
 
   return ret
-}
-
-export function readCode(absolutePath: string, ext: string) {
-  let code = readFileSync(absolutePath)
-  if (TS_EXTENSIONS.includes(ext)) {
-    const out = stripType(code, {
-      transforms: ['typescript', 'jsx'],
-      keepUnusedImports: true
-    })
-    code = out.code
-  }
-  return code
 }
 
 export function getLayerRootDirs(nuxt: Nuxt) {
