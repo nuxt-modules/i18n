@@ -55,7 +55,10 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
         isServer,
         normalizedLocales
       }),
-      hasPages: nuxt.options.pages,
+      hasPages:
+        nuxt.options.pages === true ||
+        // @ts-expect-error
+        (nuxt.options.pages && nuxt.options.pages?.enabled === true),
       localeCodes,
       dev,
       isSSG,
