@@ -20,6 +20,7 @@
   ],
   "license": "MIT",
   "homepage": "https://i18n.nuxtjs.org",
+  "funding": "https://github.com/sponsors/bobbiegoede",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nuxt-modules/i18n.git"
