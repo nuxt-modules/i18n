@@ -1,6 +1,5 @@
 // @ts-ignore
 import { JSDOM } from 'jsdom'
-import { parse as babelParse } from '@babel/parser'
 import { expect } from 'vitest'
 import { getBrowser, startServer, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
@@ -69,20 +68,6 @@ export async function assertLocaleHeadWithDom(dom: Document, headSelector: strin
       }
     }
   }
-}
-
-export function validateSyntax(code: string): boolean {
-  let ret = false
-  try {
-    const node = babelParse(code, {
-      allowImportExportEverywhere: true,
-      sourceType: 'module'
-    })
-    ret = !node.errors.length
-  } catch (e) {
-    console.error(e)
-  }
-  return ret
 }
 
 export async function waitForMs(ms = 1000) {

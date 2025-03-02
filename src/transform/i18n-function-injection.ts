@@ -8,13 +8,11 @@
 import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { walk } from 'estree-walker'
-import { transform } from 'sucrase'
+import { parseSync } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 import { isVue } from './utils'
-
-import type { Node } from 'estree-walker'
-import type { CallExpression, Pattern } from 'estree'
+import type { CallExpression, Pattern, Program } from 'estree'
 import type { BundlerPluginOptions } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:function:injection')
@@ -56,13 +54,12 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
         }
 
         // strip types and typescript specific features for ast parsing
-        const scriptTransformed = transform(script, { transforms: ['typescript', 'jsx'] }).code
-        const ast = this.parse(scriptTransformed, { sourceType: 'module', ecmaVersion: 'latest' }) as Node
+        const ast = parseSync(id, script, { lang: 'tsx' })
 
         // collect variable and function declarations with scope info.
         let scopeTracker = new ScopeTracker()
         const varCollector = new ScopedVarsCollector()
-        walk(ast, {
+        walk(ast.program as unknown as Program, {
           enter(_node) {
             if (_node.type === 'BlockStatement') {
               scopeTracker.enterScope()
@@ -83,7 +80,7 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
 
         const missingFunctionDeclarators = new Set<string>()
         scopeTracker = new ScopeTracker()
-        walk(ast, {
+        walk(ast.program as unknown as Program, {
           enter(_node) {
             if (_node.type === 'BlockStatement') {
               scopeTracker.enterScope()
