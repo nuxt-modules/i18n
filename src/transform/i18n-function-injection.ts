@@ -8,10 +8,10 @@
 import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { walk } from 'estree-walker'
-import { parseSync } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 import { isVue } from './utils'
+import { parseSync } from '../utils/parse'
 import type { CallExpression, Pattern, Program } from 'estree'
 import type { BundlerPluginOptions } from './utils'
 
