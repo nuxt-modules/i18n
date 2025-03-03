@@ -1,9 +1,10 @@
 import { generateLoaderOptions } from '../src/gen'
 import { getNormalizedLocales, resolveLocales, resolveRelativeLocales, resolveVueI18nConfigInfo } from '../src/utils'
-import { vi, beforeEach, afterEach, test, expect } from 'vitest'
+import { vi, beforeEach, afterEach, test, expect, beforeAll } from 'vitest'
 
 import type { LocaleInfo, LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from '../src/types'
 import type { Nuxt } from '@nuxt/schema'
+import { initParser } from '../src/utils/parse'
 
 vi.mock('node:fs')
 
@@ -27,6 +28,10 @@ vi.mock('@nuxt/kit', async () => {
       }
     }))
   }
+})
+
+beforeAll(async () => {
+  await initParser()
 })
 
 beforeEach(async () => {
