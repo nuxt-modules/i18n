@@ -2,11 +2,11 @@ import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANT
 import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, join } from 'pathe'
-import { parseSync } from 'oxc-parser'
 import { defu } from 'defu'
 import { genSafeVariableName } from 'knitwork'
 import { isString, isArray } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
+import { parseSync } from './utils/parse'
 
 import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
