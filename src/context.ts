@@ -17,7 +17,8 @@ export interface I18nNuxtContext {
   isSSG: boolean
   isBuild: boolean
   isTest: boolean
-  pages: boolean
+  // serialized boolean value
+  hasPages: string
   normalizedLocales: LocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
@@ -43,9 +44,9 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     isBuild: nuxt.options._build,
     isTest: nuxt.options.test,
     // pages is initially undefined - has correct value when writing i18n.options template
-    get pages() {
-      // @ts-expect-error
-      return nuxt.options.pages === true || (nuxt.options.pages && nuxt.options.pages?.enabled === true)
+    get hasPages() {
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
+      return nuxt.options.pages.toString()
     },
     normalizedLocales: undefined!,
     localeCodes: undefined!,
