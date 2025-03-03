@@ -3,11 +3,12 @@ import createDebug from 'debug'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
+import { existsSync } from 'node:fs'
 import { addServerImports, addServerPlugin, addServerTemplate, resolvePath, useLogger } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getFeatureFlags } from './bundler'
-import { getLayerI18n, isExists, toArray } from './utils'
+import { getLayerI18n, toArray } from './utils'
 import {
   H3_PKG,
   UTILS_H3_PKG,
@@ -131,7 +132,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
   const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, true)
   const pathTo = resolve(i18nDir, serverI18nLayerConfig!.experimental!.localeDetector!)
   const localeDetectorPath = await resolvePath(pathTo, { cwd: nuxt.options.rootDir, extensions: EXECUTABLE_EXTENSIONS })
-  const hasLocaleDetector = await isExists(localeDetectorPath)
+  const hasLocaleDetector = existsSync(localeDetectorPath)
   if (!hasLocaleDetector) {
     const logger = useLogger(NUXT_I18N_MODULE_ID)
     logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
