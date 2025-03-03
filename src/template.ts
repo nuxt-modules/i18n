@@ -148,7 +148,7 @@ export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x 
 export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
 export const parallelPlugin = ${ctx.options.parallelPlugin}
 export const isSSG = ${ctx.isSSG}
-export const hasPages = ${ctx.pages}
+export const hasPages = ${ctx.hasPages}
 
 export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
