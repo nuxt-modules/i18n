@@ -1,11 +1,12 @@
 import createDebug from 'debug'
 import { addTemplate } from '@nuxt/kit'
+import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import MagicString from 'magic-string'
-import { formatMessage, readFileSync } from './utils'
+import { formatMessage } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
 import { mergeLayerPages } from './layers'
@@ -382,7 +383,7 @@ function readComponent(target: string) {
   let options: ComputedRouteOptions | false | undefined = undefined
 
   try {
-    const content = readFileSync(target)
+    const content = readFileSync(target, 'utf-8')
     const { descriptor } = parseSFC(content)
 
     if (!content.includes(NUXT_I18N_COMPOSABLE_DEFINE_ROUTE)) {

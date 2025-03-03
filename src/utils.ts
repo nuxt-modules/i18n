@@ -1,4 +1,4 @@
-import { promises as fs, readFileSync as _readFileSync, constants as FS_CONSTANTS } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, join } from 'pathe'
@@ -106,7 +106,7 @@ export async function resolveLocales(srcDir: string, locales: LocaleObject[], bu
 function getLocaleType(path: string): LocaleType {
   const ext = parsePath(path).ext
   if (EXECUTABLE_EXTENSIONS.includes(ext)) {
-    const parsed = parseSync(path, readFileSync(path))
+    const parsed = parseSync(path, readFileSync(path, 'utf-8'))
     const analyzed = scanProgram(parsed.program)
     if (analyzed === 'object') {
       return 'static'
@@ -188,27 +188,6 @@ export function getLayerRootDirs(nuxt: Nuxt) {
   return layers.length > 1 ? layers.map(layer => layer.config.rootDir) : []
 }
 
-export async function writeFile(path: string, data: string) {
-  await fs.writeFile(path, data, { encoding: 'utf-8' })
-}
-
-export async function readFile(path: string) {
-  return await fs.readFile(path, { encoding: 'utf-8' })
-}
-
-export function readFileSync(path: string) {
-  return _readFileSync(path, { encoding: 'utf-8' })
-}
-
-export async function isExists(path: string) {
-  try {
-    await fs.access(path, FS_CONSTANTS.F_OK)
-    return true
-  } catch (_e) {
-    return false
-  }
-}
-
 export async function resolveVueI18nConfigInfo(
   rootDir: string,
   configPath: string = 'i18n.config',
@@ -231,7 +210,7 @@ export async function resolveVueI18nConfigInfo(
   }
 
   const absolutePath = await resolvePath(configPathInfo.relative, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
-  if (!(await isExists(absolutePath))) return undefined
+  if (!existsSync(absolutePath)) return undefined
 
   const loadPath = join(configPathInfo.relativeBase, relative(rootDir, absolutePath))
 
