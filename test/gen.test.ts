@@ -36,6 +36,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   vi.spyOn(await import('node:fs'), 'readFileSync').mockReturnValue('export default {}')
+  vi.spyOn(await import('node:fs'), 'existsSync').mockReturnValue(true)
 })
 
 afterEach(() => {
