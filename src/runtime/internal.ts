@@ -14,7 +14,7 @@ import {
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex, getRouteName } from './routing/utils'
 import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#internal-i18n-types'

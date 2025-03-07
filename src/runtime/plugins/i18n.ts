@@ -25,7 +25,7 @@ import {
 } from '../internal'
 import { createLocaleFromRouteGetter, resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/i18n'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
 import { resolveRoute } from '../routing/routing'
 import { localeHead } from '../routing/head'

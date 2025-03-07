@@ -1,8 +1,10 @@
 // @ts-ignore
+import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
 import { expect } from 'vitest'
 import { getBrowser, startServer, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
+import { resolveAlias } from '@nuxt/kit'
 
 import { errors, type BrowserContextOptions, type Page } from 'playwright-core'
 
@@ -208,9 +210,11 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>)
 
 export async function localeLoaderHelpers() {
   const ctx = useTestContext()
-  const opts = await import(ctx.nuxt?.options.buildDir + '/i18n.options.mjs')
+  const jiti = createJITI(ctx.nuxt!.options.rootDir, { alias: ctx.nuxt!.options.alias })
+  const opts = await jiti.import(resolveAlias('#build/i18n.options.mjs'), {})
 
   function findKey(code: string, ext: string, cache: boolean = false): string {
+    // @ts-expect-error generated
     return opts.localeLoaders[code].find(x => x.cache === cache && x.key.includes(ext + '_'))!.key
   }
 

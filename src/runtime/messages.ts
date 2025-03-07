@@ -1,5 +1,5 @@
 import { deepCopy, isFunction } from '@intlify/shared'
-import { createLogger } from 'virtual:nuxt-i18n-logger'
+import { createLogger } from '#nuxt-i18n/logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
