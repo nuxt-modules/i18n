@@ -1,3 +1,5 @@
+// Adapted from https://github.com/nuxt/nuxt/blob/6d85c15fb1783b003bb5d7cdefdd22b54f871f9d/packages/nuxt/src/core/utils/parse.ts
+
 export let parseSync: typeof import('oxc-parser').parseSync
 
 export async function initParser() {
@@ -9,6 +11,10 @@ export async function initParser() {
     const { parseSync: parse } = await import('@oxc-parser/wasm')
     parseSync = (filename, sourceText, options) =>
       // @ts-expect-error sourceType property conflict
-      parse(sourceText, { ...(options || {}), sourceFilename: filename + '.ts' })
+      parse(sourceText, {
+        ...(options || {}),
+        sourceFilename: filename.replace(/\?.*$/, '') + `.${options?.lang || 'ts'}`,
+        sourceType: 'module'
+      })
   }
 }
