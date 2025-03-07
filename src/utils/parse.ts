@@ -1,5 +1,4 @@
 export let parseSync: typeof import('oxc-parser').parseSync
-type ParseSyncParams = Parameters<typeof parseSync>
 
 export async function initParser() {
   try {
@@ -7,10 +6,9 @@ export async function initParser() {
   } catch (_) {
     console.warn('[nuxt-i18n]: Unable to import `oxc-parser`, falling back to `@oxc-parser/wasm`.')
 
-    const { parseSync: parser } = await import('@oxc-parser/wasm')
-    // @ts-expect-error sourceType property conflict
-    parseSync = (filename, sourceText, options?: ParseSyncParams[2]) =>
+    const { parseSync: parse } = await import('@oxc-parser/wasm')
+    parseSync = (filename, sourceText, options) =>
       // @ts-expect-error sourceType property conflict
-      parser(sourceText, { ...(options || {}), sourceFilename: filename })
+      parse(sourceText, { ...(options || {}), sourceFilename: filename + '.ts' })
   }
 }
