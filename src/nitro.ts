@@ -83,6 +83,7 @@ export { localeDetector }`
 
     // setup debug flag
     nitroConfig.replace['__DEBUG__'] = String(!!ctx.options.debug)
+    nitroConfig.replace['__TEST__'] = String(!!ctx.options.debug || nuxt.options._i18nTest)
     debug('nitro.replace', nitroConfig.replace)
   })
 

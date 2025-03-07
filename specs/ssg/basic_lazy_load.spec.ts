@@ -9,9 +9,7 @@ describe('basic lazy loading', async () => {
     browser: true,
     prerender: true,
     nuxtConfig: {
-      i18n: {
-        debug: true
-      }
+      _i18nTest: true
     }
   })
 

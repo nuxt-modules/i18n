@@ -7,7 +7,6 @@ export default defineNuxtConfig({
     [
       '@nuxtjs/i18n',
       {
-        debug: false,
         lazy: false,
         langDir: 'lang',
         defaultLocale: 'en',
@@ -26,7 +25,6 @@ export default defineNuxtConfig({
       }
     ]
   ],
-  debug: false,
   i18n: {
     restructureDir: false,
     locales: [

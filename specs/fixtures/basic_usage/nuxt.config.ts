@@ -25,6 +25,5 @@ export default defineNuxtConfig({
       alternateLinkCanonicalQueries: false,
       autoImportTranslationFunctions: true
     }
-    // debug: true,
   }
 })
