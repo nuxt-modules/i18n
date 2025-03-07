@@ -8,9 +8,7 @@ describe('basic lazy loading (restructure)', async () => {
     rootDir: fileURLToPath(new URL(`../fixtures/restructure`, import.meta.url)),
     browser: true,
     nuxtConfig: {
-      i18n: {
-        debug: true
-      }
+      _i18nTest: true
     }
   })
 

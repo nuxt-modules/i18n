@@ -35,7 +35,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     write: true,
     filename: 'nuxt-i18n-logger.mjs',
     getContents() {
-      if (!ctx.options.debug) {
+      if (!ctx.options.debug && !nuxt.options._i18nTest) {
         return `export function createLogger() {}`
       }
 
@@ -101,7 +101,8 @@ export function createLogger(label) {
     addWebpackPlugin(
       new webpack.DefinePlugin({
         ...getFeatureFlags(nuxtOptions.bundle),
-        __DEBUG__: String(!!nuxtOptions.debug)
+        __DEBUG__: String(!!nuxtOptions.debug),
+        __TEST__: String(!!nuxtOptions.debug || nuxt.options._i18nTest)
       })
     )
   } catch (e: unknown) {
@@ -117,7 +118,8 @@ export function createLogger(label) {
     addRspackPlugin(
       new rspack.DefinePlugin({
         ...getFeatureFlags(nuxtOptions.bundle),
-        __DEBUG__: String(!!nuxtOptions.debug)
+        __DEBUG__: String(!!nuxtOptions.debug),
+        __TEST__: String(!!nuxtOptions.debug || nuxt.options._i18nTest)
       })
     )
   } catch (e: unknown) {
@@ -130,6 +132,7 @@ export function createLogger(label) {
   extendViteConfig(config => {
     config.define ??= {}
     config.define['__DEBUG__'] = JSON.stringify(!!nuxtOptions.debug)
+    config.define['__TEST__'] = String(!!nuxtOptions.debug || nuxt.options._i18nTest)
 
     debug('vite.config.define', config.define)
   })

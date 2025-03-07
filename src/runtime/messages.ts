@@ -129,7 +129,7 @@ export async function loadLocale(
       __DEBUG__ && logger.log(loader.key + ' is already loaded')
       message = cacheMessages.get(loader.key)
     } else {
-      __DEBUG__ && !loader.cache && logger.log(loader.key + ' bypassing cache!')
+      __TEST__ && !loader.cache && logger.log(loader.key + ' bypassing cache!')
       __DEBUG__ && logger.log(loader.key + ' is loading ...')
       message = await nuxt.runWithContext(() => loadMessage(locale, loader, nuxt))
     }

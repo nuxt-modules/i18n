@@ -5,3 +5,4 @@ declare namespace NodeJS {
 }
 
 declare let __DEBUG__: boolean
+declare let __TEST__: boolean

@@ -16,7 +16,6 @@ await setup({
       }
     },
     i18n: {
-      //   debug: true,
       defaultLocale: 'en',
       baseUrl: ''
     }

@@ -42,6 +42,5 @@ export default defineNuxtConfig({
         name: 'Japanese'
       }
     ]
-    // debug: true,
   }
 })
