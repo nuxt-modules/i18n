@@ -1,5 +1,5 @@
 {
-  "name": "@nuxtjs/i18n-playground",
+  "name": "nuxt-i18n-playground",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "nuxt3-test-empty-options",
+  "name": "fixture-empty-options",
   "private": true,
   "type": "module",
   "scripts": {

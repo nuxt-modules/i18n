@@ -1,5 +1,5 @@
 {
-  "name": "nuxt3-test-issues-2473",
+  "name": "fixture-2473",
   "private": true,
   "scripts": {
     "build": "nuxt build",

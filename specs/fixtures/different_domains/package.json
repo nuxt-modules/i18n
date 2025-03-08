@@ -1,5 +1,5 @@
 {
-  "name": "nuxt3-test-domain",
+  "name": "fixture-different-domains",
   "private": true,
   "type": "module",
   "scripts": {

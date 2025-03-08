@@ -1,5 +1,5 @@
 {
-  "name": "@nuxtjs/i18n-docs",
+  "name": "nuxt-i18n-docs",
   "private": true,
   "type": "module",
   "scripts": {
