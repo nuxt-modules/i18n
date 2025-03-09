@@ -167,12 +167,11 @@ export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions) {
 
   const resolveArr = nuxt.options._layers.map(async layer => {
     const i18n = getLayerI18n(layer)
-    const res = await resolveVueI18nConfigInfo(resolveI18nDir(layer, i18n || {}, true), i18n?.vueI18n)
+    const i18nDirPath = resolveI18nDir(layer, i18n || {}, true)
+    const res = await resolveVueI18nConfigInfo(i18nDirPath, i18n?.vueI18n)
 
     if (res == null && i18n?.vueI18n != null) {
-      logger.warn(
-        `Ignore Vue I18n configuration file does not exist at ${i18n.vueI18n} in ${layer.config.rootDir}. Skipping...`
-      )
+      logger.warn(`Vue I18n configuration file \`${i18n.vueI18n}\` not found in \`${i18nDirPath}\`. Skipping...`)
       return undefined
     }
 
