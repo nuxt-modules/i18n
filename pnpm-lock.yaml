@@ -69,8 +69,8 @@ importers:
         specifier: ^0.53.0
         version: 0.53.0
       pathe:
-        specifier: ^1.1.1
-        version: 1.1.2
+        specifier: ^2.0.3
+        version: 2.0.3
       ufo:
         specifier: ^1.3.1
         version: 1.5.4
@@ -6287,12 +6287,6 @@ packages:
   pathe@1.1.2:
     resolution: {integrity: sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==}
 
-  pathe@2.0.1:
-    resolution: {integrity: sha512-6jpjMpOth5S9ITVu5clZ7NOgHNsv5vRQdheL9ztp2vZmM6fRbLvyua1tiBIL4lk8SAe3ARzeXEly6siXCjDHDw==}
-
-  pathe@2.0.2:
-    resolution: {integrity: sha512-15Ztpk+nov8DR524R4BF7uEuzESgzUEAV4Ah7CUMNGXdE5ELuvxElxGXndBl32vMSsWa1jpNf22Z+Er3sKwq+w==}
-
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
 
@@ -10127,7 +10121,7 @@ snapshots:
       h3: 1.13.1
       image-meta: 0.2.1
       ohash: 1.1.4
-      pathe: 2.0.1
+      pathe: 2.0.3
       std-env: 3.8.0
       ufo: 1.5.4
     optionalDependencies:
@@ -16165,7 +16159,7 @@ snapshots:
       nypm: 0.5.2
       ofetch: 1.4.1
       ohash: 1.1.4
-      pathe: 2.0.2
+      pathe: 2.0.3
       perfect-debounce: 1.0.0
       pkg-types: 1.3.1
       radix3: 1.1.2
@@ -16902,10 +16896,6 @@ snapshots:
   path-type@6.0.0: {}
 
   pathe@1.1.2: {}
-
-  pathe@2.0.1: {}
-
-  pathe@2.0.2: {}
 
   pathe@2.0.3: {}
 
@@ -19298,7 +19288,7 @@ snapshots:
       debug: 4.4.0(supports-color@9.4.0)
       expect-type: 1.1.0
       magic-string: 0.30.17
-      pathe: 2.0.1
+      pathe: 2.0.3
       std-env: 3.8.0
       tinybench: 2.9.0
       tinyexec: 0.3.2
