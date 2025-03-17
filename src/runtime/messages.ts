@@ -2,7 +2,7 @@ import { deepCopy, isFunction } from '@intlify/shared'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
-import type { NuxtApp } from '#app'
+import { type NuxtApp, reloadNuxtApp } from '#app'
 import type { DeepRequired } from 'ts-essentials'
 import type { VueI18nConfig, NuxtI18nOptions } from '#internal-i18n-types'
 import type { CoreContext } from '@intlify/h3'
@@ -17,18 +17,22 @@ export type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
 }
 
 const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
-
 export async function loadVueI18nOptions(
   vueI18nConfigs: VueI18nConfig[],
   nuxt: Pick<NuxtApp, 'runWithContext'>
 ): Promise<I18nOptions> {
   const vueI18nOptions: I18nOptions = { messages: {} }
-  for (const configFile of vueI18nConfigs) {
-    const { default: resolver } = await configFile()
+  try {
+    for (const configFile of vueI18nConfigs) {
+      const { default: resolver } = await configFile()
 
-    const resolved = isFunction(resolver) ? await nuxt.runWithContext(() => resolver()) : resolver
+      const resolved = isFunction(resolver) ? await nuxt.runWithContext(() => resolver()) : resolver
 
-    deepCopy(resolved, vueI18nOptions)
+      deepCopy(resolved, vueI18nOptions)
+    }
+  } catch {
+    // something went wrong, reload the app (`reloadNuxtApp` has built-in reload-loop protection)
+    reloadNuxtApp()
   }
 
   return vueI18nOptions
