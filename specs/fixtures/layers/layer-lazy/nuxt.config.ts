@@ -23,6 +23,12 @@ export default defineNuxtConfig({
         name: 'Nederlands'
       },
       {
+        code: 'be',
+        language: 'nl-BE',
+        file: 'nl.json',
+        name: 'Nederlands (België)'
+      },
+      {
         code: 'kr',
         language: 'kr-KO',
         file: 'kr.json',
