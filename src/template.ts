@@ -123,17 +123,20 @@ export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: Temp
     '}'
   ].join('\n\n')
 
-  const importStrings: string[] = []
+  const importStrings = new Set<string>()
   const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
     const val = opts.localeLoaders[locale]
-    importStrings.push(...val.flatMap(x => x.importString))
+    const importers = val.flatMap(x => x.importString)
+    for (const importer of importers) {
+      importStrings.add(importer)
+    }
     localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
   return `
 // @ts-nocheck
-${(!ctx.options.lazy && importStrings.join('\n')) || ''}
+${(!ctx.options.lazy && [...importStrings].join('\n')) || ''}
 
 export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 
