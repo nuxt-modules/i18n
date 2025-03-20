@@ -83,7 +83,7 @@
       "@nuxtjs/i18n": "link:.",
       "consola": "^3",
       "unimport": "4.1.2",
-      "@intlify/core": "^10.0.5",
+      "@intlify/core": "^10.0.6",
       "rollup": "4.36.0",
       "tailwindcss": "4.0.7",
       "@tailwindcss/vite": "4.0.7"
@@ -98,7 +98,7 @@
   },
   "dependencies": {
     "@intlify/h3": "^0.6.1",
-    "@intlify/shared": "^10.0.5",
+    "@intlify/shared": "^10.0.6",
     "@intlify/unplugin-vue-i18n": "^6.0.5",
     "@intlify/utils": "^0.13.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
@@ -118,7 +118,7 @@
     "ufo": "^1.5.4",
     "unplugin": "^2.2.1",
     "unplugin-vue-router": "^0.12.0",
-    "vue-i18n": "^10.0.5",
+    "vue-i18n": "^10.0.6",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
