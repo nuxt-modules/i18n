@@ -52,7 +52,9 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 
   const i18nParams = computed({
     get() {
-      return experimentalSSR ? common.metaState.value : router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] ?? {}
+      return experimentalSSR
+        ? common.metaState.value
+        : (router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] ?? {})
     },
     set(val) {
       common.metaState.value = val
