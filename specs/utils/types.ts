@@ -26,7 +26,7 @@ export interface TestOptions {
     launch?: LaunchOptions
   }
   server: boolean
-  port?: number
+  port?: number | number[]
 }
 
 export interface TestContext {

@@ -49,7 +49,7 @@ export async function waitForHydration(page: Page, url: string, waitUntil?: Goto
   }
 }
 
-export async function createPage(path?: string, options?: BrowserContextOptions) {
+export async function createPage(path?: string, options?: BrowserContextOptions, port?: number) {
   const browser = await getBrowser()
   const page = await browser.newPage(options)
 
@@ -59,13 +59,14 @@ export async function createPage(path?: string, options?: BrowserContextOptions)
     if (waitUntil && ['hydration', 'route'].includes(waitUntil)) {
       delete options.waitUntil
     }
+
     const res = await _goto(url, options as Parameters<Page['goto']>[1])
     await waitForHydration(page, url, waitUntil)
     return res
   }
 
   if (path) {
-    await page.goto(url(path), { waitUntil: 'hydration' })
+    await page.goto(url(path, port), { waitUntil: 'hydration' })
   }
 
   return page
