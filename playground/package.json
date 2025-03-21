@@ -10,7 +10,6 @@
   },
   "devDependencies": {
     "@nuxtjs/i18n": "latest",
-    "@nuxt/devtools": "latest",
     "nuxt": "latest"
   }
 }
