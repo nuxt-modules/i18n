@@ -8,9 +8,21 @@ import {
   NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
   NUXT_I18N_VIRTUAL_PREFIX
 } from '../constants'
+import { resolve, dirname } from 'pathe'
+import { parseSync } from '../utils/parse'
+import { resolvePath, tryUseNuxt } from '@nuxt/kit'
+import { transform as esbuildTransform } from 'esbuild'
+import type { SameShape, TransformOptions, TransformResult } from 'esbuild'
 
 import type { BundlerPluginOptions } from './utils'
 import type { I18nNuxtContext } from '../context'
+
+async function transform<T extends TransformOptions>(
+  input: string | Uint8Array,
+  options?: SameShape<TransformOptions, T>
+): Promise<TransformResult<T>> {
+  return await esbuildTransform(input, { ...tryUseNuxt()?.options.esbuild.options, ...options })
+}
 
 const debug = createDebug('@nuxtjs/i18n:transform:resource')
 
@@ -61,8 +73,20 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
       /**
        * Match and replace `defineI18nX(<content>)` with its `<content>`
        */
-      transform(code, id) {
+      async transform(_code, id) {
         debug('transform', id)
+        let code = _code
+
+        const parsed = parseSync(id, _code)
+        // ensure imported resources are transformed as well
+        for (const x of parsed.module.staticImports) {
+          i18nPathSet.add(await resolvePath(resolve(dirname(id), x.moduleRequest.value)))
+        }
+
+        // transform typescript
+        if (/(c|m)?ts$/.test(id)) {
+          code = (await transform(_code, { loader: 'ts' })).code
+        }
 
         const s = new MagicString(code)
         const matches = code.matchAll(DEFINE_I18N_FN_RE)
