@@ -9,7 +9,7 @@ import {
   NUXT_I18N_VIRTUAL_PREFIX
 } from '../constants'
 import { resolve, dirname } from 'pathe'
-import { parseSync } from '../utils/parse'
+import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
 import { transform as esbuildTransform } from 'esbuild'
 import type { SameShape, TransformOptions, TransformResult } from 'esbuild'
@@ -77,10 +77,10 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
         debug('transform', id)
         let code = _code
 
-        const parsed = parseSync(id, _code)
         // ensure imported resources are transformed as well
-        for (const x of parsed.module.staticImports) {
-          i18nPathSet.add(await resolvePath(resolve(dirname(id), x.moduleRequest.value)))
+        const staticImports = findStaticImports(_code)
+        for (const x of staticImports) {
+          i18nPathSet.add(await resolvePath(resolve(dirname(id), x.specifier)))
         }
 
         // transform typescript

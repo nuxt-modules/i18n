@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import createDebug from 'debug'
-import { resolve } from 'pathe'
 import { extendViteConfig, addWebpackPlugin, addBuildPlugin, addTemplate, addRspackPlugin } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
 import { toArray } from './utils'
@@ -8,7 +7,6 @@ import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { asI18nVirtual } from './transform/utils'
-import { getLayerLangPaths } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
@@ -19,13 +17,8 @@ const debug = createDebug('@nuxtjs/i18n:bundler')
 
 export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { options: nuxtOptions } = ctx
-  const langPaths = getLayerLangPaths(nuxt)
-  debug('langPaths -', langPaths)
-  const i18nModulePaths =
-    nuxtOptions?.i18nModules?.map(module => resolve(nuxt.options._layers[0].config.rootDir, module.langDir ?? '')) ?? []
-  debug('i18nModulePaths -', i18nModulePaths)
-  const localePaths = [...langPaths, ...i18nModulePaths]
-  const localeIncludePaths = localePaths.length ? localePaths.map(x => resolve(x, './**')) : undefined
+  const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta!.map(m => m.path))])]
+  const localeIncludePaths = localePaths.length ? localePaths : undefined
 
   const sourceMapOptions: BundlerPluginOptions = {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
