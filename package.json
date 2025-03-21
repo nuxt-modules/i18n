@@ -129,7 +129,7 @@
     "@nuxt/schema": "^3.16.1",
     "@rspack/core": "^1.2.6",
     "@types/debug": "^4.1.9",
-    "@types/eslint": "^8.56.6",
+    "@types/eslint": "^9.6.1",
     "@unhead/vue": "^2.0.0-rc.13",
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
