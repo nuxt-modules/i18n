@@ -44,7 +44,6 @@ export const DEFAULT_OPTIONS = {
     optimizeTranslationDirective: true
   },
   compilation: {
-    jit: true,
     strictMessage: true,
     escapeHtml: false
   },
