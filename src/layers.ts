@@ -145,22 +145,6 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   return mergeConfigLocales(configs)
 }
 
-/**
- * Returns an array of absolute paths to each layers `langDir`
- */
-export const getLayerLangPaths = (nuxt: Nuxt) => {
-  const langPaths: string[] = []
-
-  for (const layer of nuxt.options._layers) {
-    const i18n = getLayerI18n(layer)
-    if (i18n?.restructureDir === false && i18n?.langDir == null) continue
-
-    langPaths.push(resolveLayerLangDir(layer, i18n || {}))
-  }
-
-  return langPaths
-}
-
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions) {
   const logger = useLogger(NUXT_I18N_MODULE_ID)
   const nuxt = useNuxt()
