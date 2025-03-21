@@ -18,6 +18,12 @@ export default defineNuxtConfig({
         language: 'ja-JP',
         file: 'ja.yaml',
         name: 'Japanese'
+      },
+      {
+        code: 'nl',
+        language: 'nl-NL',
+        file: 'nl.ts',
+        name: 'Nederlands'
       }
     ]
   }
