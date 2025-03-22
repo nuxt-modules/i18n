@@ -11,6 +11,10 @@
   },
   "packageRules": [
     {
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "matchPackageNames": ["node"],
       "enabled": false
     },
