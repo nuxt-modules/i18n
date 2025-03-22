@@ -1,6 +1,5 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
-import { RESOLVED_VIRTUAL_NUXT_I18N_LOGGER, VIRTUAL_NUXT_I18N_LOGGER } from '../virtual-logger'
 import { defu } from 'defu'
 import { addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
@@ -20,7 +19,6 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.alias['#internal-i18n-types'] = resolver.resolve('./types')
   nuxt.options.build.transpile.push('#i18n')
   nuxt.options.build.transpile.push('#internal-i18n-types')
-  nuxt.options.build.transpile.push(VIRTUAL_NUXT_I18N_LOGGER)
 
   if (ctx.isDev && options.experimental.hmr) {
     addVitePlugin({
@@ -48,10 +46,6 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
     write: true,
     getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt))
   })
-
-  nuxt.options.imports.transform ??= {}
-  nuxt.options.imports.transform.include ??= []
-  nuxt.options.imports.transform.include.push(new RegExp(`${RESOLVED_VIRTUAL_NUXT_I18N_LOGGER}$`))
 
   /**
    * `$i18n` type narrowing based on 'legacy' or 'composition'
