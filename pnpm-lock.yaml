@@ -74,6 +74,9 @@ importers:
       pathe:
         specifier: ^2.0.3
         version: 2.0.3
+      typescript:
+        specifier: ^5.6.2
+        version: 5.6.2
       ufo:
         specifier: ^1.5.4
         version: 1.5.4
@@ -180,9 +183,6 @@ importers:
       ts-essentials:
         specifier: ^9.4.2
         version: 9.4.2(typescript@5.6.2)
-      typescript:
-        specifier: ^5.6.2
-        version: 5.6.2
       typescript-eslint:
         specifier: ^7.14.0
         version: 7.14.1(eslint@9.5.0)(typescript@5.6.2)
@@ -13132,7 +13132,7 @@ snapshots:
       unctx: 2.4.1
       unimport: 4.1.2
       unplugin: 2.2.1
-      unplugin-vue-router: 0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
+      unplugin-vue-router: 0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.6.2)))(vue@3.5.13(typescript@5.7.3))
       unstorage: 1.15.0(db0@0.3.1(better-sqlite3@11.8.1))(ioredis@5.6.0)
       untyped: 2.0.0
       vue: 3.5.13(typescript@5.7.3)
@@ -14896,7 +14896,7 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  unplugin-vue-router@0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3)):
+  unplugin-vue-router@0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.6.2)))(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@babel/types': 7.26.10
       '@vue-macros/common': 1.16.1(vue@3.5.13(typescript@5.7.3))
@@ -14914,7 +14914,7 @@ snapshots:
       unplugin-utils: 0.2.4
       yaml: 2.7.0
     optionalDependencies:
-      vue-router: 4.5.0(vue@3.5.13(typescript@5.7.3))
+      vue-router: 4.5.0(vue@3.5.13(typescript@5.6.2))
     transitivePeerDependencies:
       - vue
 
