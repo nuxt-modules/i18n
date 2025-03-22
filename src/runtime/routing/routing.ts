@@ -8,9 +8,9 @@ import { getLocaleRouteName, getRouteName } from './utils'
 import { extendPrefixable, extendSwitchLocalePathIntercepter, type CommonComposableOptions } from '../utils'
 
 import type { Locale } from 'vue-i18n'
-import type { RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw, RouteRecordNameGeneric } from 'vue-router'
+import type { RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw, RouteMap } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CompatRoute } from '../types'
+import type { CompatRoute, RouteLocationGenericPath } from '../types'
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.
@@ -18,12 +18,16 @@ import type { CompatRoute } from '../types'
  * @remarks
  * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
  */
-export function getRouteBaseName(common: CommonComposableOptions, route: { name?: RouteRecordNameGeneric | null }) {
+export function getRouteBaseName<Name extends keyof RouteMap = keyof RouteMap>(
+  common: CommonComposableOptions,
+  route: Name | RouteLocationGenericPath | null
+) {
   const _route = unref(route)
-  if (_route == null || !_route.name) {
+  const routeName = typeof _route === 'object' ? _route?.name : _route
+  if (_route == null || !routeName) {
     return
   }
-  const name = getRouteName(_route.name)
+  const name = getRouteName(routeName)
   return name.split(common.runtimeConfig.public.i18n.routesNameSeparator)[0]
 }
 

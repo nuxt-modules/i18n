@@ -20,7 +20,14 @@ import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { resolveRoute } from '../routing/routing'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { RouteLocationAsRelativeI18n, RouteLocationRaw, RouteLocationResolvedI18n, RouteMapI18n } from 'vue-router'
+import type {
+  RouteLocationAsRelativeI18n,
+  RouteLocationRaw,
+  RouteLocationResolvedI18n,
+  RouteMap,
+  RouteMapI18n
+} from 'vue-router'
+import type { RouteLocationGenericPath } from '../types'
 
 export * from 'vue-i18n'
 export * from './shared'
@@ -189,15 +196,14 @@ export type ResolveRouteFunction = (route: RouteLocationRaw, locale?: Locale) =>
  *
  * @returns Route base name (without localization suffix) or `undefined` if no name was found.
  */
-export type RouteBaseNameFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationI18nGenericPath
+export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMap>(
+  route: Name | RouteLocationGenericPath
 ) => string | undefined
 
 /**
  * Returns a {@link RouteBaseNameFunction} used get the base name of a route.
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
-  // @ts-expect-error - generated types conflict with the generic types we accept
   return wrapComposable(getRouteBaseName)
 }
 

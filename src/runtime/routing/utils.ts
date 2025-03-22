@@ -10,7 +10,7 @@ export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): Locale
   return locales.map(x => (typeof x === 'string' ? { code: x } : x))
 }
 
-export function getRouteName(routeName?: string | symbol | null) {
+export function getRouteName(routeName?: string | symbol | number | null) {
   if (typeof routeName === 'string') return routeName
   if (routeName != null) return routeName.toString()
   return '(null)'

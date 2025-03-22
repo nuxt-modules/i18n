@@ -2,10 +2,15 @@ import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
 import type { I18n, Locale, Composer, VueI18n, ExportedGlobalComposer } from 'vue-i18n'
-import type { RouteLocationNormalizedGeneric, RouteRecordNameGeneric } from 'vue-router'
+import type { RouteLocationAsRelative, RouteLocationNormalizedGeneric, RouteRecordNameGeneric } from 'vue-router'
 
 export type CompatRoute = Omit<RouteLocationNormalizedGeneric, 'name'> & {
   name: RouteRecordNameGeneric | null
+}
+
+export type RouteLocationGenericPath = Omit<RouteLocationAsRelative, 'path' | 'name'> & {
+  path?: string
+  name?: RouteLocationAsRelative['name'] | null
 }
 
 /**

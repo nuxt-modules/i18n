@@ -110,6 +110,7 @@ describe('basic usage - compatibilityVersion: 4', async () => {
     const { page } = await renderPage('/nuxt-context-extension')
 
     expect(await getText(page, '#get-route-base-name')).toEqual('nuxt-context-extension')
+    expect(await getText(page, '#get-route-base-name-string')).toEqual('nuxt-context-extension')
     expect(await getText(page, '#switch-locale-path')).toEqual('/ja/nuxt-context-extension')
     expect(await getText(page, '#locale-path')).toEqual('/nl/nuxt-context-extension')
 
