@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { exec } from 'tinyexec'
+import { x } from 'tinyexec'
 import { getRandomPort, waitForPort } from 'get-port-please'
 import type { FetchOptions } from 'ofetch'
 import { $fetch as _$fetch, fetch as _fetch } from 'ofetch'
@@ -13,19 +12,15 @@ function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
-// @ts-expect-error type cast
-// eslint-disable-next-line
-const kit: typeof _kit = _kit.default || _kit
-
 export async function startServer(env: Record<string, unknown> = {}) {
   const ctx = useTestContext()
-  await stopServer()
+  stopServer()
   const host = '127.0.0.1'
   const ports = ctx.options.port ? toArray(ctx.options.port) : [await getRandomPort(host)]
   ctx.url = `http://${host}:${ports[0]}`
   if (ctx.options.dev) {
-    const nuxiCLI = await kit.resolvePath('nuxi/cli')
-    ctx.serverProcess = exec(nuxiCLI, ['_dev'], {
+    ctx.serverProcess = x('nuxi', ['_dev'], {
+      throwOnError: true,
       nodeOptions: {
         cwd: ctx.nuxt!.options.rootDir,
         stdio: 'inherit',
@@ -60,7 +55,8 @@ export async function startServer(env: Record<string, unknown> = {}) {
     // ;(await import('consola')).consola.restoreConsole()
     const [_command, ...commandArgs] = command.split(' ')
 
-    ctx.serverProcess = exec(_command, commandArgs, {
+    ctx.serverProcess = x(_command, commandArgs, {
+      throwOnError: true,
       nodeOptions: {
         env: {
           ...process.env,
@@ -71,9 +67,10 @@ export async function startServer(env: Record<string, unknown> = {}) {
       }
     })
 
-    await waitForPort(ports[0], { retries: 32, host, delay: 1000 })
+    await waitForPort(ports[0], { retries: 50, host, delay: 500 })
   } else {
-    ctx.serverProcess = exec('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
+    ctx.serverProcess = x('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
+      throwOnError: true,
       nodeOptions: {
         stdio: 'inherit',
         env: {
@@ -84,15 +81,13 @@ export async function startServer(env: Record<string, unknown> = {}) {
         }
       }
     })
-    await waitForPort(ports[0], { retries: 20, host })
+    await waitForPort(ports[0], { retries: 200, host, delay: 100 })
   }
 }
 
-export async function stopServer() {
+export function stopServer() {
   const ctx = useTestContext()
-  if (ctx.serverProcess) {
-    await ctx.serverProcess.kill()
-  }
+  ctx.serverProcess?.kill()
 }
 
 export function fetch(path: string, options?: any) {
