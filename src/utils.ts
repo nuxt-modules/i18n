@@ -3,12 +3,11 @@ import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
 import { parse as parsePath, resolve, relative, join } from 'pathe'
 import { defu } from 'defu'
-import { genSafeVariableName } from 'knitwork'
 import { isString, isArray } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, NULL_HASH } from './constants'
+import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from './utils/parse'
 
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleType, LocaleFile, LocaleObject } from './types'
+import type { NuxtI18nOptions, LocaleInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { IdentifierName, Program } from 'oxc-parser'
 
@@ -47,54 +46,29 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   return normalized
 }
 
-const IMPORT_ID_CACHES = new Map<string, string>()
-
-export const normalizeWithUnderScore = (name: string) => name.replace(/-/g, '_').replace(/\./g, '_').replace(/\//g, '_')
-
-function convertToImportId(file: string) {
-  if (IMPORT_ID_CACHES.has(file)) {
-    return IMPORT_ID_CACHES.get(file)
-  }
-
-  const { dir, base } = parsePath(file)
-  const id = normalizeWithUnderScore(`${dir}/${base}`)
-  IMPORT_ID_CACHES.set(file, id)
-
-  return id
-}
-
-export async function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): Promise<LocaleInfo[]> {
-  const files = await Promise.all(locales.flatMap(x => getLocalePaths(x)).map(x => resolve(srcDir, x)))
-  const find = (f: string) => files.find(file => file === resolve(srcDir, f))
-
+export function resolveLocales(_srcDir: string, locales: LocaleObject[], buildDir: string): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
-
-  for (const { file, ...locale } of locales) {
-    const resolved: LocaleInfo = { ...locale, files: [], meta: [] }
+  for (const locale of locales) {
+    const resolved: LocaleInfo = Object.assign({}, locale, { meta: [] })
+    delete resolved.file
+    delete resolved.files
 
     const files = getLocaleFiles(locale)
     for (const f of files) {
-      const filePath = find(f.path) ?? ''
-      const localeType = getLocaleType(filePath)
-      const isCached = filePath ? localeType !== 'dynamic' : true
-      const parsed = parsePath(filePath)
-      const importKey = join(parsed.root, parsed.dir, parsed.base)
-      const key = genSafeVariableName(`locale_${convertToImportId(importKey)}`)
+      const localeType = getLocaleType(f.path)
 
       const metaFile = {
-        path: filePath,
-        loadPath: relative(buildDir, filePath),
+        path: f.path,
+        loadPath: relative(buildDir, f.path),
         type: localeType,
-        hash: getHash(filePath),
-        key,
+        hash: getHash(f.path),
         file: {
           path: f.path,
-          cache: f.cache ?? isCached
+          cache: f.cache ?? localeType !== 'dynamic'
         }
       }
 
       resolved.meta!.push(metaFile)
-      resolved.files.push(metaFile.file)
     }
 
     localesResolved.push(resolved)
@@ -105,7 +79,7 @@ export async function resolveLocales(srcDir: string, locales: LocaleObject[], bu
 
 function getLocaleType(path: string): LocaleType {
   const ext = parsePath(path).ext
-  if (EXECUTABLE_EXTENSIONS.includes(ext)) {
+  if (EXECUTABLE_EXT_RE.test(ext)) {
     const parsed = parseSync(path, readFileSync(path, 'utf-8'))
     const analyzed = scanProgram(parsed.program)
     if (analyzed === 'object') {
@@ -183,52 +157,24 @@ function scanProgram(program: Program) {
   return ret
 }
 
-export function getLayerRootDirs(nuxt: Nuxt) {
-  const layers = nuxt.options._layers
-  return layers.length > 1 ? layers.map(layer => layer.config.rootDir) : []
-}
-
 export async function resolveVueI18nConfigInfo(
   rootDir: string,
   configPath: string = 'i18n.config',
   buildDir = useNuxt().options.buildDir
 ) {
-  const configPathInfo: Required<VueI18nConfigPathInfo> = {
-    relativeBase: relative(buildDir, rootDir),
-    relative: configPath,
-    absolute: '',
-    rootDir,
-    hash: NULL_HASH,
-    type: 'unknown',
-    meta: {
-      path: '',
-      loadPath: '',
-      type: 'unknown',
-      hash: NULL_HASH,
-      key: ''
-    }
-  }
-
-  const absolutePath = await resolvePath(configPathInfo.relative, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
+  const relativeBase = relative(buildDir, rootDir)
+  const absolutePath = await resolvePath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
   if (!existsSync(absolutePath)) return undefined
 
-  const loadPath = join(configPathInfo.relativeBase, relative(rootDir, absolutePath))
-
-  configPathInfo.absolute = absolutePath
-  configPathInfo.type = getLocaleType(absolutePath)
-  configPathInfo.hash = getHash(loadPath)
-
-  const key = `${normalizeWithUnderScore(configPathInfo.relative)}_${configPathInfo.hash}`
-
-  configPathInfo.meta = {
-    path: absolutePath,
-    type: configPathInfo.type,
-    hash: configPathInfo.hash,
-    loadPath,
-    key
+  return {
+    rootDir,
+    meta: {
+      loadPath: join(relativeBase, relative(rootDir, absolutePath)), // relative
+      path: absolutePath, // absolute
+      hash: getHash(absolutePath),
+      type: getLocaleType(absolutePath)
+    }
   }
-
-  return configPathInfo
 }
 
 export type PrerenderTarget = {
@@ -240,9 +186,9 @@ export const getLocalePaths = (locale: LocaleObject): string[] => {
   return getLocaleFiles(locale).map(x => x.path)
 }
 
-export const getLocaleFiles = (locale: LocaleObject | LocaleInfo): LocaleFile[] => {
+export const getLocaleFiles = (locale: LocaleObject): LocaleFile[] => {
   if (locale.file != null) {
-    return [locale.file].map(x => (isString(x) ? { path: x, cache: undefined } : (x as LocaleFile)))
+    return [locale.file].map(x => (isString(x) ? { path: x, cache: undefined } : x))
   }
 
   if (locale.files != null) {
@@ -343,7 +289,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
   }
 }
 
-export function getHash(text: BinaryLike): string {
+function getHash(text: BinaryLike): string {
   return createHash('sha256').update(text).digest('hex').substring(0, 8)
 }
 

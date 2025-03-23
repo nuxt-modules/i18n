@@ -2,7 +2,7 @@ import createDebug from 'debug'
 import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getHash, getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
+import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -69,14 +69,13 @@ export function generateLoaderOptions(
 
   const importMapper = new Map<string, LocaleLoaderData>()
   function generateLocaleImports(meta: NonNullable<LocaleInfo['meta']>[number]) {
-    if (importMapper.has(meta.key)) return importMapper.get(meta.key)!
-    const hash = getHash(meta.path)
-    const key = `locale_${genSafeVariableName(basename(meta.path))}_${hash}`
-    const specifier = asI18nVirtual(hash)
+    if (importMapper.has(meta.path)) return importMapper.get(meta.path)!
+    const key = `locale_${genSafeVariableName(basename(meta.path))}_${meta.hash}`
+    const specifier = asI18nVirtual(meta.hash)
     const async = genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` })
     const sync = `() => Promise.resolve(${key})`
 
-    importMapper.set(meta.key, {
+    importMapper.set(meta.path, {
       specifier,
       key: genString(key),
       relative: meta.loadPath,
@@ -85,7 +84,7 @@ export function generateLoaderOptions(
       importString: genImport(specifier, key)
     })
 
-    return importMapper.get(meta.key)!
+    return importMapper.get(meta.path)!
   }
 
   /**
@@ -102,10 +101,9 @@ export function generateLoaderOptions(
   const vueI18nConfigs = []
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
     const config = ctx.vueI18nConfigPaths[i]
-    if (config.absolute === '') continue
-    const hash = getHash(config.meta.path)
-    const key = genString(`config_${genSafeVariableName(basename(config.meta.path))}_${hash}`)
-    const specifier = asI18nVirtual(hash)
+    if (config.meta.path === '') continue
+    const key = genString(`config_${genSafeVariableName(basename(config.meta.path))}_${config.meta.hash}`)
+    const specifier = asI18nVirtual(config.meta.hash)
     const importer = genDynamicImport(specifier, { comment: `webpackChunkName: ${key}` })
     vueI18nConfigs.push({ specifier, importer, relative: config.meta.loadPath })
   }

@@ -11,7 +11,7 @@ export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
    */
   const normalizedLocales = getNormalizedLocales(options.locales)
   const localeCodes = normalizedLocales.map(locale => locale.code)
-  const localeInfo = await resolveLocales(nuxt.options.srcDir, normalizedLocales, nuxt.options.buildDir)
+  const localeInfo = resolveLocales(nuxt.options.srcDir, normalizedLocales, nuxt.options.buildDir)
   debug('localeInfo', localeInfo)
 
   /**
