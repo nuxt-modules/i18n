@@ -66,12 +66,6 @@ test('resolveLocales', async () => {
     [
       {
         "code": "en",
-        "files": [
-          {
-            "cache": true,
-            "path": "en.json",
-          },
-        ],
         "meta": [
           {
             "file": {
@@ -79,7 +73,6 @@ test('resolveLocales', async () => {
               "path": "en.json",
             },
             "hash": "5c407b7f",
-            "key": "locale__path_to_project_en_json",
             "loadPath": "../en.json",
             "path": "/path/to/project/en.json",
             "type": "static",
@@ -88,12 +81,6 @@ test('resolveLocales', async () => {
       },
       {
         "code": "ja",
-        "files": [
-          {
-            "cache": true,
-            "path": "ja.json",
-          },
-        ],
         "meta": [
           {
             "file": {
@@ -101,7 +88,6 @@ test('resolveLocales', async () => {
               "path": "ja.json",
             },
             "hash": "0e1b8bd4",
-            "key": "locale__path_to_project_ja_json",
             "loadPath": "../ja.json",
             "path": "/path/to/project/ja.json",
             "type": "static",
@@ -110,12 +96,6 @@ test('resolveLocales', async () => {
       },
       {
         "code": "es",
-        "files": [
-          {
-            "cache": true,
-            "path": "es.json",
-          },
-        ],
         "meta": [
           {
             "file": {
@@ -123,7 +103,6 @@ test('resolveLocales', async () => {
               "path": "es.json",
             },
             "hash": "c78280fb",
-            "key": "locale__path_to_project_es_json",
             "loadPath": "../es.json",
             "path": "/path/to/project/es.json",
             "type": "static",
@@ -132,16 +111,6 @@ test('resolveLocales', async () => {
       },
       {
         "code": "es-AR",
-        "files": [
-          {
-            "cache": true,
-            "path": "es.json",
-          },
-          {
-            "cache": true,
-            "path": "es-AR.json",
-          },
-        ],
         "meta": [
           {
             "file": {
@@ -149,7 +118,6 @@ test('resolveLocales', async () => {
               "path": "es.json",
             },
             "hash": "c78280fb",
-            "key": "locale__path_to_project_es_json",
             "loadPath": "../es.json",
             "path": "/path/to/project/es.json",
             "type": "static",
@@ -160,7 +128,6 @@ test('resolveLocales', async () => {
               "path": "es-AR.json",
             },
             "hash": "65220c0a",
-            "key": "locale__path_to_project_es_AR_json",
             "loadPath": "../es-AR.json",
             "path": "/path/to/project/es-AR.json",
             "type": "static",
@@ -169,12 +136,6 @@ test('resolveLocales', async () => {
       },
       {
         "code": "nl",
-        "files": [
-          {
-            "cache": false,
-            "path": "nl.js",
-          },
-        ],
         "meta": [
           {
             "file": {
@@ -182,7 +143,6 @@ test('resolveLocales', async () => {
               "path": "nl.js",
             },
             "hash": "b7971e5b",
-            "key": "locale__path_to_project_nl_js",
             "loadPath": "../nl.js",
             "path": "/path/to/project/nl.js",
             "type": "dynamic",

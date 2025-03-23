@@ -1,7 +1,6 @@
 import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
-import { getHash } from '../utils'
 import { asI18nVirtual, VIRTUAL_PREFIX_HEX } from './utils'
 import {
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
@@ -34,14 +33,13 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
     const DEFINE_I18N_FN_RE = new RegExp(`\\b(${pattern})\\s*\\((.+)\\s*\\)`, 'gms')
 
     // TODO: track all i18n files found in configuration
-    const i18nPathSet = new Set([
-      ...ctx.localeInfo.flatMap(x => x.meta!.map(m => m.path)),
-      ...ctx.vueI18nConfigPaths.map(x => x.absolute)
-    ])
-
+    const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta!), ...ctx.vueI18nConfigPaths.map(x => x.meta)]
+    const i18nPathSet = new Set()
     const i18nFileHashSet = new Map<string, string>()
-    for (const path of Array.from(i18nPathSet)) {
-      i18nFileHashSet.set(asI18nVirtual(getHash(path)), path)
+    for (const meta of i18nFileMetas) {
+      if (i18nPathSet.has(meta.path)) continue
+      i18nPathSet.add(meta.path)
+      i18nFileHashSet.set(asI18nVirtual(meta.hash), meta.path)
     }
 
     return {

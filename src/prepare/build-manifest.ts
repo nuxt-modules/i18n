@@ -1,6 +1,5 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { getLocaleFiles } from '../utils'
 import { relative } from 'pathe'
 
 export function prepareBuildManifest({ options, localeInfo }: I18nNuxtContext, nuxt: Nuxt) {
@@ -8,8 +7,8 @@ export function prepareBuildManifest({ options, localeInfo }: I18nNuxtContext, n
     if (!options.lazy) return
 
     const langFiles = localeInfo
-      .flatMap(locale => getLocaleFiles(locale))
-      .map(x => relative(nuxt.options.srcDir, x.path))
+      .flatMap(locale => locale.meta!.map(m => m.path))
+      .map(x => relative(nuxt.options.srcDir, x))
     const langPaths = [...new Set(langFiles)]
 
     for (const key in manifest) {
