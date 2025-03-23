@@ -46,7 +46,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
   return normalized
 }
 
-export function resolveLocales(_srcDir: string, locales: LocaleObject[], buildDir: string): LocaleInfo[] {
+export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {
     const resolved: LocaleInfo = Object.assign({}, locale, { meta: [] })
@@ -55,13 +55,14 @@ export function resolveLocales(_srcDir: string, locales: LocaleObject[], buildDi
 
     const files = getLocaleFiles(locale)
     for (const f of files) {
-      const localeType = getLocaleType(f.path)
+      const filePath = resolve(srcDir, f.path)
+      const localeType = getLocaleType(filePath)
 
       const metaFile = {
-        path: f.path,
-        loadPath: relative(buildDir, f.path),
+        path: filePath,
+        loadPath: relative(buildDir, filePath),
         type: localeType,
-        hash: getHash(f.path),
+        hash: getHash(filePath),
         file: {
           path: f.path,
           cache: f.cache ?? localeType !== 'dynamic'
