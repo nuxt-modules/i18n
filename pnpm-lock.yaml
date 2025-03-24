@@ -217,8 +217,8 @@ importers:
         specifier: ^1.2.29
         version: 1.2.29
       '@iconify-json/vscode-icons':
-        specifier: ^1.2.16
-        version: 1.2.16
+        specifier: ^1.2.17
+        version: 1.2.17
       '@nuxt/content':
         specifier: ^3.4.0
         version: 3.4.0(magicast@0.3.5)(typescript@5.7.3)
@@ -1022,8 +1022,8 @@ packages:
   '@iconify-json/simple-icons@1.2.29':
     resolution: {integrity: sha512-KYrxmxtRz6iOAulRiUsIBMUuXek+H+Evwf8UvYPIkbQ+KDoOqTegHx3q/w3GDDVC0qJYB+D3hXPMZcpm78qIuA==}
 
-  '@iconify-json/vscode-icons@1.2.16':
-    resolution: {integrity: sha512-hstc2yVq2UJ6v6FrgjftzXRvphGZBsKxvSeXoFLP1Hgx89TPZKrGE5SV6vqsoeIlLYaQ7OZbXmAoVGroTfGmVQ==}
+  '@iconify-json/vscode-icons@1.2.17':
+    resolution: {integrity: sha512-7ge4lTxBMpxEE8SGZ3ytjsLOWEip35B+6HJIKPep8gnoqZHTTT5bYDNDkx3iSganyaTviOvBuarzz5Z7Rg62Iw==}
 
   '@iconify/collections@1.0.529':
     resolution: {integrity: sha512-4HE68ut6CcJvQ0GFYsg73K9tqIRdy0tRBoTPVpyVjWNzeGm28cr4nDPaDDEJqbyDf3w9Y4AV1QQ+w+Gq6XDboQ==}
@@ -7322,7 +7322,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/vscode-icons@1.2.16':
+  '@iconify-json/vscode-icons@1.2.17':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -12649,7 +12649,7 @@ snapshots:
       unctx: 2.4.1
       unimport: 4.1.2
       unplugin: 2.2.2
-      unplugin-vue-router: 0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.6.2)))(vue@3.5.13(typescript@5.7.3))
+      unplugin-vue-router: 0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3))
       unstorage: 1.15.0(db0@0.3.1(better-sqlite3@11.9.1))(ioredis@5.6.0)
       untyped: 2.0.0
       vue: 3.5.13(typescript@5.7.3)
@@ -14231,7 +14231,7 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  unplugin-vue-router@0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.6.2)))(vue@3.5.13(typescript@5.7.3)):
+  unplugin-vue-router@0.12.0(vue-router@4.5.0(vue@3.5.13(typescript@5.7.3)))(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@babel/types': 7.26.10
       '@vue-macros/common': 1.16.1(vue@3.5.13(typescript@5.7.3))
@@ -14249,7 +14249,7 @@ snapshots:
       unplugin-utils: 0.2.4
       yaml: 2.7.0
     optionalDependencies:
-      vue-router: 4.5.0(vue@3.5.13(typescript@5.6.2))
+      vue-router: 4.5.0(vue@3.5.13(typescript@5.7.3))
     transitivePeerDependencies:
       - vue
 
