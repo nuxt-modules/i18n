@@ -8,6 +8,7 @@ import { vi, afterAll, describe, test, expect } from 'vitest'
 import type { NuxtPage } from '@nuxt/schema'
 import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
 import type { NuxtI18nOptions } from '../../src/types'
+import { getNormalizedLocales } from '../../src/utils'
 
 /**
  * NOTE:
@@ -129,6 +130,7 @@ describe.each([
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
+      localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
 
@@ -197,6 +199,7 @@ describe.each([
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
+      localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
@@ -264,6 +267,7 @@ test('#1649', () => {
   const localizedPages = localizeRoutes(pages, {
     ...options,
     includeUnprefixedFallback: false,
+    localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
     optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
   } as Parameters<typeof localizeRoutes>[1])
 
@@ -331,6 +335,7 @@ test('pages config using route name', () => {
   const localizedPages = localizeRoutes(pages, {
     ...options,
     includeUnprefixedFallback: false,
+    localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
     optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
   } as Parameters<typeof localizeRoutes>[1])
   expect(localizedPages).toMatchSnapshot()

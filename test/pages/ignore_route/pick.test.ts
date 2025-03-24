@@ -9,6 +9,7 @@ import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 import type { NuxtPage } from '@nuxt/schema'
 import type { NuxtI18nOptions } from '../../../src/types'
 import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../../src/pages'
+import { getNormalizedLocales } from '../../../src/utils'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -149,6 +150,7 @@ describe.each([
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
+      localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
     expect(localizedPages).toMatchSnapshot()
@@ -195,6 +197,7 @@ describe.each([
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
+      localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
