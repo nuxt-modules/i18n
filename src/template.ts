@@ -116,7 +116,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
 export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: TemplateNuxtI18nOptions): string {
   const codeHMR =
     ctx.isDev &&
-    opts.nuxtI18nOptions.experimental.hmr &&
+    opts.nuxtI18nOptions.hmr &&
     [
       `if(import.meta.hot) {`,
       deepEqualFn,
