@@ -6,16 +6,9 @@ import { getLayerI18n, getLocalePaths } from './utils'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleInfo, VueI18nConfigPathInfo, LocaleObject, LocaleFile } from './types'
+import type { NuxtI18nOptions, LocaleInfo, LocaleObject, LocaleFile } from './types'
 import type { Locale } from 'vue-i18n'
 import type { I18nNuxtContext } from './context'
-
-export type LoaderOptions = {
-  vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
-  localeInfo: LocaleInfo[]
-  nuxtI18nOptions: NuxtI18nOptions
-  normalizedLocales: LocaleObject<string>[]
-}
 
 const debug = createDebug('@nuxtjs/i18n:gen')
 

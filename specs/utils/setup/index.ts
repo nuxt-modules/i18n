@@ -2,18 +2,12 @@ import { createTestContext, setTestContext } from '../context'
 import { buildFixture, loadFixture } from '../nuxt'
 import { startServer, stopServer } from '../server'
 import { createBrowser } from '../browser'
-import setupJest from './jest'
 import setupVitest from './vitest'
 import consola from 'consola'
 
 import type { TestHooks, TestOptions, VitestContext } from '../types'
 
-export const setupMaps = {
-  jest: setupJest,
-  vitest: setupVitest
-}
-
-export function createTest(options: Partial<TestOptions>): TestHooks {
+function createTest(options: Partial<TestOptions>): TestHooks {
   const ctx = createTestContext(options)
 
   const beforeEach = () => {
@@ -86,8 +80,5 @@ export async function setup(options: Partial<TestOptions> = {}) {
   }
 
   const hooks = createTest(options)
-
-  const setupFn = setupMaps[hooks.ctx.options.runner]
-
-  await setupFn(hooks)
+  await setupVitest(hooks)
 }

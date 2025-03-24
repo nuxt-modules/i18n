@@ -8,7 +8,7 @@ import {
 } from './constants'
 import type { I18nNuxtContext } from './context'
 
-export type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
+type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
 // used to compare vue-i18n config replacement
 const deepEqualFn = `function deepEqual(a, b, ignoreKeys = []) {

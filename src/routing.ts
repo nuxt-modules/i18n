@@ -21,7 +21,7 @@ export declare interface ComputedRouteOptions {
   paths: Record<string, string>
 }
 
-export function prefixLocalizedRoute(
+function prefixLocalizedRoute(
   localizeOptions: PrefixLocalizedRouteOptions,
   options: LocalizeRoutesParams,
   extra = false
@@ -44,7 +44,7 @@ function adjustRoutePathForTrailingSlash(localized: LocalizedRoute, trailingSlas
   return localized.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
 }
 
-export type LocalizeRoutesParams = MarkRequired<
+type LocalizeRoutesParams = MarkRequired<
   NuxtI18nOptions,
   'strategy' | 'locales' | 'routesNameSeparator' | 'trailingSlash' | 'defaultLocaleRouteNameSuffix'
 > & {
@@ -52,7 +52,7 @@ export type LocalizeRoutesParams = MarkRequired<
   optionsResolver?: RouteOptionsResolver
 }
 
-export function shouldLocalizeRoutes(options: NuxtI18nOptions) {
+function shouldLocalizeRoutes(options: NuxtI18nOptions) {
   if (options.strategy === 'no_prefix') {
     // no_prefix is only supported when using a separate domain per locale
     if (!options.differentDomains) return false

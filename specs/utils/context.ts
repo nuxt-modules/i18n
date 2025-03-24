@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import { defu } from 'defu'
-import type { TestContext, TestOptions, TestRunner } from './types'
+import type { TestContext, TestOptions } from './types'
 
 let currentContext: TestContext | undefined
 
@@ -17,7 +17,7 @@ export function createTestContext(options: Partial<TestOptions>): TestContext {
     build: options.browser !== false || options.server !== false,
     nuxtConfig: {},
     // TODO: auto detect based on process.env
-    runner: <TestRunner>'vitest',
+    runner: 'vitest' as const,
     browserOptions: {
       type: 'chromium' as const
     }
@@ -43,18 +43,8 @@ export function setTestContext(context?: TestContext): TestContext | undefined {
   return currentContext
 }
 
-export function isDev() {
-  const ctx = useTestContext()
-  return ctx.options.dev
-}
-
-export function recoverContextFromEnv() {
+function recoverContextFromEnv() {
   if (!currentContext && process.env.NUXT_TEST_CONTEXT) {
     setTestContext(JSON.parse(process.env.NUXT_TEST_CONTEXT || '{}'))
   }
-}
-
-export function exposeContextToEnv() {
-  const { options, browser, url } = currentContext!
-  process.env.NUXT_TEST_CONTEXT = JSON.stringify({ options, browser, url })
 }

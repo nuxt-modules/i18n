@@ -33,12 +33,8 @@ export async function getBrowser(): Promise<Browser> {
 }
 
 type _GotoOptions = NonNullable<Parameters<Page['goto']>[1]>
-export interface GotoOptions extends Omit<_GotoOptions, 'waitUntil'> {
+interface GotoOptions extends Omit<_GotoOptions, 'waitUntil'> {
   waitUntil?: 'hydration' | 'route' | _GotoOptions['waitUntil']
-}
-
-interface NuxtPage extends Omit<Page, 'goto'> {
-  goto: (url: string, options?: GotoOptions) => Promise<Response | null>
 }
 
 export async function waitForHydration(page: Page, url: string, waitUntil?: GotoOptions['waitUntil']): Promise<void> {

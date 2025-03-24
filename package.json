@@ -73,6 +73,7 @@
     "lint": "run-p \"lint:* {@}\" --",
     "lint:prettier": "prettier . --check",
     "lint:eslint": "eslint .",
+    "lint:knip": "pnpm knip --workspace .",
     "test": "pnpm build && run-s test:types test:unit test:spec",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test -c vitest.config.test.ts",
@@ -131,6 +132,7 @@
     "@rspack/core": "^1.2.6",
     "@types/debug": "^4.1.12",
     "@types/eslint": "^8.56.6",
+    "@types/estree": "^1.0.7",
     "@unhead/vue": "^2.0.0",
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
@@ -140,10 +142,10 @@
     "get-port-please": "^3.1.2",
     "gh-changelogen": "^0.2.8",
     "globals": "^16.0.0",
-    "globby": "^14.1.0",
     "h3": "^1.15.1",
     "jiti": "^2.4.2",
     "jsdom": "^24.1.0",
+    "knip": "^5.46.0",
     "lint-staged": "^15.2.7",
     "nitropack": "^2.11.7",
     "npm-run-all2": "^6.2.0",
@@ -157,7 +159,6 @@
     "typescript-eslint": "^7.14.0",
     "unbuild": "^2.0.0",
     "undici": "^7.5.0",
-    "unhead": "^2.0.0",
     "vitest": "^3.0.9",
     "vue": "^3.5.13",
     "webpack": "^5.98.0"
@@ -179,6 +180,6 @@
     "access": "public"
   },
   "engines": {
-    "node": "^14.16.0 || >=16.11.0"
+    "node": ">=18.12.0"
   }
 }

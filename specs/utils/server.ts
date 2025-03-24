@@ -67,7 +67,7 @@ export async function startServer(env: Record<string, unknown> = {}) {
       }
     })
 
-    await waitForPort(ports[0], { retries: 50, host, delay: 500 })
+    await waitForPort(ports[0], { retries: 50, host, delay: process.env.CI ? 1000 : 500 })
   } else {
     ctx.serverProcess = x('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
       throwOnError: true,

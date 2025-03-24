@@ -4,8 +4,6 @@ import type { Browser, LaunchOptions } from 'playwright-core'
 import type { NuxtI18nOptions } from '../../src/types'
 import type { Suite, File } from 'vitest'
 
-export type TestRunner = 'vitest' | 'jest'
-
 export interface TestOptions {
   testDir: string
   fixture: string
@@ -19,7 +17,7 @@ export interface TestOptions {
   setupTimeout: number
   waitFor: number
   browser: boolean
-  runner: TestRunner
+  runner: 'vitest'
   logLevel: number
   browserOptions: {
     type: 'chromium' | 'firefox' | 'webkit'

@@ -90,7 +90,7 @@ export async function loadFixture(testContext: VitestContext) {
   }
 }
 
-export async function clearDir(path: string) {
+async function clearDir(path: string) {
   await fsp.rm(path, { recursive: true, force: true })
   await fsp.mkdir(path, { recursive: true })
 }

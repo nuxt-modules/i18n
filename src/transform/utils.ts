@@ -2,23 +2,7 @@ import { pathToFileURL } from 'node:url'
 import { parseQuery, parseURL } from 'ufo'
 import { NUXT_I18N_VIRTUAL_PREFIX } from '../constants'
 
-import type { UnpluginContextMeta } from 'unplugin'
-
-export const VIRTUAL_PREFIX = '\0'
 export const VIRTUAL_PREFIX_HEX = '\x00'
-
-export function getVirtualId(id: string, framework: UnpluginContextMeta['framework'] = 'vite') {
-  // prettier-ignore
-  return framework === 'vite'
-    ? id.startsWith(VIRTUAL_PREFIX)
-      ? id.slice(VIRTUAL_PREFIX.length)
-      : ''
-    : id
-}
-
-export function asVirtualId(id: string, framework: UnpluginContextMeta['framework'] = 'vite') {
-  return framework === 'vite' ? VIRTUAL_PREFIX + id : id
-}
 
 export function asI18nVirtual(val: string) {
   return NUXT_I18N_VIRTUAL_PREFIX + '/' + val
