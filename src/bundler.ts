@@ -74,7 +74,7 @@ export function createLogger(label) {
     defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
     globalSFCScope: nuxtOptions.customBlocks.globalSFCScope,
     dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-    optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective
+    optimizeTranslationDirective: false
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
