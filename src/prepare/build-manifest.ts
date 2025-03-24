@@ -7,7 +7,7 @@ export function prepareBuildManifest({ options, localeInfo }: I18nNuxtContext, n
     if (!options.lazy) return
 
     const langFiles = localeInfo
-      .flatMap(locale => locale.meta!.map(m => m.path))
+      .flatMap(locale => locale.meta.map(m => m.path))
       .map(x => relative(nuxt.options.srcDir, x))
     const langPaths = [...new Set(langFiles)]
 
