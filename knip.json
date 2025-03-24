@@ -1,0 +1,31 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["build.config.ts", "src/module.ts", "src/runtime/**", "scripts/*"],
+      "ignoreUnresolved": [
+        "#app/nuxt",
+        "#nuxt-i18n/logger",
+        "#internal/i18n/options.mjs",
+        "#internal/i18n/locale.detector.mjs",
+        "#internal/i18n-type-generation-options"
+      ],
+      "ignoreDependencies": [
+        // pre-commit
+        "lint-staged",
+        // used in auto imports
+        "@intlify/utils"
+      ],
+      "ignore": ["{specs,test}/{fixtures,mocks}/**", "specs/utils/runtime/global-setup.ts"]
+    },
+    "docs": {
+      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"],
+      "ignoreUnresolved": ["#content/server"]
+    },
+    "playground": {
+      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "layers/**", "*.ts"],
+      "ignore": ["i18n/**"],
+      "ignoreDependencies": ["@nuxtjs/i18n"]
+    }
+  }
+}
