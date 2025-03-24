@@ -4,26 +4,23 @@
     ".": {
       "entry": ["build.config.ts", "src/module.ts", "src/runtime/**", "scripts/*"],
       "ignoreUnresolved": [
-        "#app/nuxt",
-        "#nuxt-i18n/logger",
-        "#internal/i18n/options.mjs",
-        "#internal/i18n/locale.detector.mjs",
-        "#internal/i18n-type-generation-options"
+        // virtuals
+        "#nuxt-i18n/*",
+        "#internal/i18n*"
       ],
       "ignoreDependencies": [
         // pre-commit
         "lint-staged",
-        // used in auto imports
+        // auto imports
         "@intlify/utils"
       ],
       "ignore": ["{specs,test}/{fixtures,mocks}/**"]
     },
     "docs": {
-      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"],
-      "ignoreUnresolved": ["#content/server"]
+      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"]
     },
     "playground": {
-      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "layers/**", "*.ts"],
+      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"],
       "ignore": ["i18n/**"],
       "ignoreDependencies": ["@nuxtjs/i18n"]
     }
