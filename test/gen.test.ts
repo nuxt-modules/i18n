@@ -329,7 +329,7 @@ test('toCode: function (arrow)', async () => {
         locales: localeInfo
       }
     },
-    makeNuxtOptions(localeInfo as LocaleInfo[])
+    makeNuxtOptions(localeInfo as unknown as LocaleInfo[])
   )
 
   expect(code).toMatchSnapshot()
@@ -354,7 +354,7 @@ test('toCode: function (named)', async () => {
         locales: localeInfo
       }
     },
-    makeNuxtOptions(localeInfo as LocaleInfo[])
+    makeNuxtOptions(localeInfo as unknown as LocaleInfo[])
   )
 
   expect(code).toMatchSnapshot()

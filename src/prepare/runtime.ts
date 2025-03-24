@@ -53,6 +53,6 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
    */
   addTypeTemplate({
     filename: 'types/i18n-plugin.d.ts',
-    getContents: () => generateI18nTypes(nuxt, ctx.userOptions)
+    getContents: () => generateI18nTypes(nuxt, ctx)
   })
 }

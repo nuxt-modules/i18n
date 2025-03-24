@@ -17,7 +17,6 @@ export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * resolve vue-i18n config path
    */
-
   const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(options)
   debug('VueI18nConfigPaths', vueI18nConfigPaths)
 
