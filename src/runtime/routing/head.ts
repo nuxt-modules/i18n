@@ -16,7 +16,7 @@ import type {
 } from '#internal-i18n-types'
 import type { CommonComposableOptions } from '../utils'
 
-export type HeadContext = {
+type HeadContext = {
   key: string
   seo: boolean | SeoAttributesOptions | undefined
   currentDir: string
@@ -177,7 +177,7 @@ export function getHreflangLinks(common: CommonComposableOptions, ctx: HeadConte
   return links
 }
 
-export function getCanonicalUrl(common: CommonComposableOptions, ctx: HeadContext) {
+function getCanonicalUrl(common: CommonComposableOptions, ctx: HeadContext) {
   const route = common.router.currentRoute.value
   const currentRoute = localeRoute(common, {
     ...route,
@@ -203,7 +203,7 @@ export function getCanonicalLink(common: CommonComposableOptions, ctx: HeadConte
   return [{ [ctx.key]: 'i18n-can', rel: 'canonical', href }]
 }
 
-export function getCanonicalQueryParams(common: CommonComposableOptions, ctx: HeadContext) {
+function getCanonicalQueryParams(common: CommonComposableOptions, ctx: HeadContext) {
   const route = common.router.currentRoute.value
   const currentRoute = localeRoute(common, {
     ...route,

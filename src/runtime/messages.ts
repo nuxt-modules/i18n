@@ -10,7 +10,7 @@ import type { CoreContext } from '@intlify/h3'
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
 type MessageLoaderResult<T, Result = MessageLoaderFunction<T> | LocaleMessages<T>> = { default: Result } | Result
 
-export type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
+type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
   key: string
   load: () => Promise<MessageLoaderResult<T>>
   cache: boolean

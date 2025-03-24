@@ -117,9 +117,6 @@ importers:
       '@types/estree':
         specifier: ^1.0.7
         version: 1.0.7
-      '@unhead/vue':
-        specifier: ^2.0.0
-        version: 2.0.0(vue@3.5.13(typescript@5.6.2))
       bumpp:
         specifier: ^9.4.1
         version: 9.4.1(magicast@0.3.5)
