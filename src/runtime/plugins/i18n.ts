@@ -27,15 +27,14 @@ import { createLocaleFromRouteGetter, resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/i18n'
 import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
-import { resolveRoute } from '../routing/routing'
 import { localeHead } from '../routing/head'
-import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocaleLocation } from '../composables'
+import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { LocaleHeadFunction, ResolveRouteFunction } from '../composables'
+import type { LocaleHeadFunction } from '../composables'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -229,11 +228,7 @@ export default defineNuxtPlugin({
         localePath: useLocalePath(),
         localeRoute: useLocaleRoute(),
         getRouteBaseName: useRouteBaseName(),
-        switchLocalePath: useSwitchLocalePath(),
-        // TODO: remove in v10
-        resolveRoute: wrapComposable(resolveRoute) as ResolveRouteFunction,
-        // TODO: remove in v10
-        localeLocation: useLocaleLocation()
+        switchLocalePath: useSwitchLocalePath()
       }
     }
   }
