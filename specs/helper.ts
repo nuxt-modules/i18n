@@ -76,8 +76,6 @@ export async function waitForMs(ms = 1000) {
   await new Promise(resolve => setTimeout(resolve, ms))
 }
 
-export const isRenderingJson = true
-
 export async function renderPage(path = '/', options?: BrowserContextOptions) {
   const ctx = useTestContext()
   if (!ctx.options.browser) {
@@ -126,24 +124,6 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
   }
 }
 
-export async function expectNoClientErrors(path: string) {
-  const ctx = useTestContext()
-  if (!ctx.options.browser) {
-    return
-  }
-
-  const { page, pageErrors, consoleLogs } = (await renderPage(path))!
-
-  const consoleLogErrors = consoleLogs.filter(i => i.type === 'error')
-  const consoleLogWarnings = consoleLogs.filter(i => i.type === 'warning')
-
-  expect(pageErrors).toEqual([])
-  expect(consoleLogErrors).toEqual([])
-  expect(consoleLogWarnings).toEqual([])
-
-  await page.close()
-}
-
 export async function gotoPath(page: Page, path: string) {
   await page.goto(url(path))
   await waitForURL(page, path)
@@ -170,7 +150,7 @@ export async function waitForURL(page: Page, path: string) {
   }
 }
 
-export function flattenObject(obj: Record<string, unknown> = {}) {
+function flattenObject(obj: Record<string, unknown> = {}) {
   const flattened: Record<string, unknown> = {}
 
   for (const key of Object.keys(obj)) {
@@ -190,7 +170,7 @@ export function flattenObject(obj: Record<string, unknown> = {}) {
   return flattened
 }
 
-export function convertObjectToConfig(obj: Record<string, unknown>) {
+function convertObjectToConfig(obj: Record<string, unknown>) {
   const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
 
   const env: Record<string, unknown> = {}

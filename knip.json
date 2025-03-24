@@ -16,7 +16,7 @@
         // used in auto imports
         "@intlify/utils"
       ],
-      "ignore": ["{specs,test}/{fixtures,mocks}/**", "specs/utils/runtime/global-setup.ts"]
+      "ignore": ["{specs,test}/{fixtures,mocks}/**"]
     },
     "docs": {
       "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"],

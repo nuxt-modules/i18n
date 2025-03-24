@@ -90,9 +90,7 @@ export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig'
 export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR = 'defineI18nLocaleDetector'
 export const NUXT_I18N_VIRTUAL_PREFIX = '#nuxt-i18n'
 
-export const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
-export const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
+const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
+const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']
 export const EXECUTABLE_EXTENSIONS = [...JS_EXTENSIONS, ...TS_EXTENSIONS]
 export const EXECUTABLE_EXT_RE = /\.[c|m]?[j|t]s$/
-
-export const NULL_HASH = '00000000'

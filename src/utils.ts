@@ -15,7 +15,7 @@ export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
-export function normalizeIncludingLocales(locales?: string | string[]) {
+function normalizeIncludingLocales(locales?: string | string[]) {
   return toArray(locales ?? []).filter(isString)
 }
 
