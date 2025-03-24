@@ -24,7 +24,7 @@ describe('localizeRoutes', function () {
         }
       ]
       const localeCodes = ['en', 'ja']
-      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes })
+      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes, localeCodes })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
@@ -60,7 +60,7 @@ describe('localizeRoutes', function () {
       const children: NuxtPage[] = routes[0].children as NuxtPage[]
 
       const localeCodes = ['en', 'ja']
-      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes })
+      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes, localeCodes })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(2)
@@ -92,7 +92,12 @@ describe('localizeRoutes', function () {
         }
       ]
       const localeCodes = ['en', 'ja']
-      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales: localeCodes, trailingSlash: true })
+      const localizedRoutes = localizeRoutes(routes, {
+        ...nuxtOptions,
+        locales: localeCodes,
+        trailingSlash: true,
+        localeCodes
+      })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
@@ -123,7 +128,8 @@ describe('localizeRoutes', function () {
       const localizedRoutes = localizeRoutes(routes, {
         ...nuxtOptions,
         locales: localeCodes,
-        routesNameSeparator: '__'
+        routesNameSeparator: '__',
+        localeCodes
       })
 
       expect(localizedRoutes).toMatchSnapshot()
@@ -171,7 +177,8 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
-        locales: localeCodes
+        locales: localeCodes,
+        localeCodes
       })
 
       expect(localizedRoutes).toMatchSnapshot()
@@ -195,7 +202,8 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
-        locales: localeCodes
+        locales: localeCodes,
+        localeCodes
       })
 
       expect(localizedRoutes).toMatchSnapshot()
@@ -220,7 +228,8 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix',
         locales: localeCodes,
-        includeUnprefixedFallback: true
+        includeUnprefixedFallback: true,
+        localeCodes
       })
 
       expect(localizedRoutes).toMatchSnapshot()
@@ -244,7 +253,8 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'no_prefix',
-        locales: localeCodes
+        locales: localeCodes,
+        localeCodes
       })
 
       expect(localizedRoutes).toMatchSnapshot()
@@ -267,7 +277,8 @@ describe('localizeRoutes', function () {
       const localizedRoutes = localizeRoutes(routes, {
         ...nuxtOptions,
         locales: localeCodes,
-        optionsResolver: () => undefined
+        optionsResolver: () => undefined,
+        localeCodes
       })
 
       expect(localizedRoutes).toMatchSnapshot()

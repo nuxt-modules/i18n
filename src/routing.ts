@@ -1,4 +1,4 @@
-import { getNormalizedLocales, toArray } from './utils'
+import { toArray } from './utils'
 import { isObject } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
@@ -21,7 +21,7 @@ export declare interface ComputedRouteOptions {
   paths: Record<string, string>
 }
 
-function prefixLocalizedRoute(
+function shouldPrefix(
   localizeOptions: PrefixLocalizedRouteOptions,
   options: LocalizeRoutesParams,
   extra = false
@@ -50,6 +50,7 @@ type LocalizeRoutesParams = MarkRequired<
 > & {
   includeUnprefixedFallback?: boolean
   optionsResolver?: RouteOptionsResolver
+  localeCodes: string[]
 }
 
 function shouldLocalizeRoutes(options: NuxtI18nOptions) {
@@ -83,6 +84,8 @@ type LocalizeRouteParams = {
    * locales to use for localization
    */
   locales: string[]
+
+  defaultLocales: string[]
   /**
    * parent route
    */
@@ -95,6 +98,128 @@ type LocalizeRouteParams = {
    * indicates whether this is a default route for 'prefix_and_default' strategy
    */
   extra?: boolean
+}
+
+function localizeSingleRoute(
+  route: NuxtPage,
+  options: LocalizeRoutesParams,
+  { locales = [], parent, parentLocalized, extra = false, defaultLocales }: LocalizeRouteParams
+): NuxtPage[] {
+  // skip route localization
+  if (route.redirect && !route.file) {
+    return [route]
+  }
+
+  // resolve with route (page) options
+  const routeOptions = options.optionsResolver?.(route, locales)
+  if (options.optionsResolver != null && routeOptions == null) {
+    return [route]
+  }
+
+  // component specific options
+  const componentOptions: ComputedRouteOptions = {
+    // filter locales to prevent child routes from being localized even though they are disabled in the configuration.
+    locales: locales.filter(locale => (routeOptions?.locales ?? locales).includes(locale)),
+    paths: {},
+    ...routeOptions
+  }
+
+  const { strategy, trailingSlash, multiDomainLocales, routesNameSeparator, defaultLocaleRouteNameSuffix } = options
+  const resultRoutes: (LocalizedRoute | NuxtPage)[] = []
+  for (const locale of componentOptions.locales) {
+    const localized: LocalizedRoute = { ...route, locale, parent }
+
+    const isDefaultLocale = defaultLocales.includes(locale)
+    const addDefaultTree = isDefaultLocale && strategy === 'prefix_and_default' && parent == null && !extra
+
+    // localize route again for strategy `prefix_and_default`
+    if (addDefaultTree && parent == null && !extra) {
+      const extraRoutes = localizeSingleRoute(route, options, { locales: [locale], extra: true, defaultLocales })
+      resultRoutes.push(...extraRoutes)
+    }
+
+    // localize route name
+    if (localized.name) {
+      const nameSegments = [localized.name, routesNameSeparator, locale]
+      if (extra) {
+        nameSegments.push(routesNameSeparator, defaultLocaleRouteNameSuffix)
+      }
+      localized.name = join(...nameSegments)
+    }
+
+    // use custom path if found
+    localized.path = componentOptions.paths?.[locale] ?? localized.path
+
+    const defaultLocale = isDefaultLocale ? locale : options.defaultLocale
+    if (shouldPrefix({ defaultLocale, ...localized }, options, extra)) {
+      if (multiDomainLocales && (strategy === 'prefix_except_default' || strategy === 'prefix_and_default')) {
+        resultRoutes.push({
+          ...localized,
+          name: join(localized.name, routesNameSeparator, defaultLocaleRouteNameSuffix)
+        })
+      }
+
+      localized.path = join('/', locale, localized.path)
+
+      if (isDefaultLocale && strategy === 'prefix' && options.includeUnprefixedFallback) {
+        resultRoutes.push({ ...route, locale, parent })
+      }
+    }
+
+    // TODO: alias custom paths?
+    // add prefixes to aliases where applicable
+    if (localized.alias) {
+      const newAliases: string[] = []
+      for (const alias of toArray(localized.alias)) {
+        let localizedAlias = alias
+        if (shouldPrefix({ defaultLocale, ...localized, path: alias }, options, extra)) {
+          localizedAlias = join('/', locale, localizedAlias)
+        }
+        localizedAlias &&= adjustRoutePathForTrailingSlash({ ...localized, path: localizedAlias }, trailingSlash)
+        newAliases.push(localizedAlias)
+      }
+      localized.alias = newAliases
+    }
+
+    localized.path &&= adjustRoutePathForTrailingSlash(localized, trailingSlash)
+
+    // remove parent path from child route
+    if (parentLocalized != null) {
+      localized.path = localized.path.replace(parentLocalized.path + '/', '')
+
+      // handle parent/index
+      if (localized.path === parentLocalized.path) {
+        localized.path = ''
+      }
+    }
+
+    // localize child routes if set
+    if (localized.children) {
+      let children: NuxtPage[] = []
+      for (const child of localized.children) {
+        children = children.concat(
+          localizeSingleRoute(child, options, {
+            locales: [locale],
+            parent: route,
+            parentLocalized: localized,
+            extra,
+            defaultLocales
+          })
+        )
+      }
+      localized.children = children
+    }
+
+    resultRoutes.push(localized)
+  }
+
+  // remove properties used for localization process
+  for (const x of resultRoutes as MarkOptional<LocalizedRoute, 'parent' | 'locale'>[]) {
+    delete x.parent
+    delete x.locale
+  }
+
+  return resultRoutes
 }
 
 /**
@@ -118,132 +243,9 @@ export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams
     defaultLocales = defaultLocales.concat(domainDefaults)
   }
 
-  function localizeRoute(
-    route: NuxtPage,
-    { locales = [], parent, parentLocalized, extra = false }: LocalizeRouteParams
-  ): NuxtPage[] {
-    // skip route localization
-    if (route.redirect && !route.file) {
-      return [route]
-    }
-
-    // resolve with route (page) options
-    const routeOptions = options.optionsResolver?.(route, locales)
-    if (options.optionsResolver != null && routeOptions == null) {
-      return [route]
-    }
-
-    // component specific options
-    const componentOptions: ComputedRouteOptions = {
-      // filter locales to prevent child routes from being localized even though they are disabled in the configuration.
-      locales: locales.filter(locale => (routeOptions?.locales ?? locales).includes(locale)),
-      paths: {},
-      ...routeOptions
-    }
-
-    const localizedRoutes: (LocalizedRoute | NuxtPage)[] = []
-    for (const locale of componentOptions.locales) {
-      const localized: LocalizedRoute = { ...route, locale, parent }
-      const isDefaultLocale = defaultLocales.includes(locale)
-      const addDefaultTree = isDefaultLocale && options.strategy === 'prefix_and_default' && parent == null && !extra
-
-      // localize route again for strategy `prefix_and_default`
-      if (addDefaultTree && parent == null && !extra) {
-        localizedRoutes.push(...localizeRoute(route, { locales: [locale], extra: true }))
-      }
-
-      const nameSegments = [localized.name, options.routesNameSeparator, locale]
-      if (extra) {
-        nameSegments.push(options.routesNameSeparator, options.defaultLocaleRouteNameSuffix)
-      }
-
-      // localize name if set
-      localized.name &&= join(...nameSegments)
-
-      // use custom path if found
-      localized.path = componentOptions.paths?.[locale] ?? localized.path
-
-      const localePrefixable = prefixLocalizedRoute(
-        { defaultLocale: isDefaultLocale ? locale : options.defaultLocale, ...localized },
-        options,
-        extra
-      )
-      if (localePrefixable) {
-        if (
-          options.multiDomainLocales &&
-          (options.strategy === 'prefix_except_default' || options.strategy === 'prefix_and_default')
-        ) {
-          localizedRoutes.push({
-            ...localized,
-            name: `${localized.name}___${options.defaultLocaleRouteNameSuffix}`
-          })
-        }
-
-        localized.path = join('/', locale, localized.path)
-
-        if (isDefaultLocale && options.strategy === 'prefix' && options.includeUnprefixedFallback) {
-          localizedRoutes.push({ ...route, locale, parent })
-        }
-      }
-
-      // TODO: alias custom paths?
-      // add prefixes to aliases where applicable
-      if (localized.alias) {
-        const aliases = toArray(localized.alias)
-        const localizedAliases: string | string[] | undefined = []
-
-        for (const alias of aliases) {
-          const aliasPrefixable = prefixLocalizedRoute(
-            { defaultLocale: isDefaultLocale ? locale : options.defaultLocale, ...localized, path: alias },
-            options,
-            extra
-          )
-
-          let localizedAlias = alias
-          if (aliasPrefixable) {
-            localizedAlias = join('/', locale, localizedAlias)
-          }
-
-          localizedAlias &&= adjustRoutePathForTrailingSlash(
-            { ...localized, path: localizedAlias },
-            options.trailingSlash
-          )
-
-          localizedAliases.push(localizedAlias)
-        }
-
-        localized.alias = localizedAliases
-      }
-
-      localized.path &&= adjustRoutePathForTrailingSlash(localized, options.trailingSlash)
-
-      // remove parent path from child route
-      if (parentLocalized != null) {
-        localized.path = localized.path.replace(parentLocalized.path + '/', '')
-
-        // handle parent/index
-        if (localized.path === parentLocalized.path) {
-          localized.path = ''
-        }
-      }
-
-      // localize child routes if set
-      localized.children &&= localized.children.flatMap(child =>
-        localizeRoute(child, { locales: [locale], parent: route, parentLocalized: localized, extra })
-      )
-
-      localizedRoutes.push(localized)
-    }
-
-    // remove properties used for localization process
-    return localizedRoutes.flatMap((x: MarkOptional<LocalizedRoute, 'parent' | 'locale'>) => {
-      delete x.parent
-      delete x.locale
-      return x
-    })
+  let processed: NuxtPage[] = []
+  for (const route of routes) {
+    processed = processed.concat(localizeSingleRoute(route, options, { locales: options.localeCodes, defaultLocales }))
   }
-
-  return routes.flatMap(route =>
-    localizeRoute(route, { locales: getNormalizedLocales(options.locales).map(x => x.code) })
-  )
+  return processed
 }
