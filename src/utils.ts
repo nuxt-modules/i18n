@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
-import { parse as parsePath, resolve, relative, join } from 'pathe'
+import { resolve, relative, join } from 'pathe'
 import { defu } from 'defu'
 import { isString, isArray } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
@@ -9,14 +9,14 @@ import { parseSync } from './utils/parse'
 
 import type { NuxtI18nOptions, LocaleInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { IdentifierName, Program } from 'oxc-parser'
+import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
 export function normalizeIncludingLocales(locales?: string | string[]) {
-  return (toArray(locales) ?? []).filter(isString)
+  return toArray(locales ?? []).filter(isString)
 }
 
 export function filterLocales(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
@@ -34,9 +34,8 @@ export function filterLocales(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
 }
 
 export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): LocaleObject[] {
-  locales = locales || []
   const normalized: LocaleObject[] = []
-  for (const locale of locales) {
+  for (const locale of locales ?? []) {
     if (isString(locale)) {
       normalized.push({ code: locale, language: locale })
     } else {
@@ -49,7 +48,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
 export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {
-    const resolved: LocaleInfo = Object.assign({}, locale, { meta: [] })
+    const resolved: LocaleInfo = Object.assign({ meta: [] }, locale)
     delete resolved.file
     delete resolved.files
 
@@ -58,7 +57,7 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir
       const filePath = resolve(srcDir, f.path)
       const localeType = getLocaleType(filePath)
 
-      const metaFile = {
+      resolved.meta.push({
         path: filePath,
         loadPath: relative(buildDir, filePath),
         type: localeType,
@@ -67,9 +66,7 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir
           path: f.path,
           cache: f.cache ?? localeType !== 'dynamic'
         }
-      }
-
-      resolved.meta!.push(metaFile)
+      })
     }
 
     localesResolved.push(resolved)
@@ -79,83 +76,72 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir
 }
 
 function getLocaleType(path: string): LocaleType {
-  const ext = parsePath(path).ext
-  if (EXECUTABLE_EXT_RE.test(ext)) {
-    const parsed = parseSync(path, readFileSync(path, 'utf-8'))
-    const analyzed = scanProgram(parsed.program)
-    if (analyzed === 'object') {
-      return 'static'
-    } else if (analyzed === 'function' || analyzed === 'arrow-function') {
-      return 'dynamic'
-    } else {
-      return 'unknown'
-    }
-  } else {
+  if (!EXECUTABLE_EXT_RE.test(path)) {
     return 'static'
   }
+
+  const parsed = parseSync(path, readFileSync(path, 'utf-8'))
+  const analyzed = scanProgram(parsed.program)
+  // prettier-ignore
+  return analyzed === 'object'
+    ? 'static'
+    : analyzed === 'function'
+      ? 'dynamic'
+      : 'unknown'
 }
 
 function scanProgram(program: Program) {
-  let ret: false | 'object' | 'function' | 'arrow-function' = false
-  let variableDeclaration: IdentifierName | undefined
+  let varDeclarationName: IdentifierName | undefined
+  const varDeclarations: VariableDeclarator[] = []
 
   for (const node of program.body) {
-    if (node.type !== 'ExportDefaultDeclaration') continue
-
-    if (node.declaration.type === 'ObjectExpression') {
-      ret = 'object'
-      break
-    }
-
-    if (node.declaration.type === 'Identifier') {
-      variableDeclaration = node.declaration
-      break
-    }
-
-    if (node.declaration.type === 'CallExpression' && node.declaration.callee.type === 'Identifier') {
-      const [fnNode] = node.declaration.arguments
-      if (fnNode.type === 'FunctionExpression') {
-        ret = 'function'
+    switch (node.type) {
+      // collect variable declarations
+      case 'VariableDeclaration':
+        for (const decl of node.declarations) {
+          if (decl.type !== 'VariableDeclarator' || decl.init == null) continue
+          if ('name' in decl.id === false) continue
+          varDeclarations.push(decl)
+        }
         break
-      }
-
-      if (fnNode.type === 'ArrowFunctionExpression') {
-        ret = 'arrow-function'
-        break
-      }
-    }
-  }
-
-  if (variableDeclaration) {
-    for (const node of program.body) {
-      if (node.type !== 'VariableDeclaration') continue
-      for (const decl of node.declarations) {
-        if (decl.type !== 'VariableDeclarator') continue
-        if (decl.init == null) continue
-        if ('name' in decl.id === false || decl.id.name !== variableDeclaration.name) continue
-
-        if (decl.init.type === 'ObjectExpression') {
-          ret = 'object'
+      // check default export - store identifier if exporting variable name
+      case 'ExportDefaultDeclaration':
+        if (node.declaration.type === 'Identifier') {
+          varDeclarationName = node.declaration
           break
         }
 
-        if (decl.init.type === 'CallExpression' && decl.init.callee.type === 'Identifier') {
-          const [fnNode] = decl.init.arguments
-          if (fnNode.type === 'FunctionExpression') {
-            ret = 'function'
-            break
-          }
+        if (node.declaration.type === 'ObjectExpression') {
+          return 'object'
+        }
 
-          if (fnNode.type === 'ArrowFunctionExpression') {
-            ret = 'arrow-function'
-            break
+        if (node.declaration.type === 'CallExpression' && node.declaration.callee.type === 'Identifier') {
+          const [fnNode] = node.declaration.arguments
+          if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
+            return 'function'
           }
+        }
+        break
+    }
+  }
+
+  if (varDeclarationName) {
+    const n = varDeclarations.find(x => x.id.type === 'Identifier' && x.id.name === varDeclarationName.name)
+    if (n) {
+      if (n.init?.type === 'ObjectExpression') {
+        return 'object'
+      }
+
+      if (n.init?.type === 'CallExpression' && n.init.callee.type === 'Identifier') {
+        const [fnNode] = n.init.arguments
+        if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
+          return 'function'
         }
       }
     }
   }
 
-  return ret
+  return false
 }
 
 export async function resolveVueI18nConfigInfo(
@@ -163,10 +149,10 @@ export async function resolveVueI18nConfigInfo(
   configPath: string = 'i18n.config',
   buildDir = useNuxt().options.buildDir
 ) {
-  const relativeBase = relative(buildDir, rootDir)
   const absolutePath = await resolvePath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
   if (!existsSync(absolutePath)) return undefined
 
+  const relativeBase = relative(buildDir, rootDir)
   return {
     rootDir,
     meta: {
@@ -176,11 +162,6 @@ export async function resolveVueI18nConfigInfo(
       type: getLocaleType(absolutePath)
     }
   }
-}
-
-export type PrerenderTarget = {
-  type: 'locale' | 'config'
-  path: string
 }
 
 export const getLocalePaths = (locale: LocaleObject): string[] => {
@@ -193,7 +174,7 @@ export const getLocaleFiles = (locale: LocaleObject): LocaleFile[] => {
   }
 
   if (locale.files != null) {
-    return [...locale.files].map(x => (isString(x) ? { path: x, cache: undefined } : x))
+    return locale.files.map(x => (isString(x) ? { path: x, cache: undefined } : x))
   }
 
   return []

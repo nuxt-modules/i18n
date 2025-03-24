@@ -2,7 +2,7 @@ import createDebug from 'debug'
 import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getLayerI18n, getLocalePaths, getNormalizedLocales } from './utils'
+import { getLayerI18n, getLocalePaths } from './utils'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -226,12 +226,11 @@ declare module 'vue-router' {
   }
 }`
 
-export function generateI18nTypes(nuxt: Nuxt, options: NuxtI18nOptions) {
+export function generateI18nTypes(nuxt: Nuxt, { userOptions: options, normalizedLocales }: I18nNuxtContext) {
   const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
   const resolvedLocaleType = typeof generatedLocales === 'string' ? 'Locale[]' : 'LocaleObject[]'
-  const localeCodeStrings = getNormalizedLocales(options.locales).map(x => JSON.stringify(x.code))
-  const narrowedLocaleType = localeCodeStrings.join(' | ') || 'string'
+  const narrowedLocaleType = normalizedLocales.map(x => JSON.stringify(x.code)).join(' | ') || 'string'
 
   const i18nType = `${vueI18nTypes.join(' & ')} & NuxtI18nRoutingCustomProperties<${resolvedLocaleType}>`
 

@@ -17,7 +17,7 @@ const debug = createDebug('@nuxtjs/i18n:bundler')
 
 export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { options: nuxtOptions } = ctx
-  const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta!.map(m => m.path))])]
+  const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
   const localeIncludePaths = localePaths.length ? localePaths : undefined
 
   const sourceMapOptions: BundlerPluginOptions = {
@@ -85,38 +85,33 @@ export function createLogger(label) {
     addBuildPlugin(TransformI18nFunctionPlugin(sourceMapOptions))
   }
 
+  const defineConfig = {
+    ...getFeatureFlags(nuxtOptions.bundle),
+    __DEBUG__: String(!!nuxtOptions.debug),
+    __TEST__: String(!!nuxtOptions.debug || nuxt.options._i18nTest)
+  }
   /**
    * webpack plugin
    */
-  try {
-    const webpack = await import('webpack').then(m => m.default || m)
-
-    addWebpackPlugin(
-      new webpack.DefinePlugin({
-        ...getFeatureFlags(nuxtOptions.bundle),
-        __DEBUG__: String(!!nuxtOptions.debug),
-        __TEST__: String(!!nuxtOptions.debug || nuxt.options._i18nTest)
-      })
-    )
-  } catch (e: unknown) {
-    debug((e as Error).message)
+  if (nuxt.options.builder === '@nuxt/webpack-builder') {
+    try {
+      const webpack = await import('webpack').then(m => m.default || m)
+      addWebpackPlugin(new webpack.DefinePlugin(defineConfig))
+    } catch (e: unknown) {
+      debug((e as Error).message)
+    }
   }
 
   /**
    * rspack plugin
    */
-  try {
-    const { rspack } = await import('@rspack/core')
-
-    addRspackPlugin(
-      new rspack.DefinePlugin({
-        ...getFeatureFlags(nuxtOptions.bundle),
-        __DEBUG__: String(!!nuxtOptions.debug),
-        __TEST__: String(!!nuxtOptions.debug || nuxt.options._i18nTest)
-      })
-    )
-  } catch (e: unknown) {
-    debug((e as Error).message)
+  if (nuxt.options.builder == '@nuxt/rspack-builder') {
+    try {
+      const { rspack } = await import('@rspack/core')
+      addRspackPlugin(new rspack.DefinePlugin(defineConfig))
+    } catch (e: unknown) {
+      debug((e as Error).message)
+    }
   }
 
   /**
@@ -124,8 +119,8 @@ export function createLogger(label) {
    */
   extendViteConfig(config => {
     config.define ??= {}
-    config.define['__DEBUG__'] = JSON.stringify(!!nuxtOptions.debug)
-    config.define['__TEST__'] = String(!!nuxtOptions.debug || nuxt.options._i18nTest)
+    config.define['__DEBUG__'] = defineConfig['__DEBUG__']
+    config.define['__TEST__'] = defineConfig['__TEST__']
 
     debug('vite.config.define', config.define)
   })

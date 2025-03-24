@@ -52,15 +52,14 @@ export { localeDetector }`
       nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
       nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
 
+      const localePathsByType = getResourcePathsGrouped(ctx.localeInfo)
       // install server resource transform plugin for yaml / json5 format
-      const yamlPaths = getResourcePaths(ctx.localeInfo, /\.ya?ml$/)
-      if (yamlPaths.length > 0) {
-        nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: yamlPaths }))
+      if (localePathsByType.yaml.length > 0) {
+        nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: localePathsByType.yaml }))
       }
 
-      const json5Paths = getResourcePaths(ctx.localeInfo, /\.json5?$/)
-      if (json5Paths.length > 0) {
-        nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: json5Paths }))
+      if (localePathsByType.json5.length > 0) {
+        nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
       }
 
       // auto import for server-side
@@ -118,37 +117,33 @@ export { localeDetector }`
 }
 
 async function resolveLocaleDetectorPath(nuxt: Nuxt) {
-  const serverI18nLayer = nuxt.options._layers.find(l => {
-    const layerI18n = getLayerI18n(l)
-    return layerI18n?.experimental?.localeDetector != null && layerI18n?.experimental?.localeDetector !== ''
-  })
+  const i18nLayer = nuxt.options._layers.find(l => !!getLayerI18n(l)?.experimental?.localeDetector)
 
-  let enableServerIntegration = serverI18nLayer != null
-
-  if (serverI18nLayer == null) {
-    return [enableServerIntegration, '']
+  // no locale detector configured
+  if (i18nLayer == null) {
+    return [false, '']
   }
 
-  const serverI18nLayerConfig = getLayerI18n(serverI18nLayer)
-  const i18nDir = resolveI18nDir(serverI18nLayer, serverI18nLayerConfig!, true)
-  const pathTo = resolve(i18nDir, serverI18nLayerConfig!.experimental!.localeDetector!)
-  const localeDetectorPath = await resolvePath(pathTo, { cwd: nuxt.options.rootDir, extensions: EXECUTABLE_EXTENSIONS })
-  const hasLocaleDetector = existsSync(localeDetectorPath)
-  if (!hasLocaleDetector) {
+  const i18nLayerConfig = getLayerI18n(i18nLayer)
+  const i18nDir = resolveI18nDir(i18nLayer, i18nLayerConfig!, true)
+  const localeDetectorPath = await resolvePath(resolve(i18nDir, i18nLayerConfig!.experimental!.localeDetector!), {
+    cwd: nuxt.options.rootDir,
+    extensions: EXECUTABLE_EXTENSIONS
+  })
+  if (!existsSync(localeDetectorPath)) {
     const logger = useLogger(NUXT_I18N_MODULE_ID)
     logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
-    enableServerIntegration = false
+    return [false, localeDetectorPath]
   }
 
-  return [enableServerIntegration, localeDetectorPath]
+  return [true, localeDetectorPath]
 }
 
-function getResourcePaths(localeInfo: LocaleInfo[], extPattern: RegExp): string[] {
-  return localeInfo.reduce((acc, locale) => {
-    if (!locale.meta) return acc
-    const collected = locale.meta
-      .map(meta => (extPattern.test(meta.path) ? meta.path : undefined))
-      .filter(Boolean) as string[]
-    return [...acc, ...collected]
-  }, [] as string[])
+function getResourcePathsGrouped(localeInfo: LocaleInfo[]) {
+  const groups: { yaml: string[]; json5: string[] } = { yaml: [], json5: [] }
+  for (const locale of localeInfo) {
+    groups.yaml = groups.yaml.concat(locale.meta.filter(meta => /\.ya?ml$/.test(meta.path)).map(x => x.path))
+    groups.json5 = groups.json5.concat(locale.meta.filter(meta => /\.json5?$/.test(meta.path)).map(x => x.path))
+  }
+  return groups
 }

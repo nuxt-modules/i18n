@@ -91,7 +91,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
 
     // do not mutate pages if localization is skipped
     if (pages !== localizedPages) {
-      pages.splice(0, pages.length)
+      pages.length = 0
       pages.unshift(...localizedPages)
     }
 
@@ -270,8 +270,7 @@ export function getRouteOptionsResolver(
 function resolveRoutePath(path: string): string {
   const normalizePath = path.slice(1, path.length) // remove `/`
   const tokens = parseSegment(normalizePath)
-  const routePath = getRoutePath(tokens)
-  return routePath
+  return getRoutePath(tokens)
 }
 
 /**

@@ -62,12 +62,6 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
  * This overwrites `options.locales`
  */
 export const applyLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
-  const project = nuxt.options._layers[0]
-  const layers = nuxt.options._layers
-
-  const resolvedLayerPaths = layers.map(l => resolve(project.config.rootDir, l.config.rootDir))
-  debug('using layers at paths', resolvedLayerPaths)
-
   const mergedLocales = mergeLayerLocales(options, nuxt)
   debug('merged locales', mergedLocales)
 
