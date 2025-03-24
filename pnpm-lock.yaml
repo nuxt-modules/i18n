@@ -144,9 +144,6 @@ importers:
       globals:
         specifier: ^16.0.0
         version: 16.0.0
-      globby:
-        specifier: ^14.1.0
-        version: 14.1.0
       h3:
         specifier: ^1.15.1
         version: 1.15.1
