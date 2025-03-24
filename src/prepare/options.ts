@@ -20,7 +20,11 @@ export function prepareOptions({ debug, logger, options }: I18nNuxtContext, nuxt
     )
   }
 
-  if (!nuxt.options?._prepare && nuxt.options.i18n?.bundle?.optimizeTranslationDirective == null) {
+  if (
+    !nuxt.options?._prepare &&
+    !nuxt.options?.test &&
+    nuxt.options.i18n?.bundle?.optimizeTranslationDirective == null
+  ) {
     logger.warn(
       '`bundle.optimizeTranslationDirective` is enabled by default, we recommend disabling this feature as it causes issues and will be deprecated in v10.\nExplicitly setting this option to `true` or `false` disables this warning, for more details see: https://github.com/nuxt-modules/i18n/issues/3238#issuecomment-2672492536'
     )

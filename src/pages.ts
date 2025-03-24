@@ -79,6 +79,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
 
     const localizedPages = localizeRoutes(pages, {
       ...options,
+      localeCodes,
       includeUnprefixedFallback,
       optionsResolver: getRouteOptionsResolver(ctx, options)
     })
