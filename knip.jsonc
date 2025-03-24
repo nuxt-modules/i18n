@@ -2,7 +2,13 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "workspaces": {
     ".": {
-      "entry": ["build.config.ts", "src/module.ts", "src/runtime/**", "scripts/*"],
+      "entry": [
+        "build.config.ts",
+        "src/module.ts",
+        "src/runtime/{plugins,components,composables}/**",
+        "src/runtime/server/**",
+        "scripts/*"
+      ],
       "ignoreUnresolved": [
         // virtuals
         "#nuxt-i18n/*",

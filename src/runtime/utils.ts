@@ -26,15 +26,9 @@ import type { I18n, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
-import type { HeadSafe } from '@unhead/vue'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type {
-  PrefixableOptions,
-  SwitchLocalePathIntercepter,
-  BaseUrlResolveHandler,
-  LocaleObject
-} from '#internal-i18n-types'
+import type { PrefixableOptions, SwitchLocalePathIntercepter, BaseUrlResolveHandler } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 import { createLocaleFromRouteGetter } from './routing/utils'
 import { getComposer } from './compatibility'
@@ -382,21 +376,9 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
 }
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
-export type HeadParam = Required<Pick<HeadSafe, 'meta' | 'link'>>
-export function getNormalizedLocales(locales: string[] | LocaleObject[]): LocaleObject[] {
-  const normalized: LocaleObject[] = []
-  for (const locale of locales) {
-    if (typeof locale === 'string') {
-      normalized.push({ code: locale })
-      continue
-    }
-    normalized.push(locale)
-  }
-  return normalized
-}
 
 // collect unique keys of passed objects
-export function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
+function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
   const keySet = new Set<string>()
 
   for (const obj of objects) {

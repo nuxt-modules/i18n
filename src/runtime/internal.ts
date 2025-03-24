@@ -22,7 +22,7 @@ import type { CookieRef, NuxtApp } from 'nuxt/app'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 
-export function formatMessage(message: string) {
+function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
 }
 
