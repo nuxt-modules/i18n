@@ -157,6 +157,6 @@ export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${genString(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 /** client **/
-${(ctx.isDev && opts.nuxtI18nOptions.experimental.hmr && codeHMR) || ''}
+${(ctx.isDev && opts.nuxtI18nOptions.hmr && codeHMR) || ''}
 /** client-end **/`
 }
