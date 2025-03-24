@@ -132,6 +132,7 @@
     "@rspack/core": "^1.2.6",
     "@types/debug": "^4.1.12",
     "@types/eslint": "^8.56.6",
+    "@types/estree": "^1.0.7",
     "@unhead/vue": "^2.0.0",
     "bumpp": "^9.4.1",
     "changelogithub": "^0.13.7",
@@ -159,7 +160,6 @@
     "typescript-eslint": "^7.14.0",
     "unbuild": "^2.0.0",
     "undici": "^7.5.0",
-    "unhead": "^2.0.0",
     "vitest": "^3.0.9",
     "vue": "^3.5.13",
     "webpack": "^5.98.0"
