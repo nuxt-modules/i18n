@@ -5,7 +5,6 @@ import { createBrowser } from '../browser'
 import setupJest from './jest'
 import setupVitest from './vitest'
 import consola from 'consola'
-import defu from 'defu'
 
 import type { TestHooks, TestOptions, VitestContext } from '../types'
 
@@ -31,7 +30,7 @@ export function createTest(options: Partial<TestOptions>): TestHooks {
   const afterAll = async () => {
     if (ctx.serverProcess) {
       setTestContext(ctx)
-      await stopServer()
+      stopServer()
       setTestContext(undefined)
     }
 

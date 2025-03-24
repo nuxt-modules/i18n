@@ -11,5 +11,12 @@
     "source.fixAll.eslint": "explicit"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "eslint.useFlatConfig": true
+  "eslint.useFlatConfig": true,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.hg/store/**": true,
+    "**/.nuxt/___**": true,
+    "**/.output/___**": true,
+  }
 }
