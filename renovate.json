@@ -1,7 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":prHourlyLimit4", ":semanticCommitTypeAll(chore)"],
-  "baseBranches": ["$default"],
+  "extends": [
+    "config:recommended",
+    ":prHourlyLimit4",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "baseBranches": [
+    "$default"
+  ],
   "meteor": {
     "enabled": false
   },
@@ -11,39 +17,74 @@
   },
   "packageRules": [
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "enabled": false
     },
     {
-      "matchPackageNames": ["node"],
+      "matchPackageNames": [
+        "node"
+      ],
       "enabled": false
     },
     {
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
-      "matchFiles": ["package.json"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "lockFileMaintenance": {
         "enabled": true,
-        "extends": ["schedule:weekly"]
+        "extends": [
+          "schedule:weekly"
+        ]
       }
     },
     {
       "groupName": "Docs dependencies",
-      "matchFiles": ["docs/package.json"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchFileNames": [
+        "docs/package.json"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     },
     {
       "groupName": "Nuxt & Vue dependencies",
-      "matchFiles": ["package.json", "docs/package.json"],
-      "matchPackageNames": ["nuxt", "@nuxt/**", "vue", "vue-router"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchFileNames": [
+        "package.json",
+        "docs/package.json"
+      ],
+      "matchPackageNames": [
+        "nuxt",
+        "@nuxt/**",
+        "vue",
+        "vue-router"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     },
     {
       "groupName": "Intlify dependencies",
-      "matchFiles": ["package.json"],
-      "matchPackageNames": ["vue-i18n", "@intlify/**"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchPackageNames": [
+        "vue-i18n",
+        "@intlify/**"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     }
   ]
 }
