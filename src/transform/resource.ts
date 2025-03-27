@@ -20,7 +20,7 @@ async function transform<T extends TransformOptions>(
   input: string | Uint8Array,
   options?: SameShape<TransformOptions, T>
 ): Promise<TransformResult<T>> {
-  return await esbuildTransform(input, { ...tryUseNuxt()?.options.esbuild.options, ...options })
+  return await esbuildTransform(input, { ...tryUseNuxt()?.options.esbuild?.options, ...options })
 }
 
 const debug = createDebug('@nuxtjs/i18n:transform:resource')
