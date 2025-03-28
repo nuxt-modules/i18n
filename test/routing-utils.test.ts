@@ -1,6 +1,11 @@
 import { describe, it, assert, test } from 'vitest'
 import * as utils from '../src/runtime/routing/utils'
 
+const ROUTE_GEN_CONFIG = {
+  routesNameSeparator: '___',
+  defaultLocaleRouteNameSuffix: 'default'
+}
+
 describe('getLocaleRouteName', () => {
   describe('strategy: prefix_and_default', () => {
     it('should be `route1___en___default`', () => {
@@ -8,9 +13,8 @@ describe('getLocaleRouteName', () => {
         utils.getLocaleRouteName('route1', 'en', {
           defaultLocale: 'en',
           strategy: 'prefix_and_default',
-          routesNameSeparator: '___',
-          defaultLocaleRouteNameSuffix: 'default',
-          differentDomains: false
+          differentDomains: false,
+          ...ROUTE_GEN_CONFIG
         }),
         'route1___en___default'
       )
@@ -23,9 +27,8 @@ describe('getLocaleRouteName', () => {
         utils.getLocaleRouteName('route1', 'en', {
           defaultLocale: 'en',
           strategy: 'prefix_except_default',
-          routesNameSeparator: '___',
-          defaultLocaleRouteNameSuffix: 'default',
-          differentDomains: false
+          differentDomains: false,
+          ...ROUTE_GEN_CONFIG
         }),
         'route1___en'
       )
@@ -54,9 +57,8 @@ describe('getLocaleRouteName', () => {
           utils.getLocaleRouteName(null, 'en', {
             defaultLocale: 'en',
             strategy: 'prefix_and_default',
-            routesNameSeparator: '___',
-            defaultLocaleRouteNameSuffix: 'default',
-            differentDomains: false
+            differentDomains: false,
+            ...ROUTE_GEN_CONFIG
           }),
           '(null)___en___default'
         )
@@ -154,26 +156,5 @@ describe('findBrowserLocale', () => {
     const browserLocales = ['en-IN', 'en']
 
     assert.ok(utils.findBrowserLocale(locales, browserLocales) === 'en-GB')
-  })
-
-  it('options', () => {
-    const locale = utils.findBrowserLocale([{ code: 'en' }, { code: 'ja' }], ['ja-JP', 'en-US'], {
-      // custom matcher
-      matcher(locales, browserLocales) {
-        const matchedLocales = [] as utils.BrowserLocale[]
-        for (const [index, browserCode] of browserLocales.entries()) {
-          const languageCode = browserCode.split('-')[0].toLowerCase()
-          const matchedLocale = locales.find(l => l.language.split('-')[0].toLowerCase() === languageCode)
-          if (matchedLocale) {
-            matchedLocales.push({ code: matchedLocale.code, score: 1 * index })
-            break
-          }
-        }
-        return matchedLocales
-      },
-      // custom comparer
-      comparer: (a, b) => a.score - b.score
-    })
-    assert.ok(locale === 'ja')
   })
 })

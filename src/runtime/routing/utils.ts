@@ -63,21 +63,10 @@ interface BrowserLocale {
    */
   code: string
   /**
-   * The score number
-   *
-   * @remarks
-   * The score number that is used by `sorter` of {@link FindBrowserLocaleOptions}
+   * The match score - used to sort multiple matched locales
    */
   score: number
 }
-
-/**
- * The target locale info
- *
- * @remarks
- * This type is used by {@link BrowserLocaleMatcher} first argument
- */
-type TargetLocale = { code: string; language: string }
 
 /**
  * The browser locale matcher
@@ -90,15 +79,12 @@ type TargetLocale = { code: string; language: string }
  *
  * @returns The matched {@link BrowserLocale | locale info}
  */
-type BrowserLocaleMatcher = (locales: TargetLocale[], browserLocales: string[]) => BrowserLocale[]
-type LocaleComparer = (a: BrowserLocale, b: BrowserLocale) => number
-
-function matchBrowserLocale(locales: TargetLocale[], browserLocales: string[]): BrowserLocale[] {
+function matchBrowserLocale(locales: LocaleObject[], browserLocales: string[]): BrowserLocale[] {
   const matchedLocales = [] as BrowserLocale[]
 
   // first pass: match exact locale.
   for (const [index, browserCode] of browserLocales.entries()) {
-    const matchedLocale = locales.find(l => l.language.toLowerCase() === browserCode.toLowerCase())
+    const matchedLocale = locales.find(l => l.language?.toLowerCase() === browserCode.toLowerCase())
     if (matchedLocale) {
       matchedLocales.push({ code: matchedLocale.code, score: 1 - index / browserLocales.length })
       break
@@ -108,7 +94,7 @@ function matchBrowserLocale(locales: TargetLocale[], browserLocales: string[]): 
   // second pass: match only locale code part of the browser locale (not including country).
   for (const [index, browserCode] of browserLocales.entries()) {
     const languageCode = browserCode.split('-')[0].toLowerCase()
-    const matchedLocale = locales.find(l => l.language.split('-')[0].toLowerCase() === languageCode)
+    const matchedLocale = locales.find(l => l.language?.split('-')[0].toLowerCase() === languageCode)
     if (matchedLocale) {
       // deduct a thousandth for being non-exact match.
       matchedLocales.push({ code: matchedLocale.code, score: 0.999 - index / browserLocales.length })
@@ -132,35 +118,19 @@ function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
  *
  * @param locales - The target {@link LocaleObject} list
  * @param browserLocales - The locale code list that is used in browser
- * @param options - The options for {@link findBrowserLocale} function
  *
  * @returns The matched the locale code
  */
-export function findBrowserLocale(
-  locales: LocaleObject[],
-  browserLocales: string[],
-  {
-    matcher = matchBrowserLocale,
-    comparer = compareBrowserLocale
-  }: { matcher?: BrowserLocaleMatcher; comparer?: LocaleComparer } = {}
-): string {
-  const normalizedLocales = []
-  for (const l of locales) {
-    const { code } = l
-    const language = l.language || code
-    normalizedLocales.push({ code, language })
-  }
-
-  // finding!
-  const matchedLocales = matcher(normalizedLocales, browserLocales)
-
+export function findBrowserLocale(locales: LocaleObject[], browserLocales: string[]): string {
+  const normalizedLocales = locales.map(l => ({ code: l.code, language: l.language || l.code }))
+  const matchedLocales = matchBrowserLocale(normalizedLocales, browserLocales)
   if (matchedLocales.length === 0) {
     return ''
   }
 
+  // sort by score when multiple locales matched
   if (matchedLocales.length > 1) {
-    // sort!
-    matchedLocales.sort(comparer)
+    matchedLocales.sort(compareBrowserLocale)
   }
 
   return matchedLocales[0].code
