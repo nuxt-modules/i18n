@@ -5,7 +5,6 @@ import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import MagicString from 'magic-string'
 import { formatMessage } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
@@ -16,7 +15,7 @@ import { createRoutesContext } from 'unplugin-vue-router'
 import { resolveOptions } from 'unplugin-vue-router/options'
 
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
-import type { Node, ObjectExpression, ArrayExpression } from '@babel/types'
+import type { Node, ObjectExpression, ArrayExpression, Expression, PrivateName } from '@babel/types'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-vue-router'
 import type { NuxtI18nOptions, CustomRoutePages, ComputedRouteOptions, RouteOptionsResolver } from './types'
 import type { I18nNuxtContext } from './context'
@@ -259,10 +258,9 @@ export function getRouteOptionsResolver(
   const useConfig = customRoutes === 'config'
   debug('getRouteOptionsResolver useConfig', useConfig)
 
+  const getter = useConfig ? getRouteOptionsFromPages : getRouteOptionsFromComponent
   return (route, localeCodes): ComputedRouteOptions | undefined => {
-    const ret = useConfig
-      ? getRouteOptionsFromPages(ctx, route, localeCodes, pages, defaultLocale)
-      : getRouteOptionsFromComponent(route, localeCodes)
+    const ret = getter(route, localeCodes, ctx, pages, defaultLocale)
     debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
     return ret
   }
@@ -278,9 +276,9 @@ function resolveRoutePath(path: string): string {
  * Retrieve custom routes from i18n config `pages` property
  */
 function getRouteOptionsFromPages(
-  ctx: NuxtPageAnalyzeContext,
   route: NuxtPage,
   localeCodes: string[],
+  ctx: NuxtPageAnalyzeContext,
   pages: CustomRoutePages,
   defaultLocale: string
 ) {
@@ -318,17 +316,15 @@ function getRouteOptionsFromPages(
 
   // construct paths object
   for (const locale of options.locales) {
-    const customLocalePath = pageOptions[locale]
-    if (isString(customLocalePath)) {
-      // set custom path if any
-      options.paths[locale] = resolveRoutePath(customLocalePath)
+    // set custom path if any
+    if (isString(pageOptions[locale])) {
+      options.paths[locale] = resolveRoutePath(pageOptions[locale])
       continue
     }
 
-    const customDefaultLocalePath = pageOptions[defaultLocale]
-    if (isString(customDefaultLocalePath)) {
-      // set default locale's custom path if any
-      options.paths[locale] = resolveRoutePath(customDefaultLocalePath)
+    // set default locale's custom path if any
+    if (isString(pageOptions[defaultLocale])) {
+      options.paths[locale] = resolveRoutePath(pageOptions[defaultLocale])
     }
   }
 
@@ -340,10 +336,9 @@ function getRouteOptionsFromPages(
  */
 function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
   debug('getRouteOptionsFromComponent', route)
-  const file = route.file
 
   // localize disabled if no file (vite) or component (webpack)
-  if (!isString(file)) {
+  if (route.file == null) {
     return undefined
   }
 
@@ -352,7 +347,7 @@ function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
     paths: {}
   }
 
-  const componentOptions = readComponent(file)
+  const componentOptions = readComponent(route.file)
 
   // skip if page components not defined
   if (componentOptions == null) {
@@ -367,9 +362,9 @@ function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
   options.locales = componentOptions.locales || localeCodes
 
   // construct paths object
-  for (const [locale, path] of Object.entries(componentOptions.paths ?? {})) {
-    if (isString(path)) {
-      options.paths[locale] = resolveRoutePath(path)
+  for (const locale in componentOptions.paths) {
+    if (isString(componentOptions.paths[locale])) {
+      options.paths[locale] = resolveRoutePath(componentOptions.paths[locale])
     }
   }
 
@@ -380,118 +375,104 @@ function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
  * Parse page component at `target` and extract argument passed to `defineI18nRoute()`
  */
 function readComponent(target: string) {
-  let options: ComputedRouteOptions | false | undefined = undefined
-
   try {
     const content = readFileSync(target, 'utf-8')
     const { descriptor } = parseSFC(content)
 
     if (!content.includes(NUXT_I18N_COMPOSABLE_DEFINE_ROUTE)) {
-      return options
+      return undefined
     }
 
     const desc = compileScript(descriptor, { id: target })
-    const { scriptSetupAst, scriptAst } = desc
 
     let extract = ''
-    const genericSetupAst = scriptSetupAst || scriptAst
-    if (genericSetupAst) {
-      const s = new MagicString(desc.loc.source)
-      genericSetupAst.forEach(ast => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-        walk(ast as any, {
-          enter(_node) {
-            const node = _node as Node
+    const genericSetupAst = desc.scriptSetupAst || desc.scriptAst || []
+    for (const ast of genericSetupAst) {
+      // @ts-expect-error type mismatch
+      walk(ast, {
+        enter(node: Node) {
+          if (node.type !== 'CallExpression') return
+          if (node.callee.type === 'Identifier' && node.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_ROUTE) {
+            const arg = node.arguments[0]
             if (
-              node.type === 'CallExpression' &&
-              node.callee.type === 'Identifier' &&
-              node.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_ROUTE
+              arg.type === 'BooleanLiteral' ||
+              (arg.type === 'ObjectExpression' && verifyObjectValue(arg.properties))
             ) {
-              const arg = node.arguments[0]
-              if (arg.type === 'ObjectExpression') {
-                if (verifyObjectValue(arg.properties) && arg.start != null && arg.end != null) {
-                  extract = s.slice(arg.start, arg.end)
-                }
-              } else if (arg.type === 'BooleanLiteral' && arg.start != null && arg.end != null) {
-                extract = s.slice(arg.start, arg.end)
-              }
+              extract = desc.loc.source.slice(arg.start!, arg.end!)
             }
           }
-        })
+        }
       })
     }
 
     if (extract) {
-      options = evalValue(extract)
+      return evalValue(extract)
     }
   } catch (e: unknown) {
     console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
   }
 
-  return options
+  return undefined
+}
+
+function nodeNameOrValue(val: PrivateName | Expression, name: string) {
+  return (val.type === 'Identifier' && val.name === name) || (val.type === 'StringLiteral' && val.value === name)
 }
 
 function verifyObjectValue(properties: ObjectExpression['properties']) {
-  let ret = true
   for (const prop of properties) {
-    if (prop.type === 'ObjectProperty') {
-      if (
-        (prop.key.type === 'Identifier' && prop.key.name === 'locales') ||
-        (prop.key.type === 'StringLiteral' && prop.key.value === 'locales')
-      ) {
-        if (prop.value.type === 'ArrayExpression') {
-          ret = verifyLocalesArrayExpression(prop.value.elements)
-        } else {
-          console.warn(formatMessage(`'locale' value is required array`))
-          ret = false
-        }
-      } else if (
-        (prop.key.type === 'Identifier' && prop.key.name === 'paths') ||
-        (prop.key.type === 'StringLiteral' && prop.key.value === 'paths')
-      ) {
-        if (prop.value.type === 'ObjectExpression') {
-          ret = verifyPathsObjectExpress(prop.value.properties)
-        } else {
-          console.warn(formatMessage(`'paths' value is required object`))
-          ret = false
-        }
+    if (prop.type !== 'ObjectProperty') {
+      console.warn(formatMessage(`'defineI18nRoute' requires an object as argument`))
+      return false
+    }
+
+    if (nodeNameOrValue(prop.key, 'locales')) {
+      if (prop.value.type !== 'ArrayExpression' || !verifyLocalesArrayExpression(prop.value.elements)) {
+        console.warn(formatMessage(`expected 'locale' to be an array`))
+        return false
       }
-    } else {
-      console.warn(formatMessage(`'defineI18nRoute' is required object`))
-      ret = false
+    }
+
+    if (nodeNameOrValue(prop.key, 'paths')) {
+      if (prop.value.type !== 'ObjectExpression' || !verifyPathsObjectExpress(prop.value.properties)) {
+        console.warn(formatMessage(`expected 'paths' to be an object`))
+        return false
+      }
     }
   }
-  return ret
+
+  return true
 }
 
 function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
-  let ret = true
   for (const prop of properties) {
-    if (prop.type === 'ObjectProperty') {
-      if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
-        console.warn(formatMessage(`'paths.${prop.key.name}' value is required string literal`))
-        ret = false
-      } else if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
-        console.warn(formatMessage(`'paths.${prop.key.value}' value is required string literal`))
-        ret = false
-      }
-    } else {
+    if (prop.type !== 'ObjectProperty') {
       console.warn(formatMessage(`'paths' is required object`))
-      ret = false
+      return false
+    }
+
+    if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
+      console.warn(formatMessage(`expected 'paths.${prop.key.name}' to be a string literal`))
+      return false
+    }
+
+    if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
+      console.warn(formatMessage(`expected 'paths.${prop.key.value}' to be a string literal`))
+      return false
     }
   }
-  return ret
+
+  return true
 }
 
 function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
-  let ret = true
   for (const element of elements) {
     if (element?.type !== 'StringLiteral') {
       console.warn(formatMessage(`required 'locales' value string literal`))
-      ret = false
+      return false
     }
   }
-  return ret
+  return true
 }
 
 function evalValue(value: string) {
