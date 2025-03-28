@@ -55,8 +55,7 @@ export default defineNuxtPlugin({
     }
 
     nuxtApp.$config.public.i18n.defaultLocale = defaultLocaleDomain
-    // @ts-expect-error type incompatible
-    runtimeI18n.baseUrl = extendBaseUrl()
+    runtimeI18n.baseUrl = extendBaseUrl(nuxtApp)
 
     const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
 
@@ -77,12 +76,12 @@ export default defineNuxtPlugin({
       vueI18nOptions.locale = defaultLocaleDomain
     }
 
-    const getRouteLocale = createLocaleFromRouteGetter()
     const localeCookie = getI18nCookie()
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
 
+    i18n.__localeFromRoute = createLocaleFromRouteGetter()
     i18n.__firstAccess = true
     i18n.__setLocale = (locale: string) => {
       const i = getI18nTarget(i18n)
@@ -138,7 +137,7 @@ export default defineNuxtPlugin({
 
           const route = currentRoute.value
           const redirectPath = await nuxtApp.runWithContext(() =>
-            detectRedirect({ to: route, locale, routeLocale: getRouteLocale(route) })
+            detectRedirect({ to: route, locale, routeLocale: i18n.__localeFromRoute(route) })
           )
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
