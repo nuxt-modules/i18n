@@ -84,14 +84,7 @@
       "@nuxtjs/i18n": "link:.",
       "unimport": "4.1.2",
       "rollup": "4.37.0"
-    },
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "protobufjs",
-      "vue-demi",
-      "esbuild",
-      "sharp"
-    ]
+    }
   },
   "dependencies": {
     "@intlify/h3": "^0.6.1",
