@@ -9,7 +9,6 @@ import {
   UTILS_PKG,
   UTILS_H3_PKG,
   UFO_PKG,
-  IS_HTTPS_PKG,
   NUXT_I18N_MODULE_ID
 } from './constants'
 
@@ -32,7 +31,6 @@ export async function setupAlias({ userOptions: options, isDev, isPrepare }: I18
   modules[CORE_PKG] = `${CORE_PKG}/dist/core.node.mjs`
   modules[UTILS_H3_PKG] = `${UTILS_PKG}/dist/h3.mjs` // for `@intlify/utils/h3`
   modules[UFO_PKG] = UFO_PKG
-  modules[IS_HTTPS_PKG] = IS_HTTPS_PKG
 
   const moduleDirs: string[] = nuxt.options.modulesDir || []
   const enhancedModulesDirs = [...moduleDirs, ...moduleDirs.map(dir => `${dir}/${NUXT_I18N_MODULE_ID}/node_modules`)]
