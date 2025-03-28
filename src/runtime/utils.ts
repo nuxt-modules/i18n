@@ -29,7 +29,6 @@ import type { Router } from '#vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
-import { createLocaleFromRouteGetter } from './routing/utils'
 import { getComposer } from './compatibility'
 
 /**
@@ -274,8 +273,7 @@ export async function navigate({ nuxtApp, locale, route, redirectPath }: Navigat
     }
 
     if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
-      const getLocaleFromRoute = createLocaleFromRouteGetter()
-      const oldLocale = getLocaleFromRoute(route.path)
+      const oldLocale = nuxtApp._vueI18n.__localeFromRoute(route.path)
 
       if (oldLocale !== '') {
         return navigateTo(`/${locale + route.path.replace(`/${oldLocale}`, '')}`)

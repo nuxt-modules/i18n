@@ -181,7 +181,7 @@ export function createLocaleFromRouteGetter() {
   /**
    * extract locale code from route name or path
    */
-  const getLocaleFromRoute = (route: string | CompatRoute) => {
+  return (route: string | CompatRoute) => {
     let matches: RegExpMatchArray | null = null
 
     if (typeof route === 'string') {
@@ -199,6 +199,4 @@ export function createLocaleFromRouteGetter() {
 
     return matches?.[1] ?? ''
   }
-
-  return getLocaleFromRoute
 }

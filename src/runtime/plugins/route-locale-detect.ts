@@ -3,7 +3,6 @@ import { hasPages } from '#build/i18n.options.mjs'
 import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware } from '#imports'
 import { createLogger } from '#nuxt-i18n/logger'
 import { makeFallbackLocaleCodes } from '../messages'
-import { createLocaleFromRouteGetter } from '../routing/utils'
 import { detectLocale, detectRedirect, loadAndSetLocale, navigate } from '../utils'
 
 import type { NuxtApp } from '#app'
@@ -16,10 +15,14 @@ export default defineNuxtPlugin({
     const logger = /*#__PURE__*/ createLogger('plugin:route-locale-detect')
     const nuxtApp = nuxt as unknown as NuxtApp
     const currentRoute = nuxtApp.$router.currentRoute
-    const getRouteLocale = createLocaleFromRouteGetter()
 
     async function handleRouteDetect(to: CompatRoute) {
-      let detected = detectLocale(to, getRouteLocale(to), unref(nuxtApp.$i18n.locale), nuxtApp.$i18n.getLocaleCookie())
+      let detected = detectLocale(
+        to,
+        nuxtApp._vueI18n.__localeFromRoute(to),
+        unref(nuxtApp.$i18n.locale),
+        nuxtApp.$i18n.getLocaleCookie()
+      )
 
       if (nuxtApp._vueI18n.__firstAccess) {
         nuxtApp._vueI18n.__setLocale(detected)
@@ -49,7 +52,7 @@ export default defineNuxtPlugin({
       const locale = await nuxtApp.runWithContext(() => handleRouteDetect(to))
 
       const redirectPath = await nuxtApp.runWithContext(() =>
-        detectRedirect({ to, from, locale, routeLocale: getRouteLocale(to) }, true)
+        detectRedirect({ to, from, locale, routeLocale: nuxtApp._vueI18n.__localeFromRoute(to) }, true)
       )
 
       nuxtApp._vueI18n.__firstAccess = false
