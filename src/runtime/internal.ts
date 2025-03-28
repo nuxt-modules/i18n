@@ -2,7 +2,7 @@
 
 import { isArray, isString, isObject } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
-import isHTTPS from 'is-https'
+import { getRequestProtocol } from 'h3'
 import {
   useRequestHeaders,
   useRequestEvent,
@@ -338,31 +338,28 @@ export function getLocaleDomain(locales: LocaleObject[], strategy: string, route
 }
 
 export function getDomainFromLocale(localeCode: Locale): string | undefined {
-  const runtimeConfig = useRuntimeConfig()
   const nuxtApp = useNuxtApp()
   const host = getHost()
-  // lookup the `differentDomain` origin associated with given locale.
-  const config = runtimeConfig.public.i18n as I18nPublicRuntimeConfig
+  const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
   const lang = normalizedLocales.find(locale => locale.code === localeCode)
-  const domain = config?.domainLocales?.[localeCode]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
+  // lookup the `differentDomain` origin associated with given locale.
+  const domain =
+    runtimeI18n?.domainLocales?.[localeCode]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
 
-  if (domain) {
-    if (hasProtocol(domain, { strict: true })) {
-      return domain
-    }
-    let protocol
-    if (import.meta.server) {
-      const {
-        node: { req }
-      } = useRequestEvent(nuxtApp)!
-      protocol = req && isHTTPS(req) ? 'https:' : 'http:'
-    } else {
-      protocol = new URL(window.location.origin).protocol
-    }
-    return protocol + '//' + domain
+  if (!domain) {
+    console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+    return
   }
 
-  console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+  if (hasProtocol(domain, { strict: true })) {
+    return domain
+  }
+
+  const protocol = import.meta.server
+    ? getRequestProtocol(useRequestEvent(nuxtApp)!) + ':'
+    : new URL(window.location.origin).protocol
+
+  return protocol + '//' + domain
 }
 
 export const runtimeDetectBrowserLanguage = (
