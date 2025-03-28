@@ -298,8 +298,7 @@ export interface LocaleObject<T = Locale> extends Record<string, any> {
 /**
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BaseUrlResolveHandler<Context = any> = (context: Context) => string
+export type BaseUrlResolveHandler<Context = unknown> = (context: Context) => string
 
 /**
  * Options to compute route localizing
@@ -409,29 +408,6 @@ export interface I18nHeadMetaInfo {
   meta?: MetaAttrs[]
   link?: MetaAttrs[]
 }
-
-/**
- * Route path prefix judgment options used in {@link Prefixable}
- */
-export type PrefixableOptions = {
-  /**
-   * Current locale
-   */
-  currentLocale: Locale
-  /**
-   * Default locale
-   */
-  defaultLocale: Locale
-  /**
-   * Current strategy
-   */
-  strategy: Strategies
-}
-
-/**
- * The intercept handler which is called in {@link switchLocalePath} function
- */
-export type SwitchLocalePathIntercepter = (path: string, locale: Locale) => string
 
 export interface I18nPublicRuntimeConfig {
   baseUrl: NuxtI18nOptions['baseUrl']

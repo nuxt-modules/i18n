@@ -55,8 +55,7 @@ export default defineNuxtPlugin({
     }
 
     nuxtApp.$config.public.i18n.defaultLocale = defaultLocaleDomain
-    // @ts-expect-error type incompatible
-    runtimeI18n.baseUrl = extendBaseUrl()
+    runtimeI18n.baseUrl = extendBaseUrl(nuxtApp)
 
     const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
 

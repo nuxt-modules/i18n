@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { joinURL, isEqual } from 'ufo'
+import { isEqual } from 'ufo'
 import { isFunction } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
@@ -27,8 +27,7 @@ import type { NuxtApp } from '#app'
 import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { PrefixableOptions, SwitchLocalePathIntercepter, BaseUrlResolveHandler } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 import { createLocaleFromRouteGetter } from './routing/utils'
 import { getComposer } from './compatibility'
@@ -310,7 +309,7 @@ export async function navigate({ nuxtApp, locale, route, redirectPath }: Navigat
   }
 }
 
-function prefixable({ currentLocale, defaultLocale, strategy }: PrefixableOptions): boolean {
+export function prefixable(currentLocale: string, defaultLocale: string, strategy: Strategies): boolean {
   return (
     // strategy has no prefixes
     strategy !== 'no_prefix' &&
@@ -319,44 +318,20 @@ function prefixable({ currentLocale, defaultLocale, strategy }: PrefixableOption
   )
 }
 
-// override prefix for route path, support domain
-export function extendPrefixable(runtimeConfig = useRuntimeConfig()) {
-  const logger = /*#__PURE__*/ createLogger('extendPrefixable')
-  return (opts: PrefixableOptions): boolean => {
-    const _prefixable = prefixable(opts)
-    __DEBUG__ && logger.log(_prefixable)
-    return _prefixable && !runtimeConfig.public.i18n.differentDomains
-  }
-}
-
-// override switch locale path intercepter, support domain
-export function extendSwitchLocalePathIntercepter(runtimeConfig = useRuntimeConfig()): SwitchLocalePathIntercepter {
-  const logger = /*#__PURE__*/ createLogger('extendSwitchLocalePathIntercepter')
-
-  return (path: string, locale: Locale): string => {
-    if (!runtimeConfig.public.i18n.differentDomains) {
-      return path
-    }
-
-    const domain = getDomainFromLocale(locale)
-    __DEBUG__ && logger.log({ domain, path })
-    return (domain && joinURL(domain, path)) || path
-  }
-}
-
-export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
+export function extendBaseUrl(ctx: NuxtApp) {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
-  return (): string => {
-    const ctx = useNuxtApp()
-    const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n as I18nPublicRuntimeConfig
+  const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n as I18nPublicRuntimeConfig
 
-    if (isFunction(baseUrl)) {
+  if (isFunction(baseUrl)) {
+    return (): string => {
       const baseUrlResult = baseUrl(ctx)
       __DEBUG__ && logger.log('using localeLoader function -', { baseUrlResult })
       return baseUrlResult
     }
+  }
 
-    const localeCode = isFunction(defaultLocale) ? (defaultLocale() as string) : defaultLocale
+  const localeCode = isFunction(defaultLocale) ? (defaultLocale() as string) : defaultLocale
+  return (): string => {
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode)
       if (domain) {
@@ -365,13 +340,9 @@ export function extendBaseUrl(): BaseUrlResolveHandler<NuxtApp> {
       }
     }
 
-    if (baseUrl) {
-      __DEBUG__ && logger.log('using runtimeConfig -', { baseUrl })
-      return baseUrl
-    }
+    __DEBUG__ && logger.log('using runtimeConfig -', { baseUrl })
 
-    // @ts-expect-error all cases are already handled
-    return baseUrl
+    return baseUrl ?? ''
   }
 }
 
