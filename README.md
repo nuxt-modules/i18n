@@ -1,7 +1,7 @@
 [![Nuxt i18n](./docs/public/cover.png)](https://i18n.nuxtjs.org)
 
-[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
-[![](https://img.shields.io/npm/dm/%40nuxtjs%2Fi18n?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
+[![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n/latest.svg?style=flat&label=npm&colorA=18181B)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
+[![](https://img.shields.io/npm/dm/%40nuxtjs%2Fi18n?style=flat&colorA=18181B&color=blue)](https://npmjs.com/package/%40nuxtjs%2Fi18n)
 [![](https://snyk.io/test/github/nuxt-community/i18n-module/badge.svg?style=flat-square)](https://snyk.io/test/github/nuxt-modules/i18n)
 <a href="https://volta.net/nuxt-modules/i18n?utm_source=nuxt_i18n_readme"><img src="https://user-images.githubusercontent.com/904724/209143798-32345f6c-3cf8-4e06-9659-f4ace4a6acde.svg" alt="Volta board"></a>
 
@@ -46,7 +46,7 @@ npx nuxi@latest module add i18n
 }
 ```
 
-## Edge Release Channel &nbsp; [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n-edge/latest.svg?style=flat-square)](https://npmjs.com/package/%40nuxtjs%2Fi18n-edge)
+## Edge Release Channel &nbsp; [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n-edge/latest.svg?style=flat&label=npm&colorA=18181B&color=blue)](https://npmjs.com/package/%40nuxtjs%2Fi18n-edge)
 
 Nuxt I18n lands commits, improvements and bug fixes every day, you can opt in to test these before their release using the edge release channel.
 
