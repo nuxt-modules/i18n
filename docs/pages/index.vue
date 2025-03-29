@@ -21,7 +21,7 @@ const { copy, copied } = useClipboard({ source })
         v-bind="page.hero"
         class="relative"
         :ui="{
-          container: 'overflow-hidden py-10 flex flex-row items-center  gap-1',
+          container: 'overflow-hidden py-10 flex flex-col md:flex-row items-center gap-4',
           links: 'flex items-center gap-2',
           description: 'dark:text-gray-400 text-xl max-w-2xl leading-normal mb-10'
         }"
@@ -52,11 +52,11 @@ const { copy, copied } = useClipboard({ source })
           aria-label="Copy code to get started"
           :model-value="source"
           name="get-started"
-          class="mx-auto"
+          class="mx-auto w-full max-w-[300px] md:max-w-[300px]"
           disabled
           autocomplete="off"
           size="lg"
-          :ui="{ base: 'w-[300px] disabled:cursor-default', icon: { trailing: { pointer: '' } } }"
+          :ui="{ base: 'disabled:cursor-default overflow-x-auto', icon: { trailing: { pointer: '' } } }"
         >
           <template #leading>
             <UIcon name="i-ph-terminal" />
