@@ -11,14 +11,15 @@ import {
 } from '#imports'
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getLocalesRegex, getRouteName, regexpPath } from './routing/utils'
-import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
+import { initCommonComposableOptions } from './utils'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, LocaleObject } from '#internal-i18n-types'
-import type { CookieRef, NuxtApp } from 'nuxt/app'
+import type { CookieRef } from 'nuxt/app'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
+import type { CommonComposableOptions } from './utils'
 
 function formatMessage(message: string) {
   return NUXT_I18N_MODULE_ID + ' ' + message
@@ -117,7 +118,6 @@ export function getLocaleCookie(
 
   __DEBUG__ && logger.log(`unknown locale cookie (${localeCode}), unsetting cookie`)
   cookieRef.value = undefined
-  return
 }
 
 export function setLocaleCookie(
@@ -215,12 +215,12 @@ export function getHost() {
   }
 
   const header = useRequestHeaders(['x-forwarded-host', 'host'])
-  return header['x-forwarded-host'] || header['host']
+  return header['x-forwarded-host'] || header['host'] || ''
 }
 
 export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
-  const host = getHost() || ''
+  const host = getHost()
   const routePath = isObject(route) ? route.path : isString(route) ? route : ''
 
   if (!host) {
@@ -301,9 +301,9 @@ export function getDomainFromLocale(localeCode: Locale): string | undefined {
   return protocol + '//' + domain
 }
 
-export const runtimeDetectBrowserLanguage = (
+export function runtimeDetectBrowserLanguage(
   opts: I18nPublicRuntimeConfig = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
-) => {
+) {
   if (opts?.detectBrowserLanguage === false) return false
 
   return opts?.detectBrowserLanguage
@@ -346,26 +346,20 @@ export function setupMultiDomainLocales(runtimeI18n: I18nPublicRuntimeConfig, de
 /**
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
-export function getDefaultLocaleForDomain(nuxtContext: NuxtApp) {
-  const { locales, defaultLocale, multiDomainLocales } = nuxtContext.$config.public.i18n as I18nPublicRuntimeConfig
-
-  let defaultLocaleDomain: string = defaultLocale || ''
+export function getDefaultLocaleForDomain(runtimeI18n: I18nPublicRuntimeConfig) {
+  const { locales, defaultLocale, multiDomainLocales } = runtimeI18n
+  const defaultLocaleDomain = defaultLocale || ''
 
   if (!multiDomainLocales) {
     return defaultLocaleDomain
   }
 
   const host = getHost()
-  const hasDefaultForDomains = locales.some(
-    (l): l is LocaleObject => typeof l !== 'string' && Array.isArray(l.defaultForDomains)
-  )
-
-  if (hasDefaultForDomains) {
-    const findDefaultLocale = locales.find((l): l is LocaleObject =>
-      typeof l === 'string' || !Array.isArray(l.defaultForDomains) ? false : l.defaultForDomains.includes(host ?? '')
+  if (locales.some(l => typeof l !== 'string' && l.defaultForDomains != null)) {
+    const findDefaultLocale = locales.find(
+      (l): l is LocaleObject => typeof l !== 'string' && !!l.defaultForDomains?.includes(host)
     )
-
-    defaultLocaleDomain = findDefaultLocale?.code ?? ''
+    return findDefaultLocale?.code ?? ''
   }
 
   return defaultLocaleDomain

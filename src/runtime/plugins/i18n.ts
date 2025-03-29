@@ -45,7 +45,7 @@ export default defineNuxtPlugin({
     const nuxtApp = nuxt as unknown as NuxtApp
     const currentRoute = nuxtApp.$router.currentRoute
 
-    const defaultLocaleDomain = getDefaultLocaleForDomain(nuxtApp)
+    const defaultLocaleDomain = getDefaultLocaleForDomain(nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig)
     setupMultiDomainLocales(nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig, defaultLocaleDomain)
 
     // Fresh copy per request to prevent reusing mutated options
@@ -64,16 +64,15 @@ export default defineNuxtPlugin({
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
-    vueI18nOptions.messages = vueI18nOptions.messages || {}
+    vueI18nOptions.messages ||= {}
+    vueI18nOptions.fallbackLocale ??= false
+    if (defaultLocaleDomain) {
+      vueI18nOptions.locale = defaultLocaleDomain
+    }
 
     // initialize locale objects to make vue-i18n aware of available locales
     for (const l of localeCodes) {
       vueI18nOptions.messages[l] ??= {}
-    }
-
-    vueI18nOptions.fallbackLocale = vueI18nOptions.fallbackLocale ?? false
-    if (defaultLocaleDomain) {
-      vueI18nOptions.locale = defaultLocaleDomain
     }
 
     const localeCookie = getI18nCookie()

@@ -1,12 +1,12 @@
-import { joinURL } from 'ufo'
+import { joinURL, withQuery, type QueryValue } from 'ufo'
 import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
+import { assign, isObject } from '@intlify/shared'
 
 import { getNormalizedLocales } from './utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer } from '../compatibility'
 import { toArray } from '../utils'
 
-import type { I18n } from 'vue-i18n'
 import type {
   I18nHeadMetaInfo,
   MetaAttrs,
@@ -33,6 +33,7 @@ export function creatHeadContext({ key, seo }: Required<Pick<I18nHeadOptions, 'k
   const locale = unref(nuxtApp.$i18n.locale)
   const locales = getNormalizedLocales(unref(nuxtApp.$i18n.locales))
   const currentLocale: LocaleObject = locales.find(l => l.code === locale) || { code: locale }
+  const baseUrl = joinURL(unref(getComposer(nuxtApp.$i18n).baseUrl), nuxtApp.$config.app.baseURL)
   return {
     key,
     seo,
@@ -41,7 +42,7 @@ export function creatHeadContext({ key, seo }: Required<Pick<I18nHeadOptions, 'k
     currentDir: currentLocale.dir || defaultDirection,
     currentLocale,
     currentLanguage: currentLocale.language,
-    baseUrl: getBaseUrl()
+    baseUrl
   }
 }
 
@@ -59,7 +60,7 @@ export function localeHead(
   common: CommonComposableOptions,
   { dir = true, lang = true, seo = true, key = 'hid' }: I18nHeadOptions
 ): I18nHeadMetaInfo {
-  const metaObject: Required<I18nHeadMetaInfo> = {
+  const metaObject: I18nHeadMetaInfo = {
     htmlAttrs: {},
     link: [],
     meta: []
@@ -87,26 +88,19 @@ export function localeHead(
   // Adding SEO Meta
   if (seo && ctx.locale && ctx.locales) {
     // prettier-ignore
-    metaObject.link.push(
-      ...getHreflangLinks(common, ctx),
-      ...getCanonicalLink(common, ctx)
-    )
+    metaObject.link = metaObject.link.concat(
+      getHreflangLinks(common, ctx),
+      getCanonicalLink(common, ctx))
 
     // prettier-ignore
-    metaObject.meta.push(
-      ...getOgUrl(common, ctx),
-      ...getCurrentOgLocale(ctx),
-      ...getAlternateOgLocales(ctx)
+    metaObject.meta = metaObject.meta.concat(
+      getOgUrl(common, ctx),
+      getCurrentOgLocale(ctx),
+      getAlternateOgLocales(ctx)
     )
   }
 
   return metaObject
-}
-
-function getBaseUrl() {
-  const nuxtApp = useNuxtApp()
-  const i18n = getComposer(nuxtApp.$i18n as unknown as I18n)
-  return joinURL(unref(i18n.baseUrl), nuxtApp.$config.app.baseURL)
 }
 
 export function getHreflangLinks(common: CommonComposableOptions, ctx: HeadContext) {
@@ -140,37 +134,16 @@ export function getHreflangLinks(common: CommonComposableOptions, ctx: HeadConte
 
   for (const [language, mapLocale] of localeMap.entries()) {
     const localePath = switchLocalePath(common, mapLocale.code, routeWithoutQuery)
-    const canonicalQueryParams = getCanonicalQueryParams(common, ctx)
-    let href = joinURL(ctx.baseUrl, localePath)
-    if (canonicalQueryParams && strictCanonicals) {
-      href = `${href}?${canonicalQueryParams}`
-    }
+    if (!localePath) continue
 
-    if (localePath) {
-      links.push({
-        [ctx.key]: `i18n-alt-${language}`,
-        rel: 'alternate',
-        href: href,
-        hreflang: language
-      })
-    }
-  }
+    const href = withQuery(
+      joinURL(ctx.baseUrl, localePath),
+      strictCanonicals ? getCanonicalQueryParams(common, ctx) : {}
+    )
 
-  if (defaultLocale) {
-    const localePath = switchLocalePath(common, defaultLocale, routeWithoutQuery)
-    const canonicalQueryParams = getCanonicalQueryParams(common, ctx)
-    let href = joinURL(ctx.baseUrl, localePath)
-    if (canonicalQueryParams && strictCanonicals) {
-      href = `${href}?${canonicalQueryParams}`
-    }
-
-    if (localePath) {
-      links.push({
-        [ctx.key]: 'i18n-xd',
-        rel: 'alternate',
-        href: href,
-        hreflang: 'x-default'
-      })
+    links.push({ [ctx.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language })
+    if (defaultLocale && defaultLocale === mapLocale.code) {
+      links.unshift({ [ctx.key]: 'i18n-xd', rel: 'alternate', href, hreflang: 'x-default' })
     }
   }
 
@@ -179,24 +152,17 @@ export function getHreflangLinks(common: CommonComposableOptions, ctx: HeadConte
 
 function getCanonicalUrl(common: CommonComposableOptions, ctx: HeadContext) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute(common, {
-    ...route,
-    path: undefined,
-    name: getRouteBaseName(common, route)
-  })
+  const currentRoute = localeRoute(
+    common,
+    assign({}, route, { path: undefined, name: getRouteBaseName(common, route) })
+  )
 
   if (!currentRoute) return ''
-  let href = joinURL(ctx.baseUrl, currentRoute.path)
 
-  const canonicalQueryParams = getCanonicalQueryParams(common, ctx)
-  if (canonicalQueryParams) {
-    href = `${href}?${canonicalQueryParams}`
-  }
-
-  return href
+  return withQuery(joinURL(ctx.baseUrl, currentRoute.path), getCanonicalQueryParams(common, ctx))
 }
 
-export function getCanonicalLink(common: CommonComposableOptions, ctx: HeadContext) {
+export function getCanonicalLink(common: CommonComposableOptions, ctx: HeadContext): MetaAttrs[] {
   const href = getCanonicalUrl(common, ctx)
   if (!href) return []
 
@@ -205,41 +171,37 @@ export function getCanonicalLink(common: CommonComposableOptions, ctx: HeadConte
 
 function getCanonicalQueryParams(common: CommonComposableOptions, ctx: HeadContext) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute(common, {
-    ...route,
-    path: undefined,
-    name: getRouteBaseName(common, route)
-  })
+  const currentRoute = localeRoute(
+    common,
+    assign({}, route, { path: undefined, name: getRouteBaseName(common, route) })
+  )
 
-  const canonicalQueries = (typeof ctx.seo === 'object' && ctx.seo.canonicalQueries) || []
-  const currentRouteQueryParams = currentRoute?.query || {}
-  const params = new URLSearchParams()
-  for (const queryParamName of canonicalQueries) {
-    if (queryParamName in currentRouteQueryParams) {
-      for (const v of toArray(currentRouteQueryParams[queryParamName])) {
-        params.append(queryParamName, v || '')
-      }
+  const canonicalQueries = (isObject(ctx.seo) && ctx.seo?.canonicalQueries) || []
+  const currentRouteQuery = currentRoute?.query || {}
+  const params: Record<string, QueryValue[]> = {}
+  for (const param of canonicalQueries.filter(x => x in currentRouteQuery)) {
+    params[param] ??= []
+    for (const val of toArray(currentRouteQuery[param])) {
+      params[param].push(val || '')
     }
   }
 
-  return params.toString() || undefined
+  return params
 }
 
-export function getOgUrl(common: CommonComposableOptions, ctx: HeadContext) {
+export function getOgUrl(common: CommonComposableOptions, ctx: HeadContext): MetaAttrs[] {
   const href = getCanonicalUrl(common, ctx)
   if (!href) return []
-
   return [{ [ctx.key]: 'i18n-og-url', property: 'og:url', content: href }]
 }
 
-export function getCurrentOgLocale(ctx: HeadContext) {
-  if (!ctx.currentLocale || !ctx.currentLanguage) return []
-
+export function getCurrentOgLocale(ctx: HeadContext): MetaAttrs[] {
+  if (!ctx.currentLanguage) return []
   // Replace dash with underscore as defined in spec: language_TERRITORY
   return [{ [ctx.key]: 'i18n-og', property: 'og:locale', content: hyphenToUnderscore(ctx.currentLanguage) }]
 }
 
-export function getAlternateOgLocales(ctx: HeadContext) {
+export function getAlternateOgLocales(ctx: HeadContext): MetaAttrs[] {
   const alternateLocales = ctx.locales.filter(locale => locale.language && locale.language !== ctx.currentLanguage)
 
   return alternateLocales.map(locale => ({

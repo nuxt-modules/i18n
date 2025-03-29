@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isEqual } from 'ufo'
 import { isFunction } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
@@ -28,7 +27,7 @@ import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
-import type { CompatRoute } from './types'
+import type { CompatRoute, I18nRouteMeta } from './types'
 import { getComposer } from './compatibility'
 
 /**
@@ -41,14 +40,14 @@ export type CommonComposableOptions = {
   router: Router
   i18n: I18n
   runtimeConfig: RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } }
-  metaState: Ref<Record<Locale, any>>
+  metaState: Ref<I18nRouteMeta>
 }
 export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
   return {
     i18n: i18n ?? (useNuxtApp().$i18n as unknown as I18n),
     router: useRouter(),
     runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } },
-    metaState: useState<Record<Locale, any>>('nuxt-i18n-meta', () => ({}))
+    metaState: useState<I18nRouteMeta>('nuxt-i18n-meta', () => ({}))
   }
 }
 
@@ -343,8 +342,6 @@ export function extendBaseUrl(ctx: NuxtApp) {
     return baseUrl ?? ''
   }
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // collect unique keys of passed objects
 function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {

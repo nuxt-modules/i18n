@@ -11,7 +11,7 @@ import { prefixable, type CommonComposableOptions } from '../utils'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw, RouteMap } from 'vue-router'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CompatRoute, RouteLocationGenericPath } from '../types'
+import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from '../types'
 
 /**
  * Returns base name of current (if argument not provided) or passed in route.
@@ -132,7 +132,7 @@ export function resolveRoute(common: CommonComposableOptions, route: RouteLocati
 function getLocalizableMetaFromDynamicParams(
   common: CommonComposableOptions,
   route: CompatRoute
-): Record<Locale, Record<string, unknown>> {
+): Partial<I18nRouteMeta> {
   if (common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR) {
     return unref(common.metaState.value)
   }

@@ -1,5 +1,5 @@
 import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, getCurrentScope, onScopeDispose } from 'vue'
 import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
 import { DEFAULT_DYNAMIC_PARAMS_KEY, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { useHead } from '#imports'
@@ -19,7 +19,7 @@ import { getComposer } from '../compatibility'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { resolveRoute } from '../routing/routing'
-import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
+import type { I18nHeadMetaInfo, I18nHeadOptions, MetaAttrs, SeoAttributesOptions } from '#internal-i18n-types'
 import type {
   RouteLocationAsRelativeI18n,
   RouteLocationRaw,
@@ -27,7 +27,7 @@ import type {
   RouteMap,
   RouteMapI18n
 } from 'vue-router'
-import type { RouteLocationGenericPath } from '../types'
+import type { RouteLocationGenericPath, I18nRouteMeta } from '../types'
 
 export * from 'vue-i18n'
 export * from './shared'
@@ -37,7 +37,7 @@ export * from './shared'
  *
  * @params params - an object with {@link Locale} keys with localized parameters
  */
-export type SetI18nParamsFunction = (params: Partial<Record<Locale, unknown>>) => void
+export type SetI18nParamsFunction = (params: I18nRouteMeta) => void
 
 /**
  * Returns a {@link SetI18nParamsFunction} used to set i18n params for the current route.
@@ -63,14 +63,14 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
         ? common.metaState.value
         : (router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] ?? {})
     },
-    set(val) {
+    set(val: I18nRouteMeta) {
       common.metaState.value = val
       _i18nParams.value = val
       router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] = val
     }
   })
 
-  const stop = watch(
+  const unsub = watch(
     () => router.currentRoute.value.fullPath,
     () => {
       router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] = experimentalSSR
@@ -79,9 +79,9 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
     }
   )
 
-  onUnmounted(() => {
-    stop()
-  })
+  if (getCurrentScope()) {
+    onScopeDispose(unsub)
+  }
 
   if (!ctx.baseUrl) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
@@ -96,12 +96,12 @@ export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunct
 
     // Adding SEO Meta
     head?.patch({
-      link: [...getHreflangLinks(common, ctx), ...getCanonicalLink(common, ctx)],
-      meta: [...getOgUrl(common, ctx), ...getCurrentOgLocale(ctx), ...getAlternateOgLocales(ctx)]
+      link: ([] as MetaAttrs[]).concat(getHreflangLinks(common, ctx), getCanonicalLink(common, ctx)),
+      meta: ([] as MetaAttrs[]).concat(getOgUrl(common, ctx), getCurrentOgLocale(ctx), getAlternateOgLocales(ctx))
     })
   }
 
-  return function (params: Partial<Record<Locale, unknown>>) {
+  return function (params: I18nRouteMeta) {
     i18nParams.value = { ...params }
     setMeta()
   }
@@ -130,37 +130,17 @@ export function useLocaleHead({
   key = 'hid'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
   const common = initCommonComposableOptions()
-  const metaObject: Ref<I18nHeadMetaInfo> = ref({
-    htmlAttrs: {},
-    link: [],
-    meta: []
-  })
-
-  function cleanMeta() {
-    metaObject.value = {
-      htmlAttrs: {},
-      link: [],
-      meta: []
-    }
-  }
-
-  function updateMeta() {
-    metaObject.value = localeHead(common, { dir, lang, seo, key })
-  }
+  const metaObject = ref(localeHead(common, { dir, lang, seo, key }))
 
   if (import.meta.client) {
     const i18n = getComposer(common.i18n)
-    const stop = watch(
+    const unsub = watch(
       [() => common.router.currentRoute.value, i18n.locale],
-      () => {
-        cleanMeta()
-        updateMeta()
-      },
-      { immediate: true }
+      () => (metaObject.value = localeHead(common, { dir, lang, seo, key }))
     )
-    onUnmounted(() => stop())
-  } else {
-    updateMeta()
+    if (getCurrentScope()) {
+      onScopeDispose(unsub)
+    }
   }
 
   return metaObject

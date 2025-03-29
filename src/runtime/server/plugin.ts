@@ -57,7 +57,7 @@ export default defineNitroPlugin(async nitro => {
   const { onRequest, onAfterResponse } = defineI18nMiddleware({
     ...options,
     locale: localeDetector
-  } as any) // eslint-disable-line @typescript-eslint/no-explicit-any -- FIXME: option type should be exported `@intlify/h3`
+  } as Parameters<typeof defineI18nMiddleware>[0])
 
   nitro.hooks.hook('request', onRequest)
   nitro.hooks.hook('afterResponse', onAfterResponse)
