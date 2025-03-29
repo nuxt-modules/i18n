@@ -98,13 +98,6 @@ export interface ExperimentalFeatures {
    * @defaultValue `false`
    */
   alternateLinkCanonicalQueries?: boolean
-
-  /**
-   * Hot module replacement for locale message files and vue-i18n configuration in dev mode.
-   *
-   * @defaultValue `true`
-   */
-  hmr?: boolean
 }
 
 export interface BundleOptions
@@ -258,6 +251,12 @@ export type NuxtI18nOptions<
    * @defaultValue ''
    */
   baseUrl?: string | BaseUrlResolveHandler<Context>
+  /**
+   * Hot module replacement for locale message files and vue-i18n configuration in dev mode.
+   *
+   * @defaultValue `true`
+   */
+  hmr?: boolean
 }
 
 export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOptions | Promise<I18nOptions>) }>

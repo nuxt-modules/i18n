@@ -32,8 +32,7 @@ export const DEFAULT_OPTIONS = {
     typedPages: true,
     typedOptionsAndMessages: false,
     generatedLocaleFilePathFormat: 'absolute',
-    alternateLinkCanonicalQueries: false,
-    hmr: true
+    alternateLinkCanonicalQueries: false
   },
   bundle: {
     compositionOnly: true,
@@ -79,7 +78,8 @@ export const DEFAULT_OPTIONS = {
   types: 'composition',
   debug: false,
   parallelPlugin: false,
-  multiDomainLocales: false
+  multiDomainLocales: false,
+  hmr: true
 } as const
 
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs'

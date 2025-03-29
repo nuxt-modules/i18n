@@ -20,7 +20,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.build.transpile.push('#i18n')
   nuxt.options.build.transpile.push('#internal-i18n-types')
 
-  if (ctx.isDev && options.experimental.hmr) {
+  if (ctx.isDev && options.hmr) {
     addVitePlugin({
       name: 'i18n:options-hmr',
       configureServer(server) {
