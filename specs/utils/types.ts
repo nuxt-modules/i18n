@@ -35,6 +35,11 @@ export interface TestContext {
   serverProcess?: ReturnType<typeof exec>
   // eslint-disable-next-line @typescript-eslint/ban-types
   mockFn?: Function
+  /**
+   * Functions to run on the vitest `afterAll` hook.
+   * Useful for removing anything created during the test.
+   */
+  teardown?: (() => void)[]
 }
 
 export interface TestHooks {

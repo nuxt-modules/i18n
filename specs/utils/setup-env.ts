@@ -9,8 +9,7 @@ const _warn = console.warn.bind(console)
 
 const hiddenWarns = ['[@vue/reactivity-transform]', '[Vue warn]: Component', '[Vue router warn]']
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-console.warn = (arg0: any, ...args: any[]) => {
+console.warn = (arg0: unknown, ...args: unknown[]) => {
   if (typeof arg0 === 'string' && hiddenWarns.some(w => arg0.includes(w))) {
     return
   }

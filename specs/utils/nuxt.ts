@@ -1,4 +1,4 @@
-import { existsSync, promises as fsp } from 'node:fs'
+import { existsSync, rmSync, mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defu } from 'defu'
 import * as _kit from '@nuxt/kit'
@@ -25,10 +25,10 @@ const isNuxtApp = (dir: string) => {
   return (
     existsSync(dir) &&
     (existsSync(resolve(dir, 'pages')) ||
+      existsSync(resolve(dir, 'nuxt.config.ts')) ||
       existsSync(resolve(dir, 'nuxt.config.js')) ||
       existsSync(resolve(dir, 'nuxt.config.mjs')) ||
-      existsSync(resolve(dir, 'nuxt.config.cjs')) ||
-      existsSync(resolve(dir, 'nuxt.config.ts')))
+      existsSync(resolve(dir, 'nuxt.config.cjs')))
   )
 }
 
@@ -82,17 +82,21 @@ export async function loadFixture(testContext: VitestContext) {
     configFile: ctx.options.configFile
   })
 
+  const buildDir = ctx.nuxt.options.buildDir
+  const outputDir = ctx.nuxt.options.nitro?.output?.dir
+  ctx.teardown ??= []
+
   // NOTE: the following code is original code
   // await fsp.mkdir(ctx.nuxt.options.buildDir, { recursive: true })
-  await clearDir(ctx.nuxt.options.buildDir)
-  if (ctx.nuxt.options.nitro?.output?.dir) {
-    await clearDir(ctx.nuxt.options.nitro.output?.dir)
+  if (!existsSync(buildDir)) {
+    mkdirSync(buildDir, { recursive: true })
+    ctx.teardown.push(() => rmSync(buildDir, { recursive: true, force: true }))
   }
-}
 
-async function clearDir(path: string) {
-  await fsp.rm(path, { recursive: true, force: true })
-  await fsp.mkdir(path, { recursive: true })
+  if (outputDir && !existsSync(outputDir)) {
+    mkdirSync(outputDir, { recursive: true })
+    ctx.teardown.push(() => rmSync(outputDir, { recursive: true, force: true }))
+  }
 }
 
 export async function buildFixture() {

@@ -35,6 +35,10 @@ function createTest(options: Partial<TestOptions>): TestHooks {
     if (ctx.browser) {
       await ctx.browser.close()
     }
+
+    if (ctx.teardown) {
+      await Promise.all(ctx.teardown.map(fn => fn()))
+    }
   }
 
   const setup = async (testContext: VitestContext) => {
