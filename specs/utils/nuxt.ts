@@ -1,8 +1,8 @@
-import { existsSync, rmSync, mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, promises as fsp } from 'node:fs'
 import { defu } from 'defu'
 import * as _kit from '@nuxt/kit'
 import { useTestContext } from './context'
+import { resolve } from 'node:path'
 import { relative } from 'pathe'
 
 import type { VitestContext } from './types'
@@ -86,19 +86,16 @@ export async function loadFixture(testContext: VitestContext) {
   const outputDir = ctx.nuxt.options.nitro?.output?.dir
   ctx.teardown ??= []
 
-  // NOTE: the following code is original code
-  // await fsp.mkdir(ctx.nuxt.options.buildDir, { recursive: true })
-  if (!existsSync(buildDir)) {
-    mkdirSync(buildDir, { recursive: true })
-    ctx.teardown.push(() => rmSync(buildDir, { recursive: true, force: true }))
-  }
-
-  if (outputDir && !existsSync(outputDir)) {
-    mkdirSync(outputDir, { recursive: true })
-    ctx.teardown.push(() => rmSync(outputDir, { recursive: true, force: true }))
+  await clearDir(buildDir)
+  if (outputDir) {
+    await clearDir(outputDir)
   }
 }
 
+async function clearDir(path: string) {
+  await fsp.rm(path, { recursive: true, force: true })
+  await fsp.mkdir(path, { recursive: true })
+}
 export async function buildFixture() {
   const ctx = useTestContext()
   // Hide build info for test
