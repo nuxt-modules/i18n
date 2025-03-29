@@ -13,6 +13,8 @@ export type RouteLocationGenericPath = Omit<RouteLocationAsRelative, 'path' | 'n
   name?: RouteLocationAsRelative['name'] | null
 }
 
+export type I18nRouteMeta = Partial<Record<Locale, Record<string, unknown>>>
+
 /**
  * Called before the app's locale is switched.
  *

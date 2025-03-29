@@ -281,8 +281,7 @@ export type Directions = 'ltr' | 'rtl' | 'auto'
  *
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface LocaleObject<T = Locale> extends Record<string, any> {
+export interface LocaleObject<T = Locale> extends Record<string, unknown> {
   code: T
   name?: string
   dir?: Directions
@@ -395,8 +394,7 @@ export interface I18nHeadOptions {
  *
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MetaAttrs = Record<string, any>
+export type MetaAttrs = Record<string, string>
 
 /**
  * I18n header meta info.
@@ -404,9 +402,9 @@ export type MetaAttrs = Record<string, any>
  * @public
  */
 export interface I18nHeadMetaInfo {
-  htmlAttrs?: MetaAttrs
-  meta?: MetaAttrs[]
-  link?: MetaAttrs[]
+  htmlAttrs: MetaAttrs
+  meta: MetaAttrs[]
+  link: MetaAttrs[]
 }
 
 export interface I18nPublicRuntimeConfig {

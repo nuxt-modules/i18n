@@ -64,8 +64,7 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
     localeCodes: string[]
   },
   nuxt: { runWithContext: NuxtApp['runWithContext'] }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<Record<string, any>> {
+): Promise<LocaleMessages<DefineLocaleMessage>> {
   const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
 
   // load fallback messages
