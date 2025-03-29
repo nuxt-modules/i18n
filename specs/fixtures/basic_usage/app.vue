@@ -26,7 +26,7 @@ section {
 }
 .my-enter-active,
 .my-leave-active {
-  transition: opacity 0.3s;
+  transition: opacity 0.1s;
 }
 .my-enter,
 .my-leave-active {
