@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     }
   },
   extends: [
+    `../layers/layer-server`,
     `../layers/layer-lazy`,
     `../layers/layer-vueI18n-options/layer-simple`,
     `../layers/layer-vueI18n-options/layer-simple-secondary`
@@ -20,26 +21,12 @@ export default defineNuxtConfig({
     restructureDir: false,
     baseUrl: 'http://localhost:3000',
     vueI18n: './config/i18n.config.ts',
+    locales: ['en', 'fr'],
     defaultLocale: 'en',
     experimental: {
       alternateLinkCanonicalQueries: false,
       autoImportTranslationFunctions: true,
       localeDetector: './localeDetector.ts'
-    },
-    langDir: 'locales',
-    locales: [
-      {
-        code: 'en',
-        language: 'en-US',
-        file: 'en.json5',
-        name: 'English'
-      },
-      {
-        code: 'ja',
-        language: 'ja-JP',
-        file: 'ja.yaml',
-        name: 'Japanese'
-      }
-    ]
+    }
   }
 })

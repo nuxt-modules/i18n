@@ -1,32 +1,7 @@
-import { describe, test, expect } from 'vitest'
-import { fileURLToPath } from 'node:url'
-import { setup } from './utils'
+import { test, expect } from 'vitest'
 import { getData, getText, renderPage, waitForTransition, waitForURL } from './helper'
 
-describe('basic usage - language switching', async () => {
-  await setup({
-    rootDir: fileURLToPath(new URL(`./fixtures/basic_usage`, import.meta.url)),
-    browser: true,
-    // prerender: true,
-    // overrides
-    nuxtConfig: {
-      runtimeConfig: {
-        public: {
-          i18n: {
-            // baseUrl: 'http://localhost:3000',
-            // skipSettingLocaleOnNavigate: undefined,
-            // detectBrowserLanguage: undefined,
-            // experimental: {
-            //   alternateLinkCanonicalQueries: false
-            // }
-            skipSettingLocaleOnNavigate: true,
-            detectBrowserLanguage: false
-          }
-        }
-      }
-    }
-  })
-
+export function languageSwitchingTests() {
   test('language switching', async () => {
     const { page } = await renderPage('/')
 
@@ -129,4 +104,4 @@ describe('basic usage - language switching', async () => {
 
     expect(await getText(page, '#per-component-hello')).toMatch('Hello!')
   })
-})
+}
