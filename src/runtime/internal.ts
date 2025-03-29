@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { isArray, isString, isObject } from '@intlify/shared'
+import { isString, isObject } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
 import { getRequestProtocol } from 'h3'
 import {
@@ -12,7 +10,7 @@ import {
   useRouter
 } from '#imports'
 import { NUXT_I18N_MODULE_ID, DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { findBrowserLocale, getLocalesRegex, getRouteName } from './routing/utils'
+import { findBrowserLocale, getLocalesRegex, getRouteName, regexpPath } from './routing/utils'
 import { initCommonComposableOptions, type CommonComposableOptions } from './utils'
 import { createLogger } from '#nuxt-i18n/logger'
 
@@ -55,33 +53,20 @@ export function parseAcceptLanguage(input: string): string[] {
 }
 
 export function getBrowserLocale(): string | undefined {
-  let ret: string | undefined
-  const logger = /*#__PURE__*/ createLogger('getBrowserLocale')
-
+  // get browser language either from navigator if running on client side, or from the headers
   if (import.meta.client) {
-    if (navigator.languages) {
-      // get browser language either from navigator if running on client side, or from the headers
-      ret = findBrowserLocale(normalizedLocales, navigator.languages as string[])
-      __DEBUG__ && logger.log('(navigator.languages, ret) -', navigator.languages, ret)
-    }
-  } else if (import.meta.server) {
-    const header = useRequestHeaders(['accept-language'])
-    __DEBUG__ && logger.log('accept-language', header)
-    const accept = header['accept-language']
-    if (accept) {
-      ret = findBrowserLocale(normalizedLocales, parseAcceptLanguage(accept))
-      __DEBUG__ && logger.log('ret', ret)
-    }
+    return findBrowserLocale(normalizedLocales, navigator.languages as string[])
   }
 
-  return ret
+  const { 'accept-language': accept } = useRequestHeaders(['accept-language'])
+  return accept ? findBrowserLocale(normalizedLocales, parseAcceptLanguage(accept)) : undefined
 }
 
 export function getI18nCookie() {
   const detect = runtimeDetectBrowserLanguage()
   const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
   const date = new Date()
-  const cookieOptions: Record<string, any> = {
+  const cookieOptions: Record<string, unknown> = {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: '/',
     sameSite: detect && detect.cookieCrossOrigin ? 'none' : 'lax',
@@ -147,30 +132,20 @@ export function setLocaleCookie(
   cookieRef.value = locale
 }
 
-const enum DetectFailure {
-  NOT_FOUND = 'not_found_match',
-  FIRST_ACCESS = 'first_access_only',
-  NO_REDIRECT_ROOT = 'not_redirect_on_root',
-  NO_REDIRECT_NO_PREFIX = 'not_redirect_on_no_prefix',
-  SSG_IGNORE = 'detect_ignore_on_ssg',
-  DISABLED = 'disabled'
-}
+type DetectFailureStates =
+  | 'not_found_match'
+  | 'first_access_only'
+  | 'not_redirect_on_root'
+  | 'not_redirect_on_no_prefix'
+  | 'detect_ignore_on_ssg'
+  | 'disabled'
 
-const enum DetectFrom {
-  COOKIE = 'cookie',
-  NAVIGATOR_HEADER = 'navigator_or_header',
-  FALLBACK = 'fallback'
-}
+type DetectFromStates = 'cookie' | 'navigator_or_header' | 'fallback'
 
 type DetectBrowserLanguageFromResult = {
   locale: string
-  from?: DetectFrom
-  reason?: DetectFailure
-}
-
-const DefaultDetectBrowserLanguageFromResult: DetectBrowserLanguageFromResult = {
-  locale: '',
-  reason: DetectFailure.DISABLED
+  from?: DetectFromStates
+  error?: DetectFailureStates
 }
 
 export function detectBrowserLanguage(
@@ -183,7 +158,7 @@ export function detectBrowserLanguage(
 
   // feature is disabled
   if (!_detect) {
-    return DefaultDetectBrowserLanguageFromResult
+    return { locale: '', error: 'disabled' }
   }
 
   const nuxtApp = useNuxtApp()
@@ -194,147 +169,111 @@ export function detectBrowserLanguage(
 
   // detection ignored during nuxt generate
   if (isSSG && firstAccess && strategy === 'no_prefix' && import.meta.server) {
-    return { locale: '', reason: DetectFailure.SSG_IGNORE }
+    return { locale: '', error: 'detect_ignore_on_ssg' }
   }
 
   // detection only on first access
   if (!firstAccess) {
-    return { locale: strategy === 'no_prefix' ? locale : '', reason: DetectFailure.FIRST_ACCESS }
+    return { locale: strategy === 'no_prefix' ? locale : '', error: 'first_access_only' }
   }
 
-  const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = _detect
-
-  const path = isString(route) ? route : route.path
-  __DEBUG__ && logger.log({ locale, path, strategy, alwaysRedirect, redirectOn })
+  __DEBUG__ && logger.log({ locale, path: typeof route === 'string' ? route : route.path, strategy, ..._detect })
 
   if (strategy !== 'no_prefix') {
+    const path = typeof route === 'string' ? route : route.path
+
     // detection only on root
-    if (redirectOn === 'root' && path !== '/') {
-      __DEBUG__ && logger.log('not root', { path })
-      return { locale: '', reason: DetectFailure.NO_REDIRECT_ROOT }
+    if (_detect.redirectOn === 'root' && path !== '/') {
+      return { locale: '', error: 'not_redirect_on_root' }
     }
 
-    __DEBUG__ && redirectOn === 'no prefix' && logger.log('no prefix -', { path })
-
     // detection only on unprefixed route
-    if (redirectOn === 'no prefix' && !alwaysRedirect && path.match(getLocalesRegex(localeCodes))) {
-      return { locale: '', reason: DetectFailure.NO_REDIRECT_NO_PREFIX }
+    if (_detect.redirectOn === 'no prefix' && !_detect.alwaysRedirect && path.match(regexpPath)) {
+      return { locale: '', error: 'not_redirect_on_no_prefix' }
     }
   }
 
-  // track detection match source
-  let from: DetectFrom | undefined
-
   // match locale from cookie if enabled and present
-  const cookieMatch = (useCookie && localeCookie) || undefined
-  if (useCookie) {
-    from = DetectFrom.COOKIE
+  const cookieMatch = (_detect.useCookie && localeCookie) || undefined
+  if (cookieMatch) {
+    return { locale: cookieMatch, from: 'cookie' }
   }
 
   // match locale from either navigator or header detection
   const browserMatch = nuxtApp.$i18n.getBrowserLocale()
-  if (!cookieMatch) {
-    from = DetectFrom.NAVIGATOR_HEADER
+  if (browserMatch) {
+    return { locale: browserMatch, from: 'navigator_or_header' }
   }
-
-  const matchedLocale = cookieMatch || browserMatch
 
   // use fallback locale when no locale matched
-  const resolved = matchedLocale || fallbackLocale || ''
-  if (!matchedLocale && fallbackLocale) {
-    from = DetectFrom.FALLBACK
-  }
-
-  __DEBUG__ && logger.log({ locale: resolved, cookieMatch, browserMatch, from })
-
-  return { locale: resolved, from }
+  return { locale: _detect.fallbackLocale || '', from: 'fallback' }
 }
 
 export function getHost() {
-  let host: string | undefined
   if (import.meta.client) {
-    host = window.location.host
-  } else if (import.meta.server) {
-    const header = useRequestHeaders(['x-forwarded-host', 'host'])
-
-    let detectedHost: string | string[] | undefined
-    if ('x-forwarded-host' in header) {
-      detectedHost = header['x-forwarded-host']
-    } else if ('host' in header) {
-      detectedHost = header['host']
-    }
-
-    host = isArray(detectedHost) ? detectedHost[0] : detectedHost
+    return window.location.host
   }
-  return host
+
+  const header = useRequestHeaders(['x-forwarded-host', 'host'])
+  return header['x-forwarded-host'] || header['host']
 }
 
 export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
-  let host = getHost() || ''
+  const host = getHost() || ''
   const routePath = isObject(route) ? route.path : isString(route) ? route : ''
 
-  if (host) {
-    __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path: routePath })
+  if (!host) {
+    return host
+  }
 
-    let matchingLocale: LocaleObject | undefined
-    const matchingLocales = locales.filter(locale => {
-      if (locale && locale.domain) {
-        let domain = locale.domain
-        if (hasProtocol(locale.domain)) {
-          domain = locale.domain.replace(/(http|https):\/\//, '')
-        }
-        return domain === host
-      } else if (Array.isArray(locale?.domains)) {
-        return locale.domains.includes(host)
-      }
-      return false
-    })
+  __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path: routePath })
 
-    if (matchingLocales.length === 1) {
-      matchingLocale = matchingLocales[0]
-      __DEBUG__ && logger.log(`found one matching domain`, { host, matchedLocale: matchingLocales[0].code })
-    } else if (matchingLocales.length > 1) {
-      if (strategy === 'no_prefix') {
-        console.warn(
-          formatMessage(
-            'Multiple matching domains found! This is not supported for no_prefix strategy in combination with differentDomains!'
-          )
-        )
-        // Just return the first matching domain locale
-        matchingLocale = matchingLocales[0]
-      } else {
-        // get prefix from route
-        if (route) {
-          __DEBUG__ && logger.log(`check matched domain for locale match`, { path: routePath, host })
-
-          if (routePath && routePath !== '') {
-            const matches = routePath.match(getLocalesRegex(matchingLocales.map(l => l.code)))
-            if (matches && matches.length > 1) {
-              matchingLocale = matchingLocales.find(l => l.code === matches[1])
-              __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchingLocale?.code })
-            }
-          }
-        }
-
-        if (!matchingLocale) {
-          // Fall back to default language on this domain - if set
-          matchingLocale = matchingLocales.find(l =>
-            Array.isArray(l.defaultForDomains) ? l.defaultForDomains.includes(host) : l.domainDefault
-          )
-          __DEBUG__ &&
-            logger.log(`no locale matched - using default for this domain`, { matchedLocale: matchingLocale?.code })
-        }
-      }
+  const matchingLocales = locales.filter(locale => {
+    if (locale.domain) {
+      return (hasProtocol(locale.domain) ? locale.domain.replace(/(http|https):\/\//, '') : locale.domain) === host
     }
+    return Array.isArray(locale?.domains) ? locale.domains.includes(host) : false
+  })
 
-    if (matchingLocale) {
-      return matchingLocale.code
-    } else {
-      host = ''
+  if (matchingLocales.length === 0) {
+    return ''
+  }
+
+  if (matchingLocales.length === 1) {
+    __DEBUG__ && logger.log(`found one matching domain`, { host, matchedLocale: matchingLocales[0].code })
+    return matchingLocales[0]?.code ?? ''
+  }
+
+  if (strategy === 'no_prefix') {
+    console.warn(
+      formatMessage(
+        'Multiple matching domains found! This is not supported for no_prefix strategy in combination with differentDomains!'
+      )
+    )
+    // Just return the first matching domain locale
+    return matchingLocales[0]?.code ?? ''
+  }
+
+  // get prefix from route
+  if (route) {
+    __DEBUG__ && logger.log(`check matched domain for locale match`, { path: routePath, host })
+
+    if (routePath && routePath !== '') {
+      const matched = routePath.match(getLocalesRegex(matchingLocales.map(l => l.code)))?.at(1)
+      if (matched) {
+        const matchingLocale = matchingLocales.find(l => l.code === matched)
+        __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchingLocale?.code })
+        return matchingLocale?.code ?? ''
+      }
     }
   }
-  return host
+
+  // Fall back to default language on this domain - if set
+  const matchingLocale = matchingLocales.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)
+  __DEBUG__ && logger.log(`no locale matched - using default for this domain`, { matchedLocale: matchingLocale?.code })
+
+  return matchingLocale?.code ?? ''
 }
 
 export function getDomainFromLocale(localeCode: Locale): string | undefined {
@@ -373,9 +312,8 @@ export const runtimeDetectBrowserLanguage = (
 /**
  * Removes default routes depending on domain
  */
-export function setupMultiDomainLocales(nuxtContext: NuxtApp, defaultLocaleDomain: string) {
-  const { multiDomainLocales, strategy, routesNameSeparator, defaultLocaleRouteNameSuffix } = nuxtContext.$config.public
-    .i18n as I18nPublicRuntimeConfig
+export function setupMultiDomainLocales(runtimeI18n: I18nPublicRuntimeConfig, defaultLocaleDomain: string) {
+  const { multiDomainLocales, strategy, routesNameSeparator, defaultLocaleRouteNameSuffix } = runtimeI18n
 
   // feature disabled
   if (!multiDomainLocales) return
@@ -432,5 +370,3 @@ export function getDefaultLocaleForDomain(nuxtContext: NuxtApp) {
 
   return defaultLocaleDomain
 }
-
-/* eslint-enable @typescript-eslint/no-explicit-any */

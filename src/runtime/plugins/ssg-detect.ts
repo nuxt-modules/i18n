@@ -30,7 +30,7 @@ export default defineNuxtPlugin({
         localeCookie || unref(nuxtApp.$i18n.defaultLocale)
       )
 
-      __DEBUG__ && logger.log('app:mounted: detectBrowserLanguage (locale, reason, from) -', Object.values(detected))
+      __DEBUG__ && logger.log('app:mounted: detectBrowserLanguage (locale, reason, error) -', Object.values(detected))
 
       await nuxtApp.$i18n.setLocale(detected.locale)
       nuxtApp._vueI18n.__firstAccess = false

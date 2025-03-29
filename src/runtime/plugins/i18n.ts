@@ -46,7 +46,7 @@ export default defineNuxtPlugin({
     const currentRoute = nuxtApp.$router.currentRoute
 
     const defaultLocaleDomain = getDefaultLocaleForDomain(nuxtApp)
-    setupMultiDomainLocales(nuxtApp, defaultLocaleDomain)
+    setupMultiDomainLocales(nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig, defaultLocaleDomain)
 
     // Fresh copy per request to prevent reusing mutated options
     const runtimeI18n = {

@@ -397,3 +397,7 @@ export function createNuxtI18nDev() {
 
   return { resetI18nProperties }
 }
+
+export function toArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value]
+}
