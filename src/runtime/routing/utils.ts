@@ -141,7 +141,7 @@ export function getLocalesRegex(localeCodes: string[]) {
 }
 
 const localesPattern = `(${localeCodes.join('|')})`
-const regexpPath = getLocalesRegex(localeCodes)
+export const regexpPath = getLocalesRegex(localeCodes)
 
 export function createLocaleFromRouteGetter() {
   const { routesNameSeparator, defaultLocaleRouteNameSuffix } = useRuntimeConfig().public.i18n

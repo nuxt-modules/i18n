@@ -1,10 +1,10 @@
 import { joinURL } from 'ufo'
-import { isArray, isObject } from '@intlify/shared'
 import { unref, useNuxtApp, useRuntimeConfig } from '#imports'
 
 import { getNormalizedLocales } from './utils'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer } from '../compatibility'
+import { toArray } from '../utils'
 
 import type { I18n } from 'vue-i18n'
 import type {
@@ -141,7 +141,7 @@ export function getHreflangLinks(common: CommonComposableOptions, ctx: HeadConte
   for (const [language, mapLocale] of localeMap.entries()) {
     const localePath = switchLocalePath(common, mapLocale.code, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, ctx)
-    let href = toAbsoluteUrl(localePath, ctx.baseUrl)
+    let href = joinURL(ctx.baseUrl, localePath)
     if (canonicalQueryParams && strictCanonicals) {
       href = `${href}?${canonicalQueryParams}`
     }
@@ -159,7 +159,7 @@ export function getHreflangLinks(common: CommonComposableOptions, ctx: HeadConte
   if (defaultLocale) {
     const localePath = switchLocalePath(common, defaultLocale, routeWithoutQuery)
     const canonicalQueryParams = getCanonicalQueryParams(common, ctx)
-    let href = toAbsoluteUrl(localePath, ctx.baseUrl)
+    let href = joinURL(ctx.baseUrl, localePath)
     if (canonicalQueryParams && strictCanonicals) {
       href = `${href}?${canonicalQueryParams}`
     }
@@ -186,7 +186,7 @@ function getCanonicalUrl(common: CommonComposableOptions, ctx: HeadContext) {
   })
 
   if (!currentRoute) return ''
-  let href = toAbsoluteUrl(currentRoute.path, ctx.baseUrl)
+  let href = joinURL(ctx.baseUrl, currentRoute.path)
 
   const canonicalQueryParams = getCanonicalQueryParams(common, ctx)
   if (canonicalQueryParams) {
@@ -211,17 +211,13 @@ function getCanonicalQueryParams(common: CommonComposableOptions, ctx: HeadConte
     name: getRouteBaseName(common, route)
   })
 
-  const canonicalQueries = (isObject(ctx.seo) && ctx.seo.canonicalQueries) || []
+  const canonicalQueries = (typeof ctx.seo === 'object' && ctx.seo.canonicalQueries) || []
   const currentRouteQueryParams = currentRoute?.query || {}
   const params = new URLSearchParams()
   for (const queryParamName of canonicalQueries) {
     if (queryParamName in currentRouteQueryParams) {
-      const queryParamValue = currentRouteQueryParams[queryParamName]
-
-      if (isArray(queryParamValue)) {
-        queryParamValue.forEach(v => params.append(queryParamName, v || ''))
-      } else {
-        params.append(queryParamName, queryParamValue || '')
+      for (const v of toArray(currentRouteQueryParams[queryParamName])) {
+        params.append(queryParamName, v || '')
       }
     }
   }
@@ -253,11 +249,6 @@ export function getAlternateOgLocales(ctx: HeadContext) {
   }))
 }
 
-function hyphenToUnderscore(str?: string) {
-  return (str || '').replace(/-/g, '_')
-}
-
-function toAbsoluteUrl(urlOrPath: string, baseUrl: string) {
-  if (urlOrPath.match(/^https?:\/\//)) return urlOrPath
-  return joinURL(baseUrl, urlOrPath)
+function hyphenToUnderscore(val: string = '') {
+  return val.replace(/-/g, '_')
 }
