@@ -1,10 +1,8 @@
-import CustomModule from './module'
-
 const i18nDomains = ['nuxt-app.localhost', 'fr.nuxt-app.localhost', 'ja.nuxt-app.localhost']
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
-  modules: [CustomModule, '@nuxtjs/i18n'],
+  modules: ['@nuxtjs/i18n'],
 
   i18n: {
     restructureDir: false,
