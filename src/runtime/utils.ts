@@ -1,5 +1,5 @@
 import { isEqual } from 'ufo'
-import { isFunction } from '@intlify/shared'
+import { isArray, isFunction, isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
   NUXT_I18N_MODULE_ID,
@@ -9,13 +9,9 @@ import {
   normalizedLocales,
   vueI18nConfigs
 } from '#build/i18n.options.mjs'
-import {
-  detectBrowserLanguage,
-  getLocaleDomain,
-  getDomainFromLocale,
-  runtimeDetectBrowserLanguage,
-  getHost
-} from './internal'
+import { getComposer } from './compatibility'
+import { getDomainFromLocale, getHost, getLocaleDomain } from './domain'
+import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import { localePath, switchLocalePath } from './routing/routing'
 import { createLogger } from '#nuxt-i18n/logger'
@@ -28,7 +24,10 @@ import type { Router } from '#vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
 import type { CompatRoute, I18nRouteMeta } from './types'
-import { getComposer } from './compatibility'
+
+export function formatMessage(message: string) {
+  return `[${NUXT_I18N_MODULE_ID}]: ${message}`
+}
 
 /**
  * Common options used internally by composable functions, these
@@ -236,7 +235,7 @@ export async function navigate({ nuxtApp, locale, route, redirectPath }: Navigat
 
   if (route.path === '/' && rootRedirect) {
     let redirectCode = 302
-    if (typeof rootRedirect === 'string') {
+    if (isString(rootRedirect)) {
       redirectPath = '/' + rootRedirect
     } else {
       redirectPath = '/' + rootRedirect.path
@@ -261,11 +260,11 @@ export async function navigate({ nuxtApp, locale, route, redirectPath }: Navigat
   if (multiDomainLocales && strategy === 'prefix_except_default') {
     const host = getHost()
     const currentDomain = locales.find(locale => {
-      if (typeof locale === 'string') return
+      if (isString(locale)) return
       return locale.defaultForDomains?.find(domain => domain === host)
     })
 
-    const defaultLocaleForDomain = typeof currentDomain !== 'string' ? currentDomain?.code : undefined
+    const defaultLocaleForDomain = !isString(currentDomain) ? currentDomain?.code : undefined
 
     if (route.path.startsWith(`/${defaultLocaleForDomain}`)) {
       return navigateTo(route.path.replace(`/${defaultLocaleForDomain}`, ''))
@@ -396,5 +395,5 @@ export function createNuxtI18nDev() {
 }
 
 export function toArray<T>(value: T | T[]): T[] {
-  return Array.isArray(value) ? value : [value]
+  return isArray(value) ? value : [value]
 }

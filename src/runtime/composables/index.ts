@@ -197,7 +197,7 @@ export function useBrowserLocale(): string | null {
   return (
     findBrowserLocale(
       normalizedLocales,
-      import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'] || '')
+      import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'])
     ) || null
   )
 }

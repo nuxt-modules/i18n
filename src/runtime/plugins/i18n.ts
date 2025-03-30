@@ -13,15 +13,12 @@ import {
 import { loadVueI18nOptions, loadLocale } from '../messages'
 import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl, createNuxtI18nDev } from '../utils'
 import {
-  getBrowserLocale,
   getLocaleCookie,
-  setLocaleCookie,
   getI18nCookie,
   runtimeDetectBrowserLanguage,
-  getDefaultLocaleForDomain,
-  setupMultiDomainLocales,
   wrapComposable,
-  defineGetter
+  getBrowserLocale,
+  setLocaleCookie
 } from '../internal'
 import { createLocaleFromRouteGetter, resolveBaseUrl } from '../routing/utils'
 import { extendI18n } from '../routing/i18n'
@@ -30,6 +27,7 @@ import { getI18nTarget } from '../compatibility'
 import { resolveRoute } from '../routing/routing'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath, useLocaleLocation } from '../composables'
+import { getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -216,7 +214,7 @@ export default defineNuxtPlugin({
      * We inject `i18n.global` to **nuxt app instance only** as vue-i18n has already been injected into vue
      * from https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
      */
-    defineGetter(nuxtApp, '$i18n', getI18nTarget(i18n))
+    Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
 
     return {
       provide: {
