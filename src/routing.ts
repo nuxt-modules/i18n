@@ -1,5 +1,5 @@
 import { toArray } from './utils'
-import { isObject } from '@intlify/shared'
+import { isObject, isString } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
@@ -61,7 +61,7 @@ function shouldLocalizeRoutes(options: NuxtI18nOptions) {
     // check if domains are used multiple times
     const domains = new Set<string>()
     for (const locale of options.locales || []) {
-      if (typeof locale === 'string') continue
+      if (isString(locale)) continue
       if (locale.domain) {
         if (domains.has(locale.domain)) {
           console.error(

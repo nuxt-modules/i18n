@@ -1,4 +1,4 @@
-import { deepCopy, isFunction } from '@intlify/shared'
+import { deepCopy, isArray, isFunction, isString } from '@intlify/shared'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
@@ -36,10 +36,10 @@ export async function loadVueI18nOptions(
 
 export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): Locale[] {
   if (fallback === false) return []
-  if (Array.isArray(fallback)) return fallback
+  if (isArray(fallback)) return fallback
 
   let fallbackLocales: Locale[] = []
-  if (typeof fallback === 'string') {
+  if (isString(fallback)) {
     if (locales.every(locale => locale !== fallback)) {
       fallbackLocales.push(fallback)
     }

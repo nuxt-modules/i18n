@@ -1,4 +1,4 @@
-import { isFunction } from '@intlify/shared'
+import { isFunction, isString } from '@intlify/shared'
 import { localeCodes } from '#build/i18n.options.mjs'
 import { useRuntimeConfig } from '#app'
 
@@ -7,11 +7,11 @@ import type { Locale } from 'vue-i18n'
 import type { CompatRoute } from '../types'
 
 export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): LocaleObject[] {
-  return locales.map(x => (typeof x === 'string' ? { code: x } : x))
+  return locales.map(x => (isString(x) ? { code: x } : x))
 }
 
 export function getRouteName(routeName?: string | symbol | number | null) {
-  if (typeof routeName === 'string') return routeName
+  if (isString(routeName)) return routeName
   if (routeName != null) return routeName.toString()
   return '(null)'
 }
@@ -77,7 +77,7 @@ interface BrowserLocale {
  * @returns The matched {@link BrowserLocale | locale info}
  */
 function matchBrowserLocale(locales: LocaleObject[], browserLocales: readonly string[]): BrowserLocale[] {
-  const matchedLocales = [] as BrowserLocale[]
+  const matchedLocales: BrowserLocale[] = []
 
   // first pass: match exact locale.
   for (const [index, browserCode] of browserLocales.entries()) {
@@ -151,7 +151,7 @@ export function createLocaleFromRouteGetter() {
   return (route: string | CompatRoute) => {
     let matches: RegExpMatchArray | null = null
 
-    if (typeof route === 'string') {
+    if (isString(route)) {
       matches = route.match(regexpPath)
       return matches?.[1] ?? ''
     }

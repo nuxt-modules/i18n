@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { isObject } from '@intlify/shared'
 import { useLocalePath, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
 import { defineNuxtLink } from '#imports'
@@ -59,7 +60,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
 
       const destination = props.to ?? props.href
       // When `to` is a route object then it's an internal link
-      if (typeof destination === 'object') {
+      if (isObject(destination)) {
         return false
       }
 
