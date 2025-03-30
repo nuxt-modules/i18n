@@ -72,7 +72,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * setup module alias
      */
-    await setupAlias(ctx, nuxt)
+    setupAlias(ctx, nuxt)
 
     /**
      * add plugin and templates
