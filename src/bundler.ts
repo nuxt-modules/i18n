@@ -16,14 +16,6 @@ import type { I18nNuxtContext } from './context'
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
 export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  const { options: nuxtOptions } = ctx
-  const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
-  const localeIncludePaths = localePaths.length ? localePaths : undefined
-
-  const sourceMapOptions: BundlerPluginOptions = {
-    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
-  }
-
   addTemplate({
     write: true,
     filename: 'nuxt-i18n-logger.mjs',
@@ -34,9 +26,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
       return `
 import { createConsola } from 'consola'
-
 const debugLogger = createConsola({ level: ${ctx.options.debug === 'verbose' ? 999 : 4} }).withTag('i18n')
-
 export function createLogger(label) {
   return debugLogger.withTag(label)
 }`
@@ -48,47 +38,50 @@ export function createLogger(label) {
   /**
    * shared plugins (nuxt/nitro)
    */
-  const resourcePlugin = ResourcePlugin(sourceMapOptions, ctx)
+  const pluginOptions: BundlerPluginOptions = {
+    sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client
+  }
+  const resourcePlugin = ResourcePlugin(pluginOptions, ctx)
 
   addBuildPlugin(resourcePlugin)
-
   nuxt.hook('nitro:config', async cfg => {
     cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
     cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
-
     cfg.rollupConfig!.plugins.push(resourcePlugin.rollup())
   })
 
   /**
-   * shared plugins (webpack/vite)
+   * shared plugins (vite/webpack/rspack)
    */
+  const { options } = ctx
+  const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
   const vueI18nPluginOptions: PluginOptions = {
     allowDynamic: true,
-    include: localeIncludePaths,
-    runtimeOnly: nuxtOptions.bundle.runtimeOnly,
-    fullInstall: nuxtOptions.bundle.fullInstall,
-    onlyLocales: nuxtOptions.bundle.onlyLocales,
-    escapeHtml: nuxtOptions.compilation.escapeHtml,
-    compositionOnly: nuxtOptions.bundle.compositionOnly,
-    strictMessage: nuxtOptions.compilation.strictMessage,
-    defaultSFCLang: nuxtOptions.customBlocks.defaultSFCLang,
-    globalSFCScope: nuxtOptions.customBlocks.globalSFCScope,
-    dropMessageCompiler: nuxtOptions.bundle.dropMessageCompiler,
-    optimizeTranslationDirective: nuxtOptions.bundle.optimizeTranslationDirective
+    include: localePaths.length ? localePaths : undefined,
+    runtimeOnly: options.bundle.runtimeOnly,
+    fullInstall: options.bundle.fullInstall,
+    onlyLocales: options.bundle.onlyLocales,
+    escapeHtml: options.compilation.escapeHtml,
+    compositionOnly: options.bundle.compositionOnly,
+    strictMessage: options.compilation.strictMessage,
+    defaultSFCLang: options.customBlocks.defaultSFCLang,
+    globalSFCScope: options.customBlocks.globalSFCScope,
+    dropMessageCompiler: options.bundle.dropMessageCompiler,
+    optimizeTranslationDirective: options.bundle.optimizeTranslationDirective
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
-  addBuildPlugin(TransformMacroPlugin(sourceMapOptions))
-  if (nuxtOptions.experimental.autoImportTranslationFunctions) {
-    addBuildPlugin(TransformI18nFunctionPlugin(sourceMapOptions))
+  addBuildPlugin(TransformMacroPlugin(pluginOptions))
+  if (options.experimental.autoImportTranslationFunctions) {
+    addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
   const defineConfig = {
-    ...getFeatureFlags(nuxtOptions.bundle),
-    __DEBUG__: String(!!nuxtOptions.debug),
-    __TEST__: String(!!nuxtOptions.debug || nuxt.options._i18nTest)
+    ...getFeatureFlags(options.bundle),
+    __DEBUG__: String(!!options.debug),
+    __TEST__: String(!!options.debug || nuxt.options._i18nTest)
   }
   /**
    * webpack plugin
@@ -105,7 +98,7 @@ export function createLogger(label) {
   /**
    * rspack plugin
    */
-  if (nuxt.options.builder == '@nuxt/rspack-builder') {
+  if (nuxt.options.builder === '@nuxt/rspack-builder') {
     try {
       const { rspack } = await import('@rspack/core')
       addRspackPlugin(new rspack.DefinePlugin(defineConfig))

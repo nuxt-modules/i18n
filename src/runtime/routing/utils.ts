@@ -1,67 +1,39 @@
-import { isFunction, isString } from '@intlify/shared'
+import { isString } from '@intlify/shared'
 import { localeCodes } from '#build/i18n.options.mjs'
 import { useRuntimeConfig } from '#app'
 
-import type { LocaleObject, BaseUrlResolveHandler, I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { LocaleObject, I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { Locale } from 'vue-i18n'
 import type { CompatRoute } from '../types'
+import type { RouteRecordNameGeneric } from 'vue-router'
 
 export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): LocaleObject[] {
   return locales.map(x => (isString(x) ? { code: x } : x))
 }
 
-export function getRouteName(routeName?: string | symbol | number | null) {
+export function getRouteName(routeName?: RouteRecordNameGeneric) {
   if (isString(routeName)) return routeName
   if (routeName != null) return routeName.toString()
   return '(null)'
 }
 
-export function getLocaleRouteName(
-  routeName: symbol | string | null | undefined,
-  locale: Locale,
-  {
-    defaultLocale,
-    strategy,
-    routesNameSeparator,
-    defaultLocaleRouteNameSuffix,
-    differentDomains
-  }: I18nPublicRuntimeConfig
-) {
+export function getLocaleRouteName(routeName: RouteRecordNameGeneric, locale: Locale, opts: I18nPublicRuntimeConfig) {
+  const { defaultLocale, strategy, routesNameSeparator, defaultLocaleRouteNameSuffix, differentDomains } = opts
   const localizedRoutes = strategy !== 'no_prefix' || differentDomains
-  let name = getRouteName(routeName) + (localizedRoutes ? routesNameSeparator + locale : '')
+  const name = getRouteName(routeName) + (localizedRoutes ? routesNameSeparator + locale : '')
   if (locale === defaultLocale && strategy === 'prefix_and_default') {
-    name += routesNameSeparator + defaultLocaleRouteNameSuffix
+    return name + routesNameSeparator + defaultLocaleRouteNameSuffix
   }
   return name
-}
-
-/**
- * Resolve base url
- *
- * @param baseUrl - A base url to resolve on SEO and domain. if you want to resolve with dynamically, you can spacify {@link BaseUrlResolveHandler}
- * @param context - A context to resolve base url, if you want to resolve base url with {@link BaseUrlResolveHandler}
- *
- * @returns A resolved base url
- */
-export function resolveBaseUrl<Context = unknown>(baseUrl: string | BaseUrlResolveHandler<Context>, context: Context) {
-  if (isFunction(baseUrl)) {
-    return baseUrl(context)
-  }
-
-  return baseUrl
 }
 
 /**
  * The browser locale code and match score
  */
 interface BrowserLocale {
-  /**
-   * The locale code, such as BCP 47 (e.g `en-US`), or `ja`
-   */
+  /** The locale code, such as BCP 47 (e.g `en-US`), or `ja` */
   code: string
-  /**
-   * The match score - used to sort multiple matched locales
-   */
+  /** The match score - used to sort multiple matched locales */
   score: number
 }
 
@@ -149,21 +121,17 @@ export function createLocaleFromRouteGetter() {
    * extract locale code from route name or path
    */
   return (route: string | CompatRoute) => {
-    let matches: RegExpMatchArray | null = null
-
     if (isString(route)) {
-      matches = route.match(regexpPath)
-      return matches?.[1] ?? ''
+      return route.match(regexpPath)?.[1] ?? ''
     }
-
+    // extract from route name
     if (route.name) {
-      // extract from route name
-      matches = getRouteName(route.name).match(regexpName)
-    } else if (route.path) {
-      // extract from path
-      matches = route.path.match(regexpPath)
+      return getRouteName(route.name).match(regexpName)?.[1] ?? ''
     }
-
-    return matches?.[1] ?? ''
+    // extract from path
+    if (route.path) {
+      return route.path.match(regexpPath)?.[1] ?? ''
+    }
+    return ''
   }
 }
