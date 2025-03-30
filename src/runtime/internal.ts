@@ -27,7 +27,7 @@ export function wrapComposable<F extends (common: CommonComposableOptions, ...ar
  * @param input - Accept-Language header value.
  * @return An array of locale codes. Priority determined by order in array.
  */
-export function parseAcceptLanguage(input: string = ''): string[] {
+function parseAcceptLanguage(input: string = ''): string[] {
   // Example input: en-US,en;q=0.9,nb;q=0.8,no;q=0.7
   // Contains tags separated by comma.
   // Each tag consists of locale code (2-3 letter language code) and optionally country code
@@ -62,6 +62,7 @@ export function getI18nCookie() {
   return useNuxtCookie<string | undefined>(cookieKey, cookieOptions)
 }
 
+// TODO: remove side-effects
 export function getLocaleCookie(
   cookieRef: CookieRef<string | undefined>,
   detect: false | DetectBrowserLanguageOptions,
