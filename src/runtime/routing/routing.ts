@@ -4,7 +4,7 @@ import { isNavigationFailure } from 'vue-router'
 import { unref } from '#imports'
 
 import { getI18nTarget } from '../compatibility'
-import { getDomainFromLocale } from '../internal'
+import { getDomainFromLocale } from '../domain'
 import { getLocaleRouteName, getRouteName } from './utils'
 import { prefixable, type CommonComposableOptions } from '../utils'
 
