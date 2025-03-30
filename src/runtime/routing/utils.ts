@@ -76,7 +76,7 @@ interface BrowserLocale {
  *
  * @returns The matched {@link BrowserLocale | locale info}
  */
-function matchBrowserLocale(locales: LocaleObject[], browserLocales: string[]): BrowserLocale[] {
+function matchBrowserLocale(locales: LocaleObject[], browserLocales: readonly string[]): BrowserLocale[] {
   const matchedLocales = [] as BrowserLocale[]
 
   // first pass: match exact locale.
@@ -118,7 +118,7 @@ function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
  *
  * @returns The matched the locale code
  */
-export function findBrowserLocale(locales: LocaleObject[], browserLocales: string[]): string {
+export function findBrowserLocale(locales: LocaleObject[], browserLocales: readonly string[]): string {
   const normalizedLocales = locales.map(l => ({ code: l.code, language: l.language || l.code }))
   const matchedLocales = matchBrowserLocale(normalizedLocales, browserLocales)
   if (matchedLocales.length === 0) {
