@@ -3,7 +3,7 @@ import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useNuxt } from '@nuxt/kit'
 import { resolve, relative, join } from 'pathe'
 import { defu } from 'defu'
-import { isString, isArray } from '@intlify/shared'
+import { isString, isArray, assign, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from './utils/parse'
 
@@ -48,7 +48,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales']): Local
 export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {
-    const resolved: LocaleInfo = Object.assign({ meta: [] }, locale)
+    const resolved: LocaleInfo = assign({ meta: [] }, locale)
     delete resolved.file
     delete resolved.files
 
@@ -215,7 +215,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
       const merged = mergedLocales.get(code)
 
       // set normalized locale or to existing entry
-      if (typeof locale === 'string') {
+      if (isString(locale)) {
         mergedLocales.set(code, merged ?? { language: code, code })
         continue
       }
@@ -261,7 +261,7 @@ export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => 
     const layerLocales = options.locales ?? []
 
     for (const locale of layerLocales) {
-      if (typeof locale !== 'object') continue
+      if (!isObject(locale)) continue
       baseLocales.push({ ...locale, file: undefined, files: getLocaleFiles(locale) })
     }
 
@@ -278,9 +278,7 @@ function getHash(text: BinaryLike): string {
 export function getLayerI18n(configLayer: NuxtConfigLayer) {
   const layerInlineOptions = (configLayer.config.modules || []).find(
     (mod): mod is [string, NuxtI18nOptions] | undefined =>
-      isArray(mod) &&
-      typeof mod[0] === 'string' &&
-      [NUXT_I18N_MODULE_ID, `${NUXT_I18N_MODULE_ID}-edge`].includes(mod[0])
+      isArray(mod) && isString(mod[0]) && [NUXT_I18N_MODULE_ID, `${NUXT_I18N_MODULE_ID}-edge`].includes(mod[0])
   )?.[1]
 
   if (configLayer.config.i18n) {
@@ -297,7 +295,7 @@ export const applyOptionOverrides = (options: NuxtI18nOptions, nuxt: Nuxt) => {
   if (overrides) {
     delete options.overrides
     project.config.i18n = defu(overrides, project.config.i18n)
-    Object.assign(options, defu(overrides, mergedOptions))
+    assign(options, defu(overrides, mergedOptions))
   }
 }
 

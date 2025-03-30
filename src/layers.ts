@@ -116,7 +116,7 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
    * installing through `installModule` and should have absolute paths.
    */
   outer: for (const locale of options.locales) {
-    if (typeof locale === 'string') continue
+    if (isString(locale)) continue
 
     const files = getLocaleFiles(locale)
     if (files.length === 0) continue

@@ -1,4 +1,4 @@
-import { deepCopy } from '@intlify/shared'
+import { deepCopy, isArray, isFunction, isObject } from '@intlify/shared'
 import { vueI18nConfigs, localeLoaders, nuxtI18nOptions, normalizedLocales } from '#internal/i18n/options.mjs'
 // @ts-expect-error virtual file
 import { dtsFile } from '#internal/i18n-type-generation-options'
@@ -61,7 +61,7 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
   for (const key in obj) {
     if (!Object.prototype.hasOwnProperty.call(obj, key)) continue
 
-    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+    if (isObject(obj[key]) && obj[key] !== null && !isArray(obj[key])) {
       str += `${indent}"${key}": {\n`
       str += generateInterface(obj[key] as Record<string, unknown>, indentLevel + 1)
       str += `${indent}};\n`
@@ -69,8 +69,8 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
       // str += `${indent}/**\n`
       // str += `${indent} * ${JSON.stringify(obj[key])}\n`
       // str += `${indent} */\n`
-      let propertyType = Array.isArray(obj[key]) ? 'unknown[]' : typeof obj[key]
-      if (propertyType === 'function') {
+      let propertyType = isArray(obj[key]) ? 'unknown[]' : typeof obj[key]
+      if (isFunction(propertyType)) {
         propertyType = '() => string'
       }
       str += `${indent}"${key}": ${propertyType};\n`

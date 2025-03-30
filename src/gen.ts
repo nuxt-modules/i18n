@@ -1,4 +1,5 @@
 import createDebug from 'debug'
+import { isString } from '@intlify/shared'
 import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
@@ -16,7 +17,7 @@ export function simplifyLocaleOptions(
   nuxt: Nuxt,
   options: Pick<NuxtI18nOptions, 'locales' | 'experimental' | 'i18nModules'>
 ) {
-  const isLocaleObjectsArray = (locales?: Locale[] | LocaleObject[]) => locales?.some(x => typeof x !== 'string')
+  const isLocaleObjectsArray = (locales?: Locale[] | LocaleObject[]) => locales?.some(x => !isString(x))
 
   const hasLocaleObjects =
     nuxt.options._layers.some(layer => isLocaleObjectsArray(getLayerI18n(layer)?.locales)) ||
@@ -124,7 +125,7 @@ export function generateLoaderOptions(
     return {
       ...x,
       files: x.files.map(f => {
-        if (typeof f === 'string') return relative(nuxt.options.rootDir, f)
+        if (isString(f)) return relative(nuxt.options.rootDir, f)
         return { ...f, path: relative(nuxt.options.rootDir, f.path) }
       }) as string[] | LocaleFile[]
     }
@@ -222,7 +223,7 @@ declare module 'vue-router' {
 export function generateI18nTypes(nuxt: Nuxt, { userOptions: options, normalizedLocales }: I18nNuxtContext) {
   const vueI18nTypes = options.types === 'legacy' ? ['VueI18n'] : ['ExportedGlobalComposer', 'Composer']
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
-  const resolvedLocaleType = typeof generatedLocales === 'string' ? 'Locale[]' : 'LocaleObject[]'
+  const resolvedLocaleType = isString(generatedLocales) ? 'Locale[]' : 'LocaleObject[]'
   const narrowedLocaleType = normalizedLocales.map(x => JSON.stringify(x.code)).join(' | ') || 'string'
 
   const i18nType = `${vueI18nTypes.join(' & ')} & NuxtI18nRoutingCustomProperties<${resolvedLocaleType}>`
