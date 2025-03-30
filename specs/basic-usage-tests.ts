@@ -404,7 +404,7 @@ export function basicUsageTests() {
     const links = getDataFromDom(dom, '#home-use-locale-head').link
     const i18nCan = links.find(x => x.id === 'i18n-can')
     expect(i18nCan.href).toContain(configDomain)
-    expect(dom.querySelector('#i18n-alt-fr').href).toEqual(
+    expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual(
       'https://runtime-config-domain.com/fr?noncanonical&canonical'
     )
 
@@ -425,7 +425,7 @@ export function basicUsageTests() {
     // head tags - alt links are updated server side
     const html = await $fetch('/?noncanonical&canonical')
     const dom = getDom(html)
-    expect(dom.querySelector('#i18n-alt-fr').href).toEqual('http://localhost:3000/fr?canonical=')
+    expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual('http://localhost:3000/fr?canonical=')
 
     await restore()
   })
@@ -484,11 +484,15 @@ export function basicUsageTests() {
     // head tags - alt links are updated server side
     const product1Html = await $fetch('/products/big-chair')
     const product1Dom = getDom(product1Html)
-    expect(product1Dom.querySelector('#i18n-alt-nl').href).toEqual('http://localhost:3000/nl/products/grote-stoel')
+    expect(product1Dom.querySelector('#i18n-alt-nl')?.getAttribute('href')).toEqual(
+      'http://localhost:3000/nl/products/grote-stoel'
+    )
 
     const product2Html = await $fetch('/nl/products/rode-mok')
     const product2dom = getDom(product2Html)
-    expect(product2dom.querySelector('#i18n-alt-en').href).toEqual('http://localhost:3000/products/red-mug')
+    expect(product2dom.querySelector('#i18n-alt-en')?.getAttribute('href')).toEqual(
+      'http://localhost:3000/products/red-mug'
+    )
   })
 
   test('(#2000) Should be able to load large vue-i18n messages', async () => {
@@ -513,10 +517,10 @@ export function basicUsageTests() {
     const html = await $fetch('/composables')
     const dom = getDom(html)
 
-    expect(dom.querySelector('head #locale-path').content).toEqual('/nested/test-route')
-    expect(dom.querySelector('head #locale-route').content).toEqual('/nested/test-route')
-    expect(dom.querySelector('head #switch-locale-path').content).toEqual('/fr/composables')
-    expect(dom.querySelector('head #route-base-name').content).toEqual('nested-test-route')
+    expect(dom.querySelector('head #locale-path')?.getAttribute('content')).toEqual('/nested/test-route')
+    expect(dom.querySelector('head #locale-route')?.getAttribute('content')).toEqual('/nested/test-route')
+    expect(dom.querySelector('head #switch-locale-path')?.getAttribute('content')).toEqual('/fr/composables')
+    expect(dom.querySelector('head #route-base-name')?.getAttribute('content')).toEqual('nested-test-route')
   })
 
   test('(#2874) options `locales` and `vueI18n` passed using `installModule` are not overridden', async () => {

@@ -1,7 +1,6 @@
 // @ts-ignore
 import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
-import { expect } from 'vitest'
 import { getBrowser, startServer, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
 import { resolveAlias } from '@nuxt/kit'
