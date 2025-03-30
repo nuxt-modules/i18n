@@ -52,10 +52,7 @@ export function resolveBaseUrl<Context = unknown>(baseUrl: string | BaseUrlResol
 }
 
 /**
- * The browser locale info
- *
- * @remarks
- * This type is used by {@link FindBrowserLocaleOptions#sorter | sorter} in {@link findBrowserLocale} function
+ * The browser locale code and match score
  */
 interface BrowserLocale {
   /**
