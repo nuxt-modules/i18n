@@ -1,7 +1,5 @@
 import type { Locale, LocaleMessages, DefineLocaleMessage, I18nOptions } from 'vue-i18n'
 
-type MaybePromise<T> = T | Promise<T>
-
 /**
  * The `defineI18nLocale` defines a composable function to dynamically load locale messages.
  *
@@ -16,7 +14,7 @@ type MaybePromise<T> = T | Promise<T>
  */
 export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale> = (
   locale: Locales
-) => MaybePromise<Messages>
+) => Messages | Promise<Messages>
 
 /**
  * Define locale loader for dynamic locale messages loading
@@ -41,7 +39,7 @@ export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>,
  *
  * @returns Return vue-i18n options object that will be resolved by Promise.
  */
-export type ConfigLoader<Config extends I18nOptions> = () => MaybePromise<Config>
+export type ConfigLoader<Config extends I18nOptions> = () => Config | Promise<Config>
 
 /**
  * Define configuration for vue-i18n runtime plugin
