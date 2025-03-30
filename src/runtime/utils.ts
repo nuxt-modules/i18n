@@ -219,14 +219,14 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
 const useRedirectState = () => useState<string>(NUXT_I18N_MODULE_ID + ':redirect', () => '')
 
 type NavigateArgs = {
-  nuxtApp: NuxtApp
+  nuxt: NuxtApp
   redirectPath: string
   locale: string
   route: CompatRoute
 }
 
-export async function navigate({ nuxtApp, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
-  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxtApp
+export async function navigate({ nuxt, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
+  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxt
     .$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
 
@@ -242,15 +242,15 @@ export async function navigate({ nuxtApp, locale, route, redirectPath }: Navigat
       redirectCode = rootRedirect.statusCode
     }
 
-    redirectPath = nuxtApp.$localePath(redirectPath, locale)
+    redirectPath = nuxt.$localePath(redirectPath, locale)
     __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, redirectCode })
     return navigateTo(redirectPath, { redirectCode })
   }
 
   if (import.meta.client && skipSettingLocaleOnNavigate) {
-    nuxtApp._vueI18n.__pendingLocale = locale
-    nuxtApp._vueI18n.__pendingLocalePromise = new Promise(resolve => {
-      nuxtApp._vueI18n.__resolvePendingLocalePromise = () => resolve()
+    nuxt._vueI18n.__pendingLocale = locale
+    nuxt._vueI18n.__pendingLocalePromise = new Promise(resolve => {
+      nuxt._vueI18n.__resolvePendingLocalePromise = () => resolve()
     })
     if (!enableNavigate) {
       return
@@ -271,7 +271,7 @@ export async function navigate({ nuxtApp, locale, route, redirectPath }: Navigat
     }
 
     if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
-      const oldLocale = nuxtApp._vueI18n.__localeFromRoute(route.path)
+      const oldLocale = nuxt._vueI18n.__localeFromRoute(route.path)
 
       if (oldLocale !== '') {
         return navigateTo(`/${locale + route.path.replace(`/${oldLocale}`, '')}`)

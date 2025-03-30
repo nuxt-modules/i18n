@@ -1,4 +1,4 @@
-import { defineNuxtPlugin } from '#imports'
+import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { useSwitchLocalePath } from '#i18n'
 import { SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from '#build/i18n.options.mjs'
 
@@ -6,7 +6,8 @@ import { SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from '#build/i18n.options.mjs'
 export default defineNuxtPlugin({
   name: 'i18n:plugin:switch-locale-path-ssr',
   dependsOn: ['i18n:plugin'],
-  setup(nuxt) {
+  setup() {
+    const nuxt = useNuxtApp()
     if (nuxt.$config.public.i18n.experimental.switchLocalePathLinkSSR !== true) return
 
     const switchLocalePath = useSwitchLocalePath()
