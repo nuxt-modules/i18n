@@ -1,10 +1,9 @@
-import { useRequestHeaders, useCookie as useNuxtCookie } from '#imports'
+import { useNuxtApp, useCookie as useNuxtCookie } from '#imports'
 import { ref } from 'vue'
-import { parseAcceptLanguage, wrapComposable, runtimeDetectBrowserLanguage } from '../internal'
-import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
+import { runtimeDetectBrowserLanguage, wrapComposable } from '../internal'
+import { localeCodes } from '#build/i18n.options.mjs'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/routing'
-import { findBrowserLocale } from '../routing/utils'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { resolveRoute } from '../routing/routing'
@@ -193,22 +192,13 @@ export function useSwitchLocalePath(): SwitchLocalePathFunction {
  * @returns the browser locale, if not detected, return `null`.
  */
 export function useBrowserLocale(): string | null {
-  const headers = useRequestHeaders(['accept-language'])
-  return (
-    findBrowserLocale(
-      normalizedLocales,
-      import.meta.client ? (navigator.languages as string[]) : parseAcceptLanguage(headers['accept-language'])
-    ) || null
-  )
+  return useNuxtApp().$i18n.getBrowserLocale() || null
 }
 
 /**
  * Returns the locale cookie based on `document.cookie` (client-side) or `cookie` header (server-side).
  *
- * @remark
- * If `detectBrowserLanguage.useCookie` is `false` this will always return an empty string.
- *
- * @returns a `Ref<string>` with the detected cookie or an empty string if none is detected.
+ * @returns a `Ref<string>` with the detected cookie or an empty string if none is detected or if `detectBrowserLanguage.useCookie` is disabled.
  */
 export function useCookieLocale(): Ref<string> {
   const locale: Ref<string> = ref('')
@@ -218,17 +208,7 @@ export function useCookieLocale(): Ref<string> {
     return locale
   }
 
-  const cookieKey = detect.cookieKey!
-
-  let code: string | null = null
-  if (import.meta.client) {
-    code = useNuxtCookie<string>(cookieKey).value
-  } else if (import.meta.server) {
-    const cookie = useRequestHeaders(['cookie'])
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    code = (cookie as any)[cookieKey]
-  }
-
+  const code: string | null = useNuxtCookie<string>(detect.cookieKey!).value
   if (code && localeCodes.includes(code)) {
     locale.value = code
   }

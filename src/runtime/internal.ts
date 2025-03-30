@@ -62,6 +62,7 @@ export function getI18nCookie() {
   return useNuxtCookie<string | undefined>(cookieKey, cookieOptions)
 }
 
+// TODO: remove side-effects
 export function getLocaleCookie(
   cookieRef: CookieRef<string | undefined>,
   detect: false | DetectBrowserLanguageOptions,
