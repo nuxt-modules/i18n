@@ -219,10 +219,9 @@ function getHreflangLinks(common: CommonComposableOptions, ctx: HeadContext) {
     const localePath = switchLocalePath(common, mapLocale.code, routeWithoutQuery)
     if (!localePath) continue
 
-    const href = withQuery(
-      joinURL(ctx.baseUrl, localePath),
-      strictCanonicals ? getCanonicalQueryParams(common, ctx) : {}
-    )
+    // localized paths with domain already contain baseUrl
+    const fullPath = differentDomains && mapLocale.domain ? localePath : joinURL(ctx.baseUrl, localePath)
+    const href = withQuery(fullPath, strictCanonicals ? getCanonicalQueryParams(common, ctx) : {})
 
     links.push({ [ctx.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language })
     if (defaultLocale && defaultLocale === mapLocale.code) {
