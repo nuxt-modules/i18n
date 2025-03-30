@@ -17,9 +17,7 @@ test('`differentDomains` with `no_prefix` has hreflang links', async () => {
   const dom = getDom(html)
   expect(
     Array.from(dom.querySelectorAll(`[rel="alternate"]`)).map(x => ({
-      // @ts-expect-error untyped var
       id: x.getAttribute('id'),
-      // @ts-expect-error untyped var
       href: x.getAttribute('href')
     }))
   ).toMatchInlineSnapshot(`
