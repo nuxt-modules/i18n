@@ -1,4 +1,4 @@
-import { useNuxtApp, useCookie as useNuxtCookie } from '#imports'
+import { useNuxtApp, useCookie } from '#imports'
 import { ref } from 'vue'
 import { runtimeDetectBrowserLanguage, wrapComposable } from '../internal'
 import { localeCodes } from '#build/i18n.options.mjs'
@@ -208,7 +208,7 @@ export function useCookieLocale(): Ref<string> {
     return locale
   }
 
-  const code: string | null = useNuxtCookie<string>(detect.cookieKey!).value
+  const code = useCookie(detect.cookieKey!).value
   if (code && localeCodes.includes(code)) {
     locale.value = code
   }

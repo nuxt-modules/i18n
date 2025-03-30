@@ -1,14 +1,13 @@
 import { isString } from '@intlify/shared'
-import { useCookie as useNuxtCookie, useRuntimeConfig, useNuxtApp, useRequestHeader } from '#imports'
+import { useCookie, useNuxtApp, useRequestHeader, useRuntimeConfig } from '#imports'
 import { DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, regexpPath } from './routing/utils'
 import { initCommonComposableOptions } from './utils'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
-import type { DetectBrowserLanguageOptions } from '#internal-i18n-types'
-import type { CookieRef } from 'nuxt/app'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { CookieOptions, CookieRef } from 'nuxt/app'
 import type { CompatRoute } from './types'
 import type { CommonComposableOptions } from './utils'
 
@@ -44,27 +43,24 @@ export function getBrowserLocale(): string | undefined {
   return findBrowserLocale(normalizedLocales, browserLocales) || undefined
 }
 
-export function getI18nCookie() {
+export function createI18nCookie() {
   const detect = runtimeDetectBrowserLanguage()
   const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
   const date = new Date()
-  const cookieOptions: Record<string, unknown> = {
-    expires: new Date(date.setDate(date.getDate() + 365)),
+  const cookieOptions: CookieOptions<string | null | undefined> & { readonly: false } = {
     path: '/',
+    readonly: false,
+    expires: new Date(date.setDate(date.getDate() + 365)),
     sameSite: detect && detect.cookieCrossOrigin ? 'none' : 'lax',
+    domain: (detect && detect.cookieDomain) || undefined,
     secure: (detect && detect.cookieCrossOrigin) || (detect && detect.cookieSecure)
   }
-
-  if (detect && detect.cookieDomain) {
-    cookieOptions.domain = detect.cookieDomain
-  }
-
-  return useNuxtCookie<string | undefined>(cookieKey, cookieOptions)
+  return useCookie(cookieKey, cookieOptions)
 }
 
 // TODO: remove side-effects
 export function getLocaleCookie(
-  cookieRef: CookieRef<string | undefined>,
+  cookieRef: CookieRef<string | null | undefined>,
   detect: false | DetectBrowserLanguageOptions,
   defaultLocale: string
 ): string | undefined {
@@ -99,18 +95,6 @@ export function getLocaleCookie(
 
   __DEBUG__ && logger.log(`unknown locale cookie (${localeCode}), unsetting cookie`)
   cookieRef.value = undefined
-}
-
-export function setLocaleCookie(
-  cookieRef: CookieRef<string | undefined>,
-  locale: string,
-  detect: false | DetectBrowserLanguageOptions
-) {
-  if (detect === false || !detect.useCookie) {
-    return
-  }
-
-  cookieRef.value = locale
 }
 
 type DetectFailureStates =
@@ -194,6 +178,5 @@ export function runtimeDetectBrowserLanguage(
   opts: I18nPublicRuntimeConfig = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
 ) {
   if (opts?.detectBrowserLanguage === false) return false
-
   return opts?.detectBrowserLanguage
 }
