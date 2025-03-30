@@ -187,10 +187,10 @@ function _localeHead(common: CommonComposableOptions, options: Required<I18nHead
 }
 
 function getHreflangLinks(common: CommonComposableOptions, ctx: HeadContext) {
-  const { defaultLocale, strategy } = ctx.runtimeI18n
+  const { defaultLocale, strategy, differentDomains } = ctx.runtimeI18n
   const links: MetaAttrs[] = []
 
-  if (strategy === 'no_prefix') return links
+  if (strategy === 'no_prefix' && !differentDomains) return links
 
   const localeMap = new Map<string, LocaleObject>()
   for (const locale of ctx.locales) {
