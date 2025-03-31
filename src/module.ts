@@ -39,82 +39,83 @@ export default defineNuxtModule<NuxtI18nOptions>({
     await initParser()
 
     /**
-     * Prepare options
+     * prepare options
      */
     prepareOptions(ctx, nuxt)
 
     /**
-     * nuxt layers handling ...
+     * allow other modules to setup first in case these use i18n hooks
      */
-    await prepareLayers(ctx, nuxt)
+    nuxt.hook('modules:done', async () => {
+      /**
+       * nuxt layers handling ...
+       */
+      await prepareLayers(ctx, nuxt)
+      /**
+       * setup runtime config
+       */
+      prepareRuntimeConfig(ctx, nuxt)
 
-    /**
-     * setup runtime config
-     */
-    // for public
-    prepareRuntimeConfig(ctx, nuxt)
+      /**
+       * resolve locale info and vue-i18n config path
+       */
+      await resolveLocaleInfo(ctx, nuxt)
 
-    /**
-     * resolve locale info and vue-i18n config path
-     */
-    await resolveLocaleInfo(ctx, nuxt)
+      /**
+       * setup nuxt/pages
+       */
+      await setupPages(ctx, nuxt)
 
-    /**
-     * setup nuxt/pages
-     */
-    await setupPages(ctx, nuxt)
+      /**
+       * ignore `/` during prerender when using prefixed routing
+       */
+      prepareStrategy(ctx, nuxt)
 
-    /**
-     * ignore `/` during prerender when using prefixed routing
-     */
-    prepareStrategy(ctx, nuxt)
+      /**
+       * setup module alias
+       */
+      setupAlias(ctx, nuxt)
 
-    /**
-     * setup module alias
-     */
-    setupAlias(ctx, nuxt)
+      /**
+       * add plugin and templates
+       */
+      prepareRuntime(ctx, nuxt)
 
-    /**
-     * add plugin and templates
-     */
-    prepareRuntime(ctx, nuxt)
+      /**
+       * generate vue-i18n and messages types using runtime server endpoint
+       */
+      await prepareTypeGeneration(ctx, nuxt)
 
-    /**
-     * generate vue-i18n and messages types using runtime server endpoint
-     */
-    await prepareTypeGeneration(ctx, nuxt)
+      /**
+       * disable preloading/prefetching lazy loaded locales
+       */
+      prepareBuildManifest(ctx, nuxt)
 
-    /**
-     * disable preloading/prefetching lazy loaded locales
-     */
-    prepareBuildManifest(ctx, nuxt)
+      /**
+       * extend bundler
+       */
+      await extendBundler(ctx, nuxt)
 
-    /**
-     * extend bundler
-     */
+      /**
+       * setup nitro
+       */
+      await setupNitro(ctx, nuxt)
 
-    await extendBundler(ctx, nuxt)
+      /**
+       * auto imports
+       */
+      prepareAutoImports(ctx, nuxt)
 
-    /**
-     * setup nitro
-     */
+      /**
+       * transpile @nuxtjs/i18n
+       */
+      prepareTranspile(nuxt)
 
-    await setupNitro(ctx, nuxt)
-
-    /**
-     * auto imports
-     */
-    prepareAutoImports(ctx, nuxt)
-
-    /**
-     * transpile @nuxtjs/i18n
-     */
-    prepareTranspile(nuxt)
-
-    /**
-     * Optimize deps
-     */
-    prepareVite(nuxt)
+      /**
+       * optimize deps
+       */
+      prepareVite(nuxt)
+    })
   }
 })
 
