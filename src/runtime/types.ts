@@ -188,10 +188,10 @@ declare module '#app' {
 
 declare module 'vue-i18n' {
   interface I18n {
-    __pendingLocale?: string
-    __pendingLocalePromise?: Promise<void>
-    __firstAccess: boolean
-    __localeFromRoute: (route: string | CompatRoute) => string
+    /** @internal */ __pendingLocale?: string
+    /** @internal */ __pendingLocalePromise?: Promise<void>
+    /** @internal */ __firstAccess: boolean
+    /** @internal */ __localeFromRoute: (route: string | CompatRoute) => string
     /**
      * Sets the value of the locale property on VueI18n or Composer instance
      *

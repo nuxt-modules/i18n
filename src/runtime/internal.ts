@@ -97,27 +97,23 @@ export function getLocaleCookie(
   cookieRef.value = undefined
 }
 
-type DetectFailureStates =
-  | 'not_found_match'
-  | 'first_access_only'
-  | 'not_redirect_on_root'
-  | 'not_redirect_on_no_prefix'
-  | 'detect_ignore_on_ssg'
-  | 'disabled'
-
-type DetectFromStates = 'cookie' | 'navigator_or_header' | 'fallback'
-
-type DetectBrowserLanguageFromResult = {
+type DetectBrowserLanguageResult = {
   locale: string
-  from?: DetectFromStates
-  error?: DetectFailureStates
+  from?: 'cookie' | 'navigator_or_header' | 'fallback'
+  error?:
+    | 'not_found_match'
+    | 'first_access_only'
+    | 'not_redirect_on_root'
+    | 'not_redirect_on_no_prefix'
+    | 'detect_ignore_on_ssg'
+    | 'disabled'
 }
 
 export function detectBrowserLanguage(
   route: string | CompatRoute,
   localeCookie: string | undefined,
   locale: Locale = ''
-): DetectBrowserLanguageFromResult {
+): DetectBrowserLanguageResult {
   const logger = /*#__PURE__*/ createLogger('detectBrowserLanguage')
   const _detect = runtimeDetectBrowserLanguage()
 

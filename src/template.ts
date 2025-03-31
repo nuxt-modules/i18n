@@ -114,14 +114,17 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
 }
 
 export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: TemplateNuxtI18nOptions): string {
-  const codeHMR = [
-    `if(import.meta.hot) {`,
-    deepEqualFn,
-    loadConfigsFn,
-    genLocaleLoaderHMR(opts.localeLoaders),
-    genVueI18nConfigHMR(opts.vueI18nConfigs),
-    '}'
-  ].join('\n\n')
+  const codeHMR =
+    ctx.isDev &&
+    opts.nuxtI18nOptions.experimental.hmr &&
+    [
+      `if(import.meta.hot) {`,
+      deepEqualFn,
+      loadConfigsFn,
+      genLocaleLoaderHMR(opts.localeLoaders),
+      genVueI18nConfigHMR(opts.vueI18nConfigs),
+      '}'
+    ].join('\n\n')
 
   const importStrings = new Set<string>()
   const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
@@ -157,6 +160,6 @@ export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
 export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${genString(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 /** client **/
-${(ctx.isDev && opts.nuxtI18nOptions.experimental.hmr && codeHMR) || ''}
+${codeHMR || ''}
 /** client-end **/`
 }

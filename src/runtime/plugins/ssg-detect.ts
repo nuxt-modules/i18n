@@ -3,7 +3,6 @@ import { isSSG } from '#build/i18n.options.mjs'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { createLogger } from '#nuxt-i18n/logger'
 import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from '../internal'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:ssg-detect',
@@ -11,12 +10,7 @@ export default defineNuxtPlugin({
   enforce: 'post',
   setup() {
     const nuxt = useNuxtApp()
-    if (
-      !isSSG ||
-      nuxt.$i18n.strategy !== 'no_prefix' ||
-      !runtimeDetectBrowserLanguage(nuxt.$config.public.i18n as I18nPublicRuntimeConfig)
-    )
-      return
+    if (!isSSG || nuxt.$i18n.strategy !== 'no_prefix' || !runtimeDetectBrowserLanguage()) return
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n:ssg-detect')
     const localeCookie = nuxt.$i18n.getLocaleCookie()

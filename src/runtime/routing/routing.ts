@@ -29,8 +29,7 @@ export function getRouteBaseName<Name extends keyof RouteMap = keyof RouteMap>(
   if (_route == null || !routeName) {
     return
   }
-  const name = getRouteName(routeName)
-  return name.split(common.runtimeConfig.public.i18n.routesNameSeparator)[0]
+  return getRouteName(routeName).split(common.runtimeConfig.public.i18n.routesNameSeparator)[0]
 }
 
 /**

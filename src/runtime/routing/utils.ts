@@ -7,10 +7,6 @@ import type { Locale } from 'vue-i18n'
 import type { CompatRoute } from '../types'
 import type { RouteRecordNameGeneric } from 'vue-router'
 
-export function getNormalizedLocales(locales: Locale[] | LocaleObject[]): LocaleObject[] {
-  return locales.map(x => (isString(x) ? { code: x } : x))
-}
-
 export function getRouteName(routeName?: RouteRecordNameGeneric) {
   if (isString(routeName)) return routeName
   if (routeName != null) return routeName.toString()
