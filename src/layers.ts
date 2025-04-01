@@ -3,7 +3,7 @@ import { getLayerI18n, mergeConfigLocales, resolveVueI18nConfigInfo, formatMessa
 
 import { useLogger, useNuxt } from '@nuxt/kit'
 import { isAbsolute, parse, resolve } from 'pathe'
-import { isString } from '@intlify/shared'
+import { assign, isString } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleConfig } from './utils'
@@ -106,7 +106,7 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
     const i18n = getLayerI18n(layer)
     if (i18n?.locales == null) continue
 
-    configs.push({ ...i18n, langDir: resolveLayerLangDir(layer, i18n) })
+    configs.push(assign({}, i18n, { langDir: resolveLayerLangDir(layer, i18n) }))
   }
 
   const installModuleConfigMap = new Map<string, LocaleConfig>()
@@ -134,7 +134,7 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
     installModuleConfigMap.set(langDir, { langDir, locales })
   }
 
-  configs.unshift(...Array.from(installModuleConfigMap.values()))
+  configs.unshift(...installModuleConfigMap.values())
 
   return mergeConfigLocales(configs)
 }
