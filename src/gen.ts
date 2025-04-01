@@ -1,9 +1,9 @@
 import createDebug from 'debug'
-import { isString } from '@intlify/shared'
+import { assign, isString } from '@intlify/shared'
 import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { distDir, runtimeDir } from './dirs'
-import { getLayerI18n, getLocalePaths } from './utils'
+import { getLayerI18n, getLocaleFiles } from './utils'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -31,15 +31,9 @@ export function simplifyLocaleOptions(
       return locale.code
     }
 
-    if (locale.file || (locale.files?.length ?? 0) > 0) {
-      locale.files = getLocalePaths(locale)
-
-      if (pathFormat === 'relative') {
-        locale.files = locale.files.map(x => relative(nuxt.options.rootDir, x))
-      }
-    } else {
-      delete locale.files
-    }
+    locale.files = getLocaleFiles(locale).map(x =>
+      pathFormat === 'relative' ? relative(nuxt.options.rootDir, x.path) : x.path
+    )
     delete locale.file
 
     return locale
@@ -104,14 +98,13 @@ export function generateLoaderOptions(
 
   const pathFormat = ctx.options.experimental?.generatedLocaleFilePathFormat ?? 'absolute'
 
-  const nuxtI18nOptions = {
-    ...ctx.options,
+  const nuxtI18nOptions = assign({}, ctx.options, {
     locales: simplifyLocaleOptions(nuxt, ctx.options),
-    i18nModules: (ctx.options.i18nModules ?? []).map(x => {
+    i18nModules: ctx.options.i18nModules.map(x => {
       if (pathFormat === 'absolute' || x.langDir == null) return x
-      return { ...x, langDir: relative(nuxt.options.rootDir, x.langDir) }
+      return assign({}, x, { langDir: relative(nuxt.options.rootDir, x.langDir) })
     })
-  }
+  })
   // @ts-expect-error is required
   delete nuxtI18nOptions.vueI18n
 
