@@ -100,7 +100,7 @@ export function generateLoaderOptions(
 
   const nuxtI18nOptions = assign({}, ctx.options, {
     locales: simplifyLocaleOptions(nuxt, ctx.options),
-    i18nModules: ctx.options.i18nModules.map(x => {
+    i18nModules: (ctx.options.i18nModules ?? []).map(x => {
       if (pathFormat === 'absolute' || x.langDir == null) return x
       return assign({}, x, { langDir: relative(nuxt.options.rootDir, x.langDir) })
     })
