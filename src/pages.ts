@@ -7,7 +7,7 @@ import { walk } from 'estree-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { formatMessage } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
-import { localizeRoutes } from './routing'
+import { localizeRoutes, type ComputedRouteOptions, type RouteOptionsResolver } from './routing'
 import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath, dirname } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
@@ -17,7 +17,7 @@ import { resolveOptions } from 'unplugin-vue-router/options'
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { Node, ObjectExpression, ArrayExpression, Expression, PrivateName } from '@babel/types'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-vue-router'
-import type { NuxtI18nOptions, CustomRoutePages, ComputedRouteOptions, RouteOptionsResolver } from './types'
+import type { NuxtI18nOptions, CustomRoutePages } from './types'
 import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
@@ -259,7 +259,7 @@ export function getRouteOptionsResolver(
   debug('getRouteOptionsResolver useConfig', useConfig)
 
   const getter = useConfig ? getRouteOptionsFromPages : getRouteOptionsFromComponent
-  return (route, localeCodes): ComputedRouteOptions | undefined => {
+  return (route, localeCodes) => {
     const ret = getter(route, localeCodes, ctx, pages, defaultLocale)
     debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
     return ret
