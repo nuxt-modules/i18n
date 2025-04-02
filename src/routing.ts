@@ -4,21 +4,23 @@ import { isObject, isString } from '@intlify/shared'
 import type { Locale } from 'vue-i18n'
 import type { NuxtPage } from '@nuxt/schema'
 import type { MarkRequired, MarkOptional } from 'ts-essentials'
-import type { NuxtI18nOptions, PrefixLocalizedRouteOptions, RouteOptionsResolver } from './types'
+import type { NuxtI18nOptions } from './types'
 
 const join = (...args: (string | undefined)[]) => args.filter(Boolean).join('')
 
 /**
- * Options to compute route localizing
- *
- * @remarks
- * The route options that is compute the route to be localized on {@link localizeRoutes}
- *
- * @public
+ * Localize route path prefix predicate options
+ * @internal
  */
-export declare interface ComputedRouteOptions {
-  locales: readonly string[]
-  paths: Record<string, string>
+interface PrefixLocalizedRouteOptions {
+  /** Current locale */
+  locale: Locale
+  /** Default locale */
+  defaultLocale?: Locale | undefined
+  /** The parent route of the route to be resolved */
+  parent: NuxtPage | undefined
+  /** The path of route */
+  path: string
 }
 
 function shouldPrefix(
@@ -43,6 +45,19 @@ function adjustRoutePathForTrailingSlash(localized: LocalizedRoute, trailingSlas
   const isChildWithRelativePath = localized.parent != null && !localized.path.startsWith('/')
   return localized.path.replace(/\/+$/, '') + (trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
 }
+
+/**
+ * Options used during route localization in {@link localizeRoutes}
+ */
+export interface ComputedRouteOptions {
+  locales: readonly string[]
+  paths: Record<string, string>
+}
+
+/**
+ * Resolver for route localizing options
+ */
+export type RouteOptionsResolver = (route: NuxtPage, localeCodes: Locale[]) => ComputedRouteOptions | undefined
 
 type LocalizeRoutesParams = MarkRequired<
   NuxtI18nOptions,
@@ -80,23 +95,14 @@ function shouldLocalizeRoutes(options: NuxtI18nOptions) {
 
 type LocalizedRoute = NuxtPage & { locale: Locale; parent: NuxtPage | undefined }
 type LocalizeRouteParams = {
-  /**
-   * locales to use for localization
-   */
+  /** locales to use for localization */
   locales: string[]
-
   defaultLocales: string[]
-  /**
-   * parent route
-   */
+  /** parent route */
   parent?: NuxtPage
-  /**
-   * localized parent route
-   */
+  /** localized parent route */
   parentLocalized?: NuxtPage
-  /**
-   * indicates whether this is a default route for 'prefix_and_default' strategy
-   */
+  /** indicates whether this is a default route for 'prefix_and_default' strategy */
   extra?: boolean
 }
 
@@ -224,13 +230,6 @@ function localizeSingleRoute(
 
 /**
  * Localize routes
- *
- * @param routes - Some routes
- * @param options - An options
- *
- * @returns Localized routes
- *
- * @public
  */
 export function localizeRoutes(routes: NuxtPage[], options: LocalizeRoutesParams): NuxtPage[] {
   if (!shouldLocalizeRoutes(options)) return routes
