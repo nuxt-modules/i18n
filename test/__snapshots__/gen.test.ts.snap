@@ -79,6 +79,104 @@ exports[`basic 1`] = `
 }
 `;
 
+exports[`files with cache configuration (off) 1`] = `
+{
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "importString": "import locale_en_46json_e9231b3b from "#nuxt-i18n/e9231b3b";",
+        "key": ""locale_en_46json_e9231b3b"",
+        "load": "() => import("#nuxt-i18n/e9231b3b" /* webpackChunkName: "locale_en_46json_e9231b3b" */)",
+        "relative": "srcDir/test/locales/en.json",
+        "specifier": "#nuxt-i18n/e9231b3b",
+      },
+    ],
+    "es": [
+      {
+        "cache": false,
+        "importString": "import locale_es_46json_4fad0583 from "#nuxt-i18n/4fad0583";",
+        "key": ""locale_es_46json_4fad0583"",
+        "load": "() => import("#nuxt-i18n/4fad0583" /* webpackChunkName: "locale_es_46json_4fad0583" */)",
+        "relative": "srcDir/test/locales/es.json",
+        "specifier": "#nuxt-i18n/4fad0583",
+      },
+    ],
+    "es-AR": [
+      {
+        "cache": false,
+        "importString": "import locale_es_46json_4fad0583 from "#nuxt-i18n/4fad0583";",
+        "key": ""locale_es_46json_4fad0583"",
+        "load": "() => import("#nuxt-i18n/4fad0583" /* webpackChunkName: "locale_es_46json_4fad0583" */)",
+        "relative": "srcDir/test/locales/es.json",
+        "specifier": "#nuxt-i18n/4fad0583",
+      },
+      {
+        "cache": true,
+        "importString": "import locale_es_45AR_46json_5c77b60d from "#nuxt-i18n/5c77b60d";",
+        "key": ""locale_es_45AR_46json_5c77b60d"",
+        "load": "() => import("#nuxt-i18n/5c77b60d" /* webpackChunkName: "locale_es_45AR_46json_5c77b60d" */)",
+        "relative": "srcDir/test/locales/es-AR.json",
+        "specifier": "#nuxt-i18n/5c77b60d",
+      },
+    ],
+    "fr": [
+      {
+        "cache": true,
+        "importString": "import locale_fr_46json_5627016f from "#nuxt-i18n/5627016f";",
+        "key": ""locale_fr_46json_5627016f"",
+        "load": "() => import("#nuxt-i18n/5627016f" /* webpackChunkName: "locale_fr_46json_5627016f" */)",
+        "relative": "srcDir/test/locales/fr.json",
+        "specifier": "#nuxt-i18n/5627016f",
+      },
+    ],
+    "ja": [
+      {
+        "cache": true,
+        "importString": "import locale_ja_46json_354e4128 from "#nuxt-i18n/354e4128";",
+        "key": ""locale_ja_46json_354e4128"",
+        "load": "() => import("#nuxt-i18n/354e4128" /* webpackChunkName: "locale_ja_46json_354e4128" */)",
+        "relative": "srcDir/test/locales/ja.json",
+        "specifier": "#nuxt-i18n/354e4128",
+      },
+    ],
+  },
+  "normalizedLocales": [
+    {
+      "code": "en",
+    },
+    {
+      "code": "ja",
+    },
+    {
+      "code": "fr",
+    },
+    {
+      "code": "es",
+    },
+    {
+      "code": "es-AR",
+    },
+  ],
+  "nuxtI18nOptions": {
+    "defaultLocale": "en",
+    "experimental": {
+      "generatedLocaleFilePathFormat": "off",
+    },
+    "i18nModules": [],
+    "lazy": true,
+    "locales": [],
+  },
+  "vueI18nConfigs": [
+    {
+      "importer": "() => import("#nuxt-i18n/6354e9fa" /* webpackChunkName: "config_i18n_46config_46ts_6354e9fa" */)",
+      "relative": "/test/i18n.config.ts",
+      "specifier": "#nuxt-i18n/6354e9fa",
+    },
+  ],
+}
+`;
+
 exports[`files with cache configuration (relative) 1`] = `
 {
   "localeLoaders": {
@@ -639,21 +737,30 @@ exports[`toCode: function (arrow) 1`] = `
       {
         "code": "en",
         "files": [
-          "en.json",
+          {
+            "cache": true,
+            "path": "en.json",
+          },
         ],
         "testFunc": [Function],
       },
       {
         "code": "ja",
         "files": [
-          "ja.json",
+          {
+            "cache": true,
+            "path": "ja.json",
+          },
         ],
         "testFunc": [Function],
       },
       {
         "code": "fr",
         "files": [
-          "fr.json",
+          {
+            "cache": true,
+            "path": "fr.json",
+          },
         ],
         "testFunc": [Function],
       },
@@ -681,21 +788,30 @@ exports[`toCode: function (named) 1`] = `
       {
         "code": "en",
         "files": [
-          "en.json",
+          {
+            "cache": true,
+            "path": "en.json",
+          },
         ],
         "testFunc": [Function],
       },
       {
         "code": "ja",
         "files": [
-          "ja.json",
+          {
+            "cache": true,
+            "path": "ja.json",
+          },
         ],
         "testFunc": [Function],
       },
       {
         "code": "fr",
         "files": [
-          "fr.json",
+          {
+            "cache": true,
+            "path": "fr.json",
+          },
         ],
         "testFunc": [Function],
       },

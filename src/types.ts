@@ -99,7 +99,7 @@ export interface ExperimentalFeatures {
    * @remark `'relative'` locale file and langDir paths are converted to be relative to the `rootDir`
    * @default 'absolute'
    */
-  generatedLocaleFilePathFormat?: 'absolute' | 'relative'
+  generatedLocaleFilePathFormat?: 'absolute' | 'relative' | 'off'
   /**
    * Removes non-canonical query parameters from alternate link meta tags
    * @default false
