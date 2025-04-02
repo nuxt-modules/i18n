@@ -239,6 +239,47 @@ test('files with cache configuration (relative)', async () => {
   expect(code).toMatchSnapshot()
 })
 
+test('files with cache configuration (off)', async () => {
+  const locales = getMockLocales([
+    {
+      code: 'es',
+      files: [{ path: 'es.json', cache: false }]
+    },
+    {
+      code: 'es-AR',
+      files: [
+        { path: 'es.json', cache: false },
+        { path: 'es-AR.json', cache: true }
+      ]
+    }
+  ])
+
+  for (const l of locales) {
+    // @ts-ignore
+    l.files = resolveRelativeLocales(l, { langDir: 'locales' })
+  }
+  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
+      localeInfo,
+      normalizedLocales: getNormalizedLocales(locales),
+      options: {
+        ...NUXT_I18N_OPTIONS,
+        lazy: true,
+        experimental: {
+          generatedLocaleFilePathFormat: 'off'
+        }
+      }
+    },
+    { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } }
+  )
+
+  expect(code).toMatchSnapshot()
+})
+
 test('locale file in nested', async () => {
   const locales = [
     {
