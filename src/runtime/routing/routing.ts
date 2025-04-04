@@ -111,7 +111,7 @@ function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, l
   return route
 }
 
-export function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
+function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
   try {
     const _locale = locale || unref(getI18nTarget(common.i18n).locale)
     const normalized = normalizeRawLocation(route)
