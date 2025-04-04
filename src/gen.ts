@@ -7,7 +7,7 @@ import { getLayerI18n, getLocaleFiles } from './utils'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleInfo, LocaleObject, ExperimentalFeatures } from './types'
+import type { NuxtI18nOptions, LocaleObject, ExperimentalFeatures } from './types'
 import type { Locale } from 'vue-i18n'
 import type { I18nNuxtContext } from './context'
 
@@ -39,7 +39,7 @@ export function simplifyLocaleOptions(
 
   const locales = (options.locales ?? []) as LocaleObject[]
 
-  return locales.map(({ meta, ...locale }) => {
+  return locales.map(locale => {
     if (!hasLocaleObjects) locale.code
     return formatLocaleFiles(nuxt, locale, options.experimental?.generatedLocaleFilePathFormat)
   })
@@ -60,32 +60,30 @@ export function generateLoaderOptions(
 ) {
   debug('generateLoaderOptions: lazy', ctx.options.lazy)
 
-  const importMapper = new Map<string, LocaleLoaderData>()
-  function generateLocaleImports(meta: NonNullable<LocaleInfo['meta']>[number]) {
-    if (importMapper.has(meta.path)) return importMapper.get(meta.path)!
-    const key = `locale_${genSafeVariableName(basename(meta.path))}_${meta.hash}`
-    const specifier = asI18nVirtual(meta.hash)
-    const async = genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` })
-    const sync = `() => Promise.resolve(${key})`
-
-    importMapper.set(meta.path, {
-      specifier,
-      key: genString(key),
-      relative: meta.loadPath,
-      cache: meta.file.cache ?? true,
-      load: ctx.options.lazy ? async : sync,
-      importString: genImport(specifier, key)
-    })
-
-    return importMapper.get(meta.path)!
-  }
-
   /**
    * Prepare locale file imports
    */
+  const importMapper = new Map<string, LocaleLoaderData>()
   const localeLoaders: Record<string, LocaleLoaderData[]> = {}
   for (const locale of ctx.localeInfo) {
-    localeLoaders[locale.code] = (locale?.meta ?? []).map(meta => generateLocaleImports(meta))
+    localeLoaders[locale.code] ??= []
+    for (const meta of locale.meta) {
+      if (!importMapper.has(meta.path)) {
+        const key = `locale_${genSafeVariableName(basename(meta.path))}_${meta.hash}`
+        const specifier = asI18nVirtual(meta.hash)
+        importMapper.set(meta.path, {
+          specifier,
+          key: genString(key),
+          relative: meta.loadPath,
+          cache: meta.file.cache ?? true,
+          load: ctx.options.lazy
+            ? genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` })
+            : `() => Promise.resolve(${key})`,
+          importString: genImport(specifier, key)
+        })
+      }
+      localeLoaders[locale.code].push(importMapper.get(meta.path)!)
+    }
   }
 
   /**
@@ -94,7 +92,6 @@ export function generateLoaderOptions(
   const vueI18nConfigs = []
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
     const config = ctx.vueI18nConfigPaths[i]
-    if (config.meta.path === '') continue
     const key = genString(`config_${genSafeVariableName(basename(config.meta.path))}_${config.meta.hash}`)
     const specifier = asI18nVirtual(config.meta.hash)
     const importer = genDynamicImport(specifier, { comment: `webpackChunkName: ${key}` })
