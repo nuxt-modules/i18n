@@ -122,12 +122,7 @@ export interface ExperimentalFeatures {
 export interface BundleOptions
   extends Pick<
     PluginOptions,
-    | 'compositionOnly'
-    | 'runtimeOnly'
-    | 'fullInstall'
-    | 'dropMessageCompiler'
-    | 'onlyLocales'
-    | 'optimizeTranslationDirective'
+    'compositionOnly' | 'runtimeOnly' | 'fullInstall' | 'dropMessageCompiler' | 'onlyLocales'
   > {}
 
 export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang' | 'globalSFCScope'> {}
