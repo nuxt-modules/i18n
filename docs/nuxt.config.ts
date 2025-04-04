@@ -1,7 +1,7 @@
 import pkg from '../package.json'
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui-pro', '@nuxt/content', 'nuxt-og-image'],
+  modules: ['@nuxt/ui-pro', '@nuxt/content', 'nuxt-og-image', 'nuxt-llms'],
   routeRules: {
     // v7
     '/docs/v7': { redirect: '/docs/v7/setup' },
@@ -30,9 +30,6 @@ export default defineNuxtConfig({
     }
   },
 
-  // Nuxt UI & UI Pro
-  ui: { icons: ['heroicons', 'simple-icons'] },
-
   // special license for nuxt & nuxt-modules orgs
   uiPro: { license: 'oss' },
 
@@ -44,6 +41,16 @@ export default defineNuxtConfig({
           langs: ['bash', 'js', 'ts', 'typescript', 'diff', 'vue', 'json', 'jsonc', 'yml', 'css', 'mdc']
         }
       }
+    }
+  },
+
+  llms: {
+    domain: 'https://i18n.nuxtjs.org',
+    title: 'Nuxt i18n Docs',
+    description: 'Nuxt i18n is a powerful internationalization (i18n) module for Nuxt powered by Vue i18n.',
+    full: {
+      title: 'Nuxt i18n Docs',
+      description: 'The complete Nuxt i18n documentation written in Markdown (MDC syntax).'
     }
   },
 
