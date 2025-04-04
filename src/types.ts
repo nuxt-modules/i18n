@@ -73,14 +73,21 @@ type RouteLocationAsStringTypedListI18n<T = RouteMapGeneric extends RouteMapI18n
 export type CustomRoutePages = RouteLocationAsStringTypedListI18n
 
 export interface ExperimentalFeatures {
+  /**
+   * Path to server-side locale detector resolved from `restructureDir` (`<rootDir>/i18n` by default)
+   * @default undefined
+   */
   localeDetector?: string
+  /**
+   * Updates links rendered using `<SwitchLocalePath>` before server response, necessary for dynamic i18n params.
+   * @default false
+   */
   switchLocalePathLinkSSR?: boolean
   /**
    * Automatically imports/initializes `$t`, `$rt`, `$d`, `$n`, `$tm` and `$te` functions in `<script setup>` when used.
    * @default false
    */
   autoImportTranslationFunctions?: boolean
-
   /**
    * Generates types for i18n routing helper
    * @default true
@@ -88,15 +95,15 @@ export interface ExperimentalFeatures {
   typedPages?: boolean
   /**
    * Generates types for vue-i18n and messages
-   * @remark `'default'` to generate types based on `defaultLocale`
-   * @remark `'all'` to generate types based on all locales
+   * - `'default'` to generate types based on `defaultLocale`
+   * - `'all'` to generate types based on all locales
    * @default false
    */
   typedOptionsAndMessages?: false | 'default' | 'all'
   /**
    * Locale file and langDir paths can be formatted differently to prevent exposing sensitive paths in production.
-   * @remark `'absolute'` locale file and langDir paths contain the full absolute path
-   * @remark `'relative'` locale file and langDir paths are converted to be relative to the `rootDir`
+   * - `'absolute'` locale file and langDir paths contain the full absolute path
+   * - `'relative'` locale file and langDir paths are converted to be relative to the `rootDir`
    * @default 'absolute'
    */
   generatedLocaleFilePathFormat?: 'absolute' | 'relative' | 'off'
@@ -150,13 +157,15 @@ export type NuxtI18nOptions<
   customBlocks?: CustomBlocksOptions
   /**
    * Enable when using different domains for each locale
-   * @remarks If enabled, no prefix is added to routes and `locales` must be configured as an array of `LocaleObject` objects with the `domain` property set.
+   *
+   * If enabled, no prefix is added to routes and `locales` must be configured as an array of `LocaleObject` objects with the `domain` property set.
    * @default false
    */
   differentDomains?: boolean
   /**
    * Enable when using different domains with different locales
-   * @remarks If enabled, `locales` must be configured as an array of `LocaleObject` objects with the `domains` and `defaultForDomains` property set.
+   *
+   * If enabled, `locales` must be configured as an array of `LocaleObject` objects with the `domains` and `defaultForDomains` property set.
    * @default false
    */
   multiDomainLocales?: boolean
@@ -185,21 +194,19 @@ export type NuxtI18nOptions<
    *
    * It's recommended to set this to some locale regardless of chosen strategy, as it will be used as a fallback locale when navigating to a non-existent route
    *
-   * @remarks When using `prefix_except_default` strategy, routes for `defaultLocale` have no prefix.
+   * With `prefix_except_default` strategy, routes for `defaultLocale` have no prefix.
    * @default ''
    */
   defaultLocale?: Locale
   /**
    * List of locales supported by your app
-   * @remarks Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
+   *
+   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
    * @default []
    */
   locales?: ConfiguredLocaleType
   /**
    * Routes strategy
-   *
-   * @remarks
-   * Can be set to one of the following:
    * - `no_prefix`: routes won't have a locale prefix
    * - `prefix_except_default`: locale prefix added for every locale except default
    * - `prefix`: locale prefix added for every locale
@@ -220,7 +227,8 @@ export type NuxtI18nOptions<
   routesNameSeparator?: string
   /**
    * Internal suffix added to generated route names for default locale
-   * @remarks Relevant if strategy is `prefix_and_default` - you shouldn't need to change this.
+   *
+   * Relevant if strategy is `prefix_and_default` - you shouldn't need to change this.
    * @default 'default'
    */
   defaultLocaleRouteNameSuffix?: string
@@ -232,7 +240,6 @@ export type NuxtI18nOptions<
   /**
    * The fallback base URL to use as a prefix for alternate URLs in hreflang tags.
    *
-   * @remarks
    * By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used.
    *
    * Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string.
@@ -262,7 +269,8 @@ export type Directions = 'ltr' | 'rtl' | 'auto'
  * Locale object
  * @public
  */
-export interface LocaleObject<T = Locale> extends Record<string, unknown> {
+export interface LocaleObject<T = Locale> {
+  [k: string]: unknown
   /** Code used for route prefixing and argument in i18n utility functions. */
   code: T
   /** User facing name */
@@ -276,6 +284,7 @@ export interface LocaleObject<T = Locale> extends Record<string, unknown> {
   domain?: string
   domains?: string[]
   defaultForDomains?: string[]
+  domainDefault?: boolean
   file?: string | LocaleFile
   files?: string[] | LocaleFile[]
 }
