@@ -7,7 +7,7 @@ on:
       - '!**'
   pull_request:
     types: [opened, synchronize, labeled]
-    branches: [main]
+    branches: [next]
     paths-ignore:
       - 'docs/**'
       - 'test/**'
