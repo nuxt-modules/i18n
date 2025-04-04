@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { useLocaleLocation, useLocalePath, useLocaleRoute } from '#i18n'
+import { useLocalePath, useLocaleRoute } from '#i18n'
 
 const localePath = useLocalePath()
-const localeLocation = useLocaleLocation()
 const localeRoute = useLocaleRoute()
 </script>
 
