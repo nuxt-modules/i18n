@@ -170,8 +170,8 @@ export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfi
 }
 
 export type LocaleConfig = {
-  langDir?: string | null
-  locales?: string[] | LocaleObject[]
+  langDir: string
+  locales: string[] | LocaleObject[]
 }
 
 /**
@@ -215,27 +215,26 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
   return Array.from(mergedLocales.values())
 }
 
-type RegisterModuleArg = Pick<NuxtI18nOptions, 'langDir' | 'locales'>
-
 /**
  * Merges project layer locales with registered i18n modules
  */
 export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => {
-  options.i18nModules = []
+  const i18nModules: LocaleConfig[] = []
 
   await nuxt.callHook(
     'i18n:registerModule',
-    (config: RegisterModuleArg) => config.langDir && options.i18nModules!.push(config)
+    config => config.langDir && config.locales && i18nModules.push({ langDir: config.langDir, locales: config.locales })
   )
 
-  if (options.i18nModules.length > 0) {
+  if (i18nModules.length > 0) {
     const baseLocales: LocaleObject[] = []
     for (const locale of options.locales!) {
       if (!isObject(locale)) continue
       baseLocales.push(assign({}, locale, { file: undefined, files: getLocaleFiles(locale) }))
     }
-    options.locales = mergeConfigLocales(options.i18nModules, baseLocales)
+    options.locales = mergeConfigLocales(i18nModules, baseLocales)
   }
+  options.i18nModules = i18nModules
 }
 
 function getHash(text: BinaryLike): string {

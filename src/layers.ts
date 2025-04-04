@@ -12,7 +12,7 @@ import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './typ
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
-export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
+export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
   const logger = useLogger(NUXT_I18N_MODULE_ID)
   const project = nuxt.options._layers[0]
   const layers = nuxt.options._layers
@@ -21,14 +21,12 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
     const layerI18n = getLayerI18n(layer)
     if (layerI18n == null) continue
 
-    const configLocation = project.config.rootDir === layer.config.rootDir ? 'project layer' : 'extended layer'
-    const layerHint = `In ${configLocation} (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
+    const configLocation = project.config.rootDir === layer.config.rootDir ? 'project' : 'extended'
+    const layerHint = `In ${configLocation} layer (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
 
     try {
       // check `langDir` option
       if (layerI18n.langDir) {
-        const locales = layerI18n.locales || []
-
         if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
           logger.warn(
             `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
@@ -36,17 +34,15 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
           )
         }
 
-        for (const locale of locales) {
+        for (const locale of layerI18n.locales ?? []) {
           if (isString(locale)) {
             throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
           }
-
-          if (!(locale.file || locale.files)) {
-            throw new Error(
-              'All locales must have the `file` or `files` property set when using `langDir`.\n' +
-                `Found none in:\n${JSON.stringify(locale, null, 2)}.`
-            )
-          }
+          if (locale.file || locale.files) continue
+          throw new Error(
+            'All locales must have the `file` or `files` property set when using `langDir`.\n' +
+              `Found none in:\n${JSON.stringify(locale, null, 2)}.`
+          )
         }
       }
     } catch (err) {
@@ -56,19 +52,7 @@ export const checkLayerOptions = (_options: NuxtI18nOptions, nuxt: Nuxt) => {
   }
 }
 
-/**
- * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
- *
- * This overwrites `options.locales`
- */
-export const applyLayerOptions = (options: NuxtI18nOptions, nuxt: Nuxt) => {
-  const mergedLocales = mergeLayerLocales(options, nuxt)
-  debug('merged locales', mergedLocales)
-
-  options.locales = mergedLocales
-}
-
-export const mergeLayerPages = (analyzer: (pathOverride: string) => void, nuxt: Nuxt) => {
+export function mergeLayerPages(analyzer: (pathOverride: string) => void, nuxt: Nuxt) {
   const project = nuxt.options._layers[0]
   const layers = nuxt.options._layers
 
@@ -86,7 +70,6 @@ export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, fr
   if (i18n.restructureDir !== false) {
     return resolve(layer.config.rootDir, i18n.restructureDir ?? 'i18n')
   }
-
   return resolve(layer.config.rootDir, fromRootDir ? '' : layer.config.srcDir)
 }
 
@@ -96,25 +79,25 @@ function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
   return resolve(resolveI18nDir(layer, i18n), i18n.langDir)
 }
 
-const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
-  debug('project layer `lazy` option', options.lazy)
+/**
+ * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
+ * This overwrites `options.locales`
+ */
+export function applyLayerOptions(options: NuxtI18nOptions, nuxt: Nuxt) {
   options.locales ??= []
 
   const configs: LocaleConfig[] = []
-
   for (const layer of nuxt.options._layers) {
     const i18n = getLayerI18n(layer)
     if (i18n?.locales == null) continue
-
-    configs.push(assign({}, i18n, { langDir: resolveLayerLangDir(layer, i18n) }))
+    configs.push(assign({}, i18n, { langDir: resolveLayerLangDir(layer, i18n), locales: i18n.locales }))
   }
-
-  const installModuleConfigMap = new Map<string, LocaleConfig>()
 
   /**
    * Collect any locale files that are not provided by layers these are added when
    * installing through `installModule` and should have absolute paths.
    */
+  const installModuleConfigMap = new Map<string, LocaleConfig>()
   outer: for (const locale of options.locales) {
     if (isString(locale)) continue
 
@@ -136,27 +119,28 @@ const mergeLayerLocales = (options: NuxtI18nOptions, nuxt: Nuxt) => {
 
   configs.unshift(...installModuleConfigMap.values())
 
-  return mergeConfigLocales(configs)
+  debug('merged locales', configs)
+  options.locales = mergeConfigLocales(configs)
 }
 
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions) {
   const logger = useLogger(NUXT_I18N_MODULE_ID)
   const nuxt = useNuxt()
 
-  const resolveArr = nuxt.options._layers.map(async layer => {
-    const i18n = getLayerI18n(layer)
-    const i18nDirPath = resolveI18nDir(layer, i18n || {}, true)
-    const res = await resolveVueI18nConfigInfo(i18nDirPath, i18n?.vueI18n)
+  const resolved = await Promise.all(
+    nuxt.options._layers.map(async layer => {
+      const i18n = getLayerI18n(layer)
+      const i18nDirPath = resolveI18nDir(layer, i18n || {}, true)
+      const res = await resolveVueI18nConfigInfo(i18nDirPath, i18n?.vueI18n)
 
-    if (res == null && i18n?.vueI18n != null) {
-      logger.warn(`Vue I18n configuration file \`${i18n.vueI18n}\` not found in \`${i18nDirPath}\`. Skipping...`)
-      return undefined
-    }
+      if (res == null && i18n?.vueI18n != null) {
+        logger.warn(`Vue I18n configuration file \`${i18n.vueI18n}\` not found in \`${i18nDirPath}\`. Skipping...`)
+        return undefined
+      }
 
-    return res
-  })
-
-  const resolved = await Promise.all(resolveArr)
+      return res
+    })
+  )
 
   // use `vueI18n` passed by `installModule`
   if (options.vueI18n && isAbsolute(options.vueI18n)) {
