@@ -66,17 +66,12 @@ export function mergeLayerPages(analyzer: (pathOverride: string) => void, nuxt: 
   }
 }
 
-export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, fromRootDir: boolean = false) {
-  if (i18n.restructureDir !== false) {
-    return resolve(layer.config.rootDir, i18n.restructureDir ?? 'i18n')
-  }
-  return resolve(layer.config.rootDir, fromRootDir ? '' : layer.config.srcDir)
+export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
+  return resolve(layer.config.rootDir, i18n.restructureDir ?? 'i18n')
 }
 
 function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
-  i18n.restructureDir ??= 'i18n'
-  i18n.langDir ??= i18n.restructureDir !== false ? 'locales' : ''
-  return resolve(resolveI18nDir(layer, i18n), i18n.langDir)
+  return resolve(resolveI18nDir(layer, i18n), i18n.langDir ?? 'locales')
 }
 
 /**
@@ -130,7 +125,7 @@ export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions) {
   const resolved = await Promise.all(
     nuxt.options._layers.map(async layer => {
       const i18n = getLayerI18n(layer)
-      const i18nDirPath = resolveI18nDir(layer, i18n || {}, true)
+      const i18nDirPath = resolveI18nDir(layer, i18n || {})
       const res = await resolveVueI18nConfigInfo(i18nDirPath, i18n?.vueI18n)
 
       if (res == null && i18n?.vueI18n != null) {

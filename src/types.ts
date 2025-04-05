@@ -136,10 +136,10 @@ export type NuxtI18nOptions<
   vueI18n?: string
   experimental?: ExperimentalFeatures
   /**
-   * The directory to resolve i18n files from, the restructure can be disabled by setting this to `false`.
+   * The directory from which i18n files are resolved relative to the `<rootDir>` of the project.
    * @default 'i18n'
    */
-  restructureDir?: string | false
+  restructureDir?: string
   bundle?: BundleOptions
   compilation?: LocaleMessageCompilationOptions
   customBlocks?: CustomBlocksOptions

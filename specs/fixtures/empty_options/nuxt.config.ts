@@ -2,7 +2,5 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   modules: ['@nuxtjs/i18n'],
-  i18n: {
-    restructureDir: false
-  }
+  i18n: {}
 })

@@ -125,7 +125,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
   }
 
   const i18nLayerConfig = getLayerI18n(i18nLayer)
-  const i18nDir = resolveI18nDir(i18nLayer, i18nLayerConfig!, true)
+  const i18nDir = resolveI18nDir(i18nLayer, i18nLayerConfig!)
   const localeDetectorPath = await resolvePath(resolve(i18nDir, i18nLayerConfig!.experimental!.localeDetector!), {
     cwd: nuxt.options.rootDir,
     extensions: EXECUTABLE_EXTENSIONS

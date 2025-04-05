@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
   i18n: {
-    restructureDir: false,
     bundle: {
       compositionOnly: false
     },
