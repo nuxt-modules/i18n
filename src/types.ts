@@ -79,11 +79,6 @@ export interface ExperimentalFeatures {
    */
   localeDetector?: string
   /**
-   * Automatically imports/initializes `$t`, `$rt`, `$d`, `$n`, `$tm` and `$te` functions in `<script setup>` when used.
-   * @default false
-   */
-  autoImportTranslationFunctions?: boolean
-  /**
    * Generates types for i18n routing helper
    * @default true
    */
@@ -233,6 +228,21 @@ export type NuxtI18nOptions<
    * @defaultValue `true`
    */
   hmr?: boolean
+  /**
+   * Automatically imports/initializes `$t`, `$rt`, `$d`, `$n`, `$tm` and `$te` functions in `<script setup>` when used.
+   *
+   * This requires Nuxt's `autoImport` functionality to work.
+   *
+   * @example
+   * ```vue
+   * <script setup>
+   * // const { t: $t } = useI18n() --- automatically declared
+   * const title = computed(() => $t('my-title'))
+   * </script>
+   * ```
+   * @default true
+   */
+  autoDeclare?: boolean
 }
 
 export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOptions | Promise<I18nOptions>) }>

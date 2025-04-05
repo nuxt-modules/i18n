@@ -1,6 +1,6 @@
 <script setup lang="ts">
-console.log(`[autoImportTranslationFunctions][default]: ${$t('welcome')}`)
-console.log(`[autoImportTranslationFunctions][fr]: ${$t('welcome', 1, { locale: 'fr' })}`)
+console.log(`[autoDeclare][default]: ${$t('welcome')}`)
+console.log(`[autoDeclare][fr]: ${$t('welcome', 1, { locale: 'fr' })}`)
 </script>
 
 <template>

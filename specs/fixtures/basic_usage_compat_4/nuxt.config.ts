@@ -24,7 +24,6 @@ export default defineNuxtConfig({
     defaultLocale: 'en',
     experimental: {
       alternateLinkCanonicalQueries: false,
-      autoImportTranslationFunctions: true,
       localeDetector: './localeDetector.ts'
     }
   }
