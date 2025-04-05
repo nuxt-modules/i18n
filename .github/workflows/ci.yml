@@ -21,7 +21,6 @@ jobs:
         os: [ubuntu-latest]
     timeout-minutes: 10
 
-    name: Lint on Node.js ${{ matrix.node-version }}
     steps:
       - name: Checkout codes
         uses: actions/checkout@v4
@@ -52,7 +51,6 @@ jobs:
         os: [ubuntu-latest]
     timeout-minutes: 10
 
-    name: Build on Node.js ${{ matrix.node-version }}
     steps:
       - name: Checkout codes
         uses: actions/checkout@v4
@@ -88,7 +86,6 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     timeout-minutes: 25
 
-    name: Test on Node.js ${{ matrix.node-version }} (${{ matrix.os }})
     steps:
       - name: Checkout codes
         uses: actions/checkout@v4
