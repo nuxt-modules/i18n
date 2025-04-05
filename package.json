@@ -35,17 +35,13 @@
     "nuxt-module"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/types.d.mts",
-      "default": "./dist/module.mjs"
-    },
+    ".": "./dist/module.mjs",
     "./package.json": "./package.json"
   },
   "imports": {
     "#i18n": "./dist/runtime/composables/index.js"
   },
   "main": "./dist/module.mjs",
-  "types": "./dist/types.d.ts",
   "files": [
     "dist",
     "internals.d.ts"
@@ -106,7 +102,7 @@
     "mlly": "^1.7.4",
     "oxc-parser": "^0.61.2",
     "pathe": "^2.0.3",
-    "typescript": "^5.6.2",
+    "typescript": "^5.8.2",
     "ufo": "^1.5.4",
     "unplugin": "^2.2.2",
     "unplugin-vue-router": "^0.12.0",
@@ -116,7 +112,7 @@
   "devDependencies": {
     "@babel/types": "^7.27.0",
     "@eslint/js": "9.23.0",
-    "@nuxt/module-builder": "^0.8.4",
+    "@nuxt/module-builder": "^1.0.0",
     "@nuxt/schema": "^3.16.2",
     "@rspack/core": "^1.2.8",
     "@types/debug": "^4.1.12",
@@ -144,7 +140,7 @@
     "tinyexec": "^1.0.0",
     "ts-essentials": "^9.4.2",
     "typescript-eslint": "^7.14.0",
-    "unbuild": "^2.0.0",
+    "unbuild": "^3.5.0",
     "undici": "^7.5.0",
     "vitest": "^3.0.9",
     "vue": "^3.5.13",
