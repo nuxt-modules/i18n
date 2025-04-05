@@ -101,13 +101,6 @@ export interface ExperimentalFeatures {
    */
   typedOptionsAndMessages?: false | 'default' | 'all'
   /**
-   * Locale file and langDir paths can be formatted differently to prevent exposing sensitive paths in production.
-   * - `'absolute'` locale file and langDir paths contain the full absolute path
-   * - `'relative'` locale file and langDir paths are converted to be relative to the `rootDir`
-   * @default 'absolute'
-   */
-  generatedLocaleFilePathFormat?: 'absolute' | 'relative' | 'off'
-  /**
    * Removes non-canonical query parameters from alternate link meta tags
    * @default false
    */
