@@ -1,7 +1,7 @@
 import { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import {
-  DEFAULT_DYNAMIC_PARAMS_KEY,
+  DYNAMIC_PARAMS_KEY,
   DEFAULT_COOKIE_KEY,
   NUXT_I18N_MODULE_ID,
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER
@@ -157,7 +157,7 @@ export const isSSG = ${ctx.isSSG}
 export const hasPages = ${ctx.hasPages}
 
 export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
-export const DEFAULT_DYNAMIC_PARAMS_KEY = ${genString(DEFAULT_DYNAMIC_PARAMS_KEY)}
+export const DYNAMIC_PARAMS_KEY = ${genString(DYNAMIC_PARAMS_KEY)}
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${genString(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 /** client **/
 ${codeHMR || ''}

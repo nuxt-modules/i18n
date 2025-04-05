@@ -19,7 +19,6 @@ await setup({
     },
     i18n: {
       experimental: {
-        switchLocalePathLinkSSR: true,
         alternateLinkCanonicalQueries: false
       }
     }
@@ -27,32 +26,11 @@ await setup({
 })
 
 describe('experimental.switchLocalePathLinkSSR', async () => {
-  test('dynamic parameters render and update reactively client-side', async () => {
-    const { page } = await renderPage('/products/big-chair')
-
-    expect(await page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
-
-    await gotoPath(page, '/nl/products/rode-mok')
-    expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
-
-    // Translated params are not lost on query changes
-    await page.locator('#params-add-query').click()
-    await waitForURL(page, '/nl/products/rode-mok?test=123&canonical=123')
-    expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
-      '/products/red-mug?test=123&canonical=123'
-    )
-
-    await page.locator('#params-remove-query').click()
-    await waitForURL(page, '/nl/products/rode-mok')
-    expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
-  })
-
   test('respects `experimental.alternateLinkCanonicalQueries`', async () => {
     const restore = await startServerWithRuntimeConfig({
       public: {
         i18n: {
           experimental: {
-            switchLocalePathLinkSSR: true,
             alternateLinkCanonicalQueries: true
           }
         }

@@ -79,11 +79,6 @@ export interface ExperimentalFeatures {
    */
   localeDetector?: string
   /**
-   * Updates links rendered using `<SwitchLocalePath>` before server response, necessary for dynamic i18n params.
-   * @default false
-   */
-  switchLocalePathLinkSSR?: boolean
-  /**
    * Automatically imports/initializes `$t`, `$rt`, `$d`, `$n`, `$tm` and `$te` functions in `<script setup>` when used.
    * @default false
    */

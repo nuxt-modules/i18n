@@ -19,7 +19,7 @@ export const STRATEGIES = {
   NO_PREFIX: STRATEGY_NO_PREFIX
 } as const
 
-export const DEFAULT_DYNAMIC_PARAMS_KEY = 'nuxtI18nInternal'
+export const DYNAMIC_PARAMS_KEY = 'nuxtI18nInternal'
 export const DEFAULT_COOKIE_KEY = 'i18n_redirected'
 export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = 'nuxt-i18n-slp'
 
@@ -27,7 +27,6 @@ export const DEFAULT_OPTIONS = {
   restructureDir: 'i18n',
   experimental: {
     localeDetector: '',
-    switchLocalePathLinkSSR: false,
     autoImportTranslationFunctions: false,
     typedPages: true,
     typedOptionsAndMessages: false,
