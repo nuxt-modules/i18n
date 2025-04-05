@@ -3,16 +3,10 @@ import pkg from '../package.json'
 export default defineNuxtConfig({
   modules: ['@nuxt/ui-pro', '@nuxt/content', 'nuxt-og-image', 'nuxt-llms'],
   routeRules: {
-    // v7
-    '/docs/v7': { redirect: '/docs/v7/setup' },
-
     // default
     '/': { prerender: true },
     '/docs': { redirect: '/docs/getting-started' },
-    '/api/search.json': { prerender: true },
-
-    // v8
-    '/docs/v8': { redirect: '/docs/v8/getting-started' }
+    '/api/search.json': { prerender: true }
   },
 
   // SEO
