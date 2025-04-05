@@ -8,10 +8,6 @@ export default defineNuxtPlugin({
   dependsOn: ['i18n:plugin'],
   setup() {
     const nuxt = useNuxtApp()
-    if (nuxt.$config.public.i18n.experimental.switchLocalePathLinkSSR !== true) return
-
-    const switchLocalePath = useSwitchLocalePath()
-
     const switchLocalePathLinkWrapperExpr = new RegExp(
       [
         `<!--${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-\\[(\\w+)\\]-->`,
@@ -21,6 +17,7 @@ export default defineNuxtPlugin({
       'g'
     )
 
+    const switchLocalePath = useSwitchLocalePath()
     nuxt.hook('app:rendered', ctx => {
       if (ctx.renderResult?.html == null) return
 

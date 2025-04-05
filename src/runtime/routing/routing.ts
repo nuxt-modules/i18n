@@ -1,5 +1,5 @@
 import { hasProtocol, joinURL, parsePath, parseQuery, withTrailingSlash, withoutTrailingSlash } from 'ufo'
-import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 import { assign, isObject, isString } from '@intlify/shared'
 import { isNavigationFailure } from 'vue-router'
 import { unref } from '#imports'
@@ -129,18 +129,6 @@ function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, 
   }
 }
 
-function getLocalizableMetaFromDynamicParams(
-  common: CommonComposableOptions,
-  route: CompatRoute
-): Partial<I18nRouteMeta> {
-  if (common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR) {
-    return unref(common.metaState.value)
-  }
-
-  const meta = route.meta || {}
-  return (unref(meta)?.[DEFAULT_DYNAMIC_PARAMS_KEY] || {}) as Record<Locale, never>
-}
-
 /**
  * Resolve the localized path of the current route.
  */
@@ -152,23 +140,20 @@ export function switchLocalePath(common: CommonComposableOptions, locale: Locale
     return ''
   }
 
-  const resolvedParams = getLocalizableMetaFromDynamicParams(common, route)[locale]
-
+  const dynamicParams = (route.meta[DYNAMIC_PARAMS_KEY] ?? {}) as Partial<I18nRouteMeta>
   /**
-   * NOTE:
    * Nuxt route uses a proxy with getters for performance reasons (https://github.com/nuxt/nuxt/pull/21957).
    * Spreading will result in an empty object, so we make a copy of the route by accessing each getter property by name.
+   * We skip the `matched` and `redirectedFrom` properties.
    */
   const routeCopy = {
     name,
-    params: assign({}, route.params, resolvedParams),
+    params: assign({}, route.params, dynamicParams[locale]),
     fullPath: route.fullPath,
     query: route.query,
     hash: route.hash,
     path: route.path,
     meta: route.meta
-    // matched: route.matched,
-    // redirectedFrom: route.redirectedFrom
   }
 
   const path = localePath(common, routeCopy, locale)
@@ -196,10 +181,6 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
   if (common.runtimeConfig.public.i18n.strategy !== 'prefix') {
     return common.router.resolve(route)
   }
-
-  // if (isArray(route.matched) && route.matched.length > 0) {
-  //   return route.matched[0]
-  // }
 
   const restPath = route.path.slice(1)
   const targetPath = route.path[0] + locale + (restPath && '/' + restPath)

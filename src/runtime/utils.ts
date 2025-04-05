@@ -19,11 +19,10 @@ import { unref } from 'vue'
 
 import type { I18n, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { Ref } from '#imports'
 import type { Router } from '#vue-router'
 import type { RuntimeConfig } from 'nuxt/schema'
 import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
-import type { CompatRoute, I18nRouteMeta } from './types'
+import type { CompatRoute } from './types'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -39,14 +38,12 @@ export type CommonComposableOptions = {
   router: Router
   i18n: I18n
   runtimeConfig: RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } }
-  metaState: Ref<I18nRouteMeta>
 }
 export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
   return {
     i18n: i18n ?? (useNuxtApp().$i18n as unknown as I18n),
     router: useRouter(),
-    runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } },
-    metaState: useState<I18nRouteMeta>('nuxt-i18n-meta', () => ({}))
+    runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } }
   }
 }
 

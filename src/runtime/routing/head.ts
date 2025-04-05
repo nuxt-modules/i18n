@@ -5,7 +5,7 @@ import { assign, isObject, isString } from '@intlify/shared'
 import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer } from '../compatibility'
 import { toArray } from '../utils'
-import { DEFAULT_DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
+import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 
 import type {
   I18nHeadMetaInfo,
@@ -102,28 +102,22 @@ export function _useSetI18nParams(
 ): (params: I18nRouteMeta) => void {
   const head = useHead({})
   const router = common.router
-  const experimentalSSR = common.runtimeConfig.public.i18n.experimental.switchLocalePathLinkSSR
 
   const _i18nParams = ref({})
   const i18nParams = computed({
     get() {
-      return experimentalSSR
-        ? common.metaState.value
-        : (router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] ?? {})
+      return router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY]
     },
     set(val: I18nRouteMeta) {
-      common.metaState.value = val
       _i18nParams.value = val
-      router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] = val
+      router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] = val
     }
   })
 
   const unsub = watch(
     () => router.currentRoute.value.fullPath,
     () => {
-      router.currentRoute.value.meta[DEFAULT_DYNAMIC_PARAMS_KEY] = experimentalSSR
-        ? common.metaState.value
-        : _i18nParams.value
+      router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] = _i18nParams.value
     }
   )
 
@@ -209,7 +203,7 @@ function getHreflangLinks(common: CommonComposableOptions, ctx: HeadContext) {
   const routeWithoutQuery = strictCanonicals ? common.router.resolve({ query: {} }) : undefined
 
   // set meta property which is lost on router.resolve
-  if (!ctx.runtimeI18n.experimental.switchLocalePathLinkSSR && strictCanonicals) {
+  if (strictCanonicals) {
     routeWithoutQuery!.meta = common.router.currentRoute.value.meta
   }
 
