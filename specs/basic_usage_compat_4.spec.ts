@@ -16,10 +16,7 @@ describe('basic usage - compatibilityVersion: 4', async () => {
           i18n: {
             baseUrl: 'http://localhost:3000',
             skipSettingLocaleOnNavigate: undefined,
-            detectBrowserLanguage: undefined,
-            experimental: {
-              alternateLinkCanonicalQueries: false
-            }
+            detectBrowserLanguage: undefined
           }
         }
       }

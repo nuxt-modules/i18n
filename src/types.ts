@@ -92,7 +92,7 @@ export interface ExperimentalFeatures {
   typedOptionsAndMessages?: false | 'default' | 'all'
   /**
    * Removes non-canonical query parameters from alternate link meta tags
-   * @default false
+   * @default true
    */
   alternateLinkCanonicalQueries?: boolean
 }

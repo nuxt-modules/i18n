@@ -29,8 +29,7 @@ export const DEFAULT_OPTIONS = {
     localeDetector: '',
     typedPages: true,
     typedOptionsAndMessages: false,
-    alternateLinkCanonicalQueries: false,
-    hmr: true
+    alternateLinkCanonicalQueries: true
   },
   bundle: {
     compositionOnly: true,
