@@ -40,7 +40,7 @@ export function simplifyLocaleOptions(
   const locales = (options.locales ?? []) as LocaleObject[]
 
   return locales.map(locale => {
-    if (!hasLocaleObjects) locale.code
+    if (!hasLocaleObjects) return locale.code
     return formatLocaleFiles(nuxt, locale, options.experimental?.generatedLocaleFilePathFormat)
   })
 }
