@@ -1,5 +1,6 @@
-import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
+import type { I18nNuxtContext } from '../context'
+import type { I18nPublicRuntimeConfig } from '../types'
 import { DEFAULT_OPTIONS } from '../constants'
 import { defu } from 'defu'
 
@@ -20,7 +21,8 @@ export function prepareRuntimeConfig({ options }: I18nNuxtContext, nuxt: Nuxt) {
     locales: options.locales,
     detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
     experimental: options.experimental,
-    multiDomainLocales: options.multiDomainLocales
+    multiDomainLocales: options.multiDomainLocales,
+    domainLocales: {} as I18nPublicRuntimeConfig['domainLocales']
     // TODO: we should support more i18n module options. welcome PRs :-)
   })
 }
