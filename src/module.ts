@@ -56,6 +56,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
        * nuxt layers handling ...
        */
       await prepareLayers(ctx, nuxt)
+
       /**
        * setup runtime config
        */
