@@ -2,7 +2,6 @@ packages:
   - docs
   - playground
   - specs/fixtures/*
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - esbuild
-  - vue-demi
+onlyBuiltDependencies:
+  - better-sqlite3
+  - sharp

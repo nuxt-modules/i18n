@@ -5,17 +5,18 @@ const props = defineProps<{ links?: NavigationMenuItem[] }>()
 
 const appConfig = useAppConfig()
 const config = useRuntimeConfig()
-const { $currentDocsVersion, $currentDocsVersionNavigation } = useNuxtApp()
+const { $currentDocsVersionNavigation } = useNuxtApp()
 
 const processed = computed<DropdownMenuItem[]>(() => {
   const items = [
-    { label: `v${config.public.version}`, version: 9, to: '/docs' },
-    { label: 'v8.x', version: 8, to: '/docs/v8' },
-    { label: 'v7.x', version: 7, to: '/docs/v7' }
+    { label: `v${config.public.version}`, version: 10, to: '/docs' },
+    { label: `v9.x`, version: 9, to: 'https://v9.nuxtjs.org/docs' },
+    { label: 'v8.x', version: 8, to: 'https://v9.nuxtjs.org/docs/v8' },
+    { label: 'v7.x', version: 7, to: 'https://v9.nuxtjs.org/docs/v7' }
   ]
 
   return items.map(x => {
-    const isActive = $currentDocsVersion.value === x.version
+    const isActive = 10 === x.version
     return {
       ...x,
       color: (isActive && 'primary') || undefined,
@@ -44,7 +45,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
         size="xs"
       >
         <UButton
-          :label="$currentDocsVersion === 9 ? `v${config.public.version}` : `v${$currentDocsVersion}.x`"
+          :label="`v${config.public.version}`"
           variant="subtle"
           trailing-icon="i-lucide-chevron-down"
           size="xs"
