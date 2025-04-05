@@ -1,15 +1,15 @@
-import type { Composer, ExportedGlobalComposer, VueI18n } from 'vue-i18n'
-import type { ComposerCustomProperties, NuxtI18nRoutingCustomProperties } from './runtime/types'
+import type { Composer, VueI18n } from 'vue-i18n'
+import type { ComposerCustomProperties } from './runtime/types'
 
 declare module 'vue-i18n' {
   interface ComposerCustom extends ComposerCustomProperties {}
-  interface ExportedGlobalComposer extends NuxtI18nRoutingCustomProperties {}
-  interface VueI18n extends NuxtI18nRoutingCustomProperties {}
+  interface ExportedGlobalComposer extends ComposerCustomProperties {}
+  interface VueI18n extends ComposerCustomProperties {}
 }
 
 declare module '#app' {
   interface NuxtApp {
-    $i18n: VueI18n & ExportedGlobalComposer & Composer & NuxtI18nRoutingCustomProperties
+    $i18n: VueI18n & Composer
   }
 }
 

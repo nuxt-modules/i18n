@@ -43,7 +43,28 @@ type BeforeLanguageSwitchHandler = (
  */
 type LanguageSwitchedHandler = (oldLocale: Locale, newLocale: Locale) => Promise<void>
 
-interface SharedProperties {
+/**
+ * @template ConfiguredLocaleType - The type of the locales configuration. Can be an array of string codes or an array of {@link LocaleObject}.
+ */
+export interface ComposerCustomProperties<
+  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
+> {
+  /**
+   * List of locales - can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
+   */
+  locales: ComputedRef<ConfiguredLocaleType>
+  /**
+   * List of locale codes
+   */
+  localeCodes: ComputedRef<Locale[]>
+  /**
+   * Base URL that is used in generating canonical links
+   */
+  baseUrl: ComputedRef<string>
+  /**
+   * Current locale properties.
+   */
+  localeProperties: ComputedRef<LocaleObject>
   /**
    * Routing strategy.
    */
@@ -129,54 +150,6 @@ interface SharedProperties {
   waitForPendingLocaleChange: () => Promise<void>
 
   __extendComposer: (instance: Composer | VueI18n | ExportedGlobalComposer) => void
-}
-
-export interface ComposerCustomProperties<
-  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
-> extends SharedProperties {
-  /**
-   * List of locales
-   *
-   * @remarks
-   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
-   */
-  locales: ComputedRef<ConfiguredLocaleType>
-  /**
-   * List of locale codes
-   */
-  localeCodes: ComputedRef<Locale[]>
-  /**
-   * Base URL that is used in generating canonical links
-   */
-  baseUrl: ComputedRef<string>
-  /**
-   * Current locale properties.
-   */
-  localeProperties: ComputedRef<LocaleObject>
-}
-
-export interface NuxtI18nRoutingCustomProperties<
-  ConfiguredLocaleType extends Locale[] | LocaleObject[] = Locale[] | LocaleObject[]
-> extends SharedProperties {
-  /**
-   * List of locales
-   *
-   * @remarks
-   * Can either be an array of string codes (e.g. `['en', 'fr']`) or an array of {@link LocaleObject} for more complex configurations
-   */
-  readonly locales: ConfiguredLocaleType
-  /**
-   * List of locale codes
-   */
-  readonly localeCodes: Locale[]
-  /**
-   * Base URL that is used in generating canonical links
-   */
-  baseUrl: string
-  /**
-   * Current locale properties.
-   */
-  localeProperties: LocaleObject
 }
 
 declare module '#app' {
