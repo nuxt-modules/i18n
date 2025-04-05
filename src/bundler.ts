@@ -67,7 +67,7 @@ export function createLogger(label) {
     defaultSFCLang: options.customBlocks.defaultSFCLang,
     globalSFCScope: options.customBlocks.globalSFCScope,
     dropMessageCompiler: options.bundle.dropMessageCompiler,
-    optimizeTranslationDirective: options.bundle.optimizeTranslationDirective
+    optimizeTranslationDirective: false
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
