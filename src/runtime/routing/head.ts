@@ -35,8 +35,8 @@ type HeadContext = {
 function createHeadContext(options: Required<I18nHeadOptions>): HeadContext {
   const nuxtApp = useNuxtApp()
   const locale = unref(nuxtApp.$i18n.locale)
-  const locales = unref(nuxtApp.$i18n.locales).map(x => (isString(x) ? { code: x } : x))
-  const currentLocale: LocaleObject = locales.find(l => l.code === locale) || { code: locale }
+  const locales = unref(nuxtApp.$i18n.locales).map(x => (isString(x) ? { code: x } : (x as LocaleObject)))
+  const currentLocale = locales.find(l => l.code === locale) || { code: locale }
   const baseUrl = joinURL(unref(getComposer(nuxtApp.$i18n).baseUrl), nuxtApp.$config.app.baseURL)
   const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
 
