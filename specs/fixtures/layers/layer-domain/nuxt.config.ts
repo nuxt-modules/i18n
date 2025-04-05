@@ -1,12 +1,6 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
   i18n: {
-    restructureDir: false,
-    // lazy: false,
-    // differentDomains: true,
-    // defaultLocale: 'en',
-    // strategy: 'prefix_except_default',
-    langDir: 'locales',
     locales: [
       {
         code: 'en',

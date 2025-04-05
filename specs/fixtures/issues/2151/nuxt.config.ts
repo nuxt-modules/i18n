@@ -6,9 +6,7 @@ export default defineNuxtConfig({
   },
   modules: ['@nuxtjs/i18n'],
   i18n: {
-    restructureDir: false,
     lazy: true,
-    langDir: 'locales',
     locales: [
       {
         code: 'en',

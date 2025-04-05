@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
   i18n: {
-    restructureDir: false,
     baseUrl: 'https://abwaab.com',
     locales: [
       {
@@ -25,7 +24,6 @@ export default defineNuxtConfig({
     strategy: 'prefix_and_default',
     detectBrowserLanguage: false,
     defaultLocale: 'ar',
-    lazy: true,
-    langDir: 'i18n/'
+    lazy: true
   }
 })

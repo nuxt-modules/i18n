@@ -4,7 +4,6 @@ export default defineNuxtConfig({
 
   srcDir: '.',
   i18n: {
-    restructureDir: false,
     lazy: false,
     baseUrl: 'http://localhost:3000',
     // strategy: 'prefix',

@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
 
   i18n: {
-    restructureDir: false,
     lazy: false,
     baseUrl: 'http://localhost:3000',
     locales: [
