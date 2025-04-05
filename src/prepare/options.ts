@@ -20,9 +20,9 @@ export function prepareOptions({ debug, logger, options }: I18nNuxtContext, nuxt
     )
   }
 
-  if (options.experimental.autoImportTranslationFunctions && nuxt.options.imports.autoImport === false) {
+  if (options.autoDeclare && nuxt.options.imports.autoImport === false) {
     logger.warn(
-      'Disabling `autoImports` in Nuxt is not compatible with `experimental.autoImportTranslationFunctions`, either enable `autoImports` or disable `experimental.autoImportTranslationFunctions`.'
+      'Disabling `autoImports` in Nuxt is not compatible with `autoDeclare`, either enable `autoImports` or disable `autoDeclare`.'
     )
   }
 

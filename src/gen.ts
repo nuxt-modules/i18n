@@ -245,7 +245,7 @@ declare module '#app' {
 
 ${typedRouterAugmentations}
 
-${(options.experimental?.autoImportTranslationFunctions && globalTranslationTypes) || ''}
+${(options.autoDeclare && globalTranslationTypes) || ''}
 
 export {}`
 }

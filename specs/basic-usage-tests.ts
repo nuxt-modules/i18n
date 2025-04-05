@@ -530,14 +530,12 @@ export function basicUsageTests() {
     expect(await getText(page, '#install-module-vue-i18n')).toEqual('Installer module vue-i18n works!')
   })
 
-  describe('experimental.autoImportTranslationFunctions', async () => {
-    test('can use `$t` in `<template>`', async () => {
-      const { consoleLogs } = await renderPage('/experimental/auto-import-translation-functions')
+  test('can use `$t` in `<template>` with `autoDeclare``', async () => {
+    const { consoleLogs } = await renderPage('/experimental/auto-import-translation-functions')
 
-      const logStrings = consoleLogs.map(x => x.text)
-      expect(logStrings).toContain('[autoImportTranslationFunctions][default]: Welcome')
-      expect(logStrings).toContain('[autoImportTranslationFunctions][fr]: Bienvenue')
-    })
+    const logStrings = consoleLogs.map(x => x.text)
+    expect(logStrings).toContain('[autoDeclare][default]: Welcome')
+    expect(logStrings).toContain('[autoDeclare][fr]: Bienvenue')
   })
 
   test('dynamic parameters render and update reactively client-side', async () => {

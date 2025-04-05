@@ -27,7 +27,6 @@ export const DEFAULT_OPTIONS = {
   restructureDir: 'i18n',
   experimental: {
     localeDetector: '',
-    autoImportTranslationFunctions: false,
     typedPages: true,
     typedOptionsAndMessages: false,
     alternateLinkCanonicalQueries: false,
@@ -77,7 +76,8 @@ export const DEFAULT_OPTIONS = {
   debug: false,
   parallelPlugin: false,
   multiDomainLocales: false,
-  hmr: true
+  hmr: true,
+  autoDeclare: true
 } as const
 
 export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs'

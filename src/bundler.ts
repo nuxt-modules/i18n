@@ -74,7 +74,7 @@ export function createLogger(label) {
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(pluginOptions))
-  if (options.experimental.autoImportTranslationFunctions) {
+  if (options.autoDeclare) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
