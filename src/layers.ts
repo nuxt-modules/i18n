@@ -71,9 +71,7 @@ export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
 }
 
 function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
-  i18n.restructureDir ??= 'i18n'
-  i18n.langDir ??= 'locales'
-  return resolve(resolveI18nDir(layer, i18n), i18n.langDir)
+  return resolve(resolveI18nDir(layer, i18n), i18n.langDir ?? 'locales')
 }
 
 /**
