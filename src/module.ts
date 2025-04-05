@@ -44,6 +44,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     prepareOptions(ctx, nuxt)
 
     /**
+     * auto imports
+     */
+    prepareAutoImports(ctx)
+
+    /**
      * allow other modules to setup first in case these use i18n hooks
      */
     nuxt.hook('modules:done', async () => {
@@ -100,11 +105,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
        * setup nitro
        */
       await setupNitro(ctx, nuxt)
-
-      /**
-       * auto imports
-       */
-      prepareAutoImports(ctx, nuxt)
 
       /**
        * transpile @nuxtjs/i18n
