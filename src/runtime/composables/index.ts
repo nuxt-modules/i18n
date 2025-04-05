@@ -6,15 +6,8 @@ import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
-import type { resolveRoute } from '../routing/routing'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type {
-  RouteLocationAsRelativeI18n,
-  RouteLocationRaw,
-  RouteLocationResolvedI18n,
-  RouteMap,
-  RouteMapI18n
-} from 'vue-router'
+import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMap, RouteMapI18n } from 'vue-router'
 import type { RouteLocationGenericPath, I18nRouteMeta } from '../types'
 
 export * from 'vue-i18n'
@@ -75,18 +68,6 @@ export function useLocaleHead({
 type RouteLocationI18nGenericPath = Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }
 
 /**
- * Revoles a localized route object for the passed route.
- *
- * @param route - a route name or route object.
- * @param locale - (default: current locale).
- *
- * @returns Localized route object
- *
- * @deprecated use {@link useLocalePath}/{@link LocalePathFunction $localePath} or {@link useLocaleRoute}/{@link LocaleRouteFunction $localeRoute} instead
- */
-export type ResolveRouteFunction = (route: RouteLocationRaw, locale?: Locale) => ReturnType<typeof resolveRoute>
-
-/**
  * Resolves the route base name for the given route.
  *
  * @param route - a route name or route object.
@@ -142,32 +123,6 @@ export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof Route
  * Returns a {@link LocaleRouteFunction} used to resolve localized route objects.
  */
 export function useLocaleRoute(): LocaleRouteFunction {
-  // @ts-expect-error - generated types conflict with the generic types we accept
-  return wrapComposable(localeRoute)
-}
-
-/**
- * Resolves a localized variant of the passed route.
- *
- * @param route - a route name or route object.
- * @param locale - (default: current locale).
- *
- * @returns A resolved route object
- *
- * @deprecated use {@link useLocaleRoute}/{@link LocaleRouteFunction $localeRoute} instead
- */
-export type LocaleLocationFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationI18nGenericPath,
-  locale?: Locale
-) => RouteLocationResolvedI18n<Name> | undefined
-
-/**
- * Returns a {@link LocaleLocationFunction} used to resolve localized route objects.
- *
- * @deprecated use {@link useLocaleRoute}/{@link LocaleRouteFunction $localeRoute} instead
- */
-export function useLocaleLocation(): LocaleLocationFunction {
-  // we wrap `localeRoute` as the implementation is identical
   // @ts-expect-error - generated types conflict with the generic types we accept
   return wrapComposable(localeRoute)
 }

@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { useLocaleLocation, useLocalePath, useLocaleRoute } from '#i18n'
+import { useLocalePath, useLocaleRoute } from '#i18n'
 
 const localePath = useLocalePath()
-const localeLocation = useLocaleLocation()
 const localeRoute = useLocaleRoute()
 </script>
 
@@ -62,21 +61,6 @@ const localeRoute = useLocaleRoute()
         <span class="path-match-ja">{{ JSON.stringify(localeRoute('/:pathMatch(.*)*', 'ja')) }}</span>
         <span class="path-match-name">{{ JSON.stringify(localeRoute('pathMatch')) }}</span>
         <span class="path-match-name-ja">{{ JSON.stringify(localeRoute('pathMatch', 'ja')) }}</span>
-        <span class="undefined-path-ja">{{ JSON.stringify(localeRoute('/vue-i18n', 'ja')) }}</span>
-        <span class="undefined-name-ja">{{ JSON.stringify(localeRoute('vue-i18n', 'ja')) }}</span>
-      </section>
-    </ClientOnly>
-    <ClientOnly>
-      <section id="locale-location">
-        <span class="index">{{ JSON.stringify(localeLocation('/')) }}</span>
-        <span class="index-name-ja">{{ JSON.stringify(localeLocation('index', 'ja')) }}</span>
-        <span class="about-name">{{ JSON.stringify(localeLocation('about')) }}</span>
-        <span class="about-ja">{{ JSON.stringify(localeLocation('/about', 'ja')) }}</span>
-        <span class="about-name-ja">{{ JSON.stringify(localeLocation('about', 'ja')) }}</span>
-        <span class="about-object-ja">{{ JSON.stringify(localeLocation({ name: 'about' }, 'ja')) }}</span>
-        <span class="path-match-ja">{{ JSON.stringify(localeLocation('/:pathMatch(.*)*', 'ja')) }}</span>
-        <span class="path-match-name">{{ JSON.stringify(localeLocation('pathMatch')) }}</span>
-        <span class="path-match-name-ja">{{ JSON.stringify(localeLocation('pathMatch', 'ja')) }}</span>
         <span class="undefined-path-ja">{{ JSON.stringify(localeRoute('/vue-i18n', 'ja')) }}</span>
         <span class="undefined-name-ja">{{ JSON.stringify(localeRoute('vue-i18n', 'ja')) }}</span>
       </section>
