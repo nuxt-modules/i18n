@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@nuxtjs/i18n': link:.
+  '@nuxtjs/i18n': workspace:*
   unimport: 4.1.2
   rollup: 4.37.0
 
@@ -234,7 +234,7 @@ importers:
   playground:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:..
+        specifier: workspace:*
         version: link:..
       nuxt:
         specifier: latest
@@ -243,7 +243,7 @@ importers:
   specs/fixtures/basic:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -252,7 +252,7 @@ importers:
   specs/fixtures/basic_usage:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -261,7 +261,7 @@ importers:
   specs/fixtures/basic_usage_compat_4:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -270,7 +270,7 @@ importers:
   specs/fixtures/different_domains:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -279,7 +279,7 @@ importers:
   specs/fixtures/domain-ssg:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -288,7 +288,7 @@ importers:
   specs/fixtures/empty_options:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -297,7 +297,7 @@ importers:
   specs/fixtures/inline_options:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -306,7 +306,7 @@ importers:
   specs/fixtures/lazy:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -315,7 +315,7 @@ importers:
   specs/fixtures/lazy-without-server:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -324,7 +324,7 @@ importers:
   specs/fixtures/multi_domains_locales:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -333,7 +333,7 @@ importers:
   specs/fixtures/restructure:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest
@@ -342,7 +342,7 @@ importers:
   specs/fixtures/routing:
     devDependencies:
       '@nuxtjs/i18n':
-        specifier: link:../../..
+        specifier: workspace:*
         version: link:../../..
       nuxt:
         specifier: latest

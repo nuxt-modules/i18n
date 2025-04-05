@@ -39,7 +39,8 @@
     "./package.json": "./package.json"
   },
   "imports": {
-    "#i18n": "./dist/runtime/composables/index.js"
+    "#i18n": "./dist/runtime/composables/index.js",
+    "#internal-i18n-types": "./dist/types.d.mts"
   },
   "main": "./dist/module.mjs",
   "files": [
@@ -75,12 +76,10 @@
     "test:unit": "vitest run test -c vitest.config.test.ts",
     "test:spec": "vitest run specs"
   },
-  "pnpm": {
-    "overrides": {
-      "@nuxtjs/i18n": "link:.",
-      "unimport": "4.1.2",
-      "rollup": "4.37.0"
-    }
+  "resolutions": {
+    "@nuxtjs/i18n": "workspace:*",
+    "unimport": "4.1.2",
+    "rollup": "4.37.0"
   },
   "dependencies": {
     "@intlify/h3": "^0.6.1",
