@@ -23,7 +23,6 @@ export default defineNuxtConfig({
     locales: ['en', 'fr'],
     defaultLocale: 'en',
     experimental: {
-      alternateLinkCanonicalQueries: false,
       localeDetector: './localeDetector.ts'
     }
   }

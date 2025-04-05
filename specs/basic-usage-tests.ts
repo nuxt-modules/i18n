@@ -405,29 +405,67 @@ export function basicUsageTests() {
     const i18nCan = links.find(x => x.id === 'i18n-can')
     expect(i18nCan.href).toContain(configDomain)
     expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual(
-      'https://runtime-config-domain.com/fr?noncanonical&canonical'
+      'https://runtime-config-domain.com/fr?canonical='
     )
 
     await restore()
   })
 
   test('render seo tags with `experimental.alternateLinkCanonicalQueries`', async () => {
-    const restore = await startServerWithRuntimeConfig({
-      public: {
-        i18n: {
-          experimental: {
-            alternateLinkCanonicalQueries: true
-          }
-        }
-      }
-    })
-
     // head tags - alt links are updated server side
     const html = await $fetch('/?noncanonical&canonical')
     const dom = getDom(html)
     expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual('http://localhost:3000/fr?canonical=')
+  })
 
-    await restore()
+  test('respects `experimental.alternateLinkCanonicalQueries`', async () => {
+    // head tags - alt links are updated server side
+    const product1Html = await $fetch('/products/big-chair?test=123&canonical=123')
+    const product1Dom = getDom(product1Html)
+    expect(product1Dom.querySelector('#i18n-alt-nl')?.getAttribute('href')).toEqual(
+      'http://localhost:3000/nl/products/grote-stoel?canonical=123'
+    )
+    expect(product1Dom.querySelector('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
+      '/nl/products/grote-stoel?test=123&canonical=123'
+    )
+
+    const product2Html = await $fetch('/nl/products/rode-mok?test=123&canonical=123')
+    const product2dom = getDom(product2Html)
+    expect(product2dom.querySelector('#i18n-alt-en')?.getAttribute('href')).toEqual(
+      'http://localhost:3000/products/red-mug?canonical=123'
+    )
+    expect(product2dom.querySelector('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
+      '/products/red-mug?test=123&canonical=123'
+    )
+  })
+
+  test('dynamic parameters rendered correctly during SSR', async () => {
+    // head tags - alt links are updated server side
+    const product1Html = await $fetch('/products/big-chair')
+    const product1Dom = getDom(product1Html)
+    expect(product1Dom.querySelector('#i18n-alt-nl')?.getAttribute('href')).toEqual(
+      'http://localhost:3000/nl/products/grote-stoel'
+    )
+    expect(product1Dom.querySelector('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
+      '/nl/products/grote-stoel'
+    )
+
+    const product2Html = await $fetch('/nl/products/rode-mok')
+    const product2dom = getDom(product2Html)
+    expect(product2dom.querySelector('#i18n-alt-en')?.getAttribute('href')).toEqual(
+      'http://localhost:3000/products/red-mug'
+    )
+    expect(product2dom.querySelector('#switch-locale-path-link-en')?.getAttribute('href')).toEqual('/products/red-mug')
+  })
+
+  test('encode localized path to prevent XSS', async () => {
+    const url = `/experimental//"><script>console.log('xss')</script><`
+
+    const html = await $fetch(url)
+    const dom = getDom(html)
+
+    // the localized should be the same as encoded
+    expect(dom.querySelector('#slp-xss a')?.getAttribute('href')).toEqual(encodeURI('/nl' + url))
   })
 
   test('server integration extended from `layers/layer-server`', async () => {
