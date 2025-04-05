@@ -31,7 +31,6 @@ export const DEFAULT_OPTIONS = {
     autoImportTranslationFunctions: false,
     typedPages: true,
     typedOptionsAndMessages: false,
-    generatedLocaleFilePathFormat: 'absolute',
     alternateLinkCanonicalQueries: false,
     hmr: true
   },
