@@ -90,7 +90,7 @@ export default defineNuxtPlugin({
     extendI18n(i18n, {
       extendComposer(composer) {
         const _locales = ref<Locale[] | LocaleObject[]>(runtimeI18n.locales)
-        composer.locales = computed(() => _locales.value as unknown as typeof composer.locales.value)
+        composer.locales = computed(() => _locales.value)
 
         const _localeCodes = ref<Locale[]>(localeCodes)
         composer.localeCodes = computed(() => _localeCodes.value)
