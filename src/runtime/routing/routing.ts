@@ -20,7 +20,7 @@ import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from '../ty
  * @remarks
  * Base name is name of the route without locale suffix and other metadata added by nuxt i18n module
  */
-export function getRouteBaseName<Name extends keyof RouteMap = keyof RouteMap>(
+export function routeBaseName<Name extends keyof RouteMap = keyof RouteMap>(
   common: CommonComposableOptions,
   route: Name | RouteLocationGenericPath | null
 ) {
@@ -83,7 +83,7 @@ function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, l
 
   if (isRouteLocationPathRaw(route)) {
     const resolved = resolve(common, route, locale) as RouteLike
-    const resolvedName = getRouteBaseName(common, resolved)
+    const resolvedName = routeBaseName(common, resolved)
     if (resolvedName) {
       resolved.name = getLocaleRouteName(resolvedName, locale, runtimeI18n)
       return resolved
@@ -100,7 +100,7 @@ function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, l
   }
 
   // if name is falsy fallback to current route name
-  route.name ||= getRouteBaseName(common, common.router.currentRoute.value)
+  route.name ||= routeBaseName(common, common.router.currentRoute.value)
 
   const localizedName = getLocaleRouteName(route.name, locale, runtimeI18n)
   // route localization may be disabled, check if localized variant exists
@@ -134,7 +134,7 @@ function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, 
  */
 export function switchLocalePath(common: CommonComposableOptions, locale: Locale, _route?: CompatRoute): string {
   const route = _route ?? common.router.currentRoute.value
-  const name = getRouteBaseName(common, route)
+  const name = routeBaseName(common, route)
 
   if (!name) {
     return ''

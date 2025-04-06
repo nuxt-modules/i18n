@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { runtimeDetectBrowserLanguage, wrapComposable } from '../internal'
 import { localeCodes } from '#build/i18n.options.mjs'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
-import { getRouteBaseName, localePath, localeRoute, switchLocalePath } from '../routing/routing'
+import { routeBaseName, localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
@@ -12,6 +12,40 @@ import type { RouteLocationGenericPath, I18nRouteMeta } from '../types'
 
 export * from 'vue-i18n'
 export * from './shared'
+
+declare module '#app' {
+  interface NuxtApp {
+    $localePath: LocalePathFunction
+    $localeRoute: LocaleRouteFunction
+    $routeBaseName: RouteBaseNameFunction
+    $switchLocalePath: SwitchLocalePathFunction
+    /**
+     * @deprecated use {@link useLocaleHead} instead
+     */
+    $localeHead: LocaleHeadFunction
+    /**
+     * @deprecated use {@link $routeBaseName} instead
+     */
+    $getRouteBaseName: RouteBaseNameFunction
+  }
+}
+
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $localePath: LocalePathFunction
+    $localeRoute: LocaleRouteFunction
+    $routeBaseName: RouteBaseNameFunction
+    $switchLocalePath: SwitchLocalePathFunction
+    /**
+     * @deprecated use {@link useLocaleHead} instead
+     */
+    $localeHead: LocaleHeadFunction
+    /**
+     * @deprecated use {@link $routeBaseName} instead
+     */
+    $getRouteBaseName: RouteBaseNameFunction
+  }
+}
 
 /**
  * Used to set i18n params for the current route.
@@ -82,7 +116,7 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
  * Returns a {@link RouteBaseNameFunction} used get the base name of a route.
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
-  return wrapComposable(getRouteBaseName)
+  return wrapComposable(routeBaseName)
 }
 
 /**

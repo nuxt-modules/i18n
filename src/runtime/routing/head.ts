@@ -2,7 +2,7 @@ import { joinURL, withQuery, type QueryValue } from 'ufo'
 import { computed, getCurrentScope, onScopeDispose, ref, unref, useHead, useNuxtApp, watch, type Ref } from '#imports'
 import { assign, isObject, isString } from '@intlify/shared'
 
-import { getRouteBaseName, localeRoute, switchLocalePath } from './routing'
+import { routeBaseName, localeRoute, switchLocalePath } from './routing'
 import { getComposer } from '../compatibility'
 import { toArray } from '../utils'
 import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
@@ -226,10 +226,7 @@ function getHreflangLinks(common: CommonComposableOptions, ctx: HeadContext) {
 
 function getCanonicalUrl(common: CommonComposableOptions, ctx: HeadContext) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute(
-    common,
-    assign({}, route, { path: undefined, name: getRouteBaseName(common, route) })
-  )
+  const currentRoute = localeRoute(common, assign({}, route, { path: undefined, name: routeBaseName(common, route) }))
 
   if (!currentRoute) return ''
 
@@ -245,10 +242,7 @@ function getCanonicalLink(common: CommonComposableOptions, ctx: HeadContext): Me
 
 function getCanonicalQueryParams(common: CommonComposableOptions, ctx: HeadContext) {
   const route = common.router.currentRoute.value
-  const currentRoute = localeRoute(
-    common,
-    assign({}, route, { path: undefined, name: getRouteBaseName(common, route) })
-  )
+  const currentRoute = localeRoute(common, assign({}, route, { path: undefined, name: routeBaseName(common, route) }))
 
   const canonicalQueries = (isObject(ctx.seo) && ctx.seo?.canonicalQueries) || []
   const currentRouteQuery = currentRoute?.query || {}

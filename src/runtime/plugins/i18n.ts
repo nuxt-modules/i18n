@@ -29,7 +29,6 @@ import { getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { LocaleHeadFunction } from '../composables'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -202,17 +201,11 @@ export default defineNuxtPlugin({
      */
     Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
 
-    return {
-      provide: {
-        /**
-         * TODO: remove type assertions while type narrowing based on generated types
-         */
-        localeHead: wrapComposable(localeHead) as LocaleHeadFunction,
-        localePath: useLocalePath(),
-        localeRoute: useLocaleRoute(),
-        getRouteBaseName: useRouteBaseName(),
-        switchLocalePath: useSwitchLocalePath()
-      }
-    }
+    nuxt.provide('localeHead', wrapComposable(localeHead))
+    nuxt.provide('localePath', useLocalePath())
+    nuxt.provide('localeRoute', useLocaleRoute())
+    nuxt.provide('routeBaseName', useRouteBaseName())
+    nuxt.provide('getRouteBaseName', useRouteBaseName())
+    nuxt.provide('switchLocalePath', useSwitchLocalePath())
   }
 })
