@@ -56,47 +56,47 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
 
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
 
-  const pagesHook: Parameters<(typeof nuxt)['hook']>[0] =
-    nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend'
+  nuxt.hook(
+    nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
+    async pages => {
+      debug('pages making ...', pages)
+      const ctx: NuxtPageAnalyzeContext = {
+        stack: [],
+        srcDir,
+        pagesDir,
+        pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
+      }
 
-  nuxt.hook(pagesHook, async pages => {
-    debug('pages making ...', pages)
-    const ctx: NuxtPageAnalyzeContext = {
-      stack: [],
-      srcDir,
-      pagesDir,
-      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
+      analyzeNuxtPages(ctx, pages)
+      const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
+      mergeLayerPages(analyzer, nuxt)
+
+      if (typedRouter) {
+        await typedRouter.createContext(pages).scanPages(false)
+      }
+
+      const localizedPages = localizeRoutes(pages, {
+        ...options,
+        localeCodes,
+        includeUnprefixedFallback,
+        optionsResolver: getRouteOptionsResolver(ctx, options)
+      })
+
+      // keep root when using prefixed routing without prerendering
+      const indexPage = pages.find(x => x.path === '/')
+      if (!nuxt.options._generate && options.strategy === 'prefix' && indexPage != null) {
+        localizedPages.unshift(indexPage)
+      }
+
+      // do not mutate pages if localization is skipped
+      if (pages !== localizedPages) {
+        pages.length = 0
+        pages.unshift(...localizedPages)
+      }
+
+      debug('... made pages', pages)
     }
-
-    analyzeNuxtPages(ctx, pages)
-    const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
-    mergeLayerPages(analyzer, nuxt)
-
-    if (typedRouter) {
-      await typedRouter.createContext(pages).scanPages(false)
-    }
-
-    const localizedPages = localizeRoutes(pages, {
-      ...options,
-      localeCodes,
-      includeUnprefixedFallback,
-      optionsResolver: getRouteOptionsResolver(ctx, options)
-    })
-
-    // keep root when using prefixed routing without prerendering
-    const indexPage = pages.find(x => x.path === '/')
-    if (!nuxt.options._generate && options.strategy === 'prefix' && indexPage != null) {
-      localizedPages.unshift(indexPage)
-    }
-
-    // do not mutate pages if localization is skipped
-    if (pages !== localizedPages) {
-      pages.length = 0
-      pages.unshift(...localizedPages)
-    }
-
-    debug('... made pages', pages)
-  })
+  )
 }
 
 /**

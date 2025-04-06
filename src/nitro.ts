@@ -95,22 +95,22 @@ export { localeDetector }`
     }))
   )
 
-  if (enableServerIntegration) {
-    // `@intlify/utils/h3` and `defineLocaleDetector
-    const h3UtilsExports = await resolveModuleExportNames(UTILS_H3_PKG, { url: import.meta.url })
-    addServerImports([
-      ...h3UtilsExports.map(key => ({
-        name: key,
-        as: key,
-        from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
-      })),
-      {
-        name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
-        as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
-        from: ctx.resolver.resolve('runtime/composables/server')
-      }
-    ])
+  // `@intlify/utils/h3` and `defineLocaleDetector
+  const h3UtilsExports = await resolveModuleExportNames(UTILS_H3_PKG, { url: import.meta.url })
+  addServerImports([
+    ...h3UtilsExports.map(key => ({
+      name: key,
+      as: key,
+      from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
+    })),
+    {
+      name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+      as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+      from: ctx.resolver.resolve('runtime/composables/server')
+    }
+  ])
 
+  if (enableServerIntegration) {
     // add nitro plugin
     addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
   }

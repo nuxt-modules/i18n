@@ -3,6 +3,8 @@ import type { I18nNuxtContext } from '../context'
 import type { I18nPublicRuntimeConfig } from '../types'
 import { DEFAULT_OPTIONS } from '../constants'
 import { defu } from 'defu'
+import { simplifyLocaleOptions } from '../gen'
+import { assign } from '@intlify/shared'
 
 export function prepareRuntimeConfig({ options }: I18nNuxtContext, nuxt: Nuxt) {
   // @ts-expect-error generated type
@@ -25,4 +27,6 @@ export function prepareRuntimeConfig({ options }: I18nNuxtContext, nuxt: Nuxt) {
     domainLocales: {} as I18nPublicRuntimeConfig['domainLocales']
     // TODO: we should support more i18n module options. welcome PRs :-)
   })
+
+  nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, assign({}, options))
 }

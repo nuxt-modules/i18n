@@ -1,9 +1,8 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
-import { assign } from '@intlify/shared'
 import { addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
-import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from '../gen'
+import { generateI18nTypes, generateLoaderOptions } from '../gen'
 import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
 
 export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
@@ -38,8 +37,6 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
       }
     })
   }
-
-  nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(nuxt, assign({}, options))
 
   addTemplate({
     filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
