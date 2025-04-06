@@ -2,8 +2,8 @@
 
 <template>
   <div>
-    <p id="get-route-base-name">{{ $nuxt.$getRouteBaseName($route) }}</p>
-    <p id="get-route-base-name-string">{{ $nuxt.$getRouteBaseName($route.name) }}</p>
+    <p id="get-route-base-name">{{ $nuxt.$routeBaseName($route) }}</p>
+    <p id="get-route-base-name-string">{{ $nuxt.$routeBaseName($route.name) }}</p>
     <p id="switch-locale-path">{{ $nuxt.$switchLocalePath('ja') }}</p>
     <p id="locale-path">{{ $nuxt.$localePath('nuxt-context-extension', 'nl') }}</p>
     <p id="locale-route">{{ JSON.stringify($nuxt.$localeRoute()) }}</p>
