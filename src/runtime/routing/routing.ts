@@ -187,7 +187,7 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
   }
 
   if (common.runtimeConfig.public.i18n.strategy !== 'prefix') {
-    return common.router.resolve(route)
+    return common.router.resolve(route, undefined, { locale: false })
   }
 
   const restPath = route.path.slice(1)
@@ -198,5 +198,5 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
     return route
   }
 
-  return common.router.resolve(assign({}, route, _route, { path: targetPath }))
+  return common.router.resolve(assign({}, route, _route, { path: targetPath }), undefined, { locale: false })
 }
