@@ -14,7 +14,7 @@ import {
   loadAndSetLocale,
   detectRedirect,
   navigate,
-  extendBaseUrl,
+  createBaseUrlGetter,
   createNuxtI18nDev,
   initComposableOptions
 } from '../utils'
@@ -47,7 +47,7 @@ export default defineNuxtPlugin({
     const runtimeI18n = {
       ..._runtimeI18n,
       defaultLocale: defaultLocaleDomain,
-      baseUrl: extendBaseUrl(nuxt)
+      baseUrl: createBaseUrlGetter(nuxt)
     }
 
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)

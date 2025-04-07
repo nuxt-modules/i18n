@@ -403,7 +403,10 @@ export function prefixable(currentLocale: string, defaultLocale: string, strateg
   )
 }
 
-export function extendBaseUrl(nuxt: NuxtApp) {
+/**
+ * Returns a getter function which returns the baseUrl
+ */
+export function createBaseUrlGetter(nuxt: NuxtApp) {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   const { baseUrl, defaultLocale, differentDomains } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
@@ -432,6 +435,10 @@ export function extendBaseUrl(nuxt: NuxtApp) {
   }
 }
 
+/**
+ * Returns a getter function which returns a localized route name for the given route and locale.
+ * The returned function can vary based on the strategy and domain configuration.
+ */
 export function createLocaleRouteNameGetter({
   strategy,
   differentDomains,
