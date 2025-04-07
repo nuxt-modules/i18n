@@ -16,8 +16,12 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   // for composables
   nuxt.options.alias['#i18n'] = resolver.resolve('./runtime/composables/index')
   nuxt.options.alias['#internal-i18n-types'] = resolver.resolve('./types')
+  nuxt.options.alias['#i18n-kit/head'] = resolver.resolve('./runtime/kit/head')
+  nuxt.options.alias['#i18n-kit/routing'] = resolver.resolve('./runtime/kit/routing')
   nuxt.options.build.transpile.push('#i18n')
   nuxt.options.build.transpile.push('#internal-i18n-types')
+  nuxt.options.build.transpile.push('#i18n-kit/head')
+  nuxt.options.build.transpile.push('#i18n-kit/routing')
 
   if (ctx.isDev && options.hmr) {
     addVitePlugin({

@@ -3,6 +3,7 @@ import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
 import type { I18n, Locale, Composer, VueI18n, ExportedGlobalComposer } from 'vue-i18n'
 import type { RouteLocationAsRelative, RouteLocationNormalizedGeneric, RouteRecordNameGeneric } from 'vue-router'
+import type { CommonComposableOptions } from './utils'
 
 export type CompatRoute = Omit<RouteLocationNormalizedGeneric, 'name'> & {
   name: RouteRecordNameGeneric | null
@@ -156,6 +157,8 @@ declare module '#app' {
   interface NuxtApp {
     /** @internal */
     _vueI18n: I18n
+    /** @internal */
+    _nuxtI18n: CommonComposableOptions
   }
 }
 

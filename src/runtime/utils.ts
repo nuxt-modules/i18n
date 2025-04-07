@@ -1,7 +1,8 @@
-import { isEqual } from 'ufo'
-import { isArray, isFunction, isString } from '@intlify/shared'
+import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
+import { assign, isFunction, isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import {
+  DYNAMIC_PARAMS_KEY,
   NUXT_I18N_MODULE_ID,
   isSSG,
   localeCodes,
@@ -9,20 +10,31 @@ import {
   normalizedLocales,
   vueI18nConfigs
 } from '#build/i18n.options.mjs'
-import { getComposer } from './compatibility'
-import { getDomainFromLocale, getHost, getLocaleDomain } from './domain'
+import { getComposer, getI18nTarget } from './compatibility'
+import { createDomainFromLocaleGetter, getDomainFromLocale, getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
-import { localePath, switchLocalePath } from './routing/routing'
+import {
+  getRouteName,
+  getLocalizedRouteName,
+  getLocalizedDefaultRouteName,
+  getGenericRouteBaseName
+} from '#i18n-kit/routing'
+import {
+  localePath,
+  switchLocalePath,
+  type RouteLike,
+  type RouteLikeWithName,
+  type RouteLikeWithPath
+} from './routing/routing'
 import { createLogger } from '#nuxt-i18n/logger'
 import { unref } from 'vue'
 
 import type { I18n, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { Router } from '#vue-router'
-import type { RuntimeConfig } from 'nuxt/schema'
+import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, Router, RouteRecordNameGeneric } from '#vue-router'
 import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
-import type { CompatRoute } from './types'
+import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
@@ -36,14 +48,94 @@ export function formatMessage(message: string) {
  */
 export type CommonComposableOptions = {
   router: Router
-  i18n: I18n
-  runtimeConfig: RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } }
+  /**
+   *
+   */
+  getLocale: () => string
+  /**
+   * Extract route base name without localized suffix
+   */
+  getRouteBaseName: (route: RouteRecordNameGeneric | RouteLocationGenericPath | null) => string | undefined
+  /**
+   *
+   */
+  afterSwitchLocalePath: (path: string, locale: string) => string
+  getLocalizedDynamicParams: (locale: string) => Record<string, unknown> | undefined
+  /**
+   * Prepares a route object to be resolved as a localized route
+   */
+  resolveLocalizedRouteObject: (route: RouteLike, locale: string) => RouteLike
 }
-export function initCommonComposableOptions(i18n?: I18n): CommonComposableOptions {
+
+const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
+export function useComposableOptions(): CommonComposableOptions {
+  return useNuxtApp()._nuxtI18n
+}
+export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
+  const router = useRouter()
+  const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+  const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash } = runtimeI18n
+
+  const getDomainFromLocale = createDomainFromLocaleGetter(useNuxtApp())
+  const routeByPathResolver = createLocalizedRouteByPathResolver(strategy, router)
+  const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n)
+
+  function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
+    return getGenericRouteBaseName(route, routesNameSeparator)
+  }
+
+  function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
+    // if name is falsy fallback to current route name
+    route.name ||= getRouteBaseName(router.currentRoute.value)
+
+    // route localization may be disabled, check if localized variant exists
+    const localizedName = getLocalizedRouteName(route.name, locale)
+    if (router.hasRoute(localizedName)) {
+      route.name = localizedName
+    }
+
+    return route
+  }
+
+  function resolveLocalizedRouteByPath(input: RouteLikeWithPath, locale: string) {
+    const route = routeByPathResolver(input, locale) as RouteLike
+
+    const resolvedName = getRouteBaseName(route)
+    if (resolvedName) {
+      route.name = getLocalizedRouteName(resolvedName, locale)
+      return route
+    }
+    // if route has a path defined but no name, resolve full route using the path
+    if (!differentDomains && prefixable(locale, defaultLocale, strategy)) {
+      route.path = '/' + locale + route.path
+    }
+
+    route.path = (trailingSlash ? withTrailingSlash : withoutTrailingSlash)(route.path, true)
+    return route
+  }
+
   return {
-    i18n: i18n ?? (useNuxtApp().$i18n as unknown as I18n),
-    router: useRouter(),
-    runtimeConfig: useRuntimeConfig() as RuntimeConfig & { public: { i18n: I18nPublicRuntimeConfig } }
+    router,
+    getLocale: () => unref(getI18nTarget(i18n ?? (useNuxtApp().$i18n as unknown as I18n)).locale),
+    getRouteBaseName,
+    getLocalizedDynamicParams: locale => {
+      const params = (router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] ?? {}) as Partial<I18nRouteMeta>
+      return params[locale]
+    },
+    afterSwitchLocalePath: (path, locale) => {
+      if (differentDomains) {
+        const domain = getDomainFromLocale(locale)
+        return (domain && joinURL(domain, path)) || path
+      }
+      return path
+    },
+    resolveLocalizedRouteObject: (route, locale) => {
+      if (isRouteLocationPathRaw(route)) {
+        return resolveLocalizedRouteByPath(route, locale)
+      }
+
+      return resolveLocalizedRouteByName(route, locale)
+    }
   }
 }
 
@@ -191,7 +283,7 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
    * `$switchLocalePath` and `$localePath` functions internally use `$router.currentRoute`
    * instead we use composable internals which allows us to pass the `to` route from navigation middleware.
    */
-  const common = initCommonComposableOptions()
+  const common = useComposableOptions()
   const logger = /*#__PURE__*/ createLogger('detectRedirect')
 
   __DEBUG__ && logger.log({ to, from })
@@ -339,6 +431,74 @@ export function extendBaseUrl(ctx: NuxtApp) {
   }
 }
 
+export function createLocaleRouteNameGetter({
+  strategy,
+  differentDomains,
+  defaultLocale,
+  routesNameSeparator,
+  defaultLocaleRouteNameSuffix
+}: {
+  strategy: Strategies
+  differentDomains: boolean
+  defaultLocale: string
+  routesNameSeparator: string
+  defaultLocaleRouteNameSuffix: string
+}): (name: RouteRecordNameGeneric | null, locale: string) => string {
+  // no route localization
+  if (strategy === 'no_prefix' && !differentDomains) {
+    return routeName => getRouteName(routeName)
+  }
+
+  // default locale routes have default suffix
+  if (strategy === 'prefix_and_default') {
+    return (name, locale) =>
+      getLocalizedDefaultRouteName(
+        getRouteName(name),
+        locale,
+        routesNameSeparator,
+        defaultLocale,
+        defaultLocaleRouteNameSuffix
+      )
+  }
+
+  // routes are localized
+  return (name, locale) => getLocalizedRouteName(getRouteName(name), locale, routesNameSeparator)
+}
+
+/**
+ * Factory function which returns a resolver function based on the routing strategy.
+ */
+export function createLocalizedRouteByPathResolver(
+  strategy: Strategies,
+  router: Router
+): (route: RouteLocationPathRaw, locale: Locale) => RouteLocationPathRaw | RouteLocationResolvedGeneric {
+  switch (strategy) {
+    case 'no_prefix':
+      return route => route
+    case 'prefix_and_default':
+    case 'prefix_except_default':
+    default:
+      return route => router.resolve(route)
+    case 'prefix':
+      /**
+       * The `router.resolve` function prints warnings when resolving non-existent paths and `router.hasRoute` only accepts named routes.
+       * The path passed to `localePath` is not prefixed which will trigger vue-router warnings since all routes are prefixed.
+       * We work around this by manually prefixing the path and finding the route in `router.options.routes`.
+       */
+      return (route, locale) => {
+        const restPath = route.path.slice(1)
+        const targetPath = route.path[0] + locale + (restPath && '/' + restPath)
+        const _route = router.options.routes.find(r => r.path === targetPath)
+
+        if (_route == null) {
+          return route
+        }
+
+        return router.resolve(assign({}, route, _route, { path: targetPath }))
+      }
+  }
+}
+
 // collect unique keys of passed objects
 function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
   const keySet = new Set<string>()
@@ -389,8 +549,4 @@ export function createNuxtI18nDev() {
   }
 
   return { resetI18nProperties }
-}
-
-export function toArray<T>(value: T | T[]): T[] {
-  return isArray(value) ? value : [value]
 }

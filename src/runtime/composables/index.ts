@@ -1,14 +1,15 @@
 import { useNuxtApp, useCookie } from '#imports'
 import { ref } from 'vue'
-import { runtimeDetectBrowserLanguage, wrapComposable } from '../internal'
+import { runtimeDetectBrowserLanguage } from '../internal'
 import { localeCodes } from '#build/i18n.options.mjs'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
-import { routeBaseName, localePath, localeRoute, switchLocalePath } from '../routing/routing'
+import { useComposableOptions } from '../utils'
+import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMap, RouteMapI18n } from 'vue-router'
-import type { RouteLocationGenericPath, I18nRouteMeta } from '../types'
+import type { RouteLocationGenericPath, I18nRouteMeta, CompatRoute } from '../types'
 
 export * from 'vue-i18n'
 export * from './shared'
@@ -60,7 +61,8 @@ export type SetI18nParamsFunction = (params: I18nRouteMeta) => void
  * @param options - An {@link SeoAttributesOptions} object.
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
-  return wrapComposable(_useSetI18nParams)(seo)
+  const common = useComposableOptions()
+  return _useSetI18nParams(common, seo)
 }
 
 /**
@@ -82,7 +84,8 @@ export function useLocaleHead({
   seo = true,
   key = 'hid'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
-  return wrapComposable(_useLocaleHead)({ dir, lang, seo, key })
+  const common = useComposableOptions()
+  return _useLocaleHead(common, { dir, lang, seo, key })
 }
 
 /**
@@ -116,7 +119,11 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
  * ```
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
-  return wrapComposable(routeBaseName)
+  const common = useComposableOptions()
+  return route => {
+    if (route == null) return
+    return common.getRouteBaseName(route) || undefined
+  }
 }
 
 /**
@@ -142,8 +149,8 @@ export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteM
  * ```
  */
 export function useLocalePath(): LocalePathFunction {
-  // @ts-expect-error - generated types conflict with the generic types we accept
-  return wrapComposable(localePath)
+  const common = useComposableOptions()
+  return (route, locale) => localePath(common, route as CompatRoute, locale)
 }
 
 /**
@@ -163,8 +170,8 @@ export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof Route
  * Returns a {@link LocaleRouteFunction} used to resolve localized route objects.
  */
 export function useLocaleRoute(): LocaleRouteFunction {
-  // @ts-expect-error - generated types conflict with the generic types we accept
-  return wrapComposable(localeRoute)
+  const common = useComposableOptions()
+  return (route, locale) => localeRoute(common, route as CompatRoute, locale)
 }
 
 /**
@@ -184,7 +191,8 @@ export type SwitchLocalePathFunction = (locale: Locale) => string
  * ```
  */
 export function useSwitchLocalePath(): SwitchLocalePathFunction {
-  return wrapComposable(switchLocalePath)
+  const common = useComposableOptions()
+  return locale => switchLocalePath(common, locale)
 }
 
 /**

@@ -10,15 +10,16 @@ import {
   normalizedLocales
 } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
-import { loadAndSetLocale, detectRedirect, navigate, extendBaseUrl, createNuxtI18nDev } from '../utils'
 import {
-  getLocaleCookie,
-  createI18nCookie,
-  runtimeDetectBrowserLanguage,
-  wrapComposable,
-  getBrowserLocale
-} from '../internal'
-import { createLocaleFromRouteGetter } from '../routing/utils'
+  loadAndSetLocale,
+  detectRedirect,
+  navigate,
+  extendBaseUrl,
+  createNuxtI18nDev,
+  initComposableOptions
+} from '../utils'
+import { getLocaleCookie, createI18nCookie, runtimeDetectBrowserLanguage, getBrowserLocale } from '../internal'
+import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
 import { extendI18n } from '../routing/i18n'
 import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
@@ -28,7 +29,7 @@ import { getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { LocaleObject, I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -67,7 +68,7 @@ export default defineNuxtPlugin({
     const i18n = createI18n(vueI18nOptions)
 
     nuxt._vueI18n = i18n
-    i18n.__localeFromRoute = createLocaleFromRouteGetter()
+    i18n.__localeFromRoute = createLocaleFromRouteGetter({ ...runtimeI18n, localeCodes })
     i18n.__firstAccess = true
     i18n.__setLocale = (locale: string) => {
       const i = getI18nTarget(i18n)
@@ -77,6 +78,7 @@ export default defineNuxtPlugin({
         i.locale = locale
       }
     }
+    nuxt._nuxtI18n = initComposableOptions(i18n)
 
     // HMR helper functionality
     if (import.meta.dev) {
@@ -201,7 +203,7 @@ export default defineNuxtPlugin({
      */
     Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
 
-    nuxt.provide('localeHead', wrapComposable(localeHead))
+    nuxt.provide('localeHead', (options: I18nHeadOptions) => localeHead(nuxt._nuxtI18n, options))
     nuxt.provide('localePath', useLocalePath())
     nuxt.provide('localeRoute', useLocaleRoute())
     nuxt.provide('routeBaseName', useRouteBaseName())
