@@ -1,4 +1,4 @@
-import { deepCopy, isArray, isFunction, isString } from '@intlify/shared'
+import { deepCopy, isArray, isFunction, isString, toTypeString } from '@intlify/shared'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
@@ -80,6 +80,8 @@ export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
   return messages
 }
 
+const isModule = (val: unknown): val is { default: unknown } => toTypeString(val) === '[object Module]'
+
 async function loadMessage(
   locale: Locale,
   { key, load }: LocaleLoader,
@@ -89,7 +91,7 @@ async function loadMessage(
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && logger.log({ locale })
-    const getter = await load().then(r => ('default' in r ? r.default : r))
+    const getter = await load().then(x => (isModule(x) ? x.default : x))
     if (isFunction(getter)) {
       message = await nuxt.runWithContext(() => getter(locale))
       __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
