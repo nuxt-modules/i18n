@@ -412,7 +412,7 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
   }
 }
 
-export function prefixable(currentLocale: string, defaultLocale: string, strategy: Strategies): boolean {
+function prefixable(currentLocale: string, defaultLocale: string, strategy: Strategies): boolean {
   return (
     // strategy has no prefixes
     strategy !== 'no_prefix' &&
@@ -494,7 +494,7 @@ export function createLocaleRouteNameGetter({
 /**
  * Factory function which returns a resolver function based on the routing strategy.
  */
-export function createLocalizedRouteByPathResolver(
+function createLocalizedRouteByPathResolver(
   strategy: Strategies,
   router: Router
 ): (route: RouteLocationPathRaw, locale: Locale) => RouteLocationPathRaw | RouteLocationResolvedGeneric {

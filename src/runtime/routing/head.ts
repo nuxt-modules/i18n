@@ -18,6 +18,7 @@ function createHeadOptions(
   routingOptions = common.getRoutingOptions()
 ): HeadOptions {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
+  const canonicalQueries = (typeof options.seo === 'object' && options.seo?.canonicalQueries) || []
 
   if (!baseUrl) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
@@ -35,7 +36,7 @@ function createHeadOptions(
     hreflangLinks: routingOptions.hreflangLinks,
     defaultLocale: routingOptions.defaultLocale,
     strictCanonicals: routingOptions.strictCanonicals,
-    canonicalQueries: (typeof options.seo === 'object' && options.seo?.canonicalQueries) || [],
+    canonicalQueries,
     getLocaleRoute: route => localeRoute(common, route),
     getCurrentRoute: () => common.router.currentRoute.value,
     getRouteBaseName: common.getRouteBaseName,
