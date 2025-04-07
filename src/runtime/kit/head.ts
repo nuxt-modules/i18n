@@ -54,7 +54,11 @@ export type HeadOptions = {
 /**
  * @internal
  */
-export function localeHead(options: HeadOptions): I18nHeadMetaInfo {
+export function localeHead(
+  options: HeadOptions,
+  currentLanguage = options.getCurrentLanguage(),
+  currentDirection = options.getCurrentDirection()
+): I18nHeadMetaInfo {
   const metaObject: I18nHeadMetaInfo = {
     htmlAttrs: {},
     link: [],
@@ -63,10 +67,9 @@ export function localeHead(options: HeadOptions): I18nHeadMetaInfo {
 
   // Adding Direction Attribute
   if (options.dir) {
-    metaObject.htmlAttrs.dir = options.getCurrentDirection()
+    metaObject.htmlAttrs.dir = currentDirection
   }
 
-  const currentLanguage = options.getCurrentLanguage()
   if (options.lang && currentLanguage) {
     metaObject.htmlAttrs.lang = currentLanguage
   }
@@ -90,7 +93,10 @@ export function localeHead(options: HeadOptions): I18nHeadMetaInfo {
   return metaObject
 }
 
-function getHreflangLinks(options: HeadOptions) {
+function getHreflangLinks(
+  options: HeadOptions,
+  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined
+) {
   if (!options.hreflangLinks) return []
 
   const localeMap = new Map<string, HeadLocale>()
@@ -107,8 +113,6 @@ function getHreflangLinks(options: HeadOptions) {
 
     localeMap.set(locale.language, locale)
   }
-
-  const routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined
 
   const links: MetaAttrs[] = []
   for (const [language, mapLocale] of localeMap.entries()) {
@@ -129,8 +133,7 @@ function getHreflangLinks(options: HeadOptions) {
   return links
 }
 
-function getCanonicalUrl(options: HeadOptions) {
-  const route = options.getCurrentRoute()
+function getCanonicalUrl(options: HeadOptions, route = options.getCurrentRoute()) {
   const currentRoute = options.getLocaleRoute(
     Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) })
   )
@@ -139,15 +142,13 @@ function getCanonicalUrl(options: HeadOptions) {
   return withQuery(joinURL(options.baseUrl, currentRoute.path), getCanonicalQueryParams(options))
 }
 
-function getCanonicalLink(options: HeadOptions): MetaAttrs | undefined {
-  const href = getCanonicalUrl(options)
+function getCanonicalLink(options: HeadOptions, href = getCanonicalUrl(options)): MetaAttrs | undefined {
   if (href) {
     return { [options.key]: 'i18n-can', rel: 'canonical', href }
   }
 }
 
-function getCanonicalQueryParams(options: HeadOptions) {
-  const route = options.getCurrentRoute()
+function getCanonicalQueryParams(options: HeadOptions, route = options.getCurrentRoute()) {
   const currentRoute = options.getLocaleRoute(
     Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) })
   )
@@ -164,22 +165,22 @@ function getCanonicalQueryParams(options: HeadOptions) {
   return params
 }
 
-function getOgUrl(options: HeadOptions): MetaAttrs | undefined {
-  const href = getCanonicalUrl(options)
+function getOgUrl(options: HeadOptions, href = getCanonicalUrl(options)): MetaAttrs | undefined {
   if (href) {
     return { [options.key]: 'i18n-og-url', property: 'og:url', content: href }
   }
 }
 
-function getCurrentOgLocale(options: HeadOptions): MetaAttrs | undefined {
-  if (!options.getCurrentLanguage()) return
-  return { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(options.getCurrentLanguage()) }
+function getCurrentOgLocale(
+  options: HeadOptions,
+  currentLanguage = options.getCurrentLanguage()
+): MetaAttrs | undefined {
+  if (!currentLanguage) return
+  return { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }
 }
 
-function getAlternateOgLocales(options: HeadOptions): MetaAttrs[] {
-  const alternateLocales = options.locales.filter(
-    locale => locale.language && locale.language !== options.getCurrentLanguage()
-  )
+function getAlternateOgLocales(options: HeadOptions, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
+  const alternateLocales = options.locales.filter(locale => locale.language && locale.language !== currentLanguage)
 
   return alternateLocales.map(locale => ({
     [options.key]: `i18n-og-alt-${locale.language}`,

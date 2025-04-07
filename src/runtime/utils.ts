@@ -1,6 +1,6 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { assign, isFunction, isString } from '@intlify/shared'
-import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
+import { navigateTo, useNuxtApp, useRouter, useState } from '#imports'
 import {
   DYNAMIC_PARAMS_KEY,
   NUXT_I18N_MODULE_ID,
@@ -33,7 +33,7 @@ import { unref } from 'vue'
 import type { I18n, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, Router, RouteRecordNameGeneric } from '#vue-router'
-import type { I18nPublicRuntimeConfig, Strategies } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, LocaleObject, Strategies } from '#internal-i18n-types'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 
 export function formatMessage(message: string) {
@@ -48,7 +48,13 @@ export function formatMessage(message: string) {
  */
 export type CommonComposableOptions = {
   router: Router
+  getRoutingOptions: () => Pick<
+    I18nPublicRuntimeConfig,
+    'strategy' | 'differentDomains' | 'routesNameSeparator' | 'defaultLocale' | 'trailingSlash' | 'defaultDirection'
+  > & { strictCanonicals: boolean; hreflangLinks: boolean }
   getLocale: () => string
+  getLocales: () => LocaleObject[]
+  getBaseUrl: () => string
   /**
    * Extract route base name without localized suffix
    */
@@ -67,10 +73,12 @@ export function useComposableOptions(): CommonComposableOptions {
 }
 export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
   const router = useRouter()
-  const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
-  const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash } = runtimeI18n
+  const nuxt = useNuxtApp()
+  const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
+  const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } =
+    runtimeI18n
 
-  const getDomainFromLocale = createDomainFromLocaleGetter(useNuxtApp())
+  const getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
   const routeByPathResolver = createLocalizedRouteByPathResolver(strategy, router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n)
 
@@ -108,9 +116,25 @@ export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
     return route
   }
 
+  const _i18n = getI18nTarget(i18n ?? (useNuxtApp().$i18n as unknown as I18n))
   return {
     router,
-    getLocale: () => unref(getI18nTarget(i18n ?? (useNuxtApp().$i18n as unknown as I18n)).locale),
+    getRoutingOptions: () => ({
+      strategy,
+      differentDomains,
+      routesNameSeparator,
+      defaultLocale,
+      trailingSlash,
+      defaultDirection,
+      strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
+      hreflangLinks: !(strategy === 'no_prefix' && !differentDomains)
+    }),
+    getLocale: () => unref(_i18n.locale),
+    getLocales: () => {
+      const locales = unref(_i18n.locales)
+      return locales.map(x => (isString(x) ? { code: x } : (x as LocaleObject)))
+    },
+    getBaseUrl: () => joinURL(unref(_i18n.baseUrl), nuxt.$config.app.baseURL),
     getRouteBaseName,
     getLocalizedDynamicParams: locale => {
       const params = (router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] ?? {}) as Partial<I18nRouteMeta>

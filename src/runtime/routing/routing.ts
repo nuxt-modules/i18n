@@ -68,9 +68,9 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 function resolveRoute(
   common: Pick<CommonComposableOptions, 'resolveLocalizedRouteObject' | 'router'>,
   route: RouteLocationRaw,
-  locale: Locale
+  locale: Locale,
+  normalized = normalizeRawLocation(route)
 ) {
-  const normalized = normalizeRawLocation(route)
   const resolved = common.router.resolve(common.resolveLocalizedRouteObject(normalized, locale))
   if (resolved.name) {
     return resolved
@@ -101,10 +101,9 @@ function tryResolveRoute(
 export function switchLocalePath(
   common: CommonComposableOptions,
   locale: Locale,
-  route: CompatRoute = common.router.currentRoute.value
+  route: CompatRoute = common.router.currentRoute.value,
+  name = common.getRouteBaseName(route)
 ): string {
-  const name = common.getRouteBaseName(route)
-
   // unable to localize nameless path
   if (!name) {
     return ''

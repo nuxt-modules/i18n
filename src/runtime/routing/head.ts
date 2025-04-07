@@ -1,29 +1,23 @@
-import { joinURL } from 'ufo'
-import { computed, getCurrentScope, onScopeDispose, ref, unref, useHead, useNuxtApp, watch, type Ref } from '#imports'
-import { assign, isString } from '@intlify/shared'
+import { computed, getCurrentScope, onScopeDispose, ref, useHead, watch, type Ref } from '#imports'
+import { assign } from '@intlify/shared'
 
 import { localeHead as _localeHead, type HeadOptions } from '#i18n-kit/head'
-import { getComposer } from '../compatibility'
 import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 
-import type {
-  I18nHeadMetaInfo,
-  LocaleObject,
-  I18nHeadOptions,
-  SeoAttributesOptions,
-  I18nPublicRuntimeConfig
-} from '#internal-i18n-types'
+import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { CommonComposableOptions } from '../utils'
 import type { I18nRouteMeta } from '../types'
 import { localeRoute, switchLocalePath } from './routing'
 
-function createHeadOptions(common: CommonComposableOptions, options: Required<I18nHeadOptions>): HeadOptions {
-  const nuxtApp = useNuxtApp()
-  const locale = common.getLocale()
-  const locales = unref(nuxtApp.$i18n.locales).map(x => (isString(x) ? { code: x } : (x as LocaleObject)))
+function createHeadOptions(
+  common: CommonComposableOptions,
+  options: Required<I18nHeadOptions>,
+  locale = common.getLocale(),
+  locales = common.getLocales(),
+  baseUrl = common.getBaseUrl(),
+  routingOptions = common.getRoutingOptions()
+): HeadOptions {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
-  const baseUrl = joinURL(unref(getComposer(nuxtApp.$i18n).baseUrl), nuxtApp.$config.app.baseURL)
-  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
 
   if (!baseUrl) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
@@ -36,11 +30,11 @@ function createHeadOptions(common: CommonComposableOptions, options: Required<I1
     seo: options.seo,
     locales,
     getCurrentLanguage: () => currentLocale.language,
-    getCurrentDirection: () => currentLocale.dir || runtimeI18n.defaultDirection,
+    getCurrentDirection: () => currentLocale.dir || routingOptions.defaultDirection,
     baseUrl,
-    strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
-    hreflangLinks: !(runtimeI18n.strategy === 'no_prefix' && !runtimeI18n.differentDomains),
-    defaultLocale: runtimeI18n.defaultLocale,
+    hreflangLinks: routingOptions.hreflangLinks,
+    defaultLocale: routingOptions.defaultLocale,
+    strictCanonicals: routingOptions.strictCanonicals,
     canonicalQueries: (typeof options.seo === 'object' && options.seo?.canonicalQueries) || [],
     getLocaleRoute: route => localeRoute(common, route),
     getCurrentRoute: () => common.router.currentRoute.value,
