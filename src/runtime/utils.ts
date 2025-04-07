@@ -11,7 +11,7 @@ import {
   vueI18nConfigs
 } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
-import { createDomainFromLocaleGetter, getDomainFromLocale, getHost, getLocaleDomain } from './domain'
+import { createDomainFromLocaleGetter, getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import {
@@ -403,19 +403,20 @@ export function prefixable(currentLocale: string, defaultLocale: string, strateg
   )
 }
 
-export function extendBaseUrl(ctx: NuxtApp) {
+export function extendBaseUrl(nuxt: NuxtApp) {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
-  const { baseUrl, defaultLocale, differentDomains } = ctx.$config.public.i18n as I18nPublicRuntimeConfig
+  const { baseUrl, defaultLocale, differentDomains } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
   if (isFunction(baseUrl)) {
     return (): string => {
-      const baseUrlResult = baseUrl(ctx)
+      const baseUrlResult = baseUrl(nuxt)
       __DEBUG__ && logger.log('using localeLoader function -', { baseUrlResult })
       return baseUrlResult
     }
   }
 
   const localeCode = isFunction(defaultLocale) ? (defaultLocale() as string) : defaultLocale
+  const getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
   return (): string => {
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode)

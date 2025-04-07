@@ -24,6 +24,10 @@ function parseAcceptLanguage(input: string = ''): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
+export function getCompatRoutePath(route: string | CompatRoute) {
+  return isString(route) ? route : route.path
+}
+
 export function getBrowserLocale(): string | undefined {
   // get browser language either from navigator if running on client side, or from the headers
   const browserLocales = import.meta.client
@@ -133,10 +137,10 @@ export function detectBrowserLanguage(
     return { locale: strategy === 'no_prefix' ? locale : '', error: 'first_access_only' }
   }
 
-  __DEBUG__ && logger.log({ locale, path: isString(route) ? route : route.path, strategy, ..._detect })
+  __DEBUG__ && logger.log({ locale, path: getCompatRoutePath(route), strategy, ..._detect })
 
   if (strategy !== 'no_prefix') {
-    const path = isString(route) ? route : route.path
+    const path = getCompatRoutePath(route)
 
     // detection only on root
     if (_detect.redirectOn === 'root' && path !== '/') {

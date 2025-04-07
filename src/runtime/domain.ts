@@ -1,7 +1,7 @@
 import { isArray, isString } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
-import { getRequestProtocol } from 'h3'
-import { useRequestEvent, useRuntimeConfig, useRouter, useRequestHeaders, useNuxtApp } from '#imports'
+import { getRequestProtocol, getRequestHost } from 'h3'
+import { useRequestEvent, useRuntimeConfig, useRouter } from '#imports'
 import { normalizedLocales } from '#build/i18n.options.mjs'
 import { getLocalesRegex, getRouteName } from '#i18n-kit/routing'
 import { createLogger } from '#nuxt-i18n/logger'
@@ -12,24 +12,17 @@ import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 import type { NuxtApp } from '#app'
+import { getCompatRoutePath } from './internal'
 
 export function getHost() {
-  if (import.meta.client) {
-    return window.location.host
-  }
-
-  const header = useRequestHeaders(['x-forwarded-host', 'host'])
-  return header['x-forwarded-host'] || header['host'] || ''
+  return import.meta.server ? getRequestHost(useRequestEvent()!, { xForwardedHost: true }) : window.location.host
 }
 
 export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   const host = getHost()
-  if (!host) {
-    return host
-  }
 
-  const routePath = isString(route) ? route : route.path
+  const path = getCompatRoutePath(route)
   const matchingLocales = locales.filter(locale => {
     if (locale.domain) {
       return (hasProtocol(locale.domain) ? locale.domain.replace(/(http|https):\/\//, '') : locale.domain) === host
@@ -37,7 +30,7 @@ export function getLocaleDomain(locales: LocaleObject[], strategy: string, route
     return isArray(locale?.domains) ? locale.domains.includes(host) : false
   })
 
-  __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path: routePath })
+  __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path })
 
   if (matchingLocales.length === 0) {
     return ''
@@ -59,10 +52,10 @@ export function getLocaleDomain(locales: LocaleObject[], strategy: string, route
   }
 
   // get prefix from route
-  if (route && routePath) {
-    __DEBUG__ && logger.log(`check matched domain for locale match`, { path: routePath, host })
+  if (route && path) {
+    __DEBUG__ && logger.log(`check matched domain for locale match`, { path, host })
 
-    const matched = routePath.match(getLocalesRegex(matchingLocales.map(l => l.code)))?.at(1)
+    const matched = path.match(getLocalesRegex(matchingLocales.map(l => l.code)))?.at(1)
     if (matched) {
       const matchingLocale = matchingLocales.find(l => l.code === matched)
       __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchingLocale?.code })
@@ -77,41 +70,23 @@ export function getLocaleDomain(locales: LocaleObject[], strategy: string, route
   return matchingLocale?.code ?? ''
 }
 
-export function getDomainFromLocale(localeCode: Locale): string | undefined {
-  const nuxt = useNuxtApp()
-  const host = getHost()
-  const { domainLocales } = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
-  const lang = normalizedLocales.find(locale => locale.code === localeCode)
-  // lookup the `differentDomain` origin associated with given locale.
-  const domain = domainLocales?.[localeCode]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
-
-  if (!domain) {
-    console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
-    return
-  }
-
-  if (hasProtocol(domain, { strict: true })) {
-    return domain
-  }
-
-  const protocol = import.meta.server
+function getProtocol(nuxt: NuxtApp) {
+  return import.meta.server
     ? getRequestProtocol(useRequestEvent(nuxt)!) + ':'
     : new URL(window.location.origin).protocol
-
-  return protocol + '//' + domain
 }
 
 export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
   const host = getHost()
   const { domainLocales } = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
 
-  return (localeCode: Locale): string | undefined => {
-    const lang = normalizedLocales.find(locale => locale.code === localeCode)
+  return (locale: Locale): string | undefined => {
+    const lang = normalizedLocales.find(x => x.code === locale)
     // lookup the `differentDomain` origin associated with given locale.
-    const domain = domainLocales?.[localeCode]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
+    const domain = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
 
     if (!domain) {
-      console.warn(formatMessage('Could not find domain name for locale ' + localeCode))
+      console.warn(formatMessage('Could not find domain name for locale ' + locale))
       return
     }
 
@@ -119,11 +94,7 @@ export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
       return domain
     }
 
-    const protocol = import.meta.server
-      ? getRequestProtocol(useRequestEvent(nuxt)!) + ':'
-      : new URL(window.location.origin).protocol
-
-    return protocol + '//' + domain
+    return getProtocol(nuxt) + '//' + domain
   }
 }
 
