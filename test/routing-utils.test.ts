@@ -9,9 +9,17 @@ const ROUTE_GEN_CONFIG = {
 }
 
 const routeNameGetters = {
-  noPrefix: createLocaleRouteNameGetter('no_prefix', false, ROUTE_GEN_CONFIG),
-  prefixAndDefault: createLocaleRouteNameGetter('prefix_and_default', false, ROUTE_GEN_CONFIG),
-  prefixExceptDefault: createLocaleRouteNameGetter('prefix_except_default', false, ROUTE_GEN_CONFIG)
+  noPrefix: createLocaleRouteNameGetter({ strategy: 'no_prefix', differentDomains: false, ...ROUTE_GEN_CONFIG }),
+  prefixAndDefault: createLocaleRouteNameGetter({
+    strategy: 'prefix_and_default',
+    differentDomains: false,
+    ...ROUTE_GEN_CONFIG
+  }),
+  prefixExceptDefault: createLocaleRouteNameGetter({
+    strategy: 'prefix_except_default',
+    differentDomains: false,
+    ...ROUTE_GEN_CONFIG
+  })
 }
 
 describe('getLocaleRouteName', () => {

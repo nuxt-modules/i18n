@@ -35,20 +35,19 @@ function createHeadOptions(common: CommonComposableOptions, options: Required<I1
     key: options.key,
     seo: options.seo,
     locales,
-    currentDir: currentLocale.dir || runtimeI18n.defaultDirection,
-    currentLanguage: currentLocale.language,
+    getCurrentLanguage: () => currentLocale.language,
+    getCurrentDirection: () => currentLocale.dir || runtimeI18n.defaultDirection,
     baseUrl,
     strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
     hreflangLinks: !(runtimeI18n.strategy === 'no_prefix' && !runtimeI18n.differentDomains),
     defaultLocale: runtimeI18n.defaultLocale,
     canonicalQueries: (typeof options.seo === 'object' && options.seo?.canonicalQueries) || [],
-    // getRouteBaseName: route => getGenericRouteBaseName(route, runtimeI18n.routesNameSeparator),
-    getRouteBaseName: common.getRouteBaseName,
     getLocaleRoute: route => localeRoute(common, route),
     getCurrentRoute: () => common.router.currentRoute.value,
+    getRouteBaseName: common.getRouteBaseName,
+    getLocalizedRoute: (locale, route) => switchLocalePath(common, locale, route),
     getRouteWithoutQuery: () =>
-      assign({}, common.router.resolve({ query: {} }), { meta: common.router.currentRoute.value.meta }),
-    getLocalizedRoute: (locale, route) => switchLocalePath(common, locale, route)
+      assign({}, common.router.resolve({ query: {} }), { meta: common.router.currentRoute.value.meta })
   }
 }
 

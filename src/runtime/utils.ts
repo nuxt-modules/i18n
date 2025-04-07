@@ -48,17 +48,11 @@ export function formatMessage(message: string) {
  */
 export type CommonComposableOptions = {
   router: Router
-  /**
-   *
-   */
   getLocale: () => string
   /**
    * Extract route base name without localized suffix
    */
   getRouteBaseName: (route: RouteRecordNameGeneric | RouteLocationGenericPath | null) => string | undefined
-  /**
-   *
-   */
   afterSwitchLocalePath: (path: string, locale: string) => string
   getLocalizedDynamicParams: (locale: string) => Record<string, unknown> | undefined
   /**

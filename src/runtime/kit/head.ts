@@ -36,8 +36,8 @@ export type HeadOptions = {
   dir: boolean
   lang: boolean
   seo: boolean | SeoAttributesOptions | undefined
-  currentDir: string
-  currentLanguage: string | undefined
+  getCurrentLanguage: () => string | undefined
+  getCurrentDirection: () => string
   baseUrl: string
   locales: HeadLocale[]
   defaultLocale: string | undefined
@@ -63,11 +63,12 @@ export function localeHead(options: HeadOptions): I18nHeadMetaInfo {
 
   // Adding Direction Attribute
   if (options.dir) {
-    metaObject.htmlAttrs.dir = options.currentDir
+    metaObject.htmlAttrs.dir = options.getCurrentDirection()
   }
 
-  if (options.lang && options.currentLanguage) {
-    metaObject.htmlAttrs.lang = options.currentLanguage
+  const currentLanguage = options.getCurrentLanguage()
+  if (options.lang && currentLanguage) {
+    metaObject.htmlAttrs.lang = currentLanguage
   }
 
   // Adding SEO Meta
@@ -171,13 +172,13 @@ function getOgUrl(options: HeadOptions): MetaAttrs | undefined {
 }
 
 function getCurrentOgLocale(options: HeadOptions): MetaAttrs | undefined {
-  if (!options.currentLanguage) return
-  return { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(options.currentLanguage) }
+  if (!options.getCurrentLanguage()) return
+  return { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(options.getCurrentLanguage()) }
 }
 
 function getAlternateOgLocales(options: HeadOptions): MetaAttrs[] {
   const alternateLocales = options.locales.filter(
-    locale => locale.language && locale.language !== options.currentLanguage
+    locale => locale.language && locale.language !== options.getCurrentLanguage()
   )
 
   return alternateLocales.map(locale => ({
