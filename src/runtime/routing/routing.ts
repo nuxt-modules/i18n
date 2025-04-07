@@ -111,17 +111,25 @@ function resolveRouteObject(common: CommonComposableOptions, route: RouteLike, l
   return route
 }
 
+export function _resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
+  const _locale = locale || unref(getI18nTarget(common.i18n).locale)
+  const normalized = normalizeRawLocation(route)
+  const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale), undefined, { locale: false })
+
+  if (resolved.name) {
+    return resolved
+  }
+
+  // if unable to resolve route try resolving route based on original input
+  return common.router.resolve(route, undefined, { locale: false })
+}
+
+/**
+ * Resolve route but catch Vue Router's no match resolution error
+ */
 function resolveRoute(common: CommonComposableOptions, route: RouteLocationRaw, locale?: Locale) {
   try {
-    const _locale = locale || unref(getI18nTarget(common.i18n).locale)
-    const normalized = normalizeRawLocation(route)
-    const resolved = common.router.resolve(resolveRouteObject(common, normalized, _locale))
-    if (resolved.name) {
-      return resolved
-    }
-
-    // if didn't resolve to an existing route then just return resolved route based on original input.
-    return common.router.resolve(route)
+    return _resolveRoute(common, route, locale)
   } catch (e: unknown) {
     if (isNavigationFailure(e, 1 /* No match */)) {
       return null
@@ -179,7 +187,7 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
   }
 
   if (common.runtimeConfig.public.i18n.strategy !== 'prefix') {
-    return common.router.resolve(route)
+    return common.router.resolve(route, undefined, { locale: false })
   }
 
   const restPath = route.path.slice(1)
@@ -190,5 +198,5 @@ function resolve(common: CommonComposableOptions, route: RouteLocationPathRaw, l
     return route
   }
 
-  return common.router.resolve(assign({}, route, _route, { path: targetPath }))
+  return common.router.resolve(assign({}, route, _route, { path: targetPath }), undefined, { locale: false })
 }

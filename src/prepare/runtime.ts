@@ -9,6 +9,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { options, resolver } = ctx
   // for core plugin
   addPlugin(resolver.resolve('./runtime/plugins/i18n'))
+  addPlugin(resolver.resolve('./runtime/plugins/route-resolution-enhancement'))
   addPlugin(resolver.resolve('./runtime/plugins/route-locale-detect'))
   addPlugin(resolver.resolve('./runtime/plugins/ssg-detect'))
   addPlugin(resolver.resolve('./runtime/plugins/switch-locale-path-ssr'))

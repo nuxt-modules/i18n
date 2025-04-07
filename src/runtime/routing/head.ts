@@ -200,7 +200,9 @@ function getHreflangLinks(common: CommonComposableOptions, ctx: HeadContext) {
   }
 
   const strictCanonicals = ctx.runtimeI18n.experimental.alternateLinkCanonicalQueries === true
-  const routeWithoutQuery = strictCanonicals ? common.router.resolve({ query: {} }) : undefined
+  const routeWithoutQuery = strictCanonicals
+    ? common.router.resolve({ query: {} }, undefined, { locale: false })
+    : undefined
 
   // set meta property which is lost on router.resolve
   if (strictCanonicals) {
