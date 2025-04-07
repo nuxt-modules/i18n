@@ -93,7 +93,7 @@ export function useComposableOptions(): CommonComposableOptions {
 export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
   const router = useRouter()
   const nuxt = useNuxtApp()
-  const runtimeI18n = nuxt.$config.public.i18n
+  const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } =
     runtimeI18n
 
@@ -355,7 +355,7 @@ type NavigateArgs = {
 
 export async function navigate({ nuxt, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
   const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxt
-    .$config.public.i18n
+    .$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
 
   __DEBUG__ &&
@@ -447,7 +447,7 @@ export function prefixable(currentLocale: string, defaultLocale: string, strateg
  */
 export function createBaseUrlGetter(nuxt: NuxtApp) {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
-  const { baseUrl, defaultLocale, differentDomains } = nuxt.$config.public.i18n
+  const { baseUrl, defaultLocale, differentDomains } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
   if (isFunction(baseUrl)) {
     return (): string => {
