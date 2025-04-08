@@ -11,7 +11,7 @@ import {
   vueI18nConfigs
 } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
-import { createDomainFromLocaleGetter, getHost, getLocaleDomain } from './domain'
+import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import {
@@ -46,7 +46,7 @@ export function formatMessage(message: string) {
  *
  * @internal
  */
-export type CommonComposableOptions = {
+export type ComposableContext = {
   router: Router
   getRoutingOptions: () => Pick<
     I18nPublicRuntimeConfig,
@@ -87,18 +87,27 @@ export type CommonComposableOptions = {
 }
 
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
-export function useComposableOptions(): CommonComposableOptions {
+export function useComposableContext(): ComposableContext {
   return useNuxtApp()._nuxtI18n
 }
-export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
+
+type ComposableContextOptions = {
+  i18n: I18n
+  runtimeI18n: I18nPublicRuntimeConfig
+  getDomainFromLocale: (locale: Locale) => string | undefined
+}
+export function createComposableContext({
+  i18n: _i18n,
+  runtimeI18n,
+  getDomainFromLocale
+}: ComposableContextOptions): ComposableContext {
   const router = useRouter()
   const nuxt = useNuxtApp()
-  const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
+  const i18n = getI18nTarget(_i18n)
   const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } =
     runtimeI18n
 
-  const getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
-  const routeByPathResolver = createLocalizedRouteByPathResolver(strategy, router)
+  const routeByPathResolver = createLocalizedRouteByPathResolver(runtimeI18n.strategy, router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n)
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
@@ -106,6 +115,9 @@ export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
   }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
+    if (!route.name) {
+      console.log('route name falsy on', route, locale)
+    }
     // if name is falsy fallback to current route name
     route.name ||= getRouteBaseName(router.currentRoute.value)
 
@@ -137,7 +149,6 @@ export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
     return route
   }
 
-  const _i18n = getI18nTarget(i18n ?? (useNuxtApp().$i18n as unknown as I18n))
   return {
     router,
     getRoutingOptions: () => ({
@@ -150,12 +161,12 @@ export function initComposableOptions(i18n?: I18n): CommonComposableOptions {
       strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(strategy === 'no_prefix' && !differentDomains)
     }),
-    getLocale: () => unref(_i18n.locale),
+    getLocale: () => unref(i18n.locale),
     getLocales: () => {
-      const locales = unref(_i18n.locales)
+      const locales = unref(i18n.locales)
       return locales.map(x => (isString(x) ? { code: x } : (x as LocaleObject)))
     },
-    getBaseUrl: () => joinURL(unref(_i18n.baseUrl), nuxt.$config.app.baseURL),
+    getBaseUrl: () => joinURL(unref(i18n.baseUrl), nuxt.$config.app.baseURL),
     getRouteBaseName,
     getLocalizedDynamicParams: locale => {
       const params = (router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] ?? {}) as Partial<I18nRouteMeta>
@@ -322,7 +333,7 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
    * `$switchLocalePath` and `$localePath` functions internally use `$router.currentRoute`
    * instead we use composable internals which allows us to pass the `to` route from navigation middleware.
    */
-  const common = useComposableOptions()
+  const common = useComposableContext()
   const logger = /*#__PURE__*/ createLogger('detectRedirect')
 
   __DEBUG__ && logger.log({ to, from })
@@ -458,7 +469,7 @@ export function createBaseUrlGetter(nuxt: NuxtApp) {
   }
 
   const localeCode = isFunction(defaultLocale) ? (defaultLocale() as string) : defaultLocale
-  const getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
+  const getDomainFromLocale = nuxt._i18nGetDomainFromLocale
   return (): string => {
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode)

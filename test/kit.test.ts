@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 import {
-  CommonComposableOptions,
+  ComposableContext,
   createLocaleRouteNameGetter,
   createLocalizedRouteByPathResolver,
   isRouteLocationPathRaw,
@@ -47,7 +47,7 @@ const i18nMock = {
 }
 
 // more flexible implementation of `initComposableOptions` in src/runtime/utils.ts
-function initComposableOptions(router: Router): CommonComposableOptions {
+function initComposableOptions(router: Router): ComposableContext {
   const getLocalizedRouteName = (name: RouteRecordNameGeneric | null, locale: string) =>
     createLocaleRouteNameGetter(routingOptions)(name, locale)
   const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } =

@@ -16,7 +16,7 @@ import {
   navigate,
   createBaseUrlGetter,
   createNuxtI18nDev,
-  initComposableOptions
+  createComposableContext
 } from '../utils'
 import { getLocaleCookie, createI18nCookie, runtimeDetectBrowserLanguage, getBrowserLocale } from '../internal'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
@@ -25,7 +25,7 @@ import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
-import { getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
+import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -38,7 +38,7 @@ export default defineNuxtPlugin({
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-
+    nuxt._i18nGetDomainFromLocale = createDomainFromLocaleGetter(nuxt)
     const defaultLocaleDomain = getDefaultLocaleForDomain(_runtimeI18n)
     setupMultiDomainLocales(_runtimeI18n, defaultLocaleDomain)
     nuxt.$config.public.i18n.defaultLocale = defaultLocaleDomain
@@ -78,7 +78,7 @@ export default defineNuxtPlugin({
         i.locale = locale
       }
     }
-    nuxt._nuxtI18n = initComposableOptions(i18n)
+    nuxt._nuxtI18n = createComposableContext({ i18n, getDomainFromLocale: nuxt._i18nGetDomainFromLocale, runtimeI18n })
 
     // HMR helper functionality
     if (import.meta.dev) {

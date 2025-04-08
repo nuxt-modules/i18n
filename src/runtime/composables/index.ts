@@ -1,9 +1,8 @@
 import { useNuxtApp, useCookie } from '#imports'
 import { ref } from 'vue'
 import { runtimeDetectBrowserLanguage } from '../internal'
-import { localeCodes } from '#build/i18n.options.mjs'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
-import { useComposableOptions } from '../utils'
+import { useComposableContext } from '../utils'
 import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
@@ -61,7 +60,7 @@ export type SetI18nParamsFunction = (params: I18nRouteMeta) => void
  * @param options - An {@link SeoAttributesOptions} object.
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
-  const common = useComposableOptions()
+  const common = useComposableContext()
   return _useSetI18nParams(common, seo)
 }
 
@@ -84,7 +83,7 @@ export function useLocaleHead({
   seo = true,
   key = 'hid'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
-  const common = useComposableOptions()
+  const common = useComposableContext()
   return _useLocaleHead(common, { dir, lang, seo, key })
 }
 
@@ -119,7 +118,7 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
  * ```
  */
 export function useRouteBaseName(): RouteBaseNameFunction {
-  const common = useComposableOptions()
+  const common = useComposableContext()
   return route => {
     if (route == null) return
     return common.getRouteBaseName(route) || undefined
@@ -149,7 +148,7 @@ export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteM
  * ```
  */
 export function useLocalePath(): LocalePathFunction {
-  const common = useComposableOptions()
+  const common = useComposableContext()
   return (route, locale) => localePath(common, route as CompatRoute, locale)
 }
 
@@ -170,7 +169,7 @@ export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof Route
  * Returns a {@link LocaleRouteFunction} used to resolve localized route objects.
  */
 export function useLocaleRoute(): LocaleRouteFunction {
-  const common = useComposableOptions()
+  const common = useComposableContext()
   return (route, locale) => localeRoute(common, route as CompatRoute, locale)
 }
 
@@ -191,7 +190,7 @@ export type SwitchLocalePathFunction = (locale: Locale) => string
  * ```
  */
 export function useSwitchLocalePath(): SwitchLocalePathFunction {
-  const common = useComposableOptions()
+  const common = useComposableContext()
   return locale => switchLocalePath(common, locale)
 }
 
@@ -217,8 +216,9 @@ export function useCookieLocale(): Ref<string> {
     return locale
   }
 
+  const locales = useNuxtApp()._nuxtI18n.getLocales()
   const code = useCookie(detect.cookieKey!).value
-  if (code && localeCodes.includes(code)) {
+  if (code && locales.some(x => x.code === code)) {
     locale.value = code
   }
 

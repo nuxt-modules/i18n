@@ -5,17 +5,17 @@ import { localeHead as _localeHead, type HeadOptions } from '#i18n-kit/head'
 import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { CommonComposableOptions } from '../utils'
+import type { ComposableContext } from '../utils'
 import type { I18nRouteMeta } from '../types'
 import { localeRoute, switchLocalePath } from './routing'
 
 function createHeadOptions(
-  common: CommonComposableOptions,
+  ctx: ComposableContext,
   options: Required<I18nHeadOptions>,
-  locale = common.getLocale(),
-  locales = common.getLocales(),
-  baseUrl = common.getBaseUrl(),
-  routingOptions = common.getRoutingOptions()
+  locale = ctx.getLocale(),
+  locales = ctx.getLocales(),
+  baseUrl = ctx.getBaseUrl(),
+  routingOptions = ctx.getRoutingOptions()
 ): HeadOptions {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
   const canonicalQueries = (typeof options.seo === 'object' && options.seo?.canonicalQueries) || []
@@ -37,19 +37,19 @@ function createHeadOptions(
     defaultLocale: routingOptions.defaultLocale,
     strictCanonicals: routingOptions.strictCanonicals,
     canonicalQueries,
-    getLocaleRoute: route => localeRoute(common, route),
-    getCurrentRoute: () => common.router.currentRoute.value,
-    getRouteBaseName: common.getRouteBaseName,
-    getLocalizedRoute: (locale, route) => switchLocalePath(common, locale, route),
+    getLocaleRoute: route => localeRoute(ctx, route),
+    getCurrentRoute: () => ctx.router.currentRoute.value,
+    getRouteBaseName: ctx.getRouteBaseName,
+    getLocalizedRoute: (locale, route) => switchLocalePath(ctx, locale, route),
     getRouteWithoutQuery: () =>
-      assign({}, common.router.resolve({ query: {} }), { meta: common.router.currentRoute.value.meta })
+      assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })
   }
 }
 
 /**
  * Returns localized head properties for locale-related aspects.
  *
- * @param common - Common options used internally by composable functions.
+ * @param ctx - Context used internally by composable functions.
  * @param options - An options, see about details {@link I18nHeadOptions}.
  *
  * @returns The localized {@link I18nHeadMetaInfo | head properties}.
@@ -57,16 +57,13 @@ function createHeadOptions(
  * @public
  */
 export function localeHead(
-  common: CommonComposableOptions,
+  ctx: ComposableContext,
   { dir = true, lang = true, seo = true, key = 'hid' }: I18nHeadOptions
 ): I18nHeadMetaInfo {
-  return _localeHead(createHeadOptions(common, { dir, lang, seo, key }))
+  return _localeHead(createHeadOptions(ctx, { dir, lang, seo, key }))
 }
 
-export function _useLocaleHead(
-  common: CommonComposableOptions,
-  options: Required<I18nHeadOptions>
-): Ref<I18nHeadMetaInfo> {
+export function _useLocaleHead(common: ComposableContext, options: Required<I18nHeadOptions>): Ref<I18nHeadMetaInfo> {
   const metaObject = ref(_localeHead(createHeadOptions(common, options)))
 
   if (import.meta.client) {
@@ -83,11 +80,11 @@ export function _useLocaleHead(
 }
 
 export function _useSetI18nParams(
-  common: CommonComposableOptions,
-  seo?: SeoAttributesOptions
+  ctx: ComposableContext,
+  seo?: SeoAttributesOptions,
+  router = ctx.router
 ): (params: I18nRouteMeta) => void {
   const head = useHead({})
-  const router = common.router
 
   const _i18nParams = ref({})
   const i18nParams = computed({
@@ -117,7 +114,7 @@ export function _useSetI18nParams(
   return function (params: I18nRouteMeta) {
     i18nParams.value = { ...params }
 
-    const { link, meta } = _localeHead(createHeadOptions(common, ctxOptions))
+    const { link, meta } = _localeHead(createHeadOptions(ctx, ctxOptions))
     head?.patch({ link, meta })
   }
 }

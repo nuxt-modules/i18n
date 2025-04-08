@@ -1,11 +1,10 @@
 import { hasProtocol, parsePath, parseQuery } from 'ufo'
 import { assign, isString } from '@intlify/shared'
 
-import type { CommonComposableOptions } from '../utils'
-
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
 import type { CompatRoute } from '../types'
+import type { ComposableContext } from '../utils'
 
 export type RouteLikeWithPath = RouteLocationPathRaw & { name?: string }
 export type RouteLikeWithName = RouteLocationNamedRaw & { path?: string }
@@ -14,18 +13,14 @@ export type RouteLike = RouteLikeWithPath | RouteLikeWithName
 /**
  * Resolves a localized path of the passed in route.
  */
-export function localePath(
-  common: Pick<CommonComposableOptions, 'resolveLocalizedRouteObject' | 'router' | 'getLocale'>,
-  route: RouteLocationRaw,
-  locale: Locale = common.getLocale()
-): string {
+export function localePath(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()): string {
   // return external url as is
   if (isString(route) && hasProtocol(route, { acceptRelative: true })) {
     return route
   }
 
   try {
-    const localizedRoute = resolveRoute(common, route, locale)
+    const localizedRoute = resolveRoute(ctx, route, locale)
     return localizedRoute?.redirectedFrom?.fullPath || localizedRoute.fullPath
   } catch {
     return ''
@@ -35,11 +30,7 @@ export function localePath(
 /**
  * Resolves a localized variant of the passed route.
  */
-export function localeRoute(
-  common: Pick<CommonComposableOptions, 'resolveLocalizedRouteObject' | 'router' | 'getLocale'>,
-  route: RouteLocationRaw,
-  locale?: Locale
-) {
+export function localeRoute(common: ComposableContext, route: RouteLocationRaw, locale?: Locale) {
   return tryResolveRoute(common, route, locale)
 }
 
@@ -65,31 +56,23 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 /**
  * Try resolving route and throw on failure
  */
-function resolveRoute(
-  common: Pick<CommonComposableOptions, 'resolveLocalizedRouteObject' | 'router'>,
-  route: RouteLocationRaw,
-  locale: Locale,
-  normalized = normalizeRawLocation(route)
-) {
-  const resolved = common.router.resolve(common.resolveLocalizedRouteObject(normalized, locale))
+function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale) {
+  const normalized = normalizeRawLocation(route)
+  const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale))
   if (resolved.name) {
     return resolved
   }
 
   // if unable to resolve route try resolving route based on original input
-  return common.router.resolve(route)
+  return ctx.router.resolve(route)
 }
 
 /**
  * Try resolving route and return undefined on failure
  */
-function tryResolveRoute(
-  common: Pick<CommonComposableOptions, 'resolveLocalizedRouteObject' | 'router' | 'getLocale'>,
-  route: RouteLocationRaw,
-  locale: Locale = common.getLocale()
-) {
+function tryResolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
   try {
-    return resolveRoute(common, route, locale)
+    return resolveRoute(ctx, route, locale)
   } catch (_) {
     return
   }
@@ -99,11 +82,11 @@ function tryResolveRoute(
  * Resolve the localized path of the current route.
  */
 export function switchLocalePath(
-  common: CommonComposableOptions,
+  ctx: ComposableContext,
   locale: Locale,
-  route: CompatRoute = common.router.currentRoute.value,
-  name = common.getRouteBaseName(route)
+  route: CompatRoute = ctx.router.currentRoute.value
 ): string {
+  const name = ctx.getRouteBaseName(route)
   // unable to localize nameless path
   if (!name) {
     return ''
@@ -116,7 +99,7 @@ export function switchLocalePath(
    */
   const routeCopy = {
     name,
-    params: assign({}, route.params, common.getLocalizedDynamicParams(locale)),
+    params: assign({}, route.params, ctx.getLocalizedDynamicParams(locale)),
     fullPath: route.fullPath,
     query: route.query,
     hash: route.hash,
@@ -124,7 +107,7 @@ export function switchLocalePath(
     meta: route.meta
   }
 
-  const path = localePath(common, routeCopy, locale)
+  const path = localePath(ctx, routeCopy, locale)
   // custom locale path for domains
-  return common.afterSwitchLocalePath(path, locale)
+  return ctx.afterSwitchLocalePath(path, locale)
 }
