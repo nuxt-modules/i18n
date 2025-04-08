@@ -52,43 +52,35 @@ export type ComposableContext = {
     I18nPublicRuntimeConfig,
     'strategy' | 'differentDomains' | 'routesNameSeparator' | 'defaultLocale' | 'trailingSlash' | 'defaultDirection'
   > & {
-    /**
-     * Use `canonicalQueries` for alternate links
-     */
+    /** Use `canonicalQueries` for alternate links */
     strictCanonicals: boolean
-    /**
-     * Enable/disable hreflangLinks
-     */
+    /** Enable/disable hreflangLinks */
     hreflangLinks: boolean
   }
   getLocale: () => string
   getLocales: () => LocaleObject[]
   getBaseUrl: () => string
-  /**
-   * Extract route base name without localized suffix
-   */
+  /** Extracts the route base name (without locale suffix) */
   getRouteBaseName: (route: RouteRecordNameGeneric | RouteLocationGenericPath | null) => string | undefined
-  /**
-   * `switchLocalePath` middleware
-   *
-   * Allows modifying the resolved localized path before it is returned
-   */
+  /** Modifies the resolved localized path. Middleware for `switchLocalePath` */
   afterSwitchLocalePath: (path: string, locale: string) => string
-  /**
-   * `switchLocalePath` middleware
-   *
-   * Allows providing localized parameters during resolution of the current route
-   */
+  /** Provides localized dynamic parameters for the current route */
   getLocalizedDynamicParams: (locale: string) => Record<string, unknown> | undefined
-  /**
-   * Prepares a route object to be resolved as a localized route
-   */
+  /** Prepares a route object to be resolved as a localized route */
   resolveLocalizedRouteObject: (route: RouteLike, locale: string) => RouteLike
 }
 
+// RouteLike object has a path and no name.
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
+
 export function useComposableContext(): ComposableContext {
-  return useNuxtApp()._nuxtI18n
+  const context = useNuxtApp()._nuxtI18n
+  if (!context) {
+    throw new Error(
+      'i18n context is not initialized. Ensure the i18n plugin is installed and the composable is used within a Vue component or setup function.'
+    )
+  }
+  return context
 }
 
 type ComposableContextOptions = {
@@ -109,19 +101,16 @@ export function createComposableContext({
 
   const routeByPathResolver = createLocalizedRouteByPathResolver(runtimeI18n.strategy, router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n)
+  const formatTrailingSlash = trailingSlash ? withTrailingSlash : withoutTrailingSlash
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
     return getGenericRouteBaseName(route, routesNameSeparator)
   }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
-    if (!route.name) {
-      console.log('route name falsy on', route, locale)
-    }
-    // if name is falsy fallback to current route name
-    route.name ||= getRouteBaseName(router.currentRoute.value)
+    route.name ||= getRouteBaseName(router.currentRoute.value) // fallback to current route name
 
-    // route localization may be disabled, check if localized variant exists
+    // check if localized variant exists
     const localizedName = getLocalizedRouteName(route.name, locale)
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
@@ -130,17 +119,15 @@ export function createComposableContext({
     return route
   }
 
-  const formatTrailingSlash = trailingSlash ? withTrailingSlash : withoutTrailingSlash
   function resolveLocalizedRouteByPath(input: RouteLikeWithPath, locale: string) {
     const route = routeByPathResolver(input, locale) as RouteLike
+    const baseName = getRouteBaseName(route)
 
-    const resolvedName = getRouteBaseName(route)
-    if (resolvedName) {
-      route.name = getLocalizedRouteName(resolvedName, locale)
+    if (baseName) {
+      route.name = getLocalizedRouteName(baseName, locale)
       return route
     }
 
-    // if route has a path defined but no name, resolve full route using the path
     if (!differentDomains && prefixable(locale, defaultLocale, strategy)) {
       route.path = '/' + locale + route.path
     }

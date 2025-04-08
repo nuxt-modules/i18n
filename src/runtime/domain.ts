@@ -18,53 +18,54 @@ export function getHost() {
   return import.meta.server ? getRequestHost(useRequestEvent()!, { xForwardedHost: true }) : window.location.host
 }
 
+/**
+ * Filters locales by domain matching current host
+ */
+function filterMatchingDomainsLocales(locales: LocaleObject[], host: string) {
+  return locales.filter(locale => {
+    const normalized = locale.domain
+      ? hasProtocol(locale.domain)
+        ? locale.domain.replace(/(https?):\/\//, '')
+        : locale.domain
+      : ''
+    return normalized === host || (isArray(locale.domains) && locale.domains.includes(host))
+  })
+}
+
 export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   const host = getHost()
-
   const path = getCompatRoutePath(route)
-  const matchingLocales = locales.filter(locale => {
-    if (locale.domain) {
-      return (hasProtocol(locale.domain) ? locale.domain.replace(/(http|https):\/\//, '') : locale.domain) === host
-    }
-    return isArray(locale?.domains) ? locale.domains.includes(host) : false
-  })
 
   __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path })
 
-  if (matchingLocales.length === 0) {
-    return ''
-  }
-
-  if (matchingLocales.length === 1) {
-    __DEBUG__ && logger.log(`found one matching domain`, { host, matchedLocale: matchingLocales[0].code })
-    return matchingLocales[0]?.code ?? ''
+  const matches = filterMatchingDomainsLocales(locales, host)
+  if (matches.length <= 1 || strategy === 'no_prefix') {
+    __DEBUG__ && matches.length && logger.log(`found one matching domain`, { host, matchedLocale: matches[0].code })
+    return matches[0]?.code ?? ''
   }
 
   if (strategy === 'no_prefix') {
     console.warn(
-      formatMessage(
-        'Multiple matching domains found! This is not supported for no_prefix strategy in combination with differentDomains!'
-      )
+      formatMessage('Multiple matching domains found - this is not supported for no_prefix strategy + differentDomains')
     )
     // Just return the first matching domain locale
-    return matchingLocales[0]?.code ?? ''
+    return matches[0]?.code ?? ''
   }
 
   // get prefix from route
   if (route && path) {
     __DEBUG__ && logger.log(`check matched domain for locale match`, { path, host })
-
-    const matched = path.match(getRoutePathLocaleRegex(matchingLocales.map(l => l.code)))?.at(1)
+    const matched = path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
     if (matched) {
-      const matchingLocale = matchingLocales.find(l => l.code === matched)
-      __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchingLocale?.code })
-      return matchingLocale?.code ?? ''
+      const matchedLocale = matches.find(l => l.code === matched)
+      __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchedLocale?.code })
+      return matchedLocale?.code ?? ''
     }
   }
 
   // Fall back to default language on this domain - if set
-  const matchingLocale = matchingLocales.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)
+  const matchingLocale = matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)
   __DEBUG__ && logger.log(`no locale matched - using default for this domain`, { matchedLocale: matchingLocale?.code })
 
   return matchingLocale?.code ?? ''
