@@ -167,11 +167,9 @@ export function createComposableContext({
       return path
     },
     resolveLocalizedRouteObject: (route, locale) => {
-      if (isRouteLocationPathRaw(route)) {
-        return resolveLocalizedRouteByPath(route, locale)
-      }
-
-      return resolveLocalizedRouteByName(route, locale)
+      return isRouteLocationPathRaw(route)
+        ? resolveLocalizedRouteByPath(route, locale)
+        : resolveLocalizedRouteByName(route, locale)
     }
   }
 }
@@ -295,13 +293,9 @@ export function detectLocale(
 type DetectRedirectOptions = {
   to: CompatRoute
   from?: CompatRoute
-  /**
-   * The locale we want to navigate to
-   */
+  /** The locale we want to navigate to */
   locale: Locale
-  /**
-   * Locale detected from route
-   */
+  /** Locale detected from route */
   routeLocale: string
 }
 
@@ -316,24 +310,19 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
     return ''
   }
 
-  /**
-   * `$switchLocalePath` and `$localePath` functions internally use `$router.currentRoute`
-   * instead we use composable internals which allows us to pass the `to` route from navigation middleware.
-   */
-  const common = useComposableContext()
   const logger = /*#__PURE__*/ createLogger('detectRedirect')
-
   __DEBUG__ && logger.log({ to, from })
   __DEBUG__ && logger.log({ locale, routeLocale, inMiddleware })
 
-  let redirectPath = switchLocalePath(common, locale, to)
+  const ctx = useComposableContext()
+  let redirectPath = switchLocalePath(ctx, locale, to)
 
-  // if current route is a 404 we attempt to find a matching route using the full path
+  // current route is a 404, attempt to find a matching route using fullPath
   if (inMiddleware && !redirectPath) {
-    redirectPath = localePath(common, to.fullPath, locale)
+    redirectPath = localePath(ctx, to.fullPath, locale)
   }
 
-  // NOTE: #1889, #2226 if resolved route is the same as current route, skip redirection by returning empty string value
+  // resolved route is equal to current route, skip redirection (#1889, #2226)
   if (isEqual(redirectPath, to.fullPath) || (from && isEqual(redirectPath, from.fullPath))) {
     return ''
   }
