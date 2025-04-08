@@ -66,12 +66,10 @@ export function findBrowserLocale(locales: Locale[], browserLocales: readonly st
   return matchedLocales[0].code
 }
 
-function getRouteLocaleRegex(options: {
-  localeCodes: string[]
-  routesNameSeparator: string
-  defaultLocaleRouteNameSuffix: string
-}) {
-  const localesPattern = getLocalesPattern(options.localeCodes)
+function getRouteNameLocaleRegex(
+  options: { localeCodes: string[]; routesNameSeparator: string; defaultLocaleRouteNameSuffix: string },
+  localesPattern: string = getLocalesPattern(options.localeCodes)
+) {
   const defaultSuffixPattern = `(?:${options.routesNameSeparator}${options.defaultLocaleRouteNameSuffix})?`
   return new RegExp(`${options.routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
 }
@@ -130,10 +128,14 @@ export function getLocalizedDefaultRouteName(
 }
 
 /**
+ * Match locale code from route path (e.g. `/en/about` => `en`)
  * @internal
  */
-export function getLocalesRegex(localeCodes: string[]) {
-  return new RegExp(`^/${getLocalesPattern(localeCodes)}(?:/|$)`, 'i')
+export function getRoutePathLocaleRegex(
+  localeCodes: string[],
+  localesPattern: string = getLocalesPattern(localeCodes)
+) {
+  return new RegExp(`^/${localesPattern}(?:/|$)`, 'i')
 }
 
 function getLocalesPattern(localeCodes: string[]) {
@@ -148,8 +150,9 @@ export function createLocaleFromRouteGetter(options: {
   routesNameSeparator: string
   defaultLocaleRouteNameSuffix: string
 }) {
-  const regexpPath = getLocalesRegex(options.localeCodes)
-  const regexpName = getRouteLocaleRegex(options)
+  const localesPattern = getLocalesPattern(options.localeCodes)
+  const regexpName = getRouteNameLocaleRegex(options, localesPattern)
+  const regexpPath = getRoutePathLocaleRegex(options.localeCodes, localesPattern)
 
   function matchPath(path: string) {
     return path.match(regexpPath)?.[1] ?? ''

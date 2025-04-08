@@ -3,7 +3,7 @@ import { hasProtocol } from 'ufo'
 import { getRequestProtocol, getRequestHost } from 'h3'
 import { useRequestEvent, useRuntimeConfig, useRouter } from '#imports'
 import { normalizedLocales } from '#build/i18n.options.mjs'
-import { getLocalesRegex, getRouteName } from '#i18n-kit/routing'
+import { getRoutePathLocaleRegex, getRouteName } from '#i18n-kit/routing'
 import { createLogger } from '#nuxt-i18n/logger'
 import { formatMessage } from './utils'
 
@@ -55,7 +55,7 @@ export function getLocaleDomain(locales: LocaleObject[], strategy: string, route
   if (route && path) {
     __DEBUG__ && logger.log(`check matched domain for locale match`, { path, host })
 
-    const matched = path.match(getLocalesRegex(matchingLocales.map(l => l.code)))?.at(1)
+    const matched = path.match(getRoutePathLocaleRegex(matchingLocales.map(l => l.code)))?.at(1)
     if (matched) {
       const matchingLocale = matchingLocales.find(l => l.code === matched)
       __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchingLocale?.code })

@@ -1,7 +1,7 @@
 import { isString } from '@intlify/shared'
 import { useCookie, useNuxtApp, useRequestHeader, useRuntimeConfig } from '#imports'
 import { DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { findBrowserLocale, getLocalesRegex } from '#i18n-kit/routing'
+import { findBrowserLocale, getRoutePathLocaleRegex } from '#i18n-kit/routing'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
@@ -95,7 +95,7 @@ export function getLocaleCookie(
   cookieRef.value = undefined
 }
 
-const LOCALE_PATH_RE = getLocalesRegex(localeCodes)
+const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
 
 type DetectBrowserLanguageResult = {
   locale: string

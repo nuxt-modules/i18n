@@ -1,7 +1,7 @@
 import { computed, getCurrentScope, onScopeDispose, ref, useHead, watch, type Ref } from '#imports'
 import { assign } from '@intlify/shared'
 
-import { localeHead as _localeHead, type HeadOptions } from '#i18n-kit/head'
+import { localeHead as _localeHead, type HeadContext } from '#i18n-kit/head'
 import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
@@ -9,37 +9,34 @@ import type { ComposableContext } from '../utils'
 import type { I18nRouteMeta } from '../types'
 import { localeRoute, switchLocalePath } from './routing'
 
-function createHeadOptions(
+function createHeadContext(
   ctx: ComposableContext,
-  options: Required<I18nHeadOptions>,
+  config: Required<I18nHeadOptions>,
   locale = ctx.getLocale(),
   locales = ctx.getLocales(),
   baseUrl = ctx.getBaseUrl(),
   routingOptions = ctx.getRoutingOptions()
-): HeadOptions {
+): HeadContext {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
-  const canonicalQueries = (typeof options.seo === 'object' && options.seo?.canonicalQueries) || []
+  const canonicalQueries = (typeof config.seo === 'object' && config.seo?.canonicalQueries) || []
 
   if (!baseUrl) {
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
   }
 
   return {
-    dir: options.dir,
-    lang: options.lang,
-    key: options.key,
-    seo: options.seo,
+    ...config,
     locales,
-    getCurrentLanguage: () => currentLocale.language,
-    getCurrentDirection: () => currentLocale.dir || routingOptions.defaultDirection,
     baseUrl,
+    canonicalQueries,
     hreflangLinks: routingOptions.hreflangLinks,
     defaultLocale: routingOptions.defaultLocale,
     strictCanonicals: routingOptions.strictCanonicals,
-    canonicalQueries,
-    getLocaleRoute: route => localeRoute(ctx, route),
-    getCurrentRoute: () => ctx.router.currentRoute.value,
     getRouteBaseName: ctx.getRouteBaseName,
+    getCurrentRoute: () => ctx.router.currentRoute.value,
+    getCurrentLanguage: () => currentLocale.language,
+    getCurrentDirection: () => currentLocale.dir || routingOptions.defaultDirection,
+    getLocaleRoute: route => localeRoute(ctx, route),
     getLocalizedRoute: (locale, route) => switchLocalePath(ctx, locale, route),
     getRouteWithoutQuery: () =>
       assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })
@@ -60,16 +57,16 @@ export function localeHead(
   ctx: ComposableContext,
   { dir = true, lang = true, seo = true, key = 'hid' }: I18nHeadOptions
 ): I18nHeadMetaInfo {
-  return _localeHead(createHeadOptions(ctx, { dir, lang, seo, key }))
+  return _localeHead(createHeadContext(ctx, { dir, lang, seo, key }))
 }
 
-export function _useLocaleHead(common: ComposableContext, options: Required<I18nHeadOptions>): Ref<I18nHeadMetaInfo> {
-  const metaObject = ref(_localeHead(createHeadOptions(common, options)))
+export function _useLocaleHead(ctx: ComposableContext, options: Required<I18nHeadOptions>): Ref<I18nHeadMetaInfo> {
+  const metaObject = ref(_localeHead(createHeadContext(ctx, options)))
 
   if (import.meta.client) {
     const unsub = watch(
-      [() => common.router.currentRoute.value, () => common.getLocale()],
-      () => (metaObject.value = _localeHead(createHeadOptions(common, options)))
+      [() => ctx.router.currentRoute.value, () => ctx.getLocale()],
+      () => (metaObject.value = _localeHead(createHeadContext(ctx, options)))
     )
     if (getCurrentScope()) {
       onScopeDispose(unsub)
@@ -114,7 +111,7 @@ export function _useSetI18nParams(
   return function (params: I18nRouteMeta) {
     i18nParams.value = { ...params }
 
-    const { link, meta } = _localeHead(createHeadOptions(ctx, ctxOptions))
+    const { link, meta } = _localeHead(createHeadContext(ctx, ctxOptions))
     head?.patch({ link, meta })
   }
 }

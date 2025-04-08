@@ -22,7 +22,8 @@ export interface I18nHeadMetaInfo {
 
 type SeoAttributesOptions = {
   /**
-   * An array of strings corresponding to query params you would like to include in your canonical URL.
+   * An array of strings corresponding to query params
+   * to include in your canonical URL.
    * @default []
    */
   canonicalQueries?: string[]
@@ -31,19 +32,19 @@ type SeoAttributesOptions = {
 /**
  * @internal
  */
-export type HeadOptions = {
+export type HeadContext = {
   key: string
   dir: boolean
   lang: boolean
   seo: boolean | SeoAttributesOptions | undefined
-  getCurrentLanguage: () => string | undefined
-  getCurrentDirection: () => string
   baseUrl: string
   locales: HeadLocale[]
   defaultLocale: string | undefined
   hreflangLinks: boolean
   strictCanonicals: boolean
   canonicalQueries: string[]
+  getCurrentLanguage: () => string | undefined
+  getCurrentDirection: () => string
   getRouteBaseName: (route: RouteLocationResolvedGeneric | RouteLocationNormalizedLoadedGeneric) => string | undefined
   getLocaleRoute: (route: RouteLocationResolvedGeneric) => RouteLocationResolvedGeneric | undefined
   getCurrentRoute: () => RouteLocationNormalizedLoadedGeneric
@@ -55,7 +56,7 @@ export type HeadOptions = {
  * @internal
  */
 export function localeHead(
-  options: HeadOptions,
+  options: HeadContext,
   currentLanguage = options.getCurrentLanguage(),
   currentDirection = options.getCurrentDirection()
 ): I18nHeadMetaInfo {
@@ -79,13 +80,13 @@ export function localeHead(
     // prettier-ignore
     metaObject.link = metaObject.link.concat(
       getHreflangLinks(options),
-      getCanonicalLink(options) ?? []
+      getCanonicalLink(options)
     )
 
     // prettier-ignore
     metaObject.meta = metaObject.meta.concat(
-      getOgUrl(options) ?? [],
-      getCurrentOgLocale(options) ?? [],
+      getOgUrl(options),
+      getCurrentOgLocale(options),
       getAlternateOgLocales(options)
     )
   }
@@ -93,14 +94,13 @@ export function localeHead(
   return metaObject
 }
 
-function getHreflangLinks(
-  options: HeadOptions,
-  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined
-) {
-  if (!options.hreflangLinks) return []
-
+/**
+ * Create a map of locales for hreflang links
+ * to avoid duplicates and handle catchall locales
+ */
+function createLocaleMap(locales: HeadLocale[]) {
   const localeMap = new Map<string, HeadLocale>()
-  for (const locale of options.locales) {
+  for (const locale of locales) {
     if (!locale.language) {
       console.warn('Locale `language` ISO code is required to generate alternate link')
       continue
@@ -113,27 +113,45 @@ function getHreflangLinks(
 
     localeMap.set(locale.language, locale)
   }
+  return localeMap
+}
+
+function getHreflangLinks(options: HeadContext) {
+  if (!options.hreflangLinks) return []
 
   const links: MetaAttrs[] = []
-  for (const [language, mapLocale] of localeMap.entries()) {
-    const localePath = options.getLocalizedRoute(mapLocale.code, routeWithoutQuery)
-    if (!localePath) continue
+  const localeMap = createLocaleMap(options.locales)
+  for (const [language, locale] of localeMap.entries()) {
+    const link = getHreflangLink(language, locale, options)
+    if (!link) continue
 
-    const href = withQuery(
-      // localized paths with domain already contain baseUrl
-      hasProtocol(localePath) ? localePath : joinURL(options.baseUrl, localePath),
-      options.strictCanonicals ? getCanonicalQueryParams(options) : {}
-    )
-
-    links.push({ [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language })
-    if (options.defaultLocale && options.defaultLocale === mapLocale.code) {
-      links.unshift({ [options.key]: 'i18n-xd', rel: 'alternate', href, hreflang: 'x-default' })
+    links.push(link)
+    if (options.defaultLocale && options.defaultLocale === locale.code) {
+      links.unshift({ [options.key]: 'i18n-xd', rel: 'alternate', href: link.href, hreflang: 'x-default' })
     }
   }
+
   return links
 }
 
-function getCanonicalUrl(options: HeadOptions, route = options.getCurrentRoute()) {
+function getHreflangLink(
+  language: string,
+  locale: HeadLocale,
+  options: HeadContext,
+  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined
+): MetaAttrs | undefined {
+  const localePath = options.getLocalizedRoute(locale.code, routeWithoutQuery)
+  if (!localePath) return undefined
+
+  const href = withQuery(
+    hasProtocol(localePath) ? localePath : joinURL(options.baseUrl, localePath),
+    options.strictCanonicals ? getCanonicalQueryParams(options) : {}
+  )
+
+  return { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
+}
+
+function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()) {
   const currentRoute = options.getLocaleRoute(
     Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) })
   )
@@ -142,13 +160,12 @@ function getCanonicalUrl(options: HeadOptions, route = options.getCurrentRoute()
   return withQuery(joinURL(options.baseUrl, currentRoute.path), getCanonicalQueryParams(options))
 }
 
-function getCanonicalLink(options: HeadOptions, href = getCanonicalUrl(options)): MetaAttrs | undefined {
-  if (href) {
-    return { [options.key]: 'i18n-can', rel: 'canonical', href }
-  }
+function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
+  if (!href) return []
+  return [{ [options.key]: 'i18n-can', rel: 'canonical', href }]
 }
 
-function getCanonicalQueryParams(options: HeadOptions, route = options.getCurrentRoute()) {
+function getCanonicalQueryParams(options: HeadContext, route = options.getCurrentRoute()) {
   const currentRoute = options.getLocaleRoute(
     Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) })
   )
@@ -165,21 +182,17 @@ function getCanonicalQueryParams(options: HeadOptions, route = options.getCurren
   return params
 }
 
-function getOgUrl(options: HeadOptions, href = getCanonicalUrl(options)): MetaAttrs | undefined {
-  if (href) {
-    return { [options.key]: 'i18n-og-url', property: 'og:url', content: href }
-  }
+function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
+  if (!href) return []
+  return [{ [options.key]: 'i18n-og-url', property: 'og:url', content: href }]
 }
 
-function getCurrentOgLocale(
-  options: HeadOptions,
-  currentLanguage = options.getCurrentLanguage()
-): MetaAttrs | undefined {
-  if (!currentLanguage) return
-  return { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }
+function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
+  if (!currentLanguage) return []
+  return [{ [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }]
 }
 
-function getAlternateOgLocales(options: HeadOptions, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
+function getAlternateOgLocales(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
   const alternateLocales = options.locales.filter(locale => locale.language && locale.language !== currentLanguage)
 
   return alternateLocales.map(locale => ({
