@@ -3,6 +3,7 @@ import type { NuxtPage } from '@nuxt/schema'
 
 import type { MarkRequired } from 'ts-essentials'
 import type { LocaleObject } from '../../src/types'
+import type { AnalyzedNuxtPageMeta, NuxtPageAnalyzeContext } from '../../src/pages'
 
 export function getNuxtOptions(
   pages: Required<NuxtI18nOptions>['pages'],
@@ -36,4 +37,16 @@ export function stripFilePropertyFromPages(pages: NuxtPage[]) {
     }
     return page
   })
+}
+
+export function createPageAnalyzeContext(
+  srcDir: string = '/path/to/nuxt-app',
+  pagesDir: string = 'pages'
+): NuxtPageAnalyzeContext {
+  return {
+    stack: [],
+    srcDir,
+    pagesDir,
+    pages: new Map<string, AnalyzedNuxtPageMeta>()
+  }
 }

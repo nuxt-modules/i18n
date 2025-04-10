@@ -68,7 +68,11 @@ export default defineNuxtPlugin({
     const i18n = createI18n(vueI18nOptions)
 
     nuxt._vueI18n = i18n
-    i18n.__localeFromRoute = createLocaleFromRouteGetter({ ...runtimeI18n, localeCodes })
+    i18n.__localeFromRoute = createLocaleFromRouteGetter({
+      separator: runtimeI18n.routesNameSeparator,
+      defaultSuffix: runtimeI18n.defaultLocaleRouteNameSuffix,
+      localeCodes
+    })
     i18n.__firstAccess = true
     i18n.__setLocale = (locale: string) => {
       const i = getI18nTarget(i18n)

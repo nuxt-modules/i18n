@@ -1,8 +1,8 @@
 import { test, expect } from 'vitest'
 import { analyzeNuxtPages } from '../../src/pages'
+import { createPageAnalyzeContext } from './utils'
 
 import type { NuxtPage } from '@nuxt/schema'
-import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../src/pages'
 
 test('analyzeNuxtPages', () => {
   const pages: NuxtPage[] = [
@@ -101,14 +101,7 @@ test('analyzeNuxtPages', () => {
     }
   ]
 
-  const srcDir = '/path/to/nuxt-app'
-  const pagesDir = 'pages'
-  const ctx: NuxtPageAnalyzeContext = {
-    stack: [],
-    srcDir,
-    pagesDir,
-    pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
-  }
+  const ctx = createPageAnalyzeContext()
   analyzeNuxtPages(ctx, pages)
 
   expect(ctx.stack.length).toBe(0)
@@ -153,11 +146,6 @@ test('analyzeNuxtPages', () => {
         "inRoot": true,
         "name": "foo",
         "path": "foo",
-      },
-      {
-        "inRoot": false,
-        "name": "foo-bar",
-        "path": "foo/bar",
       },
       {
         "inRoot": false,

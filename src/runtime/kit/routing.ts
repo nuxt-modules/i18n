@@ -66,19 +66,27 @@ export function findBrowserLocale(locales: Locale[], browserLocales: readonly st
   return matchedLocales[0].code
 }
 
-function getRouteNameLocaleRegex(
-  options: { localeCodes: string[]; routesNameSeparator: string; defaultLocaleRouteNameSuffix: string },
+export function getRouteNameLocaleRegex(
+  options: { localeCodes: string[]; separator: string; defaultSuffix: string },
   localesPattern: string = getLocalesPattern(options.localeCodes)
 ) {
-  const defaultSuffixPattern = `(?:${options.routesNameSeparator}${options.defaultLocaleRouteNameSuffix})?`
-  return new RegExp(`${options.routesNameSeparator}${localesPattern}${defaultSuffixPattern}$`, 'i')
+  const defaultSuffixPattern = `(?:${options.separator}${options.defaultSuffix})?`
+  return new RegExp(`${options.separator}${localesPattern}${defaultSuffixPattern}$`, 'i')
+}
+
+/**
+ * Convenience function to return the first match of the regex or empty string
+ * @internal
+ */
+export function createNameLocaleRegexMatcher(re: RegExp) {
+  return (val: string) => val.match(re)?.[1] ?? ''
 }
 
 /**
  * Normalizes {@link RouteName} to string
  * @internal
  */
-export function getRouteName(routeName: RouteName) {
+export function normalizeRouteName(routeName: RouteName) {
   if (typeof routeName === 'string') return routeName
   if (routeName != null) return routeName.toString()
   return ''
@@ -88,43 +96,30 @@ export function getRouteName(routeName: RouteName) {
  * Normalizes {@link RouteName} or {@link RouteObject} to string
  * @internal
  */
-export function getGenericRouteName(route: RouteName | RouteObject) {
-  if (typeof route === 'object') return getRouteName(route?.name)
-  return getRouteName(route)
+export function getRouteName(route: RouteName | RouteObject) {
+  if (typeof route === 'object') return normalizeRouteName(route?.name)
+  return normalizeRouteName(route)
 }
 
 /**
  * Extract route name without localization from {@link RouteName} or {@link RouteObject}
  * @internal
  */
-export function getGenericRouteBaseName(route: RouteName | RouteObject, separator: string) {
-  return getGenericRouteName(route).split(separator)[0]
+export function getRouteBaseName(route: RouteName | RouteObject, separator: string) {
+  return getRouteName(route).split(separator)[0]
 }
 
-/**
- * Add locale suffix to route name
- * @internal
- */
-export function getLocalizedRouteName(routeName: string, locale: string, separator: string) {
-  return routeName + separator + locale
-}
-
-/**
- * Add locale and default suffix to route name
- * @internal
- */
-export function getLocalizedDefaultRouteName(
+export function getLocalizedRouteName(
   routeName: string,
   locale: string,
-  separator: string,
-  defaultLocale: string,
-  defaultSuffix: string
+  isDefault: boolean,
+  separator: string = '___',
+  defaultSuffix: string = 'default'
 ) {
-  const localizedName = getLocalizedRouteName(routeName, locale, separator)
-  if (locale === defaultLocale) {
-    return localizedName + separator + defaultSuffix
+  if (isDefault) {
+    return routeName + separator + locale + separator + defaultSuffix
   }
-  return localizedName
+  return routeName + separator + locale
 }
 
 /**
@@ -143,23 +138,20 @@ function getLocalesPattern(localeCodes: string[]) {
 }
 
 /**
+ * NOTE: this likely needs to be implemented on the utility function consumer side
  * @internal
  */
 export function createLocaleFromRouteGetter(options: {
   localeCodes: string[]
-  routesNameSeparator: string
-  defaultLocaleRouteNameSuffix: string
+  separator: string
+  defaultSuffix: string
 }) {
   const localesPattern = getLocalesPattern(options.localeCodes)
   const regexpName = getRouteNameLocaleRegex(options, localesPattern)
   const regexpPath = getRoutePathLocaleRegex(options.localeCodes, localesPattern)
 
-  function matchPath(path: string) {
-    return path.match(regexpPath)?.[1] ?? ''
-  }
-  function matchName(name: string) {
-    return name.match(regexpName)?.[1] ?? ''
-  }
+  const matchPath = createNameLocaleRegexMatcher(regexpPath)
+  const matchName = createNameLocaleRegexMatcher(regexpName)
 
   /**
    * extract locale code from route name or path
@@ -175,7 +167,7 @@ export function createLocaleFromRouteGetter(options: {
 
     // extract from route name
     if (route?.name) {
-      return matchName(getRouteName(route.name))
+      return matchName(normalizeRouteName(route.name))
     }
 
     // extract from path

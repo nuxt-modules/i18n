@@ -5,7 +5,7 @@ import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { formatMessage } from './utils'
+import { formatMessage, getNormalizedLocales } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes, type ComputedRouteOptions, type RouteOptionsResolver } from './routing'
 import { mergeLayerPages } from './layers'
@@ -38,7 +38,7 @@ export type NuxtPageAnalyzeContext = {
   stack: string[]
   srcDir: string
   pagesDir: string
-  pages: Map<NuxtPage, AnalyzedNuxtPageMeta>
+  pages: Map<string, AnalyzedNuxtPageMeta>
 }
 
 export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContext, nuxt: Nuxt) {
@@ -64,7 +64,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
         stack: [],
         srcDir,
         pagesDir,
-        pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
+        pages: new Map<string, AnalyzedNuxtPageMeta>()
       }
 
       analyzeNuxtPages(ctx, pages)
@@ -77,7 +77,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
 
       const localizedPages = localizeRoutes(pages, {
         ...options,
-        localeCodes,
+        locales: getNormalizedLocales(options.locales),
         includeUnprefixedFallback,
         optionsResolver: getRouteOptionsResolver(ctx, options)
       })
@@ -233,7 +233,7 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages?: NuxtPage[]
     const filePath = splits.at(1)
     if (filePath == null) continue
 
-    ctx.pages.set(page, {
+    ctx.pages.set(page.file, {
       path: analyzePagePath(filePath, ctx.stack.length),
       // if route has an index child the parent will not have a name
       name: page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name,
@@ -288,7 +288,7 @@ function getRouteOptionsFromPages(
   }
 
   // get `AnalyzedNuxtPageMeta` to use Vue Router path mapping
-  const pageMeta = ctx.pages.get(route as unknown as NuxtPage)
+  const pageMeta = ctx.pages.get(route.file!)
 
   // skip if no `AnalyzedNuxtPageMeta`
   if (pageMeta == null) {

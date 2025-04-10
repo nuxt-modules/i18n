@@ -1,31 +1,31 @@
 import { describe, test, expect } from 'vitest'
 import {
-  ComposableContext,
+  type ComposableContext,
   createLocaleRouteNameGetter,
   createLocalizedRouteByPathResolver,
   isRouteLocationPathRaw,
   prefixable
 } from '../src/runtime/utils'
-import { getGenericRouteBaseName } from '#i18n-kit/routing'
-import { createMemoryHistory, createRouter, RouteLocationRaw } from 'vue-router'
-import { RouteRecordNameGeneric, type Router } from 'vue-router'
-import { RouteLocationGenericPath } from '../src/runtime/types'
+import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
+import { createMemoryHistory, createRouter, type RouteLocationRaw } from 'vue-router'
+import { type RouteRecordNameGeneric, type Router } from 'vue-router'
+import { type RouteLocationGenericPath } from '../src/runtime/types'
 import {
   localePath as _localePath,
   switchLocalePath as _switchLocalePath,
   localeRoute as _localeRoute,
-  RouteLike,
-  RouteLikeWithName,
-  RouteLikeWithPath
+  type RouteLike,
+  type RouteLikeWithName,
+  type RouteLikeWithPath
 } from '../src/runtime/routing/routing'
 import { withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import { reactive, ref, unref } from 'vue'
 import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
-import { NuxtPage } from 'nuxt/schema'
 import { localizeRoutes } from '../src/routing'
 import { getNormalizedLocales } from '../src/utils'
-import { Strategies } from '#internal-i18n-types'
+import type { NuxtPage } from 'nuxt/schema'
+import type { Strategies } from '#internal-i18n-types'
 
 const routingOptions = reactive({
   strategy: 'prefix_and_default' as Strategies,
@@ -58,7 +58,7 @@ function initComposableOptions(router: Router): ComposableContext {
     createLocalizedRouteByPathResolver(strategy, router)(input, locale)
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
-    return getGenericRouteBaseName(route, routesNameSeparator)
+    return _getRouteBaseName(route, routesNameSeparator)
   }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
@@ -163,17 +163,13 @@ function localizeRoutesWithStrategy(routes: NuxtPage[], strategy?: Strategies) {
   if (strategy) {
     routingOptions.strategy = strategy
   }
-  return localizeRoutes(routes, {
-    ...routingOptions,
-    locales: unref(i18nMock.locales),
-    localeCodes: unref(i18nMock.locales).map(x => x.code)
-  })
+  return localizeRoutes(routes, { ...routingOptions, locales: unref(i18nMock.locales) })
 }
 
 describe('testing', () => {
   test('switching locale path', async () => {
     const routes = await loadFixtureAndRoutes()
-    const localized = localizeRoutesWithStrategy(routes)
+    const localized = localizeRoutesWithStrategy(routes, 'prefix_and_default')
     const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
 
     const options = initComposableOptions(router)

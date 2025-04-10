@@ -14,12 +14,7 @@ import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
-import {
-  getRouteName,
-  getLocalizedRouteName,
-  getLocalizedDefaultRouteName,
-  getGenericRouteBaseName
-} from '#i18n-kit/routing'
+import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
   localePath,
   switchLocalePath,
@@ -104,7 +99,7 @@ export function createComposableContext({
   const formatTrailingSlash = trailingSlash ? withTrailingSlash : withoutTrailingSlash
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
-    return getGenericRouteBaseName(route, routesNameSeparator)
+    return _getRouteBaseName(route, routesNameSeparator)
   }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
@@ -480,23 +475,19 @@ export function createLocaleRouteNameGetter({
 }): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
   if (strategy === 'no_prefix' && !differentDomains) {
-    return routeName => getRouteName(routeName)
+    return routeName => normalizeRouteName(routeName)
   }
+
+  const localizeRouteName = (name: string, locale: string, isDefault: boolean) =>
+    getLocalizedRouteName(name, locale, isDefault, routesNameSeparator, defaultLocaleRouteNameSuffix)
 
   // default locale routes have default suffix
   if (strategy === 'prefix_and_default') {
-    return (name, locale) =>
-      getLocalizedDefaultRouteName(
-        getRouteName(name),
-        locale,
-        routesNameSeparator,
-        defaultLocale,
-        defaultLocaleRouteNameSuffix
-      )
+    return (name, locale) => localizeRouteName(normalizeRouteName(name), locale, locale === defaultLocale)
   }
 
   // routes are localized
-  return (name, locale) => getLocalizedRouteName(getRouteName(name), locale, routesNameSeparator)
+  return (name, locale) => localizeRouteName(normalizeRouteName(name), locale, false)
 }
 
 /**
