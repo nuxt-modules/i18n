@@ -130,6 +130,186 @@ exports[`localizeRoutes > strategy: "prefix" > should be localized routing 1`] =
 ]
 `;
 
+exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > should be localized routing 1`] = `
+[
+  {
+    "children": [],
+    "name": "user-profile___ja",
+    "path": "/ja/user/:id/profile",
+  },
+  {
+    "children": [],
+    "name": "user-posts___ja",
+    "path": "/ja/user/:id/posts",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___ja",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___ja",
+        "path": "posts",
+      },
+    ],
+    "name": "user___ja",
+    "path": "/ja/user/:id",
+  },
+  {
+    "children": [],
+    "name": "about___ja",
+    "path": "/ja/about",
+  },
+  {
+    "children": [],
+    "name": "user-profile___en",
+    "path": "/user/:id/profile",
+  },
+  {
+    "children": [],
+    "name": "user-posts___en",
+    "path": "/user/:id/posts",
+  },
+  {
+    "children": [],
+    "name": "user-profile",
+    "path": "/user/:id/profile",
+  },
+  {
+    "children": [],
+    "name": "user-posts",
+    "path": "/user/:id/posts",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___en",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___en",
+        "path": "posts",
+      },
+    ],
+    "name": "user___en",
+    "path": "/user/:id",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts",
+        "path": "posts",
+      },
+    ],
+    "name": "user___ja___default",
+    "path": "/user/:id",
+  },
+  {
+    "children": [],
+    "name": "home___en",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "name": "home___ja___default",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "name": "home___ja",
+    "path": "/ja",
+  },
+  {
+    "children": [],
+    "name": "about___en",
+    "path": "/about",
+  },
+  {
+    "children": [],
+    "name": "about___ja___default",
+    "path": "/about",
+  },
+]
+`;
+
+exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > should be localized routing 2`] = `
+[
+  {
+    "children": [],
+    "name": "user-profile___ja",
+    "path": "/ja/user/:id/profile",
+  },
+  {
+    "children": [],
+    "name": "user-posts___ja",
+    "path": "/ja/user/:id/posts",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___ja",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___ja",
+        "path": "posts",
+      },
+    ],
+    "name": "user___ja",
+    "path": "/ja/user/:id",
+  },
+  {
+    "children": [],
+    "name": "about___ja",
+    "path": "/ja/about",
+  },
+  {
+    "children": [],
+    "name": "user-profile___en",
+    "path": "/user/:id/profile",
+  },
+  {
+    "children": [],
+    "name": "user-posts___en",
+    "path": "/user/:id/posts",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___en",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___en",
+        "path": "posts",
+      },
+    ],
+    "name": "user___en",
+    "path": "/user/:id",
+  },
+  {
+    "children": [],
+    "name": "home___ja",
+    "path": "/ja",
+  },
+  {
+    "children": [],
+    "name": "home___en",
+    "path": "/",
+  },
+  {
+    "children": [],
+    "name": "about___en",
+    "path": "/about",
+  },
+]
+`;
+
 exports[`localizeRoutes > strategy: "prefix_and_default" > should be localized routing 1`] = `
 [
   {

@@ -1,24 +1,13 @@
 import { isString } from '@intlify/shared'
 import { useCookie, useNuxtApp, useRequestHeader, useRuntimeConfig } from '#imports'
 import { DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { findBrowserLocale, regexpPath } from './routing/utils'
-import { initCommonComposableOptions } from './utils'
+import { findBrowserLocale, getRoutePathLocaleRegex } from '#i18n-kit/routing'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CookieOptions, CookieRef } from 'nuxt/app'
 import type { CompatRoute } from './types'
-import type { CommonComposableOptions } from './utils'
-
-type TailParameters<T> = T extends (first: CommonComposableOptions, ...rest: infer R) => unknown ? R : never
-
-export function wrapComposable<F extends (common: CommonComposableOptions, ...args: never[]) => ReturnType<F>>(
-  fn: F,
-  common = initCommonComposableOptions()
-) {
-  return (...args: TailParameters<F>) => fn(common, ...args)
-}
 
 /**
  * Parses locales provided from browser through `accept-language` header.
@@ -35,12 +24,21 @@ function parseAcceptLanguage(input: string = ''): string[] {
   return input.split(',').map(tag => tag.split(';')[0])
 }
 
+export function getCompatRoutePath(route: string | CompatRoute) {
+  return isString(route) ? route : route.path
+}
+
 export function getBrowserLocale(): string | undefined {
   // get browser language either from navigator if running on client side, or from the headers
   const browserLocales = import.meta.client
     ? navigator.languages
     : parseAcceptLanguage(useRequestHeader('accept-language'))
-  return findBrowserLocale(normalizedLocales, browserLocales) || undefined
+  return (
+    findBrowserLocale(
+      normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code })),
+      browserLocales
+    ) || undefined
+  )
 }
 
 export function createI18nCookie() {
@@ -97,6 +95,8 @@ export function getLocaleCookie(
   cookieRef.value = undefined
 }
 
+const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
+
 type DetectBrowserLanguageResult = {
   locale: string
   from?: 'cookie' | 'navigator_or_header' | 'fallback'
@@ -108,7 +108,6 @@ type DetectBrowserLanguageResult = {
     | 'detect_ignore_on_ssg'
     | 'disabled'
 }
-
 export function detectBrowserLanguage(
   route: string | CompatRoute,
   localeCookie: string | undefined,
@@ -138,10 +137,10 @@ export function detectBrowserLanguage(
     return { locale: strategy === 'no_prefix' ? locale : '', error: 'first_access_only' }
   }
 
-  __DEBUG__ && logger.log({ locale, path: isString(route) ? route : route.path, strategy, ..._detect })
+  __DEBUG__ && logger.log({ locale, path: getCompatRoutePath(route), strategy, ..._detect })
 
   if (strategy !== 'no_prefix') {
-    const path = isString(route) ? route : route.path
+    const path = getCompatRoutePath(route)
 
     // detection only on root
     if (_detect.redirectOn === 'root' && path !== '/') {
@@ -149,7 +148,7 @@ export function detectBrowserLanguage(
     }
 
     // detection only on unprefixed route
-    if (_detect.redirectOn === 'no prefix' && !_detect.alwaysRedirect && path.match(regexpPath)) {
+    if (_detect.redirectOn === 'no prefix' && !_detect.alwaysRedirect && path.match(LOCALE_PATH_RE)) {
       return { locale: '', error: 'not_redirect_on_no_prefix' }
     }
   }

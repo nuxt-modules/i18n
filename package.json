@@ -40,6 +40,8 @@
   },
   "imports": {
     "#i18n": "./dist/runtime/composables/index.js",
+    "#i18n-kit/head": "./dist/runtime/kit/head.js",
+    "#i18n-kit/routing": "./dist/runtime/kit/routing.js",
     "#internal-i18n-types": "./dist/types.d.mts"
   },
   "main": "./dist/module.mjs",

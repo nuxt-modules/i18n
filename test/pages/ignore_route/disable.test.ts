@@ -4,12 +4,9 @@ import { fileURLToPath } from 'node:url'
 import { vi, describe, test, expect } from 'vitest'
 import { localizeRoutes } from '../../../src/routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../../src/pages'
-import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
+import { createPageAnalyzeContext, getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 
-import type { NuxtPage } from '@nuxt/schema'
 import type { NuxtI18nOptions } from '../../../src/types'
-import type { NuxtPageAnalyzeContext, AnalyzedNuxtPageMeta } from '../../../src/pages'
-import { getNormalizedLocales } from '../../../src/utils'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -118,21 +115,11 @@ describe.each([
   test(_case, () => {
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
-    const srcDir = '/path/to/nuxt-app'
-    const pagesDir = 'pages'
-    const ctx: NuxtPageAnalyzeContext = {
-      stack: [],
-      srcDir,
-      pagesDir,
-      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
-    }
-
+    const ctx = createPageAnalyzeContext()
     analyzeNuxtPages(ctx, pages)
-
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
-      localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
     expect(localizedPages).toMatchSnapshot()
@@ -153,21 +140,11 @@ describe.each([
   }
 ])('Page components', ({ case: _case, options, pages }) => {
   test(_case, () => {
-    const srcDir = '/path/to/nuxt-app'
-    const pagesDir = 'pages'
-    const ctx: NuxtPageAnalyzeContext = {
-      stack: [],
-      srcDir,
-      pagesDir,
-      pages: new Map<NuxtPage, AnalyzedNuxtPageMeta>()
-    }
-
+    const ctx = createPageAnalyzeContext()
     analyzeNuxtPages(ctx, pages)
-
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
-      localeCodes: getNormalizedLocales(options.locales).map(x => x.code),
       optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
