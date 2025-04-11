@@ -122,7 +122,7 @@ export function localizeSingleRoute(
   return resultRoutes
 }
 
-export type LocalizerData = {
+type LocalizerData = {
   route: LocalizableRoute
   prefixed: string
   unprefixed: string
@@ -148,7 +148,7 @@ export type RouteContext = {
   localizers: { enabled: (data: LocalizerData) => boolean; localizer: LocalizerFn }[]
 }
 
-export type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]
+type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]
 
 function createDefaultOptionsResolver(opts: { optionsResolver?: RouteOptionsResolver }): RouteOptionsResolver {
   return (route, locales) => {
