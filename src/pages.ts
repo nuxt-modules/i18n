@@ -7,7 +7,7 @@ import { walk } from 'estree-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { formatMessage, getNormalizedLocales } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
-import { localizeRoutes, type ComputedRouteOptions, type RouteOptionsResolver } from './routing'
+import { localizeRoutes } from './routing'
 import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath, dirname } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
@@ -19,6 +19,7 @@ import type { Node, ObjectExpression, ArrayExpression, Expression, PrivateName }
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-vue-router'
 import type { NuxtI18nOptions, CustomRoutePages } from './types'
 import type { I18nNuxtContext } from './context'
+import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
 
@@ -39,6 +40,11 @@ export type NuxtPageAnalyzeContext = {
   srcDir: string
   pagesDir: string
   pages: Map<string, AnalyzedNuxtPageMeta>
+}
+
+type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
+  redirect?: (Omit<NarrowedNuxtPage, 'name'> & { name?: string }) | string
+  children?: NarrowedNuxtPage[]
 }
 
 export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContext, nuxt: Nuxt) {
@@ -75,7 +81,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
         await typedRouter.createContext(pages).scanPages(false)
       }
 
-      const localizedPages = localizeRoutes(pages, {
+      const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
         ...options,
         locales: getNormalizedLocales(options.locales),
         includeUnprefixedFallback,
@@ -85,7 +91,7 @@ export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContex
       // keep root when using prefixed routing without prerendering
       const indexPage = pages.find(x => x.path === '/')
       if (!nuxt.options._generate && options.strategy === 'prefix' && indexPage != null) {
-        localizedPages.unshift(indexPage)
+        localizedPages.unshift(indexPage as NarrowedNuxtPage)
       }
 
       // do not mutate pages if localization is skipped

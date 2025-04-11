@@ -7,6 +7,7 @@ import { getNormalizedLocales } from '../../src/utils'
 import { setupMultiDomainLocales } from '../../src/runtime/domain'
 import type { NuxtPage } from '@nuxt/schema'
 import type { LocaleObject } from '../../src/types'
+import { LocalizableRoute } from '../../src/kit/gen'
 
 const nuxtOptions = getNuxtOptions({})
 nuxtOptions.locales = nuxtOptions.locales?.filter(x => (x as LocaleObject).code !== 'fr') as LocaleObject[]
@@ -25,7 +26,7 @@ describe('localizeRoutes', function () {
         }
       ]
       const locales = getNormalizedLocales(['en', 'ja'])
-      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales })
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], { ...nuxtOptions, locales })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
@@ -61,7 +62,7 @@ describe('localizeRoutes', function () {
       const children: NuxtPage[] = routes[0].children as NuxtPage[]
 
       const locales = getNormalizedLocales(['en', 'ja'])
-      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales })
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], { ...nuxtOptions, locales })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(2)
@@ -93,7 +94,11 @@ describe('localizeRoutes', function () {
         }
       ]
       const locales = getNormalizedLocales(['en', 'ja'])
-      const localizedRoutes = localizeRoutes(routes, { ...nuxtOptions, locales, trailingSlash: true })
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        locales,
+        trailingSlash: true
+      })
 
       expect(localizedRoutes).toMatchSnapshot()
       expect(localizedRoutes.length).to.equal(4)
@@ -121,7 +126,7 @@ describe('localizeRoutes', function () {
         }
       ]
       const locales = getNormalizedLocales(['en', 'ja'])
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         locales,
         routesNameSeparator: '__'
@@ -167,7 +172,7 @@ describe('localizeRoutes', function () {
         }
       ]
 
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
@@ -206,7 +211,7 @@ describe('localizeRoutes', function () {
         }
       ]
 
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
@@ -247,7 +252,7 @@ describe('localizeRoutes', function () {
         }
       ]
       const localeCodes = ['en', 'ja']
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
@@ -270,7 +275,7 @@ describe('localizeRoutes', function () {
           name: 'about'
         }
       ]
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix',
@@ -294,7 +299,7 @@ describe('localizeRoutes', function () {
           name: 'about'
         }
       ]
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'no_prefix',
@@ -317,7 +322,7 @@ describe('localizeRoutes', function () {
           name: 'about'
         }
       ]
-      const localizedRoutes = localizeRoutes(routes, {
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         locales: getNormalizedLocales(['en', 'ja']),
         optionsResolver: () => undefined

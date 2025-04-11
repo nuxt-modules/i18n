@@ -26,6 +26,7 @@ import { localizeRoutes } from '../src/routing'
 import { getNormalizedLocales } from '../src/utils'
 import type { NuxtPage } from 'nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
+import { LocalizableRoute } from '../src/kit/gen'
 
 const routingOptions = reactive({
   strategy: 'prefix_and_default' as Strategies,
@@ -163,7 +164,7 @@ function localizeRoutesWithStrategy(routes: NuxtPage[], strategy?: Strategies) {
   if (strategy) {
     routingOptions.strategy = strategy
   }
-  return localizeRoutes(routes, { ...routingOptions, locales: unref(i18nMock.locales) })
+  return localizeRoutes(routes as LocalizableRoute[], { ...routingOptions, locales: unref(i18nMock.locales) })
 }
 
 describe('testing', () => {
