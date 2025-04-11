@@ -14,9 +14,10 @@ describe('#2590', async () => {
     const { page } = await renderPage('/')
 
     // html tag `lang` attribute
-    expect(await page.getAttribute('html', 'lang')).toMatch('en-US')
+    expect(await page.getAttribute('html', 'lang')).toMatch('en')
+    expect(await page.getAttribute('html', 'lang')).toEqual('en-US')
 
     // html tag `dir` attribute
-    expect(await page.getAttribute('html', 'dir')).toMatch('ltr')
+    expect(await page.getAttribute('html', 'dir')).toEqual('ltr')
   })
 })
