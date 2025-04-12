@@ -1,10 +1,10 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { filterLocales, getNormalizedLocales, mergeI18nModules, resolveLocales } from '../utils'
+import { debug, filterLocales, getNormalizedLocales, mergeI18nModules, resolveLocales } from '../utils'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from '../layers'
 
 export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  const { options, debug } = ctx
+  const { options } = ctx
 
   /**
    * collect and merge locales from layers and module hooks

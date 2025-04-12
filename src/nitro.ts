@@ -4,16 +4,15 @@ import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
 import { existsSync } from 'node:fs'
-import { addServerImports, addServerPlugin, addServerTemplate, resolvePath, useLogger } from '@nuxt/kit'
+import { addServerImports, addServerPlugin, addServerTemplate, resolvePath } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getFeatureFlags } from './bundler'
-import { getLayerI18n, toArray } from './utils'
+import { getLayerI18n, logger, toArray } from './utils'
 import {
   H3_PKG,
   UTILS_H3_PKG,
   EXECUTABLE_EXTENSIONS,
-  NUXT_I18N_MODULE_ID,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
   NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
   NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR
@@ -29,7 +28,7 @@ const debug = createDebug('@nuxtjs/i18n:nitro')
 export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
-  const setupServer = enableServerIntegration || (ctx.options.experimental.typedOptionsAndMessages && ctx.isDev)
+  const setupServer = enableServerIntegration || (ctx.options.experimental.typedOptionsAndMessages && nuxt.options.dev)
   if (setupServer) {
     addServerTemplate({
       filename: '#internal/i18n/options.mjs',
@@ -72,7 +71,7 @@ export { localeDetector }`
 
     nitroConfig.replace ||= {}
 
-    if (ctx.isSSR) {
+    if (nuxt.options.ssr) {
       // vue-i18n feature flags configuration for server-side (server api, server middleware, etc...)
       nitroConfig.replace = {
         ...nitroConfig.replace,
@@ -131,7 +130,6 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
     extensions: EXECUTABLE_EXTENSIONS
   })
   if (!existsSync(localeDetectorPath)) {
-    const logger = useLogger(NUXT_I18N_MODULE_ID)
     logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
     return [false, localeDetectorPath]
   }

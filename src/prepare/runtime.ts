@@ -23,7 +23,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.options.build.transpile.push('#i18n-kit/head')
   nuxt.options.build.transpile.push('#i18n-kit/routing')
 
-  if (ctx.isDev && options.hmr) {
+  if (nuxt.options.dev && options.hmr) {
     addVitePlugin({
       name: 'i18n:options-hmr',
       configureServer(server) {
