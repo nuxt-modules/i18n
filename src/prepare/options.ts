@@ -20,7 +20,7 @@ export function prepareOptions({ debug, logger, options }: I18nNuxtContext, nuxt
     )
   }
 
-  if (options.autoDeclare && nuxt.options.imports.autoImport === false) {
+  if (nuxt.options.i18n?.autoDeclare && nuxt.options.imports.autoImport === false) {
     logger.warn(
       'Disabling `autoImports` in Nuxt is not compatible with `autoDeclare`, either enable `autoImports` or disable `autoDeclare`.'
     )
