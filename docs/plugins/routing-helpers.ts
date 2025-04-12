@@ -7,6 +7,17 @@ const v8DocsRE = /^\/docs\/v8/
 export default defineNuxtPlugin(async () => {
   const router = useRouter()
 
+  if (import.meta.server) {
+    const req = useRequestURL()
+    if (req.hostname.startsWith('v8') && req.pathname === '/') {
+      navigateTo('/docs/v8/getting-started')
+    }
+
+    if (req.hostname.startsWith('v7') && req.pathname === '/') {
+      navigateTo('/docs/v7/setup')
+    }
+  }
+
   const { data: navigation } = await useAsyncData('navigation', () => queryCollectionNavigation('docs'))
   const nav = computed<ContentNavigationItem[]>(
     () => mapContentNavigation(navigation.value).at(0).children as ContentNavigationItem[]
