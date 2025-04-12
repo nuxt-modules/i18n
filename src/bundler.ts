@@ -74,7 +74,7 @@ export function createLogger(label) {
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(pluginOptions))
-  if (options.autoDeclare) {
+  if (options.autoDeclare && nuxt.options.imports.autoImport !== false) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
