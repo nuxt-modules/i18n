@@ -10,9 +10,9 @@ const { $currentDocsVersionNavigation } = useNuxtApp()
 const processed = computed<DropdownMenuItem[]>(() => {
   const items = [
     { label: `v${config.public.version}`, version: 10, to: '/docs' },
-    { label: `v9.x`, version: 9, to: 'https://v9.nuxtjs.org/docs' },
-    { label: 'v8.x', version: 8, to: 'https://v9.nuxtjs.org/docs/v8' },
-    { label: 'v7.x', version: 7, to: 'https://v9.nuxtjs.org/docs/v7' }
+    { label: `v9.x`, version: 9, to: 'https://v9.i18n.nuxtjs.org/docs' },
+    { label: 'v8.x', version: 8, to: 'https://v9.i18n.nuxtjs.org/docs/v8/getting-started' },
+    { label: 'v7.x', version: 7, to: 'https://v9.i18n.nuxtjs.org/docs/v7/setup' }
   ]
 
   return items.map(x => {
