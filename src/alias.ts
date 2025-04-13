@@ -17,9 +17,9 @@ import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:alias')
 
-export function setupAlias({ userOptions: options, isDev, isPrepare }: I18nNuxtContext, nuxt: Nuxt) {
+export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt) {
   const modules = {
-    [VUE_I18N_PKG]: `${VUE_I18N_PKG}/dist/vue-i18n${!isDev && !isPrepare && options.bundle?.runtimeOnly ? '.runtime' : ''}.mjs`,
+    [VUE_I18N_PKG]: `${VUE_I18N_PKG}/dist/vue-i18n${!nuxt.options.dev && !nuxt.options._prepare && options.bundle?.runtimeOnly ? '.runtime' : ''}.mjs`,
     [SHARED_PKG]: `${SHARED_PKG}/dist/shared.mjs`,
     [MESSAGE_COMPILER_PKG]: `${MESSAGE_COMPILER_PKG}/dist/message-compiler.mjs`,
     [CORE_BASE_PKG]: `${CORE_BASE_PKG}/dist/core-base.mjs`,

@@ -47,10 +47,10 @@ type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   children?: NarrowedNuxtPage[]
 }
 
-export async function setupPages({ localeCodes, options, isSSR }: I18nNuxtContext, nuxt: Nuxt) {
+export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt: Nuxt) {
   if (!localeCodes.length) return
 
-  let includeUnprefixedFallback = !isSSR
+  let includeUnprefixedFallback = !nuxt.options.ssr
   nuxt.hook('nitro:init', () => {
     debug('enable includeUprefixedFallback')
     includeUnprefixedFallback = options.strategy !== 'prefix'

@@ -9,7 +9,8 @@ vi.mock('pathe', async () => {
   return { ...mod, resolve: vi.fn((...args: string[]) => mod.normalize(args.join('/'))) }
 })
 
-vi.mock('@nuxt/kit', () => {
+vi.mock('@nuxt/kit', async importOriginal => {
+  const actual = await importOriginal()
   const resolveFiles = () => {
     return [
       ['en', 'json'],
@@ -19,7 +20,11 @@ vi.mock('@nuxt/kit', () => {
       ['nl', 'js']
     ].map(pair => `/path/to/project/locales/${pair[0]}.${pair[1]}`)
   }
-  return { resolveFiles }
+  return {
+    // @ts-expect-error import actual
+    ...actual,
+    resolveFiles
+  }
 })
 
 vi.mock('node:fs')

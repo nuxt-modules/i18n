@@ -33,7 +33,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
-    const ctx = createContext(i18nOptions, nuxt)
+    const ctx = createContext(i18nOptions)
 
     await initParser()
 

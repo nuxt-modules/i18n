@@ -1,3 +1,4 @@
+import { useNuxt } from '@nuxt/kit'
 import { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import {
@@ -113,9 +114,13 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
   return statements.join('\n\n')
 }
 
-export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: TemplateNuxtI18nOptions): string {
+export function generateTemplateNuxtI18nOptions(
+  ctx: I18nNuxtContext,
+  opts: TemplateNuxtI18nOptions,
+  nuxt = useNuxt()
+): string {
   const codeHMR =
-    ctx.isDev &&
+    nuxt.options.dev &&
     opts.nuxtI18nOptions.hmr &&
     [
       `if(import.meta.hot) {`,
@@ -137,6 +142,9 @@ export function generateTemplateNuxtI18nOptions(ctx: I18nNuxtContext, opts: Temp
     localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  const hasPages = nuxt.options.pages.toString()
+
   return `
 // @ts-nocheck
 ${(!ctx.options.lazy && [...importStrings].join('\n')) || ''}
@@ -153,8 +161,8 @@ export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x 
 
 export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
 export const parallelPlugin = ${ctx.options.parallelPlugin}
-export const isSSG = ${ctx.isSSG}
-export const hasPages = ${ctx.hasPages}
+export const isSSG = ${nuxt.options._generate}
+export const hasPages = ${hasPages}
 
 export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
 export const DYNAMIC_PARAMS_KEY = ${genString(DYNAMIC_PARAMS_KEY)}

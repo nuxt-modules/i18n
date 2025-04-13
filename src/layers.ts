@@ -1,10 +1,16 @@
 import createDebug from 'debug'
-import { getLayerI18n, mergeConfigLocales, resolveVueI18nConfigInfo, formatMessage, getLocaleFiles } from './utils'
+import { useNuxt } from '@nuxt/kit'
+import {
+  getLayerI18n,
+  mergeConfigLocales,
+  resolveVueI18nConfigInfo,
+  formatMessage,
+  getLocaleFiles,
+  logger
+} from './utils'
 
-import { useLogger, useNuxt } from '@nuxt/kit'
 import { isAbsolute, parse, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
-import { NUXT_I18N_MODULE_ID } from './constants'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
@@ -13,7 +19,6 @@ import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './typ
 const debug = createDebug('@nuxtjs/i18n:layers')
 
 export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
-  const logger = useLogger(NUXT_I18N_MODULE_ID)
   const project = nuxt.options._layers[0]
   const layers = nuxt.options._layers
 
@@ -118,10 +123,7 @@ export function applyLayerOptions(options: NuxtI18nOptions, nuxt: Nuxt) {
   options.locales = mergeConfigLocales(configs)
 }
 
-export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions) {
-  const logger = useLogger(NUXT_I18N_MODULE_ID)
-  const nuxt = useNuxt()
-
+export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt = useNuxt()) {
   const resolved = await Promise.all(
     nuxt.options._layers.map(async layer => {
       const i18n = getLayerI18n(layer)

@@ -1,8 +1,9 @@
+import { defu } from 'defu'
+import createDebug from 'debug'
 import { readFileSync, existsSync } from 'node:fs'
 import { createHash, type BinaryLike } from 'node:crypto'
-import { resolvePath, useNuxt } from '@nuxt/kit'
+import { resolvePath, useLogger, useNuxt } from '@nuxt/kit'
 import { resolve, relative, join } from 'pathe'
-import { defu } from 'defu'
 import { isString, isArray, assign, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from './utils/parse'
@@ -268,3 +269,6 @@ export const applyOptionOverrides = (options: NuxtI18nOptions, nuxt: Nuxt) => {
 export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
+
+export const logger = useLogger(NUXT_I18N_MODULE_ID)
+export const debug = createDebug(NUXT_I18N_MODULE_ID)
