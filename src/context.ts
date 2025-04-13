@@ -1,4 +1,6 @@
 import { createResolver } from '@nuxt/kit'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'pathe'
 import type { Resolver } from '@nuxt/kit'
 import type { LocaleInfo, LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
 
@@ -10,9 +12,13 @@ export interface I18nNuxtContext {
   localeCodes: string[]
   localeInfo: LocaleInfo[]
   vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
+  distDir: string
+  runtimeDir: string
 }
 
 const resolver = createResolver(import.meta.url)
+const distDir = dirname(fileURLToPath(import.meta.url))
+const runtimeDir = fileURLToPath(new URL('./runtime', import.meta.url))
 
 export function createContext(userOptions: NuxtI18nOptions): I18nNuxtContext {
   const options = userOptions as Required<NuxtI18nOptions>
@@ -21,6 +27,8 @@ export function createContext(userOptions: NuxtI18nOptions): I18nNuxtContext {
     options,
     resolver,
     userOptions,
+    distDir,
+    runtimeDir,
     localeInfo: undefined!,
     localeCodes: undefined!,
     normalizedLocales: undefined!,

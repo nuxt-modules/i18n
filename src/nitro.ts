@@ -117,12 +117,13 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
     cwd: nuxt.options.rootDir,
     extensions: EXECUTABLE_EXTENSIONS
   })
-  if (!existsSync(localeDetectorPath)) {
+
+  const exists = existsSync(localeDetectorPath)
+  if (!exists) {
     logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
-    return [false, localeDetectorPath]
   }
 
-  return [true, localeDetectorPath]
+  return [exists, localeDetectorPath]
 }
 
 function getResourcePathsGrouped(localeInfo: LocaleInfo[]) {

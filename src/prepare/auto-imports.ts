@@ -5,10 +5,9 @@ import {
   VUE_I18N_PKG
 } from '../constants'
 import { addComponent, addImports, resolveModule, useNuxt } from '@nuxt/kit'
-import { runtimeDir } from '../dirs'
 import type { I18nNuxtContext } from '../context'
 
-export function prepareAutoImports({ resolver, userOptions: options }: I18nNuxtContext, nuxt = useNuxt()) {
+export function prepareAutoImports({ resolver, userOptions: options, runtimeDir }: I18nNuxtContext, nuxt = useNuxt()) {
   addComponent({
     name: 'NuxtLinkLocale',
     filePath: resolver.resolve(runtimeDir, 'components/NuxtLinkLocale')

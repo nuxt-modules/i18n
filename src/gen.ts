@@ -1,8 +1,6 @@
-import createDebug from 'debug'
 import { assign, isString } from '@intlify/shared'
 import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
-import { distDir, runtimeDir } from './dirs'
 import { getLayerI18n } from './utils'
 import { asI18nVirtual } from './transform/utils'
 
@@ -10,8 +8,6 @@ import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleObject } from './types'
 import type { Locale } from 'vue-i18n'
 import type { I18nNuxtContext } from './context'
-
-const debug = createDebug('@nuxtjs/i18n:gen')
 
 function stripLocaleFiles(locale: LocaleObject) {
   delete locale.files
@@ -46,8 +42,6 @@ export function generateLoaderOptions(
   ctx: Pick<I18nNuxtContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales'>,
   nuxt: Nuxt
 ) {
-  debug('generateLoaderOptions: lazy', ctx.options.lazy)
-
   /**
    * Prepare locale file imports
    */
@@ -193,7 +187,10 @@ declare module 'vue-router' {
   }
 }`
 
-export function generateI18nTypes(nuxt: Nuxt, { userOptions: options, normalizedLocales }: I18nNuxtContext) {
+export function generateI18nTypes(
+  nuxt: Nuxt,
+  { userOptions: options, normalizedLocales, runtimeDir, distDir }: I18nNuxtContext
+) {
   const legacyTypes = options.types === 'legacy'
   const i18nType = legacyTypes ? 'VueI18n' : 'Composer'
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
