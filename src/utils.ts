@@ -11,12 +11,13 @@ import { parseSync } from './utils/parse'
 import type { NuxtI18nOptions, LocaleInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
+import type { I18nNuxtContext } from './context'
 
 export function formatMessage(message: string) {
   return `[${NUXT_I18N_MODULE_ID}]: ${message}`
 }
 
-export function filterLocales(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
+export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const project = getLayerI18n(nuxt.options._layers[0])
   const includingLocales = toArray(project?.bundle?.onlyLocales ?? []).filter(isString)
 
@@ -24,7 +25,7 @@ export function filterLocales(options: Required<NuxtI18nOptions>, nuxt: Nuxt) {
     return
   }
 
-  options.locales = options.locales.filter(locale =>
+  ctx.options.locales = ctx.options.locales.filter(locale =>
     includingLocales.includes(isString(locale) ? locale : locale.code)
   ) as string[] | LocaleObject[]
 }
@@ -219,23 +220,23 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
 /**
  * Merges project layer locales with registered i18n modules
  */
-export const mergeI18nModules = async (options: NuxtI18nOptions, nuxt: Nuxt) => {
+export const mergeI18nModules = async (ctx: I18nNuxtContext, nuxt: Nuxt) => {
   const i18nModules: LocaleConfig[] = []
 
   await nuxt.callHook(
     'i18n:registerModule',
-    config => config.langDir && config.locales && i18nModules.push({ langDir: config.langDir, locales: config.locales })
+    ({ langDir, locales }) => langDir && locales && i18nModules.push({ langDir, locales })
   )
 
   if (i18nModules.length > 0) {
     const baseLocales: LocaleObject[] = []
-    for (const locale of options.locales!) {
+    for (const locale of ctx.options.locales) {
       if (!isObject(locale)) continue
       baseLocales.push(assign({}, locale, { file: undefined, files: getLocaleFiles(locale) }))
     }
-    options.locales = mergeConfigLocales(i18nModules, baseLocales)
+    ctx.options.locales = mergeConfigLocales(i18nModules, baseLocales)
   }
-  options.i18nModules = i18nModules
+  ctx.options.i18nModules = i18nModules
 }
 
 function getHash(text: BinaryLike): string {

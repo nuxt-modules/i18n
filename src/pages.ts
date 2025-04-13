@@ -8,7 +8,6 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { formatMessage, getNormalizedLocales } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
-import { mergeLayerPages } from './layers'
 import { resolve, parse as parsePath, dirname } from 'pathe'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
 import { createRoutesContext } from 'unplugin-vue-router'
@@ -42,6 +41,15 @@ export type NuxtPageAnalyzeContext = {
   pages: Map<string, AnalyzedNuxtPageMeta>
 }
 
+function createPageAnalyzeContext(srcDir: string, pagesDir: string): NuxtPageAnalyzeContext {
+  return {
+    stack: [],
+    srcDir,
+    pagesDir,
+    pages: new Map<string, AnalyzedNuxtPageMeta>()
+  }
+}
+
 type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   redirect?: (Omit<NarrowedNuxtPage, 'name'> & { name?: string }) | string
   children?: NarrowedNuxtPage[]
@@ -56,26 +64,23 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
     includeUnprefixedFallback = options.strategy !== 'prefix'
   })
 
-  const pagesDir = nuxt.options.dir && nuxt.options.dir.pages ? nuxt.options.dir.pages : 'pages'
-  const srcDir = nuxt.options.srcDir
-  debug(`pagesDir: ${pagesDir}, srcDir: ${srcDir}, trailingSlash: ${options.trailingSlash}`)
+  const pagesDir = nuxt.options.dir?.pages ?? 'pages'
+  debug(`pagesDir: ${pagesDir}, srcDir: ${nuxt.options.srcDir}, trailingSlash: ${options.trailingSlash}`)
 
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
 
+  const projectLayer = nuxt.options._layers[0]
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async pages => {
-      debug('pages making ...', pages)
-      const ctx: NuxtPageAnalyzeContext = {
-        stack: [],
-        srcDir,
-        pagesDir,
-        pages: new Map<string, AnalyzedNuxtPageMeta>()
-      }
+      debug('pages (before)', pages)
+      const ctx = createPageAnalyzeContext(nuxt.options.srcDir, pagesDir)
 
-      analyzeNuxtPages(ctx, pages)
-      const analyzer = (pageDirOverride: string) => analyzeNuxtPages(ctx, pages, pageDirOverride)
-      mergeLayerPages(analyzer, nuxt)
+      // analyze layer pages
+      for (const layer of nuxt.options._layers) {
+        const pagesDir = resolve(projectLayer.config.rootDir, layer.config.srcDir, layer.config.dir?.pages ?? 'pages')
+        analyzeNuxtPages(ctx, pages, pagesDir)
+      }
 
       if (typedRouter) {
         await typedRouter.createContext(pages).scanPages(false)
@@ -100,7 +105,7 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
         pages.unshift(...localizedPages)
       }
 
-      debug('... made pages', pages)
+      debug('pages (after)', pages)
     }
   )
 }
