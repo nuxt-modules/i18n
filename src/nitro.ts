@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs'
 import { addServerImports, addServerPlugin, addServerTemplate, resolvePath } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
-import { getFeatureFlags } from './bundler'
+import { getDefineConfig } from './bundler'
 import { getLayerI18n, logger, toArray } from './utils'
 import {
   H3_PKG,
@@ -69,19 +69,7 @@ export { localeDetector }`
       }
     }
 
-    nitroConfig.replace ||= {}
-
-    if (nuxt.options.ssr) {
-      // vue-i18n feature flags configuration for server-side (server api, server middleware, etc...)
-      nitroConfig.replace = {
-        ...nitroConfig.replace,
-        ...getFeatureFlags(ctx.options.bundle)
-      }
-    }
-
-    // setup debug flag
-    nitroConfig.replace['__DEBUG__'] = String(!!ctx.options.debug)
-    nitroConfig.replace['__TEST__'] = String(!!ctx.options.debug || nuxt.options._i18nTest)
+    nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx.options, true))
     debug('nitro.replace', nitroConfig.replace)
   })
 

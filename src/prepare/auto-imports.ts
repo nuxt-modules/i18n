@@ -20,6 +20,7 @@ export function prepareAutoImports({ resolver, userOptions: options }: I18nNuxtC
   })
 
   const vueI18nPath = `${VUE_I18N_PKG}/dist/vue-i18n${!nuxt.options.dev && !nuxt.options._prepare && options.bundle?.runtimeOnly ? '.runtime' : ''}.mjs`
+  const composablesIndex = resolver.resolve(runtimeDir, 'composables/index')
   addImports([
     { name: 'useI18n', from: resolveModule(vueI18nPath) },
     ...[
@@ -34,10 +35,6 @@ export function prepareAutoImports({ resolver, userOptions: options }: I18nNuxtC
       NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
       NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
       NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
-    ].map(key => ({
-      name: key,
-      as: key,
-      from: resolver.resolve(runtimeDir, 'composables/index')
-    }))
+    ].map(key => ({ name: key, as: key, from: composablesIndex }))
   ])
 }
