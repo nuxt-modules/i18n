@@ -68,9 +68,9 @@ export async function loadFixture(testContext: VitestContext) {
          * The `overrides` option is only used for testing, it is used to option overrides to the project layer in a fixture.
          */
         (_, nuxt) => {
-          const project = nuxt.options._layers[0]
-          const { overrides, ...mergedOptions } = nuxt.options.i18n
-          if (overrides) {
+          if (nuxt.options?.i18n?.overrides) {
+            const project = nuxt.options._layers[0]
+            const { overrides, ...mergedOptions } = nuxt.options.i18n
             delete nuxt.options.i18n.overrides
             project.config.i18n = defu(overrides, project.config.i18n)
             Object.assign(nuxt.options.i18n, defu(overrides, mergedOptions))
