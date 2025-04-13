@@ -15,6 +15,7 @@ import { assign, isString } from '@intlify/shared'
 import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
+import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
 
@@ -57,20 +58,6 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
   }
 }
 
-export function mergeLayerPages(analyzer: (pathOverride: string) => void, nuxt: Nuxt) {
-  const project = nuxt.options._layers[0]
-  const layers = nuxt.options._layers
-
-  // No layers to merge
-  if (layers.length === 1) return
-
-  for (const l of layers) {
-    const lPath = resolve(project.config.rootDir, l.config.srcDir, l.config.dir?.pages ?? 'pages')
-    debug('mergeLayerPages: path ->', lPath)
-    analyzer(lPath)
-  }
-}
-
 export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
   return resolve(layer.config.rootDir, i18n.restructureDir ?? 'i18n')
 }
@@ -83,8 +70,8 @@ function resolveLayerLangDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions) {
  * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
  * This overwrites `options.locales`
  */
-export function applyLayerOptions(options: NuxtI18nOptions, nuxt: Nuxt) {
-  options.locales ??= []
+export function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
+  ctx.options.locales ??= []
 
   const configs: LocaleConfig[] = []
   for (const layer of nuxt.options._layers) {
@@ -98,7 +85,7 @@ export function applyLayerOptions(options: NuxtI18nOptions, nuxt: Nuxt) {
    * installing through `installModule` and should have absolute paths.
    */
   const installModuleConfigMap = new Map<string, LocaleConfig>()
-  outer: for (const locale of options.locales) {
+  outer: for (const locale of ctx.options.locales) {
     if (isString(locale)) continue
 
     const files = getLocaleFiles(locale)
@@ -120,7 +107,7 @@ export function applyLayerOptions(options: NuxtI18nOptions, nuxt: Nuxt) {
   configs.unshift(...installModuleConfigMap.values())
 
   debug('merged locales', configs)
-  options.locales = mergeConfigLocales(configs)
+  ctx.options.locales = mergeConfigLocales(configs)
 }
 
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt = useNuxt()) {
