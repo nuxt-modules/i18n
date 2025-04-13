@@ -255,17 +255,6 @@ export function getLayerI18n(configLayer: NuxtConfigLayer) {
   return layerInlineOptions
 }
 
-export const applyOptionOverrides = (options: NuxtI18nOptions, nuxt: Nuxt) => {
-  const project = nuxt.options._layers[0]
-  const { overrides, ...mergedOptions } = options
-
-  if (overrides) {
-    delete options.overrides
-    project.config.i18n = defu(overrides, project.config.i18n)
-    assign(options, defu(overrides, mergedOptions))
-  }
-}
-
 export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
