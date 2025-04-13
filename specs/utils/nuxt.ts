@@ -63,6 +63,20 @@ export async function loadFixture(testContext: VitestContext) {
 
     ctx.options.nuxtConfig = defu(ctx.options.nuxtConfig, {
       buildDir,
+      modules: [
+        /**
+         * The `overrides` option is only used for testing, it is used to option overrides to the project layer in a fixture.
+         */
+        (_, nuxt) => {
+          if (nuxt.options?.i18n?.overrides) {
+            const project = nuxt.options._layers[0]
+            const { overrides, ...mergedOptions } = nuxt.options.i18n
+            delete nuxt.options.i18n.overrides
+            project.config.i18n = defu(overrides, project.config.i18n)
+            Object.assign(nuxt.options.i18n, defu(overrides, mergedOptions))
+          }
+        }
+      ],
       // NOTE: the following code is added for prerender
       _generate: ctx.options.prerender,
       nitro: {
