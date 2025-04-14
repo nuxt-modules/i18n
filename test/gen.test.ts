@@ -5,17 +5,9 @@ import { vi, beforeEach, afterEach, test, expect, beforeAll } from 'vitest'
 import type { LocaleInfo, LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from '../src/types'
 import type { Nuxt } from '@nuxt/schema'
 import { initParser } from '../src/utils/parse'
+import { dirname, parse } from 'pathe'
 
 vi.mock('node:fs')
-
-vi.mock('pathe', async () => {
-  const mod = await vi.importActual<typeof import('pathe')>('pathe')
-  return {
-    ...mod,
-    resolve: vi.fn((...args: string[]) => mod.normalize(args.join('/'))),
-    relative: vi.fn((...args: string[]) => args[1].replace(args[0] + '/', ''))
-  }
-})
 
 vi.mock('@nuxt/kit', async () => {
   const mod = await vi.importActual<typeof import('@nuxt/kit')>('@nuxt/kit')
@@ -24,7 +16,8 @@ vi.mock('@nuxt/kit', async () => {
     useNuxt: vi.fn(() => ({
       options: {
         rootDir: '/test',
-        srcDir: '/test/srcDir'
+        srcDir: '/test/srcDir',
+        buildDir: '/test/.nuxt'
       }
     }))
   }
@@ -67,12 +60,9 @@ const NUXT_I18N_OPTIONS = {
 } as Required<NuxtI18nOptions>
 
 const NUXT_I18N_VUE_I18N_CONFIG = {
-  rootDir: '/path/to',
   meta: {
     // absolute
-    path: '/path/to/i18n.config.ts',
-    // relative
-    loadPath: 'i18n.config.ts'
+    path: '/path/to/i18n.config.ts'
   }
 } as Required<VueI18nConfigPathInfo>
 
@@ -80,7 +70,8 @@ const makeNuxtOptions = (localeInfo: LocaleInfo[]) => {
   return {
     options: {
       rootDir: '/test',
-      buildDir: '.nuxt',
+      srcDir: '/test',
+      buildDir: '/test/.nuxt',
       _layers: [
         {
           config: {
@@ -95,10 +86,9 @@ const makeNuxtOptions = (localeInfo: LocaleInfo[]) => {
 }
 
 test('basic', async () => {
-  const { generateLoaderOptions } = await import('../src/gen')
   const locales = getMockLocales()
-  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const localeInfo = await resolveLocales('/test', locales)
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
   const code = generateLoaderOptions(
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
@@ -114,8 +104,8 @@ test('basic', async () => {
 
 test('lazy', async () => {
   const locales = getMockLocales()
-  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const localeInfo = await resolveLocales('/test', locales)
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
   const code = generateLoaderOptions(
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
@@ -146,8 +136,8 @@ test('multiple files', async () => {
     ])
   ]
 
-  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const localeInfo = await resolveLocales('/test', locales)
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
 
   const code = generateLoaderOptions(
     {
@@ -179,11 +169,11 @@ test('files with cache configuration', async () => {
 
   for (const l of locales) {
     // @ts-ignore
-    l.files = resolveRelativeLocales(l, { langDir: 'locales' })
+    l.files = resolveRelativeLocales(l, { langDir: '/test/srcDir/locales' })
   }
 
-  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const localeInfo = await resolveLocales('/test', locales)
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
 
   const code = generateLoaderOptions(
     {
@@ -213,9 +203,9 @@ test('locale file in nested', async () => {
       files: [{ path: 'fr/main.json', cache: true }]
     }
   ]
-  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
+  const localeInfo = await resolveLocales('/test', locales)
 
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
   const code = generateLoaderOptions(
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<VueI18nConfigPathInfo> => x != null),
@@ -231,27 +221,23 @@ test('locale file in nested', async () => {
 
 test('vueI18n option', async () => {
   const locales = getMockLocales()
-  const localeInfo = await resolveLocales('srcDir', locales, '.nuxt')
+  const localeInfo = await resolveLocales('/test', locales)
   const vueI18nConfigs = await Promise.all(
     [
       NUXT_I18N_VUE_I18N_CONFIG,
       {
-        rootDir: '/path/layer1',
-        relativeBase: '../..',
         meta: {
           path: '/path/layer1/i18n.custom.ts',
           loadPath: 'i18n.custom.ts'
         }
       },
       {
-        rootDir: '/path/foo/layer2',
-        relativeBase: '../../..',
         meta: {
           path: '/path/foo/layer2/vue-i18n.options.js',
           loadPath: 'vue-i18n.options.js'
         }
       }
-    ].map(x => resolveVueI18nConfigInfo(x.rootDir, x.meta.loadPath, '.nuxt'))
+    ].map(x => resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir))
   )
   const code = generateLoaderOptions(
     {
@@ -270,7 +256,7 @@ test('vueI18n option', async () => {
 })
 
 test('toCode: function (arrow)', async () => {
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
   const localeInfo = getMockLocales().map(locale => ({
     ...locale,
     testFunc: (prop: string) => {
@@ -295,7 +281,7 @@ test('toCode: function (arrow)', async () => {
 })
 
 test('toCode: function (named)', async () => {
-  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', NUXT_I18N_VUE_I18N_CONFIG.meta.loadPath, '.nuxt')
+  const vueI18nConfig = await resolveVueI18nConfigInfo('/test', parse(NUXT_I18N_VUE_I18N_CONFIG.meta.path).dir)
   const localeInfo = getMockLocales().map(locale => ({
     ...locale,
     testFunc(prop: string) {

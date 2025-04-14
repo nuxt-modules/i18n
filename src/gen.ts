@@ -56,7 +56,7 @@ export function generateLoaderOptions(
         importMapper.set(meta.path, {
           specifier,
           key: genString(key),
-          relative: meta.loadPath,
+          relative: relative(nuxt.options.buildDir, meta.path),
           cache: meta.file.cache ?? true,
           load: ctx.options.lazy
             ? genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` })
@@ -77,7 +77,7 @@ export function generateLoaderOptions(
     const key = genString(`config_${genSafeVariableName(basename(config.meta.path))}_${config.meta.hash}`)
     const specifier = asI18nVirtual(config.meta.hash)
     const importer = genDynamicImport(specifier, { comment: `webpackChunkName: ${key}` })
-    vueI18nConfigs.push({ specifier, importer, relative: config.meta.loadPath })
+    vueI18nConfigs.push({ specifier, importer, relative: relative(nuxt.options.buildDir, config.meta.path) })
   }
 
   const nuxtI18nOptions = assign({}, ctx.options, {

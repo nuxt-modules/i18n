@@ -2,8 +2,8 @@ import { defu } from 'defu'
 import createDebug from 'debug'
 import { readFileSync, existsSync } from 'node:fs'
 import { createHash, type BinaryLike } from 'node:crypto'
-import { resolvePath, useLogger, useNuxt } from '@nuxt/kit'
-import { resolve, relative, join } from 'pathe'
+import { resolvePath, useLogger } from '@nuxt/kit'
+import { resolve } from 'pathe'
 import { isString, isArray, assign, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from './utils/parse'
@@ -38,7 +38,7 @@ export function getNormalizedLocales(locales: NuxtI18nOptions['locales'] = []): 
   return normalized
 }
 
-export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir: string): LocaleInfo[] {
+export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {
     const resolved: LocaleInfo = assign({ meta: [] }, locale)
@@ -54,7 +54,6 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], buildDir
         type,
         path,
         hash: getHash(path),
-        loadPath: relative(buildDir, path),
         file: {
           path: f.path,
           cache: f.cache ?? type !== 'dynamic'
@@ -137,19 +136,12 @@ function scanProgram(program: Program) {
   return false
 }
 
-export async function resolveVueI18nConfigInfo(
-  rootDir: string,
-  configPath: string = 'i18n.config',
-  buildDir = useNuxt().options.buildDir
-) {
+export async function resolveVueI18nConfigInfo(rootDir: string, configPath: string = 'i18n.config') {
   const absolutePath = await resolvePath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
   if (!existsSync(absolutePath)) return undefined
 
-  const relativeBase = relative(buildDir, rootDir)
   return {
-    rootDir,
     meta: {
-      loadPath: join(relativeBase, relative(rootDir, absolutePath)), // relative
       path: absolutePath, // absolute
       hash: getHash(absolutePath),
       type: getLocaleType(absolutePath)
@@ -164,9 +156,8 @@ export const getLocaleFiles = (locale: LocaleObject): LocaleFile[] => {
 }
 
 export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
-  const rootDir = useNuxt().options.rootDir
   return getLocaleFiles(locale).map(file => ({
-    path: resolve(rootDir, resolve(config.langDir ?? '', file.path)),
+    path: resolve(config.langDir, file.path),
     cache: file.cache
   })) as LocaleFile[]
 }
