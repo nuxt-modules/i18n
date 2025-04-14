@@ -102,78 +102,64 @@ test('analyzeNuxtPages', () => {
   ]
 
   const ctx = createPageAnalyzeContext()
-  analyzeNuxtPages(ctx, pages)
+  analyzeNuxtPages(ctx, ctx.pagesDir, pages)
 
   expect(ctx.stack.length).toBe(0)
   expect([...ctx.pages.values()]).toMatchInlineSnapshot(`
     [
       {
-        "inRoot": true,
         "name": "catch",
         "path": "[...catch]",
       },
       {
-        "inRoot": true,
         "name": undefined,
         "path": "account",
       },
       {
-        "inRoot": false,
         "name": "account-addresses",
         "path": "account/addresses",
       },
       {
-        "inRoot": false,
         "name": "account-fooid",
         "path": "account/foo[id]",
       },
       {
-        "inRoot": false,
         "name": "account",
         "path": "account/index",
       },
       {
-        "inRoot": false,
         "name": "account-profile",
         "path": "account/profile",
       },
       {
-        "inRoot": true,
         "name": "blog-date-slug",
         "path": "blog/[date]/[slug]",
       },
       {
-        "inRoot": true,
         "name": "foo",
         "path": "foo",
       },
       {
-        "inRoot": false,
         "name": "foo-bar",
         "path": "foo/bar",
       },
       {
-        "inRoot": false,
         "name": "foo-bar-buz",
         "path": "foo/bar/buz",
       },
       {
-        "inRoot": false,
         "name": "foo-hoge-piyo",
         "path": "foo/hoge/[piyo]",
       },
       {
-        "inRoot": false,
         "name": "foo-qux",
         "path": "foo/qux",
       },
       {
-        "inRoot": true,
         "name": "index",
         "path": "index",
       },
       {
-        "inRoot": true,
         "name": "users-profile",
         "path": "users/[[profile]]",
       },

@@ -115,7 +115,7 @@ describe.each([
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
     const ctx = createPageAnalyzeContext()
-    analyzeNuxtPages(ctx, pages)
+    analyzeNuxtPages(ctx, ctx.pagesDir, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
@@ -175,7 +175,7 @@ describe.each([
 ])('Page components', ({ case: _case, options, pages }) => {
   test(_case, () => {
     const ctx = createPageAnalyzeContext()
-    analyzeNuxtPages(ctx, pages)
+    analyzeNuxtPages(ctx, ctx.pagesDir, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
@@ -234,7 +234,7 @@ test('#1649', () => {
   vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
   const ctx = createPageAnalyzeContext('/path/to/1649')
-  analyzeNuxtPages(ctx, pages)
+  analyzeNuxtPages(ctx, ctx.pagesDir, pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
     includeUnprefixedFallback: false,
@@ -293,7 +293,7 @@ test('pages config using route name', () => {
   vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
   const ctx = createPageAnalyzeContext('/path/to/1649')
-  analyzeNuxtPages(ctx, pages)
+  analyzeNuxtPages(ctx, ctx.pagesDir, pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
     includeUnprefixedFallback: false,

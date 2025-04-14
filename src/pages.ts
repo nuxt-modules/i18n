@@ -23,7 +23,6 @@ import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 const debug = createDebug('@nuxtjs/i18n:pages')
 
 export type AnalyzedNuxtPageMeta = {
-  inRoot: boolean
   /**
    * Analyzed path used to retrieve configured custom paths
    */
@@ -36,18 +35,7 @@ export type NuxtPageAnalyzeContext = {
    * Array of paths to track current route depth
    */
   stack: string[]
-  srcDir: string
-  pagesDir: string
   pages: Map<string, AnalyzedNuxtPageMeta>
-}
-
-function createPageAnalyzeContext(srcDir: string, pagesDir: string): NuxtPageAnalyzeContext {
-  return {
-    stack: [],
-    srcDir,
-    pagesDir,
-    pages: new Map<string, AnalyzedNuxtPageMeta>()
-  }
 }
 
 type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
@@ -64,22 +52,21 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
     includeUnprefixedFallback = options.strategy !== 'prefix'
   })
 
-  const pagesDir = nuxt.options.dir?.pages ?? 'pages'
-  debug(`pagesDir: ${pagesDir}, srcDir: ${nuxt.options.srcDir}, trailingSlash: ${options.trailingSlash}`)
-
-  const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
-
   const projectLayer = nuxt.options._layers[0]
+  const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async pages => {
       debug('pages (before)', pages)
-      const ctx = createPageAnalyzeContext(nuxt.options.srcDir, pagesDir)
+      const ctx: NuxtPageAnalyzeContext = {
+        stack: [],
+        pages: new Map<string, AnalyzedNuxtPageMeta>()
+      }
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
         const pagesDir = resolve(projectLayer.config.rootDir, layer.config.srcDir, layer.config.dir?.pages ?? 'pages')
-        analyzeNuxtPages(ctx, pages, pagesDir)
+        analyzeNuxtPages(ctx, pagesDir, pages)
       }
 
       if (typedRouter) {
@@ -88,8 +75,8 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
 
       const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
         ...options,
-        locales: getNormalizedLocales(options.locales),
         includeUnprefixedFallback,
+        locales: getNormalizedLocales(options.locales),
         optionsResolver: getRouteOptionsResolver(ctx, options)
       })
 
@@ -233,26 +220,24 @@ function analyzePagePath(pagePath: string, parents = 0) {
  * Construct the map of full paths from NuxtPage to support custom routes.
  * `NuxtPage` of the nested route doesn't have a slash (`/`) and isn’t the full path.
  */
-export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pages?: NuxtPage[], pageDirOverride?: string): void {
+export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, pages?: NuxtPage[]): void {
   if (pages == null || pages.length === 0) return
 
-  const pagesPath = resolve(ctx.srcDir, pageDirOverride ?? ctx.pagesDir)
   for (const page of pages) {
     if (page.file == null) continue
 
-    const splits = page.file.split(pagesPath)
+    const splits = page.file.split(pagesDir)
     const filePath = splits.at(1)
     if (filePath == null) continue
 
     ctx.pages.set(page.file, {
       path: analyzePagePath(filePath, ctx.stack.length),
       // if route has an index child the parent will not have a name
-      name: page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name,
-      inRoot: ctx.stack.length === 0
+      name: page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name
     })
 
     ctx.stack.push(page.path)
-    analyzeNuxtPages(ctx, page.children, pageDirOverride)
+    analyzeNuxtPages(ctx, pagesDir, page.children)
     ctx.stack.pop()
   }
 }
