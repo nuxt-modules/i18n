@@ -74,10 +74,10 @@ export function generateLoaderOptions(
   const vueI18nConfigs = []
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
     const config = ctx.vueI18nConfigPaths[i]
-    const key = genString(`config_${genSafeVariableName(basename(config.meta.path))}_${config.meta.hash}`)
-    const specifier = asI18nVirtual(config.meta.hash)
+    const key = genString(`config_${genSafeVariableName(basename(config.path))}_${config.hash}`)
+    const specifier = asI18nVirtual(config.hash)
     const importer = genDynamicImport(specifier, { comment: `webpackChunkName: ${key}` })
-    vueI18nConfigs.push({ specifier, importer, relative: relative(nuxt.options.buildDir, config.meta.path) })
+    vueI18nConfigs.push({ specifier, importer, relative: relative(nuxt.options.buildDir, config.path) })
   }
 
   const nuxtI18nOptions = assign({}, ctx.options, {

@@ -141,11 +141,9 @@ export async function resolveVueI18nConfigInfo(rootDir: string, configPath: stri
   if (!existsSync(absolutePath)) return undefined
 
   return {
-    meta: {
-      path: absolutePath, // absolute
-      hash: getHash(absolutePath),
-      type: getLocaleType(absolutePath)
-    }
+    path: absolutePath, // absolute
+    hash: getHash(absolutePath),
+    type: getLocaleType(absolutePath)
   }
 }
 

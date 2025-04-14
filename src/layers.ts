@@ -14,7 +14,7 @@ import { assign, isString } from '@intlify/shared'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
+import type { FileMeta, LocaleObject, NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 
 const debug = createDebug('@nuxtjs/i18n:layers')
@@ -131,5 +131,5 @@ export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nu
     resolved.unshift(await resolveVueI18nConfigInfo(parse(options.vueI18n).dir, options.vueI18n))
   }
 
-  return resolved.filter((x): x is Required<VueI18nConfigPathInfo> => x != null)
+  return resolved.filter((x): x is Required<FileMeta> => x != null)
 }

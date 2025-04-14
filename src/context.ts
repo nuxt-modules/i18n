@@ -2,7 +2,7 @@ import { createResolver } from '@nuxt/kit'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'pathe'
 import type { Resolver } from '@nuxt/kit'
-import type { LocaleInfo, LocaleObject, NuxtI18nOptions, VueI18nConfigPathInfo } from './types'
+import type { FileMeta, LocaleInfo, LocaleObject, NuxtI18nOptions } from './types'
 
 export interface I18nNuxtContext {
   resolver: Resolver
@@ -11,7 +11,7 @@ export interface I18nNuxtContext {
   normalizedLocales: LocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
-  vueI18nConfigPaths: Required<VueI18nConfigPathInfo>[]
+  vueI18nConfigPaths: FileMeta[]
   distDir: string
   runtimeDir: string
 }

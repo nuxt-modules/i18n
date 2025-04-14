@@ -33,7 +33,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
     const DEFINE_I18N_FN_RE = new RegExp(`\\b(${pattern})\\s*\\((.+)\\s*\\)`, 'gms')
 
     // TODO: track all i18n files found in configuration
-    const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths.map(x => x.meta)]
+    const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths]
     const i18nPathSet = new Set()
     const i18nFileHashSet = new Map<string, string>()
     for (const meta of i18nFileMetas) {

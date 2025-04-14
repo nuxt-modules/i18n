@@ -51,13 +51,6 @@ export type FileMeta = {
 }
 
 /**
- * @internal
- */
-export type VueI18nConfigPathInfo = {
-  meta: FileMeta
-}
-
-/**
  * @public
  */
 export interface RootRedirectOptions {
