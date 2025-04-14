@@ -46,7 +46,6 @@ export type LocaleInfo = Omit<LocaleObject, 'file' | 'files'> & {
  */
 export type FileMeta = {
   path: string
-  loadPath: string
   hash: string
   type: LocaleType
 }
@@ -55,7 +54,6 @@ export type FileMeta = {
  * @internal
  */
 export type VueI18nConfigPathInfo = {
-  rootDir: string
   meta: FileMeta
 }
 
