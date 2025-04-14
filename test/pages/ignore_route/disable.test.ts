@@ -115,7 +115,7 @@ describe.each([
   test(_case, () => {
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
-    const ctx = createPageAnalyzeContext()
+    const ctx = createPageAnalyzeContext(undefined, undefined, options.pages)
     analyzeNuxtPages(ctx, ctx.pagesDir, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
@@ -140,7 +140,7 @@ describe.each([
   }
 ])('Page components', ({ case: _case, options, pages }) => {
   test(_case, () => {
-    const ctx = createPageAnalyzeContext()
+    const ctx = createPageAnalyzeContext(undefined, undefined, options.pages)
     analyzeNuxtPages(ctx, ctx.pagesDir, pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,

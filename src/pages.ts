@@ -16,7 +16,7 @@ import { resolveOptions } from 'unplugin-vue-router/options'
 import type { Nuxt, NuxtPage } from '@nuxt/schema'
 import type { Node, ObjectExpression, ArrayExpression, Expression, PrivateName } from '@babel/types'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-vue-router'
-import type { NuxtI18nOptions, CustomRoutePages } from './types'
+import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 
@@ -35,6 +35,7 @@ export type NuxtPageAnalyzeContext = {
    * Array of paths to track current route depth
    */
   stack: string[]
+  config: NuxtI18nOptions['pages']
   pages: Map<string, AnalyzedNuxtPageMeta>
 }
 
@@ -60,6 +61,7 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
       debug('pages (before)', pages)
       const ctx: NuxtPageAnalyzeContext = {
         stack: [],
+        config: options.pages,
         pages: new Map<string, AnalyzedNuxtPageMeta>()
       }
 
@@ -249,17 +251,8 @@ export function getRouteOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
   options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'customRoutes'>
 ): RouteOptionsResolver {
-  const { pages, defaultLocale, customRoutes } = options
-
-  const useConfig = customRoutes === 'config'
-  debug('getRouteOptionsResolver useConfig', useConfig)
-
-  const getter = useConfig ? getRouteOptionsFromPages : getRouteOptionsFromComponent
-  return (route, localeCodes) => {
-    const ret = getter(route, localeCodes, ctx, pages, defaultLocale)
-    debug('getRouteOptionsResolver resolved', route.path, route.name, ret)
-    return ret
-  }
+  const { defaultLocale, customRoutes } = options
+  return (route, localeCodes) => getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
 }
 
 function resolveRoutePath(path: string): string {
@@ -268,103 +261,79 @@ function resolveRoutePath(path: string): string {
   return getRoutePath(tokens)
 }
 
-/**
- * Retrieve custom routes from i18n config `pages` property
- */
-function getRouteOptionsFromPages(
-  route: NuxtPage,
-  localeCodes: string[],
+function getRouteFromConfig(
   ctx: NuxtPageAnalyzeContext,
-  pages: CustomRoutePages,
-  defaultLocale: string
-) {
-  const options: ComputedRouteOptions = {
-    locales: localeCodes,
-    paths: {}
-  }
-
-  // get `AnalyzedNuxtPageMeta` to use Vue Router path mapping
+  route: NuxtPage,
+  localeCodes: string[]
+): ComputedRouteOptions | false | undefined {
   const pageMeta = ctx.pages.get(route.file!)
 
-  // skip if no `AnalyzedNuxtPageMeta`
   if (pageMeta == null) {
-    console.warn(
-      formatMessage(`Couldn't find AnalyzedNuxtPageMeta by NuxtPage (${route.path}), so no custom route for it`)
-    )
-    return options
-  }
-
-  const valueByName = pageMeta.name ? pages[pageMeta.name] : undefined
-  const pageOptions = valueByName ?? pages[pageMeta.path]
-
-  // routing disabled
-  if (pageOptions === false) {
+    console.warn(formatMessage(`No custom route config found for ${route.path}`))
     return undefined
   }
 
-  // skip if no page options defined
-  if (!pageOptions) {
-    return options
+  const valueByName = pageMeta?.name ? ctx.config?.[pageMeta.name] : undefined
+  const valueByPath = pageMeta?.path != null ? ctx.config?.[pageMeta.path] : undefined
+  const resolved = valueByName ?? valueByPath
+  if (!resolved) return resolved
+  return {
+    paths: (resolved ?? {}) as Record<string, string>,
+    locales: localeCodes.filter(locale => resolved[locale] !== false)
+  }
+}
+
+function getRouteFromMacro(
+  _ctx: NuxtPageAnalyzeContext,
+  route: NuxtPage,
+  localeCodes: string[]
+): ComputedRouteOptions | false | undefined {
+  const resolved = readComponent(route.file!)
+  if (!resolved) return resolved
+  return {
+    paths: resolved.paths ?? {},
+    locales: resolved?.locales || localeCodes
+  }
+}
+
+function getRouteOptions(
+  route: NuxtPage,
+  localeCodes: string[],
+  ctx: NuxtPageAnalyzeContext,
+  defaultLocale: string,
+  mode: 'config' | 'page' = 'config'
+) {
+  const resolvedOptions =
+    mode === 'config' ? getRouteFromConfig(ctx, route, localeCodes) : getRouteFromMacro(ctx, route, localeCodes)
+
+  // routing disabled
+  if (resolvedOptions === false) {
+    return undefined
   }
 
-  // remove disabled locales from page options
-  options.locales = options.locales.filter(locale => pageOptions[locale] !== false)
+  const locales = resolvedOptions?.locales || localeCodes
+  const paths: Record<string, string> = {}
+
+  // skip if no page options defined
+  if (!resolvedOptions) {
+    return { locales, paths }
+  }
 
   // construct paths object
-  for (const locale of options.locales) {
+  for (const locale of resolvedOptions.locales) {
     // set custom path if any
-    if (isString(pageOptions[locale])) {
-      options.paths[locale] = resolveRoutePath(pageOptions[locale])
+    if (isString(resolvedOptions.paths[locale])) {
+      paths[locale] = resolveRoutePath(resolvedOptions.paths[locale])
       continue
     }
 
     // set default locale's custom path if any
-    if (isString(pageOptions[defaultLocale])) {
-      options.paths[locale] = resolveRoutePath(pageOptions[defaultLocale])
+    if (isString(resolvedOptions.paths[defaultLocale])) {
+      paths[locale] = resolveRoutePath(resolvedOptions.paths[defaultLocale])
     }
   }
 
-  return options
-}
-
-/**
- * Retrieve custom routes by parsing page components and extracting argument passed to `defineI18nRoute()`
- */
-function getRouteOptionsFromComponent(route: NuxtPage, localeCodes: string[]) {
-  debug('getRouteOptionsFromComponent', route)
-
-  // localize disabled if no file (vite) or component (webpack)
-  if (route.file == null) {
-    return undefined
-  }
-
-  const options: ComputedRouteOptions = {
-    locales: localeCodes,
-    paths: {}
-  }
-
-  const componentOptions = readComponent(route.file)
-
-  // skip if page components not defined
-  if (componentOptions == null) {
-    return options
-  }
-
-  // localize disabled
-  if (componentOptions === false) {
-    return undefined
-  }
-
-  options.locales = componentOptions.locales || localeCodes
-
-  // construct paths object
-  for (const locale in componentOptions.paths) {
-    if (isString(componentOptions.paths[locale])) {
-      options.paths[locale] = resolveRoutePath(componentOptions.paths[locale])
-    }
-  }
-
-  return options
+  return { locales, paths }
 }
 
 /**

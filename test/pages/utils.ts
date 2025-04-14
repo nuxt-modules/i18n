@@ -39,11 +39,16 @@ export function stripFilePropertyFromPages(pages: NuxtPage[]) {
   })
 }
 
-export function createPageAnalyzeContext(srcDir: string = '/path/to/nuxt-app', pagesDir: string = 'pages') {
+export function createPageAnalyzeContext(
+  srcDir: string = '/path/to/nuxt-app',
+  pagesDir: string = 'pages',
+  config: NuxtI18nOptions['pages'] = undefined
+) {
   return {
     stack: [],
     srcDir,
     pagesDir,
+    config,
     pages: new Map<string, AnalyzedNuxtPageMeta>()
   }
 }
