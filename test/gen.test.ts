@@ -169,7 +169,7 @@ test('files with cache configuration', async () => {
 
   for (const l of locales) {
     // @ts-ignore
-    l.files = resolveRelativeLocales(l, { langDir: 'locales' })
+    l.files = resolveRelativeLocales(l, { langDir: '/test/srcDir/locales' })
   }
 
   const localeInfo = await resolveLocales('/test', locales)
