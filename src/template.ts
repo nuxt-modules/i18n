@@ -155,8 +155,6 @@ export const localeLoaders = ${genObjectFromRaw(localeLoaderEntries)}
 
 export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => x.importer))}
 
-export const nuxtI18nOptions = ${genObjectFromValues(opts.nuxtI18nOptions)}
-
 export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x => genObjectFromValues(x, '  ')))}
 
 export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
