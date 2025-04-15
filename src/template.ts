@@ -121,7 +121,7 @@ export function generateTemplateNuxtI18nOptions(
 ): string {
   const codeHMR =
     nuxt.options.dev &&
-    opts.nuxtI18nOptions.hmr &&
+    ctx.options.hmr &&
     [
       `if(import.meta.hot) {`,
       deepEqualFn,
