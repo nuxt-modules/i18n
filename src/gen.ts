@@ -1,4 +1,4 @@
-import { assign, isString } from '@intlify/shared'
+import { isString } from '@intlify/shared'
 import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { getLayerI18n } from './utils'
@@ -80,25 +80,12 @@ export function generateLoaderOptions(
     vueI18nConfigs.push({ specifier, importer, relative: relative(nuxt.options.buildDir, config.path) })
   }
 
-  const nuxtI18nOptions = assign({}, ctx.options, {
-    locales: simplifyLocaleOptions(nuxt, ctx.options),
-    i18nModules: (ctx.options.i18nModules ?? []).map(x => {
-      delete x.langDir
-      x.locales = (x.locales ?? []).map(locale => (isString(locale) ? locale : stripLocaleFiles(locale))) as
-        | string[]
-        | LocaleObject[]
-      return x
-    })
-  })
-  // @ts-expect-error is required
-  delete nuxtI18nOptions.vueI18n
-
   /**
    * Process locale file paths in `normalizedLocales`
    */
   const normalizedLocales = ctx.normalizedLocales.map(x => stripLocaleFiles(x))
 
-  return { localeLoaders, nuxtI18nOptions, vueI18nConfigs, normalizedLocales }
+  return { localeLoaders, vueI18nConfigs, normalizedLocales }
 }
 
 /**
