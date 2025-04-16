@@ -113,7 +113,7 @@
   "devDependencies": {
     "@babel/types": "^7.27.0",
     "@eslint/js": "9.23.0",
-    "@nuxt/module-builder": "^1.0.0",
+    "@nuxt/module-builder": "^1.0.1",
     "@nuxt/schema": "^3.16.2",
     "@rspack/core": "^1.2.8",
     "@types/debug": "^4.1.12",
