@@ -35,7 +35,7 @@ function onClick() {
     return navigateTo(route.fullPath)
   }
 }
-const { data, refresh } = useAsyncData('home', () =>
+const { data, refresh } = useAsyncData(`home-${locale.value}`, () =>
   Promise.resolve({
     aboutPath: localePath('about'),
     aboutTranslation: t('about')
