@@ -1,15 +1,21 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, useTestContext } from '../utils'
+import { setup, url } from '../utils'
 import { getText, getData, waitForMs, renderPage, waitForURL, localeLoaderHelpers } from '../helper'
 
 describe('basic lazy loading', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/lazy-without-server`, import.meta.url)),
+    rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
     browser: true,
     prerender: true,
     nuxtConfig: {
-      _i18nTest: true
+      _i18nTest: true,
+      runtimeConfig: {
+        public: {
+          // disables fetching localized messages from server route
+          noServer: true
+        }
+      }
     }
   })
 
