@@ -89,7 +89,7 @@
   "dependencies": {
     "@intlify/h3": "^0.6.1",
     "@intlify/shared": "^10.0.7",
-    "@intlify/unplugin-vue-i18n": "^6.0.5",
+    "@intlify/unplugin-vue-i18n": "^6.0.8",
     "@intlify/utils": "^0.13.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
     "@nuxt/kit": "^3.16.2",
