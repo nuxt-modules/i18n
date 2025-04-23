@@ -1,6 +1,5 @@
 import { deepCopy, isArray, isFunction, isObject } from '@intlify/shared'
 import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n/options.mjs'
-// @ts-expect-error virtual file
 import { dtsFile } from '#internal/i18n-type-generation-options'
 import { loadLocale, loadVueI18nOptions } from '../messages'
 import { nuxtMock } from './utils'
