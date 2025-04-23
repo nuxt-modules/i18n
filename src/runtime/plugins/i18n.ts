@@ -18,7 +18,7 @@ import {
   createNuxtI18nDev,
   createComposableContext
 } from '../utils'
-import { getLocaleCookie, createI18nCookie, runtimeDetectBrowserLanguage, getBrowserLocale } from '../internal'
+import { getLocaleCookie, createI18nCookie, getBrowserLocale } from '../internal'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
 import { extendI18n } from '../routing/i18n'
 import { createLogger } from '#nuxt-i18n/logger'
@@ -90,7 +90,7 @@ export default defineNuxtPlugin({
     }
 
     const localeCookie = createI18nCookie()
-    const detectBrowserOptions = runtimeDetectBrowserLanguage()
+    const detectBrowserOptions = runtimeI18n.detectBrowserLanguage
     // extend i18n instance
     extendI18n(i18n, {
       extendComposer(composer) {

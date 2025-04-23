@@ -42,7 +42,7 @@ export function getBrowserLocale(): string | undefined {
 }
 
 export function createI18nCookie() {
-  const detect = runtimeDetectBrowserLanguage()
+  const detect = (useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig).detectBrowserLanguage
   const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
   const date = new Date()
   const cookieOptions: CookieOptions<string | null | undefined> & { readonly: false } = {
@@ -114,7 +114,7 @@ export function detectBrowserLanguage(
   locale: Locale = ''
 ): DetectBrowserLanguageResult {
   const logger = /*#__PURE__*/ createLogger('detectBrowserLanguage')
-  const _detect = runtimeDetectBrowserLanguage()
+  const _detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
 
   // feature is disabled
   if (!_detect) {
@@ -167,11 +167,4 @@ export function detectBrowserLanguage(
 
   // use fallback locale when no locale matched
   return { locale: _detect.fallbackLocale || '', from: 'fallback' }
-}
-
-export function runtimeDetectBrowserLanguage(
-  opts: I18nPublicRuntimeConfig = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
-) {
-  if (opts?.detectBrowserLanguage === false) return false
-  return opts?.detectBrowserLanguage
 }
