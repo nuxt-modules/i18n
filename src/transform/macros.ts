@@ -17,12 +17,13 @@ import type { BundlerPluginOptions } from './utils'
 
 const debug = createDebug('@nuxtjs/i18n:transform:macros')
 
+const I18N_MACRO_FN_RE = new RegExp(`\\b${NUXT_I18N_COMPOSABLE_DEFINE_ROUTE}\\s*\\(\\s*`)
+
 /**
  * TODO:
  *  `paths`, `locales` completions like `unplugin-vue-router`
  *  ref: https://github.com/posva/unplugin-vue-router
  */
-
 export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
   createUnplugin(() => {
     return {
@@ -37,36 +38,41 @@ export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
         return isVue(id, { type: ['script'] })
       },
 
-      transform(code, id) {
-        debug('transform', id)
+      transform: {
+        filter: {
+          code: { include: I18N_MACRO_FN_RE }
+        },
+        handler(code, id) {
+          debug('transform', id)
 
-        const parsed = parseSFC(code, { sourceMap: false })
-        // only transform <script>
-        const script = parsed.descriptor.scriptSetup ?? parsed.descriptor.script
-        if (!script) {
-          return
-        }
+          const parsed = parseSFC(code, { sourceMap: false })
+          // only transform <script>
+          const script = parsed.descriptor.scriptSetup ?? parsed.descriptor.script
+          if (!script) {
+            return
+          }
 
-        const s = new MagicString(code)
+          const s = new MagicString(code)
 
-        // match content inside <script>
-        const match = script.content.match(new RegExp(`\\b${NUXT_I18N_COMPOSABLE_DEFINE_ROUTE}\\s*\\(\\s*`))
-        if (match?.[0]) {
-          // tree-shake out any runtime references to the macro.
-          const scriptString = new MagicString(script.content)
-          scriptString.overwrite(match.index!, match.index! + match[0].length, `false && /*#__PURE__*/ ${match[0]}`)
+          // match content inside <script>
+          const match = script.content.match(I18N_MACRO_FN_RE)
+          if (match?.[0]) {
+            // tree-shake out any runtime references to the macro.
+            const scriptString = new MagicString(script.content)
+            scriptString.overwrite(match.index!, match.index! + match[0].length, `false && /*#__PURE__*/ ${match[0]}`)
 
-          // using the locations from the parsed result we only replace the <script> contents
-          s.overwrite(script.loc.start.offset, script.loc.end.offset, scriptString.toString())
-        }
+            // using the locations from the parsed result we only replace the <script> contents
+            s.overwrite(script.loc.start.offset, script.loc.end.offset, scriptString.toString())
+          }
 
-        if (s.hasChanged()) {
-          debug('transformed: id -> ', id)
-          debug('transformed: code -> ', s.toString())
+          if (s.hasChanged()) {
+            debug('transformed: id -> ', id)
+            debug('transformed: code -> ', s.toString())
 
-          return {
-            code: s.toString(),
-            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+            return {
+              code: s.toString(),
+              map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+            }
           }
         }
       }

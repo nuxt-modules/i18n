@@ -38,104 +38,109 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
         return isVue(id, { type: ['script'] })
       },
 
-      transform(code, id) {
-        debug('transform', id)
+      transform: {
+        filter: {
+          code: { include: TRANSLATION_FUNCTIONS_RE }
+        },
+        handler(code, id) {
+          debug('transform', id)
 
-        // only transform if translation functions are present
-        const script = extractScriptContent(code)
-        if (!script || !TRANSLATION_FUNCTIONS_RE.test(script)) {
-          return
-        }
-
-        // only transform <script setup> and if translation functions are present
-        const scriptSetup = parseSFC(code, { sourceMap: false }).descriptor.scriptSetup
-        if (!scriptSetup) {
-          return
-        }
-
-        // strip types and typescript specific features for ast parsing
-        const ast = parseSync(id, script, { lang: 'tsx' })
-
-        // collect variable and function declarations with scope info.
-        let scopeTracker = new ScopeTracker()
-        const varCollector = new ScopedVarsCollector()
-        walk(ast.program as unknown as Program, {
-          enter(_node) {
-            if (_node.type === 'BlockStatement') {
-              scopeTracker.enterScope()
-              varCollector.refresh(scopeTracker.curScopeKey)
-            } else if (_node.type === 'FunctionDeclaration' && _node.id) {
-              varCollector.addVar(_node.id.name)
-            } else if (_node.type === 'VariableDeclarator') {
-              varCollector.collect(_node.id)
-            }
-          },
-          leave(_node) {
-            if (_node.type === 'BlockStatement') {
-              scopeTracker.leaveScope()
-              varCollector.refresh(scopeTracker.curScopeKey)
-            }
-          }
-        })
-
-        const missingFunctionDeclarators = new Set<string>()
-        scopeTracker = new ScopeTracker()
-        walk(ast.program as unknown as Program, {
-          enter(_node) {
-            if (_node.type === 'BlockStatement') {
-              scopeTracker.enterScope()
-            }
-
-            if (_node.type !== 'CallExpression' || (_node as CallExpression).callee.type !== 'Identifier') {
-              return
-            }
-
-            const node: CallExpression = _node as CallExpression
-            const name = 'name' in node.callee && node.callee.name
-
-            if (!name || !TRANSLATION_FUNCTIONS.includes(name)) {
-              return
-            }
-
-            // check if function is used without having been declared
-            if (varCollector.hasVar(scopeTracker.curScopeKey, name)) {
-              return
-            }
-
-            missingFunctionDeclarators.add(name)
-          },
-          leave(_node) {
-            if (_node.type === 'BlockStatement') {
-              scopeTracker.leaveScope()
-            }
-          }
-        })
-
-        const s = new MagicString(code)
-        if (missingFunctionDeclarators.size > 0) {
-          debug(`injecting ${Array.from(missingFunctionDeclarators).join(', ')} declaration to ${id}`)
-
-          // only add variables when used without having been declared
-          const assignments: string[] = []
-          for (const missing of missingFunctionDeclarators) {
-            assignments.push(TRANSLATION_FUNCTIONS_MAP[missing])
+          // only transform if translation functions are present
+          const script = extractScriptContent(code)
+          if (!script) {
+            return
           }
 
-          // add variable declaration at the start of <script>, `autoImports` does the rest
-          s.overwrite(
-            scriptSetup.loc.start.offset,
-            scriptSetup.loc.end.offset,
-            `\nconst { ${assignments.join(', ')} } = useI18n()\n` + scriptSetup.content
-          )
-        }
+          // only transform <script setup> and if translation functions are present
+          const scriptSetup = parseSFC(code, { sourceMap: false }).descriptor.scriptSetup
+          if (!scriptSetup) {
+            return
+          }
 
-        if (s.hasChanged()) {
-          debug('transformed: id -> ', id)
-          debug('transformed: code -> ', s.toString())
+          // strip types and typescript specific features for ast parsing
+          const ast = parseSync(id, script, { lang: 'tsx' })
 
-          return {
-            code: s.toString(),
-            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+          // collect variable and function declarations with scope info.
+          let scopeTracker = new ScopeTracker()
+          const varCollector = new ScopedVarsCollector()
+          walk(ast.program as unknown as Program, {
+            enter(_node) {
+              if (_node.type === 'BlockStatement') {
+                scopeTracker.enterScope()
+                varCollector.refresh(scopeTracker.curScopeKey)
+              } else if (_node.type === 'FunctionDeclaration' && _node.id) {
+                varCollector.addVar(_node.id.name)
+              } else if (_node.type === 'VariableDeclarator') {
+                varCollector.collect(_node.id)
+              }
+            },
+            leave(_node) {
+              if (_node.type === 'BlockStatement') {
+                scopeTracker.leaveScope()
+                varCollector.refresh(scopeTracker.curScopeKey)
+              }
+            }
+          })
+
+          const missingFunctionDeclarators = new Set<string>()
+          scopeTracker = new ScopeTracker()
+          walk(ast.program as unknown as Program, {
+            enter(_node) {
+              if (_node.type === 'BlockStatement') {
+                scopeTracker.enterScope()
+              }
+
+              if (_node.type !== 'CallExpression' || (_node as CallExpression).callee.type !== 'Identifier') {
+                return
+              }
+
+              const node: CallExpression = _node as CallExpression
+              const name = 'name' in node.callee && node.callee.name
+
+              if (!name || !TRANSLATION_FUNCTIONS.includes(name)) {
+                return
+              }
+
+              // check if function is used without having been declared
+              if (varCollector.hasVar(scopeTracker.curScopeKey, name)) {
+                return
+              }
+
+              missingFunctionDeclarators.add(name)
+            },
+            leave(_node) {
+              if (_node.type === 'BlockStatement') {
+                scopeTracker.leaveScope()
+              }
+            }
+          })
+
+          const s = new MagicString(code)
+          if (missingFunctionDeclarators.size > 0) {
+            debug(`injecting ${Array.from(missingFunctionDeclarators).join(', ')} declaration to ${id}`)
+
+            // only add variables when used without having been declared
+            const assignments: string[] = []
+            for (const missing of missingFunctionDeclarators) {
+              assignments.push(TRANSLATION_FUNCTIONS_MAP[missing])
+            }
+
+            // add variable declaration at the start of <script>, `autoImports` does the rest
+            s.overwrite(
+              scriptSetup.loc.start.offset,
+              scriptSetup.loc.end.offset,
+              `\nconst { ${assignments.join(', ')} } = useI18n()\n` + scriptSetup.content
+            )
+          }
+
+          if (s.hasChanged()) {
+            debug('transformed: id -> ', id)
+            debug('transformed: code -> ', s.toString())
+
+            return {
+              code: s.toString(),
+              map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+            }
           }
         }
       }
