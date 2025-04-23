@@ -23,7 +23,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      myKey: 'runtime-config-value'
+      myKey: 'runtime-config-value',
+      noServer: false
     }
   },
   modules: [i18nModule, '@nuxtjs/i18n'],
