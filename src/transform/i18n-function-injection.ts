@@ -11,7 +11,7 @@ import { walk } from 'estree-walker'
 import { createUnplugin } from 'unplugin'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 import { isVue } from './utils'
-import { parseSync } from '../utils/parse'
+import { parseSync } from 'oxc-parser'
 import type { CallExpression, Pattern, Program } from 'estree'
 import type { BundlerPluginOptions } from './utils'
 
