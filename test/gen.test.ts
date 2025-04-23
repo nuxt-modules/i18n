@@ -1,6 +1,7 @@
 import { generateLoaderOptions } from '../src/gen'
 import { getNormalizedLocales, resolveLocales, resolveRelativeLocales, resolveVueI18nConfigInfo } from '../src/utils'
-import { vi, beforeEach, afterEach, test, expect, beforeAll } from 'vitest'
+import { vi, beforeEach, afterEach, test, expect } from 'vitest'
+import { parse } from 'pathe'
 
 import type { FileMeta, LocaleInfo, LocaleObject, NuxtI18nOptions } from '../src/types'
 import type { Nuxt } from '@nuxt/schema'
