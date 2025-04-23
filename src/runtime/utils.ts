@@ -12,7 +12,7 @@ import {
 } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
-import { detectBrowserLanguage, runtimeDetectBrowserLanguage } from './internal'
+import { detectBrowserLanguage } from './internal'
 import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
@@ -172,8 +172,8 @@ export function createComposableContext({
 export async function loadAndSetLocale(newLocale: Locale, initial: boolean = false): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const nuxtApp = useNuxtApp()
-  const { differentDomains, skipSettingLocaleOnNavigate } = nuxtApp.$config.public.i18n
-  const opts = runtimeDetectBrowserLanguage()
+  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
+  const { differentDomains, skipSettingLocaleOnNavigate, detectBrowserLanguage: opts } = runtimeI18n
 
   const oldLocale = unref(nuxtApp.$i18n.locale)
   const localeCodes = unref(nuxtApp.$i18n.localeCodes)
@@ -249,8 +249,9 @@ export function detectLocale(
   localeCookie: string | undefined
 ) {
   const nuxtApp = useNuxtApp()
-  const { strategy, defaultLocale, differentDomains, multiDomainLocales } = nuxtApp.$config.public.i18n
-  const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
+
+  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
+  const { strategy, defaultLocale, differentDomains, multiDomainLocales, detectBrowserLanguage: _detect } = runtimeI18n
   const logger = /*#__PURE__*/ createLogger('detectLocale')
 
   const detectedBrowser = detectBrowserLanguage(route, localeCookie, currentLocale)
@@ -271,12 +272,12 @@ export function detectLocale(
     detected ||= routeLocale
   }
 
-  __DEBUG__ && logger.log('2/3', { detected, detectBrowserLanguage: _detectBrowserLanguage })
+  __DEBUG__ && logger.log('2/3', { detected, detectBrowserLanguage: _detect })
 
   const cookieLocale =
     (localeCodes.includes(detectedBrowser.locale) || (localeCookie && localeCodes.includes(localeCookie))) &&
-    _detectBrowserLanguage &&
-    _detectBrowserLanguage.useCookie &&
+    _detect &&
+    _detect.useCookie &&
     localeCookie
   detected ||= cookieLocale || currentLocale || defaultLocale || ''
 

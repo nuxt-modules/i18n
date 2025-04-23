@@ -1,6 +1,5 @@
-import { useNuxtApp, useCookie } from '#imports'
+import { useNuxtApp, useCookie, useRuntimeConfig } from '#imports'
 import { ref } from 'vue'
-import { runtimeDetectBrowserLanguage } from '../internal'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../utils'
 import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
@@ -210,14 +209,14 @@ export function useBrowserLocale(): string | null {
  */
 export function useCookieLocale(): Ref<string> {
   const locale: Ref<string> = ref('')
-  const detect = runtimeDetectBrowserLanguage()
+  const detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
 
   if (!detect || !detect.useCookie) {
     return locale
   }
 
   const locales = useNuxtApp()._nuxtI18n.getLocales()
-  const code = useCookie(detect.cookieKey!).value
+  const code = useCookie(detect.cookieKey).value
   if (code && locales.some(x => x.code === code)) {
     locale.value = code
   }
