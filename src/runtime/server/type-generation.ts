@@ -2,7 +2,6 @@ import { deepCopy, isArray, isFunction, isObject } from '@intlify/shared'
 import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n/options.mjs'
 import { dtsFile } from '#internal/i18n-type-generation-options'
 import { loadLocale, loadVueI18nOptions } from '../messages'
-import { nuxtMock } from './utils'
 import { writeFile } from 'fs/promises'
 import { useRuntimeConfig } from '#imports'
 
@@ -25,7 +24,7 @@ export default async () => {
     numberFormats: {}
   }
 
-  const vueI18nConfig: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtMock)
+  const vueI18nConfig: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
   for (const locale of targetLocales) {
     deepCopy(vueI18nConfig.messages?.[locale] || {}, merged.messages)
     deepCopy(vueI18nConfig.numberFormats?.[locale] || {}, merged.numberFormats)
@@ -35,7 +34,7 @@ export default async () => {
   const loaderPromises: Promise<void>[] = []
   for (const locale in localeLoaders) {
     if (!targetLocales.includes(locale)) continue
-    loaderPromises.push(loadLocale(locale, localeLoaders, (_, message) => deepCopy(message, merged.messages), nuxtMock))
+    loaderPromises.push(loadLocale(locale, localeLoaders, (_, message) => deepCopy(message, merged.messages)))
   }
 
   await Promise.all(loaderPromises)
