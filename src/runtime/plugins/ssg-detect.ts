@@ -1,5 +1,4 @@
 import { unref } from 'vue'
-import { isSSG } from '#build/i18n.options.mjs'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { createLogger } from '#nuxt-i18n/logger'
 import { detectBrowserLanguage } from '../internal'
@@ -10,7 +9,7 @@ export default defineNuxtPlugin({
   enforce: 'post',
   setup() {
     const nuxt = useNuxtApp()
-    if (!isSSG || nuxt.$i18n.strategy !== 'no_prefix' || !nuxt.$config.public.i18n.detectBrowserLanguage) return
+    if (!__IS_SSG__ || nuxt.$i18n.strategy !== 'no_prefix' || !nuxt.$config.public.i18n.detectBrowserLanguage) return
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n:ssg-detect')
     const localeCookie = nuxt.$i18n.getLocaleCookie()

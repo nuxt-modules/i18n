@@ -8,14 +8,6 @@ declare module '#build/i18n.options.mjs' {
   export const vueI18nConfigs: VueI18nConfig[]
   export const localeCodes: string[]
   export const normalizedLocales: LocaleObject[]
-  export const isSSG: boolean
-  export const hasPages: boolean
-  export const parallelPlugin: boolean
-
-  export const NUXT_I18N_MODULE_ID: string
-  export const DYNAMIC_PARAMS_KEY: string
-  export const DEFAULT_COOKIE_KEY: string
-  export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER: string
 }
 
 declare module '#internal/i18n/options.mjs' {
@@ -26,14 +18,6 @@ declare module '#internal/i18n/options.mjs' {
   export const vueI18nConfigs: VueI18nConfig[]
   export const localeCodes: string[]
   export const normalizedLocales: LocaleObject[]
-  export const isSSG: boolean
-  export const hasPages: boolean
-  export const parallelPlugin: boolean
-
-  export const NUXT_I18N_MODULE_ID: string
-  export const DYNAMIC_PARAMS_KEY: string
-  export const DEFAULT_COOKIE_KEY: string
-  export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER: string
 }
 
 declare module '#internal/i18n/locale.detector.mjs' {

@@ -1,15 +1,7 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { assign, isFunction, isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useState } from '#imports'
-import {
-  DYNAMIC_PARAMS_KEY,
-  NUXT_I18N_MODULE_ID,
-  isSSG,
-  localeCodes,
-  localeLoaders,
-  normalizedLocales,
-  vueI18nConfigs
-} from '#build/i18n.options.mjs'
+import { localeCodes, localeLoaders, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage } from './internal'
@@ -32,7 +24,7 @@ import type { I18nPublicRuntimeConfig, LocaleObject, Strategies } from '#interna
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 
 export function formatMessage(message: string) {
-  return `[${NUXT_I18N_MODULE_ID}]: ${message}`
+  return `[${__NUXT_I18N_MODULE_ID__}]: ${message}`
 }
 
 /**
@@ -151,7 +143,7 @@ export function createComposableContext({
     getBaseUrl: () => joinURL(unref(i18n.baseUrl), nuxt.$config.app.baseURL),
     getRouteBaseName,
     getLocalizedDynamicParams: locale => {
-      const params = (router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] ?? {}) as Partial<I18nRouteMeta>
+      const params = (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
       return params[locale]
     },
     afterSwitchLocalePath: (path, locale) => {
@@ -327,7 +319,7 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
 }
 
 // composable function for redirect loop avoiding
-const useRedirectState = () => useState<string>(NUXT_I18N_MODULE_ID + ':redirect', () => '')
+const useRedirectState = () => useState<string>(__NUXT_I18N_MODULE_ID__ + ':redirect', () => '')
 
 type NavigateArgs = {
   nuxt: NuxtApp
@@ -342,7 +334,13 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
   const logger = /*#__PURE__*/ createLogger('navigate')
 
   __DEBUG__ &&
-    logger.log('options', { rootRedirect, differentDomains, skipSettingLocaleOnNavigate, enableNavigate, isSSG })
+    logger.log('options', {
+      rootRedirect,
+      differentDomains,
+      skipSettingLocaleOnNavigate,
+      enableNavigate,
+      isSSG: __IS_SSG__
+    })
 
   if (route.path === '/' && rootRedirect) {
     let redirectCode = 302

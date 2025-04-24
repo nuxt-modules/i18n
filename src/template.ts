@@ -1,12 +1,6 @@
 import { useNuxt } from '@nuxt/kit'
 import { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
-import {
-  DYNAMIC_PARAMS_KEY,
-  DEFAULT_COOKIE_KEY,
-  NUXT_I18N_MODULE_ID,
-  SWITCH_LOCALE_PATH_LINK_IDENTIFIER
-} from './constants'
 import type { I18nNuxtContext } from './context'
 
 type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
@@ -142,9 +136,6 @@ export function generateTemplateNuxtI18nOptions(
     localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
-  const hasPages = nuxt.options.pages.toString()
-
   return `
 // @ts-nocheck
 ${(!ctx.options.lazy && [...importStrings].join('\n')) || ''}
@@ -157,14 +148,6 @@ export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => x.i
 
 export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x => genObjectFromValues(x, '  ')))}
 
-export const NUXT_I18N_MODULE_ID = ${genString(NUXT_I18N_MODULE_ID)}
-export const parallelPlugin = ${ctx.options.parallelPlugin}
-export const isSSG = ${nuxt.options._generate}
-export const hasPages = ${hasPages}
-
-export const DEFAULT_COOKIE_KEY = ${genString(DEFAULT_COOKIE_KEY)}
-export const DYNAMIC_PARAMS_KEY = ${genString(DYNAMIC_PARAMS_KEY)}
-export const SWITCH_LOCALE_PATH_LINK_IDENTIFIER = ${genString(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)}
 /** client **/
 ${codeHMR || ''}
 /** client-end **/`
