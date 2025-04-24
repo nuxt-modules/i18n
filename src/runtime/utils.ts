@@ -430,7 +430,9 @@ export function createBaseUrlGetter(nuxt: NuxtApp) {
     }
   }
 
-  const localeCode = isFunction(defaultLocale) ? /*#__PURE__*/ (defaultLocale() as string) : defaultLocale
+  const localeCode = isFunction(defaultLocale)
+    ? /*#__PURE__*/ (defaultLocale as unknown as () => string)()
+    : defaultLocale
   return (): string => {
     if (__DIFFERENT_DOMAINS__ && localeCode) {
       const domain = nuxt._i18nGetDomainFromLocale(localeCode)

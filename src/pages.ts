@@ -442,7 +442,7 @@ function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
 
 function evalValue(value: string) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, @typescript-eslint/no-unsafe-call
     return new Function(`return (${value})`)() as ComputedRouteOptions | false
   } catch (_e) {
     console.error(formatMessage(`Cannot evaluate value: ${value}`))
