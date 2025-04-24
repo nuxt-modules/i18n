@@ -52,6 +52,8 @@ export default [
       }
     },
     rules: {
+      '@typescript-eslint/no-unused-expressions': ['error', { allowShortCircuit: true }],
+      '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
       '@typescript-eslint/no-unused-vars': [
         'error',
         {

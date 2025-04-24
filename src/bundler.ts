@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import createDebug from 'debug'
 import { extendViteConfig, addWebpackPlugin, addBuildPlugin, addTemplate, addRspackPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
