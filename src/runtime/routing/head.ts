@@ -33,7 +33,7 @@ function createHeadContext(
     getRouteBaseName: ctx.getRouteBaseName,
     getCurrentRoute: () => ctx.router.currentRoute.value,
     getCurrentLanguage: () => currentLocale.language,
-    getCurrentDirection: () => currentLocale.dir || routingOptions.defaultDirection,
+    getCurrentDirection: () => currentLocale.dir || __DEFAULT_DIRECTION__,
     getLocaleRoute: route => localeRoute(ctx, route),
     getLocalizedRoute: (locale, route) => switchLocalePath(ctx, locale, route),
     getRouteWithoutQuery: () =>

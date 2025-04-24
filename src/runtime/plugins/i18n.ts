@@ -32,8 +32,13 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
     nuxt._i18nGetDomainFromLocale = createDomainFromLocaleGetter(nuxt)
-    const defaultLocaleDomain = getDefaultLocaleForDomain(_runtimeI18n)
-    setupMultiDomainLocales(_runtimeI18n, defaultLocaleDomain)
+
+    let defaultLocaleDomain: string = _runtimeI18n.defaultLocale || ''
+    if (__MULTI_DOMAIN_LOCALES__) {
+      defaultLocaleDomain = getDefaultLocaleForDomain(_runtimeI18n)
+      setupMultiDomainLocales(defaultLocaleDomain)
+    }
+
     nuxt.$config.public.i18n.defaultLocale = defaultLocaleDomain
 
     // Fresh copy per request to prevent reusing mutated options
@@ -62,8 +67,8 @@ export default defineNuxtPlugin({
 
     nuxt._vueI18n = i18n
     i18n.__localeFromRoute = createLocaleFromRouteGetter({
-      separator: runtimeI18n.routesNameSeparator,
-      defaultSuffix: runtimeI18n.defaultLocaleRouteNameSuffix,
+      separator: __ROUTE_NAME_SEPARATOR__,
+      defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__,
       localeCodes
     })
     i18n.__firstAccess = true
@@ -100,14 +105,14 @@ export default defineNuxtPlugin({
           watch(composer.locale, () => (_baseUrl.value = runtimeI18n.baseUrl()))
         }
 
-        composer.strategy = runtimeI18n.strategy
+        composer.strategy = __I18N_STRATEGY__
         composer.localeProperties = computed(
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(locale, i18n.__firstAccess)
 
-          if (composer.strategy === 'no_prefix' || !__HAS_PAGES__) {
+          if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
             await composer.loadLocaleMessages(locale)
             i18n.__setLocale(locale)
             return
@@ -124,7 +129,7 @@ export default defineNuxtPlugin({
         }
         composer.loadLocaleMessages = async (locale: string) =>
           await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer), nuxt)
-        composer.differentDomains = runtimeI18n.differentDomains
+        composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
         composer.getBrowserLocale = () => getBrowserLocale()
         composer.getLocaleCookie = () => getLocaleCookie(localeCookie, detectBrowserOptions, composer.defaultLocale)
@@ -163,11 +168,11 @@ export default defineNuxtPlugin({
           ['locales', () => c.locales],
           ['localeCodes', () => c.localeCodes],
           ['baseUrl', () => c.baseUrl],
-          ['strategy', () => c.strategy],
+          ['strategy', () => __I18N_STRATEGY__],
           ['localeProperties', () => c.localeProperties],
           ['setLocale', () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
           ['loadLocaleMessages', () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
-          ['differentDomains', () => c.differentDomains],
+          ['differentDomains', () => __DIFFERENT_DOMAINS__],
           ['defaultLocale', () => c.defaultLocale],
           ['getBrowserLocale', () => () => Reflect.apply(c.getBrowserLocale, c, [])],
           ['getLocaleCookie', () => () => Reflect.apply(c.getLocaleCookie, c, [])],

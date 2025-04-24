@@ -122,24 +122,23 @@ export function detectBrowserLanguage(
   }
 
   const nuxtApp = useNuxtApp()
-  const strategy = nuxtApp.$i18n.strategy
   const firstAccess = nuxtApp._vueI18n.__firstAccess
 
   __DEBUG__ && logger.log({ firstAccess })
 
   // detection ignored during nuxt generate
-  if (__IS_SSG__ && firstAccess && strategy === 'no_prefix' && import.meta.server) {
+  if (__IS_SSG__ && firstAccess && __I18N_STRATEGY__ === 'no_prefix' && import.meta.server) {
     return { locale: '', error: 'detect_ignore_on_ssg' }
   }
 
   // detection only on first access
   if (!firstAccess) {
-    return { locale: strategy === 'no_prefix' ? locale : '', error: 'first_access_only' }
+    return { locale: __I18N_STRATEGY__ === 'no_prefix' ? locale : '', error: 'first_access_only' }
   }
 
-  __DEBUG__ && logger.log({ locale, path: getCompatRoutePath(route), strategy, ..._detect })
+  __DEBUG__ && logger.log({ locale, path: getCompatRoutePath(route), strategy: __I18N_STRATEGY__, ..._detect })
 
-  if (strategy !== 'no_prefix') {
+  if (__I18N_STRATEGY__ !== 'no_prefix') {
     const path = getCompatRoutePath(route)
 
     // detection only on root

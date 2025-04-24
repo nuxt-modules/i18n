@@ -124,7 +124,15 @@ export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt =
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
     __NUXT_I18N_MODULE_ID__: JSON.stringify(NUXT_I18N_MODULE_ID),
-    __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)
+    __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
+    __I18N_STRATEGY__: JSON.stringify(options.strategy),
+    __LAZY_LOCALES__: String(options.lazy),
+    __DIFFERENT_DOMAINS__: String(options.differentDomains),
+    __MULTI_DOMAIN_LOCALES__: String(options.multiDomainLocales),
+    __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
+    __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
+    __TRAILING_SLASH__: String(options.trailingSlash),
+    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection)
   }
 
   if (nuxt.options.ssr || !server) {

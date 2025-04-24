@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNuxtOptions } from './utils'
@@ -9,6 +9,12 @@ import type { NuxtPage } from '@nuxt/schema'
 import type { LocaleObject } from '../../src/types'
 import { LocalizableRoute } from '../../src/kit/gen'
 
+beforeEach(() => {
+  vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
+  vi.stubGlobal('__ROUTE_NAME_SEPARATOR__', '___')
+  vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', 'default')
+})
+globalThis.__ROUTE_NAME_SEPARATOR__ = '___'
 const nuxtOptions = getNuxtOptions({})
 nuxtOptions.locales = nuxtOptions.locales?.filter(x => (x as LocaleObject).code !== 'fr') as LocaleObject[]
 delete nuxtOptions.defaultLocale
@@ -146,6 +152,7 @@ describe('localizeRoutes', function () {
   })
 
   describe('strategy: "prefix_and_default"', function () {
+    vi.stubGlobal('__I18N_STRATEGY__', 'prefix_and_default')
     it('should be localized routing', function () {
       const routes: NuxtPage[] = [
         {
@@ -183,6 +190,8 @@ describe('localizeRoutes', function () {
     })
   })
 
+  vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', true)
+  vi.stubGlobal('__I18N_STRATEGY__', 'prefix_and_default')
   // low confidence test
   describe('strategy: "prefix_and_default" + multiDomainLocales', function () {
     it('should be localized routing', function () {
@@ -224,20 +233,12 @@ describe('localizeRoutes', function () {
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      setupMultiDomainLocales(
-        {
-          multiDomainLocales: true,
-          strategy: 'prefix_except_default',
-          routesNameSeparator: '___',
-          defaultLocaleRouteNameSuffix: 'default'
-        },
-        'en',
-        router
-      )
+      setupMultiDomainLocales('en', router)
 
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
     })
   })
+  vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
 
   describe('strategy: "prefix_except_default"', function () {
     it('should be localized routing', function () {
@@ -332,3 +333,4 @@ describe('localizeRoutes', function () {
     })
   })
 })
+vi.unstubAllGlobals()
