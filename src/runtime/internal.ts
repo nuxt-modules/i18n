@@ -1,6 +1,6 @@
 import { isString } from '@intlify/shared'
 import { useCookie, useNuxtApp, useRequestHeader, useRuntimeConfig } from '#imports'
-import { DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
+import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, getRoutePathLocaleRegex } from '#i18n-kit/routing'
 import { createLogger } from '#nuxt-i18n/logger'
 
@@ -43,7 +43,7 @@ export function getBrowserLocale(): string | undefined {
 
 export function createI18nCookie() {
   const detect = (useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig).detectBrowserLanguage
-  const cookieKey = (detect && detect.cookieKey) || DEFAULT_COOKIE_KEY
+  const cookieKey = (detect && detect.cookieKey) || __DEFAULT_COOKIE_KEY__
   const date = new Date()
   const cookieOptions: CookieOptions<string | null | undefined> & { readonly: false } = {
     path: '/',
@@ -128,7 +128,7 @@ export function detectBrowserLanguage(
   __DEBUG__ && logger.log({ firstAccess })
 
   // detection ignored during nuxt generate
-  if (isSSG && firstAccess && strategy === 'no_prefix' && import.meta.server) {
+  if (__IS_SSG__ && firstAccess && strategy === 'no_prefix' && import.meta.server) {
     return { locale: '', error: 'detect_ignore_on_ssg' }
   }
 

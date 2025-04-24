@@ -13,6 +13,12 @@ import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
 import type { I18nNuxtContext } from './context'
 import type { NuxtI18nOptions } from './types'
+import {
+  DEFAULT_COOKIE_KEY,
+  DYNAMIC_PARAMS_KEY,
+  NUXT_I18N_MODULE_ID,
+  SWITCH_LOCALE_PATH_LINK_IDENTIFIER
+} from './constants'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -110,7 +116,15 @@ export function createLogger(label) {
 export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt = useNuxt()) {
   const common = {
     __DEBUG__: String(!!options.debug),
-    __TEST__: String(!!options.debug || nuxt.options._i18nTest)
+    __TEST__: String(!!options.debug || nuxt.options._i18nTest),
+    __IS_SSG__: String(nuxt.options._generate),
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    __HAS_PAGES__: String(nuxt.options.pages.toString()),
+    __PARALLEL_PLUGIN__: String(options.parallelPlugin),
+    __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
+    __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
+    __NUXT_I18N_MODULE_ID__: JSON.stringify(NUXT_I18N_MODULE_ID),
+    __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER)
   }
 
   if (nuxt.options.ssr || !server) {

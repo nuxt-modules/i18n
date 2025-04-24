@@ -1,6 +1,5 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { useSwitchLocalePath } from '#i18n'
-import { SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from '#build/i18n.options.mjs'
 
 // Replace `SwitchLocalePathLink` href in rendered html for SSR support
 export default defineNuxtPlugin({
@@ -10,9 +9,9 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp()
     const switchLocalePathLinkWrapperExpr = new RegExp(
       [
-        `<!--${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-\\[(\\w+)\\]-->`,
+        `<!--${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}-\\[(\\w+)\\]-->`,
         `.+?`,
-        `<!--/${SWITCH_LOCALE_PATH_LINK_IDENTIFIER}-->`
+        `<!--/${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}-->`
       ].join(''),
       'g'
     )

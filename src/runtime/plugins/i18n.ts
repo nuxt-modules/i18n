@@ -1,14 +1,7 @@
 import { computed, isRef, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
-import {
-  localeCodes,
-  vueI18nConfigs,
-  hasPages,
-  localeLoaders,
-  parallelPlugin,
-  normalizedLocales
-} from '#build/i18n.options.mjs'
+import { localeCodes, vueI18nConfigs, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
 import {
   loadAndSetLocale,
@@ -33,7 +26,7 @@ import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#in
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
-  parallel: parallelPlugin,
+  parallel: __PARALLEL_PLUGIN__,
   async setup() {
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
@@ -114,7 +107,7 @@ export default defineNuxtPlugin({
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(locale, i18n.__firstAccess)
 
-          if (composer.strategy === 'no_prefix' || !hasPages) {
+          if (composer.strategy === 'no_prefix' || !__HAS_PAGES__) {
             await composer.loadLocaleMessages(locale)
             i18n.__setLocale(locale)
             return

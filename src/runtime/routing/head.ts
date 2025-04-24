@@ -1,8 +1,6 @@
 import { computed, getCurrentScope, onScopeDispose, ref, useHead, watch, type Ref } from '#imports'
 import { assign } from '@intlify/shared'
-
 import { localeHead as _localeHead, type HeadContext } from '#i18n-kit/head'
-import { DYNAMIC_PARAMS_KEY } from '#build/i18n.options.mjs'
 
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { ComposableContext } from '../utils'
@@ -86,18 +84,18 @@ export function _useSetI18nParams(
   const _i18nParams = ref({})
   const i18nParams = computed({
     get() {
-      return router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY]
+      return router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__]
     },
     set(val: I18nRouteMeta) {
       _i18nParams.value = val
-      router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] = val
+      router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = val
     }
   })
 
   const unsub = watch(
     () => router.currentRoute.value.fullPath,
     () => {
-      router.currentRoute.value.meta[DYNAMIC_PARAMS_KEY] = _i18nParams.value
+      router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = _i18nParams.value
     }
   )
 
