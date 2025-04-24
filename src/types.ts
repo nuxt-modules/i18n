@@ -336,8 +336,12 @@ export interface I18nHeadMetaInfo {
 export interface I18nPublicRuntimeConfig {
   baseUrl: NuxtI18nOptions['baseUrl']
   rootRedirect: NuxtI18nOptions['rootRedirect']
-  multiDomainLocales?: NuxtI18nOptions['multiDomainLocales']
 
+  /**
+   * Overwritten at build time, used to pass generated options to runtime
+   * @internal
+   */
+  multiDomainLocales?: NuxtI18nOptions['multiDomainLocales']
   /**
    * Overwritten at build time, used to pass generated options to runtime
    * @internal

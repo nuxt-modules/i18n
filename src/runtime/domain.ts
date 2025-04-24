@@ -38,24 +38,23 @@ function filterMatchingDomainsLocales(locales: LocaleObject[], host: string) {
   })
 }
 
-export function getLocaleDomain(locales: LocaleObject[], strategy: string, route: string | CompatRoute): string {
+export function getLocaleDomain(locales: LocaleObject[], route: string | CompatRoute): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   const host = getHost()
   const path = getCompatRoutePath(route)
 
-  __DEBUG__ && logger.log(`locating domain for host`, { host, strategy, path })
+  __DEBUG__ && logger.log(`locating domain for host`, { host, strategy: __I18N_STRATEGY__, path })
 
   const matches = filterMatchingDomainsLocales(locales, host)
-  if (matches.length <= 1 || strategy === 'no_prefix') {
+  if (matches.length <= 1 || __I18N_STRATEGY__ === 'no_prefix') {
     __DEBUG__ && matches.length && logger.log(`found one matching domain`, { host, matchedLocale: matches[0].code })
-    return matches[0]?.code ?? ''
-  }
-
-  if (strategy === 'no_prefix') {
-    console.warn(
-      formatMessage('Multiple matching domains found - this is not supported for no_prefix strategy + differentDomains')
-    )
-    // Just return the first matching domain locale
+    if (matches.length > 1 && __I18N_STRATEGY__ === 'no_prefix') {
+      console.warn(
+        formatMessage(
+          'Multiple matching domains found - this is not supported for no_prefix strategy + differentDomains'
+        )
+      )
+    }
     return matches[0]?.code ?? ''
   }
 
@@ -108,33 +107,18 @@ export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
 /**
  * Removes default routes depending on domain
  */
-export function setupMultiDomainLocales(
-  {
-    multiDomainLocales,
-    strategy,
-    routesNameSeparator,
-    defaultLocaleRouteNameSuffix
-  }: Pick<
-    I18nPublicRuntimeConfig,
-    'multiDomainLocales' | 'strategy' | 'routesNameSeparator' | 'defaultLocaleRouteNameSuffix'
-  >,
-  defaultLocaleDomain: string,
-  router: Router = useRouter()
-) {
-  // feature disabled
-  if (!multiDomainLocales) return
+export function setupMultiDomainLocales(defaultLocaleDomain: string, router: Router = useRouter()) {
   // incompatible strategy
-  if (!(strategy === 'prefix_except_default' || strategy === 'prefix_and_default')) return
-
-  const defaultRouteSuffix = routesNameSeparator + defaultLocaleRouteNameSuffix
+  if (!(__I18N_STRATEGY__ === 'prefix_except_default' || __I18N_STRATEGY__ === 'prefix_and_default')) return
 
   const matcher = createNameLocaleRegexMatcher(
     getRouteNameLocaleRegex({
       localeCodes: [defaultLocaleDomain],
-      separator: routesNameSeparator,
-      defaultSuffix: defaultLocaleRouteNameSuffix
+      separator: __ROUTE_NAME_SEPARATOR__,
+      defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__
     })
   )
+  const defaultRouteSuffix = __ROUTE_NAME_SEPARATOR__ + __ROUTE_NAME_DEFAULT_SUFFIX__
   // Adjust routes to match the domain's locale and structure
   for (const route of router.getRoutes()) {
     const routeName = normalizeRouteName(route.name)
@@ -157,11 +141,7 @@ export function setupMultiDomainLocales(
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
 export function getDefaultLocaleForDomain(runtimeI18n: I18nPublicRuntimeConfig) {
-  const { locales, defaultLocale, multiDomainLocales } = runtimeI18n
-  if (!multiDomainLocales) {
-    return defaultLocale || ''
-  }
-
+  const { locales, defaultLocale } = runtimeI18n
   const host = getHost()
   if (locales.some(l => !isString(l) && l.defaultForDomains != null)) {
     const findDefaultLocale = locales.find(

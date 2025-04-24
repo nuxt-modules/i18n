@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect, vi } from 'vitest'
 import {
   type ComposableContext,
   createLocaleRouteNameGetter,
@@ -49,14 +49,25 @@ const i18nMock = {
 
 // more flexible implementation of `initComposableOptions` in src/runtime/utils.ts
 function initComposableOptions(router: Router): ComposableContext {
+  vi.stubGlobal('__I18N_STRATEGY__', routingOptions.strategy)
+  vi.stubGlobal('__DIFFERENT_DOMAINS__', false)
+  vi.stubGlobal('__ROUTE_NAME_SEPARATOR__', routingOptions.routesNameSeparator)
+  vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', routingOptions.defaultLocaleRouteNameSuffix)
+  vi.stubGlobal('__TRAILING_SLASH__', routingOptions.defaultLocaleRouteNameSuffix)
+
+  globalThis['__I18N_STRATEGY__'] = routingOptions.strategy
+  globalThis['__DIFFERENT_DOMAINS__'] = false
+  globalThis['__ROUTE_NAME_SEPARATOR__'] = routingOptions.routesNameSeparator
+  globalThis['__ROUTE_NAME_DEFAULT_SUFFIX__'] = routingOptions.defaultLocaleRouteNameSuffix
+  globalThis['__TRAILING_SLASH__'] = routingOptions.defaultLocaleRouteNameSuffix
+
   const getLocalizedRouteName = (name: RouteRecordNameGeneric | null, locale: string) =>
-    createLocaleRouteNameGetter(routingOptions)(name, locale)
-  const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } =
-    routingOptions
+    createLocaleRouteNameGetter(routingOptions.defaultLocale)(name, locale)
+  const { differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } = routingOptions
 
   // const getDomainFromLocale = (locale: string) => undefined
   const routeByPathResolver = (input: RouteLikeWithPath, locale: string) =>
-    createLocalizedRouteByPathResolver(strategy, router)(input, locale)
+    createLocalizedRouteByPathResolver(router)(input, locale)
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
     return _getRouteBaseName(route, routesNameSeparator)
@@ -86,7 +97,7 @@ function initComposableOptions(router: Router): ComposableContext {
     }
 
     // if route has a path defined but no name, resolve full route using the path
-    if (!differentDomains && prefixable(locale, defaultLocale, strategy)) {
+    if (!differentDomains && prefixable(locale, defaultLocale)) {
       route.path = '/' + locale + route.path
     }
 
@@ -163,6 +174,7 @@ async function loadFixtureAndRoutes() {
 function localizeRoutesWithStrategy(routes: NuxtPage[], strategy?: Strategies) {
   if (strategy) {
     routingOptions.strategy = strategy
+    globalThis['__I18N_STRATEGY__'] = strategy
   }
   return localizeRoutes(routes as LocalizableRoute[], { ...routingOptions, locales: unref(i18nMock.locales) })
 }

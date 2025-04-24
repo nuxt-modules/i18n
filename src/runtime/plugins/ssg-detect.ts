@@ -8,8 +8,8 @@ export default defineNuxtPlugin({
   dependsOn: ['i18n:plugin', 'i18n:plugin:route-locale-detect'],
   enforce: 'post',
   setup() {
-    const nuxt = useNuxtApp()
-    if (!__IS_SSG__ || nuxt.$i18n.strategy !== 'no_prefix' || !nuxt.$config.public.i18n.detectBrowserLanguage) return
+    const nuxt = /*#__PURE__*/ useNuxtApp()
+    if (!__IS_SSG__ || __I18N_STRATEGY__ !== 'no_prefix' || !nuxt.$config.public.i18n.detectBrowserLanguage) return
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n:ssg-detect')
     const localeCookie = nuxt.$i18n.getLocaleCookie()

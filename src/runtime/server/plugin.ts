@@ -23,7 +23,6 @@ export default defineNitroPlugin(async nitro => {
   options.messages = await loadInitialMessages(options.messages, localeLoaders, {
     localeCodes,
     initialLocale,
-    lazy: runtimeI18n.lazy,
     defaultLocale: runtimeI18n.defaultLocale,
     fallbackLocale: options.fallbackLocale
   })
@@ -36,7 +35,7 @@ export default defineNitroPlugin(async nitro => {
       defaultLocale: initialLocale,
       fallbackLocale: options.fallbackLocale
     })
-    if (runtimeI18n.lazy) {
+    if (__LAZY_LOCALES__) {
       if (fallbackLocale) {
         const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
         await Promise.all(

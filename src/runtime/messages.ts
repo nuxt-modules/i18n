@@ -3,8 +3,7 @@ import { createLogger } from '#nuxt-i18n/logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { DeepRequired } from 'ts-essentials'
-import type { VueI18nConfig, NuxtI18nOptions } from '#internal-i18n-types'
+import type { VueI18nConfig } from '#internal-i18n-types'
 import type { CoreContext } from '@intlify/h3'
 
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
@@ -56,26 +55,27 @@ export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Local
   return fallbackLocales
 }
 
-export async function loadInitialMessages<Context extends NuxtApp = NuxtApp>(
+export async function loadInitialMessages(
   messages: LocaleMessages<DefineLocaleMessage>,
   localeLoaders: Record<Locale, LocaleLoader[]>,
-  options: Pick<DeepRequired<NuxtI18nOptions<Context>>, 'defaultLocale' | 'lazy'> & {
+  options: {
+    localeCodes: string[]
+    defaultLocale: Locale
     initialLocale: Locale
     fallbackLocale: FallbackLocale
-    localeCodes: string[]
   },
   nuxt = nuxtMock
 ): Promise<LocaleMessages<DefineLocaleMessage>> {
-  const { defaultLocale, initialLocale, localeCodes, fallbackLocale, lazy } = options
+  const { defaultLocale, initialLocale, localeCodes, fallbackLocale } = options
 
   // load fallback messages
-  if (lazy && fallbackLocale) {
+  if (__LAZY_LOCALES__ && fallbackLocale) {
     const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
     await Promise.all(fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, messages, nuxt)))
   }
 
   // load initial messages
-  const locales = lazy ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
+  const locales = __LAZY_LOCALES__ ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
   await Promise.all(locales.map((locale: Locale) => loadAndSetLocaleMessages(locale, localeLoaders, messages, nuxt)))
 
   return messages

@@ -20,7 +20,7 @@ import { unref } from 'vue'
 import type { I18n, Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, Router, RouteRecordNameGeneric } from 'vue-router'
-import type { I18nPublicRuntimeConfig, LocaleObject, Strategies } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 
 export function formatMessage(message: string) {
@@ -35,10 +35,8 @@ export function formatMessage(message: string) {
  */
 export type ComposableContext = {
   router: Router
-  getRoutingOptions: () => Pick<
-    I18nPublicRuntimeConfig,
-    'strategy' | 'differentDomains' | 'routesNameSeparator' | 'defaultLocale' | 'trailingSlash' | 'defaultDirection'
-  > & {
+  getRoutingOptions: () => {
+    defaultLocale: string
     /** Use `canonicalQueries` for alternate links */
     strictCanonicals: boolean
     /** Enable/disable hreflangLinks */
@@ -83,15 +81,12 @@ export function createComposableContext({
   const router = useRouter()
   const nuxt = useNuxtApp()
   const i18n = getI18nTarget(_i18n)
-  const { strategy, differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } =
-    runtimeI18n
 
-  const routeByPathResolver = createLocalizedRouteByPathResolver(runtimeI18n.strategy, router)
-  const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n)
-  const formatTrailingSlash = trailingSlash ? withTrailingSlash : withoutTrailingSlash
+  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
+  const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n.defaultLocale)
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
-    return _getRouteBaseName(route, routesNameSeparator)
+    return _getRouteBaseName(route, __ROUTE_NAME_SEPARATOR__)
   }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
@@ -115,25 +110,20 @@ export function createComposableContext({
       return route
     }
 
-    if (!differentDomains && prefixable(locale, defaultLocale, strategy)) {
+    if (!__DIFFERENT_DOMAINS__ && prefixable(locale, runtimeI18n.defaultLocale)) {
       route.path = '/' + locale + route.path
     }
 
-    route.path = formatTrailingSlash(route.path, true)
+    route.path = (__TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash)(route.path, true)
     return route
   }
 
   return {
     router,
     getRoutingOptions: () => ({
-      strategy,
-      differentDomains,
-      routesNameSeparator,
-      defaultLocale,
-      trailingSlash,
-      defaultDirection,
+      defaultLocale: runtimeI18n.defaultLocale,
       strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
-      hreflangLinks: !(strategy === 'no_prefix' && !differentDomains)
+      hreflangLinks: !(__I18N_STRATEGY__ === 'no_prefix' && !__DIFFERENT_DOMAINS__)
     }),
     getLocale: () => unref(i18n.locale),
     getLocales: () => {
@@ -147,7 +137,7 @@ export function createComposableContext({
       return params[locale]
     },
     afterSwitchLocalePath: (path, locale) => {
-      if (differentDomains) {
+      if (__DIFFERENT_DOMAINS__) {
         const domain = getDomainFromLocale(locale)
         return (domain && joinURL(domain, path)) || path
       }
@@ -165,7 +155,7 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const nuxtApp = useNuxtApp()
   const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-  const { differentDomains, skipSettingLocaleOnNavigate, detectBrowserLanguage: opts } = runtimeI18n
+  const { skipSettingLocaleOnNavigate, detectBrowserLanguage: opts } = runtimeI18n
 
   const oldLocale = unref(nuxtApp.$i18n.locale)
   const localeCodes = unref(nuxtApp.$i18n.localeCodes)
@@ -199,7 +189,7 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   }
 
   // no change if different domains option enabled
-  if (!initial && differentDomains) {
+  if (!initial && __DIFFERENT_DOMAINS__) {
     syncCookie()
     return false
   }
@@ -243,7 +233,7 @@ export function detectLocale(
   const nuxtApp = useNuxtApp()
 
   const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-  const { strategy, defaultLocale, differentDomains, multiDomainLocales, detectBrowserLanguage: _detect } = runtimeI18n
+  const { defaultLocale, detectBrowserLanguage: _detect } = runtimeI18n
   const logger = /*#__PURE__*/ createLogger('detectLocale')
 
   const detectedBrowser = detectBrowserLanguage(route, localeCookie, currentLocale)
@@ -255,12 +245,12 @@ export function detectLocale(
   }
 
   let detected: string = ''
-  __DEBUG__ && logger.log('1/3', { detected, strategy })
+  __DEBUG__ && logger.log('1/3', { detected, strategy: __I18N_STRATEGY__ })
 
   // detect locale by route
-  if (differentDomains || multiDomainLocales) {
-    detected ||= getLocaleDomain(normalizedLocales, strategy, route)
-  } else if (strategy !== 'no_prefix') {
+  if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
+    detected ||= getLocaleDomain(normalizedLocales, route)
+  } else if (__I18N_STRATEGY__ !== 'no_prefix') {
     detected ||= routeLocale
   }
 
@@ -294,7 +284,7 @@ type DetectRedirectOptions = {
  */
 export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirectOptions, inMiddleware = false): string {
   // no locale change detected from routing
-  if (routeLocale === locale || useNuxtApp().$i18n.strategy === 'no_prefix') {
+  if (routeLocale === locale || __I18N_STRATEGY__ === 'no_prefix') {
     return ''
   }
 
@@ -329,14 +319,13 @@ type NavigateArgs = {
 }
 
 export async function navigate({ nuxt, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
-  const { rootRedirect, differentDomains, multiDomainLocales, skipSettingLocaleOnNavigate, locales, strategy } = nuxt
-    .$config.public.i18n as I18nPublicRuntimeConfig
+  const { rootRedirect, skipSettingLocaleOnNavigate, locales } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
 
   __DEBUG__ &&
     logger.log('options', {
       rootRedirect,
-      differentDomains,
+      differentDomains: __DIFFERENT_DOMAINS__,
       skipSettingLocaleOnNavigate,
       enableNavigate,
       isSSG: __IS_SSG__
@@ -366,7 +355,7 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
     }
   }
 
-  if (multiDomainLocales && strategy === 'prefix_except_default') {
+  if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
     const host = getHost()
     const currentDomain = locales.find(locale => {
       if (isString(locale)) return
@@ -396,7 +385,7 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
     return
   }
 
-  if (differentDomains) {
+  if (__DIFFERENT_DOMAINS__) {
     const state = useRedirectState()
     __DEBUG__ && logger.log('redirect', { state: state.value, redirectPath })
     if (state.value && state.value !== redirectPath) {
@@ -414,12 +403,15 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
   }
 }
 
-export function prefixable(currentLocale: string, defaultLocale: string, strategy: Strategies): boolean {
+export function prefixable(currentLocale: string, defaultLocale: string): boolean {
   return (
     // strategy has no prefixes
-    strategy !== 'no_prefix' &&
+    __I18N_STRATEGY__ !== 'no_prefix' &&
     // strategy should not prefix default locale
-    !(currentLocale === defaultLocale && (strategy === 'prefix_and_default' || strategy === 'prefix_except_default'))
+    !(
+      currentLocale === defaultLocale &&
+      (__I18N_STRATEGY__ === 'prefix_and_default' || __I18N_STRATEGY__ === 'prefix_except_default')
+    )
   )
 }
 
@@ -428,7 +420,7 @@ export function prefixable(currentLocale: string, defaultLocale: string, strateg
  */
 export function createBaseUrlGetter(nuxt: NuxtApp) {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
-  const { baseUrl, defaultLocale, differentDomains } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
+  const { baseUrl, defaultLocale } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
   if (isFunction(baseUrl)) {
     return (): string => {
@@ -438,11 +430,10 @@ export function createBaseUrlGetter(nuxt: NuxtApp) {
     }
   }
 
-  const localeCode = isFunction(defaultLocale) ? (defaultLocale() as string) : defaultLocale
-  const getDomainFromLocale = nuxt._i18nGetDomainFromLocale
+  const localeCode = isFunction(defaultLocale) ? /*#__PURE__*/ (defaultLocale() as string) : defaultLocale
   return (): string => {
-    if (differentDomains && localeCode) {
-      const domain = getDomainFromLocale(localeCode)
+    if (__DIFFERENT_DOMAINS__ && localeCode) {
+      const domain = nuxt._i18nGetDomainFromLocale(localeCode)
       if (domain) {
         __DEBUG__ && logger.log('using differentDomains -', { domain })
         return domain
@@ -459,29 +450,19 @@ export function createBaseUrlGetter(nuxt: NuxtApp) {
  * Returns a getter function which returns a localized route name for the given route and locale.
  * The returned function can vary based on the strategy and domain configuration.
  */
-export function createLocaleRouteNameGetter({
-  strategy,
-  differentDomains,
-  defaultLocale,
-  routesNameSeparator,
-  defaultLocaleRouteNameSuffix
-}: {
-  strategy: Strategies
-  differentDomains: boolean
+export function createLocaleRouteNameGetter(
   defaultLocale: string
-  routesNameSeparator: string
-  defaultLocaleRouteNameSuffix: string
-}): (name: RouteRecordNameGeneric | null, locale: string) => string {
+): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
-  if (strategy === 'no_prefix' && !differentDomains) {
+  if (__I18N_STRATEGY__ === 'no_prefix' && !__DIFFERENT_DOMAINS__) {
     return routeName => normalizeRouteName(routeName)
   }
 
   const localizeRouteName = (name: string, locale: string, isDefault: boolean) =>
-    getLocalizedRouteName(name, locale, isDefault, routesNameSeparator, defaultLocaleRouteNameSuffix)
+    getLocalizedRouteName(name, locale, isDefault, __ROUTE_NAME_SEPARATOR__, __ROUTE_NAME_DEFAULT_SUFFIX__)
 
   // default locale routes have default suffix
-  if (strategy === 'prefix_and_default') {
+  if (__I18N_STRATEGY__ === 'prefix_and_default') {
     return (name, locale) => localizeRouteName(normalizeRouteName(name), locale, locale === defaultLocale)
   }
 
@@ -493,34 +474,31 @@ export function createLocaleRouteNameGetter({
  * Factory function which returns a resolver function based on the routing strategy.
  */
 export function createLocalizedRouteByPathResolver(
-  strategy: Strategies,
   router: Router
 ): (route: RouteLocationPathRaw, locale: Locale) => RouteLocationPathRaw | RouteLocationResolvedGeneric {
-  switch (strategy) {
-    case 'no_prefix':
-      return route => route
-    case 'prefix_and_default':
-    case 'prefix_except_default':
-    default:
-      return route => router.resolve(route)
-    case 'prefix':
-      /**
-       * The `router.resolve` function prints warnings when resolving non-existent paths and `router.hasRoute` only accepts named routes.
-       * The path passed to `localePath` is not prefixed which will trigger vue-router warnings since all routes are prefixed.
-       * We work around this by manually prefixing the path and finding the route in `router.options.routes`.
-       */
-      return (route, locale) => {
-        const restPath = route.path.slice(1)
-        const targetPath = route.path[0] + locale + (restPath && '/' + restPath)
-        const _route = router.options.routes.find(r => r.path === targetPath)
-
-        if (_route == null) {
-          return route
-        }
-
-        return router.resolve(assign({}, route, _route, { path: targetPath }))
-      }
+  if (__I18N_STRATEGY__ === 'no_prefix') {
+    return route => route
   }
+  if (__I18N_STRATEGY__ === 'prefix') {
+    /**
+     * The `router.resolve` function prints warnings when resolving non-existent paths and `router.hasRoute` only accepts named routes.
+     * The path passed to `localePath` is not prefixed which will trigger vue-router warnings since all routes are prefixed.
+     * We work around this by manually prefixing the path and finding the route in `router.options.routes`.
+     */
+    return (route, locale) => {
+      const restPath = route.path.slice(1)
+      const targetPath = route.path[0] + locale + (restPath && '/' + restPath)
+      const _route = router.options.routes.find(r => r.path === targetPath)
+
+      if (_route == null) {
+        return route
+      }
+
+      return router.resolve(assign({}, route, _route, { path: targetPath }))
+    }
+  }
+  // strategy is prefix_except_default or prefix_and_default
+  return route => router.resolve(route)
 }
 
 // collect unique keys of passed objects

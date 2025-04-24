@@ -12,7 +12,6 @@ export default defineNuxtPlugin({
   async setup() {
     const logger = /*#__PURE__*/ createLogger('plugin:route-locale-detect')
     const nuxt = useNuxtApp()
-    const currentRoute = nuxt.$router.currentRoute
 
     async function handleRouteDetect(to: CompatRoute) {
       let detected = detectLocale(
@@ -37,7 +36,7 @@ export default defineNuxtPlugin({
       return detected
     }
 
-    await handleRouteDetect(currentRoute.value)
+    await handleRouteDetect(nuxt.$router.currentRoute.value)
 
     // app has no pages - do not register route middleware
     if (!__HAS_PAGES__) return
