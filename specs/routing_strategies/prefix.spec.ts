@@ -22,11 +22,14 @@ await setup({
 describe('strategy: prefix', async () => {
   beforeEach(async () => {
     // use original fixture `detectBrowserLanguage` value as default for tests, overwrite here needed
-    await startServerWithRuntimeConfig({
-      public: {
-        i18n: { detectBrowserLanguage: false }
-      }
-    })
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: { detectBrowserLanguage: false }
+        }
+      },
+      true
+    )
   })
 
   test.each([
@@ -120,7 +123,7 @@ describe('strategy: prefix', async () => {
   })
 
   test('(#1889) navigation to page with `defineI18nRoute(false)`', async () => {
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {
@@ -153,8 +156,6 @@ describe('strategy: prefix', async () => {
     // does not redirect to prefixed route for routes with disabled localization
     await page.goto(url('/ignore-routes/disable'))
     await waitForURL(page, '/ignore-routes/disable')
-
-    await restore()
   })
 
   test('should not transform `defineI18nRoute()` inside template', async () => {
@@ -165,7 +166,7 @@ describe('strategy: prefix', async () => {
   })
 
   test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {
@@ -183,8 +184,6 @@ describe('strategy: prefix', async () => {
 
     await gotoPath(page, '/en')
     expect(await getText(page, '#home-header')).toEqual('Homepage')
-
-    await restore()
   })
 
   test('(#2020) pass query parameter', async () => {

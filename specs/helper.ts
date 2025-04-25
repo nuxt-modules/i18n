@@ -1,9 +1,10 @@
 // @ts-ignore
 import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
-import { getBrowser, startServer, url, useTestContext } from './utils'
+import { getBrowser, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
 import { resolveAlias } from '@nuxt/kit'
+import { onTestFinished } from 'vitest'
 
 import { errors, type BrowserContextOptions, type Page } from 'playwright-core'
 
@@ -169,7 +170,7 @@ function flattenObject(obj: Record<string, unknown> = {}) {
   return flattened
 }
 
-function convertObjectToConfig(obj: Record<string, unknown>) {
+export function convertObjectToConfig(obj: Record<string, unknown>) {
   const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
 
   const env: Record<string, unknown> = {}
@@ -181,10 +182,54 @@ function convertObjectToConfig(obj: Record<string, unknown>) {
   return env
 }
 
-export async function startServerWithRuntimeConfig(env: Record<string, unknown>) {
-  const converted = convertObjectToConfig(env)
-  await startServer(converted)
-  return async () => startServer()
+export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
+  const ctx = useTestContext()
+  const identifier = (ctx.url ?? '') + Math.random().toString(36).slice(2, 10)
+
+  let stored
+  let configUpdated = new Promise<void>(resolve => {
+    const handler = (msg: { type: string; value: unknown; identifier: string }) => {
+      if (msg.identifier === identifier && msg.type === 'confirm:runtime-config') {
+        stored = msg.value
+        ctx.serverProcess!.process?.off('message', handler)
+        resolve()
+      }
+    }
+    ctx.serverProcess!.process?.on('message', handler)
+  })
+
+  ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: env, identifier }, undefined, {
+    keepOpen: true
+  })
+
+  await configUpdated
+
+  let restored = false
+  const restoreFn = async () => {
+    if (restored) return
+    restored = true
+
+    let configUpdated = new Promise<void>(resolve => {
+      const handler = (msg: { type: string; value: unknown; identifier: string }) => {
+        if ((msg.identifier === identifier && msg.type) === 'confirm:runtime-config') {
+          ctx.serverProcess!.process?.off('message', handler)
+          resolve()
+        }
+      }
+      ctx.serverProcess!.process?.on('message', handler)
+    })
+
+    ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: stored, identifier }, undefined, {
+      keepOpen: true
+    })
+    await configUpdated
+  }
+
+  if (!skipRestore) {
+    onTestFinished(async () => await restoreFn())
+  }
+
+  return restoreFn
 }
 
 export async function localeLoaderHelpers() {

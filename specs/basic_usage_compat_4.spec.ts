@@ -32,14 +32,17 @@ describe('basic usage - compatibilityVersion: 4', async () => {
   describe('language switching', async () => {
     beforeAll(async () => {
       setTestContext(ctx)
-      await startServerWithRuntimeConfig({
-        public: {
-          i18n: {
-            skipSettingLocaleOnNavigate: true,
-            detectBrowserLanguage: false
+      await startServerWithRuntimeConfig(
+        {
+          public: {
+            i18n: {
+              skipSettingLocaleOnNavigate: true,
+              detectBrowserLanguage: false
+            }
           }
-        }
-      })
+        },
+        true
+      )
     })
 
     languageSwitchingTests()
