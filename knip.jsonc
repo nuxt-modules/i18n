@@ -20,7 +20,9 @@
         // pre-commit
         "lint-staged",
         // auto imports
-        "@intlify/utils"
+        "@intlify/utils",
+        // ssg tests
+        "serve"
       ],
       "ignore": ["{specs,test}/{fixtures,mocks}/**"]
     },
