@@ -11,6 +11,9 @@ describe('#2911', async () => {
     nuxtConfig: {
       app: {
         baseURL: '/base-path'
+      },
+      i18n: {
+        detectBrowserLanguage: false
       }
     }
   })

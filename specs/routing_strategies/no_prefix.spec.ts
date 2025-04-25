@@ -14,8 +14,7 @@ await setup({
     i18n: {
       strategy: 'no_prefix',
       defaultLocale: 'en',
-      defaultDirection: 'auto',
-      detectBrowserLanguage: {}
+      defaultDirection: 'auto'
     }
   }
 })

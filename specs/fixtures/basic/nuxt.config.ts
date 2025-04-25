@@ -20,9 +20,6 @@ export default defineNuxtConfig({
       }
     ],
     defaultLocale: 'en',
-    // TODO: remove this later, set to `{}` in test `setup` and overwrite using `startServerWithRuntimeConfig`
-    // `false` will not be overwritten by `runtimeConfig` making this fixture less reusable
-    detectBrowserLanguage: false,
     vueI18n: './config/i18n.config.ts'
   }
 })

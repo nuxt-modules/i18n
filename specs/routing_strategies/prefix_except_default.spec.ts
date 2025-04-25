@@ -12,7 +12,8 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'en',
-      defaultDirection: 'auto'
+      defaultDirection: 'auto',
+      detectBrowserLanguage: false
     }
   }
 })

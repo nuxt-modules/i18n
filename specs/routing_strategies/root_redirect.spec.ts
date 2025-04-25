@@ -12,7 +12,8 @@ await setup({
       strategy: 'prefix',
       defaultLocale: 'en',
       // configure `rootDirect` to object so it can be overwritten by `runtimeConfig`
-      rootRedirect: { path: 'about', statusCode: 302 }
+      rootRedirect: { path: 'about', statusCode: 302 },
+      detectBrowserLanguage: false
     }
   }
 })

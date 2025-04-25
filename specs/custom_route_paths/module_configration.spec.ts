@@ -26,7 +26,8 @@ await setup({
         'blog/article': {
           en: '/news/article'
         }
-      }
+      },
+      detectBrowserLanguage: false
     }
   }
 })

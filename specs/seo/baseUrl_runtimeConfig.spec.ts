@@ -17,7 +17,8 @@ await setup({
     },
     i18n: {
       defaultLocale: 'en',
-      baseUrl: ''
+      baseUrl: '',
+      detectBrowserLanguage: false
     }
   }
 })

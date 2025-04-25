@@ -11,7 +11,8 @@ await setup({
     i18n: {
       bundle: {
         onlyLocales: 'en'
-      }
+      },
+      detectBrowserLanguage: false
     }
   }
 })

@@ -12,9 +12,7 @@ await setup({
   nuxtConfig: {
     i18n: {
       strategy: 'prefix',
-      defaultLocale: 'en',
-      // fixture uses `false` which cannot be overwritten using runtimeConfig
-      detectBrowserLanguage: {}
+      defaultLocale: 'en'
     }
   }
 })

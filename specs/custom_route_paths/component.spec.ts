@@ -10,7 +10,8 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'en',
-      customRoutes: 'page'
+      customRoutes: 'page',
+      detectBrowserLanguage: false
     }
   }
 })

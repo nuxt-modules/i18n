@@ -9,6 +9,7 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'en',
+      detectBrowserLanguage: false,
       baseUrl: () => {
         if (import.meta.server) {
           // @ts-ignore
