@@ -1,7 +1,7 @@
 // @ts-ignore
 import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
-import { getBrowser, url, useTestContext } from './utils'
+import { getBrowser, TestContext, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
 import { resolveAlias } from '@nuxt/kit'
 import { onTestFinished } from 'vitest'
@@ -150,51 +150,40 @@ export async function waitForURL(page: Page, path: string) {
   }
 }
 
-export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
-  const ctx = useTestContext()
-  const identifier = (ctx.url ?? '') + Math.random().toString(36).slice(2, 10)
-
-  let stored
-  let configUpdated = new Promise<void>(resolve => {
+async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown, identifier: string) {
+  const updated = new Promise<unknown>(resolve => {
     const handler = (msg: { type: string; value: unknown; identifier: string }) => {
       if (msg.identifier === identifier && msg.type === 'confirm:runtime-config') {
-        stored = msg.value
         ctx.serverProcess!.process?.off('message', handler)
-        resolve()
+        resolve(msg.value)
       }
     }
     ctx.serverProcess!.process?.on('message', handler)
   })
 
-  ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: env, identifier }, undefined, {
+  ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: config, identifier }, undefined, {
     keepOpen: true
   })
 
-  await configUpdated
+  return await updated
+}
+
+export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
+  const ctx = useTestContext()
+  const identifier = (ctx.url ?? '') + Math.random().toString(36).slice(2, 10)
+
+  const stored = await updateProcessRuntimeConfig(ctx, env, identifier)
 
   let restored = false
   const restoreFn = async () => {
     if (restored) return
+
     restored = true
-
-    let configUpdated = new Promise<void>(resolve => {
-      const handler = (msg: { type: string; value: unknown; identifier: string }) => {
-        if ((msg.identifier === identifier && msg.type) === 'confirm:runtime-config') {
-          ctx.serverProcess!.process?.off('message', handler)
-          resolve()
-        }
-      }
-      ctx.serverProcess!.process?.on('message', handler)
-    })
-
-    ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: stored, identifier }, undefined, {
-      keepOpen: true
-    })
-    await configUpdated
+    await await updateProcessRuntimeConfig(ctx, stored, identifier)
   }
 
   if (!skipRestore) {
-    onTestFinished(async () => await restoreFn())
+    onTestFinished(restoreFn)
   }
 
   return restoreFn
