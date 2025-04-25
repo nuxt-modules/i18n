@@ -1,5 +1,4 @@
-// @ts-ignore
-import createJITI from 'jiti'
+import { createJiti } from 'jiti'
 import { JSDOM } from 'jsdom'
 import { getBrowser, TestContext, url, useTestContext } from './utils'
 import { resolveAlias } from '@nuxt/kit'
@@ -197,7 +196,7 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
 
 export async function localeLoaderHelpers() {
   const ctx = useTestContext()
-  const jiti = createJITI(ctx.nuxt!.options.rootDir, { alias: ctx.nuxt!.options.alias })
+  const jiti = createJiti(ctx.nuxt!.options.rootDir, { alias: ctx.nuxt!.options.alias })
   const opts = await jiti.import(resolveAlias('#build/i18n.options.mjs'), {})
 
   function findKey(code: string, ext: string, cache: boolean = false): string {

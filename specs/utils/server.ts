@@ -7,6 +7,7 @@ import * as _kit from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { useTestContext } from './context'
 import { request } from 'undici'
+import { resolveModulePath } from 'exsolve'
 
 function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
@@ -50,24 +51,30 @@ export async function startServer(env: Record<string, unknown> = {}) {
     ctx.serverProcess.kill()
     throw lastError || new Error('Timeout waiting for dev server!')
   } else if (ctx.options.prerender) {
-    const listenTo = ports.map(port => `-l tcp://${host}:${port}`).join(' ')
-    const command = `pnpx serve ${ctx.nuxt!.options.nitro!.output?.publicDir} ${listenTo} --no-port-switching`
-    // ;(await import('consola')).consola.restoreConsole()
-    const [_command, ...commandArgs] = command.split(' ')
+    const listenTo = ports.flatMap(port => ['-l', `tcp://${host}:${port}`])
+    const servePath = resolveModulePath('serve/build/main.js', { from: process.cwd() })
+    ;(await import('consola')).consola.restoreConsole()
 
-    ctx.serverProcess = x(_command, commandArgs, {
-      throwOnError: true,
-      nodeOptions: {
-        env: {
-          ...process.env,
-          PORT: String(ports[0]),
-          HOST: host,
-          ...env
+    ctx.serverProcess = x(
+      'node',
+      [servePath, ctx.nuxt!.options.nitro!.output?.publicDir!, ...listenTo, '--no-port-switching'],
+      // 'pnpx',
+      // ['serve', ctx.nuxt!.options.nitro!.output?.publicDir!, ...listenTo, '--no-port-switching'],
+      {
+        throwOnError: true,
+        nodeOptions: {
+          env: {
+            ...process.env,
+            PORT: String(ports[0]),
+            HOST: host,
+            ...env
+          }
         }
       }
-    })
-
-    await waitForPort(ports[0], { retries: 50, host, delay: process.env.CI ? 1000 : 500 })
+    )
+    console.time(`serving static (${ports[0]})`)
+    await waitForPort(ports[0], { retries: 1000, host, delay: 10 })
+    console.timeLog(`serving static (${ports[0]})`)
   } else {
     ctx.serverProcess = x('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
       throwOnError: true,
@@ -81,7 +88,10 @@ export async function startServer(env: Record<string, unknown> = {}) {
         }
       }
     })
-    await waitForPort(ports[0], { retries: process.env.CI ? 50 : 200, host, delay: process.env.CI ? 400 : 100 })
+    ;(await import('consola')).consola.restoreConsole()
+    console.time(`server (${ports[0]})`)
+    await waitForPort(ports[0], { retries: 500, host, delay: 10 })
+    console.timeLog(`server (${ports[0]})`)
   }
 }
 
