@@ -74,9 +74,7 @@ export default defineNuxtPlugin({
         const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
         if (content) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          const serverMessages = content ? parse(content) : []
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          vueI18nOptions.messages = serverMessages
+          vueI18nOptions.messages = parse(content)
           nuxt._i18nPreloaded = true
         }
       }

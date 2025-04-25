@@ -26,15 +26,9 @@ export default async () => {
 
   const vueI18nConfig: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
   for (const locale of targetLocales) {
-    vueI18nConfig.messages![locale] ??= {}
-    vueI18nConfig.numberFormats![locale] ??= {}
-    vueI18nConfig.datetimeFormats![locale] ??= {}
-  }
-
-  for (const locale of targetLocales) {
-    deepCopy(vueI18nConfig.messages![locale], merged.messages)
-    deepCopy(vueI18nConfig.numberFormats![locale], merged.numberFormats)
-    deepCopy(vueI18nConfig.datetimeFormats![locale], merged.datetimeFormats)
+    deepCopy(vueI18nConfig.messages?.[locale] || {}, merged.messages)
+    deepCopy(vueI18nConfig.numberFormats?.[locale] || {}, merged.numberFormats)
+    deepCopy(vueI18nConfig.datetimeFormats?.[locale] || {}, merged.datetimeFormats)
   }
 
   const loaderPromises: Promise<void>[] = []
