@@ -137,7 +137,7 @@ export type NuxtI18nOptions<
   langDir?: string | null
   lazy?: boolean
   pages?: CustomRoutePages
-  customRoutes?: 'page' | 'config'
+  customRoutes?: 'page' | 'config' | 'meta'
   /**
    * Do not use in projects - this is used internally for e2e tests to override default option merging.
    * @internal

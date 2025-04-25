@@ -19,6 +19,7 @@ import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-v
 import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
+import type { I18nRoute } from './runtime/composables'
 
 const debug = createDebug('@nuxtjs/i18n:pages')
 
@@ -55,6 +56,9 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
 
   const projectLayer = nuxt.options._layers[0]
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
+
+  nuxt.options.experimental.extraPageMetaExtractionKeys ??= []
+  nuxt.options.experimental.extraPageMetaExtractionKeys.push('i18n')
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async pages => {
@@ -296,15 +300,34 @@ function getRouteFromMacro(
   }
 }
 
+function getRouteFromMeta(
+  _ctx: NuxtPageAnalyzeContext,
+  route: NuxtPage,
+  localeCodes: string[]
+): ComputedRouteOptions | false | undefined {
+  const resolved = route.meta?.i18n as I18nRoute | false | undefined
+  if (!resolved) return resolved
+  return {
+    paths: (resolved.paths ?? {}) as Record<string, string>,
+    locales: resolved?.locales || localeCodes
+  }
+}
+
 function getRouteOptions(
   route: NuxtPage,
   localeCodes: string[],
   ctx: NuxtPageAnalyzeContext,
   defaultLocale: string,
-  mode: 'config' | 'page' = 'config'
+  mode: 'config' | 'page' | 'meta' = 'config'
 ) {
-  const resolvedOptions =
-    mode === 'config' ? getRouteFromConfig(ctx, route, localeCodes) : getRouteFromMacro(ctx, route, localeCodes)
+  let resolvedOptions
+  if (mode === 'meta') {
+    resolvedOptions = getRouteFromMeta(ctx, route, localeCodes)
+  } else if (mode === 'page') {
+    resolvedOptions = getRouteFromMacro(ctx, route, localeCodes)
+  } else {
+    resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
+  }
 
   // routing disabled
   if (resolvedOptions === false) {
