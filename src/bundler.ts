@@ -11,7 +11,6 @@ import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
 import type { I18nNuxtContext } from './context'
-import type { NuxtI18nOptions } from './types'
 import {
   DEFAULT_COOKIE_KEY,
   DYNAMIC_PARAMS_KEY,
@@ -61,6 +60,9 @@ export function createLogger(label) {
    */
   const { options } = ctx
   const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
+  const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths]
+  ctx.fullStatic = i18nFileMetas.every(m => m.type === 'static')
+
   const vueI18nPluginOptions: PluginOptions = {
     ...options.bundle,
     ...options.compilation,
@@ -78,7 +80,7 @@ export function createLogger(label) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
-  const defineConfig = getDefineConfig(options)
+  const defineConfig = getDefineConfig(ctx)
   /**
    * webpack plugin
    */
@@ -112,7 +114,7 @@ export function createLogger(label) {
   })
 }
 
-export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt = useNuxt()) {
+export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
   const common = {
     __DEBUG__: String(!!options.debug),
     __TEST__: String(!!options.debug || nuxt.options._i18nTest),
@@ -131,7 +133,8 @@ export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt =
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
-    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection)
+    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
+    __I18N_FULL_STATIC__: String(fullStatic)
   }
 
   if (nuxt.options.ssr || !server) {

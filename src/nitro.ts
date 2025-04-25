@@ -27,7 +27,8 @@ const debug = createDebug('@nuxtjs/i18n:nitro')
 export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
-  const setupServer = enableServerIntegration || (ctx.options.experimental.typedOptionsAndMessages && nuxt.options.dev)
+  const setupServer =
+    enableServerIntegration || ctx.fullStatic || (ctx.options.experimental.typedOptionsAndMessages && nuxt.options.dev)
   if (setupServer) {
     addServerTemplate({
       filename: '#internal/i18n/options.mjs',
@@ -68,7 +69,7 @@ export { localeDetector }`
       }
     }
 
-    nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx.options, true))
+    nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
     debug('nitro.replace', nitroConfig.replace)
   })
 
@@ -96,6 +97,9 @@ export { localeDetector }`
     }
   ])
 
+  if (ctx.fullStatic) {
+    addServerPlugin(ctx.resolver.resolve('runtime/server/messages-cache'))
+  }
   if (enableServerIntegration) {
     // add nitro plugin
     addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))

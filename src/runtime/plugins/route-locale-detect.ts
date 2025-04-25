@@ -23,9 +23,11 @@ export default defineNuxtPlugin({
 
       if (nuxt._vueI18n.__firstAccess) {
         nuxt._vueI18n.__setLocale(detected)
-        const fallbackLocales = makeFallbackLocaleCodes(unref(nuxt._vueI18n.global.fallbackLocale), [detected])
-        await Promise.all(fallbackLocales.map(x => nuxt.$i18n.loadLocaleMessages(x)))
-        await nuxt.$i18n.loadLocaleMessages(detected)
+        if (!nuxt._i18nPreloaded) {
+          const fallbackLocales = makeFallbackLocaleCodes(unref(nuxt._vueI18n.global.fallbackLocale), [detected])
+          await Promise.all(fallbackLocales.map(x => nuxt.$i18n.loadLocaleMessages(x)))
+          await nuxt.$i18n.loadLocaleMessages(detected)
+        }
       }
 
       const modified = await nuxt.runWithContext(() => loadAndSetLocale(detected, nuxt._vueI18n.__firstAccess))

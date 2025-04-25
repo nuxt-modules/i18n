@@ -529,10 +529,10 @@ export function createNuxtI18nDev() {
   async function resetI18nProperties(locale?: string) {
     const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtApp)
 
-    const messageLocales = uniqueKeys(opts.messages || {}, composer.messages.value)
+    const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {
       if (locale && k !== locale) continue
-      const current = opts.messages?.[k] || {}
+      const current = opts.messages![k] || {}
       // override config messages with locale files in correct order
       await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
       composer.setLocaleMessage(k, current)

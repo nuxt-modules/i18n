@@ -31,6 +31,8 @@ export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[], nuxt =
     deepCopy(resolved, vueI18nOptions)
   }
 
+  vueI18nOptions.fallbackLocale ??= false
+
   return vueI18nOptions
 }
 
