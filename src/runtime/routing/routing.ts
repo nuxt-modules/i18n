@@ -54,21 +54,21 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 }
 
 /**
- * Try resolving route and throw on failure
+ * Resolve route, throws on failure
  */
-function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale) {
+export function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale) {
   const normalized = normalizeRawLocation(route)
-  const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale))
+  const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale), undefined, { locale: false })
   if (resolved.name) {
     return resolved
   }
 
   // if unable to resolve route try resolving route based on original input
-  return ctx.router.resolve(route)
+  return ctx.router.resolve(route, undefined, { locale: false })
 }
 
 /**
- * Try resolving route and return undefined on failure
+ * Resolve route, returns undefined on failure
  */
 function tryResolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
   try {

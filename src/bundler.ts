@@ -131,7 +131,8 @@ export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt =
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
-    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection)
+    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
+    __I18N_ROUTE_RESOLUTION__: JSON.stringify(options.experimental?.routeResolutionEnhancement ?? false)
   }
 
   if (nuxt.options.ssr || !server) {

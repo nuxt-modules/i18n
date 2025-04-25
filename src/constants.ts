@@ -29,7 +29,8 @@ export const DEFAULT_OPTIONS = {
     localeDetector: '',
     typedPages: true,
     typedOptionsAndMessages: false,
-    alternateLinkCanonicalQueries: true
+    alternateLinkCanonicalQueries: true,
+    routeResolutionEnhancement: false as false | 'explicit' | 'implicit'
   },
   bundle: {
     compositionOnly: true,
