@@ -1,7 +1,7 @@
 import { test, describe, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup } from '../utils'
-import { getText, gotoPath, renderPage } from '../helper'
+import { gotoPath, renderPage } from '../helper'
 
 describe('#2151', async () => {
   await setup({
@@ -12,9 +12,9 @@ describe('#2151', async () => {
   test('should load resources with `autoImport` disabled', async () => {
     const { page } = await renderPage('/', { locale: 'ja' })
 
-    expect(await getText(page, '#msg')).toEqual('日本語のメッセージ')
+    expect(await page.locator('#msg').innerText()).toEqual('日本語のメッセージ')
 
     await gotoPath(page, '/en')
-    expect(await getText(page, '#msg')).toEqual('English message')
+    expect(await page.locator('#msg').innerText()).toEqual('English message')
   })
 })

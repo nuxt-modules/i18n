@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup } from '../utils'
-import { getText, gotoPath, renderPage, startServerWithRuntimeConfig } from '../helper'
+import { gotoPath, renderPage, startServerWithRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -50,12 +50,12 @@ test('detection with cookie', async () => {
   // navigate to about
   await gotoPath(page, '/about')
   // detect locale from persisted cookie
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   // navigate with home link
   await page.locator('#link-home').click()
 
   // locale in home
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-en').click()
@@ -111,27 +111,27 @@ test('detection with browser', async () => {
   const { page } = await renderPage('/', { locale: 'fr' })
 
   // detect locale from navigator language
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
   await page.locator('#set-locale-link-en').click()
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // navigate to blog/article
   await gotoPath(page, '/blog/article')
 
   // locale in blog/article
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // navigate with home
   await gotoPath(page, '/')
 
   // locale in home
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
   await page.locator('#set-locale-link-en').click()
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 })
 
 // disable
@@ -155,7 +155,7 @@ test('disable', async () => {
   await gotoPath(page, '/about')
 
   // set default locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
@@ -164,7 +164,7 @@ test('disable', async () => {
   await page.locator('#link-home').click()
 
   // set default locale
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 })
 
 test('fallback', async () => {
@@ -181,5 +181,5 @@ test('fallback', async () => {
   const { page } = await renderPage('/', { locale: 'ja' })
 
   // detect fallback locale with navigator language
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 })

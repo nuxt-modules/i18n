@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, $fetch } from '../utils'
-import { getText, getData, waitForMs, renderPage, waitForURL, getDom, localeLoaderHelpers } from '../helper'
+import { waitForMs, renderPage, getDom, localeLoaderHelpers } from '../helper'
 
 describe('basic lazy loading', async () => {
   await setup({
@@ -16,19 +16,19 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage('/nl')
 
     // capture dynamicTime - simulates changing api response
-    const dynamicTime = await getText(page, '#dynamic-time')
+    const dynamicTime = await page.locator('#dynamic-time').innerText()
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
-    await waitForURL(page, '/fr')
-    expect(await getText(page, '#dynamic-time')).toEqual('Not dynamic')
+    await page.waitForURL(url('/fr'))
+    expect(await page.locator('#dynamic-time').innerText()).toEqual('Not dynamic')
 
     // dynamicTime depends on passage of some time
-    await waitForMs(100)
+    await waitForMs(1)
 
     // dynamicTime does not match captured dynamicTime
     await page.click('#lang-switcher-with-nuxt-link-nl')
-    await waitForURL(page, '/nl')
-    expect(await getText(page, '#dynamic-time')).to.not.equal(dynamicTime)
+    await page.waitForURL(url('/nl'))
+    expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
 
   test('locales are fetched on demand', async () => {
@@ -62,18 +62,18 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage('/')
 
     // `en` rendering
-    expect(await getText(page, '#home-header')).toEqual('Homepage')
-    expect(await getText(page, 'title')).toEqual('Homepage')
-    expect(await getText(page, '#link-about')).toEqual('About us')
+    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
+    expect(await page.locator('title').innerText()).toEqual('Homepage')
+    expect(await page.locator('#link-about').innerText()).toEqual('About us')
 
     // lang switcher rendering
-    expect(await getText(page, '#set-locale-link-fr')).toEqual('Français')
+    expect(await page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
     // html tag `lang` attribute with language code
     expect(await page.getAttribute('html', 'lang')).toEqual('en-US')
@@ -83,18 +83,18 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage('/fr')
 
     // `fr` rendering
-    expect(await getText(page, '#home-header')).toEqual('Accueil')
-    expect(await getText(page, 'title')).toEqual('Accueil')
-    expect(await getText(page, '#link-about')).toEqual('À propos')
+    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    expect(await page.locator('title').innerText()).toEqual('Accueil')
+    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#set-locale-link-en')).toEqual('English')
+    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
     // html tag `lang` attribute with language code
     expect(await page.getAttribute('html', 'lang')).toEqual('fr-FR')
@@ -104,12 +104,12 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage('/en-GB')
 
     // `en` base rendering
-    expect(await getText(page, '#home-header')).toEqual('Homepage')
-    expect(await getText(page, 'title')).toEqual('Homepage')
-    expect(await getText(page, '#link-about')).toEqual('About us')
+    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
+    expect(await page.locator('title').innerText()).toEqual('Homepage')
+    expect(await page.locator('#link-about').innerText()).toEqual('About us')
 
-    expect(await getText(page, '#profile-js')).toEqual('Profile1')
-    expect(await getText(page, '#profile-ts')).toEqual('Profile2')
+    expect(await page.locator('#profile-js').innerText()).toEqual('Profile1')
+    expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
   test('files with cache disabled bypass caching', async () => {
@@ -133,8 +133,8 @@ describe('basic lazy loading', async () => {
   test('manually loaded messages can be used in translations', async () => {
     const { page } = await renderPage('/manual-load')
 
-    expect(await getText(page, '#welcome-english')).toEqual('Welcome!')
-    expect(await getText(page, '#welcome-dutch')).toEqual('Welkom!')
+    expect(await page.locator('#welcome-english').innerText()).toEqual('Welcome!')
+    expect(await page.locator('#welcome-dutch').innerText()).toEqual('Welkom!')
   })
 
   test('(#3359) runtime config accessible in locale function', async () => {
@@ -150,7 +150,7 @@ describe('basic lazy loading', async () => {
       {},
       { timeout: 5000 }
     )
-    expect(await getText(page, '#runtime-config-key')).toEqual('runtime-config-value')
+    expect(await page.locator('#runtime-config-key').innerText()).toEqual('runtime-config-value')
 
     // trigger server-side locale loading
     const html = await $fetch('/en-GB')

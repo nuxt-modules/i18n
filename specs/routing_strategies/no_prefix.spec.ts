@@ -1,15 +1,7 @@
 import { describe, test, expect, beforeAll } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import {
-  getText,
-  getData,
-  renderPage,
-  waitForURL,
-  gotoPath,
-  startServerWithRuntimeConfig,
-  assetLocaleHead
-} from '../helper'
+import { renderPage, gotoPath, startServerWithRuntimeConfig, assetLocaleHead } from '../helper'
 
 import type { Response } from 'playwright-core'
 
@@ -61,19 +53,19 @@ describe('strategy: no_prefix', async () => {
      */
 
     // `en` rendering
-    expect(await getText(page, '#home-header')).toEqual('Homepage')
-    expect(await getText(page, '#link-about')).toEqual('About us')
+    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
+    expect(await page.locator('#link-about').innerText()).toEqual('About us')
 
     // lang switcher rendering
-    expect(await getText(page, '#nuxt-locale-link-fr')).toEqual('Français')
-    expect(await getText(page, '#set-locale-link-fr')).toEqual('Français')
+    expect(await page.locator('#nuxt-locale-link-fr').innerText()).toEqual('Français')
+    expect(await page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     expect(await page.getAttribute('#nuxt-locale-link-fr', 'href')).toEqual('/')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
     /**
      * change locale to `fr`
@@ -81,38 +73,34 @@ describe('strategy: no_prefix', async () => {
 
     // click `fr` lang switch link (`setLocale`)
     await page.locator('#set-locale-link-fr').click()
-    await waitForURL(page, '/')
+    await page.waitForURL(url('/'))
 
     // `fr` rendering
-    expect(await getText(page, '#home-header')).toEqual('Accueil')
-    expect(await getText(page, '#link-about')).toEqual('À propos')
+    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#nuxt-locale-link-en')).toEqual('English')
-    expect(await getText(page, '#set-locale-link-en')).toEqual('English')
+    expect(await page.locator('#nuxt-locale-link-en').innerText()).toEqual('English')
+    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     expect(await page.getAttribute('#nuxt-locale-link-en', 'href')).toEqual('/')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   })
 
   test('(#2493) should navigate from url with and without trailing slash', async () => {
     const { page } = await renderPage('/category/nested/')
 
     await page.locator('#return-home-link').click()
-    await waitForURL(page, '/')
-
-    expect(page.url()).toEqual(url('/'))
+    await page.waitForURL(url('/'))
 
     await gotoPath(page, '/category/nested')
 
     await page.locator('#return-home-link').click()
-    await waitForURL(page, '/')
-
-    expect(page.url()).toEqual(url('/'))
+    await page.waitForURL(url('/'))
   })
 
   test('(#2554) should not throw an error when using `setLocale` from plugin', async () => {
@@ -120,11 +108,11 @@ describe('strategy: no_prefix', async () => {
 
     const res1 = await page.goto(url('/?pluginSetLocale=fr'))
     expect(res1?.ok()).toBeTruthy()
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
     const res2 = await page.goto(url('/?pluginSetLocale=en'))
     expect(res2?.ok()).toBeTruthy()
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
   })
 
   test('(#2473) should respect `detectBrowserLanguage`', async () => {
@@ -140,23 +128,23 @@ describe('strategy: no_prefix', async () => {
     })
     const { page } = await renderPage('/', { locale: 'fr' })
 
-    expect(await getText(page, '#home-header')).toEqual(`Accueil`)
+    expect(await page.locator('#home-header').innerText()).toEqual(`Accueil`)
 
     // change page
     await page.locator('#link-about').click()
-    await waitForURL(page, '/about')
-    expect(await getText(page, '#about-header')).toEqual(`À propos`)
+    await page.waitForURL(url('/about'))
+    expect(await page.locator('#about-header').innerText()).toEqual(`À propos`)
 
     // one more change page
     await page.locator('#link-home').click()
-    expect(await getText(page, '#home-header')).toEqual(`Accueil`)
+    expect(await page.locator('#home-header').innerText()).toEqual(`Accueil`)
   })
 
   test('render with useHead', async () => {
     const { page } = await renderPage('/')
 
     // title tag
-    expect(await getText(page, 'title')).toMatch('Homepage')
+    expect(await page.locator('title').innerText()).toMatch('Homepage')
 
     // html tag `lang` and `dir` attributes
     expect(await page.getAttribute('html', 'lang')).toMatch('en')
@@ -170,7 +158,7 @@ describe('strategy: no_prefix', async () => {
     await page.waitForFunction(() => document.querySelector('title')?.textContent === 'Homepage (Arabic)')
 
     // title tag
-    expect(await getText(page, 'title')).toMatch('Homepage (Arabic)')
+    expect(await page.locator('title').innerText()).toMatch('Homepage (Arabic)')
 
     // html tag `lang` and `dir` attributes
     expect(await page.getAttribute('html', 'lang')).toMatch('ar')

@@ -1,7 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { createPage, setup, url } from '../utils'
-import { getText } from '../helper'
 
 describe('#3404', async () => {
   await setup({
@@ -11,11 +10,11 @@ describe('#3404', async () => {
 
   test('resource optimization excludes files not configured in `i18n.locales.*.files`', async () => {
     const page = await createPage('/en')
-    const heading = await getText(page, '#translated-heading')
+    const heading = await page.locator('#translated-heading').innerText()
     expect(heading).toEqual(`Hello!`)
 
     await page.goto(url('/nl'))
-    const heading2 = await getText(page, '#translated-heading')
+    const heading2 = await page.locator('#translated-heading').innerText()
     expect(heading2).toEqual(`Hallo!`)
   })
 })
