@@ -80,7 +80,7 @@ export function useLocaleHead({
   dir = true,
   lang = true,
   seo = true,
-  key = 'hid'
+  key = 'key'
 }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
   const common = useComposableContext()
   return _useLocaleHead(common, { dir, lang, seo, key })
