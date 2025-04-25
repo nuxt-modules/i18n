@@ -76,7 +76,7 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
   const browser = await getBrowser()
   const page = await browser.newPage(options)
 
-  page.setDefaultNavigationTimeout(5 * 1000)
+  page.setDefaultNavigationTimeout(process.env.CI ? 30 * 1000 : 5 * 1000)
 
   const _locator = page.locator.bind(page)
   page.locator = (selector, options) => {
