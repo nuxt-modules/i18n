@@ -3,6 +3,7 @@ import { genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { getLayerI18n } from './utils'
 import { asI18nVirtual } from './transform/utils'
+import { resolveModule } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtI18nOptions, LocaleObject } from './types'
@@ -199,6 +200,7 @@ import type { Strategies, Directions, LocaleObject } from '${relative(
     join(nuxt.options.buildDir, 'types'),
     resolve(distDir, 'types.d.mts')
   )}'
+import type { I18nRoute } from '#i18n'
 
 declare module 'vue-i18n' {
   interface ComposerCustom extends ComposerCustomProperties<${resolvedLocaleType}> {}
@@ -214,10 +216,25 @@ declare module '@intlify/core-base' {
   }
 }
 
+interface I18nMeta {
+  i18n?: I18nRoute | false
+}
+
 declare module '#app' {
   interface NuxtApp {
     $i18n: ${i18nType}
   }
+  interface PageMeta extends I18nMeta {}
+}
+
+
+// NOTE: this is a workaround for Nuxt <3.16.2
+declare module '${resolve(resolveModule('nuxt'), '../pages/runtime/composables')}' {
+  interface PageMeta extends I18nMeta {}
+}
+
+declare module 'vue-router' {
+  interface RouteMeta extends I18nMeta {}
 }
 
 ${typedRouterAugmentations}
