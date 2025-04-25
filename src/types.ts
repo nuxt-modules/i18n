@@ -312,7 +312,7 @@ export interface I18nHeadOptions {
   seo?: boolean | SeoAttributesOptions
   /**
    * Identifier attribute of `<meta>` tag
-   * @default 'hid'
+   * @default 'key'
    */
   key?: string
 }

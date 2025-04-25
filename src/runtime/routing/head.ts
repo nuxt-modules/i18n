@@ -53,7 +53,7 @@ function createHeadContext(
  */
 export function localeHead(
   ctx: ComposableContext,
-  { dir = true, lang = true, seo = true, key = 'hid' }: I18nHeadOptions
+  { dir = true, lang = true, seo = true, key = 'key' }: I18nHeadOptions
 ): I18nHeadMetaInfo {
   return _localeHead(createHeadContext(ctx, { dir, lang, seo, key }))
 }
