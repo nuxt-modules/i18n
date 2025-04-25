@@ -37,35 +37,32 @@ export default defineNitroPlugin(async nitroApp => {
   const config = useRuntimeConfig()
   const tempKeys = new Set<string>()
 
-  const handler = (msg: { type: string; value: Record<string, string>; identifier: string }) => {
-    if (msg.type === 'update:runtime-config') {
-      const identifier = msg.identifier
+  const handler = (msg: { type: string; value: Record<string, string> }) => {
+    if (msg.type !== 'update:runtime-config') return
 
-      // cleanup temporary keys
-      for (const k of tempKeys) {
-        delete process.env[k]
-      }
-
-      const envConfig = convertObjectToConfig(msg.value)
-      for (const [k, val] of Object.entries(envConfig)) {
-        // collect keys which are newly introduced to cleanup later
-        if (k in process.env === false) {
-          tempKeys.add(k)
-        }
-
-        // @ts-expect-error untyped
-        process.env[k] = val
-      }
-
-      process!.send!({ type: 'confirm:runtime-config', identifier, value: config }, undefined, {
-        keepOpen: true
-      })
+    // cleanup temporary keys
+    for (const k of tempKeys) {
+      delete process.env[k]
     }
+
+    // flatten object and use env variable keys
+    const envConfig = convertObjectToConfig(msg.value)
+    for (const [k, val] of Object.entries(envConfig)) {
+      // collect keys which are newly introduced to cleanup later
+      if (k in process.env === false) {
+        tempKeys.add(k)
+      }
+
+      // @ts-expect-error untyped
+      process.env[k] = val
+    }
+
+    process.send!({ type: 'confirm:runtime-config', value: config }, undefined, {
+      keepOpen: true
+    })
   }
 
   process.on('message', handler)
 
-  nitroApp.hooks.hook('close', () => {
-    process.off('message', handler)
-  })
+  nitroApp.hooks.hook('close', () => process.off('message', handler))
 })

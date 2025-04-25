@@ -150,10 +150,10 @@ export async function waitForURL(page: Page, path: string) {
   }
 }
 
-async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown, identifier: string) {
+async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
   const updated = new Promise<unknown>(resolve => {
-    const handler = (msg: { type: string; value: unknown; identifier: string }) => {
-      if (msg.identifier === identifier && msg.type === 'confirm:runtime-config') {
+    const handler = (msg: { type: string; value: unknown }) => {
+      if (msg.type === 'confirm:runtime-config') {
         ctx.serverProcess!.process?.off('message', handler)
         resolve(msg.value)
       }
@@ -161,7 +161,7 @@ async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown, ide
     ctx.serverProcess!.process?.on('message', handler)
   })
 
-  ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: config, identifier }, undefined, {
+  ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: config }, undefined, {
     keepOpen: true
   })
 
@@ -170,16 +170,15 @@ async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown, ide
 
 export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
   const ctx = useTestContext()
-  const identifier = (ctx.url ?? '') + Math.random().toString(36).slice(2, 10)
 
-  const stored = await updateProcessRuntimeConfig(ctx, env, identifier)
+  const stored = await updateProcessRuntimeConfig(ctx, env)
 
   let restored = false
   const restoreFn = async () => {
     if (restored) return
 
     restored = true
-    await await updateProcessRuntimeConfig(ctx, stored, identifier)
+    await await updateProcessRuntimeConfig(ctx, stored)
   }
 
   if (!skipRestore) {
