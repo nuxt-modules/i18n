@@ -13,11 +13,22 @@ function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
+const portPool = new Set<number>()
+
+async function getPort(host: string) {
+  const port = await getRandomPort(host)
+  if (portPool.has(port)) {
+    return getPort(host)
+  }
+  portPool.add(port)
+  return port
+}
+
 export async function startServer(env: Record<string, unknown> = {}) {
   const ctx = useTestContext()
   stopServer()
   const host = '127.0.0.1'
-  const ports = ctx.options.port ? toArray(ctx.options.port) : [await getRandomPort(host)]
+  const ports = ctx.options.port ? toArray(ctx.options.port) : [await getPort(host)]
   ctx.url = `http://${host}:${ports[0]}`
   if (ctx.options.dev) {
     ctx.serverProcess = x('nuxi', ['_dev'], {
@@ -89,6 +100,7 @@ export async function startServer(env: Record<string, unknown> = {}) {
       }
     })
     ;(await import('consola')).consola.restoreConsole()
+    console.log('ports in use:', portPool.size)
     console.time(`server (${ports[0]})`)
     await waitForPort(ports[0], { retries: 500, host, delay: 10 })
     console.timeLog(`server (${ports[0]})`)
