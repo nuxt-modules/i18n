@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup } from '../utils'
-import { getText, gotoPath, renderPage, startServerWithRuntimeConfig, waitForURL } from '../helper'
+import { setup, url } from '../utils'
+import { renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -36,7 +36,7 @@ test('does not reset cookie no refresh', async () => {
   ])
 
   await page.reload()
-  await waitForURL(page, '/')
+  await page.waitForURL(url('/'))
 
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }

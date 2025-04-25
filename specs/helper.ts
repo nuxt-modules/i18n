@@ -2,19 +2,10 @@
 import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
 import { getBrowser, TestContext, url, useTestContext } from './utils'
-import { snakeCase } from 'scule'
 import { resolveAlias } from '@nuxt/kit'
 import { onTestFinished } from 'vitest'
 
-import { errors, type BrowserContextOptions, type Page } from 'playwright-core'
-
-export async function getText(page: Page, selector: string, options?: Parameters<Page['locator']>[1]) {
-  return page.locator(selector, options).innerText()
-}
-
-export async function getData(page: Page, selector: string, options?: Parameters<Page['locator']>[1]) {
-  return JSON.parse(await page.locator(selector, options).innerText())
-}
+import { errors, Response, type BrowserContextOptions, type Page } from 'playwright-core'
 
 export async function waitForTransition(page: Page, selector: string = '#nuxt-page.my-leave-active') {
   await page.locator(selector).waitFor()
@@ -22,7 +13,7 @@ export async function waitForTransition(page: Page, selector: string = '#nuxt-pa
 }
 
 export async function assetLocaleHead(page: Page, headSelector: string) {
-  const localeHeadValue = await getData(page, headSelector)
+  const localeHeadValue = await JSON.parse(await page.locator(headSelector).innerText())
   const headHandle = await page.locator('head').elementHandle()
   await page.evaluateHandle(
     ([headTag, localeHead]) => {
@@ -84,19 +75,31 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
 
   const browser = await getBrowser()
   const page = await browser.newPage(options)
-  const pageErrors: Error[] = []
-  const requests: string[] = []
-  const consoleLogs: { type: string; text: string }[] = []
 
-  page.on('console', message => {
-    consoleLogs.push({
-      type: message.type(),
-      text: message.text()
-    })
-  })
-  page.on('pageerror', err => {
-    pageErrors.push(err)
-  })
+  page.setDefaultNavigationTimeout(5 * 1000)
+
+  const _locator = page.locator.bind(page)
+  page.locator = (selector, options) => {
+    const locator = _locator(selector, options)
+    const _click = locator.click.bind(locator)
+    locator.clickNavigate = async options => await fnAndWaitForNavigation(page, async () => await _click(options))
+    return locator
+  }
+
+  const _goBack = page.goBack.bind(page)
+  page.goBackNavigate = async options => await fnAndWaitForNavigation(page, async () => await _goBack(options))
+
+  const _click = page.click.bind(page)
+  page.clickNavigate = async (selector, options) =>
+    await fnAndWaitForNavigation(page, async () => await _click(selector, options))
+
+  const consoleLogs: { type: string; text: string }[] = []
+  page.on('console', message => consoleLogs.push({ type: message.type(), text: message.text() }))
+
+  const pageErrors: Error[] = []
+  page.on('pageerror', err => pageErrors.push(err))
+
+  const requests: string[] = []
   page.on('request', req => {
     try {
       requests.push(req.url().replace(url('/'), '/'))
@@ -126,30 +129,34 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
 
 export async function gotoPath(page: Page, path: string) {
   await page.goto(url(path))
-  await waitForURL(page, path)
+  await page.waitForURL(url(path))
 }
 
-export async function waitForURL(page: Page, path: string) {
-  try {
-    await page.waitForFunction(
-      path => window.useNuxtApp?.()._route.fullPath === path && !window.useNuxtApp?.().isHydrating,
-      path
-    )
-  } catch (err) {
-    if (err instanceof errors.TimeoutError) {
-      const currentPath = await page.evaluate(() => window.useNuxtApp?.()._route.fullPath)
-      const isHydrating = await page.evaluate(() => window.useNuxtApp?.().isHydrating)
-      err.message += `\nWaited for URL to be ${path} but got stuck on ${currentPath} with isHydrating: ${isHydrating}`
+export async function fnAndWaitForNavigation<T>(page: Page, fn: () => Promise<T>) {
+  const waitForNav = page.evaluate(() => {
+    return new Promise<void>(resolve => {
+      // @ts-expect-error untyped
+      const unsub = window.useNuxtApp?.().$router.afterEach(() => {
+        unsub()
+        resolve()
+      })
+    })
+  })
+  const res = await fn()
+  await waitForNav
+  return res
+}
 
-      const arr = err.stack?.split('\n')
-      arr?.splice(1, 1)
-      err.stack = arr?.join('\n') ?? undefined
-    }
+declare module 'playwright-core' {
+  interface Page {
+    clickNavigate: Page['click']
+    goBackNavigate: Page['goBack']
+  }
 
-    throw err
+  interface Locator {
+    clickNavigate: Locator['click']
   }
 }
-
 async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
   const updated = new Promise<unknown>(resolve => {
     const handler = (msg: { type: string; value: unknown }) => {

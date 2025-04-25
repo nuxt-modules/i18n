@@ -1,7 +1,6 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, createPage } from '../utils'
-import { getText } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/different_domains`, import.meta.url)),
@@ -38,7 +37,7 @@ test('(#2313) detection locale from domain', async () => {
       locale: browserLocale
     })
 
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual(locale)
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual(locale)
     await page.close()
   }
 
@@ -49,5 +48,5 @@ test('(#2313) detection locale from domain', async () => {
 test('(#2334) should not redirect loop, when use no_prefix and ssr: false', async () => {
   const page = await createPage(url('/'), { locale: 'fr' })
 
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 })

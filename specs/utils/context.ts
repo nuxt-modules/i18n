@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import { defu } from 'defu'
 import type { TestContext, TestOptions } from './types'
+import { LaunchOptions } from 'playwright-core'
 
 let currentContext: TestContext | undefined
 
@@ -19,7 +20,8 @@ export function createTestContext(options: Partial<TestOptions>): TestContext {
     // TODO: auto detect based on process.env
     runner: 'vitest' as const,
     browserOptions: {
-      type: 'chromium' as const
+      type: 'chromium' as const,
+      launch: {} satisfies LaunchOptions
     }
   })
 

@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { getText, getData, renderPage, waitForURL } from '../helper'
+import { renderPage } from '../helper'
 
 import type { Response } from 'playwright-core'
 
@@ -23,60 +23,60 @@ describe('strategy: prefix_and_default', async () => {
     const { page } = await renderPage('/')
 
     // `en` rendering
-    expect(await getText(page, '#home-header')).toMatch('Homepage')
-    expect(await getText(page, 'title')).toMatch('Homepage')
-    expect(await getText(page, '#link-about')).toMatch('About us')
+    expect(await page.locator('#home-header').innerText()).toMatch('Homepage')
+    expect(await page.locator('title').innerText()).toMatch('Homepage')
+    expect(await page.locator('#link-about').innerText()).toMatch('About us')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('Français')
-    expect(await getText(page, '#set-locale-link-fr')).toMatch('Français')
+    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toMatch('Français')
+    expect(await page.locator('#set-locale-link-fr').innerText()).toMatch('Français')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/fr')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale')).toMatch('en')
+    expect(await page.locator('#lang-switcher-current-locale').innerText()).toMatch('en')
   })
 
   test('can access to prefix locale : /en', async () => {
     const { page } = await renderPage('/en')
 
     // `en` rendering
-    expect(await getText(page, '#home-header')).toMatch('Homepage')
-    expect(await getText(page, 'title')).toMatch('Homepage')
-    expect(await getText(page, '#link-about')).toMatch('About us')
+    expect(await page.locator('#home-header').innerText()).toMatch('Homepage')
+    expect(await page.locator('title').innerText()).toMatch('Homepage')
+    expect(await page.locator('#link-about').innerText()).toMatch('About us')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toMatch('Français')
-    expect(await getText(page, '#set-locale-link-fr')).toMatch('Français')
+    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toMatch('Français')
+    expect(await page.locator('#set-locale-link-fr').innerText()).toMatch('Français')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/fr')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale')).toMatch('en')
+    expect(await page.locator('#lang-switcher-current-locale').innerText()).toMatch('en')
   })
 
   test('can access to prefix locale: /fr', async () => {
     const { page } = await renderPage('/fr')
 
     // `fr` rendering
-    expect(await getText(page, '#home-header')).toEqual('Accueil')
-    expect(await getText(page, 'title')).toEqual('Accueil')
-    expect(await getText(page, '#link-about')).toEqual('À propos')
+    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    expect(await page.locator('title').innerText()).toEqual('Accueil')
+    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('English')
-    expect(await getText(page, '#set-locale-link-en')).toEqual('English')
+    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toEqual('English')
+    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   })
 
   test('cannot access to not defined locale: /ja', async () => {
@@ -96,59 +96,56 @@ describe('strategy: prefix_and_default', async () => {
     const { page } = await renderPage('/')
 
     // click `fr` lang switch link with NuxtLink
-    await page.locator('#lang-switcher-with-nuxt-link a').click()
-    await waitForURL(page, '/fr')
+    await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+    await page.waitForURL(url('/fr'))
 
     // `fr` rendering
-    expect(await getText(page, '#home-header')).toEqual('Accueil')
-    expect(await getText(page, 'title')).toEqual('Accueil')
-    expect(await getText(page, '#link-about')).toEqual('À propos')
+    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    expect(await page.locator('title').innerText()).toEqual('Accueil')
+    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await getText(page, '#lang-switcher-with-nuxt-link a')).toEqual('English')
-    expect(await getText(page, '#set-locale-link-en')).toEqual('English')
+    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toEqual('English')
+    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about' })
+    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
     expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
 
     // current locale
-    expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
     // click `en` and `fr` lang switch link with setLocale
-    await page.locator('#set-locale-link-en').click()
-    await waitForURL(page, '/')
-    expect(await getText(page, 'title')).toEqual('Homepage')
+    await page.locator('#set-locale-link-en').clickNavigate()
+    await page.waitForURL(url('/'))
+    expect(await page.locator('title').innerText()).toEqual('Homepage')
 
-    await page.locator('#set-locale-link-fr').click()
-    await waitForURL(page, '/fr')
-    expect(await getText(page, 'title')).toEqual('Accueil')
-
-    // navigation URL
-    expect(await page.url()).toEqual(url('/fr'))
+    await page.locator('#set-locale-link-fr').clickNavigate()
+    await page.waitForURL(url('/fr'))
+    expect(await page.locator('title').innerText()).toEqual('Accueil')
   })
 
   test('(#2226) navigation works while `locale === defaultLocale`', async () => {
     const { page } = await renderPage(url('/'))
 
-    await page.locator('#lang-switcher-with-nuxt-link a').click()
-    expect(await getText(page, '#lang-switcher-default-locale')).include(`Default Locale: en`)
-    expect(await getText(page, '#lang-switcher-current-locale')).include(`Current Locale: fr`)
+    await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+    expect(await page.locator('#lang-switcher-default-locale').innerText()).include(`Default Locale: en`)
+    expect(await page.locator('#lang-switcher-current-locale').innerText()).include(`Current Locale: fr`)
 
-    await page.locator('#link-about').click()
-    await waitForURL(page, '/fr/about')
-    expect(await getText(page, '#about-header')).include(`À propos`)
+    await page.locator('#link-about').clickNavigate()
+    await page.waitForURL(url('/fr/about'))
+    expect(await page.locator('#about-header').innerText()).include(`À propos`)
 
-    await page.locator('#link-home').click()
-    await waitForURL(page, '/fr')
-    expect(await getText(page, '#home-header')).toEqual('Accueil')
+    await page.locator('#link-home').clickNavigate()
+    await page.waitForURL(url('/fr'))
+    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
 
-    await page.locator('#lang-switcher-with-nuxt-link a').click()
-    expect(await getText(page, '#lang-switcher-default-locale')).include(`Default Locale: en`)
-    expect(await getText(page, '#lang-switcher-current-locale')).include(`Current Locale: en`)
+    await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+    expect(await page.locator('#lang-switcher-default-locale').innerText()).include(`Default Locale: en`)
+    expect(await page.locator('#lang-switcher-current-locale').innerText()).include(`Current Locale: en`)
 
-    await page.locator('#link-about').click()
-    await waitForURL(page, '/about')
-    expect(await getText(page, '#about-header')).include(`About us`)
+    await page.locator('#link-about').clickNavigate()
+    await page.waitForURL(url('/about'))
+    expect(await page.locator('#about-header').innerText()).include(`About us`)
   })
 })

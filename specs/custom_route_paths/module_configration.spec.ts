@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { getText, getData, renderPage, waitForURL } from '../helper'
+import { renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -35,43 +35,41 @@ test('can access to custom route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await waitForURL(page, '/fr')
+  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.waitForURL(url('/fr'))
 
   // page path
-  expect(await getData(page, '#home-use-async-data')).toMatchObject({ aboutPath: '/fr/about-fr' })
+  expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
+    aboutPath: '/fr/about-fr'
+  })
 
   // navigate to about page for `fr`
-  await page.locator('#link-about').click()
-  await waitForURL(page, '/fr/about-fr')
+  await page.locator('#link-about').clickNavigate()
+  await page.waitForURL(url('/fr/about-fr'))
 
-  expect(await getText(page, '#about-header')).toEqual('À propos')
-  expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('fr')
-  expect(await page.url()).include('/fr/about-fr')
+  expect(await page.locator('#about-header').innerText()).toEqual('À propos')
+  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await page.waitForURL(url('/fr/about-fr'))
 })
 
 test('can access to custom nested route path', async () => {
   const { page } = await renderPage('/')
 
   // navigate to blog index page
-  await page.locator('#link-blog').click()
-  await waitForURL(page, '/news')
-
-  expect(await page.url()).include('/news')
+  await page.locator('#link-blog').clickNavigate()
+  await page.waitForURL(url('/news'))
 
   // navigate to blog article page
-  await page.locator('#link-blog-article').click()
-  await waitForURL(page, '/news/article')
-
-  expect(await page.url()).include('/news/article')
+  await page.locator('#link-blog-article').clickNavigate()
+  await page.waitForURL(url('/news/article'))
 })
 
 test('can not access to pick route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await waitForURL(page, '/fr')
+  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
   expect(await page.locator('#link-history').getAttribute('href')).toBe(null)
@@ -91,8 +89,8 @@ test('can not access to disable route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').click()
-  await waitForURL(page, '/fr')
+  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
   expect(await page.locator('#link-category').getAttribute('href')).toBe(null)
@@ -112,7 +110,5 @@ test('#3076 - layer with custom `srcDir`', async () => {
   const { page } = await renderPage('/custom-layer/custom')
 
   await page.click(`#nuxt-locale-link-fr`)
-  await waitForURL(page, '/fr/custom-layer-french/custom')
-
-  expect(await page.url()).include('/fr/custom-layer-french/custom')
+  await page.waitForURL(url('/fr/custom-layer-french/custom'))
 })

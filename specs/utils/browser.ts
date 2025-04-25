@@ -1,6 +1,7 @@
 import type { Browser, BrowserContextOptions, Page } from 'playwright-core'
 import { useTestContext } from './context'
 import { url } from './server'
+import { fnAndWaitForNavigation } from '../helper'
 
 export async function createBrowser() {
   const ctx = useTestContext()
@@ -22,6 +23,10 @@ export async function createBrowser() {
   }
 
   ctx.browser = await playwright[type].launch(launch)
+  // ctx.browser.contexts().forEach(async context => {
+  //   context.setDefaultNavigationTimeout(10 * 1000)
+  //   context.setDefaultTimeout(10 * 1000)
+  // })
 }
 
 export async function getBrowser(): Promise<Browser> {
@@ -60,6 +65,21 @@ export async function createPage(path?: string, options?: BrowserContextOptions,
     await waitForHydration(page, url, waitUntil)
     return res
   }
+
+  const _locator = page.locator.bind(page)
+  page.locator = (selector, options) => {
+    const locator = _locator(selector, options)
+    const _click = locator.click.bind(locator)
+    locator.clickNavigate = async options => await fnAndWaitForNavigation(page, async () => await _click(options))
+    return locator
+  }
+
+  const _goBack = page.goBack.bind(page)
+  page.goBackNavigate = async options => await fnAndWaitForNavigation(page, async () => await _goBack(options))
+
+  const _click = page.click.bind(page)
+  page.clickNavigate = async (selector, options) =>
+    await fnAndWaitForNavigation(page, async () => await _click(selector, options))
 
   if (path) {
     await page.goto(url(path, port), { waitUntil: 'hydration' })
