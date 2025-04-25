@@ -1,9 +1,10 @@
 // @ts-ignore
 import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
-import { getBrowser, startServer, url, useTestContext } from './utils'
+import { getBrowser, TestContext, url, useTestContext } from './utils'
 import { snakeCase } from 'scule'
 import { resolveAlias } from '@nuxt/kit'
+import { onTestFinished } from 'vitest'
 
 import { errors, type BrowserContextOptions, type Page } from 'playwright-core'
 
@@ -149,42 +150,42 @@ export async function waitForURL(page: Page, path: string) {
   }
 }
 
-function flattenObject(obj: Record<string, unknown> = {}) {
-  const flattened: Record<string, unknown> = {}
-
-  for (const key of Object.keys(obj)) {
-    const entry = obj[key]
-
-    if (typeof entry !== 'object' || entry == null) {
-      flattened[key] = obj[key]
-      continue
+async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
+  const updated = new Promise<unknown>(resolve => {
+    const handler = (msg: { type: string; value: unknown }) => {
+      if (msg.type === 'confirm:runtime-config') {
+        ctx.serverProcess!.process?.off('message', handler)
+        resolve(msg.value)
+      }
     }
+    ctx.serverProcess!.process?.on('message', handler)
+  })
 
-    const flatObject = flattenObject(entry as Record<string, unknown>)
-    for (const x of Object.keys(flatObject)) {
-      flattened[key + '_' + x] = flatObject[x]
-    }
-  }
+  ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: config }, undefined, {
+    keepOpen: true
+  })
 
-  return flattened
+  return await updated
 }
 
-function convertObjectToConfig(obj: Record<string, unknown>) {
-  const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
+export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
+  const ctx = useTestContext()
 
-  const env: Record<string, unknown> = {}
-  const flattened = flattenObject(obj)
-  for (const key in flattened) {
-    env[makeEnvKey(key)] = flattened[key]
+  const stored = await updateProcessRuntimeConfig(ctx, env)
+
+  let restored = false
+  const restoreFn = async () => {
+    if (restored) return
+
+    restored = true
+    await await updateProcessRuntimeConfig(ctx, stored)
   }
 
-  return env
-}
+  if (!skipRestore) {
+    onTestFinished(restoreFn)
+  }
 
-export async function startServerWithRuntimeConfig(env: Record<string, unknown>) {
-  const converted = convertObjectToConfig(env)
-  await startServer(converted)
-  return async () => startServer()
+  return restoreFn
 }
 
 export async function localeLoaderHelpers() {

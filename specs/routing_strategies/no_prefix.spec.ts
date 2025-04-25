@@ -30,11 +30,14 @@ await setup({
 
 describe('strategy: no_prefix', async () => {
   beforeAll(async () => {
-    await startServerWithRuntimeConfig({
-      public: {
-        i18n: { detectBrowserLanguage: false }
-      }
-    })
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: { detectBrowserLanguage: false }
+        }
+      },
+      true
+    )
   })
 
   test('cannot access with locale prefix: /ja', async () => {

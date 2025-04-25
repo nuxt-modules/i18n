@@ -21,7 +21,7 @@ await setup({
 
 describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async () => {
   test('(#2262) redirect using browser cookie with `alwaysRedirect: true`', async () => {
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {
@@ -52,8 +52,6 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
     await page.locator('#nuxt-locale-link-en').click()
     expect(await getText(page, '#lang-switcher-current-locale code')).toEqual('en')
     expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
-
-    await restore()
   })
 
   describe('(#2255) detect browser language and redirect on root', async () => {

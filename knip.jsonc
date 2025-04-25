@@ -8,7 +8,8 @@
         "src/runtime/{plugins,components,composables}/**",
         "src/runtime/server/**",
         "src/runtime/kit/**",
-        "scripts/*"
+        "scripts/*",
+        "specs/utils/nitro-plugin.ts"
       ],
       "ignoreUnresolved": [
         // virtuals

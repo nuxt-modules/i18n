@@ -19,7 +19,7 @@ await setup({
 
 describe('rootRedirect', async () => {
   test('can redirect to rootRedirect option path', async () => {
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: {
         i18n: {
           rootRedirect: 'fr'
@@ -29,12 +29,10 @@ describe('rootRedirect', async () => {
 
     const res = await fetch('/')
     expect(res.url).toBe(url('/fr'))
-
-    await restore()
   })
 
   test('(#2758) `statusCode` in `rootRedirect` should work with strategy "prefix"', async () => {
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: {
         i18n: {
           rootRedirect: { statusCode: 418, path: 'test-route' }
@@ -45,7 +43,5 @@ describe('rootRedirect', async () => {
     const res = await fetch(url('/'))
     expect(res.status).toEqual(418)
     expect(res.headers.get('location')).toEqual('/en/test-route')
-
-    await restore()
   })
 })

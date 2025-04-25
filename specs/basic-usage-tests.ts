@@ -157,14 +157,12 @@ export function basicUsageTests() {
 
     expect(await getText(page, '#runtime-config')).toEqual('Hello from runtime config!')
 
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: { runtimeValue: 'The environment variable has changed!' }
     })
 
     await gotoPath(page, '/')
     expect(await getText(page, '#runtime-config')).toEqual('The environment variable has changed!')
-
-    await restore()
   })
 
   test('layer provides locale `nl` and translation for key `hello`', async () => {
@@ -389,7 +387,7 @@ export function basicUsageTests() {
   test('render seo tags with baseUrl', async () => {
     const configDomain = 'https://runtime-config-domain.com'
 
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: {
         i18n: {
           baseUrl: configDomain
@@ -407,8 +405,6 @@ export function basicUsageTests() {
     expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual(
       'https://runtime-config-domain.com/fr?canonical='
     )
-
-    await restore()
   })
 
   test('render seo tags with `experimental.alternateLinkCanonicalQueries`', async () => {
@@ -534,15 +530,13 @@ export function basicUsageTests() {
   })
 
   test('(#2000) Should be able to load large vue-i18n messages', async () => {
-    const restore = await startServerWithRuntimeConfig({
+    await startServerWithRuntimeConfig({
       public: { longTextTest: true }
     })
 
     const { page } = await renderPage('/nl/long-text')
 
     expect(await getText(page, '#long-text')).toEqual('hallo,'.repeat(8 * 500))
-
-    await restore()
   })
 
   test('(#2094) vue-i18n messages are loaded from config exported as variable', async () => {
