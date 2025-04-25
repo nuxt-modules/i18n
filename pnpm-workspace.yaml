@@ -4,4 +4,5 @@ packages:
   - specs/fixtures/*
 onlyBuiltDependencies:
   - better-sqlite3
+  - esbuild
   - sharp
