@@ -1,7 +1,6 @@
 import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 import { snakeCase } from 'scule'
 
-// duplicate from helper.ts - due to nuxt import impound/protection
 function flattenObject(obj: Record<string, unknown> = {}) {
   const flattened: Record<string, unknown> = {}
 
@@ -22,7 +21,6 @@ function flattenObject(obj: Record<string, unknown> = {}) {
   return flattened
 }
 
-// duplicate from helper.ts - due to nuxt import impound/protection
 export function convertObjectToConfig(obj: Record<string, unknown>) {
   const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
 
