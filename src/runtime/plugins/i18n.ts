@@ -133,7 +133,9 @@ export default defineNuxtPlugin({
           await loadAndSetLocale(locale, i18n.__firstAccess)
 
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
-            await composer.loadLocaleMessages(locale)
+            if (!__I18N_FULL_STATIC__ || !nuxt._i18nPreloaded) {
+              await composer.loadLocaleMessages(locale)
+            }
             i18n.__setLocale(locale)
             return
           }

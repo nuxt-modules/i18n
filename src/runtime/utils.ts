@@ -201,14 +201,16 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
   // load locale messages required by `newLocale`
   // if (lazy) {
-  const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
+  if (!__I18N_FULL_STATIC__ || !nuxtApp._i18nPreloaded) {
+    const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
 
-  const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
-  if (i18nFallbackLocales) {
-    const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-    await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter, nuxtApp)))
+    const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
+    if (i18nFallbackLocales) {
+      const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
+      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter, nuxtApp)))
+    }
+    await loadLocale(newLocale, localeLoaders, setter, nuxtApp)
   }
-  await loadLocale(newLocale, localeLoaders, setter, nuxtApp)
   // }
 
   if (skipSettingLocaleOnNavigate) {
