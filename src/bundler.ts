@@ -60,8 +60,9 @@ export function createLogger(label) {
    */
   const { options } = ctx
   const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
-  const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths]
-  ctx.fullStatic = i18nFileMetas.every(m => m.type === 'static')
+  ctx.fullStatic =
+    ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.file.cache !== false) &&
+    ctx.vueI18nConfigPaths.every(x => x.type === 'static')
 
   const vueI18nPluginOptions: PluginOptions = {
     ...options.bundle,

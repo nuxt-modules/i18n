@@ -79,7 +79,7 @@ export default defineNuxtPlugin({
         }
       }
 
-      console.log('loaded messages', nuxt._i18nPreloaded)
+      __DEBUG__ && logger.log('preloaded full static messages', nuxt._i18nPreloaded)
     }
 
     // create i18n instance
