@@ -95,7 +95,7 @@ export interface ExperimentalFeatures {
    * Lazy loaded messages cache lifetime in seconds
    * - `-1` cache disabled
    * - `0` cache indefinitely
-   * @default -1 // disabled
+   * @default -1 // disabled, or `0` (indefinite) if all locale files are static files
    */
   cacheLifetime?: number
 }
