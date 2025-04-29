@@ -217,7 +217,7 @@ function flattenObject(obj: Record<string, unknown> = {}) {
   return flattened
 }
 
-export function convertObjectToConfig(obj: Record<string, unknown>) {
+function convertObjectToConfig(obj: Record<string, unknown>) {
   const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
 
   const env: Record<string, unknown> = {}
