@@ -7,7 +7,7 @@ import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { localeCodes, vueI18nConfigs, localeLoaders } from '#internal/i18n/options.mjs'
 import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadAndSetLocaleMessages } from '../messages'
 // @ts-expect-error virtual file
-import { appId } from '#internal/nuxt.config.mjs'
+import { appId, appBuildAssetsDir } from '#internal/nuxt.config.mjs'
 
 import type { CoreOptions } from '@intlify/core'
 import type { H3Event } from 'h3'
@@ -21,6 +21,13 @@ import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
 // const serializableMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 const serializableMessages: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
 const initialMessages: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
+
+/**
+ * Skip requests for static assets
+ */
+function shouldSkipRequest(event: H3Event) {
+  return event.path.startsWith('/favicon.ico') || event.path.startsWith(appBuildAssetsDir)
+}
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 export default defineNitroPlugin(async nitro => {
@@ -58,7 +65,13 @@ export default defineNitroPlugin(async nitro => {
   const tryRouteLocale = (event: H3Event) => routeDetector(event.path) || null
   const defaultDetector = createDefaultLocaleDetector({ defaultLocale: initialLocale, tryRouteLocale })
 
+  if (!__LAZY_LOCALES__) {
+    await Promise.all(localeCodes.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!)))
+  }
+
   nitro.hooks.hook('request', async (event: H3Event) => {
+    if (shouldSkipRequest(event)) return
+
     const locale = defaultDetector(event, options as CoreOptions<string, DefineLocaleMessage>)
     const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
     if (__LAZY_LOCALES__) {
@@ -68,10 +81,6 @@ export default defineNitroPlugin(async nitro => {
         )
       }
       await loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!)
-    } else {
-      await Promise.all(
-        localeCodes.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!))
-      )
     }
 
     event.context.i18nLocales = Array.from(new Set(fallbackLocales.concat(locale))).filter(Boolean)
@@ -79,23 +88,6 @@ export default defineNitroPlugin(async nitro => {
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
-    // const loaded = []
-
-    // for (const locale of event.context.i18nLocales) {
-    //   // console.log(locale)
-    //   if (locale in localeLoaders) {
-    //     for (const loader of localeLoaders[locale]) {
-    //       if (cacheMessages.has(loader.key)) {
-    //         loaded.push(loader.key)
-    //       }
-    //     }
-    //   }
-    // }
-
-    // console.log('cacheMessages', cacheMessages.keys())
-    // console.log('loaded', loaded)
-    // console.log('all loaded', cacheMessages.keys())
-
     try {
       const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
       for (const locale of event.context.i18nLocales) {
@@ -104,9 +96,6 @@ export default defineNitroPlugin(async nitro => {
       htmlContext.bodyAppend.unshift(
         `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(subset)}</script>`
       )
-      // htmlContext.bodyAppend.unshift(
-      //   `<script type="application/json" data-nuxt-i18n-cache="${appId}">${stringify(loaded)}</script>`
-      // )
     } catch (_) {
       console.log(_)
     }
