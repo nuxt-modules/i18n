@@ -80,7 +80,7 @@ export default defineNitroPlugin(async nitro => {
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
     try {
-      const subset = {}
+      const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
       for (const locale of event.context.i18nLocales) {
         subset[locale] = event.context.i18nCache[locale]
       }
