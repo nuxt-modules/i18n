@@ -86,6 +86,18 @@ export interface ExperimentalFeatures {
    * @default true
    */
   alternateLinkCanonicalQueries?: boolean
+  /**
+   * Enables caching of locale messages in dev mode
+   * @default false
+   */
+  devCache?: boolean
+  /**
+   * Lazy loaded messages cache lifetime in seconds
+   * - `-1` cache disabled
+   * - `0` cache indefinitely
+   * @default -1 // disabled
+   */
+  cacheLifetime?: number
 }
 
 export interface BundleOptions
@@ -105,11 +117,6 @@ export type NuxtI18nOptions<
   Context = unknown,
   ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
 > = {
-  /**
-   * Cache message during development
-   * @default false
-   */
-  devCache?: boolean
   /**
    * Path to a Vue I18n configuration file, the module will scan for a i18n.config{.js,.mjs,.ts} if left unset.
    * @default ''

@@ -29,7 +29,9 @@ export const DEFAULT_OPTIONS = {
     localeDetector: '',
     typedPages: true,
     typedOptionsAndMessages: false,
-    alternateLinkCanonicalQueries: true
+    alternateLinkCanonicalQueries: true,
+    devCache: false,
+    cacheLifetime: 1000 * 60 * 60
   },
   bundle: {
     compositionOnly: true,
@@ -56,7 +58,7 @@ export const DEFAULT_OPTIONS = {
   lazy: false,
   langDir: 'locales',
   rootRedirect: undefined,
-  devCache: false,
+
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,

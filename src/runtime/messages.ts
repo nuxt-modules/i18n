@@ -19,7 +19,8 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
 const nuxtMock: { runWithContext: NuxtApp['runWithContext'] } = {
   runWithContext: async (fn: () => Promise<never>) => await fn()
 }
-const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
+const cacheTime = import.meta.prerender ? 0 : __I18N_CACHE_LIFETIME__
+const cacheMessages = new Map<string, { time: number; message: LocaleMessages<DefineLocaleMessage> }>()
 
 export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[], nuxt = nuxtMock): Promise<I18nOptions> {
   const vueI18nOptions: I18nOptions = { messages: {} }
@@ -85,7 +86,7 @@ export async function loadInitialMessages(
 
 const isModule = (val: unknown): val is { default: unknown } => toTypeString(val) === '[object Module]'
 
-async function loadMessage(locale: Locale, { key, load }: LocaleLoader, nuxt = nuxtMock) {
+async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, nuxt = nuxtMock) {
   const logger = /*#__PURE__*/ createLogger('loadMessage')
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
@@ -99,14 +100,27 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader, nuxt = n
     } else {
       message = getter
     }
-    if (message != null && cacheMessages && (!import.meta.dev || __I18N_DEV_CACHE__)) {
-      cacheMessages.set(key, message)
+    if (message != null && cache && __I18N_CACHE__) {
+      cacheMessages.set(key, { time: Date.now(), message })
     }
     __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
   } catch (e: unknown) {
     console.error('Failed locale loading: ' + (e as Error).message)
   }
   return message
+}
+
+/**
+ * Get cached message
+ * - if cache has expired, returns undefined
+ * - if `cacheTime` is set to 0, cache never expires
+ */
+function getCachedMessage(key: string) {
+  const cache = cacheMessages.get(key)
+  if (cache == null) return
+  // if cacheTime is 0, always return cache
+  const fresh = cacheTime === 0 || Date.now() - cache.time < cacheTime
+  return fresh ? cache.message : undefined
 }
 
 export async function loadLocale(
@@ -127,9 +141,10 @@ export async function loadLocale(
   for (const loader of loaders) {
     let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
 
-    if (cacheMessages && cacheMessages.has(loader.key) && loader.cache) {
+    const cached = __I18N_CACHE__ && loader.cache && getCachedMessage(loader.key)
+    if (__I18N_CACHE__ && cached) {
       __DEBUG__ && logger.log(loader.key + ' is already loaded')
-      message = cacheMessages.get(loader.key)
+      message = cached
     } else {
       __TEST__ && !loader.cache && logger.log(loader.key + ' bypassing cache!')
       __DEBUG__ && logger.log(loader.key + ' is loading ...')

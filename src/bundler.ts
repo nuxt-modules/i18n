@@ -131,7 +131,12 @@ export function getDefineConfig({ options }: I18nNuxtContext, server = false, nu
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
-    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection)
+    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
+    __I18N_CACHE__: String(
+      options.experimental.cacheLifetime! >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
+    ),
+    __I18N_DEV_CACHE__: String(!!options.experimental.devCache),
+    __I18N_CACHE_LIFETIME__: JSON.stringify(options.experimental.cacheLifetime!)
   }
 
   if (nuxt.options.ssr || !server) {
