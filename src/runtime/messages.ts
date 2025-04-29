@@ -19,7 +19,7 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
 const nuxtMock: { runWithContext: NuxtApp['runWithContext'] } = {
   runWithContext: async (fn: () => Promise<never>) => await fn()
 }
-const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
+export const cacheMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
 
 export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[], nuxt = nuxtMock): Promise<I18nOptions> {
   const vueI18nOptions: I18nOptions = { messages: {} }
@@ -91,8 +91,13 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader, nuxt = n
   try {
     __DEBUG__ && logger.log({ locale })
     const getter = await load().then(
-      // x => (isModule(x) ? x.default : import.meta.server ? (x.default as LocaleMessages<DefineLocaleMessage>) : x)
-      x => (isModule(x) ? x.default : x)
+      x =>
+        isModule(x)
+          ? x.default
+          : import.meta.server && import.meta.dev
+            ? (x.default as LocaleMessages<DefineLocaleMessage>)
+            : x
+      // x => (isModule(x) ? x.default : x)
     )
     if (isFunction(getter)) {
       message = await nuxt.runWithContext(() => getter(locale))

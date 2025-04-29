@@ -56,7 +56,7 @@ export default defineNitroPlugin(async nitro => {
   })
 
   const tryRouteLocale = (event: H3Event) => routeDetector(event.path) || null
-  const defaultDetector = createDefaultLocaleDetector(tryRouteLocale)
+  const defaultDetector = createDefaultLocaleDetector({ defaultLocale: initialLocale, tryRouteLocale })
 
   nitro.hooks.hook('request', async (event: H3Event) => {
     const locale = defaultDetector(event, options as CoreOptions<string, DefineLocaleMessage>)
@@ -74,11 +74,28 @@ export default defineNitroPlugin(async nitro => {
       )
     }
 
-    event.context.i18nLocales = Array.from(new Set(fallbackLocales.concat(locale)))
+    event.context.i18nLocales = Array.from(new Set(fallbackLocales.concat(locale))).filter(Boolean)
     event.context.i18nCache = serializableMessages
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
+    // const loaded = []
+
+    // for (const locale of event.context.i18nLocales) {
+    //   // console.log(locale)
+    //   if (locale in localeLoaders) {
+    //     for (const loader of localeLoaders[locale]) {
+    //       if (cacheMessages.has(loader.key)) {
+    //         loaded.push(loader.key)
+    //       }
+    //     }
+    //   }
+    // }
+
+    // console.log('cacheMessages', cacheMessages.keys())
+    // console.log('loaded', loaded)
+    // console.log('all loaded', cacheMessages.keys())
+
     try {
       const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
       for (const locale of event.context.i18nLocales) {
@@ -87,23 +104,28 @@ export default defineNitroPlugin(async nitro => {
       htmlContext.bodyAppend.unshift(
         `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(subset)}</script>`
       )
+      // htmlContext.bodyAppend.unshift(
+      //   `<script type="application/json" data-nuxt-i18n-cache="${appId}">${stringify(loaded)}</script>`
+      // )
     } catch (_) {
       console.log(_)
     }
   })
 
-  const i18nMiddleware = defineI18nMiddleware({
-    ...options,
-    locale: createLocaleDetector(initialLocale, fallbackLocale)
-  } as Parameters<typeof defineI18nMiddleware>[0])
+  if (localeDetector != null) {
+    const i18nMiddleware = defineI18nMiddleware({
+      ...options,
+      locale: createLocaleDetector(initialLocale, fallbackLocale)
+    } as Parameters<typeof defineI18nMiddleware>[0])
 
-  nitro.hooks.hook('request', i18nMiddleware.onRequest)
-  nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
+    nitro.hooks.hook('request', i18nMiddleware.onRequest)
+    nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
+  }
 })
 
 function createLocaleDetector(defaultLocale: string, fallbackLocale: FallbackLocale) {
   return async (event: H3Event, i18nContext: CoreOptions<string, DefineLocaleMessage>): Promise<Locale> => {
-    const locale = localeDetector(event, { defaultLocale, fallbackLocale })
+    const locale = localeDetector!(event, { defaultLocale, fallbackLocale })
     // load locale messages in case earlier handling has not detected the same locale
     const hasLocale = event.context.i18nLocales.includes(locale)
     if (hasLocale) {

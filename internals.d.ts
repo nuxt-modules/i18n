@@ -21,9 +21,7 @@ declare module '#internal/i18n/options.mjs' {
 }
 
 declare module '#internal/i18n/locale.detector.mjs' {
-  import type { LocaleDetector } from '@nuxtjs/i18n/dist/runtime/composables/server'
-
-  export const localeDetector: LocaleDetector
+  export const localeDetector: ((event: H3Event, config: LocaleConfig) => string) | undefined
 }
 
 declare module '#internal/i18n-type-generation-options' {

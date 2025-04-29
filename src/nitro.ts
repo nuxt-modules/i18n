@@ -27,46 +27,44 @@ const debug = createDebug('@nuxtjs/i18n:nitro')
 export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
-  const setupServer =
-    enableServerIntegration || ctx.fullStatic || (ctx.options.experimental.typedOptionsAndMessages && nuxt.options.dev)
-  if (setupServer) {
-    addServerTemplate({
-      filename: '#internal/i18n/options.mjs',
-      getContents: () =>
-        nuxt.vfs['#build/i18n.options.mjs']?.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
-    })
+  addServerTemplate({
+    filename: '#internal/i18n/options.mjs',
+    getContents: () =>
+      nuxt.vfs['#build/i18n.options.mjs']?.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
+  })
 
-    addServerTemplate({
-      filename: '#internal/i18n/locale.detector.mjs',
-      getContents: () => `import localeDetector from ${JSON.stringify(localeDetectionPath)}
+  addServerTemplate({
+    filename: '#internal/i18n/locale.detector.mjs',
+    getContents: () =>
+      enableServerIntegration
+        ? `import localeDetector from ${JSON.stringify(localeDetectionPath)}
 export { localeDetector }`
-    })
-  }
+        : `const localeDetector = undefined
+        export { localeDetector }` // no-op
+  })
 
   nuxt.hook('nitro:config', async nitroConfig => {
-    if (setupServer) {
-      // inline module runtime in Nitro bundle
-      nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime')] })
+    // inline module runtime in Nitro bundle
+    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime')] })
 
-      nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
-      nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
+    nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
+    nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
 
-      const localePathsByType = getResourcePathsGrouped(ctx.localeInfo)
-      // install server resource transform plugin for yaml / json5 format
-      if (localePathsByType.yaml.length > 0) {
-        nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: localePathsByType.yaml }))
-      }
+    const localePathsByType = getResourcePathsGrouped(ctx.localeInfo)
+    // install server resource transform plugin for yaml / json5 format
+    if (localePathsByType.yaml.length > 0) {
+      nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: localePathsByType.yaml }))
+    }
 
-      if (localePathsByType.json5.length > 0) {
-        nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
-      }
+    if (localePathsByType.json5.length > 0) {
+      nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
+    }
 
-      // auto import for server-side
-      if (nitroConfig.imports) {
-        // `@intlify/h3` utilities
-        nitroConfig.imports.presets ||= []
-        nitroConfig.imports.presets.push({ from: H3_PKG, imports: ['useTranslation'] })
-      }
+    // auto import for server-side
+    if (nitroConfig.imports) {
+      // `@intlify/h3` utilities
+      nitroConfig.imports.presets ||= []
+      nitroConfig.imports.presets.push({ from: H3_PKG, imports: ['useTranslation'] })
     }
 
     nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
@@ -97,10 +95,8 @@ export { localeDetector }`
     }
   ])
 
-  if (enableServerIntegration) {
-    // add nitro plugin
-    addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
-  }
+  // add nitro plugin
+  addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
 }
 
 async function resolveLocaleDetectorPath(nuxt: Nuxt) {

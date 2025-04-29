@@ -201,7 +201,7 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
   // load locale messages required by `newLocale`
   // if (lazy) {
-  if (!__I18N_FULL_STATIC__ || !nuxtApp._i18nPreloaded) {
+  if (!__I18N_FULL_STATIC__ || !nuxtApp._i18nPreloaded || !nuxtApp._vueI18n.__firstAccess) {
     const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
 
     const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
