@@ -90,17 +90,8 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader, nuxt = n
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && logger.log({ locale })
-    const getter = await load().then(
-      x => (isModule(x) ? x.default : x)
-      // x =>
-      // isModule(x)
-      //   ? x.default
-      //   : import.meta.server && import.meta.dev
-      //     ? // @ts-expect-error no idea why this is needed
-      //       (x.default as
-      //         | MessageLoaderFunction<LocaleMessages<DefineLocaleMessage>>
-      //         | LocaleMessages<LocaleMessages<DefineLocaleMessage>>)
-      //     : x
+    const getter = await load().then(x =>
+      __LAZY_LOCALES__ || isModule(x) ? ((x as { default: unknown }).default as MessageLoaderFunction) : x
     )
     if (isFunction(getter)) {
       message = await nuxt.runWithContext(() => getter(locale))
