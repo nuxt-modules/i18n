@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { renderPage, gotoPath, startServerWithRuntimeConfig, assetLocaleHead } from '../helper'
+import { renderPage, gotoPath, setServerRuntimeConfig, assetLocaleHead } from '../helper'
 
 import type { Response } from 'playwright-core'
 
@@ -21,7 +21,7 @@ await setup({
 
 describe('strategy: no_prefix', async () => {
   beforeAll(async () => {
-    await startServerWithRuntimeConfig(
+    await setServerRuntimeConfig(
       {
         public: {
           i18n: { detectBrowserLanguage: false }
@@ -115,7 +115,7 @@ describe('strategy: no_prefix', async () => {
   })
 
   test('(#2473) should respect `detectBrowserLanguage`', async () => {
-    await startServerWithRuntimeConfig({
+    await setServerRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {

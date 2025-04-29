@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup } from '../utils'
-import { gotoPath, renderPage, startServerWithRuntimeConfig } from '../helper'
+import { gotoPath, renderPage, setServerRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -22,7 +22,7 @@ await setup({
 })
 
 test('detection with cookie', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {
@@ -63,7 +63,7 @@ test('detection with cookie', async () => {
 })
 
 test('detection with cookie - overwrite unknown locale', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {
@@ -99,7 +99,7 @@ test('detection with cookie - overwrite unknown locale', async () => {
 
 // browser
 test('detection with browser', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {
@@ -136,7 +136,7 @@ test('detection with browser', async () => {
 
 // disable
 test('disable', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: false
@@ -168,7 +168,7 @@ test('disable', async () => {
 })
 
 test('fallback', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {

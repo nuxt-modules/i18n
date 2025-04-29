@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { gotoPath, renderPage, startServerWithRuntimeConfig } from '../helper'
+import { gotoPath, renderPage, setServerRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -18,7 +18,7 @@ await setup({
 })
 
 test('redirectOn: all', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {
@@ -43,7 +43,7 @@ test('redirectOn: all', async () => {
 })
 
 test('redirectOn: no prefix', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {
@@ -68,7 +68,7 @@ test('redirectOn: no prefix', async () => {
 })
 
 test('alwaysRedirect: all', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {
@@ -95,7 +95,7 @@ test('alwaysRedirect: all', async () => {
 })
 
 test('alwaysRedirect: no prefix', async () => {
-  await startServerWithRuntimeConfig({
+  await setServerRuntimeConfig({
     public: {
       i18n: {
         detectBrowserLanguage: {

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { setTestContext, setup, useTestContext } from './utils'
 import { basicUsageTests } from './basic-usage-tests'
 import { languageSwitchingTests } from './language-switching-tests'
-import { startServerWithRuntimeConfig } from './helper'
+import { setServerRuntimeConfig } from './helper'
 
 describe('basic usage', async () => {
   await setup({
@@ -32,7 +32,7 @@ describe('basic usage', async () => {
   describe('language switching', async () => {
     beforeAll(async () => {
       setTestContext(ctx)
-      await startServerWithRuntimeConfig(
+      await setServerRuntimeConfig(
         {
           public: {
             i18n: {

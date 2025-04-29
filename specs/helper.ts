@@ -119,10 +119,6 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
     await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
   }
 
-  // onTestFinished(async () => {
-  //   await page.context().close()
-  // })
-
   return {
     page,
     pageErrors,
@@ -179,7 +175,7 @@ async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
   return await updated
 }
 
-export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
+export async function setServerRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
   const ctx = useTestContext()
 
   const stored = await updateProcessRuntimeConfig(ctx, env)
@@ -232,7 +228,7 @@ function convertObjectToConfig(obj: Record<string, unknown>) {
 
   return env
 }
-export async function startServerWithRuntimeConfigOld(env: Record<string, unknown>, skipRestore = false) {
+export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
   const ctx = useTestContext()
   const stored = await updateProcessRuntimeConfig(ctx, env)
 
