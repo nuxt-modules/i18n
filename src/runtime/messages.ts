@@ -91,13 +91,13 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader, nuxt = n
   try {
     __DEBUG__ && logger.log({ locale })
     const getter = await load().then(
-      x =>
-        isModule(x)
-          ? x.default
-          : import.meta.server && import.meta.dev
-            ? (x.default as LocaleMessages<DefineLocaleMessage>)
-            : x
-      // x => (isModule(x) ? x.default : x)
+      // x =>
+      // isModule(x)
+      //   ? x.default
+      //   : import.meta.server && import.meta.dev
+      //     ? (x.default as LocaleMessages<DefineLocaleMessage>)
+      //     : x
+      x => (isModule(x) ? x.default : x)
     )
     if (isFunction(getter)) {
       message = await nuxt.runWithContext(() => getter(locale))
