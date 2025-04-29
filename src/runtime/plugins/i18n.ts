@@ -69,7 +69,6 @@ export default defineNuxtPlugin({
       if (nuxt.ssrContext!.event.context.i18nCache) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         preloadedMessages = nuxt.ssrContext!.event.context.i18nCache
-        nuxt._i18nPreloaded = true
       }
     }
 
@@ -78,7 +77,6 @@ export default defineNuxtPlugin({
       if (content) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         preloadedMessages = parse(content)
-        nuxt._i18nPreloaded = true
       }
     }
 
@@ -89,6 +87,7 @@ export default defineNuxtPlugin({
           deepCopy(preloadedMessages[locale], vueI18nOptions.messages![locale])
         }
       }
+      nuxt._i18nPreloaded = true
     }
 
     // create i18n instance
