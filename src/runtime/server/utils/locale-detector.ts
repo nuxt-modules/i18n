@@ -1,8 +1,12 @@
+import { deepCopy } from '@intlify/shared'
+import { localeLoaders } from '#internal/i18n/options.mjs'
+import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { tryCookieLocale, tryHeaderLocale, tryQueryLocale } from '@intlify/h3'
+import { loadAndSetLocaleMessages, makeFallbackLocaleCodes } from '../../messages'
 
 import type { H3Event } from 'h3'
-import type { CoreOptions } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
+import type { CoreOptions, FallbackLocale, Locale } from '@intlify/core'
 
 export function createDefaultLocaleDetector(opts: {
   defaultLocale: string
@@ -40,5 +44,33 @@ export function createDefaultLocaleDetector(opts: {
     // If the locale cannot be resolved up to this point, it is resolved with the value `locale` of the locale config passed to the function
     __DEBUG__ && console.log('locale detected from config', opts.defaultLocale)
     return opts.defaultLocale
+  }
+}
+
+export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: FallbackLocale) {
+  return async (event: H3Event, i18nContext: CoreOptions<string, DefineLocaleMessage>): Promise<Locale> => {
+    const locale = localeDetector!(event, { defaultLocale, fallbackLocale })
+
+    // load locale messages in case earlier handling has not detected the same locale
+    // TODO: this is here for legacy reasons, it would be nice to remove message loading from the detector
+    const hasLocale = event.context.i18nLocales.includes(locale)
+    if (hasLocale) {
+      for (const locale of event.context.i18nLocales) {
+        i18nContext.messages![locale] ??= {}
+        deepCopy(event.context.i18nCache[locale], i18nContext.messages![locale])
+      }
+    } else {
+      if (__LAZY_LOCALES__) {
+        if (fallbackLocale) {
+          const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
+          await Promise.all(
+            fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages!))
+          )
+        }
+        await loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages!)
+      }
+    }
+
+    return locale
   }
 }
