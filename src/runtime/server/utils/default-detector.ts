@@ -19,21 +19,21 @@ export function createDefaultLocaleDetector(opts: {
     // try to get locale from query
     const query = tryQueryLocale(event, { lang: '' }) // disable locale default value with `lang` option
     if (query) {
-      __DEBUG__ && console.log('locale detected from query', query)
+      __DEBUG__ && console.log('locale detected from query', query.toString())
       return query.toString() as string
     }
 
     // try to get locale from cookie
     const cookie = tryCookieLocale(event, { lang: '', name: 'i18n_redirected' }) // disable locale default value with `lang` option
     if (cookie) {
-      __DEBUG__ && console.log('locale detected from cookie', cookie)
+      __DEBUG__ && console.log('locale detected from cookie', cookie.toString())
       return cookie.toString() as string
     }
 
     // try to get locale from header (`accept-header`)
     const header = tryHeaderLocale(event, { lang: '' }) // disable locale default value with `lang` option
     if (header) {
-      __DEBUG__ && console.log('locale detected from header', header)
+      __DEBUG__ && console.log('locale detected from header', header.toString())
       return header.toString() as string
     }
 
