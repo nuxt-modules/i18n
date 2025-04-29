@@ -6,6 +6,7 @@ export default defineConfig({
   ...vitestConfig,
   test: {
     ...vitestConfig.test,
+    setupFiles: [...(vitestConfig.test?.setupFiles ?? []), resolve('./test/setup.ts')].filter(Boolean),
     alias: {
       ...(vitestConfig.test?.alias ?? {}),
       '#build/i18n.options.mjs': resolve('./test/mocks/i18n.options.ts'),

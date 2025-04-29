@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { renderPage, startServerWithRuntimeConfig, gotoPath } from '../helper'
+import { renderPage, setServerRuntimeConfig, gotoPath } from '../helper'
 
 import type { Response } from 'playwright-core'
 
@@ -20,7 +20,7 @@ await setup({
 describe('strategy: prefix', async () => {
   beforeEach(async () => {
     // use original fixture `detectBrowserLanguage` value as default for tests, overwrite here needed
-    await startServerWithRuntimeConfig(
+    await setServerRuntimeConfig(
       {
         public: {
           i18n: { detectBrowserLanguage: false }
@@ -121,7 +121,7 @@ describe('strategy: prefix', async () => {
   })
 
   test('(#1889) navigation to page with `defineI18nRoute(false)`', async () => {
-    await startServerWithRuntimeConfig({
+    await setServerRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {
@@ -164,7 +164,7 @@ describe('strategy: prefix', async () => {
   })
 
   test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
-    await startServerWithRuntimeConfig({
+    await setServerRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {

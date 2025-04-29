@@ -1,7 +1,7 @@
 import { test, expect, describe, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { renderPage, startServerWithRuntimeConfig } from '../helper'
+import { renderPage, setServerRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -21,7 +21,7 @@ await setup({
 
 describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async () => {
   test('(#2262) redirect using browser cookie with `alwaysRedirect: true`', async () => {
-    await startServerWithRuntimeConfig({
+    await setServerRuntimeConfig({
       public: {
         i18n: {
           detectBrowserLanguage: {
@@ -56,7 +56,7 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
 
   describe('(#2255) detect browser language and redirect on root', async () => {
     beforeEach(async () => {
-      await startServerWithRuntimeConfig({
+      await setServerRuntimeConfig({
         public: {
           i18n: {
             detectBrowserLanguage: {

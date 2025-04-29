@@ -118,15 +118,19 @@ describe('basic lazy loading', async () => {
     const { findKey } = await localeLoaderHelpers()
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await waitForMs(100) // FIXME: may cause flaky test
     expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
+    await waitForMs(100) // FIXME: may cause flaky test
     expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
 
     await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await waitForMs(100) // FIXME: may cause flaky test
     expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
 
     await page.click('#lang-switcher-with-nuxt-link-fr')
+    await waitForMs(100) // FIXME: may cause flaky test
     expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
   })
 

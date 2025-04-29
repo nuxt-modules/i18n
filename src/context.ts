@@ -14,6 +14,7 @@ export interface I18nNuxtContext {
   vueI18nConfigPaths: FileMeta[]
   distDir: string
   runtimeDir: string
+  fullStatic: boolean
 }
 
 const resolver = createResolver(import.meta.url)
@@ -32,6 +33,7 @@ export function createContext(userOptions: NuxtI18nOptions): I18nNuxtContext {
     localeInfo: undefined!,
     localeCodes: undefined!,
     normalizedLocales: undefined!,
-    vueI18nConfigPaths: undefined!
+    vueI18nConfigPaths: undefined!,
+    fullStatic: undefined!
   }
 }

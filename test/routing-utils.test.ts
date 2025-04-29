@@ -12,26 +12,14 @@ const routeNameGetters = {
   // noPrefix: createLocaleRouteNameGetter({ strategy: 'no_prefix', differentDomains: false, ...ROUTE_GEN_CONFIG }),
   noPrefix: (...args) => {
     globalThis['__I18N_STRATEGY__'] = 'no_prefix'
-    globalThis['__DIFFERENT_DOMAINS__'] = false
-    globalThis['__ROUTE_NAME_SEPARATOR__'] = ROUTE_GEN_CONFIG.routesNameSeparator
-    globalThis['__ROUTE_NAME_DEFAULT_SUFFIX__'] = ROUTE_GEN_CONFIG.defaultLocaleRouteNameSuffix
-    globalThis['__TRAILING_SLASH__'] = ROUTE_GEN_CONFIG.defaultLocaleRouteNameSuffix
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
   },
   prefixAndDefault: (...args) => {
     globalThis['__I18N_STRATEGY__'] = 'prefix_and_default'
-    globalThis['__DIFFERENT_DOMAINS__'] = false
-    globalThis['__ROUTE_NAME_SEPARATOR__'] = ROUTE_GEN_CONFIG.routesNameSeparator
-    globalThis['__ROUTE_NAME_DEFAULT_SUFFIX__'] = ROUTE_GEN_CONFIG.defaultLocaleRouteNameSuffix
-    globalThis['__TRAILING_SLASH__'] = ROUTE_GEN_CONFIG.defaultLocaleRouteNameSuffix
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
   },
   prefixExceptDefault: (...args) => {
     globalThis['__I18N_STRATEGY__'] = 'prefix_except_default'
-    globalThis['__DIFFERENT_DOMAINS__'] = false
-    globalThis['__ROUTE_NAME_SEPARATOR__'] = ROUTE_GEN_CONFIG.routesNameSeparator
-    globalThis['__ROUTE_NAME_DEFAULT_SUFFIX__'] = ROUTE_GEN_CONFIG.defaultLocaleRouteNameSuffix
-    globalThis['__TRAILING_SLASH__'] = ROUTE_GEN_CONFIG.defaultLocaleRouteNameSuffix
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
   }
 }

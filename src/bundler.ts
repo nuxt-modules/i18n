@@ -11,7 +11,6 @@ import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
 import type { I18nNuxtContext } from './context'
-import type { NuxtI18nOptions } from './types'
 import {
   DEFAULT_COOKIE_KEY,
   DYNAMIC_PARAMS_KEY,
@@ -61,6 +60,8 @@ export function createLogger(label) {
    */
   const { options } = ctx
   const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
+  ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.file.cache !== false)
+
   const vueI18nPluginOptions: PluginOptions = {
     ...options.bundle,
     ...options.compilation,
@@ -78,7 +79,7 @@ export function createLogger(label) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
-  const defineConfig = getDefineConfig(options)
+  const defineConfig = getDefineConfig(ctx)
   /**
    * webpack plugin
    */
@@ -112,7 +113,10 @@ export function createLogger(label) {
   })
 }
 
-export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt = useNuxt()) {
+export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
+  const cacheLifetime = (options.experimental.cacheLifetime ?? fullStatic) ? 0 : -1
+  const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
+
   const common = {
     __DEBUG__: String(!!options.debug),
     __TEST__: String(!!options.debug || nuxt.options._i18nTest),
@@ -131,7 +135,9 @@ export function getDefineConfig(options: NuxtI18nOptions, server = false, nuxt =
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
-    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection)
+    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
+    __I18N_CACHE__: String(isCacheEnabled),
+    __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime)
   }
 
   if (nuxt.options.ssr || !server) {

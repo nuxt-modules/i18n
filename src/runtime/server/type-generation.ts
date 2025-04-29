@@ -6,7 +6,7 @@ import { writeFile } from 'fs/promises'
 import { useRuntimeConfig } from '#imports'
 
 import type { I18nOptions } from 'vue-i18n'
-import type { I18nPublicRuntimeConfig } from '../../types'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 export default async () => {
   const { experimental, defaultLocale } = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig

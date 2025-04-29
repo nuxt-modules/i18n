@@ -1,5 +1,6 @@
 import { computed, isRef, ref, watch } from 'vue'
-import { createI18n } from 'vue-i18n'
+import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
+
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { localeCodes, vueI18nConfigs, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
@@ -19,6 +20,8 @@ import { getI18nTarget } from '../compatibility'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
+import { parse } from 'devalue'
+import { deepCopy } from '@intlify/shared'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -51,15 +54,40 @@ export default defineNuxtPlugin({
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
     const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
-    vueI18nOptions.messages ||= {}
-    vueI18nOptions.fallbackLocale ??= false
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain
     }
 
     // initialize locale objects to make vue-i18n aware of available locales
     for (const l of localeCodes) {
-      vueI18nOptions.messages[l] ??= {}
+      vueI18nOptions.messages![l] ??= {}
+    }
+
+    let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
+    // retrieve loaded messages from server-side if enabled
+    if (import.meta.server) {
+      if (nuxt.ssrContext!.event.context.i18nCache) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        preloadedMessages = nuxt.ssrContext!.event.context.i18nCache
+      }
+    }
+
+    if (import.meta.client) {
+      const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
+      if (content) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        preloadedMessages = parse(content)
+      }
+    }
+
+    if (preloadedMessages) {
+      __DEBUG__ && logger.log('preloaded full static messages', nuxt._i18nPreloaded)
+      for (const locale of localeCodes) {
+        if (preloadedMessages[locale]) {
+          deepCopy(preloadedMessages[locale], vueI18nOptions.messages![locale])
+        }
+      }
+      nuxt._i18nPreloaded = true
     }
 
     // create i18n instance
@@ -113,6 +141,8 @@ export default defineNuxtPlugin({
           await loadAndSetLocale(locale, i18n.__firstAccess)
 
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
+            // first access will not change without route middleware
+            i18n.__firstAccess = false
             await composer.loadLocaleMessages(locale)
             i18n.__setLocale(locale)
             return

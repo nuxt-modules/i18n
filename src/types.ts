@@ -86,6 +86,18 @@ export interface ExperimentalFeatures {
    * @default true
    */
   alternateLinkCanonicalQueries?: boolean
+  /**
+   * Enables caching of locale messages in dev mode
+   * @default false
+   */
+  devCache?: boolean
+  /**
+   * Lazy loaded messages cache lifetime in seconds
+   * - `-1` cache disabled
+   * - `0` cache indefinitely
+   * @default -1 // disabled, or `0` (indefinite) if all locale files are static files
+   */
+  cacheLifetime?: number
 }
 
 export interface BundleOptions

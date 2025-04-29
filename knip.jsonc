@@ -14,7 +14,8 @@
       "ignoreUnresolved": [
         // virtuals
         "#nuxt-i18n/*",
-        "#internal/i18n*"
+        "#internal/i18n*",
+        "#internal/nuxt.config.mjs"
       ],
       "ignoreDependencies": [
         // pre-commit

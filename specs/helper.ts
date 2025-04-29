@@ -1,7 +1,7 @@
 // @ts-ignore
 import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
-import { getBrowser, TestContext, url, useTestContext } from './utils'
+import { getBrowser, startServer, TestContext, url, useTestContext } from './utils'
 import { resolveAlias } from '@nuxt/kit'
 import { onTestFinished } from 'vitest'
 
@@ -175,7 +175,7 @@ async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
   return await updated
 }
 
-export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
+export async function setServerRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
   const ctx = useTestContext()
 
   const stored = await updateProcessRuntimeConfig(ctx, env)
@@ -186,6 +186,61 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
 
     restored = true
     await await updateProcessRuntimeConfig(ctx, stored)
+  }
+
+  if (!skipRestore) {
+    onTestFinished(restoreFn)
+  }
+
+  return restoreFn
+}
+
+import { snakeCase } from 'scule'
+
+function flattenObject(obj: Record<string, unknown> = {}) {
+  const flattened: Record<string, unknown> = {}
+
+  for (const key of Object.keys(obj)) {
+    const entry = obj[key]
+
+    if (typeof entry !== 'object' || entry == null) {
+      flattened[key] = obj[key]
+      continue
+    }
+
+    const flatObject = flattenObject(entry as Record<string, unknown>)
+    for (const x of Object.keys(flatObject)) {
+      flattened[key + '_' + x] = flatObject[x]
+    }
+  }
+
+  return flattened
+}
+
+function convertObjectToConfig(obj: Record<string, unknown>) {
+  const makeEnvKey = (str: string) => `NUXT_${snakeCase(str).toUpperCase()}`
+
+  const env: Record<string, unknown> = {}
+  const flattened = flattenObject(obj)
+  for (const key in flattened) {
+    env[makeEnvKey(key)] = flattened[key]
+  }
+
+  return env
+}
+export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
+  const ctx = useTestContext()
+  const stored = await updateProcessRuntimeConfig(ctx, env)
+
+  await startServer(convertObjectToConfig(env))
+
+  let restored = false
+  const restoreFn = async () => {
+    if (restored) return
+
+    restored = true
+    // await await updateProcessRuntimeConfig(ctx, stored)
+    await startServer({})
   }
 
   if (!skipRestore) {

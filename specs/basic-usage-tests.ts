@@ -7,6 +7,7 @@ import {
   getDom,
   gotoPath,
   renderPage,
+  setServerRuntimeConfig,
   startServerWithRuntimeConfig
 } from './helper'
 import type { RouteLocation } from 'vue-router'
@@ -155,7 +156,7 @@ export function basicUsageTests() {
 
     expect(await page.locator('#runtime-config').innerText()).toEqual('Hello from runtime config!')
 
-    await startServerWithRuntimeConfig({
+    await setServerRuntimeConfig({
       public: { runtimeValue: 'The environment variable has changed!' }
     })
 
@@ -387,7 +388,7 @@ export function basicUsageTests() {
   test('render seo tags with baseUrl', async () => {
     const configDomain = 'https://runtime-config-domain.com'
 
-    await startServerWithRuntimeConfig({
+    await setServerRuntimeConfig({
       public: {
         i18n: {
           baseUrl: configDomain
@@ -530,13 +531,17 @@ export function basicUsageTests() {
   })
 
   test('(#2000) Should be able to load large vue-i18n messages', async () => {
-    await startServerWithRuntimeConfig({
-      public: { longTextTest: true }
-    })
+    const restore = await startServerWithRuntimeConfig(
+      {
+        public: { longTextTest: true }
+      },
+      true
+    )
 
     const { page } = await renderPage('/nl/long-text')
 
     expect(await page.locator('#long-text').innerText()).toEqual('hallo,'.repeat(8 * 500))
+    await restore()
   })
 
   test('(#2094) vue-i18n messages are loaded from config exported as variable', async () => {

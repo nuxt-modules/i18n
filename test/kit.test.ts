@@ -50,16 +50,6 @@ const i18nMock = {
 // more flexible implementation of `initComposableOptions` in src/runtime/utils.ts
 function initComposableOptions(router: Router): ComposableContext {
   vi.stubGlobal('__I18N_STRATEGY__', routingOptions.strategy)
-  vi.stubGlobal('__DIFFERENT_DOMAINS__', false)
-  vi.stubGlobal('__ROUTE_NAME_SEPARATOR__', routingOptions.routesNameSeparator)
-  vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', routingOptions.defaultLocaleRouteNameSuffix)
-  vi.stubGlobal('__TRAILING_SLASH__', routingOptions.defaultLocaleRouteNameSuffix)
-
-  globalThis['__I18N_STRATEGY__'] = routingOptions.strategy
-  globalThis['__DIFFERENT_DOMAINS__'] = false
-  globalThis['__ROUTE_NAME_SEPARATOR__'] = routingOptions.routesNameSeparator
-  globalThis['__ROUTE_NAME_DEFAULT_SUFFIX__'] = routingOptions.defaultLocaleRouteNameSuffix
-  globalThis['__TRAILING_SLASH__'] = routingOptions.defaultLocaleRouteNameSuffix
 
   const getLocalizedRouteName = (name: RouteRecordNameGeneric | null, locale: string) =>
     createLocaleRouteNameGetter(routingOptions.defaultLocale)(name, locale)

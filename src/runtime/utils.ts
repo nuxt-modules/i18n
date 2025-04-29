@@ -128,7 +128,7 @@ export function createComposableContext({
     getLocale: () => unref(i18n.locale),
     getLocales: () => {
       const locales = unref(i18n.locales)
-      return locales.map(x => (isString(x) ? { code: x } : (x as LocaleObject)))
+      return locales.map(x => (isString(x) ? { code: x } : x))
     },
     getBaseUrl: () => joinURL(unref(i18n.baseUrl), nuxt.$config.app.baseURL),
     getRouteBaseName,
@@ -201,14 +201,16 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
   // load locale messages required by `newLocale`
   // if (lazy) {
-  const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
+  if (!nuxtApp._i18nPreloaded || !nuxtApp._vueI18n.__firstAccess) {
+    const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
 
-  const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
-  if (i18nFallbackLocales) {
-    const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-    await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter, nuxtApp)))
+    const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
+    if (i18nFallbackLocales) {
+      const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
+      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter, nuxtApp)))
+    }
+    await loadLocale(newLocale, localeLoaders, setter, nuxtApp)
   }
-  await loadLocale(newLocale, localeLoaders, setter, nuxtApp)
   // }
 
   if (skipSettingLocaleOnNavigate) {
@@ -529,10 +531,10 @@ export function createNuxtI18nDev() {
   async function resetI18nProperties(locale?: string) {
     const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtApp)
 
-    const messageLocales = uniqueKeys(opts.messages || {}, composer.messages.value)
+    const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {
       if (locale && k !== locale) continue
-      const current = opts.messages?.[k] || {}
+      const current = opts.messages![k] || {}
       // override config messages with locale files in correct order
       await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
       composer.setLocaleMessage(k, current)

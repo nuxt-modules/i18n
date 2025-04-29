@@ -74,6 +74,7 @@ function getLocaleType(path: string): LocaleType {
 
   const parsed = parseSync(path, readFileSync(path, 'utf-8'))
   const analyzed = scanProgram(parsed.program)
+  // || analyzed === 'function-static'
   // prettier-ignore
   return analyzed === 'object'
     ? 'static'
@@ -111,6 +112,7 @@ function scanProgram(program: Program) {
           const [fnNode] = node.declaration.arguments
           if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
             return 'function'
+            // return fnNode.async ? 'function' : 'function-static'
           }
         }
         break
@@ -128,6 +130,7 @@ function scanProgram(program: Program) {
         const [fnNode] = n.init.arguments
         if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
           return 'function'
+          // return fnNode.async ? 'function' : 'function-static'
         }
       }
     }
