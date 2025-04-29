@@ -128,7 +128,7 @@ export function createComposableContext({
     getLocale: () => unref(i18n.locale),
     getLocales: () => {
       const locales = unref(i18n.locales)
-      return locales.map(x => (isString(x) ? { code: x } : (x as LocaleObject)))
+      return locales.map(x => (isString(x) ? { code: x } : x))
     },
     getBaseUrl: () => joinURL(unref(i18n.baseUrl), nuxt.$config.app.baseURL),
     getRouteBaseName,
