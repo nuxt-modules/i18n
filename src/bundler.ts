@@ -135,7 +135,8 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
     __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
-    __I18N_FULL_STATIC__: String(fullStatic)
+    __I18N_FULL_STATIC__: String(fullStatic),
+    __I18N_DEV_CACHE__: String(!!options.devCache)
   }
 
   if (nuxt.options.ssr || !server) {

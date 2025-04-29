@@ -7,7 +7,8 @@ import {
   getDom,
   gotoPath,
   renderPage,
-  startServerWithRuntimeConfig
+  startServerWithRuntimeConfig,
+  startServerWithRuntimeConfigOld
 } from './helper'
 import type { RouteLocation } from 'vue-router'
 
@@ -530,13 +531,17 @@ export function basicUsageTests() {
   })
 
   test('(#2000) Should be able to load large vue-i18n messages', async () => {
-    await startServerWithRuntimeConfig({
-      public: { longTextTest: true }
-    })
+    const restore = await startServerWithRuntimeConfigOld(
+      {
+        public: { longTextTest: true }
+      },
+      true
+    )
 
     const { page } = await renderPage('/nl/long-text')
 
     expect(await page.locator('#long-text').innerText()).toEqual('hallo,'.repeat(8 * 500))
+    await restore()
   })
 
   test('(#2094) vue-i18n messages are loaded from config exported as variable', async () => {

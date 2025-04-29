@@ -90,17 +90,20 @@ async function loadMessage(locale: Locale, { key, load }: LocaleLoader, nuxt = n
   let message: LocaleMessages<DefineLocaleMessage> | null = null
   try {
     __DEBUG__ && logger.log({ locale })
-    const getter = await load().then(x => (isModule(x) ? x.default : x))
+    const getter = await load().then(
+      // x => (isModule(x) ? x.default : import.meta.server ? (x.default as LocaleMessages<DefineLocaleMessage>) : x)
+      x => (isModule(x) ? x.default : x)
+    )
     if (isFunction(getter)) {
       message = await nuxt.runWithContext(() => getter(locale))
       __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
     } else {
       message = getter
-      if (message != null && cacheMessages && !import.meta.dev) {
-        cacheMessages.set(key, message)
-      }
-      __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
     }
+    if (message != null && cacheMessages && (!import.meta.dev || __I18N_DEV_CACHE__)) {
+      cacheMessages.set(key, message)
+    }
+    __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
   } catch (e: unknown) {
     console.error('Failed locale loading: ' + (e as Error).message)
   }

@@ -1,5 +1,6 @@
 import { computed, isRef, ref, watch } from 'vue'
-import { createI18n } from 'vue-i18n'
+import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
+
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { localeCodes, vueI18nConfigs, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadVueI18nOptions, loadLocale } from '../messages'
@@ -20,6 +21,7 @@ import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 import { parse } from 'devalue'
+import { deepCopy } from '@intlify/shared'
 
 import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -61,26 +63,35 @@ export default defineNuxtPlugin({
       vueI18nOptions.messages![l] ??= {}
     }
 
-    if (__I18N_FULL_STATIC__) {
-      // retrieve loaded messages from server-side if enabled
-      if (import.meta.server) {
-        if (nuxt.ssrContext!.event.context.i18n?.messages) {
-          vueI18nOptions.messages = nuxt.ssrContext!.event.context.i18n.messages
-          nuxt._i18nPreloaded = true
-        }
+    // if (__I18N_FULL_STATIC__) {
+    let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
+    // retrieve loaded messages from server-side if enabled
+    if (import.meta.server) {
+      if (nuxt.ssrContext!.event.context.i18nCache) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        preloadedMessages = nuxt.ssrContext!.event.context.i18nCache
+        nuxt._i18nPreloaded = true
       }
-
-      if (import.meta.client) {
-        const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
-        if (content) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          vueI18nOptions.messages = parse(content)
-          nuxt._i18nPreloaded = true
-        }
-      }
-
-      __DEBUG__ && logger.log('preloaded full static messages', nuxt._i18nPreloaded)
     }
+
+    if (import.meta.client) {
+      const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
+      if (content) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        preloadedMessages = parse(content)
+        nuxt._i18nPreloaded = true
+      }
+    }
+
+    if (preloadedMessages) {
+      __DEBUG__ && logger.log('preloaded full static messages', nuxt._i18nPreloaded)
+      for (const locale of localeCodes) {
+        if (preloadedMessages[locale]) {
+          deepCopy(preloadedMessages[locale], vueI18nOptions.messages![locale])
+        }
+      }
+    }
+    // }
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)

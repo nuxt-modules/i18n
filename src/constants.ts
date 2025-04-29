@@ -56,6 +56,7 @@ export const DEFAULT_OPTIONS = {
   lazy: false,
   langDir: 'locales',
   rootRedirect: undefined,
+  devCache: false,
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,

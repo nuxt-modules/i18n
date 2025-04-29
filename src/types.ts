@@ -106,6 +106,11 @@ export type NuxtI18nOptions<
   ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
 > = {
   /**
+   * Cache message during development
+   * @default false
+   */
+  devCache?: boolean
+  /**
    * Path to a Vue I18n configuration file, the module will scan for a i18n.config{.js,.mjs,.ts} if left unset.
    * @default ''
    */

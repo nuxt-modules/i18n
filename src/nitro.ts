@@ -97,9 +97,6 @@ export { localeDetector }`
     }
   ])
 
-  if (ctx.fullStatic) {
-    addServerPlugin(ctx.resolver.resolve('runtime/server/messages-cache'))
-  }
   if (enableServerIntegration) {
     // add nitro plugin
     addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
