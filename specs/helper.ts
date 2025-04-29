@@ -119,6 +119,10 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
     await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
   }
 
+  // onTestFinished(async () => {
+  //   await page.context().close()
+  // })
+
   return {
     page,
     pageErrors,
