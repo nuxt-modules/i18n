@@ -15,6 +15,8 @@ beforeEach(() => {
   vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', 'default')
 })
 globalThis.__ROUTE_NAME_SEPARATOR__ = '___'
+globalThis.__I18N_CACHE__ = false
+globalThis.__I18N_CACHE_LIFETIME__ = -1
 const nuxtOptions = getNuxtOptions({})
 nuxtOptions.locales = nuxtOptions.locales?.filter(x => (x as LocaleObject).code !== 'fr') as LocaleObject[]
 delete nuxtOptions.defaultLocale
