@@ -46,6 +46,7 @@ export { localeDetector }`
   nuxt.hook('nitro:config', async nitroConfig => {
     // inline module runtime in Nitro bundle
     nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime')] })
+    nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
 
     nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
     nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
@@ -71,7 +72,7 @@ export { localeDetector }`
     debug('nitro.replace', nitroConfig.replace)
   })
 
-  // `defineI18nLocale` and `defineI18nConfig`
+  // `defineI18nLocale`, `defineI18nConfig`
   addServerImports(
     [NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
       name: key,
@@ -80,19 +81,23 @@ export { localeDetector }`
     }))
   )
 
-  // `@intlify/utils/h3` and `defineLocaleDetector
+  // `defineLocaleDetector`
+  addServerImports([
+    {
+      name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+      as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+      from: ctx.resolver.resolve('runtime/composables/server')
+    }
+  ])
+
+  // `@intlify/utils/h3`
   const h3UtilsExports = await resolveModuleExportNames(UTILS_H3_PKG, { url: import.meta.url })
   addServerImports([
     ...h3UtilsExports.map(key => ({
       name: key,
       as: key,
       from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
-    })),
-    {
-      name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
-      as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
-      from: ctx.resolver.resolve('runtime/composables/server')
-    }
+    }))
   ])
 
   // add nitro plugin

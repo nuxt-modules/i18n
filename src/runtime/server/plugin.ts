@@ -1,7 +1,6 @@
 import { stringify } from 'devalue'
 import { useRuntimeConfig } from '#imports'
 import { defineI18nMiddleware } from '@intlify/h3'
-import type { CoreOptions } from '@intlify/core'
 import { deepCopy } from '@intlify/shared'
 import { defineNitroPlugin } from 'nitropack/dist/runtime/plugin'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
@@ -10,9 +9,10 @@ import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadA
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
 
+import type { CoreOptions } from '@intlify/core'
 import type { H3Event } from 'h3'
 import type { Locale, DefineLocaleMessage, FallbackLocale, LocaleMessages } from 'vue-i18n'
-import type { I18nPublicRuntimeConfig } from '~/src/types'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import { createDefaultLocaleDetector } from './utils/default-detector'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
 
