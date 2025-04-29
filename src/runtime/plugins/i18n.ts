@@ -63,7 +63,6 @@ export default defineNuxtPlugin({
       vueI18nOptions.messages![l] ??= {}
     }
 
-    // if (__I18N_FULL_STATIC__) {
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
     // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
@@ -91,7 +90,6 @@ export default defineNuxtPlugin({
         }
       }
     }
-    // }
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
@@ -147,7 +145,7 @@ export default defineNuxtPlugin({
             // first access will not change without route middleware
             i18n.__firstAccess = false
 
-            if (!__I18N_FULL_STATIC__ || !nuxt._i18nPreloaded || !i18n.__firstAccess) {
+            if (!nuxt._i18nPreloaded || !i18n.__firstAccess) {
               await composer.loadLocaleMessages(locale)
             }
             i18n.__setLocale(locale)

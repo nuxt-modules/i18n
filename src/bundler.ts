@@ -60,9 +60,6 @@ export function createLogger(label) {
    */
   const { options } = ctx
   const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
-  ctx.fullStatic =
-    ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.file.cache !== false) &&
-    ctx.vueI18nConfigPaths.every(x => x.type === 'static')
 
   const vueI18nPluginOptions: PluginOptions = {
     ...options.bundle,
@@ -115,7 +112,7 @@ export function createLogger(label) {
   })
 }
 
-export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
+export function getDefineConfig({ options }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
   const common = {
     __DEBUG__: String(!!options.debug),
     __TEST__: String(!!options.debug || nuxt.options._i18nTest),
@@ -134,9 +131,7 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
-    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
-    __I18N_FULL_STATIC__: String(fullStatic),
-    __I18N_DEV_CACHE__: String(!!options.devCache)
+    __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection)
   }
 
   if (nuxt.options.ssr || !server) {
