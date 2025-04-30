@@ -58,32 +58,6 @@ export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Local
   return fallbackLocales
 }
 
-export async function loadInitialMessages(
-  messages: LocaleMessages<DefineLocaleMessage>,
-  localeLoaders: Record<Locale, LocaleLoader[]>,
-  options: {
-    localeCodes: string[]
-    defaultLocale: Locale
-    initialLocale: Locale
-    fallbackLocale: FallbackLocale
-  },
-  nuxt = nuxtMock
-): Promise<LocaleMessages<DefineLocaleMessage>> {
-  const { defaultLocale, initialLocale, localeCodes, fallbackLocale } = options
-
-  // load fallback messages
-  if (__LAZY_LOCALES__ && fallbackLocale) {
-    const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [defaultLocale, initialLocale])
-    await Promise.all(fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, messages, nuxt)))
-  }
-
-  // load initial messages
-  const locales = __LAZY_LOCALES__ ? [...new Set<Locale>().add(defaultLocale).add(initialLocale)] : localeCodes
-  await Promise.all(locales.map((locale: Locale) => loadAndSetLocaleMessages(locale, localeLoaders, messages, nuxt)))
-
-  return messages
-}
-
 const isModule = (val: unknown): val is { default: unknown } => toTypeString(val) === '[object Module]'
 
 async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, nuxt = nuxtMock) {
