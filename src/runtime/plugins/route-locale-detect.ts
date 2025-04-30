@@ -29,7 +29,6 @@ export default defineNuxtPlugin({
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           await Promise.all(fallbackLocales.map(locale => nuxt._i18nLoadAndSetMessages(locale)))
           // @ts-expect-error untyped
-
           await nuxt._i18nLoadAndSetMessages(detected)
         }
       }

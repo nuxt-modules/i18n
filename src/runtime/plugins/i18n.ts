@@ -93,18 +93,11 @@ export default defineNuxtPlugin({
       nuxt._i18nPreloaded = true
     }
 
-    nuxt._i18nLoadMessages = async (locale: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return await $fetch(`/_i18n/${locale}/messages.json`)
-    }
-
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
       // if (import.meta.prerender || __IS_SSG__) {
       //   await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
       // } else {
-      const setter = nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n)
-      // @ts-expect-error untyped
-      setter(locale, await nuxt._i18nLoadMessages(locale))
+      i18n.global.mergeLocaleMessage(locale, await $fetch(`/_i18n/${locale}/messages.json`))
       // }
     }
 

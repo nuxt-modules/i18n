@@ -1,18 +1,15 @@
 import { deepCopy } from '@intlify/shared'
-import { localeLoaders } from '#internal/i18n/options.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { tryCookieLocale, tryHeaderLocale, tryQueryLocale } from '@intlify/h3'
-import { loadAndSetLocaleMessages, makeFallbackLocaleCodes } from '../../messages'
 
 import type { H3Event } from 'h3'
-import type { DefineLocaleMessage } from '@intlify/h3'
 import type { CoreOptions, FallbackLocale, Locale } from '@intlify/core'
 
 export function createDefaultLocaleDetector(opts: {
   defaultLocale: string
   tryRouteLocale: (event: H3Event) => string | null
 }) {
-  return (event: H3Event, _config: CoreOptions<string, DefineLocaleMessage>) => {
+  return (event: H3Event) => {
     // try to get locale from route
     const routeLocale = opts.tryRouteLocale(event)
     if (routeLocale) {
@@ -48,15 +45,16 @@ export function createDefaultLocaleDetector(opts: {
 }
 
 export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: FallbackLocale) {
-  return async (event: H3Event, i18nContext: CoreOptions<string, DefineLocaleMessage>): Promise<Locale> => {
+  return async (event: H3Event, i18nCtx: CoreOptions): Promise<Locale> => {
+    const ctx = event.context.nuxtI18n
     const locale = localeDetector!(event, { defaultLocale, fallbackLocale })
+    const fallbackLocales = ctx.getFallbackLocales(locale)
 
-    // load locale messages in case earlier handling has not detected the same locale
-    // TODO: this is here for legacy reasons, it would be nice to remove message loading from the detector
-    await event.context.i18nLoadMessages(locale)
-    for (const locale of event.context.i18nLocales ?? []) {
-      i18nContext.messages![locale] ??= {}
-      deepCopy(event.context.i18nCache[locale], i18nContext.messages![locale])
+    // Merge messages into i18n context which contains unserializable messages from vue-i18n configurations
+    const messages = await ctx.getMergedMessages(locale, fallbackLocales)
+    for (const locale in messages) {
+      i18nCtx.messages![locale] ??= {}
+      deepCopy(messages[locale], i18nCtx.messages![locale])
     }
 
     return locale

@@ -1,45 +1,42 @@
 import { stringify } from 'devalue'
-import { useRuntimeConfig } from '#imports'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { deepCopy } from '@intlify/shared'
-import { defineNitroPlugin } from 'nitropack/dist/runtime/plugin'
+import { useStorage, useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
+import { cachedMergedMessages } from './utils/messages'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
-import { localeCodes, vueI18nConfigs, localeLoaders } from '#internal/i18n/options.mjs'
+import { localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
-import { loadVueI18nOptions, loadInitialMessages, makeFallbackLocaleCodes, loadAndSetLocaleMessages } from '../messages'
+import { loadVueI18nOptions, makeFallbackLocaleCodes } from '../messages'
 // @ts-expect-error virtual file
-import { appId, appBuildAssetsDir } from '#internal/nuxt.config.mjs'
+import { appId } from '#internal/nuxt.config.mjs'
 
-import type { H3Event } from 'h3'
-import type { CoreOptions } from '@intlify/core'
-import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
+import type { H3Event, H3EventContext } from 'h3'
+import type { CoreOptions, LocaleMessages } from '@intlify/core'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-
-// keep a map of messages loaded from files
-// vue-i18n messages may contain non-serializable values (e.g. functions, symbols, etc.)
-// const serializableMessages = new Map<string, LocaleMessages<DefineLocaleMessage>>()
-const serializableMessages: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
-const initialMessages: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
-
-/**
- * Skip requests for static assets
- */
-function shouldSkipRequest(event: H3Event) {
-  return event.path.startsWith('/favicon.ico') || event.path.startsWith(appBuildAssetsDir)
-}
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 export default defineNitroPlugin(async nitro => {
+  if (import.meta.dev) {
+    const cache = useStorage('cache')
+    const cachedKeys = await cache.getKeys('nitro:functions:i18n')
+    for (const key of cachedKeys) {
+      await cache.remove(key)
+    }
+  }
+
+  // load initial locale messages for intlify/h3
   // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue-i18n options
   const options = await loadVueI18nOptions(vueI18nConfigs)
-  options.messages = options.messages || {}
   const fallbackLocale = (options.fallbackLocale = options.fallbackLocale ?? false)
+  options.messages = options.messages || {}
+  for (const locale in localeCodes) {
+    options.messages[locale] ??= {}
+  }
 
-  const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+  const runtimeI18n = useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
   const initialLocale = runtimeI18n.defaultLocale || options.locale || 'en-US'
 
-  const routeDetector = createLocaleFromRouteGetter({
+  const localeFromRoute = createLocaleFromRouteGetter({
     separator: __ROUTE_NAME_SEPARATOR__,
     defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__,
     localeCodes
@@ -47,68 +44,46 @@ export default defineNitroPlugin(async nitro => {
 
   const defaultLocaleDetector = createDefaultLocaleDetector({
     defaultLocale: initialLocale,
-    tryRouteLocale: (event: H3Event) => routeDetector(event.path) || null
+    tryRouteLocale: (event: H3Event) => localeFromRoute(event.path) || null
   })
 
-  // load initial locale messages for intlify/h3
-  await loadInitialMessages(initialMessages, localeLoaders, {
-    localeCodes,
-    initialLocale,
-    defaultLocale: runtimeI18n.defaultLocale,
-    fallbackLocale: options.fallbackLocale
-  })
+  const getFallbackLocales = (locale: string) => makeFallbackLocaleCodes(fallbackLocale, [locale])
 
-  // merge serializable messages into options.messages (vue-i18n messages)
-  for (const locale in initialMessages) {
-    options.messages[locale] ??= {}
-    deepCopy(initialMessages[locale], options.messages[locale])
-
-    serializableMessages[locale] ??= {}
-    deepCopy(initialMessages[locale], serializableMessages[locale])
+  // load initial messages
+  if (!__LAZY_LOCALES__) {
+    await Promise.all(localeCodes.map(locale => cachedMergedMessages(locale, getFallbackLocales(locale))))
   }
 
-  if (!__LAZY_LOCALES__) {
-    await Promise.all(localeCodes.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!)))
+  function createNuxtI18nContext(): H3EventContext['nuxtI18n'] {
+    return {
+      locale: undefined!,
+      fallbackLocales: undefined!,
+      getFallbackLocales,
+      messages: {},
+      getMergedMessages: cachedMergedMessages
+    }
   }
 
   nitro.hooks.hook('request', async (event: H3Event) => {
-    if (shouldSkipRequest(event)) return
+    const ctx = createNuxtI18nContext()
+    event.context.nuxtI18n = ctx
 
-    const locale = defaultLocaleDetector(event, options as CoreOptions<string, DefineLocaleMessage>)
-    event.context.i18nLocale = locale
-    event.context.i18nLoadMessages = async (locale: string) => {
-      const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
-      if (__LAZY_LOCALES__) {
-        if (fallbackLocale) {
-          await Promise.all(
-            fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!))
-          )
-        }
-        await loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!)
-      }
-
-      event.context.i18nCache = serializableMessages
-      event.context.i18nLocales = Array.from(new Set(fallbackLocales.concat(locale))).filter(Boolean)
-    }
-
-    const resolvedRoute = await nitro.h3App.resolve(event.path)
-    const isMessageRoute = resolvedRoute?.route === '/_i18n/:locale/messages.json'
-    if (!isMessageRoute) {
-      await event.context.i18nLoadMessages(locale)
-    }
+    ctx.locale = defaultLocaleDetector(event)
+    ctx.fallbackLocales = ctx.getFallbackLocales(ctx.locale)
+    ctx.messages = await ctx.getMergedMessages(ctx.locale, ctx.fallbackLocales)
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
-    if (event.context.i18nLocales == null) return
-
-    const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
-    for (const locale of event.context.i18nLocales) {
-      subset[locale] = event.context.i18nCache[locale]
-    }
+    const ctx = event.context.nuxtI18n
+    if (Object.keys(ctx?.messages ?? {}).length == 0) return
+    // const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
+    // for (const locale of ctx.localeChain) {
+    //   subset[locale] = ctx.messages[locale]
+    // }
 
     try {
       htmlContext.bodyAppend.unshift(
-        `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(subset)}</script>`
+        `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`
       )
     } catch (_) {
       console.log(_)
@@ -118,11 +93,44 @@ export default defineNitroPlugin(async nitro => {
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
     const i18nMiddleware = defineI18nMiddleware({
-      ...options,
+      ...(options as CoreOptions),
       locale: createUserLocaleDetector(initialLocale, fallbackLocale)
-    } as Parameters<typeof defineI18nMiddleware>[0])
+    })
 
     nitro.hooks.hook('request', i18nMiddleware.onRequest)
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
+
+declare module 'h3' {
+  interface H3EventContext {
+    /** @internal */
+    nuxtI18n: {
+      /**
+       * The detected locale for the current request
+       * @internal
+       */
+      locale: string
+      /**
+       * The detected fallback locales for the current request
+       * @internal
+       */
+      fallbackLocales: string[]
+      /**
+       * Get the fallback locales for the specified locale
+       * @internal
+       */
+      getFallbackLocales: (locale: string) => string[]
+      /**
+       * The loaded messages for the current request, used to insert into the rendered HTML for hydration
+       * @internal
+       */
+      messages: LocaleMessages<Record<string, string>>
+      /**
+       * Cached method to get the merged messages for the specified locale and fallback locales
+       * @internal
+       */
+      getMergedMessages: (locale: string, fallbackLocales: string[]) => Promise<LocaleMessages<Record<string, string>>>
+    }
+  }
+}
