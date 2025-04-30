@@ -94,6 +94,7 @@ export default defineNuxtPlugin({
     }
 
     nuxt._i18nLoadMessages = async (locale: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return await $fetch(`/_i18n/${locale}/messages.json`)
     }
 
