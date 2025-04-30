@@ -7,6 +7,7 @@ import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { asI18nVirtual } from './transform/utils'
+import { version } from '../package.json'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
@@ -81,7 +82,8 @@ export function createLogger(label) {
   const defineConfig = {
     ...getFeatureFlags(options.bundle),
     __DEBUG__: String(!!options.debug),
-    __TEST__: String(!!options.debug || nuxt.options._i18nTest)
+    __TEST__: String(!!options.debug || nuxt.options._i18nTest),
+    __NUXT_I18N_VERSION__: JSON.stringify(version)
   }
   /**
    * webpack plugin
@@ -114,6 +116,7 @@ export function createLogger(label) {
     config.define ??= {}
     config.define['__DEBUG__'] = defineConfig['__DEBUG__']
     config.define['__TEST__'] = defineConfig['__TEST__']
+    config.define['__NUXT_I18N_VERSION__'] = JSON.stringify(version)
 
     debug('vite.config.define', config.define)
   })

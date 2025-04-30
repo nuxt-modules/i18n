@@ -35,7 +35,9 @@ import type { LocaleHeadFunction, ResolveRouteFunction } from '../composables'
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
-  async setup() {
+  async setup(_nuxt) {
+    Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
+
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
