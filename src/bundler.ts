@@ -17,6 +17,7 @@ import {
   NUXT_I18N_MODULE_ID,
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER
 } from './constants'
+import { version } from '../package.json'
 
 const debug = createDebug('@nuxtjs/i18n:bundler')
 
@@ -126,6 +127,7 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
+    __NUXT_I18N_VERSION__: JSON.stringify(version),
     __NUXT_I18N_MODULE_ID__: JSON.stringify(NUXT_I18N_MODULE_ID),
     __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
