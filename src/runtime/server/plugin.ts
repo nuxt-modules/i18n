@@ -75,27 +75,38 @@ export default defineNitroPlugin(async nitro => {
     if (shouldSkipRequest(event)) return
 
     const locale = defaultLocaleDetector(event, options as CoreOptions<string, DefineLocaleMessage>)
-    const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
-
-    if (__LAZY_LOCALES__) {
-      if (fallbackLocale) {
-        await Promise.all(
-          fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!))
-        )
+    event.context.i18nLocale = locale
+    event.context.i18nLoadMessages = async (locale: string) => {
+      const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
+      if (__LAZY_LOCALES__) {
+        if (fallbackLocale) {
+          await Promise.all(
+            fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!))
+          )
+        }
+        await loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!)
       }
-      await loadAndSetLocaleMessages(locale, localeLoaders, serializableMessages!)
+
+      event.context.i18nCache = serializableMessages
+      event.context.i18nLocales = Array.from(new Set(fallbackLocales.concat(locale))).filter(Boolean)
     }
 
-    event.context.i18nCache = serializableMessages
-    event.context.i18nLocales = Array.from(new Set(fallbackLocales.concat(locale))).filter(Boolean)
+    const resolvedRoute = await nitro.h3App.resolve(event.path)
+    const isMessageRoute = resolvedRoute?.route === '/_i18n/:locale/messages.json'
+    if (!isMessageRoute) {
+      await event.context.i18nLoadMessages(locale)
+    }
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
+    if (event.context.i18nLocales == null) return
+
+    const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
+    for (const locale of event.context.i18nLocales) {
+      subset[locale] = event.context.i18nCache[locale]
+    }
+
     try {
-      const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
-      for (const locale of event.context.i18nLocales) {
-        subset[locale] = event.context.i18nCache[locale]
-      }
       htmlContext.bodyAppend.unshift(
         `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(subset)}</script>`
       )

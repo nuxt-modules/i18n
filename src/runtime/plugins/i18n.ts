@@ -1,9 +1,9 @@
 import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
-import { defineNuxtPlugin, useNuxtApp } from '#imports'
-import { localeCodes, vueI18nConfigs, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions, loadLocale } from '../messages'
+import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
+import { localeCodes, vueI18nConfigs, normalizedLocales } from '#build/i18n.options.mjs'
+import { loadVueI18nOptions } from '../messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -93,6 +93,22 @@ export default defineNuxtPlugin({
       nuxt._i18nPreloaded = true
     }
 
+    nuxt._i18nLoadMessages = async (locale: string) => {
+      return await $fetch(`/_i18n/${locale}/messages.json`)
+    }
+
+    nuxt._i18nLoadAndSetMessages = async (locale: string) => {
+      // if (import.meta.prerender || __IS_SSG__) {
+      //   await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
+      // } else {
+      const setter = nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n)
+      // @ts-expect-error untyped
+      setter(locale, await nuxt._i18nLoadMessages(locale))
+      // }
+    }
+
+    prerenderRoutes(localeCodes.map(locale => `/_i18n/${locale}/messages.json`))
+
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
 
@@ -160,8 +176,10 @@ export default defineNuxtPlugin({
 
           await nuxt.runWithContext(() => navigate({ nuxt, redirectPath, locale, route }, true))
         }
-        composer.loadLocaleMessages = async (locale: string) =>
-          await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer), nuxt)
+        composer.loadLocaleMessages = async (locale: string) => {
+          // @ts-expect-error untyped
+          await nuxt._i18nLoadAndSetMessages(locale)
+        }
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
         composer.getBrowserLocale = () => getBrowserLocale()

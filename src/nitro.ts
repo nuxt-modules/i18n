@@ -3,7 +3,7 @@ import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
 import { existsSync } from 'node:fs'
-import { addServerImports, addServerPlugin, addServerTemplate, resolvePath } from '@nuxt/kit'
+import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolvePath } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
@@ -102,6 +102,11 @@ export { localeDetector }`
 
   // add nitro plugin
   addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
+
+  addServerHandler({
+    route: `/_i18n/:locale/messages.json`,
+    handler: ctx.resolver.resolve('./runtime/server/routes/messages')
+  })
 }
 
 async function resolveLocaleDetectorPath(nuxt: Nuxt) {

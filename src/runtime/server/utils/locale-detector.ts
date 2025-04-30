@@ -53,22 +53,10 @@ export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: 
 
     // load locale messages in case earlier handling has not detected the same locale
     // TODO: this is here for legacy reasons, it would be nice to remove message loading from the detector
-    const hasLocale = event.context.i18nLocales.includes(locale)
-    if (hasLocale) {
-      for (const locale of event.context.i18nLocales) {
-        i18nContext.messages![locale] ??= {}
-        deepCopy(event.context.i18nCache[locale], i18nContext.messages![locale])
-      }
-    } else {
-      if (__LAZY_LOCALES__) {
-        if (fallbackLocale) {
-          const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
-          await Promise.all(
-            fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages!))
-          )
-        }
-        await loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages!)
-      }
+    await event.context.i18nLoadMessages(locale)
+    for (const locale of event.context.i18nLocales ?? []) {
+      i18nContext.messages![locale] ??= {}
+      deepCopy(event.context.i18nCache[locale], i18nContext.messages![locale])
     }
 
     return locale

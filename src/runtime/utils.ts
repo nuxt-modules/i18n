@@ -5,7 +5,7 @@ import { localeCodes, localeLoaders, normalizedLocales, vueI18nConfigs } from '#
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage } from './internal'
-import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
+import { loadAndSetLocaleMessages, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
 import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
   localePath,
@@ -200,18 +200,18 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   }
 
   // load locale messages required by `newLocale`
-  // if (lazy) {
   if (!nuxtApp._i18nPreloaded || !nuxtApp._vueI18n.__firstAccess) {
     const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
 
-    const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
     if (i18nFallbackLocales) {
       const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter, nuxtApp)))
+      // @ts-expect-error untyped
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      await Promise.all(fallbackLocales.map(locale => nuxtApp._i18nLoadAndSetMessages(locale)))
     }
-    await loadLocale(newLocale, localeLoaders, setter, nuxtApp)
+    // @ts-expect-error untyped
+    await nuxtApp._i18nLoadAndSetMessages(newLocale)
   }
-  // }
 
   if (skipSettingLocaleOnNavigate) {
     return false
