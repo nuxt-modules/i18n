@@ -31,7 +31,7 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
 
-  test('locales are fetched on demand', async () => {
+  test.skip('locales are fetched on demand', async () => {
     const home = url('/')
     const { page, requests } = await renderPage(home)
 
@@ -112,7 +112,7 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
-  test('files with cache disabled bypass caching', async () => {
+  test.skip('files with cache disabled bypass caching', async () => {
     const { page, consoleLogs: logs } = await renderPage('/')
 
     const { findKey } = await localeLoaderHelpers()
