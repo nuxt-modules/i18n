@@ -117,6 +117,7 @@ test('detection with browser', async () => {
 
   // click `en` lang switch link
   await page.locator('#set-locale-link-en').click()
+  await page.waitForTimeout(10)
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // navigate to blog/article
@@ -133,6 +134,7 @@ test('detection with browser', async () => {
 
   // click `en` lang switch link
   await page.locator('#set-locale-link-en').click()
+  await page.waitForTimeout(10)
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 })
 
