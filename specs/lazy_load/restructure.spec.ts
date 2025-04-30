@@ -31,32 +31,32 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
 
-  test.skip('locales are fetched on demand', async () => {
-    const home = url('/')
-    const { page, requests } = await renderPage(home)
+  // test.skip('locales are fetched on demand', async () => {
+  //   const home = url('/')
+  //   const { page, requests } = await renderPage(home)
 
-    const setFromRequests = () => [...new Set(requests)].filter(x => x.includes('lazy-locale-'))
+  //   const setFromRequests = () => [...new Set(requests)].filter(x => x.includes('lazy-locale-'))
 
-    // only default locales are fetched (en)
-    await page.goto(home)
-    expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
+  //   // only default locales are fetched (en)
+  //   await page.goto(home)
+  //   expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
 
-    // wait for request after navigation
-    const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
-    await page.click('#lang-switcher-with-nuxt-link-fr')
-    await localeRequestFr
+  //   // wait for request after navigation
+  //   const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
+  //   await page.click('#lang-switcher-with-nuxt-link-fr')
+  //   await localeRequestFr
 
-    // `fr` locale has been fetched
-    expect(setFromRequests().filter(locale => locale.includes('fr'))).toHaveLength(1)
+  //   // `fr` locale has been fetched
+  //   expect(setFromRequests().filter(locale => locale.includes('fr'))).toHaveLength(1)
 
-    // wait for request after navigation
-    const localeRequestNl = page.waitForRequest(/lazy-locale-module-nl/)
-    await page.click('#lang-switcher-with-nuxt-link-nl')
-    await localeRequestNl
+  //   // wait for request after navigation
+  //   const localeRequestNl = page.waitForRequest(/lazy-locale-module-nl/)
+  //   await page.click('#lang-switcher-with-nuxt-link-nl')
+  //   await localeRequestNl
 
-    // `nl` (module) locale has been fetched
-    expect(setFromRequests().filter(locale => locale.includes('nl'))).toHaveLength(1)
-  })
+  //   // `nl` (module) locale has been fetched
+  //   expect(setFromRequests().filter(locale => locale.includes('nl'))).toHaveLength(1)
+  // })
 
   test('can access to no prefix locale (en): /', async () => {
     const { page } = await renderPage('/')
@@ -112,27 +112,27 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
-  test.skip('files with cache disabled bypass caching', async () => {
-    const { page, consoleLogs: logs } = await renderPage('/')
+  // test.skip('files with cache disabled bypass caching', async () => {
+  //   const { page, consoleLogs: logs } = await renderPage('/')
 
-    const { findKey } = await localeLoaderHelpers()
+  //   const { findKey } = await localeLoaderHelpers()
 
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
+  //   await page.click('#lang-switcher-with-nuxt-link-en-GB')
+  //   await waitForMs(100) // FIXME: may cause flaky test
+  //   expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
 
-    await page.click('#lang-switcher-with-nuxt-link-fr')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
+  //   await page.click('#lang-switcher-with-nuxt-link-fr')
+  //   await waitForMs(100) // FIXME: may cause flaky test
+  //   expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
 
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
+  //   await page.click('#lang-switcher-with-nuxt-link-en-GB')
+  //   await waitForMs(100) // FIXME: may cause flaky test
+  //   expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
 
-    await page.click('#lang-switcher-with-nuxt-link-fr')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
-  })
+  //   await page.click('#lang-switcher-with-nuxt-link-fr')
+  //   await waitForMs(100) // FIXME: may cause flaky test
+  //   expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
+  // })
 
   test('manually loaded messages can be used in translations', async () => {
     const { page } = await renderPage('/manual-load')

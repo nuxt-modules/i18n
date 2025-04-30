@@ -43,6 +43,7 @@ test('detection with cookie', async () => {
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
+  await page.waitForTimeout(100)
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }
   ])
@@ -59,6 +60,7 @@ test('detection with cookie', async () => {
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-en').click()
+  await page.waitForTimeout(100)
   expect(await ctx.cookies()).toMatchObject([{ name: 'my_custom_cookie_name', value: 'en' }])
 })
 
@@ -79,7 +81,7 @@ test('detection with cookie - overwrite unknown locale', async () => {
   const { page } = await renderPage('/', { locale: 'en' })
   const ctx = page.context()
   await page.locator('#set-locale-link-fr').click()
-
+  await page.waitForTimeout(100)
   const localeCookie = (await ctx.cookies()).find(x => x.name === 'my_custom_cookie_name')
   expect([localeCookie]).toMatchObject([{ name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }])
 

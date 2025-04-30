@@ -31,6 +31,7 @@ test('does not reset cookie no refresh', async () => {
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').click()
+  await page.waitForTimeout(100)
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }
   ])
