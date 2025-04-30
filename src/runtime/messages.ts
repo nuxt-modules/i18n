@@ -101,7 +101,7 @@ async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, n
       message = getter
     }
     if (message != null && cache && __I18N_CACHE__) {
-      cacheMessages.set(key, { time: Date.now(), message })
+      cacheMessages.set(key, { time: Date.now() + cacheTime * 1000, message })
     }
     __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
   } catch (e: unknown) {
@@ -119,7 +119,7 @@ function getCachedMessage(key: string) {
   const cache = cacheMessages.get(key)
   if (cache == null) return
   // if cacheTime is 0, always return cache
-  const fresh = cacheTime === 0 || Date.now() - cache.time < cacheTime
+  const fresh = cacheTime === 0 || cache.time > Date.now()
   return fresh ? cache.message : undefined
 }
 
@@ -165,7 +165,7 @@ type LocaleLoaderMessages =
 export async function loadAndSetLocaleMessages(
   locale: Locale,
   localeLoaders: Record<Locale, LocaleLoader[]>,
-  messages: LocaleLoaderMessages,
+  messages: LocaleLoaderMessages = {},
   nuxt = nuxtMock
 ) {
   const setter = (locale: Locale, message: LocaleMessages<DefineLocaleMessage, Locale>) => {
@@ -175,4 +175,5 @@ export async function loadAndSetLocaleMessages(
   }
 
   await loadLocale(locale, localeLoaders, setter, nuxt)
+  return messages
 }
