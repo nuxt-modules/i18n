@@ -1,7 +1,7 @@
 import { getRouterParam, setResponseStatus } from 'h3'
 import { defineCachedEventHandler } from 'nitropack/runtime'
 import { isLocaleCacheable } from '../utils/messages'
-import { useI18nContext } from '../plugin'
+import { useI18nContext } from '../context'
 
 export default defineCachedEventHandler(
   async event => {

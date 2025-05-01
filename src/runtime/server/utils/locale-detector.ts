@@ -1,4 +1,4 @@
-import { useI18nContext } from '../plugin'
+import { useI18nContext } from '../context'
 import { deepCopy } from '@intlify/shared'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { tryCookieLocale, tryHeaderLocale, tryQueryLocale } from '@intlify/h3'

@@ -1,16 +1,18 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { useStorage, useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
+import { tryUseI18nContext, createI18nContext } from './context'
+import { pickNested } from './utils/messages-utils'
 import { cachedMergedMessages } from './utils/messages'
-import { localeDetector } from '#internal/i18n/locale.detector.mjs'
-import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
-import { localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
 import { loadVueI18nOptions, makeFallbackLocaleCodes } from '../messages'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
+import { localeDetector } from '#internal/i18n/locale.detector.mjs'
+import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
+import { localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
 
-import type { H3Event, H3EventContext } from 'h3'
+import type { H3Event } from 'h3'
 import type { CoreOptions, LocaleMessages } from '@intlify/core'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
@@ -93,59 +95,3 @@ export default defineNitroPlugin(async nitro => {
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
-
-function createI18nContext(opts: {
-  getFallbackLocales: (locale: string) => string[]
-}): NonNullable<H3EventContext['nuxtI18n']> {
-  return {
-    locale: undefined!,
-    fallbackLocales: undefined!,
-    getFallbackLocales: opts.getFallbackLocales,
-    messages: {},
-    getMergedMessages: cachedMergedMessages
-  }
-}
-
-export function useI18nContext(event: H3Event) {
-  if (event.context.nuxtI18n == null) {
-    throw new Error('Nuxt I18n server context has not been set up yet.')
-  }
-  return event.context.nuxtI18n
-}
-
-export function tryUseI18nContext(event: H3Event) {
-  return event.context.nuxtI18n
-}
-
-declare module 'h3' {
-  interface H3EventContext {
-    /** @internal */
-    nuxtI18n?: {
-      /**
-       * The detected locale for the current request
-       * @internal
-       */
-      locale: string
-      /**
-       * The detected fallback locales for the current request
-       * @internal
-       */
-      fallbackLocales: string[]
-      /**
-       * Get the fallback locales for the specified locale
-       * @internal
-       */
-      getFallbackLocales: (locale: string) => string[]
-      /**
-       * The loaded messages for the current request, used to insert into the rendered HTML for hydration
-       * @internal
-       */
-      messages: LocaleMessages<Record<string, string>>
-      /**
-       * Cached method to get the merged messages for the specified locale and fallback locales
-       * @internal
-       */
-      getMergedMessages: (locale: string, fallbackLocales: string[]) => Promise<LocaleMessages<Record<string, string>>>
-    }
-  }
-}
