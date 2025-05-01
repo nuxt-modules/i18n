@@ -7,6 +7,16 @@ import { onTestFinished } from 'vitest'
 
 import { errors, Response, type BrowserContextOptions, type Page } from 'playwright-core'
 
+export function waitForLocaleSwitch(page: Page) {
+  return page.evaluate(
+    async () =>
+      await new Promise<{ oldLocale: string; newLocale: string }>(resolve =>
+        // @ts-expect-error browser only
+        useNuxtApp().hooks.hookOnce('i18n:localeSwitched', resolve)
+      )
+  )
+}
+
 export async function waitForTransition(page: Page, selector: string = '#nuxt-page.my-leave-active') {
   await page.locator(selector).waitFor()
   return await page.locator(selector).waitFor({ state: 'detached' })
