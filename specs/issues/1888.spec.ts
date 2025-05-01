@@ -21,7 +21,7 @@ describe('#1888', async () => {
 
     // change to `en` locale
     await page.locator('#en').click()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(10)
 
     expect(await page.locator('#html-msg').innerText()).toEqual('Translation example')
     expect(await page.locator('#html-msg-mounted').innerText()).toEqual('Translation example')
@@ -31,7 +31,7 @@ describe('#1888', async () => {
 
     // change to `fr` locale
     await page.locator('#fr').click()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(10)
 
     expect(await page.locator('#html-msg').innerText()).toEqual('Exemple de traduction')
     expect(await page.locator('#html-msg-mounted').innerText()).toEqual('Exemple de traduction')
