@@ -1,10 +1,11 @@
 import { getRouterParam, setResponseStatus } from 'h3'
 import { defineCachedEventHandler } from 'nitropack/runtime'
 import { isLocaleCacheable } from '../utils/messages'
+import { useI18nContext } from '../plugin'
 
 export default defineCachedEventHandler(
   async event => {
-    const ctx = event.context.nuxtI18n
+    const ctx = useI18nContext(event)
     const locale = getRouterParam(event, 'locale')
     if (!ctx.locale) {
       setResponseStatus(event, 400)
