@@ -159,6 +159,9 @@ declare module '#app' {
     _vueI18n: I18n
     /** @internal */
     _i18nGetDomainFromLocale: (locale: Locale) => string | undefined
+    _i18nLoadAndSetMessages: (locale: Locale) => Promise<void>
+    _i18nPreloaded: boolean
+
     /** @internal */
     _nuxtI18n: ComposableContext
   }

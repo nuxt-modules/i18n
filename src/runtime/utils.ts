@@ -205,11 +205,8 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
     if (i18nFallbackLocales) {
       const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      // @ts-expect-error untyped
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       await Promise.all(fallbackLocales.map(locale => nuxtApp._i18nLoadAndSetMessages(locale)))
     }
-    // @ts-expect-error untyped
     await nuxtApp._i18nLoadAndSetMessages(newLocale)
   }
 

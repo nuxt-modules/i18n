@@ -25,10 +25,7 @@ export default defineNuxtPlugin({
         nuxt._vueI18n.__setLocale(detected)
         if (!nuxt._i18nPreloaded) {
           const fallbackLocales = makeFallbackLocaleCodes(unref(nuxt._vueI18n.global.fallbackLocale), [detected])
-          // @ts-expect-error untyped
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           await Promise.all(fallbackLocales.map(locale => nuxt._i18nLoadAndSetMessages(locale)))
-          // @ts-expect-error untyped
           await nuxt._i18nLoadAndSetMessages(detected)
         }
       }

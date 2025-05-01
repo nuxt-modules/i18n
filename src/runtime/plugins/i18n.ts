@@ -69,17 +69,16 @@ export default defineNuxtPlugin({
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
     // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
-      if (nuxt.ssrContext!.event.context.i18nCache) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        preloadedMessages = nuxt.ssrContext!.event.context.i18nCache
+      const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
+      if (serverI18n?.messages && Object.keys(serverI18n.messages).length) {
+        preloadedMessages = serverI18n.messages
       }
     }
 
     if (import.meta.client) {
       const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
       if (content) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        preloadedMessages = parse(content)
+        preloadedMessages = parse(content) as LocaleMessages<DefineLocaleMessage> | undefined
       }
     }
 
@@ -171,10 +170,8 @@ export default defineNuxtPlugin({
 
           await nuxt.runWithContext(() => navigate({ nuxt, redirectPath, locale, route }, true))
         }
-        composer.loadLocaleMessages = async (locale: string) => {
-          // @ts-expect-error untyped
-          await nuxt._i18nLoadAndSetMessages(locale)
-        }
+        composer.loadLocaleMessages = async (locale: string) => await nuxt._i18nLoadAndSetMessages(locale)
+
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
         composer.getBrowserLocale = () => getBrowserLocale()
