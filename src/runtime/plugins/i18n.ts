@@ -156,7 +156,9 @@ export default defineNuxtPlugin({
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
             // first access will not change without route middleware
             i18n.__firstAccess = false
-            await composer.loadLocaleMessages(locale)
+            if (!__HAS_PAGES__) {
+              await composer.loadLocaleMessages(locale)
+            }
             i18n.__setLocale(locale)
             return
           }
