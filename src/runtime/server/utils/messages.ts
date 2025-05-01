@@ -58,5 +58,6 @@ export const cachedMergedMessages = defineCachedFunction(
  * Check if the loaders for the specified locale are all cacheable
  */
 export function isLocaleCacheable(locale: string) {
+  if (!__I18N_CACHE__) return false
   return localeLoaders[locale] == null || localeLoaders[locale].some(loader => loader.cache !== false)
 }

@@ -26,3 +26,4 @@ declare let __ROUTE_NAME_DEFAULT_SUFFIX__: string
 declare let __DEFAULT_DIRECTION__: string
 declare let __I18N_CACHE__: boolean
 declare let __I18N_CACHE_LIFETIME__: number
+declare let __I18N_FULL_STATIC__: boolean

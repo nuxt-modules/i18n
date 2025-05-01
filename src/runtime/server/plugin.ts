@@ -68,6 +68,8 @@ export default defineNitroPlugin(async nitro => {
     const ctx = createNuxtI18nContext()
     event.context.nuxtI18n = ctx
 
+    if (import.meta.dev) return
+
     ctx.locale = defaultLocaleDetector(event)
     ctx.fallbackLocales = ctx.getFallbackLocales(ctx.locale)
     ctx.messages = await ctx.getMergedMessages(ctx.locale, ctx.fallbackLocales)
@@ -75,7 +77,7 @@ export default defineNitroPlugin(async nitro => {
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
     const ctx = event.context.nuxtI18n
-    if (Object.keys(ctx?.messages ?? {}).length == 0) return
+    if (import.meta.dev || Object.keys(ctx?.messages ?? {}).length == 0) return
     // const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
     // for (const locale of ctx.localeChain) {
     //   subset[locale] = ctx.messages[locale]

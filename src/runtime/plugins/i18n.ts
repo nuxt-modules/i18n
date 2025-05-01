@@ -2,8 +2,8 @@ import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
-import { localeCodes, vueI18nConfigs, normalizedLocales } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions } from '../messages'
+import { localeCodes, vueI18nConfigs, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
+import { loadLocale, loadVueI18nOptions } from '../messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -93,12 +93,13 @@ export default defineNuxtPlugin({
       nuxt._i18nPreloaded = true
     }
 
+    const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
-      // if (import.meta.prerender || __IS_SSG__) {
-      //   await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
-      // } else {
-      i18n.global.mergeLocaleMessage(locale, await $fetch(`/_i18n/${locale}/messages.json`))
-      // }
+      if (dynamicResourcesSSG || import.meta.dev) {
+        await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
+      } else {
+        i18n.global.mergeLocaleMessage(locale, await $fetch(`/_i18n/${locale}/messages.json`))
+      }
     }
 
     prerenderRoutes(localeCodes.map(locale => `/_i18n/${locale}/messages.json`))
