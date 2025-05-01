@@ -1,8 +1,8 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { useStorage, useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
+import { getRequestHeader } from 'h3'
+import { useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
-import { cachedMergedMessages } from './utils/messages'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
 import { loadVueI18nOptions, makeFallbackLocaleCodes } from '../messages'
 // @ts-expect-error virtual file
@@ -17,14 +17,6 @@ import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 export default defineNitroPlugin(async nitro => {
-  if (import.meta.dev) {
-    const cache = useStorage('cache')
-    const cachedKeys = await cache.getKeys('nitro:functions:i18n')
-    for (const key of cachedKeys) {
-      await cache.remove(key)
-    }
-  }
-
   // load initial locale messages for intlify/h3
   // `defineI18nMiddleware` options (internally, options passed to`createCoreContext` in intlify / core) are compatible with vue-i18n options
   const options = await loadVueI18nOptions(vueI18nConfigs)
@@ -50,29 +42,19 @@ export default defineNitroPlugin(async nitro => {
 
   const getFallbackLocales = (locale: string) => makeFallbackLocaleCodes(fallbackLocale, [locale])
 
-  // load initial messages
-  if (!__LAZY_LOCALES__) {
-    await Promise.all(localeCodes.map(locale => cachedMergedMessages(locale, getFallbackLocales(locale))))
-  }
-
   nitro.hooks.hook('request', async (event: H3Event) => {
     const ctx = createI18nContext({ getFallbackLocales })
     event.context.nuxtI18n = ctx
 
-    // if (import.meta.dev) return
-    ctx.locale = defaultLocaleDetector(event)
-    ctx.fallbackLocales = ctx.getFallbackLocales(ctx.locale)
-    ctx.messages = await ctx.getMergedMessages(ctx.locale, ctx.fallbackLocales)
+    if (getRequestHeader(event, 'x-nuxt-i18n') !== 'internal') {
+      ctx.locale = defaultLocaleDetector(event)
+      ctx.messages = await ctx.getMessages(ctx.locale)
+    }
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
     const ctx = tryUseI18nContext(event)
-    // if(import.meta.dev) return
     if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
-    // const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
-    // for (const locale of ctx.localeChain) {
-    //   subset[locale] = ctx.messages[locale]
-    // }
 
     try {
       htmlContext.bodyAppend.unshift(

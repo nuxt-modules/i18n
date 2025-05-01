@@ -1,27 +1,28 @@
 import { getRouterParam, setResponseStatus } from 'h3'
 import { defineCachedEventHandler } from 'nitropack/runtime'
-import { isLocaleCacheable } from '../utils/messages'
+import { getMergedMessages, isLocaleWithFallbacksCacheable } from '../utils/messages'
 import { useI18nContext } from '../context'
 
 export default defineCachedEventHandler(
   async event => {
-    const ctx = useI18nContext(event)
     const locale = getRouterParam(event, 'locale')
-    if (!ctx.locale) {
+    if (!locale) {
       setResponseStatus(event, 400)
-      return 'Locale is required'
+      return
     }
 
+    const ctx = useI18nContext(event)
     ctx.locale = locale!
-    ctx.messages = await ctx.getMergedMessages(ctx.locale, ctx.getFallbackLocales(ctx.locale))
-    return ctx.messages?.[ctx.locale] ?? {}
+    ctx.messages = await getMergedMessages(ctx.locale, ctx.getFallbackLocales(ctx.locale))
+    return ctx.messages
   },
   {
     name: 'i18n:messages',
-    getKey: event => `${event.context.params?.locale ?? 'null'}`,
+    maxAge: import.meta.dev ? -1 : 60 * 60 * 24,
+    getKey: event => getRouterParam(event, 'locale') ?? 'null',
     shouldBypassCache(event) {
       const locale = getRouterParam(event, 'locale')
-      return locale == null || !isLocaleCacheable(locale)
+      return locale == null || !isLocaleWithFallbacksCacheable(locale, useI18nContext(event).getFallbackLocales(locale))
     }
   }
 )

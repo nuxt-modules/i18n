@@ -1,9 +1,10 @@
 import { deepCopy } from '@intlify/shared'
 import { defineCachedFunction } from 'nitropack/runtime'
-import { localeLoaders } from '#internal/i18n/options.mjs'
+import { localeCodes, localeLoaders } from '#internal/i18n/options.mjs'
 import { loadAndSetLocaleMessages } from '../../messages'
 
 import type { LocaleMessages } from '@intlify/core'
+import type { DefineLocaleMessage } from '@intlify/h3'
 
 /**
  * Load messages for the specified locale
@@ -15,7 +16,8 @@ const cachedMessages = defineCachedFunction(
   },
   {
     name: 'i18n:loadMessages',
-    getKey: locale => `${locale}`,
+    maxAge: import.meta.dev ? 1 : 60 * 60 * 24,
+    getKey: locale => locale,
     shouldBypassCache: locale => !isLocaleCacheable(locale)
   }
 )
@@ -25,39 +27,33 @@ const cachedMessages = defineCachedFunction(
  * @param locale - The locale to load messages for
  * @param fallbackLocales - The fallback locales to merge with
  */
-export const cachedMergedMessages = defineCachedFunction(
-  async (locale: string, fallbackLocales: string[]) => {
-    const merged = {} as LocaleMessages<Record<string, string>>
+export const getMergedMessages = async (locale: string, fallbackLocales: string[]) => {
+  const merged = {} as LocaleMessages<DefineLocaleMessage>
 
-    if (fallbackLocales.length > 0) {
-      const messages = await Promise.all(fallbackLocales.map(cachedMessages))
-      for (const message of messages) {
-        deepCopy(message, merged)
-      }
-    }
-
-    const message = await cachedMessages(locale)
-    try {
+  if (fallbackLocales.length > 0) {
+    const messages = await Promise.all(fallbackLocales.map(cachedMessages))
+    for (const message of messages) {
       deepCopy(message, merged)
-    } catch (e) {
-      console.error('Failed to merge messages:', e, message, locale)
-    }
-
-    return merged
-  },
-  {
-    name: 'i18n:loadMergedMessages',
-    getKey: (locale, fallbackLocales) => `${locale}-[${fallbackLocales.join('-')}]`,
-    shouldBypassCache: (locale, fallbackLocales) => {
-      return !isLocaleCacheable(locale) || !fallbackLocales.every(fallbackLocale => isLocaleCacheable(fallbackLocale))
     }
   }
-)
+
+  const message = await cachedMessages(locale)
+  try {
+    deepCopy(message, merged)
+  } catch (e) {
+    console.error('Failed to merge messages:', e, message, locale)
+  }
+
+  return merged
+}
 
 /**
  * Check if the loaders for the specified locale are all cacheable
  */
 export function isLocaleCacheable(locale: string) {
-  if (!__I18N_CACHE__) return false
   return localeLoaders[locale] == null || localeLoaders[locale].some(loader => loader.cache !== false)
+}
+
+export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: string[]) {
+  return isLocaleCacheable(locale) && fallbackLocales.every(fallbackLocale => isLocaleCacheable(fallbackLocale))
 }

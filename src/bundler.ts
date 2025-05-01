@@ -116,8 +116,7 @@ export function createLogger(label) {
 }
 
 export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
-  const cacheLifetime =
-    options.experimental.cacheLifetime ?? (fullStatic || nuxt.options._generate ? FULL_STATIC_LIFETIME : -1)
+  const cacheLifetime = options.experimental.cacheLifetime ?? (fullStatic ? FULL_STATIC_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   const common = {

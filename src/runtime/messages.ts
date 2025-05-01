@@ -19,7 +19,6 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
 const nuxtMock: { runWithContext: NuxtApp['runWithContext'] } = {
   runWithContext: async (fn: () => Promise<never>) => await fn()
 }
-const cacheTime = import.meta.prerender ? 0 : __I18N_CACHE_LIFETIME__
 const cacheMessages = new Map<string, { time: number; message: LocaleMessages<DefineLocaleMessage> }>()
 
 export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[], nuxt = nuxtMock): Promise<I18nOptions> {
@@ -75,7 +74,7 @@ async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, n
       message = getter
     }
     if (message != null && cache && __I18N_CACHE__) {
-      cacheMessages.set(key, { time: Date.now() + cacheTime * 1000, message })
+      cacheMessages.set(key, { time: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, message })
     }
     __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
   } catch (e: unknown) {
@@ -93,7 +92,7 @@ function getCachedMessage(key: string) {
   const cache = cacheMessages.get(key)
   if (cache == null) return
   // if cacheTime is 0, always return cache
-  const fresh = cacheTime === 0 || cache.time > Date.now()
+  const fresh = __I18N_CACHE_LIFETIME__ === 0 || cache.time > Date.now()
   return fresh ? cache.message : undefined
 }
 

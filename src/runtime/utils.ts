@@ -5,7 +5,7 @@ import { localeCodes, localeLoaders, normalizedLocales, vueI18nConfigs } from '#
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage } from './internal'
-import { loadAndSetLocaleMessages, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
+import { loadAndSetLocaleMessages, loadVueI18nOptions } from './messages'
 import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
   localePath,
@@ -200,13 +200,12 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   }
 
   // load locale messages required by `newLocale`
-  if (!nuxtApp._i18nPreloaded || !nuxtApp._vueI18n.__firstAccess) {
-    const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
-
-    if (i18nFallbackLocales) {
-      const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      await Promise.all(fallbackLocales.map(locale => nuxtApp._i18nLoadAndSetMessages(locale)))
-    }
+  if (
+    !nuxtApp._i18nPreloaded ||
+    !nuxtApp._vueI18n.__firstAccess ||
+    !__HAS_PAGES__ ||
+    __I18N_STRATEGY__ === 'no_prefix'
+  ) {
     await nuxtApp._i18nLoadAndSetMessages(newLocale)
   }
 

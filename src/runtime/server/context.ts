@@ -1,6 +1,6 @@
 import type { LocaleMessages } from '@intlify/core'
+import type { DefineLocaleMessage } from '@intlify/h3'
 import type { H3Event, H3EventContext } from 'h3'
-import { cachedMergedMessages } from './utils/messages'
 
 export function useI18nContext(event: H3Event) {
   if (event.context.nuxtI18n == null) {
@@ -21,7 +21,9 @@ export function createI18nContext(opts: {
     fallbackLocales: undefined!,
     getFallbackLocales: opts.getFallbackLocales,
     messages: {},
-    getMergedMessages: cachedMergedMessages,
+    getMessages: async (locale: string) =>
+      // @ts-ignore excessive stack depth
+      await $fetch(`/_i18n/${locale}/messages.json`, { headers: { 'x-nuxt-i18n': 'internal' } }),
     trackedKeys: new Set<string>(),
     trackKey(key: string) {
       this.trackedKeys.add(key)
@@ -52,12 +54,12 @@ declare module 'h3' {
        * The loaded messages for the current request, used to insert into the rendered HTML for hydration
        * @internal
        */
-      messages: LocaleMessages<Record<string, string>>
+      messages: LocaleMessages<DefineLocaleMessage>
       /**
        * Cached method to get the merged messages for the specified locale and fallback locales
        * @internal
        */
-      getMergedMessages: (locale: string, fallbackLocales: string[]) => Promise<LocaleMessages<Record<string, string>>>
+      getMessages: (locale: string) => Promise<LocaleMessages<DefineLocaleMessage>>
       /**
        * The list of keys that are tracked for the current request
        * @internal

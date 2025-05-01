@@ -94,10 +94,15 @@ export default defineNuxtPlugin({
 
     const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
-      if (dynamicResourcesSSG || import.meta.dev) {
+      if (dynamicResourcesSSG) {
         await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
-      } else {
-        i18n.global.mergeLocaleMessage(locale, await $fetch(`/_i18n/${locale}/messages.json`))
+        return
+      }
+
+      const messages = await $fetch(`/_i18n/${locale}/messages.json`)
+      if (typeof messages === 'string') return
+      for (const k in messages) {
+        deepCopy(messages[k], vueI18nOptions.messages![locale])
       }
     }
 
@@ -156,9 +161,6 @@ export default defineNuxtPlugin({
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
             // first access will not change without route middleware
             i18n.__firstAccess = false
-            if (!__HAS_PAGES__) {
-              await composer.loadLocaleMessages(locale)
-            }
             i18n.__setLocale(locale)
             return
           }

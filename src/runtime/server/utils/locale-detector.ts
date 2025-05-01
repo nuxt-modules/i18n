@@ -49,10 +49,9 @@ export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: 
   return async (event: H3Event, i18nCtx: CoreOptions): Promise<Locale> => {
     const ctx = useI18nContext(event)
     const locale = localeDetector!(event, { defaultLocale, fallbackLocale })
-    const fallbackLocales = ctx.getFallbackLocales(locale)
 
     // Merge messages into i18n context which contains unserializable messages from vue-i18n configurations
-    const messages = await ctx.getMergedMessages(locale, fallbackLocales)
+    const messages = await ctx.getMessages(locale)
     for (const locale in messages) {
       i18nCtx.messages![locale] ??= {}
       deepCopy(messages[locale], i18nCtx.messages![locale])
