@@ -42,7 +42,7 @@ test('detection with cookie', async () => {
   ])
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
+  await Promise.all([page.waitForRequest('**/_i18n/fr/messages.json'), page.locator('#set-locale-link-fr').click()])
   await page.waitForTimeout(10)
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }
@@ -59,7 +59,7 @@ test('detection with cookie', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-en').click()
+  await Promise.all([page.waitForRequest('**/_i18n/en/messages.json'), page.locator('#set-locale-link-en').click()])
   await page.waitForTimeout(10)
   expect(await ctx.cookies()).toMatchObject([{ name: 'my_custom_cookie_name', value: 'en' }])
 })
@@ -80,7 +80,7 @@ test('detection with cookie - overwrite unknown locale', async () => {
   })
   const { page } = await renderPage('/', { locale: 'en' })
   const ctx = page.context()
-  await page.locator('#set-locale-link-fr').click()
+  await Promise.all([page.waitForRequest('**/_i18n/fr/messages.json'), page.locator('#set-locale-link-fr').click()])
   await page.waitForTimeout(10)
   const localeCookie = (await ctx.cookies()).find(x => x.name === 'my_custom_cookie_name')
   expect([localeCookie]).toMatchObject([{ name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }])
@@ -116,7 +116,7 @@ test('detection with browser', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
-  await page.locator('#set-locale-link-en').click()
+  await Promise.all([page.waitForRequest('**/_i18n/en/messages.json'), page.locator('#set-locale-link-en').click()])
   await page.waitForTimeout(10)
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
@@ -133,7 +133,7 @@ test('detection with browser', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
-  await page.locator('#set-locale-link-en').click()
+  await Promise.all([page.waitForRequest('**/_i18n/en/messages.json'), page.locator('#set-locale-link-en').click()])
   await page.waitForTimeout(10)
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 })

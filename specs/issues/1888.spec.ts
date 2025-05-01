@@ -5,7 +5,12 @@ import { setup, url, createPage } from '../utils'
 
 describe('#1888', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/issues/1888`, import.meta.url))
+    rootDir: fileURLToPath(new URL(`../fixtures/issues/1888`, import.meta.url)),
+    nuxtConfig: {
+      i18n: {
+        // debug: true
+      }
+    }
   })
 
   test('should be worked', async () => {
@@ -20,7 +25,7 @@ describe('#1888', async () => {
     expect(await page.locator('#flag-mounted').getAttribute('alt')).toContain('pl')
 
     // change to `en` locale
-    await page.locator('#en').click()
+    await Promise.all([page.waitForRequest('**/_i18n/en/messages.json'), page.locator('#en').click()])
     await page.waitForTimeout(10)
 
     expect(await page.locator('#html-msg').innerText()).toEqual('Translation example')
@@ -30,7 +35,7 @@ describe('#1888', async () => {
     expect(await page.locator('#flag-mounted').getAttribute('alt')).toContain('us')
 
     // change to `fr` locale
-    await page.locator('#fr').click()
+    await Promise.all([page.waitForRequest('**/_i18n/fr/messages.json'), page.locator('#fr').click()])
     await page.waitForTimeout(10)
 
     expect(await page.locator('#html-msg').innerText()).toEqual('Exemple de traduction')
