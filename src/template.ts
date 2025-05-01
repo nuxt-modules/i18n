@@ -61,7 +61,7 @@ async function loadCfg(config) {
   const { default: resolver } = await config()
   return typeof resolver === 'function' ? await nuxt.runWithContext(() => resolver()) : resolver
 }\n`
-function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders']) {
+function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoaders'], lazy: boolean) {
   const statements: string[] = []
 
   for (const locale in localeLoaders) {
@@ -71,7 +71,7 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
         [
           `  import.meta.hot.accept("${loader.relative}", async mod => {`,
           //   replace locale loader
-          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
+          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(${lazy ? 'mod' : 'mod.default'})`,
           //   trigger locale messages reload for locale
           `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${locale}")`,
           `  })`
@@ -120,7 +120,7 @@ export function generateTemplateNuxtI18nOptions(
       `if(import.meta.hot) {`,
       deepEqualFn,
       loadConfigsFn,
-      genLocaleLoaderHMR(opts.localeLoaders),
+      genLocaleLoaderHMR(opts.localeLoaders, ctx.options.lazy),
       genVueI18nConfigHMR(opts.vueI18nConfigs),
       '}'
     ].join('\n\n')
