@@ -12,7 +12,7 @@ import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
 import { localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
 
 import type { H3Event } from 'h3'
-import type { CoreOptions, LocaleMessages } from '@intlify/core'
+import type { CoreOptions } from '@intlify/core'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises

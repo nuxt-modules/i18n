@@ -1,4 +1,4 @@
-import { getRouterParam, setResponseStatus } from 'h3'
+import { getRouterParam, createError } from 'h3'
 import { defineCachedEventHandler } from 'nitropack/runtime'
 import { getMergedMessages, isLocaleWithFallbacksCacheable } from '../utils/messages'
 import { useI18nContext } from '../context'
@@ -6,13 +6,13 @@ import { useI18nContext } from '../context'
 export default defineCachedEventHandler(
   async event => {
     const locale = getRouterParam(event, 'locale')
+
     if (!locale) {
-      setResponseStatus(event, 400)
-      return
+      throw createError({ status: 400, statusMessage: 'Bad Request', message: 'Invalid locale parameter' })
     }
 
     const ctx = useI18nContext(event)
-    ctx.locale = locale!
+    ctx.locale = locale
     ctx.messages = await getMergedMessages(ctx.locale, ctx.getFallbackLocales(ctx.locale))
     return ctx.messages
   },
