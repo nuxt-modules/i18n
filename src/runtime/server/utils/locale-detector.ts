@@ -1,3 +1,4 @@
+import { useI18nContext } from '../plugin'
 import { deepCopy } from '@intlify/shared'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { tryCookieLocale, tryHeaderLocale, tryQueryLocale } from '@intlify/h3'
@@ -46,7 +47,7 @@ export function createDefaultLocaleDetector(opts: {
 
 export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: FallbackLocale) {
   return async (event: H3Event, i18nCtx: CoreOptions): Promise<Locale> => {
-    const ctx = event.context.nuxtI18n
+    const ctx = useI18nContext(event)
     const locale = localeDetector!(event, { defaultLocale, fallbackLocale })
     const fallbackLocales = ctx.getFallbackLocales(locale)
 

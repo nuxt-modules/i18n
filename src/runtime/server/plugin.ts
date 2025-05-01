@@ -54,18 +54,8 @@ export default defineNitroPlugin(async nitro => {
     await Promise.all(localeCodes.map(locale => cachedMergedMessages(locale, getFallbackLocales(locale))))
   }
 
-  function createNuxtI18nContext(): H3EventContext['nuxtI18n'] {
-    return {
-      locale: undefined!,
-      fallbackLocales: undefined!,
-      getFallbackLocales,
-      messages: {},
-      getMergedMessages: cachedMergedMessages
-    }
-  }
-
   nitro.hooks.hook('request', async (event: H3Event) => {
-    const ctx = createNuxtI18nContext()
+    const ctx = createI18nContext({ getFallbackLocales })
     event.context.nuxtI18n = ctx
 
     // if (import.meta.dev) return
@@ -75,9 +65,9 @@ export default defineNitroPlugin(async nitro => {
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
-    const ctx = event.context.nuxtI18n
+    const ctx = tryUseI18nContext(event)
     // if(import.meta.dev) return
-    if (Object.keys(ctx?.messages ?? {}).length == 0) return
+    if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
     // const subset: Record<string, LocaleMessages<DefineLocaleMessage>> = {}
     // for (const locale of ctx.localeChain) {
     //   subset[locale] = ctx.messages[locale]
@@ -104,10 +94,33 @@ export default defineNitroPlugin(async nitro => {
   }
 })
 
+function createI18nContext(opts: {
+  getFallbackLocales: (locale: string) => string[]
+}): NonNullable<H3EventContext['nuxtI18n']> {
+  return {
+    locale: undefined!,
+    fallbackLocales: undefined!,
+    getFallbackLocales: opts.getFallbackLocales,
+    messages: {},
+    getMergedMessages: cachedMergedMessages
+  }
+}
+
+export function useI18nContext(event: H3Event) {
+  if (event.context.nuxtI18n == null) {
+    throw new Error('Nuxt I18n server context has not been set up yet.')
+  }
+  return event.context.nuxtI18n
+}
+
+export function tryUseI18nContext(event: H3Event) {
+  return event.context.nuxtI18n
+}
+
 declare module 'h3' {
   interface H3EventContext {
     /** @internal */
-    nuxtI18n: {
+    nuxtI18n?: {
       /**
        * The detected locale for the current request
        * @internal
