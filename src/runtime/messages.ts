@@ -69,7 +69,7 @@ const isResolvedModule = (val: unknown): val is { default: unknown } =>
 /**
  * Get locale messages from loader
  */
-export async function getLocaleMessages(locale: string, loader: LocaleLoader) {
+async function getLocaleMessages(locale: string, loader: LocaleLoader) {
   try {
     const getter = await loader.load().then(x => (isResolvedModule(x) ? x.default : x))
     return isFunction(getter) ? await getter(locale) : getter
