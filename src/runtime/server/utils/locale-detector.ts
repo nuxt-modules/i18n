@@ -59,7 +59,7 @@ export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: 
 
     // Merge messages into i18n context which contains unserializable messages from vue-i18n configurations
     const messages = await fetchMessages(locale)
-    for (const locale in messages) {
+    for (const locale of Object.keys(messages)) {
       i18nCtx.messages![locale] ??= {}
       deepCopy(messages[locale], i18nCtx.messages![locale])
     }
