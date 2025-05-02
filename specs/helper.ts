@@ -272,3 +272,7 @@ export async function localeLoaderHelpers() {
 
   return { findKey }
 }
+
+export function waitForLocaleRequest(page: Page, locale: string) {
+  return page.waitForRequest(new RegExp(`/_i18n/${locale}/messages.json`))
+}

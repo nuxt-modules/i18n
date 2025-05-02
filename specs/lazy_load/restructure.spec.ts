@@ -1,7 +1,8 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { waitForMs, renderPage, localeLoaderHelpers } from '../helper'
+import { waitForMs, renderPage, localeLoaderHelpers, waitForLocaleRequest } from '../helper'
+import { Page } from 'playwright-core'
 
 describe('basic lazy loading (restructure)', async () => {
   await setup({
@@ -112,27 +113,20 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
-  // test.skip('files with cache disabled bypass caching', async () => {
-  //   const { page, consoleLogs: logs } = await renderPage('/')
+  test('files with cache disabled bypass caching', async () => {
+    const { page } = await renderPage('/')
 
-  //   const { findKey } = await localeLoaderHelpers()
+    async function clickAndAssertNoCache(page: Page, selector: string, locale: string) {
+      const request = waitForLocaleRequest(page, locale)
+      await page.click(selector)
+      expect((await request).headers()['cache-control']).toEqual('no-cache')
+    }
 
-  //   await page.click('#lang-switcher-with-nuxt-link-en-GB')
-  //   await waitForMs(100) // FIXME: may cause flaky test
-  //   expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
-
-  //   await page.click('#lang-switcher-with-nuxt-link-fr')
-  //   await waitForMs(100) // FIXME: may cause flaky test
-  //   expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
-
-  //   await page.click('#lang-switcher-with-nuxt-link-en-GB')
-  //   await waitForMs(100) // FIXME: may cause flaky test
-  //   expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
-
-  //   await page.click('#lang-switcher-with-nuxt-link-fr')
-  //   await waitForMs(100) // FIXME: may cause flaky test
-  //   expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
-  // })
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
+  })
 
   test('manually loaded messages can be used in translations', async () => {
     const { page } = await renderPage('/manual-load')
