@@ -1,7 +1,7 @@
 import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
-import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
 import { localeCodes, vueI18nConfigs, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
 import { getLocaleMessagesMergedCached, loadVueI18nOptions } from '../messages'
 import {
@@ -27,6 +27,9 @@ import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 
+const useLocaleConfigs = () =>
+  useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
+
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: __PARALLEL_PLUGIN__,
@@ -35,7 +38,7 @@ export default defineNuxtPlugin({
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
-
+    const serverLocaleConfigs = useLocaleConfigs()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
     nuxt._i18nGetDomainFromLocale = createDomainFromLocaleGetter(nuxt)
 
@@ -70,6 +73,9 @@ export default defineNuxtPlugin({
     // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
       const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
+      if (serverI18n?.localeConfigs) {
+        serverLocaleConfigs.value = serverI18n.localeConfigs
+      }
       if (serverI18n?.messages && Object.keys(serverI18n.messages).length) {
         preloadedMessages = serverI18n.messages
       }
@@ -94,15 +100,21 @@ export default defineNuxtPlugin({
 
     const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
-      if (dynamicResourcesSSG || import.meta.dev) {
+      if (dynamicResourcesSSG) {
         nuxt.$i18n.mergeLocaleMessage(locale, await getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
         return
       }
 
-      const messages = await $fetch(`/_i18n/${locale}/messages.json`)
-      if (typeof messages === 'string') return
+      const headers = new Headers()
+      if (!serverLocaleConfigs.value?.[locale]?.cacheable) {
+        headers.set('Cache-Control', 'no-cache')
+      }
+
+      const messages = await $fetch(`/_i18n/${locale}/messages.json`, { headers })
+      vueI18nOptions.messages ??= {}
       for (const k in messages) {
-        deepCopy(messages[k], vueI18nOptions.messages![locale])
+        vueI18nOptions.messages[locale] ??= {}
+        deepCopy(messages[k], vueI18nOptions.messages[locale])
       }
     }
 

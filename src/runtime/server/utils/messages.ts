@@ -18,9 +18,7 @@ const cachedMessages = defineCachedFunction(
     name: 'i18n:loadMessages',
     maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
     getKey: locale => locale,
-    shouldBypassCache(locale) {
-      return !isLocaleCacheable(locale)
-    }
+    shouldBypassCache: locale => !isLocaleCacheable(locale)
   }
 )
 

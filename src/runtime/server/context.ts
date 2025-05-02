@@ -22,12 +22,15 @@ export const fetchMessages = async (locale: string) =>
     headers: { 'x-nuxt-i18n': 'internal' }
   })
 
-export function createI18nContext(opts: {
-  getFallbackLocales: (locale: string) => string[]
-}): NonNullable<H3EventContext['nuxtI18n']> {
+type ContextParams = Pick<NonNullable<H3EventContext['nuxtI18n']>, 'getFallbackLocales' | 'localeConfigs'>
+export function createI18nContext({
+  getFallbackLocales,
+  localeConfigs
+}: ContextParams): NonNullable<H3EventContext['nuxtI18n']> {
   return {
     messages: {},
-    getFallbackLocales: opts.getFallbackLocales,
+    getFallbackLocales,
+    localeConfigs,
     trackedKeys: new Set<string>(),
     trackKey(key: string) {
       this.trackedKeys.add(key)
@@ -44,6 +47,7 @@ declare module 'h3' {
        * @internal
        */
       getFallbackLocales: (locale: string) => string[]
+      localeConfigs: Record<string, { cacheable: boolean; fallbacks: string[] }>
       /**
        * The loaded messages for the current request, used to insert into the rendered HTML for hydration
        * @internal

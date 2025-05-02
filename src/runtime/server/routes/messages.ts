@@ -12,7 +12,7 @@ export default defineCachedEventHandler(
     }
 
     const ctx = useI18nContext(event)
-    ctx.messages = await getMergedMessages(locale, ctx.getFallbackLocales(locale))
+    ctx.messages = await getMergedMessages(locale, ctx.localeConfigs?.[locale]?.fallbacks ?? [])
     return ctx.messages
   },
   {
@@ -22,7 +22,7 @@ export default defineCachedEventHandler(
     shouldBypassCache(event) {
       const locale = getRouterParam(event, 'locale')
       if (locale == null) return false
-      return !isLocaleWithFallbacksCacheable(locale, useI18nContext(event).getFallbackLocales(locale))
+      return !useI18nContext(event).localeConfigs?.[locale]?.cacheable
     }
   }
 )
