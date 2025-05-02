@@ -13,17 +13,21 @@ export function tryUseI18nContext(event: H3Event) {
   return event.context.nuxtI18n
 }
 
+/**
+ * Fetches the messages for the specified locale.
+ * @internal
+ */
+export const fetchMessages = async (locale: string) =>
+  await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${locale}/messages.json`, {
+    headers: { 'x-nuxt-i18n': 'internal' }
+  })
+
 export function createI18nContext(opts: {
   getFallbackLocales: (locale: string) => string[]
 }): NonNullable<H3EventContext['nuxtI18n']> {
   return {
-    locale: undefined!,
-    fallbackLocales: undefined!,
-    getFallbackLocales: opts.getFallbackLocales,
     messages: {},
-    getMessages: async (locale: string) =>
-      // @ts-ignore excessive stack depth
-      await $fetch(`/_i18n/${locale}/messages.json`, { headers: { 'x-nuxt-i18n': 'internal' } }),
+    getFallbackLocales: opts.getFallbackLocales,
     trackedKeys: new Set<string>(),
     trackKey(key: string) {
       this.trackedKeys.add(key)
@@ -36,16 +40,6 @@ declare module 'h3' {
     /** @internal */
     nuxtI18n?: {
       /**
-       * The detected locale for the current request
-       * @internal
-       */
-      locale: string
-      /**
-       * The detected fallback locales for the current request
-       * @internal
-       */
-      fallbackLocales: string[]
-      /**
        * Get the fallback locales for the specified locale
        * @internal
        */
@@ -56,11 +50,6 @@ declare module 'h3' {
        */
       messages: LocaleMessages<DefineLocaleMessage>
       /**
-       * Cached method to get the merged messages for the specified locale and fallback locales
-       * @internal
-       */
-      getMessages: (locale: string) => Promise<LocaleMessages<DefineLocaleMessage>>
-      /**
        * The list of keys that are tracked for the current request
        * @internal
        */
@@ -70,6 +59,22 @@ declare module 'h3' {
        * @internal
        */
       trackKey: (key: string) => void
+      /**
+       * Cache lookup for locale and locale chain (locale + fallback locales)
+       * @internal
+       */
+      cacheMap?: {
+        /**
+         * Map of locale codes to boolean values indicating if the locale is cacheable
+         * @internal
+         */
+        locale: Map<string, boolean>
+        /**
+         * Map of locale codes to boolean values indicating if the locale + its fallback locales are cacheable
+         * @internal
+         */
+        localeChain: Map<string, boolean>
+      }
     }
   }
 }
