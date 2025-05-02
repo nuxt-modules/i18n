@@ -12,22 +12,17 @@ export default defineCachedEventHandler(
     }
 
     const ctx = useI18nContext(event)
-    ctx.locale = locale
     ctx.messages = await getMergedMessages(locale, ctx.getFallbackLocales(locale))
-
     return ctx.messages
   },
   {
     name: 'i18n:messages',
-    maxAge: import.meta.dev ? -1 : 60 * 60 * 24,
+    maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
     getKey: event => getRouterParam(event, 'locale') ?? 'null',
     shouldBypassCache(event) {
       const locale = getRouterParam(event, 'locale')
-      return (
-        import.meta.dev ||
-        locale == null ||
-        !isLocaleWithFallbacksCacheable(locale, useI18nContext(event).getFallbackLocales(locale))
-      )
+      if (locale == null) return false
+      return !isLocaleWithFallbacksCacheable(locale, useI18nContext(event).getFallbackLocales(locale))
     }
   }
 )

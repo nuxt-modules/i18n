@@ -16,9 +16,11 @@ const cachedMessages = defineCachedFunction(
   },
   {
     name: 'i18n:loadMessages',
-    maxAge: import.meta.dev ? -1 : 60 * 60 * 24,
+    maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
     getKey: locale => locale,
-    shouldBypassCache: locale => import.meta.dev || !isLocaleCacheable(locale)
+    shouldBypassCache(locale) {
+      return !isLocaleCacheable(locale)
+    }
   }
 )
 
@@ -51,7 +53,7 @@ export const getMergedMessages = async (locale: string, fallbackLocales: string[
  * Check if the loaders for the specified locale are all cacheable
  */
 export function isLocaleCacheable(locale: string) {
-  return localeLoaders[locale] == null || localeLoaders[locale].every(loader => loader.cache !== false)
+  return localeLoaders[locale] != null && localeLoaders[locale].every(loader => loader.cache !== false)
 }
 
 export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: string[]) {
