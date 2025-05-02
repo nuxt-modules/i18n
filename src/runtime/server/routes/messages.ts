@@ -13,7 +13,8 @@ export default defineCachedEventHandler(
 
     const ctx = useI18nContext(event)
     ctx.locale = locale
-    ctx.messages = await getMergedMessages(ctx.locale, ctx.getFallbackLocales(ctx.locale))
+    ctx.messages = await getMergedMessages(locale, ctx.getFallbackLocales(locale))
+
     return ctx.messages
   },
   {

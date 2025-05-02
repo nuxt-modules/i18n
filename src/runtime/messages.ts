@@ -1,10 +1,8 @@
 import { deepCopy, isArray, isFunction, isString, toTypeString } from '@intlify/shared'
-import { createLogger } from '#nuxt-i18n/logger'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { VueI18nConfig } from '#internal-i18n-types'
-import type { CoreContext } from '@intlify/h3'
 
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
 type MessageLoaderResult<T, Result = MessageLoaderFunction<T> | LocaleMessages<T>> = { default: Result } | Result
@@ -57,33 +55,66 @@ export function makeFallbackLocaleCodes(fallback: FallbackLocale, locales: Local
   return fallbackLocales
 }
 
+/**
+ * Check if the value is a module
+ */
 const isModule = (val: unknown): val is { default: unknown } => toTypeString(val) === '[object Module]'
 
-async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, nuxt = nuxtMock) {
-  const logger = /*#__PURE__*/ createLogger('loadMessage')
-  let message: LocaleMessages<DefineLocaleMessage> | null = null
-  try {
-    __DEBUG__ && logger.log({ locale })
-    const getter = await load().then(x =>
-      (__LAZY_LOCALES__ && import.meta.server) || isModule(x)
-        ? ((x as { default: unknown }).default as MessageLoaderFunction)
-        : x
-    )
+/**
+ * Check if the value is a module and handle edge case server-side
+ */
+const isResolvedModule = (val: unknown): val is { default: unknown } =>
+  (__LAZY_LOCALES__ && import.meta.server) || isModule(val)
 
-    if (isFunction(getter)) {
-      message = await nuxt.runWithContext(() => getter(locale))
-      __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
-    } else {
-      message = getter
-    }
-    if (message != null && cache && __I18N_CACHE__ && !import.meta.dev) {
-      cacheMessages.set(key, { time: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, message })
-    }
-    __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
+/**
+ * Get locale messages from loader
+ */
+export async function getLocaleMessages(locale: string, loader: LocaleLoader) {
+  try {
+    const getter = await loader.load().then(x => (isResolvedModule(x) ? x.default : x))
+    return isFunction(getter) ? await getter(locale) : getter
   } catch (e: unknown) {
-    console.error('Failed locale loading: ' + (e as Error).message)
+    throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message)
   }
+}
+
+/**
+ * Get locale messages from loader and merge them
+ */
+export async function getLocaleMessagesMerged(locale: string, loaders: LocaleLoader[] = []) {
+  const merged: LocaleMessages<DefineLocaleMessage> = {}
+  for (const loader of loaders) {
+    deepCopy(await getLocaleMessages(locale, loader), merged)
+  }
+  return merged
+}
+
+/**
+ * Get locale messages from loader and cache them
+ */
+async function getLocaleMessagesCached(locale: string, loader: LocaleLoader) {
+  let message: LocaleMessages<DefineLocaleMessage> = {}
+
+  const cached = __I18N_CACHE__ && !import.meta.dev && loader.cache && getCachedMessages(loader.key)
+  const usedCache = !!cached
+
+  message = cached || (await getLocaleMessages(locale, loader))
+  if (__I18N_CACHE__ && !usedCache && loader.cache && !import.meta.dev) {
+    cacheMessages.set(loader.key, { time: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, message })
+  }
+
   return message
+}
+
+/**
+ * Wraps the `getLocaleMessages` function to use cache
+ */
+export async function getLocaleMessagesMergedCached(locale: string, loaders: LocaleLoader[] = []) {
+  const merged: LocaleMessages<DefineLocaleMessage> = {}
+  for (const loader of loaders) {
+    deepCopy(await getLocaleMessagesCached(locale, loader), merged)
+  }
+  return merged
 }
 
 /**
@@ -91,65 +122,10 @@ async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, n
  * - if cache has expired, returns undefined
  * - if `cacheTime` is set to 0, cache never expires
  */
-function getCachedMessage(key: string) {
+function getCachedMessages(key: string) {
   const cache = cacheMessages.get(key)
   if (cache == null) return
   // if cacheTime is 0, always return cache
   const fresh = __I18N_CACHE_LIFETIME__ === 0 || cache.time > Date.now()
   return fresh ? cache.message : undefined
-}
-
-export async function loadLocale(
-  locale: Locale,
-  localeLoaders: Record<Locale, LocaleLoader[]>,
-  setter: (locale: Locale, message: LocaleMessages<DefineLocaleMessage>) => void,
-  nuxt = nuxtMock
-) {
-  const logger = /*#__PURE__*/ createLogger('loadLocale')
-  const loaders = localeLoaders[locale]
-
-  if (loaders == null) {
-    __DEBUG__ && logger.warn('Could not find locale file messages for locale code: ' + locale)
-    return
-  }
-
-  const targetMessage: LocaleMessages<DefineLocaleMessage> = {}
-  for (const loader of loaders) {
-    let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
-
-    const cached = __I18N_CACHE__ && !import.meta.dev && loader.cache && getCachedMessage(loader.key)
-    if (__I18N_CACHE__ && cached) {
-      __DEBUG__ && logger.log(loader.key + ' is already loaded')
-      message = cached
-    } else {
-      __TEST__ && !loader.cache && logger.log(loader.key + ' bypassing cache!')
-      __DEBUG__ && logger.log(loader.key + ' is loading ...')
-      message = await nuxt.runWithContext(() => loadMessage(locale, loader, nuxt))
-    }
-
-    if (message != null) {
-      deepCopy(message, targetMessage)
-    }
-  }
-
-  setter(locale, targetMessage)
-}
-
-type LocaleLoaderMessages =
-  | CoreContext<Locale, DefineLocaleMessage>['messages']
-  | LocaleMessages<DefineLocaleMessage, Locale>
-export async function loadAndSetLocaleMessages(
-  locale: Locale,
-  localeLoaders: Record<Locale, LocaleLoader[]>,
-  messages: LocaleLoaderMessages = {},
-  nuxt = nuxtMock
-) {
-  const setter = (locale: Locale, message: LocaleMessages<DefineLocaleMessage, Locale>) => {
-    const base = messages[locale] || {}
-    deepCopy(message, base)
-    messages[locale] = base
-  }
-
-  await loadLocale(locale, localeLoaders, setter, nuxt)
-  return messages
 }

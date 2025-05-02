@@ -1,7 +1,7 @@
 import { deepCopy } from '@intlify/shared'
 import { defineCachedFunction } from 'nitropack/runtime'
 import { localeCodes, localeLoaders } from '#internal/i18n/options.mjs'
-import { loadAndSetLocaleMessages } from '../../messages'
+import { getLocaleMessagesMerged } from '../../messages'
 
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
@@ -12,7 +12,7 @@ import type { DefineLocaleMessage } from '@intlify/h3'
  */
 const cachedMessages = defineCachedFunction(
   async (locale: string) => {
-    return await loadAndSetLocaleMessages(locale, localeLoaders)
+    return { [locale]: await getLocaleMessagesMerged(locale, localeLoaders[locale]) }
   },
   {
     name: 'i18n:loadMessages',
@@ -51,7 +51,7 @@ export const getMergedMessages = async (locale: string, fallbackLocales: string[
  * Check if the loaders for the specified locale are all cacheable
  */
 export function isLocaleCacheable(locale: string) {
-  return localeLoaders[locale] == null || localeLoaders[locale].some(loader => loader.cache !== false)
+  return localeLoaders[locale] == null || localeLoaders[locale].every(loader => loader.cache !== false)
 }
 
 export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: string[]) {

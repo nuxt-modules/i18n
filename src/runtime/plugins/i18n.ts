@@ -3,7 +3,7 @@ import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
 import { localeCodes, vueI18nConfigs, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
-import { loadLocale, loadVueI18nOptions } from '../messages'
+import { getLocaleMessagesMergedCached, loadVueI18nOptions } from '../messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -95,7 +95,7 @@ export default defineNuxtPlugin({
     const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
       if (dynamicResourcesSSG || import.meta.dev) {
-        await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
+        nuxt.$i18n.mergeLocaleMessage(locale, await getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
         return
       }
 

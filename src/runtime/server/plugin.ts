@@ -1,6 +1,7 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { getRequestHeader } from 'h3'
+import { deepCopy } from '@intlify/shared'
 import { useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
@@ -22,7 +23,7 @@ export default defineNitroPlugin(async nitro => {
   const options = await loadVueI18nOptions(vueI18nConfigs)
   const fallbackLocale = (options.fallbackLocale = options.fallbackLocale ?? false)
   options.messages = options.messages || {}
-  for (const locale in localeCodes) {
+  for (const locale of localeCodes) {
     options.messages[locale] ??= {}
   }
 
@@ -48,7 +49,14 @@ export default defineNitroPlugin(async nitro => {
 
     if (getRequestHeader(event, 'x-nuxt-i18n') !== 'internal') {
       ctx.locale = defaultLocaleDetector(event)
-      ctx.messages = await ctx.getMessages(ctx.locale)
+      if (!__LAZY_LOCALES__) {
+        const localeMessages = await Promise.all(localeCodes.map(locale => ctx.getMessages(locale)))
+        for (const messages of localeMessages) {
+          deepCopy(messages, ctx.messages)
+        }
+      } else {
+        ctx.messages = await ctx.getMessages(ctx.locale)
+      }
     }
   })
 
