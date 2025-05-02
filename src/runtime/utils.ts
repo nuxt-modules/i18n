@@ -1,11 +1,11 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { assign, isFunction, isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useState } from '#imports'
-import { localeCodes, localeLoaders, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
+import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage } from './internal'
-import { loadAndSetLocaleMessages, loadVueI18nOptions } from './messages'
+import { loadVueI18nOptions } from './messages'
 import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
   localePath,
@@ -530,10 +530,7 @@ export function createNuxtI18nDev() {
     const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {
       if (locale && k !== locale) continue
-      const current = opts.messages![k] || {}
-      // override config messages with locale files in correct order
-      await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
-      composer.setLocaleMessage(k, current)
+      await nuxtApp._i18nLoadAndSetMessages(k)
     }
 
     // skip vue-i18n config properties if locale is passed (locale file HMR)

@@ -94,7 +94,7 @@ export default defineNuxtPlugin({
 
     const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
-      if (dynamicResourcesSSG) {
+      if (dynamicResourcesSSG || import.meta.dev) {
         await loadLocale(locale, localeLoaders, nuxt.$i18n.mergeLocaleMessage.bind(nuxt.$i18n), nuxt)
         return
       }

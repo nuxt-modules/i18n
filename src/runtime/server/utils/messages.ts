@@ -16,9 +16,9 @@ const cachedMessages = defineCachedFunction(
   },
   {
     name: 'i18n:loadMessages',
-    maxAge: import.meta.dev ? 1 : 60 * 60 * 24,
+    maxAge: import.meta.dev ? -1 : 60 * 60 * 24,
     getKey: locale => locale,
-    shouldBypassCache: locale => !isLocaleCacheable(locale)
+    shouldBypassCache: locale => import.meta.dev || !isLocaleCacheable(locale)
   }
 )
 
@@ -56,4 +56,27 @@ export function isLocaleCacheable(locale: string) {
 
 export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: string[]) {
   return isLocaleCacheable(locale) && fallbackLocales.every(fallbackLocale => isLocaleCacheable(fallbackLocale))
+}
+
+/**
+ * Create a cache map for locales and fallback locales
+ */
+export function createLocaleCacheMap(opts: { getFallbackLocales: (locale: string) => string[] }) {
+  const localeCacheMap = new Map<string, boolean>()
+  for (const locale of Object.keys(localeCodes)) {
+    localeCacheMap.set(locale, isLocaleCacheable(locale))
+  }
+
+  const localeChainCacheMap = new Map<string, boolean>()
+  for (const locale of Object.keys(localeCodes)) {
+    localeChainCacheMap.set(
+      locale,
+      localeCacheMap.get(locale)! && opts.getFallbackLocales(locale).every(fallback => isLocaleCacheable(fallback))
+    )
+  }
+
+  return {
+    localeCacheMap,
+    localeChainCacheMap
+  }
 }

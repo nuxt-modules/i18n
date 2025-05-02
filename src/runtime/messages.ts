@@ -65,15 +65,18 @@ async function loadMessage(locale: Locale, { key, load, cache }: LocaleLoader, n
   try {
     __DEBUG__ && logger.log({ locale })
     const getter = await load().then(x =>
-      __LAZY_LOCALES__ || isModule(x) ? ((x as { default: unknown }).default as MessageLoaderFunction) : x
+      (__LAZY_LOCALES__ && import.meta.server) || isModule(x)
+        ? ((x as { default: unknown }).default as MessageLoaderFunction)
+        : x
     )
+
     if (isFunction(getter)) {
       message = await nuxt.runWithContext(() => getter(locale))
       __DEBUG__ && logger.log('dynamic load', logger.level >= 999 ? message : '')
     } else {
       message = getter
     }
-    if (message != null && cache && __I18N_CACHE__) {
+    if (message != null && cache && __I18N_CACHE__ && !import.meta.dev) {
       cacheMessages.set(key, { time: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, message })
     }
     __DEBUG__ && logger.log('loaded', logger.level >= 999 ? message : '')
@@ -114,7 +117,7 @@ export async function loadLocale(
   for (const loader of loaders) {
     let message: LocaleMessages<DefineLocaleMessage> | undefined | null = null
 
-    const cached = __I18N_CACHE__ && loader.cache && getCachedMessage(loader.key)
+    const cached = __I18N_CACHE__ && !import.meta.dev && loader.cache && getCachedMessage(loader.key)
     if (__I18N_CACHE__ && cached) {
       __DEBUG__ && logger.log(loader.key + ' is already loaded')
       message = cached

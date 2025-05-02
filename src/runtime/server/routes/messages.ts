@@ -22,7 +22,11 @@ export default defineCachedEventHandler(
     getKey: event => getRouterParam(event, 'locale') ?? 'null',
     shouldBypassCache(event) {
       const locale = getRouterParam(event, 'locale')
-      return locale == null || !isLocaleWithFallbacksCacheable(locale, useI18nContext(event).getFallbackLocales(locale))
+      return (
+        import.meta.dev ||
+        locale == null ||
+        !isLocaleWithFallbacksCacheable(locale, useI18nContext(event).getFallbackLocales(locale))
+      )
     }
   }
 )
