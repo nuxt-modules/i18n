@@ -70,6 +70,7 @@ export default defineNuxtPlugin({
     }
 
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
+    const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
       const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
@@ -86,9 +87,7 @@ export default defineNuxtPlugin({
       if (content) {
         preloadedMessages = parse(content) as LocaleMessages<DefineLocaleMessage> | undefined
       }
-    }
-    if (preloadedMessages && Object.keys(preloadedMessages).length) {
-      if (!__I18N_FULL_STATIC__ && import.meta.client) {
+      if (preloadedMessages && Object.keys(preloadedMessages).length && dynamicResourcesSSG) {
         try {
           const msg = await Promise.all(
             Object.keys(preloadedMessages).map(async locale => ({
@@ -114,7 +113,6 @@ export default defineNuxtPlugin({
       nuxt._i18nPreloaded = true
     }
 
-    const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
       if (dynamicResourcesSSG || import.meta.dev) {
         nuxt.$i18n.mergeLocaleMessage(locale, await getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
