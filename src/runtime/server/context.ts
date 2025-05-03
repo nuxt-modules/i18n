@@ -38,6 +38,17 @@ export function createI18nContext({
   }
 }
 
+interface ServerLocaleConfig {
+  /**
+   * Message files (and its fallback locale message files) are cacheable
+   */
+  cacheable: boolean
+  /**
+   * Fallback locale codes
+   */
+  fallbacks: string[]
+}
+
 declare module 'h3' {
   interface H3EventContext {
     /** @internal */
@@ -47,7 +58,11 @@ declare module 'h3' {
        * @internal
        */
       getFallbackLocales: (locale: string) => string[]
-      localeConfigs: Record<string, { cacheable: boolean; fallbacks: string[] }>
+      /**
+       * Cached locale configurations based on runtime config
+       * @internal
+       */
+      localeConfigs: Record<string, ServerLocaleConfig>
       /**
        * The loaded messages for the current request, used to insert into the rendered HTML for hydration
        * @internal
