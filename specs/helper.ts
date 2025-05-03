@@ -1,11 +1,9 @@
 // @ts-ignore
-import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
 import { getBrowser, startServer, TestContext, url, useTestContext } from './utils'
-import { resolveAlias } from '@nuxt/kit'
 import { onTestFinished } from 'vitest'
 
-import { errors, Response, type BrowserContextOptions, type Page } from 'playwright-core'
+import type { BrowserContextOptions, Page } from 'playwright-core'
 
 export function waitForLocaleSwitch(page: Page) {
   return page.evaluate(
@@ -254,19 +252,6 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
   }
 
   return restoreFn
-}
-
-export async function localeLoaderHelpers() {
-  const ctx = useTestContext()
-  const jiti = createJITI(ctx.nuxt!.options.rootDir, { alias: ctx.nuxt!.options.alias })
-  const opts = await jiti.import(resolveAlias('#build/i18n.options.mjs'), {})
-
-  function findKey(code: string, ext: string, cache: boolean = false): string {
-    // @ts-expect-error generated
-    return opts.localeLoaders[code].find(x => x.cache === cache && x.key.includes(ext + '_'))!.key
-  }
-
-  return { findKey }
 }
 
 export function waitForLocaleRequest(page: Page, locale: string) {
