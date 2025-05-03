@@ -133,22 +133,18 @@ describe('basic lazy loading', async () => {
     expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
-  // test('files with cache disabled bypass caching', async () => {
-  //   const { page } = await renderPage('/')
+  test('files with cache disabled bypass caching', async () => {
+    const { page, consoleLogs } = await renderPage('/')
 
-  //   await page.waitForLoadState('load')
+    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(1)
 
-  //   async function clickAndAssertNoCache(page: Page, selector: string, locale: string) {
-  //     const request = waitForLocaleRequest(page, locale)
-  //     await page.click(selector)
-  //     expect((await request).headers()['cache-control']).toEqual('no-cache')
-  //   }
+    await page.click('#lang-switcher-with-nuxt-link-fr')
+    expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(1)
 
-  //   await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
-  //   await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
-  //   await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
-  //   await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
-  // })
+    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(2)
+  })
 
   test('manually loaded messages can be used in translations', async () => {
     const { page } = await renderPage('/manual-load')
