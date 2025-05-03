@@ -63,22 +63,6 @@ declare module 'h3' {
        * @internal
        */
       trackKey: (key: string) => void
-      /**
-       * Cache lookup for locale and locale chain (locale + fallback locales)
-       * @internal
-       */
-      cacheMap?: {
-        /**
-         * Map of locale codes to boolean values indicating if the locale is cacheable
-         * @internal
-         */
-        locale: Map<string, boolean>
-        /**
-         * Map of locale codes to boolean values indicating if the locale + its fallback locales are cacheable
-         * @internal
-         */
-        localeChain: Map<string, boolean>
-      }
     }
   }
 }
