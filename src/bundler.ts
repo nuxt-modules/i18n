@@ -5,6 +5,7 @@ import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
+import { HeistPlugin } from './transform/heist'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -54,6 +55,7 @@ export function createLogger(label) {
   nuxt.hook('nitro:config', async cfg => {
     cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
     cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
+    cfg.rollupConfig!.plugins.push(HeistPlugin(pluginOptions, ctx).rollup())
     cfg.rollupConfig!.plugins.push(resourcePlugin.rollup())
   })
 

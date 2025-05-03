@@ -525,7 +525,7 @@ export function createNuxtI18nDev() {
    * @param locale only passed when a locale file has been changed, if `undefined` indicates a vue-i18n config change
    */
   async function resetI18nProperties(locale?: string) {
-    const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtApp)
+    const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
 
     const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {

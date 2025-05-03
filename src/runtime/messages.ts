@@ -1,7 +1,7 @@
 import { deepCopy, isArray, isFunction, isString, toTypeString } from '@intlify/shared'
+import { useNuxtApp } from '#app'
 
 import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
-import type { NuxtApp } from '#app'
 import type { VueI18nConfig } from '#internal-i18n-types'
 
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
@@ -13,18 +13,15 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
   load: () => Promise<MessageLoaderResult<T>>
 }
 
-// mock nuxt.runWithContext to have identical signature in nitro context (which does not need runWithContext)
-const nuxtMock: { runWithContext: NuxtApp['runWithContext'] } = {
-  runWithContext: async (fn: () => Promise<never>) => await fn()
-}
 const cacheMessages = new Map<string, { time: number; messages: LocaleMessages<DefineLocaleMessage> }>()
 
-export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[], nuxt = nuxtMock): Promise<I18nOptions> {
+export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[]): Promise<I18nOptions> {
+  const nuxtApp = useNuxtApp()
   const vueI18nOptions: I18nOptions = { messages: {} }
 
   for (const configFile of vueI18nConfigs) {
     const resolver = await configFile().then(x => x.default)
-    const resolved = isFunction(resolver) ? await nuxt.runWithContext(() => resolver()) : resolver
+    const resolved = isFunction(resolver) ? await nuxtApp.runWithContext(() => resolver()) : resolver
     deepCopy(resolved, vueI18nOptions)
   }
 
@@ -68,8 +65,9 @@ const isResolvedModule = (val: unknown): val is { default: unknown } =>
  * Get locale messages from loader
  */
 async function getLocaleMessages(locale: string, loader: LocaleLoader) {
+  const nuxtApp = useNuxtApp()
   try {
-    const getter = await loader.load().then(x => (isResolvedModule(x) ? x.default : x))
+    const getter = await nuxtApp.runWithContext(loader.load).then(x => (isResolvedModule(x) ? x.default : x))
     return isFunction(getter) ? await getter(locale) : getter
   } catch (e: unknown) {
     throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message)
@@ -80,9 +78,10 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
  * Get locale messages from loader and merge them
  */
 export async function getLocaleMessagesMerged(locale: string, loaders: LocaleLoader[] = []) {
+  const nuxtApp = useNuxtApp()
   const merged: LocaleMessages<DefineLocaleMessage> = {}
   for (const loader of loaders) {
-    deepCopy(await getLocaleMessages(locale, loader), merged)
+    deepCopy(await nuxtApp.runWithContext(async () => await getLocaleMessages(locale, loader)), merged)
   }
   return merged
 }
@@ -91,11 +90,12 @@ export async function getLocaleMessagesMerged(locale: string, loaders: LocaleLoa
  * Wraps the `getLocaleMessages` function to use cache
  */
 export async function getLocaleMessagesMergedCached(locale: string, loaders: LocaleLoader[] = []) {
+  const nuxtApp = useNuxtApp()
   const merged: LocaleMessages<DefineLocaleMessage> = {}
 
   for (const loader of loaders) {
     const cached = getCachedMessages(loader)
-    const messages = cached || (await getLocaleMessages(locale, loader))
+    const messages = cached || (await nuxtApp.runWithContext(async () => await getLocaleMessages(locale, loader)))
 
     if (!cached && loader.cache !== false) {
       cacheMessages.set(loader.key, { time: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, messages })

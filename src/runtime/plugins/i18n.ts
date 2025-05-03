@@ -59,7 +59,7 @@ export default defineNuxtPlugin({
 
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
-    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
+    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain
     }
@@ -85,6 +85,22 @@ export default defineNuxtPlugin({
       const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
       if (content) {
         preloadedMessages = parse(content) as LocaleMessages<DefineLocaleMessage> | undefined
+      }
+    }
+    if (preloadedMessages && Object.keys(preloadedMessages).length) {
+      if (!__I18N_FULL_STATIC__ && import.meta.client) {
+        try {
+          const msg = await Promise.all(
+            Object.keys(preloadedMessages).map(async locale => ({
+              [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale])
+            }))
+          )
+          for (const m of msg) {
+            deepCopy(m, preloadedMessages)
+          }
+        } catch (e) {
+          console.log('Error loading messages', e)
+        }
       }
     }
 
