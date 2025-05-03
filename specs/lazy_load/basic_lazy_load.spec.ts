@@ -143,22 +143,20 @@ describe('basic lazy loading', async () => {
   test('(#3359) runtime config accessible in locale function', async () => {
     const { page } = await renderPage('/')
 
-    // wait for request after navigation
-    // const localeRequestNl = page.waitForRequest(/runtime-config-translation/)
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    // await localeRequestNl
-    // await updated text
-    await page.waitForFunction(
-      () => document.querySelector('#runtime-config-key')?.textContent === 'runtime-config-value',
-      {},
-      { timeout: 5000 }
-    )
-    expect(await page.locator('#runtime-config-key').innerText()).toEqual('runtime-config-value')
+    // check initial text value before translation has been loaded
+    expect(await page.locator('#runtime-config-key').textContent()).toEqual('runtimeConfigKey')
+
+    await Promise.all([
+      waitForLocaleNetwork(page, 'en-GB', 'response'),
+      page.click('#lang-switcher-with-nuxt-link-en-GB')
+    ])
+
+    // check text value after translation has been loaded
+    expect(await page.locator('#runtime-config-key').textContent()).toEqual('runtime-config-value')
 
     // trigger server-side locale loading
     const html = await $fetch('/en-GB')
-    const dom = getDom(html)
-    const runtimeText = dom.querySelector('#runtime-config-key')!.textContent!
+    const runtimeText = getDom(html).querySelector('#runtime-config-key')!.textContent!
     expect(runtimeText).toEqual('runtime-config-value')
   })
 })
