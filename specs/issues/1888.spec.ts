@@ -6,12 +6,7 @@ import { waitForLocaleSwitch } from '../helper'
 
 describe('#1888', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/issues/1888`, import.meta.url)),
-    nuxtConfig: {
-      i18n: {
-        // debug: true
-      }
-    }
+    rootDir: fileURLToPath(new URL(`../fixtures/issues/1888`, import.meta.url))
   })
 
   test('should be worked', async () => {

@@ -7,10 +7,7 @@ import { Page } from 'playwright-core'
 describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-    browser: true,
-    nuxtConfig: {
-      _i18nTest: true
-    }
+    browser: true
   })
 
   test('dynamic locale files are not cached', async () => {

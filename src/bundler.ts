@@ -27,7 +27,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     write: true,
     filename: 'nuxt-i18n-logger.mjs',
     getContents() {
-      if (!ctx.options.debug && !nuxt.options._i18nTest) {
+      if (!ctx.options.debug) {
         return `export function createLogger() {}`
       }
 
@@ -121,7 +121,7 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
 
   const common = {
     __DEBUG__: String(!!options.debug),
-    __TEST__: String(!!options.debug || nuxt.options._i18nTest),
+    __TEST__: String(!!options.debug),
     __IS_SSG__: String(nuxt.options._generate),
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     __HAS_PAGES__: String(nuxt.options.pages.toString()),

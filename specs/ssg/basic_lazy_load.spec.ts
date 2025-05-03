@@ -10,7 +10,6 @@ describe('basic lazy loading', async () => {
     browser: true,
     prerender: true,
     nuxtConfig: {
-      _i18nTest: true,
       runtimeConfig: {
         public: {
           // disables fetching localized messages from server route
