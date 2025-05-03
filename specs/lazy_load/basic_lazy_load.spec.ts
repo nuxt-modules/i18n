@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, $fetch } from '../utils'
-import { renderPage, getDom, waitForLocaleRequest } from '../helper'
+import { renderPage, getDom, waitForLocaleNetwork, getLocalesMessageKeyCount } from '../helper'
 import { Page } from 'playwright-core'
 
 describe('basic lazy loading', async () => {
@@ -32,32 +32,40 @@ describe('basic lazy loading', async () => {
     expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
 
-  // test.skip('locales are fetched on demand', async () => {
-  //   const home = url('/')
-  //   const { page, requests } = await renderPage(home)
+  test('locales are fetched on demand', async () => {
+    const home = url('/')
+    const { page } = await renderPage(home)
 
-  //   const setFromRequests = () => [...new Set(requests)].filter(x => x.includes('lazy-locale-'))
+    // `en` present on initial load
+    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
+      {
+        "en": 7,
+      }
+    `)
 
-  //   // only default locales are fetched (en)
-  //   await page.goto(home)
-  //   expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
+    // navigate and wait for locale file request
+    await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#lang-switcher-with-nuxt-link-fr')])
 
-  //   // wait for request after navigation
-  //   const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
-  //   await page.click('#lang-switcher-with-nuxt-link-fr')
-  //   await localeRequestFr
+    // `fr` locale has been fetched
+    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
+      {
+        "en": 7,
+        "fr": 7,
+      }
+    `)
 
-  //   // `fr` locale has been fetched
-  //   expect(setFromRequests().filter(locale => locale.includes('fr'))).toHaveLength(1)
+    // navigate and wait for locale file request
+    await Promise.all([waitForLocaleNetwork(page, 'nl', 'response'), page.click('#lang-switcher-with-nuxt-link-nl')])
 
-  //   // wait for request after navigation
-  //   const localeRequestNl = page.waitForRequest(/lazy-locale-module-nl/)
-  //   await page.click('#lang-switcher-with-nuxt-link-nl')
-  //   await localeRequestNl
-
-  //   // `nl` (module) locale has been fetched
-  //   expect(setFromRequests().filter(locale => locale.includes('nl'))).toHaveLength(1)
-  // })
+    // `nl` (module) locale has been fetched
+    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
+      {
+        "en": 7,
+        "fr": 7,
+        "nl": 8,
+      }
+    `)
+  })
 
   test('can access to no prefix locale (en): /', async () => {
     const { page } = await renderPage('/')
@@ -117,7 +125,7 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage('/')
 
     async function clickAndAssertNoCache(page: Page, selector: string, locale: string) {
-      const request = waitForLocaleRequest(page, locale)
+      const request = waitForLocaleNetwork(page, locale, 'request')
       await page.click(selector)
       expect((await request).headers()['cache-control']).toEqual('no-cache')
     }

@@ -254,6 +254,37 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
   return restoreFn
 }
 
-export function waitForLocaleRequest(page: Page, locale: string) {
-  return page.waitForRequest(new RegExp(`/_i18n/${locale}/messages.json`))
+/**
+ * Wait for the locale route to be requested or received.
+ */
+export function waitForLocaleNetwork(page: Page, locale: string, type: 'request' | 'response') {
+  if (type === 'request') {
+    return page.waitForRequest(new RegExp(`/_i18n/${locale}/messages.json`))
+  }
+  return page.waitForResponse(new RegExp(`/_i18n/${locale}/messages.json`))
+}
+
+/**
+ * Wait for the locale file (ssg) to be requested or received.
+ */
+export function waitForLocaleFileNetwork(page: Page, filename: string, type: 'request' | 'response') {
+  if (type === 'request') {
+    return page.waitForRequest(new RegExp(`/_nuxt/${filename}`))
+  }
+  return page.waitForResponse(new RegExp(`/_nuxt/${filename}`))
+}
+
+/**
+ * Get the number of messages for each locale, excluding empty locales.
+ */
+export function getLocalesMessageKeyCount(page: Page): Promise<Record<string, number>> {
+  return page.evaluate(() => {
+    return Object.entries(window.useNuxtApp().$i18n?.messages?.value ?? {}).reduce((acc, [key, value]) => {
+      const keyCount = Object.keys(value).length
+      if (keyCount) {
+        acc[key] = keyCount
+      }
+      return acc
+    }, {})
+  })
 }
