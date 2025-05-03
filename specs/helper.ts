@@ -73,10 +73,6 @@ export async function assertLocaleHeadWithDom(dom: Document, headSelector: strin
   }
 }
 
-export async function waitForMs(ms = 1000) {
-  await new Promise(resolve => setTimeout(resolve, ms))
-}
-
 export async function renderPage(path = '/', options?: BrowserContextOptions) {
   const ctx = useTestContext()
   if (!ctx.options.browser) {

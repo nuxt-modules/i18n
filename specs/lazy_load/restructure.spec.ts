@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { waitForMs, renderPage, localeLoaderHelpers, waitForLocaleRequest } from '../helper'
+import { renderPage, waitForLocaleRequest } from '../helper'
 import { Page } from 'playwright-core'
 
 describe('basic lazy loading (restructure)', async () => {
