@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { getLocalesMessageKeyCount, renderPage, waitForLocaleFileNetwork } from '../helper'
+import { getLocalesMessageKeyCount, renderPage, waitForLocaleFileNetwork, waitForLocaleSwitch } from '../helper'
 import { Page } from 'playwright-core'
 
 describe('basic lazy loading', async () => {
@@ -136,13 +136,13 @@ describe('basic lazy loading', async () => {
   test('files with cache disabled bypass caching', async () => {
     const { page, consoleLogs } = await renderPage('/')
 
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await Promise.all([waitForLocaleSwitch(page), page.click('#lang-switcher-with-nuxt-link-en-GB')])
     expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(1)
 
-    await page.click('#lang-switcher-with-nuxt-link-fr')
+    await Promise.all([waitForLocaleSwitch(page), page.click('#lang-switcher-with-nuxt-link-fr')])
     expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(1)
 
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
+    await Promise.all([waitForLocaleSwitch(page), page.click('#lang-switcher-with-nuxt-link-en-GB')])
     expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(2)
   })
 
