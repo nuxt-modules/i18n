@@ -1,11 +1,19 @@
 // @ts-ignore
-import createJITI from 'jiti'
 import { JSDOM } from 'jsdom'
 import { getBrowser, startServer, TestContext, url, useTestContext } from './utils'
-import { resolveAlias } from '@nuxt/kit'
 import { onTestFinished } from 'vitest'
 
-import { errors, Response, type BrowserContextOptions, type Page } from 'playwright-core'
+import type { BrowserContextOptions, Page } from 'playwright-core'
+
+export function waitForLocaleSwitch(page: Page) {
+  return page.evaluate(
+    async () =>
+      await new Promise<{ oldLocale: string; newLocale: string }>(resolve =>
+        // @ts-expect-error browser only
+        useNuxtApp().hooks.hookOnce('i18n:localeSwitched', resolve)
+      )
+  )
+}
 
 export async function waitForTransition(page: Page, selector: string = '#nuxt-page.my-leave-active') {
   await page.locator(selector).waitFor()
@@ -61,10 +69,6 @@ export async function assertLocaleHeadWithDom(dom: Document, headSelector: strin
       }
     }
   }
-}
-
-export async function waitForMs(ms = 1000) {
-  await new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export async function renderPage(path = '/', options?: BrowserContextOptions) {
@@ -250,15 +254,37 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
   return restoreFn
 }
 
-export async function localeLoaderHelpers() {
-  const ctx = useTestContext()
-  const jiti = createJITI(ctx.nuxt!.options.rootDir, { alias: ctx.nuxt!.options.alias })
-  const opts = await jiti.import(resolveAlias('#build/i18n.options.mjs'), {})
-
-  function findKey(code: string, ext: string, cache: boolean = false): string {
-    // @ts-expect-error generated
-    return opts.localeLoaders[code].find(x => x.cache === cache && x.key.includes(ext + '_'))!.key
+/**
+ * Wait for the locale route to be requested or received.
+ */
+export function waitForLocaleNetwork(page: Page, locale: string, type: 'request' | 'response') {
+  if (type === 'request') {
+    return page.waitForRequest(new RegExp(`/_i18n/${locale}/messages.json`))
   }
+  return page.waitForResponse(new RegExp(`/_i18n/${locale}/messages.json`))
+}
 
-  return { findKey }
+/**
+ * Wait for the locale file (ssg) to be requested or received.
+ */
+export function waitForLocaleFileNetwork(page: Page, filename: string, type: 'request' | 'response') {
+  if (type === 'request') {
+    return page.waitForRequest(new RegExp(`/_nuxt/${filename}`))
+  }
+  return page.waitForResponse(new RegExp(`/_nuxt/${filename}`))
+}
+
+/**
+ * Get the number of messages for each locale, excluding empty locales.
+ */
+export function getLocalesMessageKeyCount(page: Page): Promise<Record<string, number>> {
+  return page.evaluate(() => {
+    return Object.entries(window.useNuxtApp().$i18n?.messages?.value ?? {}).reduce((acc, [key, value]) => {
+      const keyCount = Object.keys(value).length
+      if (keyCount) {
+        acc[key] = keyCount
+      }
+      return acc
+    }, {})
+  })
 }

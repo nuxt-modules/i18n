@@ -1,9 +1,9 @@
 import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
-import { defineNuxtPlugin, useNuxtApp } from '#imports'
-import { localeCodes, vueI18nConfigs, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
-import { loadVueI18nOptions, loadLocale } from '../messages'
+import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
+import { localeCodes, vueI18nConfigs, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
+import { getLocaleMessagesMergedCached, loadVueI18nOptions } from '../messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -27,6 +27,9 @@ import type { Locale, I18nOptions, Composer } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 
+const useLocaleConfigs = () =>
+  useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
+
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: __PARALLEL_PLUGIN__,
@@ -35,7 +38,7 @@ export default defineNuxtPlugin({
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
-
+    const serverLocaleConfigs = useLocaleConfigs()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
     nuxt._i18nGetDomainFromLocale = createDomainFromLocaleGetter(nuxt)
 
@@ -56,7 +59,7 @@ export default defineNuxtPlugin({
 
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
-    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, useNuxtApp())
+    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain
     }
@@ -67,19 +70,36 @@ export default defineNuxtPlugin({
     }
 
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
+    const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
-      if (nuxt.ssrContext!.event.context.i18nCache) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        preloadedMessages = nuxt.ssrContext!.event.context.i18nCache
+      const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
+      if (serverI18n?.localeConfigs) {
+        serverLocaleConfigs.value = serverI18n.localeConfigs
+      }
+      if (serverI18n?.messages && Object.keys(serverI18n.messages).length) {
+        preloadedMessages = serverI18n.messages
       }
     }
 
     if (import.meta.client) {
       const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
       if (content) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        preloadedMessages = parse(content)
+        preloadedMessages = parse(content) as LocaleMessages<DefineLocaleMessage> | undefined
+      }
+      if (preloadedMessages && Object.keys(preloadedMessages).length && dynamicResourcesSSG) {
+        try {
+          const msg = await Promise.all(
+            Object.keys(preloadedMessages).map(async locale => ({
+              [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale])
+            }))
+          )
+          for (const m of msg) {
+            deepCopy(m, preloadedMessages)
+          }
+        } catch (e) {
+          console.log('Error loading messages', e)
+        }
       }
     }
 
@@ -92,6 +112,34 @@ export default defineNuxtPlugin({
       }
       nuxt._i18nPreloaded = true
     }
+
+    nuxt._i18nLoadAndSetMessages = async (locale: string) => {
+      if (dynamicResourcesSSG || import.meta.dev) {
+        const locales = serverLocaleConfigs.value?.[locale]?.fallbacks ?? []
+        if (!locales.includes(locale)) {
+          locales.push(locale)
+        }
+        for (const entry of locales) {
+          nuxt.$i18n.mergeLocaleMessage(
+            entry,
+            await nuxt.runWithContext(() => getLocaleMessagesMergedCached(entry, localeLoaders[entry]))
+          )
+        }
+        return
+      }
+
+      const headers = new Headers()
+      if (!serverLocaleConfigs.value?.[locale]?.cacheable) {
+        headers.set('Cache-Control', 'no-cache')
+      }
+
+      const messages = await $fetch(`/_i18n/${locale}/messages.json`, { headers })
+      for (const locale of Object.keys(messages)) {
+        nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])
+      }
+    }
+
+    prerenderRoutes(localeCodes.map(locale => `/_i18n/${locale}/messages.json`))
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
@@ -146,7 +194,6 @@ export default defineNuxtPlugin({
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
             // first access will not change without route middleware
             i18n.__firstAccess = false
-            await composer.loadLocaleMessages(locale)
             i18n.__setLocale(locale)
             return
           }
@@ -160,8 +207,8 @@ export default defineNuxtPlugin({
 
           await nuxt.runWithContext(() => navigate({ nuxt, redirectPath, locale, route }, true))
         }
-        composer.loadLocaleMessages = async (locale: string) =>
-          await loadLocale(locale, localeLoaders, composer.mergeLocaleMessage.bind(composer), nuxt)
+        composer.loadLocaleMessages = async (locale: string) => await nuxt._i18nLoadAndSetMessages(locale)
+
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
         composer.getBrowserLocale = () => getBrowserLocale()

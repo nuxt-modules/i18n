@@ -5,6 +5,7 @@ import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
+import { HeistPlugin } from './transform/heist'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -15,6 +16,7 @@ import {
   DEFAULT_COOKIE_KEY,
   DYNAMIC_PARAMS_KEY,
   NUXT_I18N_MODULE_ID,
+  FULL_STATIC_LIFETIME,
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER
 } from './constants'
 import { version } from '../package.json'
@@ -26,7 +28,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     write: true,
     filename: 'nuxt-i18n-logger.mjs',
     getContents() {
-      if (!ctx.options.debug && !nuxt.options._i18nTest) {
+      if (!ctx.options.debug) {
         return `export function createLogger() {}`
       }
 
@@ -53,6 +55,7 @@ export function createLogger(label) {
   nuxt.hook('nitro:config', async cfg => {
     cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
     cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
+    cfg.rollupConfig!.plugins.push(HeistPlugin(pluginOptions, ctx).rollup())
     cfg.rollupConfig!.plugins.push(resourcePlugin.rollup())
   })
 
@@ -115,12 +118,12 @@ export function createLogger(label) {
 }
 
 export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
-  const cacheLifetime = (options.experimental.cacheLifetime ?? fullStatic) ? 0 : -1
+  const cacheLifetime = options.experimental.cacheLifetime ?? (fullStatic ? FULL_STATIC_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   const common = {
     __DEBUG__: String(!!options.debug),
-    __TEST__: String(!!options.debug || nuxt.options._i18nTest),
+    __TEST__: String(!!options.debug),
     __IS_SSG__: String(nuxt.options._generate),
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     __HAS_PAGES__: String(nuxt.options.pages.toString()),
@@ -139,7 +142,8 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __TRAILING_SLASH__: String(options.trailingSlash),
     __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
     __I18N_CACHE__: String(isCacheEnabled),
-    __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime)
+    __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
+    __I18N_FULL_STATIC__: String(fullStatic)
   }
 
   if (nuxt.options.ssr || !server) {

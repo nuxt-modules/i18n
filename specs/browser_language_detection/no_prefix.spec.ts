@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup } from '../utils'
-import { gotoPath, renderPage, setServerRuntimeConfig } from '../helper'
+import { gotoPath, renderPage, setServerRuntimeConfig, waitForLocaleSwitch } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -35,14 +35,15 @@ test('detection with cookie', async () => {
       }
     }
   })
-  const { page } = await renderPage('/', { locale: 'en' })
+  const { page, requests, consoleLogs } = await renderPage('/', { locale: 'en' })
+
   const ctx = await page.context()
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' }
   ])
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }
   ])
@@ -58,7 +59,7 @@ test('detection with cookie', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-en').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-en').click()])
   expect(await ctx.cookies()).toMatchObject([{ name: 'my_custom_cookie_name', value: 'en' }])
 })
 
@@ -78,8 +79,7 @@ test('detection with cookie - overwrite unknown locale', async () => {
   })
   const { page } = await renderPage('/', { locale: 'en' })
   const ctx = page.context()
-  await page.locator('#set-locale-link-fr').click()
-
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
   const localeCookie = (await ctx.cookies()).find(x => x.name === 'my_custom_cookie_name')
   expect([localeCookie]).toMatchObject([{ name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }])
 
@@ -114,7 +114,7 @@ test('detection with browser', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
-  await page.locator('#set-locale-link-en').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-en').click()])
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // navigate to blog/article
@@ -130,7 +130,7 @@ test('detection with browser', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
-  await page.locator('#set-locale-link-en').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-en').click()])
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 })
 
@@ -148,7 +148,7 @@ test('disable', async () => {
   const ctx = await page.context()
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
   expect(await ctx.cookies()).toMatchObject([])
 
   // navigate to about
@@ -158,7 +158,7 @@ test('disable', async () => {
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
 
   // navigate with home link
   await page.locator('#link-home').click()

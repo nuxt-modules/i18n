@@ -1,7 +1,8 @@
 import { deepCopy, isArray, isFunction, isObject } from '@intlify/shared'
 import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n/options.mjs'
 import { dtsFile } from '#internal/i18n-type-generation-options'
-import { loadLocale, loadVueI18nOptions } from '../messages'
+import { loadVueI18nOptions } from '../messages'
+import { getMergedMessages } from './utils/messages'
 import { writeFile } from 'fs/promises'
 import { useRuntimeConfig } from '#imports'
 
@@ -31,10 +32,11 @@ export default async () => {
     deepCopy(vueI18nConfig.datetimeFormats?.[locale] || {}, merged.datetimeFormats)
   }
 
-  const loaderPromises: Promise<void>[] = []
+  const loaderPromises: Promise<unknown>[] = []
   for (const locale in localeLoaders) {
     if (!targetLocales.includes(locale)) continue
-    loaderPromises.push(loadLocale(locale, localeLoaders, (_, message) => deepCopy(message, merged.messages)))
+    const loader = async () => deepCopy(await getMergedMessages(locale, []), merged.messages)
+    loaderPromises.push(loader())
   }
 
   await Promise.all(loaderPromises)

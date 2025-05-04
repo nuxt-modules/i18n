@@ -1,11 +1,11 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { assign, isFunction, isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useState } from '#imports'
-import { localeCodes, localeLoaders, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
+import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage } from './internal'
-import { loadAndSetLocaleMessages, loadLocale, loadVueI18nOptions, makeFallbackLocaleCodes } from './messages'
+import { loadVueI18nOptions } from './messages'
 import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
   localePath,
@@ -200,18 +200,14 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   }
 
   // load locale messages required by `newLocale`
-  // if (lazy) {
-  if (!nuxtApp._i18nPreloaded || !nuxtApp._vueI18n.__firstAccess) {
-    const i18nFallbackLocales = unref(nuxtApp.$i18n.fallbackLocale)
-
-    const setter = nuxtApp.$i18n.mergeLocaleMessage.bind(nuxtApp.$i18n)
-    if (i18nFallbackLocales) {
-      const fallbackLocales = makeFallbackLocaleCodes(i18nFallbackLocales, [newLocale])
-      await Promise.all(fallbackLocales.map(locale => loadLocale(locale, localeLoaders, setter, nuxtApp)))
-    }
-    await loadLocale(newLocale, localeLoaders, setter, nuxtApp)
+  if (
+    !nuxtApp._i18nPreloaded ||
+    !nuxtApp._vueI18n.__firstAccess ||
+    !__HAS_PAGES__ ||
+    __I18N_STRATEGY__ === 'no_prefix'
+  ) {
+    await nuxtApp._i18nLoadAndSetMessages(newLocale)
   }
-  // }
 
   if (skipSettingLocaleOnNavigate) {
     return false
@@ -529,15 +525,12 @@ export function createNuxtI18nDev() {
    * @param locale only passed when a locale file has been changed, if `undefined` indicates a vue-i18n config change
    */
   async function resetI18nProperties(locale?: string) {
-    const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs, nuxtApp)
+    const opts: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
 
     const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {
       if (locale && k !== locale) continue
-      const current = opts.messages![k] || {}
-      // override config messages with locale files in correct order
-      await loadAndSetLocaleMessages(k, localeLoaders, { [k]: current }, nuxtApp)
-      composer.setLocaleMessage(k, current)
+      await nuxtApp._i18nLoadAndSetMessages(k)
     }
 
     // skip vue-i18n config properties if locale is passed (locale file HMR)

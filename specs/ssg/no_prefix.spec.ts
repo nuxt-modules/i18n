@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { renderPage } from '../helper'
+import { renderPage, waitForLocaleSwitch } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -30,7 +30,7 @@ test('does not reset cookie no refresh', async () => {
   ])
 
   // click `fr` lang switch link
-  await page.locator('#set-locale-link-fr').click()
+  await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
   expect(await ctx.cookies()).toMatchObject([
     { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }
   ])

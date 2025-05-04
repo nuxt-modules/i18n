@@ -1,15 +1,13 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { waitForMs, renderPage, localeLoaderHelpers } from '../helper'
+import { getLocalesMessageKeyCount, renderPage, waitForLocaleNetwork } from '../helper'
+import { Page } from 'playwright-core'
 
 describe('basic lazy loading (restructure)', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/restructure`, import.meta.url)),
-    browser: true,
-    nuxtConfig: {
-      _i18nTest: true
-    }
+    browser: true
   })
 
   test('dynamic locale files are not cached', async () => {
@@ -23,7 +21,7 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await page.locator('#dynamic-time').innerText()).toEqual('Not dynamic')
 
     // dynamicTime depends on passage of some time
-    await waitForMs(1)
+    await page.waitForTimeout(1)
 
     // dynamicTime does not match captured dynamicTime
     await page.click('#lang-switcher-with-nuxt-link-nl')
@@ -33,29 +31,37 @@ describe('basic lazy loading (restructure)', async () => {
 
   test('locales are fetched on demand', async () => {
     const home = url('/')
-    const { page, requests } = await renderPage(home)
+    const { page } = await renderPage(home)
 
-    const setFromRequests = () => [...new Set(requests)].filter(x => x.includes('lazy-locale-'))
+    // `en` present on initial load
+    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
+      {
+        "en": 8,
+      }
+    `)
 
-    // only default locales are fetched (en)
-    await page.goto(home)
-    expect(setFromRequests().filter(locale => locale.includes('fr') || locale.includes('nl'))).toHaveLength(0)
-
-    // wait for request after navigation
-    const localeRequestFr = page.waitForRequest(/lazy-locale-fr/)
-    await page.click('#lang-switcher-with-nuxt-link-fr')
-    await localeRequestFr
+    // navigate and wait for locale file request
+    await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#lang-switcher-with-nuxt-link-fr')])
 
     // `fr` locale has been fetched
-    expect(setFromRequests().filter(locale => locale.includes('fr'))).toHaveLength(1)
+    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
+      {
+        "en": 8,
+        "fr": 5,
+      }
+    `)
 
-    // wait for request after navigation
-    const localeRequestNl = page.waitForRequest(/lazy-locale-module-nl/)
-    await page.click('#lang-switcher-with-nuxt-link-nl')
-    await localeRequestNl
+    // navigate and wait for locale file request
+    await Promise.all([waitForLocaleNetwork(page, 'nl', 'response'), page.click('#lang-switcher-with-nuxt-link-nl')])
 
     // `nl` (module) locale has been fetched
-    expect(setFromRequests().filter(locale => locale.includes('nl'))).toHaveLength(1)
+    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
+      {
+        "en": 8,
+        "fr": 5,
+        "nl": 3,
+      }
+    `)
   })
 
   test('can access to no prefix locale (en): /', async () => {
@@ -113,25 +119,18 @@ describe('basic lazy loading (restructure)', async () => {
   })
 
   test('files with cache disabled bypass caching', async () => {
-    const { page, consoleLogs: logs } = await renderPage('/')
+    const { page } = await renderPage('/')
 
-    const { findKey } = await localeLoaderHelpers()
+    async function clickAndAssertNoCache(page: Page, selector: string, locale: string) {
+      const request = waitForLocaleNetwork(page, locale, 'request')
+      await page.click(selector)
+      expect((await request).headers()['cache-control']).toEqual('no-cache')
+    }
 
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(1)
-
-    await page.click('#lang-switcher-with-nuxt-link-fr')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(1)
-
-    await page.click('#lang-switcher-with-nuxt-link-en-GB')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('en-GB', 'js')} bypassing cache!`))).toHaveLength(2)
-
-    await page.click('#lang-switcher-with-nuxt-link-fr')
-    await waitForMs(100) // FIXME: may cause flaky test
-    expect(logs.filter(log => log.text.includes(`${findKey('fr', 'json5')} bypassing cache!`))).toHaveLength(2)
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
+    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
   })
 
   test('manually loaded messages can be used in translations', async () => {

@@ -2,6 +2,7 @@ import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { URL } from 'node:url'
 import { setup, url, createPage } from '../utils'
+import { waitForLocaleSwitch } from '../helper'
 
 describe('#1888', async () => {
   await setup({
@@ -20,7 +21,7 @@ describe('#1888', async () => {
     expect(await page.locator('#flag-mounted').getAttribute('alt')).toContain('pl')
 
     // change to `en` locale
-    await page.locator('#en').click()
+    await Promise.all([waitForLocaleSwitch(page), page.locator('#en').click()])
 
     expect(await page.locator('#html-msg').innerText()).toEqual('Translation example')
     expect(await page.locator('#html-msg-mounted').innerText()).toEqual('Translation example')
@@ -29,7 +30,7 @@ describe('#1888', async () => {
     expect(await page.locator('#flag-mounted').getAttribute('alt')).toContain('us')
 
     // change to `fr` locale
-    await page.locator('#fr').click()
+    await Promise.all([waitForLocaleSwitch(page), page.locator('#fr').click()])
 
     expect(await page.locator('#html-msg').innerText()).toEqual('Exemple de traduction')
     expect(await page.locator('#html-msg-mounted').innerText()).toEqual('Exemple de traduction')

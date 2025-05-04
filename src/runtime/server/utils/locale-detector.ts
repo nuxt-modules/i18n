@@ -1,18 +1,27 @@
+import { fetchMessages } from '../context'
 import { deepCopy } from '@intlify/shared'
-import { localeLoaders } from '#internal/i18n/options.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { tryCookieLocale, tryHeaderLocale, tryQueryLocale } from '@intlify/h3'
-import { loadAndSetLocaleMessages, makeFallbackLocaleCodes } from '../../messages'
+import { findBrowserLocale } from '#i18n-kit/routing'
+import { normalizedLocales } from '#internal/i18n/options.mjs'
+import { parseAcceptLanguage } from '../../browser'
 
 import type { H3Event } from 'h3'
-import type { DefineLocaleMessage } from '@intlify/h3'
 import type { CoreOptions, FallbackLocale, Locale } from '@intlify/core'
 
+/**
+ * Detects the locale from the request event.
+ */
 export function createDefaultLocaleDetector(opts: {
   defaultLocale: string
   tryRouteLocale: (event: H3Event) => string | null
 }) {
-  return (event: H3Event, _config: CoreOptions<string, DefineLocaleMessage>) => {
+  const normalized = normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code }))
+
+  /**
+   * Pass `lang: ''` to `try...Locale` to prevent default value from being returned early.
+   */
+  return (event: H3Event) => {
     // try to get locale from route
     const routeLocale = opts.tryRouteLocale(event)
     if (routeLocale) {
@@ -21,24 +30,26 @@ export function createDefaultLocaleDetector(opts: {
     }
 
     // try to get locale from query
-    const query = tryQueryLocale(event, { lang: '' }) // disable locale default value with `lang` option
+    const query = tryQueryLocale(event, { lang: '' })
     if (query) {
       __DEBUG__ && console.log('locale detected from query', query.toString())
       return query.toString() as string
     }
 
     // try to get locale from cookie
-    const cookie = tryCookieLocale(event, { lang: '', name: 'i18n_redirected' }) // disable locale default value with `lang` option
+    const cookie = tryCookieLocale(event, { lang: '', name: 'i18n_redirected' })
     if (cookie) {
       __DEBUG__ && console.log('locale detected from cookie', cookie.toString())
       return cookie.toString() as string
     }
 
     // try to get locale from header (`accept-header`)
-    const header = tryHeaderLocale(event, { lang: '' }) // disable locale default value with `lang` option
-    if (header) {
-      __DEBUG__ && console.log('locale detected from header', header.toString())
-      return header.toString() as string
+    const header = tryHeaderLocale(event, { lang: '' })
+    const parsed = header && parseAcceptLanguage(header.toString())
+    const resolvedHeaderLocale = parsed && findBrowserLocale(normalized, parsed)
+    if (resolvedHeaderLocale) {
+      __DEBUG__ && console.log('locale detected from header', resolvedHeaderLocale)
+      return resolvedHeaderLocale
     }
 
     // If the locale cannot be resolved up to this point, it is resolved with the value `locale` of the locale config passed to the function
@@ -48,27 +59,14 @@ export function createDefaultLocaleDetector(opts: {
 }
 
 export function createUserLocaleDetector(defaultLocale: string, fallbackLocale: FallbackLocale) {
-  return async (event: H3Event, i18nContext: CoreOptions<string, DefineLocaleMessage>): Promise<Locale> => {
+  return async (event: H3Event, i18nCtx: CoreOptions): Promise<Locale> => {
     const locale = localeDetector!(event, { defaultLocale, fallbackLocale })
 
-    // load locale messages in case earlier handling has not detected the same locale
-    // TODO: this is here for legacy reasons, it would be nice to remove message loading from the detector
-    const hasLocale = event.context.i18nLocales.includes(locale)
-    if (hasLocale) {
-      for (const locale of event.context.i18nLocales) {
-        i18nContext.messages![locale] ??= {}
-        deepCopy(event.context.i18nCache[locale], i18nContext.messages![locale])
-      }
-    } else {
-      if (__LAZY_LOCALES__) {
-        if (fallbackLocale) {
-          const fallbackLocales = makeFallbackLocaleCodes(fallbackLocale, [locale])
-          await Promise.all(
-            fallbackLocales.map(locale => loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages!))
-          )
-        }
-        await loadAndSetLocaleMessages(locale, localeLoaders, i18nContext.messages!)
-      }
+    // Merge messages into i18n context which contains unserializable messages from vue-i18n configurations
+    const messages = await fetchMessages(locale)
+    for (const locale of Object.keys(messages)) {
+      i18nCtx.messages![locale] ??= {}
+      deepCopy(messages[locale], i18nCtx.messages![locale])
     }
 
     return locale
