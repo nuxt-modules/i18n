@@ -1,4 +1,4 @@
-import { computed, isRef, ref, unref, watch } from 'vue'
+import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
@@ -23,10 +23,11 @@ import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDoma
 import { parse } from 'devalue'
 import { deepCopy } from '@intlify/shared'
 
-import type { Locale, I18nOptions, Composer } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 
+const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
 const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
 
@@ -70,7 +71,6 @@ export default defineNuxtPlugin({
     }
 
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
-    const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
     // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
       const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
@@ -144,47 +144,6 @@ export default defineNuxtPlugin({
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
 
-    if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
-      if (import.meta.server) {
-        const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
-        if (serverI18n) {
-          const target = i18n.global
-
-          const originalT = target.t.bind(target)
-          // @ts-expect-error type mismatch
-          target.t = (key, _, opts) => {
-            // @ts-expect-error type mismatch
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            serverI18n.trackKey(key, opts?.locale ?? unref(target.locale))
-            return originalT(key, _ as Parameters<typeof originalT>[1], opts as Parameters<typeof originalT>[2])
-          }
-
-          const originalTe = target.te.bind(target)
-          target.te = (key, locale) => {
-            serverI18n.trackKey(key, locale || unref(target.locale))
-            return originalTe(key, locale)
-          }
-
-          const originalTm = target.tm.bind(target)
-          target.tm = key => {
-            serverI18n.trackKey(key, unref(target.locale))
-            return originalTm(key)
-          }
-        }
-      }
-
-      if (import.meta.client) {
-        /**
-         * Ensure messages are loaded before switching page for the first time
-         */
-        const unsub = nuxt.$router.beforeResolve(async (to, from) => {
-          if (to.path === from.path) return
-          await nuxt._i18nLoadAndSetMessages(unref(getI18nTarget(i18n).locale))
-          unsub()
-        })
-      }
-    }
-
     nuxt._vueI18n = i18n
     i18n.__localeFromRoute = createLocaleFromRouteGetter({
       separator: __ROUTE_NAME_SEPARATOR__,
@@ -200,7 +159,52 @@ export default defineNuxtPlugin({
         i.locale = locale
       }
     }
+
     nuxt._nuxtI18n = createComposableContext({ i18n, getDomainFromLocale: nuxt._i18nGetDomainFromLocale, runtimeI18n })
+
+    if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
+      const ctx = nuxt._nuxtI18n
+      if (import.meta.server) {
+        const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
+        if (serverI18n) {
+          const target = i18n.global
+
+          const originalT = target.t.bind(target)
+          type TParams = Parameters<typeof originalT>
+          target.t = (
+            key,
+            listOrNamed?: string | number | unknown[] | Record<string, unknown>,
+            opts?: TranslateOptions<string> | number | string
+          ) => {
+            serverI18n.trackKey(key, ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string)
+            return originalT(key, listOrNamed as TParams[1], opts as TParams[2])
+          }
+
+          const originalTe = target.te.bind(target)
+          target.te = (key, locale) => {
+            serverI18n.trackKey(key, locale || ctx.getLocale())
+            return originalTe(key, locale)
+          }
+
+          const originalTm = target.tm.bind(target)
+          target.tm = key => {
+            serverI18n.trackKey(key, ctx.getLocale())
+            return originalTm(key)
+          }
+        }
+      }
+
+      if (import.meta.client) {
+        /**
+         * Ensure messages are loaded before switching page for the first time
+         */
+        const unsub = nuxt.$router.beforeResolve(async (to, from) => {
+          if (to.path === from.path) return
+          await nuxt._i18nLoadAndSetMessages(ctx.getLocale())
+          unsub()
+        })
+      }
+    }
 
     // HMR helper functionality
     if (import.meta.dev) {
