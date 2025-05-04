@@ -9,10 +9,18 @@ import { parseAcceptLanguage } from '../../browser'
 import type { H3Event } from 'h3'
 import type { CoreOptions, FallbackLocale, Locale } from '@intlify/core'
 
+/**
+ * Detects the locale from the request event.
+ */
 export function createDefaultLocaleDetector(opts: {
   defaultLocale: string
   tryRouteLocale: (event: H3Event) => string | null
 }) {
+  const normalized = normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code }))
+
+  /**
+   * Pass `lang: ''` to `try...Locale` to prevent default value from being returned early.
+   */
   return (event: H3Event) => {
     // try to get locale from route
     const routeLocale = opts.tryRouteLocale(event)
@@ -22,27 +30,24 @@ export function createDefaultLocaleDetector(opts: {
     }
 
     // try to get locale from query
-    const query = tryQueryLocale(event, { lang: '' }) // disable locale default value with `lang` option
+    const query = tryQueryLocale(event, { lang: '' })
     if (query) {
       __DEBUG__ && console.log('locale detected from query', query.toString())
       return query.toString() as string
     }
 
     // try to get locale from cookie
-    const cookie = tryCookieLocale(event, { lang: '', name: 'i18n_redirected' }) // disable locale default value with `lang` option
+    const cookie = tryCookieLocale(event, { lang: '', name: 'i18n_redirected' })
     if (cookie) {
       __DEBUG__ && console.log('locale detected from cookie', cookie.toString())
       return cookie.toString() as string
     }
 
     // try to get locale from header (`accept-header`)
-    const header = tryHeaderLocale(event, { lang: opts.defaultLocale }) // disable locale default value with `lang` option
+    const header = tryHeaderLocale(event, { lang: '' })
     const parsed = header && parseAcceptLanguage(header.toString())
-    if (header && parsed) {
-      const resolvedHeaderLocale = findBrowserLocale(
-        normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code })),
-        parsed
-      )
+    const resolvedHeaderLocale = parsed && findBrowserLocale(normalized, parsed)
+    if (resolvedHeaderLocale) {
       __DEBUG__ && console.log('locale detected from header', resolvedHeaderLocale)
       return resolvedHeaderLocale
     }
