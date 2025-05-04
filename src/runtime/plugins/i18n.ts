@@ -144,31 +144,44 @@ export default defineNuxtPlugin({
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
 
-    if (__I18N_STRIP_UNUSED__ && import.meta.server) {
-      const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
-      if (serverI18n) {
-        const target = i18n.global
+    if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
+      if (import.meta.server) {
+        const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
+        if (serverI18n) {
+          const target = i18n.global
 
-        const originalT = target.t.bind(target)
-        // @ts-expect-error type mismatch
-        target.t = (key, _, opts) => {
+          const originalT = target.t.bind(target)
           // @ts-expect-error type mismatch
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          serverI18n.trackKey(key, opts?.locale ?? unref(target.locale))
-          return originalT(key, _ as Parameters<typeof originalT>[1], opts as Parameters<typeof originalT>[2])
-        }
+          target.t = (key, _, opts) => {
+            // @ts-expect-error type mismatch
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            serverI18n.trackKey(key, opts?.locale ?? unref(target.locale))
+            return originalT(key, _ as Parameters<typeof originalT>[1], opts as Parameters<typeof originalT>[2])
+          }
 
-        const originalTe = target.te.bind(target)
-        target.te = (key, locale) => {
-          serverI18n.trackKey(key, locale || unref(target.locale))
-          return originalTe(key, locale)
-        }
+          const originalTe = target.te.bind(target)
+          target.te = (key, locale) => {
+            serverI18n.trackKey(key, locale || unref(target.locale))
+            return originalTe(key, locale)
+          }
 
-        const originalTm = target.tm.bind(target)
-        target.tm = key => {
-          serverI18n.trackKey(key, unref(target.locale))
-          return originalTm(key)
+          const originalTm = target.tm.bind(target)
+          target.tm = key => {
+            serverI18n.trackKey(key, unref(target.locale))
+            return originalTm(key)
+          }
         }
+      }
+
+      if (import.meta.client) {
+        /**
+         * Ensure messages are loaded before switching page for the first time
+         */
+        const unsub = nuxt.$router.beforeResolve(async (to, from) => {
+          if (to.path === from.path) return
+          await nuxt._i18nLoadAndSetMessages(unref(getI18nTarget(i18n).locale))
+          unsub()
+        })
       }
     }
 
