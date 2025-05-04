@@ -13,14 +13,16 @@ export function tryUseI18nContext(event: H3Event) {
   return event.context.nuxtI18n
 }
 
+const headers = new Headers({ 'x-nuxt-i18n': 'internal' })
+if (import.meta.dev) {
+  headers.set('Cache-Control', 'no-cache')
+}
 /**
  * Fetches the messages for the specified locale.
  * @internal
  */
 export const fetchMessages = async (locale: string) =>
-  await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${locale}/messages.json`, {
-    headers: { 'x-nuxt-i18n': 'internal' }
-  })
+  await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${locale}/messages.json`, { headers })
 
 type ContextParams = Pick<NonNullable<H3EventContext['nuxtI18n']>, 'getFallbackLocales' | 'localeConfigs'>
 export function createI18nContext({
