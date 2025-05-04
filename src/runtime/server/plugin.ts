@@ -10,24 +10,36 @@ import { loadVueI18nOptions, getFallbackLocaleCodes } from '../messages'
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
-import { localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
+import { localeCodes as _localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
 
 import type { H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import type { I18nOptions } from 'vue-i18n'
 import { isLocaleWithFallbacksCacheable } from './utils/messages'
 
-export default defineNitroPlugin(async nitro => {
-  const runtimeI18n = useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
-  // load initial locale messages for @intlify/h3 (options are compatible with vue-i18n options)
-  const options = await loadVueI18nOptions(vueI18nConfigs)
-  const fallbackLocale = (options.fallbackLocale = options.fallbackLocale ?? false)
-  const initialLocale = runtimeI18n.defaultLocale || options.locale || 'en-US'
+type ResolvedI18nOptions = Omit<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'> &
+  Required<Pick<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'>>
 
-  options.messages = options.messages || {}
-  for (const locale of localeCodes) {
+// load initial locale messages for @intlify/h3 (options are compatible with vue-i18n options)
+const setupVueI18nOptions = async (): Promise<ResolvedI18nOptions> => {
+  const runtimeI18n = useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
+  const options = await loadVueI18nOptions(vueI18nConfigs)
+
+  options.locale = runtimeI18n.defaultLocale || options.locale || 'en-US'
+  options.fallbackLocale = options.fallbackLocale ?? false
+
+  options.messages ??= {}
+  for (const locale of _localeCodes) {
     options.messages[locale] ??= {}
   }
+
+  return options as ResolvedI18nOptions
+}
+
+export default defineNitroPlugin(async nitro => {
+  const options = await setupVueI18nOptions()
+  const localeCodes = Object.keys(options.messages)
 
   const localeFromRoute = createLocaleFromRouteGetter({
     separator: __ROUTE_NAME_SEPARATOR__,
@@ -36,11 +48,11 @@ export default defineNitroPlugin(async nitro => {
   })
 
   const defaultLocaleDetector = createDefaultLocaleDetector({
-    defaultLocale: initialLocale,
+    defaultLocale: options.locale,
     tryRouteLocale: (event: H3Event) => localeFromRoute(event.path) || null
   })
 
-  const getFallbackLocales = (locale: string) => getFallbackLocaleCodes(fallbackLocale, [locale])
+  const getFallbackLocales = (locale: string) => getFallbackLocaleCodes(options.fallbackLocale, [locale])
 
   const localeConfigs: Record<string, { cacheable: boolean; fallbacks: string[] }> = {}
   for (const locale of localeCodes) {
@@ -53,16 +65,22 @@ export default defineNitroPlugin(async nitro => {
     const ctx = createI18nContext({ getFallbackLocales, localeConfigs })
     event.context.nuxtI18n = ctx
 
+    for (const locale of localeCodes) {
+      ctx.messages[locale] ??= {}
+      deepCopy(options.messages[locale], ctx.messages[locale])
+    }
+
     // skip if the request is internal
     if (getRequestHeader(event, 'x-nuxt-i18n')) return
 
     if (!__LAZY_LOCALES__) {
-      const messages = await Promise.all(localeCodes.map(fetchMessages))
-      for (const m of messages) {
-        deepCopy(m, ctx.messages)
+      const messagesArr = await Promise.all(localeCodes.map(fetchMessages))
+      for (const messages of messagesArr) {
+        deepCopy(messages, ctx.messages)
       }
     } else {
-      ctx.messages = await fetchMessages(defaultLocaleDetector(event))
+      const messages = await fetchMessages(defaultLocaleDetector(event))
+      deepCopy(messages, ctx.messages)
     }
   })
 
@@ -83,7 +101,7 @@ export default defineNitroPlugin(async nitro => {
   if (localeDetector != null) {
     const i18nMiddleware = defineI18nMiddleware({
       ...(options as CoreOptions),
-      locale: createUserLocaleDetector(initialLocale, fallbackLocale)
+      locale: createUserLocaleDetector(options.locale, options.fallbackLocale)
     })
 
     nitro.hooks.hook('request', i18nMiddleware.onRequest)

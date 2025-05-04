@@ -47,7 +47,7 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
         "en": 8,
-        "fr": 7,
+        "fr": 5,
       }
     `)
 
@@ -58,8 +58,8 @@ describe('basic lazy loading (restructure)', async () => {
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
         "en": 8,
-        "fr": 7,
-        "nl": 8,
+        "fr": 5,
+        "nl": 3,
       }
     `)
   })

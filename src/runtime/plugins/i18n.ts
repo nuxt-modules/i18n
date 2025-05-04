@@ -115,7 +115,16 @@ export default defineNuxtPlugin({
 
     nuxt._i18nLoadAndSetMessages = async (locale: string) => {
       if (dynamicResourcesSSG || import.meta.dev) {
-        nuxt.$i18n.mergeLocaleMessage(locale, await getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+        const locales = serverLocaleConfigs.value?.[locale]?.fallbacks ?? []
+        if (!locales.includes(locale)) {
+          locales.push(locale)
+        }
+        for (const entry of locales) {
+          nuxt.$i18n.mergeLocaleMessage(
+            entry,
+            await nuxt.runWithContext(() => getLocaleMessagesMergedCached(entry, localeLoaders[entry]))
+          )
+        }
         return
       }
 
@@ -125,10 +134,8 @@ export default defineNuxtPlugin({
       }
 
       const messages = await $fetch(`/_i18n/${locale}/messages.json`, { headers })
-      vueI18nOptions.messages ??= {}
-      for (const k in messages) {
-        vueI18nOptions.messages[locale] ??= {}
-        deepCopy(messages[k], vueI18nOptions.messages[locale])
+      for (const locale of Object.keys(messages)) {
+        nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])
       }
     }
 

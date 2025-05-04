@@ -8,7 +8,8 @@ import {
   gotoPath,
   renderPage,
   setServerRuntimeConfig,
-  startServerWithRuntimeConfig
+  startServerWithRuntimeConfig,
+  waitForLocaleNetwork
 } from './helper'
 import type { RouteLocation } from 'vue-router'
 
@@ -156,12 +157,14 @@ export function basicUsageTests() {
 
     expect(await page.locator('#runtime-config').innerText()).toEqual('Hello from runtime config!')
 
-    await setServerRuntimeConfig({
-      public: { runtimeValue: 'The environment variable has changed!' }
-    })
+    const restore = await startServerWithRuntimeConfig(
+      { public: { runtimeValue: 'The environment variable has changed!' } },
+      true
+    )
 
     await gotoPath(page, '/')
     expect(await page.locator('#runtime-config').innerText()).toEqual('The environment variable has changed!')
+    await restore()
   })
 
   test('layer provides locale `nl` and translation for key `hello`', async () => {
@@ -193,8 +196,11 @@ export function basicUsageTests() {
     expect(await page.locator('#snake-case').innerText()).toEqual('About-this-site')
     expect(await page.locator('#pascal-case').innerText()).toEqual('AboutThisSite')
 
-    await page.click(`#switch-locale-path-usages .switch-to-fr a`)
-    await page.waitForURL(url('/fr'))
+    await Promise.all([
+      waitForLocaleNetwork(page, 'fr', 'response'),
+      page.click(`#switch-locale-path-usages .switch-to-fr a`)
+    ])
+
     expect(await page.locator('#snake-case').innerText()).toEqual('À-propos-de-ce-site')
     expect(await page.locator('#pascal-case').innerText()).toEqual('ÀProposDeCeSite')
     expect(await page.locator('#fallback-message').innerText()).toEqual('Unique translation')

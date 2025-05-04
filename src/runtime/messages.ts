@@ -75,7 +75,7 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
 }
 
 /**
- * Get locale messages from loader and merge them
+ * Get locale messages from the loaders of a single locale and merge these
  */
 export async function getLocaleMessagesMerged(locale: string, loaders: LocaleLoader[] = []) {
   const nuxtApp = useNuxtApp()
