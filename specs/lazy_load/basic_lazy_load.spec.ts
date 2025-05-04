@@ -36,7 +36,7 @@ describe('basic lazy loading', async () => {
     // `en` present on initial load
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 4,
       }
     `)
 

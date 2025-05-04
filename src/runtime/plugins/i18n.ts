@@ -1,4 +1,4 @@
-import { computed, isRef, ref, watch } from 'vue'
+import { computed, isRef, ref, unref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
@@ -143,6 +143,34 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
+
+    if (__I18N_STRIP_UNUSED__ && import.meta.server) {
+      const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
+      if (serverI18n) {
+        const target = i18n.global
+
+        const originalT = target.t.bind(target)
+        // @ts-expect-error type mismatch
+        target.t = (key, _, opts) => {
+          // @ts-expect-error type mismatch
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          serverI18n.trackKey(key, opts?.locale ?? unref(target.locale))
+          return originalT(key, _ as Parameters<typeof originalT>[1], opts as Parameters<typeof originalT>[2])
+        }
+
+        const originalTe = target.te.bind(target)
+        target.te = (key, locale) => {
+          serverI18n.trackKey(key, locale || unref(target.locale))
+          return originalTe(key, locale)
+        }
+
+        const originalTm = target.tm.bind(target)
+        target.tm = key => {
+          serverI18n.trackKey(key, unref(target.locale))
+          return originalTm(key)
+        }
+      }
+    }
 
     nuxt._vueI18n = i18n
     i18n.__localeFromRoute = createLocaleFromRouteGetter({

@@ -143,7 +143,8 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
     __I18N_CACHE__: String(isCacheEnabled),
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
-    __I18N_FULL_STATIC__: String(fullStatic)
+    __I18N_FULL_STATIC__: String(fullStatic),
+    __I18N_STRIP_UNUSED__: JSON.stringify(!!options.experimental.stripMessagesPayload)
   }
 
   if (nuxt.options.ssr || !server) {
