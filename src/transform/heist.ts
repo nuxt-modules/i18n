@@ -15,11 +15,7 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
   // TODO: consider using a folder for shared nuxt/nitro utilities (that use `useNuxtApp().runWithContext()`)
   const targetFile = ctx.resolver.resolve(ctx.distDir, 'runtime/messages')
   const targetDir = ctx.resolver.resolve(ctx.distDir, 'runtime/shared')
-  const variantDirs = [
-    targetDir,
-    relative(nuxt.options.rootDir, targetDir),
-    '@nuxtjs/i18n/dist/runtime/shared'
-  ].flatMap(x => new RegExp(`${x}`))
+  const variantDirs = [targetDir, relative(nuxt.options.rootDir, targetDir)].flatMap(x => x + '/*')
 
   const replacementName = `__nuxtMock`
   const replacementMock = `const ${replacementName} = { runWithContext: async (fn) => await fn() };`
@@ -37,8 +33,6 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
       handler(code) {
         const s = new MagicString(code)
 
-        // s.replace(/\buseNuxtApp,?\b/, '')
-        // s.prepend(replacementMock + '\n')
         if (code.includes('useRuntimeConfig()')) {
           s.prepend('import { useRuntimeConfig } from "nitropack/runtime";\n')
         }
