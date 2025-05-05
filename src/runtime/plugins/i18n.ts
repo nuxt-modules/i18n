@@ -2,8 +2,8 @@ import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
-import { localeCodes, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
-import { getLocaleMessagesMergedCached } from '../messages'
+import { localeCodes, normalizedLocales, localeLoaders, vueI18nConfigs } from '#build/i18n.options.mjs'
+import { getLocaleMessagesMergedCached, loadVueI18nOptions } from '../messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -22,7 +22,6 @@ import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } 
 import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 import { parse } from 'devalue'
 import { deepCopy } from '@intlify/shared'
-import { setupVueI18nOptions } from '../shared/vue-i18n'
 
 import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -76,9 +75,14 @@ export default defineNuxtPlugin({
 
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
-    const vueI18nOptions: I18nOptions = await setupVueI18nOptions()
+    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain
+    }
+
+    // initialize locale objects to make vue-i18n aware of available locales
+    for (const l of localeCodes) {
+      vueI18nOptions.messages![l] ??= {}
     }
 
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
