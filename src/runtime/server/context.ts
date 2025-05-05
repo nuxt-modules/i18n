@@ -33,9 +33,10 @@ export function createI18nContext({
     messages: {},
     getFallbackLocales,
     localeConfigs,
-    trackedKeys: new Set<string>(),
-    trackKey(key: string) {
-      this.trackedKeys.add(key)
+    trackMap: {},
+    trackKey(key, locale) {
+      this.trackMap[locale] ??= new Set<string>()
+      this.trackMap[locale].add(key)
     }
   }
 }
@@ -74,12 +75,12 @@ declare module 'h3' {
        * The list of keys that are tracked for the current request
        * @internal
        */
-      trackedKeys: Set<string>
+      trackMap: Record<string, Set<string>>
       /**
        * Track message key for the current request
        * @internal
        */
-      trackKey: (key: string) => void
+      trackKey: (key: string, locale: string) => void
     }
   }
 }

@@ -32,7 +32,8 @@ export const DEFAULT_OPTIONS = {
     typedOptionsAndMessages: false,
     alternateLinkCanonicalQueries: true,
     devCache: false,
-    cacheLifetime: undefined
+    cacheLifetime: undefined,
+    stripMessagesPayload: false
   },
   bundle: {
     compositionOnly: true,

@@ -5,6 +5,8 @@ import { deepCopy } from '@intlify/shared'
 import { useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext, fetchMessages } from './context'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
+import { pickNested } from './utils/messages-utils'
+import { isLocaleWithFallbacksCacheable } from './utils/messages'
 import { loadVueI18nOptions, getFallbackLocaleCodes } from '../messages'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
@@ -16,7 +18,6 @@ import type { H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { I18nOptions } from 'vue-i18n'
-import { isLocaleWithFallbacksCacheable } from './utils/messages'
 
 type ResolvedI18nOptions = Omit<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'> &
   Required<Pick<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'>>
@@ -87,6 +88,20 @@ export default defineNitroPlugin(async nitro => {
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
     const ctx = tryUseI18nContext(event)
     if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
+
+    // only include the messages used in the current page
+    if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
+      const trackedLocales = Object.keys(ctx.trackMap)
+      for (const locale of Object.keys(ctx.messages)) {
+        if (!trackedLocales.includes(locale)) {
+          ctx.messages[locale] = {}
+          continue
+        }
+
+        const usedKeys = Array.from(ctx.trackMap[locale])
+        ctx.messages[locale] = pickNested(usedKeys, ctx.messages[locale]) as unknown as Record<string, string>
+      }
+    }
 
     try {
       htmlContext.bodyAppend.unshift(

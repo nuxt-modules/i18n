@@ -97,6 +97,12 @@ export interface ExperimentalFeatures {
    * @default -1 // disabled, or `86400` (1 day) if all locale files are static files
    */
   cacheLifetime?: number
+  /**
+   * Strip unused locale messages from the server-side rendered HTML, reducing the size of the HTML payload.
+   * This might cause issues with conditional rendering of messages in templates.
+   * @default false
+   */
+  stripMessagesPayload?: boolean
 }
 
 export interface BundleOptions
