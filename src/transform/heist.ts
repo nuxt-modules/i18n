@@ -14,6 +14,12 @@ import { useNuxt } from '@nuxt/kit'
 export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, nuxt = useNuxt()) => {
   // TODO: consider using a folder for shared nuxt/nitro utilities (that use `useNuxtApp().runWithContext()`)
   const targetFile = ctx.resolver.resolve(ctx.distDir, 'runtime/messages')
+  const targetDir = ctx.resolver.resolve(ctx.distDir, 'runtime/shared')
+  const variantDirs = [
+    targetDir,
+    relative(nuxt.options.rootDir, targetDir),
+    '@nuxtjs/i18n/dist/runtime/shared'
+  ].flatMap(x => new RegExp(`${x}`))
 
   const replacementName = `__nuxtMock`
   const replacementMock = `const ${replacementName} = { runWithContext: async (fn) => await fn() };`
@@ -26,13 +32,20 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
     enforce: 'pre',
     transform: {
       filter: {
-        id: variants
+        id: [...variants, ...variantDirs]
       },
       handler(code) {
         const s = new MagicString(code)
 
+        // s.replace(/\buseNuxtApp,?\b/, '')
+        // s.prepend(replacementMock + '\n')
+        if (code.includes('useRuntimeConfig()')) {
+          s.prepend('import { useRuntimeConfig } from "nitropack/runtime";\n')
+        }
+
         s.replace(/import.+["']#app["'];?/, replacementMock)
         s.replaceAll(/useNuxtApp\(\)/g, replacementName)
+        s.replaceAll(/#build\/i18n\.options\.mjs/g, '#internal/i18n/options.mjs')
 
         return {
           code: s.toString(),

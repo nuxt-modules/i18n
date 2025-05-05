@@ -165,6 +165,7 @@ declare module '#app' {
       setLocale: (locale: string) => void
       getDomainFromLocale: (locale: Locale) => string | undefined
       getLocaleFromRoute: (route: string | CompatRoute) => string
+      getLocaleConfig: (locale: Locale) => { cacheable: boolean; fallbacks: string[] } | undefined
       loadLocaleMessages: (locale: Locale) => Promise<void>
     }
     /** @internal */

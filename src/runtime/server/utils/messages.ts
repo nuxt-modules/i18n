@@ -1,5 +1,5 @@
 import { deepCopy } from '@intlify/shared'
-import { cachedFunction } from 'nitropack/runtime'
+import { cachedFunction, useStorage } from 'nitropack/runtime'
 import { localeLoaders } from '#internal/i18n/options.mjs'
 import { getLocaleMessagesMerged } from '../../messages'
 
@@ -30,29 +30,68 @@ const _getMessagesCached = cachedFunction(_getMessages, {
  */
 const getMessages = import.meta.dev ? _getMessages : _getMessagesCached
 
+const storage = useStorage('i18n')
+type MessagesCached = { ttl: number; value: LocaleMessages<DefineLocaleMessage> }
 /**
  * Load messages for the specified locale and merge with fallback locales in the shape of `{ [locale]: { ... } }`
  * @param locale - The locale to load messages for
  * @param fallbackLocales - The fallback locales to merge with
  */
 export const getMergedMessages = async (locale: string, fallbackLocales: string[]) => {
-  const merged = {} as LocaleMessages<DefineLocaleMessage>
+  const cacheKey = `merged:${locale}-[${fallbackLocales.join('-')}]`
+  const isCacheable = isLocaleWithFallbacksCacheable(locale, fallbackLocales)
 
-  try {
-    if (fallbackLocales.length > 0) {
-      const messages = await Promise.all(fallbackLocales.map(getMessages))
+  const cache = isCacheable && (await storage.getItemRaw<MessagesCached>(cacheKey))
+  if (!cache || cache.ttl < Date.now()) {
+    const merged = {} as LocaleMessages<DefineLocaleMessage>
+
+    try {
+      if (fallbackLocales.length > 0) {
+        const messages = await Promise.all(fallbackLocales.map(getMessages))
+        for (const message of messages) {
+          deepCopy(message, merged)
+        }
+      }
+
+      const message = await getMessages(locale)
+      deepCopy(message, merged)
+
+      if (isCacheable) {
+        await storage.setItemRaw(cacheKey, { ttl: Date.now() + 1000 * 5, value: merged })
+      }
+      return merged
+    } catch (e) {
+      throw new Error('Failed to merge messages: ' + (e as Error).message)
+    }
+  }
+
+  return cache.value
+}
+
+export const getAllMergedMessages = async (locales: string[]) => {
+  const cacheKey = `merged-full:${locales.join('-')}`
+  const isCacheable = locales.every(locale => isLocaleCacheable(locale))
+
+  const cache = isCacheable && (await storage.getItemRaw<MessagesCached>(cacheKey))
+  if (!cache || cache.ttl < Date.now()) {
+    const merged = {} as LocaleMessages<DefineLocaleMessage>
+
+    try {
+      const messages = await Promise.all(locales.map(getMessages))
       for (const message of messages) {
         deepCopy(message, merged)
       }
+
+      if (isCacheable) {
+        await storage.setItemRaw(cacheKey, { ttl: Date.now() + 1000 * 5, value: merged })
+      }
+      return merged
+    } catch (e) {
+      throw new Error('Failed to merge messages: ' + (e as Error).message)
     }
-
-    const message = await getMessages(locale)
-    deepCopy(message, merged)
-
-    return merged
-  } catch (e) {
-    throw new Error('Failed to merge messages: ' + (e as Error).message)
   }
+
+  return cache.value
 }
 
 /**

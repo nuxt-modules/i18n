@@ -13,7 +13,7 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
   load: () => Promise<MessageLoaderResult<T>>
 }
 
-const cacheMessages = new Map<string, { time: number; messages: LocaleMessages<DefineLocaleMessage> }>()
+const cacheMessages = new Map<string, { ttl: number; value: LocaleMessages<DefineLocaleMessage> }>()
 
 export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[]): Promise<I18nOptions> {
   const nuxtApp = useNuxtApp()
@@ -98,7 +98,7 @@ export async function getLocaleMessagesMergedCached(locale: string, loaders: Loc
     const messages = cached || (await nuxtApp.runWithContext(async () => await getLocaleMessages(locale, loader)))
 
     if (!cached && loader.cache !== false) {
-      cacheMessages.set(loader.key, { time: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, messages })
+      cacheMessages.set(loader.key, { ttl: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, value: messages })
     }
 
     deepCopy(messages, merged)
@@ -118,7 +118,7 @@ function getCachedMessages(loader: LocaleLoader) {
 
   const cache = cacheMessages.get(loader.key)
   if (cache == null) return
+
   // if cacheTime is 0, always return cache
-  const fresh = __I18N_CACHE_LIFETIME__ === 0 || cache.time > Date.now()
-  return fresh ? cache.messages : undefined
+  return __I18N_CACHE_LIFETIME__ === 0 || cache.ttl > Date.now() ? cache.value : undefined
 }
