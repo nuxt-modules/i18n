@@ -108,17 +108,17 @@ export function detectBrowserLanguage(
   }
 
   const nuxtApp = useNuxtApp()
-  const firstAccess = nuxtApp._vueI18n.__firstAccess
+  const ctx = nuxtApp._nuxtI18nCtx
 
-  __DEBUG__ && logger.log({ firstAccess })
+  __DEBUG__ && logger.log({ firstAccess: ctx.firstAccess })
 
   // detection ignored during nuxt generate
-  if (__IS_SSG__ && firstAccess && __I18N_STRATEGY__ === 'no_prefix' && import.meta.server) {
+  if (__IS_SSG__ && ctx.firstAccess && __I18N_STRATEGY__ === 'no_prefix' && import.meta.server) {
     return { locale: '', error: 'detect_ignore_on_ssg' }
   }
 
   // detection only on first access
-  if (!firstAccess) {
+  if (!ctx.firstAccess) {
     return { locale: __I18N_STRATEGY__ === 'no_prefix' ? locale : '', error: 'first_access_only' }
   }
 

@@ -9,6 +9,7 @@ export default defineNuxtPlugin({
   enforce: 'post',
   setup() {
     const nuxt = /*#__PURE__*/ useNuxtApp()
+    const ctx = nuxt._nuxtI18nCtx
     if (!__IS_SSG__ || __I18N_STRATEGY__ !== 'no_prefix' || !nuxt.$config.public.i18n.detectBrowserLanguage) return
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n:ssg-detect')
@@ -25,7 +26,7 @@ export default defineNuxtPlugin({
       __DEBUG__ && logger.log('app:mounted: detectBrowserLanguage (locale, reason, error) -', Object.values(detected))
 
       await nuxt.$i18n.setLocale(detected.locale)
-      nuxt._vueI18n.__firstAccess = false
+      ctx.firstAccess = false
     })
   }
 })

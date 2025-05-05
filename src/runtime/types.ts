@@ -157,11 +157,16 @@ declare module '#app' {
   interface NuxtApp {
     /** @internal */
     _vueI18n: I18n
-    /** @internal */
-    _i18nGetDomainFromLocale: (locale: Locale) => string | undefined
-    _i18nLoadAndSetMessages: (locale: Locale) => Promise<void>
-    _i18nPreloaded: boolean
 
+    /** @internal */
+    _nuxtI18nCtx: {
+      preloaded: boolean
+      firstAccess: boolean
+      setLocale: (locale: string) => void
+      getDomainFromLocale: (locale: Locale) => string | undefined
+      getLocaleFromRoute: (route: string | CompatRoute) => string
+      loadLocaleMessages: (locale: Locale) => Promise<void>
+    }
     /** @internal */
     _nuxtI18n: ComposableContext
   }
@@ -171,8 +176,6 @@ declare module 'vue-i18n' {
   interface I18n {
     /** @internal */ __pendingLocale?: string
     /** @internal */ __pendingLocalePromise?: Promise<void>
-    /** @internal */ __firstAccess: boolean
-    /** @internal */ __localeFromRoute: (route: string | CompatRoute) => string
     /**
      * Sets the value of the locale property on VueI18n or Composer instance
      *
@@ -180,8 +183,6 @@ declare module 'vue-i18n' {
      * locale property directly without triggering other side effects
      * @internal
      */
-    __setLocale: (locale: string) => void
     __resolvePendingLocalePromise?: () => void
-    loadLocaleMessages: (locale: Locale) => Promise<void>
   }
 }

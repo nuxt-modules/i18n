@@ -2,8 +2,8 @@ import { computed, isRef, ref, watch } from 'vue'
 import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
-import { localeCodes, vueI18nConfigs, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
-import { getLocaleMessagesMergedCached, loadVueI18nOptions } from '../messages'
+import { localeCodes, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
+import { getLocaleMessagesMergedCached } from '../messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -22,14 +22,27 @@ import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } 
 import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 import { parse } from 'devalue'
 import { deepCopy } from '@intlify/shared'
+import { setupVueI18nOptions } from '../shared/vue-i18n'
 
 import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
+import type { CompatRoute } from '../types'
 
 const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
 const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
+
+function createNuxtI18nContext() {
+  return {
+    firstAccess: undefined! as boolean,
+    preloaded: undefined! as boolean,
+    setLocale: undefined! as (locale: string) => void,
+    getLocaleFromRoute: undefined! as (route: string | CompatRoute) => string,
+    getDomainFromLocale: undefined! as (locale: Locale) => string | undefined,
+    loadLocaleMessages: undefined! as (locale: Locale) => Promise<void>
+  }
+}
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -39,9 +52,12 @@ export default defineNuxtPlugin({
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
+    nuxt._nuxtI18nCtx = createNuxtI18nContext()
+    const ctx = nuxt._nuxtI18nCtx
+    ctx.getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
+
     const serverLocaleConfigs = useLocaleConfigs()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-    nuxt._i18nGetDomainFromLocale = createDomainFromLocaleGetter(nuxt)
 
     let defaultLocaleDomain: string = _runtimeI18n.defaultLocale || ''
     if (__MULTI_DOMAIN_LOCALES__) {
@@ -60,14 +76,9 @@ export default defineNuxtPlugin({
 
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
-    const vueI18nOptions: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
+    const vueI18nOptions: I18nOptions = await setupVueI18nOptions()
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain
-    }
-
-    // initialize locale objects to make vue-i18n aware of available locales
-    for (const l of localeCodes) {
-      vueI18nOptions.messages![l] ??= {}
     }
 
     let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
@@ -104,16 +115,16 @@ export default defineNuxtPlugin({
     }
 
     if (preloadedMessages) {
-      __DEBUG__ && logger.log('preloaded full static messages', nuxt._i18nPreloaded)
+      __DEBUG__ && logger.log('preloaded full static messages', ctx.preloaded)
       for (const locale of localeCodes) {
         if (preloadedMessages[locale]) {
           deepCopy(preloadedMessages[locale], vueI18nOptions.messages![locale])
         }
       }
-      nuxt._i18nPreloaded = true
+      ctx.preloaded = true
     }
 
-    nuxt._i18nLoadAndSetMessages = async (locale: string) => {
+    ctx.loadLocaleMessages = async (locale: string) => {
       if (dynamicResourcesSSG || import.meta.dev) {
         const locales = serverLocaleConfigs.value?.[locale]?.fallbacks ?? []
         if (!locales.includes(locale)) {
@@ -145,13 +156,13 @@ export default defineNuxtPlugin({
     const i18n = createI18n(vueI18nOptions)
 
     nuxt._vueI18n = i18n
-    i18n.__localeFromRoute = createLocaleFromRouteGetter({
+    ctx.firstAccess = true
+    ctx.getLocaleFromRoute = createLocaleFromRouteGetter({
       separator: __ROUTE_NAME_SEPARATOR__,
       defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__,
       localeCodes
     })
-    i18n.__firstAccess = true
-    i18n.__setLocale = (locale: string) => {
+    ctx.setLocale = (locale: string) => {
       const i = getI18nTarget(i18n)
       if (isRef(i.locale)) {
         i.locale.value = locale
@@ -160,10 +171,10 @@ export default defineNuxtPlugin({
       }
     }
 
-    nuxt._nuxtI18n = createComposableContext({ i18n, getDomainFromLocale: nuxt._i18nGetDomainFromLocale, runtimeI18n })
+    nuxt._nuxtI18n = createComposableContext({ i18n, getDomainFromLocale: ctx.getDomainFromLocale, runtimeI18n })
 
     if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
-      const ctx = nuxt._nuxtI18n
+      const _ctx = nuxt._nuxtI18n
       if (import.meta.server) {
         const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
         if (serverI18n) {
@@ -176,19 +187,19 @@ export default defineNuxtPlugin({
             listOrNamed?: string | number | unknown[] | Record<string, unknown>,
             opts?: TranslateOptions<string> | number | string
           ) => {
-            serverI18n.trackKey(key, ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string)
+            serverI18n.trackKey(key, ((typeof opts === 'object' && opts?.locale) || _ctx.getLocale()) as string)
             return originalT(key, listOrNamed as TParams[1], opts as TParams[2])
           }
 
           const originalTe = target.te.bind(target)
           target.te = (key, locale) => {
-            serverI18n.trackKey(key, locale || ctx.getLocale())
+            serverI18n.trackKey(key, locale || _ctx.getLocale())
             return originalTe(key, locale)
           }
 
           const originalTm = target.tm.bind(target)
           target.tm = key => {
-            serverI18n.trackKey(key, ctx.getLocale())
+            serverI18n.trackKey(key, _ctx.getLocale())
             return originalTm(key)
           }
         }
@@ -200,7 +211,7 @@ export default defineNuxtPlugin({
          */
         const unsub = nuxt.$router.beforeResolve(async (to, from) => {
           if (to.path === from.path) return
-          await nuxt._i18nLoadAndSetMessages(ctx.getLocale())
+          await ctx.loadLocaleMessages(_ctx.getLocale())
           unsub()
         })
       }
@@ -234,25 +245,25 @@ export default defineNuxtPlugin({
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
-          await loadAndSetLocale(locale, i18n.__firstAccess)
+          await loadAndSetLocale(locale, ctx.firstAccess)
 
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
             // first access will not change without route middleware
-            i18n.__firstAccess = false
-            i18n.__setLocale(locale)
+            ctx.firstAccess = false
+            ctx.setLocale(locale)
             return
           }
 
           const route = nuxt.$router.currentRoute.value
           const redirectPath = await nuxt.runWithContext(() =>
-            detectRedirect({ to: route, locale, routeLocale: i18n.__localeFromRoute(route) })
+            detectRedirect({ to: route, locale, routeLocale: ctx.getLocaleFromRoute(route) })
           )
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
 
           await nuxt.runWithContext(() => navigate({ nuxt, redirectPath, locale, route }, true))
         }
-        composer.loadLocaleMessages = async (locale: string) => await nuxt._i18nLoadAndSetMessages(locale)
+        composer.loadLocaleMessages = ctx.loadLocaleMessages
 
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
@@ -277,7 +288,7 @@ export default defineNuxtPlugin({
         composer.finalizePendingLocaleChange = async () => {
           if (!i18n.__pendingLocale) return
 
-          i18n.__setLocale(i18n.__pendingLocale)
+          ctx.setLocale(i18n.__pendingLocale)
           i18n.__resolvePendingLocalePromise?.()
           i18n.__pendingLocale = undefined
         }

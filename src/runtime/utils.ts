@@ -154,6 +154,7 @@ export function createComposableContext({
 export async function loadAndSetLocale(newLocale: Locale, initial: boolean = false): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const nuxtApp = useNuxtApp()
+  const ctx = nuxtApp._nuxtI18nCtx
   const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
   const { skipSettingLocaleOnNavigate, detectBrowserLanguage: opts } = runtimeI18n
 
@@ -200,13 +201,8 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   }
 
   // load locale messages required by `newLocale`
-  if (
-    !nuxtApp._i18nPreloaded ||
-    !nuxtApp._vueI18n.__firstAccess ||
-    !__HAS_PAGES__ ||
-    __I18N_STRATEGY__ === 'no_prefix'
-  ) {
-    await nuxtApp._i18nLoadAndSetMessages(newLocale)
+  if (!ctx.preloaded || !ctx.firstAccess || !__HAS_PAGES__ || __I18N_STRATEGY__ === 'no_prefix') {
+    await ctx.loadLocaleMessages(newLocale)
   }
 
   if (skipSettingLocaleOnNavigate) {
@@ -215,7 +211,7 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
   // sync cookie and set the locale
   syncCookie(newLocale)
-  nuxtApp._vueI18n.__setLocale(newLocale)
+  ctx.setLocale(newLocale)
 
   await nuxtApp.$i18n.onLanguageSwitched(oldLocale, newLocale)
 
@@ -319,6 +315,7 @@ type NavigateArgs = {
 export async function navigate({ nuxt, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
   const { rootRedirect, skipSettingLocaleOnNavigate, locales } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
+  const ctx = nuxt._nuxtI18nCtx
 
   __DEBUG__ &&
     logger.log('options', {
@@ -367,7 +364,7 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
     }
 
     if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
-      const oldLocale = nuxt._vueI18n.__localeFromRoute(route.path)
+      const oldLocale = ctx.getLocaleFromRoute(route.path)
 
       if (oldLocale !== '') {
         return navigateTo(`/${locale + route.path.replace(`/${oldLocale}`, '')}`)
@@ -419,12 +416,12 @@ export function prefixable(currentLocale: string, defaultLocale: string): boolea
 export function createBaseUrlGetter(nuxt: NuxtApp) {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   const { baseUrl, defaultLocale } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
+  const ctx = nuxt._nuxtI18nCtx
 
   if (isFunction(baseUrl)) {
     return (): string => {
-      const baseUrlResult = baseUrl(nuxt)
-      __DEBUG__ && logger.log('using localeLoader function -', { baseUrlResult })
-      return baseUrlResult
+      __DEBUG__ && logger.log('using localeLoader function -', { baseUrlResult: baseUrl(nuxt) })
+      return baseUrl(nuxt)
     }
   }
 
@@ -433,9 +430,8 @@ export function createBaseUrlGetter(nuxt: NuxtApp) {
     : defaultLocale
   return (): string => {
     if (__DIFFERENT_DOMAINS__ && localeCode) {
-      const domain = nuxt._i18nGetDomainFromLocale(localeCode)
+      const domain = ctx.getDomainFromLocale(localeCode)
       if (domain) {
-        __DEBUG__ && logger.log('using differentDomains -', { domain })
         return domain
       }
     }
@@ -517,6 +513,7 @@ function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
 // HMR helper functionality
 export function createNuxtI18nDev() {
   const nuxtApp = useNuxtApp()
+  const ctx = nuxtApp._nuxtI18nCtx
   const composer = getComposer(nuxtApp._vueI18n)
 
   /**
@@ -530,7 +527,7 @@ export function createNuxtI18nDev() {
     const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {
       if (locale && k !== locale) continue
-      await nuxtApp._i18nLoadAndSetMessages(k)
+      await ctx.loadLocaleMessages(k)
     }
 
     // skip vue-i18n config properties if locale is passed (locale file HMR)
