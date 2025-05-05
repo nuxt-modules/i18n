@@ -100,7 +100,7 @@ export interface ExperimentalFeatures {
   /**
    * Strip unused locale messages from the server-side rendered HTML, reducing the size of the HTML payload.
    * This might cause issues with conditional rendering of messages in templates.
-   * @default true
+   * @default false
    */
   stripMessagesPayload?: boolean
 }

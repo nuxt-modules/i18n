@@ -33,7 +33,7 @@ export const DEFAULT_OPTIONS = {
     alternateLinkCanonicalQueries: true,
     devCache: false,
     cacheLifetime: undefined,
-    stripMessagesPayload: true
+    stripMessagesPayload: false
   },
   bundle: {
     compositionOnly: true,
