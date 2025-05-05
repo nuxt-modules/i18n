@@ -11,23 +11,24 @@ export default defineNuxtPlugin({
   async setup() {
     const logger = /*#__PURE__*/ createLogger('plugin:route-locale-detect')
     const nuxt = useNuxtApp()
+    const ctx = nuxt._nuxtI18nCtx
 
     async function handleRouteDetect(to: CompatRoute) {
       let detected = detectLocale(
         to,
-        nuxt._vueI18n.__localeFromRoute(to),
+        ctx.getLocaleFromRoute(to),
         unref(nuxt.$i18n.locale),
         nuxt.$i18n.getLocaleCookie()
       )
 
-      if (nuxt._vueI18n.__firstAccess) {
-        nuxt._vueI18n.__setLocale(detected)
-        if (!nuxt._i18nPreloaded) {
-          await nuxt._i18nLoadAndSetMessages(detected)
+      if (ctx.firstAccess) {
+        ctx.setLocale(detected)
+        if (!ctx.preloaded) {
+          await ctx.loadLocaleMessages(detected)
         }
       }
 
-      const modified = await nuxt.runWithContext(() => loadAndSetLocale(detected, nuxt._vueI18n.__firstAccess))
+      const modified = await nuxt.runWithContext(() => loadAndSetLocale(detected, ctx.firstAccess))
       if (modified) {
         detected = unref(nuxt.$i18n.locale)
       }
@@ -48,10 +49,10 @@ export default defineNuxtPlugin({
         const locale = await nuxt.runWithContext(() => handleRouteDetect(to))
 
         const redirectPath = await nuxt.runWithContext(() =>
-          detectRedirect({ to, from, locale, routeLocale: nuxt._vueI18n.__localeFromRoute(to) }, true)
+          detectRedirect({ to, from, locale, routeLocale: ctx.getLocaleFromRoute(to) }, true)
         )
 
-        nuxt._vueI18n.__firstAccess = false
+        ctx.firstAccess = false
 
         __DEBUG__ && logger.log('redirectPath on locale-changing middleware', redirectPath)
 
