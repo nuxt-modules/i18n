@@ -103,6 +103,8 @@ export interface ExperimentalFeatures {
    * @default false
    */
   stripMessagesPayload?: boolean
+
+  preload?: boolean
 }
 
 export interface BundleOptions

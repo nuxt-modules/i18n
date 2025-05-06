@@ -12,27 +12,35 @@ import { useNuxt } from '@nuxt/kit'
  * - replaces `useNuxtApp()` with the mock variable
  */
 export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, nuxt = useNuxt()) => {
-  // TODO: consider using a folder for shared nuxt/nitro utilities (that use `useNuxtApp().runWithContext()`)
-  const targetFile = ctx.resolver.resolve(ctx.distDir, 'runtime/messages')
+  // transform `runtime/shared` to be nuxt/nitro context agnostic
+  const shared = ctx.resolver.resolve(ctx.distDir, 'runtime/shared') + '/*'
 
   const replacementName = `__nuxtMock`
   const replacementMock = `const ${replacementName} = { runWithContext: async (fn) => await fn() };`
-  const variants = [targetFile, relative(nuxt.options.rootDir, targetFile)].flatMap(x =>
-    ['.ts', '.js', '.mjs'].map(y => x + y)
-  )
 
   return createUnplugin(() => ({
     name: 'nuxtjs:i18n-heist',
     enforce: 'pre',
     transform: {
       filter: {
-        id: variants
+        id: [shared, relative(nuxt.options.rootDir, shared)]
       },
       handler(code) {
         const s = new MagicString(code)
 
+        // add nitro runtime import
+        if (code.includes('useRuntimeConfig()')) {
+          s.prepend('import { useRuntimeConfig } from "nitropack/runtime";\n')
+        }
+
+        // replace `#app` import with a mock variable definition
         s.replace(/import.+["']#app["'];?/, replacementMock)
+
+        // replace `#app` with `__nuxtMock`
         s.replaceAll(/useNuxtApp\(\)/g, replacementName)
+
+        // replace `#build/i18n.options.mjs` with `#internal/i18n/options.mjs`
+        s.replaceAll(/#build\/i18n\.options\.mjs/g, '#internal/i18n/options.mjs')
 
         return {
           code: s.toString(),

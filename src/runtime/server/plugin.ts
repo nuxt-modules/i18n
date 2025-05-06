@@ -2,41 +2,20 @@ import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { getRequestHeader } from 'h3'
 import { deepCopy } from '@intlify/shared'
-import { useRuntimeConfig, defineNitroPlugin } from 'nitropack/runtime'
-import { tryUseI18nContext, createI18nContext, fetchMessages } from './context'
+import { defineNitroPlugin } from 'nitropack/runtime'
+import { tryUseI18nContext, createI18nContext } from './context'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
-import { isLocaleWithFallbacksCacheable } from './utils/messages'
-import { loadVueI18nOptions, getFallbackLocaleCodes } from '../messages'
+import { getAllMergedMessages, getMergedMessages, isLocaleWithFallbacksCacheable } from './utils/messages'
+import { getFallbackLocaleCodes } from '../shared/messages'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
-import { localeCodes as _localeCodes, vueI18nConfigs } from '#internal/i18n/options.mjs'
+import { setupVueI18nOptions } from '../shared/vue-i18n'
 
 import type { H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { I18nOptions } from 'vue-i18n'
-
-type ResolvedI18nOptions = Omit<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'> &
-  Required<Pick<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'>>
-
-// load initial locale messages for @intlify/h3 (options are compatible with vue-i18n options)
-const setupVueI18nOptions = async (): Promise<ResolvedI18nOptions> => {
-  const runtimeI18n = useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
-  const options = await loadVueI18nOptions(vueI18nConfigs)
-
-  options.locale = runtimeI18n.defaultLocale || options.locale || 'en-US'
-  options.fallbackLocale = options.fallbackLocale ?? false
-
-  options.messages ??= {}
-  for (const locale of _localeCodes) {
-    options.messages[locale] ??= {}
-  }
-
-  return options as ResolvedI18nOptions
-}
 
 export default defineNitroPlugin(async nitro => {
   const options = await setupVueI18nOptions()
@@ -65,6 +44,7 @@ export default defineNitroPlugin(async nitro => {
   nitro.hooks.hook('request', async (event: H3Event) => {
     const ctx = createI18nContext({ getFallbackLocales, localeConfigs })
     event.context.nuxtI18n = ctx
+    event.context.vueI18nOptions = options
 
     for (const locale of localeCodes) {
       ctx.messages[locale] ??= {}
@@ -74,43 +54,51 @@ export default defineNitroPlugin(async nitro => {
     // skip if the request is internal
     if (getRequestHeader(event, 'x-nuxt-i18n')) return
 
-    if (!__LAZY_LOCALES__) {
-      const messagesArr = await Promise.all(localeCodes.map(fetchMessages))
-      for (const messages of messagesArr) {
-        deepCopy(messages, ctx.messages)
-      }
-    } else {
-      const messages = await fetchMessages(defaultLocaleDetector(event))
-      deepCopy(messages, ctx.messages)
-    }
+    const locale = defaultLocaleDetector(event)
+    const messages = __LAZY_LOCALES__ // load messages for detected locale if lazy loading is enabled
+      ? await getMergedMessages(locale, localeConfigs?.[locale]?.fallbacks ?? [])
+      : await getAllMergedMessages(localeCodes)
+    deepCopy(messages, ctx.messages)
   })
 
-  nitro.hooks.hook('render:html', (htmlContext, { event }) => {
-    const ctx = tryUseI18nContext(event)
-    if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
+  if (__I18N_PRELOAD__) {
+    nitro.hooks.hook('render:html', (htmlContext, { event }) => {
+      const ctx = tryUseI18nContext(event)
+      if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
 
-    // only include the messages used in the current page
-    if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
-      const trackedLocales = Object.keys(ctx.trackMap)
-      for (const locale of Object.keys(ctx.messages)) {
-        if (!trackedLocales.includes(locale)) {
-          ctx.messages[locale] = {}
-          continue
+      // only include the messages used in the current page
+      if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
+        const trackedLocales = Object.keys(ctx.trackMap)
+        for (const locale of Object.keys(ctx.messages)) {
+          if (!trackedLocales.includes(locale)) {
+            ctx.messages[locale] = {}
+            continue
+          }
+
+          const usedKeys = Array.from(ctx.trackMap[locale])
+          ctx.messages[locale] = pickNested(usedKeys, ctx.messages[locale]) as unknown as Record<string, string>
         }
-
-        const usedKeys = Array.from(ctx.trackMap[locale])
-        ctx.messages[locale] = pickNested(usedKeys, ctx.messages[locale]) as unknown as Record<string, string>
       }
-    }
 
-    try {
-      htmlContext.bodyAppend.unshift(
-        `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`
-      )
-    } catch (_) {
-      console.log(_)
-    }
-  })
+      const stringified = stringify(ctx.messages)
+      if (import.meta.dev) {
+        const size = getStringSizeKB(stringified)
+        if (size > 10) {
+          console.log(
+            `Preloading a large messages object for ${Object.keys(ctx.messages).length} locales: ${size.toFixed(2)} KB`
+          )
+        }
+      }
+
+      try {
+        htmlContext.bodyAppend.unshift(
+          `<script type="application/json" data-nuxt-i18n="${appId}">${stringified}</script>`
+        )
+      } catch (_) {
+        console.log(_)
+      }
+    })
+  }
 
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
@@ -123,3 +111,9 @@ export default defineNitroPlugin(async nitro => {
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
+
+function getStringSizeKB(str: string): number {
+  const encoder = new TextEncoder()
+  const encoded = encoder.encode(str)
+  return encoded.length / 1024
+}
