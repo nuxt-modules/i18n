@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#app'
-import { loadVueI18nOptions } from '../messages'
+import { loadVueI18nOptions } from './messages'
 import { vueI18nConfigs, localeCodes as _localeCodes } from '#build/i18n.options.mjs'
 
 import type { I18nOptions } from 'vue-i18n'

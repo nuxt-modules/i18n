@@ -5,7 +5,7 @@ import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.opti
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { detectBrowserLanguage } from './internal'
-import { loadVueI18nOptions } from './messages'
+import { loadVueI18nOptions } from './shared/messages'
 import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
 import {
   localePath,

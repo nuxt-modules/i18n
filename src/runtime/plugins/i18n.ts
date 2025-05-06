@@ -3,7 +3,7 @@ import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
 import { localeCodes, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
-import { getLocaleMessagesMergedCached } from '../messages'
+import { getLocaleMessagesMergedCached } from '../shared/messages'
 import {
   loadAndSetLocale,
   detectRedirect,

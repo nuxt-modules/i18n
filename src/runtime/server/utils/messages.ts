@@ -1,7 +1,7 @@
 import { deepCopy } from '@intlify/shared'
 import { cachedFunction, useStorage } from 'nitropack/runtime'
 import { localeLoaders } from '#internal/i18n/options.mjs'
-import { getLocaleMessagesMerged } from '../../messages'
+import { getLocaleMessagesMerged } from '../../shared/messages'
 
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'

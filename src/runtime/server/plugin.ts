@@ -7,7 +7,7 @@ import { tryUseI18nContext, createI18nContext } from './context'
 import { createDefaultLocaleDetector, createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
 import { getAllMergedMessages, getMergedMessages, isLocaleWithFallbacksCacheable } from './utils/messages'
-import { getFallbackLocaleCodes } from '../messages'
+import { getFallbackLocaleCodes } from '../shared/messages'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
