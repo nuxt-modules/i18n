@@ -1,4 +1,4 @@
-import { useNuxtApp, useCookie, useRuntimeConfig } from '#imports'
+import { useNuxtApp, useCookie, useRuntimeConfig, useRequestEvent } from '#imports'
 import { ref } from 'vue'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../utils'
@@ -255,5 +255,40 @@ export interface I18nRoute {
 export function defineI18nRoute(route: I18nRoute | false): void {
   if (import.meta.dev) {
     warnRuntimeUsage('defineI18nRoute')
+  }
+}
+
+/**
+ * Register translation keys for preloading
+ *
+ * This is used to track keys to include in the preloaded messages which
+ * otherwise would not be included during SSR.
+ *
+ * Examples of keys to register are dynamically or conditionally rendered translations (e.g. inside `v-if` or using computed keys).
+ *
+ * @param keys - The translation keys to preload
+ *
+ * @example
+ * ```ts
+ * useI18nPreloadKeys(['my-dynamic-key', 'nested.dynamic.key'])
+ * ```
+ */
+export function useI18nPreloadKeys(keys: string[]): void {
+  if (import.meta.server) {
+    const ctx = useRequestEvent()?.context?.nuxtI18n
+    if (ctx == null) {
+      console.warn('useI18nPreloadKeys(): `nuxtI18n` server context is accessible.')
+      return
+    }
+
+    const locale = useNuxtApp()._nuxtI18n.getLocale()
+    if (locale) {
+      console.warn('useI18nPreloadKeys(): Could not resolve locale during server-side render.')
+      return
+    }
+
+    for (const k of keys) {
+      ctx?.trackKey(k, locale)
+    }
   }
 }

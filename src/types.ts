@@ -98,13 +98,20 @@ export interface ExperimentalFeatures {
    */
   cacheLifetime?: number
   /**
-   * Strip unused locale messages from the server-side rendered HTML, reducing the size of the HTML payload.
-   * This might cause issues with conditional rendering of messages in templates.
+   * Preload locale messages and add them to the server-side rendered HTML.
+   * This increases the size of the initial HTML payload but prevents an addition client-side request to load the messages.
+   *
+   * Since locale messages can be a large collection, it is recommended to use this in combination with `stripMessagesPayload`.
    * @default false
    */
-  stripMessagesPayload?: boolean
-
   preload?: boolean
+  /**
+   * Strip unused locale messages from the server-side rendered HTML, reducing the size of the HTML payload.
+   *
+   * The `useI18nPreloadKeys` composable is used to prevent keys from being stripped, this is useful for conditionally rendered translations.
+   * @default false // or `true` if `experimental.preload` is enabled
+   */
+  stripMessagesPayload?: boolean
 }
 
 export interface BundleOptions

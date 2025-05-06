@@ -31,6 +31,7 @@ export function prepareAutoImports({ resolver, userOptions: options, runtimeDir 
       'useBrowserLocale',
       'useCookieLocale',
       'useSetI18nParams',
+      'useI18nPreloadKeys',
       NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
       NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
       NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
