@@ -58,8 +58,7 @@ const _getMergedMessages = async (locale: string, fallbackLocales: string[]) => 
 export const getMergedMessages = cachedFunctionI18n(_getMergedMessages, {
   name: 'merged-single',
   maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
-  getKey: (locale, fallbackLocales) =>
-    `${locale}-[${[...new Set(fallbackLocales)].sort().join('-')}]`,
+  getKey: (locale, fallbackLocales) => `${locale}-[${[...new Set(fallbackLocales)].sort().join('-')}]`,
   shouldBypassCache: (locale, fallbackLocales) => !isLocaleWithFallbacksCacheable(locale, fallbackLocales)
 })
 
