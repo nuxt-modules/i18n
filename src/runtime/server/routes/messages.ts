@@ -1,8 +1,10 @@
 import { deepCopy } from '@intlify/shared'
 import { defineCachedEventHandler } from 'nitropack/runtime'
-import { getRouterParam, createError, H3Event, defineEventHandler } from 'h3'
+import { getRouterParam, createError, defineEventHandler } from 'h3'
 import { useI18nContext } from '../context'
 import { getMergedMessages } from '../utils/messages'
+
+import type { H3Event } from 'h3'
 
 /**
  * Load messages for the specified locale event parameter
