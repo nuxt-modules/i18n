@@ -101,6 +101,8 @@ export async function switchLocalePathTests() {
   expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about?foo=b%C3%A4r&four=%E5%9B%9B')
 
   await gotoPath(page, '/ja/about#foo=bar')
+  // path hash is not sent to the server, so we need to wait for the client to hydrate
+  await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
   expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about#foo=bar')
   expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about#foo=bar')
 
