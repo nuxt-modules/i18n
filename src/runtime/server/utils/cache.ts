@@ -34,9 +34,12 @@ export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
       pending[key] = Promise.resolve(resolver())
     }
 
-    const result = await pending[key]
-    delete pending[key]
-    return result
+    try {
+      return await pending[key]
+    } finally {
+      // Ensure we always clean up, whether the promise resolved or rejected.
+      delete pending[key]
+    }
   }
 
   return async (...args) => {
