@@ -9,6 +9,7 @@ export default defineBuildConfig({
     '@rspack/core',
     'oxc-parser',
     '@babel/parser',
+    'unstorage',
     'unplugin-vue-router',
     'unplugin-vue-router/options'
   ]
