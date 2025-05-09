@@ -89,6 +89,14 @@ const { copy, copied } = useClipboard({ source })
           </UCard>
         </UPageGrid>
       </UPageSection>
+
+      <UPageSection :title="'Sponsors'">
+        <p align="center">
+          <a href="https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg">
+            <img src="https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg" />
+          </a>
+        </p>
+      </UPageSection>
     </div>
   </UMain>
 </template>

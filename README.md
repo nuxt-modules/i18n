@@ -46,50 +46,23 @@ npx nuxi@latest module add i18n
 }
 ```
 
-## Edge Release Channel &nbsp; [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n-edge/latest.svg?style=flat&label=npm&colorA=18181B&color=blue)](https://npmjs.com/package/%40nuxtjs%2Fi18n-edge)
+## Sponsors
 
-Nuxt I18n lands commits, improvements and bug fixes every day, you can opt in to test these before their release using the edge release channel.
-
-### Opting In
-
-Update `@nuxtjs/i18n` dependency inside `package.json`:
-
-```diff
-{
-  "devDependencies": {
---    "@nuxtjs/i18n": "^8.0.0"
-++    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
-  }
-}
-```
-
-Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
-
-### Opting Out
-
-Update `@nuxtjs/i18n` dependency inside `package.json`:
-
-```diff
-{
-  "devDependencies": {
---    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
-++    "@nuxtjs/i18n": "^8.0.0"
-  }
-}
-```
-
-Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
-
-## Nuxt 2
-
-Since Nuxt 2 has reached [its end-of-life (EOL) date](https://v2.nuxt.com/lts/) we are not actively maintaining support for this version, the last version to support Nuxt 2 is `v7`.
-
-The codebase for this version can be found on the [`v7` branch](https://github.com/nuxt-modules/i18n/tree/v7) and its documentation [here](https://i18n.nuxtjs.org/docs/v7).
+<p align="center">
+  <a href="https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg">
+    <img src="https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg" />
+  </a>
+</p>
 
 ## 🔗 Links
 
 - 🔖 [Release notes](./CHANGELOG.md)
 - 👥 [Community](https://discord.nuxtjs.org/) (`🗨️❓ help` support forum)
+- 📖 Documentation
+  - [Version 10.x](https://next.i18n.nuxtjs.org/)
+  - [Version 9.x](https://v9.i18n.nuxtjs.org/)
+  - [Version 8.x](https://v9.i18n.nuxtjs.org/docs/v8)
+  - [Version 7.x (Nuxt 2 - EOL)](https://v9.i18n.nuxtjs.org/docs/v7)
 
 ## ©️ License
 
