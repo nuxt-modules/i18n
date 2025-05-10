@@ -1,5 +1,5 @@
 import { isString } from '@intlify/shared'
-import { genImport, genDynamicImport, genSafeVariableName, genString } from 'knitwork'
+import { genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { getLayerI18n } from './utils'
 import { asI18nVirtual } from './transform/utils'
@@ -34,8 +34,6 @@ type LocaleLoaderData = {
   load: string
   relative: string
   cache: boolean
-  specifier: string
-  importString: string
 }
 
 export function generateLoaderOptions(
@@ -52,14 +50,11 @@ export function generateLoaderOptions(
     for (const meta of locale.meta) {
       if (!importMapper.has(meta.path)) {
         const key = `locale_${genSafeVariableName(basename(meta.path))}_${meta.hash}`
-        const specifier = asI18nVirtual(meta.hash)
         importMapper.set(meta.path, {
-          specifier,
           key: genString(key),
           relative: relative(nuxt.options.buildDir, meta.path),
           cache: meta.file.cache ?? true,
-          load: genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` }),
-          importString: genImport(specifier, key)
+          load: genDynamicImport(asI18nVirtual(meta.hash), { comment: `webpackChunkName: ${genString(key)}` })
         })
       }
       localeLoaders[locale.code].push(importMapper.get(meta.path)!)

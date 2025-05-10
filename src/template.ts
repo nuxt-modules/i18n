@@ -125,15 +125,9 @@ export function generateTemplateNuxtI18nOptions(
       '}'
     ].join('\n\n')
 
-  const importStrings = new Set<string>()
   const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
-    const val = opts.localeLoaders[locale]
-    const importers = val.flatMap(x => x.importString)
-    for (const importer of importers) {
-      importStrings.add(importer)
-    }
-    localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
+    localeLoaderEntries[locale] = opts.localeLoaders[locale].map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
   return `
