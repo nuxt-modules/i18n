@@ -43,7 +43,6 @@ exports[`basic 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -120,7 +119,6 @@ exports[`files with cache configuration 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -169,7 +167,6 @@ exports[`lazy 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -218,7 +215,6 @@ exports[`locale file in nested 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -295,7 +291,6 @@ exports[`multiple files 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -309,7 +304,6 @@ exports[`toCode: function (arrow) 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -323,7 +317,6 @@ exports[`toCode: function (named) 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
@@ -372,17 +365,14 @@ exports[`vueI18n option 1`] = `
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
       "relative": "../../path/to",
-      "specifier": "#nuxt-i18n/c3216fe6",
     },
   ],
 }
