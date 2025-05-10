@@ -138,7 +138,6 @@ export function generateTemplateNuxtI18nOptions(
 
   return `
 // @ts-nocheck
-${(!ctx.options.lazy && [...importStrings].join('\n')) || ''}
 
 export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 

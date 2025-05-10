@@ -56,9 +56,7 @@ export default defineNitroPlugin(async nitro => {
     if (getRequestHeader(event, 'x-nuxt-i18n')) return
 
     const locale = defaultLocaleDetector(event)
-    const messages = __LAZY_LOCALES__ // load messages for detected locale if lazy loading is enabled
-      ? await getMergedMessages(locale, localeConfigs?.[locale]?.fallbacks ?? [])
-      : await getAllMergedMessages(localeCodes)
+    const messages = await getMergedMessages(locale, localeConfigs?.[locale]?.fallbacks ?? [])
     deepCopy(messages, ctx.messages)
   })
 

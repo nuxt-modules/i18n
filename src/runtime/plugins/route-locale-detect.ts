@@ -24,7 +24,7 @@ export default defineNuxtPlugin({
       if (ctx.firstAccess) {
         ctx.setLocale(detected)
         if (!ctx.preloaded) {
-          await ctx.loadLocaleMessages(detected)
+          await nuxt.runWithContext(() => ctx.loadLocaleMessages(detected))
         }
       }
 
@@ -36,7 +36,7 @@ export default defineNuxtPlugin({
       return detected
     }
 
-    await handleRouteDetect(nuxt.$router.currentRoute.value)
+    await nuxt.runWithContext(() => handleRouteDetect(nuxt.$router.currentRoute.value))
 
     // app has no pages - do not register route middleware
     if (!__HAS_PAGES__) return

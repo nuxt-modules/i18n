@@ -58,8 +58,7 @@ const isModule = (val: unknown): val is { default: unknown } => toTypeString(val
 /**
  * Check if the value is a module and handle edge case server-side
  */
-const isResolvedModule = (val: unknown): val is { default: unknown } =>
-  (__LAZY_LOCALES__ && import.meta.server) || isModule(val)
+const isResolvedModule = (val: unknown): val is { default: unknown } => import.meta.server || isModule(val)
 
 /**
  * Get locale messages from loader
@@ -68,7 +67,7 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
   const nuxtApp = useNuxtApp()
   try {
     const getter = await nuxtApp.runWithContext(loader.load).then(x => (isResolvedModule(x) ? x.default : x))
-    return isFunction(getter) ? await getter(locale) : getter
+    return isFunction(getter) ? await nuxtApp.runWithContext(() => getter(locale)) : getter
   } catch (e: unknown) {
     throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message)
   }

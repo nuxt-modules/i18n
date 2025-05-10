@@ -13,7 +13,6 @@ declare let __TRAILING_SLASH__: boolean
 declare let __PARALLEL_PLUGIN__: boolean
 declare let __DIFFERENT_DOMAINS__: boolean
 declare let __MULTI_DOMAIN_LOCALES__: boolean
-declare let __LAZY_LOCALES__: boolean
 
 declare let __DYNAMIC_PARAMS_KEY__: string
 declare let __DEFAULT_COOKIE_KEY__: string

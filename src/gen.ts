@@ -58,9 +58,7 @@ export function generateLoaderOptions(
           key: genString(key),
           relative: relative(nuxt.options.buildDir, meta.path),
           cache: meta.file.cache ?? true,
-          load: ctx.options.lazy
-            ? genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` })
-            : `() => Promise.resolve(${key})`,
+          load: genDynamicImport(specifier, { comment: `webpackChunkName: ${genString(key)}` }),
           importString: genImport(specifier, key)
         })
       }
