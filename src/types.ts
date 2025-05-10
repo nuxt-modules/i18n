@@ -161,7 +161,6 @@ export type NuxtI18nOptions<
   multiDomainLocales?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
-  lazy?: boolean
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
   /**
@@ -398,11 +397,6 @@ export interface I18nPublicRuntimeConfig {
    * @internal
    */
   defaultLocale: Required<NuxtI18nOptions>['defaultLocale']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  lazy: Required<NuxtI18nOptions>['lazy']
   /**
    * Overwritten at build time, used to pass generated options to runtime
    * @internal

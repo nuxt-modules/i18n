@@ -2,10 +2,8 @@ import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
 import { relative } from 'pathe'
 
-export function prepareBuildManifest({ options, localeInfo }: I18nNuxtContext, nuxt: Nuxt) {
+export function prepareBuildManifest({ localeInfo }: I18nNuxtContext, nuxt: Nuxt) {
   nuxt.hook('build:manifest', manifest => {
-    if (!options.lazy) return
-
     const langFiles = localeInfo
       .flatMap(locale => locale.meta.map(m => m.path))
       .map(x => relative(nuxt.options.srcDir, x))

@@ -87,7 +87,7 @@ test('basic', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      options: { ...NUXT_I18N_OPTIONS, lazy: false }
+      options: { ...NUXT_I18N_OPTIONS }
     },
     makeNuxtOptions(localeInfo)
   )
@@ -104,7 +104,7 @@ test('lazy', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      options: { ...NUXT_I18N_OPTIONS, lazy: true }
+      options: { ...NUXT_I18N_OPTIONS }
     },
     makeNuxtOptions(localeInfo)
   )
@@ -136,7 +136,7 @@ test('multiple files', async () => {
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
-      options: { ...NUXT_I18N_OPTIONS, lazy: true },
+      options: { ...NUXT_I18N_OPTIONS },
       normalizedLocales: getNormalizedLocales(locales)
     },
     makeNuxtOptions(localeInfo)
@@ -173,7 +173,7 @@ test('files with cache configuration', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      options: { ...NUXT_I18N_OPTIONS, lazy: true }
+      options: { ...NUXT_I18N_OPTIONS }
     },
     makeNuxtOptions(localeInfo)
   )
@@ -204,7 +204,7 @@ test('locale file in nested', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
-      options: { ...NUXT_I18N_OPTIONS, lazy: true }
+      options: { ...NUXT_I18N_OPTIONS }
     },
     { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } }
   )
@@ -238,8 +238,7 @@ test('vueI18n option', async () => {
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
       options: {
-        vueI18n: 'vue-i18n.config.ts',
-        lazy: false
+        vueI18n: 'vue-i18n.config.ts'
       } as Required<NuxtI18nOptions>
     },
     makeNuxtOptions(localeInfo)
@@ -263,7 +262,6 @@ test('toCode: function (arrow)', async () => {
       normalizedLocales: [],
       options: {
         ...NUXT_I18N_OPTIONS,
-        lazy: false,
         locales: localeInfo
       }
     },
@@ -288,7 +286,6 @@ test('toCode: function (named)', async () => {
       normalizedLocales: [],
       options: {
         ...NUXT_I18N_OPTIONS,
-        lazy: false,
         locales: localeInfo
       }
     },

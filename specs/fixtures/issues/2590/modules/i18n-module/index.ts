@@ -19,7 +19,6 @@ export default defineNuxtModule({
     )
 
     await installModule('@nuxtjs/i18n', {
-      lazy: true,
       defaultLocale: 'en',
       experimental: {
         jsTsFormatResource: true
