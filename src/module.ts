@@ -94,7 +94,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       prepareStrategy(ctx, nuxt)
 
       /**
-       * disable preloading/prefetching lazy loaded locales
+       * disable preloading/prefetching of locale files
        */
       prepareBuildManifest(ctx, nuxt)
 

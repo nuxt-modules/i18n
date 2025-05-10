@@ -92,7 +92,7 @@ export interface ExperimentalFeatures {
    */
   devCache?: boolean
   /**
-   * Lazy loaded messages cache lifetime in seconds
+   * Locale messages cache lifetime in seconds
    * - `-1` cache disabled
    * @default -1 // disabled, or `86400` (1 day) if all locale files are static files
    */

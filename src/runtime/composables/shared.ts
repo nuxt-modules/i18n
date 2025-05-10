@@ -3,11 +3,6 @@ import type { Locale, LocaleMessages, DefineLocaleMessage, I18nOptions } from 'v
 /**
  * The `defineI18nLocale` defines a composable function to dynamically load locale messages.
  *
- * @remarks
- * This function is used to dynamically load a locale with lazy-load translations.
- *
- * You can use at JavaScript and TypeScript extension formats.
- *
  * @param locale - A target locale that is passed from nuxt i18n module.
  *
  * @returns Returns the locale messages object that will be resolved with Promise.
