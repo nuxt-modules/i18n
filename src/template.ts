@@ -71,7 +71,7 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
         [
           `  import.meta.hot.accept("${loader.relative}", async mod => {`,
           //   replace locale loader
-          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve('mod.default')`,
+          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
           //   trigger locale messages reload for locale
           `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${locale}")`,
           `  })`
