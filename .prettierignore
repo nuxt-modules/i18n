@@ -6,3 +6,4 @@ docs/content
 .vscode/settings.json
 pnpm-lock.yaml
 CODE_OF_CONDUCT.md
+SECURITY.md
