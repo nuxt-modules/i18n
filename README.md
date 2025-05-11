@@ -46,39 +46,13 @@ npx nuxi@latest module add i18n
 }
 ```
 
-## Edge Release Channel &nbsp; [![](https://img.shields.io/npm/v/%40nuxtjs%2Fi18n-edge/latest.svg?style=flat&label=npm&colorA=18181B&color=blue)](https://npmjs.com/package/%40nuxtjs%2Fi18n-edge)
+## Sponsors
 
-Nuxt I18n lands commits, improvements and bug fixes every day, you can opt in to test these before their release using the edge release channel.
-
-### Opting In
-
-Update `@nuxtjs/i18n` dependency inside `package.json`:
-
-```diff
-{
-  "devDependencies": {
---    "@nuxtjs/i18n": "^8.0.0"
-++    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
-  }
-}
-```
-
-Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
-
-### Opting Out
-
-Update `@nuxtjs/i18n` dependency inside `package.json`:
-
-```diff
-{
-  "devDependencies": {
---    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge"
-++    "@nuxtjs/i18n": "^8.0.0"
-  }
-}
-```
-
-Remove lockfile (`package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml`) and reinstall dependencies.
+<p align="center">
+  <a href="https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg">
+    <img src="https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg" />
+  </a>
+</p>
 
 ## Nuxt 2
 
