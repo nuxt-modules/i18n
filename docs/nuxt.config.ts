@@ -1,7 +1,7 @@
 import pkg from '../package.json'
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui-pro', '@nuxt/content', 'nuxt-og-image', 'nuxt-llms'],
+  modules: ['@nuxt/ui-pro', '@nuxt/content', '@nuxt/scripts', 'nuxt-og-image', 'nuxt-llms'],
   routeRules: {
     // v7
     '/docs/v7': { redirect: '/docs/v7/setup' },
@@ -26,7 +26,13 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      version: pkg.version
+      version: pkg.version,
+      scripts: {
+        cloudflareWebAnalytics: {
+          // NUXT_PUBLIC_SCRIPTS_CLOUDFLARE_WEB_ANALYTICS_TOKEN
+          token: ''
+        }
+      }
     }
   },
 
@@ -63,5 +69,12 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   typescript: { strict: false },
+
+  scripts: {
+    registry: {
+      cloudflareWebAnalytics: true
+    }
+  },
+
   compatibilityDate: '2024-09-26'
 })
