@@ -5,7 +5,6 @@ export default defineNuxtConfig({
     // some of the options are taken from the runtimeConfig
     strategy: 'no_prefix',
     differentDomains: true,
-    lazy: false,
     locales: [
       {
         code: 'en',

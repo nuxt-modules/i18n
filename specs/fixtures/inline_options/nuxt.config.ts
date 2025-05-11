@@ -7,7 +7,6 @@ export default defineNuxtConfig({
     [
       '@nuxtjs/i18n',
       {
-        lazy: false,
         langDir: 'lang',
         defaultLocale: 'en',
         detectBrowserLanguage: false,

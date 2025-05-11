@@ -58,7 +58,6 @@ export const DEFAULT_OPTIONS = {
   trailingSlash: false,
   defaultLocaleRouteNameSuffix: 'default',
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
-  lazy: false,
   langDir: 'locales',
   rootRedirect: undefined,
 

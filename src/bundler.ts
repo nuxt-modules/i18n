@@ -134,7 +134,6 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __NUXT_I18N_MODULE_ID__: JSON.stringify(NUXT_I18N_MODULE_ID),
     __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
-    __LAZY_LOCALES__: String(options.lazy),
     __DIFFERENT_DOMAINS__: String(options.differentDomains),
     __MULTI_DOMAIN_LOCALES__: String(options.multiDomainLocales),
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),

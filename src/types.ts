@@ -92,7 +92,7 @@ export interface ExperimentalFeatures {
    */
   devCache?: boolean
   /**
-   * Lazy loaded messages cache lifetime in seconds
+   * Locale messages cache lifetime in seconds
    * - `-1` cache disabled
    * @default -1 // disabled, or `86400` (1 day) if all locale files are static files
    */
@@ -161,7 +161,6 @@ export type NuxtI18nOptions<
   multiDomainLocales?: boolean
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
-  lazy?: boolean
   pages?: CustomRoutePages
   customRoutes?: 'page' | 'config'
   /**
@@ -398,11 +397,6 @@ export interface I18nPublicRuntimeConfig {
    * @internal
    */
   defaultLocale: Required<NuxtI18nOptions>['defaultLocale']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  lazy: Required<NuxtI18nOptions>['lazy']
   /**
    * Overwritten at build time, used to pass generated options to runtime
    * @internal

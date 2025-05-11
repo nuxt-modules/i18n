@@ -71,7 +71,7 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
         [
           `  import.meta.hot.accept("${loader.relative}", async mod => {`,
           //   replace locale loader
-          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve('mod.default')`,
+          `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
           //   trigger locale messages reload for locale
           `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${locale}")`,
           `  })`
@@ -125,20 +125,13 @@ export function generateTemplateNuxtI18nOptions(
       '}'
     ].join('\n\n')
 
-  const importStrings = new Set<string>()
   const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
-    const val = opts.localeLoaders[locale]
-    const importers = val.flatMap(x => x.importString)
-    for (const importer of importers) {
-      importStrings.add(importer)
-    }
-    localeLoaderEntries[locale] = val.map(({ key, load, cache }) => ({ key, load, cache }))
+    localeLoaderEntries[locale] = opts.localeLoaders[locale].map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
   return `
 // @ts-nocheck
-${(!ctx.options.lazy && [...importStrings].join('\n')) || ''}
 
 export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 

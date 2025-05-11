@@ -527,6 +527,11 @@ export function createNuxtI18nDev() {
     const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
     for (const k of messageLocales) {
       if (locale && k !== locale) continue
+
+      if (opts?.messages && k in opts.messages) {
+        composer.setLocaleMessage(k, opts?.messages[k] ?? {})
+      }
+
       await ctx.loadLocaleMessages(k)
     }
 
