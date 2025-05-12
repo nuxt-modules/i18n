@@ -101,6 +101,7 @@ const links = computed(() =>
     <template v-if="page.body.toc.links.length" #right>
       <UContentToc :title="toc?.title" :links="page.body?.toc?.links">
         <template v-if="toc?.bottom" #bottom>
+          <Ads />
           <USeparator v-if="page.body?.toc?.links?.length" type="dashed" />
           <UPageLinks title="Community" :links="links" />
         </template>
