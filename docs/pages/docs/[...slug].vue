@@ -5,13 +5,14 @@ definePageMeta({ layout: 'docs' })
 const route = useRoute()
 const { $currentDocsVersionNavigation } = useNuxtApp()
 
+const routePath = computed(() => route.path.replace(/\/$/, '')) // Remove trailing slash
 // Main page data
 const { data } = await useAsyncData(
-  route.path,
+  routePath,
   () =>
     Promise.all([
-      queryCollection('docs').path(route.path).first(),
-      queryCollectionItemSurroundings('docs', route.path, { fields: ['title', 'description'] })
+      queryCollection('docs').path(routePath.value).first(),
+      queryCollectionItemSurroundings('docs', routePath.value, { fields: ['title', 'description'] })
     ]),
   { transform: ([page, surround]) => ({ page, surround }) }
 )
