@@ -84,6 +84,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           // ensure imported resources are transformed as well
           const staticImports = findStaticImports(_code)
           for (const x of staticImports) {
+            if (x.specifier.startsWith('\0')) continue
             i18nPathSet.add(await resolvePath(resolve(dirname(id), x.specifier)))
           }
 
