@@ -17,7 +17,6 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp()
     const i18n = nuxt._vueI18n
 
-    // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
       for (const locale of localeCodes) {
         try {
@@ -35,7 +34,6 @@ export default defineNuxtPlugin({
       const serverI18n = nuxt.ssrContext?.event.context.nuxtI18n
       // set server context messages
       if (serverI18n) {
-        // wrap translation functions to track translation keys used during SSR
         if (__I18N_STRIP_UNUSED__) {
           wrapTranslationFunctions(i18n.global as Composer, nuxt._nuxtI18n, serverI18n)
         }
@@ -52,17 +50,23 @@ export default defineNuxtPlugin({
       await mergePayloadMessages(nuxt._nuxtI18nCtx, i18n.global as Composer, nuxt)
 
       /**
-       * Ensure messages are loaded before switching page for the first time
+       * Ensure complete messages are loaded before switching page for the first time
+       * in case preloaded messages are a subset due to unused key stripping
        */
-      const unsub = nuxt.$router.beforeResolve(async (to, from) => {
-        if (to.path === from.path) return
-        await nuxt._nuxtI18nCtx.loadLocaleMessages(nuxt._nuxtI18n.getLocale())
-        unsub()
-      })
+      if (nuxt._nuxtI18nCtx.preloaded && __I18N_STRIP_UNUSED__) {
+        const unsub = nuxt.$router.beforeResolve(async (to, from) => {
+          if (to.path === from.path) return
+          await nuxt._nuxtI18nCtx.loadLocaleMessages(nuxt._nuxtI18n.getLocale())
+          unsub()
+        })
+      }
     }
   }
 })
 
+/**
+ * Wrap translation functions to track translation keys used during SSR
+ */
 function wrapTranslationFunctions(i18n: Composer, ctx: ComposableContext, serverI18n: H3EventContext['nuxtI18n']) {
   const originalT = i18n.t.bind(i18n)
   type TParams = Parameters<typeof originalT>
@@ -90,19 +94,20 @@ function wrapTranslationFunctions(i18n: Composer, ctx: ComposableContext, server
   }
 }
 
+/**
+ * Merge preloaded messages from serialized messages payload
+ */
 async function mergePayloadMessages(nuxtI18nCtx: NuxtApp['_nuxtI18nCtx'], i18n: Composer, nuxt = useNuxtApp()) {
   const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const preloadedMessages: LocaleMessages<DefineLocaleMessage> = content && parse(content)
-
   const preloadedKeys = Object.keys(preloadedMessages || {})
   if (preloadedMessages && preloadedKeys.length && nuxtI18nCtx.dynamicResourcesSSG) {
     try {
       const msg = await Promise.all(
-        preloadedKeys.map(async locale => {
-          const m = await getLocaleMessagesMergedCached(locale, localeLoaders[locale])
-          return { [locale]: m }
-        })
+        preloadedKeys.map(async locale => ({
+          [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale])
+        }))
       )
       for (const m of msg) {
         deepCopy(m, i18n.messages)
