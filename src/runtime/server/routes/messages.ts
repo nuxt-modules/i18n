@@ -17,7 +17,7 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   }
 
   const ctx = useI18nContext(event)
-  if (locale in ctx.localeConfigs === false) {
+  if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
 
