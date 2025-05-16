@@ -10,7 +10,8 @@ import {
   navigate,
   createBaseUrlGetter,
   createNuxtI18nDev,
-  createComposableContext
+  createComposableContext,
+  type ComposableContext
 } from '../utils'
 import { getLocaleCookie, createI18nCookie, getBrowserLocale } from '../internal'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
@@ -23,10 +24,11 @@ import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDoma
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { isLocaleWithFallbacksCacheable } from '../shared/cache'
 
-import type { Locale, I18nOptions, Composer } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer, VueI18n, TranslateOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 import type { CompatRoute } from '../types'
+import type { H3EventContext } from 'h3'
 
 const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
@@ -140,6 +142,10 @@ export default defineNuxtPlugin({
     }
 
     nuxt._nuxtI18n = createComposableContext({ i18n, getDomainFromLocale: ctx.getDomainFromLocale, runtimeI18n })
+
+    if (__I18N_STRIP_UNUSED__ && import.meta.server && nuxt.ssrContext?.event.context.nuxtI18n) {
+      wrapTranslationFunctions(i18n.global, nuxt._nuxtI18n, nuxt.ssrContext?.event.context.nuxtI18n)
+    }
 
     // HMR helper functionality
     if (import.meta.dev) {
@@ -274,3 +280,38 @@ export default defineNuxtPlugin({
     nuxt.provide('switchLocalePath', useSwitchLocalePath())
   }
 })
+
+/**
+ * Wrap translation functions to track translation keys used during SSR
+ */
+function wrapTranslationFunctions(
+  i18n: Composer | VueI18n,
+  ctx: ComposableContext,
+  serverI18n: H3EventContext['nuxtI18n']
+) {
+  const originalT = i18n.t.bind(i18n)
+  type TParams = Parameters<typeof originalT>
+  i18n.t = (
+    key: string,
+    listOrNamed?: string | number | unknown[] | Record<string, unknown>,
+    opts?: TranslateOptions<string> | number | string
+  ) => {
+    const locale = ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string
+    serverI18n?.trackKey(key, locale)
+    // @ts-expect-error type mismatch
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return originalT(key, listOrNamed as TParams[1], opts)
+  }
+
+  const originalTe = i18n.te.bind(i18n)
+  i18n.te = (key, locale) => {
+    serverI18n?.trackKey(key, locale || ctx.getLocale())
+    return originalTe(key, locale)
+  }
+
+  const originalTm = i18n.tm.bind(i18n)
+  i18n.tm = key => {
+    serverI18n?.trackKey(key, ctx.getLocale())
+    return originalTm(key)
+  }
+}

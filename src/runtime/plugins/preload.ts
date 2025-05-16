@@ -1,14 +1,11 @@
 import { parse } from 'devalue'
-import { deepCopy } from '@intlify/shared'
+import { unref } from 'vue'
 import { useNuxtApp, defineNuxtPlugin, type NuxtApp } from '#app'
 import { localeCodes, localeLoaders } from '#build/i18n.options.mjs'
 import { getLocaleMessagesMergedCached } from '../shared/messages'
 
-import type { TranslateOptions, Composer } from 'vue-i18n'
+import type { Composer, VueI18n } from 'vue-i18n'
 import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
-import { unref } from 'vue'
-import type { H3EventContext } from 'h3'
-import type { ComposableContext } from '../utils'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:preload',
@@ -34,11 +31,7 @@ export default defineNuxtPlugin({
       const serverI18n = nuxt.ssrContext?.event.context.nuxtI18n
       // set server context messages
       if (serverI18n) {
-        if (__I18N_STRIP_UNUSED__) {
-          wrapTranslationFunctions(i18n.global as Composer, nuxt._nuxtI18n, serverI18n)
-        }
-
-        const msg = unref(i18n.global.messages) as LocaleMessages<DefineLocaleMessage>
+        const msg = unref(nuxt._vueI18n.global.messages) as LocaleMessages<DefineLocaleMessage>
         serverI18n.messages ??= {}
         for (const k in msg) {
           serverI18n.messages[k] = msg[k]
@@ -47,7 +40,7 @@ export default defineNuxtPlugin({
     }
 
     if (import.meta.client) {
-      await mergePayloadMessages(nuxt._nuxtI18nCtx, i18n.global as Composer, nuxt)
+      await mergePayloadMessages(nuxt._nuxtI18nCtx, i18n.global, nuxt)
 
       /**
        * Ensure complete messages are loaded before switching page for the first time
@@ -65,56 +58,43 @@ export default defineNuxtPlugin({
 })
 
 /**
- * Wrap translation functions to track translation keys used during SSR
- */
-function wrapTranslationFunctions(i18n: Composer, ctx: ComposableContext, serverI18n: H3EventContext['nuxtI18n']) {
-  const originalT = i18n.t.bind(i18n)
-  type TParams = Parameters<typeof originalT>
-  i18n.t = (
-    key: string,
-    listOrNamed?: string | number | unknown[] | Record<string, unknown>,
-    opts?: TranslateOptions<string> | number | string
-  ) => {
-    const locale = ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string
-    serverI18n?.trackKey(key, locale)
-    // @ts-expect-error type mismatch
-    return originalT(key, listOrNamed as TParams[1], opts)
-  }
-
-  const originalTe = i18n.te.bind(i18n)
-  i18n.te = (key, locale) => {
-    serverI18n?.trackKey(key, locale || ctx.getLocale())
-    return originalTe(key, locale)
-  }
-
-  const originalTm = i18n.tm.bind(i18n)
-  i18n.tm = key => {
-    serverI18n?.trackKey(key, ctx.getLocale())
-    return originalTm(key)
-  }
-}
-
-/**
  * Merge preloaded messages from serialized messages payload
  */
-async function mergePayloadMessages(nuxtI18nCtx: NuxtApp['_nuxtI18nCtx'], i18n: Composer, nuxt = useNuxtApp()) {
+async function mergePayloadMessages(
+  nuxtI18nCtx: NuxtApp['_nuxtI18nCtx'],
+  i18n: Composer | VueI18n,
+  nuxt = useNuxtApp()
+) {
   const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const preloadedMessages: LocaleMessages<DefineLocaleMessage> = content && parse(content)
   const preloadedKeys = Object.keys(preloadedMessages || {})
-  if (preloadedMessages && preloadedKeys.length && nuxtI18nCtx.dynamicResourcesSSG) {
-    try {
-      const msg = await Promise.all(
-        preloadedKeys.map(async locale => ({
-          [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale])
-        }))
-      )
-      for (const m of msg) {
-        deepCopy(m, i18n.messages)
+
+  if (preloadedKeys.length) {
+    if (nuxtI18nCtx.dynamicResourcesSSG) {
+      const getKeyedLocaleMessages = async (locale: string) => {
+        return { [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale]) }
+      }
+
+      try {
+        const msg = await Promise.all(preloadedKeys.map(getKeyedLocaleMessages))
+        for (const m of msg) {
+          for (const k in m) {
+            i18n.mergeLocaleMessage(k, m[k])
+          }
+        }
+      } catch (e) {
+        console.log('Error loading messages', e)
       }
       nuxtI18nCtx.preloaded = true
-    } catch (e) {
-      console.log('Error loading messages', e)
+    } else {
+      for (const locale of preloadedKeys) {
+        const messages = preloadedMessages[locale]
+        if (messages) {
+          i18n.mergeLocaleMessage(locale, messages)
+        }
+      }
+      nuxtI18nCtx.preloaded = true
     }
   }
 }

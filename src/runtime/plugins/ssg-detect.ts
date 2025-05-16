@@ -5,7 +5,9 @@ import { detectBrowserLanguage } from '../internal'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:ssg-detect',
-  dependsOn: ['i18n:plugin', 'i18n:plugin:route-locale-detect'],
+  dependsOn: !__I18N_PRELOAD__
+    ? ['i18n:plugin', 'i18n:plugin:route-locale-detect']
+    : ['i18n:plugin', 'i18n:plugin:route-locale-detect', 'i18n:plugin:preload'],
   enforce: 'post',
   setup() {
     const nuxt = /*#__PURE__*/ useNuxtApp()
