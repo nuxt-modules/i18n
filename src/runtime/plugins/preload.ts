@@ -11,6 +11,7 @@ export default defineNuxtPlugin({
   name: 'i18n:plugin:preload',
   dependsOn: ['i18n:plugin'],
   async setup() {
+    if (!__I18N_PRELOAD__) return
     const nuxt = useNuxtApp()
     const i18n = nuxt._vueI18n
 
