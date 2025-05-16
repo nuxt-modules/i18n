@@ -1,5 +1,5 @@
 import { describe, it, assert, test } from 'vitest'
-import { createLocaleRouteNameGetter } from '../src/runtime/utils'
+import { createLocaleRouteNameGetter } from '../src/runtime/routing/utils'
 import { findBrowserLocale } from '#i18n-kit/routing'
 
 const ROUTE_GEN_CONFIG = {
