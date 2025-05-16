@@ -4,12 +4,10 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
-import { isLocaleWithFallbacksCacheable } from './utils/cache'
-import { getFallbackLocaleCodes } from '../shared/messages'
+import { createLocaleConfigs } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
-import { localeCodes } from '#internal/i18n/options.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 
 import type { H3Event } from 'h3'
@@ -17,15 +15,7 @@ import type { CoreOptions } from '@intlify/core'
 
 export default defineNitroPlugin(async nitro => {
   const options = await setupVueI18nOptions()
-
-  const getFallbackLocales = (locale: string) => getFallbackLocaleCodes(options.fallbackLocale, [locale])
-
-  const localeConfigs: Record<string, { cacheable: boolean; fallbacks: string[] }> = {}
-  for (const locale of localeCodes) {
-    const fallbacks = getFallbackLocales(locale)
-    const cacheable = isLocaleWithFallbacksCacheable(locale, fallbacks)
-    localeConfigs[locale] = { fallbacks, cacheable }
-  }
+  const localeConfigs = createLocaleConfigs(options.fallbackLocale)
 
   nitro.hooks.hook('request', async (event: H3Event) => {
     event.context.nuxtI18n = createI18nContext()

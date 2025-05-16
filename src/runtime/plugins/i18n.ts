@@ -3,7 +3,7 @@ import { createI18n } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
 import { localeCodes, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
-import { getFallbackLocaleCodes, getLocaleMessagesMergedCached } from '../shared/messages'
+import { getLocaleMessagesMergedCached } from '../shared/messages'
 import {
   loadAndSetLocale,
   detectRedirect,
@@ -21,8 +21,8 @@ import { getI18nTarget } from '../compatibility'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
+import { createLocaleConfigs } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { isLocaleWithFallbacksCacheable } from '../shared/cache'
 
 import type { Locale, I18nOptions, Composer, VueI18n, TranslateOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -78,12 +78,7 @@ export default defineNuxtPlugin({
     }
 
     if (import.meta.server) {
-      const localeConfigs: Record<string, { fallbacks: string[]; cacheable: boolean }> = {}
-      for (const locale of localeCodes) {
-        const fallbacks = getFallbackLocaleCodes(vueI18nOptions.fallbackLocale!, [locale])
-        const cacheable = isLocaleWithFallbacksCacheable(locale, fallbacks)
-        localeConfigs[locale] = { fallbacks, cacheable }
-      }
+      const localeConfigs = createLocaleConfigs(vueI18nOptions.fallbackLocale!)
       serverLocaleConfigs.value = localeConfigs
       if (nuxt.ssrContext?.event.context.nuxtI18n) {
         nuxt.ssrContext.event.context.nuxtI18n.localeConfigs = localeConfigs
