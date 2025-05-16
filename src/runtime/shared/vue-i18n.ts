@@ -13,9 +13,10 @@ export const setupVueI18nOptions = async (): Promise<ResolvedI18nOptions> => {
   const options = await loadVueI18nOptions(vueI18nConfigs)
 
   options.locale = runtimeI18n.defaultLocale || options.locale || 'en-US'
-  options.fallbackLocale = options.fallbackLocale ?? false
-
+  options.fallbackLocale ??= false
   options.messages ??= {}
+
+  // initialize locale objects to make vue-i18n aware of available locales
   for (const locale of _localeCodes) {
     options.messages[locale] ??= {}
   }

@@ -162,6 +162,7 @@ declare module '#app' {
     _nuxtI18nCtx: {
       preloaded: boolean
       firstAccess: boolean
+      dynamicResourcesSSG: boolean
       setLocale: (locale: string) => void
       getDomainFromLocale: (locale: Locale) => string | undefined
       getLocaleFromRoute: (route: string | CompatRoute) => string
