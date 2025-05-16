@@ -1,5 +1,5 @@
 import { computed, isRef, ref, watch } from 'vue'
-import { createI18n, type LocaleMessages, type DefineLocaleMessage } from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
 
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useState } from '#imports'
 import { localeCodes, normalizedLocales, localeLoaders } from '#build/i18n.options.mjs'
@@ -10,7 +10,8 @@ import {
   navigate,
   createBaseUrlGetter,
   createNuxtI18nDev,
-  createComposableContext
+  createComposableContext,
+  type ComposableContext
 } from '../utils'
 import { getLocaleCookie, createI18nCookie, getBrowserLocale } from '../internal'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
@@ -20,16 +21,15 @@ import { getI18nTarget } from '../compatibility'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createDomainFromLocaleGetter, getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
-import { parse } from 'devalue'
-import { deepCopy } from '@intlify/shared'
+import { createLocaleConfigs } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 
-import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
+import type { Locale, I18nOptions, Composer, VueI18n, TranslateOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 import type { CompatRoute } from '../types'
+import type { H3EventContext } from 'h3'
 
-const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
 const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
 
@@ -37,6 +37,7 @@ function createNuxtI18nContext() {
   return {
     firstAccess: undefined! as boolean,
     preloaded: undefined! as boolean,
+    dynamicResourcesSSG: !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__),
     setLocale: undefined! as (locale: string) => void,
     getLocaleFromRoute: undefined! as (route: string | CompatRoute) => string,
     getDomainFromLocale: undefined! as (locale: Locale) => string | undefined,
@@ -71,63 +72,21 @@ export default defineNuxtPlugin({
     runtimeI18n.defaultLocale = defaultLocaleDomain
     __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const vueI18nOptions: I18nOptions = nuxt.ssrContext?.event?.context?.vueI18n || (await setupVueI18nOptions())
+    const vueI18nOptions: I18nOptions = await setupVueI18nOptions()
     if (defaultLocaleDomain) {
       vueI18nOptions.locale = defaultLocaleDomain
     }
 
-    // initialize locale objects to make vue-i18n aware of available locales
-    for (const l of localeCodes) {
-      vueI18nOptions.messages![l] ??= {}
-    }
-
-    let preloadedMessages: LocaleMessages<DefineLocaleMessage> | undefined
-    // retrieve loaded messages from server-side if enabled
     if (import.meta.server) {
-      const serverI18n = nuxt.ssrContext!.event.context.nuxtI18n
-      if (serverI18n?.localeConfigs) {
-        serverLocaleConfigs.value = serverI18n.localeConfigs
+      const localeConfigs = createLocaleConfigs(vueI18nOptions.fallbackLocale!)
+      serverLocaleConfigs.value = localeConfigs
+      if (nuxt.ssrContext?.event.context.nuxtI18n) {
+        nuxt.ssrContext.event.context.nuxtI18n.localeConfigs = localeConfigs
       }
-      if (serverI18n?.messages && Object.keys(serverI18n.messages).length) {
-        vueI18nOptions.messages = serverI18n.messages
-        ctx.preloaded = true
-      }
-    }
-
-    if (import.meta.client) {
-      const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
-      if (content) {
-        preloadedMessages = parse(content) as LocaleMessages<DefineLocaleMessage> | undefined
-      }
-      if (preloadedMessages && Object.keys(preloadedMessages).length && dynamicResourcesSSG) {
-        try {
-          const msg = await Promise.all(
-            Object.keys(preloadedMessages).map(async locale => ({
-              [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale])
-            }))
-          )
-          for (const m of msg) {
-            deepCopy(m, preloadedMessages)
-          }
-        } catch (e) {
-          console.log('Error loading messages', e)
-        }
-      }
-    }
-
-    if (preloadedMessages) {
-      __DEBUG__ && logger.log('preloaded full static messages', ctx.preloaded)
-      for (const locale of localeCodes) {
-        if (preloadedMessages[locale]) {
-          deepCopy(preloadedMessages[locale], vueI18nOptions.messages![locale])
-        }
-      }
-      ctx.preloaded = true
     }
 
     ctx.loadLocaleMessages = async (locale: string) => {
-      if (dynamicResourcesSSG || import.meta.dev) {
+      if (ctx.dynamicResourcesSSG || import.meta.dev) {
         const locales = ctx.getLocaleConfig(locale)?.fallbacks ?? []
         if (!locales.includes(locale)) {
           locales.push(locale)
@@ -179,47 +138,8 @@ export default defineNuxtPlugin({
 
     nuxt._nuxtI18n = createComposableContext({ i18n, getDomainFromLocale: ctx.getDomainFromLocale, runtimeI18n })
 
-    if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
-      const _ctx = nuxt._nuxtI18n
-      if (import.meta.server) {
-        const serverI18n = import.meta.server ? nuxt.ssrContext!.event.context.nuxtI18n : undefined
-        const target = i18n.global
-
-        const originalT = target.t.bind(target)
-        type TParams = Parameters<typeof originalT>
-        target.t = (
-          key,
-          listOrNamed?: string | number | unknown[] | Record<string, unknown>,
-          opts?: TranslateOptions<string> | number | string
-        ) => {
-          const locale = ((typeof opts === 'object' && opts?.locale) || _ctx.getLocale()) as string
-          serverI18n?.trackKey(key, locale)
-          return originalT(key, listOrNamed as TParams[1], opts as TParams[2])
-        }
-
-        const originalTe = target.te.bind(target)
-        target.te = (key, locale) => {
-          serverI18n?.trackKey(key, locale || _ctx.getLocale())
-          return originalTe(key, locale)
-        }
-
-        const originalTm = target.tm.bind(target)
-        target.tm = key => {
-          serverI18n?.trackKey(key, _ctx.getLocale())
-          return originalTm(key)
-        }
-      }
-
-      if (import.meta.client) {
-        /**
-         * Ensure messages are loaded before switching page for the first time
-         */
-        const unsub = nuxt.$router.beforeResolve(async (to, from) => {
-          if (to.path === from.path) return
-          await ctx.loadLocaleMessages(_ctx.getLocale())
-          unsub()
-        })
-      }
+    if (__I18N_STRIP_UNUSED__ && import.meta.server && nuxt.ssrContext?.event.context.nuxtI18n) {
+      wrapTranslationFunctions(i18n.global, nuxt._nuxtI18n, nuxt.ssrContext?.event.context.nuxtI18n)
     }
 
     // HMR helper functionality
@@ -355,3 +275,38 @@ export default defineNuxtPlugin({
     nuxt.provide('switchLocalePath', useSwitchLocalePath())
   }
 })
+
+/**
+ * Wrap translation functions to track translation keys used during SSR
+ */
+function wrapTranslationFunctions(
+  i18n: Composer | VueI18n,
+  ctx: ComposableContext,
+  serverI18n: H3EventContext['nuxtI18n']
+) {
+  const originalT = i18n.t.bind(i18n)
+  type TParams = Parameters<typeof originalT>
+  i18n.t = (
+    key: string,
+    listOrNamed?: string | number | unknown[] | Record<string, unknown>,
+    opts?: TranslateOptions<string> | number | string
+  ) => {
+    const locale = ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string
+    serverI18n?.trackKey(key, locale)
+    // @ts-expect-error type mismatch
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return originalT(key, listOrNamed as TParams[1], opts)
+  }
+
+  const originalTe = i18n.te.bind(i18n)
+  i18n.te = (key, locale) => {
+    serverI18n?.trackKey(key, locale || ctx.getLocale())
+    return originalTe(key, locale)
+  }
+
+  const originalTm = i18n.tm.bind(i18n)
+  i18n.tm = key => {
+    serverI18n?.trackKey(key, ctx.getLocale())
+    return originalTm(key)
+  }
+}

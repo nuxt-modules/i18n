@@ -24,15 +24,10 @@ if (import.meta.dev) {
 export const fetchMessages = async (locale: string) =>
   await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${locale}/messages.json`, { headers })
 
-type ContextParams = Pick<NonNullable<H3EventContext['nuxtI18n']>, 'getFallbackLocales' | 'localeConfigs'>
-export function createI18nContext({
-  getFallbackLocales,
-  localeConfigs
-}: ContextParams): NonNullable<H3EventContext['nuxtI18n']> {
+export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
   return {
     messages: {},
-    getFallbackLocales,
-    localeConfigs,
+    localeConfigs: {},
     trackMap: {},
     trackKey(key, locale) {
       this.trackMap[locale] ??= new Set<string>()
@@ -57,15 +52,10 @@ declare module 'h3' {
     /** @internal */
     nuxtI18n?: {
       /**
-       * Get the fallback locales for the specified locale
-       * @internal
-       */
-      getFallbackLocales: (locale: string) => string[]
-      /**
        * Cached locale configurations based on runtime config
        * @internal
        */
-      localeConfigs: Record<string, ServerLocaleConfig>
+      localeConfigs?: Record<string, ServerLocaleConfig>
       /**
        * The loaded messages for the current request, used to insert into the rendered HTML for hydration
        * @internal
