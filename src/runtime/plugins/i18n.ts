@@ -104,9 +104,7 @@ export default defineNuxtPlugin({
           }
 
           const route = nuxt.$router.currentRoute.value
-          const redirectPath = await nuxt.runWithContext(() =>
-            detectRedirect({ to: route, locale, routeLocale: ctx.getLocaleFromRoute(route) })
-          )
+          const redirectPath = await nuxt.runWithContext(() => detectRedirect(route, locale))
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
 

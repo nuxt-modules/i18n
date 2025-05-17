@@ -144,17 +144,14 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const nuxtApp = useNuxtApp()
   const ctx = useNuxtI18nContext()
-  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-  const { skipSettingLocaleOnNavigate, detectBrowserLanguage: opts } = runtimeI18n
+  const { skipSettingLocaleOnNavigate, detectBrowserLanguage } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
 
   const oldLocale = unref(nuxtApp.$i18n.locale)
   const localeCodes = unref(nuxtApp.$i18n.localeCodes)
 
   // sets the locale cookie if unset or not up to date
   function syncCookie(locale: Locale = oldLocale) {
-    if (opts === false || !opts.useCookie) return
-    if (skipSettingLocaleOnNavigate) return
-
+    if (!detectBrowserLanguage || !detectBrowserLanguage.useCookie || skipSettingLocaleOnNavigate) return
     nuxtApp.$i18n.setLocaleCookie(locale)
   }
 
@@ -240,8 +237,9 @@ function shouldSkipDetection(route: string | CompatRoute): boolean {
   return false
 }
 
-export function detectLocale(route: string | CompatRoute, routeLocale: string) {
+export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
+  const ctx = useNuxtI18nContext(nuxtApp)
   const runtimeI18n = useNuxtApp().$config.public.i18n as I18nPublicRuntimeConfig
   const { useCookie, fallbackLocale } = runtimeI18n.detectBrowserLanguage || {}
 
@@ -267,7 +265,7 @@ export function detectLocale(route: string | CompatRoute, routeLocale: string) {
       yield getLocaleDomain(normalizedLocales, route)
     } else if (__I18N_STRATEGY__ !== 'no_prefix') {
       // route
-      yield routeLocale
+      yield ctx.getLocaleFromRoute(route)
     }
   }
 
@@ -281,29 +279,17 @@ export function detectLocale(route: string | CompatRoute, routeLocale: string) {
   return unref(nuxtApp.$i18n.locale) || runtimeI18n.defaultLocale || ''
 }
 
-type DetectRedirectOptions = {
-  to: CompatRoute
-  from?: CompatRoute
-  /** The locale we want to navigate to */
-  locale: Locale
-  /** Locale detected from route */
-  routeLocale: string
-}
-
 /**
  * Returns a localized path to redirect to, or an empty string if no redirection should occur
  *
  * @param inMiddleware - whether this is called during navigation middleware
  */
-export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirectOptions, inMiddleware = false): string {
+export function detectRedirect(to: CompatRoute, locale: string, inMiddleware = false): string {
+  const routeLocale = useNuxtI18nContext().getLocaleFromRoute(to)
   // no locale change detected from routing
   if (routeLocale === locale || __I18N_STRATEGY__ === 'no_prefix') {
     return ''
   }
-
-  const logger = /*#__PURE__*/ createLogger('detectRedirect')
-  __DEBUG__ && logger.log({ to, from })
-  __DEBUG__ && logger.log({ locale, routeLocale, inMiddleware })
 
   const ctx = useComposableContext()
   let redirectPath = switchLocalePath(ctx, locale, to)
@@ -313,8 +299,8 @@ export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirect
     redirectPath = localePath(ctx, to.fullPath, locale)
   }
 
-  // resolved route is equal to current route, skip redirection (#1889, #2226)
-  if (isEqual(redirectPath, to.fullPath) || (from && isEqual(redirectPath, from.fullPath))) {
+  // skip redirection if resolved route matches current route (#1889, #2226)
+  if (isEqual(redirectPath, to.fullPath)) {
     return ''
   }
 
@@ -336,14 +322,7 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
   const logger = /*#__PURE__*/ createLogger('navigate')
   const ctx = useNuxtI18nContext(nuxt)
 
-  __DEBUG__ &&
-    logger.log('options', {
-      rootRedirect,
-      differentDomains: __DIFFERENT_DOMAINS__,
-      skipSettingLocaleOnNavigate,
-      enableNavigate,
-      isSSG: __IS_SSG__
-    })
+  __DEBUG__ && logger.log('options', { rootRedirect, skipSettingLocaleOnNavigate, enableNavigate })
 
   if (route.path === '/' && rootRedirect) {
     let redirectCode = 302
