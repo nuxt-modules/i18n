@@ -1,13 +1,12 @@
 import { isString } from '@intlify/shared'
 import { useCookie, useRequestHeader, useRuntimeConfig } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { findBrowserLocale } from '#i18n-kit/routing'
+import { findBrowserLocale, parseAcceptLanguage } from '#i18n-kit/browser'
 import { createLogger } from '#nuxt-i18n/logger'
 
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { CookieOptions, CookieRef } from 'nuxt/app'
 import type { CompatRoute } from './types'
-import { parseAcceptLanguage } from './browser'
 
 export function getCompatRoutePath(route: string | CompatRoute) {
   return isString(route) ? route : route.path
