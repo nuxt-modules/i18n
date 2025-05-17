@@ -2,10 +2,9 @@ import { isString } from '@intlify/shared'
 import { useCookie, useRequestHeader, useRuntimeConfig } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, parseAcceptLanguage } from '#i18n-kit/browser'
-import { createLogger } from '#nuxt-i18n/logger'
 
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CookieOptions, CookieRef } from 'nuxt/app'
+import type { CookieRef } from 'nuxt/app'
 import type { CompatRoute } from './types'
 
 export function getCompatRoutePath(route: string | CompatRoute) {
@@ -25,52 +24,28 @@ export function getBrowserLocale(): string | undefined {
   )
 }
 
-export function createI18nCookie() {
-  const detect = (useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig).detectBrowserLanguage
-  const cookieKey = (detect && detect.cookieKey) || __DEFAULT_COOKIE_KEY__
+export function createI18nCookie(runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig) {
+  const { cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey } = runtimeI18n.detectBrowserLanguage || {}
   const date = new Date()
-  const cookieOptions: CookieOptions<string | undefined> & { readonly: false } = {
+  return useCookie<string | undefined>(cookieKey || __DEFAULT_COOKIE_KEY__, {
     path: '/',
     readonly: false,
     expires: new Date(date.setDate(date.getDate() + 365)),
-    sameSite: detect && detect.cookieCrossOrigin ? 'none' : 'lax',
-    domain: (detect && detect.cookieDomain) || undefined,
-    secure: (detect && detect.cookieCrossOrigin) || (detect && detect.cookieSecure)
-  }
-  return useCookie(cookieKey, cookieOptions)
+    sameSite: cookieCrossOrigin ? 'none' : 'lax',
+    domain: cookieDomain || undefined,
+    secure: cookieCrossOrigin || cookieSecure
+  })
 }
 
-// TODO: remove side-effects
 export function getLocaleCookie(
   cookieRef: CookieRef<string | undefined>,
-  detect: false | DetectBrowserLanguageOptions,
-  defaultLocale: string
+  detect: false | DetectBrowserLanguageOptions
 ): string | undefined {
-  const { useCookie, cookieKey } = detect || {}
-  const logger = /*#__PURE__*/ createLogger(`getLocaleCookie:${import.meta.client ? 'client' : 'server'}`)
-  __DEBUG__ && logger.log({ useCookie, cookieKey, localeCodes })
-
-  if (!useCookie) {
+  if (!detect || !detect.useCookie || cookieRef.value == null) {
     return
   }
 
-  const localeCode: string | undefined = cookieRef.value ?? undefined
-  if (localeCode == null) {
-    __DEBUG__ && logger.log(`none`)
-    return
+  if (localeCodes.includes(cookieRef.value)) {
+    return cookieRef.value
   }
-
-  if (localeCodes.includes(localeCode)) {
-    __DEBUG__ && logger.log(`locale from cookie: `, localeCode)
-    return localeCode
-  }
-
-  if (defaultLocale) {
-    __DEBUG__ && logger.log(`unknown locale cookie (${localeCode}), setting to defaultLocale (${defaultLocale})`)
-    cookieRef.value = defaultLocale
-    return defaultLocale
-  }
-
-  __DEBUG__ && logger.log(`unknown locale cookie (${localeCode}), unsetting cookie`)
-  cookieRef.value = undefined
 }
