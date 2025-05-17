@@ -14,12 +14,7 @@ export default defineNuxtPlugin({
     const ctx = nuxt._nuxtI18nCtx
 
     async function handleRouteDetect(to: CompatRoute) {
-      let detected = detectLocale(
-        to,
-        ctx.getLocaleFromRoute(to),
-        unref(nuxt.$i18n.locale),
-        nuxt.$i18n.getLocaleCookie()
-      )
+      let detected = detectLocale(to, ctx.getLocaleFromRoute(to))
 
       if (ctx.firstAccess) {
         ctx.setLocale(detected)
