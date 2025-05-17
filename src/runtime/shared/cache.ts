@@ -3,7 +3,7 @@ import { localeLoaders } from '#build/i18n.options.mjs'
 /**
  * Check if the loaders for the specified locale are all cacheable
  */
-function isLocaleCacheable(locale: string) {
+export function isLocaleCacheable(locale: string) {
   return localeLoaders[locale] != null && localeLoaders[locale].every(loader => loader.cache !== false)
 }
 

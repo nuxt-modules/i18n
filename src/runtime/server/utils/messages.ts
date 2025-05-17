@@ -1,7 +1,8 @@
 import { deepCopy } from '@intlify/shared'
 import { localeLoaders } from '#internal/i18n/options.mjs'
 import { getLocaleMessagesMerged } from '../../shared/messages'
-import { cachedFunctionI18n, isLocaleCacheable, isLocaleWithFallbacksCacheable } from './cache'
+import { cachedFunctionI18n } from './cache'
+import { isLocaleCacheable, isLocaleWithFallbacksCacheable } from '../../shared/cache'
 
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'

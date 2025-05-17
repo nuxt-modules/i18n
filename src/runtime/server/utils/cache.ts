@@ -1,6 +1,5 @@
 import { useStorage } from 'nitropack/runtime'
 import { prefixStorage } from 'unstorage'
-import { localeLoaders } from '#internal/i18n/options.mjs'
 
 export interface CacheOptions<T = any, ArgsT extends unknown[] = any[]> {
   name?: string
@@ -61,18 +60,4 @@ export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
 
     return cache.value
   }
-}
-
-/**
- * Check if the loaders for the specified locale are all cacheable
- */
-export function isLocaleCacheable(locale: string) {
-  return localeLoaders[locale] != null && localeLoaders[locale].every(loader => loader.cache !== false)
-}
-
-/**
- * Check if the loaders for the specified locale and fallback locales are all cacheable
- */
-export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: string[]) {
-  return isLocaleCacheable(locale) && fallbackLocales.every(fallbackLocale => isLocaleCacheable(fallbackLocale))
 }
