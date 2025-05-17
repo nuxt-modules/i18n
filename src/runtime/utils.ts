@@ -1,13 +1,13 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
-import { navigateTo, useNuxtApp, useRouter, useState } from '#imports'
+import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer, getI18nTarget } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
-import { detectBrowserLanguage } from './internal'
+import { getCompatRoutePath } from './internal'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
-import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
+import { getRouteBaseName as _getRouteBaseName, getRoutePathLocaleRegex } from '#i18n-kit/routing'
 import {
   localePath,
   switchLocalePath,
@@ -219,48 +219,78 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
   return true
 }
 
-export function detectLocale(
-  route: string | CompatRoute,
-  routeLocale: string,
-  currentLocale: string | undefined,
-  localeCookie: string | undefined
-) {
+const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
+
+export function shouldSkipDetection(route: string | CompatRoute): boolean {
+  const _detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
+  const ctx = useNuxtApp()._nuxtI18nCtx
+
+  if (!_detect) {
+    return true
+  }
+
+  if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
+    return __IS_SSG__ && ctx.firstAccess && import.meta.server
+  }
+
+  if (!ctx.firstAccess) {
+    return true
+  }
+
+  const path = getCompatRoutePath(route)
+
+  // detection only on root
+  if (_detect.redirectOn === 'root' && path !== '/') {
+    return true
+  }
+
+  // detection only on unprefixed route
+  if (_detect.redirectOn === 'no prefix' && !_detect.alwaysRedirect && path.match(LOCALE_PATH_RE)) {
+    return true
+  }
+
+  return false
+}
+
+export function detectLocale(route: string | CompatRoute, routeLocale: string) {
   const nuxtApp = useNuxtApp()
+  const runtimeI18n = useNuxtApp().$config.public.i18n as I18nPublicRuntimeConfig
+  const { useCookie, fallbackLocale } = runtimeI18n.detectBrowserLanguage || {}
 
-  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-  const { defaultLocale, detectBrowserLanguage: _detect } = runtimeI18n
-  const logger = /*#__PURE__*/ createLogger('detectLocale')
+  function* detect() {
+    if (!shouldSkipDetection(route)) {
+      // navigation - strategy no_prefix
+      if (!nuxtApp._nuxtI18nCtx.firstAccess && __I18N_STRATEGY__ === 'no_prefix') {
+        yield unref(nuxtApp.$i18n.locale)
+      }
 
-  const detectedBrowser = detectBrowserLanguage(route, localeCookie, currentLocale)
-  __DEBUG__ && logger.log({ detectBrowserLanguage: detectedBrowser })
+      // cookie
+      yield useCookie && nuxtApp.$i18n.getLocaleCookie()
 
-  // detected browser language
-  if (detectedBrowser.locale && detectedBrowser.from != null && localeCodes.includes(detectedBrowser.locale)) {
-    return detectedBrowser.locale
+      // navigator or header
+      yield nuxtApp.$i18n.getBrowserLocale()
+
+      // fallback
+      yield fallbackLocale
+    }
+
+    if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
+      // domain
+      yield getLocaleDomain(normalizedLocales, route)
+    } else if (__I18N_STRATEGY__ !== 'no_prefix') {
+      // route
+      yield routeLocale
+    }
   }
 
-  let detected: string = ''
-  __DEBUG__ && logger.log('1/3', { detected, strategy: __I18N_STRATEGY__ })
-
-  // detect locale by route
-  if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-    detected ||= getLocaleDomain(normalizedLocales, route)
-  } else if (__I18N_STRATEGY__ !== 'no_prefix') {
-    detected ||= routeLocale
+  for (const detected of detect()) {
+    if (detected) {
+      return detected
+    }
   }
 
-  __DEBUG__ && logger.log('2/3', { detected, detectBrowserLanguage: _detect })
-
-  const cookieLocale =
-    (localeCodes.includes(detectedBrowser.locale) || (localeCookie && localeCodes.includes(localeCookie))) &&
-    _detect &&
-    _detect.useCookie &&
-    localeCookie
-  detected ||= cookieLocale || currentLocale || defaultLocale || ''
-
-  __DEBUG__ && logger.log('3/3', { detected, cookieLocale, defaultLocale, localeCookie })
-
-  return detected
+  // fallback
+  return unref(nuxtApp.$i18n.locale) || runtimeI18n.defaultLocale || ''
 }
 
 type DetectRedirectOptions = {
