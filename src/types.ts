@@ -162,7 +162,7 @@ export type NuxtI18nOptions<
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   langDir?: string | null
   pages?: CustomRoutePages
-  customRoutes?: 'page' | 'config'
+  customRoutes?: 'page' | 'config' | 'meta'
   /**
    * Do not use in projects - this is used internally for e2e tests to override default option merging.
    * @internal
