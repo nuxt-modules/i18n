@@ -2,7 +2,7 @@ import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#imports'
 import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
-import { getComposer, getI18nTarget } from './compatibility'
+import { getComposer } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { getCompatRoutePath } from './internal'
 import { loadVueI18nOptions } from './shared/messages'
@@ -17,8 +17,9 @@ import {
 } from './routing/routing'
 import { createLogger } from '#nuxt-i18n/logger'
 import { unref } from 'vue'
+import { useNuxtI18nContext } from './context'
 
-import type { I18n, Locale, I18nOptions } from 'vue-i18n'
+import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { RouteLocationPathRaw, Router, RouteRecordNameGeneric } from 'vue-router'
 import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
@@ -69,19 +70,9 @@ export function useComposableContext(): ComposableContext {
   return context
 }
 
-type ComposableContextOptions = {
-  i18n: I18n
-  runtimeI18n: I18nPublicRuntimeConfig
-  getDomainFromLocale: (locale: Locale) => string | undefined
-}
-export function createComposableContext({
-  i18n: _i18n,
-  runtimeI18n,
-  getDomainFromLocale
-}: ComposableContextOptions): ComposableContext {
+export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): ComposableContext {
   const router = useRouter()
-  const nuxt = useNuxtApp()
-  const i18n = getI18nTarget(_i18n)
+  const ctx = useNuxtI18nContext()
 
   const routeByPathResolver = createLocalizedRouteByPathResolver(router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n.defaultLocale)
@@ -126,12 +117,9 @@ export function createComposableContext({
       strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(__I18N_STRATEGY__ === 'no_prefix' && !__DIFFERENT_DOMAINS__)
     }),
-    getLocale: () => unref(i18n.locale),
-    getLocales: () => {
-      const locales = unref(i18n.locales)
-      return locales.map(x => (isString(x) ? { code: x } : x))
-    },
-    getBaseUrl: () => joinURL(unref(i18n.baseUrl), nuxt.$config.app.baseURL),
+    getLocale: ctx.getLocale,
+    getLocales: ctx.getLocales,
+    getBaseUrl: ctx.getBaseUrl,
     getRouteBaseName,
     getLocalizedDynamicParams: locale => {
       const params = (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
@@ -139,7 +127,7 @@ export function createComposableContext({
     },
     afterSwitchLocalePath: (path, locale) => {
       if (__DIFFERENT_DOMAINS__) {
-        const domain = getDomainFromLocale(locale)
+        const domain = ctx.getDomainFromLocale(locale)
         return (domain && joinURL(domain, path)) || path
       }
       return path
@@ -155,7 +143,7 @@ export function createComposableContext({
 export async function loadAndSetLocale(newLocale: Locale, initial: boolean = false): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const nuxtApp = useNuxtApp()
-  const ctx = nuxtApp._nuxtI18nCtx
+  const ctx = useNuxtI18nContext()
   const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
   const { skipSettingLocaleOnNavigate, detectBrowserLanguage: opts } = runtimeI18n
 
@@ -223,7 +211,7 @@ const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
 
 function shouldSkipDetection(route: string | CompatRoute): boolean {
   const _detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
-  const ctx = useNuxtApp()._nuxtI18nCtx
+  const ctx = useNuxtI18nContext()
 
   if (!_detect) {
     return true
@@ -346,7 +334,7 @@ type NavigateArgs = {
 export async function navigate({ nuxt, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
   const { rootRedirect, skipSettingLocaleOnNavigate, locales } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
-  const ctx = nuxt._nuxtI18nCtx
+  const ctx = useNuxtI18nContext(nuxt)
 
   __DEBUG__ &&
     logger.log('options', {
@@ -372,9 +360,10 @@ export async function navigate({ nuxt, locale, route, redirectPath }: NavigateAr
   }
 
   if (import.meta.client && skipSettingLocaleOnNavigate) {
-    nuxt._vueI18n.__pendingLocale = locale
-    nuxt._vueI18n.__pendingLocalePromise = new Promise(resolve => {
-      nuxt._vueI18n.__resolvePendingLocalePromise = () => resolve()
+    const vueI18n = ctx.getVueI18n()
+    vueI18n.__pendingLocale = locale
+    vueI18n.__pendingLocalePromise = new Promise(resolve => {
+      vueI18n.__resolvePendingLocalePromise = () => resolve()
     })
     if (!enableNavigate) {
       return
@@ -444,10 +433,12 @@ export function prefixable(currentLocale: string, defaultLocale: string): boolea
 /**
  * Returns a getter function which returns the baseUrl
  */
-export function createBaseUrlGetter(nuxt: NuxtApp) {
+export function createBaseUrlGetter(
+  nuxt: NuxtApp,
+  getDomainFromLocale: (locale: string) => string | undefined
+): () => string {
   const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   const { baseUrl, defaultLocale } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-  const ctx = nuxt._nuxtI18nCtx
 
   if (isFunction(baseUrl)) {
     return (): string => {
@@ -461,7 +452,7 @@ export function createBaseUrlGetter(nuxt: NuxtApp) {
     : defaultLocale
   return (): string => {
     if (__DIFFERENT_DOMAINS__ && localeCode) {
-      const domain = ctx.getDomainFromLocale(localeCode)
+      const domain = getDomainFromLocale(localeCode)
       if (domain) {
         return domain
       }
@@ -488,9 +479,8 @@ function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
 
 // HMR helper functionality
 export function createNuxtI18nDev() {
-  const nuxtApp = useNuxtApp()
-  const ctx = nuxtApp._nuxtI18nCtx
-  const composer = getComposer(nuxtApp._vueI18n)
+  const ctx = useNuxtI18nContext()
+  const composer = getComposer(ctx.getVueI18n())
 
   /**
    * Triggers a reload of vue-i18n configs (if needed) and locale message files in the correct order
