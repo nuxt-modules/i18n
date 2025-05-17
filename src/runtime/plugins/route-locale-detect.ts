@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
     const ctx = useNuxtI18nContext(nuxt)
 
     async function handleRouteDetect(to: CompatRoute) {
-      let detected = detectLocale(to, ctx.getLocaleFromRoute(to))
+      let detected = detectLocale(to)
 
       if (ctx.firstAccess) {
         ctx.setLocale(detected)
@@ -44,9 +44,7 @@ export default defineNuxtPlugin({
 
         const locale = await nuxt.runWithContext(() => handleRouteDetect(to))
 
-        const redirectPath = await nuxt.runWithContext(() =>
-          detectRedirect({ to, from, locale, routeLocale: ctx.getLocaleFromRoute(to) }, true)
-        )
+        const redirectPath = await nuxt.runWithContext(() => detectRedirect(to, locale, true))
 
         ctx.firstAccess = false
 
