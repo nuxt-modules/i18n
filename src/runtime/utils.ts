@@ -221,7 +221,7 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 
 const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
 
-export function shouldSkipDetection(route: string | CompatRoute): boolean {
+function shouldSkipDetection(route: string | CompatRoute): boolean {
   const _detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
   const ctx = useNuxtApp()._nuxtI18nCtx
 
