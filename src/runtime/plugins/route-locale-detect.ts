@@ -4,6 +4,7 @@ import { createLogger } from '#nuxt-i18n/logger'
 import { detectLocale, detectRedirect, loadAndSetLocale, navigate } from '../utils'
 
 import type { CompatRoute } from '../types'
+import { useNuxtI18nContext } from '../context'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:route-locale-detect',
@@ -11,7 +12,7 @@ export default defineNuxtPlugin({
   async setup() {
     const logger = /*#__PURE__*/ createLogger('plugin:route-locale-detect')
     const nuxt = useNuxtApp()
-    const ctx = nuxt._nuxtI18nCtx
+    const ctx = useNuxtI18nContext(nuxt)
 
     async function handleRouteDetect(to: CompatRoute) {
       let detected = detectLocale(to, ctx.getLocaleFromRoute(to))

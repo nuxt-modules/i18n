@@ -214,8 +214,7 @@ export function useCookieLocale(): Ref<string> {
   if (!detect || !detect.useCookie) {
     return locale
   }
-
-  const locales = useNuxtApp()._nuxtI18n.getLocales()
+  const locales = useComposableContext().getLocales()
   const code = useCookie(detect.cookieKey).value
   if (code && locales.some(x => x.code === code)) {
     locale.value = code
@@ -281,7 +280,7 @@ export function useI18nPreloadKeys(keys: string[]): void {
       return
     }
 
-    const locale = useNuxtApp()._nuxtI18n.getLocale()
+    const locale = useComposableContext().getLocale()
     if (locale) {
       console.warn('useI18nPreloadKeys(): Could not resolve locale during server-side render.')
       return
