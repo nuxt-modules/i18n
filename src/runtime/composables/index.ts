@@ -281,7 +281,7 @@ export function useI18nPreloadKeys(keys: string[]): void {
     }
 
     const locale = useComposableContext().getLocale()
-    if (locale) {
+    if (!locale) {
       console.warn('useI18nPreloadKeys(): Could not resolve locale during server-side render.')
       return
     }
