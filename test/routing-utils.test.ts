@@ -1,6 +1,6 @@
 import { describe, it, assert, test } from 'vitest'
 import { createLocaleRouteNameGetter } from '../src/runtime/routing/utils'
-import { findBrowserLocale } from '#i18n-kit/routing'
+import { findBrowserLocale } from '#i18n-kit/browser'
 
 const ROUTE_GEN_CONFIG = {
   defaultLocale: 'en',
