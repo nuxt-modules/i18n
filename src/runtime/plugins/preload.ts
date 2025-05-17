@@ -1,9 +1,9 @@
 import { parse } from 'devalue'
 import { unref } from 'vue'
-import { useNuxtApp, defineNuxtPlugin, type NuxtApp } from '#app'
+import { useNuxtApp, defineNuxtPlugin } from '#app'
 import { localeCodes, localeLoaders } from '#build/i18n.options.mjs'
 import { getLocaleMessagesMergedCached } from '../shared/messages'
-import { useNuxtI18nContext } from '../context'
+import { useNuxtI18nContext, type NuxtI18nContext } from '../context'
 
 import type { Composer, VueI18n } from 'vue-i18n'
 import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
@@ -63,7 +63,7 @@ export default defineNuxtPlugin({
 /**
  * Merge preloaded messages from serialized messages payload
  */
-async function mergePayloadMessages(ctx: NuxtApp['_nuxtI18nCtx'], i18n: Composer | VueI18n, nuxt = useNuxtApp()) {
+async function mergePayloadMessages(ctx: NuxtI18nContext, i18n: Composer | VueI18n, nuxt = useNuxtApp()) {
   const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const preloadedMessages: LocaleMessages<DefineLocaleMessage> = content && parse(content)
