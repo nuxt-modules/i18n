@@ -140,14 +140,11 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
   }
 }
 
-export async function loadAndSetLocale(newLocale: Locale, initial: boolean = false): Promise<boolean> {
-  const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
+export async function loadAndSetLocale(locale: Locale): Promise<boolean> {
   const nuxtApp = useNuxtApp()
   const ctx = useNuxtI18nContext()
+  const oldLocale = ctx.getLocale()
   const { skipSettingLocaleOnNavigate, detectBrowserLanguage } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-
-  const oldLocale = unref(nuxtApp.$i18n.locale)
-  const localeCodes = unref(nuxtApp.$i18n.localeCodes)
 
   // sets the locale cookie if unset or not up to date
   function syncCookie(locale: Locale = oldLocale) {
@@ -155,51 +152,37 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
     nuxtApp.$i18n.setLocaleCookie(locale)
   }
 
-  // call `onBeforeLanguageSwitch` which may return an override for `newLocale`
-  const localeOverride = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, newLocale, initial, nuxtApp)
+  // call `onBeforeLanguageSwitch` which may return an override
+  const localeOverride = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, locale, ctx.firstAccess, nuxtApp)
   if (localeOverride && localeCodes.includes(localeOverride)) {
-    // resolved `localeOverride` is already in use
-    if (oldLocale === localeOverride) {
-      syncCookie()
-      return false
-    }
-
-    newLocale = localeOverride
+    locale = localeOverride
   }
 
-  __DEBUG__ && logger.log({ newLocale, oldLocale, initial })
-
-  // `newLocale` is unset or empty
-  if (!newLocale) {
+  // locale is falsy or equal to oldLocale
+  if (!locale || oldLocale === locale) {
     syncCookie()
     return false
   }
 
   // no change if different domains option enabled
-  if (!initial && __DIFFERENT_DOMAINS__) {
+  if (!ctx.firstAccess && __DIFFERENT_DOMAINS__) {
     syncCookie()
     return false
   }
 
-  if (oldLocale === newLocale) {
-    syncCookie()
-    return false
-  }
-
-  // load locale messages required by `newLocale`
+  // load locale messages required by locale
   if (!ctx.preloaded || !ctx.firstAccess || !__HAS_PAGES__ || __I18N_STRATEGY__ === 'no_prefix') {
-    await ctx.loadLocaleMessages(newLocale)
+    await ctx.loadLocaleMessages(locale)
   }
 
   if (skipSettingLocaleOnNavigate) {
     return false
   }
 
-  // sync cookie and set the locale
-  syncCookie(newLocale)
-  ctx.setLocale(newLocale)
+  syncCookie(locale)
+  ctx.setLocale(locale)
 
-  await nuxtApp.$i18n.onLanguageSwitched(oldLocale, newLocale)
+  await nuxtApp.$i18n.onLanguageSwitched(oldLocale, locale)
 
   return true
 }
@@ -281,10 +264,8 @@ export function detectLocale(route: string | CompatRoute): string {
 
 /**
  * Returns a localized path to redirect to, or an empty string if no redirection should occur
- *
- * @param inMiddleware - whether this is called during navigation middleware
  */
-export function detectRedirect(to: CompatRoute, locale: string, inMiddleware = false): string {
+export function detectRedirect(to: CompatRoute, locale: string): string {
   const routeLocale = useNuxtI18nContext().getLocaleFromRoute(to)
   // no locale change detected from routing
   if (routeLocale === locale || __I18N_STRATEGY__ === 'no_prefix') {
@@ -292,12 +273,7 @@ export function detectRedirect(to: CompatRoute, locale: string, inMiddleware = f
   }
 
   const ctx = useComposableContext()
-  let redirectPath = switchLocalePath(ctx, locale, to)
-
-  // current route is a 404, attempt to find a matching route using fullPath
-  if (inMiddleware && !redirectPath) {
-    redirectPath = localePath(ctx, to.fullPath, locale)
-  }
+  const redirectPath = switchLocalePath(ctx, locale, to) || localePath(ctx, to.fullPath, locale)
 
   // skip redirection if resolved route matches current route (#1889, #2226)
   if (isEqual(redirectPath, to.fullPath)) {
@@ -310,14 +286,8 @@ export function detectRedirect(to: CompatRoute, locale: string, inMiddleware = f
 // composable function for redirect loop avoiding
 const useRedirectState = () => useState<string>(__NUXT_I18N_MODULE_ID__ + ':redirect', () => '')
 
-type NavigateArgs = {
-  nuxt: NuxtApp
-  redirectPath: string
-  locale: string
-  route: CompatRoute
-}
-
-export async function navigate({ nuxt, locale, route, redirectPath }: NavigateArgs, enableNavigate = false) {
+export async function navigate(redirectPath: string, route: CompatRoute, locale: string, enableNavigate = false) {
+  const nuxt = useNuxtApp()
   const { rootRedirect, skipSettingLocaleOnNavigate, locales } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const logger = /*#__PURE__*/ createLogger('navigate')
   const ctx = useNuxtI18nContext(nuxt)

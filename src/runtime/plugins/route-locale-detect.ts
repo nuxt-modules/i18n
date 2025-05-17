@@ -24,7 +24,7 @@ export default defineNuxtPlugin({
         }
       }
 
-      const modified = await nuxt.runWithContext(() => loadAndSetLocale(detected, ctx.firstAccess))
+      const modified = await nuxt.runWithContext(() => loadAndSetLocale(detected))
       if (modified) {
         detected = unref(nuxt.$i18n.locale)
       }
@@ -44,13 +44,13 @@ export default defineNuxtPlugin({
 
         const locale = await nuxt.runWithContext(() => handleRouteDetect(to))
 
-        const redirectPath = await nuxt.runWithContext(() => detectRedirect(to, locale, true))
+        const redirectPath = await nuxt.runWithContext(() => detectRedirect(to, locale))
 
         ctx.firstAccess = false
 
         __DEBUG__ && logger.log('redirectPath on locale-changing middleware', redirectPath)
 
-        return await nuxt.runWithContext(() => navigate({ nuxt, redirectPath, locale, route: to }))
+        return await nuxt.runWithContext(() => navigate(redirectPath, to, locale))
       }),
       { global: true }
     )
