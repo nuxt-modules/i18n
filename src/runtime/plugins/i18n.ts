@@ -94,7 +94,7 @@ export default defineNuxtPlugin({
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
-          await loadAndSetLocale(locale, ctx.firstAccess)
+          await loadAndSetLocale(locale)
 
           if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
             // first access will not change without route middleware
@@ -108,7 +108,7 @@ export default defineNuxtPlugin({
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
 
-          await nuxt.runWithContext(() => navigate({ nuxt, redirectPath, locale, route }, true))
+          await nuxt.runWithContext(() => navigate(redirectPath, route, locale, true))
         }
         composer.loadLocaleMessages = ctx.loadLocaleMessages
 
