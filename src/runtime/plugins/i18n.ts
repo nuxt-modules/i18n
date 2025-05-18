@@ -4,7 +4,6 @@ import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadAndSetLocale, detectRedirect, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
 import { extendI18n } from '../routing/i18n'
-import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
 import { localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
@@ -24,9 +23,7 @@ export default defineNuxtPlugin({
   async setup(_nuxt) {
     Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
 
-    const logger = /*#__PURE__*/ createLogger('plugin:i18n')
     const nuxt = useNuxtApp()
-
     const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
     let defaultLocaleDomain: string = runtimeI18n.defaultLocale || ''
@@ -36,7 +33,6 @@ export default defineNuxtPlugin({
     }
 
     runtimeI18n.defaultLocale = defaultLocaleDomain
-    __DEBUG__ && logger.log('defaultLocale on setup', runtimeI18n.defaultLocale)
 
     const vueI18nOptions: I18nOptions = await setupVueI18nOptions()
     if (defaultLocaleDomain) {
@@ -94,18 +90,8 @@ export default defineNuxtPlugin({
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(locale)
 
-          if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
-            // first access will not change without route middleware
-            ctx.firstAccess = false
-            ctx.setLocale(locale)
-            return
-          }
-
           const route = nuxt.$router.currentRoute.value
           const redirectPath = await nuxt.runWithContext(() => detectRedirect(route, locale))
-
-          __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)
-
           await nuxt.runWithContext(() => navigate(redirectPath, route, locale, true))
         }
         composer.loadLocaleMessages = ctx.loadLocaleMessages
