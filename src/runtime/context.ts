@@ -1,19 +1,20 @@
 import { isRef, unref } from 'vue'
 
-import { useNuxtApp, useState } from '#imports'
-import { localeCodes, localeLoaders } from '#build/i18n.options.mjs'
+import { useNuxtApp, useState, useCookie, useRequestHeader } from '#imports'
+import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import { getLocaleMessagesMergedCached } from './shared/messages'
 import { createBaseUrlGetter } from './utils'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
+import { findBrowserLocale, parseAcceptLanguage } from '#i18n-kit/browser'
 import { getI18nTarget } from './compatibility'
 import { createDomainFromLocaleGetter } from './domain'
 import { joinURL } from 'ufo'
+import { isString } from '@intlify/shared'
 
 import type { Locale, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { LocaleObject } from '#internal-i18n-types'
+import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
-import { isString } from '@intlify/shared'
 
 export const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
@@ -37,6 +38,11 @@ export type NuxtI18nContext = {
   setLocale: (locale: string) => void
   /** Get normalized runtime locales */
   getLocales: () => LocaleObject[]
+  /** Get locale from locale cookie */
+  getLocaleCookie: () => string | undefined
+  /** Set locale to locale cookie */
+  setLocaleCookie: (locale: string) => void
+  getBrowserLocale: () => string | undefined
   /** Get locale from route path or object */
   getLocaleFromRoute: (route: string | CompatRoute) => string
   /** Get current base URL */
@@ -45,9 +51,24 @@ export type NuxtI18nContext = {
   getDomainFromLocale: (locale: Locale) => string | undefined
 }
 
+function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {
+  const date = new Date()
+  return useCookie<string | undefined>(cookieKey || __DEFAULT_COOKIE_KEY__, {
+    path: '/',
+    readonly: false,
+    expires: new Date(date.setDate(date.getDate() + 365)),
+    sameSite: cookieCrossOrigin ? 'none' : 'lax',
+    domain: cookieDomain || undefined,
+    secure: cookieCrossOrigin || cookieSecure
+  })
+}
+
 export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n): NuxtI18nContext {
   const i18n = getI18nTarget(_i18n)
   const serverLocaleConfigs = useLocaleConfigs()
+  const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
+  const detectBrowserLanguage = runtimeI18n.detectBrowserLanguage || {}
+  const localeCookie = createI18nCookie(detectBrowserLanguage)
 
   const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
   /** Get computed config for locale */
@@ -74,7 +95,27 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n): NuxtI18nConte
       defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__,
       localeCodes
     }),
+    getLocaleCookie: () => {
+      if (detectBrowserLanguage.useCookie && localeCodes.includes(localeCookie.value || '')) {
+        return localeCookie.value
+      }
+    },
+    setLocaleCookie: (locale: string) => {
+      if (detectBrowserLanguage.useCookie && localeCodes.includes(locale)) {
+        localeCookie.value = locale
+      }
+    },
     getBaseUrl: () => joinURL(baseUrl(), nuxt.$config.app.baseURL),
+    getBrowserLocale: () => {
+      // from navigator or request header
+      const languages = import.meta.client
+        ? navigator.languages
+        : parseAcceptLanguage(useRequestHeader('accept-language'))
+
+      // normalize matching locales
+      const availableLocales = normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code }))
+      return findBrowserLocale(availableLocales, languages) || undefined
+    },
     getDomainFromLocale,
     loadLocaleMessages: async (locale: string) => {
       if (dynamicResourcesSSG || import.meta.dev) {
