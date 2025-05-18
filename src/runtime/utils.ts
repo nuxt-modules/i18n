@@ -195,7 +195,7 @@ export function detectLocale(route: string | CompatRoute): string {
   const { fallbackLocale } = detectBrowserLanguage || {}
 
   function* detect() {
-    if (ctx.firstAccess && !skipDetect(detectBrowserLanguage, path)) {
+    if (ctx.firstAccess && detectBrowserLanguage && !skipDetect(detectBrowserLanguage, path)) {
       // cookie
       yield ctx.getLocaleCookie()
 
