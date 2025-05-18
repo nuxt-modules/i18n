@@ -1,16 +1,6 @@
 <script setup lang="ts">
 import { useI18n, useLocaleHead, useLocalePath, useLocaleRoute, useSwitchLocalePath } from '#i18n'
-import {
-  computed,
-  navigateTo,
-  ref,
-  useAppConfig,
-  useAsyncData,
-  useHead,
-  useRoute,
-  useRuntimeConfig,
-  watch
-} from '#imports'
+import { computed, navigateTo, ref, useAppConfig, useAsyncData, useHead, watch } from '#imports'
 import LangSwitcher from '../components/LangSwitcher.vue'
 import LocalScope from '../components/LocalScope.vue'
 
@@ -45,16 +35,6 @@ const { data, refresh } = useAsyncData(`home-${locale.value}`, () =>
 watch(locale, () => {
   refresh()
 })
-const route = useRoute()
-route.meta.pageTransition = {
-  name: 'my',
-  mode: 'out-in',
-  onBeforeEnter: async () => {
-    if (useRuntimeConfig().public.i18n.skipSettingLocaleOnNavigate) {
-      await finalizePendingLocaleChange()
-    }
-  }
-}
 // @ts-ignore
 definePageMeta({
   title: 'home',
