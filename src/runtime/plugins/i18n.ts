@@ -1,9 +1,9 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestHeader } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadAndSetLocale, detectRedirect, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
-import { getLocaleCookie, createI18nCookie, getBrowserLocale } from '../internal'
+import { createI18nCookie } from '../internal'
 import { extendI18n } from '../routing/i18n'
 import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
@@ -12,6 +12,7 @@ import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } 
 import { getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 import { createLocaleConfigs } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
+import { findBrowserLocale, parseAcceptLanguage } from '#i18n-kit/browser'
 import { createNuxtI18nContext, useLocaleConfigs, useNuxtI18nContext, type NuxtI18nContext } from '../context'
 
 import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
@@ -114,11 +115,28 @@ export default defineNuxtPlugin({
 
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
-        composer.getBrowserLocale = () => getBrowserLocale()
-        composer.getLocaleCookie = () => getLocaleCookie(localeCookie, runtimeI18n.detectBrowserLanguage)
+
+        composer.getBrowserLocale = () => {
+          // from navigator or request header
+          const languages = import.meta.client
+            ? navigator.languages
+            : parseAcceptLanguage(useRequestHeader('accept-language'))
+
+          // normalize matching locales
+          const availableLocales = normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code }))
+          return findBrowserLocale(availableLocales, languages) || undefined
+        }
+
+        const useCookie = runtimeI18n.detectBrowserLanguage && runtimeI18n.detectBrowserLanguage.useCookie
+        composer.getLocaleCookie = () => {
+          if (useCookie && localeCodes.includes(localeCookie.value || '')) {
+            return localeCookie.value
+          }
+        }
         composer.setLocaleCookie = (locale: string) => {
-          if (!runtimeI18n.detectBrowserLanguage || !runtimeI18n.detectBrowserLanguage.useCookie) return
-          localeCookie.value = locale
+          if (useCookie && localeCodes.includes(locale)) {
+            localeCookie.value = locale
+          }
         }
 
         composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
