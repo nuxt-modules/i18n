@@ -15,7 +15,6 @@ import {
   type RouteLikeWithPath
 } from './routing/routing'
 import { createLogger } from '#nuxt-i18n/logger'
-import { unref } from 'vue'
 import { useNuxtI18nContext } from './context'
 
 import type { Locale, I18nOptions } from 'vue-i18n'
@@ -173,16 +172,12 @@ function shouldSkipDetection(route: string | CompatRoute): boolean {
   const _detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
   const ctx = useNuxtI18nContext()
 
-  if (!_detect) {
+  if (!_detect || !ctx.firstAccess) {
     return true
   }
 
-  if (__I18N_STRATEGY__ === 'no_prefix' || !__HAS_PAGES__) {
-    return __IS_SSG__ && ctx.firstAccess && import.meta.server
-  }
-
-  if (!ctx.firstAccess) {
-    return true
+  if (!__HAS_PAGES__ || __I18N_STRATEGY__ === 'no_prefix') {
+    return false
   }
 
   const path = getCompatRoutePath(route)
@@ -203,21 +198,16 @@ function shouldSkipDetection(route: string | CompatRoute): boolean {
 export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
   const ctx = useNuxtI18nContext(nuxtApp)
-  const runtimeI18n = useNuxtApp().$config.public.i18n as I18nPublicRuntimeConfig
-  const { useCookie, fallbackLocale } = runtimeI18n.detectBrowserLanguage || {}
+  const { detectBrowserLanguage, defaultLocale } = useNuxtApp().$config.public.i18n as I18nPublicRuntimeConfig
+  const { fallbackLocale } = detectBrowserLanguage || {}
 
   function* detect() {
     if (!shouldSkipDetection(route)) {
-      // navigation - strategy no_prefix
-      if (!nuxtApp._nuxtI18nCtx.firstAccess && __I18N_STRATEGY__ === 'no_prefix') {
-        yield unref(nuxtApp.$i18n.locale)
-      }
-
       // cookie
-      yield useCookie && nuxtApp.$i18n.getLocaleCookie()
+      yield ctx.getLocaleCookie()
 
       // navigator or header
-      yield nuxtApp.$i18n.getBrowserLocale()
+      yield ctx.getBrowserLocale()
 
       // fallback
       yield fallbackLocale
@@ -239,7 +229,7 @@ export function detectLocale(route: string | CompatRoute): string {
   }
 
   // fallback
-  return unref(nuxtApp.$i18n.locale) || runtimeI18n.defaultLocale || ''
+  return ctx.getLocale() || defaultLocale || ''
 }
 
 /**
