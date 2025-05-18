@@ -10,15 +10,16 @@ import {
   createNameLocaleRegexMatcher
 } from '#i18n-kit/routing'
 import { createLogger } from '#nuxt-i18n/logger'
-import { formatMessage } from './utils'
-import { getCompatRoutePath } from './internal'
 
 import type { Locale } from 'vue-i18n'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CompatRoute } from './types'
 import type { NuxtApp } from '#app'
 import type { Router } from 'vue-router'
+
+function formatMessage(message: string) {
+  return `[${__NUXT_I18N_MODULE_ID__}]: ${message}`
+}
 
 export function getHost() {
   return import.meta.server ? getRequestHost(useRequestEvent()!, { xForwardedHost: true }) : window.location.host
@@ -38,10 +39,9 @@ function filterMatchingDomainsLocales(locales: LocaleObject[], host: string) {
   })
 }
 
-export function getLocaleDomain(locales: LocaleObject[], route: string | CompatRoute): string {
+export function getLocaleDomain(locales: LocaleObject[], path: string): string {
   const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   const host = getHost()
-  const path = getCompatRoutePath(route)
 
   __DEBUG__ && logger.log(`locating domain for host`, { host, strategy: __I18N_STRATEGY__, path })
 
@@ -59,7 +59,7 @@ export function getLocaleDomain(locales: LocaleObject[], route: string | CompatR
   }
 
   // get prefix from route
-  if (route && path) {
+  if (path) {
     __DEBUG__ && logger.log(`check matched domain for locale match`, { path, host })
     const matched = path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
     if (matched) {

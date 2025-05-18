@@ -4,7 +4,6 @@ import { navigateTo, useNuxtApp, useRouter, useRuntimeConfig, useState } from '#
 import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
-import { getCompatRoutePath } from './internal'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
 import { getRouteBaseName as _getRouteBaseName, getRoutePathLocaleRegex } from '#i18n-kit/routing'
@@ -24,10 +23,6 @@ import type { NuxtApp } from '#app'
 import type { RouteLocationPathRaw, Router, RouteRecordNameGeneric } from 'vue-router'
 import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
-
-export function formatMessage(message: string) {
-  return `[${__NUXT_I18N_MODULE_ID__}]: ${message}`
-}
 
 /**
  * Common options used internally by composable functions, these
@@ -245,7 +240,7 @@ export function detectLocale(route: string | CompatRoute): string {
 
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
       // domain
-      yield getLocaleDomain(normalizedLocales, route)
+      yield getLocaleDomain(normalizedLocales, getCompatRoutePath(route))
     } else if (__I18N_STRATEGY__ !== 'no_prefix') {
       // route
       yield ctx.getLocaleFromRoute(route)
@@ -465,4 +460,8 @@ export function createNuxtI18nDev() {
   }
 
   return { resetI18nProperties }
+}
+
+function getCompatRoutePath(route: string | CompatRoute) {
+  return isString(route) ? route : route.path
 }

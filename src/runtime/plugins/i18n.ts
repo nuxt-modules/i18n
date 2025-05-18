@@ -3,7 +3,6 @@ import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadAndSetLocale, detectRedirect, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
-import { getLocaleCookie, createI18nCookie, getBrowserLocale } from '../internal'
 import { extendI18n } from '../routing/i18n'
 import { createLogger } from '#nuxt-i18n/logger'
 import { getI18nTarget } from '../compatibility'
@@ -72,7 +71,6 @@ export default defineNuxtPlugin({
       nuxt._nuxtI18nDev = createNuxtI18nDev()
     }
 
-    const localeCookie = createI18nCookie()
     // extend i18n instance
     extendI18n(i18n, {
       extendComposer(composer) {
@@ -114,12 +112,10 @@ export default defineNuxtPlugin({
 
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = runtimeI18n.defaultLocale
-        composer.getBrowserLocale = () => getBrowserLocale()
-        composer.getLocaleCookie = () => getLocaleCookie(localeCookie, runtimeI18n.detectBrowserLanguage)
-        composer.setLocaleCookie = (locale: string) => {
-          if (!runtimeI18n.detectBrowserLanguage || !runtimeI18n.detectBrowserLanguage.useCookie) return
-          localeCookie.value = locale
-        }
+
+        composer.getBrowserLocale = ctx.getBrowserLocale
+        composer.getLocaleCookie = ctx.getLocaleCookie
+        composer.setLocaleCookie = ctx.setLocaleCookie
 
         composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
           nuxt.callHook('i18n:beforeLocaleSwitch', {
