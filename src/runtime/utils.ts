@@ -135,51 +135,36 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
   }
 }
 
-export async function loadAndSetLocale(locale: Locale): Promise<boolean> {
+export async function loadAndSetLocale(locale: Locale): Promise<string> {
   const nuxtApp = useNuxtApp()
   const ctx = useNuxtI18nContext()
   const oldLocale = ctx.getLocale()
-  const { skipSettingLocaleOnNavigate, detectBrowserLanguage } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-
-  // sets the locale cookie if unset or not up to date
-  function syncCookie(locale: Locale = oldLocale) {
-    if (!detectBrowserLanguage || !detectBrowserLanguage.useCookie || skipSettingLocaleOnNavigate) return
-    nuxtApp.$i18n.setLocaleCookie(locale)
-  }
+  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
 
   // call `onBeforeLanguageSwitch` which may return an override
-  const localeOverride = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, locale, ctx.firstAccess, nuxtApp)
-  if (localeOverride && localeCodes.includes(localeOverride)) {
-    locale = localeOverride
+  const override = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, locale, ctx.firstAccess, nuxtApp)
+  if (override && localeCodes.includes(override)) {
+    locale = override
   }
 
-  // locale is falsy or equal to oldLocale
-  if (!locale || oldLocale === locale) {
-    syncCookie()
-    return false
-  }
-
-  // no change if different domains option enabled
-  if (!ctx.firstAccess && __DIFFERENT_DOMAINS__) {
-    syncCookie()
-    return false
-  }
+  // resolved locale is different from the one passed
+  const changed = locale && oldLocale !== locale
 
   // load locale messages required by locale
-  if (!ctx.preloaded || !ctx.firstAccess || !__HAS_PAGES__ || __I18N_STRATEGY__ === 'no_prefix') {
-    await ctx.loadLocaleMessages(locale)
+  await ctx.loadLocaleMessages(locale)
+
+  if (!runtimeI18n.skipSettingLocaleOnNavigate) {
+    // set locale cookie in case it is unset or not up to date
+    ctx.setLocaleCookie(changed ? locale : oldLocale)
+
+    // update locale
+    if (changed) {
+      ctx.setLocale(locale)
+      await nuxtApp.$i18n.onLanguageSwitched(oldLocale, locale)
+    }
   }
 
-  if (skipSettingLocaleOnNavigate) {
-    return false
-  }
-
-  syncCookie(locale)
-  ctx.setLocale(locale)
-
-  await nuxtApp.$i18n.onLanguageSwitched(oldLocale, locale)
-
-  return true
+  return locale
 }
 
 const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
