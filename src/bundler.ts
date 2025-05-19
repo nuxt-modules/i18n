@@ -125,8 +125,6 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __DEBUG__: String(!!options.debug),
     __TEST__: String(!!options.debug),
     __IS_SSG__: String(nuxt.options._generate),
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    __HAS_PAGES__: String(nuxt.options.pages.toString()),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),

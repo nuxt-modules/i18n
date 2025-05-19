@@ -8,7 +8,6 @@ declare let __DEBUG__: boolean
 declare let __TEST__: boolean
 
 declare let __IS_SSG__: boolean
-declare let __HAS_PAGES__: boolean
 declare let __TRAILING_SLASH__: boolean
 declare let __PARALLEL_PLUGIN__: boolean
 declare let __DIFFERENT_DOMAINS__: boolean
