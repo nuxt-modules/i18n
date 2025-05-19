@@ -12,7 +12,7 @@ export function createLocaleRouteNameGetter(
   defaultLocale: string
 ): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
-  if (__I18N_STRATEGY__ === 'no_prefix' && !__DIFFERENT_DOMAINS__) {
+  if (!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__) {
     return routeName => normalizeRouteName(routeName)
   }
 
@@ -34,7 +34,7 @@ export function createLocaleRouteNameGetter(
 export function createLocalizedRouteByPathResolver(
   router: Router
 ): (route: RouteLocationPathRaw, locale: Locale) => RouteLocationPathRaw | RouteLocationResolvedGeneric {
-  if (__I18N_STRATEGY__ === 'no_prefix') {
+  if (!__I18N_ROUTING__) {
     return route => route
   }
 

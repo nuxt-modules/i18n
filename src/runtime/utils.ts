@@ -14,7 +14,6 @@ import {
   type RouteLikeWithName,
   type RouteLikeWithPath
 } from './routing/routing'
-import { createLogger } from '#nuxt-i18n/logger'
 import { useNuxtI18nContext } from './context'
 
 import type { Locale, I18nOptions } from 'vue-i18n'
@@ -109,7 +108,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
     getRoutingOptions: () => ({
       defaultLocale: runtimeI18n.defaultLocale,
       strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
-      hreflangLinks: !(__I18N_STRATEGY__ === 'no_prefix' && !__DIFFERENT_DOMAINS__)
+      hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__)
     }),
     getLocale: ctx.getLocale,
     getLocales: ctx.getLocales,
@@ -170,7 +169,7 @@ const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
 
 function skipDetect(detect: DetectBrowserLanguageOptions, path: string): boolean {
   // no routes - force detection
-  if (!__HAS_PAGES__ || __I18N_STRATEGY__ === 'no_prefix') {
+  if (!__I18N_ROUTING__) {
     return false
   }
 
@@ -209,7 +208,9 @@ export function detectLocale(route: string | CompatRoute): string {
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
       // domain
       yield getLocaleDomain(normalizedLocales, path)
-    } else if (__I18N_STRATEGY__ !== 'no_prefix') {
+    }
+
+    if (__I18N_ROUTING__) {
       // route
       yield ctx.getLocaleFromRoute(route)
     }
@@ -231,14 +232,14 @@ export function detectLocale(route: string | CompatRoute): string {
 export function detectRedirect(to: CompatRoute, locale: string): string {
   const routeLocale = useNuxtI18nContext().getLocaleFromRoute(to)
   // no locale change detected from routing
-  if (routeLocale === locale || __I18N_STRATEGY__ === 'no_prefix') {
+  if (routeLocale === locale || !__I18N_ROUTING__) {
     return ''
   }
 
   const ctx = useComposableContext()
   const redirectPath = switchLocalePath(ctx, locale, to) || localePath(ctx, to.fullPath, locale)
 
-  // skip redirection if resolved route matches current route (#1889, #2226)
+  // skip redirect if resolved route matches current route (#1889, #2226)
   if (isEqual(redirectPath, to.fullPath)) {
     return ''
   }
@@ -249,15 +250,27 @@ export function detectRedirect(to: CompatRoute, locale: string): string {
 // composable function for redirect loop avoiding
 const useRedirectState = () => useState<string>(__NUXT_I18N_MODULE_ID__ + ':redirect', () => '')
 
-export async function navigate(redirectPath: string, route: CompatRoute, locale: string, enableNavigate = false) {
+const PERMISSIVE_LOCALE_PATH_RE = new RegExp(`^(?:/(${localeCodes.join('|')}))?(/.*|$)`, 'i')
+/**
+ * Returns the prefix and path of a route.
+ * TODO: consider moving to #i18n-kit/routing
+ */
+function getRoutePrefixAndPath(path: string): { prefix: string | undefined; path: string } {
+  const [_, prefix, unprefixed] = PERMISSIVE_LOCALE_PATH_RE.exec(path) || []
+  return { prefix, path: unprefixed }
+}
+
+export async function navigate(
+  redirectPath: string,
+  route: string,
+  locale: string,
+  force = false
+): Promise<ReturnType<typeof navigateTo> | undefined> {
   const nuxt = useNuxtApp()
-  const { rootRedirect, skipSettingLocaleOnNavigate, locales } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-  const logger = /*#__PURE__*/ createLogger('navigate')
+  const { rootRedirect, skipSettingLocaleOnNavigate } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const ctx = useNuxtI18nContext(nuxt)
 
-  __DEBUG__ && logger.log('options', { rootRedirect, skipSettingLocaleOnNavigate, enableNavigate })
-
-  if (route.path === '/' && rootRedirect) {
+  if (route === '/' && rootRedirect) {
     let redirectCode = 302
     if (isString(rootRedirect)) {
       redirectPath = '/' + rootRedirect
@@ -266,9 +279,7 @@ export async function navigate(redirectPath: string, route: CompatRoute, locale:
       redirectCode = rootRedirect.statusCode
     }
 
-    redirectPath = nuxt.$localePath(redirectPath, locale)
-    __DEBUG__ && logger.log('rootRedirect mode', { redirectPath, redirectCode })
-    return navigateTo(redirectPath, { redirectCode })
+    return navigateTo(nuxt.$localePath(redirectPath, locale), { redirectCode })
   }
 
   if (import.meta.client && skipSettingLocaleOnNavigate) {
@@ -277,35 +288,24 @@ export async function navigate(redirectPath: string, route: CompatRoute, locale:
     vueI18n.__pendingLocalePromise = new Promise(resolve => {
       vueI18n.__resolvePendingLocalePromise = () => resolve()
     })
-    if (!enableNavigate) {
+    if (!force) {
       return
     }
   }
 
   if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
     const host = getHost()
-    const currentDomain = locales.find(locale => {
-      if (isString(locale)) return
-      return locale.defaultForDomains?.find(domain => domain === host)
-    })
+    const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
+    const { prefix, path } = getRoutePrefixAndPath(route)
 
-    const defaultLocaleForDomain = !isString(currentDomain) ? currentDomain?.code : undefined
-
-    if (route.path.startsWith(`/${defaultLocaleForDomain}`)) {
-      return navigateTo(route.path.replace(`/${defaultLocaleForDomain}`, ''))
+    // unprefixed path or default locale
+    if (!prefix || defaultLocale === prefix) {
+      redirectPath = path
+    } else {
+      redirectPath = '/' + locale + path
     }
 
-    if (!route.path.startsWith(`/${locale}`) && locale !== defaultLocaleForDomain) {
-      const oldLocale = ctx.getLocaleFromRoute(route.path)
-
-      if (oldLocale !== '') {
-        return navigateTo(`/${locale + route.path.replace(`/${oldLocale}`, '')}`)
-      }
-
-      return navigateTo(`/${locale + (route.path === '/' ? '' : route.path)}`)
-    }
-
-    if (redirectPath && route.path !== redirectPath) {
+    if (!isEqual(route, redirectPath)) {
       return navigateTo(redirectPath)
     }
 
@@ -314,14 +314,12 @@ export async function navigate(redirectPath: string, route: CompatRoute, locale:
 
   if (__DIFFERENT_DOMAINS__) {
     const state = useRedirectState()
-    __DEBUG__ && logger.log('redirect', { state: state.value, redirectPath })
     if (state.value && state.value !== redirectPath) {
       if (import.meta.client) {
         state.value = '' // reset redirect path
         window.location.assign(redirectPath)
       }
       if (import.meta.server) {
-        __DEBUG__ && logger.log('differentDomains servermode', { redirectPath })
         state.value = redirectPath // set redirect path
       }
     }
@@ -332,13 +330,9 @@ export async function navigate(redirectPath: string, route: CompatRoute, locale:
 
 export function prefixable(currentLocale: string, defaultLocale: string): boolean {
   return (
-    // strategy has no prefixes
-    __I18N_STRATEGY__ !== 'no_prefix' &&
-    // strategy should not prefix default locale
-    !(
-      currentLocale === defaultLocale &&
-      (__I18N_STRATEGY__ === 'prefix_and_default' || __I18N_STRATEGY__ === 'prefix_except_default')
-    )
+    __I18N_ROUTING__ &&
+    // only prefix default locale with strategy prefix
+    (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
   )
 }
 
@@ -349,28 +343,17 @@ export function createBaseUrlGetter(
   nuxt: NuxtApp,
   getDomainFromLocale: (locale: string) => string | undefined
 ): () => string {
-  const logger = /*#__PURE__*/ createLogger('extendBaseUrl')
   const { baseUrl, defaultLocale } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
   if (isFunction(baseUrl)) {
-    return (): string => {
-      __DEBUG__ && logger.log('using localeLoader function -', { baseUrlResult: baseUrl(nuxt) })
-      return baseUrl(nuxt)
-    }
+    return (): string => baseUrl(nuxt)
   }
 
-  const localeCode = isFunction(defaultLocale)
-    ? /*#__PURE__*/ (defaultLocale as unknown as () => string)()
-    : defaultLocale
+  const locale = isFunction(defaultLocale) ? /*#__PURE__*/ (defaultLocale as unknown as () => string)() : defaultLocale
   return (): string => {
-    if (__DIFFERENT_DOMAINS__ && localeCode) {
-      const domain = getDomainFromLocale(localeCode)
-      if (domain) {
-        return domain
-      }
+    if (__DIFFERENT_DOMAINS__ && locale) {
+      return (getDomainFromLocale(locale) || baseUrl) ?? ''
     }
-
-    __DEBUG__ && logger.log('using runtimeConfig -', { baseUrl })
 
     return baseUrl ?? ''
   }

@@ -92,7 +92,7 @@ export default defineNuxtPlugin({
 
           const route = nuxt.$router.currentRoute.value
           const redirectPath = await nuxt.runWithContext(() => detectRedirect(route, locale))
-          await nuxt.runWithContext(() => navigate(redirectPath, route, locale, true))
+          await nuxt.runWithContext(() => navigate(redirectPath, route.path, locale, true))
         }
         composer.loadLocaleMessages = ctx.loadLocaleMessages
 
