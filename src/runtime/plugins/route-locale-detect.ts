@@ -12,8 +12,8 @@ export default defineNuxtPlugin({
     const detected = detectLocale(nuxt.$router.currentRoute.value)
     await loadAndSetLocale(detected)
 
-    // app has no pages - do not register route middleware
-    if (!__HAS_PAGES__) return
+    // no pages or no prefixes - do not register route middleware
+    if (!__I18N_ROUTING__) return
 
     addRouteMiddleware(
       'locale-changing',
@@ -24,7 +24,7 @@ export default defineNuxtPlugin({
 
         ctx.firstAccess = false
 
-        return await nuxt.runWithContext(() => navigate(redirectPath, to, locale))
+        return await nuxt.runWithContext(() => navigate(redirectPath, to.path, locale))
       }),
       { global: true }
     )

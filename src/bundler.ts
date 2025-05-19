@@ -125,8 +125,6 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __DEBUG__: String(!!options.debug),
     __TEST__: String(!!options.debug),
     __IS_SSG__: String(nuxt.options._generate),
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    __HAS_PAGES__: String(nuxt.options.pages.toString()),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
@@ -144,7 +142,9 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
     __I18N_FULL_STATIC__: String(fullStatic),
     __I18N_STRIP_UNUSED__: JSON.stringify(!!options.experimental.stripMessagesPayload),
-    __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload)
+    __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix')
   }
 
   if (nuxt.options.ssr || !server) {

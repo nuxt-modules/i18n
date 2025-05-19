@@ -1,4 +1,3 @@
-import { isArray, isString } from '@intlify/shared'
 import { hasProtocol } from 'ufo'
 import { getRequestProtocol, getRequestHost } from 'h3'
 import { useRequestEvent, useRuntimeConfig, useRouter } from '#imports'
@@ -9,7 +8,6 @@ import {
   getRouteNameLocaleRegex,
   createNameLocaleRegexMatcher
 } from '#i18n-kit/routing'
-import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
 import type { LocaleObject } from '#internal-i18n-types'
@@ -17,63 +15,47 @@ import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 import type { NuxtApp } from '#app'
 import type { Router } from 'vue-router'
 
-function formatMessage(message: string) {
-  return `[${__NUXT_I18N_MODULE_ID__}]: ${message}`
+function warn(message: string) {
+  console.warn(`[${__NUXT_I18N_MODULE_ID__}]: ${message}`)
 }
 
 export function getHost() {
   return import.meta.server ? getRequestHost(useRequestEvent()!, { xForwardedHost: true }) : window.location.host
 }
 
+function toArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value]
+}
+
 /**
  * Filters locales by domain matching current host
  */
 function filterMatchingDomainsLocales(locales: LocaleObject[], host: string) {
-  return locales.filter(locale => {
-    const normalized = locale.domain
-      ? hasProtocol(locale.domain)
-        ? locale.domain.replace(/(https?):\/\//, '')
-        : locale.domain
-      : ''
-    return normalized === host || (isArray(locale.domains) && locale.domains.includes(host))
-  })
+  // normalize domain by removing protocol
+  const normalizeDomain = (domain: string = '') => domain.replace(/(https?):\/\//, '')
+  return locales.filter(locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host))
 }
 
 export function getLocaleDomain(locales: LocaleObject[], path: string): string {
-  const logger = /*#__PURE__*/ createLogger(`getLocaleDomain`)
   const host = getHost()
 
-  __DEBUG__ && logger.log(`locating domain for host`, { host, strategy: __I18N_STRATEGY__, path })
-
   const matches = filterMatchingDomainsLocales(locales, host)
+  if (matches.length > 1 && __I18N_STRATEGY__ === 'no_prefix') {
+    warn('Multiple matching domains found - this is not supported for no_prefix strategy + differentDomains')
+  }
+
   if (matches.length <= 1 || __I18N_STRATEGY__ === 'no_prefix') {
-    __DEBUG__ && matches.length && logger.log(`found one matching domain`, { host, matchedLocale: matches[0].code })
-    if (matches.length > 1 && __I18N_STRATEGY__ === 'no_prefix') {
-      console.warn(
-        formatMessage(
-          'Multiple matching domains found - this is not supported for no_prefix strategy + differentDomains'
-        )
-      )
-    }
     return matches[0]?.code ?? ''
   }
 
   // get prefix from route
-  if (path) {
-    __DEBUG__ && logger.log(`check matched domain for locale match`, { path, host })
-    const matched = path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
-    if (matched) {
-      const matchedLocale = matches.find(l => l.code === matched)
-      __DEBUG__ && logger.log(`matched locale from path`, { matchedLocale: matchedLocale?.code })
-      return matchedLocale?.code ?? ''
-    }
+  const matched = path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
+  if (matched) {
+    return matches.find(l => l.code === matched)?.code ?? ''
   }
 
-  // Fall back to default language on this domain - if set
-  const matchingLocale = matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)
-  __DEBUG__ && logger.log(`no locale matched - using default for this domain`, { matchedLocale: matchingLocale?.code })
-
-  return matchingLocale?.code ?? ''
+  // fall back to default language on this domain - if set
+  return matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code ?? ''
 }
 
 function getProtocol(nuxt: NuxtApp) {
@@ -92,7 +74,7 @@ export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
     const domain = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find(v => v === host)
 
     if (!domain) {
-      console.warn(formatMessage('Could not find domain name for locale ' + locale))
+      warn('Could not find domain name for locale ' + locale)
       return
     }
 
@@ -107,19 +89,19 @@ export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
 /**
  * Removes default routes depending on domain
  */
-export function setupMultiDomainLocales(defaultLocaleDomain: string, router: Router = useRouter()) {
+export function setupMultiDomainLocales(defaultLocale: string, router: Router = useRouter()) {
   // incompatible strategy
-  if (!(__I18N_STRATEGY__ === 'prefix_except_default' || __I18N_STRATEGY__ === 'prefix_and_default')) return
+  if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') return
 
-  const matcher = createNameLocaleRegexMatcher(
+  const getLocaleFromRouteName = createNameLocaleRegexMatcher(
     getRouteNameLocaleRegex({
-      localeCodes: [defaultLocaleDomain],
+      localeCodes: [defaultLocale],
       separator: __ROUTE_NAME_SEPARATOR__,
       defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__
     })
   )
   const defaultRouteSuffix = __ROUTE_NAME_SEPARATOR__ + __ROUTE_NAME_DEFAULT_SUFFIX__
-  // Adjust routes to match the domain's locale and structure
+  // adjust routes to match the domain's locale and structure
   for (const route of router.getRoutes()) {
     const routeName = normalizeRouteName(route.name)
     if (routeName.endsWith(defaultRouteSuffix)) {
@@ -127,12 +109,9 @@ export function setupMultiDomainLocales(defaultLocaleDomain: string, router: Rou
       continue
     }
 
-    const routeNameLocale = matcher(routeName)
-    if (routeNameLocale === defaultLocaleDomain) {
-      router.addRoute({
-        ...route,
-        path: route.path === `/${routeNameLocale}` ? '/' : route.path.replace(`/${routeNameLocale}`, '')
-      })
+    const locale = getLocaleFromRouteName(routeName)
+    if (locale === defaultLocale) {
+      router.addRoute({ ...route, path: route.path.replace(`/${locale}`, '') || '/' })
     }
   }
 }
@@ -141,13 +120,10 @@ export function setupMultiDomainLocales(defaultLocaleDomain: string, router: Rou
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
 export function getDefaultLocaleForDomain(runtimeI18n: I18nPublicRuntimeConfig) {
-  const { locales, defaultLocale } = runtimeI18n
+  const { defaultLocale } = runtimeI18n
   const host = getHost()
-  if (locales.some(l => !isString(l) && l.defaultForDomains != null)) {
-    const findDefaultLocale = locales.find(
-      (l): l is LocaleObject => !isString(l) && !!l.defaultForDomains?.includes(host)
-    )
-    return findDefaultLocale?.code ?? ''
+  if (normalizedLocales.some(l => l.defaultForDomains != null)) {
+    return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code ?? ''
   }
 
   return defaultLocale || ''
