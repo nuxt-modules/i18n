@@ -12,14 +12,17 @@ const routeNameGetters = {
   // noPrefix: createLocaleRouteNameGetter({ strategy: 'no_prefix', differentDomains: false, ...ROUTE_GEN_CONFIG }),
   noPrefix: (...args) => {
     globalThis['__I18N_STRATEGY__'] = 'no_prefix'
+    globalThis['__I18N_ROUTING__'] = false
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
   },
   prefixAndDefault: (...args) => {
     globalThis['__I18N_STRATEGY__'] = 'prefix_and_default'
+    globalThis['__I18N_ROUTING__'] = true
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
   },
   prefixExceptDefault: (...args) => {
     globalThis['__I18N_STRATEGY__'] = 'prefix_except_default'
+    globalThis['__I18N_ROUTING__'] = true
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
   }
 }
