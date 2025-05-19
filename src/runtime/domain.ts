@@ -50,7 +50,7 @@ export function getLocaleDomain(locales: LocaleObject[], path: string): string {
   }
 
   // get prefix from route
-  const matched = path && path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
+  const matched = path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
   if (matched) {
     return matches.find(l => l.code === matched)?.code ?? ''
   }

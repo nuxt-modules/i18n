@@ -190,7 +190,7 @@ export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
   const path = getCompatRoutePath(route)
   const ctx = useNuxtI18nContext(nuxtApp)
-  const { detectBrowserLanguage, defaultLocale } = useNuxtApp().$config.public.i18n as I18nPublicRuntimeConfig
+  const { detectBrowserLanguage, defaultLocale } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
   const { fallbackLocale } = detectBrowserLanguage || {}
 
   function* detect() {
