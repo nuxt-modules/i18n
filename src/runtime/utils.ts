@@ -255,22 +255,17 @@ const PERMISSIVE_LOCALE_PATH_RE = new RegExp(`^(?:/(${localeCodes.join('|')}))?(
  * Returns the prefix and path of a route.
  * TODO: consider moving to #i18n-kit/routing
  */
-function getRoutePrefixAndPath(path: string): { prefix: string | undefined; path: string } {
-  const [_, prefix, unprefixed] = PERMISSIVE_LOCALE_PATH_RE.exec(path) || []
-  return { prefix, path: unprefixed }
+function getRoutePrefixAndPath(routePath: string): { prefix?: string; unprefixed: string } {
+  const [, prefix, unprefixed = routePath] = PERMISSIVE_LOCALE_PATH_RE.exec(routePath) ?? []
+  return { prefix, unprefixed }
 }
 
-export async function navigate(
-  redirectPath: string,
-  route: string,
-  locale: string,
-  force = false
-): Promise<ReturnType<typeof navigateTo> | undefined> {
+export async function navigate(redirectPath: string, routePath: string, locale: string, force = false) {
   const nuxt = useNuxtApp()
   const { rootRedirect, skipSettingLocaleOnNavigate } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const ctx = useNuxtI18nContext(nuxt)
 
-  if (route === '/' && rootRedirect) {
+  if (routePath === '/' && rootRedirect) {
     let redirectCode = 302
     if (isString(rootRedirect)) {
       redirectPath = '/' + rootRedirect
@@ -296,16 +291,16 @@ export async function navigate(
   if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
     const host = getHost()
     const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
-    const { prefix, path } = getRoutePrefixAndPath(route)
+    const { prefix, unprefixed } = getRoutePrefixAndPath(routePath)
 
     // unprefixed path or default locale
     if (!prefix || defaultLocale === prefix) {
-      redirectPath = path
+      redirectPath = unprefixed
     } else {
-      redirectPath = '/' + locale + path
+      redirectPath = '/' + locale + unprefixed
     }
 
-    if (!isEqual(route, redirectPath)) {
+    if (!isEqual(routePath, redirectPath)) {
       return navigateTo(redirectPath)
     }
 
