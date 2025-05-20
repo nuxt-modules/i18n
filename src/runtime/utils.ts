@@ -278,7 +278,7 @@ export async function navigate(redirectPath: string, routePath: string, locale: 
     const vueI18n = ctx.getVueI18n()
     vueI18n.__pendingLocale = locale
     vueI18n.__pendingLocalePromise = new Promise(resolve => {
-      vueI18n.__resolvePendingLocalePromise = () => resolve()
+      vueI18n.__resolvePendingLocalePromise = resolve
     })
     if (!force) {
       return

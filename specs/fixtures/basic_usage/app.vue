@@ -8,9 +8,7 @@ const skipSettingLocale = useRuntimeConfig().public.i18n.skipSettingLocaleOnNavi
 const pageTransition = {
   name: 'my',
   mode: 'out-in',
-  onBeforeEnter: async () => {
-    await finalizePendingLocaleChange()
-  }
+  onBeforeEnter: () => finalizePendingLocaleChange()
 }
 </script>
 
