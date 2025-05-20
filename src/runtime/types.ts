@@ -143,9 +143,9 @@ export interface ComposerCustomProperties<
    */
   onLanguageSwitched: LanguageSwitchedHandler
   /**
-   * Switches to the pending locale that would have been set on navigate, but was prevented by the `skipSettingLocaleOnNavigate` option.
+   * Switches locale to the pending locale, used when navigation locale switch is prevented by the `skipSettingLocaleOnNavigate` option.
    */
-  finalizePendingLocaleChange: () => Promise<void>
+  finalizePendingLocaleChange: () => void
   /**
    * Returns a promise that will be resolved once the pending locale is set.
    */
@@ -167,13 +167,6 @@ declare module 'vue-i18n' {
   interface I18n {
     /** @internal */ __pendingLocale?: string
     /** @internal */ __pendingLocalePromise?: Promise<void>
-    /**
-     * Sets the value of the locale property on VueI18n or Composer instance
-     *
-     * This differs from the instance `setLocale` method in that it sets the
-     * locale property directly without triggering other side effects
-     * @internal
-     */
-    __resolvePendingLocalePromise?: () => void
+    /** @internal */ __resolvePendingLocalePromise?: () => void
   }
 }

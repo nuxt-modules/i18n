@@ -113,8 +113,7 @@ export default defineNuxtPlugin({
         composer.onLanguageSwitched = (oldLocale, newLocale) =>
           nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
 
-        // eslint-disable-next-line @typescript-eslint/require-await --- TODO: breaking - signature should be synchronous
-        composer.finalizePendingLocaleChange = async () => {
+        composer.finalizePendingLocaleChange = () => {
           if (!i18n.__pendingLocale) return
 
           ctx.setLocale(i18n.__pendingLocale)

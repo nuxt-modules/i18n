@@ -4,7 +4,7 @@ import { computed, navigateTo, ref, useAppConfig, useAsyncData, useHead, watch }
 import LangSwitcher from '../components/LangSwitcher.vue'
 import LocalScope from '../components/LocalScope.vue'
 
-const { t, locale, locales, localeProperties, finalizePendingLocaleChange } = useI18n()
+const { t, locale, locales, localeProperties } = useI18n()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const localeRoute = useLocaleRoute()
