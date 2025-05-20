@@ -1,6 +1,6 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
-import { navigateTo, useNuxtApp, useRouter, useState } from '#imports'
+import { navigateTo, useNuxtApp, useRouter } from '#imports'
 import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
@@ -247,9 +247,6 @@ export function detectRedirect(to: CompatRoute, locale: string): string {
   return redirectPath
 }
 
-// composable function for redirect loop avoiding
-const useRedirectState = () => useState<string>(__NUXT_I18N_MODULE_ID__ + ':redirect', () => '')
-
 const PERMISSIVE_LOCALE_PATH_RE = new RegExp(`^(?:/(${localeCodes.join('|')}))?(/.*|$)`, 'i')
 /**
  * Returns the prefix and path of a route.
@@ -307,18 +304,7 @@ export async function navigate(redirectPath: string, routePath: string, locale: 
     return
   }
 
-  if (__DIFFERENT_DOMAINS__) {
-    const state = useRedirectState()
-    if (state.value && state.value !== redirectPath) {
-      if (import.meta.client) {
-        state.value = '' // reset redirect path
-        window.location.assign(redirectPath)
-      }
-      if (import.meta.server) {
-        state.value = redirectPath // set redirect path
-      }
-    }
-  } else if (redirectPath) {
+  if (!__DIFFERENT_DOMAINS__ && redirectPath) {
     return navigateTo(redirectPath)
   }
 }
