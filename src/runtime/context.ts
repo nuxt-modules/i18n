@@ -5,7 +5,8 @@ import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.optio
 import { getLocaleMessagesMergedCached } from './shared/messages'
 import { createBaseUrlGetter } from './utils'
 import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
-import { findBrowserLocale, parseAcceptLanguage } from '#i18n-kit/browser'
+import { findBrowserLocale } from '#i18n-kit/browser'
+import { parseAcceptLanguage } from '@intlify/utils'
 import { getI18nTarget } from './compatibility'
 import { createDomainFromLocaleGetter } from './domain'
 import { joinURL } from 'ufo'
@@ -110,7 +111,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n): NuxtI18nConte
       // from navigator or request header
       const languages = import.meta.client
         ? navigator.languages
-        : parseAcceptLanguage(useRequestHeader('accept-language'))
+        : parseAcceptLanguage(useRequestHeader('accept-language') || '')
 
       // normalize matching locales
       const availableLocales = normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code }))
