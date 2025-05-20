@@ -52,35 +52,10 @@ function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
  * @internal
  */
 export function findBrowserLocale(locales: Locale[], browserLocales: readonly string[]): string {
-  const normalizedLocales = locales.map(l => ({ code: l.code, language: l.language || l.code }))
-  const matchedLocales = matchBrowserLocale(normalizedLocales, browserLocales)
-  if (matchedLocales.length === 0) {
-    return ''
-  }
+  const matchedLocales = matchBrowserLocale(
+    locales.map(l => ({ code: l.code, language: l.language || l.code })),
+    browserLocales
+  )
 
-  // sort by score when multiple locales matched
-  if (matchedLocales.length > 1) {
-    matchedLocales.sort(compareBrowserLocale)
-  }
-
-  return matchedLocales[0].code
-}
-
-/**
- * Parses an `Accept-Language` header string into a prioritized array of locale codes.
- *
- * Extracts locale codes (e.g., "en-US", "en") from the header string,
- * ignoring any quality values (like `;q=0.9`). The order of the resulting
- * array reflects the client's preferred order from the header.
- *
- * @example
- * ```ts
- * parseAcceptLanguage('en-US,en;q=0.9') // ['en-US', 'en']
- * ```
- *
- * @param input The `Accept-Language` header value. Defaults to ''.
- * @returns An array of locale codes based on header order.
- */
-export function parseAcceptLanguage(input: string = ''): string[] {
-  return input.split(',').map(tag => tag.split(';')[0])
+  return matchedLocales.sort(compareBrowserLocale).at(0)?.code ?? ''
 }
