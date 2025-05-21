@@ -1,6 +1,7 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { defineNitroPlugin } from 'nitropack/runtime'
+import { isString } from '@intlify/shared'
+import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
@@ -12,9 +13,14 @@ import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 
 import type { H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
+import { localeCodes } from '#internal/i18n/options.mjs'
+import { genString } from 'knitwork'
+import type { I18nPublicRuntimeConfig, RootRedirectOptions } from '#internal-i18n-types'
 
 export default defineNitroPlugin(async nitro => {
   const options = await setupVueI18nOptions()
+  const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+  const { useCookie, cookieKey } = runtimeI18n.detectBrowserLanguage || {}
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
 
   nitro.hooks.hook('request', async (event: H3Event) => {
@@ -22,7 +28,36 @@ export default defineNitroPlugin(async nitro => {
     event.context.nuxtI18n.localeConfigs = localeConfigs
   })
 
+  function getPrefixRedirectionScript() {
+    if (runtimeI18n.rootRedirect) {
+      return `
+  if(${JSON.stringify(!!runtimeI18n.rootRedirect)}) {
+    window.location.replace('${isString(runtimeI18n.rootRedirect) ? runtimeI18n.rootRedirect : (runtimeI18n.rootRedirect as RootRedirectOptions).path}');     
+  }`
+    }
+    return `
+  function getCookieValue(cookieName) {
+    if (${JSON.stringify(!useCookie)}) return '';
+    for (const cookie of document.cookie.split('; ')) {
+      const [name, value] = cookie.split('=');
+      if (name === ${genString(cookieKey || __DEFAULT_COOKIE_KEY__)}) return value;
+    }
+  }
+  const locale = getCookieValue() || navigator.language;
+  const locales = ${JSON.stringify(localeCodes)};
+  const defaultLocale = ${genString(options.locale || localeCodes[0])};
+  window.location.replace('/' + (locales.includes(locale) ? locale : defaultLocale));`
+  }
+  const ssgPrefixRedirectionScript =
+    __IS_SSG__ && __I18N_STRATEGY__ === 'prefix' && `<script>${getPrefixRedirectionScript()}</script>`
+
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
+    if (ssgPrefixRedirectionScript && event.path === '/') {
+      htmlContext.body.length = 0
+      htmlContext.bodyAppend.unshift(ssgPrefixRedirectionScript)
+      return
+    }
+
     if (__I18N_PRELOAD__) {
       const ctx = tryUseI18nContext(event)
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
