@@ -66,9 +66,9 @@ export function useComposableContext(): ComposableContext {
 export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): ComposableContext {
   const router = useRouter()
   const ctx = useNuxtI18nContext()
-
+  const defaultLocale = ctx.getDefaultLocale()
   const routeByPathResolver = createLocalizedRouteByPathResolver(router)
-  const getLocalizedRouteName = createLocaleRouteNameGetter(runtimeI18n.defaultLocale)
+  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
     return _getRouteBaseName(route, __ROUTE_NAME_SEPARATOR__)
@@ -95,7 +95,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
       return route
     }
 
-    if (!__DIFFERENT_DOMAINS__ && prefixable(locale, runtimeI18n.defaultLocale)) {
+    if (!__DIFFERENT_DOMAINS__ && prefixable(locale, defaultLocale)) {
       route.path = '/' + locale + route.path
     }
 
@@ -106,7 +106,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
   return {
     router,
     getRoutingOptions: () => ({
-      defaultLocale: runtimeI18n.defaultLocale,
+      defaultLocale: defaultLocale,
       strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__)
     }),

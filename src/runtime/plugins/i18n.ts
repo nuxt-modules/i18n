@@ -25,19 +25,12 @@ export default defineNuxtPlugin({
 
     const nuxt = useNuxtApp()
     const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-
-    let defaultLocaleDomain: string = runtimeI18n.defaultLocale || ''
+    const defaultLocale: string = getDefaultLocaleForDomain(runtimeI18n.defaultLocale || '')
     if (__MULTI_DOMAIN_LOCALES__) {
-      defaultLocaleDomain = getDefaultLocaleForDomain(runtimeI18n)
-      setupMultiDomainLocales(defaultLocaleDomain)
+      setupMultiDomainLocales(defaultLocale)
     }
 
-    runtimeI18n.defaultLocale = defaultLocaleDomain
-
-    const vueI18nOptions: I18nOptions = await setupVueI18nOptions()
-    if (defaultLocaleDomain) {
-      vueI18nOptions.locale = defaultLocaleDomain
-    }
+    const vueI18nOptions: I18nOptions = await setupVueI18nOptions(defaultLocale)
 
     if (import.meta.server) {
       const serverLocaleConfigs = useLocaleConfigs()
@@ -53,7 +46,7 @@ export default defineNuxtPlugin({
     // create i18n instance
     const i18n = createI18n(vueI18nOptions)
 
-    nuxt._nuxtI18nCtx = createNuxtI18nContext(nuxt, i18n)
+    nuxt._nuxtI18nCtx = createNuxtI18nContext(nuxt, i18n, defaultLocale)
     const ctx = useNuxtI18nContext(nuxt)
 
     nuxt._nuxtI18n = createComposableContext(runtimeI18n)
@@ -97,7 +90,7 @@ export default defineNuxtPlugin({
         composer.loadLocaleMessages = ctx.loadLocaleMessages
 
         composer.differentDomains = __DIFFERENT_DOMAINS__
-        composer.defaultLocale = runtimeI18n.defaultLocale
+        composer.defaultLocale = defaultLocale
 
         composer.getBrowserLocale = ctx.getBrowserLocale
         composer.getLocaleCookie = ctx.getLocaleCookie
