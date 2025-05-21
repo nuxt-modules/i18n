@@ -119,8 +119,7 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
 /**
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
-export function getDefaultLocaleForDomain(runtimeI18n: I18nPublicRuntimeConfig) {
-  const { defaultLocale } = runtimeI18n
+export function getDefaultLocaleForDomain(defaultLocale: string) {
   const host = getHost()
   if (normalizedLocales.some(l => l.defaultForDomains != null)) {
     return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code ?? ''

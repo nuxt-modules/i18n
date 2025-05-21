@@ -1,6 +1,6 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { defineNitroPlugin } from 'nitropack/runtime'
+import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
@@ -12,9 +12,13 @@ import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 
 import type { H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
+import type { I18nPublicRuntimeConfig } from '~/src/types'
 
 export default defineNitroPlugin(async nitro => {
-  const options = await setupVueI18nOptions()
+  const runtime18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+  const defaultLocale: string = runtime18n.defaultLocale || ''
+
+  const options = await setupVueI18nOptions(defaultLocale)
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
 
   nitro.hooks.hook('request', async (event: H3Event) => {
@@ -63,7 +67,7 @@ export default defineNitroPlugin(async nitro => {
 
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
-    const options = await setupVueI18nOptions()
+    const options = await setupVueI18nOptions(defaultLocale)
     const i18nMiddleware = defineI18nMiddleware({
       ...(options as CoreOptions),
       locale: createUserLocaleDetector(options.locale, options.fallbackLocale)

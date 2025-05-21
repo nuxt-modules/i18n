@@ -31,6 +31,8 @@ export type NuxtI18nContext = {
   /** SSG with dynamic locale resources */
   dynamicResourcesSSG: boolean
   getVueI18n: () => I18n
+  /** Get default locale */
+  getDefaultLocale: () => string
   /** Load locale messages */
   loadLocaleMessages: (locale: Locale) => Promise<void>
   /** Get current locale */
@@ -64,7 +66,7 @@ function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cooki
   })
 }
 
-export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n): NuxtI18nContext {
+export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(_i18n)
   const serverLocaleConfigs = useLocaleConfigs()
   const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
@@ -82,6 +84,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n): NuxtI18nConte
     preloaded: false,
     dynamicResourcesSSG,
     getVueI18n: () => _i18n,
+    getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: (locale: string) => {
       if (isRef(i18n.locale)) {
