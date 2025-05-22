@@ -6,7 +6,7 @@ import { getComposer } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
-import { getRouteBaseName as _getRouteBaseName, getRoutePathLocaleRegex } from '#i18n-kit/routing'
+import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
 import {
   localePath,
   switchLocalePath,
@@ -165,9 +165,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   return locale
 }
 
-const LOCALE_PATH_RE = getRoutePathLocaleRegex(localeCodes)
-
-function skipDetect(detect: DetectBrowserLanguageOptions, path: string): boolean {
+function skipDetect(detect: DetectBrowserLanguageOptions, path: string, pathLocale: string): boolean {
   // no routes - force detection
   if (!__I18N_ROUTING__) {
     return false
@@ -179,7 +177,7 @@ function skipDetect(detect: DetectBrowserLanguageOptions, path: string): boolean
   }
 
   // detection only on unprefixed route
-  if (detect.redirectOn === 'no prefix' && !detect.alwaysRedirect && path.match(LOCALE_PATH_RE)) {
+  if (detect.redirectOn === 'no prefix' && !detect.alwaysRedirect && pathLocale) {
     return true
   }
 
@@ -190,11 +188,11 @@ export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
   const path = getCompatRoutePath(route)
   const ctx = useNuxtI18nContext(nuxtApp)
-  const { detectBrowserLanguage, defaultLocale } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-  const { fallbackLocale } = detectBrowserLanguage || {}
+  const { detectBrowserLanguage: detectBrowser, defaultLocale } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
+  const { fallbackLocale } = detectBrowser || {}
 
   function* detect() {
-    if (ctx.firstAccess && detectBrowserLanguage && !skipDetect(detectBrowserLanguage, path)) {
+    if (ctx.firstAccess && detectBrowser && !skipDetect(detectBrowser, path, ctx.getLocaleFromRoute(path))) {
       // cookie
       yield ctx.getLocaleCookie()
 
