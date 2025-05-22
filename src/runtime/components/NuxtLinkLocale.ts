@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { isObject } from '@intlify/shared'
-import { useLocalePath, type Locale } from '#i18n'
+import { useLocaleRoute, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
 import { defineNuxtLink } from '#imports'
 import { hasProtocol } from 'ufo'
@@ -28,22 +28,24 @@ export default defineComponent<NuxtLinkLocaleProps>({
     }
   },
   setup(props, { slots }) {
-    const localePath = useLocalePath()
+    const localeRoute = useLocaleRoute()
 
     // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
-    const checkPropConflicts = (
-      props: NuxtLinkLocaleProps,
-      main: keyof NuxtLinkLocaleProps,
-      sub: keyof NuxtLinkProps
-    ): void => {
+    function checkPropConflicts(props: NuxtLinkLocaleProps, main: keyof NuxtLinkLocaleProps, sub: keyof NuxtLinkProps) {
       if (import.meta.dev && props[main] !== undefined && props[sub] !== undefined) {
         console.warn(`[NuxtLinkLocale] \`${main}\` and \`${sub}\` cannot be used together. \`${sub}\` will be ignored.`)
       }
     }
 
+    // Lazily check whether to.value has a protocol
+    const isAbsoluteUrl = computed(() => {
+      const path = props.to || props.href || ''
+      return typeof path === 'string' && hasProtocol(path, { acceptRelative: true })
+    })
+
     const resolvedPath = computed(() => {
       const destination = props.to ?? props.href
-      return (destination != null ? localePath(destination, props.locale) : destination) as string
+      return destination != null ? localeRoute(destination, props.locale) : destination
     })
 
     // Resolving link type
@@ -53,18 +55,13 @@ export default defineComponent<NuxtLinkLocaleProps>({
         return true
       }
 
-      // When `target` prop is set, link is external
-      if (props.target && props.target !== '_self') {
-        return true
-      }
-
-      const destination = props.to ?? props.href
+      const path = props.to || props.href || ''
       // When `to` is a route object then it's an internal link
-      if (isObject(destination)) {
+      if (isObject(path)) {
         return false
       }
 
-      return destination === '' || destination == null || hasProtocol(destination as string, { acceptRelative: true })
+      return path === '' || isAbsoluteUrl.value
     })
 
     /**
@@ -77,6 +74,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
       }
 
       if (!isExternal.value) {
+        // @ts-expect-error type needs to expanded to allow route objects/paths as NuxtLinkProps
         _props.to = resolvedPath.value
       }
 
@@ -84,8 +82,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
       checkPropConflicts(props, 'to', 'href')
       delete _props.href
 
-      // The locale attribute cannot be set for NuxtLink
-      // @see https://github.com/nuxt-modules/i18n/issues/2498
+      // Remove attributes not supported by NuxtLink (#2498)
       delete _props.locale
 
       return _props as NuxtLinkProps

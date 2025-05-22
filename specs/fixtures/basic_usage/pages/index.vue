@@ -168,6 +168,9 @@ useHead(() => ({
         <li class="external-url">
           <NuxtLinkLocale :to="'https://nuxt.com/'">Nuxt.com</NuxtLinkLocale>
         </li>
+        <li class="target-blank-with-locale">
+          <NuxtLinkLocale to="about" locale="fr" target="_blank">About us in French (new tab)</NuxtLinkLocale>
+        </li>
       </ul>
     </section>
     <section id="switch-locale-path-usages">
