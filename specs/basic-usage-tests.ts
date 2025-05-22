@@ -42,6 +42,9 @@ export function basicUsageTests() {
     expect(await page.locator('#nuxt-link-locale-usages .external-url a').getAttribute('href')).toEqual(
       'https://nuxt.com/'
     )
+    expect(await page.locator('#nuxt-link-locale-usages .target-blank-with-locale a').getAttribute('href')).toEqual(
+      '/fr/about'
+    )
 
     // Language switching path localizing with `useSwitchLocalePath`
     expect(await page.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual('/')
