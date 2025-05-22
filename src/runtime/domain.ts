@@ -2,12 +2,7 @@ import { hasProtocol } from 'ufo'
 import { getRequestProtocol, getRequestHost } from 'h3'
 import { useRequestEvent, useRuntimeConfig, useRouter } from '#imports'
 import { normalizedLocales } from '#build/i18n.options.mjs'
-import {
-  normalizeRouteName,
-  getRoutePathLocaleRegex,
-  getRouteNameLocaleRegex,
-  createNameLocaleRegexMatcher
-} from '#i18n-kit/routing'
+import { getLocaleFromRoutePath } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
 import type { LocaleObject } from '#internal-i18n-types'
@@ -49,9 +44,9 @@ export function getLocaleDomain(locales: LocaleObject[], path: string): string {
   }
 
   // get prefix from route
-  const matched = path.match(getRoutePathLocaleRegex(matches.map(l => l.code)))?.at(1)
-  if (matched) {
-    return matches.find(l => l.code === matched)?.code ?? ''
+  const pathLocale = getLocaleFromRoutePath(path)
+  if (pathLocale && matches.some(l => l.code === pathLocale)) {
+    return matches.find(l => l.code === pathLocale)?.code ?? ''
   }
 
   // fall back to default language on this domain - if set
@@ -93,17 +88,11 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
   // incompatible strategy
   if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') return
 
-  const getLocaleFromRouteName = createNameLocaleRegexMatcher(
-    getRouteNameLocaleRegex({
-      localeCodes: [defaultLocale],
-      separator: __ROUTE_NAME_SEPARATOR__,
-      defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__
-    })
-  )
+  const getLocaleFromRouteName = (name: string) => name.split(__ROUTE_NAME_SEPARATOR__).at(1) ?? ''
   const defaultRouteSuffix = __ROUTE_NAME_SEPARATOR__ + __ROUTE_NAME_DEFAULT_SUFFIX__
   // adjust routes to match the domain's locale and structure
   for (const route of router.getRoutes()) {
-    const routeName = normalizeRouteName(route.name)
+    const routeName = String(route.name)
     if (routeName.endsWith(defaultRouteSuffix)) {
       router.removeRoute(routeName)
       continue

@@ -78,6 +78,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
   const getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
   const baseUrl = createBaseUrlGetter(nuxt, getDomainFromLocale)
+  const isSupportedLocale = (locale: string) => localeCodes.includes(locale)
+  const getLocaleFromRoute = createLocaleFromRouteGetter(__ROUTE_NAME_SEPARATOR__)
 
   return {
     firstAccess: true,
@@ -94,18 +96,17 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
       }
     },
     getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : x)),
-    getLocaleFromRoute: createLocaleFromRouteGetter({
-      separator: __ROUTE_NAME_SEPARATOR__,
-      defaultSuffix: __ROUTE_NAME_DEFAULT_SUFFIX__,
-      localeCodes
-    }),
+    getLocaleFromRoute: route => {
+      const locale = getLocaleFromRoute(route)
+      return isSupportedLocale(locale) ? locale : ''
+    },
     getLocaleCookie: () => {
-      if (detectBrowserLanguage.useCookie && localeCodes.includes(localeCookie.value || '')) {
+      if (detectBrowserLanguage.useCookie && isSupportedLocale(localeCookie.value || '')) {
         return localeCookie.value
       }
     },
     setLocaleCookie: (locale: string) => {
-      if (detectBrowserLanguage.useCookie && localeCodes.includes(locale)) {
+      if (detectBrowserLanguage.useCookie && isSupportedLocale(locale)) {
         localeCookie.value = locale
       }
     },
@@ -136,6 +137,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
         return
       }
 
+      if (locale in localeLoaders === false) return
       const headers = new Headers()
       if (!getLocaleConfig(locale)?.cacheable) {
         headers.set('Cache-Control', 'no-cache')
