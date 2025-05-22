@@ -46,5 +46,5 @@ const _messagesHandlerCached = defineCachedEventHandler(_messagesHandler, {
  * - uses `messagesHandler` in development
  * - uses `cachedMessagesHandler` in production
  */
-export default _messagesHandler
-// export default import.meta.dev ? _messagesHandler : _messagesHandlerCached
+// export default _messagesHandler
+export default import.meta.dev ? _messagesHandler : _messagesHandlerCached
