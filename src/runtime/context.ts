@@ -49,7 +49,7 @@ export type NuxtI18nContext = {
   /** Get locale from route path or object */
   getLocaleFromRoute: (route: string | CompatRoute) => string
   /** Get current base URL */
-  getBaseUrl: () => string
+  getBaseUrl: (locale?: string) => string
   /** Get domain associated with locale */
   getDomainFromLocale: (locale: Locale) => string | undefined
 }
@@ -110,7 +110,12 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
         localeCookie.value = locale
       }
     },
-    getBaseUrl: () => joinURL(baseUrl(), nuxt.$config.app.baseURL),
+    getBaseUrl: (locale?: string) => {
+      if (locale) {
+        return joinURL(getDomainFromLocale(locale) || baseUrl(), nuxt.$config.app.baseURL)
+      }
+      return joinURL(baseUrl(), nuxt.$config.app.baseURL)
+    },
     getBrowserLocale: () => {
       // from navigator or request header
       const languages = import.meta.client

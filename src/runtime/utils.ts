@@ -120,8 +120,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
     },
     afterSwitchLocalePath: (path, locale) => {
       if (__DIFFERENT_DOMAINS__) {
-        const domain = ctx.getDomainFromLocale(locale)
-        return (domain && joinURL(domain, path)) || path
+        return joinURL(ctx.getBaseUrl(locale), path)
       }
       return path
     },
