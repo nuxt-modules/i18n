@@ -12,7 +12,7 @@ import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 
 import type { H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
-import type { I18nPublicRuntimeConfig } from '~/src/types'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 export default defineNitroPlugin(async nitro => {
   const runtime18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
