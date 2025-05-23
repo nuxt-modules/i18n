@@ -25,6 +25,13 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
     )
   }
 
+  const strategy = nuxt.options.i18n?.strategy || options.strategy
+  if (strategy.endsWith('_default') && !nuxt.options.i18n?.defaultLocale) {
+    logger.warn(
+      `The \`${strategy}\` i18n strategy${nuxt.options.i18n?.strategy == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`
+    )
+  }
+
   if (nuxt.options.experimental.scanPageMeta === false) {
     logger.warn(
       "Route localization features (e.g. custom name, prefixed aliases) require Nuxt's `experimental.scanPageMeta` to be enabled.\nThis feature will be enabled in future Nuxt versions (https://github.com/nuxt/nuxt/pull/27134), check out the docs for more details: https://nuxt.com/docs/guide/going-further/experimental-features#scanpagemeta"
