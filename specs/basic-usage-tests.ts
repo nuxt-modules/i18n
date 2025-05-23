@@ -46,6 +46,11 @@ export function basicUsageTests() {
       '/fr/about'
     )
 
+    expect(await page.evaluate(() => history.state.hello)).toEqual(undefined)
+    await page.locator('#nuxt-link-locale-usages .state a').clickNavigate()
+    expect(await page.evaluate(() => history.state.hello)).toEqual('world')
+    await page.goBackNavigate()
+
     // Language switching path localizing with `useSwitchLocalePath`
     expect(await page.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual('/')
     expect(await page.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual('/fr')
