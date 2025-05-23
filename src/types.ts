@@ -175,6 +175,10 @@ export type NuxtI18nOptions<
   i18nModules?: { langDir?: string | null; locales?: NuxtI18nOptions<Context>['locales'] }[]
   rootRedirect?: string | RootRedirectOptions
   skipSettingLocaleOnNavigate?: boolean
+  /**
+   * @deprecated This option is deprecated, only `'composition'` types will be supported in the future.
+   * @default 'composition'
+   */
   types?: 'composition' | 'legacy'
   debug?: boolean | 'verbose'
   parallelPlugin?: boolean
@@ -211,6 +215,7 @@ export type NuxtI18nOptions<
   trailingSlash?: boolean
   /**
    * Internal separator used for generated route names for each locale - you shouldn't need to change this
+   * @deprecated This option is deprecated and will be removed in the future.
    * @default '___'
    */
   routesNameSeparator?: string
@@ -218,6 +223,7 @@ export type NuxtI18nOptions<
    * Internal suffix added to generated route names for default locale
    *
    * Relevant if strategy is `prefix_and_default` - you shouldn't need to change this.
+   * @deprecated This option is deprecated and will be removed in the future.
    * @default 'default'
    */
   defaultLocaleRouteNameSuffix?: string
