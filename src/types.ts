@@ -341,11 +341,6 @@ export interface I18nHeadOptions {
    * @default true
    */
   seo?: boolean | SeoAttributesOptions
-  /**
-   * Identifier attribute of `<meta>` tag
-   * @default 'key'
-   */
-  key?: string
 }
 
 /**

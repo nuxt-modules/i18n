@@ -27,8 +27,8 @@ export default defineNitroPlugin(async nitro => {
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
+    const ctx = tryUseI18nContext(event)
     if (__I18N_PRELOAD__) {
-      const ctx = tryUseI18nContext(event)
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
 
       // only include the messages used in the current page
@@ -63,6 +63,9 @@ export default defineNitroPlugin(async nitro => {
         console.log(_)
       }
     }
+    htmlContext.head.push(
+      `<script data-nuxt-i18n-slp="${appId}">window._i18nSlp = ${JSON.stringify(ctx?.slp ?? {})}</script>`
+    )
   })
 
   // enable server-side translations and user locale-detector

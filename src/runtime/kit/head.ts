@@ -33,7 +33,6 @@ type SeoAttributesOptions = {
  * @internal
  */
 export type HeadContext = {
-  key: string
   dir: boolean
   lang: boolean
   seo: boolean | SeoAttributesOptions | undefined
@@ -127,7 +126,7 @@ function getHreflangLinks(options: HeadContext) {
 
     links.push(link)
     if (options.defaultLocale && options.defaultLocale === locale.code) {
-      links.unshift({ [options.key]: 'i18n-xd', rel: 'alternate', href: link.href, hreflang: 'x-default' })
+      links.unshift({ key: 'i18n-xd', rel: 'alternate', href: link.href, hreflang: 'x-default' })
     }
   }
 
@@ -148,7 +147,7 @@ function getHreflangLink(
     options.strictCanonicals ? getCanonicalQueryParams(options) : {}
   )
 
-  return { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
+  return { key: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
 }
 
 function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()) {
@@ -162,7 +161,7 @@ function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()
 
 function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
   if (!href) return []
-  return [{ [options.key]: 'i18n-can', rel: 'canonical', href }]
+  return [{ key: 'i18n-can', rel: 'canonical', href }]
 }
 
 function getCanonicalQueryParams(options: HeadContext, route = options.getCurrentRoute()) {
@@ -184,19 +183,19 @@ function getCanonicalQueryParams(options: HeadContext, route = options.getCurren
 
 function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
   if (!href) return []
-  return [{ [options.key]: 'i18n-og-url', property: 'og:url', content: href }]
+  return [{ key: 'i18n-og-url', property: 'og:url', content: href }]
 }
 
 function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
   if (!currentLanguage) return []
-  return [{ [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }]
+  return [{ key: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }]
 }
 
 function getAlternateOgLocales(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
   const alternateLocales = options.locales.filter(locale => locale.language && locale.language !== currentLanguage)
 
   return alternateLocales.map(locale => ({
-    [options.key]: `i18n-og-alt-${locale.language}`,
+    key: `i18n-og-alt-${locale.language}`,
     property: 'og:locale:alternate',
     content: formatOgLanguage(locale.language)
   }))

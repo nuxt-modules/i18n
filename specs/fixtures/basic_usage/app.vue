@@ -30,4 +30,11 @@ section {
 .my-leave-active {
   opacity: 0;
 }
+
+a[data-i18n-disabled] {
+  /* display: none; */
+  color: #d54141;
+  pointer-events: none;
+  user-select: none;
+}
 </style>

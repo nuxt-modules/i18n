@@ -1,4 +1,4 @@
-import { computed, getCurrentScope, onScopeDispose, ref, useHead, watch, type Ref } from '#imports'
+import { computed, getCurrentScope, onScopeDispose, ref, useRequestEvent, watch, type Ref } from '#imports'
 import { assign } from '@intlify/shared'
 import { localeHead as _localeHead, type HeadContext } from '#i18n-kit/head'
 
@@ -53,24 +53,24 @@ function createHeadContext(
  */
 export function localeHead(
   ctx: ComposableContext,
-  { dir = true, lang = true, seo = true, key = 'key' }: I18nHeadOptions
+  { dir = true, lang = true, seo = true }: I18nHeadOptions
 ): I18nHeadMetaInfo {
-  return _localeHead(createHeadContext(ctx, { dir, lang, seo, key }))
+  return _localeHead(createHeadContext(ctx, { dir, lang, seo }))
 }
 
 export function _useLocaleHead(ctx: ComposableContext, options: Required<I18nHeadOptions>): Ref<I18nHeadMetaInfo> {
   const metaObject = ref(_localeHead(createHeadContext(ctx, options)))
 
   if (import.meta.client) {
-    const unsub = watch(
-      [() => ctx.router.currentRoute.value, () => ctx.getLocale()],
-      () => (metaObject.value = _localeHead(createHeadContext(ctx, options)))
-    )
+    const unsub = watch([() => ctx.router.currentRoute.value, () => ctx.getLocale()], () => {
+      metaObject.value = _localeHead(createHeadContext(ctx, options))
+      ctx.getHead()?.patch(metaObject.value)
+    })
     if (getCurrentScope()) {
       onScopeDispose(unsub)
     }
   }
-
+  ctx.getHead()?.patch(metaObject.value)
   return metaObject
 }
 
@@ -79,7 +79,8 @@ export function _useSetI18nParams(
   seo?: SeoAttributesOptions,
   router = ctx.router
 ): (params: I18nRouteMeta) => void {
-  const head = useHead({})
+  const head = ctx.getHead()
+  const evt = import.meta.server && useRequestEvent()
 
   const _i18nParams = ref({})
   const i18nParams = computed({
@@ -89,6 +90,9 @@ export function _useSetI18nParams(
     set(val: I18nRouteMeta) {
       _i18nParams.value = val
       router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = val
+      if (import.meta.server && evt && evt?.context.nuxtI18n?.slp) {
+        evt.context.nuxtI18n.slp = val
+      }
     }
   })
 
@@ -96,20 +100,27 @@ export function _useSetI18nParams(
     () => router.currentRoute.value.fullPath,
     () => {
       router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = _i18nParams.value
+      updateState()
     }
   )
 
   if (getCurrentScope()) {
-    onScopeDispose(unsub)
+    onScopeDispose(() => unsub)
   }
 
-  // Hard code to 'id', this is used to replace payload before ssr response, skip setting `dir`, `lang` when setting i18n params
-  const ctxOptions = { dir: false, lang: false, key: 'id', seo: seo ?? true }
+  const metaState = ctx.getMetaState()
+  function updateState() {
+    const { link, meta } = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
+    metaState.value.link = link
+    metaState.value.meta = meta
+    head?.patch(metaState.value)
+  }
+
+  const ctxOptions = ctx.getSeoSettings()
+  ctxOptions.value.seo = seo || ctxOptions.value.seo
 
   return function (params: I18nRouteMeta) {
     i18nParams.value = { ...params }
-
-    const { link, meta } = _localeHead(createHeadContext(ctx, ctxOptions))
-    head?.patch({ link, meta })
+    updateState()
   }
 }
