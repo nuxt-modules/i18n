@@ -171,6 +171,11 @@ useHead(() => ({
         <li class="target-blank-with-locale">
           <NuxtLinkLocale to="about" locale="fr" target="_blank">About us in French (new tab)</NuxtLinkLocale>
         </li>
+        <li class="state">
+          <NuxtLinkLocale :to="{ path: '/', query: { foo: 'bar' }, state: { hello: 'world' } }"
+            >Index with state</NuxtLinkLocale
+          >
+        </li>
       </ul>
     </section>
     <section id="switch-locale-path-usages">
