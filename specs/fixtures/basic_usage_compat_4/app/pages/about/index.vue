@@ -13,16 +13,6 @@ const code = computed(() => {
 definePageMeta({
   title: 'about'
 })
-
-/*
-// TODO: defineNuxtI18n macro
-defineNuxtI18n({
-  paths: {
-    en: '/about-us',
-    fr: '/a-propos'
-  }
-})
-*/
 </script>
 
 <template>

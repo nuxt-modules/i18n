@@ -95,6 +95,157 @@ exports[`#1649 1`] = `
 ]
 `;
 
+exports[`Extract page meta > 'JavaScript' (meta) 1`] = `
+[
+  {
+    "children": [],
+    "meta": {
+      "i18n": {
+        "paths": {
+          "en": "/about-us",
+          "fr": "/a-propos",
+          "ja": "/about-ja",
+        },
+      },
+    },
+    "name": "about___en",
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "meta": {
+      "i18n": {
+        "paths": {
+          "en": "/about-us",
+          "fr": "/a-propos",
+          "ja": "/about-ja",
+        },
+      },
+    },
+    "name": "about___ja",
+    "path": "/ja/about-ja",
+  },
+]
+`;
+
+exports[`Extract page meta > 'dynamic route' (meta) 1`] = `
+[
+  {
+    "children": [],
+    "meta": {
+      "i18n": {
+        "paths": {
+          "en": "/articles/[name]",
+          "fr": "/articles/[name]",
+          "ja": "/記事/[name]",
+        },
+      },
+    },
+    "name": "name___en",
+    "path": "/articles/:name()",
+  },
+  {
+    "children": [],
+    "meta": {
+      "i18n": {
+        "paths": {
+          "en": "/articles/[name]",
+          "fr": "/articles/[name]",
+          "ja": "/記事/[name]",
+        },
+      },
+    },
+    "name": "name___ja",
+    "path": "/ja/%E8%A8%98%E4%BA%8B/:name()",
+  },
+]
+`;
+
+exports[`Extract page meta > 'ignore custom route' (meta) 1`] = `
+[
+  {
+    "children": [],
+    "meta": {
+      "i18n": false,
+    },
+    "name": "about",
+    "path": "/about",
+  },
+]
+`;
+
+exports[`Extract page meta > 'simple' (meta) 1`] = `
+[
+  {
+    "children": [],
+    "meta": {
+      "i18n": {
+        "paths": {
+          "en": "/about-us",
+          "fr": "/a-propos",
+          "ja": "/about-ja",
+        },
+      },
+    },
+    "name": "about___en",
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "meta": {
+      "i18n": {
+        "paths": {
+          "en": "/about-us",
+          "fr": "/a-propos",
+          "ja": "/about-ja",
+        },
+      },
+    },
+    "name": "about___ja",
+    "path": "/ja/about-ja",
+  },
+]
+`;
+
+exports[`Extract page meta > 'with definePageMeta' (meta) 1`] = `
+[
+  {
+    "children": [],
+    "meta": {
+      "__nuxt_dynamic_meta_key": Set {
+        "meta",
+      },
+      "i18n": {
+        "paths": {
+          "en": "/about-us",
+          "fr": "/a-propos",
+          "ja": "/about-ja",
+        },
+      },
+    },
+    "name": "about___en",
+    "path": "/about-us",
+  },
+  {
+    "children": [],
+    "meta": {
+      "__nuxt_dynamic_meta_key": Set {
+        "meta",
+      },
+      "i18n": {
+        "paths": {
+          "en": "/about-us",
+          "fr": "/a-propos",
+          "ja": "/about-ja",
+        },
+      },
+    },
+    "name": "about___ja",
+    "path": "/ja/about-ja",
+  },
+]
+`;
+
 exports[`Module configuration > dynamic parameters 1`] = `
 [
   {
@@ -248,7 +399,7 @@ exports[`Module configuration > the part of URL 1`] = `
 ]
 `;
 
-exports[`Page components > JavaScript 1`] = `
+exports[`Page components > 'JavaScript' 1`] = `
 [
   {
     "children": [],
@@ -265,7 +416,7 @@ exports[`Page components > JavaScript 1`] = `
 ]
 `;
 
-exports[`Page components > dynamic route 1`] = `
+exports[`Page components > 'dynamic route' 1`] = `
 [
   {
     "children": [],
@@ -285,7 +436,16 @@ exports[`Page components > dynamic route 1`] = `
 ]
 `;
 
-exports[`Page components > simple 1`] = `
+exports[`Page components > 'ignore custom route' 1`] = `
+[
+  {
+    "children": [],
+    "path": "/about",
+  },
+]
+`;
+
+exports[`Page components > 'simple' 1`] = `
 [
   {
     "children": [],
@@ -302,7 +462,7 @@ exports[`Page components > simple 1`] = `
 ]
 `;
 
-exports[`Page components > with definePageMeta 1`] = `
+exports[`Page components > 'with definePageMeta' 1`] = `
 [
   {
     "children": [],

@@ -8,4 +8,14 @@ defineI18nRoute({
     ja: '/記事/[name]'
   }
 })
+
+definePageMeta({
+  i18n: {
+    paths: {
+      en: '/articles/[name]',
+      fr: '/articles/[name]',
+      ja: '/記事/[name]'
+    }
+  }
+})
 </script>
