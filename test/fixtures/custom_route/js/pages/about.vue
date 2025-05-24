@@ -8,6 +8,16 @@ defineI18nRoute({
     ja: '/about-ja'
   }
 })
+
+definePageMeta({
+  i18n: {
+    paths: {
+      en: '/about-us',
+      fr: '/a-propos',
+      ja: '/about-ja'
+    }
+  }
+})
 </script>
 
 <template>

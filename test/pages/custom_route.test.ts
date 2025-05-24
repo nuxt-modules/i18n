@@ -1,11 +1,14 @@
 import fs from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
 import { localizeRoutes } from '../../src/routing'
 import { getRouteOptionsResolver, analyzeNuxtPages } from '../../src/pages'
 import { createPageAnalyzeContext, getNuxtOptions, stripFilePropertyFromPages } from './utils'
 import { vi, afterAll, describe, test, expect } from 'vitest'
 
 import type { NuxtI18nOptions } from '../../src/types'
+import { deepCopy } from '@intlify/shared'
+import { loadNuxt, buildNuxt } from '@nuxt/kit'
+import { NuxtPage } from 'nuxt/schema'
 
 /**
  * NOTE:
@@ -126,7 +129,7 @@ describe.each([
   })
 })
 
-describe.each([
+const inPageConfigs = [
   {
     case: 'simple',
     options: getNuxtOptions({}, 'page'),
@@ -171,9 +174,62 @@ describe.each([
         children: []
       }
     ]
+  },
+  {
+    case: 'ignore custom route',
+    options: getNuxtOptions({}, 'page'),
+    pages: [
+      {
+        path: '/about',
+        file: resolve(__dirname, '../fixtures/ignore_route/disable/pages/about.vue'),
+        children: []
+      }
+    ]
   }
-])('Page components', ({ case: _case, options, pages }) => {
-  test(_case, () => {
+]
+
+describe('Extract page meta', () => {
+  test.each(inPageConfigs)(`$case (meta)`, async ({ case: _case, options, pages }) => {
+    const copy = {} as typeof options
+    deepCopy(options, copy)
+    copy.customRoutes = 'meta'
+
+    let pagesResolved: (value: NuxtPage[] | PromiseLike<NuxtPage[]>) => void
+    const localizedPages = new Promise<NuxtPage[]>(res => (pagesResolved = res))
+
+    const nuxt = await loadNuxt({
+      rootDir: resolve(process.cwd(), './test/fixtures/kit'),
+      configFile: 'nuxt.config',
+      dev: false,
+
+      overrides: {
+        css: [],
+        dev: false,
+        watch: [],
+        modules: ['@nuxtjs/i18n'],
+        dir: { pages: dirname(pages[0].file) },
+        i18n: copy,
+        hooks: {
+          'pages:resolved': pages => {
+            pagesResolved(pages)
+            // close early, we have what we need
+            nuxt.close()
+          }
+        }
+      }
+    })
+
+    try {
+      await buildNuxt(nuxt)
+    } catch (_) {
+      // ignore build errors
+    }
+    expect(stripFilePropertyFromPages(await localizedPages)).toMatchSnapshot()
+  })
+})
+
+describe('Page components', () => {
+  test.each(inPageConfigs)(`$case`, async ({ case: _case, options, pages }) => {
     const ctx = createPageAnalyzeContext(undefined, undefined, options.pages)
     analyzeNuxtPages(ctx, ctx.pagesDir, pages)
     const localizedPages = localizeRoutes(pages, {

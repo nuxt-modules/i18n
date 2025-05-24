@@ -8,16 +8,6 @@ const localePath = useLocalePath()
 const code = computed(() => {
   return localeProperties.value.code
 })
-
-/*
-// TODO: defineNuxtI18n macro
-defineNuxtI18n({
-  paths: {
-    en: '/about-us',
-    fr: '/a-propos'
-  }
-})
-*/
 </script>
 
 <template>
