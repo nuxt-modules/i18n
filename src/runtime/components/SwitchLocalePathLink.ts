@@ -18,14 +18,10 @@ const SlpComponent = defineComponent({
   setup(props, { slots, attrs }) {
     const nuxtApp = useNuxtApp()
     const switchLocalePath = useSwitchLocalePath()
+    const slp = nuxtApp._nuxtI18n.getSLP()
 
     const resolved = computed(() => {
-      if (
-        __I18N_STRICT_SEO__ &&
-        nuxtApp.isHydrating &&
-        Object.keys(window?._i18nSlp ?? {}).length &&
-        !window._i18nSlp?.[props.locale]
-      ) {
+      if (__I18N_STRICT_SEO__ && nuxtApp.isHydrating && Object.keys(slp ?? {}).length && !slp?.[props.locale]) {
         return '#'
       }
       return encodeURI(switchLocalePath(props.locale)) || (__I18N_STRICT_SEO__ && '#') || ''
