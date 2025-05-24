@@ -22,7 +22,10 @@ export default defineNuxtConfig({
     baseUrl: 'http://localhost:3000',
     vueI18n: './config/i18n.config.ts',
     locales: ['en', 'fr'],
-    defaultLocale: 'en'
+    defaultLocale: 'en',
+    experimental: {
+      strictSEO: true
+    }
   },
 
   compatibilityDate: '2025-04-06'
