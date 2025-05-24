@@ -1,21 +1,19 @@
 import { hasProtocol } from 'ufo'
-import { getRequestProtocol, getRequestHost } from 'h3'
-import { useRequestEvent, useRuntimeConfig, useRouter } from '#imports'
+import { useRuntimeConfig, useRouter, useRequestURL } from '#imports'
 import { normalizedLocales } from '#build/i18n.options.mjs'
 import { getLocaleFromRoutePath } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
 import type { LocaleObject } from '#internal-i18n-types'
 import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { NuxtApp } from '#app'
 import type { Router } from 'vue-router'
 
 function warn(message: string) {
   console.warn(`[${__NUXT_I18N_MODULE_ID__}]: ${message}`)
 }
 
-export function getHost() {
-  return import.meta.server ? getRequestHost(useRequestEvent()!, { xForwardedHost: true }) : window.location.host
+export function getHost(): string {
+  return useRequestURL({ xForwardedHost: true }).host
 }
 
 function toArray<T>(value: T | T[]): T[] {
@@ -25,7 +23,7 @@ function toArray<T>(value: T | T[]): T[] {
 /**
  * Filters locales by domain matching current host
  */
-function filterMatchingDomainsLocales(locales: LocaleObject[], host: string) {
+function filterMatchingDomainsLocales(locales: LocaleObject[], host: string = getHost()): LocaleObject[] {
   // normalize domain by removing protocol
   const normalizeDomain = (domain: string = '') => domain.replace(/(https?):\/\//, '')
   return locales.filter(locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host))
@@ -53,14 +51,7 @@ export function getLocaleDomain(locales: LocaleObject[], path: string): string {
   return matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code ?? ''
 }
 
-function getProtocol(nuxt: NuxtApp) {
-  return import.meta.server
-    ? getRequestProtocol(useRequestEvent(nuxt)!) + ':'
-    : new URL(window.location.origin).protocol
-}
-
-export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
-  const host = getHost()
+export function createDomainFromLocaleGetter(host: string = getHost()): (locale: Locale) => string | undefined {
   const { domainLocales } = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
 
   return (locale: Locale): string | undefined => {
@@ -77,7 +68,7 @@ export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
       return domain
     }
 
-    return getProtocol(nuxt) + '//' + domain
+    return useRequestURL().protocol + '//' + domain
   }
 }
 
@@ -85,7 +76,6 @@ export function createDomainFromLocaleGetter(nuxt: NuxtApp) {
  * Removes default routes depending on domain
  */
 export function setupMultiDomainLocales(defaultLocale: string, router: Router = useRouter()) {
-  // incompatible strategy
   if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') return
 
   const getLocaleFromRouteName = (name: string) => name.split(__ROUTE_NAME_SEPARATOR__).at(1) ?? ''
@@ -108,8 +98,7 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
 /**
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
-export function getDefaultLocaleForDomain(defaultLocale: string) {
-  const host = getHost()
+export function getDefaultLocaleForDomain(defaultLocale: string, host: string = getHost()): string {
   if (normalizedLocales.some(l => l.defaultForDomains != null)) {
     return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code ?? ''
   }

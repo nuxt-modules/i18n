@@ -76,7 +76,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
   const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
-  const getDomainFromLocale = createDomainFromLocaleGetter(nuxt)
+  const getDomainFromLocale = createDomainFromLocaleGetter()
   const baseUrl = createBaseUrlGetter(nuxt, getDomainFromLocale)
   const isSupportedLocale = (locale: string) => localeCodes.includes(locale)
   const getLocaleFromRoute = createLocaleFromRouteGetter(__ROUTE_NAME_SEPARATOR__)
