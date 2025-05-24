@@ -6,7 +6,8 @@ const localePath = useLocalePath()
 const localeRoute = useLocaleRoute()
 const switchLocalePath = useSwitchLocalePath()
 const routeBaseName = useRouteBaseName()
-const localeHead = useLocaleHead()
+const strictSEO = useRuntimeConfig().public.i18n.experimental.strictSEO
+const localeHead = !strictSEO && useLocaleHead()
 
 const metaTestEntries = computed(() => [
   { id: 'locale-path', content: localePath('/nested/test-route') },
@@ -17,10 +18,10 @@ const metaTestEntries = computed(() => [
 
 useHead(() => ({
   htmlAttrs: {
-    ...localeHead.value.htmlAttrs
+    ...((localeHead && localeHead.value.htmlAttrs) || {})
   },
-  link: [...(localeHead.value.link || [])],
-  meta: [...(localeHead.value.meta || []), ...metaTestEntries.value]
+  link: [...((localeHead && localeHead.value.link) || [])],
+  meta: [...((localeHead && localeHead.value.meta) || []), ...metaTestEntries.value]
 }))
 </script>
 

@@ -113,9 +113,7 @@ export function _useSetI18nParams(
 
   const metaState = ctx.getMetaState()
   function updateState() {
-    const { link, meta } = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
-    metaState.value.link = link
-    metaState.value.meta = meta
+    metaState.value = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
     head?.patch(metaState.value)
   }
 

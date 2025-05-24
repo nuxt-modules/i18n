@@ -40,15 +40,20 @@ definePageMeta({
   title: 'home',
   alias: ['/aliased-home-path']
 })
+const strictSEO = useRuntimeConfig().public.i18n.experimental.strictSEO
 
-const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
-useHead(() => ({
-  htmlAttrs: {
-    lang: i18nHead.value.htmlAttrs!.lang
-  },
-  link: [...(i18nHead.value.link || [])],
-  meta: [...(i18nHead.value.meta || [])]
-}))
+const i18nHead = !strictSEO && useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
+useHead(
+  () =>
+    (!strictSEO && {
+      htmlAttrs: {
+        lang: i18nHead.value.htmlAttrs!.lang
+      },
+      link: [...(i18nHead.value.link || [])],
+      meta: [...(i18nHead.value.meta || [])]
+    }) ||
+    {}
+)
 </script>
 
 <template>

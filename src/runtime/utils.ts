@@ -116,7 +116,11 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
 
   const head = useHead({})
   const metaState = ref({ htmlAttrs: {}, meta: [], link: [] })
-  const seoSettings = ref<I18nHeadOptions>({ dir: false, lang: false, seo: false })
+  const seoSettings = ref<I18nHeadOptions>({
+    dir: __I18N_STRICT_SEO__,
+    lang: __I18N_STRICT_SEO__,
+    seo: __I18N_STRICT_SEO__ && runtimeI18n.experimental.strictSEO
+  })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const slp: Record<string, Record<string, string> | false> = import.meta.client
     ? JSON.parse(document.querySelector(`[data-nuxt-i18n-slp="${nuxtApp._id}"]`)?.textContent ?? '{}')

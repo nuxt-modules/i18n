@@ -6,9 +6,9 @@ import { useRuntimeConfig } from 'nuxt/app'
 
 const route = useRoute()
 const { t } = useI18n()
-const head = useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
-const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 const strictSEO = useRuntimeConfig().public.i18n.experimental.strictSEO
+const head = !strictSEO && useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
+const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 </script>
 
 <template>
