@@ -6,8 +6,8 @@ const localePath = useLocalePath()
 const localeRoute = useLocaleRoute()
 const switchLocalePath = useSwitchLocalePath()
 const routeBaseName = useRouteBaseName()
-const strictSEO = useRuntimeConfig().public.i18n.experimental.strictSEO
-const localeHead = !strictSEO && useLocaleHead()
+const strictSeo = useRuntimeConfig().public.i18n.experimental.strictSeo
+const localeHead = !strictSeo && useLocaleHead()
 
 const metaTestEntries = computed(() => [
   { id: 'locale-path', content: localePath('/nested/test-route') },

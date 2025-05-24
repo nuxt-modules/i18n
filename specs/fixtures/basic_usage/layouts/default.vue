@@ -6,14 +6,14 @@ import { useRuntimeConfig } from 'nuxt/app'
 
 const route = useRoute()
 const { t } = useI18n()
-const strictSEO = useRuntimeConfig().public.i18n.experimental.strictSEO
-const head = !strictSEO && useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
+const strictSeo = useRuntimeConfig().public.i18n.experimental.strictSeo
+const head = !strictSeo && useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
 const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 </script>
 
 <template>
-  <Html :lang="(!strictSEO && head.htmlAttrs.lang) || undefined" :dir="(!strictSEO && head.htmlAttrs.dir) || undefined">
-    <Head v-if="!strictSEO">
+  <Html :lang="(!strictSeo && head.htmlAttrs.lang) || undefined" :dir="(!strictSeo && head.htmlAttrs.dir) || undefined">
+    <Head v-if="!strictSeo">
       <Title>{{ title }}</Title>
       <template v-for="link in head.link" :key="link.id">
         <Link :id="link.id" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
@@ -24,7 +24,7 @@ const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
     </Head>
     <Body>
       <slot />
-      <section v-if="!strictSEO">
+      <section v-if="!strictSeo">
         <code id="layout-use-locale-head">{{ head }}</code>
       </section>
     </Body>

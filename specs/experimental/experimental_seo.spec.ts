@@ -11,13 +11,13 @@ await setup({
   nuxtConfig: {
     i18n: {
       experimental: {
-        strictSEO: true
+        strictSeo: true
       }
     }
   }
 })
 
-describe('experimental.strictSEO', async () => {
+describe('experimental.strictSeo', async () => {
   test('dynamic parameters rendered correctly during SSR', async () => {
     const { page } = await renderPage('/')
     await page.goto(url('/products/big-chair'))
