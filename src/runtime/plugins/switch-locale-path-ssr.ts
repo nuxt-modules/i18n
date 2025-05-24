@@ -21,7 +21,10 @@ export default defineNuxtPlugin({
         switchLocalePathLinkWrapperExpr,
         (match: string, p1: string) => {
           const encoded = encodeURI(switchLocalePath(p1 ?? ''))
-          return match.replace(/href="([^"]+)"/, `href="${encoded || '#'}" ${!encoded ? 'data-i18n-disabled' : ''}`)
+          return match.replace(
+            /href="([^"]+)"/,
+            `href="${encoded || '#'}" ${!encoded && __I18N_STRICT_SEO__ ? 'data-i18n-disabled' : ''}`
+          )
         }
       )
     })

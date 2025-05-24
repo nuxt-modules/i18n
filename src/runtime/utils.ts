@@ -132,7 +132,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
     getBaseUrl: ctx.getBaseUrl,
     getRouteBaseName,
     getLocalizedDynamicParams: locale => {
-      if (import.meta.client && nuxtApp.isHydrating && window._i18nSlp) {
+      if (__I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && window._i18nSlp) {
         return window._i18nSlp[locale] || {}
       }
       const params = (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
@@ -140,7 +140,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
     },
     afterSwitchLocalePath: (path, locale) => {
       const params = (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
-      if (locale && Object.keys(params).length && !params[locale]) {
+      if (__I18N_STRICT_SEO__ && locale && Object.keys(params).length && !params[locale]) {
         return ''
       }
       if (__DIFFERENT_DOMAINS__) {

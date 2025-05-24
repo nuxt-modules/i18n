@@ -20,13 +20,18 @@ const SlpComponent = defineComponent({
     const switchLocalePath = useSwitchLocalePath()
 
     const resolved = computed(() => {
-      if (nuxtApp.isHydrating && Object.keys(window?._i18nSlp ?? {}).length && !window._i18nSlp?.[props.locale]) {
+      if (
+        __I18N_STRICT_SEO__ &&
+        nuxtApp.isHydrating &&
+        Object.keys(window?._i18nSlp ?? {}).length &&
+        !window._i18nSlp?.[props.locale]
+      ) {
         return '#'
       }
-      return encodeURI(switchLocalePath(props.locale)) || '#'
+      return encodeURI(switchLocalePath(props.locale)) || (__I18N_STRICT_SEO__ && '#') || ''
     })
 
-    const disabled = computed(() => resolved.value === '#' || undefined)
+    const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)
 
     return () => h(NuxtLink, { ...attrs, to: resolved.value, 'data-i18n-disabled': disabled.value }, slots.default)
   }

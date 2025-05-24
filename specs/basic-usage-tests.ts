@@ -142,7 +142,7 @@ export function basicUsageTests() {
     )
 
     expect(await page.locator('#locale-head').innerText()).toMatchInlineSnapshot(
-      `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "key": "i18n-xd", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "x-default" }, { "key": "i18n-alt-en", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "en" }, { "key": "i18n-alt-fr", "rel": "alternate", "href": "http://localhost:3000/fr/nuxt-context-extension", "hreflang": "fr" }, { "key": "i18n-alt-ja", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja" }, { "key": "i18n-alt-ja-JP", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "key": "i18n-alt-nl", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl" }, { "key": "i18n-alt-nl-NL", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "key": "i18n-alt-nl-BE", "rel": "alternate", "href": "http://localhost:3000/be/nuxt-context-extension", "hreflang": "nl-BE" }, { "key": "i18n-alt-kr", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr" }, { "key": "i18n-alt-kr-KO", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "key": "i18n-can", "rel": "canonical", "href": "http://localhost:3000/nuxt-context-extension" } ], "meta": [ { "key": "i18n-og-url", "property": "og:url", "content": "http://localhost:3000/nuxt-context-extension" }, { "key": "i18n-og", "property": "og:locale", "content": "en" }, { "key": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "key": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "key": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "key": "i18n-og-alt-nl-BE", "property": "og:locale:alternate", "content": "nl_BE" }, { "key": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
+      `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "id": "i18n-xd", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "x-default" }, { "id": "i18n-alt-en", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "en" }, { "id": "i18n-alt-fr", "rel": "alternate", "href": "http://localhost:3000/fr/nuxt-context-extension", "hreflang": "fr" }, { "id": "i18n-alt-ja", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja" }, { "id": "i18n-alt-ja-JP", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "id": "i18n-alt-nl", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl" }, { "id": "i18n-alt-nl-NL", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "id": "i18n-alt-nl-BE", "rel": "alternate", "href": "http://localhost:3000/be/nuxt-context-extension", "hreflang": "nl-BE" }, { "id": "i18n-alt-kr", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr" }, { "id": "i18n-alt-kr-KO", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "id": "i18n-can", "rel": "canonical", "href": "http://localhost:3000/nuxt-context-extension" } ], "meta": [ { "id": "i18n-og-url", "property": "og:url", "content": "http://localhost:3000/nuxt-context-extension" }, { "id": "i18n-og", "property": "og:locale", "content": "en" }, { "id": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "id": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "id": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "id": "i18n-og-alt-nl-BE", "property": "og:locale:alternate", "content": "nl_BE" }, { "id": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
     )
   })
 
@@ -362,7 +362,7 @@ export function basicUsageTests() {
     expect(await page.getAttribute('html', 'dir')).toMatch('ltr')
 
     // rendering link tag and meta tag in head tag
-    // await assetLocaleHead(page, '#layout-use-locale-head')
+    await assetLocaleHead(page, '#layout-use-locale-head')
 
     /**
      * change locale
@@ -379,7 +379,7 @@ export function basicUsageTests() {
     expect(await page.getAttribute('html', 'lang')).toMatch('fr')
 
     // rendering link tag and meta tag in head tag
-    // await assetLocaleHead(page, '#layout-use-locale-head')
+    await assetLocaleHead(page, '#layout-use-locale-head')
 
     /**
      * access to other page
@@ -412,12 +412,12 @@ export function basicUsageTests() {
 
     const html = await $fetch('/?noncanonical&canonical')
     const dom = getDom(html)
-    // await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
+    await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
 
-    // const links = getDataFromDom(dom, '#home-use-locale-head').link
-    // const i18nCan = links.find(x => x.dataset.hid === 'i18n-can')
-    // expect(i18nCan.href).toContain(configDomain)
-    expect(dom.querySelector('link[data-hid=i18n-alt-fr]')?.getAttribute('href')).toEqual(
+    const links = getDataFromDom(dom, '#home-use-locale-head').link
+    const i18nCan = links.find(x => x.id === 'i18n-can')
+    expect(i18nCan.href).toContain(configDomain)
+    expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual(
       'https://runtime-config-domain.com/fr?canonical='
     )
   })
@@ -426,7 +426,7 @@ export function basicUsageTests() {
     // head tags - alt links are updated server side
     const html = await $fetch('/?noncanonical&canonical')
     const dom = getDom(html)
-    expect(dom.querySelector('link[data-hid=i18n-alt-fr]')?.getAttribute('href')).toEqual(
+    expect(dom.querySelector('link[id=i18n-alt-fr]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/fr?canonical='
     )
   })
@@ -435,7 +435,7 @@ export function basicUsageTests() {
     // head tags - alt links are updated server side
     const product1Html = await $fetch('/products/big-chair?test=123&canonical=123')
     const product1Dom = getDom(product1Html)
-    expect(product1Dom.querySelector('link[data-hid=i18n-alt-nl]')?.getAttribute('href')).toEqual(
+    expect(product1Dom.querySelector('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/nl/products/grote-stoel?canonical=123'
     )
     expect(product1Dom.querySelector('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
@@ -444,7 +444,7 @@ export function basicUsageTests() {
 
     const product2Html = await $fetch('/nl/products/rode-mok?test=123&canonical=123')
     const product2dom = getDom(product2Html)
-    expect(product2dom.querySelector('link[data-hid=i18n-alt-en]')?.getAttribute('href')).toEqual(
+    expect(product2dom.querySelector('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/products/red-mug?canonical=123'
     )
     expect(product2dom.querySelector('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
@@ -456,7 +456,7 @@ export function basicUsageTests() {
     // head tags - alt links are updated server side
     const product1Html = await $fetch('/products/big-chair')
     const product1Dom = getDom(product1Html)
-    expect(product1Dom.querySelector('link[data-hid=i18n-alt-nl]')?.getAttribute('href')).toEqual(
+    expect(product1Dom.querySelector('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/nl/products/grote-stoel'
     )
     expect(product1Dom.querySelector('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
@@ -465,7 +465,7 @@ export function basicUsageTests() {
 
     const product2Html = await $fetch('/nl/products/rode-mok')
     const product2dom = getDom(product2Html)
-    expect(product2dom.querySelector('link[data-hid=i18n-alt-en]')?.getAttribute('href')).toEqual(
+    expect(product2dom.querySelector('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/products/red-mug'
     )
     expect(product2dom.querySelector('#switch-locale-path-link-en')?.getAttribute('href')).toEqual('/products/red-mug')
@@ -535,13 +535,13 @@ export function basicUsageTests() {
     // head tags - alt links are updated server side
     const product1Html = await $fetch('/products/big-chair')
     const product1Dom = getDom(product1Html)
-    expect(product1Dom.querySelector('link[data-hid=i18n-alt-nl]')?.getAttribute('href')).toEqual(
+    expect(product1Dom.querySelector('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/nl/products/grote-stoel'
     )
 
     const product2Html = await $fetch('/nl/products/rode-mok')
     const product2dom = getDom(product2Html)
-    expect(product2dom.querySelector('link[data-hid=i18n-alt-en]')?.getAttribute('href')).toEqual(
+    expect(product2dom.querySelector('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
       'http://localhost:3000/products/red-mug'
     )
   })

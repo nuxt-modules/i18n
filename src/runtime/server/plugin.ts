@@ -63,9 +63,12 @@ export default defineNitroPlugin(async nitro => {
         console.log(_)
       }
     }
-    htmlContext.head.push(
-      `<script data-nuxt-i18n-slp="${appId}">window._i18nSlp = ${JSON.stringify(ctx?.slp ?? {})}</script>`
-    )
+
+    if (__I18N_STRICT_SEO__) {
+      htmlContext.head.push(
+        `<script data-nuxt-i18n-slp="${appId}">window._i18nSlp = ${JSON.stringify(ctx?.slp ?? {})}</script>`
+      )
+    }
   })
 
   // enable server-side translations and user locale-detector

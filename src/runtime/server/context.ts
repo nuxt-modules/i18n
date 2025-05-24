@@ -57,6 +57,10 @@ declare module 'h3' {
        * @internal
        */
       localeConfigs?: Record<string, ServerLocaleConfig>
+      /**
+       * SwitchLocalePath dynamic parameters state
+       * @internal
+       */
       slp: Record<string, unknown>
       /**
        * The loaded messages for the current request, used to insert into the rendered HTML for hydration
