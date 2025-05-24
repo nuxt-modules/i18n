@@ -24,7 +24,7 @@ function createHeadContext(
 
   return {
     ...config,
-    key: 'id',
+    key: __I18N_STRICT_SEO__ ? 'key' : 'id',
     locales,
     baseUrl,
     canonicalQueries,
@@ -120,7 +120,11 @@ export function _useSetI18nParams(
   }
 
   const _ctxOptions = ctx.getSeoSettings()
-  const ctxOptions = ref({ ..._ctxOptions.value, key: 'id', seo: seo ?? _ctxOptions.value.seo })
+  const ctxOptions = ref({
+    ..._ctxOptions.value,
+    key: __I18N_STRICT_SEO__ ? 'key' : 'id',
+    seo: seo ?? _ctxOptions.value.seo
+  })
 
   return function (params: I18nRouteMeta) {
     i18nParams.value = { ...params }
