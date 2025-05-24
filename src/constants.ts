@@ -35,7 +35,7 @@ export const DEFAULT_OPTIONS = {
     cacheLifetime: undefined,
     stripMessagesPayload: false,
     preload: false,
-    strictSEO: false
+    strictSeo: false
   },
   bundle: {
     compositionOnly: true,

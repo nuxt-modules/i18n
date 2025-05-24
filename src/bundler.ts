@@ -145,7 +145,7 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
-    __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSEO)
+    __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo)
   }
 
   if (nuxt.options.ssr || !server) {

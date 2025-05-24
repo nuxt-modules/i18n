@@ -172,7 +172,7 @@ export default defineNuxtPlugin({
     if (__I18N_STRICT_SEO__) {
       // enable head tag management after most of the i18n setup is done
       nuxt.hook(import.meta.server ? 'app:rendered' : 'app:mounted', () => {
-        _useLocaleHead(nuxt._nuxtI18n, { dir: true, lang: true, seo: runtimeI18n.experimental.strictSEO || false })
+        _useLocaleHead(nuxt._nuxtI18n, { dir: true, lang: true, seo: runtimeI18n.experimental.strictSeo || false })
       })
     }
   }

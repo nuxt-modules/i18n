@@ -112,7 +112,7 @@ export interface ExperimentalFeatures {
    * @default false // or `true` if `experimental.preload` is enabled
    */
   stripMessagesPayload?: boolean
-  strictSEO?: boolean | SeoAttributesOptions
+  strictSeo?: boolean | SeoAttributesOptions
 }
 
 export interface BundleOptions
