@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import LangSwitcher from '../components/LangSwitcher.vue'
-
 const route = useRoute()
 
 const setI18nParams = useSetI18nParams()

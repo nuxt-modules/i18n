@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  extends: ['../common'],
   modules: ['@nuxtjs/i18n'],
 
   srcDir: '.',

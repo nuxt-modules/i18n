@@ -2,6 +2,7 @@ import i18nModule from './i18n-module'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  extends: ['../common'],
   vite: {
     // Prevent reload by optimizing dependency before discovery
     optimizeDeps: {

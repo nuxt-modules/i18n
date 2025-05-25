@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref } from '#imports'
-import LangSwitcher from '../components/LangSwitcher.vue'
 
 const products = ref([])
 const { locale } = useI18n()
