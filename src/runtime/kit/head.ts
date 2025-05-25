@@ -41,6 +41,7 @@ export type HeadContext = {
   locales: HeadLocale[]
   defaultLocale: string | undefined
   hreflangLinks: boolean
+  strictSeo: boolean
   strictCanonicals: boolean
   canonicalQueries: string[]
   getCurrentLanguage: () => string | undefined
@@ -88,7 +89,12 @@ export function localeHead(
     metaObject.meta = metaObject.meta.concat(
       getOgUrl(options),
       getCurrentOgLocale(options),
-      getAlternateOgLocales(options, alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default'))
+      getAlternateOgLocales(
+        options,
+        options.strictSeo
+          ? alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default')
+          : options.locales.map(x => x.language || x.code)
+      )
     )
   }
 

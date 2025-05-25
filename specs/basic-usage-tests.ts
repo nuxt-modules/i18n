@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { test, expect } from 'vitest'
 import { $fetch, url } from './utils'
 import {
   assertLocaleHeadWithDom,

@@ -288,3 +288,106 @@ export function getLocalesMessageKeyCount(page: Page): Promise<Record<string, nu
     }, {})
   })
 }
+
+/**
+ * Helper function to extract and format specific head tags and attributes
+ * for human-readable inline snapshots.
+ *
+ * @param page The Playwright Page object.
+ * @returns A formatted string containing the extracted head information.
+ */
+export async function getHeadSnapshot(page: Page): Promise<string> {
+  const snapshotData = await page.evaluate(() => {
+    const data: {
+      html: { lang: string | null; dir: string | null }
+      link: { canonical: string | null; alternate: { [key: string]: string | null } }
+      meta: { [key: string]: string | string[] | null | undefined } // og:locale:alternate can be string[]
+    } = {
+      html: {
+        lang: document.documentElement.getAttribute('lang'),
+        dir: document.documentElement.getAttribute('dir')
+      },
+      link: {
+        canonical: document.querySelector('link[rel="canonical"]')?.getAttribute('href') || null,
+        alternate: {}
+      },
+      meta: {}
+    }
+
+    const alternateLinks = document.querySelectorAll('link[rel="alternate"]')
+    for (const link of alternateLinks) {
+      const href = link.getAttribute('href')
+      const hreflang = link.getAttribute('hreflang')
+      if (hreflang) {
+        data.link!.alternate![hreflang] = href
+        continue
+      }
+      data.link!.alternate!['default'] = href
+    }
+
+    const metaSelectors = ['og:url', 'og:locale', 'og:locale:alternate']
+    for (const selector of metaSelectors) {
+      data.meta![selector] = Array.from(document.querySelectorAll(`meta[property="${selector}"]`))
+        .map(meta => meta.getAttribute('content'))
+        .filter(Boolean) as string[]
+    }
+
+    return data
+  })
+
+  const sections = [
+    {
+      title: 'HTML',
+      dataKey: 'html',
+      properties: [
+        { key: 'lang', label: 'lang' },
+        { key: 'dir', label: 'dir' }
+      ],
+      customFormatter: null
+    },
+    {
+      title: 'Link',
+      dataKey: 'link',
+      properties: [{ key: 'canonical', label: 'canonical' }],
+      customFormatter: (data: typeof snapshotData, lines: string[]) => {
+        for (const hreflang in data.link.alternate) {
+          lines.push(`alternate[${hreflang}]: ${data.link.alternate[hreflang]}`)
+        }
+      }
+    },
+    {
+      title: 'Meta',
+      dataKey: 'meta',
+      properties: [
+        { key: 'og:url', label: 'og:url' },
+        { key: 'og:locale', label: 'og:locale' }
+      ],
+      customFormatter: (data: typeof snapshotData, lines: string[]) => {
+        const val = data.meta?.['og:locale:alternate']
+        const ogLocaleAlternate = Array.isArray(val) ? val : [val]
+        lines.push(`og:locale:alternate: ${ogLocaleAlternate.join(', ')}`)
+      }
+    }
+  ]
+
+  let formattedOutput: string[] = []
+  for (const section of sections) {
+    const sectionData = snapshotData[section.dataKey as keyof typeof snapshotData]
+    if (!sectionData) continue
+
+    let sectionLines: string[] = []
+    for (const prop of section.properties) {
+      const value = sectionData[prop.key as keyof typeof sectionData]
+      if (!value) continue
+      sectionLines.push(`${prop.label}: ${value}`)
+    }
+
+    section.customFormatter?.(snapshotData, sectionLines)
+
+    if (sectionLines.length == 0) continue
+    formattedOutput.push(`${section.title}:`)
+    formattedOutput.push(...sectionLines.map(line => `  ${line}`))
+  }
+
+  return formattedOutput.join('\n')
+}

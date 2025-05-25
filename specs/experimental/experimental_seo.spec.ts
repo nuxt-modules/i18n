@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch, setup, url } from '../utils'
-import { getDom, renderPage } from '../helper'
+import { getDom, getHeadSnapshot, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic_usage`, import.meta.url)),
@@ -21,78 +21,44 @@ describe('experimental.strictSeo', async () => {
   test('dynamic parameters rendered correctly during SSR', async () => {
     const { page } = await renderPage('/')
     await page.goto(url('/products/big-chair'))
-    expect(await page.locator('link[data-hid=i18n-alt-nl]').getAttribute('href')).toEqual(
-      'http://localhost:3000/nl/products/grote-stoel'
-    )
     expect(await page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
-    expect(
-      await page.evaluate(() =>
-        Array.from(document.querySelectorAll(`[rel="alternate"]`)).map(
-          x => x.getAttribute('hreflang') + ' ' + x.getAttribute('href')
-        )
-      )
-    ).toMatchInlineSnapshot(`
-      [
-        "x-default http://localhost:3000/products/big-chair",
-        "en http://localhost:3000/products/big-chair",
-        "fr http://localhost:3000/fr/products/french-chair",
-        "ja http://localhost:3000/ja/products/japanese-chair",
-        "ja-JP http://localhost:3000/ja/products/japanese-chair",
-        "nl http://localhost:3000/nl/products/grote-stoel",
-        "nl-NL http://localhost:3000/nl/products/grote-stoel",
-      ]
-    `)
-    expect(
-      await page.evaluate(() =>
-        Array.from(document.querySelectorAll(`meta[property="og:locale"],meta[property="og:locale:alternate"]`)).map(
-          x => x.getAttribute('content')
-        )
-      )
-    ).toMatchInlineSnapshot(`
-      [
-        "en",
-        "fr",
-        "ja",
-        "ja_JP",
-        "nl",
-        "nl_NL",
-      ]
+    expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
+      "HTML:
+        lang: en
+        dir: ltr
+      Link:
+        canonical: http://localhost:3000/products/big-chair
+        alternate[x-default]: http://localhost:3000/products/big-chair
+        alternate[en]: http://localhost:3000/products/big-chair
+        alternate[fr]: http://localhost:3000/fr/products/french-chair
+        alternate[ja]: http://localhost:3000/ja/products/japanese-chair
+        alternate[ja-JP]: http://localhost:3000/ja/products/japanese-chair
+        alternate[nl]: http://localhost:3000/nl/products/grote-stoel
+        alternate[nl-NL]: http://localhost:3000/nl/products/grote-stoel
+      Meta:
+        og:url: http://localhost:3000/products/big-chair
+        og:locale: en
+        og:locale:alternate: fr, ja, ja_JP, nl, nl_NL"
     `)
 
     await page.goto(url('/nl/products/rode-mok'))
-    expect(await page.locator('link[data-hid=i18n-alt-en]').getAttribute('href')).toEqual(
-      'http://localhost:3000/products/red-mug'
-    )
     expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
     expect(await page.locator('#switch-locale-path-link-ja[data-i18n-disabled]').getAttribute('href')).toEqual('#')
-    expect(
-      await page.evaluate(() =>
-        Array.from(document.querySelectorAll(`[rel="alternate"]`)).map(
-          x => x.getAttribute('hreflang') + ' ' + x.getAttribute('href')
-        )
-      )
-    ).toMatchInlineSnapshot(`
-      [
-        "x-default http://localhost:3000/products/red-mug",
-        "en http://localhost:3000/products/red-mug",
-        "fr http://localhost:3000/fr/products/french-mug",
-        "nl http://localhost:3000/nl/products/rode-mok",
-        "nl-NL http://localhost:3000/nl/products/rode-mok",
-      ]
-    `)
-    expect(
-      await page.evaluate(() =>
-        Array.from(document.querySelectorAll(`meta[property="og:locale"],meta[property="og:locale:alternate"]`)).map(
-          x => x.getAttribute('content')
-        )
-      )
-    ).toMatchInlineSnapshot(`
-      [
-        "nl_NL",
-        "en",
-        "fr",
-        "nl",
-      ]
+    expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
+      "HTML:
+        lang: nl-NL
+        dir: ltr
+      Link:
+        canonical: http://localhost:3000/nl/products/rode-mok
+        alternate[x-default]: http://localhost:3000/products/red-mug
+        alternate[en]: http://localhost:3000/products/red-mug
+        alternate[fr]: http://localhost:3000/fr/products/french-mug
+        alternate[nl]: http://localhost:3000/nl/products/rode-mok
+        alternate[nl-NL]: http://localhost:3000/nl/products/rode-mok
+      Meta:
+        og:url: http://localhost:3000/nl/products/rode-mok
+        og:locale: nl_NL
+        og:locale:alternate: en, fr, nl"
     `)
   })
 })

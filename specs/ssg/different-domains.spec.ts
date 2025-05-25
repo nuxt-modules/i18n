@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, $fetch } from '../utils'
-import { getDom } from '../helper'
+import { getDom, getHeadSnapshot, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/domain-ssg`, import.meta.url)),
@@ -13,20 +13,22 @@ await setup({
 })
 
 test('`differentDomains` with `no_prefix` has hreflang links', async () => {
-  const html = await $fetch('/')
-  const dom = getDom(html)
-  expect(
-    Array.from(dom.querySelectorAll(`[rel="alternate"]`)).map(
-      x => x.getAttribute('hreflang') + ' ' + x.getAttribute('href')
-    )
-  ).toMatchInlineSnapshot(`
-    [
-      "x-default http://localhost:7786",
-      "x-default http://localhost:7786",
-      "en http://localhost:7786",
-      "en-US http://localhost:7786",
-      "es http://localhost:7787",
-      "es-ES http://localhost:7787",
-    ]
+  const { page } = await renderPage('/')
+  // const dom = getDom(html)
+  expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
+    "HTML:
+      lang: en-US
+      dir: ltr
+    Link:
+      canonical: http://localhost:7786
+      alternate[x-default]: http://localhost:7786
+      alternate[en]: http://localhost:7786
+      alternate[en-US]: http://localhost:7786
+      alternate[es]: http://localhost:7787
+      alternate[es-ES]: http://localhost:7787
+    Meta:
+      og:url: http://localhost:7786
+      og:locale: en_US
+      og:locale:alternate: es_ES"
   `)
 })
