@@ -384,7 +384,7 @@ export async function getHeadSnapshot(page: Page): Promise<string> {
 
     section.customFormatter?.(snapshotData, sectionLines)
 
-    if (sectionLines.length == 0) continue
+    if (sectionLines.length === 0) continue
     formattedOutput.push(`${section.title}:`)
     formattedOutput.push(...sectionLines.map(line => `  ${line}`))
   }

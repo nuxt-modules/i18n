@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, $fetch } from '../utils'
-import { getDom, getHeadSnapshot, renderPage } from '../helper'
+import { setup } from '../utils'
+import { getHeadSnapshot, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/domain-ssg`, import.meta.url)),
@@ -14,7 +14,6 @@ await setup({
 
 test('`differentDomains` with `no_prefix` has hreflang links', async () => {
   const { page } = await renderPage('/')
-  // const dom = getDom(html)
   expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
     "HTML:
       lang: en-US
