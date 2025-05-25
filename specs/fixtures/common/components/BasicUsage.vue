@@ -75,5 +75,12 @@ function onClick() {
       <h3>localeRoute</h3>
       <button @click="onClick">Show profile</button>
     </section>
+    <section id="configured-locales-list">
+      <ul>
+        <li v-for="locale in locales" :key="locale.code">
+          {{ locale.code }}
+        </li>
+      </ul>
+    </section>
   </div>
 </template>

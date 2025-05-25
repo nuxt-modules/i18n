@@ -25,7 +25,7 @@ test('can access to custom route path', async () => {
   await page.goBackNavigate()
   await page.waitForURL(url('/'))
 
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   await page.locator('#link-history').clickNavigate()
@@ -41,7 +41,7 @@ test('can access to custom dynamic route path', async () => {
   await page.goBackNavigate()
   await page.waitForURL(url('/'))
 
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   await page.locator('#link-products').clickNavigate()
@@ -52,7 +52,7 @@ test('can not access to pick route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   // pick href with <NuxtLink>
@@ -63,7 +63,7 @@ test('can not access to disable route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
