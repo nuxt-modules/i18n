@@ -28,12 +28,12 @@ describe('strategy: prefix_and_default', async () => {
     expect(await page.locator('#link-about').innerText()).toMatch('About us')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toMatch('Français')
+    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').innerText()).toMatch('Français')
     expect(await page.locator('#set-locale-link-fr').innerText()).toMatch('Français')
 
     // page path
     expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/fr')
+    expect(await page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toMatch('/fr')
 
     // current locale
     expect(await page.locator('#lang-switcher-current-locale').innerText()).toMatch('en')
@@ -48,12 +48,12 @@ describe('strategy: prefix_and_default', async () => {
     expect(await page.locator('#link-about').innerText()).toMatch('About us')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toMatch('Français')
+    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').innerText()).toMatch('Français')
     expect(await page.locator('#set-locale-link-fr').innerText()).toMatch('Français')
 
     // page path
     expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toMatch('/fr')
+    expect(await page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toMatch('/fr')
 
     // current locale
     expect(await page.locator('#lang-switcher-current-locale').innerText()).toMatch('en')
@@ -68,7 +68,7 @@ describe('strategy: prefix_and_default', async () => {
     expect(await page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toEqual('English')
+    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-en').innerText()).toEqual('English')
     expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
@@ -96,7 +96,7 @@ describe('strategy: prefix_and_default', async () => {
     const { page } = await renderPage('/')
 
     // click `fr` lang switch link with NuxtLink
-    await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+    await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
     await page.waitForURL(url('/fr'))
 
     // `fr` rendering
@@ -105,7 +105,7 @@ describe('strategy: prefix_and_default', async () => {
     expect(await page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link a').innerText()).toEqual('English')
+    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-en').innerText()).toEqual('English')
     expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
@@ -128,7 +128,7 @@ describe('strategy: prefix_and_default', async () => {
   test('(#2226) navigation works while `locale === defaultLocale`', async () => {
     const { page } = await renderPage(url('/'))
 
-    await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+    await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
     expect(await page.locator('#lang-switcher-default-locale').innerText()).include(`Default Locale: en`)
     expect(await page.locator('#lang-switcher-current-locale').innerText()).include(`Current Locale: fr`)
 
@@ -140,7 +140,7 @@ describe('strategy: prefix_and_default', async () => {
     await page.waitForURL(url('/fr'))
     expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
 
-    await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+    await page.locator('#lang-switcher-with-nuxt-link .switch-to-en').clickNavigate()
     expect(await page.locator('#lang-switcher-default-locale').innerText()).include(`Default Locale: en`)
     expect(await page.locator('#lang-switcher-current-locale').innerText()).include(`Current Locale: en`)
 

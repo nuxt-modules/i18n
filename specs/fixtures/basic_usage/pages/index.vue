@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useI18n, useLocaleHead, useLocalePath, useLocaleRoute, useSwitchLocalePath } from '#i18n'
 import { computed, navigateTo, ref, useAppConfig, useAsyncData, useHead, watch } from '#imports'
-import LangSwitcher from '../components/LangSwitcher.vue'
 import LocalScope from '../components/LocalScope.vue'
 
 const { t, locale, locales, localeProperties } = useI18n()

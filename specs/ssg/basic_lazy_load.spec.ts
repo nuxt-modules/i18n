@@ -25,7 +25,7 @@ describe('basic lazy loading', async () => {
     // capture dynamicTime - simulates changing api response
     const dynamicTime = await page.locator('#dynamic-time').innerText()
 
-    await page.click('#lang-switcher-with-nuxt-link-fr')
+    await page.click('#nuxt-locale-link-fr')
     await page.waitForURL(url('/fr'))
     expect(await page.locator('#dynamic-time').innerText()).toEqual('Not dynamic')
 
@@ -33,7 +33,7 @@ describe('basic lazy loading', async () => {
     await page.waitForTimeout(1)
 
     // dynamicTime does not match captured dynamicTime
-    await page.click('#lang-switcher-with-nuxt-link-nl')
+    await page.click('#nuxt-locale-link-nl')
     await page.waitForURL(url('/nl'))
     expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
@@ -52,7 +52,7 @@ describe('basic lazy loading', async () => {
     // navigate and wait for locale file request
     await Promise.all([
       waitForLocaleFileNetwork(page, 'lazy-locale-fr.js', 'response'),
-      page.click('#lang-switcher-with-nuxt-link-fr')
+      page.click('#nuxt-locale-link-fr')
     ])
 
     // `fr` locale has been fetched
@@ -66,7 +66,7 @@ describe('basic lazy loading', async () => {
     // navigate and wait for locale file request
     await Promise.all([
       waitForLocaleFileNetwork(page, 'lazy-locale-module-nl.js', 'response'),
-      page.click('#lang-switcher-with-nuxt-link-nl')
+      page.click('#nuxt-locale-link-nl')
     ])
 
     // `nl` (module) locale has been fetched
@@ -136,13 +136,13 @@ describe('basic lazy loading', async () => {
   test('files with cache disabled bypass caching', async () => {
     const { page, consoleLogs } = await renderPage('/')
 
-    await Promise.all([waitForLocaleSwitch(page), page.click('#lang-switcher-with-nuxt-link-en-GB')])
+    await Promise.all([waitForLocaleSwitch(page), page.click('#nuxt-locale-link-en-GB')])
     expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(1)
 
-    await Promise.all([waitForLocaleSwitch(page), page.click('#lang-switcher-with-nuxt-link-fr')])
+    await Promise.all([waitForLocaleSwitch(page), page.click('#nuxt-locale-link-fr')])
     expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(1)
 
-    await Promise.all([waitForLocaleSwitch(page), page.click('#lang-switcher-with-nuxt-link-en-GB')])
+    await Promise.all([waitForLocaleSwitch(page), page.click('#nuxt-locale-link-en-GB')])
     expect(consoleLogs.filter(x => x.text.includes('loading en-GB'))).toHaveLength(2)
   })
 

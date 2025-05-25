@@ -6,12 +6,13 @@ const switchLocalePath = useSwitchLocalePath()
 <template>
   <div>
     <h1>Hello from custom page!</h1>
-    <section id="lang-switcher-with-nuxt-link">
+    <section id="custom-page-lang-switcher-with-nuxt-link">
       <strong>Using <code>NuxtLink</code></strong
       >:
       <NuxtLink
         v-for="(locale, index) in locales"
-        :id="`nuxt-locale-link-${locale.code}`"
+        :id="`custom-page-nuxt-locale-link-${locale.code}`"
+        :class="`switch-to-${locale.code}`"
         :key="index"
         :exact="true"
         :to="switchLocalePath(locale.code)"

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useFetch } from '#imports'
-import LangSwitcher from '../components/LangSwitcher.vue'
 
 const { locale } = useI18n()
 const localePath = useLocalePath()

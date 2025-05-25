@@ -2,23 +2,20 @@
 import { useI18n, useSwitchLocalePath } from '#i18n'
 import { useRoute } from '#imports'
 
-const { locales, locale, setLocale } = useI18n()
+const { locales, locale, defaultLocale, setLocale } = useI18n()
 const route = useRoute()
 const switchLocalePath = useSwitchLocalePath()
-
-const localesExcludingCurrent = computed(() => {
-  return locales.value.filter(i => i.code !== locale.value)
-})
 </script>
 
 <template>
   <div>
-    <section id="lang-switcher-with-nuxt-link">
+    <section v-if="!$nuxt.$config.public.i18n.experimental.strictSeo" id="lang-switcher-with-nuxt-link">
       <strong>Using <code>NuxtLink</code></strong
       >:
       <NuxtLink
-        v-for="(locale, index) in localesExcludingCurrent"
+        v-for="(locale, index) in locales"
         :id="`nuxt-locale-link-${locale.code}`"
+        :class="`switch-to-${locale.code}`"
         :key="index"
         :exact="true"
         :to="switchLocalePath(locale.code)"
@@ -29,7 +26,7 @@ const localesExcludingCurrent = computed(() => {
       <strong>Using <code>SwitchLocalePathLink</code></strong
       >:
       <SwitchLocalePathLink
-        v-for="(locale, index) in localesExcludingCurrent"
+        v-for="(locale, index) in locales"
         :id="`switch-locale-path-link-${locale.code}`"
         :key="index"
         :exact="true"
@@ -41,7 +38,7 @@ const localesExcludingCurrent = computed(() => {
       <strong>Using <code>setLocale()</code></strong
       >:
       <a
-        v-for="(locale, index) in localesExcludingCurrent"
+        v-for="(locale, index) in locales"
         :id="`set-locale-link-${locale.code}`"
         :key="`b-${index}`"
         href="javascript:void(0)"
@@ -52,6 +49,11 @@ const localesExcludingCurrent = computed(() => {
     <section id="lang-switcher-current-locale">
       <strong
         >Current Locale: <code>{{ locale }}</code></strong
+      >:
+    </section>
+    <section id="lang-switcher-default-locale">
+      <strong
+        >Default Locale: <code>{{ defaultLocale }}</code></strong
       >:
     </section>
     <section>

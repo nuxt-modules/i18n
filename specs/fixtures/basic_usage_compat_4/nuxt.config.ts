@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     }
   },
   extends: [
+    '../common',
     `../layers/layer-server`,
     `../layers/layer-lazy`,
     `../layers/layer-vueI18n-options/layer-simple`,

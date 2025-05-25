@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n, useLocalePath } from '#i18n'
-import LangSwitcher from '../../components/LangSwitcher.vue'
 
 const { localeProperties } = useI18n()
 const localePath = useLocalePath()

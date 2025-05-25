@@ -36,7 +36,7 @@ test('can access to custom route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   // page path
@@ -69,7 +69,7 @@ test('can not access to pick route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
@@ -90,7 +90,7 @@ test('can not access to disable route path', async () => {
   const { page } = await renderPage('/')
 
   // click `fr` switching link
-  await page.locator('#lang-switcher-with-nuxt-link a').clickNavigate()
+  await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
   await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
@@ -110,6 +110,6 @@ test('can not access to disable route path', async () => {
 test('#3076 - layer with custom `srcDir`', async () => {
   const { page } = await renderPage('/custom-layer/custom')
 
-  await page.click(`#nuxt-locale-link-fr`)
+  await page.click(`#custom-page-lang-switcher-with-nuxt-link .switch-to-fr`)
   await page.waitForURL(url('/fr/custom-layer-french/custom'))
 })

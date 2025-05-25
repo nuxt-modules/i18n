@@ -2,6 +2,7 @@ import i18nModule from '../external_module/i18n-module'
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  extends: ['../common'],
   modules: [
     i18nModule,
     [

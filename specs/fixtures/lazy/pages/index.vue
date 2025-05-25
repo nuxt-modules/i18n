@@ -2,7 +2,6 @@
 import { watchEffect } from 'vue'
 import { useAsyncData, useHead } from '#imports'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
-import LangSwitcher from '../components/LangSwitcher.vue'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()

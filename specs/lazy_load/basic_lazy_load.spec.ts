@@ -16,7 +16,7 @@ describe('basic lazy loading', async () => {
     // capture dynamicTime - simulates changing api response
     const dynamicTime = await page.locator('#dynamic-time').innerText()
 
-    await page.click('#lang-switcher-with-nuxt-link-fr')
+    await page.click('#nuxt-locale-link-fr')
     await page.waitForURL(url('/fr'))
     expect(await page.locator('#dynamic-time').innerText()).toEqual('Not dynamic')
 
@@ -24,7 +24,7 @@ describe('basic lazy loading', async () => {
     await page.waitForTimeout(1)
 
     // dynamicTime does not match captured dynamicTime
-    await page.click('#lang-switcher-with-nuxt-link-nl')
+    await page.click('#nuxt-locale-link-nl')
     await page.waitForURL(url('/nl'))
     expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
@@ -41,7 +41,7 @@ describe('basic lazy loading', async () => {
     `)
 
     // navigate and wait for locale file request
-    await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#lang-switcher-with-nuxt-link-fr')])
+    await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#nuxt-locale-link-fr')])
 
     // `fr` locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
@@ -52,7 +52,7 @@ describe('basic lazy loading', async () => {
     `)
 
     // navigate and wait for locale file request
-    await Promise.all([waitForLocaleNetwork(page, 'nl', 'response'), page.click('#lang-switcher-with-nuxt-link-nl')])
+    await Promise.all([waitForLocaleNetwork(page, 'nl', 'response'), page.click('#nuxt-locale-link-nl')])
 
     // `nl` (module) locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
@@ -127,10 +127,10 @@ describe('basic lazy loading', async () => {
       expect((await request).headers()['cache-control']).toEqual('no-cache')
     }
 
-    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
-    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
-    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-en-GB', 'en-GB')
-    await clickAndAssertNoCache(page, '#lang-switcher-with-nuxt-link-fr', 'fr')
+    await clickAndAssertNoCache(page, '#nuxt-locale-link-en-GB', 'en-GB')
+    await clickAndAssertNoCache(page, '#nuxt-locale-link-fr', 'fr')
+    await clickAndAssertNoCache(page, '#nuxt-locale-link-en-GB', 'en-GB')
+    await clickAndAssertNoCache(page, '#nuxt-locale-link-fr', 'fr')
   })
 
   test('manually loaded messages can be used in translations', async () => {
@@ -146,10 +146,7 @@ describe('basic lazy loading', async () => {
     // check initial text value before translation has been loaded
     expect(await page.locator('#runtime-config-key').textContent()).toEqual('runtimeConfigKey')
 
-    await Promise.all([
-      waitForLocaleNetwork(page, 'en-GB', 'response'),
-      page.click('#lang-switcher-with-nuxt-link-en-GB')
-    ])
+    await Promise.all([waitForLocaleNetwork(page, 'en-GB', 'response'), page.click('#nuxt-locale-link-en-GB')])
 
     // check text value after translation has been loaded
     expect(await page.locator('#runtime-config-key').textContent()).toEqual('runtime-config-value')

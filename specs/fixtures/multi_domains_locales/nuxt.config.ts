@@ -2,8 +2,8 @@ const i18nDomains = ['nuxt-app.localhost', 'fr.nuxt-app.localhost', 'ja.nuxt-app
 
 // https://nuxt.com/docs/guide/directory-structure/nuxt.config
 export default defineNuxtConfig({
+  extends: ['../common'],
   modules: ['@nuxtjs/i18n'],
-
   i18n: {
     baseUrl: 'http://localhost:3000',
     locales: [
