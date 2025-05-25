@@ -6,7 +6,7 @@ const localePath = useLocalePath()
 const localeRoute = useLocaleRoute()
 const switchLocalePath = useSwitchLocalePath()
 const routeBaseName = useRouteBaseName()
-const localeHead = useLocaleHead({ key: 'id' })
+const localeHead = useLocaleHead()
 
 const metaTestEntries = computed(() => [
   { id: 'locale-path', content: localePath('/nested/test-route') },

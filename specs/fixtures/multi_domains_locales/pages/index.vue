@@ -6,7 +6,7 @@ import LangSwitcher from '../components/LangSwitcher.vue'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
-const i18nHead = useLocaleHead({ key: 'id', seo: { canonicalQueries: ['page'] } })
+const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page'] } })
 
 useHead(() => ({
   title: t('home'),

@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from '#imports'
+import { useRoute, useHead } from '#imports'
 import { useI18n, useLocaleHead } from '#i18n'
+import { useRuntimeConfig } from 'nuxt/app'
 
 const route = useRoute()
 const { t } = useI18n()
-const head = useLocaleHead({ key: 'id', seo: { canonicalQueries: ['page', 'canonical'] } })
+const strictSeo = useRuntimeConfig().public.i18n.experimental.strictSeo
+const head = !strictSeo && useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
 const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 </script>
 
 <template>
-  <Html :lang="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir">
-    <Head>
+  <Html :lang="(!strictSeo && head.htmlAttrs.lang) || undefined" :dir="(!strictSeo && head.htmlAttrs.dir) || undefined">
+    <Head v-if="!strictSeo">
       <Title>{{ title }}</Title>
       <template v-for="link in head.link" :key="link.id">
         <Link :id="link.id" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
@@ -22,7 +24,7 @@ const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
     </Head>
     <Body>
       <slot />
-      <section>
+      <section v-if="!strictSeo">
         <code id="layout-use-locale-head">{{ head }}</code>
       </section>
     </Body>

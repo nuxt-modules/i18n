@@ -112,6 +112,7 @@ export interface ExperimentalFeatures {
    * @default false // or `true` if `experimental.preload` is enabled
    */
   stripMessagesPayload?: boolean
+  strictSeo?: boolean | SeoAttributesOptions
 }
 
 export interface BundleOptions
@@ -341,11 +342,6 @@ export interface I18nHeadOptions {
    * @default true
    */
   seo?: boolean | SeoAttributesOptions
-  /**
-   * Identifier attribute of `<meta>` tag
-   * @default 'key'
-   */
-  key?: string
 }
 
 /**

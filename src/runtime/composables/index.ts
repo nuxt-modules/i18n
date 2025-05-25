@@ -1,5 +1,5 @@
 import { useNuxtApp, useCookie, useRuntimeConfig, useRequestEvent } from '#imports'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../utils'
 import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
@@ -76,14 +76,25 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => I18nHeadMetaInfo
  * @param options - An {@link I18nHeadOptions} object
  * @returns A ref with localized {@link I18nHeadMetaInfo | head properties}.
  */
-export function useLocaleHead({
-  dir = true,
-  lang = true,
-  seo = true,
-  key = 'key'
-}: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
+export function useLocaleHead({ dir = true, lang = true, seo = true }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
+  if (__I18N_STRICT_SEO__) {
+    throw new Error(
+      'Strict SEO mode is enabled, `useLocaleHead` should not be used as localized head tags are handled internally by `@nuxtjs/i18n`'
+    )
+  }
   const common = useComposableContext()
-  return _useLocaleHead(common, { dir, lang, seo, key })
+  const settings = common.getSeoSettings()
+  settings.value = { dir, lang, seo }
+
+  const head = _useLocaleHead(common, settings.value as Required<I18nHeadOptions>)
+
+  const metaState = common.getMetaState()
+  if (import.meta.client) {
+    watch(head, () => (metaState.value = head.value))
+  }
+  metaState.value = head.value
+
+  return head
 }
 
 /**

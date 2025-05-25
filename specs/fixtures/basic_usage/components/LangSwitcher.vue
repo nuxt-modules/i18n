@@ -13,7 +13,7 @@ const localesExcludingCurrent = computed(() => {
 
 <template>
   <div>
-    <section id="lang-switcher-with-nuxt-link">
+    <section v-if="!$nuxt.$config.public.i18n.experimental.strictSeo" id="lang-switcher-with-nuxt-link">
       <strong>Using <code>NuxtLink</code></strong
       >:
       <NuxtLink
