@@ -42,6 +42,22 @@ describe('experimental.strictSeo', async () => {
         "nl-NL http://localhost:3000/nl/products/grote-stoel",
       ]
     `)
+    expect(
+      await page.evaluate(() =>
+        Array.from(document.querySelectorAll(`meta[property="og:locale"],meta[property="og:locale:alternate"]`)).map(
+          x => x.getAttribute('content')
+        )
+      )
+    ).toMatchInlineSnapshot(`
+      [
+        "en",
+        "fr",
+        "ja",
+        "ja_JP",
+        "nl",
+        "nl_NL",
+      ]
+    `)
 
     await page.goto(url('/nl/products/rode-mok'))
     expect(await page.locator('link[data-hid=i18n-alt-en]').getAttribute('href')).toEqual(
@@ -62,6 +78,20 @@ describe('experimental.strictSeo', async () => {
         "fr http://localhost:3000/fr/products/french-mug",
         "nl http://localhost:3000/nl/products/rode-mok",
         "nl-NL http://localhost:3000/nl/products/rode-mok",
+      ]
+    `)
+    expect(
+      await page.evaluate(() =>
+        Array.from(document.querySelectorAll(`meta[property="og:locale"],meta[property="og:locale:alternate"]`)).map(
+          x => x.getAttribute('content')
+        )
+      )
+    ).toMatchInlineSnapshot(`
+      [
+        "nl_NL",
+        "en",
+        "fr",
+        "nl",
       ]
     `)
   })

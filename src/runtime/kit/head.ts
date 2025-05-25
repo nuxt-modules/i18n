@@ -77,9 +77,10 @@ export function localeHead(
 
   // Adding SEO Meta
   if (options.seo) {
+    const alternateLinks = getHreflangLinks(options)
     // prettier-ignore
     metaObject.link = metaObject.link.concat(
-      getHreflangLinks(options),
+      alternateLinks,
       getCanonicalLink(options)
     )
 
@@ -87,7 +88,7 @@ export function localeHead(
     metaObject.meta = metaObject.meta.concat(
       getOgUrl(options),
       getCurrentOgLocale(options),
-      getAlternateOgLocales(options)
+      getAlternateOgLocales(options, alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default'))
     )
   }
 
@@ -192,13 +193,17 @@ function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getC
   return [{ [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }]
 }
 
-function getAlternateOgLocales(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
-  const alternateLocales = options.locales.filter(locale => locale.language && locale.language !== currentLanguage)
+function getAlternateOgLocales(
+  options: HeadContext,
+  languages: string[],
+  currentLanguage = options.getCurrentLanguage()
+): MetaAttrs[] {
+  const alternateLocales = languages.filter(locale => locale && locale !== currentLanguage)
 
   return alternateLocales.map(locale => ({
-    [options.key]: `i18n-og-alt-${locale.language}`,
+    [options.key]: `i18n-og-alt-${locale}`,
     property: 'og:locale:alternate',
-    content: formatOgLanguage(locale.language)
+    content: formatOgLanguage(locale)
   }))
 }
 
