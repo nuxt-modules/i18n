@@ -1,6 +1,4 @@
-<script setup>
-import BasicUsage from '../components/BasicUsage.vue'
-</script>
+<script setup></script>
 
 <template>
   <div>

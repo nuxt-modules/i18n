@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
-import BasicUsage from '../components/BasicUsage.vue'
 
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
