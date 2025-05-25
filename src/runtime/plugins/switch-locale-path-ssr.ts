@@ -1,12 +1,9 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { useSwitchLocalePath } from '#i18n'
 
+const identifier = __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__
 const switchLocalePathLinkWrapperExpr = new RegExp(
-  [
-    `<!--${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}-\\[(\\w+)\\]-->`,
-    `.+?`,
-    `<!--/${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}-->`
-  ].join(''),
+  [`<!--${identifier}-\\[(\\w+)\\]-->`, `.+?`, `<!--/${identifier}-->`].join(''),
   'g'
 )
 
@@ -22,8 +19,13 @@ export default defineNuxtPlugin({
 
       ctx.renderResult.html = ctx.renderResult.html.replaceAll(
         switchLocalePathLinkWrapperExpr,
-        (match: string, p1: string) =>
-          match.replace(/href="([^"]+)"/, `href="${encodeURI(switchLocalePath(p1 ?? ''))}"`)
+        (match: string, p1: string) => {
+          const encoded = encodeURI(switchLocalePath(p1 ?? ''))
+          return match.replace(
+            /href="([^"]+)"/,
+            `href="${encoded || '#'}" ${!encoded && __I18N_STRICT_SEO__ ? 'data-i18n-disabled' : ''}`
+          )
+        }
       )
     })
   }

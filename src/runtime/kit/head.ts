@@ -41,6 +41,7 @@ export type HeadContext = {
   locales: HeadLocale[]
   defaultLocale: string | undefined
   hreflangLinks: boolean
+  strictSeo: boolean
   strictCanonicals: boolean
   canonicalQueries: string[]
   getCurrentLanguage: () => string | undefined
@@ -77,9 +78,10 @@ export function localeHead(
 
   // Adding SEO Meta
   if (options.seo) {
+    const alternateLinks = getHreflangLinks(options)
     // prettier-ignore
     metaObject.link = metaObject.link.concat(
-      getHreflangLinks(options),
+      alternateLinks,
       getCanonicalLink(options)
     )
 
@@ -87,7 +89,12 @@ export function localeHead(
     metaObject.meta = metaObject.meta.concat(
       getOgUrl(options),
       getCurrentOgLocale(options),
-      getAlternateOgLocales(options)
+      getAlternateOgLocales(
+        options,
+        options.strictSeo
+          ? alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default')
+          : options.locales.map(x => x.language || x.code)
+      )
     )
   }
 
@@ -127,7 +134,11 @@ function getHreflangLinks(options: HeadContext) {
 
     links.push(link)
     if (options.defaultLocale && options.defaultLocale === locale.code) {
-      links.unshift({ [options.key]: 'i18n-xd', rel: 'alternate', href: link.href, hreflang: 'x-default' })
+      links.unshift(
+        options.strictSeo
+          ? { rel: 'alternate', href: link.href, hreflang: 'x-default' }
+          : { [options.key]: 'i18n-xd', rel: 'alternate', href: link.href, hreflang: 'x-default' }
+      )
     }
   }
 
@@ -147,8 +158,9 @@ function getHreflangLink(
     hasProtocol(localePath) ? localePath : joinURL(options.baseUrl, localePath),
     options.strictCanonicals ? getCanonicalQueryParams(options) : {}
   )
-
-  return { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
+  return options.strictSeo
+    ? { rel: 'alternate', href, hreflang: language }
+    : { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
 }
 
 function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()) {
@@ -162,7 +174,7 @@ function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()
 
 function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
   if (!href) return []
-  return [{ [options.key]: 'i18n-can', rel: 'canonical', href }]
+  return [options.strictSeo ? { rel: 'canonical', href } : { [options.key]: 'i18n-can', rel: 'canonical', href }]
 }
 
 function getCanonicalQueryParams(options: HeadContext, route = options.getCurrentRoute()) {
@@ -184,22 +196,41 @@ function getCanonicalQueryParams(options: HeadContext, route = options.getCurren
 
 function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
   if (!href) return []
-  return [{ [options.key]: 'i18n-og-url', property: 'og:url', content: href }]
+  return [
+    options.strictSeo
+      ? { property: 'og:url', content: href }
+      : { [options.key]: 'i18n-og-url', property: 'og:url', content: href }
+  ]
 }
 
 function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
   if (!currentLanguage) return []
-  return [{ [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }]
+  return [
+    options.strictSeo
+      ? { property: 'og:locale', content: formatOgLanguage(currentLanguage) }
+      : { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }
+  ]
 }
 
-function getAlternateOgLocales(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
-  const alternateLocales = options.locales.filter(locale => locale.language && locale.language !== currentLanguage)
+function getAlternateOgLocales(
+  options: HeadContext,
+  languages: string[],
+  currentLanguage = options.getCurrentLanguage()
+): MetaAttrs[] {
+  const alternateLocales = languages.filter(locale => locale && locale !== currentLanguage)
 
-  return alternateLocales.map(locale => ({
-    [options.key]: `i18n-og-alt-${locale.language}`,
-    property: 'og:locale:alternate',
-    content: formatOgLanguage(locale.language)
-  }))
+  return alternateLocales.map(locale =>
+    options.strictSeo
+      ? {
+          property: 'og:locale:alternate',
+          content: formatOgLanguage(locale)
+        }
+      : {
+          [options.key]: `i18n-og-alt-${locale}`,
+          property: 'og:locale:alternate',
+          content: formatOgLanguage(locale)
+        }
+  )
 }
 
 /**

@@ -41,7 +41,7 @@ definePageMeta({
   alias: ['/aliased-home-path']
 })
 
-const i18nHead = useLocaleHead({ key: 'id', seo: { canonicalQueries: ['page', 'canonical'] } })
+const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
 useHead(() => ({
   htmlAttrs: {
     lang: i18nHead.value.htmlAttrs!.lang

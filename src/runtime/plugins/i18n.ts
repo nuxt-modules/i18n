@@ -5,7 +5,7 @@ import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadAndSetLocale, detectRedirect, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
-import { localeHead } from '../routing/head'
+import { localeHead, _useLocaleHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { getDefaultLocaleForDomain, setupMultiDomainLocales } from '../domain'
 import { createLocaleConfigs } from '../shared/locales'
@@ -168,6 +168,13 @@ export default defineNuxtPlugin({
     nuxt.provide('routeBaseName', useRouteBaseName())
     nuxt.provide('getRouteBaseName', useRouteBaseName())
     nuxt.provide('switchLocalePath', useSwitchLocalePath())
+
+    if (__I18N_STRICT_SEO__) {
+      // enable head tag management after most of the i18n setup is done
+      nuxt.hook(import.meta.server ? 'app:rendered' : 'app:mounted', () => {
+        _useLocaleHead(nuxt._nuxtI18n, { dir: true, lang: true, seo: runtimeI18n.experimental.strictSeo || false })
+      })
+    }
   }
 })
 

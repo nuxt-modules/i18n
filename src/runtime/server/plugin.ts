@@ -27,8 +27,8 @@ export default defineNitroPlugin(async nitro => {
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
+    const ctx = tryUseI18nContext(event)
     if (__I18N_PRELOAD__) {
-      const ctx = tryUseI18nContext(event)
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
 
       // only include the messages used in the current page
@@ -62,6 +62,15 @@ export default defineNitroPlugin(async nitro => {
       } catch (_) {
         console.log(_)
       }
+    }
+
+    if (__I18N_STRICT_SEO__) {
+      const raw = JSON.stringify(ctx?.slp ?? {})
+      const safe = raw
+        .replace(/</g, '\\u003c')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029')
+      htmlContext.head.push(`<script type="application/json" data-nuxt-i18n-slp="${appId}">${safe}</script>`)
     }
   })
 
