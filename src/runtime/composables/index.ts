@@ -116,7 +116,7 @@ type RouteLocationI18nGenericPath = Omit<RouteLocationAsRelativeI18n, 'path'> & 
  */
 export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMap>(
   route: Name | RouteLocationGenericPath
-) => string | undefined
+) => keyof RouteMapI18n | undefined
 
 /**
  * Returns a {@link RouteBaseNameFunction} used get the base name of a route.
