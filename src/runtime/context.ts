@@ -73,7 +73,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
   const detectBrowserLanguage = runtimeI18n.detectBrowserLanguage || {}
   const localeCookie = createI18nCookie(detectBrowserLanguage)
 
-  const dynamicResourcesSSG = !__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)
+  const dynamicResourcesSSG = !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__))
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
   const getDomainFromLocale = createDomainFromLocaleGetter()
