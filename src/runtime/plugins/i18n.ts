@@ -95,17 +95,15 @@ export default defineNuxtPlugin({
         composer.getLocaleCookie = ctx.getLocaleCookie
         composer.setLocaleCookie = ctx.setLocaleCookie
 
-        composer.finalizePendingLocaleChange = () => {
+        composer.finalizePendingLocaleChange = async () => {
           if (!i18n.__pendingLocale) return
 
-          ctx.setLocale(i18n.__pendingLocale)
+          await ctx.setLocale(i18n.__pendingLocale)
           i18n.__resolvePendingLocalePromise?.()
           i18n.__pendingLocale = undefined
         }
         composer.waitForPendingLocaleChange = async () => {
-          if (i18n.__pendingLocale && i18n.__pendingLocalePromise) {
-            await i18n.__pendingLocalePromise
-          }
+          await i18n?.__pendingLocalePromise
         }
       },
       extendComposerInstance(instance, c) {

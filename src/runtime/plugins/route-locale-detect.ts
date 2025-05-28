@@ -10,7 +10,7 @@ export default defineNuxtPlugin({
     const ctx = useNuxtI18nContext(nuxt)
 
     const detected = detectLocale(nuxt.$router.currentRoute.value)
-    await loadAndSetLocale(detected)
+    await nuxt.runWithContext(() => loadAndSetLocale(detected))
 
     // no pages or no prefixes - do not register route middleware
     if (!__I18N_ROUTING__) return
@@ -24,7 +24,7 @@ export default defineNuxtPlugin({
 
         ctx.firstAccess = false
 
-        return await nuxt.runWithContext(() => navigate(redirectPath, to.path, locale))
+        return nuxt.runWithContext(() => navigate(redirectPath, to.path, locale))
       }),
       { global: true }
     )

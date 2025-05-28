@@ -202,8 +202,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
 
     // update locale
     if (changed) {
-      ctx.setLocale(locale)
-      await nuxt.callHook('i18n:localeSwitched', { newLocale: locale, oldLocale })
+      await ctx.setLocale(locale)
     }
   }
 
@@ -300,7 +299,7 @@ function getRoutePrefixAndPath(routePath: string): { prefix?: string; unprefixed
   return { prefix, unprefixed }
 }
 
-export async function navigate(redirectPath: string, routePath: string, locale: string, force = false) {
+export function navigate(redirectPath: string, routePath: string, locale: string, force = false) {
   const nuxt = useNuxtApp()
   const { rootRedirect, skipSettingLocaleOnNavigate } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const ctx = useNuxtI18nContext(nuxt)

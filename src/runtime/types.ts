@@ -101,7 +101,7 @@ export interface ComposerCustomProperties<
   /**
    * Switches locale to the pending locale, used when navigation locale switch is prevented by the `skipSettingLocaleOnNavigate` option.
    */
-  finalizePendingLocaleChange: () => void
+  finalizePendingLocaleChange: () => Promise<void>
   /**
    * Returns a promise that will be resolved once the pending locale is set.
    */

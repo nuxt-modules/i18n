@@ -38,7 +38,7 @@ export type NuxtI18nContext = {
   /** Get current locale */
   getLocale: () => string
   /** Set locale directly  */
-  setLocale: (locale: string) => void
+  setLocale: (locale: string) => Promise<void>
   /** Get normalized runtime locales */
   getLocales: () => LocaleObject[]
   /** Get locale from locale cookie */
@@ -88,12 +88,14 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
     getVueI18n: () => _i18n,
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
-    setLocale: (locale: string) => {
+    setLocale: async (locale: string) => {
+      const oldLocale = unref(i18n.locale)
       if (isRef(i18n.locale)) {
         i18n.locale.value = locale
       } else {
         i18n.locale = locale
       }
+      await nuxt.callHook('i18n:localeSwitched', { newLocale: locale, oldLocale })
     },
     getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : x)),
     getLocaleFromRoute: route => {
