@@ -173,13 +173,18 @@ declare global {
 }
 
 export async function loadAndSetLocale(locale: Locale): Promise<string> {
-  const nuxtApp = useNuxtApp()
+  const nuxt = useNuxtApp()
   const ctx = useNuxtI18nContext()
   const oldLocale = ctx.getLocale()
-  const runtimeI18n = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
 
-  // call `onBeforeLanguageSwitch` which may return an override
-  const override = await nuxtApp.$i18n.onBeforeLanguageSwitch(oldLocale, locale, ctx.firstAccess, nuxtApp)
+  const data = { oldLocale, newLocale: locale, initialSetup: ctx.firstAccess, nuxt }
+  // @ts-expect-error context is not typed
+  let override = (await nuxt.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
+  if (override != null && import.meta.dev) {
+    console.warn('[nuxt-i18n] Do not return in `i18n:beforeLocaleSwitch`, mutate `data.newLocale` instead.')
+  }
+  override ??= data.newLocale
+
   if (override && localeCodes.includes(override)) {
     locale = override
   }
@@ -190,6 +195,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   // load locale messages required by locale
   await ctx.loadLocaleMessages(locale)
 
+  const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   if (!runtimeI18n.skipSettingLocaleOnNavigate) {
     // set locale cookie in case it is unset or not up to date
     ctx.setLocaleCookie(changed ? locale : oldLocale)
@@ -197,7 +203,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
     // update locale
     if (changed) {
       ctx.setLocale(locale)
-      await nuxtApp.$i18n.onLanguageSwitched(oldLocale, locale)
+      await nuxt.callHook('i18n:localeSwitched', { newLocale: locale, oldLocale })
     }
   }
 

@@ -133,6 +133,7 @@ export interface ModuleRuntimeHooks {
     oldLocale: Locale
     newLocale: Locale
     initialSetup: boolean
+    /** @deprecated use `const context = useNuxtApp()` outside hook scope instead */
     context: Context
   }) => HookResult
 
