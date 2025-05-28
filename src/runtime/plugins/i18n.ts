@@ -13,7 +13,6 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { createNuxtI18nContext, useLocaleConfigs, useNuxtI18nContext, type NuxtI18nContext } from '../context'
 
 import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
-import type { NuxtApp } from '#app'
 import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 import type { H3EventContext } from 'h3'
 
@@ -96,16 +95,6 @@ export default defineNuxtPlugin({
         composer.getLocaleCookie = ctx.getLocaleCookie
         composer.setLocaleCookie = ctx.setLocaleCookie
 
-        composer.onBeforeLanguageSwitch = (oldLocale, newLocale, initialSetup, context) =>
-          nuxt.callHook('i18n:beforeLocaleSwitch', {
-            oldLocale,
-            newLocale,
-            initialSetup,
-            context
-          }) as Promise<Locale | void>
-        composer.onLanguageSwitched = (oldLocale, newLocale) =>
-          nuxt.callHook('i18n:localeSwitched', { oldLocale, newLocale }) as Promise<void>
-
         composer.finalizePendingLocaleChange = () => {
           if (!i18n.__pendingLocale) return
 
@@ -134,16 +123,6 @@ export default defineNuxtPlugin({
           ['getBrowserLocale', () => () => Reflect.apply(c.getBrowserLocale, c, [])],
           ['getLocaleCookie', () => () => Reflect.apply(c.getLocaleCookie, c, [])],
           ['setLocaleCookie', () => (locale: string) => Reflect.apply(c.setLocaleCookie, c, [locale])],
-          [
-            'onBeforeLanguageSwitch',
-            () => (oldLocale: string, newLocale: string, initialSetup: boolean, context: NuxtApp) =>
-              Reflect.apply(c.onBeforeLanguageSwitch, c, [oldLocale, newLocale, initialSetup, context])
-          ],
-          [
-            'onLanguageSwitched',
-            () => (oldLocale: string, newLocale: string) =>
-              Reflect.apply(c.onLanguageSwitched, c, [oldLocale, newLocale])
-          ],
           ['finalizePendingLocaleChange', () => () => Reflect.apply(c.finalizePendingLocaleChange, c, [])],
           ['waitForPendingLocaleChange', () => () => Reflect.apply(c.waitForPendingLocaleChange, c, [])]
         ]

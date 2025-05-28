@@ -1,4 +1,3 @@
-import type { NuxtApp } from '#app'
 import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
 import type { Locale, Composer, VueI18n, ExportedGlobalComposer } from 'vue-i18n'
@@ -22,34 +21,6 @@ export type RouteLocationGenericPath = Omit<RouteLocationAsRelative, 'path' | 'n
 }
 
 export type I18nRouteMeta = Partial<Record<Locale, false | Record<string, unknown>>>
-
-/**
- * Called before the app's locale is switched.
- *
- * @remarks
- * Can be used to override the new locale by returning a new locale code.
- *
- * @param oldLocale - The app's locale before the switch.
- * @param newLocale - The app's locale after the switch.
- * @param initialSetup - Set to `true` if it's the initial locale switch that triggers on app load. It's a special case since the locale is not technically set yet so we're switching from no locale to locale.
- * @param context - the Nuxt app instance.
- *
- * @returns The new locale to switch, or `undefined` to keep the new locale.
- */
-type BeforeLanguageSwitchHandler = (
-  oldLocale: Locale,
-  newLocale: Locale,
-  initialSetup: boolean,
-  context: NuxtApp
-) => Promise<Locale | void>
-
-/**
- * Called after the app's locale is switched.
- *
- * @param oldLocale - The app's locale before the switch
- * @param newLocale - The app's locale after the switch.
- */
-type LanguageSwitchedHandler = (oldLocale: Locale, newLocale: Locale) => Promise<void>
 
 /**
  * @template ConfiguredLocaleType - The type of the locales configuration. Can be an array of string codes or an array of {@link LocaleObject}.
@@ -127,27 +98,6 @@ export interface ComposerCustomProperties<
    * @param locale - A {@link Locale}
    */
   setLocaleCookie: (locale: Locale) => void
-  /**
-   * Called before the app's locale is switched.
-   *
-   * @remarks
-   * Can be used to override the new locale by returning a new locale code.
-   *
-   * @param oldLocale - The app's locale before the switch.
-   * @param newLocale - The app's locale after the switch.
-   * @param initialSetup - Set to `true` if it's the initial locale switch that triggers on app load. It's a special case since the locale is not technically set yet so we're switching from no locale to locale.
-   * @param context - the Nuxt app instance.
-   *
-   * @returns The new locale to switch, or `undefined` to keep the new locale.
-   */
-  onBeforeLanguageSwitch: BeforeLanguageSwitchHandler
-  /**
-   * Called after the app's locale is switched.
-   *
-   * @param oldLocale - The app's locale before the switch
-   * @param newLocale - The app's locale after the switch.
-   */
-  onLanguageSwitched: LanguageSwitchedHandler
   /**
    * Switches locale to the pending locale, used when navigation locale switch is prevented by the `skipSettingLocaleOnNavigate` option.
    */
