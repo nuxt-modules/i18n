@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { $fetch, url } from './utils'
+import { $fetch, url, useTestContext } from './utils'
 import {
   assertLocaleHeadWithDom,
   assetLocaleHead,
@@ -317,28 +317,40 @@ export function basicUsageTests() {
   test('<NuxtLink> triggers runtime hooks', async () => {
     const { page, consoleLogs } = await renderPage('/kr')
 
-    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
-    expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
-    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr fr false'))).toBeTruthy()
-
-    // current locale
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
+    consoleLogs.length = 0
 
     // navigate to about page
     await page.locator('#link-about').clickNavigate()
     await page.waitForURL(url('/fr/about'))
 
-    // navigate to home page
-    await page.locator('#link-home').clickNavigate()
-    await page.waitForURL(url('/fr'))
+    expect(consoleLogs[0].text).toEqual('i18n:beforeLocaleSwitch fr fr false')
   })
 
   test('setLocale triggers runtime hooks', async () => {
+    let output: string[] = []
+    const ctx = useTestContext()
+    ctx.serverProcess?.process?.on(
+      'message',
+      (msg: any) => msg.type === 'i18n:test-log' && msg.id === ctx.url?.split(':')[2]! && output.push(msg.data)
+    )
+    await new Promise(resolve => setTimeout(resolve, 1)) // wait for process to be ready
+    output.length = 0
+
     const { page, consoleLogs } = await renderPage('/kr')
 
-    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch kr fr true'))).toBeTruthy()
-    expect(consoleLogs.find(log => log.text.includes('onLanguageSwitched kr fr'))).toBeTruthy()
-    expect(consoleLogs.find(log => log.text.includes('onBeforeLanguageSwitch fr fr false'))).toBeTruthy()
+    // overrides and redirects to `fr`
+    expect(output).toMatchInlineSnapshot(`
+      [
+        "i18n:beforeLocaleSwitch kr fr true",
+        "i18n:localeSwitched kr fr",
+        "i18n:beforeLocaleSwitch fr fr false",
+        "i18n:beforeLocaleSwitch fr fr true",
+      ]
+    `)
+
+    // client-side enters on `fr` locale
+    expect(consoleLogs.find(log => log.text.includes('i18n:beforeLocaleSwitch fr fr true'))).toBeTruthy()
 
     // current locale
     expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')

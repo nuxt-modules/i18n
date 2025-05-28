@@ -72,7 +72,7 @@ export async function startServer(env: Record<string, unknown> = {}) {
     ctx.serverProcess = x('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
       throwOnError: true,
       nodeOptions: {
-        stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+        stdio: ['inherit', 'inherit', 'pipe', 'ipc'],
         env: {
           ...process.env,
           PORT: String(ports[0]),
@@ -81,6 +81,14 @@ export async function startServer(env: Record<string, unknown> = {}) {
         }
       }
     })
+
+    const hiddenLogs = ['[Vue Router warn]: No match found for location with path']
+    ctx.serverProcess.process?.stderr?.on('data', (msg: string) => {
+      const str = msg.toString().trim()
+      if (hiddenLogs.some(w => str.includes(w))) return
+      console.error(str)
+    })
+
     await waitForPort(ports[0], { retries: process.env.CI ? 50 : 200, host, delay: process.env.CI ? 400 : 100 })
   }
 }
