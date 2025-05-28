@@ -177,8 +177,6 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   const ctx = useNuxtI18nContext()
   const oldLocale = ctx.getLocale()
 
-  // call `i18n:beforeLocaleSwitch` which may return an override
-  // TODO: remove in v11, this is deprecated in favor of `i18n:localeDetected`
   const data = { oldLocale, newLocale: locale, initialSetup: ctx.firstAccess, nuxt }
   // @ts-expect-error context is not typed
   let override = (await nuxt.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
