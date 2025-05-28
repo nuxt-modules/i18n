@@ -304,6 +304,10 @@ export function navigate(redirectPath: string, routePath: string, locale: string
   const { rootRedirect, skipSettingLocaleOnNavigate } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const ctx = useNuxtI18nContext(nuxt)
 
+  if (__I18N_STRATEGY__ === 'prefix' && __IS_SSG__ && routePath === '/') {
+    return
+  }
+
   if (routePath === '/' && rootRedirect) {
     let redirectCode = 302
     if (isString(rootRedirect)) {

@@ -88,7 +88,7 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
 
       // keep root when using prefixed routing without prerendering
       const indexPage = pages.find(x => x.path === '/')
-      if (!nuxt.options._generate && options.strategy === 'prefix' && indexPage != null) {
+      if (options.strategy === 'prefix' && indexPage != null) {
         localizedPages.unshift(indexPage as NarrowedNuxtPage)
       }
 
