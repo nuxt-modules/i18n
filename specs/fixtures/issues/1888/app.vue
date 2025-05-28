@@ -6,7 +6,7 @@
       v-for="locale in availableLocales"
       :id="locale.code"
       :key="locale.code"
-      @click="$i18n.setLocale(locale.code)"
+      @click="async () => await $i18n.setLocale(locale.code)"
     >
       {{ locale.name }}
     </button>

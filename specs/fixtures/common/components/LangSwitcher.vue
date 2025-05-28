@@ -42,7 +42,7 @@ const switchLocalePath = useSwitchLocalePath()
         :id="`set-locale-link-${locale.code}`"
         :key="`b-${index}`"
         href="javascript:void(0)"
-        @click.prevent="setLocale(locale.code)"
+        @click.prevent="async () => await setLocale(locale.code)"
         >{{ locale.name }}</a
       >
     </section>
