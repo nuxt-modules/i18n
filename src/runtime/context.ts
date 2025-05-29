@@ -44,7 +44,7 @@ export type NuxtI18nContext = {
   /** Get current locale */
   getLocale: () => string
   /** Set locale directly  */
-  setLocale: (locale: string, suspend?: boolean) => Promise<void>
+  setLocale: (locale: string) => Promise<void>
   /** Set locale - suspend if `skipSettingLocaleOnNavigate` is enabled  */
   setLocaleSuspend: (locale: string) => Promise<void>
   /** Get normalized runtime locales */
