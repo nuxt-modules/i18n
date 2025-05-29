@@ -1,6 +1,8 @@
 import type { I18nNuxtContext } from '../context'
+import type { NuxtI18nOptions } from '../types'
 import type { Nuxt } from '@nuxt/schema'
-import { applyOptionOverrides, formatMessage } from '../utils'
+import defu from 'defu'
+import { applyOptionOverrides, formatMessage, getLayerI18n } from '../utils'
 import { checkLayerOptions } from '../layers'
 
 export function prepareOptions({ debug, logger, options }: I18nNuxtContext, nuxt: Nuxt) {
@@ -20,13 +22,19 @@ export function prepareOptions({ debug, logger, options }: I18nNuxtContext, nuxt
     )
   }
 
-  if (!nuxt.options?._prepare && !nuxt.options?.test && options.bundle.optimizeTranslationDirective == null) {
+  // take into account inline module options
+  const userOptions = defu(
+    {},
+    ...nuxt.options._layers.map(x => getLayerI18n(x)).filter(Boolean)
+  ) as Partial<NuxtI18nOptions>
+
+  if (!nuxt.options?._prepare && !nuxt.options?.test && userOptions?.bundle?.optimizeTranslationDirective == null) {
     logger.warn(
       '`bundle.optimizeTranslationDirective` is enabled by default, we recommend disabling this feature as it causes issues and will be deprecated in v10.\nExplicitly setting this option to `true` or `false` disables this warning, for more details see: https://github.com/nuxt-modules/i18n/issues/3238#issuecomment-2672492536'
     )
   }
 
-  if (options.experimental.autoImportTranslationFunctions && nuxt.options.imports.autoImport === false) {
+  if (userOptions.experimental?.autoImportTranslationFunctions && nuxt.options.imports.autoImport === false) {
     logger.warn(
       'Disabling `autoImports` in Nuxt is not compatible with `experimental.autoImportTranslationFunctions`, either enable `autoImports` or disable `experimental.autoImportTranslationFunctions`.'
     )
