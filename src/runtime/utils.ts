@@ -158,11 +158,11 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
       if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
         const host = getHost()
         const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
-        if (locale !== defaultLocale) {
+        if (locale !== defaultLocale || ctx.getLocaleFromRoute(path) !== defaultLocale) {
           return path
         }
 
-        // navigate to default locale without prefix
+        // remove default locale prefix
         return path.slice(locale.length + 1)
       }
 
