@@ -1,9 +1,9 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 import { navigateTo, ref, useHead, useNuxtApp, useRouter, type Ref } from '#imports'
-import { localeCodes, normalizedLocales, vueI18nConfigs } from '#build/i18n.options.mjs'
+import { localeCodes, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer } from './compatibility'
-import { getHost, getLocaleDomain } from './domain'
+import { getDefaultLocaleForDomain } from './domain'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
 import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
@@ -73,7 +73,7 @@ export function useComposableContext(): ComposableContext {
   return context
 }
 
-export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): ComposableContext {
+export function createComposableContext(): ComposableContext {
   const router = useRouter()
   const ctx = useNuxtI18nContext()
   const nuxtApp = useNuxtApp()
@@ -119,7 +119,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
   const seoSettings = ref<I18nHeadOptions>({
     dir: __I18N_STRICT_SEO__,
     lang: __I18N_STRICT_SEO__,
-    seo: __I18N_STRICT_SEO__ && runtimeI18n.experimental.strictSeo
+    seo: __I18N_STRICT_SEO__ && ctx.config.experimental.strictSeo
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const slp: Record<string, Record<string, string> | false> = import.meta.client
@@ -134,7 +134,7 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
     getSLP: () => slp,
     getRoutingOptions: () => ({
       defaultLocale: defaultLocale,
-      strictCanonicals: runtimeI18n.experimental.alternateLinkCanonicalQueries ?? true,
+      strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__)
     }),
     getLocale: ctx.getLocale,
@@ -156,9 +156,8 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
 
       // remove prefix if path is default for domain
       if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
-        const host = getHost()
-        const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
-        if (locale !== defaultLocale || ctx.getLocaleFromRoute(path) !== defaultLocale) {
+        const defaultLocale = getDefaultLocaleForDomain()
+        if (locale !== defaultLocale || ctx.getRouteLocale(path) !== defaultLocale) {
           return path
         }
 
@@ -236,29 +235,20 @@ export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
   const path = getCompatRoutePath(route)
   const ctx = useNuxtI18nContext(nuxtApp)
-  const { detectBrowserLanguage: detectBrowser, defaultLocale } = nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig
-  const { fallbackLocale } = detectBrowser || {}
 
   function* detect() {
-    if (ctx.firstAccess && detectBrowser && !skipDetect(detectBrowser, path, ctx.getLocaleFromRoute(path))) {
-      // cookie
-      yield ctx.getLocaleCookie()
-
-      // navigator or header
-      yield ctx.getBrowserLocale()
-
-      // fallback
-      yield fallbackLocale
+    if (ctx.firstAccess && ctx.detection.enabled && !skipDetect(ctx.detection, path, ctx.getRouteLocale(path))) {
+      yield ctx.getCookieLocale()
+      yield ctx.getBrowserLocale() // navigator or header
+      yield ctx.detection.fallbackLocale
     }
 
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-      // domain
-      yield getLocaleDomain(normalizedLocales, path)
+      yield ctx.getDomainLocale(path)
     }
 
     if (__I18N_ROUTING__) {
-      // route
-      yield ctx.getLocaleFromRoute(route)
+      yield ctx.getRouteLocale(route)
     }
   }
 
@@ -268,8 +258,7 @@ export function detectLocale(route: string | CompatRoute): string {
     }
   }
 
-  // fallback
-  return ctx.getLocale() || defaultLocale || ''
+  return ctx.getLocale() || ctx.getDefaultLocale() || ''
 }
 
 export function navigate(to: CompatRoute, locale: string) {
@@ -288,7 +277,7 @@ export function navigate(to: CompatRoute, locale: string) {
   }
 
   // skip - redirection optional prevents prefix removal, reconsider if needed (#2288)
-  if (ctx.getLocaleFromRoute(to) === locale) {
+  if (ctx.getRouteLocale(to) === locale) {
     return
   }
 

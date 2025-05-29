@@ -8,7 +8,7 @@ import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
 import { getI18nTarget } from './compatibility'
-import { createDomainFromLocaleGetter } from './domain'
+import { createDomainFromLocaleGetter, createDomainLocaleGetter } from './domain'
 import { joinURL } from 'ufo'
 import { isString } from '@intlify/shared'
 
@@ -29,13 +29,15 @@ export const useLocaleConfigs = () =>
  * @internal
  */
 export type NuxtI18nContext = {
+  vueI18n: I18n
+  config: I18nPublicRuntimeConfig
+  detection: DetectBrowserLanguageOptions & { enabled: boolean }
   /** Locale messages attached during SSR and loaded during hydration */
   preloaded: boolean
   /** Initial request/visit */
   firstAccess: boolean
   /** SSG with dynamic locale resources */
   dynamicResourcesSSG: boolean
-  vueI18n: I18n
   rootRedirect: { path: string; code: number } | undefined
   /** Get default locale */
   getDefaultLocale: () => string
@@ -50,16 +52,15 @@ export type NuxtI18nContext = {
   /** Get normalized runtime locales */
   getLocales: () => LocaleObject[]
   /** Get locale from locale cookie */
-  getLocaleCookie: () => string | undefined
+  getCookieLocale: () => string | undefined
   /** Set locale to locale cookie */
-  setLocaleCookie: (locale: string) => void
-  getBrowserLocale: () => string | undefined
+  setCookieLocale: (locale: string) => void
+  getDomainLocale: (path: string) => string
+  getBrowserLocale: () => string
   /** Get locale from route path or object */
-  getLocaleFromRoute: (route: string | CompatRoute) => string
+  getRouteLocale: (route: string | CompatRoute) => string
   /** Get current base URL */
   getBaseUrl: (locale?: string) => string
-  /** Get domain associated with locale */
-  getDomainFromLocale: (locale: Locale) => string | undefined
 }
 
 function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {
@@ -73,6 +74,7 @@ function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cooki
     secure: cookieCrossOrigin || cookieSecure
   })
 }
+
 function resolveRootRedirect(config: string | RootRedirectOptions | undefined) {
   if (!config) return undefined
   return {
@@ -88,20 +90,21 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const detectBrowserLanguage = runtimeI18n.detectBrowserLanguage || {}
   const localeCookie = createI18nCookie(detectBrowserLanguage)
 
-  const dynamicResourcesSSG = !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__))
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
-  const getDomainFromLocale = createDomainFromLocaleGetter()
+  const getDomainFromLocale = createDomainFromLocaleGetter(runtimeI18n.domainLocales)
   const baseUrl = createBaseUrlGetter(nuxt, getDomainFromLocale)
   const isSupportedLocale = (locale: string) => localeCodes.includes(locale)
   const getLocaleFromRoute = createLocaleFromRouteGetter(__ROUTE_NAME_SEPARATOR__)
 
   const ctx: NuxtI18nContext = {
-    firstAccess: true,
-    preloaded: false,
-    dynamicResourcesSSG,
     vueI18n,
+    preloaded: false,
+    firstAccess: true,
+    config: runtimeI18n,
+    detection: { ...detectBrowserLanguage, enabled: !!runtimeI18n.detectBrowserLanguage },
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
+    dynamicResourcesSSG: !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: async (locale: string) => {
@@ -123,29 +126,30 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       ctx.vueI18n.__pendingLocalePromise = new Promise(resolve => {
         ctx.vueI18n.__resolvePendingLocalePromise = async () => {
           // TODO: always syncing cookie may be undesirable, consider making this configurable
-          ctx.setLocaleCookie(locale)
+          ctx.setCookieLocale(locale)
           await ctx.setLocale(locale)
           ctx.vueI18n.__pendingLocale = undefined
           resolve()
         }
       })
 
-      if (import.meta.server || !runtimeI18n.skipSettingLocaleOnNavigate) {
+      if (import.meta.server || !ctx.config.skipSettingLocaleOnNavigate) {
         await ctx.vueI18n.__resolvePendingLocalePromise?.()
       }
     },
     getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : x)),
-    getLocaleFromRoute: route => {
+    getDomainLocale: createDomainLocaleGetter(normalizedLocales),
+    getRouteLocale: route => {
       const locale = getLocaleFromRoute(route)
       return isSupportedLocale(locale) ? locale : ''
     },
-    getLocaleCookie: () => {
-      if (detectBrowserLanguage.useCookie && isSupportedLocale(localeCookie.value || '')) {
+    getCookieLocale: () => {
+      if (ctx.detection.useCookie && isSupportedLocale(localeCookie.value || '')) {
         return localeCookie.value
       }
     },
-    setLocaleCookie: (locale: string) => {
-      if (detectBrowserLanguage.useCookie && isSupportedLocale(locale)) {
+    setCookieLocale: (locale: string) => {
+      if (ctx.detection.useCookie && isSupportedLocale(locale)) {
         localeCookie.value = locale
       }
     },
@@ -163,11 +167,10 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
       // normalize matching locales
       const availableLocales = normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code }))
-      return findBrowserLocale(availableLocales, languages) || undefined
+      return findBrowserLocale(availableLocales, languages)
     },
-    getDomainFromLocale,
     loadLocaleMessages: async (locale: string) => {
-      if (dynamicResourcesSSG || import.meta.dev) {
+      if (ctx.dynamicResourcesSSG || import.meta.dev) {
         const locales = getLocaleConfig(locale)?.fallbacks ?? []
         if (!locales.includes(locale)) {
           locales.push(locale)
