@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, detectRedirect, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
+import { loadAndSetLocale, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { localeHead, _useLocaleHead } from '../routing/head'
@@ -81,10 +81,7 @@ export default defineNuxtPlugin({
         )
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(locale)
-
-          const route = nuxt.$router.currentRoute.value
-          const redirectPath = await nuxt.runWithContext(() => detectRedirect(route, locale))
-          await nuxt.runWithContext(() => navigate(redirectPath, route.path, locale))
+          await nuxt.runWithContext(() => navigate(nuxt.$router.currentRoute.value, locale))
         }
         composer.loadLocaleMessages = ctx.loadLocaleMessages
 
@@ -97,10 +94,7 @@ export default defineNuxtPlugin({
 
         composer.finalizePendingLocaleChange = async () => {
           if (!i18n.__pendingLocale) return
-
-          await ctx.setLocale(i18n.__pendingLocale)
-          i18n.__resolvePendingLocalePromise?.()
-          i18n.__pendingLocale = undefined
+          await i18n.__resolvePendingLocalePromise?.()
         }
         composer.waitForPendingLocaleChange = async () => {
           await i18n?.__pendingLocalePromise

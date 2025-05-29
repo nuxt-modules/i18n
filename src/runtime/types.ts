@@ -123,6 +123,6 @@ declare module 'vue-i18n' {
   interface I18n {
     /** @internal */ __pendingLocale?: string
     /** @internal */ __pendingLocalePromise?: Promise<void>
-    /** @internal */ __resolvePendingLocalePromise?: () => void
+    /** @internal */ __resolvePendingLocalePromise?: () => Promise<void>
   }
 }
