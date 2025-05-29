@@ -6,7 +6,7 @@ import { getComposer } from './compatibility'
 import { getDefaultLocaleForDomain } from './domain'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
-import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
+import { getRouteBaseName } from '#i18n-kit/routing'
 import {
   localePath,
   switchLocalePath,
@@ -58,6 +58,7 @@ export type ComposableContext = {
   getLocalizedDynamicParams: (locale: string) => Record<string, unknown> | false | undefined
   /** Prepares a route object to be resolved as a localized route */
   resolveLocalizedRouteObject: (route: RouteLike, locale: string) => RouteLike
+  getRouteLocalizedParams: () => Partial<I18nRouteMeta>
 }
 
 // RouteLike object has a path and no name.
@@ -80,10 +81,6 @@ export function createComposableContext(): ComposableContext {
   const defaultLocale = ctx.getDefaultLocale()
   const routeByPathResolver = createLocalizedRouteByPathResolver(router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
-
-  function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
-    return _getRouteBaseName(route, __ROUTE_NAME_SEPARATOR__)
-  }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
     route.name ||= getRouteBaseName(router.currentRoute.value) // fallback to current route name
@@ -126,7 +123,7 @@ export function createComposableContext(): ComposableContext {
     ? JSON.parse(document.querySelector(`[data-nuxt-i18n-slp="${nuxtApp._id}"]`)?.textContent ?? '{}')
     : {}
 
-  return {
+  const composableCtx: ComposableContext = {
     router,
     getHead: () => head,
     getMetaState: () => metaState,
@@ -141,15 +138,16 @@ export function createComposableContext(): ComposableContext {
     getLocales: ctx.getLocales,
     getBaseUrl: ctx.getBaseUrl,
     getRouteBaseName,
+    getRouteLocalizedParams: () =>
+      (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>,
     getLocalizedDynamicParams: locale => {
       if (__I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && slp) {
         return slp[locale] || {}
       }
-      const params = (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
-      return params[locale]
+      return composableCtx.getRouteLocalizedParams()?.[locale]
     },
     afterSwitchLocalePath: (path, locale) => {
-      const params = (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
+      const params = composableCtx.getRouteLocalizedParams()
       if (__I18N_STRICT_SEO__ && locale && Object.keys(params).length && !params[locale]) {
         return ''
       }
@@ -176,6 +174,7 @@ export function createComposableContext(): ComposableContext {
         : resolveLocalizedRouteByName(route, locale)
     }
   }
+  return composableCtx
 }
 
 declare global {
@@ -233,7 +232,7 @@ function skipDetect(detect: DetectBrowserLanguageOptions, path: string, pathLoca
 
 export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
-  const path = getCompatRoutePath(route)
+  const path = isString(route) ? route : route.path
   const ctx = useNuxtI18nContext(nuxtApp)
 
   function* detect() {
@@ -373,8 +372,4 @@ export function createNuxtI18nDev() {
   }
 
   return { resetI18nProperties }
-}
-
-function getCompatRoutePath(route: string | CompatRoute) {
-  return isString(route) ? route : route.path
 }

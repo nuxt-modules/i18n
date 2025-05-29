@@ -1,7 +1,7 @@
 import { hasProtocol } from 'ufo'
 import { useRouter, useRequestURL } from '#imports'
 import { normalizedLocales } from '#build/i18n.options.mjs'
-import { getLocaleFromRoutePath } from '#i18n-kit/routing'
+import { defaultRouteNameSuffix, getLocaleFromRouteName, getLocaleFromRoutePath } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
 import type { LocaleObject } from '#internal-i18n-types'
@@ -22,8 +22,8 @@ function filterMatchingDomainsLocales(locales: LocaleObject[], host: string): Lo
   return locales.filter(locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host))
 }
 
-export function createDomainLocaleGetter(locales: LocaleObject[]): (path: string) => string {
-  return (path: string) => {
+export function createDomainLocaleGetter(locales: LocaleObject[]): (path: string) => string | undefined {
+  return path => {
     const host = getHost()
     const matches = filterMatchingDomainsLocales(locales, host)
 
@@ -31,17 +31,17 @@ export function createDomainLocaleGetter(locales: LocaleObject[]): (path: string
       if (matches.length > 1 && __I18N_STRATEGY__ === 'no_prefix' && import.meta.dev) {
         console.warn('[nuxt-i18n] Matched multiple domains this is incompatible with no_prefix strategy')
       }
-      return matches[0]?.code ?? ''
+      return matches[0]?.code
     }
 
     // get prefix from route
     const pathLocale = getLocaleFromRoutePath(path)
     if (pathLocale && matches.some(l => l.code === pathLocale)) {
-      return matches.find(l => l.code === pathLocale)?.code ?? ''
+      return matches.find(l => l.code === pathLocale)?.code
     }
 
     // fall back to default language on this domain - if set
-    return matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code ?? ''
+    return matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
   }
 }
 
@@ -67,8 +67,6 @@ export function createDomainFromLocaleGetter(
   }
 }
 
-const defaultRouteSuffix = __ROUTE_NAME_SEPARATOR__ + __ROUTE_NAME_DEFAULT_SUFFIX__
-const getLocaleFromRouteName = (name: string) => name.split(__ROUTE_NAME_SEPARATOR__).at(1) ?? ''
 /**
  * Removes default routes depending on domain
  */
@@ -78,7 +76,7 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
   // adjust routes to match the domain's locale and structure
   for (const route of router.getRoutes()) {
     const routeName = String(route.name)
-    if (routeName.endsWith(defaultRouteSuffix)) {
+    if (routeName.endsWith(defaultRouteNameSuffix)) {
       router.removeRoute(routeName)
       continue
     }
@@ -94,5 +92,5 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
 export function getDefaultLocaleForDomain(host: string = getHost()): string | undefined {
-  return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code ?? ''
+  return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code
 }

@@ -4,7 +4,7 @@ import { useNuxtApp, useState, useCookie, useRequestHeader } from '#imports'
 import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import { getLocaleMessagesMergedCached } from './shared/messages'
 import { createBaseUrlGetter } from './utils'
-import { createLocaleFromRouteGetter } from '#i18n-kit/routing'
+import { getLocaleFromRoute } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
 import { getI18nTarget } from './compatibility'
@@ -55,7 +55,7 @@ export type NuxtI18nContext = {
   getCookieLocale: () => string | undefined
   /** Set locale to locale cookie */
   setCookieLocale: (locale: string) => void
-  getDomainLocale: (path: string) => string
+  getDomainLocale: (path: string) => string | undefined
   getBrowserLocale: () => string
   /** Get locale from route path or object */
   getRouteLocale: (route: string | CompatRoute) => string
@@ -95,7 +95,6 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const getDomainFromLocale = createDomainFromLocaleGetter(runtimeI18n.domainLocales)
   const baseUrl = createBaseUrlGetter(nuxt, getDomainFromLocale)
   const isSupportedLocale = (locale: string) => localeCodes.includes(locale)
-  const getLocaleFromRoute = createLocaleFromRouteGetter(__ROUTE_NAME_SEPARATOR__)
 
   const ctx: NuxtI18nContext = {
     vueI18n,
