@@ -6,7 +6,7 @@ import { getComposer } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
-import { getRouteBaseName as _getRouteBaseName, getLocaleFromRoutePath } from '#i18n-kit/routing'
+import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
 import {
   localePath,
   switchLocalePath,
@@ -153,6 +153,19 @@ export function createComposableContext(runtimeI18n: I18nPublicRuntimeConfig): C
       if (__I18N_STRICT_SEO__ && locale && Object.keys(params).length && !params[locale]) {
         return ''
       }
+
+      // remove prefix if path is default for domain
+      if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
+        const host = getHost()
+        const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
+        if (locale !== defaultLocale) {
+          return path
+        }
+
+        // navigate to default locale without prefix
+        return path.slice(locale.length + 1)
+      }
+
       if (__DIFFERENT_DOMAINS__) {
         return joinURL(ctx.getBaseUrl(locale), path)
       }
@@ -177,6 +190,11 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   const ctx = useNuxtI18nContext()
   const oldLocale = ctx.getLocale()
 
+  // skip if locale is already set
+  if (locale === oldLocale && !ctx.firstAccess) {
+    return locale
+  }
+
   const data = { oldLocale, newLocale: locale, initialSetup: ctx.firstAccess, nuxt }
   // @ts-expect-error context is not typed
   let override = (await nuxt.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
@@ -189,27 +207,8 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
     locale = override
   }
 
-  // resolved locale is different from the one passed
-  const changed = locale && oldLocale !== locale
-
-  // load locale messages required by locale
   await ctx.loadLocaleMessages(locale)
-
-  const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-  if (runtimeI18n.skipSettingLocaleOnNavigate) {
-    ctx.vueI18n.__pendingLocale = locale
-    ctx.vueI18n.__pendingLocalePromise = new Promise(resolve => {
-      ctx.vueI18n.__resolvePendingLocalePromise = resolve
-    })
-  } else {
-    // set locale cookie in case it is unset or not up to date
-    ctx.setLocaleCookie(changed ? locale : oldLocale)
-
-    // update locale
-    if (changed) {
-      await ctx.setLocale(locale)
-    }
-  }
+  await ctx.setLocaleSuspend(locale)
 
   return locale
 }
@@ -273,55 +272,33 @@ export function detectLocale(route: string | CompatRoute): string {
   return ctx.getLocale() || defaultLocale || ''
 }
 
-/**
- * Returns a localized path to redirect to, or an empty string if no redirection should occur
- */
-export function detectRedirect(to: CompatRoute, locale: string): string {
-  const routeLocale = useNuxtI18nContext().getLocaleFromRoute(to)
-  // no locale change detected from routing
-  if (routeLocale === locale || !__I18N_ROUTING__) {
-    return ''
+export function navigate(to: CompatRoute, locale: string) {
+  if (!__I18N_ROUTING__ || __DIFFERENT_DOMAINS__) return
+
+  const ctx = useNuxtI18nContext()
+  const _ctx = useComposableContext()
+
+  if (to.path === '/' && ctx.rootRedirect) {
+    return navigateTo(localePath(_ctx, ctx.rootRedirect.path, locale), { redirectCode: ctx.rootRedirect.code })
   }
 
-  const ctx = useComposableContext()
-  const redirectPath = switchLocalePath(ctx, locale, to) || localePath(ctx, to.fullPath, locale)
-
-  // skip redirect if resolved route matches current route (#1889, #2226)
-  if (isEqual(redirectPath, to.fullPath)) {
-    return ''
-  }
-
-  return redirectPath
-}
-
-export function navigate(redirectPath: string, routePath: string, locale: string) {
-  const nuxt = useNuxtApp()
-  const ctx = useNuxtI18nContext(nuxt)
-
-  if (routePath === '/' && ctx.rootRedirect) {
-    return navigateTo(nuxt.$localePath(ctx.rootRedirect.path, locale), { redirectCode: ctx.rootRedirect.code })
-  }
-
-  // pending locale from skipSettingLocaleOnNavigate, skip if in navigation middleware
-  if (import.meta.client && ctx.vueI18n.__pendingLocale && nuxt._processingMiddleware) {
+  // skip - pending locale inside navigation middleware
+  if (ctx.vueI18n.__pendingLocale && useNuxtApp()._processingMiddleware) {
     return
   }
 
-  if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
-    const host = getHost()
-    const routeLocale = getLocaleFromRoutePath(routePath)
-    const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
-    if (!localeCodes.includes(routeLocale) || routeLocale !== defaultLocale) {
-      return
-    }
-
-    // navigate to default locale without prefix
-    return navigateTo(routePath.slice(routeLocale.length + 1))
+  // skip - redirection optional prevents prefix removal, reconsider if needed (#2288)
+  if (ctx.getLocaleFromRoute(to) === locale) {
+    return
   }
 
-  if (!__DIFFERENT_DOMAINS__ && redirectPath) {
-    return navigateTo(redirectPath)
+  // skip redirect if resolved route matches current route (#1889, #2226)
+  const destination = switchLocalePath(_ctx, locale, to) || localePath(_ctx, to.fullPath, locale)
+  if (isEqual(destination, to.fullPath)) {
+    return
   }
+
+  return navigateTo(destination)
 }
 
 export function prefixable(currentLocale: string, defaultLocale: string): boolean {

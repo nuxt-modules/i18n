@@ -107,6 +107,9 @@ useHead(
         <li class="path-about">
           <NuxtLink id="link-about" :to="localePath('/about')">{{ $t('about') }}</NuxtLink>
         </li>
+        <li class="path-about-en">
+          <NuxtLink id="link-about-en" :to="localePath('/about', 'en')">{{ $t('about') }}</NuxtLink>
+        </li>
         <li>
           <NuxtLink id="link-post" :to="localePath({ name: 'post-id', params: { id: 'id' } })">Post</NuxtLink>
         </li>

@@ -321,10 +321,11 @@ export function basicUsageTests() {
     consoleLogs.length = 0
 
     // navigate to about page
-    await page.locator('#link-about').clickNavigate()
-    await page.waitForURL(url('/fr/about'))
+    await page.locator('#link-about-en').clickNavigate()
+    await page.waitForURL(url('/about'))
 
-    expect(consoleLogs[0].text).toEqual('i18n:beforeLocaleSwitch fr fr false')
+    expect(consoleLogs[0].text).toEqual('i18n:beforeLocaleSwitch fr en false')
+    expect(consoleLogs[1].text).toEqual('i18n:localeSwitched fr en')
   })
 
   test('setLocale triggers runtime hooks', async () => {
@@ -344,7 +345,6 @@ export function basicUsageTests() {
       [
         "i18n:beforeLocaleSwitch kr fr true",
         "i18n:localeSwitched kr fr",
-        "i18n:beforeLocaleSwitch fr fr false",
         "i18n:beforeLocaleSwitch fr fr true",
       ]
     `)
