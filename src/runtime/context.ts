@@ -14,7 +14,12 @@ import { isString } from '@intlify/shared'
 
 import type { Locale, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
+import type {
+  DetectBrowserLanguageOptions,
+  I18nPublicRuntimeConfig,
+  LocaleObject,
+  RootRedirectOptions
+} from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 
 export const useLocaleConfigs = () =>
@@ -30,7 +35,8 @@ export type NuxtI18nContext = {
   firstAccess: boolean
   /** SSG with dynamic locale resources */
   dynamicResourcesSSG: boolean
-  getVueI18n: () => I18n
+  vueI18n: I18n
+  rootRedirect: { path: string; code: number } | undefined
   /** Get default locale */
   getDefaultLocale: () => string
   /** Load locale messages */
@@ -65,6 +71,13 @@ function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cooki
     secure: cookieCrossOrigin || cookieSecure
   })
 }
+function resolveRootRedirect(config: string | RootRedirectOptions | undefined) {
+  if (!config) return undefined
+  return {
+    path: '/' + (isString(config) ? config : config.path).replace(/^\//, ''),
+    code: (!isString(config) && config.statusCode) || 302
+  }
+}
 
 export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(_i18n)
@@ -85,7 +98,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, _i18n: I18n, defaultLocale:
     firstAccess: true,
     preloaded: false,
     dynamicResourcesSSG,
-    getVueI18n: () => _i18n,
+    vueI18n: _i18n,
+    rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: async (locale: string) => {

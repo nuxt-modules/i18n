@@ -15,7 +15,6 @@ export default defineNuxtPlugin({
     if (!__I18N_PRELOAD__) return
     const nuxt = useNuxtApp()
     const ctx = useNuxtI18nContext()
-    const vueI18n = ctx.getVueI18n()
 
     if (import.meta.server) {
       for (const locale of localeCodes) {
@@ -34,7 +33,7 @@ export default defineNuxtPlugin({
       const serverI18n = nuxt.ssrContext?.event.context.nuxtI18n
       // set server context messages
       if (serverI18n) {
-        const msg = unref(vueI18n.global.messages) as LocaleMessages<DefineLocaleMessage>
+        const msg = unref(ctx.vueI18n.global.messages) as LocaleMessages<DefineLocaleMessage>
         serverI18n.messages ??= {}
         for (const k in msg) {
           serverI18n.messages[k] = msg[k]
@@ -43,7 +42,7 @@ export default defineNuxtPlugin({
     }
 
     if (import.meta.client) {
-      await mergePayloadMessages(ctx, vueI18n.global, nuxt)
+      await mergePayloadMessages(ctx, ctx.vueI18n.global, nuxt)
 
       /**
        * Ensure complete messages are loaded before switching page for the first time

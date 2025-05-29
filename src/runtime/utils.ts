@@ -6,7 +6,7 @@ import { getComposer } from './compatibility'
 import { getHost, getLocaleDomain } from './domain'
 import { loadVueI18nOptions } from './shared/messages'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
-import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
+import { getRouteBaseName as _getRouteBaseName, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import {
   localePath,
   switchLocalePath,
@@ -196,7 +196,12 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   await ctx.loadLocaleMessages(locale)
 
   const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-  if (!runtimeI18n.skipSettingLocaleOnNavigate) {
+  if (runtimeI18n.skipSettingLocaleOnNavigate) {
+    ctx.vueI18n.__pendingLocale = locale
+    ctx.vueI18n.__pendingLocalePromise = new Promise(resolve => {
+      ctx.vueI18n.__resolvePendingLocalePromise = resolve
+    })
+  } else {
     // set locale cookie in case it is unset or not up to date
     ctx.setLocaleCookie(changed ? locale : oldLocale)
 
@@ -289,61 +294,29 @@ export function detectRedirect(to: CompatRoute, locale: string): string {
   return redirectPath
 }
 
-const PERMISSIVE_LOCALE_PATH_RE = new RegExp(`^(?:/(${localeCodes.join('|')}))?(/.*|$)`, 'i')
-/**
- * Returns the prefix and path of a route.
- * TODO: consider moving to #i18n-kit/routing
- */
-function getRoutePrefixAndPath(routePath: string): { prefix?: string; unprefixed: string } {
-  const [, prefix, unprefixed = routePath] = PERMISSIVE_LOCALE_PATH_RE.exec(routePath) ?? []
-  return { prefix, unprefixed }
-}
-
-export function navigate(redirectPath: string, routePath: string, locale: string, force = false) {
+export function navigate(redirectPath: string, routePath: string, locale: string) {
   const nuxt = useNuxtApp()
-  const { rootRedirect, skipSettingLocaleOnNavigate } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
   const ctx = useNuxtI18nContext(nuxt)
 
-  if (routePath === '/' && rootRedirect) {
-    let redirectCode = 302
-    if (isString(rootRedirect)) {
-      redirectPath = '/' + rootRedirect
-    } else {
-      redirectPath = '/' + rootRedirect.path
-      redirectCode = rootRedirect.statusCode
-    }
-
-    return navigateTo(nuxt.$localePath(redirectPath, locale), { redirectCode })
+  if (routePath === '/' && ctx.rootRedirect) {
+    return navigateTo(nuxt.$localePath(ctx.rootRedirect.path, locale), { redirectCode: ctx.rootRedirect.code })
   }
 
-  if (import.meta.client && skipSettingLocaleOnNavigate) {
-    const vueI18n = ctx.getVueI18n()
-    vueI18n.__pendingLocale = locale
-    vueI18n.__pendingLocalePromise = new Promise(resolve => {
-      vueI18n.__resolvePendingLocalePromise = resolve
-    })
-    if (!force) {
-      return
-    }
+  // pending locale from skipSettingLocaleOnNavigate, skip if in navigation middleware
+  if (import.meta.client && ctx.vueI18n.__pendingLocale && nuxt._processingMiddleware) {
+    return
   }
 
   if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
     const host = getHost()
+    const routeLocale = getLocaleFromRoutePath(routePath)
     const defaultLocale = ctx.getLocales().find(x => x.defaultForDomains?.find(domain => domain === host))?.code
-    const { prefix, unprefixed } = getRoutePrefixAndPath(routePath)
-
-    // unprefixed path or default locale
-    if (!prefix || defaultLocale === prefix) {
-      redirectPath = unprefixed
-    } else {
-      redirectPath = '/' + locale + unprefixed
+    if (!localeCodes.includes(routeLocale) || routeLocale !== defaultLocale) {
+      return
     }
 
-    if (!isEqual(routePath, redirectPath)) {
-      return navigateTo(redirectPath)
-    }
-
-    return
+    // navigate to default locale without prefix
+    return navigateTo(routePath.slice(routeLocale.length + 1))
   }
 
   if (!__DIFFERENT_DOMAINS__ && redirectPath) {
@@ -398,7 +371,7 @@ function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
 // HMR helper functionality
 export function createNuxtI18nDev() {
   const ctx = useNuxtI18nContext()
-  const composer = getComposer(ctx.getVueI18n())
+  const composer = getComposer(ctx.vueI18n)
 
   /**
    * Triggers a reload of vue-i18n configs (if needed) and locale message files in the correct order

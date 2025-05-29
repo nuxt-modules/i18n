@@ -84,7 +84,7 @@ export default defineNuxtPlugin({
 
           const route = nuxt.$router.currentRoute.value
           const redirectPath = await nuxt.runWithContext(() => detectRedirect(route, locale))
-          await nuxt.runWithContext(() => navigate(redirectPath, route.path, locale, true))
+          await nuxt.runWithContext(() => navigate(redirectPath, route.path, locale))
         }
         composer.loadLocaleMessages = ctx.loadLocaleMessages
 
@@ -159,7 +159,7 @@ export default defineNuxtPlugin({
  * Wrap translation functions to track translation keys used during SSR
  */
 function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n: H3EventContext['nuxtI18n']) {
-  const i18n = ctx.getVueI18n().global
+  const i18n = ctx.vueI18n.global
   const originalT = i18n.t.bind(i18n)
   type TParams = Parameters<typeof originalT>
   i18n.t = (
