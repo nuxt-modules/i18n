@@ -74,7 +74,7 @@ function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cooki
 function resolveRootRedirect(config: string | RootRedirectOptions | undefined) {
   if (!config) return undefined
   return {
-    path: '/' + (isString(config) ? config : config.path),
+    path: '/' + (isString(config) ? config : config.path).replace(/^\//, ''),
     code: (!isString(config) && config.statusCode) || 302
   }
 }
