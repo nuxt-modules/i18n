@@ -1,5 +1,4 @@
 import { toArray } from '../utils'
-import { getLocalizedRouteName as localizeRouteName } from '../runtime/kit/routing'
 
 const join = (...args: (string | undefined)[]) => args.filter(Boolean).join('')
 
@@ -164,8 +163,14 @@ function createLocalizeRouteName(opts: {
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
 }): RouteContext['localizeRouteName'] {
-  return (route, locale, isDefault) =>
-    localizeRouteName(route.name!, locale, isDefault, opts.routesNameSeparator, opts.defaultLocaleRouteNameSuffix)
+  const separator = opts.routesNameSeparator || '___'
+  const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
+  return (route, locale, isDefault) => {
+    // prettier-ignore
+    return !isDefault
+      ? route.name + separator + locale
+      : route.name + separator + locale + separator + defaultSuffix
+  }
 }
 
 /**

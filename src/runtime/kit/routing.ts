@@ -1,9 +1,12 @@
 import { createPathIndexLanguageParser } from '@intlify/utils'
 import type { RouteName, RouteObject } from './types'
 
+const separator = __ROUTE_NAME_SEPARATOR__ || '___'
+const defaultSuffix = __ROUTE_NAME_DEFAULT_SUFFIX__ || 'default'
+export const defaultRouteNameSuffix = separator + defaultSuffix
+
 /**
  * Normalizes {@link RouteName} to string
- * @internal
  */
 export function normalizeRouteName(routeName: RouteName) {
   if (typeof routeName === 'string') return routeName
@@ -12,57 +15,37 @@ export function normalizeRouteName(routeName: RouteName) {
 }
 
 /**
- * Normalizes {@link RouteName} or {@link RouteObject} to string
- * @internal
- */
-export function getRouteName(route: RouteName | RouteObject) {
-  if (typeof route === 'object') return normalizeRouteName(route?.name)
-  return normalizeRouteName(route)
-}
-
-/**
  * Extract route name without localization from {@link RouteName} or {@link RouteObject}
- * @internal
  */
-export function getRouteBaseName(route: RouteName | RouteObject, separator: string) {
-  return getRouteName(route).split(separator)[0]
+export function getRouteBaseName(route: RouteName | RouteObject) {
+  return normalizeRouteName(typeof route === 'object' ? route?.name : route).split(separator)[0]
 }
 
-export function getLocalizedRouteName(
-  routeName: string,
-  locale: string,
-  isDefault: boolean,
-  separator: string = '___',
-  defaultSuffix: string = 'default'
-) {
-  if (isDefault) {
-    return routeName + separator + locale + separator + defaultSuffix
-  }
-  return routeName + separator + locale
+export function getLocalizedRouteName(routeName: string, locale: string, isDefault: boolean) {
+  // prettier-ignore
+  return !isDefault
+    ? routeName + separator + locale
+    : routeName + separator + locale + defaultRouteNameSuffix
 }
 
 const pathLanguageParser = createPathIndexLanguageParser(0)
 export const getLocaleFromRoutePath = (path: string) => pathLanguageParser(path)
-export const getLocaleFromRouteName = (name: string, separator: string = '___') => name.split(separator).at(1) ?? ''
+export const getLocaleFromRouteName = (name: string) => name.split(separator).at(1) ?? ''
 
 function normalizeInput(input: RouteName | RouteObject) {
-  if (typeof input === 'object') {
-    return String(input?.name || input?.path || '')
-  }
-  return String(input)
+  // prettier-ignore
+  return typeof input !== 'object'
+    ? String(input)
+    : String(input?.name || input?.path || '')
 }
 
 /**
- * NOTE: this likely needs to be implemented on the utility function consumer side
- * @internal
+ * Extract locale code from route name or path
  */
-export function createLocaleFromRouteGetter(separator: string = '___') {
-  // extract locale code from route name or path
-  return (route: RouteName | RouteObject) => {
-    const input = normalizeInput(route)
-    if (input[0] === '/') {
-      return getLocaleFromRoutePath(input)
-    }
-    return getLocaleFromRouteName(input, separator)
-  }
+export function getLocaleFromRoute(route: RouteName | RouteObject) {
+  const input = normalizeInput(route)
+  // prettier-ignore
+  return input[0] === '/'
+      ? getLocaleFromRoutePath(input)
+      : getLocaleFromRouteName(input)
 }

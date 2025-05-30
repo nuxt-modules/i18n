@@ -51,7 +51,7 @@ export default defineNuxtPlugin({
       if (ctx.preloaded && __I18N_STRIP_UNUSED__) {
         const unsub = nuxt.$router.beforeResolve(async (to, from) => {
           if (to.path === from.path) return
-          await ctx.loadLocaleMessages(ctx.getLocale())
+          await ctx.loadMessages(ctx.getLocale())
           unsub()
         })
       }

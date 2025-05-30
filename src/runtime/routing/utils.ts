@@ -1,5 +1,5 @@
 import { assign } from '@intlify/shared'
-import { normalizeRouteName, getRouteBaseName as _getRouteBaseName, getLocalizedRouteName } from '#i18n-kit/routing'
+import { normalizeRouteName, getLocalizedRouteName } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, Router, RouteRecordNameGeneric } from 'vue-router'
@@ -16,16 +16,13 @@ export function createLocaleRouteNameGetter(
     return routeName => normalizeRouteName(routeName)
   }
 
-  const localizeRouteName = (name: string, locale: string, isDefault: boolean) =>
-    getLocalizedRouteName(name, locale, isDefault, __ROUTE_NAME_SEPARATOR__, __ROUTE_NAME_DEFAULT_SUFFIX__)
-
   // default locale routes have default suffix
   if (__I18N_STRATEGY__ === 'prefix_and_default') {
-    return (name, locale) => localizeRouteName(normalizeRouteName(name), locale, locale === defaultLocale)
+    return (name, locale) => getLocalizedRouteName(normalizeRouteName(name), locale, locale === defaultLocale)
   }
 
   // routes are localized
-  return (name, locale) => localizeRouteName(normalizeRouteName(name), locale, false)
+  return (name, locale) => getLocalizedRouteName(normalizeRouteName(name), locale, false)
 }
 
 /**
@@ -45,8 +42,7 @@ export function createLocalizedRouteByPathResolver(
      * We work around this by manually prefixing the path and finding the route in `router.options.routes`.
      */
     return (route, locale) => {
-      const restPath = route.path.slice(1)
-      const targetPath = route.path[0] + locale + (restPath && '/' + restPath)
+      const targetPath = '/' + locale + (route.path === '/' ? '' : route.path)
       const _route = router.options.routes.find(r => r.path === targetPath)
 
       if (_route == null) {

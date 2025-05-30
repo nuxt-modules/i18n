@@ -30,8 +30,12 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 /**
  * Resolves a localized variant of the passed route.
  */
-export function localeRoute(common: ComposableContext, route: RouteLocationRaw, locale?: Locale) {
-  return tryResolveRoute(common, route, locale)
+export function localeRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
+  try {
+    return resolveRoute(ctx, route, locale)
+  } catch (_) {
+    return
+  }
 }
 
 /**
@@ -65,17 +69,6 @@ function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: L
 
   // if unable to resolve route try resolving route based on original input
   return ctx.router.resolve(route)
-}
-
-/**
- * Try resolving route and return undefined on failure
- */
-function tryResolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
-  try {
-    return resolveRoute(ctx, route, locale)
-  } catch (_) {
-    return
-  }
 }
 
 /**

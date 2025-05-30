@@ -12,8 +12,7 @@ function createHeadContext(
   config: Required<I18nHeadOptions>,
   locale = ctx.getLocale(),
   locales = ctx.getLocales(),
-  baseUrl = ctx.getBaseUrl(),
-  routingOptions = ctx.getRoutingOptions()
+  baseUrl = ctx.getBaseUrl()
 ): HeadContext {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
   const canonicalQueries = (typeof config.seo === 'object' && config.seo?.canonicalQueries) || []
@@ -28,10 +27,9 @@ function createHeadContext(
     locales,
     baseUrl,
     canonicalQueries,
-    hreflangLinks: routingOptions.hreflangLinks,
-    defaultLocale: routingOptions.defaultLocale,
-    strictSeo: __I18N_STRICT_SEO__,
-    strictCanonicals: __I18N_STRICT_SEO__ || routingOptions.strictCanonicals,
+    hreflangLinks: ctx.routingOptions.hreflangLinks,
+    defaultLocale: ctx.routingOptions.defaultLocale,
+    strictCanonicals: __I18N_STRICT_SEO__ || ctx.routingOptions.strictCanonicals,
     getRouteBaseName: ctx.getRouteBaseName,
     getCurrentRoute: () => ctx.router.currentRoute.value,
     getCurrentLanguage: () => currentLocale.language,
@@ -66,14 +64,14 @@ export function _useLocaleHead(ctx: ComposableContext, options: Required<I18nHea
   if (import.meta.client) {
     const unsub = watch([() => ctx.router.currentRoute.value, () => ctx.getLocale()], () => {
       metaObject.value = _localeHead(createHeadContext(ctx, options))
-      __I18N_STRICT_SEO__ && ctx.getHead()?.patch(metaObject.value)
+      __I18N_STRICT_SEO__ && ctx.head?.patch(metaObject.value)
     })
     if (getCurrentScope()) {
       onScopeDispose(unsub)
     }
   }
 
-  __I18N_STRICT_SEO__ && ctx.getHead()?.patch(metaObject.value)
+  __I18N_STRICT_SEO__ && ctx.head?.patch(metaObject.value)
 
   return metaObject
 }
@@ -83,7 +81,7 @@ export function _useSetI18nParams(
   seo?: SeoAttributesOptions,
   router = ctx.router
 ): (params: I18nRouteMeta) => void {
-  const head = __I18N_STRICT_SEO__ ? ctx.getHead() : useHead({})
+  const head = __I18N_STRICT_SEO__ ? ctx.head : useHead({})
   const evt = __I18N_STRICT_SEO__ && import.meta.server && useRequestEvent()
 
   const _i18nParams = ref({})
@@ -112,17 +110,15 @@ export function _useSetI18nParams(
     onScopeDispose(unsub)
   }
 
-  const metaState = ctx.getMetaState()
   function updateState() {
-    metaState.value = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
-    head?.patch(metaState.value)
+    ctx.metaState = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
+    head?.patch(ctx.metaState)
   }
 
-  const _ctxOptions = ctx.getSeoSettings()
   const ctxOptions = ref({
-    ..._ctxOptions.value,
+    ...ctx.seoSettings,
     key: __I18N_STRICT_SEO__ ? 'key' : 'id',
-    seo: seo ?? _ctxOptions.value.seo
+    seo: seo ?? ctx.seoSettings.seo
   })
 
   return function (params: I18nRouteMeta) {

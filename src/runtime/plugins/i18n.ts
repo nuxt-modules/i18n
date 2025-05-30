@@ -12,8 +12,8 @@ import { createLocaleConfigs } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { createNuxtI18nContext, useLocaleConfigs, useNuxtI18nContext, type NuxtI18nContext } from '../context'
 
-import type { Locale, I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
-import type { LocaleObject, I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
+import type { I18nOptions, Composer, TranslateOptions } from 'vue-i18n'
+import type { I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
 import type { H3EventContext } from 'h3'
 
 export default defineNuxtPlugin({
@@ -24,7 +24,7 @@ export default defineNuxtPlugin({
 
     const nuxt = useNuxtApp()
     const runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-    const defaultLocale: string = getDefaultLocaleForDomain(runtimeI18n.defaultLocale || '')
+    const defaultLocale: string = getDefaultLocaleForDomain() || runtimeI18n.defaultLocale || ''
     if (__MULTI_DOMAIN_LOCALES__) {
       setupMultiDomainLocales(defaultLocale)
     }
@@ -48,7 +48,7 @@ export default defineNuxtPlugin({
     nuxt._nuxtI18nCtx = createNuxtI18nContext(nuxt, i18n, defaultLocale)
     const ctx = useNuxtI18nContext(nuxt)
 
-    nuxt._nuxtI18n = createComposableContext(runtimeI18n)
+    nuxt._nuxtI18n = createComposableContext()
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server && nuxt.ssrContext?.event.context.nuxtI18n) {
       wrapTranslationFunctions(ctx, nuxt.ssrContext?.event.context.nuxtI18n)
@@ -62,11 +62,8 @@ export default defineNuxtPlugin({
     // extend i18n instance
     extendI18n(i18n, {
       extendComposer(composer) {
-        const _locales = ref<Locale[] | LocaleObject[]>(runtimeI18n.locales)
-        composer.locales = computed(() => _locales.value)
-
-        const _localeCodes = ref<Locale[]>(localeCodes)
-        composer.localeCodes = computed(() => _localeCodes.value)
+        composer.locales = computed(() => runtimeI18n.locales)
+        composer.localeCodes = computed(() => localeCodes)
 
         const _baseUrl = ref(ctx.getBaseUrl())
         composer.baseUrl = computed(() => _baseUrl.value)
@@ -83,14 +80,14 @@ export default defineNuxtPlugin({
           await loadAndSetLocale(locale)
           await nuxt.runWithContext(() => navigate(nuxt.$router.currentRoute.value, locale))
         }
-        composer.loadLocaleMessages = ctx.loadLocaleMessages
+        composer.loadLocaleMessages = ctx.loadMessages
 
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = defaultLocale
 
         composer.getBrowserLocale = ctx.getBrowserLocale
-        composer.getLocaleCookie = ctx.getLocaleCookie
-        composer.setLocaleCookie = ctx.setLocaleCookie
+        composer.getLocaleCookie = ctx.getCookieLocale
+        composer.setLocaleCookie = ctx.setCookieLocale
 
         composer.finalizePendingLocaleChange = async () => {
           if (!i18n.__pendingLocale) return
@@ -143,7 +140,7 @@ export default defineNuxtPlugin({
     if (__I18N_STRICT_SEO__) {
       // enable head tag management after most of the i18n setup is done
       nuxt.hook(import.meta.server ? 'app:rendered' : 'app:mounted', () => {
-        _useLocaleHead(nuxt._nuxtI18n, { dir: true, lang: true, seo: runtimeI18n.experimental.strictSeo || false })
+        _useLocaleHead(nuxt._nuxtI18n, { dir: true, lang: true, seo: true })
       })
     }
   }
