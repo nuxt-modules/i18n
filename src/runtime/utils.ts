@@ -190,8 +190,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
     return locale
   }
 
-  const data = { oldLocale, newLocale: locale, initialSetup: ctx.firstAccess, nuxt }
-  // @ts-expect-error context is not typed
+  const data = { oldLocale, newLocale: locale, initialSetup: ctx.firstAccess, context: nuxt }
   let override = (await nuxt.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
   if (override != null && import.meta.dev) {
     console.warn('[nuxt-i18n] Do not return in `i18n:beforeLocaleSwitch`, mutate `data.newLocale` instead.')
