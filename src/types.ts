@@ -360,70 +360,15 @@ export interface I18nHeadMetaInfo {
 export interface I18nPublicRuntimeConfig {
   baseUrl: NuxtI18nOptions['baseUrl']
   rootRedirect: NuxtI18nOptions['rootRedirect']
-
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  multiDomainLocales?: NuxtI18nOptions['multiDomainLocales']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
   domainLocales: { [key: Locale]: { domain: string | undefined } }
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  experimental: NonNullable<NuxtI18nOptions['experimental']>
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
+  /** @internal Overwritten at build time, used to pass generated options to runtime */
   locales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  differentDomains: Required<NuxtI18nOptions>['differentDomains']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  skipSettingLocaleOnNavigate: Required<NuxtI18nOptions>['skipSettingLocaleOnNavigate']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
+  /** @internal Overwritten at build time, used to pass generated options to runtime */
   defaultLocale: Required<NuxtI18nOptions>['defaultLocale']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  defaultDirection: Required<NuxtI18nOptions>['defaultDirection']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
+  /** @internal Overwritten at build time, used to pass generated options to runtime */
+  experimental: NonNullable<NuxtI18nOptions['experimental']>
+  /** @internal Overwritten at build time, used to pass generated options to runtime */
   detectBrowserLanguage: Required<NuxtI18nOptions>['detectBrowserLanguage']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  strategy: Required<NuxtI18nOptions>['strategy']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  routesNameSeparator: Required<NuxtI18nOptions>['routesNameSeparator']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  defaultLocaleRouteNameSuffix: Required<NuxtI18nOptions>['defaultLocaleRouteNameSuffix']
-  /**
-   * Overwritten at build time, used to pass generated options to runtime
-   * @internal
-   */
-  trailingSlash: Required<NuxtI18nOptions>['trailingSlash']
+  /** @internal Overwritten at build time, used to pass generated options to runtime */
+  skipSettingLocaleOnNavigate: Required<NuxtI18nOptions>['skipSettingLocaleOnNavigate']
 }
