@@ -83,16 +83,13 @@ export function useLocaleHead({ dir = true, lang = true, seo = true }: I18nHeadO
     )
   }
   const common = useComposableContext()
-  const settings = common.getSeoSettings()
-  settings.value = { dir, lang, seo }
+  common.seoSettings = { dir, lang, seo }
+  const head = _useLocaleHead(common, common.seoSettings as Required<I18nHeadOptions>)
 
-  const head = _useLocaleHead(common, settings.value as Required<I18nHeadOptions>)
-
-  const metaState = common.getMetaState()
   if (import.meta.client) {
-    watch(head, () => (metaState.value = head.value))
+    watch(head, () => (common.metaState = head.value))
   }
-  metaState.value = head.value
+  common.metaState = head.value
 
   return head
 }

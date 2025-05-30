@@ -1,6 +1,6 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
-import { navigateTo, ref, useHead, useNuxtApp, useRouter, type Ref } from '#imports'
+import { navigateTo, useHead, useNuxtApp, useRouter } from '#imports'
 import { localeCodes, vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer } from './compatibility'
 import { getDefaultLocaleForDomain } from './domain'
@@ -36,16 +36,16 @@ import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './typ
  */
 export type ComposableContext = {
   router: Router
-  getRoutingOptions: () => {
+  routingOptions: {
     defaultLocale: string
     /** Use `canonicalQueries` for alternate links */
     strictCanonicals: boolean
     /** Enable/disable hreflangLinks */
     hreflangLinks: boolean
   }
-  getHead: () => ReturnType<typeof useHead>
-  getMetaState: () => Ref<Required<I18nHeadMetaInfo>>
-  getSeoSettings: () => Ref<I18nHeadOptions>
+  head: ReturnType<typeof useHead>
+  metaState: Required<I18nHeadMetaInfo>
+  seoSettings: I18nHeadOptions
   getLocale: () => string
   getLocales: () => LocaleObject[]
   getBaseUrl: () => string
@@ -111,13 +111,6 @@ export function createComposableContext(): ComposableContext {
     return route
   }
 
-  const head = useHead({})
-  const metaState = ref({ htmlAttrs: {}, meta: [], link: [] })
-  const seoSettings = ref<I18nHeadOptions>({
-    dir: __I18N_STRICT_SEO__,
-    lang: __I18N_STRICT_SEO__,
-    seo: __I18N_STRICT_SEO__ && ctx.config.experimental.strictSeo
-  })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const slp: Record<string, Record<string, string> | false> = import.meta.client
     ? JSON.parse(document.querySelector(`[data-nuxt-i18n-slp="${nuxtApp._id}"]`)?.textContent ?? '{}')
@@ -125,15 +118,19 @@ export function createComposableContext(): ComposableContext {
 
   const composableCtx: ComposableContext = {
     router,
-    getHead: () => head,
-    getMetaState: () => metaState,
-    getSeoSettings: () => seoSettings,
+    head: useHead({}),
+    metaState: { htmlAttrs: {}, meta: [], link: [] },
+    seoSettings: {
+      dir: __I18N_STRICT_SEO__,
+      lang: __I18N_STRICT_SEO__,
+      seo: __I18N_STRICT_SEO__
+    },
     getSLP: () => slp,
-    getRoutingOptions: () => ({
+    routingOptions: {
       defaultLocale: defaultLocale,
       strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__)
-    }),
+    },
     getLocale: ctx.getLocale,
     getLocales: ctx.getLocales,
     getBaseUrl: ctx.getBaseUrl,
