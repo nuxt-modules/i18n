@@ -304,6 +304,8 @@ export function createBaseUrlGetter(
   getDomainFromLocale: (locale: string) => string | undefined
 ): () => string {
   if (isFunction(baseUrl)) {
+    import.meta.dev &&
+      console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
     return (): string => baseUrl(nuxt)
   }
 
