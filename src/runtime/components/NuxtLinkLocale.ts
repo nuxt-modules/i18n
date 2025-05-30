@@ -2,14 +2,11 @@
 import { isObject } from '@intlify/shared'
 import { useLocaleRoute, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
-import { defineNuxtLink } from '#imports'
+import { NuxtLink } from '#components'
 import { hasProtocol } from 'ufo'
-import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
 
 import type { PropType } from 'vue'
 import type { NuxtLinkProps } from 'nuxt/app'
-
-const NuxtLinkLocale = defineNuxtLink({ ...nuxtLinkDefaults, componentName: 'NuxtLinkLocale' })
 
 type NuxtLinkLocaleProps = Omit<NuxtLinkProps, 'to'> & {
   to?: import('vue-router').RouteLocationNamedI18n
@@ -18,9 +15,8 @@ type NuxtLinkLocaleProps = Omit<NuxtLinkProps, 'to'> & {
 
 export default defineComponent<NuxtLinkLocaleProps>({
   name: 'NuxtLinkLocale',
-
   props: {
-    ...NuxtLinkLocale.props,
+    ...NuxtLink.props,
     locale: {
       type: String as PropType<Locale>,
       default: undefined,
@@ -94,6 +90,6 @@ export default defineComponent<NuxtLinkLocaleProps>({
       return _props as NuxtLinkProps
     }
 
-    return () => h(NuxtLinkLocale, getNuxtLinkProps(), slots.default)
+    return () => h(NuxtLink, getNuxtLinkProps(), slots.default)
   }
 })
