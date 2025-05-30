@@ -20,10 +20,10 @@ import type { Locale, I18nOptions } from 'vue-i18n'
 import type { NuxtApp } from '#app'
 import type { RouteLocationPathRaw, Router, RouteRecordNameGeneric } from 'vue-router'
 import type {
+  BaseUrlResolveHandler,
   DetectBrowserLanguageOptions,
   I18nHeadMetaInfo,
   I18nHeadOptions,
-  I18nPublicRuntimeConfig,
   LocaleObject
 } from '#internal-i18n-types'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
@@ -299,18 +299,17 @@ export function prefixable(currentLocale: string, defaultLocale: string): boolea
  */
 export function createBaseUrlGetter(
   nuxt: NuxtApp,
+  baseUrl: string | BaseUrlResolveHandler<unknown> | undefined,
+  defaultLocale: string,
   getDomainFromLocale: (locale: string) => string | undefined
 ): () => string {
-  const { baseUrl, defaultLocale } = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
-
   if (isFunction(baseUrl)) {
     return (): string => baseUrl(nuxt)
   }
 
-  const locale = isFunction(defaultLocale) ? /*#__PURE__*/ (defaultLocale as unknown as () => string)() : defaultLocale
   return (): string => {
-    if (__DIFFERENT_DOMAINS__ && locale) {
-      return (getDomainFromLocale(locale) || baseUrl) ?? ''
+    if (__DIFFERENT_DOMAINS__ && defaultLocale) {
+      return (getDomainFromLocale(defaultLocale) || baseUrl) ?? ''
     }
 
     return baseUrl ?? ''

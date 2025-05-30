@@ -93,7 +93,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
   const getDomainFromLocale = createDomainFromLocaleGetter(runtimeI18n.domainLocales)
-  const baseUrl = createBaseUrlGetter(nuxt, getDomainFromLocale)
+  const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
   const isSupportedLocale = (locale: string) => localeCodes.includes(locale)
 
   const ctx: NuxtI18nContext = {
