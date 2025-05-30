@@ -42,8 +42,7 @@ export function createLocalizedRouteByPathResolver(
      * We work around this by manually prefixing the path and finding the route in `router.options.routes`.
      */
     return (route, locale) => {
-      const restPath = route.path.slice(1)
-      const targetPath = route.path[0] + locale + (restPath && '/' + restPath)
+      const targetPath = '/' + locale + (route.path === '/' ? '' : route.path)
       const _route = router.options.routes.find(r => r.path === targetPath)
 
       if (_route == null) {
