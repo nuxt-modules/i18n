@@ -238,10 +238,6 @@ export type NuxtI18nOptions<
    *
    * By default VueRouter's base URL will be used and only if that is not available, fallback URL will be used.
    *
-   * Can also be a function (will be passed a Nuxt Context as a parameter) that returns a string.
-   *
-   * Useful to make base URL dynamic based on request headers.
-   *
    * @default ''
    */
   baseUrl?: string | BaseUrlResolveHandler<Context>
@@ -308,6 +304,7 @@ export interface LocaleObject<T = Locale> {
 
 /**
  * @public
+ * @deprecated Configuring baseUrl as a function is deprecated and will be removed in the v11.
  */
 export type BaseUrlResolveHandler<Context = unknown> = (context: Context) => string
 
