@@ -63,6 +63,7 @@ export type NuxtI18nContext = {
   loadMessages: (locale: Locale) => Promise<void>
   _loadMessagesFromClient: (locale: Locale) => Promise<void>
   _loadMessagesFromServer: (locale: Locale) => Promise<void>
+  isSupportedLocale: (locale: string) => boolean
 }
 
 function createI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {
@@ -96,7 +97,6 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
   const getDomainFromLocale = createDomainFromLocaleGetter(runtimeI18n.domainLocales)
   const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
-  const isSupportedLocale = (locale: string) => localeCodes.includes(locale)
 
   const ctx: NuxtI18nContext = {
     vueI18n,
@@ -106,11 +106,12 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     detection: { ...detectBrowserLanguage, enabled: !!runtimeI18n.detectBrowserLanguage },
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
     dynamicResourcesSSG: !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)),
+    isSupportedLocale: (locale: string) => localeCodes.includes(locale),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: async (locale: string) => {
       const oldLocale = ctx.getLocale()
-      if (locale === oldLocale || !isSupportedLocale(locale)) return
+      if (locale === oldLocale || !ctx.isSupportedLocale(locale)) return
 
       if (isRef(i18n.locale)) {
         i18n.locale.value = locale
@@ -121,7 +122,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       await nuxt.callHook('i18n:localeSwitched', { newLocale: locale, oldLocale })
     },
     setLocaleSuspend: async (locale: string) => {
-      if (!isSupportedLocale(locale)) return
+      if (!ctx.isSupportedLocale(locale)) return
 
       ctx.vueI18n.__pendingLocale = locale
       ctx.vueI18n.__pendingLocalePromise = new Promise(resolve => {
@@ -142,15 +143,15 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     getDomainLocale: createDomainLocaleGetter(normalizedLocales),
     getRouteLocale: route => {
       const locale = getLocaleFromRoute(route)
-      return isSupportedLocale(locale) ? locale : ''
+      return ctx.isSupportedLocale(locale) ? locale : ''
     },
     getCookieLocale: () => {
-      if (ctx.detection.useCookie && isSupportedLocale(localeCookie.value || '')) {
+      if (ctx.detection.useCookie && ctx.isSupportedLocale(localeCookie.value || '')) {
         return localeCookie.value
       }
     },
     setCookieLocale: (locale: string) => {
-      if (ctx.detection.useCookie && isSupportedLocale(locale)) {
+      if (ctx.detection.useCookie && ctx.isSupportedLocale(locale)) {
         localeCookie.value = locale
       }
     },

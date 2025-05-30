@@ -48,7 +48,7 @@ export function createDomainLocaleGetter(locales: LocaleObject[]): (path: string
 export function createDomainFromLocaleGetter(
   domainLocales: Record<string, { domain: string | undefined }>
 ): (locale: Locale) => string | undefined {
-  return (locale: Locale): string | undefined => {
+  return locale => {
     const host = getHost()
     const lang = normalizedLocales.find(x => x.code === locale)
     // lookup the `differentDomain` origin associated with given locale.

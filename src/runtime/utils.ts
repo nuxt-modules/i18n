@@ -1,7 +1,7 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 import { navigateTo, useHead, useNuxtApp, useRouter } from '#imports'
-import { localeCodes, vueI18nConfigs } from '#build/i18n.options.mjs'
+import { vueI18nConfigs } from '#build/i18n.options.mjs'
 import { getComposer } from './compatibility'
 import { getDefaultLocaleForDomain } from './domain'
 import { loadVueI18nOptions } from './shared/messages'
@@ -73,7 +73,7 @@ export function useComposableContext(): ComposableContext {
   }
   return context
 }
-
+const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
 export function createComposableContext(): ComposableContext {
   const router = useRouter()
   const ctx = useNuxtI18nContext()
@@ -103,11 +103,11 @@ export function createComposableContext(): ComposableContext {
       return route
     }
 
-    if (!__DIFFERENT_DOMAINS__ && prefixable(locale, defaultLocale)) {
+    if (prefixable(locale, defaultLocale)) {
       route.path = '/' + locale + route.path
     }
 
-    route.path = (__TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash)(route.path, true)
+    route.path = formatTrailingSlash(route.path, true)
     return route
   }
 
@@ -197,7 +197,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   }
   override ??= data.newLocale
 
-  if (override && localeCodes.includes(override)) {
+  if (ctx.isSupportedLocale(override)) {
     locale = override
   }
 
@@ -287,6 +287,7 @@ export function navigate(to: CompatRoute, locale: string) {
 
 export function prefixable(currentLocale: string, defaultLocale: string): boolean {
   return (
+    !__DIFFERENT_DOMAINS__ &&
     __I18N_ROUTING__ &&
     // only prefix default locale with strategy prefix
     (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
