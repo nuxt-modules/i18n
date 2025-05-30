@@ -80,7 +80,7 @@ export default defineNuxtPlugin({
           await loadAndSetLocale(locale)
           await nuxt.runWithContext(() => navigate(nuxt.$router.currentRoute.value, locale))
         }
-        composer.loadLocaleMessages = ctx.loadLocaleMessages
+        composer.loadLocaleMessages = ctx.loadMessages
 
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = defaultLocale

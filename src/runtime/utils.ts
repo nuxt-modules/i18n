@@ -202,7 +202,7 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
     locale = override
   }
 
-  await ctx.loadLocaleMessages(locale)
+  await ctx.loadMessages(locale)
   await ctx.setLocaleSuspend(locale)
 
   return locale
@@ -350,7 +350,7 @@ export function createNuxtI18nDev() {
         composer.setLocaleMessage(k, opts?.messages[k] ?? {})
       }
 
-      await ctx.loadLocaleMessages(k)
+      await ctx.loadMessages(k)
     }
 
     // skip vue-i18n config properties if locale is passed (locale file HMR)
