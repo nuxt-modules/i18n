@@ -58,7 +58,7 @@ const isModule = (val: unknown): val is { default: unknown } => toTypeString(val
 /**
  * Check if the value is a module and handle edge case server-side
  */
-const isResolvedModule = (val: unknown): val is { default: unknown } => import.meta.server || isModule(val)
+const isResolvedModule = (val: unknown): val is { default: unknown } => isModule(val) || import.meta.server
 
 /**
  * Get locale messages from loader
