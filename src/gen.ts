@@ -176,7 +176,7 @@ export function generateI18nTypes(
   const legacyTypes = options.types === 'legacy'
   const i18nType = legacyTypes ? 'VueI18n' : 'Composer'
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
-  const resolvedLocaleType = isString(generatedLocales) ? 'Locale[]' : 'LocaleObject[]'
+  const resolvedLocaleType = isString(generatedLocales.at(0)) ? 'Locale[]' : 'LocaleObject[]'
   const narrowedLocaleType = normalizedLocales.map(x => JSON.stringify(x.code)).join(' | ') || 'string'
 
   const globalTranslationTypes = `
