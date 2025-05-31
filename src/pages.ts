@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { addTemplate } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
@@ -19,8 +18,6 @@ import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
-
-const debug = createDebug('@nuxtjs/i18n:pages')
 
 export type AnalyzedNuxtPageMeta = {
   /**
@@ -49,7 +46,6 @@ export async function setupPages({ localeCodes, options, normalizedLocales }: I1
 
   let includeUnprefixedFallback = !nuxt.options.ssr
   nuxt.hook('nitro:init', () => {
-    debug('enable includeUprefixedFallback')
     includeUnprefixedFallback = options.strategy !== 'prefix'
   })
 
@@ -61,7 +57,6 @@ export async function setupPages({ localeCodes, options, normalizedLocales }: I1
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async pages => {
-      debug('pages (before)', pages)
       const ctx: NuxtPageAnalyzeContext = {
         stack: [],
         config: options.pages,
@@ -96,8 +91,6 @@ export async function setupPages({ localeCodes, options, normalizedLocales }: I1
         pages.length = 0
         pages.unshift(...localizedPages)
       }
-
-      debug('pages (after)', pages)
     }
   )
 }

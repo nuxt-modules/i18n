@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { resolve } from 'pathe'
@@ -21,8 +20,6 @@ import { resolveI18nDir } from './layers'
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
 import type { I18nNuxtContext } from './context'
-
-const debug = createDebug('@nuxtjs/i18n:nitro')
 
 export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
@@ -69,7 +66,6 @@ export { localeDetector }`
     }
 
     nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
-    debug('nitro.replace', nitroConfig.replace)
   })
 
   // `defineI18nLocale`, `defineI18nConfig`

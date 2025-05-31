@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import { useNuxt } from '@nuxt/kit'
 import { getLayerI18n, mergeConfigLocales, resolveVueI18nConfigInfo, getLocaleFiles, logger } from './utils'
 
@@ -9,8 +8,6 @@ import type { LocaleConfig } from './utils'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { FileMeta, LocaleObject, NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
-
-const debug = createDebug('@nuxtjs/i18n:layers')
 
 export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
   const project = nuxt.options._layers[0]
@@ -97,7 +94,6 @@ export function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
   configs.unshift(...installModuleConfigMap.values())
 
-  debug('merged locales', configs)
   ctx.options.locales = mergeConfigLocales(configs)
 }
 

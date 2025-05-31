@@ -1,10 +1,9 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { debug, logger } from '../utils'
+import { logger } from '../utils'
 import { checkLayerOptions } from '../layers'
 
 export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
-  debug('options', options)
   checkLayerOptions(options, nuxt)
 
   /**

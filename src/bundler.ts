@@ -1,12 +1,10 @@
-import createDebug from 'debug'
-import { extendViteConfig, addWebpackPlugin, addBuildPlugin, addTemplate, addRspackPlugin, useNuxt } from '@nuxt/kit'
+import { extendViteConfig, addWebpackPlugin, addBuildPlugin, addRspackPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
-import { toArray } from './utils'
+import { logger, toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { HeistPlugin } from './transform/heist'
-import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
@@ -21,28 +19,7 @@ import {
 } from './constants'
 import { version } from '../package.json'
 
-const debug = createDebug('@nuxtjs/i18n:bundler')
-
 export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  addTemplate({
-    write: true,
-    filename: 'nuxt-i18n-logger.mjs',
-    getContents() {
-      if (!ctx.options.debug) {
-        return `export function createLogger() {}`
-      }
-
-      return `
-import { createConsola } from 'consola'
-const debugLogger = createConsola({ level: ${ctx.options.debug === 'verbose' ? 999 : 4} }).withTag('i18n')
-export function createLogger(label) {
-  return debugLogger.withTag(label)
-}`
-    }
-  })
-
-  nuxt.options.alias[asI18nVirtual('logger')] = ctx.resolver.resolve(nuxt.options.buildDir, './nuxt-i18n-logger.mjs')
-
   /**
    * shared plugins (nuxt/nitro)
    */
@@ -92,7 +69,7 @@ export function createLogger(label) {
       const webpack = await import('webpack').then(m => m.default || m)
       addWebpackPlugin(new webpack.DefinePlugin(defineConfig))
     } catch (e: unknown) {
-      debug((e as Error).message)
+      logger.error((e as Error).message)
     }
   }
 
@@ -104,7 +81,7 @@ export function createLogger(label) {
       const { rspack } = await import('@rspack/core')
       addRspackPlugin(new rspack.DefinePlugin(defineConfig))
     } catch (e: unknown) {
-      debug((e as Error).message)
+      logger.error((e as Error).message)
     }
   }
 
@@ -113,7 +90,6 @@ export function createLogger(label) {
    */
   extendViteConfig(config => {
     config.define = Object.assign({}, config.define, defineConfig)
-    debug('vite.config.define', config.define)
   })
 }
 
@@ -122,8 +98,6 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   const common = {
-    __DEBUG__: String(!!options.debug),
-    __TEST__: String(!!options.debug),
     __IS_SSR__: String(nuxt.options.ssr),
     __IS_SSG__: String(nuxt.options._generate),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),

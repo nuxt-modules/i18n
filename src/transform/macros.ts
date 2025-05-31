@@ -6,7 +6,6 @@
  * - license: MIT
  */
 
-import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -14,8 +13,6 @@ import { VIRTUAL_PREFIX_HEX, isVue } from './utils'
 import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from '../constants'
 
 import type { BundlerPluginOptions } from './utils'
-
-const debug = createDebug('@nuxtjs/i18n:transform:macros')
 
 const I18N_MACRO_FN_RE = new RegExp(`\\b${NUXT_I18N_COMPOSABLE_DEFINE_ROUTE}\\s*\\(\\s*`)
 
@@ -42,9 +39,7 @@ export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
         filter: {
           code: { include: I18N_MACRO_FN_RE }
         },
-        handler(code, id) {
-          debug('transform', id)
-
+        handler(code) {
           const parsed = parseSFC(code, { sourceMap: false })
           // only transform <script>
           const script = parsed.descriptor.scriptSetup ?? parsed.descriptor.script
@@ -66,9 +61,6 @@ export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
           }
 
           if (s.hasChanged()) {
-            debug('transformed: id -> ', id)
-            debug('transformed: code -> ', s.toString())
-
             return {
               code: s.toString(),
               map: options.sourcemap ? s.generateMap({ hires: true }) : undefined

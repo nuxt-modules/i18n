@@ -1,5 +1,4 @@
 import { directoryToURL, resolveModule } from '@nuxt/kit'
-import createDebug from 'debug'
 import {
   VUE_I18N_PKG,
   SHARED_PKG,
@@ -14,8 +13,6 @@ import {
 
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from './context'
-
-const debug = createDebug('@nuxtjs/i18n:alias')
 
 export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt) {
   const modules = {
@@ -40,6 +37,5 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
     if (!module) throw new Error(`Could not resolve module "${moduleFile}"`)
     nuxt.options.alias[moduleName] = module
     nuxt.options.build.transpile.push(moduleName)
-    debug(`${moduleName} alias`, nuxt.options.alias[moduleName])
   }
 }
