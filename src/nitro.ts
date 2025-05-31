@@ -92,13 +92,13 @@ export { localeDetector }`
 
   // `@intlify/utils/h3`
   const h3UtilsExports = await resolveModuleExportNames(UTILS_H3_PKG, { url: import.meta.url })
-  addServerImports([
-    ...h3UtilsExports.map(key => ({
+  addServerImports(
+    h3UtilsExports.map(key => ({
       name: key,
       as: key,
       from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
     }))
-  ])
+  )
 
   // add nitro plugin
   addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))

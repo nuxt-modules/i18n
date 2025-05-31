@@ -1,7 +1,8 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { debug, filterLocales, getNormalizedLocales, mergeI18nModules, resolveLocales } from '../utils'
+import { isString } from '@intlify/shared'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from '../layers'
+import { debug, filterLocales, mergeI18nModules, resolveLocales } from '../utils'
 
 export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
@@ -14,7 +15,7 @@ export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * resolve locale info
    */
-  ctx.normalizedLocales = getNormalizedLocales(ctx.options.locales)
+  ctx.normalizedLocales = ctx.options.locales.map(x => (isString(x) ? { code: x, language: x } : x))
   ctx.localeCodes = ctx.normalizedLocales.map(locale => locale.code)
   ctx.localeInfo = resolveLocales(nuxt.options.srcDir, ctx.normalizedLocales)
   debug('localeInfo', ctx.localeInfo)

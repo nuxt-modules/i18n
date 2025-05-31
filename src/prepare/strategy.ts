@@ -1,9 +1,9 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
 
-export function prepareStrategy({ options, normalizedLocales }: I18nNuxtContext, nuxt: Nuxt) {
+export function prepareStrategy({ options, localeCodes }: I18nNuxtContext, nuxt: Nuxt) {
   if (options.strategy === 'prefix' && nuxt.options._generate) {
-    const localizedEntryPages = normalizedLocales.map(x => ['/', x.code].join(''))
+    const localizedEntryPages = localeCodes.map(x => '/' + x)
     nuxt.hook('nitro:config', config => {
       config.prerender ??= {}
 

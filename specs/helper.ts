@@ -189,7 +189,7 @@ export async function setServerRuntimeConfig(env: Record<string, unknown>, skipR
     if (restored) return
 
     restored = true
-    await await updateProcessRuntimeConfig(ctx, stored)
+    await updateProcessRuntimeConfig(ctx, stored)
   }
 
   if (!skipRestore) {

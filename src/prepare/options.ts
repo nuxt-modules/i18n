@@ -1,6 +1,6 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { debug, formatMessage, logger } from '../utils'
+import { debug, logger } from '../utils'
 import { checkLayerOptions } from '../layers'
 
 export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
@@ -12,10 +12,8 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
    */
   if (options.bundle.compositionOnly && options.types === 'legacy') {
     throw new Error(
-      formatMessage(
-        '`bundle.compositionOnly` option and `types` option are conflicting: ' +
-          `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
-      )
+      '[nuxt-i18n] `bundle.compositionOnly` option and `types` option are conflicting: ' +
+        `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
     )
   }
 

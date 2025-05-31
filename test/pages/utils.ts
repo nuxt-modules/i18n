@@ -3,7 +3,11 @@ import type { NuxtPage } from '@nuxt/schema'
 
 import type { MarkRequired } from 'ts-essentials'
 import type { LocaleObject } from '../../src/types'
-import type { AnalyzedNuxtPageMeta, NuxtPageAnalyzeContext } from '../../src/pages'
+import type { AnalyzedNuxtPageMeta } from '../../src/pages'
+import { isString } from '@intlify/shared'
+
+export const getNormalizedLocales = (locales: string[] | LocaleObject[] = []): LocaleObject[] =>
+  locales.map(x => (isString(x) ? { code: x, language: x } : x))
 
 export function getNuxtOptions(
   pages: Required<NuxtI18nOptions>['pages'],

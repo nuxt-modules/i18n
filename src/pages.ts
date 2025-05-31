@@ -5,7 +5,6 @@ import { isString } from '@intlify/shared'
 import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
 import { walk } from 'estree-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { formatMessage, getNormalizedLocales } from './utils'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
 import { resolve, parse as parsePath, dirname } from 'pathe'
@@ -31,7 +30,7 @@ export type AnalyzedNuxtPageMeta = {
   name?: string
 }
 
-export type NuxtPageAnalyzeContext = {
+type NuxtPageAnalyzeContext = {
   /**
    * Array of paths to track current route depth
    */
@@ -45,7 +44,7 @@ type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   children?: NarrowedNuxtPage[]
 }
 
-export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt: Nuxt) {
+export async function setupPages({ localeCodes, options, normalizedLocales }: I18nNuxtContext, nuxt: Nuxt) {
   if (!localeCodes.length) return
 
   let includeUnprefixedFallback = !nuxt.options.ssr
@@ -82,7 +81,7 @@ export async function setupPages({ localeCodes, options }: I18nNuxtContext, nuxt
       const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
         ...options,
         includeUnprefixedFallback,
-        locales: getNormalizedLocales(options.locales),
+        locales: normalizedLocales,
         optionsResolver: getRouteOptionsResolver(ctx, options)
       })
 
@@ -273,7 +272,7 @@ function getRouteFromConfig(
   const pageMeta = ctx.pages.get(route.file!)
 
   if (pageMeta == null) {
-    console.warn(formatMessage(`No custom route config found for ${route.path}`))
+    console.warn(`[nuxt-i18n] No custom route config found for ${route.path}`)
     return undefined
   }
 
@@ -287,25 +286,10 @@ function getRouteFromConfig(
   }
 }
 
-function getRouteFromMacro(
-  _ctx: NuxtPageAnalyzeContext,
-  route: NuxtPage,
-  localeCodes: string[]
+function getRouteFromResource(
+  localeCodes: string[],
+  resolved: ComputedRouteOptions | I18nRoute | false | undefined
 ): ComputedRouteOptions | false | undefined {
-  const resolved = readComponent(route.file!)
-  if (!resolved) return resolved
-  return {
-    paths: resolved.paths ?? {},
-    locales: resolved?.locales || localeCodes
-  }
-}
-
-function getRouteFromMeta(
-  _ctx: NuxtPageAnalyzeContext,
-  route: NuxtPage,
-  localeCodes: string[]
-): ComputedRouteOptions | false | undefined {
-  const resolved = route.meta?.i18n as I18nRoute | false | undefined
   if (!resolved) return resolved
   return {
     paths: (resolved.paths ?? {}) as Record<string, string>,
@@ -321,12 +305,13 @@ function getRouteOptions(
   mode: 'config' | 'page' | 'meta' = 'config'
 ) {
   let resolvedOptions
-  if (mode === 'meta') {
-    resolvedOptions = getRouteFromMeta(ctx, route, localeCodes)
-  } else if (mode === 'page') {
-    resolvedOptions = getRouteFromMacro(ctx, route, localeCodes)
-  } else {
+  if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
+  } else {
+    resolvedOptions = getRouteFromResource(
+      localeCodes,
+      mode === 'page' ? readComponent(route.file!) : (route.meta?.i18n as I18nRoute | false | undefined)
+    )
   }
 
   // routing disabled
@@ -397,7 +382,7 @@ function readComponent(target: string) {
       return evalValue(extract)
     }
   } catch (e: unknown) {
-    console.warn(formatMessage(`Couldn't read component data at ${target}: (${(e as Error).message})`))
+    console.warn(`[nuxt-i18n] Couldn't read component data at ${target}: (${(e as Error).message})`)
   }
 
   return undefined
@@ -410,20 +395,20 @@ function nodeNameOrValue(val: PrivateName | Expression, name: string) {
 function verifyObjectValue(properties: ObjectExpression['properties']) {
   for (const prop of properties) {
     if (prop.type !== 'ObjectProperty') {
-      console.warn(formatMessage(`'defineI18nRoute' requires an object as argument`))
+      console.warn(`[nuxt-i18n] 'defineI18nRoute' requires an object as argument`)
       return false
     }
 
     if (nodeNameOrValue(prop.key, 'locales')) {
       if (prop.value.type !== 'ArrayExpression' || !verifyLocalesArrayExpression(prop.value.elements)) {
-        console.warn(formatMessage(`expected 'locale' to be an array`))
+        console.warn(`[nuxt-i18n] expected 'locale' to be an array`)
         return false
       }
     }
 
     if (nodeNameOrValue(prop.key, 'paths')) {
       if (prop.value.type !== 'ObjectExpression' || !verifyPathsObjectExpress(prop.value.properties)) {
-        console.warn(formatMessage(`expected 'paths' to be an object`))
+        console.warn(`[nuxt-i18n] expected 'paths' to be an object`)
         return false
       }
     }
@@ -435,17 +420,17 @@ function verifyObjectValue(properties: ObjectExpression['properties']) {
 function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
   for (const prop of properties) {
     if (prop.type !== 'ObjectProperty') {
-      console.warn(formatMessage(`'paths' is required object`))
+      console.warn(`[nuxt-i18n] 'paths' is required object`)
       return false
     }
 
     if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
-      console.warn(formatMessage(`expected 'paths.${prop.key.name}' to be a string literal`))
+      console.warn(`[nuxt-i18n] expected 'paths.${prop.key.name}' to be a string literal`)
       return false
     }
 
     if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
-      console.warn(formatMessage(`expected 'paths.${prop.key.value}' to be a string literal`))
+      console.warn(`[nuxt-i18n] expected 'paths.${prop.key.value}' to be a string literal`)
       return false
     }
   }
@@ -456,7 +441,7 @@ function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
 function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
   for (const element of elements) {
     if (element?.type !== 'StringLiteral') {
-      console.warn(formatMessage(`required 'locales' value string literal`))
+      console.warn(`[nuxt-i18n] required 'locales' value string literal`)
       return false
     }
   }
@@ -467,8 +452,8 @@ function evalValue(value: string) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, @typescript-eslint/no-unsafe-call
     return new Function(`return (${value})`)() as ComputedRouteOptions | false
-  } catch (_e) {
-    console.error(formatMessage(`Cannot evaluate value: ${value}`))
+  } catch {
+    console.error(`[nuxt-i18n] Cannot evaluate value: ${value}`)
     return
   }
 }
