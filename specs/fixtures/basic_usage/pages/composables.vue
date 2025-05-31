@@ -18,7 +18,7 @@ const metaTestEntries = computed(() => [
 
 useHead(() => ({
   htmlAttrs: {
-    ...((localeHead && localeHead.value.htmlAttrs) || {})
+    ...(localeHead && localeHead.value.htmlAttrs)
   },
   link: [...((localeHead && localeHead.value.link) || [])],
   meta: [...((localeHead && localeHead.value.meta) || []), ...metaTestEntries.value]

@@ -18,7 +18,7 @@ import { reactive, ref, unref } from 'vue'
 import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
-import { getNormalizedLocales } from '../src/utils'
+import { getNormalizedLocales } from './pages/utils'
 import type { NuxtPage } from 'nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
 import { LocalizableRoute } from '../src/kit/gen'
@@ -49,14 +49,14 @@ function initComposableOptions(router: Router): ComposableContext {
 
   const getLocalizedRouteName = (name: RouteRecordNameGeneric | null, locale: string) =>
     createLocaleRouteNameGetter(routingOptions.defaultLocale)(name, locale)
-  const { differentDomains, routesNameSeparator, defaultLocale, trailingSlash, defaultDirection } = routingOptions
+  const { differentDomains, defaultLocale, trailingSlash, defaultDirection } = routingOptions
 
   // const getDomainFromLocale = (locale: string) => undefined
   const routeByPathResolver = (input: RouteLikeWithPath, locale: string) =>
     createLocalizedRouteByPathResolver(router)(input, locale)
 
   function getRouteBaseName(route: RouteRecordNameGeneric | RouteLocationGenericPath | null) {
-    return _getRouteBaseName(route, routesNameSeparator)
+    return _getRouteBaseName(route)
   }
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
@@ -93,13 +93,11 @@ function initComposableOptions(router: Router): ComposableContext {
 
   return {
     router,
-    getRoutingOptions: () => {
-      return {
-        ...routingOptions,
-        defaultDirection: routingOptions.defaultDirection,
-        strictCanonicals: true,
-        hreflangLinks: true
-      }
+    routingOptions: {
+      ...routingOptions,
+      // defaultDirection: routingOptions.defaultDirection,
+      strictCanonicals: true,
+      hreflangLinks: true
     },
     getLocale: () => unref(i18nMock.locale),
     getLocales: () => unref(i18nMock.locales),
@@ -146,7 +144,7 @@ async function loadFixtureAndRoutes() {
   i18nMock.baseUrl.value = String(nuxt.options.i18n.baseUrl)
   async function getPages() {
     try {
-      return await new Promise((res, err) => {
+      return await new Promise(res => {
         nuxt.hook('pages:resolved', pages => res(pages))
         buildNuxt(nuxt)
       })

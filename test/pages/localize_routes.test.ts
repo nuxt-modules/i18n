@@ -1,9 +1,8 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
-import { getNuxtOptions } from './utils'
+import { getNormalizedLocales, getNuxtOptions } from './utils'
 import { localizeRoutes } from '../../src/routing'
-import { getNormalizedLocales } from '../../src/utils'
 import { setupMultiDomainLocales } from '../../src/runtime/domain'
 import type { NuxtPage } from '@nuxt/schema'
 import type { LocaleObject } from '../../src/types'

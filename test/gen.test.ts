@@ -1,5 +1,6 @@
 import { generateLoaderOptions } from '../src/gen'
-import { getNormalizedLocales, resolveLocales, resolveRelativeLocales, resolveVueI18nConfigInfo } from '../src/utils'
+import { getNormalizedLocales } from './pages/utils'
+import { resolveLocales, resolveRelativeLocales, resolveVueI18nConfigInfo } from '../src/utils'
 import { vi, beforeEach, afterEach, test, expect } from 'vitest'
 import { parse } from 'pathe'
 
