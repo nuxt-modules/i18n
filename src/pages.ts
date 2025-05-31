@@ -30,7 +30,7 @@ export type AnalyzedNuxtPageMeta = {
   name?: string
 }
 
-export type NuxtPageAnalyzeContext = {
+type NuxtPageAnalyzeContext = {
   /**
    * Array of paths to track current route depth
    */
