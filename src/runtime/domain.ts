@@ -4,7 +4,7 @@ import { normalizedLocales } from '#build/i18n.options.mjs'
 import { defaultRouteNameSuffix, getLocaleFromRouteName, getLocaleFromRoutePath } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
-import type { LocaleObject } from '#internal-i18n-types'
+import type { LocaleObject, NormalizedLocale } from '#internal-i18n-types'
 import type { Router } from 'vue-router'
 
 const getHost = (): string => useRequestURL({ xForwardedHost: true }).host
@@ -22,7 +22,7 @@ function filterMatchingDomainsLocales(locales: LocaleObject[], host: string): Lo
   return locales.filter(locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host))
 }
 
-export function createDomainLocaleGetter(locales: LocaleObject[]): (path: string) => string | undefined {
+export function createDomainLocaleGetter(locales: NormalizedLocale[]): (path: string) => string | undefined {
   return path => {
     const host = getHost()
     const matches = filterMatchingDomainsLocales(locales, host)
