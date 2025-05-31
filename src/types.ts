@@ -302,8 +302,6 @@ export interface LocaleObject<T = Locale> {
   files?: string[] | LocaleFile[]
 }
 
-export type NormalizedLocale = Required<Pick<LocaleObject, 'language' | 'code'>> & LocaleObject
-
 /**
  * @public
  * @deprecated Configuring baseUrl as a function is deprecated and will be removed in the v11.
