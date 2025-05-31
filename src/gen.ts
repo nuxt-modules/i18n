@@ -171,13 +171,13 @@ declare module 'vue-router' {
 
 export function generateI18nTypes(
   nuxt: Nuxt,
-  { userOptions: options, normalizedLocales, runtimeDir, distDir }: I18nNuxtContext
+  { userOptions: options, localeCodes, runtimeDir, distDir }: I18nNuxtContext
 ) {
   const legacyTypes = options.types === 'legacy'
   const i18nType = legacyTypes ? 'VueI18n' : 'Composer'
   const generatedLocales = simplifyLocaleOptions(nuxt, options)
   const resolvedLocaleType = isString(generatedLocales.at(0)) ? 'Locale[]' : 'LocaleObject[]'
-  const narrowedLocaleType = normalizedLocales.map(x => JSON.stringify(x.code)).join(' | ') || 'string'
+  const narrowedLocaleType = localeCodes.map(x => JSON.stringify(x)).join(' | ') || 'string'
 
   const globalTranslationTypes = `
 declare global {

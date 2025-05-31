@@ -13,10 +13,6 @@ import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
-export function formatMessage(message: string) {
-  return `[${NUXT_I18N_MODULE_ID}]: ${message}`
-}
-
 export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const project = getLayerI18n(nuxt.options._layers[0])
   const includingLocales = toArray(project?.bundle?.onlyLocales ?? []).filter(isString)
@@ -28,14 +24,6 @@ export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   ctx.options.locales = ctx.options.locales.filter(locale =>
     includingLocales.includes(isString(locale) ? locale : locale.code)
   ) as string[] | LocaleObject[]
-}
-
-export function getNormalizedLocales(locales: NuxtI18nOptions['locales'] = []): LocaleObject[] {
-  const normalized: LocaleObject[] = []
-  for (const locale of locales) {
-    normalized.push(isString(locale) ? { code: locale, language: locale } : locale)
-  }
-  return normalized
 }
 
 export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleInfo[] {

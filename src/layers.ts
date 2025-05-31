@@ -1,13 +1,6 @@
 import createDebug from 'debug'
 import { useNuxt } from '@nuxt/kit'
-import {
-  getLayerI18n,
-  mergeConfigLocales,
-  resolveVueI18nConfigInfo,
-  formatMessage,
-  getLocaleFiles,
-  logger
-} from './utils'
+import { getLayerI18n, mergeConfigLocales, resolveVueI18nConfigInfo, getLocaleFiles, logger } from './utils'
 
 import { isAbsolute, parse, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
@@ -31,29 +24,27 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
     const layerHint = `In ${configLocation} layer (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
 
     try {
-      // check `langDir` option
-      if (layerI18n.langDir) {
-        if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
-          logger.warn(
-            `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
-              `Absolute paths will not work in production, see https://i18n.nuxtjs.org/docs/api/options#langdir for more details.`
-          )
-        }
+      if (!layerI18n.langDir) continue
+      if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
+        logger.warn(
+          `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
+            `Absolute paths will not work in production, see https://i18n.nuxtjs.org/docs/api/options#langdir for more details.`
+        )
+      }
 
-        for (const locale of layerI18n.locales ?? []) {
-          if (isString(locale)) {
-            throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
-          }
-          if (locale.file || locale.files) continue
-          throw new Error(
-            'All locales must have the `file` or `files` property set when using `langDir`.\n' +
-              `Found none in:\n${JSON.stringify(locale, null, 2)}.`
-          )
+      for (const locale of layerI18n.locales ?? []) {
+        if (isString(locale)) {
+          throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
         }
+        if (locale.file || locale.files) continue
+        throw new Error(
+          'All locales must have the `file` or `files` property set when using `langDir`.\n' +
+            `Found none in:\n${JSON.stringify(locale, null, 2)}.`
+        )
       }
     } catch (err) {
       if (!(err instanceof Error)) throw err
-      throw new Error(formatMessage(`${layerHint} ${err.message}`))
+      throw new Error(`[nuxt-i18n] ${layerHint} ${err.message}`)
     }
   }
 }

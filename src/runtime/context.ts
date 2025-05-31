@@ -167,10 +167,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         ? navigator.languages
         : parseAcceptLanguage(useRequestHeader('accept-language') || '')
 
-      return findBrowserLocale(
-        normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code })),
-        languages
-      )
+      return findBrowserLocale(normalizedLocales, languages)
     },
     _loadMessagesFromClient: async (locale: string) => {
       const locales = getLocaleConfig(locale)?.fallbacks ?? []
