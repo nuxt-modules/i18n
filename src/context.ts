@@ -15,6 +15,7 @@ export interface I18nNuxtContext {
   distDir: string
   runtimeDir: string
   fullStatic: boolean
+  i18nModules: { langDir: string; locales: string[] | LocaleObject[] }[]
 }
 
 const resolver = createResolver(import.meta.url)
@@ -34,6 +35,7 @@ export function createContext(userOptions: NuxtI18nOptions): I18nNuxtContext {
     localeCodes: undefined!,
     normalizedLocales: undefined!,
     vueI18nConfigPaths: undefined!,
-    fullStatic: undefined!
+    fullStatic: undefined!,
+    i18nModules: []
   }
 }
