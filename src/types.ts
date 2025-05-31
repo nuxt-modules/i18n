@@ -169,11 +169,6 @@ export type NuxtI18nOptions<
    * @internal
    */
   overrides?: Omit<NuxtI18nOptions<Context>, 'overrides'>
-  /**
-   * Do not use in projects - this is used internally for e2e tests to override default option merging.
-   * @internal
-   */
-  i18nModules?: { langDir?: string | null; locales?: NuxtI18nOptions<Context>['locales'] }[]
   rootRedirect?: string | RootRedirectOptions
   skipSettingLocaleOnNavigate?: boolean
   /**

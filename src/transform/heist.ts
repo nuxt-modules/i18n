@@ -13,7 +13,7 @@ import { useNuxt } from '@nuxt/kit'
  */
 export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, nuxt = useNuxt()) => {
   // transform `runtime/shared` to be nuxt/nitro context agnostic
-  const shared = ctx.resolver.resolve(ctx.distDir, 'runtime/shared') + '/*'
+  const shared = ctx.resolver.resolve(ctx.distDir, 'runtime/shared/*')
 
   const replacementName = `__nuxtMock`
   const replacementMock = `const ${replacementName} = { runWithContext: async (fn) => await fn() };`

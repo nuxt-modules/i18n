@@ -161,13 +161,7 @@ export type LocaleConfig = {
  * @param configs prepared configs to resolve locales relative to project
  * @param baseLocales optional array of locale objects to merge configs into
  */
-export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleObject[] = []) => {
-  const mergedLocales = new Map<string, LocaleObject>()
-
-  for (const locale of baseLocales) {
-    mergedLocales.set(locale.code, locale)
-  }
-
+export const mergeConfigLocales = (configs: LocaleConfig[], mergedLocales: Map<string, LocaleObject> = new Map()) => {
   for (const config of configs) {
     for (const locale of config.locales ?? []) {
       // set normalized locale or keep existing entry
@@ -200,22 +194,18 @@ export const mergeConfigLocales = (configs: LocaleConfig[], baseLocales: LocaleO
  * Merges project layer locales with registered i18n modules
  */
 export const mergeI18nModules = async (ctx: I18nNuxtContext, nuxt: Nuxt) => {
-  const i18nModules: LocaleConfig[] = []
-
   await nuxt.callHook(
     'i18n:registerModule',
-    ({ langDir, locales }) => langDir && locales && i18nModules.push({ langDir, locales })
+    ({ langDir, locales }) => langDir && locales && ctx.i18nModules.push({ langDir, locales })
   )
 
-  if (i18nModules.length > 0) {
-    const baseLocales: LocaleObject[] = []
-    for (const locale of ctx.options.locales) {
-      if (!isObject(locale)) continue
-      baseLocales.push(assign({}, locale, { file: undefined, files: getLocaleFiles(locale) }))
-    }
-    ctx.options.locales = mergeConfigLocales(i18nModules, baseLocales)
+  const mergedLocales = new Map<string, LocaleObject>()
+  for (const locale of ctx.options.locales) {
+    if (!isObject(locale)) continue
+    mergedLocales.set(locale.code, assign({}, locale, { file: undefined, files: getLocaleFiles(locale) }))
   }
-  ctx.options.i18nModules = i18nModules
+
+  ctx.options.locales = mergeConfigLocales(ctx.i18nModules, mergedLocales)
 }
 
 function getHash(text: BinaryLike): string {

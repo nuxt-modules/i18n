@@ -6,7 +6,7 @@ import { asI18nVirtual } from './transform/utils'
 import { resolveModule } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { NuxtI18nOptions, LocaleObject } from './types'
+import type { LocaleObject } from './types'
 import type { Locale } from 'vue-i18n'
 import type { I18nNuxtContext } from './context'
 
@@ -16,17 +16,14 @@ function stripLocaleFiles(locale: LocaleObject) {
   return locale
 }
 
-export function simplifyLocaleOptions(
-  nuxt: Nuxt,
-  options: Pick<NuxtI18nOptions, 'locales' | 'experimental' | 'i18nModules'>
-) {
+export function simplifyLocaleOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const isLocaleObjectsArray = (locales?: Locale[] | LocaleObject[]) => locales?.some(x => !isString(x))
 
   const hasLocaleObjects =
     nuxt.options._layers.some(layer => isLocaleObjectsArray(getLayerI18n(layer)?.locales)) ||
-    options?.i18nModules?.some(module => isLocaleObjectsArray(module?.locales))
+    ctx.i18nModules.some(module => isLocaleObjectsArray(module?.locales))
 
-  const locales = (options.locales ?? []) as LocaleObject[]
+  const locales = (ctx.options.locales ?? []) as LocaleObject[]
   return locales.map(locale => (!hasLocaleObjects ? locale.code : stripLocaleFiles(locale)))
 }
 
@@ -169,15 +166,12 @@ declare module 'vue-router' {
   }
 }`
 
-export function generateI18nTypes(
-  nuxt: Nuxt,
-  { userOptions: options, localeCodes, runtimeDir, distDir }: I18nNuxtContext
-) {
-  const legacyTypes = options.types === 'legacy'
+export function generateI18nTypes(nuxt: Nuxt, ctx: I18nNuxtContext) {
+  const legacyTypes = ctx.userOptions.types === 'legacy'
   const i18nType = legacyTypes ? 'VueI18n' : 'Composer'
-  const generatedLocales = simplifyLocaleOptions(nuxt, options)
+  const generatedLocales = simplifyLocaleOptions(ctx, nuxt)
   const resolvedLocaleType = isString(generatedLocales.at(0)) ? 'Locale[]' : 'LocaleObject[]'
-  const narrowedLocaleType = localeCodes.map(x => JSON.stringify(x)).join(' | ') || 'string'
+  const narrowedLocaleType = ctx.localeCodes.map(x => JSON.stringify(x)).join(' | ') || 'string'
 
   const globalTranslationTypes = `
 declare global {
@@ -194,11 +188,11 @@ declare global {
 import type { ${i18nType} } from 'vue-i18n'
 import type { ComposerCustomProperties } from '${relative(
     join(nuxt.options.buildDir, 'types'),
-    resolve(runtimeDir, 'types.ts')
+    resolve(ctx.runtimeDir, 'types.ts')
   )}'
 import type { Strategies, Directions, LocaleObject } from '${relative(
     join(nuxt.options.buildDir, 'types'),
-    resolve(distDir, 'types.d.mts')
+    resolve(ctx.distDir, 'types.d.mts')
   )}'
 import type { I18nRoute } from '#i18n'
 
@@ -239,7 +233,7 @@ declare module 'vue-router' {
 
 ${typedRouterAugmentations}
 
-${(options.autoDeclare && globalTranslationTypes) || ''}
+${(ctx.userOptions.autoDeclare && globalTranslationTypes) || ''}
 
 export {}`
 }
