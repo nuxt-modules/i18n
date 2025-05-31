@@ -1,4 +1,3 @@
-import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
 import { asI18nVirtual, VIRTUAL_PREFIX_HEX } from './utils'
@@ -23,15 +22,11 @@ async function transform<T extends TransformOptions>(
   return await esbuildTransform(input, { ...tryUseNuxt()?.options.esbuild?.options, ...options })
 }
 
-const debug = createDebug('@nuxtjs/i18n:transform:resource')
-
 const pattern = [NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].join('|')
 const DEFINE_I18N_FN_RE = new RegExp(`\\b(${pattern})\\s*\\((.+)\\s*\\)`, 'gms')
 
 export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext) =>
   createUnplugin(() => {
-    debug('options', options)
-
     // TODO: track all i18n files found in configuration
     const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths]
     const i18nPathSet = new Set<string>()
@@ -63,7 +58,6 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
         }
 
         if (i18nPathSet.has(id)) {
-          debug('transformInclude', id)
           return /\.([c|m]?[j|t]s)$/.test(id)
         }
       },
@@ -78,7 +72,6 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           }
         },
         async handler(_code, id) {
-          debug('transform', id)
           let code = _code
 
           // ensure imported resources are transformed as well

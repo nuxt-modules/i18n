@@ -4,9 +4,6 @@ declare namespace NodeJS {
   }
 }
 
-declare let __DEBUG__: boolean
-declare let __TEST__: boolean
-
 declare let __IS_SSG__: boolean
 declare let __IS_SSR__: boolean
 declare let __TRAILING_SLASH__: boolean

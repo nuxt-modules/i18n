@@ -1,5 +1,4 @@
 import { defu } from 'defu'
-import createDebug from 'debug'
 import { readFileSync, existsSync } from 'node:fs'
 import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useLogger } from '@nuxt/kit'
@@ -240,5 +239,4 @@ export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
-export const logger = useLogger(NUXT_I18N_MODULE_ID)
-export const debug = createDebug(NUXT_I18N_MODULE_ID)
+export const logger = useLogger('nuxt-i18n')

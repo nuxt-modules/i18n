@@ -5,7 +5,6 @@
  * - license: MIT
  */
 
-import createDebug from 'debug'
 import MagicString from 'magic-string'
 import { walk } from 'estree-walker'
 import { createUnplugin } from 'unplugin'
@@ -14,8 +13,6 @@ import { isVue } from './utils'
 import { parseSync } from 'oxc-parser'
 import type { CallExpression, Pattern, Program } from 'estree'
 import type { BundlerPluginOptions } from './utils'
-
-const debug = createDebug('@nuxtjs/i18n:function:injection')
 
 const TRANSLATION_FUNCTIONS = ['$t', '$rt', '$d', '$n', '$tm', '$te']
 const TRANSLATION_FUNCTIONS_RE = /\$(t|rt|d|n|tm|te)\s*\(\s*/
@@ -43,8 +40,6 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
           code: { include: TRANSLATION_FUNCTIONS_RE }
         },
         handler(code, id) {
-          debug('transform', id)
-
           // only transform if translation functions are present
           const script = extractScriptContent(code)
           if (!script) {
@@ -117,8 +112,6 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
 
           const s = new MagicString(code)
           if (missingFunctionDeclarators.size > 0) {
-            debug(`injecting ${Array.from(missingFunctionDeclarators).join(', ')} declaration to ${id}`)
-
             // only add variables when used without having been declared
             const assignments: string[] = []
             for (const missing of missingFunctionDeclarators) {
@@ -134,9 +127,6 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
           }
 
           if (s.hasChanged()) {
-            debug('transformed: id -> ', id)
-            debug('transformed: code -> ', s.toString())
-
             return {
               code: s.toString(),
               map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
