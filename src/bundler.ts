@@ -63,7 +63,7 @@ export function createLogger(label) {
    * shared plugins (vite/webpack/rspack)
    */
   const { options } = ctx
-  const localePaths = [...new Set([...ctx.localeInfo.flatMap(x => x.meta.map(m => m.path))])]
+  const localePaths = [...new Set(ctx.localeInfo.flatMap(x => x.meta.map(m => m.path)))]
   ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.file.cache !== false)
 
   const vueI18nPluginOptions: PluginOptions = {
