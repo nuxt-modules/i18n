@@ -336,6 +336,41 @@ export function createNuxtI18nDev() {
   const ctx = useNuxtI18nContext()
   const composer = getComposer(ctx.vueI18n)
 
+  // helper function to compare old and new vue-i18n configs
+  function deepEqual<T extends Record<string, unknown>, K extends keyof T>(a: T, b: T, ignoreKeys: K[] = []) {
+    if (a === b) return true
+    if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') return false
+
+    // top-level keys excluding ignoreKeys
+    const keysA = Object.keys(a).filter(k => !ignoreKeys.includes(k as K))
+    const keysB = Object.keys(b).filter(k => !ignoreKeys.includes(k as K))
+
+    if (keysA.length !== keysB.length) return false
+
+    for (const key of keysA) {
+      if (!keysB.includes(key)) return false
+      const valA = a[key]
+      const valB = b[key]
+      // compare functions stringified
+      if (typeof valA === 'function' && typeof valB === 'function') {
+        if (valA.toString() !== valB.toString()) {
+          return false
+        }
+      }
+      // nested recursive check (no ignoring at deeper levels)
+      else if (typeof valA === 'object' && typeof valB === 'object') {
+        if (!deepEqual(valA as unknown as T, valB as unknown as T)) {
+          return false
+        }
+      }
+      // primitive value check
+      else if (valA !== valB) {
+        return false
+      }
+    }
+    return true
+  }
+
   /**
    * Triggers a reload of vue-i18n configs (if needed) and locale message files in the correct order
    *
@@ -369,5 +404,5 @@ export function createNuxtI18nDev() {
     }
   }
 
-  return { resetI18nProperties }
+  return { resetI18nProperties, deepEqual }
 }

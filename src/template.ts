@@ -5,56 +5,6 @@ import type { I18nNuxtContext } from './context'
 
 type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
-// used to compare vue-i18n config replacement
-const deepEqualFn = `function deepEqual(a, b, ignoreKeys = []) {
-  // Same reference?
-  if (a === b) return true
-
-  // Check if either is null or not an object
-  if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') {
-    return false
-  }
-
-  // Get top-level keys, excluding ignoreKeys
-  const keysA = Object.keys(a).filter(k => !ignoreKeys.includes(k))
-  const keysB = Object.keys(b).filter(k => !ignoreKeys.includes(k))
-
-  // Must have the same number of keys (after ignoring)
-  if (keysA.length !== keysB.length) {
-    return false
-  }
-
-  // Check each property
-  for (const key of keysA) {
-    if (!keysB.includes(key)) {
-      return false
-    }
-
-    const valA = a[key]
-    const valB = b[key]
-
-    // Compare functions stringified
-    if (typeof valA === 'function' && typeof valB === 'function') {
-      if (valA.toString() !== valB.toString()) {
-        return false
-      }
-    }
-    // If nested, do a normal recursive check (no ignoring at deeper levels)
-    else if (typeof valA === 'object' && typeof valB === 'object') {
-      if (!deepEqual(valA, valB)) {
-        return false
-      }
-    }
-    // Compare primitive values
-    else if (valA !== valB) {
-      return false
-    }
-  }
-
-  return true
-}
-`
-
 const loadConfigsFn = `
 async function loadCfg(config) {
   const nuxt = useNuxtApp()
@@ -95,7 +45,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
         //   replace config loader
         `    vueI18nConfigs[${i}] = () => Promise.resolve(mod)`,
         //   compare data - reload configs if _only_ replaceable properties have changed
-        `    if(deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
+        `    if(useNuxtApp()._nuxtI18nDev.deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
         `      return await useNuxtApp()._nuxtI18nDev.resetI18nProperties()`,
         `    }`,
         //   communicate to vite plugin to trigger a page load
@@ -118,7 +68,6 @@ export function generateTemplateNuxtI18nOptions(
     ctx.options.hmr &&
     [
       `if(import.meta.hot) {`,
-      deepEqualFn,
       loadConfigsFn,
       genLocaleLoaderHMR(opts.localeLoaders),
       genVueI18nConfigHMR(opts.vueI18nConfigs),
@@ -130,17 +79,11 @@ export function generateTemplateNuxtI18nOptions(
     localeLoaderEntries[locale] = opts.localeLoaders[locale].map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
-  return `
-// @ts-nocheck
-
+  return `// @ts-nocheck
 export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
-
 export const localeLoaders = ${genObjectFromRaw(localeLoaderEntries)}
-
 export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => x.importer))}
-
 export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x => genObjectFromValues(x, '  ')))}
-
 /** client **/
 ${codeHMR || ''}
 /** client-end **/`
