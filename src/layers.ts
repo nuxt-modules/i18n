@@ -75,12 +75,8 @@ export function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
     const i18n = getLayerI18n(layer)
     if (i18n?.locales == null) continue
 
-    configs.push(
-      assign({}, i18n, {
-        langDir: resolve(resolveI18nDir(layer, i18n), i18n.langDir ?? 'locales'),
-        locales: i18n.locales
-      })
-    )
+    const langDir = resolve(resolveI18nDir(layer, i18n), i18n.langDir ?? 'locales')
+    configs.push(assign({}, i18n, { langDir, locales: i18n.locales }))
   }
 
   ctx.options.locales = mergeConfigLocales(configs)
