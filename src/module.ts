@@ -15,8 +15,6 @@ import { prepareRuntimeConfig } from './prepare/runtime-config'
 import { prepareAutoImports } from './prepare/auto-imports'
 import { prepareBuildManifest } from './prepare/build-manifest'
 import { prepareStrategy } from './prepare/strategy'
-import { prepareTranspile } from './prepare/transpile'
-import { prepareVite } from './prepare/vite'
 import { prepareTypeGeneration } from './prepare/type-generation'
 
 export * from './types'
@@ -52,12 +50,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * transpile @nuxtjs/i18n
      */
-    prepareTranspile(nuxt)
+    nuxt.options.build.transpile.push('@nuxtjs/i18n')
+    nuxt.options.build.transpile.push('@nuxtjs/i18n-edge')
 
     /**
-     * optimize deps
+     * optimize vue-i18n to ensure we share the same symbol
      */
-    prepareVite(nuxt)
+    nuxt.options.vite.optimizeDeps ||= {}
+    nuxt.options.vite.optimizeDeps.exclude ||= []
+    nuxt.options.vite.optimizeDeps.exclude.push('vue-i18n')
 
     /**
      * add plugin and templates
