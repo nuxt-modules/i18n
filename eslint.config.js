@@ -2,6 +2,7 @@ import globals from 'globals'
 import js from '@eslint/js'
 import ts from 'typescript-eslint'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import * as regexpPlugin from 'eslint-plugin-regexp'
 
 /**
  * @typedef {import("eslint").Linter.FlatConfig[]} FlatConfigs
@@ -41,6 +42,7 @@ export default [
 
   // typescript-eslint
   ...ts.configs.recommendedTypeChecked,
+  regexpPlugin.configs['flat/recommended'],
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
     languageOptions: {

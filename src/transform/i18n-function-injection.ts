@@ -15,7 +15,7 @@ import type { CallExpression, Pattern, Program } from 'estree'
 import type { BundlerPluginOptions } from './utils'
 
 const TRANSLATION_FUNCTIONS = ['$t', '$rt', '$d', '$n', '$tm', '$te']
-const TRANSLATION_FUNCTIONS_RE = /\$(t|rt|d|n|tm|te)\s*\(\s*/
+const TRANSLATION_FUNCTIONS_RE = /\$([tdn]|rt|tm|te)\s*\(\s*/
 const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], string> = {
   $t: 't: $t',
   $rt: 'rt: $rt',
@@ -138,7 +138,7 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
   })
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/pages/utils.ts#L138-L147
-const SFC_SCRIPT_RE = /<script\s*[^>]*>([\s\S]*?)<\/script\s*[^>]*>/i
+const SFC_SCRIPT_RE = /<script[^>]*>([\s\S]*?)<\/script[^>]*>/i
 function extractScriptContent(html: string) {
   const match = html.match(SFC_SCRIPT_RE)
 

@@ -18,7 +18,7 @@ function toArray<T>(value: T | T[]): T[] {
  */
 function filterMatchingDomainsLocales(locales: LocaleObject[], host: string): LocaleObject[] {
   // normalize domain by removing protocol
-  const normalizeDomain = (domain: string = '') => domain.replace(/(https?):\/\//, '')
+  const normalizeDomain = (domain: string = '') => domain.replace(/https?:\/\//, '')
   return locales.filter(locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host))
 }
 
