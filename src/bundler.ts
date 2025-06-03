@@ -39,14 +39,13 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * shared plugins (vite/webpack/rspack)
    */
-  const { options } = ctx
   const localePaths = [...new Set(ctx.localeInfo.flatMap(x => x.meta.map(m => m.path)))]
-  ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.file.cache !== false)
+  ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.cache !== false)
 
   const vueI18nPluginOptions: PluginOptions = {
-    ...options.bundle,
-    ...options.compilation,
-    ...options.customBlocks,
+    ...ctx.options.bundle,
+    ...ctx.options.compilation,
+    ...ctx.options.customBlocks,
     allowDynamic: true,
     optimizeTranslationDirective: false,
     include: localePaths.length ? localePaths : undefined
@@ -56,7 +55,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(pluginOptions))
-  if (options.autoDeclare && nuxt.options.imports.autoImport !== false) {
+  if (ctx.options.autoDeclare && nuxt.options.imports.autoImport !== false) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 

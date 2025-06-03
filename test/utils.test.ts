@@ -68,10 +68,7 @@ test('resolveLocales', async () => {
         "code": "en",
         "meta": [
           {
-            "file": {
-              "cache": true,
-              "path": "en.json",
-            },
+            "cache": true,
             "hash": "5c407b7f",
             "path": "/path/to/project/en.json",
             "type": "static",
@@ -82,10 +79,7 @@ test('resolveLocales', async () => {
         "code": "ja",
         "meta": [
           {
-            "file": {
-              "cache": true,
-              "path": "ja.json",
-            },
+            "cache": true,
             "hash": "0e1b8bd4",
             "path": "/path/to/project/ja.json",
             "type": "static",
@@ -96,10 +90,7 @@ test('resolveLocales', async () => {
         "code": "es",
         "meta": [
           {
-            "file": {
-              "cache": true,
-              "path": "es.json",
-            },
+            "cache": true,
             "hash": "c78280fb",
             "path": "/path/to/project/es.json",
             "type": "static",
@@ -110,19 +101,13 @@ test('resolveLocales', async () => {
         "code": "es-AR",
         "meta": [
           {
-            "file": {
-              "cache": true,
-              "path": "es.json",
-            },
+            "cache": true,
             "hash": "c78280fb",
             "path": "/path/to/project/es.json",
             "type": "static",
           },
           {
-            "file": {
-              "cache": true,
-              "path": "es-AR.json",
-            },
+            "cache": true,
             "hash": "65220c0a",
             "path": "/path/to/project/es-AR.json",
             "type": "static",
@@ -133,10 +118,7 @@ test('resolveLocales', async () => {
         "code": "nl",
         "meta": [
           {
-            "file": {
-              "cache": false,
-              "path": "nl.js",
-            },
+            "cache": false,
             "hash": "b7971e5b",
             "path": "/path/to/project/nl.js",
             "type": "dynamic",
