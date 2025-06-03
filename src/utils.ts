@@ -150,9 +150,9 @@ export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfi
   })) as LocaleFile[]
 }
 
-export type LocaleConfig = {
+export type LocaleConfig<T = string[] | LocaleObject[]> = {
   langDir: string
-  locales: string[] | LocaleObject[]
+  locales: T
 }
 
 /**
