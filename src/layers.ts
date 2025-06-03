@@ -58,16 +58,13 @@ export function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const configs: LocaleConfig[] = []
 
   // collect `installModule` config, identified by absolute `langDir` and `locales` paths
-  const installModuleConfig: LocaleConfig<LocaleObject[]> = { langDir: ctx.options.langDir || '', locales: [] }
-  if (isAbsolute(installModuleConfig.langDir)) {
+  if (isAbsolute(ctx.options.langDir || '')) {
+    const config: LocaleConfig<LocaleObject[]> = { langDir: ctx.options.langDir!, locales: [] }
     for (const locale of ctx.options.locales) {
-      if (isString(locale)) continue
-      // absolute locale path starts with absolute path langDir
-      if (!getLocaleFiles(locale)?.[0]?.path?.startsWith(installModuleConfig.langDir)) continue
-      installModuleConfig.locales.push(locale)
+      if (isString(locale) || !getLocaleFiles(locale)?.[0]?.path?.startsWith(config.langDir)) continue
+      config.locales.push(locale)
     }
-
-    configs.push(installModuleConfig)
+    configs.push(config)
   }
 
   // collect layer configs
