@@ -160,7 +160,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[]) => {
 
       existing.files = [...files, ...(existing.files as LocaleFile[])]
 
-      merged.set(current.code, assign(existing, current))
+      merged.set(current.code, assign({}, current, existing))
     }
   }
 
