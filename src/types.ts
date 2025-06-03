@@ -38,7 +38,7 @@ export type LocaleFile = { path: string; cache?: boolean }
 
 export type LocaleInfo = Omit<LocaleObject, 'file' | 'files'> & {
   code: Locale
-  meta: (FileMeta & { file: LocaleFile })[]
+  meta: FileMeta[]
 }
 
 /**
@@ -47,6 +47,7 @@ export type LocaleInfo = Omit<LocaleObject, 'file' | 'files'> & {
 export type FileMeta = {
   path: string
   hash: string
+  cache: boolean
   type: LocaleType
 }
 

@@ -30,8 +30,7 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleI
     delete resolved.file
     delete resolved.files
 
-    const files = getLocaleFiles(locale)
-    for (const f of files) {
+    for (const f of getLocaleFiles(locale)) {
       const path = resolve(srcDir, f.path)
       const type = getLocaleType(path)
 
@@ -39,10 +38,7 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleI
         type,
         path,
         hash: getHash(path),
-        file: {
-          path: f.path,
-          cache: f.cache ?? type !== 'dynamic'
-        }
+        cache: f.cache ?? type !== 'dynamic'
       })
     }
 
@@ -52,20 +48,12 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleI
   return localesResolved
 }
 
+const analyzedMap = { object: 'static', function: 'dynamic', unknown: 'unknown' } as const
 function getLocaleType(path: string): LocaleType {
-  if (!EXECUTABLE_EXT_RE.test(path)) {
-    return 'static'
-  }
+  if (!EXECUTABLE_EXT_RE.test(path)) return 'static'
 
   const parsed = parseSync(path, readFileSync(path, 'utf-8'))
-  const analyzed = scanProgram(parsed.program)
-  // || analyzed === 'function-static'
-  // prettier-ignore
-  return analyzed === 'object'
-    ? 'static'
-    : analyzed === 'function'
-      ? 'dynamic'
-      : 'unknown'
+  return analyzedMap[scanProgram(parsed.program) || 'unknown']
 }
 
 function scanProgram(program: Program) {
@@ -97,7 +85,6 @@ function scanProgram(program: Program) {
           const [fnNode] = node.declaration.arguments
           if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
             return 'function'
-            // return fnNode.async ? 'function' : 'function-static'
           }
         }
         break
@@ -115,7 +102,6 @@ function scanProgram(program: Program) {
         const [fnNode] = n.init.arguments
         if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
           return 'function'
-          // return fnNode.async ? 'function' : 'function-static'
         }
       }
     }
@@ -156,33 +142,29 @@ export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string; loc
  * @param configs prepared configs to resolve locales relative to project
  * @param baseLocales optional array of locale objects to merge configs into
  */
-export const mergeConfigLocales = (configs: LocaleConfig[], mergedLocales: Map<string, LocaleObject> = new Map()) => {
+export const mergeConfigLocales = (configs: LocaleConfig[]) => {
+  const merged: Map<string, LocaleObject> = new Map()
   for (const config of configs) {
     for (const locale of config.locales ?? []) {
-      // set normalized locale or keep existing entry
-      if (isString(locale)) {
-        mergedLocales.set(locale, mergedLocales.get(locale) ?? { language: locale, code: locale })
-        continue
+      const current: LocaleObject = isString(locale) ? { code: locale, language: locale } : assign({}, locale)
+
+      const files = isString(locale) ? [] : resolveRelativeLocales(current, config)
+      delete current.file
+      delete current.files
+
+      const existing = merged.get(current.code) ?? {
+        code: current.code,
+        language: current.language,
+        files: [] as LocaleFile[]
       }
 
-      const files = resolveRelativeLocales(locale, config)
-      delete locale.file
+      existing.files = [...files, ...(existing.files as LocaleFile[])]
 
-      // merge locale and files with existing entry
-      const merged = mergedLocales.get(locale.code)
-      if (merged != null) {
-        merged.files ??= [] as LocaleFile[]
-        // @ts-ignore
-        merged.files.unshift(...files)
-        mergedLocales.set(locale.code, assign({}, locale, merged))
-        continue
-      }
-
-      mergedLocales.set(locale.code, assign({}, locale, { files }))
+      merged.set(current.code, assign(existing, current))
     }
   }
 
-  return Array.from(mergedLocales.values())
+  return Array.from(merged.values())
 }
 
 function getHash(text: BinaryLike): string {

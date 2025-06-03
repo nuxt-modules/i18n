@@ -6,7 +6,6 @@ import { resolveModule } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleObject } from './types'
-import type { Locale } from 'vue-i18n'
 import type { I18nNuxtContext } from './context'
 
 function stripLocaleFiles(locale: LocaleObject) {
@@ -16,10 +15,8 @@ function stripLocaleFiles(locale: LocaleObject) {
 }
 
 export function simplifyLocaleOptions(ctx: I18nNuxtContext, _nuxt: Nuxt) {
-  const isLocaleObjectsArray = (locales?: Locale[] | LocaleObject[]) => locales?.some(x => !isString(x))
-
-  const hasLocaleObjects = isLocaleObjectsArray(ctx.options.locales)
   const locales = (ctx.options.locales ?? []) as LocaleObject[]
+  const hasLocaleObjects = locales?.some(x => !isString(x))
   return locales.map(locale => (!hasLocaleObjects ? locale.code : stripLocaleFiles(locale)))
 }
 
@@ -47,7 +44,7 @@ export function generateLoaderOptions(
         importMapper.set(meta.path, {
           key,
           relative: relative(nuxt.options.buildDir, meta.path),
-          cache: meta.file.cache ?? true,
+          cache: meta.cache ?? true,
           load: genDynamicImport(asI18nVirtual(meta.hash), { comment: `webpackChunkName: ${key}` })
         })
       }
