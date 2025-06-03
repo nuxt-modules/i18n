@@ -1,7 +1,6 @@
 import { isString } from '@intlify/shared'
 import { genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
-import { getLayerI18n } from './utils'
 import { asI18nVirtual } from './transform/utils'
 import { resolveModule } from '@nuxt/kit'
 
@@ -16,13 +15,10 @@ function stripLocaleFiles(locale: LocaleObject) {
   return locale
 }
 
-export function simplifyLocaleOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
+export function simplifyLocaleOptions(ctx: I18nNuxtContext, _nuxt: Nuxt) {
   const isLocaleObjectsArray = (locales?: Locale[] | LocaleObject[]) => locales?.some(x => !isString(x))
 
-  const hasLocaleObjects =
-    nuxt.options._layers.some(layer => isLocaleObjectsArray(getLayerI18n(layer)?.locales)) ||
-    ctx.i18nModules.some(module => isLocaleObjectsArray(module?.locales))
-
+  const hasLocaleObjects = isLocaleObjectsArray(ctx.options.locales)
   const locales = (ctx.options.locales ?? []) as LocaleObject[]
   return locales.map(locale => (!hasLocaleObjects ? locale.code : stripLocaleFiles(locale)))
 }

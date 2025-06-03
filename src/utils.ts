@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { createHash, type BinaryLike } from 'node:crypto'
 import { resolvePath, useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
-import { isString, isArray, assign, isObject } from '@intlify/shared'
+import { isString, isArray, assign } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
 
@@ -14,15 +14,13 @@ import type { I18nNuxtContext } from './context'
 
 export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const project = getLayerI18n(nuxt.options._layers[0])
-  const includingLocales = toArray(project?.bundle?.onlyLocales ?? []).filter(isString)
+  const include = toArray(project?.bundle?.onlyLocales ?? []).filter(isString)
 
-  if (!includingLocales.length) {
-    return
+  if (!include.length) {
+    return ctx.options.locales
   }
 
-  ctx.options.locales = ctx.options.locales.filter(locale =>
-    includingLocales.includes(isString(locale) ? locale : locale.code)
-  ) as string[] | LocaleObject[]
+  return ctx.options.locales.filter(x => include.includes(isString(x) ? x : x.code)) as string[] | LocaleObject[]
 }
 
 export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleInfo[] {
@@ -150,10 +148,7 @@ export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfi
   })) as LocaleFile[]
 }
 
-export type LocaleConfig = {
-  langDir: string
-  locales: string[] | LocaleObject[]
-}
+export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string; locales: T }
 
 /**
  * Generically merge LocaleObject locales
@@ -188,24 +183,6 @@ export const mergeConfigLocales = (configs: LocaleConfig[], mergedLocales: Map<s
   }
 
   return Array.from(mergedLocales.values())
-}
-
-/**
- * Merges project layer locales with registered i18n modules
- */
-export const mergeI18nModules = async (ctx: I18nNuxtContext, nuxt: Nuxt) => {
-  await nuxt.callHook(
-    'i18n:registerModule',
-    ({ langDir, locales }) => langDir && locales && ctx.i18nModules.push({ langDir, locales })
-  )
-
-  const mergedLocales = new Map<string, LocaleObject>()
-  for (const locale of ctx.options.locales) {
-    if (!isObject(locale)) continue
-    mergedLocales.set(locale.code, assign({}, locale, { file: undefined, files: getLocaleFiles(locale) }))
-  }
-
-  ctx.options.locales = mergeConfigLocales(ctx.i18nModules, mergedLocales)
 }
 
 function getHash(text: BinaryLike): string {
