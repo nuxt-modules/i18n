@@ -141,7 +141,7 @@ export const getLocaleFiles = (locale: LocaleObject): LocaleFile[] => {
     .map(x => (isString(x) ? { path: x, cache: undefined } : x))
 }
 
-function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
+export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
   return getLocaleFiles(locale).map(file => ({
     path: resolve(config.langDir, file.path),
     cache: file.cache
