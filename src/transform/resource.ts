@@ -58,7 +58,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
         }
 
         if (i18nPathSet.has(id)) {
-          return /\.([c|m]?[j|t]s)$/.test(id)
+          return /\.[cm]?[jt]s$/.test(id)
         }
       },
 
@@ -82,7 +82,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           }
 
           // transform typescript
-          if (/(c|m)?ts$/.test(id)) {
+          if (/[cm]?ts$/.test(id)) {
             code = (await transform(_code, { loader: 'ts' })).code
           }
 
@@ -95,7 +95,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           if (s.hasChanged()) {
             return {
               code: s.toString(),
-              map: options.sourcemap && !/\.([c|m]?ts)$/.test(id) ? s.generateMap({ hires: true }) : null
+              map: options.sourcemap && !/\.[cm]?ts$/.test(id) ? s.generateMap({ hires: true }) : null
             }
           }
         }
