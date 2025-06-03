@@ -52,9 +52,8 @@ export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, i1
 
 /**
  * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
- * This overwrites `options.locales`
  */
-export function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
+export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const configs: LocaleConfig[] = []
 
   // collect `installModule` config, identified by absolute `langDir` and `locales` paths
@@ -76,7 +75,13 @@ export function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
     configs.push(assign({}, i18n, { langDir, locales: i18n.locales }))
   }
 
-  ctx.options.locales = mergeConfigLocales(configs)
+  // collect hook configs
+  await nuxt.callHook(
+    'i18n:registerModule',
+    ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales })
+  )
+
+  return mergeConfigLocales(configs)
 }
 
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt = useNuxt()) {

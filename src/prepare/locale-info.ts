@@ -2,15 +2,14 @@ import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
 import { isString } from '@intlify/shared'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from '../layers'
-import { filterLocales, mergeI18nModules, resolveLocales } from '../utils'
+import { filterLocales, resolveLocales } from '../utils'
 
 export async function resolveLocaleInfo(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * collect and merge locales from layers and module hooks
    */
-  applyLayerOptions(ctx, nuxt)
-  await mergeI18nModules(ctx, nuxt)
-  filterLocales(ctx, nuxt)
+  ctx.options.locales = await applyLayerOptions(ctx, nuxt)
+  ctx.options.locales = filterLocales(ctx, nuxt)
 
   /**
    * resolve locale info
