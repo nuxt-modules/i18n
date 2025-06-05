@@ -8,9 +8,13 @@ on:
   push:
     branches:
       - next
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches:
       - next
+    paths-ignore:
+      - 'docs/**'
 
 jobs:
   lint:
