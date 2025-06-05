@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, navigate, createNuxtI18nDev, createComposableContext } from '../utils'
+import { loadAndSetLocale, navigate, createComposableContext } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { localeHead, _useLocaleHead } from '../routing/head'
@@ -52,11 +52,6 @@ export default defineNuxtPlugin({
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server && nuxt.ssrContext?.event.context.nuxtI18n) {
       wrapTranslationFunctions(ctx, nuxt.ssrContext?.event.context.nuxtI18n)
-    }
-
-    // HMR helper functionality
-    if (import.meta.dev) {
-      nuxt._nuxtI18nDev = createNuxtI18nDev()
     }
 
     // extend i18n instance
