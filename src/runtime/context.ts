@@ -28,7 +28,7 @@ export const useLocaleConfigs = () =>
 /**
  * @internal
  */
-export type NuxtI18nContext = {
+export interface NuxtI18nContext {
   vueI18n: I18n
   config: I18nPublicRuntimeConfig
   detection: DetectBrowserLanguageOptions & { enabled: boolean }

@@ -23,7 +23,7 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
           //   replace locale loader
           `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
           //   trigger locale messages reload for locale
-          `    await useNuxtApp()._nuxtI18nDev.resetI18nProperties("${locale}")`,
+          `    await useNuxtApp()._nuxtI18nCtx.dev.resetI18nProperties("${locale}")`,
           `  })`
         ].join('\n')
       )
@@ -45,8 +45,8 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
         //   replace config loader
         `    vueI18nConfigs[${i}] = () => Promise.resolve(mod)`,
         //   compare data - reload configs if _only_ replaceable properties have changed
-        `    if(useNuxtApp()._nuxtI18nDev.deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
-        `      return await useNuxtApp()._nuxtI18nDev.resetI18nProperties()`,
+        `    if(useNuxtApp()._nuxtI18nCtx.dev.deepEqual(oldData, newData, ['messages', 'numberFormats', 'datetimeFormats'])) {`,
+        `      return await useNuxtApp()._nuxtI18nCtx.dev.resetI18nProperties()`,
         `    }`,
         //   communicate to vite plugin to trigger a page load
         `    import.meta.hot.send('i18n:options-complex-invalidation', {})`,
