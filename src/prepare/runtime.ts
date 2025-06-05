@@ -9,6 +9,9 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { options, resolver } = ctx
   // for core plugin
   addPlugin(resolver.resolve('./runtime/plugins/i18n'))
+  if (nuxt.options.dev || nuxt.options._prepare) {
+    addPlugin(resolver.resolve('./runtime/plugins/dev'))
+  }
   addPlugin(resolver.resolve('./runtime/plugins/preload'))
   addPlugin(resolver.resolve('./runtime/plugins/route-locale-detect'))
   addPlugin(resolver.resolve('./runtime/plugins/ssg-detect'))
