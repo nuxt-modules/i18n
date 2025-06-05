@@ -43,10 +43,10 @@ export type ComposableContext = {
   head: ReturnType<typeof useHead>
   metaState: Required<I18nHeadMetaInfo>
   seoSettings: I18nHeadOptions
+  localePathPayload: Record<string, Record<string, string> | false>
   getLocale: () => string
   getLocales: () => LocaleObject[]
   getBaseUrl: () => string
-  getSLP: () => Record<string, Record<string, string> | false>
   /** Extracts the route base name (without locale suffix) */
   getRouteBaseName: (route: RouteRecordNameGeneric | RouteLocationGenericPath | null) => string | undefined
   /** Modifies the resolved localized path. Middleware for `switchLocalePath` */
@@ -72,8 +72,8 @@ export function useComposableContext(): ComposableContext {
 }
 const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
 export function createComposableContext(): ComposableContext {
-  const router = useRouter()
   const ctx = useNuxtI18nContext()
+  const router = useRouter()
   const nuxtApp = useNuxtApp()
   const defaultLocale = ctx.getDefaultLocale()
   const routeByPathResolver = createLocalizedRouteByPathResolver(router)
@@ -108,11 +108,6 @@ export function createComposableContext(): ComposableContext {
     return route
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const slp: Record<string, Record<string, string> | false> = import.meta.client
-    ? JSON.parse(document.querySelector(`[data-nuxt-i18n-slp="${nuxtApp._id}"]`)?.textContent ?? '{}')
-    : {}
-
   const composableCtx: ComposableContext = {
     router,
     head: useHead({}),
@@ -122,7 +117,7 @@ export function createComposableContext(): ComposableContext {
       lang: __I18N_STRICT_SEO__,
       seo: __I18N_STRICT_SEO__
     },
-    getSLP: () => slp,
+    localePathPayload: getLocalePathPayload(),
     routingOptions: {
       defaultLocale: defaultLocale,
       strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
@@ -135,8 +130,8 @@ export function createComposableContext(): ComposableContext {
     getRouteLocalizedParams: () =>
       (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>,
     getLocalizedDynamicParams: locale => {
-      if (__I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && slp) {
-        return slp[locale] || {}
+      if (__I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && composableCtx.localePathPayload) {
+        return composableCtx.localePathPayload[locale] || {}
       }
       return composableCtx.getRouteLocalizedParams()?.[locale]
     },
@@ -171,6 +166,11 @@ export function createComposableContext(): ComposableContext {
   return composableCtx
 }
 
+function getLocalePathPayload(nuxtApp = useNuxtApp()) {
+  const payload = import.meta.client && document.querySelector(`[data-nuxt-i18n-slp="${nuxtApp._id}"]`)?.textContent
+  return JSON.parse(payload || '{}') as Record<string, Record<string, string> | false>
+}
+
 declare global {
   interface Window {
     _i18nSlp: Record<string, Record<string, unknown> | false> | undefined
@@ -183,11 +183,11 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
   const oldLocale = ctx.getLocale()
 
   // skip if locale is already set
-  if (locale === oldLocale && !ctx.firstAccess) {
+  if (locale === oldLocale && !ctx.initial) {
     return locale
   }
 
-  const data = { oldLocale, newLocale: locale, initialSetup: ctx.firstAccess, context: nuxt }
+  const data = { oldLocale, newLocale: locale, initialSetup: ctx.initial, context: nuxt }
   let override = (await nuxt.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
   if (override != null && import.meta.dev) {
     console.warn('[nuxt-i18n] Do not return in `i18n:beforeLocaleSwitch`, mutate `data.newLocale` instead.')
@@ -225,18 +225,19 @@ function skipDetect(detect: DetectBrowserLanguageOptions, path: string, pathLoca
 
 export function detectLocale(route: string | CompatRoute): string {
   const nuxtApp = useNuxtApp()
-  const path = isString(route) ? route : route.path
   const ctx = useNuxtI18nContext(nuxtApp)
+  const path = isString(route) ? route : route.path
 
   function* detect() {
-    if (ctx.firstAccess && ctx.detection.enabled && !skipDetect(ctx.detection, path, ctx.getRouteLocale(path))) {
+    if (ctx.initial && ctx.detection.enabled && !skipDetect(ctx.detection, path, ctx.getRouteLocale(path))) {
       yield ctx.getCookieLocale()
-      yield ctx.getBrowserLocale() // navigator or header
+      yield import.meta.server && ctx.getHeaderLocale()
+      yield import.meta.client && ctx.getNavigatorLocale()
       yield ctx.detection.fallbackLocale
     }
 
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-      yield ctx.getDomainLocale(path)
+      yield ctx.getHostLocale(path)
     }
 
     if (__I18N_ROUTING__) {

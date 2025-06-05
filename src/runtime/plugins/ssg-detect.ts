@@ -17,7 +17,7 @@ export default defineNuxtPlugin({
     nuxt.hook('app:mounted', async () => {
       const detected = detectLocale(nuxt.$router.currentRoute.value)
       await nuxt.runWithContext(() => nuxt.$i18n.setLocale(detected))
-      ctx.firstAccess = false
+      ctx.initial = false
     })
   }
 })
