@@ -19,7 +19,7 @@ export default defineNuxtPlugin({
       defineNuxtRouteMiddleware(async to => {
         const locale = await nuxt.runWithContext(() => loadAndSetLocale(detectLocale(to)))
 
-        ctx.firstAccess = false
+        ctx.initial = false
 
         return nuxt.runWithContext(() => navigate(to, locale))
       }),

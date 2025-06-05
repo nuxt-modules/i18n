@@ -32,10 +32,10 @@ export interface NuxtI18nContext {
   vueI18n: I18n
   config: I18nPublicRuntimeConfig
   detection: DetectBrowserLanguageOptions & { enabled: boolean }
+  /** Initial request/visit */
+  initial: boolean
   /** Locale messages attached during SSR and loaded during hydration */
   preloaded: boolean
-  /** Initial request/visit */
-  firstAccess: boolean
   /** SSG with dynamic locale resources */
   dynamicResourcesSSG: boolean
   rootRedirect: { path: string; code: number } | undefined
@@ -53,8 +53,10 @@ export interface NuxtI18nContext {
   getCookieLocale: () => string | undefined
   /** Set locale to locale cookie */
   setCookieLocale: (locale: string) => void
-  getDomainLocale: (path: string) => string | undefined
+  getHostLocale: (path: string) => string | undefined
+  getHeaderLocale: () => string | undefined
   getBrowserLocale: () => string
+  getNavigatorLocale: () => string | undefined
   /** Get locale from route path or object */
   getRouteLocale: (route: string | CompatRoute) => string
   /** Get current base URL */
@@ -100,8 +102,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
   const ctx: NuxtI18nContext = {
     vueI18n,
+    initial: true,
     preloaded: false,
-    firstAccess: true,
     config: runtimeI18n,
     detection: { ...detectBrowserLanguage, enabled: !!runtimeI18n.detectBrowserLanguage },
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
@@ -140,7 +142,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       }
     },
     getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : x)),
-    getDomainLocale: createDomainLocaleGetter(normalizedLocales),
+    getHostLocale: createDomainLocaleGetter(normalizedLocales),
     getRouteLocale: route => {
       const locale = getLocaleFromRoute(route)
       return ctx.isSupportedLocale(locale) ? locale : ''
@@ -161,16 +163,20 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       }
       return joinURL(baseUrl(), nuxt.$config.app.baseURL)
     },
-    getBrowserLocale: () => {
-      // from navigator or request header
-      const languages = import.meta.client
-        ? navigator.languages
-        : parseAcceptLanguage(useRequestHeader('accept-language') || '')
-
+    getHeaderLocale: () => {
       return findBrowserLocale(
         normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code })),
-        languages
+        parseAcceptLanguage(useRequestHeader('accept-language') || '')
       )
+    },
+    getNavigatorLocale: () => {
+      return findBrowserLocale(
+        normalizedLocales.map(x => ({ code: x.code, language: x.language ?? x.code })),
+        navigator.languages
+      )
+    },
+    getBrowserLocale: () => {
+      return (import.meta.client ? ctx.getNavigatorLocale() : ctx.getHeaderLocale()) || ''
     },
     _loadMessagesFromClient: async (locale: string) => {
       const locales = getLocaleConfig(locale)?.fallbacks ?? []
