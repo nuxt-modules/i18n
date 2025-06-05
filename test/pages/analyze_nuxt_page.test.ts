@@ -1,6 +1,5 @@
 import { test, expect } from 'vitest'
-import { analyzeNuxtPages } from '../../src/pages'
-import { createPageAnalyzeContext } from './utils'
+import { analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../src/pages'
 
 import type { NuxtPage } from '@nuxt/schema'
 
@@ -101,10 +100,9 @@ test('analyzeNuxtPages', () => {
     }
   ]
 
-  const ctx = createPageAnalyzeContext()
-  analyzeNuxtPages(ctx, ctx.pagesDir, pages)
+  const ctx = new NuxtPageAnalyzeContext({})
+  analyzeNuxtPages(ctx, 'pages', pages)
 
-  expect(ctx.stack.length).toBe(0)
   expect([...ctx.pages.values()]).toMatchInlineSnapshot(`
     [
       {
