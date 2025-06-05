@@ -19,21 +19,13 @@ import type { I18nNuxtContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
 
-export type AnalyzedNuxtPageMeta = {
-  /**
-   * Analyzed path used to retrieve configured custom paths
-   */
-  path: string
-  name?: string
-}
-
-type NuxtPageAnalyzeContext = {
-  /**
-   * Array of paths to track current route depth
-   */
-  stack: string[]
+export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
-  pages: Map<string, AnalyzedNuxtPageMeta>
+  pages: Map<string, { path: string; name?: string }> = new Map()
+
+  constructor(config: NuxtI18nOptions['pages']) {
+    this.config = config || {}
+  }
 }
 
 type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
@@ -57,11 +49,7 @@ export async function setupPages({ localeCodes, options, normalizedLocales }: I1
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
     async pages => {
-      const ctx: NuxtPageAnalyzeContext = {
-        stack: [],
-        config: options.pages,
-        pages: new Map<string, AnalyzedNuxtPageMeta>()
-      }
+      const ctx = new NuxtPageAnalyzeContext(options.pages)
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
@@ -77,7 +65,7 @@ export async function setupPages({ localeCodes, options, normalizedLocales }: I1
         ...options,
         includeUnprefixedFallback,
         locales: normalizedLocales,
-        optionsResolver: getRouteOptionsResolver(ctx, options)
+        optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
       })
 
       // keep root when using prefixed routing without prerendering
@@ -224,19 +212,14 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
   for (const page of pages) {
     if (page.file == null) continue
 
-    const splits = page.file.split(pagesDir)
-    const filePath = splits.at(1)
+    const [, filePath] = page.file.split(pagesDir)
     if (filePath == null) continue
 
-    ctx.pages.set(page.file, {
-      path: analyzePagePath(filePath, ctx.stack.length),
-      // if route has an index child the parent will not have a name
-      name: page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name
-    })
+    // if route has an index child the parent will not have a name
+    const pageName = page.name ?? page.children?.find(x => x.path.endsWith('/index'))?.name
+    ctx.pages.set(page.file, { path: analyzePagePath(filePath), name: pageName })
 
-    ctx.stack.push(page.path)
     analyzeNuxtPages(ctx, pagesDir, page.children)
-    ctx.stack.pop()
   }
 }
 
@@ -245,15 +228,14 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
  */
 export function getRouteOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
-  options: Pick<Required<NuxtI18nOptions>, 'pages' | 'defaultLocale' | 'customRoutes'>
+  defaultLocale: string,
+  customRoutes: NuxtI18nOptions['customRoutes']
 ): RouteOptionsResolver {
-  const { defaultLocale, customRoutes } = options
   return (route, localeCodes) => getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
 }
 
 function resolveRoutePath(path: string): string {
-  const normalizePath = path.slice(1, path.length) // remove `/`
-  const tokens = parseSegment(normalizePath)
+  const tokens = parseSegment(path.slice(1))
   return getRoutePath(tokens)
 }
 

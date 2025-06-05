@@ -3,10 +3,8 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { vi, describe, test, expect } from 'vitest'
 import { localizeRoutes } from '../../../src/routing'
-import { getRouteOptionsResolver, analyzeNuxtPages } from '../../../src/pages'
-import { createPageAnalyzeContext, getNuxtOptions, stripFilePropertyFromPages } from '../utils'
-
-import type { NuxtI18nOptions } from '../../../src/types'
+import { getRouteOptionsResolver, analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../../src/pages'
+import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -115,12 +113,12 @@ describe.each([
   test(_case, () => {
     vi.spyOn(fs, 'readFileSync').mockReturnValue('')
 
-    const ctx = createPageAnalyzeContext(undefined, undefined, options.pages)
-    analyzeNuxtPages(ctx, ctx.pagesDir, pages)
+    const ctx = new NuxtPageAnalyzeContext(options.pages)
+    analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
-      optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
+      optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(localizedPages).toMatchSnapshot()
   })
@@ -140,12 +138,12 @@ describe.each([
   }
 ])('Page components', ({ case: _case, options, pages }) => {
   test(_case, () => {
-    const ctx = createPageAnalyzeContext(undefined, undefined, options.pages)
-    analyzeNuxtPages(ctx, ctx.pagesDir, pages)
+    const ctx = new NuxtPageAnalyzeContext(options.pages)
+    analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
       includeUnprefixedFallback: false,
-      optionsResolver: getRouteOptionsResolver(ctx, options as Required<NuxtI18nOptions>)
+      optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
   })

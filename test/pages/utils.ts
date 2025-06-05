@@ -3,7 +3,6 @@ import type { NuxtPage } from '@nuxt/schema'
 
 import type { MarkRequired } from 'ts-essentials'
 import type { LocaleObject } from '../../src/types'
-import type { AnalyzedNuxtPageMeta } from '../../src/pages'
 import { isString } from '@intlify/shared'
 
 export const getNormalizedLocales = (locales: string[] | LocaleObject[] = []): LocaleObject[] =>
@@ -41,18 +40,4 @@ export function stripFilePropertyFromPages(pages: NuxtPage[]) {
     }
     return page
   })
-}
-
-export function createPageAnalyzeContext(
-  srcDir: string = '/path/to/nuxt-app',
-  pagesDir: string = 'pages',
-  config: NuxtI18nOptions['pages'] = undefined
-) {
-  return {
-    stack: [],
-    srcDir,
-    pagesDir,
-    config,
-    pages: new Map<string, AnalyzedNuxtPageMeta>()
-  }
 }
