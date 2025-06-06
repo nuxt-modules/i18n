@@ -15,7 +15,7 @@ export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<stri
   return localeConfigs
 }
 
-export function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): string[] {
+function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): string[] {
   if (fallback === false) return []
   if (isArray(fallback)) return fallback
 
