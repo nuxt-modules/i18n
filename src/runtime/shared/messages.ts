@@ -1,7 +1,7 @@
-import { deepCopy, isArray, isFunction, isString, toTypeString } from '@intlify/shared'
+import { deepCopy, isFunction, toTypeString } from '@intlify/shared'
 import { useNuxtApp } from '#app'
 
-import type { I18nOptions, Locale, FallbackLocale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type { I18nOptions, Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { VueI18nConfig } from '#internal-i18n-types'
 
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
@@ -27,27 +27,6 @@ export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[]): Promi
 
   vueI18nOptions.fallbackLocale ??= false
   return vueI18nOptions
-}
-
-export function getFallbackLocaleCodes(fallback: FallbackLocale, locales: Locale[]): Locale[] {
-  if (fallback === false) return []
-  if (isArray(fallback)) return fallback
-
-  let fallbackLocales: Locale[] = []
-  if (isString(fallback)) {
-    if (locales.every(locale => locale !== fallback)) {
-      fallbackLocales.push(fallback)
-    }
-    return fallbackLocales
-  }
-
-  const targets = [...locales, 'default']
-  for (const locale of targets) {
-    if (locale in fallback == false) continue
-    fallbackLocales = [...fallbackLocales, ...fallback[locale].filter(Boolean)]
-  }
-
-  return fallbackLocales
 }
 
 /**
