@@ -87,10 +87,3 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
     }
   }
 }
-
-/**
- * Returns default locale for the current domain, returns `defaultLocale` by default
- */
-export function getDefaultLocaleForDomain(host: string = getHost()): string | undefined {
-  return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code
-}

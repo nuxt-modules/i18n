@@ -3,13 +3,17 @@ import { vueI18nConfigs, localeCodes as _localeCodes } from '#build/i18n.options
 
 import type { I18nOptions } from 'vue-i18n'
 
-type ResolvedI18nOptions = Omit<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'> &
-  Required<Pick<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'>>
+type RequireProps<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>
+
+export type ResolvedI18nOptions = RequireProps<I18nOptions, 'messages' | 'locale' | 'fallbackLocale'> & {
+  defaultLocale: string
+}
 
 export const setupVueI18nOptions = async (defaultLocale: string): Promise<ResolvedI18nOptions> => {
-  const options = await loadVueI18nOptions(vueI18nConfigs)
+  const options = (await loadVueI18nOptions(vueI18nConfigs)) as ResolvedI18nOptions
 
   options.locale = defaultLocale || options.locale || 'en-US'
+  options.defaultLocale = defaultLocale
   options.fallbackLocale ??= false
   options.messages ??= {}
 
@@ -18,5 +22,5 @@ export const setupVueI18nOptions = async (defaultLocale: string): Promise<Resolv
     options.messages[locale] ??= {}
   }
 
-  return options as ResolvedI18nOptions
+  return options
 }

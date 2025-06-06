@@ -22,7 +22,7 @@ import type {
 } from '#internal-i18n-types'
 import type { CompatRoute } from './types'
 
-export const useLocaleConfigs = () =>
+const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
 
 /**

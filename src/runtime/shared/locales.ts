@@ -1,4 +1,4 @@
-import { localeCodes, localeLoaders } from '#build/i18n.options.mjs'
+import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
 import { isArray, isString } from '@intlify/shared'
 import type { FallbackLocale } from 'vue-i18n'
 
@@ -48,4 +48,11 @@ export function isLocaleCacheable(locale: string) {
  */
 export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: string[]) {
   return isLocaleCacheable(locale) && fallbackLocales.every(fallbackLocale => isLocaleCacheable(fallbackLocale))
+}
+
+/**
+ * Returns default locale for the current domain, returns `defaultLocale` by default
+ */
+export function getDefaultLocaleForDomain(host: string): string | undefined {
+  return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code
 }

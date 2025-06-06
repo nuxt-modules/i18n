@@ -1,7 +1,6 @@
 import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
-import { navigateTo, useHead, useNuxtApp, useRouter } from '#imports'
-import { getDefaultLocaleForDomain } from './domain'
+import { navigateTo, useHead, useNuxtApp, useRequestURL, useRouter } from '#imports'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
 import { getRouteBaseName } from '#i18n-kit/routing'
 import {
@@ -12,6 +11,7 @@ import {
   type RouteLikeWithPath
 } from './routing/routing'
 import { useNuxtI18nContext } from './context'
+import { getDefaultLocaleForDomain } from './shared/locales'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -143,7 +143,7 @@ export function createComposableContext(): ComposableContext {
 
       // remove prefix if path is default for domain
       if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
-        const defaultLocale = getDefaultLocaleForDomain()
+        const defaultLocale = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host)
         if (locale !== defaultLocale || ctx.getRouteLocale(path) !== defaultLocale) {
           return path
         }
