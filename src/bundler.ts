@@ -1,10 +1,11 @@
-import { extendViteConfig, addWebpackPlugin, addBuildPlugin, addRspackPlugin, useNuxt } from '@nuxt/kit'
+import { addBuildPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
-import { logger, toArray } from './utils'
+import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { HeistPlugin } from './transform/heist'
+import { addDefinePlugin } from 'nuxt-define'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
@@ -52,6 +53,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(pluginOptions))
@@ -60,36 +62,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   const defineConfig = getDefineConfig(ctx)
-  /**
-   * webpack plugin
-   */
-  if (nuxt.options.builder === '@nuxt/webpack-builder') {
-    try {
-      const webpack = await import('webpack').then(m => m.default || m)
-      addWebpackPlugin(new webpack.DefinePlugin(defineConfig))
-    } catch (e: unknown) {
-      logger.error((e as Error).message)
-    }
-  }
-
-  /**
-   * rspack plugin
-   */
-  if (nuxt.options.builder === '@nuxt/rspack-builder') {
-    try {
-      const { rspack } = await import('@rspack/core')
-      addRspackPlugin(new rspack.DefinePlugin(defineConfig))
-    } catch (e: unknown) {
-      logger.error((e as Error).message)
-    }
-  }
-
-  /**
-   * vite plugin
-   */
-  extendViteConfig(config => {
-    config.define = Object.assign({}, config.define, defineConfig)
-  })
+  await addDefinePlugin(defineConfig)
 }
 
 export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
