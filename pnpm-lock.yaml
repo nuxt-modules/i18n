@@ -65,8 +65,8 @@ importers:
         specifier: ^1.7.4
         version: 1.7.4
       nuxt-define:
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: ^1.0.0
+        version: 1.0.0
       oxc-parser:
         specifier: ^0.72.1
         version: 0.72.2
@@ -4846,8 +4846,8 @@ packages:
     resolution: {integrity: sha512-tF+BUToseiljrQXEg/zbqDZvr/2RyEGKzj2PzVF0pR9iHTQPEkQ+8Yt91Qo3mU3crttxTP39GJEgN5npeFZ+1w==}
     hasBin: true
 
-  nuxt-define@0.0.2:
-    resolution: {integrity: sha512-7tRdwHglIUN5jBRsYIkuOcQal5pkgiw9LMCJFIe1OGk6F5V2uR4C1Ws3072hpTicIMBAHcLwAsi1dEepktljRw==}
+  nuxt-define@1.0.0:
+    resolution: {integrity: sha512-CYZ2WjU+KCyCDVzjYUM4eEpMF0rkPmkpiFrybTqqQCRpUbPt2h3snswWIpFPXTi+osRCY6Og0W/XLAQgDL4FfQ==}
 
   nuxt-llms@0.1.2:
     resolution: {integrity: sha512-W7QJK54X7tqfdoxDznZguALTOwTBm1Pc1E3qe6WbYDZ8PZy2ERGkyld8X3V2G67E6L19og4TXm0m8dLxrbCjNg==}
@@ -12377,7 +12377,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  nuxt-define@0.0.2: {}
+  nuxt-define@1.0.0: {}
 
   nuxt-llms@0.1.2(magicast@0.3.5):
     dependencies:
