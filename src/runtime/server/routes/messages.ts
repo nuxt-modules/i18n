@@ -33,6 +33,8 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
 const _messagesHandlerCached = defineCachedEventHandler(_messagesHandler, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
+  staleMaxAge: !__I18N_CACHE__ ? -1 : 60,
+  swr: __I18N_CACHE__,
   getKey: event => getRouterParam(event, 'locale') ?? 'null',
   shouldBypassCache(event) {
     const locale = getRouterParam(event, 'locale')

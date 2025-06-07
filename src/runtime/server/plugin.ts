@@ -1,6 +1,6 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { defineNitroPlugin } from 'nitropack/runtime'
+import { defineNitroPlugin, useStorage } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
@@ -19,6 +19,11 @@ const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true 
 export default defineNitroPlugin(async nitro => {
   const runtimeI18n = useRuntimeI18n()
   const defaultLocale: string = runtimeI18n.defaultLocale || ''
+
+  // clear cache for i18n handlers on startup
+  const cacheStorage = useStorage('cache')
+  const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
+  await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
 
   nitro.hooks.hook('request', async (event: H3Event) => {
     const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || defaultLocale)
