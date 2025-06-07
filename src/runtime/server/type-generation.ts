@@ -3,14 +3,13 @@ import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n
 import { dtsFile } from '#internal/i18n-type-generation-options'
 import { loadVueI18nOptions } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
+import { useRuntimeI18n } from '../shared/utils'
 import { writeFile } from 'fs/promises'
-import { useRuntimeConfig } from '#imports'
 
 import type { I18nOptions } from 'vue-i18n'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
 
 export default async () => {
-  const { experimental, defaultLocale } = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+  const { experimental, defaultLocale } = useRuntimeI18n()
 
   const targetLocales: string[] = []
   if (experimental.typedOptionsAndMessages === 'default' && defaultLocale != null) {

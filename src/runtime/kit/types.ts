@@ -1,5 +1,5 @@
 /** @internal */
-export type Locale = { code: string; language: string }
+export type Locale = { code: string; language?: string }
 
 /** @internal */
 export type RouteName = string | symbol | null | undefined

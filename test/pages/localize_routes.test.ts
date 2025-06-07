@@ -3,7 +3,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
 import { localizeRoutes } from '../../src/routing'
-import { setupMultiDomainLocales } from '../../src/runtime/domain'
+import { setupMultiDomainLocales } from '../../src/runtime/routing/domain'
 import type { NuxtPage } from '@nuxt/schema'
 import type { LocaleObject } from '../../src/types'
 import { LocalizableRoute } from '../../src/kit/gen'

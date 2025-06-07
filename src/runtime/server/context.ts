@@ -1,6 +1,7 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
 import type { H3Event, H3EventContext } from 'h3'
+import type { ResolvedI18nOptions } from '../shared/vue-i18n'
 
 export function useI18nContext(event: H3Event) {
   if (event.context.nuxtI18n == null) {
@@ -30,6 +31,7 @@ export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
     slp: {},
     localeConfigs: {},
     trackMap: {},
+    vueI18nOptions: undefined,
     trackKey(key, locale) {
       this.trackMap[locale] ??= new Set<string>()
       this.trackMap[locale].add(key)
@@ -77,6 +79,8 @@ declare module 'h3' {
        * @internal
        */
       trackKey: (key: string, locale: string) => void
+
+      vueI18nOptions?: ResolvedI18nOptions
     }
   }
 }
