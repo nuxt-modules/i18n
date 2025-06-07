@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL, useRouter } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadAndSetLocale, navigate, createComposableContext } from '../utils'
 import { extendI18n } from '../routing/i18n'
@@ -11,13 +11,12 @@ import { getDefaultLocaleForDomain } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { createNuxtI18nContext, useNuxtI18nContext, type NuxtI18nContext } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
-import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
 import { useDetectors } from '../shared/detection'
 import { resolveSupportedLocale } from '../shared/locales'
+import { setupMultiDomainLocales } from '../routing/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
-import type { Router } from 'vue-router'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -173,26 +172,5 @@ function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestE
   i18n.tm = key => {
     serverI18n?.trackKey(key, ctx.getLocale())
     return originalTm(key)
-  }
-}
-
-/**
- * Removes default routes depending on domain
- */
-export function setupMultiDomainLocales(defaultLocale: string, router: Router = useRouter()) {
-  if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') return
-
-  // adjust routes to match the domain's locale and structure
-  for (const route of router.getRoutes()) {
-    const routeName = String(route.name)
-    if (routeName.endsWith(defaultRouteNameSuffix)) {
-      router.removeRoute(routeName)
-      continue
-    }
-
-    const locale = getLocaleFromRouteName(routeName)
-    if (locale === defaultLocale) {
-      router.addRoute({ ...route, path: route.path.replace(`/${locale}`, '') || '/' })
-    }
   }
 }
