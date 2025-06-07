@@ -12,8 +12,6 @@ import type { H3Event } from 'h3'
 const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   const locale = getRouterParam(event, 'locale')
 
-  console.log(`Loading messages for locale: ${locale}`)
-
   if (!locale) {
     throw createError({ status: 400, message: 'Locale not specified.' })
   }
@@ -29,7 +27,7 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   return ctx.messages
 })
 
-const _cached = defineCachedFunction(_messagesHandler, {
+const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
   name: 'i18n:messages-internal',
   maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
   getKey: event => getRouterParam(event, 'locale') ?? 'null',
@@ -43,7 +41,7 @@ const _cached = defineCachedFunction(_messagesHandler, {
 /**
  * Load messages for the specified locale event parameter (cached)
  */
-const _messagesHandlerCached = defineCachedEventHandler(_cached, {
+const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : 10,
   swr: false,
