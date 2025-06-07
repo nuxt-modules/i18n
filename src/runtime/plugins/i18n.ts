@@ -7,9 +7,9 @@ import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { localeHead, _useLocaleHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
-import { getDefaultLocaleForDomain } from '../shared/locales'
+import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { createNuxtI18nContext, useNuxtI18nContext, type NuxtI18nContext } from '../context'
+import { createNuxtI18nContext, useLocaleConfigs, useNuxtI18nContext, type NuxtI18nContext } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { resolveSupportedLocale } from '../shared/locales'
@@ -30,6 +30,14 @@ export default defineNuxtPlugin({
     const _defaultLocale =
       getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
+
+    const localeConfigs = useLocaleConfigs()
+    if (import.meta.server) {
+      localeConfigs.value = useRequestEvent()!.context.nuxtI18n?.localeConfigs || {}
+    } else {
+      // fallback when server is disabled
+      localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
+    }
 
     if (__MULTI_DOMAIN_LOCALES__) {
       setupMultiDomainLocales(optionsI18n.defaultLocale)

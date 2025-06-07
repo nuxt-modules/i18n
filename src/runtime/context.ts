@@ -20,8 +20,11 @@ import type {
   RootRedirectOptions
 } from '#internal-i18n-types'
 
-const useLocaleConfigs = () =>
-  useState<Record<string, { cacheable: boolean; fallbacks: string[] }>>('i18n:cached-locale-configs', () => ({}))
+export const useLocaleConfigs = () =>
+  useState<Record<string, { cacheable: boolean; fallbacks: string[] }> | undefined>(
+    'i18n:cached-locale-configs',
+    () => undefined
+  )
 
 /**
  * @internal
@@ -84,7 +87,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const localeCookie = useI18nCookie(detectConfig)
 
   /** Get computed config for locale */
-  const getLocaleConfig = (locale: string) => serverLocaleConfigs.value[locale]
+  const getLocaleConfig = (locale: string) => serverLocaleConfigs.value![locale]
   const getDomainFromLocale = (locale: string) =>
     domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
