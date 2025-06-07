@@ -1,20 +1,23 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
-import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestURL, useRuntimeConfig } from '#imports'
+import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL, useRouter } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { loadAndSetLocale, navigate, createComposableContext } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { localeHead, _useLocaleHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
-import { setupMultiDomainLocales } from '../domain'
 import { getDefaultLocaleForDomain } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { createNuxtI18nContext, useNuxtI18nContext, type NuxtI18nContext } from '../context'
+import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
+import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
+import { useDetectors } from '../shared/detection'
+import { resolveSupportedLocale } from '../shared/locales'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
-import type { I18nPublicRuntimeConfig, I18nHeadOptions } from '#internal-i18n-types'
-import type { H3EventContext } from 'h3'
+import type { I18nHeadOptions } from '#internal-i18n-types'
+import type { Router } from 'vue-router'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -23,7 +26,7 @@ export default defineNuxtPlugin({
     Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
 
     const nuxt = useNuxtApp()
-    const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+    const runtimeI18n = useRuntimeI18n()
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
     const _defaultLocale =
       getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
@@ -37,14 +40,15 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
+    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection())
 
     nuxt._nuxtI18nCtx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale)
     const ctx = useNuxtI18nContext(nuxt)
 
     nuxt._nuxtI18n = createComposableContext()
 
-    if (__I18N_STRIP_UNUSED__ && import.meta.server && nuxt.ssrContext?.event.context.nuxtI18n) {
-      wrapTranslationFunctions(ctx, nuxt.ssrContext?.event.context.nuxtI18n)
+    if (__I18N_STRIP_UNUSED__ && import.meta.server) {
+      wrapTranslationFunctions(ctx)
     }
 
     // extend i18n instance
@@ -73,8 +77,12 @@ export default defineNuxtPlugin({
         composer.differentDomains = __DIFFERENT_DOMAINS__
         composer.defaultLocale = optionsI18n.defaultLocale
 
-        composer.getBrowserLocale = ctx.getBrowserLocale
-        composer.getLocaleCookie = ctx.getCookieLocale
+        composer.getBrowserLocale = () =>
+          import.meta.client
+            ? resolveSupportedLocale(detectors.navigator())
+            : resolveSupportedLocale(detectors.header())
+
+        composer.getLocaleCookie = () => resolveSupportedLocale(detectors.cookie())
         composer.setLocaleCookie = ctx.setCookieLocale
 
         composer.finalizePendingLocaleChange = async () => {
@@ -137,7 +145,9 @@ export default defineNuxtPlugin({
 /**
  * Wrap translation functions to track translation keys used during SSR
  */
-function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n: H3EventContext['nuxtI18n']) {
+function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestEvent()?.context?.nuxtI18n) {
+  if (!serverI18n) return
+
   const i18n = ctx.vueI18n.global
   const originalT = i18n.t.bind(i18n)
   type TParams = Parameters<typeof originalT>
@@ -163,5 +173,26 @@ function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n: H3EventConte
   i18n.tm = key => {
     serverI18n?.trackKey(key, ctx.getLocale())
     return originalTm(key)
+  }
+}
+
+/**
+ * Removes default routes depending on domain
+ */
+export function setupMultiDomainLocales(defaultLocale: string, router: Router = useRouter()) {
+  if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') return
+
+  // adjust routes to match the domain's locale and structure
+  for (const route of router.getRoutes()) {
+    const routeName = String(route.name)
+    if (routeName.endsWith(defaultRouteNameSuffix)) {
+      router.removeRoute(routeName)
+      continue
+    }
+
+    const locale = getLocaleFromRouteName(routeName)
+    if (locale === defaultLocale) {
+      router.addRoute({ ...route, path: route.path.replace(`/${locale}`, '') || '/' })
+    }
   }
 }

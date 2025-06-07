@@ -56,3 +56,7 @@ export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: 
 export function getDefaultLocaleForDomain(host: string): string | undefined {
   return normalizedLocales.find(l => !!l.defaultForDomains?.includes(host))?.code
 }
+
+export const isSupportedLocale = (locale?: string): boolean => localeCodes.includes(locale || '')
+
+export const resolveSupportedLocale = (locale: string | undefined) => (isSupportedLocale(locale) ? locale : undefined)

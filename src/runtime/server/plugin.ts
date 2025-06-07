@@ -1,6 +1,6 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
+import { defineNitroPlugin } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
@@ -9,21 +9,20 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
+import { useRuntimeI18n } from '../shared/utils'
 
 import { getRequestURL, type H3Event } from 'h3'
 import type { CoreOptions } from '@intlify/core'
-import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+
+const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true }).host
 
 export default defineNitroPlugin(async nitro => {
-  const runtimeI18n = useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+  const runtimeI18n = useRuntimeI18n()
   const defaultLocale: string = runtimeI18n.defaultLocale || ''
 
   nitro.hooks.hook('request', async (event: H3Event) => {
-    const options = await setupVueI18nOptions(
-      getDefaultLocaleForDomain(getRequestURL(event, { xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
-    )
+    const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || defaultLocale)
     const localeConfigs = createLocaleConfigs(options.fallbackLocale)
-
     event.context.nuxtI18n = createI18nContext()
     event.context.nuxtI18n.vueI18nOptions = options
     event.context.nuxtI18n.localeConfigs = localeConfigs
