@@ -56,12 +56,7 @@ export interface NuxtI18nContext {
   _loadMessagesFromServer: (locale: Locale) => Promise<void>
 }
 
-export function useI18nCookie({
-  cookieCrossOrigin,
-  cookieDomain,
-  cookieSecure,
-  cookieKey
-}: DetectBrowserLanguageOptions) {
+function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {
   const date = new Date()
   return useCookie<string | undefined>(cookieKey || __DEFAULT_COOKIE_KEY__, {
     path: '/',
