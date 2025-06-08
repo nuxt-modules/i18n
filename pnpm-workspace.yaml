@@ -2,6 +2,7 @@ packages:
   - docs
   - playground
   - specs/fixtures/*
+  - specs/fixtures/issues/*
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@tailwindcss/oxide'
