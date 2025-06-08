@@ -286,7 +286,7 @@ export function navigate(to: CompatRoute, locale: string) {
     return
   }
 
-  return navigateTo(destination)
+  return navigateTo(destination, { redirectCode: ctx.redirectStatusCode })
 }
 
 export function prefixable(currentLocale: string, defaultLocale: string): boolean {
