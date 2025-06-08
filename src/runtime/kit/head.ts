@@ -48,7 +48,7 @@ export type HeadContext = {
   getRouteBaseName: (route: RouteLocationResolvedGeneric | RouteLocationNormalizedLoadedGeneric) => string | undefined
   getLocaleRoute: (route: RouteLocationResolvedGeneric) => RouteLocationResolvedGeneric | undefined
   getCurrentRoute: () => RouteLocationNormalizedLoadedGeneric
-  getRouteWithoutQuery: () => RouteLocationResolvedGeneric
+  getRouteWithoutQuery: () => RouteLocationResolvedGeneric | undefined
   getLocalizedRoute: (locale: string, route: RouteLocationResolvedGeneric | undefined) => string
 }
 
