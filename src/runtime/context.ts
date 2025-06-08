@@ -26,6 +26,8 @@ export const useLocaleConfigs = () =>
     () => undefined
   )
 
+export const useResolvedLocale = () => useState<string>('i18n:resolved-locale', () => '')
+
 /**
  * @internal
  */
@@ -91,6 +93,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const getDomainFromLocale = (locale: string) =>
     domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
+  const resolvedLocale = useResolvedLocale()
 
   const ctx: NuxtI18nContext = {
     vueI18n,
@@ -112,6 +115,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       }
 
       await nuxt.callHook('i18n:localeSwitched', { newLocale: locale, oldLocale })
+
+      resolvedLocale.value = locale
     },
     setLocaleSuspend: async (locale: string) => {
       if (!isSupportedLocale(locale)) return
