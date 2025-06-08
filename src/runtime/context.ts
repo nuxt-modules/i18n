@@ -7,18 +7,13 @@ import { createBaseUrlGetter } from './utils'
 import { getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
-import { useI18nDetection, useRuntimeI18n } from './shared/utils'
+import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL } from 'ufo'
 import { isString } from '@intlify/shared'
 
 import type { Locale, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type {
-  DetectBrowserLanguageOptions,
-  I18nPublicRuntimeConfig,
-  LocaleObject,
-  RootRedirectOptions
-} from '#internal-i18n-types'
+import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
 export const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }> | undefined>(
@@ -71,14 +66,6 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
     domain: cookieDomain || undefined,
     secure: cookieCrossOrigin || cookieSecure
   })
-}
-
-function resolveRootRedirect(config: string | RootRedirectOptions | undefined) {
-  if (!config) return undefined
-  return {
-    path: '/' + (isString(config) ? config : config.path).replace(/^\//, ''),
-    code: (!isString(config) && config.statusCode) || 302
-  }
 }
 
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
