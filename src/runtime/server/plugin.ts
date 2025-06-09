@@ -1,6 +1,6 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runtime'
+import { defineNitroPlugin, useStorage } from 'nitropack/runtime'
 import { tryUseI18nContext, createI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
@@ -31,11 +31,9 @@ export function prefixable(currentLocale: string, defaultLocale: string): boolea
 }
 
 export default defineNitroPlugin(async nitro => {
-  const runtimeConfig = useRuntimeConfig()
-
   const runtimeI18n = useRuntimeI18n()
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
-  const defaultLocale: string = runtimeI18n.defaultLocale || ''
+  const _defaultLocale: string = runtimeI18n.defaultLocale || ''
 
   // clear cache for i18n handlers on startup
   const cacheStorage = useStorage('cache')
@@ -88,12 +86,22 @@ export default defineNitroPlugin(async nitro => {
   }
   const baseUrlGetter = createBaseUrlGetter()
 
+  async function doRedirect(event: H3Event, to: string, code: number) {
+    // console.log(`[nuxt-i18n] Redirecting to ${to} with code ${code}`)
+    await sendRedirect(event, to, code)
+  }
+
+  function doSetCookie(event: H3Event, name: string, value: string, options?: Record<string, any>) {
+    // console.log(`[nuxt-i18n] Setting cookie ${name} to ${value}`)
+    setCookie(event, name, value, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax', ...options })
+  }
+
   nitro.hooks.hook('request', async (event: H3Event) => {
     if (event.path === '/.well-known/appspecific/com.chrome.devtools.json' || event.path === '/favicon.ico') {
       sendNoContent(event)
       return
     }
-    const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || defaultLocale)
+    const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || _defaultLocale)
     const localeConfigs = createLocaleConfigs(options.fallbackLocale)
     const detector = useDetectors(event, detectConfig)
 
@@ -103,6 +111,9 @@ export default defineNitroPlugin(async nitro => {
     if (detectConfig.enabled) {
       for (const detected of detect(detector, event.path)) {
         if (detected.locale && isSupportedLocale(detected.locale)) {
+          // console.log(
+          //   `[nuxt-i18n] Detected locale "${detected.locale}" from ${detected.source} for path "${event.path}"`
+          // )
           locale = detected.locale
           break
         }
@@ -114,50 +125,58 @@ export default defineNitroPlugin(async nitro => {
     const skipRedirectOnRoot = detectConfig.redirectOn === 'root' && event.path !== '/'
 
     if (rootRedirect && event.path === '/') {
-      const domainForLocale = getDomainFromLocale(event, locale)
-      const defaultLocale =
-        (__MULTI_DOMAIN_LOCALES__ && domainForLocale && getDefaultLocaleForDomain(getHost(event))) ||
-        runtimeI18n.defaultLocale
-
       const rootRedirectIsLocalized = isSupportedLocale(detector.route(rootRedirect.path))
       const resolvedPath = rootRedirectIsLocalized
         ? rootRedirect.path
         : matchLocalized(
             rootRedirect.path,
-            detectConfig.enabled ? locale || defaultLocale : defaultLocale,
-            defaultLocale
+            (detectConfig.enabled && locale) || options.defaultLocale,
+            options.defaultLocale
           )
       if (resolvedPath) {
-        setCookie(event, 'i18n_redirected', locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
-        const fullDestination = withoutTrailingSlash(joinURL(baseUrlGetter(event, defaultLocale), resolvedPath))
-        await sendRedirect(event, fullDestination, rootRedirect.code || 302)
+        const _locale = detectConfig.enabled ? locale || options.defaultLocale : options.defaultLocale
+        doSetCookie(event, 'i18n_redirected', _locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+        event.context.nuxtI18n.detectLocale = _locale
+        await doRedirect(
+          event,
+          withoutTrailingSlash(joinURL(baseUrlGetter(event, options.defaultLocale), resolvedPath)),
+          rootRedirect.code || 302
+        )
         return
       }
     }
 
-    if (locale && detectConfig.enabled && !skipRedirectOnPrefix && !skipRedirectOnRoot) {
+    // path locale exists and we skip redirect on prefix or root
+    // ensure cookie is set to avoid redirecting from nuxt context
+    if (skipRedirectOnPrefix && pathLocale && isSupportedLocale(pathLocale)) {
+      doSetCookie(event, 'i18n_redirected', pathLocale)
+      event.context.nuxtI18n.detectLocale = pathLocale
+      locale = pathLocale
+    } else if (locale && detectConfig.enabled && !skipRedirectOnPrefix && !skipRedirectOnRoot) {
       event.context.nuxtI18n.detectRoute = event.path
 
-      const domainForLocale = getDomainFromLocale(event, locale)
-      const defaultLocale =
-        (__MULTI_DOMAIN_LOCALES__ && domainForLocale && getDefaultLocaleForDomain(getHost(event))) ||
-        runtimeI18n.defaultLocale
-      const localeInPath = detector.route(event.path)
-      const entry = isSupportedLocale(localeInPath) ? event.path.slice(localeInPath!.length + 1) : event.path
-      const resolvedPath = matchLocalized(entry || '/', locale, defaultLocale)
+      const entry = isSupportedLocale(pathLocale) ? event.path.slice(pathLocale!.length + 1) : event.path
+      const resolvedPath = matchLocalized(entry || '/', locale, options.defaultLocale)
       if (resolvedPath && resolvedPath !== event.path) {
-        setCookie(event, 'i18n_redirected', locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
-        const fullDestination = withoutTrailingSlash(joinURL(baseUrlGetter(event, defaultLocale), resolvedPath))
-        await sendRedirect(event, fullDestination, 302)
+        event.context.nuxtI18n.detectLocale = locale
+        doSetCookie(event, 'i18n_redirected', locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+        await doRedirect(
+          event,
+          withoutTrailingSlash(joinURL(baseUrlGetter(event, options.defaultLocale), resolvedPath)),
+          302
+        )
         return
       }
     }
 
     if (!pathLocale && __I18N_STRATEGY__ === 'prefix') {
-      const resolvedPath = matchLocalized(event.path, defaultLocale, defaultLocale)
+      const resolvedPath = matchLocalized(event.path, options.defaultLocale, options.defaultLocale)
       if (resolvedPath && resolvedPath !== event.path) {
-        const fullDestination = withoutTrailingSlash(joinURL(baseUrlGetter(event, defaultLocale), resolvedPath))
-        sendRedirect(event, fullDestination, 302)
+        await doRedirect(
+          event,
+          withoutTrailingSlash(joinURL(baseUrlGetter(event, options.defaultLocale), resolvedPath)),
+          302
+        )
 
         return
       }
@@ -207,7 +226,7 @@ export default defineNitroPlugin(async nitro => {
 
   // enable server-side translations and user locale-detector
   if (localeDetector != null) {
-    const options = await setupVueI18nOptions(defaultLocale)
+    const options = await setupVueI18nOptions(_defaultLocale)
     const i18nMiddleware = defineI18nMiddleware({
       ...(options as CoreOptions),
       locale: createUserLocaleDetector(options.locale, options.fallbackLocale)

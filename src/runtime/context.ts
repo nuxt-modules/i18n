@@ -81,6 +81,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
   const resolvedLocale = useResolvedLocale()
+  if (import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
+    resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
+  }
 
   const ctx: NuxtI18nContext = {
     vueI18n,
