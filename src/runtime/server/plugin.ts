@@ -118,10 +118,8 @@ export default defineNitroPlugin(async nitro => {
         (__MULTI_DOMAIN_LOCALES__ && domainForLocale && getDefaultLocaleForDomain(getHost(event))) ||
         runtimeI18n.defaultLocale
       const localeInPath = detector.route(event.path)
-      const entry =
-        (localeInPath && isSupportedLocale(localeInPath) ? event.path.slice(localeInPath.length + 1) : event.path) ||
-        '/'
-      const resolvedLocalized = matchLocalized(entry, locale, defaultLocale)
+      const entry = isSupportedLocale(localeInPath) ? event.path.slice(localeInPath!.length + 1) : event.path
+      const resolvedLocalized = matchLocalized(entry || '/', locale, defaultLocale)
       if (resolvedLocalized && resolvedLocalized !== event.path) {
         setCookie(event, 'i18n_redirected', locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
         const fullDestination = withoutTrailingSlash(joinURL(baseUrlGetter(event, defaultLocale), resolvedLocalized))

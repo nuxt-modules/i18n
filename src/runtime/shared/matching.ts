@@ -3,12 +3,11 @@ import { createRouterMatcher } from 'vue-router'
 import { i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
 
 const matcher = createRouterMatcher([], {})
-
 for (const path of Object.keys(i18nPathToPath)) {
   matcher.addRoute({ path, component: () => '', meta: {} })
 }
 
-export const getI18nPathToI18nPath = (path: string, locale: string) => {
+const getI18nPathToI18nPath = (path: string, locale: string) => {
   if (!path || !locale) return
   const plainPath = i18nPathToPath[path]
   const i18nConfig = pathToI18nConfig[plainPath]
@@ -21,7 +20,7 @@ export const getI18nPathToI18nPath = (path: string, locale: string) => {
  * Match a localized path against the resolved path and return the new path if it differs.
  * The passed path can be localized or not but should not include any prefix.
  */
-export function matchLocalized(path: string, resolved: string, defaultLocale: string): string | undefined {
+export function matchLocalized(path: string, locale: string, defaultLocale: string): string | undefined {
   if (path === '') return
   const parsed = parsePath(path)
   const resolvedMatch = matcher.resolve(
@@ -30,20 +29,19 @@ export function matchLocalized(path: string, resolved: string, defaultLocale: st
   )
 
   if (resolvedMatch && resolvedMatch.matched.length > 0) {
-    const alternate = getI18nPathToI18nPath(resolvedMatch?.matched[0]?.path, resolved)
-    const resolvedDest = matcher.resolve(
+    const alternate = getI18nPathToI18nPath(resolvedMatch?.matched[0]?.path, locale)
+    const match = matcher.resolve(
       { params: resolvedMatch.params },
       { path: alternate || '', name: '', matched: [], params: {}, meta: {} }
     )
 
     const strategizedPath =
-      (prefixable(resolved, defaultLocale) ? `/${resolved}` : '') +
-      (resolvedDest.path.length === 1 ? '' : resolvedDest.path)
+      (prefixable(locale, defaultLocale) ? `/${locale}` : '') + (match.path === '/' ? '' : match.path)
     return strategizedPath + parsed.search
   }
 }
 
-export function prefixable(currentLocale: string, defaultLocale: string): boolean {
+function prefixable(currentLocale: string, defaultLocale: string): boolean {
   return (
     !__DIFFERENT_DOMAINS__ &&
     __I18N_ROUTING__ &&
