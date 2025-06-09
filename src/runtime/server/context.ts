@@ -80,6 +80,7 @@ declare module 'h3' {
        */
       trackKey: (key: string, locale: string) => void
       detectLocale?: string
+      detectRoute?: string
       vueI18nOptions?: ResolvedI18nOptions
     }
   }

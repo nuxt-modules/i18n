@@ -7,6 +7,9 @@ export function prepareStrategy({ options, localeCodes }: I18nNuxtContext, nuxt:
     nuxt.hook('nitro:config', config => {
       config.prerender ??= {}
 
+      config.routeRules ??= {}
+      // config.routeRules['/'] = { prerender: false, ssr: true }
+
       // ignore `/` which is added by nitro by default
       config.prerender.ignore ??= []
       config.prerender.ignore.push(/^\/$/)

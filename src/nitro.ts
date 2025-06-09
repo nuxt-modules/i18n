@@ -31,6 +31,11 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   })
 
   addServerTemplate({
+    filename: '#internal/i18n-route-resources.mjs',
+    getContents: () => nuxt.vfs['#build/i18n-route-resources.mjs'] || ''
+  })
+
+  addServerTemplate({
     filename: '#internal/i18n/locale.detector.mjs',
     getContents: () =>
       enableServerIntegration

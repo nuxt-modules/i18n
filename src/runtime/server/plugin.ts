@@ -11,11 +11,13 @@ import { joinURL, withoutTrailingSlash } from 'ufo'
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n/locale.detector.mjs'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
+import { isFunction } from '@intlify/shared'
 
-import { getRequestURL, sendRedirect, type H3Event } from 'h3'
+import { getRequestURL, sendRedirect, type H3Event, setCookie, sendNoContent } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainFromLocale } from '../shared/domain'
+import { matchLocalized } from '../shared/matching'
 
 const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true }).host
 
@@ -43,83 +45,88 @@ export default defineNitroPlugin(async nitro => {
   function* detect(detectors: ReturnType<typeof useDetectors>, path: string) {
     // && !skipDetect(detectConfig, path, detectors.route(path))
     if (detectConfig.enabled) {
-      yield detectors.cookie()
-      yield detectors.header()
+      yield { locale: detectors.cookie(), source: 'cookie' }
+      yield { locale: detectors.header(), source: 'header' }
       // yield detectConfig.fallbackLocale
     }
 
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-      yield detectors.host(path)
+      yield { locale: detectors.host(path), source: 'domain' }
     }
 
     if (__I18N_ROUTING__) {
-      yield detectors.route(path)
+      yield { locale: detectors.route(path), source: 'route' }
     }
   }
   const getDomainFromLocale = (event: H3Event, locale: string) => {
+    if (!__MULTI_DOMAIN_LOCALES__ && !__DIFFERENT_DOMAINS__) return
     return domainFromLocale(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }), locale)
   }
-  // const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
 
-  // const createBaseUrlGetter = () => {
-  //   const baseUrl = runtimeI18n.baseUrl
-  //   if (isFunction(baseUrl)) {
-  //     import.meta.dev &&
-  //       console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
-  //     return (): string => baseUrl(undefined)
-  //   }
+  const createBaseUrlGetter = () => {
+    const baseUrl = runtimeI18n.baseUrl
+    if (isFunction(baseUrl)) {
+      import.meta.dev &&
+        console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
+      return (): string => baseUrl(undefined)
+    }
 
-  //   return (event: H3Event): string => {
-  //     if (__DIFFERENT_DOMAINS__ && defaultLocale) {
-  //       return (getDomainFromLocale(event, defaultLocale) || baseUrl) ?? ''
-  //     }
+    return (event: H3Event, defaultLocale: string): string => {
+      if (__MULTI_DOMAIN_LOCALES__ && defaultLocale) {
+        const domainForLocale = getDomainFromLocale(event, defaultLocale) || baseUrl
+        return domainForLocale ?? ''
+      }
+      if (__DIFFERENT_DOMAINS__ && defaultLocale) {
+        return (getDomainFromLocale(event, defaultLocale) || baseUrl) ?? ''
+      }
 
-  //     return baseUrl ?? ''
-  //   }
-  // }
-  // const baseUrlGetter = createBaseUrlGetter()
+      // if baseUrl is not determined by domain then prefer relative URL from server-side
+      return ''
+      // return baseUrl ?? ''
+    }
+  }
+  const baseUrlGetter = createBaseUrlGetter()
 
   nitro.hooks.hook('request', async (event: H3Event) => {
+    if (event.path === '/.well-known/appspecific/com.chrome.devtools.json' || event.path === '/favicon.ico') {
+      sendNoContent(event)
+      return
+    }
     const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || defaultLocale)
     const localeConfigs = createLocaleConfigs(options.fallbackLocale)
     const detector = useDetectors(event, detectConfig)
 
     event.context.nuxtI18n = createI18nContext()
 
-    // detectConfig.redirectOn === 'all'
-    let resolved = ''
+    let locale = ''
     for (const detected of detect(detector, event.path)) {
-      if (detected && isSupportedLocale(detected)) {
-        resolved = detected
+      if (detected.locale && isSupportedLocale(detected.locale)) {
+        locale = detected.locale
         break
       }
     }
 
-    if (resolved) {
-      let destination = ''
-      const domainForLocale = getDomainFromLocale(event, resolved)
-      if (__MULTI_DOMAIN_LOCALES__ && domainForLocale) {
-        const fullBase = joinURL(domainForLocale, runtimeConfig.app.baseURL)
-        const defaultLocale = getDefaultLocaleForDomain(getHost(event))
-        if (__I18N_STRATEGY__ === 'prefix_except_default') {
-          destination = joinURL(fullBase, defaultLocale === resolved ? '/' : `/${resolved}`)
-        }
+    const pathLocale = detector.route(event.path)
+    const skipRedirectOnPrefix = detectConfig.redirectOn === 'no prefix' && pathLocale && isSupportedLocale(pathLocale)
+    const skipRedirectOnRoot = detectConfig.redirectOn === 'root' && event.path !== '/'
 
-        destination ||= joinURL(fullBase, `/${resolved}`)
+    if (locale && !skipRedirectOnPrefix && !skipRedirectOnRoot) {
+      event.context.nuxtI18n.detectRoute = event.path
 
-        let entryPath = event.path
-        if (detector.route(entryPath) === resolved) {
-          entryPath = entryPath.slice(resolved.length + 1)
-        }
-        destination = joinURL(destination, entryPath)
-        if (destination !== withoutTrailingSlash(getRequestURL(event, { xForwardedHost: true }).href)) {
-          return await sendRedirect(event, destination)
-        }
-      } else if (detectConfig.enabled && __I18N_ROUTING__ && detectConfig.redirectOn === 'root' && event.path === '/') {
-        destination = prefixable(resolved, runtimeI18n.defaultLocale) ? `/${resolved}` : '/'
-        if (destination !== event.path) {
-          return await sendRedirect(event, destination)
-        }
+      const domainForLocale = getDomainFromLocale(event, locale)
+      const defaultLocale =
+        (__MULTI_DOMAIN_LOCALES__ && domainForLocale && getDefaultLocaleForDomain(getHost(event))) ||
+        runtimeI18n.defaultLocale
+      const localeInPath = detector.route(event.path)
+      const entry =
+        (localeInPath && isSupportedLocale(localeInPath) ? event.path.slice(localeInPath.length + 1) : event.path) ||
+        '/'
+      const resolvedLocalized = matchLocalized(entry, locale, defaultLocale)
+      if (resolvedLocalized && resolvedLocalized !== event.path) {
+        setCookie(event, 'i18n_redirected', locale, { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+        const fullDestination = withoutTrailingSlash(joinURL(baseUrlGetter(event, defaultLocale), resolvedLocalized))
+        await sendRedirect(event, fullDestination, 302)
+        return
       }
     }
 
