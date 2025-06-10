@@ -16,6 +16,17 @@ const getI18nPathToI18nPath = (path: string, locale: string) => {
   }
 }
 
+export function isExistingNuxtRoute(path: string) {
+  if (path === '') return
+  const parsed = parsePath(path)
+  const resolvedMatch = matcher.resolve(
+    { path: parsed.pathname },
+    { path: '/', name: '', matched: [], params: {}, meta: {} }
+  )
+
+  return resolvedMatch.matched.length > 0 ? resolvedMatch : undefined
+}
+
 /**
  * Match a localized path against the resolved path and return the new path if it differs.
  * The passed path can be localized or not but should not include any prefix.
