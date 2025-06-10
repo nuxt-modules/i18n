@@ -30,19 +30,23 @@ describe('strategy: prefix', async () => {
     )
   })
 
-  test.each([['/', '/en']])('cannot access unprefixed url: %s', async (pathUrl, destination) => {
-    const res = await fetch(pathUrl, { redirect: 'manual' })
-    expect(res.status).toBe(302)
-    expect(res.headers.get('location')).toBe(destination)
-  })
+  test('cannot access unprefixed urls', async () => {
+    const redirectUrls = [['/', '/en']]
+    for (const [pathUrl, destination] of redirectUrls) {
+      const res = await fetch(pathUrl, { redirect: 'manual' })
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(destination)
+    }
 
-  test.each([
-    ['/about', '/en/about'],
-    ['/category/foo', '/en/category/foo']
-  ])('cannot access unprefixed url: %s', async (pathUrl, destination) => {
-    const res = await fetch(pathUrl, { redirect: 'manual' })
-    expect(res.status).toBe(404)
-    expect(res.headers.get('location')).toBe(null)
+    const notFoundUrls = [
+      ['/about', '/en/about'],
+      ['/category/foo', '/en/category/foo']
+    ]
+    for (const [pathUrl, _destination] of notFoundUrls) {
+      const res = await fetch(pathUrl, { redirect: 'manual' })
+      expect(res.status).toBe(404)
+      expect(res.headers.get('location')).toBe(null)
+    }
   })
 
   test('can access to prefix locale: /en', async () => {
