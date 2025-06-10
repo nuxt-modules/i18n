@@ -64,31 +64,27 @@ export default defineNitroPlugin(async nitro => {
       yield { locale: detectors.route(path), source: 'route' }
     }
   }
+
   const getDomainFromLocale = (event: H3Event, locale: string) => {
     if (!__MULTI_DOMAIN_LOCALES__ && !__DIFFERENT_DOMAINS__) return
     return domainFromLocale(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }), locale)
   }
 
   const createBaseUrlGetter = () => {
-    const baseUrl = runtimeI18n.baseUrl
-    if (isFunction(baseUrl)) {
+    let baseUrl: string = isFunction(runtimeI18n.baseUrl) ? '' : runtimeI18n.baseUrl || ''
+    if (isFunction(runtimeI18n.baseUrl)) {
       import.meta.dev &&
         console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
-      return (): string => baseUrl(undefined)
+      return (): string => ''
     }
 
     return (event: H3Event, defaultLocale: string): string => {
-      if (__MULTI_DOMAIN_LOCALES__ && defaultLocale) {
-        const domainForLocale = getDomainFromLocale(event, defaultLocale) || baseUrl
-        return domainForLocale ?? ''
-      }
-      if (__DIFFERENT_DOMAINS__ && defaultLocale) {
-        return (getDomainFromLocale(event, defaultLocale) || baseUrl) ?? ''
+      if ((__MULTI_DOMAIN_LOCALES__ || __DIFFERENT_DOMAINS__) && defaultLocale) {
+        return getDomainFromLocale(event, defaultLocale) || baseUrl
       }
 
       // if baseUrl is not determined by domain then prefer relative URL from server-side
       return ''
-      // return baseUrl ?? ''
     }
   }
 
@@ -96,8 +92,9 @@ export default defineNitroPlugin(async nitro => {
 
   nitro.hooks.hook('request', async (event: H3Event) => {
     const detector = useDetectors(event, detection)
-    const pathLocale = detector.route(event.path)
-    const pathWithoutLocale = isSupportedLocale(pathLocale) ? event.path.slice(pathLocale!.length + 1) : event.path
+    const localeSegment = detector.route(event.path)
+    const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
+    const pathWithoutLocale = (pathLocale && event.path.slice(pathLocale.length + 1)) || event.path
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
     if (!event.path.includes('/_i18n/') && !isExistingNuxtRoute(pathWithoutLocale)) {
@@ -114,7 +111,6 @@ export default defineNitroPlugin(async nitro => {
     let locale = ''
     for (const detected of detect(detector, event.path)) {
       if (detected.locale && isSupportedLocale(detected.locale)) {
-        // console.log(`[nuxt-i18n] Detected "${detected.locale}" (${detected.source}) on path "${event.path}"`)
         locale = detected.locale
         break
       }
@@ -138,22 +134,16 @@ export default defineNitroPlugin(async nitro => {
     }
 
     switch (detection.redirectOn) {
+      case 'root':
+        if (event.path !== '/') break
+      case 'no prefix':
+        if (pathLocale) break
       case 'all':
         resolvedPath ??= getLocalizedMatch(locale)
         break
-      case 'root':
-        if (event.path === '/') {
-          resolvedPath ??= getLocalizedMatch(locale)
-        }
-        break
-      case 'no prefix':
-        if (!isSupportedLocale(pathLocale)) {
-          resolvedPath ??= getLocalizedMatch(locale)
-        }
-        break
     }
 
-    if (!pathLocale && __I18N_STRATEGY__ === 'prefix') {
+    if (event.path === '/' && __I18N_STRATEGY__ === 'prefix') {
       resolvedPath ??= getLocalizedMatch(defaultLocale)
     }
 
