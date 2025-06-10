@@ -35,6 +35,6 @@ declare module '#nuxt-i18n/logger' {
 }
 
 declare module '#build/i18n-route-resources.mjs' {
-  const i18nPathToPath: Record<string, string>
-  const pathToI18nConfig: Record<string, Record<string, string | boolean>>
+  export const i18nPathToPath: Record<string, string>
+  export const pathToI18nConfig: Record<string, Record<string, string | boolean>>
 }
