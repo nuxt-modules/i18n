@@ -1,4 +1,5 @@
-import { useRouter, type Router } from 'vue-router'
+import type { Router } from 'vue-router'
+import { useRouter } from '#imports'
 import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
 
 /**

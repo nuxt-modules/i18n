@@ -15,7 +15,6 @@ import { useDetectors } from '../shared/detection'
 import { resolveSupportedLocale } from '../shared/locales'
 import { setupMultiDomainLocales } from '../routing/domain'
 
-import type { Router } from 'vue-router'
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
 
@@ -41,7 +40,7 @@ export default defineNuxtPlugin({
     }
 
     if (__MULTI_DOMAIN_LOCALES__) {
-      setupMultiDomainLocales(optionsI18n.defaultLocale, nuxt.$router as unknown as Router)
+      setupMultiDomainLocales(optionsI18n.defaultLocale)
     }
 
     prerenderRoutes(localeCodes.map(locale => `/_i18n/${locale}/messages.json`))
