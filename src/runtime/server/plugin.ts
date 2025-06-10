@@ -117,8 +117,10 @@ export default defineNitroPlugin(async nitro => {
     switch (detection.redirectOn) {
       case 'root':
         if (event.path !== '/') break
+      // fallthrough (root has no prefix)
       case 'no prefix':
         if (pathLocale) break
+      // fallthrough to resolve
       case 'all':
         resolvedPath ??= getLocalizedMatch(locale)
         break
