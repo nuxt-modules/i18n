@@ -22,10 +22,8 @@ import type { I18nRoute } from './runtime/composables'
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
   pages: Map<string, { path: string; name?: string }> = new Map()
-  mappedPaths: { [absolutePath: string]: { path: string; name?: string } } = {}
-  mappedPathsLocalized: { [path: string]: Record<string, string | boolean> | undefined } = {}
-  mappedPathsLocalizedInverted: { [path: string]: string } = {}
-  fileToPath: { [file: string]: string } = {}
+  pathToConfig: Record<string, Record<string, string | boolean> | undefined> = {}
+  fileToPath: Record<string, string> = {}
 
   constructor(config: NuxtI18nOptions['pages']) {
     this.config = config || {}
@@ -34,7 +32,6 @@ export class NuxtPageAnalyzeContext {
   addPage(page: NuxtPage, path: string, name?: string) {
     this.pages.set(page.file!, { path: path, name: name })
     const p = path === 'index' ? '/' : '/' + path.replace(/\/index$/, '')
-    this.mappedPaths[p] = { path, name }
     this.fileToPath[page.file!] = p
   }
 }
@@ -99,38 +96,25 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         localizedPages.unshift(indexPage as NarrowedNuxtPage)
       }
 
-      const resolvedMapInverted = {} as Record<string, Record<string, string | false>>
-      for (const [path, localeConfig] of Object.entries(ctx.mappedPathsLocalized)) {
-        for (const l in localeConfig) {
-          if (localeConfig[l] === false) continue
-          ctx.mappedPathsLocalizedInverted[localeConfig[l] === true ? path : localeConfig[l]] = path
-        }
-
-        resolvedMapInverted[resolveRoutePath(path)] = {}
-        for (const l in localeConfig) {
-          resolvedMapInverted[resolveRoutePath(path)][l] =
-            localeConfig[l] === true
-              ? resolveRoutePath(path)
-              : localeConfig[l] !== false
-                ? resolveRoutePath(localeConfig[l])
-                : false
+      const invertedMap = {} as Record<string, Record<string, string | false>>
+      const localizedMapInvert: Record<string, string> = {}
+      for (const [path, localeConfig] of Object.entries(ctx.pathToConfig)) {
+        const resPath = resolveRoutePath(path)
+        invertedMap[resPath] ??= {}
+        for (const [locale, localePath] of Object.entries(localeConfig!)) {
+          const localized = localePath === true ? path : localePath
+          invertedMap[resPath][locale] = localized && resolveRoutePath(localized)
+          if (invertedMap[resPath][locale]) {
+            localizedMapInvert[invertedMap[resPath][locale]] = resPath
+          }
         }
       }
-
-      const resolvedMap = {} as Record<string, string>
-      for (const entry in ctx.mappedPathsLocalizedInverted) {
-        resolvedMap[resolveRoutePath(entry)] = resolveRoutePath(ctx.mappedPathsLocalizedInverted[entry])
-      }
-
-      // for(const entry of ctx.mapped)
-      routeResources.i18nPathToPath = resolvedMap
-      routeResources.pathToI18nConfig = resolvedMapInverted
+      routeResources.i18nPathToPath = localizedMapInvert
+      routeResources.pathToI18nConfig = invertedMap
 
       await updateTemplates({
         filter: (template: ResolvedNuxtTemplate) => template.filename === 'i18n-route-resources.mjs'
       })
-
-      // console.log(resolvedMap)
 
       // do not mutate pages if localization is skipped
       if (pages !== localizedPages) {
@@ -293,19 +277,15 @@ export function getRouteOptionsResolver(
     if (route.file) {
       const localeCfg = res?.srcPaths
       const mappedPath = ctx.fileToPath[route.file]
-      ctx.mappedPathsLocalized[mappedPath] ??= {} as Record<string, string | boolean>
-      const map = ctx.mappedPathsLocalized[mappedPath] as unknown as Record<string, string | boolean>
+      ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
 
       // set paths for all locales, assume no custom path is a disabled locale
       for (const l of localeCodes) {
-        map[l] ??= localeCfg?.[l] ?? false
+        ctx.pathToConfig[mappedPath][l] ??= localeCfg?.[l] ?? false
       }
 
       for (const l of res?.locales ?? []) {
-        // set enabled locales to default path
-        // map[l] ||= mappedPath
-        // set enabled locales to truthy (smaller build)
-        map[l] ||= true
+        ctx.pathToConfig[mappedPath][l] ||= true
       }
     }
 
