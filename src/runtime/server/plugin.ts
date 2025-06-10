@@ -21,13 +21,23 @@ import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 
 const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true }).host
 
-export function prefixable(currentLocale: string, defaultLocale: string): boolean {
-  return (
-    !__DIFFERENT_DOMAINS__ &&
-    __I18N_ROUTING__ &&
-    // only prefix default locale with strategy prefix
-    (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
-  )
+function* detect(
+  detectors: ReturnType<typeof useDetectors>,
+  detection: ReturnType<typeof useI18nDetection>,
+  path: string
+) {
+  if (detection.enabled) {
+    yield { locale: detectors.cookie(), source: 'cookie' }
+    yield { locale: detectors.header(), source: 'header' }
+  }
+
+  if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
+    yield { locale: detectors.host(path), source: 'domain' }
+  }
+
+  if (__I18N_ROUTING__) {
+    yield { locale: detectors.route(path), source: 'route' }
+  }
 }
 
 export default defineNitroPlugin(async nitro => {
@@ -47,20 +57,6 @@ export default defineNitroPlugin(async nitro => {
     maxAge: 60 * 60 * 24 * 365,
     sameSite: 'lax' as const,
     secure: detection.cookieSecure
-  }
-  function* detect(detectors: ReturnType<typeof useDetectors>, path: string) {
-    if (detection.enabled) {
-      yield { locale: detectors.cookie(), source: 'cookie' }
-      yield { locale: detectors.header(), source: 'header' }
-    }
-
-    if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-      yield { locale: detectors.host(path), source: 'domain' }
-    }
-
-    if (__I18N_ROUTING__) {
-      yield { locale: detectors.route(path), source: 'route' }
-    }
   }
 
   const getDomainFromLocale = (event: H3Event, locale: string) => {
@@ -86,27 +82,15 @@ export default defineNitroPlugin(async nitro => {
     }
   }
 
-  const baseUrlGetter = createBaseUrlGetter()
-  nitro.hooks.hook('request', async (event: H3Event) => {
-    const detector = useDetectors(event, detection)
-    const localeSegment = detector.route(event.path)
-    const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
-    const path = (pathLocale && event.path.slice(pathLocale.length + 1)) || event.path
-
-    // attempt to only run i18n detection for nuxt pages and i18n server routes
-    if (!event.path.includes('/_i18n/') && !isExistingNuxtRoute(path)) {
-      return
-    }
-
-    const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || _defaultLocale)
-    const defaultLocale = options.defaultLocale
-    const localeConfigs = createLocaleConfigs(options.fallbackLocale)
-
-    const ctx = createI18nContext()
-    event.context.nuxtI18n = ctx
-
+  function resolveRedirectPath(
+    event: H3Event,
+    path: string | undefined,
+    pathLocale: string | undefined,
+    defaultLocale: string,
+    detector: ReturnType<typeof useDetectors>
+  ) {
     let locale = ''
-    for (const detected of detect(detector, event.path)) {
+    for (const detected of detect(detector, detection, event.path)) {
       if (detected.locale && isSupportedLocale(detected.locale)) {
         locale = detected.locale
         break
@@ -144,15 +128,36 @@ export default defineNitroPlugin(async nitro => {
       resolvedPath ??= getLocalizedMatch(defaultLocale)
     }
 
-    if (resolvedPath) {
-      ctx.detectLocale = locale
-      detection.useCookie && setCookie(event, detection.cookieKey, locale, cookieOptions)
-      await sendRedirect(event, joinURL(baseUrlGetter(event, defaultLocale), resolvedPath), redirectCode)
+    return { path: resolvedPath, code: redirectCode, locale }
+  }
+
+  const baseUrlGetter = createBaseUrlGetter()
+  nitro.hooks.hook('request', async (event: H3Event) => {
+    const detector = useDetectors(event, detection)
+    const localeSegment = detector.route(event.path)
+    const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
+    const path = (pathLocale && event.path.slice(pathLocale.length + 1)) || event.path
+
+    // attempt to only run i18n detection for nuxt pages and i18n server routes
+    if (!event.path.includes('/_i18n/') && !isExistingNuxtRoute(path)) {
       return
     }
 
+    const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || _defaultLocale)
+    const ctx = createI18nContext()
+
+    const resolved = resolveRedirectPath(event, path, pathLocale, options.defaultLocale, detector)
+    if (resolved.path) {
+      ctx.detectLocale = resolved.locale
+      detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
+      await sendRedirect(event, joinURL(baseUrlGetter(event, options.defaultLocale), resolved.path), resolved.code)
+      return
+    }
+
+    const localeConfigs = createLocaleConfigs(options.fallbackLocale)
     ctx.vueI18nOptions = options
     ctx.localeConfigs = localeConfigs
+    event.context.nuxtI18n = ctx
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
