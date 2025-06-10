@@ -49,11 +49,9 @@ export default defineNitroPlugin(async nitro => {
     secure: detection.cookieSecure
   }
   function* detect(detectors: ReturnType<typeof useDetectors>, path: string) {
-    // && !skipDetect(detectConfig, path, detectors.route(path))
     if (detection.enabled) {
       yield { locale: detectors.cookie(), source: 'cookie' }
       yield { locale: detectors.header(), source: 'header' }
-      // yield detectConfig.fallbackLocale
     }
 
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
@@ -89,15 +87,14 @@ export default defineNitroPlugin(async nitro => {
   }
 
   const baseUrlGetter = createBaseUrlGetter()
-
   nitro.hooks.hook('request', async (event: H3Event) => {
     const detector = useDetectors(event, detection)
     const localeSegment = detector.route(event.path)
     const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
-    const pathWithoutLocale = (pathLocale && event.path.slice(pathLocale.length + 1)) || event.path
+    const path = (pathLocale && event.path.slice(pathLocale.length + 1)) || event.path
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
-    if (!event.path.includes('/_i18n/') && !isExistingNuxtRoute(pathWithoutLocale)) {
+    if (!event.path.includes('/_i18n/') && !isExistingNuxtRoute(path)) {
       return
     }
 
@@ -117,7 +114,7 @@ export default defineNitroPlugin(async nitro => {
     }
 
     function getLocalizedMatch(locale: string) {
-      const res = matchLocalized(pathWithoutLocale || '/', locale, defaultLocale)
+      const res = matchLocalized(path || '/', locale, defaultLocale)
       if (res && res !== event.path) {
         return res
       }
