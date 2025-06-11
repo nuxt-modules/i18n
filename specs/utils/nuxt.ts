@@ -61,18 +61,20 @@ export async function loadFixture(testContext: VitestContext) {
     const buildDir = resolve(ctx.options.rootDir, '.nuxt', testKey)
     const outputDir = resolve(ctx.options.rootDir, '.output', testKey)
 
-    ctx.options.nuxtConfig = defu(ctx.options.nuxtConfig, {
-      buildDir,
-      // NOTE: the following code is added for prerender
-      _generate: ctx.options.prerender,
-      nitro: {
-        ...(ctx.options.prerender ? { static: true } : {}),
-        output: {
-          dir: outputDir,
-          ...(ctx.options.prerender ? { publicDir: resolve(outputDir, 'public') } : {})
+    ctx.options.nuxtConfig = defu(
+      ctx.options.nuxtConfig,
+      {
+        buildDir,
+        // NOTE: the following code is added for prerender
+        _generate: ctx.options.prerender,
+        nitro: {
+          output: {
+            dir: outputDir
+          }
         }
-      }
-    })
+      },
+      ctx.options.prerender ? { nitro: { static: true, output: { publicDir: resolve(outputDir, 'public') } } } : {}
+    )
   }
 
   ctx.nuxt = await kit.loadNuxt({

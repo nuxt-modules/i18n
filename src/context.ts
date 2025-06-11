@@ -40,7 +40,7 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     isDev: nuxt.options.dev,
     isSSR: nuxt.options.ssr,
     isPrepare: nuxt.options._prepare,
-    isSSG: nuxt.options._generate,
+    isSSG: !!nuxt.options.nitro.static,
     isBuild: nuxt.options._build,
     isTest: nuxt.options.test,
     // pages is initially undefined - has correct value when writing i18n.options template
