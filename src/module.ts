@@ -25,6 +25,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
+      // @ts-ignore property removed in Nuxt 4
       bridge: false
     }
   },

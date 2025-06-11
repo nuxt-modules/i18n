@@ -71,7 +71,7 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
 
   const common = {
     __IS_SSR__: String(nuxt.options.ssr),
-    __IS_SSG__: String(nuxt.options._generate),
+    __IS_SSG__: String(!!nuxt.options.nitro.static),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
