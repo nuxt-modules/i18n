@@ -61,7 +61,7 @@ export const DEFAULT_OPTIONS = {
   strategy: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   langDir: 'locales',
   rootRedirect: undefined,
-
+  redirectStatusCode: undefined,
   detectBrowserLanguage: {
     alwaysRedirect: false,
     cookieCrossOrigin: false,
