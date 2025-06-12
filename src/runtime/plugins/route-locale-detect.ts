@@ -10,7 +10,7 @@ import type { CompatRoute } from '../types'
 export default defineNuxtPlugin({
   name: 'i18n:plugin:route-locale-detect',
   dependsOn: ['i18n:plugin'],
-  setup(_nuxt) {
+  async setup(_nuxt) {
     // @ts-expect-error internal id usage
     const nuxt = useNuxtApp(_nuxt._id)
     const logger = /*#__PURE__*/ createLogger('plugin:route-locale-detect')
