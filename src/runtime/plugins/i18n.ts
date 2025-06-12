@@ -36,10 +36,11 @@ export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(_nuxt) {
+    // @ts-expect-error internal id usage
+    const nuxt = useNuxtApp(_nuxt._id)
     Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
-    const nuxt = useNuxtApp()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
     const defaultLocaleDomain = getDefaultLocaleForDomain(_runtimeI18n)
