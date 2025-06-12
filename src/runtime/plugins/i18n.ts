@@ -127,11 +127,14 @@ export default defineNuxtPlugin({
 
     nuxt.vueApp.use(i18n)
 
-    /**
-     * We inject `i18n.global` to **nuxt app instance only** as vue-i18n has already been injected into vue
-     * from https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
-     */
-    Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
+    // Use the existing instance or create a new one of `nuxt.$i18n`
+    if (!nuxt.$i18n) {
+      /**
+       * We inject `i18n.global` to **nuxt app instance only** as vue-i18n has already been injected into vue
+       * from https://github.com/nuxt/nuxt/blob/a995f724eadaa06d5443b188879ac18dfe73de2e/packages/nuxt/src/app/nuxt.ts#L295-L299
+       */
+      Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
+    }
 
     nuxt.provide('localeHead', (options: I18nHeadOptions) => localeHead(nuxt._nuxtI18n, options))
     nuxt.provide('localePath', useLocalePath())
