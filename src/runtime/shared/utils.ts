@@ -1,5 +1,6 @@
 import { useRuntimeConfig } from '#app'
-import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig } from '#internal-i18n-types'
+import { isString } from '@intlify/shared'
+import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, RootRedirectOptions } from '#internal-i18n-types'
 
 export function useRuntimeI18n() {
   return useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
@@ -12,6 +13,14 @@ export function useI18nDetection(): DetectBrowserLanguageOptions & { enabled: bo
     ...detect,
     enabled: !!detectBrowserLanguage,
     cookieKey: detect.cookieKey || __DEFAULT_COOKIE_KEY__
+  }
+}
+
+export function resolveRootRedirect(config: string | RootRedirectOptions | undefined) {
+  if (!config) return undefined
+  return {
+    path: '/' + (isString(config) ? config : config.path).replace(/^\//, ''),
+    code: (!isString(config) && config.statusCode) || 302
   }
 }
 

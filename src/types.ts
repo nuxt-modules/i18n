@@ -114,6 +114,12 @@ export interface ExperimentalFeatures {
    */
   stripMessagesPayload?: boolean
   strictSeo?: boolean | SeoAttributesOptions
+  /**
+   * Enables Nitro context detection and allows for more reliable detection and redirection behavior especially in setups using prerendering.
+   * It is recommended to keep it enabled, but can be disabled if this causes issues, this option might be removed in v11.
+   * @default true
+   */
+  nitroContextDetection?: boolean
 }
 
 export interface BundleOptions

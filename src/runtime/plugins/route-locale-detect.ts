@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
     )
 
     // no pages or no prefixes - do not register route middleware
-    if (!__I18N_ROUTING__) return
+    if (!__I18N_ROUTING__ || (import.meta.server && __I18N_SERVER_REDIRECT__)) return
 
     addRouteMiddleware(
       'locale-changing',

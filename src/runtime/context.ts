@@ -7,18 +7,13 @@ import { createBaseUrlGetter } from './utils'
 import { getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
-import { useI18nDetection, useRuntimeI18n } from './shared/utils'
+import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL } from 'ufo'
 import { isString } from '@intlify/shared'
 
 import type { Locale, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type {
-  DetectBrowserLanguageOptions,
-  I18nPublicRuntimeConfig,
-  LocaleObject,
-  RootRedirectOptions
-} from '#internal-i18n-types'
+import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
 export const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean; fallbacks: string[] }> | undefined>(
@@ -73,14 +68,6 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
   })
 }
 
-function resolveRootRedirect(config: string | RootRedirectOptions | undefined) {
-  if (!config) return undefined
-  return {
-    path: '/' + (isString(config) ? config : config.path).replace(/^\//, ''),
-    code: (!isString(config) && config.statusCode) || 302
-  }
-}
-
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
   const runtimeI18n = useRuntimeI18n()
@@ -94,6 +81,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
   const resolvedLocale = useResolvedLocale()
+  if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
+    resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
+  }
 
   const ctx: NuxtI18nContext = {
     vueI18n,

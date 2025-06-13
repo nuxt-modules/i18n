@@ -15,7 +15,8 @@
         // virtuals
         "#nuxt-i18n/*",
         "#internal/i18n*",
-        "#internal/nuxt.config.mjs"
+        "#internal/nuxt.config.mjs",
+        "#build/i18n-route-resources.mjs"
       ],
       "ignoreDependencies": [
         // pre-commit
