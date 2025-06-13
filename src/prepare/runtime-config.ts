@@ -20,7 +20,15 @@ export function prepareRuntimeConfig({ options }: I18nNuxtContext, nuxt: Nuxt) {
     locales: options.locales,
     detectBrowserLanguage: options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
     experimental: options.experimental,
-    multiDomainLocales: options.multiDomainLocales
+    multiDomainLocales: options.multiDomainLocales,
+    domainLocales: Object.fromEntries(
+      options.locales.map(l => {
+        if (typeof l === 'string') {
+          return [l, { domain: '' }]
+        }
+        return [l.code, { domain: l.domain ?? '' }]
+      })
+    )
     // TODO: we should support more i18n module options. welcome PRs :-)
   })
 }
