@@ -151,7 +151,7 @@ test.each([
   expect(dom.querySelector('#welcome-text').textContent).toEqual(header)
 })
 
-test.only('(#2931) detect using runtimeConfig domain', async () => {
+test('(#2931) detect using runtimeConfig domain', async () => {
   const res = await undiciRequest('/', {
     headers: {
       host: 'kr.staging.nuxt-app.localhost'
