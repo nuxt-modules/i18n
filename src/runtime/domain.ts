@@ -138,12 +138,21 @@ export function setupMultiDomainLocales(runtimeI18n: I18nPublicRuntimeConfig, de
  * Returns default locale for the current domain, returns `defaultLocale` by default
  */
 export function getDefaultLocaleForDomain(runtimeI18n: I18nPublicRuntimeConfig) {
-  const { locales, defaultLocale, multiDomainLocales } = runtimeI18n
+  const { locales, domainLocales, defaultLocale, multiDomainLocales } = runtimeI18n
+  const host = getHost()
+
   if (!multiDomainLocales) {
-    return defaultLocale || ''
+    const foundLocale = normalizedLocales.find(l => {
+      const localeCode = isString(l) ? l : l.code
+      const lang = normalizedLocales.find(locale => locale.code === localeCode)
+      const domain = domainLocales?.[localeCode]?.domain ?? lang?.domain
+
+      return domain === host
+    })
+
+    return foundLocale?.code ?? defaultLocale ?? ''
   }
 
-  const host = getHost()
   if (locales.some(l => !isString(l) && l.defaultForDomains != null)) {
     const findDefaultLocale = locales.find(
       (l): l is LocaleObject => !isString(l) && !!l.defaultForDomains?.includes(host)
