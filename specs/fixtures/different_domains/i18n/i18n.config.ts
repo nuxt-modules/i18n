@@ -40,6 +40,19 @@ export default {
           article: 'Dette er bloggartikkelsiden'
         }
       }
+    },
+    kr: {
+      welcome: '환영하다',
+      home: '홈페이지',
+      profile: '프로필',
+      about: '회사 소개',
+      posts: '게시물',
+      dynamic: '동적',
+      pages: {
+        blog: {
+          article: '여기는 블로그 게시물 페이지입니다'
+        }
+      }
     }
   },
   fallbackLocale: 'en'

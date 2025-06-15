@@ -151,6 +151,16 @@ test.each([
   expect(dom.querySelector('#welcome-text').textContent).toEqual(header)
 })
 
+test('(#2931) detect using runtimeConfig domain', async () => {
+  const res = await undiciRequest('/', {
+    headers: {
+      host: 'kr.staging.nuxt-app.localhost'
+    }
+  })
+  const dom = getDom(await res.body.text())
+  expect(dom.querySelector('#welcome-text').textContent).toEqual('환영하다')
+})
+
 test('(#2374) detect with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {
