@@ -35,7 +35,8 @@ export const DEFAULT_OPTIONS = {
     cacheLifetime: undefined,
     stripMessagesPayload: false,
     preload: false,
-    strictSeo: false
+    strictSeo: false,
+    nitroContextDetection: true
   },
   bundle: {
     compositionOnly: true,

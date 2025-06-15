@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { gotoPath, renderPage, setServerRuntimeConfig } from '../helper'
+import { gotoPath, renderPage, setServerRuntimeConfig, startServerWithRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -43,16 +43,19 @@ test('redirectOn: all', async () => {
 })
 
 test('redirectOn: no prefix', async () => {
-  await setServerRuntimeConfig({
-    public: {
-      i18n: {
-        detectBrowserLanguage: {
-          alwaysRedirect: false,
-          redirectOn: 'no prefix'
+  const restore = await startServerWithRuntimeConfig(
+    {
+      public: {
+        i18n: {
+          detectBrowserLanguage: {
+            alwaysRedirect: false,
+            redirectOn: 'no prefix'
+          }
         }
       }
-    }
-  })
+    },
+    true
+  )
   const { page } = await renderPage('/blog/article', { locale: 'fr' })
 
   // detect locale from navigator language
@@ -65,6 +68,7 @@ test('redirectOn: no prefix', async () => {
   // navigate to fr blog
   await gotoPath(page, '/fr/blog/article')
   expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await restore()
 })
 
 test('alwaysRedirect: all', async () => {

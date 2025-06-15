@@ -8,6 +8,7 @@ const join = (...args: (string | undefined)[]) => args.filter(Boolean).join('')
 export interface ComputedRouteOptions {
   locales: readonly string[]
   paths: Record<string, string>
+  srcPaths?: Record<string, string>
 }
 
 /**
