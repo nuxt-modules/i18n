@@ -1,4 +1,5 @@
-import { useRouter, type Router } from 'vue-router'
+import type { Router } from 'vue-router'
+import { useRouter } from '#imports'
 import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
 
 /**
@@ -17,7 +18,7 @@ export function setupMultiDomainLocales(defaultLocale: string, router: Router = 
 
     const locale = getLocaleFromRouteName(routeName)
     if (locale === defaultLocale) {
-      router.addRoute({ ...route, path: route.path.replace(`/${locale}`, '') || '/' })
+      router.addRoute({ ...route, path: route.path.replace(new RegExp(`^/${locale}/?`), '/') })
     }
   }
 }

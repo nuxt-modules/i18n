@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { renderPage, setServerRuntimeConfig, gotoPath } from '../helper'
+import { renderPage, setServerRuntimeConfig, gotoPath, startServerWithRuntimeConfig } from '../helper'
 
 import type { Response } from 'playwright-core'
 
@@ -20,7 +20,7 @@ await setup({
 describe('strategy: prefix', async () => {
   beforeEach(async () => {
     // use original fixture `detectBrowserLanguage` value as default for tests, overwrite here needed
-    await setServerRuntimeConfig(
+    await startServerWithRuntimeConfig(
       {
         public: {
           i18n: { detectBrowserLanguage: false }
@@ -30,14 +30,23 @@ describe('strategy: prefix', async () => {
     )
   })
 
-  test.each([
-    ['/', '/en'],
-    ['/about', '/en/about'],
-    ['/category/foo', '/en/category/foo']
-  ])('cannot access unprefixed url: %s', async (pathUrl, destination) => {
-    const res = await fetch(pathUrl, { redirect: 'manual' })
-    expect(res.status).toBe(302)
-    expect(res.headers.get('location')).toBe(destination)
+  test('cannot access unprefixed urls', async () => {
+    const redirectUrls = [['/', '/en']]
+    for (const [pathUrl, destination] of redirectUrls) {
+      const res = await fetch(pathUrl, { redirect: 'manual' })
+      expect(res.status).toBe(302)
+      expect(res.headers.get('location')).toBe(destination)
+    }
+
+    const notFoundUrls = [
+      ['/about', '/en/about'],
+      ['/category/foo', '/en/category/foo']
+    ]
+    for (const [pathUrl, _destination] of notFoundUrls) {
+      const res = await fetch(pathUrl, { redirect: 'manual' })
+      expect(res.status).toBe(404)
+      expect(res.headers.get('location')).toBe(null)
+    }
   })
 
   test('can access to prefix locale: /en', async () => {
@@ -121,17 +130,20 @@ describe('strategy: prefix', async () => {
   })
 
   test('(#1889) navigation to page with `defineI18nRoute(false)`', async () => {
-    await setServerRuntimeConfig({
-      public: {
-        i18n: {
-          detectBrowserLanguage: {
-            useCookie: true,
-            alwaysRedirect: false,
-            redirectOn: 'root'
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            detectBrowserLanguage: {
+              useCookie: true,
+              alwaysRedirect: false,
+              redirectOn: 'root'
+            }
           }
         }
-      }
-    })
+      },
+      true
+    )
 
     const { page } = await renderPage('/', { locale: 'en' })
     await page.waitForURL(url('/en'))
@@ -164,18 +176,21 @@ describe('strategy: prefix', async () => {
   })
 
   test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
-    await setServerRuntimeConfig({
-      public: {
-        i18n: {
-          detectBrowserLanguage: {
-            useCookie: true,
-            cookieSecure: true,
-            fallbackLocale: 'en',
-            redirectOn: 'no prefix'
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            detectBrowserLanguage: {
+              useCookie: true,
+              cookieSecure: true,
+              fallbackLocale: 'en',
+              redirectOn: 'no prefix'
+            }
           }
         }
-      }
-    })
+      },
+      true
+    )
 
     const { page } = await renderPage('/', { locale: 'fr' })
     expect(await page.locator('#home-header').innerText()).toEqual('Accueil')

@@ -79,7 +79,7 @@ declare module 'h3' {
        * @internal
        */
       trackKey: (key: string, locale: string) => void
-
+      detectLocale?: string
       vueI18nOptions?: ResolvedI18nOptions
     }
   }
