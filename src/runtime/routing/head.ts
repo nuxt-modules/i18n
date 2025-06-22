@@ -36,8 +36,13 @@ function createHeadContext(
     getCurrentDirection: () => currentLocale.dir || __DEFAULT_DIRECTION__,
     getLocaleRoute: route => localeRoute(ctx, route),
     getLocalizedRoute: (locale, route) => switchLocalePath(ctx, locale, route),
-    getRouteWithoutQuery: () =>
-      assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })
+    getRouteWithoutQuery: () => {
+      try {
+        return assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })
+      } catch {
+        return undefined
+      }
+    }
   }
 }
 

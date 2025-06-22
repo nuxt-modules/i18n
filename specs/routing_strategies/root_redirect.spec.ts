@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { setServerRuntimeConfig } from '../helper'
+import { setServerRuntimeConfig, startServerWithRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -20,26 +20,32 @@ await setup({
 
 describe('rootRedirect', async () => {
   test('can redirect to rootRedirect option path', async () => {
-    await setServerRuntimeConfig({
-      public: {
-        i18n: {
-          rootRedirect: 'fr'
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            rootRedirect: 'fr'
+          }
         }
-      }
-    })
+      },
+      true
+    )
 
     const res = await fetch('/')
     expect(res.url).toBe(url('/fr'))
   })
 
   test('(#2758) `statusCode` in `rootRedirect` should work with strategy "prefix"', async () => {
-    await setServerRuntimeConfig({
-      public: {
-        i18n: {
-          rootRedirect: { statusCode: 418, path: 'test-route' }
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            rootRedirect: { statusCode: 418, path: 'test-route' }
+          }
         }
-      }
-    })
+      },
+      true
+    )
 
     const res = await fetch(url('/'))
     expect(res.status).toEqual(418)

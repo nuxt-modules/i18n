@@ -39,6 +39,7 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
         // replace `#app` with `__nuxtMock`
         s.replaceAll(/useNuxtApp\(\)/g, replacementName)
 
+        s.replaceAll(/#build\/i18n-route-resources\.mjs/g, '#internal/i18n-route-resources.mjs')
         // replace `#build/i18n.options.mjs` with `#internal/i18n/options.mjs`
         s.replaceAll(/#build\/i18n\.options\.mjs/g, '#internal/i18n/options.mjs')
 

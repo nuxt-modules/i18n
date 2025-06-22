@@ -48,7 +48,7 @@ export type HeadContext = {
   getRouteBaseName: (route: RouteLocationResolvedGeneric | RouteLocationNormalizedLoadedGeneric) => string | undefined
   getLocaleRoute: (route: RouteLocationResolvedGeneric) => RouteLocationResolvedGeneric | undefined
   getCurrentRoute: () => RouteLocationNormalizedLoadedGeneric
-  getRouteWithoutQuery: () => RouteLocationResolvedGeneric
+  getRouteWithoutQuery: () => RouteLocationResolvedGeneric | undefined
   getLocalizedRoute: (locale: string, route: RouteLocationResolvedGeneric | undefined) => string
 }
 
@@ -134,7 +134,7 @@ function getHreflangLinks(options: HeadContext) {
     if (!link) continue
 
     links.push(link)
-    if (options.defaultLocale && options.defaultLocale === locale.code) {
+    if (options.defaultLocale && options.defaultLocale === locale.code && links[0].hreflang !== 'x-default') {
       links.unshift(
         strictSeo
           ? { rel: 'alternate', href: link.href, hreflang: 'x-default' }
