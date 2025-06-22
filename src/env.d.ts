@@ -28,3 +28,4 @@ declare let __I18N_PRELOAD__: boolean
 /** Project has pages and strategy is not `no_prefix` */
 declare let __I18N_ROUTING__: boolean
 declare let __I18N_STRICT_SEO__: boolean
+declare let __I18N_SERVER_REDIRECT__: boolean
