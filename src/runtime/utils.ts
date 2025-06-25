@@ -57,7 +57,7 @@ export async function loadAndSetLocale(
 ): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
   const { differentDomains, skipSettingLocaleOnNavigate } = nuxtApp.$config.public.i18n
-  const opts = runtimeDetectBrowserLanguage(nuxtApp.$config.public.i18n)
+  const opts = runtimeDetectBrowserLanguage(nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig)
 
   const oldLocale = unref(nuxtApp.$i18n.locale)
   const localeCodes = unref(nuxtApp.$i18n.localeCodes)
