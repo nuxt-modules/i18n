@@ -2,14 +2,14 @@ import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL } from '#imports'
 import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
-import { loadAndSetLocale, navigate, createComposableContext } from '../utils'
+import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { localeHead, _useLocaleHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { createNuxtI18nContext, useLocaleConfigs, useNuxtI18nContext, type NuxtI18nContext } from '../context'
+import { createNuxtI18nContext, useLocaleConfigs, type NuxtI18nContext } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { resolveSupportedLocale } from '../shared/locales'
@@ -24,7 +24,8 @@ export default defineNuxtPlugin({
   async setup(_nuxt) {
     Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
 
-    const nuxt = useNuxtApp()
+    // @ts-expect-error untyped internal id parameter
+    const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n()
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
     const _defaultLocale =
@@ -49,10 +50,8 @@ export default defineNuxtPlugin({
     const i18n = createI18n(optionsI18n)
     const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection())
 
-    nuxt._nuxtI18nCtx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale)
-    const ctx = useNuxtI18nContext(nuxt)
-
-    nuxt._nuxtI18n = createComposableContext()
+    const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale)
+    nuxt._nuxtI18n = ctx
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server) {
       wrapTranslationFunctions(ctx)
@@ -133,7 +132,7 @@ export default defineNuxtPlugin({
      */
     Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
 
-    nuxt.provide('localeHead', (options: I18nHeadOptions) => localeHead(nuxt._nuxtI18n, options))
+    nuxt.provide('localeHead', (options: I18nHeadOptions) => localeHead(nuxt._nuxtI18n.composableCtx, options))
     nuxt.provide('localePath', useLocalePath())
     nuxt.provide('localeRoute', useLocaleRoute())
     nuxt.provide('routeBaseName', useRouteBaseName())
@@ -143,7 +142,7 @@ export default defineNuxtPlugin({
     if (__I18N_STRICT_SEO__) {
       // enable head tag management after most of the i18n setup is done
       nuxt.hook(import.meta.server ? 'app:rendered' : 'app:mounted', () => {
-        _useLocaleHead(nuxt._nuxtI18n, { dir: true, lang: true, seo: true })
+        _useLocaleHead(nuxt._nuxtI18n.composableCtx, { dir: true, lang: true, seo: true })
       })
     }
   }

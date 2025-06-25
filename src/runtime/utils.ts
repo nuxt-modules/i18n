@@ -23,6 +23,7 @@ import type {
   I18nHeadOptions,
   LocaleObject
 } from '#internal-i18n-types'
+import type { NuxtI18nContext } from './context'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 import { useDetectors } from './shared/detection'
 import { useI18nDetection } from './shared/utils'
@@ -63,8 +64,8 @@ export type ComposableContext = {
 // RouteLike object has a path and no name.
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
-export function useComposableContext(): ComposableContext {
-  const context = useNuxtApp()._nuxtI18n
+export function useComposableContext(nuxtApp: NuxtApp = useNuxtApp()): ComposableContext {
+  const context = nuxtApp?._nuxtI18n?.composableCtx
   if (!context) {
     throw new Error(
       'i18n context is not initialized. Ensure the i18n plugin is installed and the composable is used within a Vue component or setup function.'
@@ -73,13 +74,10 @@ export function useComposableContext(): ComposableContext {
   return context
 }
 const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
-export function createComposableContext(): ComposableContext {
-  const ctx = useNuxtI18nContext()
+export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp = useNuxtApp()): ComposableContext {
   const router = useRouter()
-  const nuxtApp = useNuxtApp()
   const detectors = useDetectors(useRequestEvent(), useI18nDetection())
   const defaultLocale = ctx.getDefaultLocale()
-  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
@@ -94,6 +92,7 @@ export function createComposableContext(): ComposableContext {
     return route
   }
 
+  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
   function resolveLocalizedRouteByPath(input: RouteLikeWithPath, locale: string) {
     const route = routeByPathResolver(input, locale) as RouteLike
     const baseName = getRouteBaseName(route)
