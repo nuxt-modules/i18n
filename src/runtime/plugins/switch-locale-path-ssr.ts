@@ -7,7 +7,7 @@ export default defineNuxtPlugin({
   name: 'i18n:plugin:switch-locale-path-ssr',
   dependsOn: ['i18n:plugin'],
   setup(_nuxt) {
-    // @ts-expect-error internal id usage
+    // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     if (nuxt.$config.public.i18n.experimental.switchLocalePathLinkSSR !== true) return
 

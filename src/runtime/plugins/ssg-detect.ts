@@ -9,7 +9,7 @@ export default defineNuxtPlugin({
   dependsOn: ['i18n:plugin', 'i18n:plugin:route-locale-detect'],
   enforce: 'post',
   setup(_nuxt) {
-    // @ts-expect-error internal id usage
+    // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     if (!isSSG || nuxt.$i18n.strategy !== 'no_prefix' || !runtimeDetectBrowserLanguage()) return
 
@@ -19,6 +19,7 @@ export default defineNuxtPlugin({
     // NOTE: avoid hydration mismatch for SSG mode
     nuxt.hook('app:mounted', async () => {
       const detected = detectBrowserLanguage(
+        nuxt,
         nuxt.$router.currentRoute.value,
         localeCookie,
         localeCookie || unref(nuxt.$i18n.defaultLocale)
