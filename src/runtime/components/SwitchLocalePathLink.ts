@@ -18,8 +18,8 @@ const SlpComponent = defineComponent({
   },
   setup(props, { slots, attrs }) {
     const nuxtApp = useNuxtApp()
-    const payload = useComposableContext().localePathPayload
-    const switchLocalePath = useSwitchLocalePath()
+    const payload = useComposableContext(nuxtApp).localePathPayload
+    const switchLocalePath = useSwitchLocalePath(nuxtApp)
 
     const resolved = computed(() => {
       if (__I18N_STRICT_SEO__ && nuxtApp.isHydrating && Object.keys(payload ?? {}).length && !payload?.[props.locale]) {

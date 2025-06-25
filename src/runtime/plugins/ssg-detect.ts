@@ -16,7 +16,7 @@ export default defineNuxtPlugin({
     const ctx = useNuxtI18nContext(nuxt)
     // NOTE: avoid hydration mismatch for SSG mode
     nuxt.hook('app:mounted', async () => {
-      const detected = detectLocale(nuxt.$router.currentRoute.value)
+      const detected = detectLocale(nuxt, nuxt.$router.currentRoute.value)
       await nuxt.runWithContext(() => nuxt.$i18n.setLocale(detected))
       ctx.initial = false
     })

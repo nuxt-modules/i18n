@@ -10,7 +10,7 @@ export function useRuntimeI18n(nuxtApp?: NuxtApp) {
 }
 
 export function useI18nDetection(
-  nuxtApp: NuxtApp
+  nuxtApp: NuxtApp | undefined
 ): DetectBrowserLanguageOptions & { enabled: boolean; cookieKey: string } {
   const detectBrowserLanguage = useRuntimeI18n(nuxtApp).detectBrowserLanguage
   const detect = detectBrowserLanguage || {}
