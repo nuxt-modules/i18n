@@ -1,6 +1,6 @@
 import { isRef, unref } from 'vue'
 
-import { useNuxtApp, useState, useCookie, useRequestURL } from '#imports'
+import { useState, useCookie, useRequestURL } from '#imports'
 import { localeLoaders } from '#build/i18n.options.mjs'
 import { getLocaleMessagesMergedCached } from './shared/messages'
 import { createBaseUrlGetter, createComposableContext } from './utils'
@@ -70,8 +70,8 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
 
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
-  const runtimeI18n = useRuntimeI18n()
-  const detectConfig = useI18nDetection()
+  const runtimeI18n = useRuntimeI18n(nuxt)
+  const detectConfig = useI18nDetection(nuxt)
   const serverLocaleConfigs = useLocaleConfigs()
   const localeCookie = useI18nCookie(detectConfig)
 
@@ -171,7 +171,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   return ctx
 }
 
-export function useNuxtI18nContext(nuxt: NuxtApp = useNuxtApp()) {
+export function useNuxtI18nContext(nuxt: NuxtApp) {
   if (nuxt._nuxtI18n == null) {
     throw new Error('Nuxt I18n context has not been set up yet.')
   }

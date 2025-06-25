@@ -1,13 +1,18 @@
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig, type NuxtApp } from '#app'
 import { isString } from '@intlify/shared'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, RootRedirectOptions } from '#internal-i18n-types'
 
-export function useRuntimeI18n() {
-  return useRuntimeConfig().public.i18n as I18nPublicRuntimeConfig
+export function useRuntimeI18n(nuxtApp?: NuxtApp) {
+  if (!nuxtApp) {
+    return useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
+  }
+  return nuxtApp.$config.public.i18n as unknown as I18nPublicRuntimeConfig
 }
 
-export function useI18nDetection(): DetectBrowserLanguageOptions & { enabled: boolean; cookieKey: string } {
-  const detectBrowserLanguage = useRuntimeI18n().detectBrowserLanguage
+export function useI18nDetection(
+  nuxtApp: NuxtApp
+): DetectBrowserLanguageOptions & { enabled: boolean; cookieKey: string } {
+  const detectBrowserLanguage = useRuntimeI18n(nuxtApp).detectBrowserLanguage
   const detect = detectBrowserLanguage || {}
   return {
     ...detect,

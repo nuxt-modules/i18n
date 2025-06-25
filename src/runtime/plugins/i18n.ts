@@ -26,7 +26,7 @@ export default defineNuxtPlugin({
 
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
-    const runtimeI18n = useRuntimeI18n()
+    const runtimeI18n = useRuntimeI18n(nuxt)
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
     const _defaultLocale =
       getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
@@ -48,7 +48,7 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
-    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection())
+    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(nuxt), nuxt)
 
     const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale)
     nuxt._nuxtI18n = ctx
@@ -75,8 +75,8 @@ export default defineNuxtPlugin({
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
-          await loadAndSetLocale(locale)
-          await nuxt.runWithContext(() => navigate(nuxt.$router.currentRoute.value, locale))
+          await loadAndSetLocale(nuxt, locale)
+          await nuxt.runWithContext(() => navigate(nuxt, nuxt.$router.currentRoute.value, locale))
         }
         composer.loadLocaleMessages = ctx.loadMessages
 
@@ -133,11 +133,11 @@ export default defineNuxtPlugin({
     Object.defineProperty(nuxt, '$i18n', { get: () => getI18nTarget(i18n) })
 
     nuxt.provide('localeHead', (options: I18nHeadOptions) => localeHead(nuxt._nuxtI18n.composableCtx, options))
-    nuxt.provide('localePath', useLocalePath())
-    nuxt.provide('localeRoute', useLocaleRoute())
-    nuxt.provide('routeBaseName', useRouteBaseName())
-    nuxt.provide('getRouteBaseName', useRouteBaseName())
-    nuxt.provide('switchLocalePath', useSwitchLocalePath())
+    nuxt.provide('localePath', useLocalePath(nuxt))
+    nuxt.provide('localeRoute', useLocaleRoute(nuxt))
+    nuxt.provide('routeBaseName', useRouteBaseName(nuxt))
+    nuxt.provide('getRouteBaseName', useRouteBaseName(nuxt))
+    nuxt.provide('switchLocalePath', useSwitchLocalePath(nuxt))
 
     if (__I18N_STRICT_SEO__) {
       // enable head tag management after most of the i18n setup is done
