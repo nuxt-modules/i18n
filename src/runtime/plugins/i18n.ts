@@ -36,10 +36,11 @@ export default defineNuxtPlugin({
   name: 'i18n:plugin',
   parallel: parallelPlugin,
   async setup(_nuxt) {
+    // @ts-expect-error untyped internal id parameter
+    const nuxt = useNuxtApp(_nuxt._id)
     Object.defineProperty(_nuxt.versions, 'nuxtI18n', { get: () => __NUXT_I18N_VERSION__ })
 
     const logger = /*#__PURE__*/ createLogger('plugin:i18n')
-    const nuxt = useNuxtApp()
     const _runtimeI18n = nuxt.$config.public.i18n as I18nPublicRuntimeConfig
 
     const defaultLocaleDomain = getDefaultLocaleForDomain(_runtimeI18n)
@@ -110,7 +111,7 @@ export default defineNuxtPlugin({
           () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
         )
         composer.setLocale = async (locale: string) => {
-          await loadAndSetLocale(locale, i18n.__firstAccess)
+          await loadAndSetLocale(nuxt, locale, i18n.__firstAccess)
 
           if (composer.strategy === 'no_prefix' || !hasPages) {
             await composer.loadLocaleMessages(locale)
@@ -120,7 +121,7 @@ export default defineNuxtPlugin({
 
           const route = nuxt.$router.currentRoute.value
           const redirectPath = await nuxt.runWithContext(() =>
-            detectRedirect({ to: route, locale, routeLocale: i18n.__localeFromRoute(route) })
+            detectRedirect({ to: route, nuxtApp: nuxt, locale, routeLocale: i18n.__localeFromRoute(route) })
           )
 
           __DEBUG__ && logger.log('redirectPath on setLocale', redirectPath)

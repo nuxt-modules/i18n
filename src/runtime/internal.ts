@@ -1,5 +1,5 @@
 import { isString } from '@intlify/shared'
-import { useCookie, useNuxtApp, useRequestHeader, useRuntimeConfig } from '#imports'
+import { useCookie, useRequestHeader, useRuntimeConfig } from '#imports'
 import { DEFAULT_COOKIE_KEY, isSSG, localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
 import { findBrowserLocale, regexpPath } from './routing/utils'
 import { initCommonComposableOptions } from './utils'
@@ -7,7 +7,7 @@ import { createLogger } from '#nuxt-i18n/logger'
 
 import type { Locale } from 'vue-i18n'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig } from '#internal-i18n-types'
-import type { CookieOptions, CookieRef } from 'nuxt/app'
+import type { CookieOptions, CookieRef, NuxtApp } from 'nuxt/app'
 import type { CompatRoute } from './types'
 import type { CommonComposableOptions } from './utils'
 
@@ -110,6 +110,7 @@ type DetectBrowserLanguageResult = {
 }
 
 export function detectBrowserLanguage(
+  nuxtApp: NuxtApp,
   route: string | CompatRoute,
   localeCookie: string | undefined,
   locale: Locale = ''
@@ -122,7 +123,6 @@ export function detectBrowserLanguage(
     return { locale: '', error: 'disabled' }
   }
 
-  const nuxtApp = useNuxtApp()
   const strategy = nuxtApp.$i18n.strategy
   const firstAccess = nuxtApp._vueI18n.__firstAccess
 

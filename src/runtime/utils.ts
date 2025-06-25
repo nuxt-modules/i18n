@@ -50,11 +50,14 @@ export function initCommonComposableOptions(i18n?: I18n): CommonComposableOption
   }
 }
 
-export async function loadAndSetLocale(newLocale: Locale, initial: boolean = false): Promise<boolean> {
+export async function loadAndSetLocale(
+  nuxtApp: NuxtApp,
+  newLocale: Locale,
+  initial: boolean = false
+): Promise<boolean> {
   const logger = /*#__PURE__*/ createLogger('loadAndSetLocale')
-  const nuxtApp = useNuxtApp()
   const { differentDomains, skipSettingLocaleOnNavigate } = nuxtApp.$config.public.i18n
-  const opts = runtimeDetectBrowserLanguage()
+  const opts = runtimeDetectBrowserLanguage(nuxtApp.$config.public.i18n as I18nPublicRuntimeConfig)
 
   const oldLocale = unref(nuxtApp.$i18n.locale)
   const localeCodes = unref(nuxtApp.$i18n.localeCodes)
@@ -124,17 +127,17 @@ export async function loadAndSetLocale(newLocale: Locale, initial: boolean = fal
 }
 
 export function detectLocale(
+  nuxtApp: NuxtApp,
   route: string | CompatRoute,
   routeLocale: string,
   currentLocale: string | undefined,
   localeCookie: string | undefined
 ) {
-  const nuxtApp = useNuxtApp()
   const { strategy, defaultLocale, differentDomains, multiDomainLocales } = nuxtApp.$config.public.i18n
   const _detectBrowserLanguage = runtimeDetectBrowserLanguage()
   const logger = /*#__PURE__*/ createLogger('detectLocale')
 
-  const detectedBrowser = detectBrowserLanguage(route, localeCookie, currentLocale)
+  const detectedBrowser = detectBrowserLanguage(nuxtApp, route, localeCookie, currentLocale)
   __DEBUG__ && logger.log({ detectBrowserLanguage: detectedBrowser })
 
   // detected browser language
@@ -167,6 +170,7 @@ export function detectLocale(
 }
 
 type DetectRedirectOptions = {
+  nuxtApp: NuxtApp
   to: CompatRoute
   from?: CompatRoute
   /**
@@ -184,9 +188,12 @@ type DetectRedirectOptions = {
  *
  * @param inMiddleware - whether this is called during navigation middleware
  */
-export function detectRedirect({ to, from, locale, routeLocale }: DetectRedirectOptions, inMiddleware = false): string {
+export function detectRedirect(
+  { to, nuxtApp, from, locale, routeLocale }: DetectRedirectOptions,
+  inMiddleware = false
+): string {
   // no locale change detected from routing
-  if (routeLocale === locale || useNuxtApp().$i18n.strategy === 'no_prefix') {
+  if (routeLocale === locale || nuxtApp.$i18n.strategy === 'no_prefix') {
     return ''
   }
 
