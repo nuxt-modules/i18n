@@ -15,7 +15,14 @@ export function prepareRuntimeConfig(ctx: I18nNuxtContext, nuxt: Nuxt) {
     locales: ctx.options.locales,
     detectBrowserLanguage: ctx.options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
     experimental: ctx.options.experimental,
-    domainLocales: {} as I18nPublicRuntimeConfig['domainLocales']
+    domainLocales: Object.fromEntries(
+      ctx.options.locales.map(l => {
+        if (typeof l === 'string') {
+          return [l, { domain: '' }]
+        }
+        return [l.code, { domain: l.domain ?? '' }]
+      })
+    ) as I18nPublicRuntimeConfig['domainLocales']
   })
 
   nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(ctx, nuxt)
