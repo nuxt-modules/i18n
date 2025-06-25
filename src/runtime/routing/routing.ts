@@ -20,8 +20,7 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
   }
 
   try {
-    const localizedRoute = resolveRoute(ctx, route, locale)
-    return localizedRoute?.redirectedFrom?.fullPath || localizedRoute.fullPath
+    return resolveRoute(ctx, route, locale).fullPath
   } catch {
     return ''
   }
@@ -33,7 +32,7 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 export function localeRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
   try {
     return resolveRoute(ctx, route, locale)
-  } catch (_) {
+  } catch {
     return
   }
 }

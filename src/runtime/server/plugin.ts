@@ -50,7 +50,7 @@ export default defineNitroPlugin(async nitro => {
   const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
   await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
 
-  const detection = useI18nDetection()
+  const detection = useI18nDetection(undefined)
   const cookieOptions = {
     path: '/',
     domain: detection.cookieDomain || undefined,

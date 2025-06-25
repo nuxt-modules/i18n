@@ -2,6 +2,7 @@ import { useSwitchLocalePath, type Locale } from '#i18n'
 import { defineNuxtLink, useNuxtApp } from '#imports'
 import { Comment, computed, defineComponent, h } from 'vue'
 import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
+import { useComposableContext } from '../utils'
 
 import type { PropType } from 'vue'
 
@@ -17,8 +18,8 @@ const SlpComponent = defineComponent({
   },
   setup(props, { slots, attrs }) {
     const nuxtApp = useNuxtApp()
-    const switchLocalePath = useSwitchLocalePath()
-    const payload = nuxtApp._nuxtI18n.localePathPayload
+    const payload = useComposableContext(nuxtApp).localePathPayload
+    const switchLocalePath = useSwitchLocalePath(nuxtApp)
 
     const resolved = computed(() => {
       if (__I18N_STRICT_SEO__ && nuxtApp.isHydrating && Object.keys(payload ?? {}).length && !payload?.[props.locale]) {

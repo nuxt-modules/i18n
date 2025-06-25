@@ -11,10 +11,11 @@ import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 export default defineNuxtPlugin({
   name: 'i18n:plugin:preload',
   dependsOn: ['i18n:plugin'],
-  async setup() {
+  async setup(_nuxt) {
     if (!__I18N_PRELOAD__) return
-    const nuxt = useNuxtApp()
-    const ctx = useNuxtI18nContext()
+    // @ts-expect-error untyped internal id parameter
+    const nuxt = useNuxtApp(_nuxt._id)
+    const ctx = useNuxtI18nContext(nuxt)
 
     if (import.meta.server) {
       for (const locale of localeCodes) {
