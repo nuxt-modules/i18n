@@ -1,7 +1,7 @@
 import { parse } from 'devalue'
 import { unref } from 'vue'
 import { useNuxtApp, defineNuxtPlugin } from '#app'
-import { localeCodes, localeLoaders } from '#build/i18n.options.mjs'
+import { localeCodes, localeLoaders } from '#build/i18n-options.mjs'
 import { getLocaleMessagesMergedCached } from '../shared/messages'
 import { useNuxtI18nContext, type NuxtI18nContext } from '../context'
 

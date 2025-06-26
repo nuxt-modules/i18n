@@ -1,10 +1,10 @@
 import { fetchMessages } from '../context'
 import { deepCopy } from '@intlify/shared'
-import { localeDetector } from '#internal/i18n/locale.detector.mjs'
+import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { tryCookieLocale, tryHeaderLocale, tryQueryLocale } from '@intlify/h3'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
-import { normalizedLocales } from '#internal/i18n/options.mjs'
+import { normalizedLocales } from '#internal/i18n-options.mjs'
 
 import type { H3Event } from 'h3'
 import type { CoreOptions, FallbackLocale, Locale } from '@intlify/core'

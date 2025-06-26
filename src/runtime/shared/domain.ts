@@ -1,5 +1,5 @@
 import { hasProtocol } from 'ufo'
-import { normalizedLocales } from '#build/i18n.options.mjs'
+import { normalizedLocales } from '#build/i18n-options.mjs'
 import { toArray } from './utils'
 
 import type { LocaleObject } from '#internal-i18n-types'

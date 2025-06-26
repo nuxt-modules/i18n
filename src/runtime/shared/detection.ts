@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { getRequestURL, getRequestHeader } from 'h3'
-import { normalizedLocales } from '#build/i18n.options.mjs'
+import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'

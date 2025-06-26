@@ -86,11 +86,10 @@ export const DEFAULT_OPTIONS = {
   autoDeclare: true
 } as const
 
-export const NUXT_I18N_TEMPLATE_OPTIONS_KEY = 'i18n.options.mjs'
-export const NUXT_I18N_COMPOSABLE_DEFINE_ROUTE = 'defineI18nRoute'
-export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE = 'defineI18nLocale'
-export const NUXT_I18N_COMPOSABLE_DEFINE_CONFIG = 'defineI18nConfig'
-export const NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR = 'defineI18nLocaleDetector'
+export const DEFINE_I18N_ROUTE_FN = 'defineI18nRoute'
+export const DEFINE_I18N_LOCALE_FN = 'defineI18nLocale'
+export const DEFINE_I18N_CONFIG_FN = 'defineI18nConfig'
+export const DEFINE_LOCALE_DETECTOR_FN = 'defineI18nLocaleDetector'
 export const NUXT_I18N_VIRTUAL_PREFIX = '#nuxt-i18n'
 
 const TS_EXTENSIONS = ['.ts', '.cts', '.mts']

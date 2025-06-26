@@ -1,9 +1,4 @@
-import {
-  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-  NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-  VUE_I18N_PKG
-} from '../constants'
+import { DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, DEFINE_I18N_ROUTE_FN, VUE_I18N_PKG } from '../constants'
 import { addComponent, addImports, resolveModule, useNuxt } from '@nuxt/kit'
 import type { I18nNuxtContext } from '../context'
 
@@ -32,9 +27,9 @@ export function prepareAutoImports({ resolver, userOptions: options, runtimeDir 
       'useCookieLocale',
       'useSetI18nParams',
       'useI18nPreloadKeys',
-      NUXT_I18N_COMPOSABLE_DEFINE_ROUTE,
-      NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-      NUXT_I18N_COMPOSABLE_DEFINE_CONFIG
+      DEFINE_I18N_ROUTE_FN,
+      DEFINE_I18N_LOCALE_FN,
+      DEFINE_I18N_CONFIG_FN
     ].map(key => ({ name: key, as: key, from: composablesIndex }))
   ])
 }
