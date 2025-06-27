@@ -1,4 +1,4 @@
-import { vueI18nConfigs } from '#build/i18n.options.mjs'
+import { vueI18nConfigs } from '#build/i18n-options.mjs'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { getComposer } from '../compatibility'
 import { useNuxtI18nContext } from '../context'

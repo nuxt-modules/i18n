@@ -3,7 +3,6 @@ import type { I18nNuxtContext } from '../context'
 import { addPlugin, addTemplate, addTypeTemplate, addVitePlugin, useNitro } from '@nuxt/kit'
 import { generateTemplateNuxtI18nOptions } from '../template'
 import { generateI18nTypes, generateLoaderOptions } from '../gen'
-import { NUXT_I18N_TEMPLATE_OPTIONS_KEY } from '../constants'
 
 export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const { options, resolver } = ctx
@@ -45,7 +44,7 @@ export function prepareRuntime(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   addTemplate({
-    filename: NUXT_I18N_TEMPLATE_OPTIONS_KEY,
+    filename: 'i18n-options.mjs',
     getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt))
   })
 

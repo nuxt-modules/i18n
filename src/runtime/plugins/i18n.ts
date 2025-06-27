@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL } from '#imports'
-import { localeCodes, normalizedLocales } from '#build/i18n.options.mjs'
+import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'

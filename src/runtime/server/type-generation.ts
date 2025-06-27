@@ -1,5 +1,5 @@
 import { deepCopy, isArray, isFunction, isObject } from '@intlify/shared'
-import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n/options.mjs'
+import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n-options.mjs'
 import { dtsFile } from '#internal/i18n-type-generation-options'
 import { loadVueI18nOptions } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'

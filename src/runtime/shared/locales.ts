@@ -1,4 +1,4 @@
-import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n.options.mjs'
+import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n-options.mjs'
 import { isArray, isString } from '@intlify/shared'
 import type { FallbackLocale } from 'vue-i18n'
 

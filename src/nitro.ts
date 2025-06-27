@@ -11,9 +11,9 @@ import {
   H3_PKG,
   UTILS_H3_PKG,
   EXECUTABLE_EXTENSIONS,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE,
-  NUXT_I18N_COMPOSABLE_DEFINE_CONFIG,
-  NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR
+  DEFINE_I18N_LOCALE_FN,
+  DEFINE_I18N_CONFIG_FN,
+  DEFINE_LOCALE_DETECTOR_FN
 } from './constants'
 import { resolveI18nDir } from './layers'
 
@@ -25,9 +25,9 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const [enableServerIntegration, localeDetectionPath] = await resolveLocaleDetectorPath(nuxt)
 
   addServerTemplate({
-    filename: '#internal/i18n/options.mjs',
+    filename: '#internal/i18n-options.mjs',
     getContents: () =>
-      nuxt.vfs['#build/i18n.options.mjs']?.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
+      nuxt.vfs['#build/i18n-options.mjs']?.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
   })
 
   addServerTemplate({
@@ -36,7 +36,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   })
 
   addServerTemplate({
-    filename: '#internal/i18n/locale.detector.mjs',
+    filename: '#internal/i18n-locale-detector.mjs',
     getContents: () =>
       enableServerIntegration
         ? `import localeDetector from ${JSON.stringify(localeDetectionPath)}
@@ -75,7 +75,7 @@ export { localeDetector }`
 
   // `defineI18nLocale`, `defineI18nConfig`
   addServerImports(
-    [NUXT_I18N_COMPOSABLE_DEFINE_LOCALE, NUXT_I18N_COMPOSABLE_DEFINE_CONFIG].map(key => ({
+    [DEFINE_I18N_LOCALE_FN, DEFINE_I18N_CONFIG_FN].map(key => ({
       name: key,
       as: key,
       from: ctx.resolver.resolve('runtime/composables/shared')
@@ -85,8 +85,8 @@ export { localeDetector }`
   // `defineLocaleDetector`
   addServerImports([
     {
-      name: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
-      as: NUXT_I18N_COMPOSABLE_DEFINE_LOCALE_DETECTOR,
+      name: DEFINE_LOCALE_DETECTOR_FN,
+      as: DEFINE_LOCALE_DETECTOR_FN,
       from: ctx.resolver.resolve('runtime/composables/server')
     }
   ])

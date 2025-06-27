@@ -1,7 +1,7 @@
 import { isRef, unref } from 'vue'
 
 import { useState, useCookie, useRequestURL } from '#imports'
-import { localeLoaders } from '#build/i18n.options.mjs'
+import { localeLoaders } from '#build/i18n-options.mjs'
 import { getLocaleMessagesMergedCached } from './shared/messages'
 import { createBaseUrlGetter, createComposableContext } from './utils'
 import { getI18nTarget } from './compatibility'

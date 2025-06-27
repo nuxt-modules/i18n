@@ -1,5 +1,5 @@
 import { deepCopy } from '@intlify/shared'
-import { localeLoaders } from '#internal/i18n/options.mjs'
+import { localeLoaders } from '#internal/i18n-options.mjs'
 import { getLocaleMessagesMerged } from '../../shared/messages'
 import { cachedFunctionI18n } from './cache'
 import { isLocaleCacheable, isLocaleWithFallbacksCacheable } from '../../shared/locales'

@@ -9,7 +9,7 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { joinURL } from 'ufo'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
-import { localeDetector } from '#internal/i18n/locale.detector.mjs'
+import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
 
