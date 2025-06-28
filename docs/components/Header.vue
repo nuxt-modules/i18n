@@ -33,7 +33,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
     <template #left>
       <NuxtLink
         to="/"
-        class="flex items-end gap-2 font-bold text-xl text-(--ui-text-highlighted) min-w-0 focus-visible:outline-(--ui-primary) shrink-0"
+        class="flex items-end gap-2 font-bold text-lg text-(--ui-text-highlighted) min-w-0 focus-visible:outline-(--ui-primary) shrink-0"
       >
         <Logo class="w-auto h-8 shrink-0" />
       </NuxtLink>
@@ -43,6 +43,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
         :items="processed"
         :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-0' }"
         size="xs"
+        class="hidden sm:flex"
       >
         <UButton
           :label="`v${config.public.version}`"
@@ -67,7 +68,7 @@ const processed = computed<DropdownMenuItem[]>(() => {
       <UContentSearchButton :label="null" />
       <!-- </UTooltip> -->
 
-      <UColorModeButton />
+      <UColorModeButton class="hidden sm:flex" />
 
       <template v-if="appConfig.header?.links">
         <UButton
