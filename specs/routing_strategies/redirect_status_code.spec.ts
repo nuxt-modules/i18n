@@ -1,7 +1,6 @@
-import { test, expect, describe, beforeEach } from 'vitest'
+import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, fetch } from '../utils'
-import { renderPage, setServerRuntimeConfig, startServerWithRuntimeConfig } from '../helper'
+import { setup, fetch } from '../utils'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -10,12 +9,11 @@ await setup({
     i18n: {
       strategy: 'prefix',
       defaultLocale: 'en',
-      detectBrowserLanguage: false,
+      detectBrowserLanguage: {
+        redirectOn: 'no prefix'
+      },
       rootRedirect: { statusCode: 418, path: 'test-route' },
-      redirectStatusCode: 307,
-      experimental: {
-        nitroContextDetection: false
-      }
+      redirectStatusCode: 307
     }
   }
 })
