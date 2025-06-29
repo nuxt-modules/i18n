@@ -37,6 +37,7 @@ export interface NuxtI18nContext {
   /** SSG with dynamic locale resources */
   dynamicResourcesSSG: boolean
   rootRedirect: { path: string; code: number } | undefined
+  redirectStatusCode: number
   /** Get default locale */
   getDefaultLocale: () => string
   /** Get current locale */
@@ -109,6 +110,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     preloaded: false,
     config: runtimeI18n,
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
+    redirectStatusCode: runtimeI18n.redirectStatusCode ?? 302,
     dynamicResourcesSSG: !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),

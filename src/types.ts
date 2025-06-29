@@ -177,6 +177,11 @@ export type NuxtI18nOptions<
    */
   overrides?: Omit<NuxtI18nOptions<Context>, 'overrides'>
   rootRedirect?: string | RootRedirectOptions
+  /**
+   * Status code used for localized redirects
+   * @default 302
+   */
+  redirectStatusCode?: number
   skipSettingLocaleOnNavigate?: boolean
   /**
    * @deprecated This option is deprecated, only `'composition'` types will be supported in the future.
@@ -362,6 +367,7 @@ export interface I18nHeadMetaInfo {
 export interface I18nPublicRuntimeConfig {
   baseUrl: NuxtI18nOptions['baseUrl']
   rootRedirect: NuxtI18nOptions['rootRedirect']
+  redirectStatusCode?: NuxtI18nOptions['redirectStatusCode']
   domainLocales: { [key: Locale]: { domain: string | undefined } }
   /** @internal Overwritten at build time, used to pass generated options to runtime */
   locales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>

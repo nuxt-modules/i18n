@@ -11,6 +11,7 @@ export function prepareRuntimeConfig(ctx: I18nNuxtContext, nuxt: Nuxt) {
     baseUrl: ctx.options.baseUrl,
     defaultLocale: ctx.options.defaultLocale,
     rootRedirect: ctx.options.rootRedirect,
+    redirectStatusCode: ctx.options.redirectStatusCode,
     skipSettingLocaleOnNavigate: ctx.options.skipSettingLocaleOnNavigate,
     locales: ctx.options.locales,
     detectBrowserLanguage: ctx.options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
