@@ -38,6 +38,8 @@ function* detect(
   if (__I18N_ROUTING__) {
     yield { locale: detectors.route(path), source: 'route' }
   }
+
+  yield { locale: detection.fallbackLocale, source: 'fallback' }
 }
 
 export default defineNitroPlugin(async nitro => {
@@ -96,6 +98,7 @@ export default defineNitroPlugin(async nitro => {
         break
       }
     }
+    locale ||= defaultLocale
 
     function getLocalizedMatch(locale: string) {
       const res = matchLocalized(path || '/', locale, defaultLocale)
@@ -112,6 +115,8 @@ export default defineNitroPlugin(async nitro => {
         (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path) ||
         matchLocalized(rootRedirect.path, locale, defaultLocale)
       redirectCode = rootRedirect.code
+    } else if (runtimeI18n.redirectStatusCode) {
+      redirectCode = runtimeI18n.redirectStatusCode
     }
 
     switch (detection.redirectOn) {
