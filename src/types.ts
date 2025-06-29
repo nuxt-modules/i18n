@@ -177,6 +177,10 @@ export type NuxtI18nOptions<
    */
   overrides?: Omit<NuxtI18nOptions<Context>, 'overrides'>
   rootRedirect?: string | RootRedirectOptions
+  /**
+   * Status code used for localized redirects
+   * @default 302
+   */
   redirectStatusCode?: number
   skipSettingLocaleOnNavigate?: boolean
   /**
