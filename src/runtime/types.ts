@@ -7,7 +7,6 @@ import type {
   RouteLocationNormalizedGeneric,
   RouteRecordNameGeneric
 } from 'vue-router'
-import type { ComposableContext } from './utils'
 import type { NuxtI18nContext } from './context'
 
 export type CompatRoute = Omit<RouteLocationNormalizedGeneric, 'name'> & {
@@ -113,9 +112,7 @@ export interface ComposerCustomProperties<
 declare module '#app' {
   interface NuxtApp {
     /** @internal */
-    _nuxtI18nCtx: NuxtI18nContext
-    /** @internal */
-    _nuxtI18n: ComposableContext
+    _nuxtI18n: NuxtI18nContext
   }
 }
 

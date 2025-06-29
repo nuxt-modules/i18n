@@ -7,7 +7,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
 import { resolve, parse as parsePath, dirname } from 'pathe'
-import { NUXT_I18N_COMPOSABLE_DEFINE_ROUTE } from './constants'
+import { DEFINE_I18N_ROUTE_FN } from './constants'
 import { createRoutesContext } from 'unplugin-vue-router'
 import { resolveOptions } from 'unplugin-vue-router/options'
 
@@ -386,7 +386,7 @@ function readComponent(target: string) {
     const content = readFileSync(target, 'utf-8')
     const { descriptor } = parseSFC(content)
 
-    if (!content.includes(NUXT_I18N_COMPOSABLE_DEFINE_ROUTE)) {
+    if (!content.includes(DEFINE_I18N_ROUTE_FN)) {
       return undefined
     }
 
@@ -399,7 +399,7 @@ function readComponent(target: string) {
       walk(ast, {
         enter(node: Node) {
           if (node.type !== 'CallExpression') return
-          if (node.callee.type === 'Identifier' && node.callee.name === NUXT_I18N_COMPOSABLE_DEFINE_ROUTE) {
+          if (node.callee.type === 'Identifier' && node.callee.name === DEFINE_I18N_ROUTE_FN) {
             const arg = node.arguments[0]
             if (
               arg.type === 'BooleanLiteral' ||

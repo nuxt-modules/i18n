@@ -1,9 +1,9 @@
 import { isRef, unref } from 'vue'
 
-import { useNuxtApp, useState, useCookie, useRequestURL } from '#imports'
-import { localeLoaders } from '#build/i18n.options.mjs'
+import { useState, useCookie, useRequestURL } from '#imports'
+import { localeLoaders } from '#build/i18n-options.mjs'
 import { getLocaleMessagesMergedCached } from './shared/messages'
-import { createBaseUrlGetter } from './utils'
+import { createBaseUrlGetter, createComposableContext } from './utils'
 import { getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
@@ -11,8 +11,9 @@ import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/
 import { joinURL } from 'ufo'
 import { isString } from '@intlify/shared'
 
-import type { Locale, I18n } from 'vue-i18n'
 import type { NuxtApp } from '#app'
+import type { Locale, I18n } from 'vue-i18n'
+import type { ComposableContext } from './utils'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
 export const useLocaleConfigs = () =>
@@ -53,8 +54,7 @@ export interface NuxtI18nContext {
   getBaseUrl: (locale?: string) => string
   /** Load locale messages */
   loadMessages: (locale: Locale) => Promise<void>
-  _loadMessagesFromClient: (locale: Locale) => Promise<void>
-  _loadMessagesFromServer: (locale: Locale) => Promise<void>
+  composableCtx: ComposableContext
 }
 
 function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {
@@ -71,8 +71,8 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
 
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
-  const runtimeI18n = useRuntimeI18n()
-  const detectConfig = useI18nDetection()
+  const runtimeI18n = useRuntimeI18n(nuxt)
+  const detectConfig = useI18nDetection(nuxt)
   const serverLocaleConfigs = useLocaleConfigs()
   const localeCookie = useI18nCookie(detectConfig)
 
@@ -84,6 +84,24 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const resolvedLocale = useResolvedLocale()
   if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
+  }
+
+  const loadMessagesFromClient = async (locale: string) => {
+    const locales = getLocaleConfig(locale)?.fallbacks ?? []
+    if (!locales.includes(locale)) locales.push(locale)
+    for (const k of locales) {
+      const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(k, localeLoaders[k]))
+      i18n.mergeLocaleMessage(k, msg)
+    }
+  }
+
+  const loadMessagesFromServer = async (locale: string) => {
+    if (locale in localeLoaders === false) return
+    const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
+    const messages = await $fetch(`/_i18n/${locale}/messages.json`, { headers })
+    for (const k of Object.keys(messages)) {
+      i18n.mergeLocaleMessage(k, messages[k])
+    }
   }
 
   const ctx: NuxtI18nContext = {
@@ -140,38 +158,24 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       }
       return joinURL(baseUrl(), nuxt.$config.app.baseURL)
     },
-    _loadMessagesFromClient: async (locale: string) => {
-      const locales = getLocaleConfig(locale)?.fallbacks ?? []
-      if (!locales.includes(locale)) locales.push(locale)
-      for (const k of locales) {
-        const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(k, localeLoaders[k]))
-        i18n.mergeLocaleMessage(k, msg)
-      }
-    },
-    _loadMessagesFromServer: async (locale: string) => {
-      if (locale in localeLoaders === false) return
-      const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
-      const messages = await $fetch(`/_i18n/${locale}/messages.json`, { headers })
-      for (const k of Object.keys(messages)) {
-        i18n.mergeLocaleMessage(k, messages[k])
-      }
-    },
     loadMessages: async (locale: string) => {
       try {
         return ctx.dynamicResourcesSSG || import.meta.dev
-          ? await ctx._loadMessagesFromClient(locale)
-          : await ctx._loadMessagesFromServer(locale)
+          ? await loadMessagesFromClient(locale)
+          : await loadMessagesFromServer(locale)
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       }
-    }
+    },
+    composableCtx: undefined!
   }
+  ctx.composableCtx = createComposableContext(ctx, nuxt)
   return ctx
 }
 
-export function useNuxtI18nContext(nuxt: NuxtApp = useNuxtApp()) {
-  if (nuxt._nuxtI18nCtx == null) {
+export function useNuxtI18nContext(nuxt: NuxtApp) {
+  if (nuxt._nuxtI18n == null) {
     throw new Error('Nuxt I18n context has not been set up yet.')
   }
-  return nuxt._nuxtI18nCtx
+  return nuxt._nuxtI18n
 }

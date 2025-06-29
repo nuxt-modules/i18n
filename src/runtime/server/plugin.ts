@@ -9,7 +9,7 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { joinURL } from 'ufo'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
-import { localeDetector } from '#internal/i18n/locale.detector.mjs'
+import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
 
@@ -50,7 +50,7 @@ export default defineNitroPlugin(async nitro => {
   const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
   await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
 
-  const detection = useI18nDetection()
+  const detection = useI18nDetection(undefined)
   const cookieOptions = {
     path: '/',
     domain: detection.cookieDomain || undefined,

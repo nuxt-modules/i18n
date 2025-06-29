@@ -23,6 +23,7 @@ import type {
   I18nHeadOptions,
   LocaleObject
 } from '#internal-i18n-types'
+import type { NuxtI18nContext } from './context'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 import { useDetectors } from './shared/detection'
 import { useI18nDetection } from './shared/utils'
@@ -63,8 +64,8 @@ export type ComposableContext = {
 // RouteLike object has a path and no name.
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
-export function useComposableContext(): ComposableContext {
-  const context = useNuxtApp()._nuxtI18n
+export function useComposableContext(nuxtApp: NuxtApp): ComposableContext {
+  const context = nuxtApp?._nuxtI18n?.composableCtx
   if (!context) {
     throw new Error(
       'i18n context is not initialized. Ensure the i18n plugin is installed and the composable is used within a Vue component or setup function.'
@@ -73,13 +74,10 @@ export function useComposableContext(): ComposableContext {
   return context
 }
 const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
-export function createComposableContext(): ComposableContext {
-  const ctx = useNuxtI18nContext()
+export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp = useNuxtApp()): ComposableContext {
   const router = useRouter()
-  const nuxtApp = useNuxtApp()
-  const detectors = useDetectors(useRequestEvent(), useI18nDetection())
+  const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
   const defaultLocale = ctx.getDefaultLocale()
-  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
@@ -94,6 +92,7 @@ export function createComposableContext(): ComposableContext {
     return route
   }
 
+  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
   function resolveLocalizedRouteByPath(input: RouteLikeWithPath, locale: string) {
     const route = routeByPathResolver(input, locale) as RouteLike
     const baseName = getRouteBaseName(route)
@@ -180,9 +179,8 @@ declare global {
   }
 }
 
-export async function loadAndSetLocale(locale: Locale): Promise<string> {
-  const nuxt = useNuxtApp()
-  const ctx = useNuxtI18nContext()
+export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promise<string> {
+  const ctx = useNuxtI18nContext(nuxtApp)
   const oldLocale = ctx.getLocale()
 
   // skip if locale is already set
@@ -190,8 +188,8 @@ export async function loadAndSetLocale(locale: Locale): Promise<string> {
     return locale
   }
 
-  const data = { oldLocale, newLocale: locale, initialSetup: ctx.initial, context: nuxt }
-  let override = (await nuxt.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
+  const data = { oldLocale, newLocale: locale, initialSetup: ctx.initial, context: nuxtApp }
+  let override = (await nuxtApp.callHook('i18n:beforeLocaleSwitch', data)) as string | undefined
   if (override != null && import.meta.dev) {
     console.warn('[nuxt-i18n] Do not return in `i18n:beforeLocaleSwitch`, mutate `data.newLocale` instead.')
   }
@@ -226,10 +224,9 @@ function skipDetect(detect: DetectBrowserLanguageOptions, path: string, pathLoca
   return false
 }
 
-export function detectLocale(route: string | CompatRoute): string {
-  const nuxtApp = useNuxtApp()
-  const detectConfig = useI18nDetection()
-  const detectors = useDetectors(useRequestEvent(), detectConfig)
+export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): string {
+  const detectConfig = useI18nDetection(nuxtApp)
+  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, nuxtApp)
   const ctx = useNuxtI18nContext(nuxtApp)
   const path = isString(route) ? route : route.path
 
@@ -259,11 +256,11 @@ export function detectLocale(route: string | CompatRoute): string {
   return ctx.getLocale() || ctx.getDefaultLocale() || ''
 }
 
-export function navigate(to: CompatRoute, locale: string) {
+export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
   if (!__I18N_ROUTING__ || __DIFFERENT_DOMAINS__) return
 
-  const ctx = useNuxtI18nContext()
-  const _ctx = useComposableContext()
+  const ctx = useNuxtI18nContext(nuxtApp)
+  const _ctx = useComposableContext(nuxtApp)
 
   if (to.path === '/' && ctx.rootRedirect) {
     return navigateTo(localePath(_ctx, ctx.rootRedirect.path, locale), { redirectCode: ctx.rootRedirect.code })
@@ -275,7 +272,7 @@ export function navigate(to: CompatRoute, locale: string) {
   }
 
   // skip - redirection optional prevents prefix removal, reconsider if needed (#2288)
-  const detectors = useDetectors(useRequestEvent(), useI18nDetection())
+  const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
   if (detectors.route(to) === locale) {
     return
   }

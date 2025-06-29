@@ -1,4 +1,4 @@
-import { vueI18nConfigs } from '#build/i18n.options.mjs'
+import { vueI18nConfigs } from '#build/i18n-options.mjs'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { getComposer } from '../compatibility'
 import { useNuxtI18nContext } from '../context'
@@ -18,9 +18,10 @@ declare module '../context' {
 export default defineNuxtPlugin({
   name: 'i18n:dev',
   dependsOn: ['i18n:plugin'],
-  setup() {
+  setup(_nuxt) {
     if (!import.meta.dev) return
-    const nuxt = useNuxtApp()
+    // @ts-expect-error untyped internal id parameter
+    const nuxt = useNuxtApp(_nuxt._id)
     const ctx = useNuxtI18nContext(nuxt)
     const composer = getComposer(ctx.vueI18n)
 
@@ -55,7 +56,7 @@ export default defineNuxtPlugin({
       }
     }
 
-    nuxt._nuxtI18nCtx.dev = {
+    nuxt._nuxtI18n.dev = {
       resetI18nProperties,
       deepEqual
     }

@@ -17,6 +17,7 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
 
   const replacementName = `__nuxtMock`
   const replacementMock = `const ${replacementName} = { runWithContext: async (fn) => await fn() };`
+  const resources = ['i18n-route-resources.mjs', 'i18n-options.mjs']
 
   return createUnplugin(() => ({
     name: 'nuxtjs:i18n-heist',
@@ -39,9 +40,9 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
         // replace `#app` with `__nuxtMock`
         s.replaceAll(/useNuxtApp\(\)/g, replacementName)
 
-        s.replaceAll(/#build\/i18n-route-resources\.mjs/g, '#internal/i18n-route-resources.mjs')
-        // replace `#build/i18n.options.mjs` with `#internal/i18n/options.mjs`
-        s.replaceAll(/#build\/i18n\.options\.mjs/g, '#internal/i18n/options.mjs')
+        for (const resource of resources) {
+          s.replaceAll(new RegExp(`#build/${resource}`, 'g'), `#internal/${resource}`)
+        }
 
         return {
           code: s.toString(),

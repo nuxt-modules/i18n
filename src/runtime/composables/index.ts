@@ -1,4 +1,4 @@
-import { useNuxtApp, useCookie, useRuntimeConfig, useRequestEvent } from '#imports'
+import { useNuxtApp, useCookie, useRequestEvent } from '#imports'
 import { ref, watch } from 'vue'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../utils'
@@ -8,6 +8,7 @@ import type { Locale } from 'vue-i18n'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMap, RouteMapI18n } from 'vue-router'
 import type { RouteLocationGenericPath, I18nRouteMeta, CompatRoute } from '../types'
+import type { NuxtApp } from '#app'
 
 export * from 'vue-i18n'
 export * from './shared'
@@ -58,8 +59,8 @@ export type SetI18nParamsFunction = (params: I18nRouteMeta) => void
  *
  * @param options - An {@link SeoAttributesOptions} object.
  */
-export function useSetI18nParams(seo?: SeoAttributesOptions): SetI18nParamsFunction {
-  const common = useComposableContext()
+export function useSetI18nParams(seo?: SeoAttributesOptions, nuxtApp: NuxtApp = useNuxtApp()): SetI18nParamsFunction {
+  const common = useComposableContext(nuxtApp)
   return _useSetI18nParams(common, seo)
 }
 
@@ -76,13 +77,16 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => I18nHeadMetaInfo
  * @param options - An {@link I18nHeadOptions} object
  * @returns A ref with localized {@link I18nHeadMetaInfo | head properties}.
  */
-export function useLocaleHead({ dir = true, lang = true, seo = true }: I18nHeadOptions = {}): Ref<I18nHeadMetaInfo> {
+export function useLocaleHead(
+  { dir = true, lang = true, seo = true }: I18nHeadOptions = {},
+  nuxtApp: NuxtApp = useNuxtApp()
+): Ref<I18nHeadMetaInfo> {
   if (__I18N_STRICT_SEO__) {
     throw new Error(
       'Strict SEO mode is enabled, `useLocaleHead` should not be used as localized head tags are handled internally by `@nuxtjs/i18n`'
     )
   }
-  const common = useComposableContext()
+  const common = useComposableContext(nuxtApp)
   common.seoSettings = { dir, lang, seo }
   const head = _useLocaleHead(common, common.seoSettings as Required<I18nHeadOptions>)
 
@@ -124,8 +128,8 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
  * routeBaseName('about-us__nl') // about-us
  * ```
  */
-export function useRouteBaseName(): RouteBaseNameFunction {
-  const common = useComposableContext()
+export function useRouteBaseName(nuxtApp: NuxtApp = useNuxtApp()): RouteBaseNameFunction {
+  const common = useComposableContext(nuxtApp)
   return route => {
     if (route == null) return
     return common.getRouteBaseName(route) || undefined
@@ -154,8 +158,8 @@ export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteM
  * localePath({ name: 'about-us' }, 'nl') // /nl/over-ons
  * ```
  */
-export function useLocalePath(): LocalePathFunction {
-  const common = useComposableContext()
+export function useLocalePath(nuxtApp: NuxtApp = useNuxtApp()): LocalePathFunction {
+  const common = useComposableContext(nuxtApp)
   return (route, locale) => localePath(common, route as CompatRoute, locale)
 }
 
@@ -175,8 +179,8 @@ export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof Route
 /**
  * Returns a {@link LocaleRouteFunction} used to resolve localized route objects.
  */
-export function useLocaleRoute(): LocaleRouteFunction {
-  const common = useComposableContext()
+export function useLocaleRoute(nuxtApp: NuxtApp = useNuxtApp()): LocaleRouteFunction {
+  const common = useComposableContext(nuxtApp)
   return (route, locale) => localeRoute(common, route as CompatRoute, locale)
 }
 
@@ -196,8 +200,8 @@ export type SwitchLocalePathFunction = (locale: Locale) => string
  * switchLocalePath('nl') // /nl/over-ons
  * ```
  */
-export function useSwitchLocalePath(): SwitchLocalePathFunction {
-  const common = useComposableContext()
+export function useSwitchLocalePath(nuxtApp: NuxtApp = useNuxtApp()): SwitchLocalePathFunction {
+  const common = useComposableContext(nuxtApp)
   return locale => switchLocalePath(common, locale)
 }
 
@@ -206,8 +210,8 @@ export function useSwitchLocalePath(): SwitchLocalePathFunction {
  *
  * @returns the browser locale or `null` if none detected.
  */
-export function useBrowserLocale(): string | null {
-  return useNuxtApp().$i18n.getBrowserLocale() || null
+export function useBrowserLocale(nuxtApp: NuxtApp = useNuxtApp()): string | null {
+  return (nuxtApp || useNuxtApp()).$i18n.getBrowserLocale() || null
 }
 
 /**
@@ -215,14 +219,15 @@ export function useBrowserLocale(): string | null {
  *
  * @returns a ref with the detected cookie or an empty string if none is detected or if `detectBrowserLanguage.useCookie` is disabled.
  */
-export function useCookieLocale(): Ref<string> {
+export function useCookieLocale(nuxtApp: NuxtApp = useNuxtApp()): Ref<string> {
   const locale: Ref<string> = ref('')
-  const detect = useRuntimeConfig().public.i18n.detectBrowserLanguage
+  const nuxt = nuxtApp || useNuxtApp()
+  const detect = nuxt.$config.public.i18n.detectBrowserLanguage
 
   if (!detect || !detect.useCookie) {
     return locale
   }
-  const locales = useComposableContext().getLocales()
+  const locales = useComposableContext(nuxt).getLocales()
   const code = useCookie(detect.cookieKey).value
   if (code && locales.some(x => x.code === code)) {
     locale.value = code
@@ -288,7 +293,7 @@ export function useI18nPreloadKeys(keys: string[]): void {
       return
     }
 
-    const locale = useComposableContext().getLocale()
+    const locale = useComposableContext(useNuxtApp()).getLocale()
     if (!locale) {
       console.warn('useI18nPreloadKeys(): Could not resolve locale during server-side render.')
       return

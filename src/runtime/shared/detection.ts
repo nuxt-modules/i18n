@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { getRequestURL, getRequestHeader } from 'h3'
-import { normalizedLocales } from '#build/i18n.options.mjs'
+import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
@@ -11,6 +11,7 @@ import { parse } from 'cookie-es'
 
 import type { H3Event } from 'h3'
 import type { CompatRoute } from '../types'
+import type { NuxtApp } from '#app'
 
 // TODO: add unit tests for these detectors
 
@@ -46,12 +47,12 @@ const getHostLocale = (
   return matchDomainLocale(locales, host, getLocaleFromRoutePath(path))
 }
 
-export const useDetectors = (event: H3Event | undefined, config: { cookieKey: string }) => {
+export const useDetectors = (event: H3Event | undefined, config: { cookieKey: string }, nuxtApp?: NuxtApp) => {
   if (import.meta.server && !event) {
     throw new Error('H3Event is required for server-side locale detection')
   }
 
-  const runtimeI18n = useRuntimeI18n()
+  const runtimeI18n = useRuntimeI18n(nuxtApp)
 
   return {
     cookie: () => getCookieLocale(event, config.cookieKey),
