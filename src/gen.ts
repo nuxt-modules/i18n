@@ -2,7 +2,6 @@ import { isString } from '@intlify/shared'
 import { genDynamicImport, genSafeVariableName, genString } from 'knitwork'
 import { resolve, relative, join, basename } from 'pathe'
 import { asI18nVirtual } from './transform/utils'
-import { resolveModule } from '@nuxt/kit'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleObject } from './types'
@@ -214,11 +213,6 @@ declare module '#app' {
   interface PageMeta extends I18nMeta {}
 }
 
-
-// NOTE: this is a workaround for Nuxt <3.16.2
-declare module '${resolve(resolveModule('nuxt'), '../pages/runtime/composables')}' {
-  interface PageMeta extends I18nMeta {}
-}
 
 declare module 'vue-router' {
   interface RouteMeta extends I18nMeta {}
