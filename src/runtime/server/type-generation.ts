@@ -34,7 +34,7 @@ export default async () => {
   const loaderPromises: Promise<unknown>[] = []
   for (const locale in localeLoaders) {
     if (!targetLocales.includes(locale)) continue
-    const loader = async () => deepCopy(await getMergedMessages(locale, []), merged.messages)
+    const loader = async () => deepCopy((await getMergedMessages(locale, []))?.[locale], merged.messages)
     loaderPromises.push(loader())
   }
 
