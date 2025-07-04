@@ -18,6 +18,9 @@ function createHeadContext(
   const canonicalQueries = (typeof config.seo === 'object' && config.seo?.canonicalQueries) || []
 
   if (!baseUrl) {
+    if (__I18N_STRICT_SEO__) {
+      throw new Error('I18n `baseUrl` is required to generate valid SEO tag links.')
+    }
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
   }
 
