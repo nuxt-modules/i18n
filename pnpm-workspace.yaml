@@ -8,5 +8,6 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - better-sqlite3
   - esbuild
+  - oxc-resolver
   - sharp
   - vue-demi
