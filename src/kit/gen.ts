@@ -98,6 +98,10 @@ export function localizeSingleRoute(
   options: LocalizeRouteParams,
   ctx: RouteContext
 ): LocalizableRoute[] {
+  // Skip i18n for routes with meta.i18n === false
+  if (route?.meta?.i18n === false) {
+    return [route]
+  }
   // resolve custom route (config/page) options
   const routeOptions = ctx.optionsResolver(route, options.locales)
   if (!routeOptions) {
