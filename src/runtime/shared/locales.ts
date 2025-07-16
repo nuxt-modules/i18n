@@ -30,7 +30,7 @@ function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): st
   const targets = [...locales, 'default']
   for (const locale of targets) {
     if (locale in fallback == false) continue
-    fallbackLocales = [...fallbackLocales, ...fallback[locale].filter(Boolean)]
+    fallbackLocales = [...fallbackLocales, ...fallback[locale]!.filter(Boolean)]
   }
 
   return fallbackLocales

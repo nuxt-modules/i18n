@@ -20,7 +20,7 @@
     "@nuxt/image": "^1.10.0",
     "@nuxt/scripts": "^0.11.8",
     "@nuxt/ui-pro": "^3.1.3",
-    "nuxt": "^3.17.5",
+    "nuxt": "^4.0.0",
     "nuxt-llms": "0.1.3",
     "nuxt-og-image": "^5.1.6",
     "shiki-transformer-color-highlight": "^1.0.0"

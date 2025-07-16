@@ -13,7 +13,7 @@ import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
 export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  const project = getLayerI18n(nuxt.options._layers[0])
+  const project = getLayerI18n(nuxt.options._layers[0]!)
   const include = toArray(project?.bundle?.onlyLocales ?? []).filter(isString)
 
   if (!include.length) {
@@ -83,7 +83,7 @@ function scanProgram(program: Program) {
 
         if (node.declaration.type === 'CallExpression' && node.declaration.callee.type === 'Identifier') {
           const [fnNode] = node.declaration.arguments
-          if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
+          if (fnNode?.type === 'FunctionExpression' || fnNode?.type === 'ArrowFunctionExpression') {
             return 'function'
           }
         }
@@ -100,7 +100,7 @@ function scanProgram(program: Program) {
 
       if (n.init?.type === 'CallExpression' && n.init.callee.type === 'Identifier') {
         const [fnNode] = n.init.arguments
-        if (fnNode.type === 'FunctionExpression' || fnNode.type === 'ArrowFunctionExpression') {
+        if (fnNode?.type === 'FunctionExpression' || fnNode?.type === 'ArrowFunctionExpression') {
           return 'function'
         }
       }

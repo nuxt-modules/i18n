@@ -37,7 +37,7 @@ export default defineNuxtPlugin({
         const msg = unref(ctx.vueI18n.global.messages) as LocaleMessages<DefineLocaleMessage>
         serverI18n.messages ??= {}
         for (const k in msg) {
-          serverI18n.messages[k] = msg[k]
+          serverI18n.messages[k] = msg[k]!
         }
       }
     }

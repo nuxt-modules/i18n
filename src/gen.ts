@@ -47,7 +47,7 @@ export function generateLoaderOptions(
           load: genDynamicImport(asI18nVirtual(meta.hash), { comment: `webpackChunkName: ${key}` })
         })
       }
-      localeLoaders[locale.code].push(importMapper.get(meta.path)!)
+      localeLoaders[locale.code]!.push(importMapper.get(meta.path)!)
     }
   }
 
@@ -56,7 +56,7 @@ export function generateLoaderOptions(
    */
   const vueI18nConfigs = []
   for (let i = ctx.vueI18nConfigPaths.length - 1; i >= 0; i--) {
-    const config = ctx.vueI18nConfigPaths[i]
+    const config = ctx.vueI18nConfigPaths[i]!
     const key = genString(`config_${genSafeVariableName(basename(config.path))}_${config.hash}`)
     vueI18nConfigs.push({
       importer: genDynamicImport(asI18nVirtual(config.hash), { comment: `webpackChunkName: ${key}` }),

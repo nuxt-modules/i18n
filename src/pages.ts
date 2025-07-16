@@ -75,7 +75,7 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
-        const pagesDir = resolve(projectLayer.config.rootDir, layer.config.srcDir, layer.config.dir?.pages ?? 'pages')
+        const pagesDir = resolve(projectLayer!.config.rootDir, layer.config.srcDir, layer.config.dir?.pages ?? 'pages')
         analyzeNuxtPages(ctx, pagesDir, pages)
       }
 
@@ -276,7 +276,7 @@ export function getRouteOptionsResolver(
     const res = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
     if (route.file) {
       const localeCfg = res?.srcPaths
-      const mappedPath = ctx.fileToPath[route.file]
+      const mappedPath = ctx.fileToPath[route.file]!
       ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
 
       // set paths for all locales, assume no custom path is a disabled locale
@@ -402,8 +402,8 @@ function readComponent(target: string) {
           if (node.callee.type === 'Identifier' && node.callee.name === DEFINE_I18N_ROUTE_FN) {
             const arg = node.arguments[0]
             if (
-              arg.type === 'BooleanLiteral' ||
-              (arg.type === 'ObjectExpression' && verifyObjectValue(arg.properties))
+              arg?.type === 'BooleanLiteral' ||
+              (arg?.type === 'ObjectExpression' && verifyObjectValue(arg.properties))
             ) {
               extract = desc.loc.source.slice(arg.start!, arg.end!)
             }

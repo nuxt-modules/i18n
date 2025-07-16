@@ -10,7 +10,7 @@ import type { FileMeta, LocaleObject, LocaleType, NuxtI18nOptions } from './type
 import type { I18nNuxtContext } from './context'
 
 export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
-  const project = nuxt.options._layers[0]
+  const project = nuxt.options._layers[0]!
   const layers = nuxt.options._layers
 
   for (const layer of layers) {

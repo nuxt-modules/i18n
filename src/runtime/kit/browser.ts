@@ -22,8 +22,8 @@ function matchBrowserLocale(locales: Locale[], browserLocales: readonly string[]
 
   // second pass: match only locale code part of the browser locale (not including country).
   for (const [index, browserCode] of browserLocales.entries()) {
-    const languageCode = browserCode.split('-')[0].toLowerCase()
-    const matchedLocale = locales.find(l => l.language?.split('-')[0].toLowerCase() === languageCode)
+    const languageCode = browserCode.split('-')[0]!.toLowerCase()
+    const matchedLocale = locales.find(l => l.language?.split('-')[0]!.toLowerCase() === languageCode)
     if (matchedLocale) {
       // deduct a thousandth for being non-exact match.
       matchedLocales.push({ code: matchedLocale.code, score: 0.999 - index / browserLocales.length })

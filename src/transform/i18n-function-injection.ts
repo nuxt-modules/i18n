@@ -115,7 +115,7 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
             // only add variables when used without having been declared
             const assignments: string[] = []
             for (const missing of missingFunctionDeclarators) {
-              assignments.push(TRANSLATION_FUNCTIONS_MAP[missing])
+              assignments.push(TRANSLATION_FUNCTIONS_MAP[missing]!)
             }
 
             // add variable declaration at the start of <script>, `autoImports` does the rest
@@ -184,7 +184,7 @@ class ScopeTracker {
   leaveScope() {
     this.scopeIndexStack.pop()
     this.curScopeKey = this.getKey()
-    this.scopeIndexStack[this.scopeIndexStack.length - 1]++
+    this.scopeIndexStack[this.scopeIndexStack.length - 1]!++
   }
 }
 

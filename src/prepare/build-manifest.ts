@@ -11,8 +11,8 @@ export function prepareBuildManifest({ localeInfo }: I18nNuxtContext, nuxt: Nuxt
 
     for (const key in manifest) {
       if (langPaths.some(x => key.startsWith(x))) {
-        manifest[key].prefetch = false
-        manifest[key].preload = false
+        manifest[key]!.prefetch = false
+        manifest[key]!.preload = false
       }
     }
   })

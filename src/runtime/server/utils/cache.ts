@@ -41,6 +41,7 @@ export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
     }
   }
 
+  // @ts-expect-error needs to be properly typed
   return async (...args) => {
     const key = [opts.name, opts.getKey(...args)].join(':').replace(/:\/$/, ':index')
     const maxAge = opts.maxAge ?? 1

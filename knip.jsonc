@@ -30,7 +30,7 @@
       "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"]
     },
     "playground": {
-      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"],
+      "entry": ["{app,server}/**", "{app,error}.vue", "*.ts"],
       "ignore": ["i18n/**"],
       "ignoreDependencies": ["@nuxtjs/i18n"]
     }

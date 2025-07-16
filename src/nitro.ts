@@ -27,7 +27,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
     getContents: () =>
-      nuxt.vfs['#build/i18n-options.mjs']?.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
+      nuxt.vfs['#build/i18n-options.mjs']!.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
   })
 
   addServerTemplate({
@@ -97,7 +97,7 @@ export { localeDetector }`
     h3UtilsExports.map(key => ({
       name: key,
       as: key,
-      from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG])
+      from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG]!)
     }))
   )
 
