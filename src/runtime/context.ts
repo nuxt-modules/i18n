@@ -146,7 +146,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         await ctx.vueI18n.__resolvePendingLocalePromise?.()
       }
     },
-    getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : x)),
+    getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : (x as LocaleObject<string>))),
     setCookieLocale: (locale: string) => {
       if (detectConfig.useCookie && isSupportedLocale(locale)) {
         localeCookie.value = locale

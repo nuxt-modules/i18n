@@ -9,8 +9,8 @@ for (const path of Object.keys(i18nPathToPath)) {
 
 const getI18nPathToI18nPath = (path: string, locale: string) => {
   if (!path || !locale) return
-  const plainPath = i18nPathToPath[path]
-  const i18nConfig = pathToI18nConfig[plainPath]
+  const plainPath = i18nPathToPath[path]!
+  const i18nConfig = pathToI18nConfig[plainPath]!
   if (i18nConfig && i18nConfig[locale]) {
     return i18nConfig[locale] === true ? plainPath : i18nConfig[locale]
   }
@@ -40,7 +40,7 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
   )
 
   if (resolvedMatch && resolvedMatch.matched.length > 0) {
-    const alternate = getI18nPathToI18nPath(resolvedMatch?.matched[0]?.path, locale)
+    const alternate = getI18nPathToI18nPath(resolvedMatch.matched[0]!.path, locale)
     const match = matcher.resolve(
       { params: resolvedMatch.params },
       { path: alternate || '', name: '', matched: [], params: {}, meta: {} }
