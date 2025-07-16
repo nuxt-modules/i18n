@@ -57,7 +57,7 @@ export function setNestedValue<T extends object, K extends string, V = any>(obj:
 
   // Iterate over all parts except the last one
   for (let i = 0; i < parts.length - 1; i++) {
-    const part = parts[i]
+    const part = parts[i]!
     if (!current[part]) {
       current[part] = {} // Create nested object if it doesn't exist
     }
@@ -65,6 +65,6 @@ export function setNestedValue<T extends object, K extends string, V = any>(obj:
   }
 
   // Set the value for the last part
-  const lastPart = parts[parts.length - 1]
+  const lastPart = parts[parts.length - 1]!
   current[lastPart] = value
 }

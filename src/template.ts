@@ -15,8 +15,8 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
   const statements: string[] = []
 
   for (const locale in localeLoaders) {
-    for (let i = 0; i < localeLoaders[locale].length; i++) {
-      const loader = localeLoaders[locale][i]
+    for (let i = 0; i < localeLoaders[locale]!.length; i++) {
+      const loader = localeLoaders[locale]![i]!
       statements.push(
         [
           `  import.meta.hot.accept("${loader.relative}", async mod => {`,
@@ -39,7 +39,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
   for (let i = 0; i < configs.length; i++) {
     statements.push(
       [
-        `  import.meta.hot.accept("${configs[i].relative}", async mod => {`,
+        `  import.meta.hot.accept("${configs[i]!.relative}", async mod => {`,
         //   load configs before replacing loader
         `    const [oldData, newData] = await Promise.all([loadCfg(vueI18nConfigs[${i}]), loadCfg(() => Promise.resolve(mod))]);`,
         //   replace config loader
@@ -76,7 +76,7 @@ export function generateTemplateNuxtI18nOptions(
 
   const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
-    localeLoaderEntries[locale] = opts.localeLoaders[locale].map(({ key, load, cache }) => ({ key, load, cache }))
+    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, cache }) => ({ key, load, cache }))
   }
 
   return `// @ts-nocheck

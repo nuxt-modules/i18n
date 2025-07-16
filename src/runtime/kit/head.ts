@@ -93,7 +93,7 @@ export function localeHead(
       getAlternateOgLocales(
         options,
         strictSeo
-          ? alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default')
+          ? alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default') as string[]
           : options.locales.map(x => x.language || x.code)
       )
     )
@@ -134,11 +134,11 @@ function getHreflangLinks(options: HeadContext) {
     if (!link) continue
 
     links.push(link)
-    if (options.defaultLocale && options.defaultLocale === locale.code && links[0].hreflang !== 'x-default') {
+    if (options.defaultLocale && options.defaultLocale === locale.code && links[0]!.hreflang !== 'x-default') {
       links.unshift(
         strictSeo
-          ? { rel: 'alternate', href: link.href, hreflang: 'x-default' }
-          : { [options.key]: 'i18n-xd', rel: 'alternate', href: link.href, hreflang: 'x-default' }
+          ? { rel: 'alternate', href: link.href!, hreflang: 'x-default' }
+          : { [options.key]: 'i18n-xd', rel: 'alternate', href: link.href!, hreflang: 'x-default' }
       )
     }
   }

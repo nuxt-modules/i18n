@@ -85,7 +85,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           const s = new MagicString(code)
           const matches = code.matchAll(DEFINE_I18N_FN_RE)
           for (const match of matches) {
-            s.overwrite(match.index, match.index + match[0].length, match[2])
+            s.overwrite(match.index, match.index + match[0].length, match[2]!)
           }
 
           if (s.hasChanged()) {

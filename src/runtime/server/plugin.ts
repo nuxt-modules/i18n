@@ -183,8 +183,8 @@ export default defineNitroPlugin(async nitro => {
             continue
           }
 
-          const usedKeys = Array.from(ctx.trackMap[locale])
-          ctx.messages[locale] = pickNested(usedKeys, ctx.messages[locale]) as unknown as Record<string, string>
+          const usedKeys = Array.from(ctx.trackMap[locale]!)
+          ctx.messages[locale] = pickNested(usedKeys, ctx.messages[locale]!) as unknown as Record<string, string>
         }
       }
 
