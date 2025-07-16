@@ -10,6 +10,10 @@ import {
   UFO_PKG,
   NUXT_I18N_MODULE_ID
 } from './constants'
+import { defu } from 'defu'
+import { resolveI18nDir } from './layers'
+import { getLayerI18n } from './utils'
+import { relative, resolve } from 'pathe'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from './context'
@@ -24,6 +28,29 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
     [UTILS_H3_PKG]: `${UTILS_PKG}/dist/h3.mjs`, // for `@intlify/utils/h3`
     [UFO_PKG]: UFO_PKG
   } as const
+
+  const layerI18nDirs = nuxt.options._layers
+    .map(l => {
+      const i18n = getLayerI18n(l)
+      if (i18n == null) return undefined
+      return relative(nuxt.options.buildDir, resolve(resolveI18nDir(l, i18n), '**/*'))
+    })
+    .filter((x): x is string => !!x)
+
+  nuxt.options.typescript = defu(nuxt.options.typescript, {
+    hoist: Object.keys(modules),
+    tsConfig: {
+      include: layerI18nDirs
+    }
+  })
+
+  const optimize = Object.keys(modules)
+  optimize.push(UTILS_PKG, 'cookie-es')
+  nuxt.options.vite = defu(nuxt.options.vite, {
+    optimizeDeps: {
+      include: optimize
+    }
+  })
 
   const moduleDirs = ([] as string[])
     .concat(
