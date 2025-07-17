@@ -120,7 +120,7 @@ type UserNuxtI18nOptions = Omit<NuxtI18nOptions, 'locales'> & { locales?: string
 export interface ModuleOptions extends UserNuxtI18nOptions {}
 
 export interface ModulePublicRuntimeConfig {
-  i18n: I18nPublicRuntimeConfig
+  i18n: Partial<I18nPublicRuntimeConfig>
 }
 export interface ModuleHooks {
   'i18n:registerModule': (
