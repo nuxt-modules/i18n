@@ -21,4 +21,4 @@ fi
 
 # Release package
 echo "⚡ Publishing edge version"
-npx npm@8.17.0 publish --tag next --access public --tolerate-republish
+npx npm@8.17.0 publish --tag latest --access public --tolerate-republish

@@ -7,12 +7,12 @@ env:
 on:
   push:
     branches:
-      - next
+      - main
     paths-ignore:
       - 'docs/**'
   pull_request:
     branches:
-      - next
+      - main
     paths-ignore:
       - 'docs/**'
 
