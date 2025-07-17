@@ -69,6 +69,12 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
   const cacheLifetime = options.experimental.cacheLifetime ?? (fullStatic ? FULL_STATIC_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
+  // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true
+  let stripMessagesPayload = !!options.experimental.preload
+  if (nuxt.options.i18n?.experimental?.stripMessagesPayload != null) {
+    stripMessagesPayload = nuxt.options.i18n.experimental.stripMessagesPayload
+  }
+
   const common = {
     __IS_SSR__: String(nuxt.options.ssr),
     __IS_SSG__: String(!!nuxt.options.nitro.static),
@@ -88,7 +94,7 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     __I18N_CACHE__: String(isCacheEnabled),
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
     __I18N_FULL_STATIC__: String(fullStatic),
-    __I18N_STRIP_UNUSED__: JSON.stringify(!!options.experimental.stripMessagesPayload),
+    __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
