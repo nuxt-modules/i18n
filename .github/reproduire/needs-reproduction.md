@@ -18,8 +18,10 @@ If `needs reproduction` labeled issues don't receive any substantial activity (e
 We have a couple of templates for starting with a minimal reproduction:
 
 👉 [Reproduction starter (v8)](https://stackblitz.com/fork/github/BobbieGoede/nuxt-i18n-starter/tree/v8)
-👉 [Reproduction starter (v9 and higher)](https://stackblitz.com/fork/github/BobbieGoede/nuxt-i18n-starter/tree/v9)
-👉 [Reproduction starter (edge)](https://stackblitz.com/fork/github/BobbieGoede/nuxt-i18n-starter/tree/edge)
+👉 [Reproduction starter (v9)](https://stackblitz.com/fork/github/BobbieGoede/nuxt-i18n-starter/tree/v9)
+👉 [Reproduction starter (v10)](https://stackblitz.com/fork/github/BobbieGoede/nuxt-i18n-starter/tree/v10)
+
+<!-- 👉 [Reproduction starter (edge)](https://stackblitz.com/fork/github/BobbieGoede/nuxt-i18n-starter/tree/edge) -->
 
 A public GitHub repository is also perfect. 👌
 
