@@ -19,7 +19,6 @@ import { prepareLayers } from './prepare/layers'
 import { prepareTranspile } from './prepare/transpile'
 import { prepareVite } from './prepare/vite'
 import { prepareTypeGeneration } from './prepare/type-generation'
-import { initParser } from './utils/parse'
 
 export * from './types'
 
@@ -34,10 +33,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     }
   },
   defaults: DEFAULT_OPTIONS,
-  async setup(i18nOptions, nuxt) {
+  setup(i18nOptions, nuxt) {
     const ctx = createContext(i18nOptions, nuxt)
-
-    await initParser()
 
     /**
      * prepare options
