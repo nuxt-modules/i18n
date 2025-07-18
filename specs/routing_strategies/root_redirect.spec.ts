@@ -34,6 +34,20 @@ describe('rootRedirect', async () => {
     const res = await fetch('/')
     expect(res.url).toBe(url('/fr'))
   })
+  test('keeps query params when redirecting', async () => {
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            rootRedirect: 'fr'
+          }
+        }
+      },
+      true
+    )
+    const res = await fetch('/?foo=bar')
+    expect(res.url).toBe(url('/fr?foo=bar'))
+  })
 
   test('(#2758) `statusCode` in `rootRedirect` should work with strategy "prefix"', async () => {
     await startServerWithRuntimeConfig(

@@ -35,7 +35,8 @@ describe('strategy: prefix (legacy detect)', async () => {
     const redirectUrls = [
       ['/', '/en'],
       ['/about', '/en/about'],
-      ['/category/foo', '/en/category/foo']
+      ['/category/foo', '/en/category/foo'],
+      ['/?foo=bar', '/en?foo=bar']
     ]
     for (const [pathUrl, destination] of redirectUrls) {
       const res = await fetch(pathUrl, { redirect: 'manual' })

@@ -205,4 +205,19 @@ describe('strategy: prefix', async () => {
     expect(await page.locator('#issue-2020-existing').innerText()).toBe('/en/test-route?foo=bar')
     expect(await page.locator('#issue-2020-nonexistent').innerText()).toBe('/i-dont-exist?foo=bar')
   })
+  test('should keep query params when redirecting', async () => {
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            detectBrowserLanguage: false
+          }
+        }
+      },
+      true
+    )
+
+    const res = await fetch('/?foo=bar')
+    expect(res.url).toBe(url('/en?foo=bar'))
+  })
 })
