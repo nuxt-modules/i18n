@@ -109,11 +109,13 @@ export default defineNitroPlugin(async nitro => {
 
     let resolvedPath = undefined
     let redirectCode = 302
-    if (rootRedirect && event.path === '/') {
+    const requestURL = getRequestURL(event)
+
+    if (rootRedirect && requestURL.pathname === '/') {
       locale = (detection.enabled && locale) || defaultLocale
       resolvedPath =
-        (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path) ||
-        matchLocalized(rootRedirect.path, locale, defaultLocale)
+        ((isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path) ||
+          matchLocalized(rootRedirect.path, locale, defaultLocale)) + requestURL.search
       redirectCode = rootRedirect.code
     } else if (runtimeI18n.redirectStatusCode) {
       redirectCode = runtimeI18n.redirectStatusCode
@@ -121,7 +123,7 @@ export default defineNitroPlugin(async nitro => {
 
     switch (detection.redirectOn) {
       case 'root':
-        if (event.path !== '/') break
+        if (requestURL.pathname !== '/') break
       // fallthrough (root has no prefix)
       case 'no prefix':
         if (pathLocale) break
@@ -131,10 +133,9 @@ export default defineNitroPlugin(async nitro => {
         break
     }
 
-    if (event.path === '/' && __I18N_STRATEGY__ === 'prefix') {
+    if (requestURL.pathname === '/' && __I18N_STRATEGY__ === 'prefix') {
       resolvedPath ??= getLocalizedMatch(defaultLocale)
     }
-
     return { path: resolvedPath, code: redirectCode, locale }
   }
 
