@@ -1,8 +1,7 @@
 import { resolveLocales } from '../src/utils'
 import { parseSegment, getRoutePath } from '../src/utils/route-parsing'
 import type { LocaleObject } from '../src/types'
-import { vi, beforeEach, afterEach, test, expect, beforeAll } from 'vitest'
-import { initParser } from '../src/utils/parse'
+import { vi, beforeEach, afterEach, test, expect } from 'vitest'
 
 vi.mock('pathe', async () => {
   const mod = await vi.importActual<typeof import('pathe')>('pathe')
@@ -23,10 +22,6 @@ vi.mock('@nuxt/kit', () => {
 })
 
 vi.mock('node:fs')
-
-beforeAll(async () => {
-  await initParser()
-})
 
 beforeEach(async () => {
   vi.spyOn(await import('node:fs'), 'readFileSync').mockReturnValue(

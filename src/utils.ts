@@ -5,7 +5,7 @@ import { resolve, relative, join } from 'pathe'
 import { defu } from 'defu'
 import { isString, isArray, assign, isObject } from '@intlify/shared'
 import { NUXT_I18N_MODULE_ID, EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
-import { parseSync } from './utils/parse'
+import { parseSync } from 'oxc-parser'
 
 import type { NuxtI18nOptions, LocaleInfo, LocaleType, LocaleFile, LocaleObject } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
