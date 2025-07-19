@@ -133,7 +133,7 @@
     "jsdom": "^26.0.0",
     "knip": "^5.46.1",
     "lint-staged": "^15.5.0",
-    "nitropack": "^2.11.7",
+    "nitropack": "^2.12.3",
     "npm-run-all2": "^6.2.6",
     "nuxt": "^3.17.2",
     "ofetch": "^1.4.1",
@@ -145,7 +145,7 @@
     "typescript-eslint": "^7.14.0",
     "unbuild": "^2.0.0",
     "undici": "^7.5.0",
-    "vitest": "^3.0.9",
+    "vitest": "^3.2.4",
     "vue": "^3.5.13",
     "webpack": "^5.98.0"
   },
