@@ -109,7 +109,7 @@ export default defineNitroPlugin(async nitro => {
 
     let resolvedPath = undefined
     let redirectCode = 302
-    const requestURL = new URL(getRequestURL(event))
+    const requestURL = getRequestURL(event)
 
     if (rootRedirect && requestURL.pathname === '/') {
       locale = (detection.enabled && locale) || defaultLocale
