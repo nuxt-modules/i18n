@@ -3,41 +3,33 @@ export default [
     id: 1,
     name: {
       en: 'Red mug',
-      nl: 'Rode mok',
-      fr: 'French mug'
+      nl: 'Rode mok'
     },
     slugs: {
       en: 'red-mug',
-      nl: 'rode-mok',
-      fr: 'french-mug'
+      nl: 'rode-mok'
     }
   },
   {
     id: 2,
     name: {
       en: 'Big chair',
-      nl: 'Grote stoel',
-      fr: 'French chair',
-      ja: 'Japanese chair'
+      nl: 'Grote stoel'
     },
     slugs: {
       en: 'big-chair',
-      nl: 'grote-stoel',
-      fr: 'french-chair',
-      ja: 'japanese-chair'
+      nl: 'grote-stoel'
     }
   },
   {
     id: 3,
     name: {
       en: 'Standing desk',
-      nl: 'Sta bureau',
-      fr: 'French desk'
+      nl: 'Sta bureau'
     },
     slugs: {
       en: 'standing-desk',
-      nl: 'sta-bureau',
-      fr: 'french-desk'
+      nl: 'sta-bureau'
     }
   }
 ]
