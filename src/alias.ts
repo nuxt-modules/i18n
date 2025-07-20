@@ -37,18 +37,17 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
     })
     .filter((x): x is string => !!x)
 
+  const moduleIds = Object.keys(modules)
   nuxt.options.typescript = defu(nuxt.options.typescript, {
-    hoist: Object.keys(modules),
+    hoist: moduleIds,
     tsConfig: {
       include: layerI18nDirs
     }
   })
 
-  const optimize = Object.keys(modules)
-  optimize.push(UTILS_PKG, 'cookie-es')
   nuxt.options.vite = defu(nuxt.options.vite, {
     optimizeDeps: {
-      include: optimize
+      include: moduleIds
     }
   })
 
