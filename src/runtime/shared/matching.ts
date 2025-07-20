@@ -1,4 +1,4 @@
-import { parsePath } from 'ufo'
+import { joinURL, parsePath, withLeadingSlash } from 'ufo'
 import { createRouterMatcher } from 'vue-router'
 import { i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
 
@@ -18,11 +18,7 @@ const getI18nPathToI18nPath = (path: string, locale: string) => {
 
 export function isExistingNuxtRoute(path: string) {
   if (path === '') return
-  const parsed = parsePath(path)
-  const resolvedMatch = matcher.resolve(
-    { path: parsed.pathname },
-    { path: '/', name: '', matched: [], params: {}, meta: {} }
-  )
+  const resolvedMatch = matcher.resolve({ path }, { path: '/', name: '', matched: [], params: {}, meta: {} })
 
   return resolvedMatch.matched.length > 0 ? resolvedMatch : undefined
 }
@@ -35,20 +31,19 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
   if (path === '') return
   const parsed = parsePath(path)
   const resolvedMatch = matcher.resolve(
-    { path: parsed.pathname },
+    { path: parsed.pathname || '/' },
     { path: '/', name: '', matched: [], params: {}, meta: {} }
   )
 
-  if (resolvedMatch && resolvedMatch.matched.length > 0) {
+  if (resolvedMatch.matched.length > 0) {
     const alternate = getI18nPathToI18nPath(resolvedMatch.matched[0]!.path, locale)
     const match = matcher.resolve(
       { params: resolvedMatch.params },
-      { path: alternate || '', name: '', matched: [], params: {}, meta: {} }
+      { path: alternate || '/', name: '', matched: [], params: {}, meta: {} }
     )
 
-    const strategizedPath =
-      (prefixable(locale, defaultLocale) ? `/${locale}` : '') + (match.path === '/' ? '' : match.path)
-    return strategizedPath + parsed.search
+    const isPrefixable = prefixable(locale, defaultLocale)
+    return withLeadingSlash(joinURL(isPrefixable ? locale : '', match.path))
   }
 }
 
