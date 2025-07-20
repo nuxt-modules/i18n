@@ -1,6 +1,6 @@
 import { test, expect, describe, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url } from '../utils'
+import { fetch, setup, url } from '../utils'
 import { renderPage, setServerRuntimeConfig } from '../helper'
 
 await setup({
@@ -78,6 +78,14 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
       const { page } = await renderPage('/', { extraHTTPHeaders: { 'Accept-Language': 'fr' } })
 
       expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    })
+
+    test('should keep query params when redirecting', async () => {
+      const { url: url1 } = await fetch('/?foo=bar')
+      expect(url1).toBe(url('/?foo=bar'))
+
+      const { url: url2 } = await fetch('/?foo=bar', { headers: { 'Accept-Language': 'fr' } })
+      expect(url2).toBe(url('/fr?foo=bar'))
     })
   })
 })
