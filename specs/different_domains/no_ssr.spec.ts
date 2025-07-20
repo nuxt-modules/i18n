@@ -7,7 +7,6 @@ await setup({
   nuxtConfig: {
     i18n: {
       defaultLocale: 'fr',
-      differentDomains: true,
       locales: [
         {
           code: 'en',

@@ -41,7 +41,6 @@ await setup({
           domain: 'kr.nuxt-app.localhost'
         }
       ],
-      differentDomains: true,
       strategy: 'no_prefix',
       detectBrowserLanguage: {
         useCookie: true
