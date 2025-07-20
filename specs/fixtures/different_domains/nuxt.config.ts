@@ -24,6 +24,7 @@ export default defineNuxtConfig({
         domain: 'fr.nuxt-app.localhost'
       }
     ],
+    differentDomains: true,
     defaultLocale: 'ja'
   }
 })

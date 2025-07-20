@@ -30,7 +30,6 @@ await setup({
           domain: 'fr.nuxt-app.localhost'
         }
       ],
-      differentDomains: true,
       strategy: 'prefix',
       detectBrowserLanguage: {
         useCookie: true

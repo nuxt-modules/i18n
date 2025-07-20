@@ -17,7 +17,7 @@ function createHeadContext(
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
   const canonicalQueries = (typeof config.seo === 'object' && config.seo?.canonicalQueries) || []
 
-  if (!baseUrl) {
+  if (!baseUrl && !__DIFFERENT_DOMAINS__ && !__MULTI_DOMAIN_LOCALES__) {
     if (__I18N_STRICT_SEO__) {
       throw new Error('I18n `baseUrl` is required to generate valid SEO tag links.')
     }
