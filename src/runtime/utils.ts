@@ -404,3 +404,19 @@ export function createNuxtI18nDev() {
 export function toArray<T>(value: T | T[]): T[] {
   return isArray(value) ? value : [value]
 }
+
+/**
+ * Remove routes that do not belong to the current locale/domain in `differentDomains` mode
+ *
+ * @param nuxtApp Nuxt app instance
+ * @param locale current locale to keep routes for
+ */
+export function clearDomainRoutes(nuxtApp: NuxtApp, locale: Locale) {
+  const i18nSuffix = nuxtApp.$config.public.i18n.routesNameSeparator + locale
+
+  for (const route of nuxtApp.$router.getRoutes() as CompatRoute[]) {
+    if (typeof route.name === 'string' && !route.name.endsWith(i18nSuffix)) {
+      nuxtApp.$router.removeRoute(route.name)
+    }
+  }
+}
