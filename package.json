@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "@intlify/core": "^11.1.5",
-    "@intlify/h3": "^0.6.1",
+    "@intlify/h3": "^0.7.1",
     "@intlify/shared": "^11.1.5",
     "@intlify/unplugin-vue-i18n": "^6.0.8",
     "@intlify/utils": "^0.13.0",
