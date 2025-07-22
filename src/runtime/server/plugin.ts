@@ -47,10 +47,12 @@ export default defineNitroPlugin(async nitro => {
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
   const _defaultLocale: string = runtimeI18n.defaultLocale || ''
 
-  // clear cache for i18n handlers on startup
-  const cacheStorage = useStorage('cache')
-  const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
-  await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
+  // attempt to clear cache for i18n handlers on startup
+  try {
+    const cacheStorage = useStorage('cache')
+    const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
+    await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
+  } catch {}
 
   const detection = useI18nDetection(undefined)
   const cookieOptions = {
