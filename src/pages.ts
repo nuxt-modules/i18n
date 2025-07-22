@@ -75,7 +75,7 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
 
       // analyze layer pages
       for (const layer of nuxt.options._layers) {
-        const pagesDir = resolve(projectLayer!.config.rootDir, layer.config.srcDir, layer.config.dir?.pages ?? 'pages')
+        const pagesDir = resolve(projectLayer.config.rootDir, layer.config.srcDir, layer.config.dir?.pages ?? 'pages')
         analyzeNuxtPages(ctx, pagesDir, pages)
       }
 
@@ -276,7 +276,7 @@ export function getRouteOptionsResolver(
     const res = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
     if (route.file) {
       const localeCfg = res?.srcPaths
-      const mappedPath = ctx.fileToPath[route.file]!
+      const mappedPath = ctx.fileToPath[route.file]
       ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
 
       // set paths for all locales, assume no custom path is a disabled locale
@@ -306,7 +306,6 @@ function getRouteFromConfig(
   const pageMeta = ctx.pages.get(route.file!)
 
   if (pageMeta == null) {
-    console.warn(`[nuxt-i18n] No custom route config found for ${route.path}`)
     return undefined
   }
 
