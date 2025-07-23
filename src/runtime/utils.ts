@@ -231,6 +231,11 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
   const path = isString(route) ? route : route.path
 
   function* detect() {
+    // Check route first for explicit locale preference (prefix strategy)
+    if (__I18N_ROUTING__) {
+      yield detectors.route(route)
+    }
+
     if (ctx.initial && detectConfig.enabled && !skipDetect(detectConfig, path, detectors.route(path))) {
       yield detectors.cookie()
       yield detectors.header()
@@ -240,10 +245,6 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
 
     if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
       yield detectors.host(path)
-    }
-
-    if (__I18N_ROUTING__) {
-      yield detectors.route(route)
     }
   }
 
