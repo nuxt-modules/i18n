@@ -232,6 +232,7 @@ describe('basic usage', async () => {
         waitForLocaleNetwork(page, 'fr', 'response'),
         page.click(`#switch-locale-path-usages .switch-to-fr a`)
       ])
+      await page.waitForTimeout(100)
 
       expect(await page.locator('#snake-case').innerText()).toEqual('À-propos-de-ce-site')
       expect(await page.locator('#pascal-case').innerText()).toEqual('ÀProposDeCeSite')
