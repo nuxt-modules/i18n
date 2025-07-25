@@ -115,7 +115,7 @@
   "devDependencies": {
     "@babel/types": "^7.27.3",
     "@eslint/js": "9.28.0",
-    "@nuxt/module-builder": "^1.0.1",
+    "@nuxt/module-builder": "^1.0.2",
     "@nuxt/schema": "^4.0.1",
     "@types/debug": "^4.1.12",
     "@types/estree": "^1.0.7",
@@ -146,7 +146,7 @@
     "unbuild": "^3.5.0",
     "undici": "^7.10.0",
     "vitest": "^3.2.4",
-    "vue": "^3.5.17"
+    "vue": "^3.5.18"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
