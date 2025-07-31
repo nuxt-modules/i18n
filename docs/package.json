@@ -17,7 +17,7 @@
     "@iconify-json/simple-icons": "^1.2.44",
     "@iconify-json/vscode-icons": "^1.2.23",
     "@nuxt/content": "^3.6.3",
-    "@nuxt/image": "^1.10.0",
+    "@nuxt/image": "^1.11.0",
     "@nuxt/scripts": "^0.11.10",
     "@nuxt/ui-pro": "^3.3.0",
     "nuxt": "^4.0.2",
