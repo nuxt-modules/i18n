@@ -700,6 +700,12 @@ describe('basic usage', async () => {
       expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
     })
 
+    test('(#3766) persists locale after hydration', async () => {
+      const { page } = await renderPage('/fr')
+      await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
+      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    })
+
     test('retains query parameters', async () => {
       const { page } = await renderPage('/?foo=123')
       await page.waitForURL(url('/?foo=123'))

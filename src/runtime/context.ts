@@ -142,7 +142,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         }
       })
 
-      if (import.meta.server || !ctx.config.skipSettingLocaleOnNavigate) {
+      if (import.meta.server || nuxt.isHydrating || !ctx.config.skipSettingLocaleOnNavigate) {
         await ctx.vueI18n.__resolvePendingLocalePromise?.()
       }
     },
