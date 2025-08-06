@@ -1,7 +1,7 @@
 import { useStorage } from 'nitropack/runtime'
 import { prefixStorage } from 'unstorage'
 
-export interface CacheOptions<T = any, ArgsT extends unknown[] = any[]> {
+export interface CacheOptions<ArgsT extends unknown[] = any[]> {
   name?: string
   getKey: (...args: ArgsT) => string
   shouldBypassCache: (...args: ArgsT) => boolean
@@ -21,8 +21,8 @@ type CachedValue<T> = { ttl: number; value: T; mtime: number }
  */
 export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
   fn: (...args: ArgsT) => T | Promise<T>,
-  opts: CacheOptions<T, ArgsT>
-): (...args: ArgsT) => Promise<T> {
+  opts: CacheOptions<ArgsT>
+): (...args: ArgsT) => Promise<T | undefined> {
   opts = { maxAge: 1, ...opts }
   const pending: { [key: string]: Promise<T> } = {}
 
@@ -41,7 +41,6 @@ export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
     }
   }
 
-  // @ts-expect-error needs to be properly typed
   return async (...args) => {
     const key = [opts.name, opts.getKey(...args)].join(':').replace(/:\/$/, ':index')
     const maxAge = opts.maxAge ?? 1
