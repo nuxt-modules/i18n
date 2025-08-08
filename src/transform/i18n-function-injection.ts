@@ -85,7 +85,7 @@ export function collectMissingI18nFunctions(script: string, id: string) {
 
 // from https://github.com/nuxt/nuxt/blob/a80d1a0d6349bf1003666fc79a513c0d7370c931/packages/nuxt/src/pages/utils.ts#L138-L147
 const SFC_SCRIPT_COMPLEX_RE = /<script(?<attrs>[^>]*)>(?<content>[\s\S]*?)<\/script[^>]*>/i
-export function extractScriptSetupContent(sfc: string) {
+function extractScriptSetupContent(sfc: string) {
   const match = sfc.match(SFC_SCRIPT_COMPLEX_RE)
   if (match?.groups?.content && match.groups.attrs && match.groups.attrs.indexOf('setup') !== -1) {
     return { code: match.groups.content.trim(), start: sfc.indexOf(match.groups.content) }
