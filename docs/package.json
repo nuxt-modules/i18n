@@ -13,9 +13,9 @@
   },
   "devDependencies": {
     "@iconify-json/logos": "^1.2.5",
-    "@iconify-json/lucide": "^1.2.58",
-    "@iconify-json/simple-icons": "^1.2.44",
-    "@iconify-json/vscode-icons": "^1.2.23",
+    "@iconify-json/lucide": "^1.2.61",
+    "@iconify-json/simple-icons": "^1.2.46",
+    "@iconify-json/vscode-icons": "^1.2.24",
     "@nuxt/content": "^3.6.3",
     "@nuxt/image": "^1.11.0",
     "@nuxt/scripts": "^0.11.10",
