@@ -1,8 +1,8 @@
 import { addTemplate, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
-import { parse as parseSFC, compileScript } from '@vue/compiler-sfc'
-import { walk } from 'estree-walker'
+import { parse as parseSFC } from '@vue/compiler-sfc'
+import { parseAndWalk } from 'oxc-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
@@ -12,7 +12,6 @@ import { createRoutesContext } from 'unplugin-vue-router'
 import { resolveOptions } from 'unplugin-vue-router/options'
 
 import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
-import type { Node, ObjectExpression, ArrayExpression, Expression, PrivateName } from '@babel/types'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-vue-router'
 import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
@@ -383,102 +382,39 @@ function getRouteOptions(
 function readComponent(target: string) {
   try {
     const content = readFileSync(target, 'utf-8')
-    const { descriptor } = parseSFC(content)
+    if (!content.includes(DEFINE_I18N_ROUTE_FN)) return undefined
 
-    if (!content.includes(DEFINE_I18N_ROUTE_FN)) {
+    const { descriptor } = parseSFC(content)
+    const script = descriptor.scriptSetup?.content || descriptor.script?.content
+    if (!script) {
       return undefined
     }
 
-    const desc = compileScript(descriptor, { id: target })
-
     let extract = ''
-    const genericSetupAst = desc.scriptSetupAst || desc.scriptAst || []
-    for (const ast of genericSetupAst) {
-      // @ts-expect-error type mismatch
-      walk(ast, {
-        enter(node: Node) {
-          if (node.type !== 'CallExpression') return
-          if (node.callee.type === 'Identifier' && node.callee.name === DEFINE_I18N_ROUTE_FN) {
-            const arg = node.arguments[0]
-            if (
-              arg?.type === 'BooleanLiteral' ||
-              (arg?.type === 'ObjectExpression' && verifyObjectValue(arg.properties))
-            ) {
-              extract = desc.loc.source.slice(arg.start!, arg.end!)
-            }
-          }
+    parseAndWalk(script, target, {
+      enter(node) {
+        if (
+          extract ||
+          node.type !== 'CallExpression' ||
+          node.callee.type !== 'Identifier' ||
+          node.callee.name !== DEFINE_I18N_ROUTE_FN
+        )
+          return
+
+        if (node.arguments[0]) {
+          extract = script.slice(node.arguments[0].start, node.arguments[0].end)
         }
-      })
-    }
+      }
+    })
 
     if (extract) {
-      return evalValue(extract)
+      return evalAndValidateValue(extract)
     }
   } catch (e: unknown) {
     console.warn(`[nuxt-i18n] Couldn't read component data at ${target}: (${(e as Error).message})`)
   }
 
   return undefined
-}
-
-function nodeNameOrValue(val: PrivateName | Expression, name: string) {
-  return (val.type === 'Identifier' && val.name === name) || (val.type === 'StringLiteral' && val.value === name)
-}
-
-function verifyObjectValue(properties: ObjectExpression['properties']) {
-  for (const prop of properties) {
-    if (prop.type !== 'ObjectProperty') {
-      console.warn(`[nuxt-i18n] 'defineI18nRoute' requires an object as argument`)
-      return false
-    }
-
-    if (nodeNameOrValue(prop.key, 'locales')) {
-      if (prop.value.type !== 'ArrayExpression' || !verifyLocalesArrayExpression(prop.value.elements)) {
-        console.warn(`[nuxt-i18n] expected 'locale' to be an array`)
-        return false
-      }
-    }
-
-    if (nodeNameOrValue(prop.key, 'paths')) {
-      if (prop.value.type !== 'ObjectExpression' || !verifyPathsObjectExpress(prop.value.properties)) {
-        console.warn(`[nuxt-i18n] expected 'paths' to be an object`)
-        return false
-      }
-    }
-  }
-
-  return true
-}
-
-function verifyPathsObjectExpress(properties: ObjectExpression['properties']) {
-  for (const prop of properties) {
-    if (prop.type !== 'ObjectProperty') {
-      console.warn(`[nuxt-i18n] 'paths' is required object`)
-      return false
-    }
-
-    if (prop.key.type === 'Identifier' && prop.value.type !== 'StringLiteral') {
-      console.warn(`[nuxt-i18n] expected 'paths.${prop.key.name}' to be a string literal`)
-      return false
-    }
-
-    if (prop.key.type === 'StringLiteral' && prop.value.type !== 'StringLiteral') {
-      console.warn(`[nuxt-i18n] expected 'paths.${prop.key.value}' to be a string literal`)
-      return false
-    }
-  }
-
-  return true
-}
-
-function verifyLocalesArrayExpression(elements: ArrayExpression['elements']) {
-  for (const element of elements) {
-    if (element?.type !== 'StringLiteral') {
-      console.warn(`[nuxt-i18n] required 'locales' value string literal`)
-      return false
-    }
-  }
-  return true
 }
 
 function evalValue(value: string) {
@@ -489,4 +425,32 @@ function evalValue(value: string) {
     console.error(`[nuxt-i18n] Cannot evaluate value: ${value}`)
     return
   }
+}
+
+function evalAndValidateValue(value: string) {
+  const evaluated = evalValue(value)
+  if (evaluated == null) return
+
+  // valid boolean value
+  if (typeof evaluated === 'boolean' && evaluated === false) {
+    return evaluated
+  }
+
+  // valid object
+  if (Object.prototype.toString.call(evaluated) === '[object Object]') {
+    if (evaluated.locales) {
+      if (!Array.isArray(evaluated.locales) || evaluated.locales.some(locale => typeof locale !== 'string')) {
+        console.warn(`[nuxt-i18n] Invalid locale option used with \`defineI18nRoute\`: ${value}`)
+        return
+      }
+    }
+    if (evaluated.paths && Object.prototype.toString.call(evaluated.paths) !== '[object Object]') {
+      console.warn(`[nuxt-i18n] Invalid paths option used with \`defineI18nRoute\`: ${value}`)
+      return
+    }
+
+    return evaluated
+  }
+
+  console.warn(`[nuxt-i18n] Invalid value passed to \`defineI18nRoute\`: ${value}`)
 }
