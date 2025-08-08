@@ -10,6 +10,7 @@ import { resolve, parse as parsePath, dirname } from 'pathe'
 import { DEFINE_I18N_ROUTE_FN } from './constants'
 import { createRoutesContext } from 'unplugin-vue-router'
 import { resolveOptions } from 'unplugin-vue-router/options'
+import { transform } from './transform/resource'
 
 import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'unplugin-vue-router'
@@ -385,10 +386,9 @@ function readComponent(target: string) {
     if (!content.includes(DEFINE_I18N_ROUTE_FN)) return undefined
 
     const { descriptor } = parseSFC(content)
+
     const script = descriptor.scriptSetup?.content || descriptor.script?.content
-    if (!script) {
-      return undefined
-    }
+    if (!script) return undefined
 
     let extract = ''
     parseAndWalk(script, target, {
@@ -402,7 +402,10 @@ function readComponent(target: string) {
           return
 
         if (node.arguments[0]) {
-          extract = script.slice(node.arguments[0].start, node.arguments[0].end)
+          const statement = script.slice(node.start, node.end).trim()
+          const transformed = transform('', statement, { lang: 'ts' }).code
+          // trim newline and slice function name and parenthesis
+          extract = transformed.trim().slice(DEFINE_I18N_ROUTE_FN.length + 1, -2)
         }
       }
     })
