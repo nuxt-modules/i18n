@@ -3,10 +3,17 @@ packages:
   - playground
   - specs/fixtures/*
   - specs/fixtures/issues/*
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@tailwindcss/oxide'
   - better-sqlite3
   - esbuild
+  - oxc-resolver
   - sharp
   - vue-demi
+
+overrides:
+  '@nuxtjs/i18n': workspace:*
+  rollup: 4.45.1
+  unimport: 5.2.0

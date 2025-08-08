@@ -5,17 +5,15 @@ import { DEFINE_I18N_LOCALE_FN, DEFINE_I18N_CONFIG_FN, NUXT_I18N_VIRTUAL_PREFIX 
 import { resolve, dirname } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
-import { transform as esbuildTransform } from 'esbuild'
-import type { SameShape, TransformOptions, TransformResult } from 'esbuild'
+import { transform as oxcTransform } from 'oxc-transform'
+import type { TransformOptions, TransformResult } from 'oxc-transform'
 
 import type { BundlerPluginOptions } from './utils'
 import type { I18nNuxtContext } from '../context'
 
-async function transform<T extends TransformOptions>(
-  input: string | Uint8Array,
-  options?: SameShape<TransformOptions, T>
-): Promise<TransformResult<T>> {
-  return await esbuildTransform(input, { ...tryUseNuxt()?.options.esbuild?.options, ...options })
+export function transform(id: string, input: string, options?: TransformOptions): TransformResult {
+  const oxcOptions = tryUseNuxt()?.options?.oxc?.transform?.options ?? {}
+  return oxcTransform(id, input, { ...oxcOptions, ...options })
 }
 
 const pattern = [DEFINE_I18N_LOCALE_FN, DEFINE_I18N_CONFIG_FN].join('|')
@@ -79,7 +77,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
 
           // transform typescript
           if (/[cm]?ts$/.test(id)) {
-            code = (await transform(_code, { loader: 'ts' })).code
+            code = transform(id, _code).code
           }
 
           const s = new MagicString(code)
