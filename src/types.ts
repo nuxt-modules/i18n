@@ -56,7 +56,7 @@ export interface DetectBrowserLanguageOptions {
   /**
    * Fallback locale if no locale is detected.
    *
-   * @default null
+   * @default ''
    */
   fallbackLocale?: Locale | null
   /**
@@ -265,7 +265,7 @@ export type NuxtI18nOptions<
    * Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
    *
    * Note that for better SEO it's recommended to set `redirectOn` to 'root'.
-   * @see [Browser language detection](https://nuxt.com/modules/i18n/browser-language-detection) for a guide.
+   * @see [Browser language detection](https://i18n.nuxtjs.org/docs/guide/browser-language-detection) for a guide.
    */
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
   /**
