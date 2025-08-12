@@ -4,7 +4,7 @@ import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
 import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
-import type { HookResult } from '@nuxt/schema'
+import type { HookResult, NuxtPage } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
 import { createContext } from './context'
@@ -126,6 +126,7 @@ export interface ModuleHooks {
   'i18n:registerModule': (
     registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
   ) => HookResult
+  'i18n:filterPages': (pages: NuxtPage[]) => void
 }
 
 export interface ModuleRuntimeHooks {
