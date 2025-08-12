@@ -22,6 +22,12 @@ const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], 
   $te: 'te: $te'
 }
 
+const QUERY_RE = /\?.*$/
+
+function withoutQuery(id: string) {
+  return id.replace(QUERY_RE, '')
+}
+
 export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
   createUnplugin(() => {
     return {
@@ -41,7 +47,8 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
           if (!script) return
 
           // replace .vue extension with .ts or .tsx
-          const missing = collectMissingI18nFunctions(script.code, id.replace(/\.\w+$/, '.' + script.loader))
+          const filepath = withoutQuery(id).replace(/\.\w+$/, '.' + script.loader)
+          const missing = collectMissingI18nFunctions(script.code, filepath)
           if (!missing.size) return
 
           // only add variables when used without having been declared
