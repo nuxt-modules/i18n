@@ -37,11 +37,11 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
           code: { include: TRANSLATION_FUNCTIONS_RE }
         },
         handler(code, id) {
-          const scriptContent = extractScriptSetupContent(code)
-          if (!scriptContent) return
+          const script = extractScriptSetupContent(code)
+          if (!script) return
 
-          const s = new MagicString(code)
-          const missing = collectMissingI18nFunctions(scriptContent.code, id)
+          // replace .vue extension with .ts or .tsx
+          const missing = collectMissingI18nFunctions(script.code, id.replace(/\.\w+$/, '.' + script.loader))
           if (!missing.size) return
 
           // only add variables when used without having been declared
@@ -51,7 +51,8 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
           }
 
           // add variable declaration at the start of <script>, `autoImports` does the rest
-          s.appendLeft(scriptContent.start, `\nconst { ${assignments.join(', ')} } = useI18n()\n`)
+          const s = new MagicString(code)
+          s.appendLeft(script.start, `\nconst { ${assignments.join(', ')} } = useI18n()\n`)
 
           return {
             code: s.toString(),
@@ -88,6 +89,10 @@ const SFC_SCRIPT_COMPLEX_RE = /<script(?<attrs>[^>]*)>(?<content>[\s\S]*?)<\/scr
 function extractScriptSetupContent(sfc: string) {
   const match = sfc.match(SFC_SCRIPT_COMPLEX_RE)
   if (match?.groups?.content && match.groups.attrs && match.groups.attrs.indexOf('setup') !== -1) {
-    return { code: match.groups.content.trim(), start: sfc.indexOf(match.groups.content) }
+    return {
+      code: match.groups.content.trim(),
+      loader: match.groups.attrs && /[tj]sx/.test(match.groups.attrs) ? 'tsx' : 'ts',
+      start: sfc.indexOf(match.groups.content)
+    }
   }
 }
