@@ -143,7 +143,7 @@ export type RouteContext = {
     locale: string,
     opts: LocalizeRouteParams
   ) => LocalizableRoute[]
-  localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string
+  localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
   localizers: { enabled: (data: LocalizerData) => boolean; localizer: LocalizerFn }[]
 }
@@ -167,6 +167,7 @@ function createLocalizeRouteName(opts: {
   const separator = opts.routesNameSeparator || '___'
   const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
   return (route, locale, isDefault) => {
+    if (route.name == null) return
     // prettier-ignore
     return !isDefault
       ? route.name + separator + locale
