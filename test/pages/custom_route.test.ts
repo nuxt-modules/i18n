@@ -299,6 +299,102 @@ test('#1649', () => {
   expect(localizedPages).toMatchSnapshot()
 })
 
+test('#3781', () => {
+  const pages = [
+    {
+      name: 'index',
+      path: '/',
+      file: '/path/to/3781/pages/index.vue',
+      children: []
+    },
+    {
+      path: '/customer',
+      file: '/path/to/3781/pages/customer.vue',
+      children: [
+        {
+          path: 'my-orders',
+          file: '/path/to/3781/pages/customer/my-orders.vue',
+          children: [
+            {
+              name: 'customer-my-orders',
+              path: 'index',
+              file: '/path/to/3781/pages/customer/my-orders/index.vue',
+              children: []
+            },
+            {
+              name: 'customer-my-orders-id',
+              path: ':id()',
+              file: '/path/to/3781/pages/customer/my-orders/[id].vue',
+              children: []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+
+  const options = getNuxtOptions({
+    customer: {
+      en: '/customer-account'
+    },
+    'customer-my-orders': {
+      en: '/customer-account/my-orders'
+    },
+    'customer-my-orders-id': {
+      en: '/customer-account/my-orders/[id]'
+    }
+  })
+
+  options.locales = [{ code: 'en' }]
+  options.defaultLocale = 'en'
+  options.customRoutes = 'config'
+
+  vi.spyOn(fs, 'readFileSync').mockReturnValue('')
+
+  const ctx = new NuxtPageAnalyzeContext(options.pages)
+  analyzeNuxtPages(ctx, 'pages', pages)
+  const localizedPages = localizeRoutes(pages, {
+    ...options,
+    includeUnprefixedFallback: false,
+    optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+  } as Parameters<typeof localizeRoutes>[1])
+
+  expect(localizedPages).toMatchInlineSnapshot(`
+    [
+      {
+        "children": [],
+        "file": "/path/to/3781/pages/index.vue",
+        "name": "index___en",
+        "path": "/",
+      },
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "file": "/path/to/3781/pages/customer/my-orders/index.vue",
+                "name": "customer-my-orders___en",
+                "path": "",
+              },
+              {
+                "children": [],
+                "file": "/path/to/3781/pages/customer/my-orders/[id].vue",
+                "name": "customer-my-orders-id___en",
+                "path": ":id()",
+              },
+            ],
+            "file": "/path/to/3781/pages/customer/my-orders.vue",
+            "path": "my-orders",
+          },
+        ],
+        "file": "/path/to/3781/pages/customer.vue",
+        "path": "/customer-account",
+      },
+    ]
+  `)
+})
+
 test('pages config using route name', () => {
   const pages = [
     {
