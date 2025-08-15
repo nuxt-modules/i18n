@@ -43,12 +43,20 @@ export type LocalizeRouteParams = {
 
 function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
   if (!parentLocalizedPath) return localizedPath
-  // handle parent/index
-  const path = localizedPath.replace(parentLocalizedPath + '/', '')
-  if (path === parentLocalizedPath) {
-    return localizedPath === parentLocalizedPath ? '' : localizedPath
+
+  if (localizedPath[0] !== '/') {
+    return localizedPath
   }
-  return path
+
+  const index = localizedPath.indexOf(parentLocalizedPath)
+  if (index >= 0) {
+    // parent path is found, slice from index + parent length + slash, for example:
+    // * parent='/foo', child='/foo/bar'       => 'bar'
+    // * parent='bar',  child='/foo/bar/:id()' => ':id()'
+    return localizedPath.slice(localizedPath.indexOf(parentLocalizedPath) + parentLocalizedPath.length + 1)
+  }
+
+  return localizedPath
 }
 
 function createHandleTrailingSlash(ctx: RouteContext): RouteContext['handleTrailingSlash'] {
@@ -143,7 +151,7 @@ export type RouteContext = {
     locale: string,
     opts: LocalizeRouteParams
   ) => LocalizableRoute[]
-  localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string
+  localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
   localizers: { enabled: (data: LocalizerData) => boolean; localizer: LocalizerFn }[]
 }
@@ -167,6 +175,7 @@ function createLocalizeRouteName(opts: {
   const separator = opts.routesNameSeparator || '___'
   const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
   return (route, locale, isDefault) => {
+    if (route.name == null) return
     // prettier-ignore
     return !isDefault
       ? route.name + separator + locale
