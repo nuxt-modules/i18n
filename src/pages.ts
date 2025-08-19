@@ -18,6 +18,7 @@ import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
+import { parseSync, type CallExpression, type ExpressionStatement, type ObjectExpression } from 'oxc-parser'
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
@@ -343,7 +344,7 @@ function getRouteOptions(
   } else {
     resolvedOptions = getRouteFromResource(
       localeCodes,
-      mode === 'page' ? readComponent(route.file!) : (route.meta?.i18n as I18nRoute | false | undefined)
+      mode === 'page' ? getI18nRouteConfig(route.file!) : (route.meta?.i18n as I18nRoute | false | undefined)
     )
   }
 
@@ -378,46 +379,61 @@ function getRouteOptions(
 }
 
 /**
- * Parse page component at `target` and extract argument passed to `defineI18nRoute()`
+ * Parse page component at `absolutePath` and extract argument passed to `defineI18nRoute()`
  */
-function readComponent(target: string) {
+function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = {}) {
+  let extract: false | ComputedRouteOptions | undefined = undefined
+
   try {
-    const content = readFileSync(target, 'utf-8')
+    const content = absolutePath in vfs ? vfs[absolutePath]! : readFileSync(absolutePath, 'utf-8')
     if (!content.includes(DEFINE_I18N_ROUTE_FN)) return undefined
 
     const { descriptor } = parseSFC(content)
 
-    const script = descriptor.scriptSetup?.content || descriptor.script?.content
+    const script = descriptor.scriptSetup || descriptor.script
     if (!script) return undefined
 
-    let extract = ''
-    parseAndWalk(script, target, {
-      enter(node) {
-        if (
-          extract ||
-          node.type !== 'CallExpression' ||
-          node.callee.type !== 'Identifier' ||
-          node.callee.name !== DEFINE_I18N_ROUTE_FN
-        )
+    const lang = typeof script.attrs.lang === 'string' && /j|tsx/.test(script.attrs.lang) ? 'tsx' : 'ts'
+    let code = script.content
+
+    parseAndWalk(script.content, absolutePath.replace(/\.\w+$/, '.' + lang), node => {
+      if (extract != null) return
+
+      if (
+        node.type !== 'CallExpression' ||
+        node.callee.type !== 'Identifier' ||
+        node.callee.name !== DEFINE_I18N_ROUTE_FN
+      )
+        return
+
+      let routeArgument = node.arguments[0]
+      if (routeArgument == null) return
+
+      if (typeof script.attrs.lang === 'string' && /tsx?/.test(script.attrs.lang)) {
+        const transformed = transform('', script.content.slice(node.start, node.end).trim(), { lang })
+        code = transformed.code
+
+        if (transformed.errors.length) {
+          for (const error of transformed.errors) {
+            console.warn(`Error while transforming \`${DEFINE_I18N_ROUTE_FN}()\`` + error.codeframe)
+          }
           return
-
-        if (node.arguments[0]) {
-          const statement = script.slice(node.start, node.end).trim()
-          const transformed = transform('', statement, { lang: 'ts' }).code
-          // trim newline and slice function name and parenthesis
-          extract = transformed.trim().slice(DEFINE_I18N_ROUTE_FN.length + 1, -2)
         }
-      }
-    })
 
-    if (extract) {
-      return evalAndValidateValue(extract)
-    }
+        // we already know that the first statement is a call expression
+        routeArgument = (
+          (parseSync('', transformed.code, { lang: 'js' }).program.body[0]! as ExpressionStatement)
+            .expression as CallExpression
+        ).arguments[0]! as ObjectExpression
+      }
+
+      extract = evalAndValidateValue(code.slice(routeArgument.start, routeArgument.end).trim())
+    })
   } catch (e: unknown) {
-    console.warn(`[nuxt-i18n] Couldn't read component data at ${target}: (${(e as Error).message})`)
+    console.warn(`[nuxt-i18n] Couldn't read component data at ${absolutePath}: (${(e as Error).message})`)
   }
 
-  return undefined
+  return extract satisfies false | ComputedRouteOptions | undefined
 }
 
 function evalValue(value: string) {
