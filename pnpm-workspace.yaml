@@ -12,8 +12,3 @@ onlyBuiltDependencies:
   - oxc-resolver
   - sharp
   - vue-demi
-
-overrides:
-  '@nuxtjs/i18n': workspace:*
-  rollup: 4.45.1
-  unimport: 5.2.0
