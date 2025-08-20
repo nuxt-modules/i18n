@@ -1,5 +1,6 @@
-import { deepCopy, isFunction, toTypeString } from '@intlify/shared'
+import { deepCopy, create, isFunction, toTypeString } from '@intlify/shared'
 import { useNuxtApp } from '#app'
+import { createDefu } from 'defu'
 
 import type { I18nOptions, Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 import type { VueI18nConfig } from '#internal-i18n-types'
@@ -15,14 +16,23 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
 
 const cacheMessages = new Map<string, { ttl: number; value: LocaleMessages<DefineLocaleMessage> }>()
 
+const merger = createDefu((obj, key, value) => {
+  if (key === 'messages' || key === 'datetimeFormats' || key === 'numberFormats') {
+    // @ts-ignore
+    obj[key] ??= create(null)
+    deepCopy(value, obj[key])
+    return true
+  }
+})
+
 export async function loadVueI18nOptions(vueI18nConfigs: VueI18nConfig[]): Promise<I18nOptions> {
   const nuxtApp = useNuxtApp()
-  const vueI18nOptions: I18nOptions = { messages: {} }
+  let vueI18nOptions: I18nOptions = { messages: create(null) as LocaleMessages<DefineLocaleMessage> }
 
   for (const configFile of vueI18nConfigs) {
     const resolver = await configFile().then(x => x.default)
     const resolved = isFunction(resolver) ? await nuxtApp.runWithContext(() => resolver()) : resolver
-    deepCopy(resolved, vueI18nOptions)
+    vueI18nOptions = merger(create(null), resolved, vueI18nOptions)
   }
 
   vueI18nOptions.fallbackLocale ??= false

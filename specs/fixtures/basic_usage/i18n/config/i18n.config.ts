@@ -38,6 +38,8 @@ export default defineI18nConfig(() => {
         pascalCaseText: "@.pascalCase:{'aboutSite'}"
       }
     },
+    // #3790
+    missingWarn: /^foo/,
     modifiers: {
       // @ts-ignore
       snakeCase: (str: string) => str.split(' ').join('-')
