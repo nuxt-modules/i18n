@@ -651,6 +651,14 @@ describe('basic usage', async () => {
       await page.waitForURL(url('/nl/products/rode-mok'))
       expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
     })
+
+    test('(#3790) RegExp missingWarn', async () => {
+      const { page } = await renderPage('/')
+
+      // @ts-expect-error runtime types
+      expect(await page.evaluate(() => window.useNuxtApp?.().$i18n.missingWarn)).toMatchInlineSnapshot(`/\\^foo/`)
+    })
+
     ctx = useTestContext()
   })
 
