@@ -12,10 +12,10 @@
     "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
-    "@iconify-json/logos": "^1.2.5",
-    "@iconify-json/lucide": "^1.2.58",
-    "@iconify-json/simple-icons": "^1.2.44",
-    "@iconify-json/vscode-icons": "^1.2.23",
+    "@iconify-json/logos": "^1.2.9",
+    "@iconify-json/lucide": "^1.2.64",
+    "@iconify-json/simple-icons": "^1.2.49",
+    "@iconify-json/vscode-icons": "^1.2.30",
     "@nuxt/content": "^3.6.3",
     "@nuxt/image": "^1.11.0",
     "@nuxt/scripts": "^0.11.10",
