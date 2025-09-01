@@ -23,7 +23,8 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   const strategy = nuxt.options.i18n?.strategy || options.strategy
-  if (strategy.endsWith('_default') && !nuxt.options.i18n?.defaultLocale) {
+  const defaultLocale = nuxt.options.i18n?.defaultLocale || options.defaultLocale
+  if (strategy.endsWith('_default') && !defaultLocale) {
     logger.warn(
       `The \`${strategy}\` i18n strategy${nuxt.options.i18n?.strategy == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`
     )
