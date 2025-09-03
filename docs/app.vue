@@ -20,15 +20,10 @@ useSeoMeta({
 
 // Navigation Data
 const { data: navigation } = await useAsyncData('docs_navigation', () => queryCollectionNavigation('docs'))
-const nav = computed<ContentNavigationItem[]>(
-  () => mapContentNavigation(navigation.value).at(0).children as ContentNavigationItem[]
-)
-provide('navigation', nav)
+const nav = computed<ContentNavigationItem[]>(() => navigation.value[0].children)
 
 // Search
 const { data: files } = useAsyncData('/api/search.json', () => queryCollectionSearchSections('docs'), { server: false })
-
-const currentVersionNavigation = useNuxtApp().$currentDocsVersionNavigation
 
 // // Header
 const route = useRoute()
@@ -59,12 +54,7 @@ const links = computed<unknown[]>(() => [
     <Footer />
 
     <ClientOnly>
-      <LazyUContentSearch
-        :files="files"
-        :navigation="navigation"
-        :multiple="true"
-        :kbds="['meta', 'K']"
-      />
+      <LazyUContentSearch :files="files" :navigation="nav" :multiple="true" :kbds="['meta', 'K']" />
     </ClientOnly>
   </UApp>
 </template>
