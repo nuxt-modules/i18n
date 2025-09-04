@@ -204,7 +204,7 @@ export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang
 
 export interface LocaleMessageCompilationOptions {
   /**
-   * Whether to enable strict message compilation.
+   * Whether to strictly check that the locale message does not contain HTML tags. If HTML tags are included, an error is thrown.
    *
    * @default true
    */
