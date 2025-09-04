@@ -80,13 +80,15 @@
   "resolutions": {
     "@nuxtjs/i18n": "workspace:*",
     "unimport": "5.2.0",
-    "rollup": "4.45.1"
+    "rollup": "4.45.1",
+    "vite": "npm:rolldown-vite@latest"
   },
   "dependencies": {
     "@intlify/core": "^11.1.11",
     "@intlify/h3": "^0.7.1",
+    "@intlify/message-compiler": "^11.1.11",
     "@intlify/shared": "^11.1.11",
-    "@intlify/unplugin-vue-i18n": "^6.0.8",
+    "@intlify/unplugin-vue-i18n": "^11.0.0",
     "@intlify/utils": "^0.13.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
     "@nuxt/kit": "^4.0.0",
