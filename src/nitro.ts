@@ -105,7 +105,7 @@ export { localeDetector }`
   addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
 
   addServerHandler({
-    route: `/_i18n/:locale/messages.json`,
+    route: `/_i18n/:hash/:locale/messages.json`,
     handler: ctx.resolver.resolve('./runtime/server/routes/messages')
   })
 }

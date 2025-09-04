@@ -259,9 +259,9 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
  */
 export function waitForLocaleNetwork(page: Page, locale: string, type: 'request' | 'response') {
   if (type === 'request') {
-    return page.waitForRequest(new RegExp(`/_i18n/${locale}/messages.json`))
+    return page.waitForRequest(new RegExp(`/_i18n/.*/${locale}/messages.json`))
   }
-  return page.waitForResponse(new RegExp(`/_i18n/${locale}/messages.json`))
+  return page.waitForResponse(new RegExp(`/_i18n/.*/${locale}/messages.json`))
 }
 
 /**

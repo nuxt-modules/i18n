@@ -65,7 +65,11 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   await addDefinePlugin(defineConfig)
 }
 
-export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server = false, nuxt = useNuxt()) {
+export function getDefineConfig(
+  { options, fullStatic, deploymentHash }: I18nNuxtContext,
+  server = false,
+  nuxt = useNuxt()
+) {
   const cacheLifetime = options.experimental.cacheLifetime ?? (fullStatic ? FULL_STATIC_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
@@ -99,7 +103,8 @@ export function getDefineConfig({ options, fullStatic }: I18nNuxtContext, server
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
-    __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection)
+    __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),
+    __I18N_HASH__: JSON.stringify(deploymentHash)
   }
 
   if (nuxt.options.ssr || !server) {
