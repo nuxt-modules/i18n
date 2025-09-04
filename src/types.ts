@@ -24,7 +24,7 @@ export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
  */
 export interface DetectBrowserLanguageOptions {
   /**
-   * Always redirect to the detected locale, even if it's the same as the current locale.
+   * Always redirect to the detected locale, not just on first visit
    *
    * @default false
    */
