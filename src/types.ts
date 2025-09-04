@@ -15,7 +15,7 @@ export type {
  *
  * - `'all'`: redirect on all routes
  * - `'root'`: redirect only on root route
- * - `'no prefix'`: no redirect
+ * - `'no prefix'`: redirect only on routes without locale prefix
  */
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
