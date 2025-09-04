@@ -206,7 +206,7 @@ export interface LocaleMessageCompilationOptions {
   /**
    * Whether to enable strict message compilation.
    *
-   * @default false
+   * @default true
    */
   strictMessage?: boolean
   /**
@@ -227,7 +227,7 @@ export type NuxtI18nOptions<
    */
   vueI18n?: string
   /**
-   * Experimental Nuxt I18n options, these options are not stable and may change in the future.
+   * Experimental configuration used to opt-in (or opt-out) of functionality as they stabilize.
    */
   experimental?: ExperimentalFeatures
   /**
@@ -463,7 +463,7 @@ export interface LocaleObject<T = Locale> {
    */
   dir?: Directions
   /**
-   * A language-range used for SEO features and for matching browser locales when using detectBrowserLanguage functionality.
+   * A language tag used for SEO features and for matching browser locales when using detectBrowserLanguage functionality.
    *
    * Should use the language tag syntax as defined by the IETF's BCP47, for example:
    * - 'en' (language subtag for English)
