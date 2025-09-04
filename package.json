@@ -89,13 +89,13 @@
     "@intlify/unplugin-vue-i18n": "^6.0.8",
     "@intlify/utils": "^0.13.0",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
-    "@nuxt/kit": "^4.0.3",
+    "@nuxt/kit": "^4.0.0",
     "@rollup/plugin-yaml": "^4.1.2",
-    "@vue/compiler-sfc": "^3.5.18",
+    "@vue/compiler-sfc": "^3.5.21",
     "cookie-es": "^2.0.0",
     "defu": "^6.1.4",
     "devalue": "^5.1.1",
-    "h3": "^1.15.3",
+    "h3": "^1.15.4",
     "knitwork": "^1.2.0",
     "magic-string": "^0.30.17",
     "mlly": "^1.7.4",
@@ -116,7 +116,7 @@
   "devDependencies": {
     "@eslint/js": "9.32.0",
     "@nuxt/module-builder": "^1.0.2",
-    "@nuxt/schema": "^4.0.3",
+    "@nuxt/schema": "^4.1.0",
     "@types/debug": "^4.1.12",
     "@types/jsdom": "^21.1.7",
     "bumpp": "^10.2.0",
@@ -134,7 +134,7 @@
     "lint-staged": "^15.5.0",
     "nitropack": "^2.12.4",
     "npm-run-all2": "^6.2.6",
-    "nuxt": "^4.0.3",
+    "nuxt": "^4.1.0",
     "ofetch": "^1.4.1",
     "playwright-core": "^1.54.1",
     "prettier": "^3.6.2",
@@ -145,7 +145,7 @@
     "unbuild": "^3.6.0",
     "undici": "^7.12.0",
     "vitest": "^3.2.4",
-    "vue": "^3.5.18"
+    "vue": "^3.5.21"
   },
   "lint-staged": {
     "*.{json,md,yml}": [
