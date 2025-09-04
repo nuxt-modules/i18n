@@ -11,7 +11,11 @@ export type {
 } from './constants'
 
 /**
- * @public
+ * Options for when to redirect to the detected locale.
+ *
+ * - `'all'`: redirect on all routes
+ * - `'root'`: redirect only on root route
+ * - `'no prefix'`: redirect only on routes without locale prefix
  */
 export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
 
@@ -19,13 +23,53 @@ export type RedirectOnOptions = 'all' | 'root' | 'no prefix'
  * @public
  */
 export interface DetectBrowserLanguageOptions {
+  /**
+   * Always redirect to the detected locale, not just on first visit
+   *
+   * @default false
+   */
   alwaysRedirect?: boolean
+  /**
+   * Whether the cookie is cross-origin.
+   *
+   * @default false
+   */
   cookieCrossOrigin?: boolean
+  /**
+   * Domain for the cookie.
+   *
+   * @default null
+   */
   cookieDomain?: string | null
+  /**
+   * Key for the cookie.
+   *
+   * @default 'i18n_redirected'
+   */
   cookieKey?: string
+  /**
+   * Whether the cookie is secure.
+   *
+   * @default false
+   */
   cookieSecure?: boolean
+  /**
+   * Fallback locale if no locale is detected.
+   *
+   * @default ''
+   */
   fallbackLocale?: Locale | null
+  /**
+   * When to redirect to the detected locale.
+   *
+   * @default 'root'
+   */
   redirectOn?: RedirectOnOptions
+  /**
+   * Whether to use cookies to remember the detected locale.
+   *
+   * @default true
+   */
   useCookie?: boolean
 }
 
@@ -34,15 +78,29 @@ export interface DetectBrowserLanguageOptions {
  */
 export type LocaleType = 'static' | 'dynamic' | 'unknown'
 
-export type LocaleFile = { path: string; cache?: boolean }
+/**
+ * Configuration for locale file loading.
+ */
+export type LocaleFile = {
+  /** Path to the locale file */
+  path: string
+  /** Whether to cache the file */
+  cache?: boolean
+}
 
+/**
+ * Information about a locale including file metadata.
+ */
 export type LocaleInfo = Omit<LocaleObject, 'file' | 'files'> & {
+  /** The locale code */
   code: Locale
+  /** Metadata about the locale files */
   meta: FileMeta[]
 }
 
 /**
  * @internal
+ * Metadata about a locale file.
  */
 export type FileMeta = {
   path: string
@@ -55,13 +113,23 @@ export type FileMeta = {
  * @public
  */
 export interface RootRedirectOptions {
+  /**
+   * The path to redirect to when accessing the root URL.
+   */
   path: string
+  /**
+   * The HTTP status code to use for the redirect.
+   */
   statusCode: number
 }
 
 type RouteLocationAsStringTypedListI18n<T = RouteMapGeneric extends RouteMapI18n ? RouteMapGeneric : RouteMapI18n> = {
   [N in keyof T]?: Partial<Record<Locale, `/${string}` | false>> | false
 }
+
+/**
+ * Custom route pages configuration.
+ */
 export type CustomRoutePages = RouteLocationAsStringTypedListI18n
 
 export interface ExperimentalFeatures {
@@ -113,6 +181,10 @@ export interface ExperimentalFeatures {
    * @default false // or `true` if `experimental.preload` is enabled
    */
   stripMessagesPayload?: boolean
+  /**
+   * Enables strict SEO mode.
+   * @default false
+   */
   strictSeo?: boolean | SeoAttributesOptions
   /**
    * Enables Nitro context detection and allows for more reliable detection and redirection behavior especially in setups using prerendering.
@@ -131,7 +203,17 @@ export interface BundleOptions
 export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang' | 'globalSFCScope'> {}
 
 export interface LocaleMessageCompilationOptions {
+  /**
+   * Whether to strictly check that the locale message does not contain HTML tags. If HTML tags are included, an error is thrown.
+   *
+   * @default true
+   */
   strictMessage?: boolean
+  /**
+   * Whether to escape HTML in messages.
+   *
+   * @default false
+   */
   escapeHtml?: boolean
 }
 
@@ -144,14 +226,26 @@ export type NuxtI18nOptions<
    * @default ''
    */
   vueI18n?: string
+  /**
+   * Experimental configuration used to opt-in (or opt-out) of functionality as they stabilize.
+   */
   experimental?: ExperimentalFeatures
   /**
    * The directory from which i18n files are resolved relative to the `<rootDir>` of the project.
    * @default 'i18n'
    */
   restructureDir?: string
+  /**
+   * Configure the bundling optimization for nuxt i18n module.
+   */
   bundle?: BundleOptions
+  /**
+   * Configure flags that sets the behavior compilation of locale messages.
+   */
   compilation?: LocaleMessageCompilationOptions
+  /**
+   * Configure the i18n custom blocks of SFC.
+   */
   customBlocks?: CustomBlocksOptions
   /**
    * Enable when using different domains for each locale
@@ -167,28 +261,84 @@ export type NuxtI18nOptions<
    * @default false
    */
   multiDomainLocales?: boolean
+  /**
+   * Enables browser language detection to automatically redirect visitors to their preferred locale as they visit your site for the first time.
+   *
+   * Note that for better SEO it's recommended to set `redirectOn` to 'root'.
+   * @see [Browser language detection](https://i18n.nuxtjs.org/docs/guide/browser-language-detection) for a guide.
+   */
   detectBrowserLanguage?: DetectBrowserLanguageOptions | false
+  /**
+   * A relative path to a directory containing translation files to load.
+   *
+   * The path is resolved relative to the project `restructureDir` at the root of a project ('i18n' by default).
+   * @default 'locales'
+   * @warning Absolute paths will fail in production (eg. '/locales' should be changed into either 'locales' or './locales')
+   */
   langDir?: string | null
+  /**
+   * If `customRoutes` option is disabled with config, the module will look for custom routes in the `pages` option.
+   * @see Refer to the [Routing](https://i18n.nuxtjs.org/docs/guide) for usage.
+   */
   pages?: CustomRoutePages
+  /**
+   * Whether custom paths are extracted from page files or configured in the module configuration:
+   *
+   * @example 'meta': custom paths are extracted from the definePageMeta() function in page components.
+   * @example 'config': custom paths are extracted from the module configuration.
+   * @example 'page': custom paths are extracted from the page files.
+   *
+   * @default 'page'
+   */
   customRoutes?: 'page' | 'config' | 'meta'
   /**
    * Do not use in projects - this is used internally for e2e tests to override default option merging.
    * @internal
    */
   overrides?: Omit<NuxtI18nOptions<Context>, 'overrides'>
+  /**
+   * Set to a path to which you want to redirect users accessing the root URL ('/').
+   *
+   * Accepts either a string or an object with statusCode and path properties.
+   *
+   * @example
+   * ```json
+   * {
+   *   "statusCode": 301,
+   *   "path": "about-us"
+   * }
+   * ```
+   */
   rootRedirect?: string | RootRedirectOptions
   /**
    * Status code used for localized redirects
    * @default 302
    */
   redirectStatusCode?: number
+  /**
+   * If true, the locale will not be set when navigating to a new locale.
+   *
+   * This is useful if you want to wait for the page transition to end before setting the locale yourself using `finalizePendingLocaleChange`.
+   *
+   * @see more information in [Wait for page transition](https://i18n.nuxtjs.org/docs/guide/lang-switcher#wait-for-page-transition).
+   */
   skipSettingLocaleOnNavigate?: boolean
   /**
    * @deprecated This option is deprecated, only `'composition'` types will be supported in the future.
    * @default 'composition'
    */
   types?: 'composition' | 'legacy'
+  /**
+   * Whether to use `@nuxtjs/i18n` debug mode. If true or 'verbose', logs will be output to the console, setting this to 'verbose' will also log loaded messages objects.
+   * @warning The purpose of this option is to help identify any problems with `@nuxtjs/i18n`.You should not enable this option in production as it will negatively impact performance.
+   * @default false
+   */
   debug?: boolean | 'verbose'
+  /**
+   * Set the plugin as parallel.
+   * @see [nuxt plugin loading strategy](https://nuxt.com/docs/guide/directory-structure/plugins#loading-strategy).
+   * @default false
+   */
   parallelPlugin?: boolean
   /**
    * The app's default locale
@@ -271,6 +421,9 @@ export type NuxtI18nOptions<
   autoDeclare?: boolean
 }
 
+/**
+ * Vue I18n configuration function.
+ */
 export type VueI18nConfig = () => Promise<{ default: I18nOptions | (() => I18nOptions | Promise<I18nOptions>) }>
 
 /**
@@ -291,27 +444,84 @@ export type Directions = 'ltr' | 'rtl' | 'auto'
  */
 export interface LocaleObject<T = Locale> {
   [k: string]: unknown
-  /** Code used for route prefixing and argument in i18n utility functions. */
+  /**
+   * Unique identifier of the locale.
+   * Used for route prefixing and as an argument in i18n utility functions.
+   */
   code: T
-  /** User facing name */
+  /**
+   * User facing name for the locale.
+   *
+   * This is a custom property that can be used, for example, to define the language name
+   * for the purpose of using it in a language selector on the page.
+   */
   name?: string
-  /** Writing direction */
+  /**
+   * The dir property specifies the direction of the elements and content.
+   *
+   * Value could be 'rtl', 'ltr' or 'auto'.
+   */
   dir?: Directions
-  /** Language tag - see IETF's BCP47 - required when using SEO features */
+  /**
+   * A language tag used for SEO features and for matching browser locales when using detectBrowserLanguage functionality.
+   *
+   * Should use the language tag syntax as defined by the IETF's BCP47, for example:
+   * - 'en' (language subtag for English)
+   * - 'fr-CA' (language+region subtags for French as used in Canada)
+   * - 'zh-Hans' (language+script subtags for Chinese written with Simplified script)
+   *
+   * Required when using SEO features.
+   */
   language?: string
-  /** Override default SEO catch-all and force this locale to be catch-all for its locale group */
+  /**
+   * Override default SEO catch-all and force this locale to be catch-all for its locale group.
+   */
   isCatchallLocale?: boolean
+  /**
+   * The domain name you'd like to use for that locale (including the port if used).
+   *
+   * This property can also be set using runtimeConfig.
+   *
+   * @warning This property is required when using differentDomains
+   */
   domain?: string
+  /**
+   * An array of domain names for this locale.
+   *
+   * This property is required when using multiDomainLocales while one or more of the domains having multiple of the same locales.
+   */
   domains?: string[]
+  /**
+   * An array of domain names for which this locale should be the default locale.
+   *
+   * This property is optional when using multiDomainLocales.
+   */
   defaultForDomains?: string[]
+  /**
+   * Set to true for each locale that should act as a default locale for the particular domain.
+   *
+   * This property is required when using differentDomains while one or more of the domains having multiple locales.
+   */
   domainDefault?: boolean
+  /**
+   * The name of the file containing locale messages for this locale.
+   *
+   * Will be resolved relative to the langDir path when loading locale messages from file.
+   */
   file?: string | LocaleFile
+  /**
+   * An array of file names containing locale messages for this locale.
+   *
+   * Will be resolved relative to the langDir path when loading locale messages from file.
+   */
   files?: string[] | LocaleFile[]
 }
 
 /**
  * @public
  * @deprecated Configuring baseUrl as a function is deprecated and will be removed in the v11.
+ *
+ * Function to resolve the base URL dynamically based on context.
  */
 export type BaseUrlResolveHandler<Context = unknown> = (context: Context) => string
 
@@ -359,15 +569,25 @@ export type MetaAttrs = Record<string, string>
  * @public
  */
 export interface I18nHeadMetaInfo {
+  /** HTML attributes for the HTML element */
   htmlAttrs: MetaAttrs
+  /** Meta tags */
   meta: MetaAttrs[]
+  /** Link tags */
   link: MetaAttrs[]
 }
 
+/**
+ * Public runtime configuration for i18n.
+ */
 export interface I18nPublicRuntimeConfig {
+  /** Base URL for the application */
   baseUrl: NuxtI18nOptions['baseUrl']
+  /** Root redirect configuration */
   rootRedirect: NuxtI18nOptions['rootRedirect']
+  /** Status code for redirects */
   redirectStatusCode?: NuxtI18nOptions['redirectStatusCode']
+  /** Domain locales mapping */
   domainLocales: { [key: Locale]: { domain: string | undefined } }
   /** @internal Overwritten at build time, used to pass generated options to runtime */
   locales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>
