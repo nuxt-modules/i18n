@@ -29,3 +29,5 @@ declare let __I18N_PRELOAD__: boolean
 declare let __I18N_ROUTING__: boolean
 declare let __I18N_STRICT_SEO__: boolean
 declare let __I18N_SERVER_REDIRECT__: boolean
+/** Hashed deployment timestamp */
+declare let __I18N_HASH__: string

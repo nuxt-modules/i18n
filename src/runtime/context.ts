@@ -98,7 +98,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const loadMessagesFromServer = async (locale: string) => {
     if (locale in localeLoaders === false) return
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
-    const messages = await $fetch(`/_i18n/${locale}/messages.json`, { headers })
+    const messages = await $fetch(`/_i18n/${__I18N_HASH__}/${locale}/messages.json`, { headers })
     for (const k of Object.keys(messages)) {
       i18n.mergeLocaleMessage(k, messages[k])
     }

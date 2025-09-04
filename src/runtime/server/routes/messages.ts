@@ -30,7 +30,7 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
 const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
   name: 'i18n:messages-internal',
   maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
-  getKey: event => getRouterParam(event, 'locale') ?? 'null',
+  getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-'),
   shouldBypassCache(event) {
     const locale = getRouterParam(event, 'locale')
     if (locale == null) return false
@@ -45,7 +45,7 @@ const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : 10,
   swr: false,
-  getKey: event => getRouterParam(event, 'locale') ?? 'null'
+  getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
 })
 
 /**

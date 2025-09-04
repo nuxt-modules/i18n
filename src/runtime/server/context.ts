@@ -23,7 +23,9 @@ if (import.meta.dev) {
  * @internal
  */
 export const fetchMessages = async (locale: string) =>
-  await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${locale}/messages.json`, { headers })
+  await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${__I18N_HASH__}/${locale}/messages.json`, {
+    headers
+  })
 
 export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
   return {

@@ -100,6 +100,7 @@
     "magic-string": "^0.30.17",
     "mlly": "^1.7.4",
     "nuxt-define": "^1.0.0",
+    "ohash": "^2.0.11",
     "oxc-parser": "^0.81.0",
     "oxc-transform": "^0.81.0",
     "oxc-walker": "^0.4.0",

@@ -20,7 +20,7 @@ export default defineNuxtPlugin({
     if (import.meta.server) {
       for (const locale of localeCodes) {
         try {
-          const messages = await $fetch(`/_i18n/${locale}/messages.json`)
+          const messages = await $fetch(`/_i18n/${__I18N_HASH__}/${locale}/messages.json`)
           for (const locale of Object.keys(messages)) {
             nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])
           }
