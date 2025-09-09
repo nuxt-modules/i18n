@@ -80,8 +80,7 @@
   "resolutions": {
     "@nuxtjs/i18n": "workspace:*",
     "unimport": "5.2.0",
-    "rollup": "4.45.1",
-    "vite": "npm:rolldown-vite@latest"
+    "rollup": "4.45.1"
   },
   "dependencies": {
     "@intlify/core": "^11.1.11",
