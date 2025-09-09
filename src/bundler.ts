@@ -49,7 +49,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     ...ctx.options.customBlocks,
     allowDynamic: true,
     optimizeTranslationDirective: false,
-    include: localePaths.length ? localePaths : undefined
+    include: localePaths.length ? localePaths : []
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
