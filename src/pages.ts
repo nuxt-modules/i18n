@@ -84,6 +84,10 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         await typedRouter.createContext(pages).scanPages(false)
       }
 
+      // Let user mutate pages meta, e.g. set meta.i18n = false to disable i18n for a page
+      await nuxt.callHook('i18n:filterPages', pages)
+
+      // Pass all pages to localizeRoutes, let it handle meta.i18n === false
       const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
         ...options,
         includeUnprefixedFallback,
