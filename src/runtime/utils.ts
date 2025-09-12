@@ -44,6 +44,7 @@ export type ComposableContext = {
     hreflangLinks: boolean
   }
   head: ReturnType<typeof useHead>
+  _head: ReturnType<typeof useHead> | undefined
   metaState: Required<I18nHeadMetaInfo>
   seoSettings: I18nHeadOptions
   localePathPayload: Record<string, Record<string, string> | false>
@@ -112,7 +113,11 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
 
   const composableCtx: ComposableContext = {
     router,
-    head: useHead({}),
+    _head: undefined,
+    get head() {
+      this._head ??= useHead({})
+      return this._head
+    },
     metaState: { htmlAttrs: {}, meta: [], link: [] },
     seoSettings: {
       dir: __I18N_STRICT_SEO__,
