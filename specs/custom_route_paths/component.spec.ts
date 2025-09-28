@@ -82,3 +82,11 @@ test('can not access to disable route path', async () => {
   // 404
   expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
 })
+
+test('(#3831) nested index root custom routes', async () => {
+  const { page } = await renderPage('/')
+
+  expect(await page.locator('#issue-3831-nested-root').getAttribute('href')).toBe('/my-localized-nested-root-page')
+  await page.locator('#issue-3831-nested-root').clickNavigate()
+  await page.waitForURL(url('/my-localized-nested-root-page'))
+})

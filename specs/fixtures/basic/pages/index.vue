@@ -66,5 +66,6 @@ useHead(() => ({
       <span id="issue-2020-existing">{{ localePath('/test-route?foo=bar') }}</span>
       <span id="issue-2020-nonexistent">{{ localePath('/i-dont-exist?foo=bar') }}</span>
     </section>
+    <NuxtLink id="issue-3831-nested-root" :to="localePath('index-nested-root-page')">Nested index page</NuxtLink>
   </div>
 </template>
