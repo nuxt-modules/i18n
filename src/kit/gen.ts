@@ -42,7 +42,7 @@ export type LocalizeRouteParams = {
 }
 
 function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
-  if (!parentLocalizedPath) return localizedPath
+  if (!parentLocalizedPath || parentLocalizedPath === '/') return localizedPath
 
   if (localizedPath[0] !== '/') {
     return localizedPath
