@@ -67,6 +67,106 @@ describe('`experimental.typedPages` undefined or enabled', async () => {
           'products-slug': RouteRecordInfo<'products-slug', '/products/:slug()', { slug: ParamValue<true> }, { slug: ParamValue<false> }>,
           'user-profile': RouteRecordInfo<'user-profile', '/user/profile', Record<never, never>, Record<never, never>>,
         }
+
+        /**
+         * Route file to route info map by unplugin-vue-router.
+         * Used by the volar plugin to automatically type useRoute()
+         *
+         * Each key is a file path relative to the project root with 2 properties:
+         * - routes: union of route names of the possible routes when in this page (passed to useRoute<...>())
+         * - views: names of nested views (can be passed to <RouterView name="...">)
+         *
+         * @internal
+         */
+        export interface _RouteFileInfoMap {
+          'specs/fixtures/basic_usage/app/pages/index.vue': {
+            routes: 'index'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/[...pathMatch].vue': {
+            routes: 'pathMatch'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/about/index.vue': {
+            routes: 'about'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/category/[slug].vue': {
+            routes: 'category-slug'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/composables.vue': {
+            routes: 'composables'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/experimental/[...slug].vue': {
+            routes: 'experimental-slug'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/experimental/auto-import-translation-functions.vue': {
+            routes: 'experimental-auto-import-translation-functions'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/greetings.vue': {
+            routes: 'greetings'
+            views: never
+          }
+          'specs/fixtures/layers/layer-lazy/pages/layer-page.vue': {
+            routes: 'layer-page'
+            views: never
+          }
+          'specs/fixtures/layers/layer-lazy/pages/layer-parent.vue': {
+            routes: 'layer-parent' | 'layer-parent-layer-child'
+            views: 'default'
+          }
+          'specs/fixtures/layers/layer-lazy/pages/layer-parent/layer-child.vue': {
+            routes: 'layer-parent-layer-child'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/long-text.vue': {
+            routes: 'long-text'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/nested/test-route.vue': {
+            routes: 'nested-test-route'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/nuxt-context-extension.vue': {
+            routes: 'nuxt-context-extension'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/page with spaces.vue': {
+            routes: 'page with spaces'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/post/[id].vue': {
+            routes: 'post-id'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/products.vue': {
+            routes: 'products' | 'products-slug'
+            views: 'default'
+          }
+          'specs/fixtures/basic_usage/app/pages/products/[slug].vue': {
+            routes: 'products-slug'
+            views: never
+          }
+          'specs/fixtures/basic_usage/app/pages/user/profile.vue': {
+            routes: 'user-profile'
+            views: never
+          }
+        }
+
+        /**
+         * Get a union of possible route names in a certain route component file.
+         * Used by the volar plugin to automatically type useRoute()
+         *
+         * @internal
+         */
+        export type _RouteNamesForFilePath<FilePath extends string> =
+          _RouteFileInfoMap extends Record<FilePath, infer Info>
+            ? Info['routes']
+            : keyof RouteNamedMap
       }
       "
     `)
