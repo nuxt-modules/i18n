@@ -1,4 +1,4 @@
-import { mapContentNavigation } from '@nuxt/ui-pro/runtime/utils/content.js'
+import { mapContentNavigation } from '@nuxt/ui/runtime/utils/content.js'
 import type { ContentNavigationItem } from '@nuxt/content'
 
 export default defineNuxtPlugin(async () => {
