@@ -1,10 +1,9 @@
 @import 'tailwindcss';
-@import '@nuxt/ui-pro';
+@import '@nuxt/ui';
 
 @theme {
   --container-8xl: 90rem;
   --font-sans: 'Public Sans', sans-serif;
-  /* --font-sans: 'DM Sans', sans-serif; */
 
   --color-green-50: #effdf5;
   --color-green-100: #d9fbe8;

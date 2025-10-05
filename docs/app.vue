@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { mapContentNavigation } from '@nuxt/ui-pro/runtime/utils/content.js'
 import type { ContentNavigationItem } from '@nuxt/content'
 
 const appConfig = useAppConfig()

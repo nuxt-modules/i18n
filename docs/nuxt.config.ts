@@ -1,7 +1,7 @@
 import pkg from '../package.json'
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui-pro', '@nuxt/content', '@nuxt/scripts', 'nuxt-og-image', 'nuxt-llms'],
+  modules: ['@nuxt/ui', '@nuxt/content', '@nuxt/scripts', 'nuxt-og-image', 'nuxt-llms'],
   routeRules: {
     // default
     '/': { prerender: true },
@@ -29,9 +29,6 @@ export default defineNuxtConfig({
       }
     }
   },
-
-  // special license for nuxt & nuxt-modules orgs
-  uiPro: { license: 'oss' },
 
   // Nuxt Content
   content: {
@@ -63,6 +60,12 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   typescript: { strict: false },
+
+  $development: {
+    scripts: {
+      enabled: false
+    }
+  },
 
   scripts: {
     registry: {
