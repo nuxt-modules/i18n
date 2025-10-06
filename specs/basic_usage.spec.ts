@@ -101,14 +101,14 @@ describe('basic usage', async () => {
 
     test('`v-t` directive SSR', async () => {
       const pageHTML = await $fetch('/')
-      const pageDOM = getDom(pageHTML)
-      expect(pageDOM.querySelector('#t-directive #t-directive-path')?.textContent).toEqual('Welcome')
-      expect(pageDOM.querySelector('#t-directive #t-directive-argument')?.textContent).toEqual('Hello directive!')
+      const pageDOM = await getDom(pageHTML)
+      expect(await pageDOM.locator('#t-directive #t-directive-path')?.textContent()).toEqual('Welcome')
+      expect(await pageDOM.locator('#t-directive #t-directive-argument')?.textContent()).toEqual('Hello directive!')
 
       const pageHTMLFrench = await $fetch('/fr')
-      const pageDOMFrench = getDom(pageHTMLFrench)
-      expect(pageDOMFrench.querySelector('#t-directive #t-directive-path')?.textContent).toEqual('Bienvenue')
-      expect(pageDOMFrench.querySelector('#t-directive #t-directive-argument')?.textContent).toEqual(
+      const pageDOMFrench = await getDom(pageHTMLFrench)
+      expect(await pageDOMFrench.locator('#t-directive #t-directive-path')?.textContent()).toEqual('Bienvenue')
+      expect(await pageDOMFrench.locator('#t-directive #t-directive-argument')?.textContent()).toEqual(
         'Bonjour directive!'
       )
     })
@@ -450,13 +450,13 @@ describe('basic usage', async () => {
       })
 
       const html = await $fetch('/?noncanonical&canonical')
-      const dom = getDom(html)
+      const dom = await getDom(html)
       await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
 
-      const links = getDataFromDom(dom, '#home-use-locale-head').link
+      const links = (await getDataFromDom(dom, '#home-use-locale-head')).link
       const i18nCan = links.find(x => x.id === 'i18n-can')
       expect(i18nCan.href).toContain(configDomain)
-      expect(dom.querySelector('#i18n-alt-fr')?.getAttribute('href')).toEqual(
+      expect(await dom.locator('#i18n-alt-fr')?.getAttribute('href')).toEqual(
         'https://runtime-config-domain.com/fr?canonical='
       )
     })
@@ -464,8 +464,8 @@ describe('basic usage', async () => {
     test('render seo tags with `experimental.alternateLinkCanonicalQueries`', async () => {
       // head tags - alt links are updated server side
       const html = await $fetch('/?noncanonical&canonical')
-      const dom = getDom(html)
-      expect(dom.querySelector('link[id=i18n-alt-fr]')?.getAttribute('href')).toEqual(
+      const dom = await getDom(html)
+      expect(await dom.locator('link[id=i18n-alt-fr]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/fr?canonical='
       )
     })
@@ -473,20 +473,20 @@ describe('basic usage', async () => {
     test('respects `experimental.alternateLinkCanonicalQueries`', async () => {
       // head tags - alt links are updated server side
       const product1Html = await $fetch('/products/big-chair?test=123&canonical=123')
-      const product1Dom = getDom(product1Html)
-      expect(product1Dom.querySelector('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
+      const product1Dom = await getDom(product1Html)
+      expect(await product1Dom.locator('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/nl/products/grote-stoel?canonical=123'
       )
-      expect(product1Dom.querySelector('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
+      expect(await product1Dom.locator('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
         '/nl/products/grote-stoel?test=123&canonical=123'
       )
 
       const product2Html = await $fetch('/nl/products/rode-mok?test=123&canonical=123')
-      const product2dom = getDom(product2Html)
-      expect(product2dom.querySelector('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
+      const product2dom = await getDom(product2Html)
+      expect(await product2dom.locator('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/products/red-mug?canonical=123'
       )
-      expect(product2dom.querySelector('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
+      expect(await product2dom.locator('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
         '/products/red-mug?test=123&canonical=123'
       )
     })
@@ -494,20 +494,20 @@ describe('basic usage', async () => {
     test('dynamic parameters rendered correctly during SSR', async () => {
       // head tags - alt links are updated server side
       const product1Html = await $fetch('/products/big-chair')
-      const product1Dom = getDom(product1Html)
-      expect(product1Dom.querySelector('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
+      const product1Dom = await getDom(product1Html)
+      expect(await product1Dom.locator('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/nl/products/grote-stoel'
       )
-      expect(product1Dom.querySelector('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
+      expect(await product1Dom.locator('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
         '/nl/products/grote-stoel'
       )
 
       const product2Html = await $fetch('/nl/products/rode-mok')
-      const product2dom = getDom(product2Html)
-      expect(product2dom.querySelector('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
+      const product2dom = await getDom(product2Html)
+      expect(await product2dom.locator('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/products/red-mug'
       )
-      expect(product2dom.querySelector('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
+      expect(await product2dom.locator('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
         '/products/red-mug'
       )
     })
@@ -516,10 +516,10 @@ describe('basic usage', async () => {
       const url = `/experimental//"><script>console.log('xss')</script><`
 
       const html = await $fetch(url)
-      const dom = getDom(html)
+      const dom = await getDom(html)
 
       // the localized should be the same as encoded
-      expect(dom.querySelector('#slp-xss a')?.getAttribute('href')).toEqual(encodeURI('/nl' + url))
+      expect(await dom.locator('#slp-xss a')?.getAttribute('href')).toEqual(encodeURI('/nl' + url))
     })
 
     test('server integration extended from `layers/layer-server`', async () => {
@@ -575,14 +575,14 @@ describe('basic usage', async () => {
 
       // head tags - alt links are updated server side
       const product1Html = await $fetch('/products/big-chair')
-      const product1Dom = getDom(product1Html)
-      expect(product1Dom.querySelector('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
+      const product1Dom = await getDom(product1Html)
+      expect(await product1Dom.locator('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/nl/products/grote-stoel'
       )
 
       const product2Html = await $fetch('/nl/products/rode-mok')
-      const product2dom = getDom(product2Html)
-      expect(product2dom.querySelector('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
+      const product2dom = await getDom(product2Html)
+      expect(await product2dom.locator('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
         'http://localhost:3000/products/red-mug'
       )
     })
@@ -609,12 +609,12 @@ describe('basic usage', async () => {
 
     test('(#2726) composables correctly initialize common options, no internal server error', async () => {
       const html = await $fetch('/composables')
-      const dom = getDom(html)
+      const dom = await getDom(html)
 
-      expect(dom.querySelector('head #locale-path')?.getAttribute('content')).toEqual('/nested/test-route')
-      expect(dom.querySelector('head #locale-route')?.getAttribute('content')).toEqual('/nested/test-route')
-      expect(dom.querySelector('head #switch-locale-path')?.getAttribute('content')).toEqual('/fr/composables')
-      expect(dom.querySelector('head #route-base-name')?.getAttribute('content')).toEqual('nested-test-route')
+      expect(await dom.locator('head #locale-path')?.getAttribute('content')).toEqual('/nested/test-route')
+      expect(await dom.locator('head #locale-route')?.getAttribute('content')).toEqual('/nested/test-route')
+      expect(await dom.locator('head #switch-locale-path')?.getAttribute('content')).toEqual('/fr/composables')
+      expect(await dom.locator('head #route-base-name')?.getAttribute('content')).toEqual('nested-test-route')
     })
 
     test('(#2874) options `locales` and `vueI18n` passed using `installModule` are not overridden', async () => {

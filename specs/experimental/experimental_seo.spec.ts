@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { $fetch, setup, url } from '../utils'
-import { getDom, getHeadSnapshot, renderPage } from '../helper'
+import { setup, url } from '../utils'
+import { getHeadSnapshot, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic_usage`, import.meta.url)),

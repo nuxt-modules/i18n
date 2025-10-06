@@ -48,10 +48,10 @@ describe('detection locale with host on server', () => {
         Host: host
       }
     })
-    const dom = getDom(await res.body.text())
+    const dom = await getDom(await res.body.text())
 
-    expect(dom.querySelector('#lang-switcher-current-locale code').textContent).toEqual(locale)
-    expect(dom.querySelector('#home-header').textContent).toEqual(header)
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
+    expect(await dom.locator('#home-header').textContent()).toEqual(header)
   })
 })
 
@@ -61,10 +61,10 @@ test('detection locale with x-forwarded-host on server', async () => {
       'X-Forwarded-Host': 'fr.nuxt-app.localhost'
     }
   })
-  const dom = getDom(html)
+  const dom = await getDom(html)
 
-  expect(dom.querySelector('#lang-switcher-current-locale code').textContent).toEqual('fr')
-  expect(dom.querySelector('#home-header').textContent).toEqual('Accueil')
+  expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('fr')
+  expect(await dom.locator('#home-header').textContent()).toEqual('Accueil')
 })
 
 test('pass `<NuxtLink> to props', async () => {
@@ -73,14 +73,14 @@ test('pass `<NuxtLink> to props', async () => {
       Host: 'fr.nuxt-app.localhost'
     }
   })
-  const dom = getDom(await res.body.text())
-  expect(dom.querySelector('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
+  const dom = await getDom(await res.body.text())
+  expect(await dom.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
     `http://nuxt-app.localhost/en`
   )
-  expect(dom.querySelector('#switch-locale-path-usages .switch-to-no a').getAttribute('href')).toEqual(
+  expect(await dom.locator('#switch-locale-path-usages .switch-to-no a').getAttribute('href')).toEqual(
     `http://nuxt-app.localhost/no`
   )
-  expect(dom.querySelector('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
+  expect(await dom.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
     `http://fr.nuxt-app.localhost/fr`
   )
 })
