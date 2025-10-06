@@ -153,7 +153,7 @@ describe('basic lazy loading', async () => {
 
     // trigger server-side locale loading
     const html = await $fetch('/en-GB')
-    const runtimeText = getDom(html).querySelector('#runtime-config-key')!.textContent!
+    const runtimeText = await (await getDom(html)).locator('#runtime-config-key')!.textContent()!
     expect(runtimeText).toEqual('runtime-config-value')
   })
 })

@@ -52,8 +52,8 @@ await setup({
 
 test('(#3628) `switchLocalePath` includes `app.baseURL`', async () => {
   const res = await undiciRequest('/base-path')
-  const dom = getDom(await res.body.text())
-  expect(dom?.querySelector('#switch-locale-path-usages .switch-to-kr a')?.getAttribute('href')).toEqual(
+  const dom = await getDom(await res.body.text())
+  expect(await dom?.locator('#switch-locale-path-usages .switch-to-kr a')?.getAttribute('href')).toEqual(
     `http://kr.nuxt-app.localhost/base-path`
   )
 })

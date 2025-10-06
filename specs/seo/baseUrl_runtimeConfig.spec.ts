@@ -25,10 +25,10 @@ await setup({
 
 test('render seo tags with baseUrl', async () => {
   const html = await $fetch('/?noncanonical')
-  const dom = getDom(html)
+  const dom = await getDom(html)
   await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
 
-  const links = getDataFromDom(dom, '#home-use-locale-head').link
+  const links = (await getDataFromDom(dom, '#home-use-locale-head')).link
   const i18nCan = links.find(x => x.id === 'i18n-can')
   expect(i18nCan.href).toContain(configDomain)
 })

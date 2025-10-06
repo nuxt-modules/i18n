@@ -32,6 +32,6 @@ test('render seo tags with baseUrl', async () => {
       'X-Override-Base-Url': 'CUSTOM'
     }
   })
-  const dom = getDom(html)
+  const dom = await getDom(html)
   await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
 })

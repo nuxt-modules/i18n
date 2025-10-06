@@ -63,10 +63,10 @@ describe('detection locale with host on server', () => {
         Host: host
       }
     })
-    const dom = getDom(await res.body.text())
+    const dom = await getDom(await res.body.text())
 
-    expect(dom.querySelector('#lang-switcher-current-locale code').textContent).toEqual(locale)
-    expect(dom.querySelector('#home-header').textContent).toEqual(header)
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
+    expect(await dom.locator('#home-header').textContent()).toEqual(header)
   })
 })
 
@@ -76,10 +76,10 @@ test('detection locale with x-forwarded-host on server', async () => {
       'X-Forwarded-Host': 'fr.nuxt-app.localhost'
     }
   })
-  const dom = getDom(html)
+  const dom = await getDom(html)
 
-  expect(dom.querySelector('#lang-switcher-current-locale code').textContent).toEqual('fr')
-  expect(dom.querySelector('#home-header').textContent).toEqual('Accueil')
+  expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('fr')
+  expect(await dom.locator('#home-header').textContent()).toEqual('Accueil')
 })
 
 describe('detection locale with child routes', () => {
@@ -93,9 +93,9 @@ describe('detection locale with child routes', () => {
         Host: host
       }
     })
-    const dom = getDom(await res.body.text())
+    const dom = await getDom(await res.body.text())
 
-    expect(dom.querySelector('#parent-text').textContent).toEqual(parentText)
-    expect(dom.querySelector('#child-text').textContent).toEqual(childText)
+    expect(await dom.locator('#parent-text').textContent()).toEqual(parentText)
+    expect(await dom.locator('#child-text').textContent()).toEqual(childText)
   })
 })

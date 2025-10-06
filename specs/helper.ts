@@ -1,5 +1,4 @@
 // @ts-ignore
-import { JSDOM } from 'jsdom'
 import { getBrowser, startServer, TestContext, url, useTestContext } from './utils'
 import { onTestFinished } from 'vitest'
 
@@ -44,26 +43,29 @@ export async function assetLocaleHead(page: Page, headSelector: string) {
   headHandle?.dispose()
 }
 
-export function getDom(html: string) {
-  return new JSDOM(html).window.document
+export async function getDom(html: string) {
+  const browser = await getBrowser()
+  const page = await browser.newPage()
+  await page.setContent(html)
+  return page
 }
 
-export function getDataFromDom(dom: Document, selector: string) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return JSON.parse(dom.querySelector(selector)!.textContent!.replace('&quot;', '"'))
+export async function getDataFromDom(dom: Page, selector: string) {
+  const text = (await dom.locator(selector)!.textContent()) || '{}'
+  return JSON.parse(text)
 }
 
-export async function assertLocaleHeadWithDom(dom: Document, headSelector: string) {
-  const localeHead = getDataFromDom(dom, headSelector)
+export async function assertLocaleHeadWithDom(dom: Page, headSelector: string) {
+  const localeHead = await getDataFromDom(dom, headSelector)
   const headData = [...localeHead.link, ...localeHead.meta]
   for (const head of headData) {
-    const tag = dom.querySelector(`[id="${head.id}"]`)
+    const tag = dom.locator(`[id="${head.id}"]`)
     for (const [key, value] of Object.entries(head)) {
       if (key === 'id') {
         continue
       }
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const v = tag!.getAttribute(key)
+      const v = await tag!.getAttribute(key)
       if (v !== value) {
         throw new Error(`${key} ${v} !== ${value}`)
       }
