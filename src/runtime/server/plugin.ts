@@ -146,6 +146,11 @@ export default defineNitroPlugin(async nitro => {
     const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || _defaultLocale)
     const url = getRequestURL(event)
     const ctx = createI18nContext()
+
+    const localeConfigs = createLocaleConfigs(options.fallbackLocale)
+    ctx.vueI18nOptions = options
+    ctx.localeConfigs = localeConfigs
+
     event.context.nuxtI18n = ctx
 
     if (__I18N_SERVER_REDIRECT__) {
@@ -171,10 +176,6 @@ export default defineNitroPlugin(async nitro => {
         return
       }
     }
-
-    const localeConfigs = createLocaleConfigs(options.fallbackLocale)
-    ctx.vueI18nOptions = options
-    ctx.localeConfigs = localeConfigs
   })
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
