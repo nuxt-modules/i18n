@@ -4,7 +4,7 @@ import { useSwitchLocalePath } from '#i18n'
 const identifier = __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__
 const switchLocalePathLinkWrapperExpr = new RegExp(
   [`<!--${identifier}-\\[(\\w+)\\]-->`, `.+?`, `<!--/${identifier}-->`].join(''),
-  'g'
+  'g',
 )
 
 // Replace `SwitchLocalePathLink` href in rendered html for SSR support
@@ -24,10 +24,10 @@ export default defineNuxtPlugin({
           const encoded = encodeURI(switchLocalePath(p1 ?? ''))
           return match.replace(
             /href="([^"]+)"/,
-            `href="${encoded || '#'}" ${!encoded && __I18N_STRICT_SEO__ ? 'data-i18n-disabled' : ''}`
+            `href="${encoded || '#'}" ${!encoded && __I18N_STRICT_SEO__ ? 'data-i18n-disabled' : ''}`,
           )
-        }
+        },
       )
     })
-  }
+  },
 })

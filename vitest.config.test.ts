@@ -10,7 +10,7 @@ export default defineConfig({
     alias: {
       ...vitestConfig.test?.alias,
       '#build/i18n-options.mjs': resolve('./test/mocks/i18n.options.ts'),
-      '#app': 'nuxt'
-    }
-  }
+      '#app': 'nuxt',
+    },
+  },
 })

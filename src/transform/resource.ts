@@ -62,8 +62,8 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
       transform: {
         filter: {
           id: {
-            include: [...i18nPathSet]
-          }
+            include: [...i18nPathSet],
+          },
         },
         async handler(_code, id) {
           let code = _code
@@ -89,10 +89,10 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           if (s.hasChanged()) {
             return {
               code: s.toString(),
-              map: options.sourcemap && !/\.[cm]?ts$/.test(id) ? s.generateMap({ hires: true }) : null
+              map: options.sourcemap && !/\.[cm]?ts$/.test(id) ? s.generateMap({ hires: true }) : null,
             }
           }
-        }
-      }
+        },
+      },
     }
   })

@@ -25,7 +25,7 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
       if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
         logger.warn(
           `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). `
-          + `Absolute paths will not work in production, see https://i18n.nuxtjs.org/docs/api/options#langdir for more details.`
+          + `Absolute paths will not work in production, see https://i18n.nuxtjs.org/docs/api/options#langdir for more details.`,
         )
       }
 
@@ -36,7 +36,7 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
         if (locale.file || locale.files) continue
         throw new Error(
           'All locales must have the `file` or `files` property set when using `langDir`.\n'
-          + `Found none in:\n${JSON.stringify(locale, null, 2)}.`
+          + `Found none in:\n${JSON.stringify(locale, null, 2)}.`,
         )
       }
     }
@@ -79,7 +79,7 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   // collect hook configs
   await nuxt.callHook(
     'i18n:registerModule',
-    ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales })
+    ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales }),
   )
 
   return mergeConfigLocales(configs)

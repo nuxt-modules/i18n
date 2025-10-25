@@ -22,8 +22,8 @@ export function prepareRuntimeConfig(ctx: I18nNuxtContext, nuxt: Nuxt) {
           return [l, { domain: '' }]
         }
         return [l.code, { domain: l.domain ?? '' }]
-      })
-    ) as I18nPublicRuntimeConfig['domainLocales']
+      }),
+    ) as I18nPublicRuntimeConfig['domainLocales'],
   })
 
   nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(ctx, nuxt)

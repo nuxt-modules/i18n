@@ -13,7 +13,7 @@ import {
   EXECUTABLE_EXTENSIONS,
   DEFINE_I18N_LOCALE_FN,
   DEFINE_I18N_CONFIG_FN,
-  DEFINE_LOCALE_DETECTOR_FN
+  DEFINE_LOCALE_DETECTOR_FN,
 } from './constants'
 import { resolveI18nDir } from './layers'
 
@@ -27,12 +27,12 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
     getContents: () =>
-      nuxt.vfs['#build/i18n-options.mjs']!.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, '')
+      nuxt.vfs['#build/i18n-options.mjs']!.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, ''),
   })
 
   addServerTemplate({
     filename: '#internal/i18n-route-resources.mjs',
-    getContents: () => nuxt.vfs['#build/i18n-route-resources.mjs'] || ''
+    getContents: () => nuxt.vfs['#build/i18n-route-resources.mjs'] || '',
   })
 
   addServerTemplate({
@@ -42,7 +42,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
         ? `import localeDetector from ${JSON.stringify(localeDetectionPath)}
 export { localeDetector }`
         : `const localeDetector = undefined
-        export { localeDetector }` // no-op
+        export { localeDetector }`, // no-op
   })
 
   nuxt.hook('nitro:config', async (nitroConfig) => {
@@ -78,8 +78,8 @@ export { localeDetector }`
     [DEFINE_I18N_LOCALE_FN, DEFINE_I18N_CONFIG_FN].map(key => ({
       name: key,
       as: key,
-      from: ctx.resolver.resolve('runtime/composables/shared')
-    }))
+      from: ctx.resolver.resolve('runtime/composables/shared'),
+    })),
   )
 
   // `defineLocaleDetector`
@@ -87,8 +87,8 @@ export { localeDetector }`
     {
       name: DEFINE_LOCALE_DETECTOR_FN,
       as: DEFINE_LOCALE_DETECTOR_FN,
-      from: ctx.resolver.resolve('runtime/composables/server')
-    }
+      from: ctx.resolver.resolve('runtime/composables/server'),
+    },
   ])
 
   // `@intlify/utils/h3`
@@ -97,8 +97,8 @@ export { localeDetector }`
     h3UtilsExports.map(key => ({
       name: key,
       as: key,
-      from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG]!)
-    }))
+      from: ctx.resolver.resolve(nuxt.options.alias[UTILS_H3_PKG]!),
+    })),
   )
 
   // add nitro plugin
@@ -106,7 +106,7 @@ export { localeDetector }`
 
   addServerHandler({
     route: `/_i18n/:hash/:locale/messages.json`,
-    handler: ctx.resolver.resolve('./runtime/server/routes/messages')
+    handler: ctx.resolver.resolve('./runtime/server/routes/messages'),
   })
 }
 
@@ -122,7 +122,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
   const i18nDir = resolveI18nDir(i18nLayer, i18nLayerConfig!)
   const localeDetectorPath = await resolvePath(resolve(i18nDir, i18nLayerConfig!.experimental!.localeDetector!), {
     cwd: nuxt.options.rootDir,
-    extensions: EXECUTABLE_EXTENSIONS
+    extensions: EXECUTABLE_EXTENSIONS,
   })
 
   const exists = existsSync(localeDetectorPath)

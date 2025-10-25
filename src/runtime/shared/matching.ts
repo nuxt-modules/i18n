@@ -32,14 +32,14 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
   const parsed = parsePath(path)
   const resolvedMatch = matcher.resolve(
     { path: parsed.pathname || '/' },
-    { path: '/', name: '', matched: [], params: {}, meta: {} }
+    { path: '/', name: '', matched: [], params: {}, meta: {} },
   )
 
   if (resolvedMatch.matched.length > 0) {
     const alternate = getI18nPathToI18nPath(resolvedMatch.matched[0]!.path, locale)
     const match = matcher.resolve(
       { params: resolvedMatch.params },
-      { path: alternate || '/', name: '', matched: [], params: {}, meta: {} }
+      { path: alternate || '/', name: '', matched: [], params: {}, meta: {} },
     )
 
     const isPrefixable = prefixable(locale, defaultLocale)

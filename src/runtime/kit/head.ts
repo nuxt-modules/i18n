@@ -60,12 +60,12 @@ const strictSeo = __I18N_STRICT_SEO__
 export function localeHead(
   options: HeadContext,
   currentLanguage = options.getCurrentLanguage(),
-  currentDirection = options.getCurrentDirection()
+  currentDirection = options.getCurrentDirection(),
 ): I18nHeadMetaInfo {
   const metaObject: I18nHeadMetaInfo = {
     htmlAttrs: {},
     link: [],
-    meta: []
+    meta: [],
   }
 
   // Adding Direction Attribute
@@ -82,7 +82,7 @@ export function localeHead(
     const alternateLinks = getHreflangLinks(options)
     metaObject.link = metaObject.link.concat(
       alternateLinks,
-      getCanonicalLink(options)
+      getCanonicalLink(options),
     )
 
     metaObject.meta = metaObject.meta.concat(
@@ -92,8 +92,8 @@ export function localeHead(
         options,
         strictSeo
           ? alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default') as string[]
-          : options.locales.map(x => x.language || x.code)
-      )
+          : options.locales.map(x => x.language || x.code),
+      ),
     )
   }
 
@@ -136,7 +136,7 @@ function getHreflangLinks(options: HeadContext) {
       links.unshift(
         strictSeo
           ? { rel: 'alternate', href: link.href!, hreflang: 'x-default' }
-          : { [options.key]: 'i18n-xd', rel: 'alternate', href: link.href!, hreflang: 'x-default' }
+          : { [options.key]: 'i18n-xd', rel: 'alternate', href: link.href!, hreflang: 'x-default' },
       )
     }
   }
@@ -148,14 +148,14 @@ function getHreflangLink(
   language: string,
   locale: HeadLocale,
   options: HeadContext,
-  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined
+  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
 ): MetaAttrs | undefined {
   const localePath = options.getLocalizedRoute(locale.code, routeWithoutQuery)
   if (!localePath) return undefined
 
   const href = withQuery(
     hasProtocol(localePath) ? localePath : joinURL(options.baseUrl, localePath),
-    options.strictCanonicals ? getCanonicalQueryParams(options) : {}
+    options.strictCanonicals ? getCanonicalQueryParams(options) : {},
   )
   return strictSeo
     ? { rel: 'alternate', href, hreflang: language }
@@ -164,7 +164,7 @@ function getHreflangLink(
 
 function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()) {
   const currentRoute = options.getLocaleRoute(
-    Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) })
+    Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) }),
   )
 
   if (!currentRoute) return ''
@@ -178,7 +178,7 @@ function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options))
 
 function getCanonicalQueryParams(options: HeadContext, route = options.getCurrentRoute()) {
   const currentRoute = options.getLocaleRoute(
-    Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) })
+    Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) }),
   )
 
   const currentRouteQuery = currentRoute?.query ?? {}
@@ -198,7 +198,7 @@ function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAt
   return [
     strictSeo
       ? { property: 'og:url', content: href }
-      : { [options.key]: 'i18n-og-url', property: 'og:url', content: href }
+      : { [options.key]: 'i18n-og-url', property: 'og:url', content: href },
   ]
 }
 
@@ -207,14 +207,14 @@ function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getC
   return [
     strictSeo
       ? { property: 'og:locale', content: formatOgLanguage(currentLanguage) }
-      : { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) }
+      : { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) },
   ]
 }
 
 function getAlternateOgLocales(
   options: HeadContext,
   languages: string[],
-  currentLanguage = options.getCurrentLanguage()
+  currentLanguage = options.getCurrentLanguage(),
 ): MetaAttrs[] {
   const alternateLocales = languages.filter(locale => locale && locale !== currentLanguage)
 
@@ -222,13 +222,13 @@ function getAlternateOgLocales(
     strictSeo
       ? {
           property: 'og:locale:alternate',
-          content: formatOgLanguage(locale)
+          content: formatOgLanguage(locale),
         }
       : {
           [options.key]: `i18n-og-alt-${locale}`,
           property: 'og:locale:alternate',
-          content: formatOgLanguage(locale)
-        }
+          content: formatOgLanguage(locale),
+        },
   )
 }
 

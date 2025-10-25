@@ -37,7 +37,7 @@ export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
 
       transform: {
         filter: {
-          code: { include: I18N_MACRO_FN_RE }
+          code: { include: I18N_MACRO_FN_RE },
         },
         handler(code) {
           const parsed = parseSFC(code, { sourceMap: false })
@@ -63,10 +63,10 @@ export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
           if (s.hasChanged()) {
             return {
               code: s.toString(),
-              map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+              map: options.sourcemap ? s.generateMap({ hires: true }) : undefined,
             }
           }
-        }
-      }
+        },
+      },
     }
   })

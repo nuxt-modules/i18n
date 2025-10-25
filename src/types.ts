@@ -8,7 +8,7 @@ export type {
   STRATEGY_PREFIX,
   STRATEGY_PREFIX_AND_DEFAULT,
   STRATEGY_PREFIX_EXCEPT_DEFAULT,
-  STRATEGIES
+  STRATEGIES,
 } from './constants'
 
 /**
@@ -220,7 +220,7 @@ export interface LocaleMessageCompilationOptions {
 
 export type NuxtI18nOptions<
   Context = unknown,
-  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[]
+  ConfiguredLocaleType extends string[] | LocaleObject[] = string[] | LocaleObject[],
 > = {
   /**
    * Path to a Vue I18n configuration file, the module will scan for a i18n.config{.js,.mjs,.ts} if left unset.

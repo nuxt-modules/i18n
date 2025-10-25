@@ -78,7 +78,7 @@ function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: L
 export function switchLocalePath(
   ctx: ComposableContext,
   locale: Locale,
-  route: CompatRoute = ctx.router.currentRoute.value
+  route: CompatRoute = ctx.router.currentRoute.value,
 ): string {
   const name = ctx.getRouteBaseName(route)
   // unable to localize nameless path
@@ -98,7 +98,7 @@ export function switchLocalePath(
     query: route.query,
     hash: route.hash,
     path: route.path,
-    meta: route.meta
+    meta: route.meta,
   }
 
   const path = localePath(ctx, routeCopy, locale)

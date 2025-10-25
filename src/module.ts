@@ -26,8 +26,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
       // @ts-ignore property removed in Nuxt 4
-      bridge: false
-    }
+      bridge: false,
+    },
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
@@ -110,7 +110,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
        */
       await setupNitro(ctx, nuxt)
     })
-  }
+  },
 })
 
 // Prevent type errors while configuring locale codes, as generated types will conflict with changes
@@ -124,7 +124,7 @@ export interface ModulePublicRuntimeConfig {
 }
 export interface ModuleHooks {
   'i18n:registerModule': (
-    registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void
+    registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void,
   ) => HookResult
 }
 

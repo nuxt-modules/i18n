@@ -9,7 +9,7 @@ import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, Router, RouteR
  * The returned function can vary based on the strategy and domain configuration.
  */
 export function createLocaleRouteNameGetter(
-  defaultLocale: string
+  defaultLocale: string,
 ): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
   if (!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__) {
@@ -29,7 +29,7 @@ export function createLocaleRouteNameGetter(
  * Factory function which returns a resolver function based on the routing strategy.
  */
 export function createLocalizedRouteByPathResolver(
-  router: Router
+  router: Router,
 ): (route: RouteLocationPathRaw, locale: Locale) => RouteLocationPathRaw | RouteLocationResolvedGeneric {
   if (!__I18N_ROUTING__) {
     return route => route

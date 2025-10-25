@@ -44,7 +44,6 @@ export default createConfigForNuxt({
     regexpPlugin.configs['flat/recommended'],
     {
       rules: {
-        '@stylistic/comma-dangle': ['off'],
         '@typescript-eslint/no-empty-object-type': [
           'error',
           { allowInterfaces: 'always' },

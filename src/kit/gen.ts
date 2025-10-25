@@ -90,7 +90,7 @@ function getLocalizedRoute(
   locale: string,
   localizedPath: string,
   options: LocalizeRouteParams,
-  ctx: RouteContext
+  ctx: RouteContext,
 ) {
   const path = handlePathNesting(localizedPath, options.parentLocalized?.path)
   const localized: LocalizableRoute = { ...route }
@@ -104,7 +104,7 @@ function getLocalizedRoute(
 export function localizeSingleRoute(
   route: LocalizableRoute,
   options: LocalizeRouteParams,
-  ctx: RouteContext
+  ctx: RouteContext,
 ): LocalizableRoute[] {
   // resolve custom route (config/page) options
   const routeOptions = ctx.optionsResolver(route, options.locales)
@@ -149,7 +149,7 @@ export type RouteContext = {
     route: LocalizableRoute,
     parentLocalized: LocalizableRoute,
     locale: string,
-    opts: LocalizeRouteParams
+    opts: LocalizeRouteParams,
   ) => LocalizableRoute[]
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
@@ -207,8 +207,8 @@ export function createRouteContext(opts: {
   ctx.localizers.push({
     enabled: () => true,
     localizer: ({ prefixed, unprefixed, route, usePrefix, ctx, locale, options }) => [
-      getLocalizedRoute(route, locale, usePrefix ? prefixed : unprefixed, options, ctx)
-    ]
+      getLocalizedRoute(route, locale, usePrefix ? prefixed : unprefixed, options, ctx),
+    ],
   })
 
   return ctx

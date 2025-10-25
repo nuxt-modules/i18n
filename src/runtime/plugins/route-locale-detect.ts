@@ -14,8 +14,8 @@ export default defineNuxtPlugin({
     await nuxt.runWithContext(() =>
       loadAndSetLocale(
         nuxt,
-        (ctx.initial && resolvedLocale.value) || detectLocale(nuxt, nuxt.$router.currentRoute.value)
-      )
+        (ctx.initial && resolvedLocale.value) || detectLocale(nuxt, nuxt.$router.currentRoute.value),
+      ),
     )
 
     // no pages or no prefixes - do not register route middleware
@@ -30,7 +30,7 @@ export default defineNuxtPlugin({
 
         return nuxt.runWithContext(() => navigate(nuxt, to, locale))
       }),
-      { global: true }
+      { global: true },
     )
-  }
+  },
 })

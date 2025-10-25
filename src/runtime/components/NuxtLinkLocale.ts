@@ -19,8 +19,8 @@ export default defineComponent<NuxtLinkLocaleProps>({
     locale: {
       type: String as PropType<Locale>,
       default: undefined,
-      required: false
-    }
+      required: false,
+    },
   },
   setup(props, { slots }) {
     const localeRoute = useLocaleRoute()
@@ -71,7 +71,7 @@ export default defineComponent<NuxtLinkLocaleProps>({
      */
     const getNuxtLinkProps = () => {
       const _props = {
-        ...props
+        ...props,
       }
 
       if (!isExternal.value) {
@@ -90,5 +90,5 @@ export default defineComponent<NuxtLinkLocaleProps>({
     }
 
     return () => h(NuxtLink, getNuxtLinkProps(), slots.default)
-  }
+  },
 })

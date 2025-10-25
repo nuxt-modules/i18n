@@ -20,5 +20,5 @@ export default defineNuxtPlugin({
       await nuxt.runWithContext(() => nuxt.$i18n.setLocale(detected))
       ctx.initial = false
     })
-  }
+  },
 })

@@ -19,7 +19,7 @@ const TRANSLATION_FUNCTIONS_MAP: Record<(typeof TRANSLATION_FUNCTIONS)[number], 
   $d: 'd: $d',
   $n: 'n: $n',
   $tm: 'tm: $tm',
-  $te: 'te: $te'
+  $te: 'te: $te',
 }
 
 const QUERY_RE = /\?.*$/
@@ -40,7 +40,7 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
 
       transform: {
         filter: {
-          code: { include: TRANSLATION_FUNCTIONS_RE }
+          code: { include: TRANSLATION_FUNCTIONS_RE },
         },
         handler(code, id) {
           const script = extractScriptSetupContent(code)
@@ -63,10 +63,10 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
 
           return {
             code: s.toString(),
-            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+            map: options.sourcemap ? s.generateMap({ hires: true }) : undefined,
           }
-        }
-      }
+        },
+      },
     }
   })
 
@@ -85,7 +85,7 @@ export function collectMissingI18nFunctions(script: string, id: string) {
       if (!name || !TRANSLATION_FUNCTIONS.includes(name) || scopeTracker.isDeclared(name)) return
 
       missing.add(name)
-    }
+    },
   })
 
   return missing
@@ -99,7 +99,7 @@ function extractScriptSetupContent(sfc: string) {
     return {
       code: match.groups.content.trim(),
       loader: match.groups.attrs && /[tj]sx/.test(match.groups.attrs) ? 'tsx' : 'ts',
-      start: sfc.indexOf(match.groups.content)
+      start: sfc.indexOf(match.groups.content),
     }
   }
 }

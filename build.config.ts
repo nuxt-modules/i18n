@@ -11,6 +11,6 @@ export default defineBuildConfig({
     '@babel/parser',
     'unstorage',
     'unplugin-vue-router',
-    'unplugin-vue-router/options'
-  ]
+    'unplugin-vue-router/options',
+  ],
 })

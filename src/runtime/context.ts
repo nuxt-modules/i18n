@@ -19,7 +19,7 @@ import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObjec
 export const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean, fallbacks: string[] }> | undefined>(
     'i18n:cached-locale-configs',
-    () => undefined
+    () => undefined,
   )
 
 export const useResolvedLocale = () => useState<string>('i18n:resolved-locale', () => '')
@@ -65,7 +65,7 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
     expires: new Date(date.setDate(date.getDate() + 365)),
     sameSite: cookieCrossOrigin ? 'none' : 'lax',
     domain: cookieDomain || undefined,
-    secure: cookieCrossOrigin || cookieSecure
+    secure: cookieCrossOrigin || cookieSecure,
   })
 }
 
@@ -169,7 +169,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       }
     },
-    composableCtx: undefined!
+    composableCtx: undefined!,
   }
   ctx.composableCtx = createComposableContext(ctx, nuxt)
   return ctx

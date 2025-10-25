@@ -13,8 +13,8 @@ const SlpComponent = defineComponent({
   props: {
     locale: {
       type: String as PropType<Locale>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props, { slots, attrs }) {
     const nuxtApp = useNuxtApp()
@@ -31,7 +31,7 @@ const SlpComponent = defineComponent({
     const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)
 
     return () => h(NuxtLink, { ...attrs, 'to': resolved.value, 'data-i18n-disabled': disabled.value }, slots.default)
-  }
+  },
 })
 
 export default defineComponent({
@@ -39,15 +39,15 @@ export default defineComponent({
   props: {
     locale: {
       type: String as PropType<Locale>,
-      required: true
-    }
+      required: true,
+    },
   },
   inheritAttrs: false,
   setup(props, { slots, attrs }) {
     return () => [
       h(Comment, `${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}-[${props.locale}]`),
       h(SlpComponent, { ...attrs, ...props }, slots.default),
-      h(Comment, `/${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}`)
+      h(Comment, `/${__SWITCH_LOCALE_PATH_LINK_IDENTIFIER__}`),
     ]
-  }
+  },
 })

@@ -72,7 +72,7 @@ export default defineNuxtPlugin({
 
         composer.strategy = __I18N_STRATEGY__
         composer.localeProperties = computed(
-          () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value }
+          () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value },
         )
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(nuxt, locale)
@@ -115,13 +115,13 @@ export default defineNuxtPlugin({
           ['getLocaleCookie', () => () => Reflect.apply(c.getLocaleCookie, c, [])],
           ['setLocaleCookie', () => (locale: string) => Reflect.apply(c.setLocaleCookie, c, [locale])],
           ['finalizePendingLocaleChange', () => () => Reflect.apply(c.finalizePendingLocaleChange, c, [])],
-          ['waitForPendingLocaleChange', () => () => Reflect.apply(c.waitForPendingLocaleChange, c, [])]
+          ['waitForPendingLocaleChange', () => () => Reflect.apply(c.waitForPendingLocaleChange, c, [])],
         ]
 
         for (const [key, get] of props) {
           Object.defineProperty(instance, key, { get })
         }
-      }
+      },
     })
 
     nuxt.vueApp.use(i18n)
@@ -145,7 +145,7 @@ export default defineNuxtPlugin({
         _useLocaleHead(nuxt._nuxtI18n.composableCtx, { dir: true, lang: true, seo: true })
       })
     }
-  }
+  },
 })
 
 /**
@@ -160,7 +160,7 @@ function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestE
   i18n.t = (
     key: string,
     listOrNamed?: string | number | unknown[] | Record<string, unknown>,
-    opts?: TranslateOptions<string> | number | string
+    opts?: TranslateOptions<string> | number | string,
   ) => {
     const locale = ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string
     serverI18n?.trackKey(key, locale)

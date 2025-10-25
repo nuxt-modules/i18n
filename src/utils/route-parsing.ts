@@ -14,7 +14,7 @@ enum SegmentParserState {
   dynamic,
   optional,
   catchall,
-  group
+  group,
 }
 
 enum SegmentTokenType {
@@ -22,7 +22,7 @@ enum SegmentTokenType {
   dynamic,
   optional,
   catchall,
-  group
+  group,
 }
 
 interface SegmentToken {
@@ -76,7 +76,7 @@ export function parseSegment(segment: string) {
               : state === SegmentParserState.catchall
                 ? SegmentTokenType.catchall
                 : SegmentTokenType.group,
-      value: buffer
+      value: buffer,
     })
 
     buffer = ''
