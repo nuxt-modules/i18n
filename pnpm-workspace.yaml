@@ -11,4 +11,5 @@ onlyBuiltDependencies:
   - esbuild
   - oxc-resolver
   - sharp
+  - unrs-resolver
   - vue-demi

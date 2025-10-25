@@ -74,9 +74,7 @@
     "test:spec": "vitest run specs"
   },
   "resolutions": {
-    "@nuxtjs/i18n": "workspace:*",
-    "unimport": "5.2.0",
-    "rollup": "4.45.1"
+    "@nuxtjs/i18n": "workspace:*"
   },
   "dependencies": {
     "@intlify/core": "^11.1.11",
@@ -92,7 +90,7 @@
     "devalue": "^5.1.1",
     "h3": "^1.15.4",
     "knitwork": "^1.2.0",
-    "magic-string": "^0.30.19",
+    "magic-string": "^0.30.21",
     "mlly": "^1.7.4",
     "nuxt-define": "^1.0.0",
     "ohash": "^2.0.11",
@@ -103,10 +101,10 @@
     "typescript": "^5.9.2",
     "ufo": "^1.6.1",
     "unplugin": "^2.3.5",
-    "unplugin-vue-router": "^0.15.0",
+    "unplugin-vue-router": "^0.16.0",
     "unstorage": "^1.16.1",
     "vue-i18n": "^11.1.11",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.9.0",
