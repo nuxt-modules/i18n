@@ -7,7 +7,6 @@ import {
   CORE_BASE_PKG,
   UTILS_PKG,
   UTILS_H3_PKG,
-  UFO_PKG,
   NUXT_I18N_MODULE_ID
 } from './constants'
 import { defu } from 'defu'
@@ -25,15 +24,13 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
     [MESSAGE_COMPILER_PKG]: `${MESSAGE_COMPILER_PKG}/dist/message-compiler.mjs`,
     [CORE_BASE_PKG]: `${CORE_BASE_PKG}/dist/core-base.mjs`,
     [CORE_PKG]: `${CORE_PKG}/dist/core.node.mjs`,
-    [UTILS_H3_PKG]: `${UTILS_PKG}/dist/h3.mjs`, // for `@intlify/utils/h3`
-    [UFO_PKG]: UFO_PKG
+    [UTILS_H3_PKG]: `${UTILS_PKG}/dist/h3.mjs` // for `@intlify/utils/h3`
   } as const
 
   const layerI18nDirs = nuxt.options._layers
     .map(l => {
       const i18n = getLayerI18n(l)
-      if (i18n == null) return undefined
-      return relative(nuxt.options.buildDir, resolve(resolveI18nDir(l, i18n), '**/*'))
+      return i18n ? relative(nuxt.options.buildDir, resolve(resolveI18nDir(l, i18n), '**/*')) : undefined
     })
     .filter((x): x is string => !!x)
 
@@ -45,11 +42,9 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
     }
   })
 
-  nuxt.options.vite = defu(nuxt.options.vite, {
-    optimizeDeps: {
-      include: moduleIds
-    }
-  })
+  // Exclude ESM dependencies from optimization
+  // @see https://github.com/nuxt/nuxt/blob/8db24c6a7fbcff7ab74b3ce1a196daece2f8c701/packages/vite/src/shared/client.ts#L9-L20
+  nuxt.options.vite = defu(nuxt.options.vite, { optimizeDeps: { exclude: [UTILS_PKG, ...moduleIds] } })
 
   const moduleDirs = ([] as string[])
     .concat(
