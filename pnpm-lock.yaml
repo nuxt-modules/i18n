@@ -40,9 +40,6 @@ importers:
       '@vue/compiler-sfc':
         specifier: ^3.5.22
         version: 3.5.22
-      cookie-es:
-        specifier: ^2.0.0
-        version: 2.0.0
       defu:
         specifier: ^6.1.4
         version: 6.1.4

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { getRequestURL, getRequestHeader } from 'h3'
+import { getRequestURL, getRequestHeader, getCookie } from 'h3'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
@@ -7,29 +7,23 @@ import { parseAcceptLanguage } from '@intlify/utils'
 import { matchDomainLocale } from './domain'
 import { useRuntimeI18n } from '../shared/utils'
 import type { I18nPublicRuntimeConfig } from '../../types'
-import { parse } from 'cookie-es'
 
 import type { H3Event } from 'h3'
 import type { CompatRoute } from '../types'
-import type { NuxtApp } from '#app'
+import { useCookie, type NuxtApp } from '#app'
 
 // TODO: add unit tests for these detectors
 
-const getCookieLocale = (event: H3Event | undefined, cookieName: string): string | undefined => {
-  const cookieValue = import.meta.client ? document.cookie : getRequestHeader(event!, 'cookie') || ''
-  return parse(cookieValue)[cookieName]
-}
+const getCookieLocale = (event: H3Event | undefined, cookieName: string): string | undefined =>
+  (import.meta.client ? useCookie(cookieName).value : getCookie(event!, cookieName)) || undefined
 
 const getRouteLocale = (event: H3Event | undefined, route: string | CompatRoute): string | undefined =>
   getLocaleFromRoute(route)
 
-const getHeaderLocale = (event: H3Event | undefined) => {
-  return findBrowserLocale(normalizedLocales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
-}
+const getHeaderLocale = (event: H3Event | undefined) =>
+  findBrowserLocale(normalizedLocales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
 
-const getNavigatorLocale = (event: H3Event | undefined) => {
-  return findBrowserLocale(normalizedLocales, navigator.languages)
-}
+const getNavigatorLocale = (event: H3Event | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
 
 const getHostLocale = (
   event: H3Event | undefined,
