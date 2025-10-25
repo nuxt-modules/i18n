@@ -13,7 +13,6 @@ declare module '#app' {
   }
 }
 
-/* eslint-disable no-var */
 declare global {
   var $t: Composer['t']
   var $rt: Composer['rt']
@@ -22,6 +21,5 @@ declare global {
   var $tm: Composer['tm']
   var $te: Composer['te']
 }
-/* eslint-enable no-var */
 
 export {}

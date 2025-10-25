@@ -21,7 +21,8 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 
   try {
     return resolveRoute(ctx, route, locale).fullPath
-  } catch {
+  }
+  catch {
     return ''
   }
 }
@@ -32,7 +33,8 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 export function localeRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
   try {
     return resolveRoute(ctx, route, locale)
-  } catch {
+  }
+  catch {
     return
   }
 }

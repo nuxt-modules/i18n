@@ -1,6 +1,6 @@
 import defu from 'defu'
 import { addServerPlugin } from '@nuxt/kit'
-import { mkdir } from 'fs/promises'
+import { mkdir } from 'node:fs/promises'
 import { dirname } from 'pathe'
 
 import type { Nuxt } from '@nuxt/schema'

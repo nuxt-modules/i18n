@@ -1,5 +1,5 @@
 import { useNuxt } from '@nuxt/kit'
-import { generateLoaderOptions } from './gen'
+import type { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import type { I18nNuxtContext } from './context'
 
@@ -63,18 +63,18 @@ export function generateTemplateNuxtI18nOptions(
   opts: TemplateNuxtI18nOptions,
   nuxt = useNuxt()
 ): string {
-  const codeHMR =
-    nuxt.options.dev &&
-    ctx.options.hmr &&
-    [
-      `if(import.meta.hot) {`,
-      loadConfigsFn,
-      genLocaleLoaderHMR(opts.localeLoaders),
-      genVueI18nConfigHMR(opts.vueI18nConfigs),
-      '}'
-    ].join('\n\n')
+  const codeHMR
+    = nuxt.options.dev
+      && ctx.options.hmr
+      && [
+        `if(import.meta.hot) {`,
+        loadConfigsFn,
+        genLocaleLoaderHMR(opts.localeLoaders),
+        genVueI18nConfigHMR(opts.vueI18nConfigs),
+        '}'
+      ].join('\n\n')
 
-  const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
+  const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
     localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, cache }) => ({ key, load, cache }))
   }

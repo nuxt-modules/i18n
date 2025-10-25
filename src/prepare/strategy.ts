@@ -4,7 +4,7 @@ import type { Nuxt } from '@nuxt/schema'
 export function prepareStrategy({ options, localeCodes }: I18nNuxtContext, nuxt: Nuxt) {
   if (options.strategy === 'prefix' && nuxt.options.nitro.static) {
     const localizedEntryPages = localeCodes.map(x => '/' + x)
-    nuxt.hook('nitro:config', config => {
+    nuxt.hook('nitro:config', (config) => {
       config.prerender ??= {}
 
       // ignore `/` which is added by nitro by default

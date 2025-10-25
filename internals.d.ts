@@ -3,7 +3,7 @@ declare module '#build/i18n-options.mjs' {
 
   export type { LocaleObject }
 
-  type LocaleLoader = { key: string; cache: boolean; load: () => Promise<never> }
+  type LocaleLoader = { key: string, cache: boolean, load: () => Promise<never> }
   export const localeLoaders: Record<string, LocaleLoader[]>
   export const vueI18nConfigs: VueI18nConfig[]
   export const localeCodes: string[]
@@ -13,7 +13,7 @@ declare module '#build/i18n-options.mjs' {
 declare module '#internal/i18n-options.mjs' {
   import type { LocaleObject, VueI18nConfig } from '@nuxtjs/i18n'
 
-  type LocaleLoader = { key: string; cache: boolean; load: () => Promise<never> }
+  type LocaleLoader = { key: string, cache: boolean, load: () => Promise<never> }
   export const localeLoaders: Record<string, LocaleLoader[]>
   export const vueI18nConfigs: VueI18nConfig[]
   export const localeCodes: string[]

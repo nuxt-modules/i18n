@@ -134,7 +134,7 @@ export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfi
   })) as LocaleFile[]
 }
 
-export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string; locales: T }
+export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string, locales: T }
 
 /**
  * Generically merge LocaleObject locales

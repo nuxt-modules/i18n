@@ -11,8 +11,8 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
    */
   if (options.bundle.compositionOnly && options.types === 'legacy') {
     throw new Error(
-      '[nuxt-i18n] `bundle.compositionOnly` option and `types` option are conflicting: ' +
-        `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
+      '[nuxt-i18n] `bundle.compositionOnly` option and `types` option are conflicting: '
+      + `bundle.compositionOnly: ${options.bundle.compositionOnly}, types: ${JSON.stringify(options.types)}`
     )
   }
 
@@ -32,7 +32,7 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
 
   if (nuxt.options.experimental.scanPageMeta === false) {
     logger.warn(
-      "Route localization features (e.g. custom name, prefixed aliases) require Nuxt's `experimental.scanPageMeta` to be enabled.\nThis feature will be enabled in future Nuxt versions (https://github.com/nuxt/nuxt/pull/27134), check out the docs for more details: https://nuxt.com/docs/guide/going-further/experimental-features#scanpagemeta"
+      'Route localization features (e.g. custom name, prefixed aliases) require Nuxt\'s `experimental.scanPageMeta` to be enabled.\nThis feature will be enabled in future Nuxt versions (https://github.com/nuxt/nuxt/pull/27134), check out the docs for more details: https://nuxt.com/docs/guide/going-further/experimental-features#scanpagemeta'
     )
   }
 }

@@ -80,13 +80,11 @@ export function localeHead(
   // Adding SEO Meta
   if (options.seo) {
     const alternateLinks = getHreflangLinks(options)
-    // prettier-ignore
     metaObject.link = metaObject.link.concat(
       alternateLinks,
       getCanonicalLink(options)
     )
 
-    // prettier-ignore
     metaObject.meta = metaObject.meta.concat(
       getOgUrl(options),
       getCurrentOgLocale(options),

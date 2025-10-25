@@ -23,7 +23,7 @@ export default defineNuxtPlugin({
 
     addRouteMiddleware(
       'locale-changing',
-      defineNuxtRouteMiddleware(async to => {
+      defineNuxtRouteMiddleware(async (to) => {
         const locale = await nuxt.runWithContext(() => loadAndSetLocale(nuxt, detectLocale(nuxt, to)))
 
         ctx.initial = false

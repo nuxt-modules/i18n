@@ -17,7 +17,7 @@ import type { ComposableContext } from './utils'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
 export const useLocaleConfigs = () =>
-  useState<Record<string, { cacheable: boolean; fallbacks: string[] }> | undefined>(
+  useState<Record<string, { cacheable: boolean, fallbacks: string[] }> | undefined>(
     'i18n:cached-locale-configs',
     () => undefined
   )
@@ -36,7 +36,7 @@ export interface NuxtI18nContext {
   preloaded: boolean
   /** SSG with dynamic locale resources */
   dynamicResourcesSSG: boolean
-  rootRedirect: { path: string; code: number } | undefined
+  rootRedirect: { path: string, code: number } | undefined
   redirectStatusCode: number
   /** Get default locale */
   getDefaultLocale: () => string
@@ -120,7 +120,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
       if (isRef(i18n.locale)) {
         i18n.locale.value = locale
-      } else {
+      }
+      else {
         i18n.locale = locale
       }
 
@@ -132,7 +133,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       if (!isSupportedLocale(locale)) return
 
       ctx.vueI18n.__pendingLocale = locale
-      ctx.vueI18n.__pendingLocalePromise = new Promise(resolve => {
+      ctx.vueI18n.__pendingLocalePromise = new Promise((resolve) => {
         ctx.vueI18n.__resolvePendingLocalePromise = async () => {
           // TODO: always syncing cookie may be undesirable, consider making this configurable
           ctx.setCookieLocale(locale)
@@ -163,7 +164,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         return ctx.dynamicResourcesSSG || import.meta.dev
           ? await loadMessagesFromClient(locale)
           : await loadMessagesFromServer(locale)
-      } catch (e) {
+      }
+      catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       }
     },

@@ -95,7 +95,7 @@ export function collectMissingI18nFunctions(script: string, id: string) {
 const SFC_SCRIPT_COMPLEX_RE = /<script(?<attrs>[^>]*)>(?<content>[\s\S]*?)<\/script[^>]*>/i
 function extractScriptSetupContent(sfc: string) {
   const match = sfc.match(SFC_SCRIPT_COMPLEX_RE)
-  if (match?.groups?.content && match.groups.attrs && match.groups.attrs.indexOf('setup') !== -1) {
+  if (match?.groups?.content && match.groups.attrs && match.groups.attrs.includes('setup')) {
     return {
       code: match.groups.content.trim(),
       loader: match.groups.attrs && /[tj]sx/.test(match.groups.attrs) ? 'tsx' : 'ts',

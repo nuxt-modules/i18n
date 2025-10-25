@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { isObject } from '@intlify/shared'
 import { useLocaleRoute, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'

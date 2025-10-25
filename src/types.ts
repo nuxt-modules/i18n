@@ -1,7 +1,8 @@
 import type { Locale, I18nOptions } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { RouteMapGeneric, RouteMapI18n } from 'vue-router'
-import { STRATEGIES } from './constants'
+import type { STRATEGIES } from './constants'
+
 export type {
   STRATEGY_NO_PREFIX,
   STRATEGY_PREFIX,

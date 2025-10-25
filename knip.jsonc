@@ -13,6 +13,7 @@
       ],
       "ignoreUnresolved": [
         // virtuals
+        "#app",
         "#nuxt-i18n/*",
         "#internal/i18n*",
         "#internal/nuxt.config.mjs",
@@ -24,15 +25,29 @@
         // auto imports
         "@intlify/utils"
       ],
-      "ignore": ["{specs,test}/{fixtures,mocks}/**"]
+      "ignore": [
+        "{specs,test}/{fixtures,mocks}/**"
+      ]
     },
     "docs": {
-      "entry": ["{components,layouts,pages,plugins,server}/**", "{app,error}.vue", "*.ts"]
+      "entry": [
+        "{components,layouts,pages,plugins,server}/**",
+        "{app,error}.vue",
+        "*.ts"
+      ]
     },
     "playground": {
-      "entry": ["{app,server}/**", "{app,error}.vue", "*.ts"],
-      "ignore": ["i18n/**"],
-      "ignoreDependencies": ["@nuxtjs/i18n"]
+      "entry": [
+        "{app,server}/**",
+        "{app,error}.vue",
+        "*.ts"
+      ],
+      "ignore": [
+        "i18n/**"
+      ],
+      "ignoreDependencies": [
+        "@nuxtjs/i18n"
+      ]
     }
   }
 }

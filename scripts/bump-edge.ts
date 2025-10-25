@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { promises as fsp } from 'node:fs'
 import { execSync } from 'node:child_process'
 import { resolve } from 'pathe'
@@ -14,9 +13,7 @@ async function main() {
   await fsp.writeFile(pkgPath, JSON.stringify(pkg, null, 2) + '\n')
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err)
   process.exit(1)
 })
-
-/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */

@@ -16,15 +16,15 @@ export function matchDomainLocale(locales: LocaleObject[], host: string, pathLoc
 
   return (
     // match by current path locale
-    matches.find(l => l.code === pathLocale)?.code ||
+    matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
-    matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
+    || matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
   )
 }
 
 export function domainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,
-  url: { host: string; protocol: string },
+  url: { host: string, protocol: string },
   locale: string
 ): string | undefined {
   const lang = normalizedLocales.find(x => x.code === locale)

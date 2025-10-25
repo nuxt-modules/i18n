@@ -22,7 +22,7 @@ import { parseSync, type CallExpression, type ExpressionStatement, type ObjectEx
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
-  pages: Map<string, { path: string; name?: string }> = new Map()
+  pages: Map<string, { path: string, name?: string }> = new Map()
   pathToConfig: Record<string, Record<string, string | boolean> | undefined> = {}
   fileToPath: Record<string, string> = {}
 
@@ -71,7 +71,7 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
   nuxt.options.experimental.extraPageMetaExtractionKeys.push('i18n')
   nuxt.hook(
     nuxt.options.experimental.scanPageMeta === 'after-resolve' ? 'pages:resolved' : 'pages:extend',
-    async pages => {
+    async (pages) => {
       const ctx = new NuxtPageAnalyzeContext(options.pages)
 
       // analyze layer pages
@@ -156,7 +156,7 @@ async function setupExperimentalTypedRoutes(userOptions: NuxtI18nOptions, nuxt: 
       dts: dtsFile,
       logs: !!nuxt.options.debug,
       watch: false,
-      // eslint-disable-next-line @typescript-eslint/require-await
+
       async beforeWriteFiles(rootPage) {
         rootPage.children.forEach(child => child.delete())
         function addPage(parent: EditableTreeNode, page: NuxtPage) {
@@ -341,7 +341,8 @@ function getRouteOptions(
   let resolvedOptions
   if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
-  } else {
+  }
+  else {
     resolvedOptions = getRouteFromResource(
       localeCodes,
       mode === 'page' ? getI18nRouteConfig(route.file!) : (route.meta?.i18n as I18nRoute | false | undefined)
@@ -396,13 +397,13 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
     const lang = typeof script.attrs.lang === 'string' && /j|tsx/.test(script.attrs.lang) ? 'tsx' : 'ts'
     let code = script.content
 
-    parseAndWalk(script.content, absolutePath.replace(/\.\w+$/, '.' + lang), node => {
+    parseAndWalk(script.content, absolutePath.replace(/\.\w+$/, '.' + lang), (node) => {
       if (extract != null) return
 
       if (
-        node.type !== 'CallExpression' ||
-        node.callee.type !== 'Identifier' ||
-        node.callee.name !== DEFINE_I18N_ROUTE_FN
+        node.type !== 'CallExpression'
+        || node.callee.type !== 'Identifier'
+        || node.callee.name !== DEFINE_I18N_ROUTE_FN
       )
         return
 
@@ -429,7 +430,8 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
 
       extract = evalAndValidateValue(code.slice(routeArgument.start, routeArgument.end).trim())
     })
-  } catch (e: unknown) {
+  }
+  catch (e: unknown) {
     console.warn(`[nuxt-i18n] Couldn't read component data at ${absolutePath}: (${(e as Error).message})`)
   }
 
@@ -438,9 +440,9 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
 
 function evalValue(value: string) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, @typescript-eslint/no-unsafe-call
     return new Function(`return (${value})`)() as ComputedRouteOptions | false
-  } catch {
+  }
+  catch {
     console.error(`[nuxt-i18n] Cannot evaluate value: ${value}`)
     return
   }

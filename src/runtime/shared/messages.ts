@@ -14,7 +14,7 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
   load: () => Promise<MessageLoaderResult<T>>
 }
 
-const cacheMessages = new Map<string, { ttl: number; value: LocaleMessages<DefineLocaleMessage> }>()
+const cacheMessages = new Map<string, { ttl: number, value: LocaleMessages<DefineLocaleMessage> }>()
 
 const merger = createDefu((obj, key, value) => {
   if (key === 'messages' || key === 'datetimeFormats' || key === 'numberFormats') {
@@ -57,7 +57,8 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
   try {
     const getter = await nuxtApp.runWithContext(loader.load).then(x => (isResolvedModule(x) ? x.default : x))
     return isFunction(getter) ? await nuxtApp.runWithContext(() => getter(locale)) : getter
-  } catch (e: unknown) {
+  }
+  catch (e: unknown) {
     throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message)
   }
 }

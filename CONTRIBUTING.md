@@ -31,7 +31,7 @@ git checkout -b my-new-feature
 ```
 
 - Code, code, code!
-- Run ESLint, Prettier and Vitest
+- Run ESLint and Vitest
 
 ```sh
 pnpm lint # lint and format check

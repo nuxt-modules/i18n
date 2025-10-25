@@ -28,7 +28,7 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
   } as const
 
   const layerI18nDirs = nuxt.options._layers
-    .map(l => {
+    .map((l) => {
       const i18n = getLayerI18n(l)
       return i18n ? relative(nuxt.options.buildDir, resolve(resolveI18nDir(l, i18n), '**/*')) : undefined
     })

@@ -45,7 +45,7 @@ export { localeDetector }`
         export { localeDetector }` // no-op
   })
 
-  nuxt.hook('nitro:config', async nitroConfig => {
+  nuxt.hook('nitro:config', async (nitroConfig) => {
     // inline module runtime in Nitro bundle
     nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime')] })
     nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
@@ -134,7 +134,7 @@ async function resolveLocaleDetectorPath(nuxt: Nuxt) {
 }
 
 function getResourcePathsGrouped(localeInfo: LocaleInfo[]) {
-  const groups: { yaml: string[]; json5: string[] } = { yaml: [], json5: [] }
+  const groups: { yaml: string[], json5: string[] } = { yaml: [], json5: [] }
   for (const locale of localeInfo) {
     groups.yaml = groups.yaml.concat(locale.meta.filter(meta => /\.ya?ml$/.test(meta.path)).map(x => x.path))
     groups.json5 = groups.json5.concat(locale.meta.filter(meta => /\.json5?$/.test(meta.path)).map(x => x.path))

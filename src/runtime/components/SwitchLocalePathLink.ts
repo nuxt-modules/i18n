@@ -30,7 +30,7 @@ const SlpComponent = defineComponent({
 
     const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)
 
-    return () => h(NuxtLink, { ...attrs, to: resolved.value, 'data-i18n-disabled': disabled.value }, slots.default)
+    return () => h(NuxtLink, { ...attrs, 'to': resolved.value, 'data-i18n-disabled': disabled.value }, slots.default)
   }
 })
 

@@ -70,7 +70,7 @@ function createHandleTrailingSlash(ctx: RouteContext): RouteContext['handleTrail
 function createLocalizeAliases(ctx: RouteContext): RouteContext['localizeAliases'] {
   return (route: LocalizableRoute, locale: string, options: LocalizeRouteParams) => {
     const aliases = toArray(route.alias).filter(Boolean) as string[]
-    return aliases.map(x => {
+    return aliases.map((x) => {
       const alias = ctx.handleTrailingSlash(x, !!options.parent)
       const shouldPrefix = options.shouldPrefix(x, locale, options)
       return shouldPrefix ? join('/', locale, alias) : alias
@@ -153,7 +153,7 @@ export type RouteContext = {
   ) => LocalizableRoute[]
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
-  localizers: { enabled: (data: LocalizerData) => boolean; localizer: LocalizerFn }[]
+  localizers: { enabled: (data: LocalizerData) => boolean, localizer: LocalizerFn }[]
 }
 
 type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]
@@ -176,7 +176,6 @@ function createLocalizeRouteName(opts: {
   const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
   return (route, locale, isDefault) => {
     if (route.name == null) return
-    // prettier-ignore
     return !isDefault
       ? route.name + separator + locale
       : route.name + separator + locale + separator + defaultSuffix

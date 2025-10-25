@@ -139,7 +139,7 @@ export interface ModuleRuntimeHooks {
     context: Context
   }) => HookResult
 
-  'i18n:localeSwitched': (params: { oldLocale: Locale; newLocale: Locale }) => HookResult
+  'i18n:localeSwitched': (params: { oldLocale: Locale, newLocale: Locale }) => HookResult
 }
 
 // Used by module for type inference in source code

@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     const switchLocalePath = useSwitchLocalePath(nuxt)
-    nuxt.hook('app:rendered', ctx => {
+    nuxt.hook('app:rendered', (ctx) => {
       if (ctx.renderResult?.html == null) return
 
       ctx.renderResult.html = ctx.renderResult.html.replaceAll(

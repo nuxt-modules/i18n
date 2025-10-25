@@ -130,7 +130,7 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
  */
 export function useRouteBaseName(nuxtApp: NuxtApp = useNuxtApp()): RouteBaseNameFunction {
   const common = useComposableContext(nuxtApp)
-  return route => {
+  return (route) => {
     if (route == null) return
     return common.getRouteBaseName(route) || undefined
   }
@@ -238,10 +238,10 @@ export function useCookieLocale(nuxtApp: NuxtApp = useNuxtApp()): Ref<string> {
 
 const warnRuntimeUsage = (method: string) =>
   console.warn(
-    method +
-      '() is a compiler-hint helper that is only usable inside ' +
-      'the script block of a single file component. Its arguments should be ' +
-      'compiled away and passing it at runtime has no effect.'
+    method
+    + '() is a compiler-hint helper that is only usable inside '
+    + 'the script block of a single file component. Its arguments should be '
+    + 'compiled away and passing it at runtime has no effect.'
   )
 
 /**

@@ -49,9 +49,9 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
 
 function prefixable(currentLocale: string, defaultLocale: string): boolean {
   return (
-    !__DIFFERENT_DOMAINS__ &&
-    __I18N_ROUTING__ &&
+    !__DIFFERENT_DOMAINS__
+    && __I18N_ROUTING__
     // only prefix default locale with strategy prefix
-    (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
+    && (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
   )
 }

@@ -30,7 +30,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const resourcePlugin = ResourcePlugin(pluginOptions, ctx)
 
   addBuildPlugin(resourcePlugin)
-  nuxt.hook('nitro:config', async cfg => {
+  nuxt.hook('nitro:config', async (cfg) => {
     cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
     cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
     cfg.rollupConfig!.plugins.push(HeistPlugin(pluginOptions, ctx).rollup())
@@ -53,7 +53,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions)
   })
   addBuildPlugin(TransformMacroPlugin(pluginOptions))
@@ -100,7 +100,7 @@ export function getDefineConfig(
     __I18N_FULL_STATIC__: String(fullStatic),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),

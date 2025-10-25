@@ -30,8 +30,8 @@ function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
     if (!locale.domain) continue
     if (domains.has(locale.domain)) {
       console.error(
-        `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain` +
-          ` - found multiple entries with ${locale.domain}`
+        `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
+        + ` - found multiple entries with ${locale.domain}`
       )
       return false
     }

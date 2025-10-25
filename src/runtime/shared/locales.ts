@@ -2,7 +2,7 @@ import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n-optio
 import { isArray, isString } from '@intlify/shared'
 import type { FallbackLocale } from 'vue-i18n'
 
-type LocaleConfig = { cacheable: boolean; fallbacks: string[] }
+type LocaleConfig = { cacheable: boolean, fallbacks: string[] }
 export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<string, LocaleConfig> {
   const localeConfigs: Record<string, LocaleConfig> = {}
 

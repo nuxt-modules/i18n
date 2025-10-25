@@ -7,12 +7,11 @@ import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { localeHead, _useLocaleHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
-import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
+import { createLocaleConfigs, getDefaultLocaleForDomain, resolveSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { createNuxtI18nContext, useLocaleConfigs, type NuxtI18nContext } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
-import { resolveSupportedLocale } from '../shared/locales'
 import { setupMultiDomainLocales } from '../routing/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
@@ -28,14 +27,15 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale =
-      getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
+    const _defaultLocale
+      = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
     if (import.meta.server) {
       localeConfigs.value = useRequestEvent()!.context.nuxtI18n?.localeConfigs || {}
-    } else {
+    }
+    else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
     }
@@ -165,7 +165,7 @@ function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestE
     const locale = ((typeof opts === 'object' && opts?.locale) || ctx.getLocale()) as string
     serverI18n?.trackKey(key, locale)
     // @ts-expect-error type mismatch
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
     return originalT(key, listOrNamed as TParams[1], opts)
   }
 
@@ -176,7 +176,7 @@ function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestE
   }
 
   const originalTm = i18n.tm.bind(i18n)
-  i18n.tm = key => {
+  i18n.tm = (key) => {
     serverI18n?.trackKey(key, ctx.getLocale())
     return originalTm(key)
   }

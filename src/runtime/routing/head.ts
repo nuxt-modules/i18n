@@ -42,7 +42,8 @@ function createHeadContext(
     getRouteWithoutQuery: () => {
       try {
         return assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })
-      } catch {
+      }
+      catch {
         return undefined
       }
     }
