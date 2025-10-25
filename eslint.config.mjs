@@ -1,6 +1,5 @@
 // @ts-check
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
-import * as regexpPlugin from 'eslint-plugin-regexp'
 import typegen from 'eslint-typegen'
 import perfectionist from 'eslint-plugin-perfectionist'
 
@@ -41,7 +40,6 @@ export default createConfigForNuxt({
     },
   )
   .append(
-    regexpPlugin.configs['flat/recommended'],
     {
       rules: {
         '@typescript-eslint/no-empty-object-type': [
