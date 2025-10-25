@@ -1,13 +1,13 @@
 import type { NuxtI18nOptions } from '../../src/types'
 import type { NuxtPage } from '@nuxt/schema'
 
-import type { MarkRequired } from 'ts-essentials'
 import type { LocaleObject } from '../../src/types'
 import { isString } from '@intlify/shared'
 
 export const getNormalizedLocales = (locales: string[] | LocaleObject[] = []): LocaleObject[] =>
   locales.map(x => (isString(x) ? { code: x, language: x } : x))
 
+type MarkRequired<Type, Keys extends keyof Type> = Type extends Type ? Omit<Type, Keys> & Required<Pick<Type, Keys>> : never;
 export function getNuxtOptions(
   pages: Required<NuxtI18nOptions>['pages'],
   customRoutes: Required<NuxtI18nOptions>['customRoutes'] = 'config',
