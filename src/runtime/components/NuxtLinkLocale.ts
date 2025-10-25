@@ -42,7 +42,6 @@ export default defineComponent<NuxtLinkLocaleProps>({
       const destination = props.to ?? props.href
       const resolved = destination != null ? localeRoute(destination, props.locale) : destination
       if (resolved && isObject(props.to)) {
-        // @ts-expect-error missing property type
         resolved.state = props.to?.state
       }
 
@@ -75,7 +74,6 @@ export default defineComponent<NuxtLinkLocaleProps>({
       }
 
       if (!isExternal.value) {
-        // @ts-expect-error type needs to expanded to allow route objects/paths as NuxtLinkProps
         _props.to = resolvedPath.value
       }
 
