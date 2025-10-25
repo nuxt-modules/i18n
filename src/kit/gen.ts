@@ -70,7 +70,7 @@ function createHandleTrailingSlash(ctx: RouteContext): RouteContext['handleTrail
 function createLocalizeAliases(ctx: RouteContext): RouteContext['localizeAliases'] {
   return (route: LocalizableRoute, locale: string, options: LocalizeRouteParams) => {
     const aliases = toArray(route.alias).filter(Boolean) as string[]
-    return aliases.map(x => {
+    return aliases.map((x) => {
       const alias = ctx.handleTrailingSlash(x, !!options.parent)
       const shouldPrefix = options.shouldPrefix(x, locale, options)
       return shouldPrefix ? join('/', locale, alias) : alias
@@ -90,7 +90,7 @@ function getLocalizedRoute(
   locale: string,
   localizedPath: string,
   options: LocalizeRouteParams,
-  ctx: RouteContext
+  ctx: RouteContext,
 ) {
   const path = handlePathNesting(localizedPath, options.parentLocalized?.path)
   const localized: LocalizableRoute = { ...route }
@@ -104,7 +104,7 @@ function getLocalizedRoute(
 export function localizeSingleRoute(
   route: LocalizableRoute,
   options: LocalizeRouteParams,
-  ctx: RouteContext
+  ctx: RouteContext,
 ): LocalizableRoute[] {
   // resolve custom route (config/page) options
   const routeOptions = ctx.optionsResolver(route, options.locales)
@@ -149,11 +149,11 @@ export type RouteContext = {
     route: LocalizableRoute,
     parentLocalized: LocalizableRoute,
     locale: string,
-    opts: LocalizeRouteParams
+    opts: LocalizeRouteParams,
   ) => LocalizableRoute[]
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
-  localizers: { enabled: (data: LocalizerData) => boolean; localizer: LocalizerFn }[]
+  localizers: { enabled: (data: LocalizerData) => boolean, localizer: LocalizerFn }[]
 }
 
 type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]
@@ -176,7 +176,6 @@ function createLocalizeRouteName(opts: {
   const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
   return (route, locale, isDefault) => {
     if (route.name == null) return
-    // prettier-ignore
     return !isDefault
       ? route.name + separator + locale
       : route.name + separator + locale + separator + defaultSuffix
@@ -208,8 +207,8 @@ export function createRouteContext(opts: {
   ctx.localizers.push({
     enabled: () => true,
     localizer: ({ prefixed, unprefixed, route, usePrefix, ctx, locale, options }) => [
-      getLocalizedRoute(route, locale, usePrefix ? prefixed : unprefixed, options, ctx)
-    ]
+      getLocalizedRoute(route, locale, usePrefix ? prefixed : unprefixed, options, ctx),
+    ],
   })
 
   return ctx

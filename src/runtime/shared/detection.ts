@@ -28,7 +28,7 @@ const getNavigatorLocale = (event: H3Event | undefined) => findBrowserLocale(nor
 const getHostLocale = (
   event: H3Event | undefined,
   path: string,
-  domainLocales: I18nPublicRuntimeConfig['domainLocales']
+  domainLocales: I18nPublicRuntimeConfig['domainLocales'],
 ) => {
   const host = import.meta.client
     ? new URL(window.location.href).host
@@ -36,7 +36,7 @@ const getHostLocale = (
 
   const locales = normalizedLocales.map(l => ({
     ...l,
-    domain: domainLocales[l.code]?.domain ?? l.domain
+    domain: domainLocales[l.code]?.domain ?? l.domain,
   }))
   return matchDomainLocale(locales, host, getLocaleFromRoutePath(path))
 }
@@ -53,6 +53,6 @@ export const useDetectors = (event: H3Event | undefined, config: { cookieKey: st
     header: () => (import.meta.server ? getHeaderLocale(event) : undefined),
     navigator: () => (import.meta.client ? getNavigatorLocale(event) : undefined),
     host: (path: string) => getHostLocale(event, path, runtimeI18n.domainLocales),
-    route: (path: string | CompatRoute) => getRouteLocale(event, path)
+    route: (path: string | CompatRoute) => getRouteLocale(event, path),
   }
 }

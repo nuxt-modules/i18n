@@ -5,8 +5,7 @@ import { localeCodes, localeLoaders } from '#build/i18n-options.mjs'
 import { getLocaleMessagesMergedCached } from '../shared/messages'
 import { useNuxtI18nContext, type NuxtI18nContext } from '../context'
 
-import type { Composer, VueI18n } from 'vue-i18n'
-import type { LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type { Composer, VueI18n, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:preload',
@@ -24,7 +23,8 @@ export default defineNuxtPlugin({
           for (const locale of Object.keys(messages)) {
             nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])
           }
-        } catch (e) {
+        }
+        catch (e) {
           console.log('Error loading messages', e)
         }
       }
@@ -57,7 +57,7 @@ export default defineNuxtPlugin({
         })
       }
     }
-  }
+  },
 })
 
 /**
@@ -65,7 +65,7 @@ export default defineNuxtPlugin({
  */
 async function mergePayloadMessages(ctx: NuxtI18nContext, i18n: Composer | VueI18n, nuxt = useNuxtApp()) {
   const content = document.querySelector(`[data-nuxt-i18n="${nuxt._id}"]`)?.textContent
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
   const preloadedMessages: LocaleMessages<DefineLocaleMessage> = content && parse(content)
   const preloadedKeys = Object.keys(preloadedMessages || {})
 
@@ -82,11 +82,13 @@ async function mergePayloadMessages(ctx: NuxtI18nContext, i18n: Composer | VueI1
             i18n.mergeLocaleMessage(k, m[k])
           }
         }
-      } catch (e) {
+      }
+      catch (e) {
         console.log('Error loading messages', e)
       }
       ctx.preloaded = true
-    } else {
+    }
+    else {
       for (const locale of preloadedKeys) {
         const messages = preloadedMessages[locale]
         if (messages) {

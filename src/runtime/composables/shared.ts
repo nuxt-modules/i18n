@@ -8,7 +8,7 @@ import type { Locale, LocaleMessages, DefineLocaleMessage, I18nOptions } from 'v
  * @returns Returns the locale messages object that will be resolved with Promise.
  */
 export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale> = (
-  locale: Locales
+  locale: Locales,
 ) => Messages | Promise<Messages>
 
 /**
@@ -19,7 +19,7 @@ export type LocaleLoader<Messages = LocaleMessages<DefineLocaleMessage>, Locales
  * @returns The defined locale
  */
 export function defineI18nLocale<Messages = LocaleMessages<DefineLocaleMessage>, Locales = Locale>(
-  locale: LocaleLoader<Messages, Locales>
+  locale: LocaleLoader<Messages, Locales>,
 ): LocaleLoader<Messages, Locales> {
   return locale
 }

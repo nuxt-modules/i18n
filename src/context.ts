@@ -37,6 +37,6 @@ export function createContext(userOptions: NuxtI18nOptions): I18nNuxtContext {
     normalizedLocales: undefined!,
     vueI18nConfigPaths: undefined!,
     fullStatic: undefined!,
-    deploymentHash: hash(Date.now()).slice(0, 8)
+    deploymentHash: hash(Date.now()).slice(0, 8),
   }
 }

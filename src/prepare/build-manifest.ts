@@ -3,7 +3,7 @@ import type { Nuxt } from '@nuxt/schema'
 import { relative } from 'pathe'
 
 export function prepareBuildManifest({ localeInfo }: I18nNuxtContext, nuxt: Nuxt) {
-  nuxt.hook('build:manifest', manifest => {
+  nuxt.hook('build:manifest', (manifest) => {
     const langFiles = localeInfo
       .flatMap(locale => locale.meta.map(m => m.path))
       .map(x => relative(nuxt.options.srcDir, x))

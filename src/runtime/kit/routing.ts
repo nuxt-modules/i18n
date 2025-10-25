@@ -22,7 +22,6 @@ export function getRouteBaseName(route: RouteName | RouteObject) {
 }
 
 export function getLocalizedRouteName(routeName: string, locale: string, isDefault: boolean) {
-  // prettier-ignore
   return !isDefault
     ? routeName + separator + locale
     : routeName + separator + locale + defaultRouteNameSuffix
@@ -33,7 +32,6 @@ export const getLocaleFromRoutePath = (path: string) => pathLanguageParser(path)
 export const getLocaleFromRouteName = (name: string) => name.split(separator).at(1) ?? ''
 
 function normalizeInput(input: RouteName | RouteObject) {
-  // prettier-ignore
   return typeof input !== 'object'
     ? String(input)
     : String(input?.name || input?.path || '')
@@ -44,8 +42,7 @@ function normalizeInput(input: RouteName | RouteObject) {
  */
 export function getLocaleFromRoute(route: RouteName | RouteObject) {
   const input = normalizeInput(route)
-  // prettier-ignore
   return input[0] === '/'
-      ? getLocaleFromRoutePath(input)
-      : getLocaleFromRouteName(input)
+    ? getLocaleFromRoutePath(input)
+    : getLocaleFromRouteName(input)
 }

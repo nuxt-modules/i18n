@@ -38,7 +38,7 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleI
         type,
         path,
         hash: getHash(path),
-        cache: f.cache ?? type !== 'dynamic'
+        cache: f.cache ?? type !== 'dynamic',
       })
     }
 
@@ -117,7 +117,7 @@ export async function resolveVueI18nConfigInfo(rootDir: string, configPath: stri
   return {
     path: absolutePath, // absolute
     hash: getHash(absolutePath),
-    type: getLocaleType(absolutePath)
+    type: getLocaleType(absolutePath),
   }
 }
 
@@ -130,11 +130,11 @@ export const getLocaleFiles = (locale: LocaleObject): LocaleFile[] => {
 export function resolveRelativeLocales(locale: LocaleObject, config: LocaleConfig) {
   return getLocaleFiles(locale).map(file => ({
     path: resolve(config.langDir, file.path),
-    cache: file.cache
+    cache: file.cache,
   })) as LocaleFile[]
 }
 
-export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string; locales: T }
+export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string, locales: T }
 
 /**
  * Generically merge LocaleObject locales
@@ -155,7 +155,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[]) => {
       const existing = merged.get(current.code) ?? {
         code: current.code,
         language: current.language,
-        files: [] as LocaleFile[]
+        files: [] as LocaleFile[],
       }
 
       existing.files = [...files, ...(existing.files as LocaleFile[])]
@@ -174,7 +174,7 @@ function getHash(text: BinaryLike): string {
 export function getLayerI18n(configLayer: NuxtConfigLayer) {
   const layerInlineOptions = (configLayer.config.modules || []).find(
     (mod): mod is [string, NuxtI18nOptions] | undefined =>
-      isArray(mod) && isString(mod[0]) && [NUXT_I18N_MODULE_ID, `${NUXT_I18N_MODULE_ID}-edge`].includes(mod[0])
+      isArray(mod) && isString(mod[0]) && [NUXT_I18N_MODULE_ID, `${NUXT_I18N_MODULE_ID}-edge`].includes(mod[0]),
   )?.[1]
 
   if (configLayer.config.i18n) {

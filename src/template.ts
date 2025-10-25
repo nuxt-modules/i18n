@@ -1,5 +1,5 @@
 import { useNuxt } from '@nuxt/kit'
-import { generateLoaderOptions } from './gen'
+import type { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import type { I18nNuxtContext } from './context'
 
@@ -24,8 +24,8 @@ function genLocaleLoaderHMR(localeLoaders: TemplateNuxtI18nOptions['localeLoader
           `    localeLoaders["${locale}"][${i}].load = () => Promise.resolve(mod.default)`,
           //   trigger locale messages reload for locale
           `    await useNuxtApp()._nuxtI18n.dev.resetI18nProperties("${locale}")`,
-          `  })`
-        ].join('\n')
+          `  })`,
+        ].join('\n'),
       )
     }
   }
@@ -50,8 +50,8 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
         `    }`,
         //   communicate to vite plugin to trigger a page load
         `    import.meta.hot.send('i18n:options-complex-invalidation', {})`,
-        `  })`
-      ].join('\n')
+        `  })`,
+      ].join('\n'),
     )
   }
 
@@ -61,20 +61,20 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
 export function generateTemplateNuxtI18nOptions(
   ctx: I18nNuxtContext,
   opts: TemplateNuxtI18nOptions,
-  nuxt = useNuxt()
+  nuxt = useNuxt(),
 ): string {
-  const codeHMR =
-    nuxt.options.dev &&
-    ctx.options.hmr &&
-    [
-      `if(import.meta.hot) {`,
-      loadConfigsFn,
-      genLocaleLoaderHMR(opts.localeLoaders),
-      genVueI18nConfigHMR(opts.vueI18nConfigs),
-      '}'
-    ].join('\n\n')
+  const codeHMR
+    = nuxt.options.dev
+      && ctx.options.hmr
+      && [
+        `if(import.meta.hot) {`,
+        loadConfigsFn,
+        genLocaleLoaderHMR(opts.localeLoaders),
+        genVueI18nConfigHMR(opts.vueI18nConfigs),
+        '}',
+      ].join('\n\n')
 
-  const localeLoaderEntries: Record<string, { key: string; load: string; cache: boolean }[]> = {}
+  const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
     localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, cache }) => ({ key, load, cache }))
   }

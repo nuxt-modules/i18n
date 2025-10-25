@@ -24,8 +24,8 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
       if (!layerI18n.langDir) continue
       if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
         logger.warn(
-          `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). ` +
-            `Absolute paths will not work in production, see https://i18n.nuxtjs.org/docs/api/options#langdir for more details.`
+          `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). `
+          + `Absolute paths will not work in production, see https://i18n.nuxtjs.org/docs/api/options#langdir for more details.`,
         )
       }
 
@@ -35,11 +35,12 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
         }
         if (locale.file || locale.files) continue
         throw new Error(
-          'All locales must have the `file` or `files` property set when using `langDir`.\n' +
-            `Found none in:\n${JSON.stringify(locale, null, 2)}.`
+          'All locales must have the `file` or `files` property set when using `langDir`.\n'
+          + `Found none in:\n${JSON.stringify(locale, null, 2)}.`,
         )
       }
-    } catch (err) {
+    }
+    catch (err) {
       if (!(err instanceof Error)) throw err
       throw new Error(`[nuxt-i18n] ${layerHint} ${err.message}`)
     }
@@ -78,14 +79,14 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   // collect hook configs
   await nuxt.callHook(
     'i18n:registerModule',
-    ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales })
+    ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales }),
   )
 
   return mergeConfigLocales(configs)
 }
 
 export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt = useNuxt()) {
-  const resolvers: Promise<{ path: string; hash: string; type: LocaleType } | undefined>[] = []
+  const resolvers: Promise<{ path: string, hash: string, type: LocaleType } | undefined>[] = []
 
   // collect `installModule` config
   if (options.vueI18n && isAbsolute(options.vueI18n)) {

@@ -4,7 +4,7 @@ import {
   type LocalizableRoute,
   type LocalizeRouteParams,
   type RouteContext,
-  type RouteOptionsResolver
+  type RouteOptionsResolver,
 } from './kit/gen'
 import type { LocaleObject, Strategies } from './types'
 
@@ -30,8 +30,8 @@ function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
     if (!locale.domain) continue
     if (domains.has(locale.domain)) {
       console.error(
-        `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain` +
-          ` - found multiple entries with ${locale.domain}`
+        `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
+        + ` - found multiple entries with ${locale.domain}`,
       )
       return false
     }
@@ -75,7 +75,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     trailingSlash: config.trailingSlash ?? false,
     defaultLocales: resolveDefaultLocales(config),
     routesNameSeparator: config.routesNameSeparator,
-    defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix
+    defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
   })
 
   /**
@@ -87,7 +87,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     ctx.localizers.unshift({
       enabled: ({ options, locale }) => ctx.isDefaultLocale(locale) && !options.defaultTree && options.parent == null,
       localizer: ({ route, ctx, locale, options }) =>
-        localizeSingleRoute(route, { ...options, locales: [locale], defaultTree: true }, ctx)
+        localizeSingleRoute(route, { ...options, locales: [locale], defaultTree: true }, ctx),
     })
   }
 
@@ -100,8 +100,8 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     ctx.localizers.unshift({
       enabled: ({ usePrefix }) => usePrefix,
       localizer: ({ unprefixed, route, ctx, locale }) => [
-        { ...route, name: ctx.localizeRouteName(route, locale, true), path: unprefixed }
-      ]
+        { ...route, name: ctx.localizeRouteName(route, locale, true), path: unprefixed },
+      ],
     })
   }
 
@@ -113,7 +113,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     // unshift to preserve test snapshots
     ctx.localizers.unshift({
       enabled: ({ usePrefix, locale }) => usePrefix && ctx.isDefaultLocale(locale),
-      localizer: ({ route }) => [route]
+      localizer: ({ route }) => [route],
     })
   }
 

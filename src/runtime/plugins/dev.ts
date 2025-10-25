@@ -58,9 +58,9 @@ export default defineNuxtPlugin({
 
     nuxt._nuxtI18n.dev = {
       resetI18nProperties,
-      deepEqual
+      deepEqual,
     }
-  }
+  },
 })
 
 // collect unique keys of passed objects

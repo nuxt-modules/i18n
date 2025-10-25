@@ -15,7 +15,7 @@ export const STRATEGIES = {
   PREFIX: STRATEGY_PREFIX,
   PREFIX_EXCEPT_DEFAULT: STRATEGY_PREFIX_EXCEPT_DEFAULT,
   PREFIX_AND_DEFAULT: STRATEGY_PREFIX_AND_DEFAULT,
-  NO_PREFIX: STRATEGY_NO_PREFIX
+  NO_PREFIX: STRATEGY_NO_PREFIX,
 } as const
 
 export const DYNAMIC_PARAMS_KEY = 'nuxtI18nInternal'
@@ -35,21 +35,21 @@ export const DEFAULT_OPTIONS = {
     stripMessagesPayload: false,
     preload: false,
     strictSeo: false,
-    nitroContextDetection: true
+    nitroContextDetection: true,
   },
   bundle: {
     compositionOnly: true,
     runtimeOnly: false,
     fullInstall: true,
-    dropMessageCompiler: false
+    dropMessageCompiler: false,
   },
   compilation: {
     strictMessage: true,
-    escapeHtml: false
+    escapeHtml: false,
   },
   customBlocks: {
     defaultSFCLang: 'json',
-    globalSFCScope: false
+    globalSFCScope: false,
   },
   vueI18n: '',
   locales: [] as string[],
@@ -70,7 +70,7 @@ export const DEFAULT_OPTIONS = {
     cookieSecure: false,
     fallbackLocale: '',
     redirectOn: 'root',
-    useCookie: true
+    useCookie: true,
   },
   differentDomains: false,
   baseUrl: '',
@@ -82,7 +82,7 @@ export const DEFAULT_OPTIONS = {
   parallelPlugin: false,
   multiDomainLocales: false,
   hmr: true,
-  autoDeclare: true
+  autoDeclare: true,
 } as const
 
 export const DEFINE_I18N_ROUTE_FN = 'defineI18nRoute'

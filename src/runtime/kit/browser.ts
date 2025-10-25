@@ -54,7 +54,7 @@ function compareBrowserLocale(a: BrowserLocale, b: BrowserLocale): number {
 export function findBrowserLocale(locales: Locale[], browserLocales: readonly string[]): string {
   const matchedLocales = matchBrowserLocale(
     locales.map(l => ({ code: l.code, language: l.language || l.code })),
-    browserLocales
+    browserLocales,
   )
 
   return matchedLocales.sort(compareBrowserLocale).at(0)?.code ?? ''

@@ -24,7 +24,7 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
     enforce: 'pre',
     transform: {
       filter: {
-        id: [shared, relative(nuxt.options.rootDir, shared)]
+        id: [shared, relative(nuxt.options.rootDir, shared)],
       },
       handler(code) {
         const s = new MagicString(code)
@@ -46,9 +46,9 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext,
 
         return {
           code: s.toString(),
-          map: options.sourcemap ? s.generateMap({ hires: true }) : undefined
+          map: options.sourcemap ? s.generateMap({ hires: true }) : undefined,
         }
-      }
-    }
+      },
+    },
   }))
 }

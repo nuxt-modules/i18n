@@ -1,6 +1,6 @@
 import defu from 'defu'
 import { addServerPlugin } from '@nuxt/kit'
-import { mkdir } from 'fs/promises'
+import { mkdir } from 'node:fs/promises'
 import { dirname } from 'pathe'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -17,11 +17,11 @@ export async function prepareTypeGeneration({ resolver, options }: I18nNuxtConte
   // provide file build path to runtime plugin through virtual file
   nuxt.options.nitro = defu(nuxt.options.nitro, {
     externals: {
-      inline: [/#internal\/i18n-type-generation-options/]
+      inline: [/#internal\/i18n-type-generation-options/],
     },
     virtual: {
-      '#internal/i18n-type-generation-options': () => `export const dtsFile = ${JSON.stringify(dtsFile)}`
-    }
+      '#internal/i18n-type-generation-options': () => `export const dtsFile = ${JSON.stringify(dtsFile)}`,
+    },
   })
 
   await mkdir(dirname(dtsFile), { recursive: true })

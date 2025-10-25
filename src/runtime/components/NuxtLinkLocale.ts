@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { isObject } from '@intlify/shared'
 import { useLocaleRoute, type Locale } from '#i18n'
 import { defineComponent, computed, h } from 'vue'
@@ -20,8 +19,8 @@ export default defineComponent<NuxtLinkLocaleProps>({
     locale: {
       type: String as PropType<Locale>,
       default: undefined,
-      required: false
-    }
+      required: false,
+    },
   },
   setup(props, { slots }) {
     const localeRoute = useLocaleRoute()
@@ -43,7 +42,6 @@ export default defineComponent<NuxtLinkLocaleProps>({
       const destination = props.to ?? props.href
       const resolved = destination != null ? localeRoute(destination, props.locale) : destination
       if (resolved && isObject(props.to)) {
-        // @ts-expect-error missing property type
         resolved.state = props.to?.state
       }
 
@@ -72,11 +70,10 @@ export default defineComponent<NuxtLinkLocaleProps>({
      */
     const getNuxtLinkProps = () => {
       const _props = {
-        ...props
+        ...props,
       }
 
       if (!isExternal.value) {
-        // @ts-expect-error type needs to expanded to allow route objects/paths as NuxtLinkProps
         _props.to = resolvedPath.value
       }
 
@@ -91,5 +88,5 @@ export default defineComponent<NuxtLinkLocaleProps>({
     }
 
     return () => h(NuxtLink, getNuxtLinkProps(), slots.default)
-  }
+  },
 })

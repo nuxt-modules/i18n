@@ -10,14 +10,14 @@ export function useRuntimeI18n(nuxtApp?: NuxtApp) {
 }
 
 export function useI18nDetection(
-  nuxtApp: NuxtApp | undefined
-): DetectBrowserLanguageOptions & { enabled: boolean; cookieKey: string } {
+  nuxtApp: NuxtApp | undefined,
+): DetectBrowserLanguageOptions & { enabled: boolean, cookieKey: string } {
   const detectBrowserLanguage = useRuntimeI18n(nuxtApp).detectBrowserLanguage
   const detect = detectBrowserLanguage || {}
   return {
     ...detect,
     enabled: !!detectBrowserLanguage,
-    cookieKey: detect.cookieKey || __DEFAULT_COOKIE_KEY__
+    cookieKey: detect.cookieKey || __DEFAULT_COOKIE_KEY__,
   }
 }
 
@@ -25,7 +25,7 @@ export function resolveRootRedirect(config: string | RootRedirectOptions | undef
   if (!config) return undefined
   return {
     path: '/' + (isString(config) ? config : config.path).replace(/^\//, ''),
-    code: (!isString(config) && config.statusCode) || 302
+    code: (!isString(config) && config.statusCode) || 302,
   }
 }
 

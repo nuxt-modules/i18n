@@ -7,7 +7,7 @@ import type { LocaleObject } from '#internal-i18n-types'
 export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
   const normalizeDomain = (domain: string = '') => domain.replace(/https?:\/\//, '')
   const matches = locales.filter(
-    locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host)
+    locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host),
   )
 
   if (matches.length <= 1) {
@@ -16,16 +16,16 @@ export function matchDomainLocale(locales: LocaleObject[], host: string, pathLoc
 
   return (
     // match by current path locale
-    matches.find(l => l.code === pathLocale)?.code ||
+    matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
-    matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
+    || matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
   )
 }
 
 export function domainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,
-  url: { host: string; protocol: string },
-  locale: string
+  url: { host: string, protocol: string },
+  locale: string,
 ): string | undefined {
   const lang = normalizedLocales.find(x => x.code === locale)
   // lookup the `differentDomain` origin associated with given locale.

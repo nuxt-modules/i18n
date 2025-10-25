@@ -7,7 +7,7 @@ import {
   CORE_BASE_PKG,
   UTILS_PKG,
   UTILS_H3_PKG,
-  NUXT_I18N_MODULE_ID
+  NUXT_I18N_MODULE_ID,
 } from './constants'
 import { defu } from 'defu'
 import { resolveI18nDir } from './layers'
@@ -24,11 +24,11 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
     [MESSAGE_COMPILER_PKG]: `${MESSAGE_COMPILER_PKG}/dist/message-compiler.mjs`,
     [CORE_BASE_PKG]: `${CORE_BASE_PKG}/dist/core-base.mjs`,
     [CORE_PKG]: `${CORE_PKG}/dist/core.node.mjs`,
-    [UTILS_H3_PKG]: `${UTILS_PKG}/dist/h3.mjs` // for `@intlify/utils/h3`
+    [UTILS_H3_PKG]: `${UTILS_PKG}/dist/h3.mjs`, // for `@intlify/utils/h3`
   } as const
 
   const layerI18nDirs = nuxt.options._layers
-    .map(l => {
+    .map((l) => {
       const i18n = getLayerI18n(l)
       return i18n ? relative(nuxt.options.buildDir, resolve(resolveI18nDir(l, i18n), '**/*')) : undefined
     })
@@ -38,8 +38,8 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
   nuxt.options.typescript = defu(nuxt.options.typescript, {
     hoist: moduleIds,
     tsConfig: {
-      include: layerI18nDirs
-    }
+      include: layerI18nDirs,
+    },
   })
 
   // Exclude ESM dependencies from optimization
@@ -49,7 +49,7 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
   const moduleDirs = ([] as string[])
     .concat(
       nuxt.options.modulesDir,
-      nuxt.options.modulesDir.map(dir => `${dir}/${NUXT_I18N_MODULE_ID}/node_modules`)
+      nuxt.options.modulesDir.map(dir => `${dir}/${NUXT_I18N_MODULE_ID}/node_modules`),
     )
     .map(x => directoryToURL(x))
 

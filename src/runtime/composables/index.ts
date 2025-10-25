@@ -79,11 +79,11 @@ export type LocaleHeadFunction = (options: I18nHeadOptions) => I18nHeadMetaInfo
  */
 export function useLocaleHead(
   { dir = true, lang = true, seo = true }: I18nHeadOptions = {},
-  nuxtApp: NuxtApp = useNuxtApp()
+  nuxtApp: NuxtApp = useNuxtApp(),
 ): Ref<I18nHeadMetaInfo> {
   if (__I18N_STRICT_SEO__) {
     throw new Error(
-      'Strict SEO mode is enabled, `useLocaleHead` should not be used as localized head tags are handled internally by `@nuxtjs/i18n`'
+      'Strict SEO mode is enabled, `useLocaleHead` should not be used as localized head tags are handled internally by `@nuxtjs/i18n`',
     )
   }
   const common = useComposableContext(nuxtApp)
@@ -116,7 +116,7 @@ type RouteLocationI18nGenericPath = Omit<RouteLocationAsRelativeI18n, 'path'> & 
  * @returns Route base name without localization suffix or `undefined` if no name was found.
  */
 export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMap>(
-  route: Name | RouteLocationGenericPath
+  route: Name | RouteLocationGenericPath,
 ) => keyof RouteMapI18n | undefined
 
 /**
@@ -130,7 +130,7 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
  */
 export function useRouteBaseName(nuxtApp: NuxtApp = useNuxtApp()): RouteBaseNameFunction {
   const common = useComposableContext(nuxtApp)
-  return route => {
+  return (route) => {
     if (route == null) return
     return common.getRouteBaseName(route) || undefined
   }
@@ -146,7 +146,7 @@ export function useRouteBaseName(nuxtApp: NuxtApp = useNuxtApp()): RouteBaseName
  */
 export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
   route: Name | RouteLocationI18nGenericPath,
-  locale?: Locale
+  locale?: Locale,
 ) => string
 
 /**
@@ -173,7 +173,7 @@ export function useLocalePath(nuxtApp: NuxtApp = useNuxtApp()): LocalePathFuncti
  */
 export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
   route: Name | RouteLocationI18nGenericPath,
-  locale?: Locale
+  locale?: Locale,
 ) => RouteLocationResolvedI18n<Name> | undefined
 
 /**
@@ -238,10 +238,10 @@ export function useCookieLocale(nuxtApp: NuxtApp = useNuxtApp()): Ref<string> {
 
 const warnRuntimeUsage = (method: string) =>
   console.warn(
-    method +
-      '() is a compiler-hint helper that is only usable inside ' +
-      'the script block of a single file component. Its arguments should be ' +
-      'compiled away and passing it at runtime has no effect.'
+    method
+    + '() is a compiler-hint helper that is only usable inside '
+    + 'the script block of a single file component. Its arguments should be '
+    + 'compiled away and passing it at runtime has no effect.',
   )
 
 /**
