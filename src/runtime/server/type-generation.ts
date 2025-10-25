@@ -4,7 +4,7 @@ import { dtsFile } from '#internal/i18n-type-generation-options'
 import { loadVueI18nOptions } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 import { useRuntimeI18n } from '../shared/utils'
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
 
 import type { I18nOptions } from 'vue-i18n'
 
@@ -14,14 +14,15 @@ export default async () => {
   const targetLocales: string[] = []
   if (experimental.typedOptionsAndMessages === 'default' && defaultLocale != null) {
     targetLocales.push(defaultLocale)
-  } else if (experimental.typedOptionsAndMessages === 'all') {
+  }
+  else if (experimental.typedOptionsAndMessages === 'all') {
     targetLocales.push(...normalizedLocales.map(x => x.code))
   }
 
   const merged = {
     messages: {},
     datetimeFormats: {},
-    numberFormats: {}
+    numberFormats: {},
   }
 
   const vueI18nConfig: I18nOptions = await loadVueI18nOptions(vueI18nConfigs)
@@ -56,7 +57,8 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
       str += `${indent}"${key}": {\n`
       str += generateInterface(obj[key] as Record<string, unknown>, indentLevel + 1)
       str += `${indent}};\n`
-    } else {
+    }
+    else {
       let propertyType = isArray(obj[key]) ? 'unknown[]' : typeof obj[key]
       if (isFunction(propertyType)) {
         propertyType = '() => string'

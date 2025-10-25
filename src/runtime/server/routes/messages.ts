@@ -35,7 +35,7 @@ const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
     const locale = getRouterParam(event, 'locale')
     if (locale == null) return false
     return !useI18nContext(event).localeConfigs?.[locale]?.cacheable
-  }
+  },
 })
 
 /**
@@ -45,7 +45,7 @@ const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : 10,
   swr: false,
-  getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
+  getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-'),
 })
 
 /**

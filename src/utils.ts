@@ -140,7 +140,6 @@ export type LocaleConfig<T = string[] | LocaleObject[]> = { langDir: string, loc
  * Generically merge LocaleObject locales
  *
  * @param configs prepared configs to resolve locales relative to project
- * @param baseLocales optional array of locale objects to merge configs into
  */
 export const mergeConfigLocales = (configs: LocaleConfig[]) => {
   const merged: Map<string, LocaleObject> = new Map()

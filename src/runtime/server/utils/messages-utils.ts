@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Utility type to pick properties from an object based on a list of keys,
  */
@@ -40,7 +41,8 @@ export function getNestedValue<T extends object, K extends string>(obj: T, key: 
   for (const part of parts) {
     if (current && typeof current === 'object' && part in current) {
       current = current[part as keyof typeof current]
-    } else {
+    }
+    else {
       return undefined // Key not found
     }
   }

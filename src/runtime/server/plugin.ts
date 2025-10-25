@@ -24,7 +24,7 @@ const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true 
 function* detect(
   detectors: ReturnType<typeof useDetectors>,
   detection: ReturnType<typeof useI18nDetection>,
-  path: string
+  path: string,
 ) {
   if (detection.enabled) {
     yield { locale: detectors.cookie(), source: 'cookie' }
@@ -42,7 +42,7 @@ function* detect(
   yield { locale: detection.fallbackLocale, source: 'fallback' }
 }
 
-export default defineNitroPlugin(async nitro => {
+export default defineNitroPlugin(async (nitro) => {
   const runtimeI18n = useRuntimeI18n()
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
   const _defaultLocale: string = runtimeI18n.defaultLocale || ''
@@ -52,7 +52,10 @@ export default defineNitroPlugin(async nitro => {
     const cacheStorage = useStorage('cache')
     const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
     await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
-  } catch {}
+  }
+  catch {
+    // no-op
+  }
 
   const detection = useI18nDetection(undefined)
   const cookieOptions = {
@@ -60,7 +63,7 @@ export default defineNitroPlugin(async nitro => {
     domain: detection.cookieDomain || undefined,
     maxAge: 60 * 60 * 24 * 365,
     sameSite: 'lax' as const,
-    secure: detection.cookieSecure
+    secure: detection.cookieSecure,
   }
 
   const getDomainFromLocale = (event: H3Event, locale: string) => {
@@ -69,10 +72,10 @@ export default defineNitroPlugin(async nitro => {
   }
 
   const createBaseUrlGetter = () => {
-    let baseUrl: string = isFunction(runtimeI18n.baseUrl) ? '' : runtimeI18n.baseUrl || ''
+    const baseUrl: string = isFunction(runtimeI18n.baseUrl) ? '' : runtimeI18n.baseUrl || ''
     if (isFunction(runtimeI18n.baseUrl)) {
-      import.meta.dev &&
-        console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
+      import.meta.dev
+        && console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
       return (): string => ''
     }
 
@@ -91,7 +94,7 @@ export default defineNitroPlugin(async nitro => {
     path: string | undefined,
     pathLocale: string | undefined,
     defaultLocale: string,
-    detector: ReturnType<typeof useDetectors>
+    detector: ReturnType<typeof useDetectors>,
   ) {
     let locale = ''
     for (const detected of detect(detector, detection, event.path)) {
@@ -115,11 +118,12 @@ export default defineNitroPlugin(async nitro => {
     const requestURL = getRequestURL(event)
     if (rootRedirect && requestURL.pathname === '/') {
       locale = (detection.enabled && locale) || defaultLocale
-      resolvedPath =
-        (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path) ||
-        matchLocalized(rootRedirect.path, locale, defaultLocale)
+      resolvedPath
+        = (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path)
+          || matchLocalized(rootRedirect.path, locale, defaultLocale)
       redirectCode = rootRedirect.code
-    } else if (runtimeI18n.redirectStatusCode) {
+    }
+    else if (runtimeI18n.redirectStatusCode) {
       redirectCode = runtimeI18n.redirectStatusCode
     }
 
@@ -208,9 +212,10 @@ export default defineNitroPlugin(async nitro => {
 
       try {
         htmlContext.bodyAppend.unshift(
-          `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`
+          `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`,
         )
-      } catch (_) {
+      }
+      catch (_) {
         console.log(_)
       }
     }
@@ -230,7 +235,7 @@ export default defineNitroPlugin(async nitro => {
     const options = await setupVueI18nOptions(_defaultLocale)
     const i18nMiddleware = defineI18nMiddleware({
       ...(options as CoreOptions),
-      locale: createUserLocaleDetector(options.locale, options.fallbackLocale)
+      locale: createUserLocaleDetector(options.locale, options.fallbackLocale),
     })
 
     nitro.hooks.hook('request', i18nMiddleware.onRequest)

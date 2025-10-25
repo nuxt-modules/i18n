@@ -57,7 +57,7 @@ export type SetI18nParamsFunction = (params: I18nRouteMeta) => void
 /**
  * Returns a {@link SetI18nParamsFunction} used to set i18n params for the current route.
  *
- * @param options - An {@link SeoAttributesOptions} object.
+ * @param seo - An {@link SeoAttributesOptions} object.
  */
 export function useSetI18nParams(seo?: SeoAttributesOptions, nuxtApp: NuxtApp = useNuxtApp()): SetI18nParamsFunction {
   const common = useComposableContext(nuxtApp)
