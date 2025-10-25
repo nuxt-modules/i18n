@@ -12,14 +12,32 @@ const title = computed(() => `Page - ${t(route.meta?.title ?? '')}`)
 </script>
 
 <template>
-  <Html :lang="(!strictSeo && head.htmlAttrs.lang) || undefined" :dir="(!strictSeo && head.htmlAttrs.dir) || undefined">
+  <Html
+    :lang="(!strictSeo && head.htmlAttrs.lang) || undefined"
+    :dir="(!strictSeo && head.htmlAttrs.dir) || undefined"
+  >
     <Head v-if="!strictSeo">
       <Title>{{ title }}</Title>
-      <template v-for="link in head.link" :key="link.id">
-        <Link :id="link.id" :rel="link.rel" :href="link.href" :hreflang="link.hreflang" />
+      <template
+        v-for="link in head.link"
+        :key="link.id"
+      >
+        <Link
+          :id="link.id"
+          :rel="link.rel"
+          :href="link.href"
+          :hreflang="link.hreflang"
+        />
       </template>
-      <template v-for="meta in head.meta" :key="meta.id">
-        <Meta :id="meta.id" :property="meta.property" :content="meta.content" />
+      <template
+        v-for="meta in head.meta"
+        :key="meta.id"
+      >
+        <Meta
+          :id="meta.id"
+          :property="meta.property"
+          :content="meta.content"
+        />
       </template>
     </Head>
     <Body>

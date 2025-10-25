@@ -11,9 +11,9 @@ await setup({
   nuxtConfig: {
     i18n: {
       customRoutes: 'config',
-      pages: {}
-    }
-  }
+      pages: {},
+    },
+  },
 })
 
 describe('localeRoute', async () => {

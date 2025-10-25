@@ -13,7 +13,7 @@ export default defineNuxtConfig({
         domain: '127.0.0.1:7776',
         // domain: 'en.localhost',
         name: 'English',
-        files: ['en.json']
+        files: ['en.json'],
       },
       {
         code: 'es',
@@ -21,9 +21,9 @@ export default defineNuxtConfig({
         domain: '127.0.0.1:7777',
         // domain: 'es.localhost',
         name: 'Español',
-        files: ['es.json']
-      }
+        files: ['es.json'],
+      },
     ],
-    detectBrowserLanguage: false
-  }
+    detectBrowserLanguage: false,
+  },
 })

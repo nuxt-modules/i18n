@@ -1,16 +1,18 @@
 import { defineNuxtPlugin } from '#imports'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function log(...args: any[]) {
   if (import.meta.server && process.send) {
     process.send({ type: 'i18n:test-log', id: process.env.PORT, data: Array.from(args).join(' ') })
     // !import.meta.CI && console.log(...args)
-  } else {
+  }
+  else {
     console.log(...args)
   }
 }
 
-export default defineNuxtPlugin(nuxtApp => {
-  nuxtApp.hook('i18n:beforeLocaleSwitch', data => {
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.hook('i18n:beforeLocaleSwitch', (data) => {
     if (data.newLocale === 'kr') {
       data.newLocale = 'fr'
     }

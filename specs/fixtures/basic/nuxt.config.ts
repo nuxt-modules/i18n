@@ -11,15 +11,15 @@ export default defineNuxtConfig({
       {
         code: 'en',
         language: 'en',
-        name: 'English'
+        name: 'English',
       },
       {
         code: 'fr',
         language: 'fr-FR',
-        name: 'Français'
-      }
+        name: 'Français',
+      },
     ],
     defaultLocale: 'en',
-    vueI18n: './config/i18n.config.ts'
-  }
+    vueI18n: './config/i18n.config.ts',
+  },
 })

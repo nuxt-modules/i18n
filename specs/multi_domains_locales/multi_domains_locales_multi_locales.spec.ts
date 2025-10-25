@@ -17,36 +17,36 @@ await setup({
           language: 'en',
           name: 'English',
           domains: i18nDomains,
-          defaultForDomains: ['nuxt-app.localhost']
+          defaultForDomains: ['nuxt-app.localhost'],
         },
         {
           code: 'no',
           language: 'no-NO',
           name: 'Norwegian',
-          domains: i18nDomains
+          domains: i18nDomains,
         },
         {
           code: 'fr',
           language: 'fr-FR',
           name: 'Français',
           domains: i18nDomains,
-          defaultForDomains: ['fr.nuxt-app.localhost']
+          defaultForDomains: ['fr.nuxt-app.localhost'],
         },
         {
           code: 'ja',
           language: 'jp-JA',
           name: 'Japan',
           domains: i18nDomains,
-          defaultForDomains: ['ja.nuxt-app.localhost']
-        }
+          defaultForDomains: ['ja.nuxt-app.localhost'],
+        },
       ],
       multiDomainLocales: true,
       strategy: 'prefix_except_default',
       detectBrowserLanguage: {
-        useCookie: true
-      }
-    }
-  }
+        useCookie: true,
+      },
+    },
+  },
 })
 
 describe('detection locale with host on server', () => {
@@ -56,12 +56,12 @@ describe('detection locale with host on server', () => {
     ['/fr', 'fr', 'nuxt-app.localhost', 'Accueil'],
     ['/', 'fr', 'fr.nuxt-app.localhost', 'Accueil'],
     ['/en', 'en', 'fr.nuxt-app.localhost', 'Homepage'],
-    ['/no', 'no', 'fr.nuxt-app.localhost', 'Hjemmeside']
+    ['/no', 'no', 'fr.nuxt-app.localhost', 'Hjemmeside'],
   ])('%s host', async (path, locale, host, header) => {
     const res = await undiciRequest(path, {
       headers: {
-        Host: host
-      }
+        Host: host,
+      },
     })
     const dom = await getDom(await res.body.text())
 
@@ -73,8 +73,8 @@ describe('detection locale with host on server', () => {
 test('detection locale with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {
-      'X-Forwarded-Host': 'fr.nuxt-app.localhost'
-    }
+      'X-Forwarded-Host': 'fr.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(html)
 
@@ -86,12 +86,12 @@ describe('detection locale with child routes', () => {
   test.each([
     ['/parent/child', 'nuxt-app.localhost', 'Parent route test', 'Child route test'],
     ['/no/parent/child', 'nuxt-app.localhost', 'Forældrerutetest', 'Børns rute test'],
-    ['/fr/parent/child', 'nuxt-app.localhost', 'Test de la voie parentale', 'Test de parcours pour enfants']
+    ['/fr/parent/child', 'nuxt-app.localhost', 'Test de la voie parentale', 'Test de parcours pour enfants'],
   ])('%s host', async (path, host, parentText, childText) => {
     const res = await undiciRequest(path, {
       headers: {
-        Host: host
-      }
+        Host: host,
+      },
     })
     const dom = await getDom(await res.body.text())
 

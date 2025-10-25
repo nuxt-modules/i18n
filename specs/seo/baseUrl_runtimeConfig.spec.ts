@@ -11,16 +11,16 @@ await setup({
     runtimeConfig: {
       public: {
         i18n: {
-          baseUrl: configDomain
-        }
-      }
+          baseUrl: configDomain,
+        },
+      },
     },
     i18n: {
       defaultLocale: 'en',
       baseUrl: '',
-      detectBrowserLanguage: false
-    }
-  }
+      detectBrowserLanguage: false,
+    },
+  },
 })
 
 test('render seo tags with baseUrl', async () => {

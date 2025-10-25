@@ -1,7 +1,7 @@
 export default defineAppConfig({
   myProject: {
-    name: 'This is Nuxt layer'
-  }
+    name: 'This is Nuxt layer',
+  },
 })
 
 declare module '@nuxt/schema' {

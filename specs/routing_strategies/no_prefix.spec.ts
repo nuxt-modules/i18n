@@ -14,9 +14,9 @@ await setup({
     i18n: {
       strategy: 'no_prefix',
       defaultLocale: 'en',
-      defaultDirection: 'auto'
-    }
-  }
+      defaultDirection: 'auto',
+    },
+  },
 })
 
 describe('strategy: no_prefix', async () => {
@@ -24,10 +24,10 @@ describe('strategy: no_prefix', async () => {
     await setServerRuntimeConfig(
       {
         public: {
-          i18n: { detectBrowserLanguage: false }
-        }
+          i18n: { detectBrowserLanguage: false },
+        },
       },
-      true
+      true,
     )
   })
 
@@ -37,11 +37,12 @@ describe('strategy: no_prefix', async () => {
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
-    } catch (error: unknown) {
+    }
+    catch (error: unknown) {
       res = error as Error & { status: () => number }
     }
     // 404
-    expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    expect(res!.status()).toBe(404)
   })
 
   test('locale change with reactivity', async () => {
@@ -121,10 +122,10 @@ describe('strategy: no_prefix', async () => {
         i18n: {
           detectBrowserLanguage: {
             // fallback to defaultLocale
-            fallbackLocale: 'en'
-          }
-        }
-      }
+            fallbackLocale: 'en',
+          },
+        },
+      },
     })
     const { page } = await renderPage('/', { locale: 'fr' })
 

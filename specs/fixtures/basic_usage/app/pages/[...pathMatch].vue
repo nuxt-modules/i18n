@@ -4,7 +4,7 @@ const route = useRoute()
 const setI18nParams = useSetI18nParams()
 setI18nParams({
   en: { pathMatch: ['my-post', 'abc'] },
-  fr: { pathMatch: ['mon-article', 'xyz'] }
+  fr: { pathMatch: ['mon-article', 'xyz'] },
 })
 </script>
 

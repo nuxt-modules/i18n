@@ -2,7 +2,6 @@ import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
 import { getLocalesMessageKeyCount, renderPage, waitForLocaleFileNetwork, waitForLocaleSwitch } from '../helper'
-import { Page } from 'playwright-core'
 
 describe('basic lazy loading', async () => {
   await setup({
@@ -13,10 +12,10 @@ describe('basic lazy loading', async () => {
       runtimeConfig: {
         public: {
           // disables fetching localized messages from server route
-          noServer: true
-        }
-      }
-    }
+          noServer: true,
+        },
+      },
+    },
   })
 
   test('dynamic locale files are not cached', async () => {
@@ -52,7 +51,7 @@ describe('basic lazy loading', async () => {
     // navigate and wait for locale file request
     await Promise.all([
       waitForLocaleFileNetwork(page, 'lazy-locale-fr.js', 'response'),
-      page.click('#nuxt-locale-link-fr')
+      page.click('#nuxt-locale-link-fr'),
     ])
 
     // `fr` locale has been fetched
@@ -66,7 +65,7 @@ describe('basic lazy loading', async () => {
     // navigate and wait for locale file request
     await Promise.all([
       waitForLocaleFileNetwork(page, 'lazy-locale-module-nl.js', 'response'),
-      page.click('#nuxt-locale-link-nl')
+      page.click('#nuxt-locale-link-nl'),
     ])
 
     // `nl` (module) locale has been fetched

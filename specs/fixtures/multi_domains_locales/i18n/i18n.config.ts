@@ -11,15 +11,15 @@ export default {
       dynamic: 'Dynamique',
       pages: {
         blog: {
-          article: "Cette page d'article de blog"
-        }
+          article: 'Cette page d\'article de blog',
+        },
       },
       parent: {
         text: 'Test de la voie parentale',
         child: {
-          text: 'Test de parcours pour enfants'
-        }
-      }
+          text: 'Test de parcours pour enfants',
+        },
+      },
     },
     en: {
       welcome: 'Welcome',
@@ -30,15 +30,15 @@ export default {
       dynamic: 'Dynamic',
       pages: {
         blog: {
-          article: 'This is blog article page'
-        }
+          article: 'This is blog article page',
+        },
       },
       parent: {
         text: 'Parent route test',
         child: {
-          text: 'Child route test'
-        }
-      }
+          text: 'Child route test',
+        },
+      },
     },
     no: {
       welcome: 'Velkommen',
@@ -49,16 +49,16 @@ export default {
       dynamic: 'Dynamic',
       pages: {
         blog: {
-          article: 'Dette er bloggartikkelsiden'
-        }
+          article: 'Dette er bloggartikkelsiden',
+        },
       },
       parent: {
         text: 'Forældrerutetest',
         child: {
-          text: 'Børns rute test'
-        }
-      }
-    }
+          text: 'Børns rute test',
+        },
+      },
+    },
   },
-  fallbackLocale: 'en'
+  fallbackLocale: 'en',
 }

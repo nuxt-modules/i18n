@@ -4,8 +4,8 @@ export default defineI18nConfig(() => {
     legacy: true,
     messages: {
       en: {
-        hello: 'Hello world!'
-      }
-    }
+        hello: 'Hello world!',
+      },
+    },
   }
 })

@@ -14,22 +14,22 @@ await setup({
       customRoutes: 'config',
       pages: {
         'category/[slug]': false,
-        history: {
-          fr: false
+        'history': {
+          fr: false,
         },
         'about/index': {
-          fr: '/about-fr'
+          fr: '/about-fr',
         },
         'blog/index': {
-          en: '/news'
+          en: '/news',
         },
         'blog/article': {
-          en: '/news/article'
-        }
+          en: '/news/article',
+        },
       },
-      detectBrowserLanguage: false
-    }
-  }
+      detectBrowserLanguage: false,
+    },
+  },
 })
 
 test('can access to custom route path', async () => {
@@ -41,7 +41,7 @@ test('can access to custom route path', async () => {
 
   // page path
   expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
-    aboutPath: '/fr/about-fr'
+    aboutPath: '/fr/about-fr',
   })
 
   // navigate to about page for `fr`
@@ -79,11 +79,12 @@ test('can not access to pick route path', async () => {
   let res: Awaited<ReturnType<typeof page.goto>> | (Error & { status: () => number }) | null = null
   try {
     res = await page.goto(url('/fr/history'))
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     res = error as Error & { status: () => number }
   }
   // 404
-  expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+  expect(res!.status()).toBe(404)
 })
 
 test('can not access to disable route path', async () => {
@@ -100,11 +101,12 @@ test('can not access to disable route path', async () => {
   let res: Awaited<ReturnType<typeof page.goto>> | (Error & { status: () => number }) | null = null
   try {
     res = await page.goto(url('/fr/category/test'))
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     res = error as Error & { status: () => number }
   }
   // 404
-  expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+  expect(res!.status()).toBe(404)
 })
 
 test('#3076 - layer with custom `srcDir`', async () => {

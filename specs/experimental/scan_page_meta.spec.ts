@@ -9,9 +9,9 @@ await setup({
   // overrides
   nuxtConfig: {
     experimental: {
-      scanPageMeta: true
-    }
-  }
+      scanPageMeta: true,
+    },
+  },
 })
 
 describe('Using Nuxt experimental feature `scanPageMeta`', async () => {

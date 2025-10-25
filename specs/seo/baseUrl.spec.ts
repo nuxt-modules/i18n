@@ -21,16 +21,16 @@ await setup({
           return xOverrideBaseUrl || ''
         }
         return ''
-      }
-    }
-  }
+      },
+    },
+  },
 })
 
 test('render seo tags with baseUrl', async () => {
   const html = await $fetch('/?noncanonical', {
     headers: {
-      'X-Override-Base-Url': 'CUSTOM'
-    }
+      'X-Override-Base-Url': 'CUSTOM',
+    },
   })
   const dom = await getDom(html)
   await assertLocaleHeadWithDom(dom, '#home-use-locale-head')

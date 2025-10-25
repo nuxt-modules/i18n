@@ -3,7 +3,7 @@ export default defineI18nConfig(() => ({
   locale: 'en',
   messages: {
     en: {
-      hello: 'from the en locale'
-    }
-  }
+      hello: 'from the en locale',
+    },
+  },
 }))

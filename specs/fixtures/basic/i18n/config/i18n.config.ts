@@ -11,9 +11,9 @@ export default {
       dynamic: 'Dynamique',
       pages: {
         blog: {
-          article: "Cette page d'article de blog"
-        }
-      }
+          article: 'Cette page d\'article de blog',
+        },
+      },
     },
     en: {
       welcome: 'Welcome',
@@ -24,14 +24,14 @@ export default {
       dynamic: 'Dynamic',
       pages: {
         blog: {
-          article: 'This is blog article page'
-        }
-      }
-    }
+          article: 'This is blog article page',
+        },
+      },
+    },
   },
   modifiers: {
     // @ts-ignore
-    snakeCase: (str: string) => str.split(' ').join('-')
+    snakeCase: (str: string) => str.split(' ').join('-'),
   },
-  fallbackLocale: 'en'
+  fallbackLocale: 'en',
 }

@@ -13,11 +13,11 @@ await setup({
         i18n: {
           domainLocales: {
             kr: {
-              domain: 'kr.staging.nuxt-app.localhost'
-            }
-          }
-        }
-      }
+              domain: 'kr.staging.nuxt-app.localhost',
+            },
+          },
+        },
+      },
     },
     i18n: {
       baseUrl: 'http://localhost:3000',
@@ -26,24 +26,24 @@ await setup({
           code: 'en',
           language: 'en',
           name: 'English',
-          domain: 'en.nuxt-app.localhost'
+          domain: 'en.nuxt-app.localhost',
         },
         {
           code: 'fr',
           language: 'fr-FR',
           name: 'Français',
-          domain: 'fr.nuxt-app.localhost'
+          domain: 'fr.nuxt-app.localhost',
         },
         {
           code: 'kr',
           language: 'ko-KR',
           name: '한국어',
-          domain: 'kr.nuxt-app.localhost'
-        }
+          domain: 'kr.nuxt-app.localhost',
+        },
       ],
       strategy: 'no_prefix',
       detectBrowserLanguage: {
-        useCookie: true
+        useCookie: true,
       },
       customRoutes: 'config',
       pages: {
@@ -51,22 +51,22 @@ await setup({
           en: '/localized-in-english',
           fr: '/localized-in-french',
           ja: '/localized-in-japanese',
-          nl: '/localized-in-dutch'
-        }
-      }
-    }
-  }
+          nl: '/localized-in-dutch',
+        },
+      },
+    },
+  },
 })
 
 describe('detection locale with host on server', () => {
   test.each([
     ['en', 'en.nuxt-app.localhost', 'Homepage'],
-    ['fr', 'fr.nuxt-app.localhost', 'Accueil']
+    ['fr', 'fr.nuxt-app.localhost', 'Accueil'],
   ])('%s host', async (locale, host, header) => {
     const res = await undiciRequest('/', {
       headers: {
-        Host: host
-      }
+        Host: host,
+      },
     })
     const dom = await getDom(await res.body.text())
 
@@ -78,8 +78,8 @@ describe('detection locale with host on server', () => {
 test('detection locale with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {
-      'X-Forwarded-Host': 'fr.nuxt-app.localhost'
-    }
+      'X-Forwarded-Host': 'fr.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(html)
 
@@ -90,61 +90,61 @@ test('detection locale with x-forwarded-host on server', async () => {
 test('pass `<NuxtLink> to props', async () => {
   const res = await undiciRequest('/', {
     headers: {
-      Host: 'fr.nuxt-app.localhost'
-    }
+      Host: 'fr.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(await res.body.text())
   expect(await dom.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
-    `http://en.nuxt-app.localhost`
+    `http://en.nuxt-app.localhost`,
   )
   expect(await dom.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
-    `http://fr.nuxt-app.localhost`
+    `http://fr.nuxt-app.localhost`,
   )
 })
 
 test('layer provides locales with domains', async () => {
   const res = await undiciRequest('/', {
     headers: {
-      Host: 'fr.nuxt-app.localhost'
-    }
+      Host: 'fr.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(await res.body.text())
 
   // `en` link uses project domain configuration, overrides layer
   expect(await dom.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
-    `http://en.nuxt-app.localhost`
+    `http://en.nuxt-app.localhost`,
   )
 
   // `nl` link uses layer domain configuration
   expect(await dom.locator('#switch-locale-path-usages .switch-to-nl a').getAttribute('href')).toEqual(
-    `http://layer-nl.example.com`
+    `http://layer-nl.example.com`,
   )
   // `ja` link uses layer domain configuration
   expect(await dom.locator('#switch-locale-path-usages .switch-to-ja a').getAttribute('href')).toEqual(
-    `http://layer-ja.example.com`
+    `http://layer-ja.example.com`,
   )
 })
 
 test('pass `<NuxtLink> to props using domains from runtimeConfig', async () => {
   const res = await undiciRequest('/', {
     headers: {
-      Host: 'fr.nuxt-app.localhost'
-    }
+      Host: 'fr.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(await res.body.text())
   expect(await dom.locator('#switch-locale-path-usages .switch-to-kr a').getAttribute('href')).toEqual(
-    `http://kr.staging.nuxt-app.localhost`
+    `http://kr.staging.nuxt-app.localhost`,
   )
 })
 
 test.each([
   ['en.nuxt-app.localhost', 'Welcome'],
-  ['fr.nuxt-app.localhost', 'Bienvenue']
+  ['fr.nuxt-app.localhost', 'Bienvenue'],
 ])('(#2374) detect %s with host on server', async (host, header) => {
   const res = await undiciRequest('/', {
     headers: {
-      host: host
-    }
+      host: host,
+    },
   })
   const dom = await getDom(await res.body.text())
   expect(await dom.locator('#welcome-text').textContent()).toEqual(header)
@@ -153,8 +153,8 @@ test.each([
 test('(#2931) detect using runtimeConfig domain', async () => {
   const res = await undiciRequest('/', {
     headers: {
-      host: 'kr.staging.nuxt-app.localhost'
-    }
+      host: 'kr.staging.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(await res.body.text())
   expect(await dom.locator('#welcome-text').textContent()).toEqual('환영하다')
@@ -163,34 +163,34 @@ test('(#2931) detect using runtimeConfig domain', async () => {
 test('(#2374) detect with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {
-      'X-Forwarded-Host': 'fr.nuxt-app.localhost'
-    }
+      'X-Forwarded-Host': 'fr.nuxt-app.localhost',
+    },
   })
   const dom = await getDom(html)
 
   expect(await dom.locator('#welcome-text').textContent()).toEqual('Bienvenue')
 })
 
-test("supports custom routes with `strategy: 'no_prefix'`", async () => {
+test('supports custom routes with `strategy: \'no_prefix\'`', async () => {
   const res = await undiciRequest('/localized-in-french', {
     headers: {
-      host: 'fr.nuxt-app.localhost'
-    }
+      host: 'fr.nuxt-app.localhost',
+    },
   })
   const resBody = await res.body.text()
   const dom = await getDom(resBody)
 
   // `en` link uses project domain configuration, overrides layer
   expect(await dom.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
-    `http://en.nuxt-app.localhost/localized-in-english`
+    `http://en.nuxt-app.localhost/localized-in-english`,
   )
 
   // `nl` link uses layer domain configuration
   expect(await dom.locator('#switch-locale-path-usages .switch-to-nl a').getAttribute('href')).toEqual(
-    `http://layer-nl.example.com/localized-in-dutch`
+    `http://layer-nl.example.com/localized-in-dutch`,
   )
   // `ja` link uses layer domain configuration
   expect(await dom.locator('#switch-locale-path-usages .switch-to-ja a').getAttribute('href')).toEqual(
-    `http://layer-ja.example.com/localized-in-japanese`
+    `http://layer-ja.example.com/localized-in-japanese`,
   )
 })

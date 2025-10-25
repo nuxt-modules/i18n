@@ -33,7 +33,7 @@ export interface TestContext {
   browser?: Browser
   url?: string
   serverProcess?: ReturnType<typeof exec>
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   mockFn?: Function
   /**
    * Functions to run on the vitest `afterAll` hook.

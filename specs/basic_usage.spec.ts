@@ -1,7 +1,6 @@
-import { beforeAll, describe } from 'vitest'
+import { beforeAll, describe, test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setTestContext, setup, $fetch, url, useTestContext } from './utils'
-import { test, expect } from 'vitest'
 import {
   assertLocaleHeadWithDom,
   assetLocaleHead,
@@ -12,7 +11,7 @@ import {
   setServerRuntimeConfig,
   startServerWithRuntimeConfig,
   waitForLocaleNetwork,
-  waitForTransition
+  waitForTransition,
 } from './helper'
 import type { RouteLocation } from 'vue-router'
 
@@ -27,14 +26,14 @@ describe('basic usage', async () => {
           i18n: {
             baseUrl: 'http://localhost:3000',
             skipSettingLocaleOnNavigate: undefined,
-            detectBrowserLanguage: undefined
-          }
-        }
-      }
-    }
+            detectBrowserLanguage: undefined,
+          },
+        },
+      },
+    },
   })
 
-  let ctx
+  let ctx: ReturnType<typeof useTestContext>
   describe('general usage', async () => {
     test('basic usage', async () => {
       const { page } = await renderPage('/')
@@ -49,7 +48,7 @@ describe('basic usage', async () => {
       expect(await page.locator('#locale-path-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
       expect(await page.locator('#locale-path-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
       expect(await page.locator('#locale-path-usages .object-with-named a').getAttribute('href')).toEqual(
-        '/category/nintendo'
+        '/category/nintendo',
       )
 
       // URL path localizing with `NuxtLinkLocale`
@@ -59,13 +58,13 @@ describe('basic usage', async () => {
       expect(await page.locator('#nuxt-link-locale-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
       expect(await page.locator('#nuxt-link-locale-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
       expect(await page.locator('#nuxt-link-locale-usages .object-with-named a').getAttribute('href')).toEqual(
-        '/category/nintendo'
+        '/category/nintendo',
       )
       expect(await page.locator('#nuxt-link-locale-usages .external-url a').getAttribute('href')).toEqual(
-        'https://nuxt.com/'
+        'https://nuxt.com/',
       )
       expect(await page.locator('#nuxt-link-locale-usages .target-blank-with-locale a').getAttribute('href')).toEqual(
-        '/fr/about'
+        '/fr/about',
       )
 
       expect(await page.evaluate(() => history.state.hello)).toEqual(undefined)
@@ -109,7 +108,7 @@ describe('basic usage', async () => {
       const pageDOMFrench = await getDom(pageHTMLFrench)
       expect(await pageDOMFrench.locator('#t-directive #t-directive-path')?.textContent()).toEqual('Bienvenue')
       expect(await pageDOMFrench.locator('#t-directive #t-directive-argument')?.textContent()).toEqual(
-        'Bonjour directive!'
+        'Bonjour directive!',
       )
     })
 
@@ -124,7 +123,7 @@ describe('basic usage', async () => {
       const localeRoute = JSON.parse(await page.locator('#locale-route').innerText()) as RouteLocation
       // remove properties that vary based on test environment and vue-router version
       // we only need to know if the correct route (object) is returned
-      localeRoute.matched = localeRoute.matched.map(x => {
+      localeRoute.matched = localeRoute.matched.map((x) => {
         for (const component in x.components) {
           x.components[component] = {}
         }
@@ -162,11 +161,11 @@ describe('basic usage', async () => {
         "path": "/nuxt-context-extension",
         "query": {},
       }
-    `
+    `,
       )
 
       expect(await page.locator('#locale-head').innerText()).toMatchInlineSnapshot(
-        `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "id": "i18n-xd", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "x-default" }, { "id": "i18n-alt-en", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "en" }, { "id": "i18n-alt-fr", "rel": "alternate", "href": "http://localhost:3000/fr/nuxt-context-extension", "hreflang": "fr" }, { "id": "i18n-alt-ja", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja" }, { "id": "i18n-alt-ja-JP", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "id": "i18n-alt-nl", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl" }, { "id": "i18n-alt-nl-NL", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "id": "i18n-alt-nl-BE", "rel": "alternate", "href": "http://localhost:3000/be/nuxt-context-extension", "hreflang": "nl-BE" }, { "id": "i18n-alt-kr", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr" }, { "id": "i18n-alt-kr-KO", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "id": "i18n-can", "rel": "canonical", "href": "http://localhost:3000/nuxt-context-extension" } ], "meta": [ { "id": "i18n-og-url", "property": "og:url", "content": "http://localhost:3000/nuxt-context-extension" }, { "id": "i18n-og", "property": "og:locale", "content": "en" }, { "id": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "id": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "id": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "id": "i18n-og-alt-nl-BE", "property": "og:locale:alternate", "content": "nl_BE" }, { "id": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
+        `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "id": "i18n-xd", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "x-default" }, { "id": "i18n-alt-en", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "en" }, { "id": "i18n-alt-fr", "rel": "alternate", "href": "http://localhost:3000/fr/nuxt-context-extension", "hreflang": "fr" }, { "id": "i18n-alt-ja", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja" }, { "id": "i18n-alt-ja-JP", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "id": "i18n-alt-nl", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl" }, { "id": "i18n-alt-nl-NL", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "id": "i18n-alt-nl-BE", "rel": "alternate", "href": "http://localhost:3000/be/nuxt-context-extension", "hreflang": "nl-BE" }, { "id": "i18n-alt-kr", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr" }, { "id": "i18n-alt-kr-KO", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "id": "i18n-can", "rel": "canonical", "href": "http://localhost:3000/nuxt-context-extension" } ], "meta": [ { "id": "i18n-og-url", "property": "og:url", "content": "http://localhost:3000/nuxt-context-extension" }, { "id": "i18n-og", "property": "og:locale", "content": "en" }, { "id": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "id": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "id": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "id": "i18n-og-alt-nl-BE", "property": "og:locale:alternate", "content": "nl_BE" }, { "id": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`,
       )
     })
 
@@ -180,7 +179,7 @@ describe('basic usage', async () => {
       await page.waitForURL(url('/fr'))
 
       expect(await page.locator('#register-module').innerText()).toEqual(
-        'This is a merged module layer locale key in French'
+        'This is a merged module layer locale key in French',
       )
     })
 
@@ -191,7 +190,7 @@ describe('basic usage', async () => {
 
       const restore = await startServerWithRuntimeConfig(
         { public: { runtimeValue: 'The environment variable has changed!' } },
-        true
+        true,
       )
 
       await gotoPath(page, '/')
@@ -205,14 +204,14 @@ describe('basic usage', async () => {
       expect(await page.locator('#i18n-layer-target').innerText()).toEqual('Hello world!')
       expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/layer-parent')
       expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
-        '/layer-parent/layer-child'
+        '/layer-parent/layer-child',
       )
 
       await gotoPath(page, '/nl/layer-page')
       expect(await page.locator('#i18n-layer-target').innerText()).toEqual('Hallo wereld!')
       expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/nl/layer-ouder')
       expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
-        '/nl/layer-ouder/layer-kind'
+        '/nl/layer-ouder/layer-kind',
       )
     })
 
@@ -230,7 +229,7 @@ describe('basic usage', async () => {
 
       await Promise.all([
         waitForLocaleNetwork(page, 'fr', 'response'),
-        page.click(`#switch-locale-path-usages .switch-to-fr a`)
+        page.click(`#switch-locale-path-usages .switch-to-fr a`),
       ])
       await page.waitForTimeout(100)
 
@@ -279,7 +278,7 @@ describe('basic usage', async () => {
 
       // page path
       expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
-        aboutPath: '/nl/about'
+        aboutPath: '/nl/about',
       })
 
       // current locale
@@ -304,7 +303,7 @@ describe('basic usage', async () => {
 
       expect(await page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
       expect(await page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual(
-        '/nl/about?foo=bar#my-hash'
+        '/nl/about?foo=bar#my-hash',
       )
     })
 
@@ -328,7 +327,7 @@ describe('basic usage', async () => {
 
       expect(await page.locator('#module-layer-base-key').innerText()).toEqual('Layer base key overwritten!')
       expect(await page.locator('#module-layer-base-key-named').innerText()).toEqual(
-        'Layer base key overwritten, greetings bar!'
+        'Layer base key overwritten, greetings bar!',
       )
     })
 
@@ -356,11 +355,11 @@ describe('basic usage', async () => {
     })
 
     test('setLocale triggers runtime hooks', async () => {
-      let output: string[] = []
+      const output: string[] = []
       const ctx = useTestContext()
       ctx.serverProcess?.process?.on(
         'message',
-        (msg: any) => msg.type === 'i18n:test-log' && msg.id === ctx.url?.split(':')[2]! && output.push(msg.data)
+        (msg: { type: string, id: string, data: string }) => msg.type === 'i18n:test-log' && msg.id === ctx.url?.split(':')[2] && output.push(msg.data),
       )
       output.length = 0
       await new Promise(resolve => setTimeout(resolve, 1)) // wait for process to be ready
@@ -444,9 +443,9 @@ describe('basic usage', async () => {
       await setServerRuntimeConfig({
         public: {
           i18n: {
-            baseUrl: configDomain
-          }
-        }
+            baseUrl: configDomain,
+          },
+        },
       })
 
       const html = await $fetch('/?noncanonical&canonical')
@@ -454,10 +453,10 @@ describe('basic usage', async () => {
       await assertLocaleHeadWithDom(dom, '#home-use-locale-head')
 
       const links = (await getDataFromDom(dom, '#home-use-locale-head')).link
-      const i18nCan = links.find(x => x.id === 'i18n-can')
+      const i18nCan = links.find((x: { id: string, href: string }) => x.id === 'i18n-can')
       expect(i18nCan.href).toContain(configDomain)
       expect(await dom.locator('#i18n-alt-fr')?.getAttribute('href')).toEqual(
-        'https://runtime-config-domain.com/fr?canonical='
+        'https://runtime-config-domain.com/fr?canonical=',
       )
     })
 
@@ -466,7 +465,7 @@ describe('basic usage', async () => {
       const html = await $fetch('/?noncanonical&canonical')
       const dom = await getDom(html)
       expect(await dom.locator('link[id=i18n-alt-fr]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/fr?canonical='
+        'http://localhost:3000/fr?canonical=',
       )
     })
 
@@ -475,19 +474,19 @@ describe('basic usage', async () => {
       const product1Html = await $fetch('/products/big-chair?test=123&canonical=123')
       const product1Dom = await getDom(product1Html)
       expect(await product1Dom.locator('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/nl/products/grote-stoel?canonical=123'
+        'http://localhost:3000/nl/products/grote-stoel?canonical=123',
       )
       expect(await product1Dom.locator('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
-        '/nl/products/grote-stoel?test=123&canonical=123'
+        '/nl/products/grote-stoel?test=123&canonical=123',
       )
 
       const product2Html = await $fetch('/nl/products/rode-mok?test=123&canonical=123')
       const product2dom = await getDom(product2Html)
       expect(await product2dom.locator('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/products/red-mug?canonical=123'
+        'http://localhost:3000/products/red-mug?canonical=123',
       )
       expect(await product2dom.locator('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
-        '/products/red-mug?test=123&canonical=123'
+        '/products/red-mug?test=123&canonical=123',
       )
     })
 
@@ -496,19 +495,19 @@ describe('basic usage', async () => {
       const product1Html = await $fetch('/products/big-chair')
       const product1Dom = await getDom(product1Html)
       expect(await product1Dom.locator('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/nl/products/grote-stoel'
+        'http://localhost:3000/nl/products/grote-stoel',
       )
       expect(await product1Dom.locator('#switch-locale-path-link-nl')?.getAttribute('href')).toEqual(
-        '/nl/products/grote-stoel'
+        '/nl/products/grote-stoel',
       )
 
       const product2Html = await $fetch('/nl/products/rode-mok')
       const product2dom = await getDom(product2Html)
       expect(await product2dom.locator('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/products/red-mug'
+        'http://localhost:3000/products/red-mug',
       )
       expect(await product2dom.locator('#switch-locale-path-link-en')?.getAttribute('href')).toEqual(
-        '/products/red-mug'
+        '/products/red-mug',
       )
     })
 
@@ -529,14 +528,14 @@ describe('basic usage', async () => {
       // LocaleDetector: header
       const resHeader = await $fetch('/api/server', {
         query: { key: 'snakeCaseText' },
-        headers: { 'Accept-Language': 'fr' }
+        headers: { 'Accept-Language': 'fr' },
       })
       expect(resHeader?.snakeCaseText).toMatch('À-propos-de-ce-site')
 
       // LocaleDetector: cookie
       const resCookie = await $fetch('/api/server', {
         query: { key: 'snakeCaseText' },
-        headers: { cookie: 'i18n_locale=fr;' }
+        headers: { cookie: 'i18n_locale=fr;' },
       })
       expect(resCookie?.snakeCaseText).toMatch('À-propos-de-ce-site')
 
@@ -558,7 +557,7 @@ describe('basic usage', async () => {
 
       await gotoPath(page, '/nl/products/rode-mok')
       await page.waitForFunction(
-        () => document.querySelector('#switch-locale-path-link-en')?.getAttribute('href') === '/products/red-mug'
+        () => document.querySelector('#switch-locale-path-link-en')?.getAttribute('href') === '/products/red-mug',
       )
       expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
 
@@ -566,7 +565,7 @@ describe('basic usage', async () => {
       await page.locator('#params-add-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok?test=123&canonical=123'))
       expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
-        '/products/red-mug?test=123&canonical=123'
+        '/products/red-mug?test=123&canonical=123',
       )
 
       await page.locator('#params-remove-query').clickNavigate()
@@ -577,22 +576,22 @@ describe('basic usage', async () => {
       const product1Html = await $fetch('/products/big-chair')
       const product1Dom = await getDom(product1Html)
       expect(await product1Dom.locator('link[id=i18n-alt-nl]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/nl/products/grote-stoel'
+        'http://localhost:3000/nl/products/grote-stoel',
       )
 
       const product2Html = await $fetch('/nl/products/rode-mok')
       const product2dom = await getDom(product2Html)
       expect(await product2dom.locator('link[id=i18n-alt-en]')?.getAttribute('href')).toEqual(
-        'http://localhost:3000/products/red-mug'
+        'http://localhost:3000/products/red-mug',
       )
     })
 
     test('(#2000) Should be able to load large vue-i18n messages', async () => {
       const restore = await startServerWithRuntimeConfig(
         {
-          public: { longTextTest: true }
+          public: { longTextTest: true },
         },
-        true
+        true,
       )
 
       const { page } = await renderPage('/nl/long-text')
@@ -644,7 +643,7 @@ describe('basic usage', async () => {
       await page.locator('#params-add-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok?test=123&canonical=123'))
       expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
-        '/products/red-mug?test=123&canonical=123'
+        '/products/red-mug?test=123&canonical=123',
       )
 
       await page.locator('#params-remove-query').clickNavigate()
@@ -670,11 +669,11 @@ describe('basic usage', async () => {
           public: {
             i18n: {
               skipSettingLocaleOnNavigate: true,
-              detectBrowserLanguage: false
-            }
-          }
+              detectBrowserLanguage: false,
+            },
+          },
         },
-        true
+        true,
       )
     })
 
@@ -700,7 +699,7 @@ describe('basic usage', async () => {
       // page path
       expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
         aboutPath: '/about',
-        aboutTranslation: 'About us'
+        aboutTranslation: 'About us',
       })
       expect(await page.getAttribute('#nuxt-locale-link-fr', 'href')).toEqual('/fr')
 

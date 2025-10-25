@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { x } from 'tinyexec'
 import { getRandomPort, waitForPort } from 'get-port-please'
 import type { FetchOptions } from 'ofetch'
@@ -30,9 +29,9 @@ export async function startServer(env: Record<string, unknown> = {}) {
           PORT: String(ports[0]),
           HOST: host,
           NODE_ENV: 'development',
-          ...env
-        }
-      }
+          ...env,
+        },
+      },
     })
     await waitForPort(ports[0], { retries: 32, host }).catch(() => {})
     let lastError
@@ -43,13 +42,15 @@ export async function startServer(env: Record<string, unknown> = {}) {
         if (!res.includes('__NUXT_LOADING__')) {
           return
         }
-      } catch (e) {
+      }
+      catch (e) {
         lastError = e
       }
     }
     ctx.serverProcess.kill()
     throw lastError || new Error('Timeout waiting for dev server!')
-  } else if (ctx.options.prerender) {
+  }
+  else if (ctx.options.prerender) {
     const listenTo = ports.map(port => `-l tcp://${host}:${port}`).join(' ')
     const command = `pnpx serve ${ctx.nuxt!.options.nitro!.output?.publicDir} ${listenTo} --no-port-switching`
     // ;(await import('consola')).consola.restoreConsole()
@@ -62,13 +63,14 @@ export async function startServer(env: Record<string, unknown> = {}) {
           ...process.env,
           PORT: String(ports[0]),
           HOST: host,
-          ...env
-        }
-      }
+          ...env,
+        },
+      },
     })
 
     await waitForPort(ports[0], { retries: 50, host, delay: process.env.CI ? 1000 : 500 })
-  } else {
+  }
+  else {
     ctx.serverProcess = x('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
       throwOnError: true,
       nodeOptions: {
@@ -77,9 +79,9 @@ export async function startServer(env: Record<string, unknown> = {}) {
           ...process.env,
           PORT: String(ports[0]),
           HOST: host,
-          ...env
-        }
-      }
+          ...env,
+        },
+      },
     })
 
     const hiddenLogs = ['[Vue Router warn]: No match found for location with path']
@@ -98,7 +100,7 @@ export function stopServer() {
   ctx.serverProcess?.kill()
 }
 
-export function fetch(path: string, options?: any) {
+export function fetch(path: string, options?: RequestInit) {
   return _fetch(url(path), options)
 }
 
@@ -127,5 +129,3 @@ export function url(path: string, port?: number) {
 
   return ctx.url + path
 }
-
-/* eslint-enable @typescript-eslint/no-non-null-assertion */

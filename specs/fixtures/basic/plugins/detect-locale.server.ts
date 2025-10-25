@@ -9,5 +9,5 @@ export default defineNuxtPlugin({
 
     // @ts-expect-error lacking types
     nuxtApp.ssrContext.payload.serverDetectedLocale = toValue(nuxtApp.$i18n.locale)
-  }
+  },
 })

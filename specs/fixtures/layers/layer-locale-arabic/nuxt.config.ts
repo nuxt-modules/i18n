@@ -7,8 +7,8 @@ export default defineNuxtConfig({
         language: 'ar',
         file: 'ar.json',
         name: 'Arabic',
-        dir: 'rtl'
-      }
-    ]
-  }
+        dir: 'rtl',
+      },
+    ],
+  },
 })

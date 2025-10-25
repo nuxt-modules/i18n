@@ -10,9 +10,9 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      strategy: STRATEGIES.PREFIX_AND_DEFAULT
-    }
-  }
+      strategy: STRATEGIES.PREFIX_AND_DEFAULT,
+    },
+  },
 })
 
 describe('localePath', async () => {

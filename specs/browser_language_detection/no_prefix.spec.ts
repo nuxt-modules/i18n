@@ -15,10 +15,10 @@ await setup({
         cookieKey: 'my_custom_cookie_name',
         redirectOn: 'root',
         cookieCrossOrigin: true,
-        cookieSecure: true
-      }
-    }
-  }
+        cookieSecure: true,
+      },
+    },
+  },
 })
 
 test('detection with cookie', async () => {
@@ -30,22 +30,22 @@ test('detection with cookie', async () => {
           cookieKey: 'my_custom_cookie_name',
           redirectOn: 'root',
           cookieCrossOrigin: true,
-          cookieSecure: true
-        }
-      }
-    }
+          cookieSecure: true,
+        },
+      },
+    },
   })
-  const { page, requests, consoleLogs } = await renderPage('/', { locale: 'en' })
+  const { page } = await renderPage('/', { locale: 'en' })
 
   const ctx = await page.context()
   expect(await ctx.cookies()).toMatchObject([
-    { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' }
+    { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' },
   ])
 
   // click `fr` lang switch link
   await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
   expect(await ctx.cookies()).toMatchObject([
-    { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' }
+    { name: 'my_custom_cookie_name', value: 'fr', secure: true, sameSite: 'None' },
   ])
 
   // navigate to about
@@ -72,10 +72,10 @@ test('detection with cookie - overwrite unknown locale', async () => {
           cookieKey: 'my_custom_cookie_name',
           redirectOn: 'root',
           cookieCrossOrigin: true,
-          cookieSecure: true
-        }
-      }
-    }
+          cookieSecure: true,
+        },
+      },
+    },
   })
   const { page } = await renderPage('/', { locale: 'en' })
   const ctx = page.context()
@@ -87,13 +87,13 @@ test('detection with cookie - overwrite unknown locale', async () => {
   localeCookie!.value = 'unknown_locale'
   await ctx.addCookies([localeCookie!])
   expect(await ctx.cookies()).toMatchObject([
-    { name: 'my_custom_cookie_name', value: 'unknown_locale', secure: true, sameSite: 'None' }
+    { name: 'my_custom_cookie_name', value: 'unknown_locale', secure: true, sameSite: 'None' },
   ])
 
   // unknown locale cookie is overwritten to default locale
   await gotoPath(page, '/')
   expect(await ctx.cookies()).toMatchObject([
-    { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' }
+    { name: 'my_custom_cookie_name', value: 'en', secure: true, sameSite: 'None' },
   ])
 })
 
@@ -103,10 +103,10 @@ test('detection with browser', async () => {
     public: {
       i18n: {
         detectBrowserLanguage: {
-          useCookie: false
-        }
-      }
-    }
+          useCookie: false,
+        },
+      },
+    },
   })
   const { page } = await renderPage('/', { locale: 'fr' })
 
@@ -139,9 +139,9 @@ test('disable', async () => {
   await setServerRuntimeConfig({
     public: {
       i18n: {
-        detectBrowserLanguage: false
-      }
-    }
+        detectBrowserLanguage: false,
+      },
+    },
   })
 
   const { page } = await renderPage('/', { locale: 'en' })
@@ -173,10 +173,10 @@ test('fallback', async () => {
       i18n: {
         detectBrowserLanguage: {
           useCookie: false,
-          fallbackLocale: 'fr'
-        }
-      }
-    }
+          fallbackLocale: 'fr',
+        },
+      },
+    },
   })
   const { page } = await renderPage('/', { locale: 'ja' })
 

@@ -12,10 +12,10 @@ await setup({
       strategy: 'prefix',
       defaultLocale: 'en',
       experimental: {
-        nitroContextDetection: false
-      }
-    }
-  }
+        nitroContextDetection: false,
+      },
+    },
+  },
 })
 
 describe('strategy: prefix (legacy detect)', async () => {
@@ -24,10 +24,10 @@ describe('strategy: prefix (legacy detect)', async () => {
     await startServerWithRuntimeConfig(
       {
         public: {
-          i18n: { detectBrowserLanguage: false }
-        }
+          i18n: { detectBrowserLanguage: false },
+        },
       },
-      true
+      true,
     )
   })
 
@@ -36,7 +36,7 @@ describe('strategy: prefix (legacy detect)', async () => {
       ['/', '/en'],
       ['/about', '/en/about'],
       ['/category/foo', '/en/category/foo'],
-      ['/?foo=bar', '/en?foo=bar']
+      ['/?foo=bar', '/en?foo=bar'],
     ]
     for (const [pathUrl, destination] of redirectUrls) {
       const res = await fetch(pathUrl, { redirect: 'manual' })

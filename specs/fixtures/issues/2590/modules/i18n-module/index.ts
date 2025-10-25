@@ -12,23 +12,23 @@ export default defineNuxtModule({
             code: 'en',
             language: 'en-US',
             file: 'en-US.ts',
-            name: 'English'
-          }
-        ]
-      })
+            name: 'English',
+          },
+        ],
+      }),
     )
 
     await installModule('@nuxtjs/i18n', {
       defaultLocale: 'en',
       experimental: {
-        jsTsFormatResource: true
+        jsTsFormatResource: true,
       },
       detectBrowserLanguage: {
         useCookie: true,
         cookieKey: 'i18n_lang',
-        redirectOn: 'root'
+        redirectOn: 'root',
       },
-      vueI18n: './i18n.config.ts'
+      vueI18n: './i18n.config.ts',
     })
-  }
+  },
 })

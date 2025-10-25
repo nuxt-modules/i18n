@@ -7,15 +7,15 @@ const locales: LocaleMessages<DefineLocaleMessage> = {
       nest: {
         foo: {
           bar: {
-            profile: 'Profile1'
-          }
-        }
-      }
-    }
-  }
+            profile: 'Profile1',
+          },
+        },
+      },
+    },
+  },
 }
 
-export default defineEventHandler(event => {
+export default defineEventHandler((event) => {
   const locale = event.context.params?.locale
   if (locale == null) {
     return {}

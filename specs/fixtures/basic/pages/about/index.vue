@@ -11,14 +11,18 @@ const code = computed(() => {
 
 <template>
   <div>
-    <h1 id="about-header">{{ $t('about') }}</h1>
+    <h1 id="about-header">
+      {{ $t('about') }}
+    </h1>
     <LangSwitcher />
     <!-- div id="store-path-fr">{{ $store.state.routePathFr }}</div -->
     <section>
-      <strong
-        >code: <code id="locale-properties-code">{{ code }}</code></strong
-      >
+      <strong>code: <code id="locale-properties-code">{{ code }}</code></strong>
     </section>
-    <NuxtLink id="link-home" exact :to="localePath('index')">{{ $t('home') }}</NuxtLink>
+    <NuxtLink
+      id="link-home"
+      exact
+      :to="localePath('index')"
+    >{{ $t('home') }}</NuxtLink>
   </div>
 </template>

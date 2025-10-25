@@ -10,7 +10,7 @@ export default defineNuxtConfig({
         language: 'en',
         lang: 'en',
         file: 'en-en.js',
-        dir: 'ltr'
+        dir: 'ltr',
       },
       {
         code: 'ar',
@@ -18,11 +18,11 @@ export default defineNuxtConfig({
         language: 'ar',
         lang: 'ar',
         file: 'ar-ar.js',
-        dir: 'rtl'
-      }
+        dir: 'rtl',
+      },
     ],
     strategy: 'prefix_and_default',
     detectBrowserLanguage: false,
-    defaultLocale: 'ar'
-  }
+    defaultLocale: 'ar',
+  },
 })

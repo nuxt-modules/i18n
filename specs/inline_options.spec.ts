@@ -5,7 +5,7 @@ import { renderPage } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/inline_options`, import.meta.url)),
-  browser: true
+  browser: true,
 })
 
 describe('inline options are handled correctly', async () => {
@@ -29,9 +29,9 @@ describe('inline options are handled correctly', async () => {
     expect(
       consoleLogs.some(
         log =>
-          log.type === 'warning' &&
-          log.text.includes('[nuxt-i18n-routing] Locale `language` ISO code is required to generate alternate link')
-      )
+          log.type === 'warning'
+          && log.text.includes('[nuxt-i18n-routing] Locale `language` ISO code is required to generate alternate link'),
+      ),
     ).toBe(false)
   })
 

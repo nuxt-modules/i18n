@@ -10,30 +10,30 @@ await setup({
       locales: [
         {
           code: 'en',
-          domain: 'en.nuxt-app.localhost'
+          domain: 'en.nuxt-app.localhost',
         },
         {
           code: 'fr',
-          domain: 'fr.nuxt-app.localhost'
+          domain: 'fr.nuxt-app.localhost',
         },
         {
           code: 'nl',
-          domain: 'localhost'
-        }
+          domain: 'localhost',
+        },
       ],
-      strategy: 'no_prefix'
+      strategy: 'no_prefix',
     },
-    ssr: false
-  }
+    ssr: false,
+  },
 })
 
 test('(#2313) detection locale from domain', async () => {
   async function assertDifferentDomain(locale: string, browserLocale = 'en') {
     const page = await createPage(url('/'), {
       extraHTTPHeaders: {
-        'X-Forwarded-Host': `${locale}.nuxt-app.localhost`
+        'X-Forwarded-Host': `${locale}.nuxt-app.localhost`,
       },
-      locale: browserLocale
+      locale: browserLocale,
     })
 
     expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual(locale)

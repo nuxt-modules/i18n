@@ -4,7 +4,7 @@ const route = useRoute()
 const setI18nParams = useSetI18nParams()
 setI18nParams({
   en: { id: 'my-post' },
-  fr: { id: 'mon-article' }
+  fr: { id: 'mon-article' },
 })
 </script>
 

@@ -33,15 +33,16 @@ export function convertObjectToConfig(obj: Record<string, unknown>) {
   return env
 }
 
-export default defineNitroPlugin(async nitroApp => {
+export default defineNitroPlugin(async (nitroApp) => {
   const config = useRuntimeConfig()
   const tempKeys = new Set<string>()
 
-  const handler = (msg: { type: string; value: Record<string, string> }) => {
+  const handler = (msg: { type: string, value: Record<string, string> }) => {
     if (msg.type !== 'update:runtime-config') return
 
     // cleanup temporary keys
     for (const k of tempKeys) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete process.env[k]
     }
 
@@ -58,7 +59,7 @@ export default defineNitroPlugin(async nitroApp => {
     }
 
     process.send!({ type: 'confirm:runtime-config', value: config }, undefined, {
-      keepOpen: true
+      keepOpen: true,
     })
   }
 

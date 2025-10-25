@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let counter = 0
 
 export default defineI18nLocale(async function (locale) {
@@ -15,11 +16,11 @@ export default defineI18nLocale(async function (locale) {
         nest: {
           foo: {
             bar: {
-              profile: 'Profile1'
-            }
-          }
-        }
-      }
+              profile: 'Profile1',
+            },
+          },
+        },
+      },
     }
   }
 

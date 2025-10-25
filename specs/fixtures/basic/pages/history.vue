@@ -8,7 +8,7 @@
 defineI18nRoute({
   paths: {
     en: '/our-history',
-    fr: '/notre-histoire'
-  }
+    fr: '/notre-histoire',
+  },
 })
 </script>

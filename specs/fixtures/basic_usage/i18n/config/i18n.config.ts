@@ -13,11 +13,11 @@ export default defineI18nConfig(() => {
         welcome: 'Bienvenue',
         profile: 'Profil',
         aboutSite: 'À propos de ce site',
-        snakeCaseText: "@.snakeCase:{'aboutSite'}",
-        pascalCaseText: "@.pascalCase:{'aboutSite'}",
+        snakeCaseText: '@.snakeCase:{\'aboutSite\'}',
+        pascalCaseText: '@.pascalCase:{\'aboutSite\'}',
         hello: 'Bonjour le monde!',
-        modifier: "@.snakeCase:{'hello'}",
-        helloMessage: 'Bonjour {name}!'
+        modifier: '@.snakeCase:{\'hello\'}',
+        helloMessage: 'Bonjour {name}!',
       },
       en: {
         home: 'Homepage',
@@ -27,22 +27,22 @@ export default defineI18nConfig(() => {
         welcome: 'Welcome',
         profile: 'Profile',
         hello: 'Hello world!',
-        modifier: "@.snakeCase:{'hello'}",
+        modifier: '@.snakeCase:{\'hello\'}',
         fallbackMessage: 'This is the fallback message!',
         runtimeKey: config.public.runtimeValue,
-        helloMessage: 'Hello {name}!'
+        helloMessage: 'Hello {name}!',
       },
       nl: {
         aboutSite: 'Over deze site',
-        snakeCaseText: "@.snakeCase:{'aboutSite'}",
-        pascalCaseText: "@.pascalCase:{'aboutSite'}"
-      }
+        snakeCaseText: '@.snakeCase:{\'aboutSite\'}',
+        pascalCaseText: '@.pascalCase:{\'aboutSite\'}',
+      },
     },
     // #3790
     missingWarn: /^foo/,
     modifiers: {
       // @ts-ignore
-      snakeCase: (str: string) => str.split(' ').join('-')
-    }
+      snakeCase: (str: string) => str.split(' ').join('-'),
+    },
   }
 })

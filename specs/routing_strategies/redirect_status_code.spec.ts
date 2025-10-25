@@ -10,12 +10,12 @@ await setup({
       strategy: 'prefix',
       defaultLocale: 'en',
       detectBrowserLanguage: {
-        redirectOn: 'no prefix'
+        redirectOn: 'no prefix',
       },
       rootRedirect: { statusCode: 418, path: 'test-route' },
-      redirectStatusCode: 307
-    }
-  }
+      redirectStatusCode: 307,
+    },
+  },
 })
 
 describe('redirectStatusCode', () => {

@@ -9,14 +9,14 @@ await setup({
   // overrides
   nuxtConfig: {
     experimental: {
-      typedPages: true
+      typedPages: true,
     },
     i18n: {
       experimental: {
-        typedPages: false
-      }
-    }
-  }
+        typedPages: false,
+      },
+    },
+  },
 })
 
 describe('`experimental.typedPages` explicitly disabled', async () => {
@@ -26,10 +26,10 @@ describe('`experimental.typedPages` explicitly disabled', async () => {
         fileURLToPath(
           new URL(
             `../fixtures/basic_usage/.nuxt/___experimental_typed_pages_explicit_disable_spec_ts/types/typed-router-i18n.d.ts`,
-            import.meta.url
-          )
-        )
-      )
+            import.meta.url,
+          ),
+        ),
+      ),
     ).rejects.toThrowError()
   })
 })

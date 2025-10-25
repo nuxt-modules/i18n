@@ -6,6 +6,6 @@ export default defineNuxtConfig({
     locales,
     defaultLocale: 'en',
     detectBrowserLanguage: false,
-    strategy: 'no_prefix'
-  }
+    strategy: 'no_prefix',
+  },
 })

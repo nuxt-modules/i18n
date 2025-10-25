@@ -8,12 +8,12 @@ import productsData from './products-data'
 const locales: LocaleMessages<DefineLocaleMessage> = {
   'en-GB': {
     settings: {
-      profile: 'Profile'
-    }
+      profile: 'Profile',
+    },
   },
-  ja: {}
+  'ja': {},
 }
 
-export default defineEventHandler(event => {
+export default defineEventHandler((event) => {
   return productsData
 })

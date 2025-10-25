@@ -9,9 +9,9 @@ await setup({
   // overrides
   nuxtConfig: {
     experimental: {
-      typedPages: true
-    }
-  }
+      typedPages: true,
+    },
+  },
 })
 
 describe('`experimental.typedPages` undefined or enabled', async () => {
@@ -21,11 +21,11 @@ describe('`experimental.typedPages` undefined or enabled', async () => {
         fileURLToPath(
           new URL(
             `../fixtures/basic_usage/.nuxt/___experimental_typed_pages_spec_ts/types/typed-router-i18n.d.ts`,
-            import.meta.url
-          )
+            import.meta.url,
+          ),
         ),
-        'utf-8'
-      )
+        'utf-8',
+      ),
     ).toMatchInlineSnapshot(`
       "/* eslint-disable */
       /* prettier-ignore */

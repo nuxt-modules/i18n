@@ -12,9 +12,9 @@ export default defineNuxtModule({
           code: 'en',
           language: 'en',
           files: [resolve('./locales/en.json')],
-          name: 'English'
-        }
-      ]
+          name: 'English',
+        },
+      ],
     })
-  }
+  },
 })
