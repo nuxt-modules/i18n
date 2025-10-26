@@ -11,10 +11,10 @@ await setup({
     i18n: {
       strategy: 'prefix_and_default',
       detectBrowserLanguage: {
-        redirectOn: 'all'
-      }
-    }
-  }
+        redirectOn: 'all',
+      },
+    },
+  },
 })
 
 test('redirectOn: all', async () => {
@@ -23,10 +23,10 @@ test('redirectOn: all', async () => {
       i18n: {
         detectBrowserLanguage: {
           alwaysRedirect: false,
-          redirectOn: 'no prefix'
-        }
-      }
-    }
+          redirectOn: 'no prefix',
+        },
+      },
+    },
   })
   const { page } = await renderPage('/blog/article', { locale: 'fr' })
 
@@ -49,12 +49,12 @@ test('redirectOn: no prefix', async () => {
         i18n: {
           detectBrowserLanguage: {
             alwaysRedirect: false,
-            redirectOn: 'no prefix'
-          }
-        }
-      }
+            redirectOn: 'no prefix',
+          },
+        },
+      },
     },
-    true
+    true,
   )
   const { page } = await renderPage('/blog/article', { locale: 'fr' })
 
@@ -77,10 +77,10 @@ test('alwaysRedirect: all', async () => {
       i18n: {
         detectBrowserLanguage: {
           alwaysRedirect: true,
-          redirectOn: 'all'
-        }
-      }
-    }
+          redirectOn: 'all',
+        },
+      },
+    },
   })
   const blog = '/blog/article'
   const { page } = await renderPage(blog, { locale: 'en' }) // set browser locale
@@ -104,10 +104,10 @@ test('alwaysRedirect: no prefix', async () => {
       i18n: {
         detectBrowserLanguage: {
           alwaysRedirect: true,
-          redirectOn: 'no prefix'
-        }
-      }
-    }
+          redirectOn: 'no prefix',
+        },
+      },
+    },
   })
   const { page } = await renderPage('/about', { locale: 'en' }) // set browser locale
   const ctx = await page.context()

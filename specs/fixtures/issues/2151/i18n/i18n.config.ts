@@ -6,7 +6,7 @@ export default defineI18nConfig(() => ({
   messages: {
     en: {},
     ja: {
-      msg: '日本語のメッセージ'
-    }
-  }
+      msg: '日本語のメッセージ',
+    },
+  },
 }))

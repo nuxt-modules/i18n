@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { setServerRuntimeConfig, startServerWithRuntimeConfig } from '../helper'
+import { startServerWithRuntimeConfig } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -13,9 +13,9 @@ await setup({
       defaultLocale: 'en',
       // configure `rootDirect` to object so it can be overwritten by `runtimeConfig`
       rootRedirect: { path: 'about', statusCode: 302 },
-      detectBrowserLanguage: false
-    }
-  }
+      detectBrowserLanguage: false,
+    },
+  },
 })
 
 describe('rootRedirect', async () => {
@@ -24,11 +24,11 @@ describe('rootRedirect', async () => {
       {
         public: {
           i18n: {
-            rootRedirect: 'fr'
-          }
-        }
+            rootRedirect: 'fr',
+          },
+        },
       },
-      true
+      true,
     )
 
     const res = await fetch('/')
@@ -39,11 +39,11 @@ describe('rootRedirect', async () => {
       {
         public: {
           i18n: {
-            rootRedirect: 'fr'
-          }
-        }
+            rootRedirect: 'fr',
+          },
+        },
       },
-      true
+      true,
     )
     const res = await fetch('/?foo=bar')
     expect(res.url).toBe(url('/fr?foo=bar'))
@@ -54,11 +54,11 @@ describe('rootRedirect', async () => {
       {
         public: {
           i18n: {
-            rootRedirect: { statusCode: 418, path: 'test-route' }
-          }
-        }
+            rootRedirect: { statusCode: 418, path: 'test-route' },
+          },
+        },
       },
-      true
+      true,
     )
 
     const res = await fetch(url('/'))

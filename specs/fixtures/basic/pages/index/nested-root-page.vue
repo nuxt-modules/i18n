@@ -2,8 +2,8 @@
 defineI18nRoute({
   paths: {
     en: '/my-localized-nested-root-page',
-    fr: '/my-localized-nested-root-page-french'
-  }
+    fr: '/my-localized-nested-root-page-french',
+  },
 })
 </script>
 

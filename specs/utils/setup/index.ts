@@ -68,7 +68,7 @@ function createTest(options: Partial<TestOptions>): TestHooks {
     afterEach,
     afterAll,
     setup,
-    ctx
+    ctx,
   }
 }
 

@@ -13,9 +13,9 @@ await setup({
     i18n: {
       defaultLocale: 'en',
       defaultDirection: 'auto',
-      detectBrowserLanguage: false
-    }
-  }
+      detectBrowserLanguage: false,
+    },
+  },
 })
 
 describe('default strategy: prefix_except_default', async () => {
@@ -65,11 +65,12 @@ describe('default strategy: prefix_except_default', async () => {
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
-    } catch (error: unknown) {
+    }
+    catch (error: unknown) {
       res = error as Error & { status: () => number }
     }
     // 404
-    expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    expect(res!.status()).toBe(404)
   })
 
   test('reactivity', async () => {

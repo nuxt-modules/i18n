@@ -12,9 +12,9 @@ await setup({
     i18n: {
       vueI18n: 'i18n-legacy.config.ts',
       customRoutes: 'config',
-      pages: {}
-    }
-  }
+      pages: {},
+    },
+  },
 })
 
 describe('localeRoute', async () => {

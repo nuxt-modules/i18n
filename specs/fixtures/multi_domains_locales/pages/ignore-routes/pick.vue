@@ -1,6 +1,6 @@
 <script setup>
 defineI18nRoute({
-  paths: ['fr']
+  paths: ['fr'],
 })
 </script>
 

@@ -9,7 +9,8 @@ export async function createBrowser() {
   let playwright: typeof import('playwright-core')
   try {
     playwright = await import(/* vite-ignore */ 'playwright-core')
-  } catch {
+  }
+  catch {
     /* istanbul ignore next */
     throw new Error(`
       The dependency 'playwright-core' not found.
@@ -45,7 +46,8 @@ interface GotoOptions extends Omit<_GotoOptions, 'waitUntil'> {
 export async function waitForHydration(page: Page, url: string, waitUntil?: GotoOptions['waitUntil']): Promise<void> {
   if (waitUntil === 'hydration') {
     await page.waitForFunction(() => window.useNuxtApp?.().isHydrating === false)
-  } else if (waitUntil === 'route') {
+  }
+  else if (waitUntil === 'route') {
     await page.waitForFunction(route => window.useNuxtApp?.()._route.fullPath === route, url)
   }
 }

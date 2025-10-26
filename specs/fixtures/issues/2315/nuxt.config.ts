@@ -3,10 +3,10 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/i18n'],
   i18n: {
     bundle: {
-      compositionOnly: false
+      compositionOnly: false,
     },
     types: 'legacy',
     locales: ['en'],
-    defaultLocale: 'en'
-  }
+    defaultLocale: 'en',
+  },
 })

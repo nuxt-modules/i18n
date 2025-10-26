@@ -2,27 +2,27 @@
 export default defineNuxtConfig({
   i18n: {
     experimental: {
-      localeDetector: './localeDetector.ts'
+      localeDetector: './localeDetector.ts',
     },
     locales: [
       {
         code: 'en',
         language: 'en-US',
         file: 'en.json5',
-        name: 'English'
+        name: 'English',
       },
       {
         code: 'ja',
         language: 'ja-JP',
         file: 'ja.yaml',
-        name: 'Japanese'
+        name: 'Japanese',
       },
       {
         code: 'nl',
         language: 'nl-NL',
         file: 'nl.ts',
-        name: 'Nederlands'
-      }
-    ]
-  }
+        name: 'Nederlands',
+      },
+    ],
+  },
 })

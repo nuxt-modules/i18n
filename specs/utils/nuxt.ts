@@ -19,17 +19,17 @@ function getTestKey(ctx: VitestContext) {
 }
 
 // @ts-expect-error type cast
-// eslint-disable-next-line
+
 const kit: typeof _kit = _kit.default || _kit
 
 const isNuxtApp = (dir: string) => {
   return (
-    existsSync(dir) &&
-    (existsSync(resolve(dir, 'pages')) ||
-      existsSync(resolve(dir, 'nuxt.config.ts')) ||
-      existsSync(resolve(dir, 'nuxt.config.js')) ||
-      existsSync(resolve(dir, 'nuxt.config.mjs')) ||
-      existsSync(resolve(dir, 'nuxt.config.cjs')))
+    existsSync(dir)
+    && (existsSync(resolve(dir, 'pages'))
+      || existsSync(resolve(dir, 'nuxt.config.ts'))
+      || existsSync(resolve(dir, 'nuxt.config.js'))
+      || existsSync(resolve(dir, 'nuxt.config.mjs'))
+      || existsSync(resolve(dir, 'nuxt.config.cjs')))
   )
 }
 
@@ -57,7 +57,7 @@ export async function loadFixture(testContext: VitestContext) {
     // const randomId = Math.random().toString(36).slice(2, 8)
     // const buildDir = resolve(ctx.options.rootDir, '.nuxt', randomId)
 
-    let testKey = getTestKey(testContext)
+    const testKey = getTestKey(testContext)
 
     const buildDir = resolve(ctx.options.rootDir, '.nuxt', testKey)
     const outputDir = resolve(ctx.options.rootDir, '.output', testKey)
@@ -83,16 +83,16 @@ export async function loadFixture(testContext: VitestContext) {
               project.config.i18n = defu(overrides, project.config.i18n)
               Object.assign(nuxt.options.i18n, defu(overrides, mergedOptions))
             }
-          }
+          },
         ],
         _generate: ctx.options.prerender,
         nitro: {
           output: {
-            dir: outputDir
-          }
-        }
+            dir: outputDir,
+          },
+        },
       },
-      ctx.options.prerender ? { nitro: { static: true, output: { publicDir: resolve(outputDir, 'public') } } } : {}
+      ctx.options.prerender ? { nitro: { static: true, output: { publicDir: resolve(outputDir, 'public') } } } : {},
     )
   }
 
@@ -100,7 +100,7 @@ export async function loadFixture(testContext: VitestContext) {
     cwd: ctx.options.rootDir,
     dev: ctx.options.dev,
     overrides: ctx.options.nuxtConfig,
-    configFile: ctx.options.configFile
+    configFile: ctx.options.configFile,
   })
 
   const buildDir = ctx.nuxt.options.buildDir

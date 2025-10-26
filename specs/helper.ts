@@ -1,16 +1,19 @@
 // @ts-ignore
-import { getBrowser, startServer, TestContext, url, useTestContext } from './utils'
+import type { TestContext } from './utils'
+import { getBrowser, startServer, url, useTestContext } from './utils'
 import { onTestFinished } from 'vitest'
 
 import type { BrowserContextOptions, Page } from 'playwright-core'
 
+import { snakeCase } from 'scule'
+
 export function waitForLocaleSwitch(page: Page) {
   return page.evaluate(
     async () =>
-      await new Promise<{ oldLocale: string; newLocale: string }>(resolve =>
+      await new Promise<{ oldLocale: string, newLocale: string }>(resolve =>
         // @ts-expect-error browser only
-        useNuxtApp().hooks.hookOnce('i18n:localeSwitched', resolve)
-      )
+        useNuxtApp().hooks.hookOnce('i18n:localeSwitched', resolve),
+      ),
   )
 }
 
@@ -38,7 +41,7 @@ export async function assetLocaleHead(page: Page, headSelector: string) {
         }
       }
     },
-    [headHandle, localeHeadValue]
+    [headHandle, localeHeadValue],
   )
   headHandle?.dispose()
 }
@@ -64,7 +67,7 @@ export async function assertLocaleHeadWithDom(dom: Page, headSelector: string) {
       if (key === 'id') {
         continue
       }
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       const v = await tag!.getAttribute(key)
       if (v !== value) {
         throw new Error(`${key} ${v} !== ${value}`)
@@ -99,17 +102,18 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
   page.clickNavigate = async (selector, options) =>
     await fnAndWaitForNavigation(page, async () => await _click(selector, options))
 
-  const consoleLogs: { type: string; text: string }[] = []
+  const consoleLogs: { type: string, text: string }[] = []
   page.on('console', message => consoleLogs.push({ type: message.type(), text: message.text() }))
 
   const pageErrors: Error[] = []
   page.on('pageerror', err => pageErrors.push(err))
 
   const requests: string[] = []
-  page.on('request', req => {
+  page.on('request', (req) => {
     try {
       requests.push(req.url().replace(url('/'), '/'))
-    } catch (err) {
+    }
+    catch {
       // TODO
     }
   })
@@ -129,7 +133,7 @@ export async function renderPage(path = '/', options?: BrowserContextOptions) {
     page,
     pageErrors,
     requests,
-    consoleLogs
+    consoleLogs,
   }
 }
 
@@ -140,7 +144,7 @@ export async function gotoPath(page: Page, path: string) {
 
 export async function fnAndWaitForNavigation<T>(page: Page, fn: () => Promise<T>) {
   const waitForNav = page.evaluate(() => {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       // @ts-expect-error untyped
       const unsub = window.useNuxtApp?.().$router.afterEach(() => {
         unsub()
@@ -164,8 +168,8 @@ declare module 'playwright-core' {
   }
 }
 async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
-  const updated = new Promise<unknown>(resolve => {
-    const handler = (msg: { type: string; value: unknown }) => {
+  const updated = new Promise<unknown>((resolve) => {
+    const handler = (msg: { type: string, value: unknown }) => {
       if (msg.type === 'confirm:runtime-config') {
         ctx.serverProcess!.process?.off('message', handler)
         resolve(msg.value)
@@ -175,7 +179,7 @@ async function updateProcessRuntimeConfig(ctx: TestContext, config: unknown) {
   })
 
   ctx.serverProcess!.process?.send({ type: 'update:runtime-config', value: config }, undefined, {
-    keepOpen: true
+    keepOpen: true,
   })
 
   return await updated
@@ -200,8 +204,6 @@ export async function setServerRuntimeConfig(env: Record<string, unknown>, skipR
 
   return restoreFn
 }
-
-import { snakeCase } from 'scule'
 
 function flattenObject(obj: Record<string, unknown> = {}) {
   const flattened: Record<string, unknown> = {}
@@ -236,7 +238,7 @@ function convertObjectToConfig(obj: Record<string, unknown>) {
 }
 export async function startServerWithRuntimeConfig(env: Record<string, unknown>, skipRestore = false) {
   const ctx = useTestContext()
-  const stored = await updateProcessRuntimeConfig(ctx, env)
+  await updateProcessRuntimeConfig(ctx, env)
 
   await startServer(convertObjectToConfig(env))
 
@@ -301,19 +303,19 @@ export function getLocalesMessageKeyCount(page: Page): Promise<Record<string, nu
 export async function getHeadSnapshot(page: Page): Promise<string> {
   const snapshotData = await page.evaluate(() => {
     const data: {
-      html: { lang: string | null; dir: string | null }
-      link: { canonical: string | null; alternate: { [key: string]: string | null } }
+      html: { lang: string | null, dir: string | null }
+      link: { canonical: string | null, alternate: { [key: string]: string | null } }
       meta: { [key: string]: string | string[] | null | undefined } // og:locale:alternate can be string[]
     } = {
       html: {
         lang: document.documentElement.getAttribute('lang'),
-        dir: document.documentElement.getAttribute('dir')
+        dir: document.documentElement.getAttribute('dir'),
       },
       link: {
         canonical: document.querySelector('link[rel="canonical"]')?.getAttribute('href') || null,
-        alternate: {}
+        alternate: {},
       },
-      meta: {}
+      meta: {},
     }
 
     const alternateLinks = document.querySelectorAll('link[rel="alternate"]')
@@ -343,9 +345,9 @@ export async function getHeadSnapshot(page: Page): Promise<string> {
       dataKey: 'html',
       properties: [
         { key: 'lang', label: 'lang' },
-        { key: 'dir', label: 'dir' }
+        { key: 'dir', label: 'dir' },
       ],
-      customFormatter: null
+      customFormatter: null,
     },
     {
       title: 'Link',
@@ -355,29 +357,29 @@ export async function getHeadSnapshot(page: Page): Promise<string> {
         for (const hreflang in data.link.alternate) {
           lines.push(`alternate[${hreflang}]: ${data.link.alternate[hreflang]}`)
         }
-      }
+      },
     },
     {
       title: 'Meta',
       dataKey: 'meta',
       properties: [
         { key: 'og:url', label: 'og:url' },
-        { key: 'og:locale', label: 'og:locale' }
+        { key: 'og:locale', label: 'og:locale' },
       ],
       customFormatter: (data: typeof snapshotData, lines: string[]) => {
         const val = data.meta?.['og:locale:alternate']
         const ogLocaleAlternate = Array.isArray(val) ? val : [val]
         lines.push(`og:locale:alternate: ${ogLocaleAlternate.join(', ')}`)
-      }
-    }
+      },
+    },
   ]
 
-  let formattedOutput: string[] = []
+  const formattedOutput: string[] = []
   for (const section of sections) {
     const sectionData = snapshotData[section.dataKey as keyof typeof snapshotData]
     if (!sectionData) continue
 
-    let sectionLines: string[] = []
+    const sectionLines: string[] = []
     for (const prop of section.properties) {
       const value = sectionData[prop.key as keyof typeof sectionData]
       if (!value) continue

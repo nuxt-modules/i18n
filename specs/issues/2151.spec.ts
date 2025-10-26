@@ -6,15 +6,15 @@ import { gotoPath, renderPage } from '../helper'
 describe('#2151', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/issues/2151`, import.meta.url)),
-    browser: true
+    browser: true,
   })
 
   test('should load resources with `autoImport` disabled', async () => {
     const { page } = await renderPage('/', { locale: 'ja' })
-
-    expect(await page.locator('#msg').innerText()).toEqual('日本語のメッセージ')
+    const msg = page.locator('#msg')
+    expect(await msg.innerText()).toEqual('日本語のメッセージ')
 
     await gotoPath(page, '/en')
-    expect(await page.locator('#msg').innerText()).toEqual('English message')
+    expect(await msg.innerText()).toEqual('English message')
   })
 })

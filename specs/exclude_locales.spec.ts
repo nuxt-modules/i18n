@@ -10,11 +10,11 @@ await setup({
   nuxtConfig: {
     i18n: {
       bundle: {
-        onlyLocales: 'en'
+        onlyLocales: 'en',
       },
-      detectBrowserLanguage: false
-    }
-  }
+      detectBrowserLanguage: false,
+    },
+  },
 })
 
 test('leave only English locale', async () => {

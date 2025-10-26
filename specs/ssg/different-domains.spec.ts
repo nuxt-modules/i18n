@@ -9,7 +9,7 @@ await setup({
   prerender: true,
   // overrides
   nuxtConfig: {},
-  port: [7787, 7786]
+  port: [7787, 7786],
 })
 
 test('`differentDomains` with `no_prefix` has hreflang links', async () => {

@@ -6,18 +6,18 @@ import ru from '../../i18n/locales/ru.json'
 
 const resources = {
   en,
-  ru
+  ru,
 }
 
 const i18n = createI18n({
-  fallbackLocale: 'en'
+  fallbackLocale: 'en',
 }).global
 
 for (const { code } of locales) {
   i18n.setLocaleMessage(code, resources[code])
 }
 
-export default defineEventHandler(e => {
+export default defineEventHandler((e) => {
   e.context.$t = (key: string) => i18n.t(key, getCookie(e, 'lang') || i18n.fallbackLocale.toString())
 })
 

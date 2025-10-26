@@ -4,6 +4,6 @@
 
 <script setup lang="ts">
 const { localeProperties } = useI18n({
-  useScope: 'local'
+  useScope: 'local',
 })
 </script>

@@ -9,7 +9,7 @@ describe('#3842 - prefix strategy catch-all redirects on server route', async ()
 
   test('should not redirect API calls', async () => {
     const res = await fetch(url('/api/test'))
-    
+
     expect(res.redirected).toBe(false)
     expect(await res.json()).toMatchInlineSnapshot(`
       {

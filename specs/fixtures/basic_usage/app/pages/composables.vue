@@ -12,15 +12,15 @@ const metaTestEntries = computed(() => [
   { id: 'locale-path', content: localePath('/nested/test-route') },
   { id: 'locale-route', content: localeRoute('/nested/test-route')?.fullPath ?? '' },
   { id: 'switch-locale-path', content: switchLocalePath('fr') },
-  { id: 'route-base-name', content: routeBaseName(localeRoute('/nested/test-route', 'fr')) ?? '' }
+  { id: 'route-base-name', content: routeBaseName(localeRoute('/nested/test-route', 'fr')) ?? '' },
 ])
 
 useHead(() => ({
   htmlAttrs: {
-    ...localeHead.value.htmlAttrs
+    ...localeHead.value.htmlAttrs,
   },
   link: [...(localeHead.value.link || [])],
-  meta: [...(localeHead.value.meta || []), ...metaTestEntries.value]
+  meta: [...(localeHead.value.meta || []), ...metaTestEntries.value],
 }))
 </script>
 

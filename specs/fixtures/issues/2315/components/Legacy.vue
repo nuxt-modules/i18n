@@ -6,10 +6,10 @@ export default defineComponent({
     locale: 'en',
     messages: {
       en: {
-        hello: 'Hello, local!'
-      }
-    }
-  }
+        hello: 'Hello, local!',
+      },
+    },
+  },
 })
 </script>
 

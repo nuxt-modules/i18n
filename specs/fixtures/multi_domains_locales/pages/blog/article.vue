@@ -13,9 +13,7 @@ const code = computed(() => {
     <p>{{ t('pages.blog.article') }}</p>
     <LangSwitcher />
     <section>
-      <strong
-        >code: <code id="locale-properties-code">{{ code }}</code></strong
-      >
+      <strong>code: <code id="locale-properties-code">{{ code }}</code></strong>
     </section>
   </div>
 </template>

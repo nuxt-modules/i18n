@@ -10,9 +10,9 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      strategy: STRATEGIES.PREFIX
-    }
-  }
+      strategy: STRATEGIES.PREFIX,
+    },
+  },
 })
 describe('localePath', async () => {
   describe(`route strategy: ${STRATEGIES.PREFIX}`, async () => {

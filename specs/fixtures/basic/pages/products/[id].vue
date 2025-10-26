@@ -8,7 +8,7 @@
 defineI18nRoute({
   paths: {
     en: '/products/[id]',
-    fr: '/produits/[id]'
-  }
+    fr: '/produits/[id]',
+  },
 })
 </script>

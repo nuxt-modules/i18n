@@ -45,14 +45,14 @@ export async function localePathTests(strategy: Strategies) {
   expect(await page.locator('#locale-path .query-foo-string').innerText()).toEqual(prefixPath('?foo=1'))
   expect(await page.locator('#locale-path .query-foo-string-about').innerText()).toEqual(prefixPath('/about?foo=1'))
   expect(await page.locator('#locale-path .query-foo-test-string').innerText()).toEqual(
-    prefixPath('/about?foo=1&test=2')
+    prefixPath('/about?foo=1&test=2'),
   )
 
   expect(await page.locator('#locale-path .query-foo-path-param').innerText()).toEqual(
-    prefixPath('/path/as a test?foo=bar+sentence')
+    prefixPath('/path/as a test?foo=bar+sentence'),
   )
   expect(await page.locator('#locale-path .query-foo-path-param-escaped').innerText()).toEqual(
-    prefixPath('/path/as%20a%20test?foo=bar+sentence')
+    prefixPath('/path/as%20a%20test?foo=bar+sentence'),
   )
   expect(await page.locator('#locale-path .hash-path-about').innerText()).toEqual(prefixPath('/about#foo=bar'))
 
@@ -89,10 +89,10 @@ export async function switchLocalePathTests() {
   await page.goto(url('/ja/about?foo=bär&four=四&foo=bar'))
   await page.waitForURL(url('/ja/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B'))
   expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual(
-    '/ja/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B'
+    '/ja/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B',
   )
   expect(await page.locator('#switch-locale-path .en').innerText()).toEqual(
-    '/en/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B'
+    '/en/about?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B',
   )
 
   await page.goto(url('/ja/about?foo=bär&four=四'))
@@ -123,10 +123,10 @@ export async function switchLocalePathTests() {
   await page.goto(url('/ja/count/三?foo=bär&four=四&foo=bar'))
   await page.waitForURL(url('/ja/count/%E4%B8%89?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B'))
   expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual(
-    '/ja/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B'
+    '/ja/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B',
   )
   expect(await page.locator('#switch-locale-path .en').innerText()).toEqual(
-    '/en/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B'
+    '/en/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B',
   )
 
   // TODO: figure out what was being tested originally
@@ -142,42 +142,42 @@ export async function localeRouteTests() {
     fullPath: '/en',
     path: '/en',
     name: 'index___en',
-    href: '/en'
+    href: '/en',
   })
 
   expect(JSON.parse(await page.locator('#locale-route .index-name-ja').innerText())).include({
     fullPath: '/ja',
     path: '/ja',
     name: 'index___ja',
-    href: '/ja'
+    href: '/ja',
   })
 
   expect(JSON.parse(await page.locator('#locale-route .about-name').innerText())).include({
     fullPath: '/en/about',
     path: '/en/about',
     name: 'about___en',
-    href: '/en/about'
+    href: '/en/about',
   })
 
   expect(JSON.parse(await page.locator('#locale-route .about-ja').innerText())).include({
     fullPath: '/ja/about',
     path: '/ja/about',
     name: 'about___ja',
-    href: '/ja/about'
+    href: '/ja/about',
   })
 
   expect(JSON.parse(await page.locator('#locale-route .about-name-ja').innerText())).include({
     fullPath: '/ja/about',
     path: '/ja/about',
     name: 'about___ja',
-    href: '/ja/about'
+    href: '/ja/about',
   })
 
   expect(JSON.parse(await page.locator('#locale-route .path-match-ja').innerText())).include({
     fullPath: '/ja/:pathMatch(.*)*',
     path: '/ja/:pathMatch(.*)*',
     name: 'pathMatch___ja',
-    href: '/ja/:pathMatch(.*)*'
+    href: '/ja/:pathMatch(.*)*',
   })
 
   // name
@@ -185,14 +185,14 @@ export async function localeRouteTests() {
     fullPath: '/en',
     path: '/en',
     name: 'pathMatch___en',
-    href: '/en'
+    href: '/en',
   })
 
   expect(JSON.parse(await page.locator('#locale-route .path-match-name-ja').innerText())).include({
     fullPath: '/ja',
     path: '/ja',
     name: 'pathMatch___ja',
-    href: '/ja'
+    href: '/ja',
   })
 
   // object
@@ -200,7 +200,7 @@ export async function localeRouteTests() {
     fullPath: '/ja/about',
     path: '/ja/about',
     name: 'about___ja',
-    href: '/ja/about'
+    href: '/ja/about',
   })
 
   // undefined path
@@ -208,7 +208,7 @@ export async function localeRouteTests() {
     fullPath: '/ja/vue-i18n',
     path: '/ja/vue-i18n',
     name: 'pathMatch___ja',
-    href: '/ja/vue-i18n'
+    href: '/ja/vue-i18n',
   })
 
   // undefined name

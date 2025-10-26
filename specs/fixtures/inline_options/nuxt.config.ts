@@ -16,14 +16,14 @@ export default defineNuxtConfig({
             code: 'en',
             language: 'en-US',
             file: 'locale-file-en.json',
-            name: 'English'
-          }
+            name: 'English',
+          },
         ],
         experimental: {
-          localeDetector: './locale-detector.ts'
-        }
-      }
-    ]
+          localeDetector: './locale-detector.ts',
+        },
+      },
+    ],
   ],
   i18n: {
     locales: [
@@ -31,8 +31,8 @@ export default defineNuxtConfig({
         code: 'ja',
         language: 'ja-JP',
         file: 'locale-file-ja.json',
-        name: 'Japanese'
-      }
-    ]
-  }
+        name: 'Japanese',
+      },
+    ],
+  },
 })

@@ -11,10 +11,10 @@ await setup({
   nuxtConfig: {
     i18n: {
       experimental: {
-        strictSeo: true
-      }
-    }
-  }
+        strictSeo: true,
+      },
+    },
+  },
 })
 
 describe('experimental.strictSeo', async () => {

@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, fetch } from '../utils'
-import { renderPage, setServerRuntimeConfig, gotoPath, startServerWithRuntimeConfig } from '../helper'
+import { renderPage, gotoPath, startServerWithRuntimeConfig } from '../helper'
 
 import type { Response } from 'playwright-core'
 
@@ -12,9 +12,9 @@ await setup({
   nuxtConfig: {
     i18n: {
       strategy: 'prefix',
-      defaultLocale: 'en'
-    }
-  }
+      defaultLocale: 'en',
+    },
+  },
 })
 
 describe('strategy: prefix', async () => {
@@ -23,10 +23,10 @@ describe('strategy: prefix', async () => {
     await startServerWithRuntimeConfig(
       {
         public: {
-          i18n: { detectBrowserLanguage: false }
-        }
+          i18n: { detectBrowserLanguage: false },
+        },
       },
-      true
+      true,
     )
   })
 
@@ -40,7 +40,7 @@ describe('strategy: prefix', async () => {
 
     const notFoundUrls = [
       ['/about', '/en/about'],
-      ['/category/foo', '/en/category/foo']
+      ['/category/foo', '/en/category/foo'],
     ]
     for (const [pathUrl, _destination] of notFoundUrls) {
       const res = await fetch(pathUrl, { redirect: 'manual' })
@@ -97,11 +97,12 @@ describe('strategy: prefix', async () => {
     let res: Response | (Error & { status: () => number }) | null = null
     try {
       res = await page.goto(home)
-    } catch (error: unknown) {
+    }
+    catch (error: unknown) {
       res = error as Error & { status: () => number }
     }
     // 404
-    expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    expect(res!.status()).toBe(404)
   })
 
   test('reactivity', async () => {
@@ -137,12 +138,12 @@ describe('strategy: prefix', async () => {
             detectBrowserLanguage: {
               useCookie: true,
               alwaysRedirect: false,
-              redirectOn: 'root'
-            }
-          }
-        }
+              redirectOn: 'root',
+            },
+          },
+        },
       },
-      true
+      true,
     )
 
     const { page } = await renderPage('/', { locale: 'en' })
@@ -175,7 +176,7 @@ describe('strategy: prefix', async () => {
     expect(await page.locator('#link-define-i18n-route-false').innerText()).toEqual('go to defineI18nRoute(false)')
   })
 
-  test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
+  test('(#2132) should redirect on root url with `redirectOn: \'no prefix\'`', async () => {
     await startServerWithRuntimeConfig(
       {
         public: {
@@ -184,12 +185,12 @@ describe('strategy: prefix', async () => {
               useCookie: true,
               cookieSecure: true,
               fallbackLocale: 'en',
-              redirectOn: 'no prefix'
-            }
-          }
-        }
+              redirectOn: 'no prefix',
+            },
+          },
+        },
       },
-      true
+      true,
     )
 
     const { page } = await renderPage('/', { locale: 'fr' })
@@ -210,11 +211,11 @@ describe('strategy: prefix', async () => {
       {
         public: {
           i18n: {
-            detectBrowserLanguage: false
-          }
-        }
+            detectBrowserLanguage: false,
+          },
+        },
       },
-      true
+      true,
     )
 
     const res = await fetch('/?foo=bar')

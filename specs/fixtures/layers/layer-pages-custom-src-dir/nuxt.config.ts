@@ -6,8 +6,8 @@ export default defineNuxtConfig({
     pages: {
       'custom-layer/[slug]': {
         en: '/custom-layer/[slug]',
-        fr: '/custom-layer-french/[slug]'
-      }
-    }
-  }
+        fr: '/custom-layer-french/[slug]',
+      },
+    },
+  },
 })

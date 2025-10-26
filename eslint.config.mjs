@@ -19,7 +19,6 @@ export default createConfigForNuxt({
         '.nuxt',
         'dist',
         'playground',
-        'specs',
         'test',
         'coverage',
         'docs',
@@ -35,6 +34,12 @@ export default createConfigForNuxt({
       },
     },
   )
+  .override('nuxt/tooling/unicorn', {
+    rules: {
+      'unicorn/no-new-array': 'off',
+      'unicorn/prefer-dom-node-text-content': 'off',
+    },
+  })
   .append(
     {
       rules: {
@@ -75,6 +80,16 @@ export default createConfigForNuxt({
     // override rules
     {
       rules: { '@typescript-eslint/ban-ts-comment': 'off' },
+    },
+    {
+      files: ['**/fixtures/**', '**/fixture/**', '**/*-fixture/**'],
+      name: 'local/disables/fixtures',
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/triple-slash-reference': 'off',
+        'vue/multi-word-component-names': 'off',
+        'vue/valid-v-for': 'off',
+      },
     },
   )
 

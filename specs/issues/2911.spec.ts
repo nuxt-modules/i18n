@@ -1,6 +1,5 @@
 import { test, expect, describe } from 'vitest'
-import { fileURLToPath } from 'node:url'
-import { URL } from 'node:url'
+import { fileURLToPath, URL } from 'node:url'
 import { setup } from '../utils'
 import { renderPage } from '../helper'
 
@@ -10,12 +9,12 @@ describe('#2911', async () => {
     browser: true,
     nuxtConfig: {
       app: {
-        baseURL: '/base-path'
+        baseURL: '/base-path',
       },
       i18n: {
-        detectBrowserLanguage: false
-      }
-    }
+        detectBrowserLanguage: false,
+      },
+    },
   })
 
   test('`useLocaleHead` uses Nuxt `app.baseURL` in meta tags', async () => {

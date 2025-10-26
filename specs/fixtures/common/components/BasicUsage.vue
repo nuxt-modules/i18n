@@ -4,7 +4,7 @@ import { useLocalePath, useSwitchLocalePath, useLocaleRoute, useI18n } from '#i1
 
 const { locale, locales } = useI18n()
 const normalizedLocales = computed(() =>
-  locales.value.map(x => (typeof x === 'string' ? { code: x, name: x } : { code: x.code, name: x.name ?? x.code }))
+  locales.value.map(x => (typeof x === 'string' ? { code: x, name: x } : { code: x.code, name: x.name ?? x.code })),
 )
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
@@ -12,7 +12,7 @@ const localeRoute = useLocaleRoute()
 
 const category = ref({
   title: 'Kirby',
-  slug: 'nintendo'
+  slug: 'nintendo',
 })
 
 function onClick() {
@@ -31,8 +31,12 @@ function onClick() {
       <div class="vue-i18n">
         <form>
           <select v-model="locale">
-            <option value="en">en</option>
-            <option value="fr">fr</option>
+            <option value="en">
+              en
+            </option>
+            <option value="fr">
+              fr
+            </option>
           </select>
           <p>{{ $t('welcome') }}</p>
         </form>
@@ -66,18 +70,27 @@ function onClick() {
     <section id="switch-locale-path-usages">
       <h3>switchLocalePath</h3>
       <ul>
-        <li v-for="l of normalizedLocales" :key="l.code" :class="`switch-to-${l.code}`">
+        <li
+          v-for="l of normalizedLocales"
+          :key="l.code"
+          :class="`switch-to-${l.code}`"
+        >
           <NuxtLink :to="switchLocalePath(l.code)">{{ l.name }}</NuxtLink>
         </li>
       </ul>
     </section>
     <section id="locale-route-usages">
       <h3>localeRoute</h3>
-      <button @click="onClick">Show profile</button>
+      <button @click="onClick">
+        Show profile
+      </button>
     </section>
     <section id="configured-locales-list">
       <ul>
-        <li v-for="locale in locales" :key="locale.code">
+        <li
+          v-for="locale in locales"
+          :key="locale.code"
+        >
           {{ locale.code }}
         </li>
       </ul>

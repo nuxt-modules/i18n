@@ -11,9 +11,9 @@ await setup({
     i18n: {
       defaultLocale: 'en',
       customRoutes: 'page',
-      detectBrowserLanguage: false
-    }
-  }
+      detectBrowserLanguage: false,
+    },
+  },
 })
 
 test('can access to custom route path', async () => {
@@ -75,12 +75,13 @@ test('can not access to disable route path', async () => {
     // attempting to goto /fr/disable instead of /fr/ignore-routes/disable since
     // that route has a catch all that would succeed
     res = await page.goto(url('/fr/disable'))
-  } catch (error: unknown) {
+  }
+  catch (error: unknown) {
     res = error as Error & { status: () => number }
   }
 
   // 404
-  expect(res!.status()).toBe(404) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+  expect(res!.status()).toBe(404)
 })
 
 test('(#3831) nested index root custom routes', async () => {

@@ -12,31 +12,31 @@ export default defineNuxtConfig({
         language: 'en',
         name: 'English',
         domains: i18nDomains,
-        defaultForDomains: ['nuxt-app.localhost']
+        defaultForDomains: ['nuxt-app.localhost'],
       },
       {
         code: 'no',
         language: 'no-NO',
         name: 'Norwegian',
-        domains: i18nDomains
+        domains: i18nDomains,
       },
       {
         code: 'fr',
         language: 'fr-FR',
         name: 'Français',
         domains: i18nDomains,
-        defaultForDomains: ['fr.nuxt-app.localhost']
+        defaultForDomains: ['fr.nuxt-app.localhost'],
       },
       {
         code: 'ja',
         language: 'jp-JA',
         name: 'Japan',
         domains: i18nDomains,
-        defaultForDomains: ['ja.nuxt-app.localhost']
-      }
+        defaultForDomains: ['ja.nuxt-app.localhost'],
+      },
     ],
     detectBrowserLanguage: {
-      useCookie: true
-    }
-  }
+      useCookie: true,
+    },
+  },
 })

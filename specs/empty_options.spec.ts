@@ -5,7 +5,7 @@ import { renderPage } from './helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`./fixtures/empty_options`, import.meta.url)),
-  browser: true
+  browser: true,
 })
 
 describe('inline options are handled correctly', async () => {

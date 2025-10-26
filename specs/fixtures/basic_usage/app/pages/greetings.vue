@@ -3,14 +3,16 @@ import { useI18n } from '#i18n'
 
 const { t } = useI18n({
   inheritLocale: true,
-  useScope: 'local'
+  useScope: 'local',
 })
 </script>
 
 <template>
   <div>
     <LangSwitcher />
-    <h3 id="per-component-hello">{{ t('hello') }}</h3>
+    <h3 id="per-component-hello">
+      {{ t('hello') }}
+    </h3>
   </div>
 </template>
 

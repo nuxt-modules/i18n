@@ -8,7 +8,7 @@ export default defineNuxtConfig({
         flag: 'us',
         language: 'en-US',
         file: 'en.json',
-        name: 'English'
+        name: 'English',
       },
       { code: 'pl', flag: 'pl', language: 'pl-PL', file: 'pl.json', name: 'Polski' },
       {
@@ -16,20 +16,20 @@ export default defineNuxtConfig({
         flag: 'fr',
         language: 'fr-FR',
         file: 'fr.json',
-        name: 'Français'
-      }
+        name: 'Français',
+      },
     ],
     defaultLocale: 'en',
     strategy: 'prefix_except_default',
     compilation: {
-      strictMessage: false
+      strictMessage: false,
     },
     detectBrowserLanguage: {
       useCookie: true,
       // cookieKey: 'locale',
       // fallbackLocale: 'en',
       alwaysRedirect: true,
-      redirectOn: 'root'
-    }
-  }
+      redirectOn: 'root',
+    },
+  },
 })

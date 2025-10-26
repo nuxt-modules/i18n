@@ -22,7 +22,9 @@ if (product.value != null) {
 
 <template>
   <div>
-    <section class="product">{{ product?.name?.[locale] }}</section>
+    <section class="product">
+      {{ product?.name?.[locale] }}
+    </section>
   </div>
 </template>
 

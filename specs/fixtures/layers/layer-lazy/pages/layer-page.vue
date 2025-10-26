@@ -4,8 +4,14 @@
       {{ $t('hello') }}
     </div>
     <div>
-      <NuxtLink id="i18n-layer-parent-link" :to="localePath('/layer-parent')">Layer parent page</NuxtLink>
-      <NuxtLink id="i18n-layer-parent-child-link" :to="localePath('/layer-parent/layer-child')">
+      <NuxtLink
+        id="i18n-layer-parent-link"
+        :to="localePath('/layer-parent')"
+      >Layer parent page</NuxtLink>
+      <NuxtLink
+        id="i18n-layer-parent-child-link"
+        :to="localePath('/layer-parent/layer-child')"
+      >
         Layer parent-child page
       </NuxtLink>
     </div>

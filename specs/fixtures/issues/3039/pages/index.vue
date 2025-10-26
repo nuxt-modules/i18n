@@ -7,6 +7,10 @@ if (import.meta.server) {
 </script>
 
 <template>
-  <div data-testid="locale">{{ locale }}</div>
-  <p data-testid="welcome">{{ $t('welcome') }}</p>
+  <div data-testid="locale">
+    {{ locale }}
+  </div>
+  <p data-testid="welcome">
+    {{ $t('welcome') }}
+  </p>
 </template>

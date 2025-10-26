@@ -2,12 +2,12 @@ import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url, $fetch } from '../utils'
 import { renderPage, getDom, waitForLocaleNetwork, getLocalesMessageKeyCount } from '../helper'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-    browser: true
+    browser: true,
   })
 
   test('dynamic locale files are not cached', async () => {

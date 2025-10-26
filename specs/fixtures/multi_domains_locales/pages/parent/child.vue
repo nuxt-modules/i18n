@@ -3,5 +3,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <p id="child-text">{{ t('parent.child.text') }}</p>
+  <p id="child-text">
+    {{ t('parent.child.text') }}
+  </p>
 </template>

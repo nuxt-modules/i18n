@@ -11,11 +11,11 @@ const appConfig = useAppConfig()
 
 const category = ref({
   title: 'Kirby',
-  slug: 'nintendo'
+  slug: 'nintendo',
 })
 
 const normalizedLocales = computed(() =>
-  locales.value.map(x => (typeof x === 'string' ? { code: x, name: x } : { code: x.code, name: x.name ?? x.code }))
+  locales.value.map(x => (typeof x === 'string' ? { code: x, name: x } : { code: x.code, name: x.name ?? x.code })),
 )
 
 function onClick() {
@@ -27,8 +27,8 @@ function onClick() {
 const { data, refresh } = useAsyncData(`home-${locale.value}`, () =>
   Promise.resolve({
     aboutPath: localePath('about'),
-    aboutTranslation: t('about')
-  })
+    aboutTranslation: t('about'),
+  }),
 )
 
 watch(locale, () => {
@@ -37,16 +37,16 @@ watch(locale, () => {
 // @ts-ignore
 definePageMeta({
   title: 'home',
-  alias: ['/aliased-home-path']
+  alias: ['/aliased-home-path'],
 })
 
 const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page', 'canonical'] } })
 useHead(() => ({
   htmlAttrs: {
-    lang: i18nHead.value.htmlAttrs!.lang
+    lang: i18nHead.value.htmlAttrs!.lang,
   },
   link: [...(i18nHead.value.link || [])],
-  meta: [...(i18nHead.value.meta || [])]
+  meta: [...(i18nHead.value.meta || [])],
 }))
 </script>
 
@@ -55,26 +55,34 @@ useHead(() => ({
     <section id="vue-i18n-usage">
       <form>
         <select v-model="locale">
-          <option value="en">en</option>
-          <option value="fr">fr</option>
+          <option value="en">
+            en
+          </option>
+          <option value="fr">
+            fr
+          </option>
         </select>
         <p>{{ $t('welcome') }}</p>
       </form>
     </section>
     <LangSwitcher />
     <section>
-      <strong>resolve with <code>useAsyncData</code></strong
-      >:
+      <strong>resolve with <code>useAsyncData</code></strong>:
       <code id="home-use-async-data">{{ data }}</code>
     </section>
     <section>
-      <strong><code>useHead</code> with <code>useLocaleHead</code></strong
-      >:
+      <strong><code>useHead</code> with <code>useLocaleHead</code></strong>:
       <code id="home-use-locale-head">{{ i18nHead }}</code>
     </section>
     <section id="t-directive">
-      <p id="t-directive-path" v-t="'welcome'"></p>
-      <p id="t-directive-argument" v-t="{ path: 'helloMessage', args: { name: 'directive' } }"></p>
+      <p
+        id="t-directive-path"
+        v-t="'welcome'"
+      />
+      <p
+        id="t-directive-argument"
+        v-t="{ path: 'helloMessage', args: { name: 'directive' } }"
+      />
     </section>
     <section id="locale-path-usages">
       <h3>localePath</h3>
@@ -100,27 +108,48 @@ useHead(() => ({
           </NuxtLink>
         </li>
         <li class="path-about">
-          <NuxtLink id="link-about" :to="localePath('/about')">{{ $t('about') }}</NuxtLink>
+          <NuxtLink
+            id="link-about"
+            :to="localePath('/about')"
+          >{{ $t('about') }}</NuxtLink>
         </li>
         <li class="path-about-en">
-          <NuxtLink id="link-about-en" :to="localePath('/about', 'en')">{{ $t('about') }}</NuxtLink>
+          <NuxtLink
+            id="link-about-en"
+            :to="localePath('/about', 'en')"
+          >{{ $t('about') }}</NuxtLink>
         </li>
         <li>
-          <NuxtLink id="link-post" :to="localePath({ name: 'post-id', params: { id: 'id' } })">Post</NuxtLink>
+          <NuxtLink
+            id="link-post"
+            :to="localePath({ name: 'post-id', params: { id: 'id' } })"
+          >Post</NuxtLink>
         </li>
         <li>
-          <NuxtLink id="link-greetings" :to="localePath('greetings')">Greetings</NuxtLink>
+          <NuxtLink
+            id="link-greetings"
+            :to="localePath('greetings')"
+          >Greetings</NuxtLink>
         </li>
         <li class="path-hash">
-          <NuxtLink id="link-about-hash" :to="localePath('/about#my-hash')">{{ $t('about') }}</NuxtLink>
+          <NuxtLink
+            id="link-about-hash"
+            :to="localePath('/about#my-hash')"
+          >{{ $t('about') }}</NuxtLink>
         </li>
         <li class="path-query-hash">
-          <NuxtLink id="link-about-query-hash" :to="localePath('/about?foo=bar#my-hash')">
+          <NuxtLink
+            id="link-about-query-hash"
+            :to="localePath('/about?foo=bar#my-hash')"
+          >
             {{ $t('about') }}
           </NuxtLink>
         </li>
         <li class="path-hash">
-          <NuxtLink id="link-about-hash-object" :to="localePath({ name: 'about', hash: '#my-hash' })">{{
+          <NuxtLink
+            id="link-about-hash-object"
+            :to="localePath({ name: 'about', hash: '#my-hash' })"
+          >{{
             $t('about')
           }}</NuxtLink>
         </li>
@@ -133,12 +162,18 @@ useHead(() => ({
           </NuxtLink>
         </li>
         <li class="path-spaces">
-          <NuxtLink id="link-page-with-spaces" :to="localePath({ name: 'page with spaces' })">
+          <NuxtLink
+            id="link-page-with-spaces"
+            :to="localePath({ name: 'page with spaces' })"
+          >
             To the page with spaces!
           </NuxtLink>
         </li>
         <li class="path-spaces-encoded">
-          <NuxtLink id="link-page-with-spaces-encoded" :to="localePath(`/${encodeURI('page with spaces')}`)">
+          <NuxtLink
+            id="link-page-with-spaces-encoded"
+            :to="localePath(`/${encodeURI('page with spaces')}`)"
+          >
             To the page with spaces!
           </NuxtLink>
         </li>
@@ -148,19 +183,32 @@ useHead(() => ({
       <h3>NuxtLinkLocale</h3>
       <ul>
         <li class="name">
-          <NuxtLinkLocale :to="'index'">{{ $t('home') }}</NuxtLinkLocale>
+          <NuxtLinkLocale :to="'index'">
+            {{ $t('home') }}
+          </NuxtLinkLocale>
         </li>
         <li class="path">
-          <NuxtLinkLocale :to="'/'">{{ $t('home') }}</NuxtLinkLocale>
+          <NuxtLinkLocale :to="'/'">
+            {{ $t('home') }}
+          </NuxtLinkLocale>
         </li>
         <li class="named-with-locale">
-          <NuxtLinkLocale :to="'index'" :locale="'fr'">Homepage in French</NuxtLinkLocale>
+          <NuxtLinkLocale
+            :to="'index'"
+            :locale="'fr'"
+          >
+            Homepage in French
+          </NuxtLinkLocale>
         </li>
         <li class="nest-path">
-          <NuxtLinkLocale :to="'/user/profile'">Route by path to: {{ $t('profile') }}</NuxtLinkLocale>
+          <NuxtLinkLocale :to="'/user/profile'">
+            Route by path to: {{ $t('profile') }}
+          </NuxtLinkLocale>
         </li>
         <li class="nest-named">
-          <NuxtLinkLocale :to="'user-profile'">Route by name to: {{ $t('profile') }}</NuxtLinkLocale>
+          <NuxtLinkLocale :to="'user-profile'">
+            Route by name to: {{ $t('profile') }}
+          </NuxtLinkLocale>
         </li>
         <li class="object-with-named">
           <NuxtLinkLocale :to="{ name: 'category-slug', params: { slug: category.slug } }">
@@ -168,65 +216,105 @@ useHead(() => ({
           </NuxtLinkLocale>
         </li>
         <li class="external-url">
-          <NuxtLinkLocale :to="'https://nuxt.com/'">Nuxt.com</NuxtLinkLocale>
+          <NuxtLinkLocale :to="'https://nuxt.com/'">
+            Nuxt.com
+          </NuxtLinkLocale>
         </li>
         <li class="target-blank-with-locale">
-          <NuxtLinkLocale to="about" locale="fr" target="_blank">About us in French (new tab)</NuxtLinkLocale>
+          <NuxtLinkLocale
+            to="about"
+            locale="fr"
+            target="_blank"
+          >
+            About us in French (new tab)
+          </NuxtLinkLocale>
         </li>
         <li class="state">
-          <NuxtLinkLocale :to="{ path: '/', query: { foo: 'bar' }, state: { hello: 'world' } }"
-            >Index with state</NuxtLinkLocale
-          >
+          <NuxtLinkLocale :to="{ path: '/', query: { foo: 'bar' }, state: { hello: 'world' } }">
+            Index with state
+          </NuxtLinkLocale>
         </li>
       </ul>
     </section>
     <section id="switch-locale-path-usages">
       <h3>switchLocalePath</h3>
       <ul>
-        <li v-for="locale of normalizedLocales" :key="locale.code" :class="`switch-to-${locale.code}`">
+        <li
+          v-for="locale of normalizedLocales"
+          :key="locale.code"
+          :class="`switch-to-${locale.code}`"
+        >
           <NuxtLink :to="switchLocalePath(locale.code)">{{ locale.name }}</NuxtLink>
         </li>
       </ul>
     </section>
     <section id="locale-route-usages">
       <h3>localeRoute</h3>
-      <button @click="onClick">Show profile</button>
+      <button @click="onClick">
+        Show profile
+      </button>
     </section>
     <section>
       <code id="register-module">{{ $t('moduleLayerText') }}</code>
     </section>
     <section>
-      <p id="app-config-name">{{ appConfig?.myProject?.name }}</p>
+      <p id="app-config-name">
+        {{ appConfig?.myProject?.name }}
+      </p>
     </section>
     <section>
-      <div id="layer-message">{{ $t('thanks') }}</div>
-      <div id="snake-case">{{ $t('snakeCaseText') }}</div>
-      <div id="pascal-case">{{ $t('pascalCaseText') }}</div>
-      <div id="fallback-message">{{ $t('uniqueTranslation') }}</div>
+      <div id="layer-message">
+        {{ $t('thanks') }}
+      </div>
+      <div id="snake-case">
+        {{ $t('snakeCaseText') }}
+      </div>
+      <div id="pascal-case">
+        {{ $t('pascalCaseText') }}
+      </div>
+      <div id="fallback-message">
+        {{ $t('uniqueTranslation') }}
+      </div>
     </section>
     <section>
-      <div id="home-header">{{ $t('modifier') }}</div>
+      <div id="home-header">
+        {{ $t('modifier') }}
+      </div>
     </section>
     <section>
-      <div id="fallback-key">{{ $t('fallbackMessage') }}</div>
+      <div id="fallback-key">
+        {{ $t('fallbackMessage') }}
+      </div>
     </section>
     <section>
-      <div id="runtime-config">{{ $t('runtimeKey') }}</div>
+      <div id="runtime-config">
+        {{ $t('runtimeKey') }}
+      </div>
     </section>
     <section>
-      <div id="module-layer-base-key">{{ $t('moduleLayerBaseKey') }}</div>
-      <div id="module-layer-base-key-named">{{ $t('moduleLayerBaseKeyNamed', { name: 'bar' }) }}</div>
+      <div id="module-layer-base-key">
+        {{ $t('moduleLayerBaseKey') }}
+      </div>
+      <div id="module-layer-base-key-named">
+        {{ $t('moduleLayerBaseKeyNamed', { name: 'bar' }) }}
+      </div>
     </section>
     <section>
-      <div id="issue-2094">{{ $t('variableExportedI18nConfig') }}</div>
+      <div id="issue-2094">
+        {{ $t('variableExportedI18nConfig') }}
+      </div>
     </section>
     <section>
       <code id="global-scope-properties">{{ localeProperties }}</code>
       <LocalScope />
     </section>
     <section>
-      <div id="install-module-locale">{{ $t('installerModuleLocaleMessage') }}</div>
-      <div id="install-module-vue-i18n">{{ $t('installerModuleVueI18nMessage') }}</div>
+      <div id="install-module-locale">
+        {{ $t('installerModuleLocaleMessage') }}
+      </div>
+      <div id="install-module-vue-i18n">
+        {{ $t('installerModuleVueI18nMessage') }}
+      </div>
     </section>
   </div>
 </template>

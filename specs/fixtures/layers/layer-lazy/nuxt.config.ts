@@ -6,41 +6,41 @@ export default defineNuxtConfig({
         code: 'en',
         language: 'en-US',
         file: 'en.json',
-        name: 'English'
+        name: 'English',
       },
       {
         code: 'fr',
         language: 'fr-FR',
         file: 'fr.json',
-        name: 'Français'
+        name: 'Français',
       },
       {
         code: 'nl',
         language: 'nl-NL',
         file: 'nl.json',
-        name: 'Nederlands'
+        name: 'Nederlands',
       },
       {
         code: 'be',
         language: 'nl-BE',
         file: 'nl.json',
-        name: 'Nederlands (België)'
+        name: 'Nederlands (België)',
       },
       {
         code: 'kr',
         language: 'kr-KO',
         file: 'kr.json',
-        name: '한국어'
-      }
+        name: '한국어',
+      },
     ],
     customRoutes: 'config',
     pages: {
       'layer-parent': {
-        nl: '/layer-ouder'
+        nl: '/layer-ouder',
       },
       'layer-parent/layer-child': {
-        nl: '/layer-ouder/layer-kind'
-      }
-    }
-  }
+        nl: '/layer-ouder/layer-kind',
+      },
+    },
+  },
 })

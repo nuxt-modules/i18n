@@ -8,18 +8,17 @@ describe('#3407', async () => {
     browser: true,
     // this is an SSG test
     prerender: true,
-    port: [7777, 7776]
+    port: [7777, 7776],
   })
 
   test('`detectBrowserLanguage: false` disables locale detection in SSG', async () => {
     const page = await createPage('/')
-    const heading = await page.locator('#translated-heading').innerText()
-    expect(heading).toEqual(`Problema de i18n SSG`)
+    const heading = page.locator('#translated-heading')
+    expect(await heading.innerText()).toEqual(`Problema de i18n SSG`)
 
     const enPath = url('/', 7776)
     await page.goto(enPath)
     await waitForHydration(page, enPath, 'hydration')
-    const heading2 = await page.locator('#translated-heading').innerText()
-    expect(heading2).toEqual(`i18n SSG issue`)
+    expect(await heading.innerText()).toEqual(`i18n SSG issue`)
   })
 })

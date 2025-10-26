@@ -2,8 +2,8 @@ export default {
   messages: {
     en: {
       about: 'Should be overridden',
-      uniqueTranslation: 'Unique translation'
-    }
+      uniqueTranslation: 'Unique translation',
+    },
   },
   modifiers: {
     // @ts-ignore
@@ -11,6 +11,6 @@ export default {
       str
         .split(' ')
         .map(s => s.slice(0, 1).toUpperCase() + s.slice(1))
-        .join('')
-  }
+        .join(''),
+  },
 }

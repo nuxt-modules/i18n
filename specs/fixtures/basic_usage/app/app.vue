@@ -8,13 +8,16 @@ const skipSettingLocale = useRuntimeConfig().public.i18n.skipSettingLocaleOnNavi
 const pageTransition = {
   name: 'my',
   mode: 'out-in',
-  onBeforeEnter: async () => await finalizePendingLocaleChange()
+  onBeforeEnter: async () => await finalizePendingLocaleChange(),
 }
 </script>
 
 <template>
   <NuxtLayout>
-    <NuxtPage id="nuxt-page" :transition="skipSettingLocale ? pageTransition : undefined" />
+    <NuxtPage
+      id="nuxt-page"
+      :transition="skipSettingLocale ? pageTransition : undefined"
+    />
   </NuxtLayout>
 </template>
 

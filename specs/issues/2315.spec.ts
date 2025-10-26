@@ -4,14 +4,11 @@ import { setup, url, createPage } from '../utils'
 
 describe('#2315', async () => {
   await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/issues/2315`, import.meta.url))
+    rootDir: fileURLToPath(new URL(`../fixtures/issues/2315`, import.meta.url)),
   })
 
   test('locale scope', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
-
+    const page = await createPage(url('/'))
     expect(await page.locator('#msg').innerText()).toEqual('Hello, local!')
   })
 })

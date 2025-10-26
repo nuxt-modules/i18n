@@ -11,29 +11,44 @@
       {{ locale.name }}
     </button>
 
-    <hr />
+    <hr>
 
     <h3>Current language:</h3>
     <p>
-      <img id="flag" :src="`/flags/${currentLocale.flag}.svg`" :alt="currentLocale.flag" :key="currentLocale.flag" />
+      <img
+        id="flag"
+        :key="currentLocale.flag"
+        :src="`/flags/${currentLocale.flag}.svg`"
+        :alt="currentLocale.flag"
+      >
 
       <img
         v-if="isMounted"
         id="flag-mounted"
+        :key="currentLocale.flag"
         :src="`/flags/${currentLocale.flag}.svg`"
         :alt="currentLocale.flag"
-        :key="currentLocale.flag"
-      />
+      >
 
       <span>{{ currentLocale.name }}</span>
     </p>
 
-    <hr />
+    <hr>
 
     <h3>Translation test</h3>
-    <p id="html-msg" v-html="$t('test')" :key="currentLocale" />
-    <p id="html-msg-mounted" v-html="$t('test')" v-if="isMounted" />
-    <p id="test-msg">{{ $t('test') }}</p>
+    <p
+      id="html-msg"
+      :key="currentLocale"
+      v-html="$t('test')"
+    />
+    <p
+      v-if="isMounted"
+      id="html-msg-mounted"
+      v-html="$t('test')"
+    />
+    <p id="test-msg">
+      {{ $t('test') }}
+    </p>
   </div>
 </template>
 

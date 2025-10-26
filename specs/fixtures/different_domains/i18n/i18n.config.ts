@@ -11,9 +11,9 @@ export default {
       dynamic: 'Dynamique',
       pages: {
         blog: {
-          article: "Cette page d'article de blog"
-        }
-      }
+          article: 'Cette page d\'article de blog',
+        },
+      },
     },
     en: {
       welcome: 'Welcome',
@@ -24,9 +24,9 @@ export default {
       dynamic: 'Dynamic',
       pages: {
         blog: {
-          article: 'This is blog article page'
-        }
-      }
+          article: 'This is blog article page',
+        },
+      },
     },
     no: {
       welcome: 'Velkommen',
@@ -37,9 +37,9 @@ export default {
       dynamic: 'Dynamic',
       pages: {
         blog: {
-          article: 'Dette er bloggartikkelsiden'
-        }
-      }
+          article: 'Dette er bloggartikkelsiden',
+        },
+      },
     },
     kr: {
       welcome: '환영하다',
@@ -50,10 +50,10 @@ export default {
       dynamic: '동적',
       pages: {
         blog: {
-          article: '여기는 블로그 게시물 페이지입니다'
-        }
-      }
-    }
+          article: '여기는 블로그 게시물 페이지입니다',
+        },
+      },
+    },
   },
-  fallbackLocale: 'en'
+  fallbackLocale: 'en',
 }

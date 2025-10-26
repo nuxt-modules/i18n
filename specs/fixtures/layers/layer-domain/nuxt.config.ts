@@ -7,22 +7,22 @@ export default defineNuxtConfig({
         language: 'en-US',
         file: 'en.json',
         domain: 'layer-en.example.com',
-        name: 'English'
+        name: 'English',
       },
       {
         code: 'nl',
         language: 'nl-NL',
         file: 'nl.json',
         domain: 'layer-nl.example.com',
-        name: 'Nederlands'
+        name: 'Nederlands',
       },
       {
         code: 'ja',
         language: 'ja',
         file: 'ja.json',
         domain: 'layer-ja.example.com',
-        name: 'Japanese'
-      }
-    ]
-  }
+        name: 'Japanese',
+      },
+    ],
+  },
 })

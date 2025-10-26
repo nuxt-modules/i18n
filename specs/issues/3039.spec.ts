@@ -5,7 +5,7 @@ import { createPage, setup } from '../utils'
 describe('#3039', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/issues/3039`, import.meta.url)),
-    browser: true
+    browser: true,
   })
 
   test('does not detect and set locale client-side if locale has been detected and set server-side', async () => {

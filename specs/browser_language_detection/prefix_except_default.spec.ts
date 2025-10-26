@@ -13,10 +13,10 @@ await setup({
       detectBrowserLanguage: {
         useCookie: true,
         redirectOn: 'root',
-        alwaysRedirect: true
-      }
-    }
-  }
+        alwaysRedirect: true,
+      },
+    },
+  },
 })
 
 describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async () => {
@@ -27,10 +27,10 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
           detectBrowserLanguage: {
             useCookie: true,
             redirectOn: 'root',
-            alwaysRedirect: true
-          }
-        }
-      }
+            alwaysRedirect: true,
+          },
+        },
+      },
     })
     const { page } = await renderPage('/', { locale: 'en' })
     const ctx = page.context()
@@ -61,10 +61,10 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
           i18n: {
             detectBrowserLanguage: {
               useCookie: true,
-              redirectOn: 'root'
-            }
-          }
-        }
+              redirectOn: 'root',
+            },
+          },
+        },
       })
     })
 

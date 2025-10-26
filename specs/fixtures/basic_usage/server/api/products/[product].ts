@@ -9,13 +9,13 @@ import productsData from '../products-data'
 const locales: LocaleMessages<DefineLocaleMessage> = {
   'en-GB': {
     settings: {
-      profile: 'Profile'
-    }
+      profile: 'Profile',
+    },
   },
-  ja: {}
+  'ja': {},
 }
 
-export default defineEventHandler(event => {
+export default defineEventHandler((event) => {
   const slug = event.context.params?.product
   const found = productsData.find(x => Object.values(x.slugs).includes(slug))
 

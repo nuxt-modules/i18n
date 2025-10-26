@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { defu } from 'defu'
 import type { TestContext, TestOptions } from './types'
-import { LaunchOptions } from 'playwright-core'
+import type { LaunchOptions } from 'playwright-core'
 
 let currentContext: TestContext | undefined
 
@@ -21,12 +21,12 @@ export function createTestContext(options: Partial<TestOptions>): TestContext {
     runner: 'vitest' as const,
     browserOptions: {
       type: 'chromium' as const,
-      launch: {} satisfies LaunchOptions
-    }
+      launch: {} satisfies LaunchOptions,
+    },
   })
 
   return setTestContext({
-    options: _options as TestOptions
+    options: _options as TestOptions,
   })
 }
 

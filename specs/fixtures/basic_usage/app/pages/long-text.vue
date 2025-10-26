@@ -6,6 +6,8 @@ const { t } = useI18n()
 
 <template>
   <div>
-    <p id="long-text">{{ t('big') }}</p>
+    <p id="long-text">
+      {{ t('big') }}
+    </p>
   </div>
 </template>
