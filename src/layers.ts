@@ -1,5 +1,5 @@
 import { useNuxt } from '@nuxt/kit'
-import { getLayerI18n, mergeConfigLocales, resolveVueI18nConfigInfo, getLocaleFiles, logger } from './utils'
+import { getLayerI18n, getLocaleFiles, logger, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
 
 import { isAbsolute, parse, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
@@ -15,13 +15,13 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
 
   for (const layer of layers) {
     const layerI18n = getLayerI18n(layer)
-    if (layerI18n == null) continue
+    if (layerI18n == null) { continue }
 
     const configLocation = project.config.rootDir === layer.config.rootDir ? 'project' : 'extended'
     const layerHint = `In ${configLocation} layer (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
 
     try {
-      if (!layerI18n.langDir) continue
+      if (!layerI18n.langDir) { continue }
       if (isString(layerI18n.langDir) && isAbsolute(layerI18n.langDir)) {
         logger.warn(
           `${layerHint} \`langDir\` is set to an absolute path (\`${layerI18n.langDir}\`) but should be set a path relative to \`srcDir\` (\`${layer.config.srcDir}\`). `
@@ -33,15 +33,14 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
         if (isString(locale)) {
           throw new Error('When using the `langDir` option the `locales` must be a list of objects.')
         }
-        if (locale.file || locale.files) continue
+        if (locale.file || locale.files) { continue }
         throw new Error(
           'All locales must have the `file` or `files` property set when using `langDir`.\n'
           + `Found none in:\n${JSON.stringify(locale, null, 2)}.`,
         )
       }
-    }
-    catch (err) {
-      if (!(err instanceof Error)) throw err
+    } catch (err) {
+      if (!(err instanceof Error)) { throw err }
       throw new Error(`[nuxt-i18n] ${layerHint} ${err.message}`)
     }
   }
@@ -61,7 +60,7 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   if (isAbsolute(ctx.options.langDir || '')) {
     const config: LocaleConfig<LocaleObject[]> = { langDir: ctx.options.langDir!, locales: [] }
     for (const locale of ctx.options.locales) {
-      if (isString(locale) || !getLocaleFiles(locale)?.[0]?.path?.startsWith(config.langDir)) continue
+      if (isString(locale) || !getLocaleFiles(locale)?.[0]?.path?.startsWith(config.langDir)) { continue }
       config.locales.push(locale)
     }
     configs.push(config)
@@ -70,7 +69,7 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   // collect layer configs
   for (const layer of nuxt.options._layers) {
     const i18n = getLayerI18n(layer)
-    if (i18n?.locales == null) continue
+    if (i18n?.locales == null) { continue }
 
     const langDir = resolve(resolveI18nDir(layer, i18n), i18n.langDir ?? 'locales')
     configs.push(assign({}, i18n, { langDir, locales: i18n.locales }))

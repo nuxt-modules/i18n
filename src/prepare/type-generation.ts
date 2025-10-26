@@ -7,7 +7,7 @@ import type { Nuxt } from '@nuxt/schema'
 import type { I18nNuxtContext } from '../context'
 
 export async function prepareTypeGeneration({ resolver, options }: I18nNuxtContext, nuxt: Nuxt) {
-  if (options.experimental.typedOptionsAndMessages === false || !nuxt.options.dev) return
+  if (options.experimental.typedOptionsAndMessages === false || !nuxt.options.dev) { return }
 
   const declarationFile = './types/i18n-messages.d.ts'
   const dtsFile = resolver.resolve(nuxt.options.buildDir, declarationFile)

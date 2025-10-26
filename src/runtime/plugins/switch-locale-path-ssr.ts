@@ -16,7 +16,7 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const switchLocalePath = useSwitchLocalePath(nuxt)
     nuxt.hook('app:rendered', (ctx) => {
-      if (ctx.renderResult?.html == null) return
+      if (ctx.renderResult?.html == null) { return }
 
       ctx.renderResult.html = ctx.renderResult.html.replaceAll(
         switchLocalePathLinkWrapperExpr,

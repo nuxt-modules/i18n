@@ -6,7 +6,7 @@ import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routin
  * Removes default routes depending on domain
  */
 export function setupMultiDomainLocales(defaultLocale: string, router: Router = useRouter()) {
-  if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') return
+  if (__I18N_STRATEGY__ !== 'prefix_except_default' && __I18N_STRATEGY__ !== 'prefix_and_default') { return }
 
   // adjust routes to match the domain's locale and structure
   for (const route of router.getRoutes()) {

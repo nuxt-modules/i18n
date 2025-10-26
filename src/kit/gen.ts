@@ -42,7 +42,7 @@ export type LocalizeRouteParams = {
 }
 
 function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
-  if (!parentLocalizedPath || parentLocalizedPath === '/') return localizedPath
+  if (!parentLocalizedPath || parentLocalizedPath === '/') { return localizedPath }
 
   if (localizedPath[0] !== '/') {
     return localizedPath
@@ -61,7 +61,7 @@ function handlePathNesting(localizedPath: string, parentLocalizedPath: string = 
 
 function createHandleTrailingSlash(ctx: RouteContext): RouteContext['handleTrailingSlash'] {
   return (localizedPath: string, hasParent: boolean) => {
-    if (!localizedPath) return ''
+    if (!localizedPath) { return '' }
     const isChildWithRelativePath = hasParent && !localizedPath.startsWith('/')
     return localizedPath.replace(/\/+$/, '') + (ctx.trailingSlash ? '/' : '') || (isChildWithRelativePath ? '' : '/')
   }
@@ -122,7 +122,7 @@ export function localizeSingleRoute(
 
     const data = { route, prefixed, unprefixed, locale, usePrefix, ctx, options }
     for (const localizer of ctx.localizers) {
-      if (!localizer.enabled(data)) continue
+      if (!localizer.enabled(data)) { continue }
       resultRoutes.push(...localizer.localizer(data))
     }
   }
@@ -161,9 +161,9 @@ type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]
 function createDefaultOptionsResolver(opts: { optionsResolver?: RouteOptionsResolver }): RouteOptionsResolver {
   return (route, locales) => {
     // unable to resolve options
-    if (route.redirect && !route.file) return undefined
+    if (route.redirect && !route.file) { return undefined }
     // continue with default options if unset
-    if (opts?.optionsResolver == null) return { locales, paths: {} }
+    if (opts?.optionsResolver == null) { return { locales, paths: {} } }
     return opts.optionsResolver(route, locales)
   }
 }
@@ -175,7 +175,7 @@ function createLocalizeRouteName(opts: {
   const separator = opts.routesNameSeparator || '___'
   const defaultSuffix = opts.defaultLocaleRouteNameSuffix || 'default'
   return (route, locale, isDefault) => {
-    if (route.name == null) return
+    if (route.name == null) { return }
     return !isDefault
       ? route.name + separator + locale
       : route.name + separator + locale + separator + defaultSuffix

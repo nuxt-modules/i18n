@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Locale, FallbackLocale } from 'vue-i18n'
+import type { FallbackLocale, Locale } from 'vue-i18n'
 
 /**
  * The locale config for nuxt i18n options

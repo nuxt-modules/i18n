@@ -1,21 +1,21 @@
-import { isEqual, joinURL, withoutTrailingSlash, withTrailingSlash } from 'ufo'
+import { isEqual, joinURL, withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 import { navigateTo, useHead, useNuxtApp, useRequestEvent, useRequestURL, useRouter } from '#imports'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
 import { getRouteBaseName } from '#i18n-kit/routing'
 import {
-  localePath,
-  switchLocalePath,
   type RouteLike,
   type RouteLikeWithName,
   type RouteLikeWithPath,
+  localePath,
+  switchLocalePath,
 } from './routing/routing'
 import { useNuxtI18nContext } from './context'
 import { getDefaultLocaleForDomain, isSupportedLocale } from './shared/locales'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { RouteLocationPathRaw, Router, RouteRecordNameGeneric } from 'vue-router'
+import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
 import type {
   BaseUrlResolveHandler,
   DetectBrowserLanguageOptions,
@@ -126,7 +126,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     },
     localePathPayload: getLocalePathPayload(),
     routingOptions: {
-      defaultLocale: defaultLocale,
+      defaultLocale,
       strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__),
     },
@@ -262,7 +262,7 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
 }
 
 export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
-  if (!__I18N_ROUTING__ || __DIFFERENT_DOMAINS__) return
+  if (!__I18N_ROUTING__ || __DIFFERENT_DOMAINS__) { return }
 
   const ctx = useNuxtI18nContext(nuxtApp)
   const _ctx = useComposableContext(nuxtApp)

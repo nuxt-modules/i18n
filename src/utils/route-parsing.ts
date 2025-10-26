@@ -90,11 +90,9 @@ export function parseSegment(segment: string) {
         buffer = ''
         if (c === '[') {
           state = SegmentParserState.dynamic
-        }
-        else if (c === '(') {
+        } else if (c === '(') {
           state = SegmentParserState.group
-        }
-        else {
+        } else {
           i--
           state = SegmentParserState.static
         }
@@ -104,12 +102,10 @@ export function parseSegment(segment: string) {
         if (c === '[') {
           consumeBuffer()
           state = SegmentParserState.dynamic
-        }
-        else if (c === '(') {
+        } else if (c === '(') {
           consumeBuffer()
           state = SegmentParserState.group
-        }
-        else {
+        } else {
           buffer += c
         }
         break
@@ -128,25 +124,20 @@ export function parseSegment(segment: string) {
         if (c === ']' && (state !== SegmentParserState.optional || segment[i - 1] === ']')) {
           if (!buffer) {
             throw new Error('Empty param')
-          }
-          else {
+          } else {
             consumeBuffer()
           }
           state = SegmentParserState.initial
-        }
-        else if (c === ')' && state === SegmentParserState.group) {
+        } else if (c === ')' && state === SegmentParserState.group) {
           if (!buffer) {
             throw new Error('Empty group')
-          }
-          else {
+          } else {
             consumeBuffer()
           }
           state = SegmentParserState.initial
-        }
-        else if (c && PARAM_CHAR_RE.test(c)) {
+        } else if (c && PARAM_CHAR_RE.test(c)) {
           buffer += c
-        }
-        else {
+        } else {
           // console.debug(`[pages]Ignored character "${c}" while building param "${buffer}" from "segment"`)
         }
         break

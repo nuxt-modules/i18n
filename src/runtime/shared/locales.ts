@@ -16,8 +16,8 @@ export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<stri
 }
 
 function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): string[] {
-  if (fallback === false) return []
-  if (isArray(fallback)) return fallback
+  if (fallback === false) { return [] }
+  if (isArray(fallback)) { return fallback }
 
   let fallbackLocales: string[] = []
   if (isString(fallback)) {
@@ -29,7 +29,7 @@ function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): st
 
   const targets = [...locales, 'default']
   for (const locale of targets) {
-    if (locale in fallback == false) continue
+    if (locale in fallback == false) { continue }
     fallbackLocales = [...fallbackLocales, ...fallback[locale]!.filter(Boolean)]
   }
 

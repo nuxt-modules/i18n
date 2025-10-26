@@ -1,6 +1,6 @@
 import { isString } from '@intlify/shared'
 import { genDynamicImport, genSafeVariableName, genString } from 'knitwork'
-import { resolve, relative, join, basename } from 'pathe'
+import { basename, join, relative, resolve } from 'pathe'
 import { asI18nVirtual } from './transform/utils'
 
 import type { Nuxt } from '@nuxt/schema'

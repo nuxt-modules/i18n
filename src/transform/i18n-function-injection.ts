@@ -6,7 +6,7 @@
  */
 
 import MagicString from 'magic-string'
-import { walk, ScopeTracker, parseAndWalk } from 'oxc-walker'
+import { ScopeTracker, parseAndWalk, walk } from 'oxc-walker'
 import { createUnplugin } from 'unplugin'
 import { isVue } from './utils'
 import type { BundlerPluginOptions } from './utils'
@@ -44,12 +44,12 @@ export const TransformI18nFunctionPlugin = (options: BundlerPluginOptions) =>
         },
         handler(code, id) {
           const script = extractScriptSetupContent(code)
-          if (!script) return
+          if (!script) { return }
 
           // replace .vue extension with .ts or .tsx
           const filepath = withoutQuery(id).replace(/\.\w+$/, '.' + script.loader)
           const missing = collectMissingI18nFunctions(script.code, filepath)
-          if (!missing.size) return
+          if (!missing.size) { return }
 
           // only add variables when used without having been declared
           const assignments: string[] = []
@@ -79,10 +79,10 @@ export function collectMissingI18nFunctions(script: string, id: string) {
   walk(ast.program, {
     scopeTracker,
     enter(node) {
-      if (node.type !== 'CallExpression' || node.callee.type !== 'Identifier') return
+      if (node.type !== 'CallExpression' || node.callee.type !== 'Identifier') { return }
       const name = node.callee.name
       // check if function is used without having been declared
-      if (!name || !TRANSLATION_FUNCTIONS.includes(name) || scopeTracker.isDeclared(name)) return
+      if (!name || !TRANSLATION_FUNCTIONS.includes(name) || scopeTracker.isDeclared(name)) { return }
 
       missing.add(name)
     },

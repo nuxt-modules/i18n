@@ -1,6 +1,6 @@
-import { computed, getCurrentScope, onScopeDispose, ref, useHead, useRequestEvent, watch, type Ref } from '#imports'
+import { type Ref, computed, getCurrentScope, onScopeDispose, ref, useHead, useRequestEvent, watch } from '#imports'
 import { assign } from '@intlify/shared'
-import { localeHead as _localeHead, type HeadContext } from '#i18n-kit/head'
+import { type HeadContext, localeHead as _localeHead } from '#i18n-kit/head'
 
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { ComposableContext } from '../utils'
@@ -42,8 +42,7 @@ function createHeadContext(
     getRouteWithoutQuery: () => {
       try {
         return assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })
-      }
-      catch {
+      } catch {
         return undefined
       }
     },

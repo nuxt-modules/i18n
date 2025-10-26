@@ -46,8 +46,7 @@ const _getMergedMessages = async (locale: string, fallbackLocales: string[]) => 
     deepCopy(message, merged)
 
     return merged
-  }
-  catch (e) {
+  } catch (e) {
     throw new Error('Failed to merge messages: ' + (e as Error).message)
   }
 }
@@ -75,8 +74,7 @@ const _getAllMergedMessages = async (locales: string[]) => {
     }
 
     return merged
-  }
-  catch (e) {
+  } catch (e) {
     throw new Error('Failed to merge messages: ' + (e as Error).message)
   }
 }

@@ -1,4 +1,4 @@
-import { useSwitchLocalePath, type Locale } from '#i18n'
+import { type Locale, useSwitchLocalePath } from '#i18n'
 import { defineNuxtLink, useNuxtApp } from '#imports'
 import { Comment, computed, defineComponent, h } from 'vue'
 import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'

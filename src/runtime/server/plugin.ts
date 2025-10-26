@@ -1,7 +1,7 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { defineNitroPlugin, useStorage } from 'nitropack/runtime'
-import { tryUseI18nContext, createI18nContext, useI18nContext } from './context'
+import { createI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
 import { createLocaleConfigs, getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
@@ -13,7 +13,7 @@ import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
 
-import { getRequestURL, sendRedirect, type H3Event, setCookie } from 'h3'
+import { type H3Event, getRequestURL, sendRedirect, setCookie } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainFromLocale } from '../shared/domain'
@@ -52,8 +52,7 @@ export default defineNitroPlugin(async (nitro) => {
     const cacheStorage = useStorage('cache')
     const cachedKeys = await cacheStorage.getKeys('nitro:handlers:i18n')
     await Promise.all(cachedKeys.map(key => cacheStorage.removeItem(key)))
-  }
-  catch {
+  } catch {
     // no-op
   }
 
@@ -67,7 +66,7 @@ export default defineNitroPlugin(async (nitro) => {
   }
 
   const getDomainFromLocale = (event: H3Event, locale: string) => {
-    if (!__MULTI_DOMAIN_LOCALES__ && !__DIFFERENT_DOMAINS__) return
+    if (!__MULTI_DOMAIN_LOCALES__ && !__DIFFERENT_DOMAINS__) { return }
     return domainFromLocale(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }), locale)
   }
 
@@ -122,17 +121,16 @@ export default defineNitroPlugin(async (nitro) => {
         = (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path)
           || matchLocalized(rootRedirect.path, locale, defaultLocale)
       redirectCode = rootRedirect.code
-    }
-    else if (runtimeI18n.redirectStatusCode) {
+    } else if (runtimeI18n.redirectStatusCode) {
       redirectCode = runtimeI18n.redirectStatusCode
     }
 
     switch (detection.redirectOn) {
       case 'root':
-        if (requestURL.pathname !== '/') break
+        if (requestURL.pathname !== '/') { break }
       // fallthrough (root has no prefix)
       case 'no prefix':
-        if (pathLocale) break
+        if (pathLocale) { break }
       // fallthrough to resolve
       case 'all':
         resolvedPath ??= getLocalizedMatch(locale)
@@ -164,7 +162,7 @@ export default defineNitroPlugin(async (nitro) => {
   })
 
   nitro.hooks.hook('render:before', async ({ event }) => {
-    if (!__I18N_SERVER_REDIRECT__) return
+    if (!__I18N_SERVER_REDIRECT__) { return }
 
     const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initialize(event) : useI18nContext(event)
     const url = getRequestURL(event)
@@ -194,7 +192,7 @@ export default defineNitroPlugin(async (nitro) => {
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
     const ctx = tryUseI18nContext(event)
     if (__I18N_PRELOAD__) {
-      if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) return
+      if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) { return }
 
       // only include the messages used in the current page
       if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
@@ -214,9 +212,8 @@ export default defineNitroPlugin(async (nitro) => {
         htmlContext.bodyAppend.unshift(
           `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`,
         )
-      }
-      catch (_) {
-        console.log(_)
+      } catch (_) {
+        console.warn(_)
       }
     }
 

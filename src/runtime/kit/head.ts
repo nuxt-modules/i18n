@@ -123,13 +123,13 @@ function createLocaleMap(locales: HeadLocale[]) {
 }
 
 function getHreflangLinks(options: HeadContext) {
-  if (!options.hreflangLinks) return []
+  if (!options.hreflangLinks) { return [] }
 
   const links: MetaAttrs[] = []
   const localeMap = createLocaleMap(options.locales)
   for (const [language, locale] of localeMap.entries()) {
     const link = getHreflangLink(language, locale, options)
-    if (!link) continue
+    if (!link) { continue }
 
     links.push(link)
     if (options.defaultLocale && options.defaultLocale === locale.code && links[0]!.hreflang !== 'x-default') {
@@ -151,7 +151,7 @@ function getHreflangLink(
   routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
 ): MetaAttrs | undefined {
   const localePath = options.getLocalizedRoute(locale.code, routeWithoutQuery)
-  if (!localePath) return undefined
+  if (!localePath) { return undefined }
 
   const href = withQuery(
     hasProtocol(localePath) ? localePath : joinURL(options.baseUrl, localePath),
@@ -167,12 +167,12 @@ function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()
     Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) }),
   )
 
-  if (!currentRoute) return ''
+  if (!currentRoute) { return '' }
   return withQuery(joinURL(options.baseUrl, currentRoute.path), getCanonicalQueryParams(options))
 }
 
 function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
-  if (!href) return []
+  if (!href) { return [] }
   return [strictSeo ? { rel: 'canonical', href } : { [options.key]: 'i18n-can', rel: 'canonical', href }]
 }
 
@@ -194,7 +194,7 @@ function getCanonicalQueryParams(options: HeadContext, route = options.getCurren
 }
 
 function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
-  if (!href) return []
+  if (!href) { return [] }
   return [
     strictSeo
       ? { property: 'og:url', content: href }
@@ -203,7 +203,7 @@ function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAt
 }
 
 function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
-  if (!currentLanguage) return []
+  if (!currentLanguage) { return [] }
   return [
     strictSeo
       ? { property: 'og:locale', content: formatOgLanguage(currentLanguage) }

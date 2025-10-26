@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useStorage } from 'nitropack/runtime'
 import { prefixStorage } from 'unstorage'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface CacheOptions<ArgsT extends unknown[] = any[]> {
   name?: string
   getKey: (...args: ArgsT) => string
@@ -20,7 +20,6 @@ type CachedValue<T> = { ttl: number, value: T, mtime: number }
  * Create a cached function
  * Adapted from nitropack/runtime `cachedFunction`
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
   fn: (...args: ArgsT) => T | Promise<T>,
   opts: CacheOptions<ArgsT>,
@@ -37,10 +36,8 @@ export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
 
     try {
       return await pending[key]
-    }
-    finally {
+    } finally {
       // Ensure we always clean up, whether the promise resolved or rejected.
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete pending[key]
     }
   }

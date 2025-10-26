@@ -1,8 +1,8 @@
-import { deepCopy, create, isFunction, toTypeString } from '@intlify/shared'
+import { create, deepCopy, isFunction, toTypeString } from '@intlify/shared'
 import { useNuxtApp } from '#app'
 import { createDefu } from 'defu'
 
-import type { I18nOptions, Locale, LocaleMessages, DefineLocaleMessage } from 'vue-i18n'
+import type { DefineLocaleMessage, I18nOptions, Locale, LocaleMessages } from 'vue-i18n'
 import type { VueI18nConfig } from '#internal-i18n-types'
 
 type MessageLoaderFunction<T = DefineLocaleMessage> = (locale: Locale) => Promise<LocaleMessages<T>>
@@ -18,7 +18,7 @@ const cacheMessages = new Map<string, { ttl: number, value: LocaleMessages<Defin
 
 const merger = createDefu((obj, key, value) => {
   if (key === 'messages' || key === 'datetimeFormats' || key === 'numberFormats') {
-    // @ts-ignore
+    // @ts-expect-error generic object
     obj[key] ??= create(null)
     deepCopy(value, obj[key])
     return true
@@ -57,8 +57,7 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
   try {
     const getter = await nuxtApp.runWithContext(loader.load).then(x => (isResolvedModule(x) ? x.default : x))
     return isFunction(getter) ? await nuxtApp.runWithContext(() => getter(locale)) : getter
-  }
-  catch (e: unknown) {
+  } catch (e: unknown) {
     throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message)
   }
 }
@@ -102,11 +101,11 @@ export async function getLocaleMessagesMergedCached(locale: string, loaders: Loc
  * - if `cacheTime` is set to 0, cache never expires
  */
 function getCachedMessages(loader: LocaleLoader) {
-  if (!__I18N_CACHE__) return
-  if (loader.cache === false) return
+  if (!__I18N_CACHE__) { return }
+  if (loader.cache === false) { return }
 
   const cache = cacheMessages.get(loader.key)
-  if (cache == null) return
+  if (cache == null) { return }
 
   // if cacheTime is 0, always return cache
   return __I18N_CACHE_LIFETIME__ === 0 || cache.ttl > Date.now() ? cache.value : undefined

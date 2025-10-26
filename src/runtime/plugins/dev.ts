@@ -19,7 +19,7 @@ export default defineNuxtPlugin({
   name: 'i18n:dev',
   dependsOn: ['i18n:plugin'],
   setup(_nuxt) {
-    if (!import.meta.dev) return
+    if (!import.meta.dev) { return }
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     const ctx = useNuxtI18nContext(nuxt)
@@ -35,7 +35,7 @@ export default defineNuxtPlugin({
 
       const messageLocales = uniqueKeys(opts.messages!, composer.messages.value)
       for (const k of messageLocales) {
-        if (locale && k !== locale) continue
+        if (locale && k !== locale) { continue }
 
         // set to vue-i18n messages or reset to account for removed messages
         composer.setLocaleMessage(k, opts?.messages?.[k] ?? {})
@@ -43,7 +43,7 @@ export default defineNuxtPlugin({
       }
 
       // skip vue-i18n config properties if locale is passed (locale file HMR)
-      if (locale != null) return
+      if (locale != null) { return }
 
       const numberFormatLocales = uniqueKeys(opts.numberFormats || {}, composer.numberFormats.value)
       for (const k of numberFormatLocales) {
@@ -78,33 +78,31 @@ function uniqueKeys(...objects: Array<Record<string, unknown>>): string[] {
 
 // helper function to compare old and new vue-i18n configs
 function deepEqual<T extends Record<string, unknown>, K extends keyof T>(a: T, b: T, ignoreKeys: K[] = []) {
-  if (a === b) return true
-  if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') return false
+  if (a === b) { return true }
+  if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') { return false }
 
   // top-level keys excluding ignoreKeys
   const keysA = Object.keys(a).filter(k => !ignoreKeys.includes(k as K))
   const keysB = Object.keys(b).filter(k => !ignoreKeys.includes(k as K))
 
-  if (keysA.length !== keysB.length) return false
+  if (keysA.length !== keysB.length) { return false }
 
   for (const key of keysA) {
-    if (!keysB.includes(key)) return false
+    if (!keysB.includes(key)) { return false }
     const valA = a[key]
     const valB = b[key]
-    // compare functions stringified
     if (typeof valA === 'function' && typeof valB === 'function') {
+      // compare functions stringified
       if (valA.toString() !== valB.toString()) {
         return false
       }
-    }
-    // nested recursive check (no ignoring at deeper levels)
-    else if (typeof valA === 'object' && typeof valB === 'object') {
+    } else if (typeof valA === 'object' && typeof valB === 'object') {
+      // nested recursive check (no ignoring at deeper levels)
       if (!deepEqual(valA as unknown as T, valB as unknown as T)) {
         return false
       }
-    }
-    // primitive value check
-    else if (valA !== valB) {
+    } else if (valA !== valB) {
+      // primitive value check
       return false
     }
   }

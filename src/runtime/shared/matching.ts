@@ -8,7 +8,7 @@ for (const path of Object.keys(i18nPathToPath)) {
 }
 
 const getI18nPathToI18nPath = (path: string, locale: string) => {
-  if (!path || !locale) return
+  if (!path || !locale) { return }
   const plainPath = i18nPathToPath[path]!
   const i18nConfig = pathToI18nConfig[plainPath]!
   if (i18nConfig && i18nConfig[locale]) {
@@ -17,7 +17,7 @@ const getI18nPathToI18nPath = (path: string, locale: string) => {
 }
 
 export function isExistingNuxtRoute(path: string) {
-  if (path === '') return
+  if (path === '') { return }
   const resolvedMatch = matcher.resolve({ path }, { path: '/', name: '', matched: [], params: {}, meta: {} })
 
   return resolvedMatch.matched.length > 0 ? resolvedMatch : undefined
@@ -28,7 +28,7 @@ export function isExistingNuxtRoute(path: string) {
  * The passed path can be localized or not but should not include any prefix.
  */
 export function matchLocalized(path: string, locale: string, defaultLocale: string): string | undefined {
-  if (path === '') return
+  if (path === '') { return }
   const parsed = parsePath(path)
   const resolvedMatch = matcher.resolve(
     { path: parsed.pathname || '/' },
