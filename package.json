@@ -80,7 +80,6 @@
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
     "@nuxt/kit": "^4.1.2",
     "@rollup/plugin-yaml": "^4.1.2",
-    "@vue/compiler-sfc": "^3.5.22",
     "defu": "^6.1.4",
     "devalue": "^5.1.1",
     "h3": "^1.15.4",
