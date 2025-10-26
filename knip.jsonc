@@ -20,8 +20,6 @@
         "#build/i18n-route-resources.mjs"
       ],
       "ignoreDependencies": [
-        // pre-commit
-        "lint-staged",
         // auto imports
         "@intlify/utils"
       ],

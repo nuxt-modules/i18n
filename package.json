@@ -49,29 +49,24 @@
     "internals.d.ts"
   ],
   "scripts": {
-    "prepare": "git config --local core.hooksPath .githooks",
     "build": "nuxt-module-build prepare && nuxt-module-build build .",
     "stub": "nuxt-module-build build --stub .",
     "prepack": "pnpm build",
     "release": "bumpp --commit \"release: v%s\" --push --tag",
-    "dev": "pnpm dev:prepare && pnpm build --sourcemap && nuxi dev playground",
+    "dev": "nuxt dev playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare",
-    "dev:build": "nuxi build playground",
-    "dev:generate": "nuxi generate playground",
-    "dev:preview": "nuxi preview playground",
-    "dev:clean": "rm -rf playground/.nuxt playground/dist playground/.output",
-    "docs:dev": "nuxi dev docs",
-    "docs:build": "nuxi build docs",
-    "docs:generate": "nuxt-module-build prepare && nuxi generate docs",
-    "docs:preview": "nuxi preview docs",
-    "fix": "pnpm lint:eslint --fix",
-    "lint": "pnpm lint:eslint && pnpm lint:knip",
-    "lint:eslint": "eslint .",
-    "lint:knip": "pnpm knip --workspace .",
-    "test": "pnpm build && pnpm test:types && pnpm test:unit && pnpm test:spec",
+    "dev:build": "nuxt build playground",
+    "dev:generate": "nuxt generate playground",
+    "dev:preview": "nuxt preview playground",
+    "docs:generate": "pnpm run --filter docs generate",
+    "docs:dev": "pnpm run --filter docs dev",
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --cache --fix",
+    "lint:knip": "knip --workspace .",
+    "test": "pnpm build && pnpm test:types && pnpm test:unit && pnpm test:e2e",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest run test -c vitest.config.test.ts",
-    "test:spec": "vitest run specs"
+    "test:e2e": "vitest run specs"
   },
   "resolutions": {
     "@nuxtjs/i18n": "workspace:*"
@@ -118,7 +113,6 @@
     "get-port-please": "^3.2.0",
     "jiti": "^2.5.1",
     "knip": "5.62.0",
-    "lint-staged": "^15.5.0",
     "nitropack": "^2.12.6",
     "nuxt": "^4.1.2",
     "ofetch": "^1.4.1",
@@ -129,11 +123,6 @@
     "undici": "^7.12.0",
     "vitest": "^3.2.4",
     "vue": "^3.5.22"
-  },
-  "lint-staged": {
-    "*.{js,ts,vue}": [
-      "eslint --fix"
-    ]
   },
   "publishConfig": {
     "access": "public"
