@@ -37,7 +37,7 @@ git checkout -b my-new-feature
 pnpm lint # lint and format check
 pnpm fix  # auto fix for lint and format
 pnpm test:unit # unit tests
-pnpm test:spec # e2e tests
+pnpm test:e2e # e2e tests
 ```
 
 - Commit and push your changes
