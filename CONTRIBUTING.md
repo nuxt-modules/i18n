@@ -35,7 +35,7 @@ git checkout -b my-new-feature
 
 ```sh
 pnpm lint # lint and format check
-pnpm fix  # auto fix for lint and format
+pnpm lint:fix  # auto fix for lint and format
 pnpm test:unit # unit tests
 pnpm test:e2e # e2e tests
 ```
