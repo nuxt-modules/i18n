@@ -5,11 +5,11 @@ import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
-import { localeHead, _useLocaleHead } from '../routing/head'
+import { _useLocaleHead, localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createLocaleConfigs, getDefaultLocaleForDomain, resolveSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { createNuxtI18nContext, useLocaleConfigs, type NuxtI18nContext } from '../context'
+import { type NuxtI18nContext, createNuxtI18nContext, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
@@ -34,8 +34,7 @@ export default defineNuxtPlugin({
     const localeConfigs = useLocaleConfigs()
     if (import.meta.server) {
       localeConfigs.value = useRequestEvent()!.context.nuxtI18n?.localeConfigs || {}
-    }
-    else {
+    } else {
       // fallback when server is disabled
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
     }
@@ -92,7 +91,7 @@ export default defineNuxtPlugin({
         composer.setLocaleCookie = ctx.setCookieLocale
 
         composer.finalizePendingLocaleChange = async () => {
-          if (!i18n.__pendingLocale) return
+          if (!i18n.__pendingLocale) { return }
           await i18n.__resolvePendingLocalePromise?.()
         }
         composer.waitForPendingLocaleChange = async () => {
@@ -107,8 +106,8 @@ export default defineNuxtPlugin({
           ['baseUrl', () => c.baseUrl],
           ['strategy', () => __I18N_STRATEGY__],
           ['localeProperties', () => c.localeProperties],
-          ['setLocale', () => async (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
-          ['loadLocaleMessages', () => async (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
+          ['setLocale', () => (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
+          ['loadLocaleMessages', () => (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
           ['differentDomains', () => __DIFFERENT_DOMAINS__],
           ['defaultLocale', () => c.defaultLocale],
           ['getBrowserLocale', () => () => Reflect.apply(c.getBrowserLocale, c, [])],
@@ -152,7 +151,7 @@ export default defineNuxtPlugin({
  * Wrap translation functions to track translation keys used during SSR
  */
 function wrapTranslationFunctions(ctx: NuxtI18nContext, serverI18n = useRequestEvent()?.context?.nuxtI18n) {
-  if (!serverI18n) return
+  if (!serverI18n) { return }
 
   const i18n = ctx.vueI18n.global
   const originalT = i18n.t.bind(i18n)

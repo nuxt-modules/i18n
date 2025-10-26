@@ -14,8 +14,8 @@ import type { I18nNuxtContext } from './context'
 import {
   DEFAULT_COOKIE_KEY,
   DYNAMIC_PARAMS_KEY,
-  NUXT_I18N_MODULE_ID,
   FULL_STATIC_LIFETIME,
+  NUXT_I18N_MODULE_ID,
   SWITCH_LOCALE_PATH_LINK_IDENTIFIER,
 } from './constants'
 import { version } from '../package.json'

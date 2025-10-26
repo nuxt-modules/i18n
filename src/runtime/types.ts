@@ -1,6 +1,6 @@
 import type { ComputedRef } from 'vue'
 import type { Directions, LocaleObject, Strategies } from '#internal-i18n-types'
-import type { Locale, Composer, VueI18n, ExportedGlobalComposer } from 'vue-i18n'
+import type { Composer, ExportedGlobalComposer, Locale, VueI18n } from 'vue-i18n'
 import type {
   HistoryState,
   RouteLocationAsRelative,

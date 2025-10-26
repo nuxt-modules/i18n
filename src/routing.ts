@@ -1,33 +1,33 @@
 import {
-  createRouteContext,
-  localizeSingleRoute,
   type LocalizableRoute,
   type LocalizeRouteParams,
   type RouteContext,
   type RouteOptionsResolver,
+  createRouteContext,
+  localizeSingleRoute,
 } from './kit/gen'
 import type { LocaleObject, Strategies } from './types'
 
 function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext) {
-  if (opts.strategy === 'no_prefix') return () => false
+  if (opts.strategy === 'no_prefix') { return () => false }
   return (path: string, locale: string, options: LocalizeRouteParams) => {
-    if (options.defaultTree) return false
+    if (options.defaultTree) { return false }
     // child route with relative path
-    if (options.parent != null && !path.startsWith('/')) return false
-    if (ctx.isDefaultLocale(locale) && opts.strategy === 'prefix_except_default') return false
+    if (options.parent != null && !path.startsWith('/')) { return false }
+    if (ctx.isDefaultLocale(locale) && opts.strategy === 'prefix_except_default') { return false }
     return true
   }
 }
 
 function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
-  if (options.strategy !== 'no_prefix') return true
+  if (options.strategy !== 'no_prefix') { return true }
   // no_prefix is only supported when using a separate domain per locale
-  if (!options.differentDomains) return false
+  if (!options.differentDomains) { return false }
 
   // check if domains are used multiple times
   const domains = new Set<string>()
   for (const locale of options.locales) {
-    if (!locale.domain) continue
+    if (!locale.domain) { continue }
     if (domains.has(locale.domain)) {
       console.error(
         `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
@@ -68,7 +68,7 @@ type SetupLocalizeRoutesOptions = {
  * Localize routes
  */
 export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalizeRoutesOptions): LocalizableRoute[] {
-  if (!shouldLocalizeRoutes(config)) return routes
+  if (!shouldLocalizeRoutes(config)) { return routes }
 
   const ctx = createRouteContext({
     optionsResolver: config.optionsResolver,

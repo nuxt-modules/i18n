@@ -1,13 +1,13 @@
 import { directoryToURL, resolveModule } from '@nuxt/kit'
 import {
-  VUE_I18N_PKG,
-  SHARED_PKG,
-  MESSAGE_COMPILER_PKG,
-  CORE_PKG,
   CORE_BASE_PKG,
-  UTILS_PKG,
-  UTILS_H3_PKG,
+  CORE_PKG,
+  MESSAGE_COMPILER_PKG,
   NUXT_I18N_MODULE_ID,
+  SHARED_PKG,
+  UTILS_H3_PKG,
+  UTILS_PKG,
+  VUE_I18N_PKG,
 } from './constants'
 import { defu } from 'defu'
 import { resolveI18nDir } from './layers'
@@ -55,7 +55,7 @@ export function setupAlias({ userOptions: options }: I18nNuxtContext, nuxt: Nuxt
 
   for (const [moduleName, moduleFile] of Object.entries(modules)) {
     const module = resolveModule(moduleFile, { url: moduleDirs })
-    if (!module) throw new Error(`Could not resolve module "${moduleFile}"`)
+    if (!module) { throw new Error(`Could not resolve module "${moduleFile}"`) }
     nuxt.options.alias[moduleName] = module
     nuxt.options.build.transpile.push(moduleName)
   }

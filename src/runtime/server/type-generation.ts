@@ -1,5 +1,5 @@
 import { deepCopy, isArray, isFunction, isObject } from '@intlify/shared'
-import { vueI18nConfigs, localeLoaders, normalizedLocales } from '#internal/i18n-options.mjs'
+import { localeLoaders, normalizedLocales, vueI18nConfigs } from '#internal/i18n-options.mjs'
 import { dtsFile } from '#internal/i18n-type-generation-options'
 import { loadVueI18nOptions } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
@@ -14,8 +14,7 @@ export default async () => {
   const targetLocales: string[] = []
   if (experimental.typedOptionsAndMessages === 'default' && defaultLocale != null) {
     targetLocales.push(defaultLocale)
-  }
-  else if (experimental.typedOptionsAndMessages === 'all') {
+  } else if (experimental.typedOptionsAndMessages === 'all') {
     targetLocales.push(...normalizedLocales.map(x => x.code))
   }
 
@@ -34,7 +33,7 @@ export default async () => {
 
   const loaderPromises: Promise<unknown>[] = []
   for (const locale in localeLoaders) {
-    if (!targetLocales.includes(locale)) continue
+    if (!targetLocales.includes(locale)) { continue }
     const loader = async () => deepCopy((await getMergedMessages(locale, []))?.[locale], merged.messages)
     loaderPromises.push(loader())
   }
@@ -51,14 +50,13 @@ function generateInterface(obj: Record<string, unknown>, indentLevel = 1) {
   let str = ''
 
   for (const key in obj) {
-    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) { continue }
 
     if (isObject(obj[key]) && obj[key] !== null && !isArray(obj[key])) {
       str += `${indent}"${key}": {\n`
       str += generateInterface(obj[key] as Record<string, unknown>, indentLevel + 1)
       str += `${indent}};\n`
-    }
-    else {
+    } else {
       let propertyType = isArray(obj[key]) ? 'unknown[]' : typeof obj[key]
       if (isFunction(propertyType)) {
         propertyType = '() => string'

@@ -9,8 +9,8 @@ export const defaultRouteNameSuffix = separator + defaultSuffix
  * Normalizes {@link RouteName} to string
  */
 export function normalizeRouteName(routeName: RouteName) {
-  if (typeof routeName === 'string') return routeName
-  if (routeName != null) return routeName.toString()
+  if (typeof routeName === 'string') { return routeName }
+  if (routeName != null) { return routeName.toString() }
   return ''
 }
 

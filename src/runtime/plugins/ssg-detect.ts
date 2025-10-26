@@ -9,7 +9,7 @@ export default defineNuxtPlugin({
     : ['i18n:plugin', 'i18n:plugin:route-locale-detect', 'i18n:plugin:preload'],
   enforce: 'post',
   setup(_nuxt) {
-    if (!__IS_SSG__ || !__I18N_ROUTING__) return
+    if (!__IS_SSG__ || !__I18N_ROUTING__) { return }
 
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)

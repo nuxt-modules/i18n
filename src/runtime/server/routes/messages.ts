@@ -1,6 +1,6 @@
 import { deepCopy } from '@intlify/shared'
 import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
-import { getRouterParam, createError, defineEventHandler } from 'h3'
+import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { useI18nContext } from '../context'
 import { getMergedMessages } from '../utils/messages'
 
@@ -33,7 +33,7 @@ const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
   getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-'),
   shouldBypassCache(event) {
     const locale = getRouterParam(event, 'locale')
-    if (locale == null) return false
+    if (locale == null) { return false }
     return !useI18nContext(event).localeConfigs?.[locale]?.cacheable
   },
 })

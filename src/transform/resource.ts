@@ -1,8 +1,8 @@
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
-import { asI18nVirtual, VIRTUAL_PREFIX_HEX } from './utils'
-import { DEFINE_I18N_LOCALE_FN, DEFINE_I18N_CONFIG_FN, NUXT_I18N_VIRTUAL_PREFIX } from '../constants'
-import { resolve, dirname } from 'pathe'
+import { VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
+import { DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, NUXT_I18N_VIRTUAL_PREFIX } from '../constants'
+import { dirname, resolve } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
 import { transform as oxcTransform } from 'oxc-transform'
@@ -26,7 +26,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
     const i18nPathSet = new Set<string>()
     const i18nFileHashSet = new Map<string, string>()
     for (const meta of i18nFileMetas) {
-      if (i18nPathSet.has(meta.path)) continue
+      if (i18nPathSet.has(meta.path)) { continue }
       i18nPathSet.add(meta.path)
       i18nFileHashSet.set(asI18nVirtual(meta.hash), meta.path)
     }
@@ -71,7 +71,7 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           // ensure imported resources are transformed as well
           const staticImports = findStaticImports(_code)
           for (const x of staticImports) {
-            if (x.specifier.startsWith('\0')) continue
+            if (x.specifier.startsWith('\0')) { continue }
             i18nPathSet.add(await resolvePath(resolve(dirname(id), x.specifier)))
           }
 

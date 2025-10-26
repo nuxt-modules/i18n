@@ -3,7 +3,7 @@ import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { NUXT_I18N_MODULE_ID, DEFAULT_OPTIONS } from './constants'
+import { DEFAULT_OPTIONS, NUXT_I18N_MODULE_ID } from './constants'
 import type { HookResult } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
@@ -25,6 +25,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore property removed in Nuxt 4
       bridge: false,
     },

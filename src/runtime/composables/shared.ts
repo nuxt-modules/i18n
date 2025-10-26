@@ -1,4 +1,4 @@
-import type { Locale, LocaleMessages, DefineLocaleMessage, I18nOptions } from 'vue-i18n'
+import type { DefineLocaleMessage, I18nOptions, Locale, LocaleMessages } from 'vue-i18n'
 
 /**
  * The `defineI18nLocale` defines a composable function to dynamically load locale messages.

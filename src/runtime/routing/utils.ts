@@ -1,8 +1,8 @@
 import { assign } from '@intlify/shared'
-import { normalizeRouteName, getLocalizedRouteName } from '#i18n-kit/routing'
+import { getLocalizedRouteName, normalizeRouteName } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
-import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, Router, RouteRecordNameGeneric } from 'vue-router'
+import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, RouteRecordNameGeneric, Router } from 'vue-router'
 
 /**
  * Returns a getter function which returns a localized route name for the given route and locale.

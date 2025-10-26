@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { getRequestURL, getRequestHeader, getCookie } from 'h3'
+import { getCookie, getRequestHeader, getRequestURL } from 'h3'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
@@ -10,7 +10,7 @@ import type { I18nPublicRuntimeConfig } from '../../types'
 
 import type { H3Event } from 'h3'
 import type { CompatRoute } from '../types'
-import { useCookie, type NuxtApp } from '#app'
+import { type NuxtApp, useCookie } from '#app'
 
 // TODO: add unit tests for these detectors
 

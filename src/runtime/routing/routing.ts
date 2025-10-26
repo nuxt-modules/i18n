@@ -2,7 +2,7 @@ import { hasProtocol, parsePath, parseQuery } from 'ufo'
 import { assign, isString } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
-import type { RouteLocationRaw, RouteLocationPathRaw, RouteLocationNamedRaw } from 'vue-router'
+import type { RouteLocationNamedRaw, RouteLocationPathRaw, RouteLocationRaw } from 'vue-router'
 import type { CompatRoute } from '../types'
 import type { ComposableContext } from '../utils'
 
@@ -21,8 +21,7 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 
   try {
     return resolveRoute(ctx, route, locale).fullPath
-  }
-  catch {
+  } catch {
     return ''
   }
 }
@@ -33,8 +32,7 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 export function localeRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
   try {
     return resolveRoute(ctx, route, locale)
-  }
-  catch {
+  } catch {
     return
   }
 }

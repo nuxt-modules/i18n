@@ -1,6 +1,6 @@
 import { isObject } from '@intlify/shared'
-import { useLocaleRoute, type Locale } from '#i18n'
-import { defineComponent, computed, h } from 'vue'
+import { type Locale, useLocaleRoute } from '#i18n'
+import { computed, defineComponent, h } from 'vue'
 import { NuxtLink } from '#components'
 import { hasProtocol } from 'ufo'
 

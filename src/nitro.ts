@@ -8,12 +8,12 @@ import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
 import { getLayerI18n, logger, toArray } from './utils'
 import {
+  DEFINE_I18N_CONFIG_FN,
+  DEFINE_I18N_LOCALE_FN,
+  DEFINE_LOCALE_DETECTOR_FN,
+  EXECUTABLE_EXTENSIONS,
   H3_PKG,
   UTILS_H3_PKG,
-  EXECUTABLE_EXTENSIONS,
-  DEFINE_I18N_LOCALE_FN,
-  DEFINE_I18N_CONFIG_FN,
-  DEFINE_LOCALE_DETECTOR_FN,
 } from './constants'
 import { resolveI18nDir } from './layers'
 

@@ -1,4 +1,4 @@
-import { useNuxtApp, useCookie, useRequestEvent } from '#imports'
+import { useCookie, useNuxtApp, useRequestEvent } from '#imports'
 import { ref, watch } from 'vue'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
 import { useComposableContext } from '../utils'
@@ -7,7 +7,7 @@ import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
 import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMap, RouteMapI18n } from 'vue-router'
-import type { RouteLocationGenericPath, I18nRouteMeta, CompatRoute } from '../types'
+import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from '../types'
 import type { NuxtApp } from '#app'
 
 export * from 'vue-i18n'
@@ -131,7 +131,7 @@ export type RouteBaseNameFunction = <Name extends keyof RouteMap = keyof RouteMa
 export function useRouteBaseName(nuxtApp: NuxtApp = useNuxtApp()): RouteBaseNameFunction {
   const common = useComposableContext(nuxtApp)
   return (route) => {
-    if (route == null) return
+    if (route == null) { return }
     return common.getRouteBaseName(route) || undefined
   }
 }
