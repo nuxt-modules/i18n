@@ -75,6 +75,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const detectConfig = useI18nDetection(nuxt)
   const serverLocaleConfigs = useLocaleConfigs()
   const localeCookie = useI18nCookie(detectConfig)
+  const loadMap = new Set<string>()
 
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value![locale]
@@ -159,12 +160,17 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       return joinURL(baseUrl(), nuxt.$config.app.baseURL)
     },
     loadMessages: async (locale: string) => {
+      // prevent multiple loads during hydration
+      if (nuxt.isHydrating && loadMap.has(locale)) { return }
+
       try {
         return ctx.dynamicResourcesSSG || import.meta.dev
           ? await loadMessagesFromClient(locale)
           : await loadMessagesFromServer(locale)
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
+      } finally {
+        loadMap.add(locale)
       }
     },
     composableCtx: undefined!,
