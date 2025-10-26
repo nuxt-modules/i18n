@@ -23,7 +23,7 @@ if (import.meta.dev) {
  * @internal
  */
 export const fetchMessages = async (locale: string) =>
-  await $fetch<LocaleMessages<DefineLocaleMessage>>(`/_i18n/${__I18N_HASH__}/${locale}/messages.json`, {
+  await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${locale}/messages.json`, {
     headers,
   })
 

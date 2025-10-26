@@ -420,6 +420,11 @@ export type NuxtI18nOptions<
    * @default true
    */
   autoDeclare?: boolean
+  /**
+   * Prefix for the server route used for loading locale messages.
+   * @default '/_i18n'
+   */
+  serverRoutePrefix?: string
 }
 
 /**

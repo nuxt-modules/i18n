@@ -172,7 +172,7 @@ export default defineNitroPlugin(async (nitro) => {
     const path = (pathLocale && url.pathname.slice(pathLocale.length + 1)) || url.pathname
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
-    if (!url.pathname.includes('/_i18n/') && !isExistingNuxtRoute(path)) {
+    if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path)) {
       return
     }
 
