@@ -66,6 +66,10 @@ export async function localePathTests(strategy: Strategies) {
   expect(await page.locator('#locale-path .external-mail').innerText()).toEqual('mailto:example@mail.com')
   expect(await page.locator('#locale-path .external-phone').innerText()).toEqual('tel:+31612345678')
 
+  // (#3840) localized route as parameter
+  expect(await page.getByTestId('current-localized-route-param').innerText()).toEqual(prefixPath('/', 'ja'))
+  expect(await page.getByTestId('object-localized-route-param').innerText()).toEqual(prefixPath('/', 'ja'))
+
   // for vue-router deprecation
   // https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22
   expect(consoleLogs.find(log => log.text.includes('Discarded invalid param(s)'))).toBeFalsy()

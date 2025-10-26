@@ -82,7 +82,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
-    route.name ||= getRouteBaseName(router.currentRoute.value) // fallback to current route name
+    route.name = getRouteBaseName(route.name || router.currentRoute.value) // fallback to current route name
 
     // check if localized variant exists
     const localizedName = getLocalizedRouteName(route.name, locale)
