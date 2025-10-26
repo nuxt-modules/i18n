@@ -83,6 +83,7 @@ export const DEFAULT_OPTIONS = {
   multiDomainLocales: false,
   hmr: true,
   autoDeclare: true,
+  serverRoutePrefix: '/_i18n',
 } as const
 
 export const DEFINE_I18N_ROUTE_FN = 'defineI18nRoute'

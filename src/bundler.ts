@@ -103,8 +103,8 @@ export function getDefineConfig(
 
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
+    __I18N_SERVER_ROUTE__: JSON.stringify([options.serverRoutePrefix, deploymentHash].join('/')),
     __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),
-    __I18N_HASH__: JSON.stringify(deploymentHash),
   }
 
   if (nuxt.options.ssr || !server) {
