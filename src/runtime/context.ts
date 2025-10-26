@@ -164,7 +164,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       if (nuxt.isHydrating && loadMap.has(locale)) { return }
 
       try {
-        return ctx.dynamicResourcesSSG
+        return ctx.dynamicResourcesSSG || import.meta.dev
           ? await loadMessagesFromClient(locale)
           : await loadMessagesFromServer(locale)
       } catch (e) {
