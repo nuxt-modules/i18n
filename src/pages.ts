@@ -1,7 +1,6 @@
 import { addTemplate, updateTemplates } from '@nuxt/kit'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
-import { parse as parseSFC } from '@vue/compiler-sfc'
 import { parseAndWalk } from 'oxc-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
@@ -19,6 +18,7 @@ import type { I18nNuxtContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
 import { parseSync, type CallExpression, type ExpressionStatement, type ObjectExpression } from 'oxc-parser'
+import { extractScriptContent } from './utils/extract-script'
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
@@ -389,47 +389,45 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
     const content = absolutePath in vfs ? vfs[absolutePath]! : readFileSync(absolutePath, 'utf-8')
     if (!content.includes(DEFINE_I18N_ROUTE_FN)) return undefined
 
-    const { descriptor } = parseSFC(content)
+    const blocks = extractScriptContent(content)
 
-    const script = descriptor.scriptSetup || descriptor.script
-    if (!script) return undefined
+    for (const script of blocks) {
+      if (extract != null) break
+      parseAndWalk(script.code, absolutePath.replace(/\.\w+$/, '.' + script.loader), (node) => {
+        if (extract != null) return
+        let code = script.code
 
-    const lang = typeof script.attrs.lang === 'string' && /j|tsx/.test(script.attrs.lang) ? 'tsx' : 'ts'
-    let code = script.content
-
-    parseAndWalk(script.content, absolutePath.replace(/\.\w+$/, '.' + lang), (node) => {
-      if (extract != null) return
-
-      if (
-        node.type !== 'CallExpression'
-        || node.callee.type !== 'Identifier'
-        || node.callee.name !== DEFINE_I18N_ROUTE_FN
-      )
-        return
-
-      let routeArgument = node.arguments[0]
-      if (routeArgument == null) return
-
-      if (typeof script.attrs.lang === 'string' && /tsx?/.test(script.attrs.lang)) {
-        const transformed = transform('', script.content.slice(node.start, node.end).trim(), { lang })
-        code = transformed.code
-
-        if (transformed.errors.length) {
-          for (const error of transformed.errors) {
-            console.warn(`Error while transforming \`${DEFINE_I18N_ROUTE_FN}()\`` + error.codeframe)
-          }
+        if (
+          node.type !== 'CallExpression'
+          || node.callee.type !== 'Identifier'
+          || node.callee.name !== DEFINE_I18N_ROUTE_FN
+        )
           return
+
+        let routeArgument = node.arguments[0]
+        if (routeArgument == null) return
+
+        if (typeof script.loader === 'string' && /tsx?/.test(script.loader)) {
+          const transformed = transform('', script.code.slice(node.start, node.end).trim(), { lang: script.loader })
+          code = transformed.code
+
+          if (transformed.errors.length) {
+            for (const error of transformed.errors) {
+              console.warn(`Error while transforming \`${DEFINE_I18N_ROUTE_FN}()\`` + error.codeframe)
+            }
+            return
+          }
+
+          // we already know that the first statement is a call expression
+          routeArgument = (
+            (parseSync('', transformed.code, { lang: 'js' }).program.body[0]! as ExpressionStatement)
+              .expression as CallExpression
+          ).arguments[0]! as ObjectExpression
         }
 
-        // we already know that the first statement is a call expression
-        routeArgument = (
-          (parseSync('', transformed.code, { lang: 'js' }).program.body[0]! as ExpressionStatement)
-            .expression as CallExpression
-        ).arguments[0]! as ObjectExpression
-      }
-
-      extract = evalAndValidateValue(code.slice(routeArgument.start, routeArgument.end).trim())
-    })
+        extract = evalAndValidateValue(code.slice(routeArgument.start, routeArgument.end).trim())
+      })
+    }
   }
   catch (e: unknown) {
     console.warn(`[nuxt-i18n] Couldn't read component data at ${absolutePath}: (${(e as Error).message})`)
