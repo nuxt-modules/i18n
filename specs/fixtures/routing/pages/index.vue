@@ -49,6 +49,10 @@ const localeRoute = useLocaleRoute()
       <span class="external-link">{{ localePath('https://github.com') }}</span>
       <span class="external-mail">{{ localePath('mailto:example@mail.com') }}</span>
       <span class="external-phone">{{ localePath('tel:+31612345678') }}</span>
+
+      <!-- #3840 -->
+      <span data-testid="current-localized-route-param">{{ localePath($route, 'ja') }}</span>
+      <span data-testid="object-localized-route-param">{{ localePath({ name: 'index___en'}, 'ja') }}</span>
     </section>
     <ClientOnly>
       <section id="locale-route">
