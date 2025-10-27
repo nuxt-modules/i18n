@@ -1,8 +1,8 @@
-import { DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, DEFINE_I18N_ROUTE_FN, VUE_I18N_PKG } from '../constants'
-import { addComponent, addImports, resolveModule, useNuxt } from '@nuxt/kit'
+import { DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, DEFINE_I18N_ROUTE_FN } from '../constants'
+import { addComponent, addImports, resolveModule } from '@nuxt/kit'
 import type { I18nNuxtContext } from '../context'
 
-export function prepareAutoImports({ resolver, userOptions: options, runtimeDir }: I18nNuxtContext, nuxt = useNuxt()) {
+export function prepareAutoImports({ resolver, runtimeDir, vueI18nRuntimeOnly }: I18nNuxtContext) {
   addComponent({
     name: 'NuxtLinkLocale',
     filePath: resolver.resolve(runtimeDir, 'components/NuxtLinkLocale'),
@@ -13,7 +13,7 @@ export function prepareAutoImports({ resolver, userOptions: options, runtimeDir 
     filePath: resolver.resolve(runtimeDir, 'components/SwitchLocalePathLink'),
   })
 
-  const vueI18nPath = `${VUE_I18N_PKG}/dist/vue-i18n${!nuxt.options.dev && !nuxt.options._prepare && options.bundle?.runtimeOnly ? '.runtime' : ''}.mjs`
+  const vueI18nPath = `vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`
   const composablesIndex = resolver.resolve(runtimeDir, 'composables/index')
   addImports([
     { name: 'useI18n', from: resolveModule(vueI18nPath) },

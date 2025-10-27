@@ -32,7 +32,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
   },
   defaults: DEFAULT_OPTIONS,
   async setup(i18nOptions, nuxt) {
-    const ctx = createContext(i18nOptions)
+    const ctx = createContext(i18nOptions, nuxt)
 
     /**
      * prepare options
@@ -53,14 +53,22 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * transpile @nuxtjs/i18n
      */
     nuxt.options.build.transpile.push('@nuxtjs/i18n')
-    nuxt.options.build.transpile.push('@nuxtjs/i18n-edge')
 
     /**
-     * optimize vue-i18n to ensure we share the same symbol
+     * exclude ESM dependencies from optimization
+     * @see https://github.com/nuxt/nuxt/blob/8db24c6a7fbcff7ab74b3ce1a196daece2f8c701/packages/vite/src/shared/client.ts#L9-L20
      */
     nuxt.options.vite.optimizeDeps ||= {}
     nuxt.options.vite.optimizeDeps.exclude ||= []
-    nuxt.options.vite.optimizeDeps.exclude.push('vue-i18n')
+    nuxt.options.vite.optimizeDeps.exclude.push(
+      'vue-i18n',
+      '@intlify/shared',
+      '@intlify/core',
+      '@intlify/core-base',
+      '@intlify/message-compiler',
+      '@intlify/utils',
+      '@intlify/utils/h3',
+    )
 
     /**
      * add plugin and templates
