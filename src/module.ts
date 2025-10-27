@@ -3,7 +3,7 @@ import { setupAlias } from './alias'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { DEFAULT_OPTIONS, NUXT_I18N_MODULE_ID } from './constants'
+import { DEFAULT_OPTIONS } from './constants'
 import type { HookResult } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
@@ -21,7 +21,7 @@ export * from './types'
 
 export default defineNuxtModule<NuxtI18nOptions>({
   meta: {
-    name: NUXT_I18N_MODULE_ID,
+    name: '@nuxtjs/i18n',
     configKey: 'i18n',
     compatibility: {
       nuxt: '>=3.0.0-rc.11',

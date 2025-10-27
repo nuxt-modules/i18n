@@ -4,7 +4,7 @@ import { type BinaryLike, createHash } from 'node:crypto'
 import { resolvePath, useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
-import { EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE, NUXT_I18N_MODULE_ID } from './constants'
+import { EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
 
 import type { LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
@@ -172,9 +172,7 @@ function getHash(text: BinaryLike): string {
 
 export function getLayerI18n(configLayer: NuxtConfigLayer) {
   const layerInlineOptions = (configLayer.config.modules || []).find(
-    (mod): mod is [string, NuxtI18nOptions] | undefined =>
-      isArray(mod) && isString(mod[0]) && [NUXT_I18N_MODULE_ID, `${NUXT_I18N_MODULE_ID}-edge`].includes(mod[0]),
-  )?.[1]
+    (mod): mod is [string, NuxtI18nOptions] | undefined => isArray(mod) && '@nuxtjs/i18n' === mod[0])?.[1]
 
   if (configLayer.config.i18n) {
     return defu(configLayer.config.i18n, layerInlineOptions)

@@ -1,4 +1,3 @@
-export const NUXT_I18N_MODULE_ID = '@nuxtjs/i18n'
 export const H3_PKG = '@intlify/h3'
 export const UTILS_H3_PKG = '@intlify/utils/h3'
 export const STRATEGY_PREFIX = 'prefix'

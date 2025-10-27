@@ -1,5 +1,4 @@
 import { directoryToURL, resolveModule } from '@nuxt/kit'
-import { NUXT_I18N_MODULE_ID } from './constants'
 import { defu } from 'defu'
 import { resolveI18nDir } from './layers'
 import { getLayerI18n } from './utils'
@@ -36,7 +35,7 @@ export function setupAlias({ vueI18nRuntimeOnly }: I18nNuxtContext, nuxt: Nuxt) 
   const moduleDirs = ([] as string[])
     .concat(
       nuxt.options.modulesDir,
-      nuxt.options.modulesDir.map(dir => `${dir}/${NUXT_I18N_MODULE_ID}/node_modules`),
+      nuxt.options.modulesDir.map(dir => `${dir}/@nuxtjs/i18n/node_modules`),
     )
     .map(x => directoryToURL(x))
 
