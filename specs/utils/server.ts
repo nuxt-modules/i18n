@@ -89,7 +89,7 @@ export async function startServer(env: Record<string, unknown> = {}) {
       console.error(str)
     })
 
-    await waitForPort(ports[0], { retries: process.env.CI ? 50 : 200, host, delay: process.env.CI ? 400 : 100 })
+    await waitForPort(ports[0], { retries: process.env.CI ? 50 : 200, host, delay: process.env.CI ? 500 : 100 })
   }
 }
 
