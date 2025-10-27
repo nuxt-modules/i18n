@@ -193,6 +193,12 @@ export interface ExperimentalFeatures {
    * @default true
    */
   nitroContextDetection?: boolean
+  /**
+   * HTTP cache duration for the messages API endpoint in seconds.
+   * This controls how long browsers cache the translation data.
+   * @default 10
+   */
+  httpCacheDuration?: number
 }
 
 export interface BundleOptions

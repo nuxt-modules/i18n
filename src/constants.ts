@@ -30,6 +30,7 @@ export const DEFAULT_OPTIONS = {
     preload: false,
     strictSeo: false,
     nitroContextDetection: true,
+    httpCacheDuration: 10,
   },
   bundle: {
     compositionOnly: true,

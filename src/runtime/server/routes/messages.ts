@@ -43,7 +43,7 @@ const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
  */
 const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
-  maxAge: !__I18N_CACHE__ ? -1 : 10,
+  maxAge: !__I18N_CACHE__ ? -1 : __I18N_HTTP_CACHE_DURATION__,
   swr: false,
   getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-'),
 })
