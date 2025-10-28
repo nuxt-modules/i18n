@@ -1,9 +1,8 @@
-import { defineNuxtModule } from '@nuxt/kit'
-import { setupAlias } from './alias'
+import { addComponent, addImports, addImportsSources, defineNuxtModule, resolveModule } from '@nuxt/kit'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { DEFAULT_OPTIONS } from './constants'
+import { DEFAULT_OPTIONS, DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, DEFINE_I18N_ROUTE_FN } from './constants'
 import type { HookResult } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
@@ -12,10 +11,10 @@ import { prepareOptions } from './prepare/options'
 import { resolveLocaleInfo } from './prepare/locale-info'
 import { prepareRuntime } from './prepare/runtime'
 import { prepareRuntimeConfig } from './prepare/runtime-config'
-import { prepareAutoImports } from './prepare/auto-imports'
 import { prepareBuildManifest } from './prepare/build-manifest'
 import { prepareStrategy } from './prepare/strategy'
 import { prepareTypeGeneration } from './prepare/type-generation'
+import { relative } from 'pathe'
 
 export * from './types'
 
@@ -42,17 +41,60 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * auto imports
      */
-    prepareAutoImports(ctx)
+    addComponent({
+      name: 'NuxtLinkLocale',
+      filePath: ctx.resolver.resolve(ctx.runtimeDir, 'components/NuxtLinkLocale'),
+    })
+
+    addComponent({
+      name: 'SwitchLocalePathLink',
+      filePath: ctx.resolver.resolve(ctx.runtimeDir, 'components/SwitchLocalePathLink'),
+    })
+
+    addImports({
+      name: 'useI18n',
+      from: 'vue-i18n',
+    })
+
+    addImportsSources({
+      from: ctx.resolver.resolve(ctx.runtimeDir, 'composables/index'),
+      imports: [
+        'useRouteBaseName',
+        'useLocalePath',
+        'useLocaleRoute',
+        'useSwitchLocalePath',
+        'useLocaleHead',
+        'useBrowserLocale',
+        'useCookieLocale',
+        'useSetI18nParams',
+        'useI18nPreloadKeys',
+        DEFINE_I18N_ROUTE_FN,
+        DEFINE_I18N_LOCALE_FN,
+        DEFINE_I18N_CONFIG_FN,
+      ],
+    })
 
     /**
-     * setup module alias
+     * transpile and alias dependencies
      */
-    setupAlias(ctx, nuxt)
+    const deps = [
+      'vue-i18n',
+      '@intlify/shared',
+      '@intlify/core',
+      '@intlify/core-base',
+      '@intlify/utils',
+      '@intlify/utils/h3',
+      '@intlify/message-compiler',
+    ]
+    nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
 
-    /**
-     * transpile @nuxtjs/i18n
-     */
-    nuxt.options.build.transpile.push('@nuxtjs/i18n')
+    for (const dep of deps) {
+      if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
+      nuxt.options.alias[dep] = resolveModule(dep)
+    }
+    const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
+    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`)
+    nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`)
 
     /**
      * exclude ESM dependencies from optimization
@@ -60,14 +102,17 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     nuxt.options.vite.optimizeDeps ||= {}
     nuxt.options.vite.optimizeDeps.exclude ||= []
-    nuxt.options.vite.optimizeDeps.exclude.push(
-      'vue-i18n',
-      '@intlify/shared',
-      '@intlify/core',
-      '@intlify/core-base',
-      '@intlify/message-compiler',
-      '@intlify/utils',
-      '@intlify/utils/h3',
+    nuxt.options.vite.optimizeDeps.exclude.push(...deps)
+
+    /**
+     * typescript hoist dependencies and include i18n directories
+     */
+    nuxt.options.typescript.hoist ||= []
+    nuxt.options.typescript.hoist.push(...deps)
+
+    nuxt.options.typescript.tsConfig.include ||= []
+    nuxt.options.typescript.tsConfig.include.push(
+      ...ctx.i18nLayers.map(l => relative(nuxt.options.buildDir, l.i18nDir + '/**/*')),
     )
 
     /**
