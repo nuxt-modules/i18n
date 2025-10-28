@@ -1,4 +1,4 @@
-import { addComponent, addImports, addImportsSources, defineNuxtModule, resolveModule } from '@nuxt/kit'
+import { addComponent, addImports, addImportsSources, addPlugin, addTemplate, addTypeTemplate, defineNuxtModule, resolveModule } from '@nuxt/kit'
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
@@ -9,12 +9,14 @@ import type { Locale } from 'vue-i18n'
 import { createContext } from './context'
 import { prepareOptions } from './prepare/options'
 import { resolveLocaleInfo } from './prepare/locale-info'
-import { prepareRuntime } from './prepare/runtime'
+import { prepareHMR } from './prepare/runtime'
 import { prepareRuntimeConfig } from './prepare/runtime-config'
 import { prepareBuildManifest } from './prepare/build-manifest'
 import { prepareStrategy } from './prepare/strategy'
 import { prepareTypeGeneration } from './prepare/type-generation'
 import { relative } from 'pathe'
+import { generateTemplateNuxtI18nOptions } from './template'
+import { generateI18nTypes, generateLoaderOptions } from './gen'
 
 export * from './types'
 
@@ -74,9 +76,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       ],
     })
 
-    /**
-     * transpile and alias dependencies
-     */
     const deps = [
       'vue-i18n',
       '@intlify/shared',
@@ -86,8 +85,10 @@ export default defineNuxtModule<NuxtI18nOptions>({
       '@intlify/utils/h3',
       '@intlify/message-compiler',
     ]
-    nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
 
+    /**
+     * alias and transpile dependencies
+     */
     for (const dep of deps) {
       if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
       nuxt.options.alias[dep] = resolveModule(dep)
@@ -95,6 +96,15 @@ export default defineNuxtModule<NuxtI18nOptions>({
     const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
     nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`)
     nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`)
+    nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
+
+    /**
+     * alias and transpile runtime and internals
+     */
+    nuxt.options.alias['#i18n'] = ctx.resolver.resolve('./runtime/composables/index')
+    nuxt.options.alias['#i18n-kit'] = ctx.resolver.resolve('./runtime/kit')
+    nuxt.options.alias['#internal-i18n-types'] = ctx.resolver.resolve('./types')
+    nuxt.options.build.transpile.push('#i18n', '#i18n-kit', '#internal-i18n-types')
 
     /**
      * exclude ESM dependencies from optimization
@@ -118,7 +128,30 @@ export default defineNuxtModule<NuxtI18nOptions>({
     /**
      * add plugin and templates
      */
-    prepareRuntime(ctx, nuxt)
+    addPlugin(ctx.resolver.resolve('./runtime/plugins/i18n'))
+    if (nuxt.options.dev || nuxt.options._prepare) {
+      addPlugin(ctx.resolver.resolve('./runtime/plugins/dev'))
+    }
+    addPlugin(ctx.resolver.resolve('./runtime/plugins/preload'))
+    addPlugin(ctx.resolver.resolve('./runtime/plugins/route-locale-detect'))
+    addPlugin(ctx.resolver.resolve('./runtime/plugins/ssg-detect'))
+    addPlugin(ctx.resolver.resolve('./runtime/plugins/switch-locale-path-ssr'))
+
+    addTemplate({
+      filename: 'i18n-options.mjs',
+      getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt)),
+    })
+
+    /**
+     * `$i18n` type narrowing based on 'legacy' or 'composition'
+     * `locales` type narrowing based on generated configuration
+     */
+    addTypeTemplate({
+      filename: 'types/i18n-plugin.d.ts',
+      getContents: () => generateI18nTypes(nuxt, ctx),
+    })
+
+    prepareHMR(ctx, nuxt)
 
     /**
      * generate vue-i18n and messages types using runtime server endpoint
