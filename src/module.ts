@@ -2,7 +2,7 @@ import { addComponent, addImports, addImportsSources, defineNuxtModule, resolveM
 import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
-import { DEFAULT_OPTIONS, DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, DEFINE_I18N_ROUTE_FN } from './constants'
+import { DEFAULT_OPTIONS } from './constants'
 import type { HookResult } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
@@ -68,9 +68,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
         'useCookieLocale',
         'useSetI18nParams',
         'useI18nPreloadKeys',
-        DEFINE_I18N_ROUTE_FN,
-        DEFINE_I18N_LOCALE_FN,
-        DEFINE_I18N_CONFIG_FN,
+        'defineI18nRoute',
+        'defineI18nLocale',
+        'defineI18nConfig',
       ],
     })
 

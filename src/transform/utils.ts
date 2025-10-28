@@ -1,8 +1,8 @@
 import { pathToFileURL } from 'node:url'
 import { parseQuery, parseURL } from 'ufo'
-import { NUXT_I18N_VIRTUAL_PREFIX } from '../constants'
 
 export const VIRTUAL_PREFIX_HEX = '\x00'
+export const NUXT_I18N_VIRTUAL_PREFIX = '#nuxt-i18n'
 
 export function asI18nVirtual(val: string) {
   return NUXT_I18N_VIRTUAL_PREFIX + '/' + val

@@ -10,11 +10,10 @@ import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 import { VIRTUAL_PREFIX_HEX, isVue } from './utils'
-import { DEFINE_I18N_ROUTE_FN } from '../constants'
 
 import type { BundlerPluginOptions } from './utils'
 
-const I18N_MACRO_FN_RE = new RegExp(`\\b${DEFINE_I18N_ROUTE_FN}\\s*\\(\\s*`)
+const I18N_MACRO_FN_RE = /\bdefineI18nRoute\s*\(\s*/
 
 /**
  * TODO:
