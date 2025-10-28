@@ -1,14 +1,12 @@
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
-import { resolve } from 'pathe'
 import { existsSync } from 'node:fs'
 import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolvePath } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
-import { getLayerI18n, logger, toArray } from './utils'
+import { logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
-import { resolveI18nDir } from './layers'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
@@ -26,7 +24,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
     getContents: () => nuxt.vfs['#build/i18n-route-resources.mjs'] || '',
   })
 
-  const localeDetectorPath = await resolveLocaleDetectorPath(nuxt)
+  const localeDetectorPath = await resolveLocaleDetectorPath(ctx, nuxt)
   addServerTemplate({
     filename: '#internal/i18n-locale-detector.mjs',
     getContents: () =>
@@ -78,28 +76,18 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   })
 }
 
-async function resolveLocaleDetectorPath(nuxt: Nuxt) {
-  const i18nLayer = nuxt.options._layers.find(l => !!getLayerI18n(l)?.experimental?.localeDetector)
+async function resolveLocaleDetectorPath(ctx: I18nNuxtContext, nuxt: Nuxt) {
+  const detector = ctx.i18nLayers.find(l => !!l.i18nDetector)?.i18nDetector
+  if (detector == null) { return '' }
 
-  // no locale detector configured
-  if (i18nLayer == null) {
-    return ''
-  }
-
-  const i18nLayerConfig = getLayerI18n(i18nLayer)
-  const i18nDir = resolveI18nDir(i18nLayer, i18nLayerConfig!)
-  const localeDetectorPath = await resolvePath(resolve(i18nDir, i18nLayerConfig!.experimental!.localeDetector!), {
-    cwd: nuxt.options.rootDir,
-    extensions: EXECUTABLE_EXTENSIONS,
-  })
-
-  const exists = existsSync(localeDetectorPath)
+  const resolved = await resolvePath(detector, { cwd: nuxt.options.rootDir, extensions: EXECUTABLE_EXTENSIONS })
+  const exists = existsSync(resolved)
   if (!exists) {
-    logger.warn(`localeDetector file '${localeDetectorPath}' does not exist. skip server-side integration ...`)
+    logger.warn(`localeDetector file '${resolved}' does not exist.`)
     return ''
   }
 
-  return localeDetectorPath
+  return resolved
 }
 
 function getResourcePathsGrouped(localeInfo: LocaleInfo[]) {

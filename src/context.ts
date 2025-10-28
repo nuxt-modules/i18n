@@ -23,7 +23,7 @@ export interface I18nNuxtContext {
   i18nLayers: LayerWithI18n[]
 }
 
-type LayerWithI18n = { config: NuxtConfigLayer, i18n: Partial<NuxtI18nOptions>, i18nDir: string }
+type LayerWithI18n = { config: NuxtConfigLayer, i18n: Partial<NuxtI18nOptions>, i18nDir: string, i18nDetector?: string }
 const resolver = createResolver(import.meta.url)
 const distDir = dirname(fileURLToPath(import.meta.url))
 const runtimeDir = fileURLToPath(new URL('./runtime', import.meta.url))
@@ -35,7 +35,9 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
   for (const l of nuxt.options._layers) {
     const i18n = getLayerI18n(l)
     if (!i18n) { continue }
-    i18nLayers.push({ config: l, i18n, i18nDir: resolveI18nDir(l, i18n) })
+    const i18nDir = resolveI18nDir(l, i18n)
+    const i18nDetector = i18n.experimental?.localeDetector ? resolver.resolve(i18nDir, i18n.experimental.localeDetector) : undefined
+    i18nLayers.push({ config: l, i18n, i18nDir, i18nDetector })
   }
 
   return {
