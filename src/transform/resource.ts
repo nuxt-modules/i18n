@@ -1,7 +1,6 @@
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
-import { VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
-import { DEFINE_I18N_CONFIG_FN, DEFINE_I18N_LOCALE_FN, NUXT_I18N_VIRTUAL_PREFIX } from '../constants'
+import { NUXT_I18N_VIRTUAL_PREFIX, VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
 import { dirname, resolve } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
@@ -16,8 +15,7 @@ export function transform(id: string, input: string, options?: TransformOptions)
   return oxcTransform(id, input, { ...oxcOptions, ...options })
 }
 
-const pattern = [DEFINE_I18N_LOCALE_FN, DEFINE_I18N_CONFIG_FN].join('|')
-const DEFINE_I18N_FN_RE = new RegExp(`\\b(${pattern})\\s*\\((.+)\\s*\\)`, 'gms')
+const DEFINE_I18N_FN_RE = /\b(defineI18nLocale|defineI18nConfig)\s*\((.+)\)/gs
 
 export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext) =>
   createUnplugin(() => {

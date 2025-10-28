@@ -1,5 +1,3 @@
-export const H3_PKG = '@intlify/h3'
-export const UTILS_H3_PKG = '@intlify/utils/h3'
 export const STRATEGY_PREFIX = 'prefix'
 export const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default'
 export const STRATEGY_PREFIX_AND_DEFAULT = 'prefix_and_default'
@@ -79,12 +77,6 @@ export const DEFAULT_OPTIONS = {
   autoDeclare: true,
   serverRoutePrefix: '/_i18n',
 } as const
-
-export const DEFINE_I18N_ROUTE_FN = 'defineI18nRoute'
-export const DEFINE_I18N_LOCALE_FN = 'defineI18nLocale'
-export const DEFINE_I18N_CONFIG_FN = 'defineI18nConfig'
-export const DEFINE_LOCALE_DETECTOR_FN = 'defineI18nLocaleDetector'
-export const NUXT_I18N_VIRTUAL_PREFIX = '#nuxt-i18n'
 
 const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
 const JS_EXTENSIONS = ['.js', '.cjs', '.mjs']

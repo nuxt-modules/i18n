@@ -7,7 +7,6 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { getRoutePath, parseSegment } from './utils/route-parsing'
 import { localizeRoutes } from './routing'
 import { dirname, parse as parsePath, resolve } from 'pathe'
-import { DEFINE_I18N_ROUTE_FN } from './constants'
 import { createRoutesContext } from 'unplugin-vue-router'
 import { resolveOptions } from 'unplugin-vue-router/options'
 import { transform } from './transform/resource'
@@ -386,7 +385,7 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
 
   try {
     const content = absolutePath in vfs ? vfs[absolutePath]! : readFileSync(absolutePath, 'utf-8')
-    if (!content.includes(DEFINE_I18N_ROUTE_FN)) { return undefined }
+    if (!content.includes('defineI18nRoute')) { return undefined }
 
     const { descriptor } = parseSFC(content)
 
@@ -402,7 +401,7 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
       if (
         node.type !== 'CallExpression'
         || node.callee.type !== 'Identifier'
-        || node.callee.name !== DEFINE_I18N_ROUTE_FN
+        || node.callee.name !== 'defineI18nRoute'
       ) { return }
 
       let routeArgument = node.arguments[0]
@@ -414,7 +413,7 @@ function getI18nRouteConfig(absolutePath: string, vfs: Record<string, string> = 
 
         if (transformed.errors.length) {
           for (const error of transformed.errors) {
-            console.warn(`Error while transforming \`${DEFINE_I18N_ROUTE_FN}()\`` + error.codeframe)
+            console.warn(`Error while transforming \`defineI18nRoute()\`` + error.codeframe)
           }
           return
         }
