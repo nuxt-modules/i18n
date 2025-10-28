@@ -16,7 +16,6 @@ export interface I18nNuxtContext {
   localeCodes: string[]
   localeInfo: LocaleInfo[]
   vueI18nConfigPaths: FileMeta[]
-  vueI18nRuntimeOnly: boolean
   distDir: string
   runtimeDir: string
   fullStatic: boolean
@@ -50,7 +49,6 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     localeCodes: undefined!,
     normalizedLocales: undefined!,
     vueI18nConfigPaths: undefined!,
-    vueI18nRuntimeOnly: !!(!nuxt.options.dev && !nuxt.options._prepare && options.bundle?.runtimeOnly),
     fullStatic: undefined!,
     deploymentHash: hash(Date.now()).slice(0, 8),
   }

@@ -51,15 +51,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
       filePath: ctx.resolver.resolve(ctx.runtimeDir, 'components/SwitchLocalePathLink'),
     })
 
-    const vueI18nModulePath = resolveModule(`vue-i18n/dist/vue-i18n${ctx.vueI18nRuntimeOnly ? '.runtime' : ''}`)
     addImports({
       name: 'useI18n',
-      from: vueI18nModulePath,
+      from: 'vue-i18n',
     })
 
-    const composablesIndex = ctx.resolver.resolve(ctx.runtimeDir, 'composables/index')
     addImportsSources({
-      from: composablesIndex,
+      from: ctx.resolver.resolve(ctx.runtimeDir, 'composables/index'),
       imports: [
         'useRouteBaseName',
         'useLocalePath',
@@ -94,7 +92,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
       if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
       nuxt.options.alias[dep] = resolveModule(dep)
     }
-    nuxt.options.alias['vue-i18n'] = vueI18nModulePath
+    const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
+    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`)
     nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`)
 
     /**
