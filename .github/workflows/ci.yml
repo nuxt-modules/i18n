@@ -118,6 +118,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
+          enableCrossOsArchive: true
           key: node-v${{ matrix.node-version }}-${{ github.sha }}
 
       - name: Testing
