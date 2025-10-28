@@ -13,11 +13,7 @@ describe('#2590', async () => {
   test('Locale `language` ISO code is required to generate alternate link', async () => {
     const { page } = await renderPage('/')
 
-    // html tag `lang` attribute
-    expect(await page.getAttribute('html', 'lang')).toMatch('en')
     expect(await page.getAttribute('html', 'lang')).toEqual('en-US')
-
-    // html tag `dir` attribute
     expect(await page.getAttribute('html', 'dir')).toEqual('ltr')
   })
 })

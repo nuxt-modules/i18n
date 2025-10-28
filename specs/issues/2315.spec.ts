@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url, createPage } from '../utils'
+import { setup, createPage } from '../utils'
 
 describe('#2315', async () => {
   await setup({
@@ -8,10 +8,8 @@ describe('#2315', async () => {
   })
 
   test('locale scope', async () => {
-    const home = url('/')
-    const page = await createPage()
-    await page.goto(home)
-
+    const page = await createPage('/')
+    
     expect(await page.locator('#msg').innerText()).toEqual('Hello, local!')
   })
 })
