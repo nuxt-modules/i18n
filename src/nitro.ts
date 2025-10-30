@@ -1,7 +1,7 @@
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { existsSync } from 'node:fs'
-import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolvePath } from '@nuxt/kit'
+import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolveModule, resolvePath } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
@@ -40,7 +40,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
     { name: 'defineI18nLocaleDetector', from: ctx.resolver.resolve('runtime/composables/server') },
   ])
 
-  const h3UtilsExports = await resolveModuleExportNames('@intlify/utils/h3')
+  const h3UtilsExports = await resolveModuleExportNames(resolveModule('@intlify/utils/h3'))
   addServerImports([
     { name: 'useTranslation', from: '@intlify/h3' },
     ...h3UtilsExports.map(name => ({ name, from: '@intlify/utils/h3' })),
