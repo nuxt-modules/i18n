@@ -41,7 +41,7 @@ export const fetchMessages = async (locale: string) => {
   if (import.meta.dev) {
     headers.set('Cache-Control', 'no-cache')
   }
-  await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${locale}/messages.json`, {
+  return await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${locale}/messages.json`, {
     headers,
   })
 }
