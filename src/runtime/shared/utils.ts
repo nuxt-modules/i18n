@@ -1,10 +1,12 @@
-import { type NuxtApp, useRuntimeConfig } from '#app'
+import type { NuxtApp } from '#app'
+import { useRuntimeConfig } from '#imports'
 import { isString } from '@intlify/shared'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, RootRedirectOptions } from '#internal-i18n-types'
+import type { H3Event } from 'h3'
 
-export function useRuntimeI18n(nuxtApp?: NuxtApp) {
+export function useRuntimeI18n(nuxtApp?: NuxtApp, event?: H3Event) {
   if (!nuxtApp) {
-    return useRuntimeConfig().public.i18n as unknown as I18nPublicRuntimeConfig
+    return useRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
   }
   return nuxtApp.$config.public.i18n as unknown as I18nPublicRuntimeConfig
 }

@@ -1,10 +1,10 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
 import { defineNitroPlugin, useStorage } from 'nitropack/runtime'
-import { createI18nContext, tryUseI18nContext, useI18nContext } from './context'
+import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
-import { createLocaleConfigs, getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
+import { isSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { joinURL } from 'ufo'
 // @ts-expect-error virtual file
@@ -18,8 +18,6 @@ import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainFromLocale } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
-
-const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true }).host
 
 function* detect(
   detectors: ReturnType<typeof useDetectors>,
@@ -145,26 +143,14 @@ export default defineNitroPlugin(async (nitro) => {
 
   const baseUrlGetter = createBaseUrlGetter()
 
-  async function initialize(event: H3Event) {
-    const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || _defaultLocale)
-    const localeConfigs = createLocaleConfigs(options.fallbackLocale)
-    const ctx = createI18nContext()
-
-    ctx.vueI18nOptions = options
-    ctx.localeConfigs = localeConfigs
-
-    event.context.nuxtI18n = ctx
-    return ctx
-  }
-
   nitro.hooks.hook('request', async (event: H3Event) => {
-    await initialize(event)
+    await initializeI18nContext(event)
   })
 
   nitro.hooks.hook('render:before', async ({ event }) => {
     if (!__I18N_SERVER_REDIRECT__) { return }
 
-    const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initialize(event) : useI18nContext(event)
+    const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initializeI18nContext(event) : useI18nContext(event)
     const url = getRequestURL(event)
     const detector = useDetectors(event, detection)
     const localeSegment = detector.route(event.path)
