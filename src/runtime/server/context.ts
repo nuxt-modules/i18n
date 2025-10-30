@@ -1,7 +1,9 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
-import type { H3Event, H3EventContext } from 'h3'
-import type { ResolvedI18nOptions } from '../shared/vue-i18n'
+import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
+import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
+import { useRuntimeI18n } from '../shared/utils'
+import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
 
 export function useI18nContext(event: H3Event) {
   if (event.context.nuxtI18n == null) {
@@ -14,18 +16,35 @@ export function tryUseI18nContext(event: H3Event) {
   return event.context.nuxtI18n
 }
 
-const headers = new Headers({ 'x-nuxt-i18n': 'internal' })
-if (import.meta.dev) {
-  headers.set('Cache-Control', 'no-cache')
+const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true }).host
+
+export async function initializeI18nContext(event: H3Event) {
+  const runtimeI18n = useRuntimeI18n(undefined, event)
+  const defaultLocale: string = runtimeI18n.defaultLocale || ''
+  const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || defaultLocale)
+  const localeConfigs = createLocaleConfigs(options.fallbackLocale)
+  const ctx = createI18nContext()
+
+  ctx.vueI18nOptions = options
+  ctx.localeConfigs = localeConfigs
+
+  event.context.nuxtI18n = ctx
+  return ctx
 }
+
 /**
  * Fetches the messages for the specified locale.
  * @internal
  */
-export const fetchMessages = async (locale: string) =>
+export const fetchMessages = async (locale: string) => {
+  const headers = new Headers({ 'x-nuxt-i18n': 'internal' })
+  if (import.meta.dev) {
+    headers.set('Cache-Control', 'no-cache')
+  }
   await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${locale}/messages.json`, {
     headers,
   })
+}
 
 export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
   return {
