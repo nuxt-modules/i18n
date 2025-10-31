@@ -152,11 +152,11 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
         const defaultLocale = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host)
         if (locale !== defaultLocale || detectors.route(path) !== defaultLocale) {
-          return path
+          return joinURL(ctx.getBaseUrl(locale), path)
         }
 
         // remove default locale prefix
-        return path.slice(locale.length + 1)
+        return joinURL(ctx.getBaseUrl(locale), path.slice(locale.length + 1))
       }
 
       if (__DIFFERENT_DOMAINS__) {
