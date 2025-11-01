@@ -11,13 +11,7 @@ import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
 import type { I18nNuxtContext } from './context'
-import {
-  DEFAULT_COOKIE_KEY,
-  DYNAMIC_PARAMS_KEY,
-  FULL_STATIC_LIFETIME,
-  NUXT_I18N_MODULE_ID,
-  SWITCH_LOCALE_PATH_LINK_IDENTIFIER,
-} from './constants'
+import { DEFAULT_COOKIE_KEY, DYNAMIC_PARAMS_KEY, FULL_STATIC_LIFETIME, SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from './constants'
 import { version } from '../package.json'
 
 export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
@@ -86,7 +80,6 @@ export function getDefineConfig(
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
     __NUXT_I18N_VERSION__: JSON.stringify(version),
-    __NUXT_I18N_MODULE_ID__: JSON.stringify(NUXT_I18N_MODULE_ID),
     __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
     __DIFFERENT_DOMAINS__: String(options.differentDomains),
@@ -97,6 +90,7 @@ export function getDefineConfig(
     __DEFAULT_DIRECTION__: JSON.stringify(options.defaultDirection),
     __I18N_CACHE__: String(isCacheEnabled),
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
+    __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
     __I18N_FULL_STATIC__: String(fullStatic),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),

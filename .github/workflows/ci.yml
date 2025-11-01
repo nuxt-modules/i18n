@@ -9,15 +9,17 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'docs/**'
+      - "docs/**"
   pull_request:
     branches:
       - main
     paths-ignore:
-      - 'docs/**'
+      - "docs/**"
 
 jobs:
   lint:
+    needs:
+      - build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -36,13 +38,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Building
-        run: pnpm build
+      - name: Restore dist cache
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: node-v${{ matrix.node-version }}-${{ github.sha }}
 
       - name: Linting
         run: pnpm lint
@@ -66,7 +71,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -78,7 +83,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node-version }}-${{ github.sha }}
+          key: node-v${{ matrix.node-version }}-${{ github.sha }}
 
   test:
     needs:
@@ -101,7 +106,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -113,7 +118,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node-version }}-${{ github.sha }}
+          enableCrossOsArchive: true
+          key: node-v${{ matrix.node-version }}-${{ github.sha }}
 
       - name: Testing
         run: pnpm test
@@ -139,7 +145,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -148,7 +154,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ matrix.os }}-node-v${{ matrix.node-version }}-${{ github.sha }}
+          key: node-v${{ matrix.node-version }}-${{ github.sha }}
 
       - name: Release Edge
         if: |
