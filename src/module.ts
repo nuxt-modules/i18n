@@ -3,7 +3,7 @@ import { setupPages } from './pages'
 import { setupNitro } from './nitro'
 import { extendBundler } from './bundler'
 import { DEFAULT_OPTIONS } from './constants'
-import type { HookResult } from '@nuxt/schema'
+import type { HookResult, NuxtPage } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
 import { createContext } from './context'
@@ -204,7 +204,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 type UserNuxtI18nOptions = Omit<NuxtI18nOptions, 'locales'> & { locales?: string[] | LocaleObject<string>[] }
 
 // Used by nuxt/module-builder for `types.d.ts` generation
-export interface ModuleOptions extends UserNuxtI18nOptions {}
+export interface ModuleOptions extends UserNuxtI18nOptions { }
 
 export interface ModulePublicRuntimeConfig {
   i18n: Partial<I18nPublicRuntimeConfig>
@@ -213,6 +213,7 @@ export interface ModuleHooks {
   'i18n:registerModule': (
     registerModule: (config: Pick<NuxtI18nOptions<unknown>, 'langDir' | 'locales'>) => void,
   ) => HookResult
+  'i18n:filterPages': (pages: NuxtPage[]) => void
 }
 
 export interface ModuleRuntimeHooks {
@@ -231,7 +232,7 @@ export interface ModuleRuntimeHooks {
 
 // Used by module for type inference in source code
 declare module '#app' {
-  interface RuntimeNuxtHooks extends ModuleRuntimeHooks {}
+  interface RuntimeNuxtHooks extends ModuleRuntimeHooks { }
 }
 
 declare module '@nuxt/schema' {
@@ -241,6 +242,6 @@ declare module '@nuxt/schema' {
   interface NuxtOptions {
     ['i18n']: UserNuxtI18nOptions
   }
-  interface NuxtHooks extends ModuleHooks {}
-  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig {}
+  interface NuxtHooks extends ModuleHooks { }
+  interface PublicRuntimeConfig extends ModulePublicRuntimeConfig { }
 }
