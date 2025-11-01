@@ -11,10 +11,10 @@
     "typecheck": "nuxt typecheck"
   },
   "devDependencies": {
-    "@iconify-json/logos": "^1.2.5",
-    "@iconify-json/lucide": "^1.2.68",
-    "@iconify-json/simple-icons": "^1.2.54",
-    "@iconify-json/vscode-icons": "^1.2.23",
+    "@iconify-json/logos": "^1.2.10",
+    "@iconify-json/lucide": "^1.2.71",
+    "@iconify-json/simple-icons": "^1.2.56",
+    "@iconify-json/vscode-icons": "^1.2.33",
     "@nuxt/content": "^3.7.1",
     "@nuxt/image": "^1.11.0",
     "@nuxt/scripts": "^0.12.1",
@@ -22,6 +22,6 @@
     "better-sqlite3": "^12.4.1",
     "nuxt": "^4.1.2",
     "nuxt-llms": "0.1.3",
-    "nuxt-og-image": "^5.1.11"
+    "nuxt-og-image": "^5.1.12"
   }
 }
