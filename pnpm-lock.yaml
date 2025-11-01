@@ -12,16 +12,16 @@ importers:
   .:
     dependencies:
       '@intlify/core':
-        specifier: ^11.1.11
+        specifier: ^11.1.12
         version: 11.1.12
       '@intlify/h3':
-        specifier: ^0.7.1
-        version: 0.7.1
+        specifier: ^0.7.4
+        version: 0.7.4
       '@intlify/shared':
-        specifier: ^11.1.11
+        specifier: ^11.1.12
         version: 11.1.12
       '@intlify/unplugin-vue-i18n':
-        specifier: ^11.0.0
+        specifier: ^11.0.1
         version: 11.0.1(@vue/compiler-dom@3.5.22)(eslint@9.38.0(jiti@2.6.1))(rollup@4.52.5)(typescript@5.9.3)(vue-i18n@11.1.12(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
       '@intlify/utils':
         specifier: ^0.13.0
@@ -90,7 +90,7 @@ importers:
         specifier: ^1.16.1
         version: 1.17.1(db0@0.3.4(better-sqlite3@12.4.1))(ioredis@5.8.2)
       vue-i18n:
-        specifier: ^11.1.11
+        specifier: ^11.1.12
         version: 11.1.12(vue@3.5.22(typescript@5.9.3))
       vue-router:
         specifier: ^4.6.3
@@ -888,8 +888,8 @@ packages:
     resolution: {integrity: sha512-Uccp4VtalUSk/b4F9nBBs7VGgIh9VnXTSHHQ+Kc0AetsHJLxdi04LfhfSi4dujtsTAWnHMHWZw07UbMm6Umq1g==}
     engines: {node: '>= 16'}
 
-  '@intlify/h3@0.7.1':
-    resolution: {integrity: sha512-D/9+L7IzPrOa7e6R/ztepXayAq+snfzBYIwAk3RbaQsLEXwVNjC5c+WKXjni1boc/plGRegw4/m33SaFwvdEpg==}
+  '@intlify/h3@0.7.4':
+    resolution: {integrity: sha512-BtL5+U3Dd9Qz6so+ArOMQWZ+nV21rOqqYUXnqwvW6J3VUXr66A9+9+vUFb/NAQvOU4kdfkO3c/9LMRGU9WZ8vw==}
     engines: {node: '>= 20'}
 
   '@intlify/message-compiler@11.1.12':
@@ -6864,7 +6864,7 @@ snapshots:
       '@intlify/core-base': 11.1.12
       '@intlify/shared': 11.1.12
 
-  '@intlify/h3@0.7.1':
+  '@intlify/h3@0.7.4':
     dependencies:
       '@intlify/core': 11.1.12
       '@intlify/utils': 0.13.0
