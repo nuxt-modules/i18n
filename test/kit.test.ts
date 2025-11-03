@@ -99,6 +99,7 @@ function initComposableOptions(router: Router): ComposableContext {
       strictCanonicals: true,
       hreflangLinks: true
     },
+    isHydratingSSR: () => false,
     getLocale: () => unref(i18nMock.locale),
     getLocales: () => unref(i18nMock.locales),
     getBaseUrl: () => unref(i18nMock.baseUrl),
@@ -170,6 +171,7 @@ describe('testing', () => {
     const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
 
     const options = initComposableOptions(router)
+    const setI18nParams = (params) => options.getLocalizedDynamicParams = (l) => params[l]
     await options.router.push('/')
 
     const localePath = (route: RouteLocationRaw, locale?: string) => _localePath(options, route, locale)
@@ -435,5 +437,19 @@ describe('testing', () => {
     await router.push('/ja/count/三?foo=bär&four=四&foo=bar')
     expect(switchLocalePath('ja')).toEqual('/ja/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
     expect(switchLocalePath('en')).toEqual('/en/count/三?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+
+
+    setI18nParams({
+      ja: {
+        param: 'japan_test',
+        foo: 'baz',
+      }
+    });
+    await router.push('/en/path/test?foo=bar#hash')
+    expect(switchLocalePath('ja')).toEqual('/ja/path/japan_test?foo=baz#hash')
+    expect(switchLocalePath('en')).toEqual('/en/path/test?foo=bar#hash')
+    options.isHydratingSSR = () => true
+    expect(switchLocalePath('ja')).toEqual('/ja/path/japan_test?foo=baz')
+    expect(switchLocalePath('en')).toEqual('/en/path/test?foo=bar')
   })
 })

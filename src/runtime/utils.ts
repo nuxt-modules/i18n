@@ -45,6 +45,7 @@ export type ComposableContext = {
   }
   head: ReturnType<typeof useHead>
   _head: ReturnType<typeof useHead> | undefined
+  isHydratingSSR: () => boolean
   metaState: Required<I18nHeadMetaInfo>
   seoSettings: I18nHeadOptions
   localePathPayload: Record<string, Record<string, string> | false>
@@ -124,6 +125,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       lang: __I18N_STRICT_SEO__,
       seo: __I18N_STRICT_SEO__,
     },
+    isHydratingSSR: () => !!(nuxtApp.isHydrating && nuxtApp.payload?.serverRendered),
     localePathPayload: getLocalePathPayload(),
     routingOptions: {
       defaultLocale,

@@ -29,7 +29,7 @@ export function domainFromLocale(
 ): string | undefined {
   const lang = normalizedLocales.find(x => x.code === locale)
   // lookup the `differentDomain` origin associated with given locale.
-  const domain = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find(v => v === url.host)
+  const domain = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find((v: string) => v === url.host)
 
   if (!domain) {
     import.meta.dev && console.warn('[nuxt-i18n] Could not find domain name for locale ' + locale)
