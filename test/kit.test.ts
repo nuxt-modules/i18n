@@ -443,6 +443,7 @@ describe('testing', () => {
       ja: {
         param: 'japan_test',
         foo: 'baz',
+        non_existing: 'bar',
       }
     });
     await router.push('/en/path/test?foo=bar#hash')
