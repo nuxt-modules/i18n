@@ -1,6 +1,7 @@
 import { joinURL, parsePath, withLeadingSlash } from 'ufo'
 import { createRouterMatcher } from 'vue-router'
 import { i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
+import { NUXT_ERROR_SIGNATURE } from '#app/composables/error'
 
 const matcher = createRouterMatcher([], {})
 for (const path of Object.keys(i18nPathToPath)) {
@@ -18,6 +19,9 @@ const getI18nPathToI18nPath = (path: string, locale: string) => {
 
 export function isExistingNuxtRoute(path: string) {
   if (path === '') { return }
+  // Skip if this is a Nuxt error page (even if it matches a dynamic route)
+  if (path === NUXT_ERROR_SIGNATURE) { return }
+
   const resolvedMatch = matcher.resolve({ path }, { path: '/', name: '', matched: [], params: {}, meta: {} })
 
   return resolvedMatch.matched.length > 0 ? resolvedMatch : undefined
