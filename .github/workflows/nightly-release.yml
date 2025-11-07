@@ -1,4 +1,7 @@
 name: nightly release
+
+permissions: {}
+
 on:
   push:
     branches:
