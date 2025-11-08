@@ -1,5 +1,9 @@
 name: Release
 
+permissions:
+  id-token: write
+  contents: write
+
 # trigger by `git tag` push only via `yarn release`
 on:
   push:

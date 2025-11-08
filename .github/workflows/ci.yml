@@ -1,6 +1,8 @@
 ---
 name: CI
 
+permissions: {}
+
 env:
   CI: true
 
@@ -130,6 +132,8 @@ jobs:
       - build
       - test
     runs-on: ${{ matrix.os }}
+    permissions:
+      id-token: write
     strategy:
       matrix:
         node-version: [lts/*]
