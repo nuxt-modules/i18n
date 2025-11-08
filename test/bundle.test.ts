@@ -17,7 +17,7 @@ describe.skipIf(process.env.ECOSYSTEM_CI || isWindows)(
       const rootDir = fileURLToPath(new URL("../.tmp", import.meta.url));
       await fsp.rm(rootDir, { recursive: true, force: true });
 
-      const [withoutImage, withImage] = await Promise.all([
+      const [withoutModule, withModule, withVueI18n] = await Promise.all([
         build(join(rootDir, "without")),
         build(join(rootDir, "with"), {
           modules: ["@nuxtjs/i18n"],
@@ -29,16 +29,32 @@ describe.skipIf(process.env.ECOSYSTEM_CI || isWindows)(
           //   ],
           // },
         }),
+        build(join(rootDir, "vue-i18n"), {}, { vueI18n: true }),
       ]);
 
+      // total bundle size increase
       expect(
-        roundToKilobytes(withImage.totalBytes - withoutImage.totalBytes),
+        roundToKilobytes(withModule.totalBytes - withoutModule.totalBytes),
       ).toMatchInlineSnapshot(`"69.4k"`);
+
+      // vue-i18n bundle size (without nuxt-i18n)
+      expect(
+        roundToKilobytes(withVueI18n.totalBytes - withoutModule.totalBytes),
+      ).toMatchInlineSnapshot(`"44.2k"`);
+
+      // nuxt-i18n overhead
+      expect(
+        roundToKilobytes(withModule.totalBytes - withVueI18n.totalBytes),
+      ).toMatchInlineSnapshot(`"25.2k"`);
     });
   },
 );
 
-async function build(rootDir: string, config: NuxtConfig = {}) {
+async function build(
+  rootDir: string,
+  config: NuxtConfig = {},
+  options: { vueI18n?: boolean } = {},
+) {
   await mkdir(rootDir, { recursive: true });
   // await mkdir(join(rootDir, "/i18n/locales"), { recursive: true });
   // await writeFile(
@@ -57,7 +73,12 @@ async function build(rootDir: string, config: NuxtConfig = {}) {
   await writeFile(
     join(rootDir, "app.vue"),
     // `<template><NuxtPage /></template>`,
-    `<template><div>Hello world</div></template>`,
+    options.vueI18n
+      ? `<script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+</script>\n`
+      : `` + `<template><div>Hello world</div></template>`,
   );
   const nuxt = await loadNuxt({
     cwd: rootDir,
@@ -85,6 +106,7 @@ async function build(rootDir: string, config: NuxtConfig = {}) {
   await nuxt.close();
   return await analyzeSizes(["**/*.js"], join(rootDir, ".output/public"));
 }
+
 async function analyzeSizes(pattern: string[], rootDir: string) {
   const files: string[] = await glob(pattern, { cwd: rootDir });
   let totalBytes = 0;
