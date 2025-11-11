@@ -40,12 +40,12 @@ describe.skipIf(process.env.ECOSYSTEM_CI || isWindows)(
       // vue-i18n bundle size (without nuxt-i18n)
       expect(
         roundToKilobytes(withVueI18n.totalBytes - withoutModule.totalBytes),
-      ).toMatchInlineSnapshot(`"44.2k"`);
+      ).toMatchInlineSnapshot(`"43.3k"`);
 
       // nuxt-i18n overhead
       expect(
         roundToKilobytes(withModule.totalBytes - withVueI18n.totalBytes),
-      ).toMatchInlineSnapshot(`"25.2k"`);
+      ).toMatchInlineSnapshot(`"26.0k"`);
     });
   },
 );
@@ -75,9 +75,9 @@ async function build(
     // `<template><NuxtPage /></template>`,
     options.vueI18n
       ? `<script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
-</script>\n`
+      import { useI18n } from 'vue-i18n'
+      const { t } = useI18n()
+      </script>\n`
       : `` + `<template><div>Hello world</div></template>`,
   );
   const nuxt = await loadNuxt({
@@ -86,20 +86,23 @@ const { t } = useI18n()
     overrides: {
       ssr: false,
       ...config,
-      // to disable minification for easier size analysis
-      // vite: {
-      //   $client: {
-      //     build: {
-      //       minify: false,
-      //       rollupOptions: {
-      //         output: {
-      //           chunkFileNames: "_nuxt/[name].js",
-      //           entryFileNames: "_nuxt/[name].js",
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
+      vite: {
+        define: {
+          __INTLIFY_PROD_DEVTOOLS__: false, // for vue-i18n build - disabled in nuxt-i18n bundler.ts
+        },
+        // to disable minification for easier size analysis
+        // $client: {
+        //   build: {
+        //     minify: false,
+        //     rollupOptions: {
+        //       output: {
+        //         chunkFileNames: "_nuxt/[name].js",
+        //         entryFileNames: "_nuxt/[name].js",
+        //       },
+        //     },
+        //   },
+        // },
+      },
     },
   });
   await buildNuxt(nuxt);
@@ -125,8 +128,5 @@ async function analyzeSizes(pattern: string[], rootDir: string) {
 }
 
 function roundToKilobytes(bytes: number) {
-  // const kb = bytes / 1024;
-  // const scale = 10000;
-  // return Math.trunc(kb * scale) / scale + "k";
   return (bytes / 1024).toFixed(bytes > 100 * 1024 ? 0 : 1) + "k";
 }
