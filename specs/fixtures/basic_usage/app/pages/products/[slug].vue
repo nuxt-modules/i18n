@@ -10,7 +10,7 @@ const setI18nParams = useSetI18nParams({ canonicalQueries: ['canonical'] })
 product.value = await $fetch(`/api/products/${route.params.slug}`)
 if (product.value != null) {
   const availableLocales = Object.keys(product.value.slugs)
-  const slugs: Record<string, string> = {}
+  const slugs: Record<string, string> = { en: { foo: 'baz' } }
 
   for (const l of availableLocales) {
     slugs[l] = { slug: product.value.slugs[l] }

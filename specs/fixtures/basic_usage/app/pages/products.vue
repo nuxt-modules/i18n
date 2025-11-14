@@ -22,6 +22,11 @@ onMounted(async () => {
       <li>
         <NuxtLink id="params-remove-query" :to="localePath({ query: undefined })">Remove query</NuxtLink>
       </li>
+      <li>
+        <NuxtLink id="params-translate-query" :to="localePath({ query: { foo: 'bar', test: '123', canonical: '123' } })"
+        >Translate query</NuxtLink
+        >
+      </li>
     </ul>
     <ul>
       <li v-for="product in products" :key="product.id">
