@@ -17,6 +17,7 @@
 .nitro
 .output
 .eslintcache
+.tmp
 
 dist
 temp
@@ -29,4 +30,3 @@ node_modules
 package-lock.json
 test/setup/context.json
 eslint-typegen.d.ts
-.eslintcache
