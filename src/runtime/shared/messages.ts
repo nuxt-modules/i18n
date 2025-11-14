@@ -67,10 +67,15 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
  */
 export async function getLocaleMessagesMerged(locale: string, loaders: LocaleLoader[] = []) {
   const nuxtApp = useNuxtApp()
+  const messages = await Promise.all(
+    loaders.map(loader => nuxtApp.runWithContext(() => getLocaleMessages(locale, loader))),
+  )
+
   const merged: LocaleMessages<DefineLocaleMessage> = {}
-  for (const loader of loaders) {
-    deepCopy(await nuxtApp.runWithContext(async () => await getLocaleMessages(locale, loader)), merged)
+  for (const message of messages) {
+    deepCopy(message, merged)
   }
+
   return merged
 }
 
@@ -79,17 +84,20 @@ export async function getLocaleMessagesMerged(locale: string, loaders: LocaleLoa
  */
 export async function getLocaleMessagesMergedCached(locale: string, loaders: LocaleLoader[] = []) {
   const nuxtApp = useNuxtApp()
-  const merged: LocaleMessages<DefineLocaleMessage> = {}
-
-  for (const loader of loaders) {
+  const messages = await Promise.all(loaders.map(async (loader) => {
     const cached = getCachedMessages(loader)
-    const messages = cached || (await nuxtApp.runWithContext(async () => await getLocaleMessages(locale, loader)))
+    const messages = cached || (await nuxtApp.runWithContext(() => getLocaleMessages(locale, loader)))
 
     if (!cached && loader.cache !== false) {
       cacheMessages.set(loader.key, { ttl: Date.now() + __I18N_CACHE_LIFETIME__ * 1000, value: messages })
     }
 
-    deepCopy(messages, merged)
+    return messages
+  }))
+
+  const merged: LocaleMessages<DefineLocaleMessage> = {}
+  for (const message of messages) {
+    deepCopy(message, merged)
   }
 
   return merged
