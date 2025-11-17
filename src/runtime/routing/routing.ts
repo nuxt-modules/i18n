@@ -84,6 +84,18 @@ export function switchLocalePath(
     return ''
   }
 
+  const tr = ctx.getLocalizedDynamicParams(locale)
+  const query: Record<string, unknown> = {}
+  const params: Record<string, unknown> = {}
+  if (tr) {
+    for (const key in tr) {
+      if (key in route.params) {
+        params[key] = tr[key]
+      } else if (key in route.query) {
+        query[key] = tr[key]
+      }
+    }
+  }
   /**
    * Nuxt route uses a proxy with getters for performance reasons (https://github.com/nuxt/nuxt/pull/21957).
    * Spreading will result in an empty object, so we make a copy of the route by accessing each getter property by name.
@@ -91,10 +103,11 @@ export function switchLocalePath(
    */
   const routeCopy = {
     name,
-    params: assign({}, route.params, ctx.getLocalizedDynamicParams(locale)),
+    params: assign({}, route.params, params),
     fullPath: route.fullPath,
-    query: route.query,
-    hash: route.hash,
+    query: assign({}, route.query, query),
+    // Don't include the current hash when running in SSR to avoid hydration mismatch because servers don't know about the hash
+    hash: ctx.isHydratingSSR() ? '' : route.hash,
     path: route.path,
     meta: route.meta,
   }

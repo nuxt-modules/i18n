@@ -569,6 +569,13 @@ describe('basic usage', async () => {
         '/products/red-mug?test=123&canonical=123'
       )
 
+      // Translated query args
+      await page.locator('#params-translate-query').clickNavigate()
+      await page.waitForURL(url('/nl/products/rode-mok?foo=bar&test=123&canonical=123'))
+      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
+        '/products/red-mug?foo=baz&test=123&canonical=123'
+      )
+
       await page.locator('#params-remove-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok'))
       expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
