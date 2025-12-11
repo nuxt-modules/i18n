@@ -65,6 +65,20 @@ type SetupLocalizeRoutesOptions = {
 }
 
 /**
+ * Build a map of locale codes to their custom prefixes
+ */
+function buildLocalePrefixes(locales: LocaleObject[]): Record<string, string> {
+  const prefixes: Record<string, string> = {}
+  for (const locale of locales) {
+    // Use custom prefix if defined and non-empty, otherwise use locale code
+    if (locale.prefix && locale.prefix.length > 0) {
+      prefixes[locale.code] = locale.prefix
+    }
+  }
+  return prefixes
+}
+
+/**
  * Localize routes
  */
 export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalizeRoutesOptions): LocalizableRoute[] {
@@ -74,6 +88,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     optionsResolver: config.optionsResolver,
     trailingSlash: config.trailingSlash ?? false,
     defaultLocales: resolveDefaultLocales(config),
+    localePrefixes: buildLocalePrefixes(config.locales),
     routesNameSeparator: config.routesNameSeparator,
     defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
   })
