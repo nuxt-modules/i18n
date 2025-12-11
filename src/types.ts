@@ -520,8 +520,6 @@ export interface LocaleObject<T = Locale> {
    *
    * When set, routes will use this prefix instead of the locale code.
    * For example, setting `prefix: 'brazil'` for `pt-BR` locale will result in `/brazil/about` instead of `/pt-BR/about`.
-   *
-   * This allows using business-oriented or SEO-friendly prefixes while keeping the locale code unchanged.
    */
   prefix?: string
   /**
