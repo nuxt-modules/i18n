@@ -69,7 +69,7 @@ export function getDefineConfig(
 
   // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true
   let stripMessagesPayload = !!options.experimental.preload
-  if (nuxt.options.i18n?.experimental?.stripMessagesPayload != null) {
+  if (nuxt.options.i18n && nuxt.options.i18n.experimental?.stripMessagesPayload != null) {
     stripMessagesPayload = nuxt.options.i18n.experimental.stripMessagesPayload
   }
 
