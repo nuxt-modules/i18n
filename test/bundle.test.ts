@@ -58,7 +58,7 @@ describe.skipIf(process.env.ECOSYSTEM_CI || isWindows)(
         {
           "module": "69.4k",
           "module (without vue-i18n)": "26.0k",
-          "vue-i18n": "43.4k",
+          "vue-i18n": "43.3k",
           "vue-i18n (without message compiler)": "26.8k",
         }
       `);
