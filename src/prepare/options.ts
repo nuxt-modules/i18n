@@ -16,17 +16,17 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
     )
   }
 
-  if (nuxt.options.i18n?.autoDeclare && nuxt.options.imports.autoImport === false) {
+  if (nuxt.options.i18n && nuxt.options.i18n.autoDeclare && nuxt.options.imports.autoImport === false) {
     logger.warn(
       'Disabling `autoImports` in Nuxt is not compatible with `autoDeclare`, either enable `autoImports` or disable `autoDeclare`.',
     )
   }
 
-  const strategy = nuxt.options.i18n?.strategy || options.strategy
-  const defaultLocale = nuxt.options.i18n?.defaultLocale || options.defaultLocale
+  const strategy = (nuxt.options.i18n && nuxt.options.i18n.strategy) || options.strategy
+  const defaultLocale = (nuxt.options.i18n && nuxt.options.i18n.defaultLocale) || options.defaultLocale
   if (strategy.endsWith('_default') && !defaultLocale) {
     logger.warn(
-      `The \`${strategy}\` i18n strategy${nuxt.options.i18n?.strategy == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
+      `The \`${strategy}\` i18n strategy${(nuxt.options.i18n && nuxt.options.i18n.strategy) == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
     )
   }
 
