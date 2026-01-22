@@ -1,10 +1,15 @@
 import { joinURL, parsePath, withLeadingSlash } from 'ufo'
 import { createRouterMatcher } from 'vue-router'
-import { i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
+import { disabledI18nPathToPath, i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
 
 const matcher = createRouterMatcher([], {})
 for (const path of Object.keys(i18nPathToPath)) {
   matcher.addRoute({ path, component: () => '', meta: {} })
+}
+
+const disabledI18nMatcher = createRouterMatcher([], {})
+for (const path of Object.keys(disabledI18nPathToPath)) {
+  disabledI18nMatcher.addRoute({ path, component: () => '', meta: {} })
 }
 
 const getI18nPathToI18nPath = (path: string, locale: string) => {
@@ -21,6 +26,12 @@ export function isExistingNuxtRoute(path: string) {
   // TODO: path should not have base url - check if base url is stripped earlier
   // skip nuxt error route - this path is hardcoded within nitro context code in nuxt
   if (path.endsWith('/__nuxt_error')) { return }
+
+  // skip disabled i18n routes - this prevent a redirect if there is a catch all route
+  const disabledI18nResolvedMatch = disabledI18nMatcher.resolve({ path }, { path: '/', name: '', matched: [], params: {}, meta: {} })
+  if (disabledI18nResolvedMatch.matched.length > 0) {
+    return
+  }
 
   const resolvedMatch = matcher.resolve({ path }, { path: '/', name: '', matched: [], params: {}, meta: {} })
 
