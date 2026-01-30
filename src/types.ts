@@ -293,7 +293,7 @@ export type NuxtI18nOptions<
    *
    * @example 'meta': custom paths are extracted from the definePageMeta() function in page components.
    * @example 'config': custom paths are extracted from the module configuration.
-   * @example 'page': custom paths are extracted from the page files.
+   * @example 'page': (deprecated) custom paths are extracted from the page files.
    *
    * @default 'page'
    */
