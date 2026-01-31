@@ -137,6 +137,9 @@ export default defineNitroPlugin(async (nitro) => {
 
     if (requestURL.pathname === '/' && __I18N_STRATEGY__ === 'prefix') {
       resolvedPath ??= getLocalizedMatch(defaultLocale)
+      // Fallback: when no route exists for / in i18nPathToPath (e.g. pages/index/index.vue creates /index),
+      // redirect to /{locale} directly for SEO (308 permanent redirect)
+      resolvedPath ??= `/${locale}`
     }
     return { path: resolvedPath, code: redirectCode, locale }
   }
