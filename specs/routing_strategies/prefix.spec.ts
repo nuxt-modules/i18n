@@ -49,6 +49,28 @@ describe('strategy: prefix', async () => {
     }
   })
 
+  test('(#3913) server-side redirect for root path (/) with detectBrowserLanguage and redirectOn: root', async () => {
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            defaultLocale: 'fr',
+            detectBrowserLanguage: {
+              useCookie: true,
+              redirectOn: 'root'
+            }
+          }
+        }
+      },
+      true
+    )
+
+    // Must return 302 redirect (not 200) for SEO - curl/ bots should get server-side redirect
+    const res = await fetch('/', { redirect: 'manual', headers: { 'Accept-Language': 'fr' } })
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toBe('/fr')
+  })
+
   test('can access to prefix locale: /en', async () => {
     const { page } = await renderPage('/en')
 

@@ -158,7 +158,10 @@ export default defineNitroPlugin(async (nitro) => {
     const path = (pathLocale && url.pathname.slice(pathLocale.length + 1)) ?? url.pathname
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
-    if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path)) {
+    // Root path (/) with prefix strategy is not in i18nPathToPath (only /en, /fr etc. are),
+    // but we need to run redirect logic to redirect / to /locale for SEO (issue #3913)
+    const isRootPathWithPrefixStrategy = url.pathname === '/' && __I18N_STRATEGY__ === 'prefix'
+    if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path) && !isRootPathWithPrefixStrategy) {
       return
     }
 
