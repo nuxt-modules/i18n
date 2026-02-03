@@ -2,12 +2,19 @@
 
 exports[`basic 1`] = `
 {
+  "importStatements": [
+    "import locale_en_46json_f7535dc0 from "#nuxt-i18n/f7535dc0";",
+    "import locale_ja_46json_5843ecf1 from "#nuxt-i18n/5843ecf1";",
+    "import locale_fr_46json_3d83f3b3 from "#nuxt-i18n/3d83f3b3";",
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {
     "en": [
       {
         "cache": true,
         "key": ""locale_en_46json_f7535dc0"",
         "load": "() => import("#nuxt-i18n/f7535dc0" /* webpackChunkName: "locale_en_46json_f7535dc0" */)",
+        "loadServer": "() => Promise.resolve(locale_en_46json_f7535dc0)",
         "relative": "../en.json",
       },
     ],
@@ -16,6 +23,7 @@ exports[`basic 1`] = `
         "cache": true,
         "key": ""locale_fr_46json_3d83f3b3"",
         "load": "() => import("#nuxt-i18n/3d83f3b3" /* webpackChunkName: "locale_fr_46json_3d83f3b3" */)",
+        "loadServer": "() => Promise.resolve(locale_fr_46json_3d83f3b3)",
         "relative": "../fr.json",
       },
     ],
@@ -24,6 +32,7 @@ exports[`basic 1`] = `
         "cache": true,
         "key": ""locale_ja_46json_5843ecf1"",
         "load": "() => import("#nuxt-i18n/5843ecf1" /* webpackChunkName: "locale_ja_46json_5843ecf1" */)",
+        "loadServer": "() => Promise.resolve(locale_ja_46json_5843ecf1)",
         "relative": "../ja.json",
       },
     ],
@@ -42,6 +51,7 @@ exports[`basic 1`] = `
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -50,12 +60,21 @@ exports[`basic 1`] = `
 
 exports[`files with cache configuration 1`] = `
 {
+  "importStatements": [
+    "import locale_en_46json_7973e345 from "#nuxt-i18n/7973e345";",
+    "import locale_ja_46json_4c459061 from "#nuxt-i18n/4c459061";",
+    "import locale_fr_46json_aa45ccf4 from "#nuxt-i18n/aa45ccf4";",
+    "import locale_es_46json_cffd8a40 from "#nuxt-i18n/cffd8a40";",
+    "import locale_es_45AR_46json_d3b7c72c from "#nuxt-i18n/d3b7c72c";",
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {
     "en": [
       {
         "cache": true,
         "key": ""locale_en_46json_7973e345"",
         "load": "() => import("#nuxt-i18n/7973e345" /* webpackChunkName: "locale_en_46json_7973e345" */)",
+        "loadServer": "() => Promise.resolve(locale_en_46json_7973e345)",
         "relative": "../srcDir/locales/en.json",
       },
     ],
@@ -64,6 +83,7 @@ exports[`files with cache configuration 1`] = `
         "cache": false,
         "key": ""locale_es_46json_cffd8a40"",
         "load": "() => import("#nuxt-i18n/cffd8a40" /* webpackChunkName: "locale_es_46json_cffd8a40" */)",
+        "loadServer": "() => Promise.resolve(locale_es_46json_cffd8a40)",
         "relative": "../srcDir/locales/es.json",
       },
     ],
@@ -72,12 +92,14 @@ exports[`files with cache configuration 1`] = `
         "cache": false,
         "key": ""locale_es_46json_cffd8a40"",
         "load": "() => import("#nuxt-i18n/cffd8a40" /* webpackChunkName: "locale_es_46json_cffd8a40" */)",
+        "loadServer": "() => Promise.resolve(locale_es_46json_cffd8a40)",
         "relative": "../srcDir/locales/es.json",
       },
       {
         "cache": true,
         "key": ""locale_es_45AR_46json_d3b7c72c"",
         "load": "() => import("#nuxt-i18n/d3b7c72c" /* webpackChunkName: "locale_es_45AR_46json_d3b7c72c" */)",
+        "loadServer": "() => Promise.resolve(locale_es_45AR_46json_d3b7c72c)",
         "relative": "../srcDir/locales/es-AR.json",
       },
     ],
@@ -86,6 +108,7 @@ exports[`files with cache configuration 1`] = `
         "cache": true,
         "key": ""locale_fr_46json_aa45ccf4"",
         "load": "() => import("#nuxt-i18n/aa45ccf4" /* webpackChunkName: "locale_fr_46json_aa45ccf4" */)",
+        "loadServer": "() => Promise.resolve(locale_fr_46json_aa45ccf4)",
         "relative": "../srcDir/locales/fr.json",
       },
     ],
@@ -94,6 +117,7 @@ exports[`files with cache configuration 1`] = `
         "cache": true,
         "key": ""locale_ja_46json_4c459061"",
         "load": "() => import("#nuxt-i18n/4c459061" /* webpackChunkName: "locale_ja_46json_4c459061" */)",
+        "loadServer": "() => Promise.resolve(locale_ja_46json_4c459061)",
         "relative": "../srcDir/locales/ja.json",
       },
     ],
@@ -118,6 +142,7 @@ exports[`files with cache configuration 1`] = `
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -126,12 +151,19 @@ exports[`files with cache configuration 1`] = `
 
 exports[`lazy 1`] = `
 {
+  "importStatements": [
+    "import locale_en_46json_f7535dc0 from "#nuxt-i18n/f7535dc0";",
+    "import locale_ja_46json_5843ecf1 from "#nuxt-i18n/5843ecf1";",
+    "import locale_fr_46json_3d83f3b3 from "#nuxt-i18n/3d83f3b3";",
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {
     "en": [
       {
         "cache": true,
         "key": ""locale_en_46json_f7535dc0"",
         "load": "() => import("#nuxt-i18n/f7535dc0" /* webpackChunkName: "locale_en_46json_f7535dc0" */)",
+        "loadServer": "() => Promise.resolve(locale_en_46json_f7535dc0)",
         "relative": "../en.json",
       },
     ],
@@ -140,6 +172,7 @@ exports[`lazy 1`] = `
         "cache": true,
         "key": ""locale_fr_46json_3d83f3b3"",
         "load": "() => import("#nuxt-i18n/3d83f3b3" /* webpackChunkName: "locale_fr_46json_3d83f3b3" */)",
+        "loadServer": "() => Promise.resolve(locale_fr_46json_3d83f3b3)",
         "relative": "../fr.json",
       },
     ],
@@ -148,6 +181,7 @@ exports[`lazy 1`] = `
         "cache": true,
         "key": ""locale_ja_46json_5843ecf1"",
         "load": "() => import("#nuxt-i18n/5843ecf1" /* webpackChunkName: "locale_ja_46json_5843ecf1" */)",
+        "loadServer": "() => Promise.resolve(locale_ja_46json_5843ecf1)",
         "relative": "../ja.json",
       },
     ],
@@ -166,6 +200,7 @@ exports[`lazy 1`] = `
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -174,12 +209,19 @@ exports[`lazy 1`] = `
 
 exports[`locale file in nested 1`] = `
 {
+  "importStatements": [
+    "import locale_main_46json_291f935f from "#nuxt-i18n/291f935f";",
+    "import locale_main_46json_cfa671d1 from "#nuxt-i18n/cfa671d1";",
+    "import locale_main_46json_7ba1ed37 from "#nuxt-i18n/7ba1ed37";",
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {
     "en": [
       {
         "cache": true,
         "key": ""locale_main_46json_291f935f"",
         "load": "() => import("#nuxt-i18n/291f935f" /* webpackChunkName: "locale_main_46json_291f935f" */)",
+        "loadServer": "() => Promise.resolve(locale_main_46json_291f935f)",
         "relative": "../en/main.json",
       },
     ],
@@ -188,6 +230,7 @@ exports[`locale file in nested 1`] = `
         "cache": true,
         "key": ""locale_main_46json_7ba1ed37"",
         "load": "() => import("#nuxt-i18n/7ba1ed37" /* webpackChunkName: "locale_main_46json_7ba1ed37" */)",
+        "loadServer": "() => Promise.resolve(locale_main_46json_7ba1ed37)",
         "relative": "../fr/main.json",
       },
     ],
@@ -196,6 +239,7 @@ exports[`locale file in nested 1`] = `
         "cache": true,
         "key": ""locale_main_46json_cfa671d1"",
         "load": "() => import("#nuxt-i18n/cfa671d1" /* webpackChunkName: "locale_main_46json_cfa671d1" */)",
+        "loadServer": "() => Promise.resolve(locale_main_46json_cfa671d1)",
         "relative": "../ja/main.json",
       },
     ],
@@ -214,6 +258,7 @@ exports[`locale file in nested 1`] = `
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -222,12 +267,21 @@ exports[`locale file in nested 1`] = `
 
 exports[`multiple files 1`] = `
 {
+  "importStatements": [
+    "import locale_en_46json_f7535dc0 from "#nuxt-i18n/f7535dc0";",
+    "import locale_ja_46json_5843ecf1 from "#nuxt-i18n/5843ecf1";",
+    "import locale_fr_46json_3d83f3b3 from "#nuxt-i18n/3d83f3b3";",
+    "import locale_es_46json_234aa7ad from "#nuxt-i18n/234aa7ad";",
+    "import locale_es_45AR_46json_dab30c5d from "#nuxt-i18n/dab30c5d";",
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {
     "en": [
       {
         "cache": true,
         "key": ""locale_en_46json_f7535dc0"",
         "load": "() => import("#nuxt-i18n/f7535dc0" /* webpackChunkName: "locale_en_46json_f7535dc0" */)",
+        "loadServer": "() => Promise.resolve(locale_en_46json_f7535dc0)",
         "relative": "../en.json",
       },
     ],
@@ -236,6 +290,7 @@ exports[`multiple files 1`] = `
         "cache": true,
         "key": ""locale_es_46json_234aa7ad"",
         "load": "() => import("#nuxt-i18n/234aa7ad" /* webpackChunkName: "locale_es_46json_234aa7ad" */)",
+        "loadServer": "() => Promise.resolve(locale_es_46json_234aa7ad)",
         "relative": "../es.json",
       },
     ],
@@ -244,12 +299,14 @@ exports[`multiple files 1`] = `
         "cache": true,
         "key": ""locale_es_46json_234aa7ad"",
         "load": "() => import("#nuxt-i18n/234aa7ad" /* webpackChunkName: "locale_es_46json_234aa7ad" */)",
+        "loadServer": "() => Promise.resolve(locale_es_46json_234aa7ad)",
         "relative": "../es.json",
       },
       {
         "cache": true,
         "key": ""locale_es_45AR_46json_dab30c5d"",
         "load": "() => import("#nuxt-i18n/dab30c5d" /* webpackChunkName: "locale_es_45AR_46json_dab30c5d" */)",
+        "loadServer": "() => Promise.resolve(locale_es_45AR_46json_dab30c5d)",
         "relative": "../es-AR.json",
       },
     ],
@@ -258,6 +315,7 @@ exports[`multiple files 1`] = `
         "cache": true,
         "key": ""locale_fr_46json_3d83f3b3"",
         "load": "() => import("#nuxt-i18n/3d83f3b3" /* webpackChunkName: "locale_fr_46json_3d83f3b3" */)",
+        "loadServer": "() => Promise.resolve(locale_fr_46json_3d83f3b3)",
         "relative": "../fr.json",
       },
     ],
@@ -266,6 +324,7 @@ exports[`multiple files 1`] = `
         "cache": true,
         "key": ""locale_ja_46json_5843ecf1"",
         "load": "() => import("#nuxt-i18n/5843ecf1" /* webpackChunkName: "locale_ja_46json_5843ecf1" */)",
+        "loadServer": "() => Promise.resolve(locale_ja_46json_5843ecf1)",
         "relative": "../ja.json",
       },
     ],
@@ -290,6 +349,7 @@ exports[`multiple files 1`] = `
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -298,11 +358,15 @@ exports[`multiple files 1`] = `
 
 exports[`toCode: function (arrow) 1`] = `
 {
+  "importStatements": [
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {},
   "normalizedLocales": [],
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -311,11 +375,15 @@ exports[`toCode: function (arrow) 1`] = `
 
 exports[`toCode: function (named) 1`] = `
 {
+  "importStatements": [
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {},
   "normalizedLocales": [],
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],
@@ -324,12 +392,19 @@ exports[`toCode: function (named) 1`] = `
 
 exports[`vueI18n option 1`] = `
 {
+  "importStatements": [
+    "import locale_en_46json_f7535dc0 from "#nuxt-i18n/f7535dc0";",
+    "import locale_ja_46json_5843ecf1 from "#nuxt-i18n/5843ecf1";",
+    "import locale_fr_46json_3d83f3b3 from "#nuxt-i18n/3d83f3b3";",
+    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
+  ],
   "localeLoaders": {
     "en": [
       {
         "cache": true,
         "key": ""locale_en_46json_f7535dc0"",
         "load": "() => import("#nuxt-i18n/f7535dc0" /* webpackChunkName: "locale_en_46json_f7535dc0" */)",
+        "loadServer": "() => Promise.resolve(locale_en_46json_f7535dc0)",
         "relative": "../en.json",
       },
     ],
@@ -338,6 +413,7 @@ exports[`vueI18n option 1`] = `
         "cache": true,
         "key": ""locale_fr_46json_3d83f3b3"",
         "load": "() => import("#nuxt-i18n/3d83f3b3" /* webpackChunkName: "locale_fr_46json_3d83f3b3" */)",
+        "loadServer": "() => Promise.resolve(locale_fr_46json_3d83f3b3)",
         "relative": "../fr.json",
       },
     ],
@@ -346,6 +422,7 @@ exports[`vueI18n option 1`] = `
         "cache": true,
         "key": ""locale_ja_46json_5843ecf1"",
         "load": "() => import("#nuxt-i18n/5843ecf1" /* webpackChunkName: "locale_ja_46json_5843ecf1" */)",
+        "loadServer": "() => Promise.resolve(locale_ja_46json_5843ecf1)",
         "relative": "../ja.json",
       },
     ],
@@ -364,14 +441,17 @@ exports[`vueI18n option 1`] = `
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
+      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
       "relative": "../../path/to",
     },
   ],

@@ -36,7 +36,7 @@ export function generateLoaderOptions(
    */
   const importMapper = new Map<string, LocaleLoaderData>()
   const localeLoaders: Record<string, LocaleLoaderData[]> = {}
-  const importStatements: string[] = []
+  const importStatements = new Set<string>()
   for (const locale of ctx.localeInfo) {
     localeLoaders[locale.code] ??= []
     for (const meta of locale.meta) {
@@ -44,7 +44,7 @@ export function generateLoaderOptions(
         const identifier = `locale_${genSafeVariableName(basename(meta.path))}_${meta.hash}`
         const key = genString(identifier)
 
-        importStatements.push(genImport(asI18nVirtual(meta.hash), identifier))
+        importStatements.add(genImport(asI18nVirtual(meta.hash), identifier))
         importMapper.set(meta.path, {
           key,
           relative: relative(nuxt.options.buildDir, meta.path),
@@ -66,7 +66,7 @@ export function generateLoaderOptions(
     const identifier = `config_${genSafeVariableName(basename(config.path))}_${config.hash}`
     const key = genString(identifier)
 
-    importStatements.push(genImport(asI18nVirtual(config.hash), identifier))
+    importStatements.add(genImport(asI18nVirtual(config.hash), identifier))
     vueI18nConfigs.push({
       importer: genDynamicImport(asI18nVirtual(config.hash), { comment: `webpackChunkName: ${key}` }),
       importerServer: `() => Promise.resolve(${identifier})`,
@@ -79,7 +79,7 @@ export function generateLoaderOptions(
    */
   const normalizedLocales = ctx.normalizedLocales.map(x => stripLocaleFiles(x))
 
-  return { localeLoaders, vueI18nConfigs, normalizedLocales, importStatements }
+  return { localeLoaders, vueI18nConfigs, normalizedLocales, importStatements: Array.from(importStatements) }
 }
 
 /**
