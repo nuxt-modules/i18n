@@ -11,12 +11,13 @@ import { EXECUTABLE_EXTENSIONS } from './constants'
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleInfo } from './types'
 import type { I18nNuxtContext } from './context'
+import { generateLoaderOptions } from './gen'
+import { generateTemplateNuxtI18nOptions } from './template'
 
 export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
-    getContents: () =>
-      nuxt.vfs['#build/i18n-options.mjs']!.replace(/\/\*\* client \*\*\/[\s\S]*\/\*\* client-end \*\*\//, ''),
+    getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt), true),
   })
 
   addServerTemplate({
@@ -56,7 +57,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
   nuxt.hook('nitro:config', async (nitroConfig) => {
     // inline module runtime in Nitro bundle
-    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime')] })
+    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...new Set(ctx.localeInfo.flatMap(x => x.meta.map(m => m.path)))] })
     nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
 
     nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []

@@ -61,6 +61,7 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
 export function generateTemplateNuxtI18nOptions(
   ctx: I18nNuxtContext,
   opts: TemplateNuxtI18nOptions,
+  server: boolean = false,
   nuxt = useNuxt(),
 ): string {
   const codeHMR
@@ -76,15 +77,15 @@ export function generateTemplateNuxtI18nOptions(
 
   const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
-    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, cache }) => ({ key, load, cache }))
+    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, loadServer, cache }) => ({ key, load: server ? loadServer : load, cache }))
   }
 
   return `// @ts-nocheck
+${server ? opts.importStatements.join('\n') : ''}
 export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 export const localeLoaders = ${genObjectFromRaw(localeLoaderEntries)}
-export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => x.importer))}
+export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => server ? x.importerServer : x.importer))}
 export const normalizedLocales = ${genArrayFromRaw(opts.normalizedLocales.map(x => genObjectFromValues(x, '  ')))}
-/** client **/
-${codeHMR || ''}
-/** client-end **/`
+${server ? '' : codeHMR || ''}
+`
 }
