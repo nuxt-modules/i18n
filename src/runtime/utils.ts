@@ -43,8 +43,8 @@ export type ComposableContext = {
     /** Enable/disable hreflangLinks */
     hreflangLinks: boolean
   }
-  head: ReturnType<typeof useHead>
-  _head: ReturnType<typeof useHead> | undefined
+  head: ReturnType<typeof import('nuxt/app').useHead>
+  _head: ReturnType<typeof import('nuxt/app').useHead> | undefined
   metaState: Required<I18nHeadMetaInfo>
   seoSettings: I18nHeadOptions
   localePathPayload: Record<string, Record<string, string> | false>
