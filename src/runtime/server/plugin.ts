@@ -13,7 +13,7 @@ import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
 
-import { type H3Event, getRequestURL, sendRedirect, setCookie } from 'h3'
+import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainFromLocale } from '../shared/domain'
@@ -38,6 +38,19 @@ function* detect(
   }
 
   yield { locale: detection.fallbackLocale, source: 'fallback' }
+}
+
+// Adapted from H3 v1
+// https://github.com/h3js/h3/blob/24231b9c448aa852b15b889c53253a783f67a126/src/utils/response.ts#L166-L179
+function createRedirectResponse(event: H3Event, dest: string, code: number) {
+  event.node.res.setHeader('location', dest)
+  event.node.res.statusCode = sanitizeStatusCode(code, event.node.res.statusCode)
+
+  return {
+    headers: event.node.res.getHeaders() as Record<string, string>,
+    statusCode: event.node.res.statusCode,
+    body: `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${dest.replace(/"/g, '%22')}"></head></html>`,
+  }
 }
 
 export default defineNitroPlugin(async (nitro) => {
@@ -147,8 +160,9 @@ export default defineNitroPlugin(async (nitro) => {
     await initializeI18nContext(event)
   })
 
-  nitro.hooks.hook('render:before', async ({ event }) => {
+  nitro.hooks.hook('render:before', async (context) => {
     if (!__I18N_SERVER_REDIRECT__) { return }
+    const { event } = context
 
     const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initializeI18nContext(event) : useI18nContext(event)
     const url = getRequestURL(event)
@@ -166,7 +180,7 @@ export default defineNitroPlugin(async (nitro) => {
     if (resolved.path && resolved.path !== url.pathname) {
       ctx.detectLocale = resolved.locale
       detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
-      await sendRedirect(
+      context.response = createRedirectResponse(
         event,
         joinURL(baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale), resolved.path + url.search),
         resolved.code,
