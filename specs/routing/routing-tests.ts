@@ -103,12 +103,28 @@ export async function switchLocalePathTests() {
   await page.waitForURL(url('/ja/about?foo=b%C3%A4r&four=%E5%9B%9B'))
   expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about?foo=b%C3%A4r&four=%E5%9B%9B')
   expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about?foo=b%C3%A4r&four=%E5%9B%9B')
+  const forbidden = [
+    'Hydration completed but contains mismatches.',
+    'Note: this mismatch is check-only'
+  ]
 
+  const logs: string[] = []
+
+  page.on('console', msg => {
+    const text = msg.text()
+    if (forbidden.some(f => text.includes(f))) {
+      logs.push(text)
+    }
+  })
   await gotoPath(page, '/ja/about#foo=bar')
   // path hash is not sent to the server, so we need to wait for the client to hydrate
   await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
-  expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about#foo=bar')
-  expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about#foo=bar')
+
+  // We don't force a rerender on mounted, so the hash will not be present for switchLocale
+  expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about')
+  expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about')
+
+  expect(logs, `Hydration mismatch warnings:\n${logs.join('\n')}`).toHaveLength(0)
 
   await page.goto(url('/ja/about?foo=é'))
   await page.waitForURL(url('/ja/about?foo=%C3%A9'))
