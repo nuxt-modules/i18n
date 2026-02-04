@@ -40,6 +40,8 @@ function* detect(
   yield { locale: detection.fallbackLocale, source: 'fallback' }
 }
 
+// Adapted from H3 v1
+// https://github.com/h3js/h3/blob/24231b9c448aa852b15b889c53253a783f67a126/src/utils/response.ts#L166-L179
 function createRedirectResponse(event: H3Event, dest: string, code: number) {
   event.node.res.setHeader('location', dest)
   event.node.res.statusCode = sanitizeStatusCode(code, event.node.res.statusCode)
