@@ -10,4 +10,4 @@ pnpm i --frozen-lockfile=false
 
 # Release package
 echo "⚡ Publishing with tag latest"
-pnpm publish --tag latest --access public --tolerate-republish --provenance
+pnpm publish --tag latest --access public --provenance
