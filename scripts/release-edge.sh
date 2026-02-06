@@ -13,4 +13,4 @@ pnpm i --frozen-lockfile=false
 
 # Release package
 echo "⚡ Publishing edge version"
-pnpm publish --tag latest --access public --provenance
+pnpm publish --tag latest --access public --provenance --no-git-checks
