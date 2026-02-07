@@ -7,7 +7,7 @@ import { vi, afterAll, describe, test, expect } from 'vitest'
 
 import { deepCopy } from '@intlify/shared'
 import { loadNuxt, buildNuxt } from '@nuxt/kit'
-import { NuxtPage } from 'nuxt/schema'
+import { NuxtPage } from '@nuxt/schema'
 
 /**
  * NOTE:

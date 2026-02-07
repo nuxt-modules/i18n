@@ -19,7 +19,7 @@ import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
 import { getNormalizedLocales } from './pages/utils'
-import type { NuxtPage } from 'nuxt/schema'
+import type { NuxtPage } from '@nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
 import { LocalizableRoute } from '../src/kit/gen'
 
