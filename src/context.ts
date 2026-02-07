@@ -4,7 +4,7 @@ import { dirname } from 'pathe'
 import { hash } from 'ohash'
 import type { Resolver } from '@nuxt/kit'
 import type { FileMeta, LocaleInfo, LocaleObject, NuxtI18nOptions } from './types'
-import type { Nuxt, NuxtConfigLayer } from 'nuxt/schema'
+import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import { getLayerI18n } from './utils'
 import { resolveI18nDir } from './layers'
 
