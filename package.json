@@ -69,10 +69,7 @@
     "test:e2e": "vitest run specs"
   },
   "resolutions": {
-    "@nuxtjs/i18n": "workspace:*",
-    "@nuxt/schema": "4.2.0",
-    "@nuxt/kit": "4.2.0",
-    "nuxt": "4.2.0"
+    "@nuxtjs/i18n": "workspace:*"
   },
   "dependencies": {
     "@intlify/core": "^11.1.11",
