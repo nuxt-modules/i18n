@@ -4,14 +4,14 @@ import { NUXT_I18N_VIRTUAL_PREFIX, VIRTUAL_PREFIX_HEX, asI18nVirtual } from './u
 import { dirname, resolve } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
-import { transform as oxcTransform } from 'oxc-transform'
+import { transformSync as oxcTransform } from 'oxc-transform'
 import type { TransformOptions, TransformResult } from 'oxc-transform'
 
 import type { BundlerPluginOptions } from './utils'
 import type { I18nNuxtContext } from '../context'
 
 export function transform(id: string, input: string, options?: TransformOptions): TransformResult {
-  const oxcOptions = tryUseNuxt()?.options?.oxc?.transform?.options ?? {}
+  const oxcOptions = (tryUseNuxt()?.options?.oxc?.transform?.options ?? {}) as TransformOptions
   return oxcTransform(id, input, { ...oxcOptions, ...options })
 }
 

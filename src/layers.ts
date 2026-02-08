@@ -77,7 +77,9 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
   // collect hook configs
   await nuxt.callHook(
+    // @ts-expect-error - type issue only present within repo
     'i18n:registerModule',
+    // @ts-expect-error - type issue only present within repo
     ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales }),
   )
 
