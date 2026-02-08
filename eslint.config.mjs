@@ -111,6 +111,7 @@ export default createConfigForNuxt({
       },
     },
     // Sort rule keys in eslint config
+    // @ts-ignore type issues with eslint
     {
       files: ['**/eslint.config.mjs'],
       name: 'local/sort-eslint-config',

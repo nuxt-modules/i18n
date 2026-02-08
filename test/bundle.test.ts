@@ -56,10 +56,10 @@ describe.skipIf(process.env.ECOSYSTEM_CI || isWindows)(
 
       expect(data).toMatchInlineSnapshot(`
         {
-          "module": "69.4k",
+          "module": "69.0k",
           "module (without vue-i18n)": "26.0k",
-          "vue-i18n": "43.3k",
-          "vue-i18n (without message compiler)": "26.8k",
+          "vue-i18n": "43.0k",
+          "vue-i18n (without message compiler)": "26.4k",
         }
       `);
     });
