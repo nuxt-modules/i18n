@@ -12,20 +12,20 @@ importers:
   .:
     dependencies:
       '@intlify/core':
-        specifier: ^11.1.11
+        specifier: ^11.2.8
         version: 11.2.8
       '@intlify/h3':
-        specifier: ^0.7.1
+        specifier: ^0.7.4
         version: 0.7.4
       '@intlify/shared':
-        specifier: ^11.1.11
+        specifier: ^11.2.8
         version: 11.2.8
       '@intlify/unplugin-vue-i18n':
-        specifier: ^11.0.0
+        specifier: ^11.0.3
         version: 11.0.3(@vue/compiler-dom@3.5.27)(eslint@9.39.2(jiti@2.6.1))(rollup@4.57.1)(typescript@5.9.3)(vue-i18n@11.2.8(vue@3.5.27(typescript@5.9.3)))(vue@3.5.27(typescript@5.9.3))
       '@intlify/utils':
-        specifier: ^0.13.0
-        version: 0.13.0
+        specifier: ^0.14.1
+        version: 0.14.1
       '@miyaneee/rollup-plugin-json5':
         specifier: ^1.2.0
         version: 1.2.0(rollup@4.57.1)
@@ -1054,6 +1054,10 @@ packages:
   '@intlify/utils@0.13.0':
     resolution: {integrity: sha512-8i3uRdAxCGzuHwfmHcVjeLQBtysQB2aXl/ojoagDut5/gY5lvWCQ2+cnl2TiqE/fXj/D8EhWG/SLKA7qz4a3QA==}
     engines: {node: '>= 18'}
+
+  '@intlify/utils@0.14.1':
+    resolution: {integrity: sha512-/NVDhX6sG87h0PXIwUCTW9DeHbKeqlni6qVV8xzMULQRHE9azIETldBlTKaBji7z6ostyDIH4s6SWI3AAI4uFg==}
+    engines: {node: '>= 20'}
 
   '@intlify/vue-i18n-extensions@8.0.0':
     resolution: {integrity: sha512-w0+70CvTmuqbskWfzeYhn0IXxllr6mU+IeM2MU0M+j9OW64jkrvqY+pYFWrUnIIC9bEdij3NICruicwd5EgUuQ==}
@@ -7764,6 +7768,8 @@ snapshots:
       - typescript
 
   '@intlify/utils@0.13.0': {}
+
+  '@intlify/utils@0.14.1': {}
 
   '@intlify/vue-i18n-extensions@8.0.0(@intlify/shared@11.2.8)(@vue/compiler-dom@3.5.27)(vue-i18n@11.2.8(vue@3.5.27(typescript@5.9.3)))(vue@3.5.27(typescript@5.9.3))':
     dependencies:

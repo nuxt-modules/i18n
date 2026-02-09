@@ -72,11 +72,11 @@
     "@nuxtjs/i18n": "workspace:*"
   },
   "dependencies": {
-    "@intlify/core": "^11.1.11",
-    "@intlify/h3": "^0.7.1",
-    "@intlify/shared": "^11.1.11",
-    "@intlify/unplugin-vue-i18n": "^11.0.0",
-    "@intlify/utils": "^0.13.0",
+    "@intlify/core": "^11.2.8",
+    "@intlify/h3": "^0.7.4",
+    "@intlify/shared": "^11.2.8",
+    "@intlify/unplugin-vue-i18n": "^11.0.3",
+    "@intlify/utils": "^0.14.1",
     "@miyaneee/rollup-plugin-json5": "^1.2.0",
     "@nuxt/kit": "^4.3.1",
     "@rollup/plugin-yaml": "^4.1.2",
