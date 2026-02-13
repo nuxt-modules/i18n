@@ -1,5 +1,5 @@
 import { resolveLocales } from '../src/utils'
-import { parseSegment, getRoutePath } from '../src/utils/route-parsing'
+import { parseSegment, toVueRouterSegment } from 'unrouting'
 import type { LocaleObject } from '../src/types'
 import { vi, beforeEach, afterEach, test, expect, beforeAll } from 'vitest'
 
@@ -132,17 +132,17 @@ test('resolveLocales', async () => {
 test('parseSegment', () => {
   const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
   expect(tokens).toEqual([
-    { type: 1, value: 'foo' },
-    { type: 0, value: '_' },
-    { type: 1, value: 'bar' },
-    { type: 0, value: ':' },
-    { type: 3, value: 'buz' },
-    { type: 0, value: '_buz_' },
-    { type: 2, value: 'qux' }
+    { type: 'dynamic', value: 'foo' },
+    { type: 'static', value: '_' },
+    { type: 'dynamic', value: 'bar' },
+    { type: 'static', value: ':' },
+    { type: 'catchall', value: 'buz' },
+    { type: 'static', value: '_buz_' },
+    { type: 'optional', value: 'qux' },
   ])
 })
 
-test('getRoutePath', () => {
+test('toVueRouterSegment', () => {
   const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
-  expect(getRoutePath(tokens)).toBe(`/:foo()_:bar()\\::buz(.*)*_buz_:qux?`)
+  expect('/' + toVueRouterSegment(tokens)).toBe(`/:foo()_:bar()\\::buz(.*)*_buz_:qux?`)
 })
