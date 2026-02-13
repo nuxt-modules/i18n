@@ -4,7 +4,7 @@ import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
 import { parseAndWalk } from 'oxc-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { getRoutePath, parseSegment } from './utils/route-parsing'
+import { parseSegment, toVueRouterSegment } from 'unrouting'
 import { localizeRoutes } from './routing'
 import { dirname, parse as parsePath, resolve } from 'pathe'
 import { createRoutesContext } from 'unplugin-vue-router'
@@ -295,7 +295,7 @@ export function getRouteOptionsResolver(
 
 function resolveRoutePath(path: string): string {
   const tokens = parseSegment(path.slice(1))
-  return getRoutePath(tokens)
+  return '/' + toVueRouterSegment(tokens)
 }
 
 function getRouteFromConfig(
