@@ -91,20 +91,20 @@ export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nu
 
   // collect `installModule` config
   if (options.vueI18n && isAbsolute(options.vueI18n)) {
-    resolvers.push(resolveVueI18nConfigInfo(parse(options.vueI18n).dir, options.vueI18n))
+    resolvers.push(resolveVueI18nConfigInfo(parse(options.vueI18n).dir, options.vueI18n, nuxt.vfs))
   }
 
   for (const layer of nuxt.options._layers) {
-    resolvers.push(resolveLayerVueI18n(layer))
+    resolvers.push(resolveLayerVueI18n(layer, nuxt.vfs))
   }
 
   return (await Promise.all(resolvers)).filter((x): x is Required<FileMeta> => x != null)
 }
 
-async function resolveLayerVueI18n(layer: NuxtConfigLayer) {
+async function resolveLayerVueI18n(layer: NuxtConfigLayer, vfs: Record<string, string>) {
   const i18n = getLayerI18n(layer)
   const i18nDir = resolveI18nDir(layer, i18n || {})
-  const resolved = await resolveVueI18nConfigInfo(i18nDir, i18n?.vueI18n)
+  const resolved = await resolveVueI18nConfigInfo(i18nDir, i18n?.vueI18n, vfs)
 
   if (import.meta.dev && resolved == null && i18n?.vueI18n) {
     logger.warn(`Vue I18n configuration file \`${i18n.vueI18n}\` not found in \`${i18nDir}\`. Skipping...`)
