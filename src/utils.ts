@@ -23,7 +23,7 @@ export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   return ctx.options.locales.filter(x => include.includes(isString(x) ? x : x.code)) as string[] | LocaleObject[]
 }
 
-export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleInfo[] {
+export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Record<string, string>): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {
     const resolved: LocaleInfo = assign({ meta: [] }, locale)
@@ -32,7 +32,7 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleI
 
     for (const f of getLocaleFiles(locale)) {
       const path = resolve(srcDir, f.path)
-      const type = getLocaleType(path)
+      const type = getLocaleType(path, vfs)
 
       resolved.meta.push({
         type,
@@ -49,10 +49,10 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[]): LocaleI
 }
 
 const analyzedMap = { object: 'static', function: 'dynamic', unknown: 'unknown' } as const
-function getLocaleType(path: string): LocaleType {
+function getLocaleType(path: string, vfs: Record<string, string>): LocaleType {
   if (!EXECUTABLE_EXT_RE.test(path)) { return 'static' }
 
-  const parsed = parseSync(path, readFileSync(path, 'utf-8'))
+  const parsed = parseSync(path, vfs[path] ?? readFileSync(path, 'utf-8'))
   return analyzedMap[scanProgram(parsed.program) || 'unknown']
 }
 
@@ -110,14 +110,14 @@ function scanProgram(program: Program) {
   return false
 }
 
-export async function resolveVueI18nConfigInfo(rootDir: string, configPath: string = 'i18n.config') {
+export async function resolveVueI18nConfigInfo(rootDir: string, configPath: string = 'i18n.config', vfs: Record<string, string>) {
   const absolutePath = await resolvePath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
   if (!existsSync(absolutePath)) { return undefined }
 
   return {
     path: absolutePath, // absolute
     hash: getHash(absolutePath),
-    type: getLocaleType(absolutePath),
+    type: getLocaleType(absolutePath, vfs),
   }
 }
 

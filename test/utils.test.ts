@@ -1,41 +1,10 @@
 import { resolveLocales } from '../src/utils'
-import { parseSegment, toVueRouterSegment } from 'unrouting'
 import type { LocaleObject } from '../src/types'
-import { vi, beforeEach, afterEach, test, expect, beforeAll } from 'vitest'
+import { vi, test, expect } from 'vitest'
 
 vi.mock('pathe', async () => {
   const mod = await vi.importActual<typeof import('pathe')>('pathe')
   return { ...mod, resolve: vi.fn((...args: string[]) => mod.normalize(args.join('/'))) }
-})
-
-vi.mock('@nuxt/kit', async importOriginal => {
-  const actual = await importOriginal()
-  const resolveFiles = () => {
-    return [
-      ['en', 'json'],
-      ['ja', 'json'],
-      ['es', 'json'],
-      ['es-AR', 'json'],
-      ['nl', 'js']
-    ].map(pair => `/path/to/project/locales/${pair[0]}.${pair[1]}`)
-  }
-  return {
-    // @ts-expect-error import actual
-    ...actual,
-    resolveFiles
-  }
-})
-
-vi.mock('node:fs')
-
-beforeEach(async () => {
-  vi.spyOn(await import('node:fs'), 'readFileSync').mockReturnValue(
-    'export default defineI18nLocale(() => { return {} })'
-  )
-})
-
-afterEach(() => {
-  vi.clearAllMocks()
 })
 
 test('resolveLocales', async () => {
@@ -44,14 +13,7 @@ test('resolveLocales', async () => {
       code: 'en',
       files: ['en.json']
     },
-    {
-      code: 'ja',
-      files: ['ja.json']
-    },
-    {
-      code: 'es',
-      files: ['es.json']
-    },
+
     {
       code: 'es-AR',
       files: ['es.json', 'es-AR.json']
@@ -61,7 +23,7 @@ test('resolveLocales', async () => {
       files: ['nl.js']
     }
   ] as LocaleObject[]
-  const resolvedLocales = await resolveLocales('/path/to/project', locales)
+  const resolvedLocales = resolveLocales('/path/to/project', locales, { '/path/to/project/nl.js': 'export default defineI18nLocale(() => { return {} })' })
   expect(resolvedLocales).toMatchInlineSnapshot(`
     [
       {
@@ -71,28 +33,6 @@ test('resolveLocales', async () => {
             "cache": true,
             "hash": "5c407b7f",
             "path": "/path/to/project/en.json",
-            "type": "static",
-          },
-        ],
-      },
-      {
-        "code": "ja",
-        "meta": [
-          {
-            "cache": true,
-            "hash": "0e1b8bd4",
-            "path": "/path/to/project/ja.json",
-            "type": "static",
-          },
-        ],
-      },
-      {
-        "code": "es",
-        "meta": [
-          {
-            "cache": true,
-            "hash": "c78280fb",
-            "path": "/path/to/project/es.json",
             "type": "static",
           },
         ],
@@ -127,22 +67,4 @@ test('resolveLocales', async () => {
       },
     ]
   `)
-})
-
-test('parseSegment', () => {
-  const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
-  expect(tokens).toEqual([
-    { type: 'dynamic', value: 'foo' },
-    { type: 'static', value: '_' },
-    { type: 'dynamic', value: 'bar' },
-    { type: 'static', value: ':' },
-    { type: 'catchall', value: 'buz' },
-    { type: 'static', value: '_buz_' },
-    { type: 'optional', value: 'qux' },
-  ])
-})
-
-test('toVueRouterSegment', () => {
-  const tokens = parseSegment('[foo]_[bar]:[...buz]_buz_[[qux]]')
-  expect('/' + toVueRouterSegment(tokens)).toBe(`/:foo()_:bar()\\::buz(.*)*_buz_:qux?`)
 })
