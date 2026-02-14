@@ -526,7 +526,7 @@ export interface LocaleObject<T = Locale> {
    *
    * Will be resolved relative to the langDir path when loading locale messages from file.
    */
-  files?: string[] | LocaleFile[]
+  files?: (string | LocaleFile)[]
 }
 
 /**
