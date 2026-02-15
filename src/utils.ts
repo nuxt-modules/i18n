@@ -1,7 +1,7 @@
 import { defu } from 'defu'
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { type BinaryLike, createHash } from 'node:crypto'
-import { resolvePath, useLogger } from '@nuxt/kit'
+import { findPath, useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
 import { EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
@@ -111,11 +111,11 @@ function scanProgram(program: Program) {
 }
 
 export async function resolveVueI18nConfigInfo(rootDir: string, configPath: string = 'i18n.config', vfs: Record<string, string>) {
-  const absolutePath = await resolvePath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
-  if (!existsSync(absolutePath)) { return undefined }
+  const absolutePath = await findPath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
+  if (!absolutePath) { return undefined }
 
   return {
-    path: absolutePath, // absolute
+    path: absolutePath,
     hash: getHash(absolutePath),
     type: getLocaleType(absolutePath, vfs),
   }
