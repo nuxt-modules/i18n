@@ -124,6 +124,9 @@ export async function buildFixture() {
   // Hide build info for test
   const prevLevel = logger.level
   logger.level = ctx.options.logLevel
-  await buildNuxt(ctx.nuxt!)
-  logger.level = prevLevel
+  try {
+    await buildNuxt(ctx.nuxt!)
+  } finally {
+    logger.level = prevLevel
+  }
 }
