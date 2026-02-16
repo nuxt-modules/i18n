@@ -76,19 +76,19 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   return mergeConfigLocales(configs)
 }
 
-export async function resolveLayerVueI18nConfigInfo({ options, i18nLayers }: I18nNuxtContext, nuxt = useNuxt()) {
+export async function resolveLayerVueI18nConfigInfo(ctx: I18nNuxtContext, nuxt = useNuxt()) {
   const res: Omit<FileMeta, 'cache'>[] = []
 
   // collect `installModule` config
-  if (options.vueI18n && isAbsolute(options.vueI18n)) {
-    const resolved = await findPath(options.vueI18n, { extensions: EXECUTABLE_EXTENSIONS })
+  if (ctx.options.vueI18n && isAbsolute(ctx.options.vueI18n)) {
+    const resolved = await findPath(ctx.options.vueI18n, { extensions: EXECUTABLE_EXTENSIONS })
 
     if (resolved) {
       res.push(resolveVueI18nConfigInfo(resolved, nuxt.vfs))
     }
   }
 
-  for (const layer of i18nLayers) {
+  for (const layer of ctx.i18nLayers) {
     const resolved = await findPath(layer.i18n.vueI18n || 'i18n.config', { cwd: layer.i18nDir, extensions: EXECUTABLE_EXTENSIONS })
 
     if (!resolved) {
