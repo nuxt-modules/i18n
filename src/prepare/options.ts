@@ -34,9 +34,9 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   if (hasMultiDomainLocales) {
-    const hasDomainLocales = nuxt.options.i18n.locales?.some(
-      locale => !isString(locale) && locale.domains?.length,
-    )
+    const locales = (nuxt.options.i18n && nuxt.options.i18n.locales) || options.locales
+    const hasDomainLocales = locales.some(locale => !isString(locale) && locale.domains?.length)
+
     if (!hasDomainLocales) {
       logger.warn(
         `The \`domains\` needs to be set when \`multiDomainLocales\` is enabled.`,
