@@ -14,7 +14,7 @@ export interface I18nNuxtContext {
   normalizedLocales: LocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
-  vueI18nConfigPaths: FileMeta[]
+  vueI18nConfigPaths: Omit<FileMeta, 'cache'>[]
   distDir: string
   runtimeDir: string
   fullStatic: boolean

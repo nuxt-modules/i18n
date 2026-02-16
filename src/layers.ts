@@ -7,7 +7,7 @@ import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt } from '@nuxt/schema'
-import type { LocaleObject, LocaleType, NuxtI18nOptions } from './types'
+import type { FileMeta, LocaleObject, NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 
 export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
@@ -77,7 +77,7 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
 }
 
 export async function resolveLayerVueI18nConfigInfo({ options, i18nLayers }: I18nNuxtContext, nuxt = useNuxt()) {
-  const res: ({ path: string, hash: string, type: LocaleType })[] = []
+  const res: Omit<FileMeta, 'cache'>[] = []
 
   // collect `installModule` config
   if (options.vueI18n && isAbsolute(options.vueI18n)) {
