@@ -1,6 +1,6 @@
 import { existsSync, promises as fsp } from 'node:fs'
 import { defu } from 'defu'
-import * as _kit from '@nuxt/kit'
+import { useNuxt, loadNuxt, logger, buildNuxt } from '@nuxt/kit'
 import { useTestContext } from './context'
 import { resolve } from 'node:path'
 import { relative } from 'pathe'
@@ -17,10 +17,6 @@ function getTestKey(ctx: VitestContext) {
 
   return testKey
 }
-
-// @ts-expect-error type cast
-// eslint-disable-next-line
-const kit: typeof _kit = _kit.default || _kit
 
 const isNuxtApp = (dir: string) => {
   return (
@@ -66,13 +62,19 @@ export async function loadFixture(testContext: VitestContext) {
       ctx.options.nuxtConfig,
       {
         buildDir,
-        modules: [
-          (_, nuxt) => {
+        hooks: {
+          /**
+           * Arrays are merged instead of overridden so we manually override the project layer with the test override config.
+           */
+          'modules:before'() {
+            const nuxt = useNuxt() as any // type is incomplete in this context
+            
             /**
              * Register nitro plugin for IPC communication to update runtime config
              */
             nuxt.options.nitro.plugins ||= []
             nuxt.options.nitro.plugins.push(fileURLToPath(new URL('./nitro-plugin', import.meta.url)))
+
             /**
              * The `overrides` option is only used for testing, it is used to option overrides to the project layer in a fixture.
              */
@@ -84,7 +86,7 @@ export async function loadFixture(testContext: VitestContext) {
               Object.assign(nuxt.options.i18n, defu(overrides, mergedOptions))
             }
           }
-        ],
+        },
         _generate: ctx.options.prerender,
         nitro: {
           output: {
@@ -96,7 +98,7 @@ export async function loadFixture(testContext: VitestContext) {
     )
   }
 
-  ctx.nuxt = await kit.loadNuxt({
+  ctx.nuxt = await loadNuxt({
     cwd: ctx.options.rootDir,
     dev: ctx.options.dev,
     overrides: ctx.options.nuxtConfig,
@@ -120,8 +122,11 @@ async function clearDir(path: string) {
 export async function buildFixture() {
   const ctx = useTestContext()
   // Hide build info for test
-  const prevLevel = kit.logger.level
-  kit.logger.level = ctx.options.logLevel
-  await kit.buildNuxt(ctx.nuxt!)
-  kit.logger.level = prevLevel
+  const prevLevel = logger.level
+  logger.level = ctx.options.logLevel
+  try {
+    await buildNuxt(ctx.nuxt!)
+  } finally {
+    logger.level = prevLevel
+  }
 }

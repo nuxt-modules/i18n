@@ -173,7 +173,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       ctx.localeCodes = ctx.normalizedLocales.map(locale => locale.code)
       ctx.localeInfo = resolveLocales(nuxt.options.srcDir, ctx.normalizedLocales, nuxt.vfs)
 
-      ctx.vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx.options)
+      ctx.vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx)
 
       /**
        * expose i18n options via runtime config for use in app/server contexts

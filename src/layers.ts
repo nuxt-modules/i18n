@@ -1,12 +1,13 @@
-import { useNuxt } from '@nuxt/kit'
+import { findPath, useNuxt } from '@nuxt/kit'
 import { getLayerI18n, getLocaleFiles, logger, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
 
-import { isAbsolute, parse, resolve } from 'pathe'
+import { isAbsolute, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
+import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { LocaleConfig } from './utils'
-import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
-import type { FileMeta, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
+import type { Nuxt } from '@nuxt/schema'
+import type { FileMeta, LocaleObject, NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 
 export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
@@ -46,10 +47,6 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
   }
 }
 
-export function resolveI18nDir(layer: NuxtConfigLayer, i18n: NuxtI18nOptions, i18nDir = i18n.restructureDir ?? 'i18n') {
-  return resolve(layer.config.rootDir, i18nDir)
-}
-
 /**
  * Merges `locales` configured by each layer and resolves the locale `files` to absolute paths.
  */
@@ -67,48 +64,42 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   // collect layer configs
-  for (const layer of nuxt.options._layers) {
-    const i18n = getLayerI18n(layer)
-    if (i18n?.locales == null) { continue }
-
-    const langDir = resolve(resolveI18nDir(layer, i18n), i18n.langDir ?? 'locales')
-    configs.push(assign({}, i18n, { langDir, locales: i18n.locales }))
+  for (const layer of ctx.i18nLayers) {
+    if (layer.i18n.locales == null) { continue }
+    configs.push(assign({}, layer.i18n, { langDir: resolve(layer.i18nDir, layer.i18n.langDir ?? 'locales'), locales: layer.i18n.locales }))
   }
 
   // collect hook configs
-  await nuxt.callHook(
-    // @ts-expect-error - type issue only present within repo
-    'i18n:registerModule',
-    // @ts-expect-error - type issue only present within repo
-    ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales }),
-  )
+  // @ts-expect-error - type issue only present within repo
+  await nuxt.callHook('i18n:registerModule', ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales }))
 
   return mergeConfigLocales(configs)
 }
 
-export async function resolveLayerVueI18nConfigInfo(options: NuxtI18nOptions, nuxt = useNuxt()) {
-  const resolvers: Promise<{ path: string, hash: string, type: LocaleType } | undefined>[] = []
+export async function resolveLayerVueI18nConfigInfo(ctx: I18nNuxtContext, nuxt = useNuxt()) {
+  const res: Omit<FileMeta, 'cache'>[] = []
 
   // collect `installModule` config
-  if (options.vueI18n && isAbsolute(options.vueI18n)) {
-    resolvers.push(resolveVueI18nConfigInfo(parse(options.vueI18n).dir, options.vueI18n, nuxt.vfs))
+  if (ctx.options.vueI18n && isAbsolute(ctx.options.vueI18n)) {
+    const resolved = await findPath(ctx.options.vueI18n, { extensions: EXECUTABLE_EXTENSIONS })
+
+    if (resolved) {
+      res.push(resolveVueI18nConfigInfo(resolved, nuxt.vfs))
+    }
   }
 
-  for (const layer of nuxt.options._layers) {
-    resolvers.push(resolveLayerVueI18n(layer, nuxt.vfs))
+  for (const layer of ctx.i18nLayers) {
+    const resolved = await findPath(layer.i18n.vueI18n || 'i18n.config', { cwd: layer.i18nDir, extensions: EXECUTABLE_EXTENSIONS })
+
+    if (!resolved) {
+      if (import.meta.dev && layer.i18n.vueI18n) {
+        logger.warn(`Vue I18n configuration file \`${layer.i18n.vueI18n}\` not found in \`${layer.i18nDir}\`. Skipping...`)
+      }
+      continue
+    }
+
+    res.push(resolveVueI18nConfigInfo(resolved, nuxt.vfs))
   }
 
-  return (await Promise.all(resolvers)).filter((x): x is Required<FileMeta> => x != null)
-}
-
-async function resolveLayerVueI18n(layer: NuxtConfigLayer, vfs: Record<string, string>) {
-  const i18n = getLayerI18n(layer)
-  const i18nDir = resolveI18nDir(layer, i18n || {})
-  const resolved = await resolveVueI18nConfigInfo(i18nDir, i18n?.vueI18n, vfs)
-
-  if (import.meta.dev && resolved == null && i18n?.vueI18n) {
-    logger.warn(`Vue I18n configuration file \`${i18n.vueI18n}\` not found in \`${i18nDir}\`. Skipping...`)
-  }
-
-  return resolved
+  return res
 }
