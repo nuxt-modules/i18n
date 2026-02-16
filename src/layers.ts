@@ -1,12 +1,13 @@
-import { useNuxt } from '@nuxt/kit'
+import { findPath, useNuxt } from '@nuxt/kit'
 import { getLayerI18n, getLocaleFiles, logger, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
 
-import { isAbsolute, parse, resolve } from 'pathe'
+import { isAbsolute, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
+import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt } from '@nuxt/schema'
-import type { FileMeta, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
+import type { LocaleObject, LocaleType, NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
 
 export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
@@ -80,24 +81,25 @@ export async function resolveLayerVueI18nConfigInfo({ options, i18nLayers }: I18
 
   // collect `installModule` config
   if (options.vueI18n && isAbsolute(options.vueI18n)) {
-    const resolved = await resolveVueI18nConfigInfo(parse(options.vueI18n).dir, options.vueI18n, nuxt.vfs)
+    const resolved = await findPath(options.vueI18n, { extensions: EXECUTABLE_EXTENSIONS })
+
     if (resolved) {
-      res.push(resolved)
+      res.push(resolveVueI18nConfigInfo(resolved, nuxt.vfs))
     }
   }
 
   for (const layer of i18nLayers) {
-    const resolved = await resolveVueI18nConfigInfo(layer.i18nDir, layer.i18n.vueI18n, nuxt.vfs)
+    const resolved = await findPath(layer.i18n.vueI18n || 'i18n.config', { cwd: layer.i18nDir, extensions: EXECUTABLE_EXTENSIONS })
 
-    if (resolved == null) {
+    if (!resolved) {
       if (import.meta.dev && layer.i18n.vueI18n) {
         logger.warn(`Vue I18n configuration file \`${layer.i18n.vueI18n}\` not found in \`${layer.i18nDir}\`. Skipping...`)
       }
       continue
     }
 
-    res.push(resolved)
+    res.push(resolveVueI18nConfigInfo(resolved, nuxt.vfs))
   }
 
-  return res.filter((x): x is Required<FileMeta> => x != null)
+  return res
 }

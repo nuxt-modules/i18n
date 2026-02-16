@@ -1,10 +1,10 @@
 import { defu } from 'defu'
 import { readFileSync } from 'node:fs'
 import { type BinaryLike, createHash } from 'node:crypto'
-import { findPath, useLogger } from '@nuxt/kit'
+import { useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
-import { EXECUTABLE_EXTENSIONS, EXECUTABLE_EXT_RE } from './constants'
+import { EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
 
 import type { LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
@@ -110,14 +110,11 @@ function scanProgram(program: Program) {
   return false
 }
 
-export async function resolveVueI18nConfigInfo(rootDir: string, configPath: string = 'i18n.config', vfs: Record<string, string>) {
-  const absolutePath = await findPath(configPath, { cwd: rootDir, extensions: EXECUTABLE_EXTENSIONS })
-  if (!absolutePath) { return undefined }
-
+export function resolveVueI18nConfigInfo(path: string, vfs: Record<string, string>) {
   return {
-    path: absolutePath,
-    hash: getHash(absolutePath),
-    type: getLocaleType(absolutePath, vfs),
+    path,
+    hash: getHash(path),
+    type: getLocaleType(path, vfs),
   }
 }
 
