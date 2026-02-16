@@ -356,40 +356,6 @@ exports[`multiple files 1`] = `
 }
 `;
 
-exports[`toCode: function (arrow) 1`] = `
-{
-  "importStatements": [
-    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
-  ],
-  "localeLoaders": {},
-  "normalizedLocales": [],
-  "vueI18nConfigs": [
-    {
-      "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
-      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
-      "relative": "../../path/to",
-    },
-  ],
-}
-`;
-
-exports[`toCode: function (named) 1`] = `
-{
-  "importStatements": [
-    "import config_to_c3216fe6 from "#nuxt-i18n/c3216fe6";",
-  ],
-  "localeLoaders": {},
-  "normalizedLocales": [],
-  "vueI18nConfigs": [
-    {
-      "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
-      "importerServer": "() => Promise.resolve(config_to_c3216fe6)",
-      "relative": "../../path/to",
-    },
-  ],
-}
-`;
-
 exports[`vueI18n option 1`] = `
 {
   "importStatements": [
