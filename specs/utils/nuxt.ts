@@ -66,13 +66,19 @@ export async function loadFixture(testContext: VitestContext) {
       ctx.options.nuxtConfig,
       {
         buildDir,
-        modules: [
-          (_, nuxt) => {
+        hooks: {
+          /**
+           * Arrays are merged instead of overridden so we manually override the project layer with the test override config.
+           */
+          'modules:before'() {
+            const nuxt = _kit.useNuxt() as any // type is incomplete in this context
+            
             /**
              * Register nitro plugin for IPC communication to update runtime config
              */
             nuxt.options.nitro.plugins ||= []
             nuxt.options.nitro.plugins.push(fileURLToPath(new URL('./nitro-plugin', import.meta.url)))
+
             /**
              * The `overrides` option is only used for testing, it is used to option overrides to the project layer in a fixture.
              */
@@ -84,7 +90,7 @@ export async function loadFixture(testContext: VitestContext) {
               Object.assign(nuxt.options.i18n, defu(overrides, mergedOptions))
             }
           }
-        ],
+        },
         _generate: ctx.options.prerender,
         nitro: {
           output: {
