@@ -39,7 +39,7 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
 
     if (!hasDomainLocales) {
       logger.warn(
-        `The \`domains\` needs to be set when \`multiDomainLocales\` is enabled.`,
+        `Locale \`domains\` must be configured when \`multiDomainLocales\` is enabled.`,
       )
     }
   }
