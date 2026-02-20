@@ -17,8 +17,8 @@ const I18N_MACRO_FN_RE = /\bdefineI18nRoute\s*\(\s*/
 
 /**
  * TODO:
- *  `paths`, `locales` completions like `unplugin-vue-router`
- *  ref: https://github.com/posva/unplugin-vue-router
+ *  `paths`, `locales` completions like `vue-router`
+ *  ref: https://github.com/vuejs/vue-router
  */
 export const TransformMacroPlugin = (options: BundlerPluginOptions) =>
   createUnplugin(() => {
