@@ -69,7 +69,8 @@
     "test:e2e": "vitest run specs"
   },
   "resolutions": {
-    "@nuxtjs/i18n": "workspace:*"
+    "@nuxtjs/i18n": "workspace:*",
+    "vue-router": "5.0.3"
   },
   "dependencies": {
     "@intlify/core": "^11.2.8",
@@ -95,11 +96,10 @@
     "pathe": "^2.0.3",
     "ufo": "^1.6.1",
     "unplugin": "^2.3.11",
-    "unplugin-vue-router": "^0.16.0",
     "unrouting": "^0.1.5",
     "unstorage": "^1.16.1",
     "vue-i18n": "^11.1.11",
-    "vue-router": "^4.6.4"
+    "vue-router": "^5.0.3"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.9.0",
