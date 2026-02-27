@@ -2,6 +2,7 @@ import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
 import { logger } from '../utils'
 import { checkLayerOptions } from '../layers'
+import { isString } from '@intlify/shared'
 
 export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
   checkLayerOptions(options, nuxt)
@@ -24,10 +25,23 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
 
   const strategy = (nuxt.options.i18n && nuxt.options.i18n.strategy) || options.strategy
   const defaultLocale = (nuxt.options.i18n && nuxt.options.i18n.defaultLocale) || options.defaultLocale
-  if (strategy.endsWith('_default') && !defaultLocale) {
+  const hasMultiDomainLocales = (nuxt.options.i18n && nuxt.options.i18n.multiDomainLocales) || options.multiDomainLocales
+
+  if (strategy.endsWith('_default') && !defaultLocale && !hasMultiDomainLocales) {
     logger.warn(
       `The \`${strategy}\` i18n strategy${(nuxt.options.i18n && nuxt.options.i18n.strategy) == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
     )
+  }
+
+  if (hasMultiDomainLocales) {
+    const locales = (nuxt.options.i18n && nuxt.options.i18n.locales) || options.locales || []
+    const hasDomainLocales = locales.some(locale => !isString(locale) && locale.domains?.length)
+
+    if (!hasDomainLocales) {
+      logger.warn(
+        `Locale \`domains\` must be configured when \`multiDomainLocales\` is enabled.`,
+      )
+    }
   }
 
   if (nuxt.options.experimental.scanPageMeta === false) {
