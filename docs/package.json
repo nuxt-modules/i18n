@@ -15,12 +15,12 @@
     "@iconify-json/lucide": "^1.2.89",
     "@iconify-json/simple-icons": "^1.2.70",
     "@iconify-json/vscode-icons": "^1.2.40",
-    "@nuxt/content": "^3.7.1",
+    "@nuxt/content": "^3.12.0",
     "@nuxt/image": "^1.11.0",
-    "@nuxt/scripts": "^0.12.1",
-    "@nuxt/ui": "^4.0.1",
+    "@nuxt/scripts": "^0.13.2",
+    "@nuxt/ui": "^4.5.0",
     "better-sqlite3": "^12.6.2",
-    "nuxt": "^4.1.2",
+    "nuxt": "^4.3.1",
     "nuxt-llms": "0.2.0",
     "nuxt-og-image": "^5.1.13"
   }
