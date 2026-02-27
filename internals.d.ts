@@ -31,4 +31,5 @@ declare module '#internal/i18n-type-generation-options' {
 declare module '#build/i18n-route-resources.mjs' {
   export const i18nPathToPath: Record<string, string>
   export const pathToI18nConfig: Record<string, Record<string, string | boolean>>
+  export const disabledI18nPathToPath: Record<string, string>
 }
