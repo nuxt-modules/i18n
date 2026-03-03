@@ -34,12 +34,15 @@ const items = versions.map((x) => {
 <template>
   <div class="flex items-center gap-1.5">
     <UContextMenu v-if="hasLogo" :items="contextMenuItems">
-      <UColorModeImage
+      <NuxtLink to="/" class="flex items-center gap-2">
+
+        <UColorModeImage
         :light="headerLightUrl"
         :dark="headerDarkUrl"
         :alt="appConfig.header?.logo?.alt || appConfig.header?.title"
         :class="['h-6 w-auto shrink-0', appConfig.header?.logo?.class]"
-      />
+        />
+      </NuxtLink>
     </UContextMenu>
     <span v-else>
       {{ appConfig.header?.title || "{appConfig.header.title}" }}

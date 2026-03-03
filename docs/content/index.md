@@ -1,6 +1,6 @@
 ---
-title: 'Internationalization for Nuxt Applications · @nuxtjs/i18n'
-description: 'I18n (Internationalization) module for your Nuxt project powered by Vue I18n.'
+title: 'I18n for Nuxt Applications'
+description: 'Internationalization module for your Nuxt project powered by Vue I18n.'
 navigation: false
 ---
 
@@ -31,7 +31,7 @@ ui:
 :::
 
 #title
-[i18n]{class="md:hidden"}[Internationalization]{class="hidden md:block"} for [Nuxt Applications]{.text-primary}
+[I18n]{class="lg:hidden! inline"}[Internationalization]{class="hidden lg:inline!"} for [Nuxt Applications]{.text-primary}
 
 #description
 I18n (Internationalization) module for your Nuxt project powered by Vue I18n.

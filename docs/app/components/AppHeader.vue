@@ -8,6 +8,7 @@ const links = computed(() => [
     active: route.path.startsWith("/docs"),
   },
 ]);
+// const { $ } = useNuxtApp()
 </script>
 
 <template>
@@ -21,18 +22,20 @@ const links = computed(() => [
       <AppHeaderLogo />
     </template>
 
-    <!-- <UNavigationMenu :items="links" variant="link" /> -->
+    <UNavigationMenu :items="links" variant="link" />
 
     <template #right>
       <UTooltip text="Search" :kbds="['meta', 'K']">
         <UContentSearchButton />
       </UTooltip>
+      
+      <UColorModeButton class="hidden sm:flex" />
 
-      <UTooltip text="Open on GitHub" class="hidden lg:flex">
+      <UTooltip text="Open on GitHub" class="flex">
         <UButton
           color="neutral"
           variant="ghost"
-          to="https://github.com/nuxt/ui"
+          to="https://github.com/nuxt-modules/i18n"
           target="_blank"
           icon="i-simple-icons-github"
           aria-label="GitHub"
@@ -41,7 +44,12 @@ const links = computed(() => [
     </template>
 
     <template #body>
-      <HeaderBody />
+      <!-- <HeaderBody /> -->
+            <UContentNavigation
+        :navigation="$currentDocsVersionNavigation.value"
+        highlight
+        :ui="{ linkTrailingBadge: 'font-semibold uppercase' }"
+      />
     </template>
   </UHeader>
 </template>

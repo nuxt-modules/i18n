@@ -1,7 +1,9 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
+@source inline("lg:hidden!,lg:inline!");
 
 @theme {
+  --container-8xl: 90rem;
   --font-sans: 'Public Sans', sans-serif;
 
   --color-green-50: #effdf5;
@@ -15,4 +17,8 @@
   --color-green-800: #016538;
   --color-green-900: #0a5331;
   --color-green-950: #052e16;
+}
+
+:root {
+  --ui-container: var(--container-8xl);
 }
