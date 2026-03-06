@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-const route = useRoute()
-const key = ref(route.path)
+const route = useRoute();
+const key = ref(route.path);
 
 function attachRouteWatcher() {
   watch(
     () => route.path,
-    newPath => {
-      key.value = newPath
-    }
-  )
+    (newPath) => {
+      key.value = newPath;
+    },
+  );
 }
 </script>
 

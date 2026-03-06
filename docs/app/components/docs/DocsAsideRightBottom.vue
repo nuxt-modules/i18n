@@ -37,6 +37,8 @@ const links = computed(() =>
     v-if="appConfig.toc?.bottom?.links?.length"
     class="hidden lg:block space-y-6"
   >
+    <Ads />
+
     <USeparator type="dashed" />
 
     <UPageLinks

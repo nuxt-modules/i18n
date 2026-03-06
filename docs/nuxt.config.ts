@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   },
 
   // SEO
-  site: { url: "https://i18n.nuxtjs.org" },
+  site: { name: 'Nuxt I18n', url: "https://i18n.nuxtjs.org" },
 
   nitro: {
     prerender: {
@@ -46,11 +46,11 @@ export default defineNuxtConfig({
 
   typescript: { strict: false },
 
-  // $development: {
-  //   scripts: {
-  //     enabled: false,
-  //   },
-  // },
+  $development: {
+    scripts: {
+      enabled: false,
+    },
+  },
 
   scripts: {
     registry: {

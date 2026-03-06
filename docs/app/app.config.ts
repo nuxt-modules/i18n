@@ -17,7 +17,7 @@ export default defineAppConfig({
 
   // SEO
   seo: {
-    siteName: "@nuxtjs/i18n",
+    title: "Nuxt I18n",
   },
 
   // Header
