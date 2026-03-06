@@ -46,11 +46,11 @@ export default defineNuxtConfig({
 
   typescript: { strict: false },
 
-  $development: {
-    scripts: {
-      enabled: false,
-    },
-  },
+  // $development: {
+  //   scripts: {
+  //     enabled: false,
+  //   },
+  // },
 
   scripts: {
     registry: {

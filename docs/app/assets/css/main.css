@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
-@source inline("lg:hidden!,lg:inline!");
+@source inline("lg:hidden!,lg:inline!,p-16");
 
 @theme {
   --container-8xl: 90rem;

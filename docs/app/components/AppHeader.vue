@@ -8,7 +8,6 @@ const links = computed(() => [
     active: route.path.startsWith("/docs"),
   },
 ]);
-// const { $ } = useNuxtApp()
 </script>
 
 <template>
@@ -28,7 +27,7 @@ const links = computed(() => [
       <UTooltip text="Search" :kbds="['meta', 'K']">
         <UContentSearchButton />
       </UTooltip>
-      
+
       <UColorModeButton class="hidden sm:flex" />
 
       <UTooltip text="Open on GitHub" class="flex">
@@ -44,8 +43,7 @@ const links = computed(() => [
     </template>
 
     <template #body>
-      <!-- <HeaderBody /> -->
-            <UContentNavigation
+      <UContentNavigation
         :navigation="$currentDocsVersionNavigation.value"
         highlight
         :ui="{ linkTrailingBadge: 'font-semibold uppercase' }"

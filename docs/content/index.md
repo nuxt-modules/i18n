@@ -124,7 +124,10 @@ title: Build i18n-ready apps in seconds!
 ::u-page-section
 ---
 title: Sponsors
+style: "max-width: 1000px; margin-left: auto; margin-right: auto;"
 ---
+
+
 
 ![Sponsors](https://raw.githubusercontent.com/bobbiegoede/static/main/sponsors.svg)
 ::

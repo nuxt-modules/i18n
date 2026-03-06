@@ -31,7 +31,6 @@ export default defineAppConfig({
 
   // Social links
   socials: {
-    github: "https://github.com/nuxt-modules/i18n",
     nuxt: "https://nuxt.com",
   },
 
@@ -46,6 +45,7 @@ export default defineAppConfig({
   toc: {
     title: "On this page",
     bottom: {
+      edit: 'https://github.com/nuxt-modules/i18n/edit/main/docs/content',
       title: "Community",
       links: [
         {
