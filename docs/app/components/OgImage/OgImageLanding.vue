@@ -17,8 +17,8 @@ defineProps({
     default: ''
   }
 })
-const grayColor = 'rgb(24, 24, 27)'
-const greenColor = 'rgb(52, 211, 153)'
+// const grayColor = 'rgb(24, 24, 27)'
+// const greenColor = 'rgb(52, 211, 153)'
 </script>
 
 <template>
@@ -40,11 +40,11 @@ const greenColor = 'rgb(52, 211, 153)'
       </svg>
     </div>
 
-    <div class="w-[800px] flex-1 flex-col justify-center gap-0">
+    <div class="w-full flex-1 flex-col justify-center gap-0">
       <!-- <p v-if="headline" class="uppercase text-[24px] text-[rgb(52_211_153)] mb-4 font-semibold">
         {{ headline }}
       </p> -->
-      <h1 class="m-0 text-[64px] text-pretty font-semibold mb-2 text-white flex items-center">
+      <h1 class="m-0 text-[64px] w-full text-pretty font-semibold mb-2 text-white flex items-center">
         <span>{{ title }}</span>
       </h1>
       <p v-if="description" class="text-[32px] text-pretty text-[#94a3b8] leading-normal">
