@@ -169,7 +169,7 @@ export default defineNitroPlugin(async (nitro) => {
     const detector = useDetectors(event, detection)
     const localeSegment = detector.route(event.path)
     const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
-    const path = (pathLocale && url.pathname.slice(pathLocale.length + 1)) ?? url.pathname
+    const path = (pathLocale && event.path.slice(pathLocale.length + 1)) ?? event.path
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
     if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path)) {
