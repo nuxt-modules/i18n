@@ -83,26 +83,19 @@ export function generateLoaderOptions(
 }
 
 /**
- * From vuejs/router
- * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/typed-routes/route-map.ts
- * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/typed-routes/route-location.ts
+ * I18n type augmentations for vue-router.
  *
  * Depends on `TypesConfig`
- * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/src/config.ts#L14
- * Depends on the same mechanism of `RouteNamedMap
- * https://github.com/vuejs/router/blob/14219b01bee142423265a3aaacd1eac0dcc95071/packages/router/vue-router-auto.d.ts#L4
+ * https://github.com/vuejs/router/blob/main/packages/router/src/config.ts
+ *
+ * Types like RouteMapGeneric, RouteRecordInfoGeneric, RouteLocationAsRelativeTypedList, etc.
+ * are already provided by vue-router v5 and must not be redeclared.
  */
 const typedRouterAugmentations = `
 declare module 'vue-router' {
-  import type { RouteNamedMapI18n } from 'vue-router/auto-routes'
-
-  export interface TypesConfig {
-    RouteNamedMapI18n: RouteNamedMapI18n
-  }
-
   export type RouteMapI18n =
     TypesConfig extends Record<'RouteNamedMapI18n', infer RouteNamedMap> ? RouteNamedMap : RouteMapGeneric
-    
+
   // Prefer named resolution for i18n
   export type RouteLocationNamedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
       | Name
@@ -140,8 +133,6 @@ declare module 'vue-router' {
     RouteMapGeneric extends RouteMapI18n
       ? RouteLocationNormalizedLoadedGeneric
       : RouteLocationNormalizedLoadedTypedListI18n<RouteMapI18n>[Name]
-
-  type _LiteralUnion<LiteralType, BaseType extends string = string> = LiteralType | (BaseType & Record<never, never>)
 
   export type RouteLocationAsStringI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
     RouteMapGeneric extends RouteMapI18n
