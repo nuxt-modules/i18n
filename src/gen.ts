@@ -94,10 +94,19 @@ export function generateLoaderOptions(
  */
 const typedRouterAugmentations = `
 declare module 'vue-router' {
-  import type { RouteNamedMapI18n } from 'vue-router/auto-routes'
-
-  export interface TypesConfig {
-    RouteNamedMapI18n: RouteNamedMapI18n
+  interface RouteRecordInfo<Name extends string | symbol = string, Path extends string = string, ParamsRaw extends RouteParamsRawGeneric = RouteParamsRawGeneric, Params extends RouteParamsGeneric = RouteParamsGeneric, ChildrenNames extends string | symbol = never> {
+    name: Name;
+    path: Path;
+    paramsRaw: ParamsRaw;
+    params: Params;
+    childrenNames: ChildrenNames;
+  }
+  type RouteRecordInfoGeneric = RouteRecordInfo<string | symbol, string, RouteParamsRawGeneric, RouteParamsGeneric, string | symbol>;
+  type RouteMapGeneric = Record<string | symbol, RouteRecordInfoGeneric>;
+  type RouteLocationAsRelativeTypedList<RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } = RouteMapGeneric> = { [N in keyof RouteMap]: RouteLocationAsRelativeTyped<RouteMap, N> };
+  interface RouteLocationAsRelativeTyped<RouteMap extends { [K in keyof RouteMap]: RouteRecordInfoGeneric } = RouteMapGeneric, Name extends keyof RouteMap = keyof RouteMap> extends RouteLocationAsRelativeGeneric {
+    name?: Extract<Name, string | symbol>;
+    params?: RouteMap[Name]['paramsRaw'];
   }
 
   export type RouteMapI18n =
