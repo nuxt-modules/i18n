@@ -90,23 +90,30 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     ctx.consolidateRoute = (route, routeOptions, params) => {
       const makeRegexRoute = (locales: readonly string[]): LocalizableRoute => {
         const localePattern = locales.join('|')
+        const regexPrefix = `/:locale(${localePattern})`
         const regexPath = route.path === '/'
-          ? `/:locale(${localePattern})`
-          : `/:locale(${localePattern})${route.path}`
-        return {
+          ? regexPrefix
+          : regexPrefix + route.path
+        const consolidated: LocalizableRoute = {
           ...route,
           path: ctx.handleTrailingSlash(regexPath, !!params.parent),
           meta: { ...(route.meta as Record<string, unknown> ?? {}), __i18nConsolidated: true },
         }
+        // Prefix aliases with the locale regex pattern so params match the parent route
+        if (consolidated.alias) {
+          const aliases = Array.isArray(consolidated.alias) ? consolidated.alias : [consolidated.alias]
+          consolidated.alias = aliases.map(a => regexPrefix + (a.startsWith('/') ? a : '/' + a))
+        }
+        return consolidated
       }
 
       if (strategy === 'prefix_except_default') {
         const result: LocalizableRoute[] = []
         // Unprefixed route for default locale (name: about___en)
         const unprefixed: LocalizableRoute = { ...route }
-        if (unprefixed.name) {
-          unprefixed.name = ctx.localizeRouteName(unprefixed, defaultLocale, false)
-        }
+        unprefixed.name &&= ctx.localizeRouteName(unprefixed, defaultLocale, false)
+        // Localize children for the default locale so they get ___en suffixes
+        unprefixed.children &&= ctx.localizeChildren(route, unprefixed, defaultLocale, params)
         result.push(unprefixed)
         // Regex route for non-default locales (keeps base name)
         const nonDefault = routeOptions.locales.filter(l => !ctx.isDefaultLocale(l))
@@ -119,9 +126,9 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
       if (strategy === 'prefix_and_default') {
         // Default tree unprefixed route (name: about___en___default)
         const defaultTree: LocalizableRoute = { ...route }
-        if (defaultTree.name) {
-          defaultTree.name = ctx.localizeRouteName(defaultTree, defaultLocale, true)
-        }
+        defaultTree.name &&= ctx.localizeRouteName(defaultTree, defaultLocale, true)
+        // Localize children for the default locale so they get proper suffixes
+        defaultTree.children &&= ctx.localizeChildren(route, defaultTree, defaultLocale, { ...params, defaultTree: true })
         // Regex route for all locales (keeps base name)
         return [defaultTree, makeRegexRoute(routeOptions.locales)]
       }

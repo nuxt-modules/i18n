@@ -88,9 +88,14 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const localizedName = getLocalizedRouteName(route.name, locale)
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
+      // Remove stale locale param inherited from a consolidated route — per-locale routes don't use it
+      if (__I18N_CONSOLIDATED_ROUTES__ && route.params) {
+        delete (route.params as Record<string, unknown>).locale
+      }
     } else if (__I18N_CONSOLIDATED_ROUTES__ && router.hasRoute(route.name!)) {
       // consolidated route: keep base name, inject locale as route param
-      const resolved = router.resolve({ name: route.name! })
+      // spread existing params (e.g. slug) to satisfy all required route params
+      const resolved = router.resolve({ name: route.name!, params: { ...(route.params as Record<string, unknown> || {}), locale } })
       if (resolved.meta?.__i18nConsolidated) {
         route.params = { ...(route.params || {}), locale }
       }
@@ -109,9 +114,12 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       if (router.hasRoute(localizedName)) {
         route.name = localizedName
       } else if (__I18N_CONSOLIDATED_ROUTES__) {
-        // consolidated route: keep base name, inject locale as route param
-        route.name = baseName
-        route.params = { ...(route.params || {}), locale }
+        // check if this is actually a consolidated route (not a disabled/unlocalized one)
+        const record = router.getRoutes().find(r => r.name === baseName)
+        if (record?.meta?.__i18nConsolidated) {
+          route.name = baseName
+          route.params = { ...(route.params || {}), locale }
+        }
       }
       return route
     }
@@ -201,8 +209,8 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
   const ctx = useNuxtI18nContext(nuxtApp)
   const oldLocale = ctx.getLocale()
 
-  // skip if locale is already set
-  if (locale === oldLocale && !ctx.initial) {
+  // skip if locale is already set and there is no pending locale change to a different locale
+  if (locale === oldLocale && !ctx.initial && (!ctx.vueI18n.__pendingLocale || ctx.vueI18n.__pendingLocale === locale)) {
     return locale
   }
 

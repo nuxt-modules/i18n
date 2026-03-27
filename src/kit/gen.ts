@@ -114,7 +114,9 @@ export function localizeSingleRoute(
 
   // Consolidate eligible top-level routes into a single regex-prefixed route.
   // Guards: only at the top level (no parent), not inside a default-tree pass.
-  if (ctx.consolidateRoute && !options.defaultTree && options.parent == null && canConsolidateRoute(routeOptions, options.locales)) {
+  if (ctx.consolidateRoute && !options.defaultTree && options.parent == null
+    && canConsolidateRoute(routeOptions, options.locales)
+    && canConsolidateChildren(route.children, options.locales, ctx)) {
     return ctx.consolidateRoute(route, routeOptions, options)
   }
 
@@ -237,4 +239,23 @@ export function canConsolidateRoute(
   if (!routeOptions) { return false }
   if (routeOptions.locales.length !== allLocales.length) { return false }
   return Object.keys(routeOptions.paths).length === 0
+}
+
+/**
+ * Recursively check that all child routes are also eligible for consolidation.
+ * A parent with consolidation-eligible options but a child with per-locale custom paths
+ * cannot be consolidated since children of the consolidated route would miss the custom paths.
+ */
+function canConsolidateChildren(
+  children: LocalizableRoute[] | undefined,
+  allLocales: readonly string[],
+  ctx: RouteContext,
+): boolean {
+  if (!children?.length) { return true }
+  for (const child of children) {
+    const childOptions = ctx.optionsResolver(child, allLocales as string[])
+    if (!canConsolidateRoute(childOptions, allLocales)) { return false }
+    if (!canConsolidateChildren(child.children, allLocales, ctx)) { return false }
+  }
+  return true
 }
