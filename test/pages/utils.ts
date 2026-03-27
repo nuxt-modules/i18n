@@ -1,7 +1,7 @@
-import type { NuxtI18nOptions } from '../../src/types'
+import type { NuxtI18nOptions, LocaleObject, Strategies } from '../../src/types'
 import type { NuxtPage } from '@nuxt/schema'
+import type { ComputedRouteOptions, LocalizableRoute, RouteOptionsResolver } from '../../src/kit/gen'
 
-import type { LocaleObject } from '../../src/types'
 import { isString } from '@intlify/shared'
 
 export const getNormalizedLocales = (locales: string[] | LocaleObject[] = []): LocaleObject[] =>
@@ -40,4 +40,66 @@ export function stripFilePropertyFromPages(pages: NuxtPage[]) {
     }
     return page
   })
+}
+
+/**
+ * Creates a mock `RouteOptionsResolver` from a simple map, bypassing `NuxtPageAnalyzeContext`.
+ *
+ * @param optionsMap - keyed by route name or path
+ *   - `ComputedRouteOptions`: custom locales/paths for the route
+ *   - `false`: route localization disabled (resolver returns `undefined`)
+ *   - `undefined` entry or missing key with no file: pass-through (resolver returns `undefined`)
+ * @param fallbackLocales - locales returned for routes not in the map (defaults to resolver's localeCodes)
+ */
+export function createMockOptionsResolver(
+  optionsMap: Record<string, ComputedRouteOptions | false | undefined> = {},
+  fallbackLocales?: string[]
+): RouteOptionsResolver {
+  return (route: LocalizableRoute, localeCodes: string[]) => {
+    const key = route.name || route.path
+    if (key && key in optionsMap) {
+      const value = optionsMap[key]
+      // false = disabled
+      if (value === false) return undefined
+      // explicit options
+      if (value != null) return value
+      // undefined = pass-through
+      return undefined
+    }
+
+    // redirect-only routes without a file are not localizable
+    if (route.redirect && !route.file) return undefined
+
+    // default: all locales, no custom paths
+    return { locales: fallbackLocales ?? localeCodes, paths: {} }
+  }
+}
+
+/**
+ * Creates a config object compatible with `localizeRoutes()` from minimal inputs.
+ */
+export function createTestConfig(opts: {
+  locales?: string[] | LocaleObject[]
+  strategy?: Strategies
+  defaultLocale?: string
+  trailingSlash?: boolean
+  optionsResolver?: RouteOptionsResolver
+  includeUnprefixedFallback?: boolean
+  differentDomains?: boolean
+  multiDomainLocales?: boolean
+  routesNameSeparator?: string
+  defaultLocaleRouteNameSuffix?: string
+}) {
+  return {
+    locales: getNormalizedLocales(opts.locales ?? ['en', 'fr']),
+    strategy: opts.strategy ?? 'prefix_except_default' as Strategies,
+    defaultLocale: opts.defaultLocale ?? 'en',
+    trailingSlash: opts.trailingSlash ?? false,
+    routesNameSeparator: opts.routesNameSeparator ?? '___',
+    defaultLocaleRouteNameSuffix: opts.defaultLocaleRouteNameSuffix ?? 'default',
+    optionsResolver: opts.optionsResolver,
+    includeUnprefixedFallback: opts.includeUnprefixedFallback ?? false,
+    differentDomains: opts.differentDomains,
+    multiDomainLocales: opts.multiDomainLocales,
+  }
 }

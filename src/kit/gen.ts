@@ -213,3 +213,16 @@ export function createRouteContext(opts: {
 
   return ctx
 }
+
+/**
+ * Check whether a route can be consolidated into a single regex route.
+ * A route is eligible when all provided locales are enabled and no per-locale custom paths are defined.
+ */
+export function canConsolidateRoute(
+  routeOptions: ComputedRouteOptions | undefined,
+  allLocales: readonly string[],
+): boolean {
+  if (!routeOptions) { return false }
+  if (routeOptions.locales.length !== allLocales.length) { return false }
+  return Object.keys(routeOptions.paths).length === 0
+}
