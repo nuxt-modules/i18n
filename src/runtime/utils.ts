@@ -126,9 +126,10 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
         // Fallback: consolidated route — keep base name with locale param
         const record = router.getRoutes().find(r => r.name === baseName)
         if (record?.meta?.__i18nConsolidated) {
-          route.name = baseName
-          route.params = { ...(route.params || {}), locale }
-          return route
+          const consolidated = route as RouteLikeWithName
+          consolidated.name = baseName
+          consolidated.params = { ...(consolidated.params || {}), locale }
+          return consolidated
         }
       }
 
