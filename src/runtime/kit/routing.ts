@@ -47,7 +47,7 @@ export function getLocaleFromRoute(route: RouteName | RouteObject) {
   }
 
   const fromName = getLocaleFromRouteName(input)
-  if (fromName) return fromName
+  if (fromName) { return fromName }
 
   // Fallback: for consolidated routes the name has no locale suffix,
   // try path-based detection if the route object has a path.
