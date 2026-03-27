@@ -28,8 +28,7 @@ export const DEFAULT_OPTIONS = {
     strictSeo: false,
     nitroContextDetection: true,
     httpCacheDuration: 10,
-    // TODO: REVERT before merging
-    regexConsolidation: true,
+    compactRoutes: false,
   },
   bundle: {
     compositionOnly: true,

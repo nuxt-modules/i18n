@@ -142,10 +142,10 @@ export async function switchLocalePathTests() {
 export async function localeRouteTests() {
   const { page } = await renderPage('/en')
 
-  // Detect consolidation: consolidated routes use the base name (no ___locale suffix)
+  // Detect compact routes: compact routes use the base name (no ___locale suffix)
   const indexRoute = JSON.parse(await page.locator('#locale-route .index').innerText())
-  const consolidated = !indexRoute.name.includes('___')
-  const routeName = (base: string, locale: string) => (consolidated ? base : `${base}___${locale}`)
+  const compacted = !indexRoute.name.includes('___')
+  const routeName = (base: string, locale: string) => (compacted ? base : `${base}___${locale}`)
 
   expect(indexRoute).include({
     fullPath: '/en',

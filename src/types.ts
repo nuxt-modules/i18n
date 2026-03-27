@@ -205,7 +205,7 @@ export interface ExperimentalFeatures {
    * share the same path and no locale is disabled.
    * @default false
    */
-  regexConsolidation?: boolean
+  compactRoutes?: boolean
 }
 
 export interface BundleOptions

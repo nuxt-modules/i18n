@@ -112,12 +112,12 @@ export function localizeSingleRoute(
     return [route]
   }
 
-  // Consolidate eligible top-level routes into a single regex-prefixed route.
+  // Compact eligible top-level routes into a single regex-prefixed route.
   // Guards: only at the top level (no parent), not inside a default-tree pass.
-  if (ctx.consolidateRoute && !options.defaultTree && options.parent == null
-    && canConsolidateRoute(routeOptions, options.locales)
-    && canConsolidateChildren(route.children, options.locales, ctx)) {
-    return ctx.consolidateRoute(route, routeOptions, options)
+  if (ctx.compactRoute && !options.defaultTree && options.parent == null
+    && canCompactRoute(routeOptions, options.locales)
+    && canCompactChildren(route.children, options.locales, ctx)) {
+    return ctx.compactRoute(route, routeOptions, options)
   }
 
   const resultRoutes: LocalizableRoute[] = []
@@ -162,8 +162,8 @@ export type RouteContext = {
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
   localizers: { enabled: (data: LocalizerData) => boolean, localizer: LocalizerFn }[]
-  /** When set, eligible routes are consolidated into a single regex-prefixed route instead of per-locale duplicates. */
-  consolidateRoute?: (
+  /** When set, eligible routes are compacted into a single regex-prefixed route instead of per-locale duplicates. */
+  compactRoute?: (
     route: LocalizableRoute,
     routeOptions: ComputedRouteOptions,
     params: LocalizeRouteParams,
@@ -229,10 +229,10 @@ export function createRouteContext(opts: {
 }
 
 /**
- * Check whether a route can be consolidated into a single regex route.
+ * Check whether a route can be compacted into a single regex route.
  * A route is eligible when all provided locales are enabled and no per-locale custom paths are defined.
  */
-export function canConsolidateRoute(
+export function canCompactRoute(
   routeOptions: ComputedRouteOptions | undefined,
   allLocales: readonly string[],
 ): boolean {
@@ -242,11 +242,11 @@ export function canConsolidateRoute(
 }
 
 /**
- * Recursively check that all child routes are also eligible for consolidation.
- * A parent with consolidation-eligible options but a child with per-locale custom paths
- * cannot be consolidated since children of the consolidated route would miss the custom paths.
+ * Recursively check that all child routes are also eligible for compaction.
+ * A parent with compact-eligible options but a child with per-locale custom paths
+ * cannot be compacted since children of the compact route would miss the custom paths.
  */
-function canConsolidateChildren(
+function canCompactChildren(
   children: LocalizableRoute[] | undefined,
   allLocales: readonly string[],
   ctx: RouteContext,
@@ -254,8 +254,8 @@ function canConsolidateChildren(
   if (!children?.length) { return true }
   for (const child of children) {
     const childOptions = ctx.optionsResolver(child, allLocales as string[])
-    if (!canConsolidateRoute(childOptions, allLocales)) { return false }
-    if (!canConsolidateChildren(child.children, allLocales, ctx)) { return false }
+    if (!canCompactRoute(childOptions, allLocales)) { return false }
+    if (!canCompactChildren(child.children, allLocales, ctx)) { return false }
   }
   return true
 }

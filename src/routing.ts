@@ -62,7 +62,7 @@ type SetupLocalizeRoutesOptions = {
   defaultLocaleRouteNameSuffix: string
   defaultLocale?: string
   optionsResolver?: RouteOptionsResolver
-  regexConsolidation?: boolean
+  compactRoutes?: boolean
 }
 
 /**
@@ -82,29 +82,29 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
   const strategy = config.strategy ?? 'prefix_and_default'
 
   /**
-   * Regex consolidation: merge all per-locale routes into a single `/:locale(en|fr)/path` route
+   * Compact routes: merge all per-locale routes into a single `/:locale(en|fr)/path` route
    * for routes where all locales share the same path.
    */
-  if (config.regexConsolidation && strategy !== 'no_prefix' && !config.differentDomains && !config.multiDomainLocales) {
+  if (config.compactRoutes && strategy !== 'no_prefix' && !config.differentDomains && !config.multiDomainLocales) {
     const defaultLocale = config.defaultLocale ?? ''
-    ctx.consolidateRoute = (route, routeOptions, params) => {
+    ctx.compactRoute = (route, routeOptions, params) => {
       const makeRegexRoute = (locales: readonly string[]): LocalizableRoute => {
         const localePattern = locales.join('|')
         const regexPrefix = `/:locale(${localePattern})`
         const regexPath = route.path === '/'
           ? regexPrefix
           : regexPrefix + route.path
-        const consolidated: LocalizableRoute = {
+        const compacted: LocalizableRoute = {
           ...route,
           path: ctx.handleTrailingSlash(regexPath, !!params.parent),
-          meta: { ...(route.meta as Record<string, unknown> ?? {}), __i18nConsolidated: true },
+          meta: { ...(route.meta as Record<string, unknown> ?? {}), __i18nCompact: true },
         }
         // Prefix aliases with the locale regex pattern so params match the parent route
-        if (consolidated.alias) {
-          const aliases = Array.isArray(consolidated.alias) ? consolidated.alias : [consolidated.alias]
-          consolidated.alias = aliases.map(a => regexPrefix + (a.startsWith('/') ? a : '/' + a))
+        if (compacted.alias) {
+          const aliases = Array.isArray(compacted.alias) ? compacted.alias : [compacted.alias]
+          compacted.alias = aliases.map(a => regexPrefix + (a.startsWith('/') ? a : '/' + a))
         }
-        return consolidated
+        return compacted
       }
 
       if (strategy === 'prefix_except_default' && defaultLocale) {

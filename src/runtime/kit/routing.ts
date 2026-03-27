@@ -49,7 +49,7 @@ export function getLocaleFromRoute(route: RouteName | RouteObject) {
   const fromName = getLocaleFromRouteName(input)
   if (fromName) { return fromName }
 
-  // Fallback: for consolidated routes the name has no locale suffix,
+  // Fallback: for compact routes the name has no locale suffix,
   // try path-based detection if the route object has a path.
   if (typeof route === 'object' && route?.path) {
     return getLocaleFromRoutePath(String(route.path))

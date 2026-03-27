@@ -10,12 +10,12 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const ctx = useNuxtI18nContext(nuxt)
 
-    // Set meta.key on consolidated routes so NuxtPage triggers transitions when the locale param changes.
+    // Set meta.key on compact routes so NuxtPage triggers transitions when the locale param changes.
     // This must be done at runtime because functions in route meta don't survive Nuxt's build-time serialization.
-    if (__I18N_CONSOLIDATED_ROUTES__) {
+    if (__I18N_COMPACT_ROUTES__) {
       const router = useRouter()
       for (const route of router.getRoutes()) {
-        if (route.meta?.__i18nConsolidated) {
+        if (route.meta?.__i18nCompact) {
           route.meta.key = (r: { path: string }) => r.path
         }
       }

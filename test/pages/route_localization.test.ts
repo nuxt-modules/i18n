@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
-import { localizeSingleRoute, createRouteContext, canConsolidateRoute } from '../../src/kit/gen'
+import { localizeSingleRoute, createRouteContext, canCompactRoute } from '../../src/kit/gen'
 import { buildPathToConfig, NuxtPageAnalyzeContext } from '../../src/pages'
 import { createMockOptionsResolver, createTestConfig, getNormalizedLocales } from './utils'
 
@@ -611,42 +611,42 @@ describe('buildPathToConfig', () => {
 })
 
 // ---------------------------------------------------------------------------
-// e) canConsolidateRoute
+// e) canCompactRoute
 // ---------------------------------------------------------------------------
 
-describe('canConsolidateRoute', () => {
+describe('canCompactRoute', () => {
   const allLocales = ['en', 'fr', 'ja']
 
   it('returns true when all locales enabled and no custom paths', () => {
-    expect(canConsolidateRoute({ locales: ['en', 'fr', 'ja'], paths: {} }, allLocales)).toBe(true)
+    expect(canCompactRoute({ locales: ['en', 'fr', 'ja'], paths: {} }, allLocales)).toBe(true)
   })
 
   it('returns false when some locales have custom paths', () => {
-    expect(canConsolidateRoute({ locales: ['en', 'fr', 'ja'], paths: { fr: '/a-propos' } }, allLocales)).toBe(false)
+    expect(canCompactRoute({ locales: ['en', 'fr', 'ja'], paths: { fr: '/a-propos' } }, allLocales)).toBe(false)
   })
 
   it('returns false when only a subset of locales is enabled', () => {
-    expect(canConsolidateRoute({ locales: ['en', 'fr'], paths: {} }, allLocales)).toBe(false)
+    expect(canCompactRoute({ locales: ['en', 'fr'], paths: {} }, allLocales)).toBe(false)
   })
 
   it('returns false when routeOptions is undefined', () => {
-    expect(canConsolidateRoute(undefined, allLocales)).toBe(false)
+    expect(canCompactRoute(undefined, allLocales)).toBe(false)
   })
 
   it('returns true for single locale with no custom paths', () => {
-    expect(canConsolidateRoute({ locales: ['en'], paths: {} }, ['en'])).toBe(true)
+    expect(canCompactRoute({ locales: ['en'], paths: {} }, ['en'])).toBe(true)
   })
 
   it('returns false when paths is non-empty even if values match original', () => {
-    expect(canConsolidateRoute({ locales: ['en', 'fr'], paths: { en: '/about', fr: '/about' } }, ['en', 'fr'])).toBe(false)
+    expect(canCompactRoute({ locales: ['en', 'fr'], paths: { en: '/about', fr: '/about' } }, ['en', 'fr'])).toBe(false)
   })
 })
 
 // ---------------------------------------------------------------------------
-// f) regex consolidation via localizeRoutes
+// f) compact routes via localizeRoutes
 // ---------------------------------------------------------------------------
 
-describe('regex consolidation', () => {
+describe('compact routes', () => {
   const locales = ['en', 'fr', 'ja']
   const routes: LocalizableRoute[] = [
     { path: '/', name: 'home' },
@@ -654,8 +654,8 @@ describe('regex consolidation', () => {
   ]
 
   describe('eligible routes — prefix strategy', () => {
-    it('consolidates into a single regex route', () => {
-      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', regexConsolidation: true })
+    it('compacts into a single regex route', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', compactRoutes: true })
       const result = localizeRoutes(routes, config)
 
       // single route per page — no per-locale duplication
@@ -663,13 +663,13 @@ describe('regex consolidation', () => {
       const about = result.find(r => r.path === '/:locale(en|fr|ja)/about')
       expect(about).toBeDefined()
       expect(about?.name).toBe('about')
-      expect((about?.meta as Record<string, unknown>)?.__i18nConsolidated).toBe(true)
+      expect((about?.meta as Record<string, unknown>)?.__i18nCompact).toBe(true)
     })
   })
 
   describe('eligible routes — prefix_except_default strategy', () => {
     it('generates unprefixed default route + non-default regex route', () => {
-      const config = createTestConfig({ locales, strategy: 'prefix_except_default', defaultLocale: 'en', regexConsolidation: true })
+      const config = createTestConfig({ locales, strategy: 'prefix_except_default', defaultLocale: 'en', compactRoutes: true })
       const result = localizeRoutes(routes, config)
 
       const aboutEn = findRoute(result, 'about___en')
@@ -687,7 +687,7 @@ describe('regex consolidation', () => {
 
   describe('eligible routes — prefix_and_default strategy', () => {
     it('generates default-tree route + all-locale regex route', () => {
-      const config = createTestConfig({ locales, strategy: 'prefix_and_default', defaultLocale: 'en', regexConsolidation: true })
+      const config = createTestConfig({ locales, strategy: 'prefix_and_default', defaultLocale: 'en', compactRoutes: true })
       const result = localizeRoutes(routes, config)
 
       const aboutDefault = findRoute(result, 'about___en___default')
@@ -704,11 +704,11 @@ describe('regex consolidation', () => {
   })
 
   describe('ineligible routes — must stay per-locale', () => {
-    it('does NOT consolidate a route with custom per-locale paths', () => {
+    it('does NOT compact a route with custom per-locale paths', () => {
       const resolver = createMockOptionsResolver({
         about: { locales, paths: { fr: '/a-propos' } },
       })
-      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, compactRoutes: true })
       const result = localizeRoutes([{ path: '/about', name: 'about' }], config)
 
       expect(findRoute(result, 'about___en')).toBeDefined()
@@ -717,11 +717,11 @@ describe('regex consolidation', () => {
       expect(result.find(r => r.path?.includes(':locale'))).toBeUndefined()
     })
 
-    it('does NOT consolidate a route available for a locale subset', () => {
+    it('does NOT compact a route available for a locale subset', () => {
       const resolver = createMockOptionsResolver({
         about: { locales: ['fr', 'ja'], paths: {} },
       })
-      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, compactRoutes: true })
       const result = localizeRoutes([{ path: '/about', name: 'about' }], config)
 
       expect(findRoute(result, 'about___fr')).toBeDefined()
@@ -730,9 +730,9 @@ describe('regex consolidation', () => {
       expect(result.find(r => r.path?.includes(':locale'))).toBeUndefined()
     })
 
-    it('does NOT consolidate a disabled route (resolver returns undefined)', () => {
+    it('does NOT compact a disabled route (resolver returns undefined)', () => {
       const resolver = createMockOptionsResolver({ about: false })
-      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, compactRoutes: true })
       const result = localizeRoutes([{ path: '/about', name: 'about' }], config)
 
       // route returned unchanged
@@ -742,22 +742,22 @@ describe('regex consolidation', () => {
     })
   })
 
-  describe('mixed app — some routes consolidated, some per-locale', () => {
-    it('handles consolidatable and non-consolidatable routes in the same call', () => {
+  describe('mixed app — some routes compacted, some per-locale', () => {
+    it('handles compactable and non-compactable routes in the same call', () => {
       const resolver = createMockOptionsResolver({
-        // contact has a custom fr path → not consolidatable
+        // contact has a custom fr path → not compactable
         contact: { locales, paths: { fr: '/nous-contacter' } },
-        // about has no custom paths → consolidatable
+        // about has no custom paths → compactable
         about: { locales, paths: {} },
       })
-      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, compactRoutes: true })
       const input: LocalizableRoute[] = [
         { path: '/about', name: 'about' },
         { path: '/contact', name: 'contact' },
       ]
       const result = localizeRoutes(input, config)
 
-      // about → consolidated
+      // about → compacted
       expect(result.find(r => r.path === '/:locale(en|fr|ja)/about')).toBeDefined()
       expect(findRoute(result, 'about___en')).toBeUndefined()
 

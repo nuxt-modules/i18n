@@ -88,21 +88,21 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const localizedName = getLocalizedRouteName(route.name, locale)
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
-      // Remove stale locale param inherited from a consolidated route — per-locale routes don't use it
-      if (__I18N_CONSOLIDATED_ROUTES__ && route.params) {
+      // Remove stale locale param inherited from a compact route — per-locale routes don't use it
+      if (__I18N_COMPACT_ROUTES__ && route.params) {
         delete (route.params as Record<string, unknown>).locale
       }
-    } else if (__I18N_CONSOLIDATED_ROUTES__ && isSupportedLocale(locale) && router.hasRoute(route.name!)) {
-      // consolidated route: keep base name, inject locale as route param
+    } else if (__I18N_COMPACT_ROUTES__ && isSupportedLocale(locale) && router.hasRoute(route.name!)) {
+      // compact route: keep base name, inject locale as route param
       // spread existing params (e.g. slug) to satisfy all required route params
       const resolved = router.resolve({ name: route.name!, params: { ...(route.params as Record<string, unknown> || {}), locale } })
-      if (resolved.meta?.__i18nConsolidated) {
+      if (resolved.meta?.__i18nCompact) {
         route.params = { ...(route.params || {}), locale }
         return route
       }
     }
 
-    // No per-locale or consolidated match: set localized name so router.resolve
+    // No per-locale or compact match: set localized name so router.resolve
     // fails for unsupported locales (e.g. 'undefined'), matching per-locale behavior.
     route.name = localizedName
     return route
@@ -115,21 +115,21 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
 
     if (baseName) {
       // Try per-locale route first (e.g. about___en) — this handles the default locale
-      // in prefix_except_default where the unprefixed route exists alongside the consolidated one.
+      // in prefix_except_default where the unprefixed route exists alongside the compact one.
       const localizedName = getLocalizedRouteName(baseName, locale)
       if (router.hasRoute(localizedName)) {
         route.name = localizedName
         return route
       }
 
-      if (__I18N_CONSOLIDATED_ROUTES__) {
-        // Fallback: consolidated route — keep base name with locale param
+      if (__I18N_COMPACT_ROUTES__) {
+        // Fallback: compact route — keep base name with locale param
         const record = router.getRoutes().find(r => r.name === baseName)
-        if (record?.meta?.__i18nConsolidated) {
-          const consolidated = route as RouteLikeWithName
-          consolidated.name = baseName
-          consolidated.params = { ...(consolidated.params || {}), locale }
-          return consolidated
+        if (record?.meta?.__i18nCompact) {
+          const compacted = route as RouteLikeWithName
+          compacted.name = baseName
+          compacted.params = { ...(compacted.params || {}), locale }
+          return compacted
         }
       }
 

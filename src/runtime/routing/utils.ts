@@ -50,10 +50,10 @@ export function createLocalizedRouteByPathResolver(
         return router.resolve(assign({}, route, _route, { path: targetPath }))
       }
 
-      // For consolidated routes, the regex pattern (e.g. /:locale(en|ja)/path/:param)
+      // For compact routes, the regex pattern (e.g. /:locale(en|ja)/path/:param)
       // won't have an exact match above. Return the original route — downstream
       // resolveLocalizedRouteByPath will add the prefix and router.resolve will
-      // match the consolidated route using path-based resolution (preserving URL encoding).
+      // match the compact route using path-based resolution (preserving URL encoding).
       return route
     }
   }
