@@ -112,6 +112,12 @@ export function localizeSingleRoute(
     return [route]
   }
 
+  // Consolidate eligible top-level routes into a single regex-prefixed route.
+  // Guards: only at the top level (no parent), not inside a default-tree pass.
+  if (ctx.consolidateRoute && !options.defaultTree && options.parent == null && canConsolidateRoute(routeOptions, options.locales)) {
+    return ctx.consolidateRoute(route, routeOptions, options)
+  }
+
   const resultRoutes: LocalizableRoute[] = []
   for (const locale of routeOptions.locales) {
     // use custom path if found
@@ -154,6 +160,12 @@ export type RouteContext = {
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
   localizers: { enabled: (data: LocalizerData) => boolean, localizer: LocalizerFn }[]
+  /** When set, eligible routes are consolidated into a single regex-prefixed route instead of per-locale duplicates. */
+  consolidateRoute?: (
+    route: LocalizableRoute,
+    routeOptions: ComputedRouteOptions,
+    params: LocalizeRouteParams,
+  ) => LocalizableRoute[]
 }
 
 type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]

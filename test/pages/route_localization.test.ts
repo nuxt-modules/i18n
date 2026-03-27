@@ -641,3 +641,130 @@ describe('canConsolidateRoute', () => {
     expect(canConsolidateRoute({ locales: ['en', 'fr'], paths: { en: '/about', fr: '/about' } }, ['en', 'fr'])).toBe(false)
   })
 })
+
+// ---------------------------------------------------------------------------
+// f) regex consolidation via localizeRoutes
+// ---------------------------------------------------------------------------
+
+describe('regex consolidation', () => {
+  const locales = ['en', 'fr', 'ja']
+  const routes: LocalizableRoute[] = [
+    { path: '/', name: 'home' },
+    { path: '/about', name: 'about' },
+  ]
+
+  describe('eligible routes — prefix strategy', () => {
+    it('consolidates into a single regex route', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', regexConsolidation: true })
+      const result = localizeRoutes(routes, config)
+
+      // single route per page — no per-locale duplication
+      expect(result.filter(r => r.path?.includes('/about'))).toHaveLength(1)
+      const about = result.find(r => r.path === '/:locale(en|fr|ja)/about')
+      expect(about).toBeDefined()
+      expect(about?.name).toBe('about')
+      expect((about?.meta as Record<string, unknown>)?.__i18nConsolidated).toBe(true)
+    })
+  })
+
+  describe('eligible routes — prefix_except_default strategy', () => {
+    it('generates unprefixed default route + non-default regex route', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix_except_default', defaultLocale: 'en', regexConsolidation: true })
+      const result = localizeRoutes(routes, config)
+
+      const aboutEn = findRoute(result, 'about___en')
+      expect(aboutEn?.path).toBe('/about')
+
+      const aboutRegex = result.find(r => r.path === '/:locale(fr|ja)/about')
+      expect(aboutRegex).toBeDefined()
+      expect(aboutRegex?.name).toBe('about')
+
+      // no per-locale duplication for non-default locales
+      expect(findRoute(result, 'about___fr')).toBeUndefined()
+      expect(findRoute(result, 'about___ja')).toBeUndefined()
+    })
+  })
+
+  describe('eligible routes — prefix_and_default strategy', () => {
+    it('generates default-tree route + all-locale regex route', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix_and_default', defaultLocale: 'en', regexConsolidation: true })
+      const result = localizeRoutes(routes, config)
+
+      const aboutDefault = findRoute(result, 'about___en___default')
+      expect(aboutDefault?.path).toBe('/about')
+
+      const aboutRegex = result.find(r => r.path === '/:locale(en|fr|ja)/about')
+      expect(aboutRegex).toBeDefined()
+      expect(aboutRegex?.name).toBe('about')
+
+      // no per-locale routes
+      expect(findRoute(result, 'about___en')).toBeUndefined()
+      expect(findRoute(result, 'about___fr')).toBeUndefined()
+    })
+  })
+
+  describe('ineligible routes — must stay per-locale', () => {
+    it('does NOT consolidate a route with custom per-locale paths', () => {
+      const resolver = createMockOptionsResolver({
+        about: { locales, paths: { fr: '/a-propos' } },
+      })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const result = localizeRoutes([{ path: '/about', name: 'about' }], config)
+
+      expect(findRoute(result, 'about___en')).toBeDefined()
+      expect(findRoute(result, 'about___fr')).toBeDefined()
+      expect(findRoute(result, 'about___ja')).toBeDefined()
+      expect(result.find(r => r.path?.includes(':locale'))).toBeUndefined()
+    })
+
+    it('does NOT consolidate a route available for a locale subset', () => {
+      const resolver = createMockOptionsResolver({
+        about: { locales: ['fr', 'ja'], paths: {} },
+      })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const result = localizeRoutes([{ path: '/about', name: 'about' }], config)
+
+      expect(findRoute(result, 'about___fr')).toBeDefined()
+      expect(findRoute(result, 'about___ja')).toBeDefined()
+      expect(findRoute(result, 'about___en')).toBeUndefined()
+      expect(result.find(r => r.path?.includes(':locale'))).toBeUndefined()
+    })
+
+    it('does NOT consolidate a disabled route (resolver returns undefined)', () => {
+      const resolver = createMockOptionsResolver({ about: false })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const result = localizeRoutes([{ path: '/about', name: 'about' }], config)
+
+      // route returned unchanged
+      expect(result).toHaveLength(1)
+      expect(result[0].path).toBe('/about')
+      expect(result[0].name).toBe('about')
+    })
+  })
+
+  describe('mixed app — some routes consolidated, some per-locale', () => {
+    it('handles consolidatable and non-consolidatable routes in the same call', () => {
+      const resolver = createMockOptionsResolver({
+        // contact has a custom fr path → not consolidatable
+        contact: { locales, paths: { fr: '/nous-contacter' } },
+        // about has no custom paths → consolidatable
+        about: { locales, paths: {} },
+      })
+      const config = createTestConfig({ locales, strategy: 'prefix', defaultLocale: 'en', optionsResolver: resolver, regexConsolidation: true })
+      const input: LocalizableRoute[] = [
+        { path: '/about', name: 'about' },
+        { path: '/contact', name: 'contact' },
+      ]
+      const result = localizeRoutes(input, config)
+
+      // about → consolidated
+      expect(result.find(r => r.path === '/:locale(en|fr|ja)/about')).toBeDefined()
+      expect(findRoute(result, 'about___en')).toBeUndefined()
+
+      // contact → per-locale
+      expect(findRoute(result, 'contact___en')).toBeDefined()
+      expect(findRoute(result, 'contact___fr')).toBeDefined()
+      expect(findRoute(result, 'contact___ja')).toBeDefined()
+    })
+  })
+})

@@ -43,8 +43,17 @@ export function createLocalizedRouteByPathResolver(
      */
     return (route, locale) => {
       const targetPath = '/' + locale + (route.path === '/' ? '' : route.path)
-      const _route = router.options.routes.find(r => r.path === targetPath)
 
+      if (__I18N_CONSOLIDATED_ROUTES__) {
+        // router.resolve handles regex route matching (e.g. /:locale(en|fr)/about) natively
+        const resolved = router.resolve(assign({}, route, { path: targetPath }))
+        if (resolved.matched.length > 0) {
+          return resolved
+        }
+      }
+
+      // Fallback: exact path match for per-locale routes
+      const _route = router.options.routes.find(r => r.path === targetPath)
       if (_route == null) {
         return route
       }

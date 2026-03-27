@@ -88,6 +88,12 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const localizedName = getLocalizedRouteName(route.name, locale)
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
+    } else if (__I18N_CONSOLIDATED_ROUTES__ && router.hasRoute(route.name!)) {
+      // consolidated route: keep base name, inject locale as route param
+      const resolved = router.resolve({ name: route.name! })
+      if (resolved.meta?.__i18nConsolidated) {
+        route.params = { ...(route.params || {}), locale }
+      }
     }
 
     return route
@@ -99,7 +105,14 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const baseName = getRouteBaseName(route)
 
     if (baseName) {
-      route.name = getLocalizedRouteName(baseName, locale)
+      const localizedName = getLocalizedRouteName(baseName, locale)
+      if (router.hasRoute(localizedName)) {
+        route.name = localizedName
+      } else if (__I18N_CONSOLIDATED_ROUTES__) {
+        // consolidated route: keep base name, inject locale as route param
+        route.name = baseName
+        route.params = { ...(route.params || {}), locale }
+      }
       return route
     }
 

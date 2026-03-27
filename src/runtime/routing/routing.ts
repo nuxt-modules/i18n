@@ -91,7 +91,12 @@ export function switchLocalePath(
    */
   const routeCopy = {
     name,
-    params: assign({}, route.params, ctx.getLocalizedDynamicParams(locale)),
+    params: assign(
+      {},
+      route.params,
+      ctx.getLocalizedDynamicParams(locale),
+      __I18N_CONSOLIDATED_ROUTES__ ? { locale } : {},
+    ),
     fullPath: route.fullPath,
     query: route.query,
     hash: route.hash,

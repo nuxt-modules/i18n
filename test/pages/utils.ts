@@ -89,6 +89,7 @@ export function createTestConfig(opts: {
   multiDomainLocales?: boolean
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
+  regexConsolidation?: boolean
 }) {
   return {
     locales: getNormalizedLocales(opts.locales ?? ['en', 'fr']),
@@ -101,5 +102,6 @@ export function createTestConfig(opts: {
     includeUnprefixedFallback: opts.includeUnprefixedFallback ?? false,
     differentDomains: opts.differentDomains,
     multiDomainLocales: opts.multiDomainLocales,
+    regexConsolidation: opts.regexConsolidation,
   }
 }

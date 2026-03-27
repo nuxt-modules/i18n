@@ -89,6 +89,7 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         includeUnprefixedFallback,
         locales: normalizedLocales,
         optionsResolver: resolver,
+        regexConsolidation: !!options.experimental?.regexConsolidation,
       })
 
       // Build path config from original pages (not localized copies)
