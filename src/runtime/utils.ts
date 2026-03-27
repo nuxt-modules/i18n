@@ -92,15 +92,19 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       if (__I18N_CONSOLIDATED_ROUTES__ && route.params) {
         delete (route.params as Record<string, unknown>).locale
       }
-    } else if (__I18N_CONSOLIDATED_ROUTES__ && router.hasRoute(route.name!)) {
+    } else if (__I18N_CONSOLIDATED_ROUTES__ && isSupportedLocale(locale) && router.hasRoute(route.name!)) {
       // consolidated route: keep base name, inject locale as route param
       // spread existing params (e.g. slug) to satisfy all required route params
       const resolved = router.resolve({ name: route.name!, params: { ...(route.params as Record<string, unknown> || {}), locale } })
       if (resolved.meta?.__i18nConsolidated) {
         route.params = { ...(route.params || {}), locale }
+        return route
       }
     }
 
+    // No per-locale or consolidated match: set localized name so router.resolve
+    // fails for unsupported locales (e.g. 'undefined'), matching per-locale behavior.
+    route.name = localizedName
     return route
   }
 
@@ -110,17 +114,27 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const baseName = getRouteBaseName(route)
 
     if (baseName) {
+      // Try per-locale route first (e.g. about___en) — this handles the default locale
+      // in prefix_except_default where the unprefixed route exists alongside the consolidated one.
       const localizedName = getLocalizedRouteName(baseName, locale)
       if (router.hasRoute(localizedName)) {
         route.name = localizedName
-      } else if (__I18N_CONSOLIDATED_ROUTES__) {
-        // check if this is actually a consolidated route (not a disabled/unlocalized one)
+        return route
+      }
+
+      if (__I18N_CONSOLIDATED_ROUTES__) {
+        // Fallback: consolidated route — keep base name with locale param
         const record = router.getRoutes().find(r => r.name === baseName)
         if (record?.meta?.__i18nConsolidated) {
           route.name = baseName
           route.params = { ...(route.params || {}), locale }
+          return route
         }
       }
+
+      // Set the localized route name — if the route doesn't exist (e.g. disabled routes),
+      // router.resolve will fail and localePath correctly returns empty.
+      route.name = localizedName
       return route
     }
 

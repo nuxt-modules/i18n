@@ -85,7 +85,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
    * Regex consolidation: merge all per-locale routes into a single `/:locale(en|fr)/path` route
    * for routes where all locales share the same path.
    */
-  if (config.regexConsolidation) {
+  if (config.regexConsolidation && strategy !== 'no_prefix' && !config.differentDomains && !config.multiDomainLocales) {
     const defaultLocale = config.defaultLocale ?? ''
     ctx.consolidateRoute = (route, routeOptions, params) => {
       const makeRegexRoute = (locales: readonly string[]): LocalizableRoute => {
@@ -107,7 +107,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
         return consolidated
       }
 
-      if (strategy === 'prefix_except_default') {
+      if (strategy === 'prefix_except_default' && defaultLocale) {
         const result: LocalizableRoute[] = []
         // Unprefixed route for default locale (name: about___en)
         const unprefixed: LocalizableRoute = { ...route }
@@ -123,7 +123,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
         return result
       }
 
-      if (strategy === 'prefix_and_default') {
+      if (strategy === 'prefix_and_default' && defaultLocale) {
         // Default tree unprefixed route (name: about___en___default)
         const defaultTree: LocalizableRoute = { ...route }
         defaultTree.name &&= ctx.localizeRouteName(defaultTree, defaultLocale, true)
