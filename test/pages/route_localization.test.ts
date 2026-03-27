@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
 import { localizeSingleRoute, createRouteContext, canConsolidateRoute } from '../../src/kit/gen'
+import { buildPathToConfig, NuxtPageAnalyzeContext } from '../../src/pages'
 import { createMockOptionsResolver, createTestConfig, getNormalizedLocales } from './utils'
 
 import type { LocalizableRoute, LocalizeRouteParams } from '../../src/kit/gen'
@@ -515,7 +516,102 @@ describe('localizeRoutes options', () => {
 })
 
 // ---------------------------------------------------------------------------
-// d) canConsolidateRoute
+// d) buildPathToConfig
+// ---------------------------------------------------------------------------
+
+describe('buildPathToConfig', () => {
+  function makeCtx(fileToPath: Record<string, string> = {}): NuxtPageAnalyzeContext {
+    const ctx = new NuxtPageAnalyzeContext({})
+    ctx.fileToPath = fileToPath
+    return ctx
+  }
+
+  it('marks all locales as true for a route with no custom paths', () => {
+    const ctx = makeCtx({ '/pages/about.vue': '/about' })
+    const resolver = createMockOptionsResolver({
+      about: { locales: ['en', 'fr'], paths: {} },
+    })
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      { path: '/about', name: 'about', file: '/pages/about.vue' },
+    ])
+    expect(ctx.pathToConfig['/about']).toEqual({ en: true, fr: true })
+  })
+
+  it('stores srcPath string for locale with a custom path', () => {
+    const ctx = makeCtx({ '/pages/about.vue': '/about' })
+    const resolver = createMockOptionsResolver({
+      about: { locales: ['en', 'fr'], paths: { fr: '/a-propos' }, srcPaths: { fr: '/a-propos' } },
+    })
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      { path: '/about', name: 'about', file: '/pages/about.vue' },
+    ])
+    expect(ctx.pathToConfig['/about']).toEqual({ en: true, fr: '/a-propos' })
+  })
+
+  it('marks all locales as false when resolver returns undefined (disabled route)', () => {
+    const ctx = makeCtx({ '/pages/secret.vue': '/secret' })
+    const resolver = createMockOptionsResolver({ secret: false })
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      { path: '/secret', name: 'secret', file: '/pages/secret.vue' },
+    ])
+    expect(ctx.pathToConfig['/secret']).toEqual({ en: false, fr: false })
+  })
+
+  it('skips routes without a file', () => {
+    const ctx = makeCtx({})
+    const resolver = createMockOptionsResolver()
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      { path: '/about', name: 'about' },
+    ])
+    expect(Object.keys(ctx.pathToConfig)).toHaveLength(0)
+  })
+
+  it('skips routes whose file is not in fileToPath', () => {
+    const ctx = makeCtx({})
+    const resolver = createMockOptionsResolver()
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      { path: '/about', name: 'about', file: '/pages/about.vue' },
+    ])
+    expect(Object.keys(ctx.pathToConfig)).toHaveLength(0)
+  })
+
+  it('recurses into children routes', () => {
+    const ctx = makeCtx({
+      '/pages/account.vue': '/account',
+      '/pages/account/profile.vue': '/account/profile',
+    })
+    const resolver = createMockOptionsResolver()
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      {
+        path: '/account',
+        name: 'account',
+        file: '/pages/account.vue',
+        children: [
+          { path: 'profile', name: 'account-profile', file: '/pages/account/profile.vue' },
+        ],
+      },
+    ])
+    expect(ctx.pathToConfig['/account']).toEqual({ en: true, fr: true })
+    expect(ctx.pathToConfig['/account/profile']).toEqual({ en: true, fr: true })
+  })
+
+  it('processes multiple top-level routes', () => {
+    const ctx = makeCtx({
+      '/pages/home.vue': '/',
+      '/pages/about.vue': '/about',
+    })
+    const resolver = createMockOptionsResolver()
+    buildPathToConfig(ctx, ['en', 'fr'], resolver, [
+      { path: '/', name: 'home', file: '/pages/home.vue' },
+      { path: '/about', name: 'about', file: '/pages/about.vue' },
+    ])
+    expect(ctx.pathToConfig['/']).toEqual({ en: true, fr: true })
+    expect(ctx.pathToConfig['/about']).toEqual({ en: true, fr: true })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// e) canConsolidateRoute
 // ---------------------------------------------------------------------------
 
 describe('canConsolidateRoute', () => {

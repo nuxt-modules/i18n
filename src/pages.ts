@@ -14,7 +14,7 @@ import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'vue-router/unplugin'
 import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
-import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
+import type { ComputedRouteOptions, LocalizableRoute, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
 import { type CallExpression, type ExpressionStatement, type ObjectExpression, parseSync } from 'oxc-parser'
 
@@ -82,12 +82,17 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         await typedRouter.createContext(pages).scanPages(false)
       }
 
+      const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
+
       const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
         ...options,
         includeUnprefixedFallback,
         locales: normalizedLocales,
-        optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale, options.customRoutes),
+        optionsResolver: resolver,
       })
+
+      // Build path config from original pages (not localized copies)
+      buildPathToConfig(ctx, localeCodes, resolver, pages as LocalizableRoute[])
 
       // keep root when using prefixed routing without prerendering
       const indexPage = pages.find(x => x.path === '/')
@@ -264,32 +269,57 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
 }
 
 /**
- * Function factory, returns a function based on the `customRoutes` option property
+ * Returns a pure RouteOptionsResolver with no side effects.
+ */
+export function createPureOptionsResolver(
+  ctx: NuxtPageAnalyzeContext,
+  defaultLocale: string,
+  customRoutes: NuxtI18nOptions['customRoutes'],
+): RouteOptionsResolver {
+  return (route, localeCodes) => getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
+}
+
+/**
+ * Post-processing step: builds ctx.pathToConfig from the original (pre-localized) routes.
+ * Call this after localizeRoutes() with the same resolver used for localization.
+ */
+export function buildPathToConfig(
+  ctx: NuxtPageAnalyzeContext,
+  localeCodes: string[],
+  resolver: RouteOptionsResolver,
+  routes: LocalizableRoute[],
+): void {
+  for (const route of routes) {
+    if (route.file) {
+      const res = resolver(route, localeCodes)
+      const localeCfg = res?.srcPaths
+      const mappedPath = ctx.fileToPath[route.file]
+      if (mappedPath) {
+        ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
+        for (const l of localeCodes) {
+          ctx.pathToConfig[mappedPath][l] ??= localeCfg?.[l] ?? false
+        }
+        for (const l of res?.locales ?? []) {
+          ctx.pathToConfig[mappedPath][l] ||= true
+        }
+      }
+    }
+    if (route.children?.length) {
+      buildPathToConfig(ctx, localeCodes, resolver, route.children)
+    }
+  }
+}
+
+/**
+ * Function factory, returns a function based on the `customRoutes` option property.
+ * @deprecated Use createPureOptionsResolver + buildPathToConfig instead.
  */
 export function getRouteOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
   defaultLocale: string,
   customRoutes: NuxtI18nOptions['customRoutes'],
 ): RouteOptionsResolver {
-  return (route, localeCodes) => {
-    const res = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
-    if (route.file) {
-      const localeCfg = res?.srcPaths
-      const mappedPath = ctx.fileToPath[route.file]!
-      ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
-
-      // set paths for all locales, assume no custom path is a disabled locale
-      for (const l of localeCodes) {
-        ctx.pathToConfig[mappedPath][l] ??= localeCfg?.[l] ?? false
-      }
-
-      for (const l of res?.locales ?? []) {
-        ctx.pathToConfig[mappedPath][l] ||= true
-      }
-    }
-
-    return res
-  }
+  return createPureOptionsResolver(ctx, defaultLocale, customRoutes)
 }
 
 function resolveRoutePath(path: string): string {
