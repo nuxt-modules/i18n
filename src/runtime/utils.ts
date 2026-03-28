@@ -124,8 +124,8 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
 
       if (__I18N_COMPACT_ROUTES__) {
         // Fallback: compact route — keep base name with locale param
-        const record = router.getRoutes().find(r => r.name === baseName)
-        if (record?.meta?.__i18nCompact) {
+        const resolved = router.resolve({ name: baseName, params: {} })
+        if (resolved.matched.some(r => r.meta?.__i18nCompact)) {
           const compacted = route as RouteLikeWithName
           compacted.name = baseName
           compacted.params = { ...(compacted.params || {}), locale }

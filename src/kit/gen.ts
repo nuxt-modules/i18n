@@ -117,7 +117,8 @@ export function localizeSingleRoute(
   if (ctx.compactRoute && !options.defaultTree && options.parent == null
     && canCompactRoute(routeOptions, options.locales)
     && canCompactChildren(route.children, options.locales, ctx)) {
-    return ctx.compactRoute(route, routeOptions, options)
+    const compacted = ctx.compactRoute(route, routeOptions, options)
+    if (compacted) { return compacted }
   }
 
   const resultRoutes: LocalizableRoute[] = []
@@ -167,7 +168,7 @@ export type RouteContext = {
     route: LocalizableRoute,
     routeOptions: ComputedRouteOptions,
     params: LocalizeRouteParams,
-  ) => LocalizableRoute[]
+  ) => LocalizableRoute[] | undefined
 }
 
 type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]

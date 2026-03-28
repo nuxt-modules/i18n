@@ -85,9 +85,20 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
    * Compact routes: merge all per-locale routes into a single `/:locale(en|fr)/path` route
    * for routes where all locales share the same path.
    */
-  if (config.compactRoutes && strategy !== 'no_prefix' && !config.differentDomains && !config.multiDomainLocales) {
+  if (
+    config.compactRoutes
+    && strategy !== 'no_prefix'
+    && !config.differentDomains
+    && !config.multiDomainLocales
+    && !config.includeUnprefixedFallback
+  ) {
     const defaultLocale = config.defaultLocale ?? ''
     ctx.compactRoute = (route, routeOptions, params) => {
+      // Skip compaction if the route already defines a :locale param to avoid collisions
+      if (route.path.includes(':locale')) {
+        return undefined
+      }
+
       const makeRegexRoute = (locales: readonly string[]): LocalizableRoute => {
         const localePattern = locales.join('|')
         const regexPrefix = `/:locale(${localePattern})`
@@ -99,10 +110,13 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
           path: ctx.handleTrailingSlash(regexPath, !!params.parent),
           meta: { ...(route.meta as Record<string, unknown> ?? {}), __i18nCompact: true },
         }
-        // Prefix aliases with the locale regex pattern so params match the parent route
+        // Prefix aliases with the locale regex pattern and normalize trailing slashes
         if (compacted.alias) {
           const aliases = Array.isArray(compacted.alias) ? compacted.alias : [compacted.alias]
-          compacted.alias = aliases.map(a => regexPrefix + (a.startsWith('/') ? a : '/' + a))
+          compacted.alias = aliases.map((a) => {
+            const aliasPath = regexPrefix + (a.startsWith('/') ? a : '/' + a)
+            return ctx.handleTrailingSlash(aliasPath, !!params.parent)
+          })
         }
         return compacted
       }

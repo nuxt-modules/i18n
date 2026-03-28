@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
     if (__I18N_COMPACT_ROUTES__) {
       const router = useRouter()
       for (const route of router.getRoutes()) {
-        if (route.meta?.__i18nCompact) {
+        if (route.meta?.__i18nCompact && route.meta.key == null) {
           route.meta.key = (r: { path: string }) => r.path
         }
       }

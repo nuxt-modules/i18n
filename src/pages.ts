@@ -277,7 +277,14 @@ export function createPureOptionsResolver(
   defaultLocale: string,
   customRoutes: NuxtI18nOptions['customRoutes'],
 ): RouteOptionsResolver {
-  return (route, localeCodes) => getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
+  const cache = new Map<string, ComputedRouteOptions | undefined>()
+  return (route, localeCodes) => {
+    const key = `${route.file ?? route.name ?? route.path}::${localeCodes.join(',')}`
+    if (cache.has(key)) { return cache.get(key) }
+    const resolved = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
+    cache.set(key, resolved)
+    return resolved
+  }
 }
 
 /**
