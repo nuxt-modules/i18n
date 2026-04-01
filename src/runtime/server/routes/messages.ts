@@ -1,6 +1,7 @@
 import { deepCopy } from '@intlify/shared'
 import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
 import { createError, defineEventHandler, getRouterParam } from 'h3'
+import type {} from '@intlify/h3'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
 import { getMergedMessages } from '../utils/messages'
 
