@@ -41,11 +41,8 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
     { name: 'defineI18nLocaleDetector', from: ctx.resolver.resolve('runtime/composables/server') },
   ])
 
-  const h3UtilsExports = await resolveModuleExportNames(resolveModule('@intlify/utils/h3'))
-  addServerImports([
-    { name: 'useTranslation', from: '@intlify/h3' },
-    ...h3UtilsExports.map(name => ({ name, from: '@intlify/utils/h3' })),
-  ])
+  const h3Exports = await resolveModuleExportNames(resolveModule('@intlify/h3'))
+  addServerImports(h3Exports.map(name => ({ name, from: '@intlify/h3' })))
 
   // add nitro plugin
   addServerPlugin(ctx.resolver.resolve('runtime/server/plugin'))
