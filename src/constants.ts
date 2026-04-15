@@ -28,7 +28,7 @@ export const DEFAULT_OPTIONS = {
     strictSeo: false,
     nitroContextDetection: true,
     httpCacheDuration: 10,
-    compactRoutes: true,
+    compactRoutes: false,
   },
   bundle: {
     compositionOnly: true,
