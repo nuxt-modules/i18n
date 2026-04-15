@@ -88,8 +88,23 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const localizedName = getLocalizedRouteName(route.name, locale)
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
+      // Remove stale locale param inherited from a compact route — per-locale routes don't use it
+      if (__I18N_COMPACT_ROUTES__ && route.params) {
+        delete (route.params as Record<string, unknown>).locale
+      }
+    } else if (__I18N_COMPACT_ROUTES__ && isSupportedLocale(locale) && router.hasRoute(route.name!)) {
+      // compact route: keep base name, inject locale as route param
+      // spread existing params (e.g. slug) to satisfy all required route params
+      const resolved = router.resolve({ name: route.name!, params: { ...(route.params as Record<string, unknown> || {}), locale } })
+      if (resolved.meta?.__i18nCompact) {
+        route.params = { ...(route.params || {}), locale }
+        return route
+      }
     }
 
+    // No per-locale or compact match: set localized name so router.resolve
+    // fails for unsupported locales (e.g. 'undefined'), matching per-locale behavior.
+    route.name = localizedName
     return route
   }
 
@@ -99,7 +114,28 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const baseName = getRouteBaseName(route)
 
     if (baseName) {
-      route.name = getLocalizedRouteName(baseName, locale)
+      // Try per-locale route first (e.g. about___en) — this handles the default locale
+      // in prefix_except_default where the unprefixed route exists alongside the compact one.
+      const localizedName = getLocalizedRouteName(baseName, locale)
+      if (router.hasRoute(localizedName)) {
+        route.name = localizedName
+        return route
+      }
+
+      if (__I18N_COMPACT_ROUTES__) {
+        // Fallback: compact route — keep base name with locale param
+        const resolved = router.resolve({ name: baseName, params: {} })
+        if (resolved.matched.some(r => r.meta?.__i18nCompact)) {
+          const compacted = route as RouteLikeWithName
+          compacted.name = baseName
+          compacted.params = { ...(compacted.params || {}), locale }
+          return compacted
+        }
+      }
+
+      // Set the localized route name — if the route doesn't exist (e.g. disabled routes),
+      // router.resolve will fail and localePath correctly returns empty.
+      route.name = localizedName
       return route
     }
 
@@ -188,8 +224,8 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
   const ctx = useNuxtI18nContext(nuxtApp)
   const oldLocale = ctx.getLocale()
 
-  // skip if locale is already set
-  if (locale === oldLocale && !ctx.initial) {
+  // skip if locale is already set and there is no pending locale change to a different locale
+  if (locale === oldLocale && !ctx.initial && (!ctx.vueI18n.__pendingLocale || ctx.vueI18n.__pendingLocale === locale)) {
     return locale
   }
 

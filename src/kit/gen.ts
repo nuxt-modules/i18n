@@ -112,6 +112,15 @@ export function localizeSingleRoute(
     return [route]
   }
 
+  // Compact eligible top-level routes into a single regex-prefixed route.
+  // Guards: only at the top level (no parent), not inside a default-tree pass.
+  if (ctx.compactRoute && !options.defaultTree && options.parent == null
+    && canCompactRoute(routeOptions, options.locales)
+    && canCompactChildren(route.children, options.locales, ctx)) {
+    const compacted = ctx.compactRoute(route, routeOptions, options)
+    if (compacted) { return compacted }
+  }
+
   const resultRoutes: LocalizableRoute[] = []
   for (const locale of routeOptions.locales) {
     // use custom path if found
@@ -154,6 +163,12 @@ export type RouteContext = {
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
   localizers: { enabled: (data: LocalizerData) => boolean, localizer: LocalizerFn }[]
+  /** When set, eligible routes are compacted into a single regex-prefixed route instead of per-locale duplicates. */
+  compactRoute?: (
+    route: LocalizableRoute,
+    routeOptions: ComputedRouteOptions,
+    params: LocalizeRouteParams,
+  ) => LocalizableRoute[] | undefined
 }
 
 type LocalizerFn = (data: LocalizerData) => LocalizableRoute[]
@@ -212,4 +227,36 @@ export function createRouteContext(opts: {
   })
 
   return ctx
+}
+
+/**
+ * Check whether a route can be compacted into a single regex route.
+ * A route is eligible when all provided locales are enabled and no per-locale custom paths are defined.
+ */
+export function canCompactRoute(
+  routeOptions: ComputedRouteOptions | undefined,
+  allLocales: readonly string[],
+): boolean {
+  if (!routeOptions) { return false }
+  if (routeOptions.locales.length !== allLocales.length) { return false }
+  return Object.keys(routeOptions.paths).length === 0
+}
+
+/**
+ * Recursively check that all child routes are also eligible for compaction.
+ * A parent with compact-eligible options but a child with per-locale custom paths
+ * cannot be compacted since children of the compact route would miss the custom paths.
+ */
+function canCompactChildren(
+  children: LocalizableRoute[] | undefined,
+  allLocales: readonly string[],
+  ctx: RouteContext,
+): boolean {
+  if (!children?.length) { return true }
+  for (const child of children) {
+    const childOptions = ctx.optionsResolver(child, allLocales as string[])
+    if (!canCompactRoute(childOptions, allLocales)) { return false }
+    if (!canCompactChildren(child.children, allLocales, ctx)) { return false }
+  }
+  return true
 }

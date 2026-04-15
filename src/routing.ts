@@ -62,6 +62,7 @@ type SetupLocalizeRoutesOptions = {
   defaultLocaleRouteNameSuffix: string
   defaultLocale?: string
   optionsResolver?: RouteOptionsResolver
+  compactRoutes?: boolean
 }
 
 /**
@@ -78,10 +79,82 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
   })
 
+  const strategy = config.strategy ?? 'prefix_and_default'
+
+  /**
+   * Compact routes: merge all per-locale routes into a single `/:locale(en|fr)/path` route
+   * for routes where all locales share the same path.
+   */
+  if (
+    config.compactRoutes
+    && strategy !== 'no_prefix'
+    && !config.differentDomains
+    && !config.multiDomainLocales
+    && !config.includeUnprefixedFallback
+  ) {
+    const defaultLocale = config.defaultLocale ?? ''
+    ctx.compactRoute = (route, routeOptions, params) => {
+      // Skip compaction if the route already defines a :locale param to avoid collisions
+      if (route.path.includes(':locale')) {
+        return undefined
+      }
+
+      const makeRegexRoute = (locales: readonly string[]): LocalizableRoute => {
+        const localePattern = locales.join('|')
+        const regexPrefix = `/:locale(${localePattern})`
+        const regexPath = route.path === '/'
+          ? regexPrefix
+          : regexPrefix + route.path
+        const compacted: LocalizableRoute = {
+          ...route,
+          path: ctx.handleTrailingSlash(regexPath, !!params.parent),
+          meta: { ...(route.meta as Record<string, unknown> ?? {}), __i18nCompact: true },
+        }
+        // Prefix aliases with the locale regex pattern and normalize trailing slashes
+        if (compacted.alias) {
+          const aliases = Array.isArray(compacted.alias) ? compacted.alias : [compacted.alias]
+          compacted.alias = aliases.map((a) => {
+            const aliasPath = regexPrefix + (a.startsWith('/') ? a : '/' + a)
+            return ctx.handleTrailingSlash(aliasPath, !!params.parent)
+          })
+        }
+        return compacted
+      }
+
+      if (strategy === 'prefix_except_default' && defaultLocale) {
+        const result: LocalizableRoute[] = []
+        // Unprefixed route for default locale (name: about___en)
+        const unprefixed: LocalizableRoute = { ...route }
+        unprefixed.name &&= ctx.localizeRouteName(unprefixed, defaultLocale, false)
+        // Localize children for the default locale so they get ___en suffixes
+        unprefixed.children &&= ctx.localizeChildren(route, unprefixed, defaultLocale, params)
+        result.push(unprefixed)
+        // Regex route for non-default locales (keeps base name)
+        const nonDefault = routeOptions.locales.filter(l => !ctx.isDefaultLocale(l))
+        if (nonDefault.length > 0) {
+          result.push(makeRegexRoute(nonDefault))
+        }
+        return result
+      }
+
+      if (strategy === 'prefix_and_default' && defaultLocale) {
+        // Default tree unprefixed route (name: about___en___default)
+        const defaultTree: LocalizableRoute = { ...route }
+        defaultTree.name &&= ctx.localizeRouteName(defaultTree, defaultLocale, true)
+        // Localize children for the default locale so they get proper suffixes
+        defaultTree.children &&= ctx.localizeChildren(route, defaultTree, defaultLocale, { ...params, defaultTree: true })
+        // Regex route for all locales (keeps base name)
+        return [defaultTree, makeRegexRoute(routeOptions.locales)]
+      }
+
+      // prefix strategy: single regex route for all locales (keeps base name)
+      return [makeRegexRoute(routeOptions.locales)]
+    }
+  }
+
   /**
    * Default tree for prefix_and_default strategy
    */
-  const strategy = config.strategy ?? 'prefix_and_default'
   if (strategy === 'prefix_and_default') {
     // unshift to preserve test snapshots
     ctx.localizers.unshift({

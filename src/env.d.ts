@@ -31,3 +31,5 @@ declare let __I18N_STRICT_SEO__: boolean
 declare let __I18N_SERVER_REDIRECT__: boolean
 /** Includes hashed deployment timestamp */
 declare let __I18N_SERVER_ROUTE__: string
+/** Whether compact routes are enabled */
+declare let __I18N_COMPACT_ROUTES__: boolean
