@@ -12,6 +12,10 @@ export default defineNuxtConfig({
   // SEO
   site: { name: 'Nuxt I18n', url: "https://i18n.nuxtjs.org" },
 
+  image: {
+    domains: ["raw.githubusercontent.com"],
+  },
+
   nitro: {
     prerender: {
       crawlLinks: true,
