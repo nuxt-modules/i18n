@@ -1,6 +1,6 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { useNuxtI18nContext } from '../context'
-import { detectLocale } from '../utils'
+import { detectLocale, loadAndSetLocale, navigate } from '../utils'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:ssg-detect',
@@ -17,8 +17,10 @@ export default defineNuxtPlugin({
     // NOTE: avoid hydration mismatch for SSG mode
     nuxt.hook('app:mounted', async () => {
       const detected = detectLocale(nuxt, nuxt.$router.currentRoute.value)
-      await nuxt.runWithContext(() => nuxt.$i18n.setLocale(detected))
       ctx.initial = false
+      const locale = await nuxt.runWithContext(() => loadAndSetLocale(nuxt, detected))
+      ctx.setCookieLocale(locale)
+      await nuxt.runWithContext(() => navigate(nuxt, nuxt.$router.currentRoute.value, locale))
     })
   },
 })
