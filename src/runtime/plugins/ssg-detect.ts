@@ -19,6 +19,8 @@ export default defineNuxtPlugin({
       const detected = detectLocale(nuxt, nuxt.$router.currentRoute.value)
       ctx.initial = false
       const locale = await nuxt.runWithContext(() => loadAndSetLocale(nuxt, detected))
+      // `loadAndSetLocale` can short-circuit when the detected locale already matches the current locale.
+      // Keep the cookie in sync for that first-visit SSG case as well.
       ctx.setCookieLocale(locale)
       await nuxt.runWithContext(() => navigate(nuxt, nuxt.$router.currentRoute.value, locale))
     })

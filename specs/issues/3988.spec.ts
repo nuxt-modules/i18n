@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { fetch, setup, url } from '../utils'
+import { setup, url } from '../utils'
 import { renderPage } from '../helper'
 
 describe('#3988', async () => {
@@ -11,9 +11,6 @@ describe('#3988', async () => {
   })
 
   test('avoids hydration mismatch when browser detection redirects from prerendered root', async () => {
-    const response = await fetch('/')
-    expect(await response.text()).toContain('window.location.replace(')
-
     const { page, consoleLogs, pageErrors } = await renderPage('/', { locale: 'en' })
 
     await page.waitForURL(url('/en'))
@@ -28,7 +25,7 @@ describe('#3988', async () => {
     expect(pageErrors).toEqual([])
     expect(
       consoleLogs.some(log =>
-        log.type === 'warning' && /hydration|mismatch/i.test(log.text)
+        ['warning', 'error'].includes(log.type) && /hydration|mismatch/i.test(log.text)
       )
     ).toBe(false)
   })

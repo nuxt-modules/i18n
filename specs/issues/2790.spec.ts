@@ -32,10 +32,15 @@ async function resolvePublicAsset(publicDir: string, pathname: string) {
     }
   } catch {}
 
+  if (extname(pathname)) {
+    return null
+  }
+
   return join(publicDir, '200.html')
 }
 
 describe('#2790', async () => {
+  // Reuse the `#3988` fixture so this spec only needs to override the routing strategy to `prefix`.
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/issues/3988`, import.meta.url)),
     browser: true,
@@ -54,12 +59,19 @@ describe('#2790', async () => {
       try {
         const pathname = new URL(request.url || '/', 'http://127.0.0.1').pathname
         const filePath = await resolvePublicAsset(publicDir, pathname)
+        if (filePath == null) {
+          response.statusCode = 404
+          response.end()
+          return
+        }
+
         const contents = await readFile(filePath)
 
         response.statusCode = 200
         response.setHeader('content-type', contentTypes[extname(filePath)] || 'application/octet-stream')
         response.end(contents)
-      } catch {
+      } catch (error) {
+        console.error(error)
         response.statusCode = 500
         response.end()
       }
@@ -98,7 +110,7 @@ describe('#2790', async () => {
       expect(pageErrors).toEqual([])
       expect(
         consoleLogs.some(log =>
-          log.type === 'warning' && /hydration|mismatch/i.test(log.text)
+          ['warning', 'error'].includes(log.type) && /hydration|mismatch/i.test(log.text)
         )
       ).toBe(false)
     } finally {
