@@ -18,7 +18,7 @@
     "@iconify-json/lucide": "^1.2.102",
     "@iconify-json/simple-icons": "^1.2.78",
     "@iconify-json/vscode-icons": "^1.2.45",
-    "@nuxt/scripts": "^0.13.2",
+    "@nuxt/scripts": "^0.13.4",
     "better-sqlite3": "^12.9.0",
     "nuxt": "^4.4.2",
     "nuxt-llms": "0.2.0"
