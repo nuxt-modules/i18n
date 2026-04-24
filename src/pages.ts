@@ -242,11 +242,19 @@ export {}`
 function analyzePagePath(pagePath: string, parents = 0) {
   const { dir, name } = parsePath(pagePath)
 
-  if (parents > 0 || dir !== '/') {
-    return `${dir.slice(1, dir.length)}/${name}`
-  }
+  const analyzed = (parents > 0 || dir !== '/')
+    ? `${dir.slice(1, dir.length)}/${name}`
+    : name
 
-  return name
+  return stripRouteGroups(analyzed)
+}
+
+/**
+ * Strip Nuxt route-group segments (`(name)`) from a path. Route groups are
+ * directory names used to organize files without contributing to the URL.
+ */
+function stripRouteGroups(path: string): string {
+  return path.split('/').filter(s => !/^\([^)]+\)$/.test(s)).join('/')
 }
 
 /**
