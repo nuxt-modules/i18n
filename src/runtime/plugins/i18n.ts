@@ -43,7 +43,7 @@ export default defineNuxtPlugin({
       setupMultiDomainLocales(optionsI18n.defaultLocale)
     }
 
-    prerenderRoutes(localeCodes.map(locale => `${__I18N_SERVER_ROUTE__}/${locale}/messages.json`))
+    prerenderRoutes(localeCodes.map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`))
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
