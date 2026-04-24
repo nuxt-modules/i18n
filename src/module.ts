@@ -76,6 +76,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       '@intlify/core-base',
       '@intlify/utils',
       '@intlify/utils/h3',
+      '@intlify/h3',
       '@intlify/message-compiler',
     ]
 

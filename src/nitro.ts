@@ -44,7 +44,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const h3UtilsExports = await resolveModuleExportNames(resolveModule('@intlify/utils/h3'))
   addServerImports([
     { name: 'useTranslation', from: '@intlify/h3' },
-    ...h3UtilsExports.map(name => ({ name, from: '@intlify/utils/h3' })),
+    ...h3UtilsExports.map(name => ({ name, from: '@intlify/h3' })),
   ])
 
   // add nitro plugin
