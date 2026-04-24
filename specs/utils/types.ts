@@ -4,6 +4,10 @@ import type { Browser, LaunchOptions } from 'playwright-core'
 import type { NuxtI18nOptions } from '../../src/types'
 import type { Suite, File } from 'vitest'
 
+export type TestServerProcess =
+  | ReturnType<typeof exec>
+  | { kill: () => void | Promise<void> }
+
 export interface TestOptions {
   testDir: string
   fixture: string
@@ -32,7 +36,7 @@ export interface TestContext {
   nuxt?: Nuxt
   browser?: Browser
   url?: string
-  serverProcess?: ReturnType<typeof exec>
+  serverProcess?: TestServerProcess
   // eslint-disable-next-line @typescript-eslint/ban-types
   mockFn?: Function
   /**
@@ -45,7 +49,7 @@ export interface TestContext {
 export interface TestHooks {
   beforeEach: () => void
   afterEach: () => void
-  afterAll: () => void
+  afterAll: () => void | Promise<void>
   setup: (testContext: VitestContext) => void
   ctx: TestContext
 }
