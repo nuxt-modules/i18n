@@ -7,7 +7,7 @@ import { assign, isArray, isString } from '@intlify/shared'
 import { EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
 
-import type { LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
+import type { FileMeta, LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
@@ -165,6 +165,33 @@ export const mergeConfigLocales = (configs: LocaleConfig[]) => {
 
 function getHash(text: BinaryLike): string {
   return createHash('sha256').update(text).digest('hex').substring(0, 8)
+}
+
+/**
+ * Compute a content-based hash for cache-busting message server routes.
+ * Why: vue-i18n config files run at runtime and may declare `fallbackLocale`,
+ * so we can't statically resolve fallback chains. To stay correct under
+ * fallbacks, every locale shares one hash covering all locale + config
+ * files — any content change busts every endpoint.
+ */
+export function computeLocaleHashes(localeInfo: LocaleInfo[], vueI18nConfigPaths: Omit<FileMeta, 'cache'>[]): Record<string, string> {
+  const hasher = createHash('sha256')
+  const paths = [
+    ...localeInfo.flatMap(l => l.meta.map(m => m.path)),
+    ...vueI18nConfigPaths.map(c => c.path),
+  ].sort()
+
+  for (const p of paths) {
+    hasher.update(readFileSync(p))
+  }
+
+  const digest = hasher.digest('hex').substring(0, 8)
+  const hashes: Record<string, string> = {}
+  for (const locale of localeInfo) {
+    hashes[locale.code] = digest
+  }
+
+  return hashes
 }
 
 export function getLayerI18n(configLayer: NuxtConfigLayer) {
