@@ -24,7 +24,7 @@ function createTest(options: Partial<TestOptions>): TestHooks {
   const afterAll = async () => {
     if (ctx.serverProcess) {
       setTestContext(ctx)
-      stopServer()
+      await stopServer()
       setTestContext(undefined)
     }
 
