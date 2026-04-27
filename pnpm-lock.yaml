@@ -160,21 +160,21 @@ importers:
   docs:
     dependencies:
       docus:
-        specifier: ^5.9.0
-        version: 5.9.0(83129e4d6fef2c89f50659b6d5f3c94c)
+        specifier: ^5.10.0
+        version: 5.10.0(83129e4d6fef2c89f50659b6d5f3c94c)
     devDependencies:
       '@iconify-json/logos':
         specifier: ^1.2.11
         version: 1.2.11
       '@iconify-json/lucide':
-        specifier: ^1.2.102
-        version: 1.2.102
+        specifier: ^1.2.104
+        version: 1.2.104
       '@iconify-json/simple-icons':
-        specifier: ^1.2.78
-        version: 1.2.78
+        specifier: ^1.2.80
+        version: 1.2.80
       '@iconify-json/vscode-icons':
-        specifier: ^1.2.45
-        version: 1.2.45
+        specifier: ^1.2.46
+        version: 1.2.46
       '@nuxt/scripts':
         specifier: ^0.13.2
         version: 0.13.2(@googlemaps/markerclusterer@2.6.2)(@unhead/vue@2.1.12(vue@3.5.30(typescript@5.9.3)))(db0@0.3.4(better-sqlite3@12.9.0))(ioredis@5.10.0)(magicast@0.5.2)(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))
@@ -1049,14 +1049,14 @@ packages:
   '@iconify-json/logos@1.2.11':
     resolution: {integrity: sha512-fOo4pGEatuyuCFNL+cwquYMa2Im0oJHRHV7lt/Qqs5Ode/lPImHCQcfTtPzZj7qYMPb/h8YHN3TG54uEowrjNQ==}
 
-  '@iconify-json/lucide@1.2.102':
-    resolution: {integrity: sha512-Dm3EEqu5NrmzyDMB2U1+8yroEj2/dB9V4KlH0m/szwwF/ofSf0cPaGTZqkd1aExXjCor+vU53ttRMCGuXf+/cg==}
+  '@iconify-json/lucide@1.2.104':
+    resolution: {integrity: sha512-Vh4VPA/UNFhSPzEdDnSuOPA1xO6b/kI1w4SLBEiKnsFYPWimq2tVDynMgKnwddz6iZpuZfZU4PXR6kn0hJayKw==}
 
-  '@iconify-json/simple-icons@1.2.78':
-    resolution: {integrity: sha512-I3lkNp0Qu7q2iZWkdcf/I2hqGhzK6qxdILh9T7XqowQrnpmG/BayDsiCf6PktDoWlW0U971xA5g+panm+NFrfQ==}
+  '@iconify-json/simple-icons@1.2.80':
+    resolution: {integrity: sha512-iglncJJ6X/dVuzFDU32MrHwwo4RBwivGf108dgyYg+HKS78ifx0h7sTenpDZMVT+UhdS6CSgZcvY/SvRXlIEUg==}
 
-  '@iconify-json/vscode-icons@1.2.45':
-    resolution: {integrity: sha512-ow+ueibMIq79ueM1kv6cOWgHx8jfh1XJQi2RrqMHb4HLbvIBlxpy5PCMvOJXlA68R6fBAHpWQeh6uWx7VKEVsA==}
+  '@iconify-json/vscode-icons@1.2.46':
+    resolution: {integrity: sha512-ZuLQscdXzGfUy1BtpNE74rNRjhNkcT/BLUbclQpY7aNLS2ByBuF9RzSjJQ1c0nqRyyInBFWmEL8DbTufw6w5Vw==}
 
   '@iconify/collections@1.0.660':
     resolution: {integrity: sha512-7SG+ZacgqAhZdjSv4+eyFtJ+amI2PzIrg6NrZ2T5qdRpWOBv0Px1SB0C+4CsGxHenhhWjGMfSHG1vzkPgF0PyA==}
@@ -4482,8 +4482,8 @@ packages:
     resolution: {integrity: sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==}
     engines: {node: '>=0.3.1'}
 
-  docus@5.9.0:
-    resolution: {integrity: sha512-LyG29cwMhsdMd8q17wjzLjDbTG4u4cheuc87OlZTfNMEMEHIls4jgmg8h3fFXiMdrbannoZDIWGDGbZD5EEg0g==}
+  docus@5.10.0:
+    resolution: {integrity: sha512-FF6fp4y9K3w7yoQtC9XvPhBW5U3+7rtHj4NjxuTVVD+MZHP1Nz7Ticuw0Ml2XcfkO1A7dG9JCifuRHS7EEY+4Q==}
     peerDependencies:
       better-sqlite3: 12.x
       nuxt: 4.x
@@ -8236,7 +8236,7 @@ snapshots:
   '@babel/template@7.28.6':
     dependencies:
       '@babel/code-frame': 7.29.0
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.2
       '@babel/types': 7.29.0
 
   '@babel/traverse@7.29.0':
@@ -8244,7 +8244,7 @@ snapshots:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.1
       '@babel/helper-globals': 7.28.0
-      '@babel/parser': 7.29.0
+      '@babel/parser': 7.29.2
       '@babel/template': 7.28.6
       '@babel/types': 7.29.0
       debug: 4.4.3
@@ -8610,15 +8610,15 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/lucide@1.2.102':
+  '@iconify-json/lucide@1.2.104':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/simple-icons@1.2.78':
+  '@iconify-json/simple-icons@1.2.80':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/vscode-icons@1.2.45':
+  '@iconify-json/vscode-icons@1.2.46':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -8724,7 +8724,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.34.5':
     dependencies:
-      '@emnapi/runtime': 1.9.0
+      '@emnapi/runtime': 1.9.2
     optional: true
 
   '@img/sharp-win32-arm64@0.34.5':
@@ -8916,8 +8916,8 @@ snapshots:
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
-      '@emnapi/core': 1.9.0
-      '@emnapi/runtime': 1.9.0
+      '@emnapi/core': 1.9.2
+      '@emnapi/runtime': 1.9.2
       '@tybys/wasm-util': 0.10.1
     optional: true
 
@@ -8997,7 +8997,7 @@ snapshots:
       chokidar: 5.0.0
       consola: 3.4.2
       db0: 0.3.4(better-sqlite3@12.9.0)
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       git-url-parse: 16.1.0
       hookable: 5.5.3
@@ -9025,7 +9025,7 @@ snapshots:
       slugify: 1.6.6
       socket.io-client: 4.8.3
       std-env: 3.10.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ufo: 1.6.3
       unctx: 2.5.0
       unified: 11.0.5
@@ -9160,14 +9160,14 @@ snapshots:
       '@nuxt/devtools-kit': 3.2.3(magicast@0.5.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       fontless: 0.2.1(db0@0.3.4(better-sqlite3@12.9.0))(ioredis@5.10.0)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))
-      h3: 1.15.6
+      h3: 1.15.11
       magic-regexp: 0.10.0
       ofetch: 1.5.1
       pathe: 2.0.3
       sirv: 3.0.2
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ufo: 1.6.3
       unifont: 0.7.4
       unplugin: 3.0.0
@@ -9208,9 +9208,9 @@ snapshots:
       mlly: 1.8.2
       ohash: 2.0.11
       pathe: 2.0.3
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       std-env: 3.10.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
     transitivePeerDependencies:
       - magicast
       - vite
@@ -9220,8 +9220,8 @@ snapshots:
     dependencies:
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       consola: 3.4.2
-      defu: 6.1.4
-      h3: 1.15.6
+      defu: 6.1.7
+      h3: 1.15.11
       image-meta: 0.2.2
       knitwork: 1.3.0
       ohash: 2.0.11
@@ -9256,7 +9256,7 @@ snapshots:
     dependencies:
       c12: 3.3.3(magicast@0.5.2)
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       errx: 0.1.0
       exsolve: 1.0.8
@@ -9271,7 +9271,7 @@ snapshots:
       rc9: 3.0.0
       scule: 1.3.0
       semver: 7.7.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ufo: 1.6.3
       unctx: 2.5.0
       untyped: 2.0.0
@@ -9565,7 +9565,7 @@ snapshots:
       '@vueuse/shared': 14.2.1(vue@3.5.30(typescript@5.9.3))
       colortranslator: 5.0.0
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       embla-carousel-auto-height: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-auto-scroll: 8.6.0(embla-carousel@8.6.0)
       embla-carousel-autoplay: 8.6.0(embla-carousel@8.6.0)
@@ -9586,7 +9586,7 @@ snapshots:
       tailwind-merge: 3.5.0
       tailwind-variants: 3.2.2(tailwind-merge@3.5.0)(tailwindcss@4.2.2)
       tailwindcss: 4.2.2
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       typescript: 5.9.3
       ufo: 1.6.3
       unplugin: 3.0.0
@@ -9775,7 +9775,7 @@ snapshots:
       '@modelcontextprotocol/sdk': 1.29.0(zod@4.3.6)
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       h3: 1.15.11
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       zod: 4.3.6
     transitivePeerDependencies:
       - '@cfworker/json-schema'
@@ -9791,10 +9791,10 @@ snapshots:
       '@shikijs/transformers': 3.23.0
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
-      '@vue/compiler-core': 3.5.30
+      '@vue/compiler-core': 3.5.32
       consola: 3.4.2
       debug: 4.4.3
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       detab: 3.0.2
       github-slugger: 2.0.0
@@ -9844,7 +9844,7 @@ snapshots:
       '@vue/compiler-core': 3.5.32
       consola: 3.4.2
       debug: 4.4.3
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       detab: 3.0.2
       github-slugger: 2.0.0
@@ -11483,8 +11483,8 @@ snapshots:
       '@babel/core': 7.29.0
       '@babel/helper-module-imports': 7.28.6
       '@babel/helper-plugin-utils': 7.28.6
-      '@babel/parser': 7.29.0
-      '@vue/compiler-sfc': 3.5.30
+      '@babel/parser': 7.29.2
+      '@vue/compiler-sfc': 3.5.32
     transitivePeerDependencies:
       - supports-color
 
@@ -11572,12 +11572,12 @@ snapshots:
   '@vue/language-core@3.2.5':
     dependencies:
       '@volar/language-core': 2.4.28
-      '@vue/compiler-dom': 3.5.30
-      '@vue/shared': 3.5.30
+      '@vue/compiler-dom': 3.5.32
+      '@vue/shared': 3.5.32
       alien-signals: 3.1.2
       muggle-string: 0.4.1
       path-browserify: 1.0.1
-      picomatch: 4.0.3
+      picomatch: 4.0.4
 
   '@vue/reactivity@3.5.30':
     dependencies:
@@ -12310,14 +12310,14 @@ snapshots:
 
   diff@8.0.3: {}
 
-  docus@5.9.0(83129e4d6fef2c89f50659b6d5f3c94c):
+  docus@5.10.0(83129e4d6fef2c89f50659b6d5f3c94c):
     dependencies:
       '@ai-sdk/gateway': 3.0.98(zod@4.3.6)
       '@ai-sdk/mcp': 1.0.36(zod@4.3.6)
       '@ai-sdk/vue': 3.0.141(vue@3.5.30(typescript@5.9.3))(zod@4.3.6)
-      '@iconify-json/lucide': 1.2.102
-      '@iconify-json/simple-icons': 1.2.78
-      '@iconify-json/vscode-icons': 1.2.45
+      '@iconify-json/lucide': 1.2.104
+      '@iconify-json/simple-icons': 1.2.80
+      '@iconify-json/vscode-icons': 1.2.46
       '@nuxt/content': 3.12.0(better-sqlite3@12.9.0)(magicast@0.5.2)(valibot@1.2.0(typescript@5.9.3))
       '@nuxt/image': 2.0.0(db0@0.3.4(better-sqlite3@12.9.0))(ioredis@5.10.0)(magicast@0.5.2)
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
@@ -12334,7 +12334,7 @@ snapshots:
       '@vueuse/core': 14.2.1(vue@3.5.30(typescript@5.9.3))
       ai: 6.0.141(zod@4.3.6)
       better-sqlite3: 12.9.0
-      defu: 6.1.4
+      defu: 6.1.7
       exsolve: 1.0.8
       git-url-parse: 16.1.0
       motion-v: 2.2.1(@vueuse/core@14.2.1(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3))
@@ -13047,7 +13047,7 @@ snapshots:
     dependencies:
       consola: 3.4.2
       css-tree: 3.2.1
-      defu: 6.1.4
+      defu: 6.1.7
       esbuild: 0.27.4
       fontaine: 0.8.0
       jiti: 2.6.1
@@ -13151,7 +13151,7 @@ snapshots:
     dependencies:
       citty: 0.1.6
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       node-fetch-native: 1.6.7
       nypm: 0.6.5
       pathe: 2.0.3
@@ -13501,10 +13501,10 @@ snapshots:
       '@fastify/accept-negotiator': 2.0.1
       citty: 0.1.6
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       etag: 1.8.1
-      h3: 1.15.6
+      h3: 1.15.11
       image-meta: 0.2.2
       listhen: 1.9.0
       ofetch: 1.5.1
@@ -13685,7 +13685,7 @@ snapshots:
       lodash: 4.17.23
       minimist: 1.2.8
       prettier: 3.8.1
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
 
   json-schema-traverse@0.4.1: {}
 
@@ -14519,7 +14519,7 @@ snapshots:
     dependencies:
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       citty: 0.1.6
-      mlly: 1.8.1
+      mlly: 1.8.2
       ohash: 2.0.11
       scule: 1.3.0
       typescript: 5.9.3
@@ -15613,12 +15613,12 @@ snapshots:
 
   rc9@2.1.2:
     dependencies:
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
 
   rc9@3.0.0:
     dependencies:
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
 
   rc@1.2.8:
@@ -15748,7 +15748,7 @@ snapshots:
       '@vueuse/core': 14.2.1(vue@3.5.30(typescript@5.9.3))
       '@vueuse/shared': 14.2.1(vue@3.5.30(typescript@5.9.3))
       aria-hidden: 1.2.6
-      defu: 6.1.4
+      defu: 6.1.7
       ohash: 2.0.11
       vue: 3.5.30(typescript@5.9.3)
     transitivePeerDependencies:
@@ -16614,7 +16614,7 @@ snapshots:
     dependencies:
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       unimport: 5.7.0
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
@@ -16634,8 +16634,8 @@ snapshots:
       magic-string: 0.30.21
       mlly: 1.8.2
       obug: 2.1.1
-      picomatch: 4.0.3
-      tinyglobby: 0.2.15
+      picomatch: 4.0.4
+      tinyglobby: 0.2.16
       unplugin: 3.0.0
       unplugin-utils: 0.3.1
       vue: 3.5.30(typescript@5.9.3)
