@@ -1,0 +1,2 @@
+[images]
+  remote_images = ["https://raw.githubusercontent.com/.*"]
