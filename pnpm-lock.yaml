@@ -159,6 +159,9 @@ importers:
 
   docs:
     dependencies:
+      '@takumi-rs/core':
+        specifier: ^1.1.2
+        version: 1.1.2
       docus:
         specifier: ^5.9.0
         version: 5.9.0(83129e4d6fef2c89f50659b6d5f3c94c)
@@ -175,6 +178,9 @@ importers:
       '@iconify-json/vscode-icons':
         specifier: ^1.2.45
         version: 1.2.45
+      '@nuxt/fonts':
+        specifier: 0.14.0
+        version: 0.14.0(db0@0.3.4(better-sqlite3@12.9.0))(ioredis@5.10.0)(magicast@0.5.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))
       '@nuxt/scripts':
         specifier: ^0.13.2
         version: 0.13.2(@googlemaps/markerclusterer@2.6.2)(@unhead/vue@2.1.12(vue@3.5.30(typescript@5.9.3)))(db0@0.3.4(better-sqlite3@12.9.0))(ioredis@5.10.0)(magicast@0.5.2)(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))
@@ -3053,8 +3059,20 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@takumi-rs/core-darwin-arm64@1.1.2':
+    resolution: {integrity: sha512-CLPzikYAND2xFm0Lg5HKImCOnl+Sue4F/WIcm1Z2ykL7h2r9rWDBzcFqGhAEFj9onMJH6c60Mph8kDa1jdj2rQ==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
   '@takumi-rs/core-darwin-x64@0.73.1':
     resolution: {integrity: sha512-GUggPolYTa2bAuWu3aqZZCSzCo+ZGFsLKzW+pkc6D8n+PrWCko25vbMpkNhG7Cz5a7UcuWUaTba8rBejNKF/HQ==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@takumi-rs/core-darwin-x64@1.1.2':
+    resolution: {integrity: sha512-eH351x+BJOMdLQgUoVKEIfTQbBjR6Dv7rzTLZUdWwbbwjEe38geCNsxQunHQ96nsB7M+0sGc8aJjOkd+0qoK3g==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [x64]
     os: [darwin]
@@ -3065,8 +3083,20 @@ packages:
     cpu: [arm64]
     os: [linux]
 
+  '@takumi-rs/core-linux-arm64-gnu@1.1.2':
+    resolution: {integrity: sha512-2cuSnKWAfQjQwS+7aprz0LRkztPVsGqWGTto0TydVI81z7sNyC4kZWoJMTpkNb3439HB03UBStQVacgUeVOL+w==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
   '@takumi-rs/core-linux-arm64-musl@0.73.1':
     resolution: {integrity: sha512-idzxH2JcUo+yD2t7OexbPB5DN+1x88GcpDKoJVvwc2nOxr7KQGdGqALVBOe5i2mNnkUSIr/ZeBz7yBII5bA6ag==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@takumi-rs/core-linux-arm64-musl@1.1.2':
+    resolution: {integrity: sha512-7OIdvVy6lbr49LIBe96uvlOg4Awmye5w+DgL4d0rRi1Zv7bmY23ciBCGaM+7jjkZgcThGrlZKz1Ecopx56pPqA==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [arm64]
     os: [linux]
@@ -3077,8 +3107,20 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@takumi-rs/core-linux-x64-gnu@1.1.2':
+    resolution: {integrity: sha512-IXEhQjGSGye+kwawDad00kN2cLpj1rPF5u0K4KsANvWxa/dho32Nnw+RX8cCtPGiuvEKhtENxtdc7pVSx1E84g==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [linux]
+
   '@takumi-rs/core-linux-x64-musl@0.73.1':
     resolution: {integrity: sha512-rHsvVVT+m4+zaIjJxp2dn8ibvjCtXRasByMii6st7zRwioQIibCAMq/Ik/uVcPFpeMBhyai6mGZe0NTWq23ZEA==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@takumi-rs/core-linux-x64-musl@1.1.2':
+    resolution: {integrity: sha512-Q2vuZCwQ/XmHwwbJxSKNNEKdWdhsvBMhTF8pyyGti5s44yx7W6+a0MkDdMRAkStzDhH6HeZlpknpHcUk4R4g8w==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [x64]
     os: [linux]
@@ -3089,8 +3131,20 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@takumi-rs/core-win32-arm64-msvc@1.1.2':
+    resolution: {integrity: sha512-CKpslxYCltih/lL+h7xkVzsfIZtDcXp3WGk01fudgx82Ic87b/jjRMX5KE4f/exkgrKxshRF4yCQGGeQ3vIhiw==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
   '@takumi-rs/core-win32-x64-msvc@0.73.1':
     resolution: {integrity: sha512-/vluH32+cST6CBM1n1XUTjnRCkfDmQxqRrM1v8Ccpv1aKHrYdh2BRz47oY2hFiEcO4jyP36lmhPvDUS8odVaFw==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@takumi-rs/core-win32-x64-msvc@1.1.2':
+    resolution: {integrity: sha512-c+n2vPpDscMuTHZ29eJp8did5tlJ/KKBKicc51D6AdkA5jhr7MLeryzIKe3ob59iQttWYd/1j4+tUwoO6yEusg==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
     cpu: [x64]
     os: [win32]
@@ -3099,8 +3153,23 @@ packages:
     resolution: {integrity: sha512-+8GNu0O9lDNBjXx2uM3/15zIyTCt+vI3Ltmkudacybnvl6Kx2TMokRWD9/bymg19ZVcGbfOC1FsFIGQdVePCvQ==}
     engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
 
+  '@takumi-rs/core@1.1.2':
+    resolution: {integrity: sha512-JI0kUis5MCPzOt2sCahBZLVJERpp1t1fXTRBaBbCGploUa/hqRA9HW6Nr+tccDM/C6wy9FDrJnI4SB56W0HfDA==}
+    engines: {node: '>= 12.22.0 < 13 || >= 14.17.0 < 15 || >= 15.12.0 < 16 || >= 16.0.0'}
+
   '@takumi-rs/helpers@0.73.1':
     resolution: {integrity: sha512-OONKM9+XtiRp7s2e3kwbnTyF9cYqk6L8d7Q2KG449OjphdlhuCZhVwmpqHI2nHEgL1TLC2LEHzxJHvfyAIdNBw==}
+
+  '@takumi-rs/helpers@1.1.2':
+    resolution: {integrity: sha512-Edvmk7UzPhlbUCYpIqeBBfq9h/lAeWAhtwIhJJ10vxv7qNWjgfIPakzNWeAYhFVj8KT5y47S3RLT3cKVniqI5g==}
+    peerDependencies:
+      react: ^19.2.5
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   '@tanstack/table-core@8.21.3':
     resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
@@ -9160,14 +9229,14 @@ snapshots:
       '@nuxt/devtools-kit': 3.2.3(magicast@0.5.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))
       '@nuxt/kit': 4.4.2(magicast@0.5.2)
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       fontless: 0.2.1(db0@0.3.4(better-sqlite3@12.9.0))(ioredis@5.10.0)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))
-      h3: 1.15.6
+      h3: 1.15.11
       magic-regexp: 0.10.0
       ofetch: 1.5.1
       pathe: 2.0.3
       sirv: 3.0.2
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ufo: 1.6.3
       unifont: 0.7.4
       unplugin: 3.0.0
@@ -9210,7 +9279,7 @@ snapshots:
       pathe: 2.0.3
       picomatch: 4.0.3
       std-env: 3.10.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
     transitivePeerDependencies:
       - magicast
       - vite
@@ -9256,7 +9325,7 @@ snapshots:
     dependencies:
       c12: 3.3.3(magicast@0.5.2)
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       errx: 0.1.0
       exsolve: 1.0.8
@@ -9271,7 +9340,7 @@ snapshots:
       rc9: 3.0.0
       scule: 1.3.0
       semver: 7.7.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ufo: 1.6.3
       unctx: 2.5.0
       untyped: 2.0.0
@@ -9794,7 +9863,7 @@ snapshots:
       '@vue/compiler-core': 3.5.30
       consola: 3.4.2
       debug: 4.4.3
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       detab: 3.0.2
       github-slugger: 2.0.0
@@ -10849,25 +10918,49 @@ snapshots:
   '@takumi-rs/core-darwin-arm64@0.73.1':
     optional: true
 
+  '@takumi-rs/core-darwin-arm64@1.1.2':
+    optional: true
+
   '@takumi-rs/core-darwin-x64@0.73.1':
+    optional: true
+
+  '@takumi-rs/core-darwin-x64@1.1.2':
     optional: true
 
   '@takumi-rs/core-linux-arm64-gnu@0.73.1':
     optional: true
 
+  '@takumi-rs/core-linux-arm64-gnu@1.1.2':
+    optional: true
+
   '@takumi-rs/core-linux-arm64-musl@0.73.1':
+    optional: true
+
+  '@takumi-rs/core-linux-arm64-musl@1.1.2':
     optional: true
 
   '@takumi-rs/core-linux-x64-gnu@0.73.1':
     optional: true
 
+  '@takumi-rs/core-linux-x64-gnu@1.1.2':
+    optional: true
+
   '@takumi-rs/core-linux-x64-musl@0.73.1':
+    optional: true
+
+  '@takumi-rs/core-linux-x64-musl@1.1.2':
     optional: true
 
   '@takumi-rs/core-win32-arm64-msvc@0.73.1':
     optional: true
 
+  '@takumi-rs/core-win32-arm64-msvc@1.1.2':
+    optional: true
+
   '@takumi-rs/core-win32-x64-msvc@0.73.1':
+    optional: true
+
+  '@takumi-rs/core-win32-x64-msvc@1.1.2':
     optional: true
 
   '@takumi-rs/core@0.73.1':
@@ -10883,7 +10976,25 @@ snapshots:
       '@takumi-rs/core-win32-arm64-msvc': 0.73.1
       '@takumi-rs/core-win32-x64-msvc': 0.73.1
 
+  '@takumi-rs/core@1.1.2':
+    dependencies:
+      '@takumi-rs/helpers': 1.1.2
+    optionalDependencies:
+      '@takumi-rs/core-darwin-arm64': 1.1.2
+      '@takumi-rs/core-darwin-x64': 1.1.2
+      '@takumi-rs/core-linux-arm64-gnu': 1.1.2
+      '@takumi-rs/core-linux-arm64-musl': 1.1.2
+      '@takumi-rs/core-linux-x64-gnu': 1.1.2
+      '@takumi-rs/core-linux-x64-musl': 1.1.2
+      '@takumi-rs/core-win32-arm64-msvc': 1.1.2
+      '@takumi-rs/core-win32-x64-msvc': 1.1.2
+    transitivePeerDependencies:
+      - react
+      - react-dom
+
   '@takumi-rs/helpers@0.73.1': {}
+
+  '@takumi-rs/helpers@1.1.2': {}
 
   '@tanstack/table-core@8.21.3': {}
 
@@ -11267,7 +11378,7 @@ snapshots:
       debug: 4.4.3
       minimatch: 10.2.4
       semver: 7.7.4
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -11577,7 +11688,7 @@ snapshots:
       alien-signals: 3.1.2
       muggle-string: 0.4.1
       path-browserify: 1.0.1
-      picomatch: 4.0.3
+      picomatch: 4.0.4
 
   '@vue/reactivity@3.5.30':
     dependencies:
@@ -13047,7 +13158,7 @@ snapshots:
     dependencies:
       consola: 3.4.2
       css-tree: 3.2.1
-      defu: 6.1.4
+      defu: 6.1.7
       esbuild: 0.27.4
       fontaine: 0.8.0
       jiti: 2.6.1
@@ -13151,7 +13262,7 @@ snapshots:
     dependencies:
       citty: 0.1.6
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       node-fetch-native: 1.6.7
       nypm: 0.6.5
       pathe: 2.0.3
@@ -13501,10 +13612,10 @@ snapshots:
       '@fastify/accept-negotiator': 2.0.1
       citty: 0.1.6
       consola: 3.4.2
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
       etag: 1.8.1
-      h3: 1.15.6
+      h3: 1.15.11
       image-meta: 0.2.2
       listhen: 1.9.0
       ofetch: 1.5.1
@@ -13685,7 +13796,7 @@ snapshots:
       lodash: 4.17.23
       minimist: 1.2.8
       prettier: 3.8.1
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
 
   json-schema-traverse@0.4.1: {}
 
@@ -13886,7 +13997,7 @@ snapshots:
     dependencies:
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      mlly: 1.8.1
+      mlly: 1.8.2
       regexp-tree: 0.1.27
       type-level-regexp: 0.1.17
       ufo: 1.6.3
@@ -15613,12 +15724,12 @@ snapshots:
 
   rc9@2.1.2:
     dependencies:
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
 
   rc9@3.0.0:
     dependencies:
-      defu: 6.1.4
+      defu: 6.1.7
       destr: 2.0.5
 
   rc@1.2.8:
@@ -15748,7 +15859,7 @@ snapshots:
       '@vueuse/core': 14.2.1(vue@3.5.30(typescript@5.9.3))
       '@vueuse/shared': 14.2.1(vue@3.5.30(typescript@5.9.3))
       aria-hidden: 1.2.6
-      defu: 6.1.4
+      defu: 6.1.7
       ohash: 2.0.11
       vue: 3.5.30(typescript@5.9.3)
     transitivePeerDependencies:
@@ -16635,7 +16746,7 @@ snapshots:
       mlly: 1.8.2
       obug: 2.1.1
       picomatch: 4.0.3
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       unplugin: 3.0.0
       unplugin-utils: 0.3.1
       vue: 3.5.30(typescript@5.9.3)
@@ -16652,7 +16763,7 @@ snapshots:
   unplugin@3.0.0:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       webpack-virtual-modules: 0.6.2
 
   unrouting@0.1.5:
@@ -16823,7 +16934,7 @@ snapshots:
       picocolors: 1.1.1
       picomatch: 4.0.3
       tiny-invariant: 1.3.3
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
       vite: 7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
       vscode-uri: 3.1.0
     optionalDependencies:

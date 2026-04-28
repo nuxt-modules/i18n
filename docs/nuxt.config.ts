@@ -2,7 +2,7 @@ import pkg from "../package.json";
 
 export default defineNuxtConfig({
   extends: ["docus"],
-  modules: ["@nuxt/scripts", "nuxt-llms"],
+  modules: ["@nuxt/scripts", "nuxt-llms", "@nuxt/fonts"],
   routeRules: {
     // default
     "/": { prerender: true },
