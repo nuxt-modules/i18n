@@ -77,7 +77,6 @@ export const DEFAULT_OPTIONS = {
   hmr: true,
   autoDeclare: true,
   serverRoutePrefix: '/_i18n',
-  cdnURL: '',
 } as const
 
 const TS_EXTENSIONS = ['.ts', '.cts', '.mts']
