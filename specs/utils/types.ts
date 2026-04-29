@@ -1,4 +1,5 @@
 import type { Nuxt, NuxtConfig } from '@nuxt/schema'
+import type { Server } from 'node:http'
 import type { exec } from 'tinyexec'
 import type { Browser, LaunchOptions } from 'playwright-core'
 import type { NuxtI18nOptions } from '../../src/types'
@@ -33,6 +34,7 @@ export interface TestContext {
   browser?: Browser
   url?: string
   serverProcess?: ReturnType<typeof exec>
+  staticServers?: Server[]
   // eslint-disable-next-line @typescript-eslint/ban-types
   mockFn?: Function
   /**
