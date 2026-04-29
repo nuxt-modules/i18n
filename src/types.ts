@@ -438,6 +438,22 @@ export type NuxtI18nOptions<
    * @default '/_i18n'
    */
   serverRoutePrefix?: string
+  /**
+   * Absolute URL prefix used by the **client** to fetch lazy-loaded locale messages.
+   *
+   * When set:
+   * - Client-side requests for messages target `<cdnURL><serverRoutePrefix>/<hash>/<locale>/messages.json`
+   *   instead of the local Nitro server, so messages can be served from a CDN / static origin.
+   * - The corresponding hashed messages JSON files are emitted into `.output/public/` at build time,
+   *   ready to be uploaded alongside `_nuxt/*` chunks.
+   *
+   * Server-side rendering keeps fetching messages from the local Nitro handler so SSR does not
+   * round-trip through the CDN.
+   *
+   * @example 'https://cdn.example.com'
+   * @default ''
+   */
+  cdnURL?: string
 }
 
 /**

@@ -99,6 +99,7 @@ export function getDefineConfig(
     __I18N_COMPACT_ROUTES__: String(!!options.experimental?.compactRoutes),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
+    __I18N_CDN_URL__: JSON.stringify(options.cdnURL ?? ''),
     __I18N_LOCALE_HASHES__: JSON.stringify(localeHashes),
     __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),
   }
