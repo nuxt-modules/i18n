@@ -49,4 +49,16 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
       'Route localization features (e.g. custom name, prefixed aliases) require Nuxt\'s `experimental.scanPageMeta` to be enabled.\nThis feature will be enabled in future Nuxt versions (https://github.com/nuxt/nuxt/pull/27134), check out the docs for more details: https://nuxt.com/docs/guide/going-further/experimental-features#scanpagemeta',
     )
   }
+
+  if (options.experimental?.compactRoutes) {
+    const conflicts: string[] = []
+    if (strategy === 'no_prefix') { conflicts.push('`strategy: "no_prefix"`') }
+    if (options.differentDomains) { conflicts.push('`differentDomains`') }
+    if (hasMultiDomainLocales) { conflicts.push('`multiDomainLocales`') }
+    if (conflicts.length) {
+      logger.warn(
+        `\`experimental.compactRoutes\` is enabled but has no effect due to incompatible option(s): ${conflicts.join(', ')}. Routes will fall back to per-locale duplication.`,
+      )
+    }
+  }
 }

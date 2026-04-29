@@ -703,6 +703,55 @@ describe('compact routes', () => {
     })
   })
 
+  // The Nuxt module wrapper passes `includeUnprefixedFallback: true` for any
+  // strategy other than `prefix`, even though the flag is only consulted when
+  // strategy === 'prefix'. The compactRoutes gate must not treat that as a
+  // disable signal — see issue #3971.
+  describe('compactRoutes is not blocked by includeUnprefixedFallback for non-prefix strategies', () => {
+    it('compacts under prefix_except_default + includeUnprefixedFallback: true', () => {
+      const config = createTestConfig({
+        locales,
+        strategy: 'prefix_except_default',
+        defaultLocale: 'en',
+        compactRoutes: true,
+        includeUnprefixedFallback: true,
+      })
+      const result = localizeRoutes(routes, config)
+
+      expect(result.find(r => r.path === '/:locale(fr|ja)/about')).toBeDefined()
+      expect(findRoute(result, 'about___fr')).toBeUndefined()
+      expect(findRoute(result, 'about___ja')).toBeUndefined()
+    })
+
+    it('compacts under prefix_and_default + includeUnprefixedFallback: true', () => {
+      const config = createTestConfig({
+        locales,
+        strategy: 'prefix_and_default',
+        defaultLocale: 'en',
+        compactRoutes: true,
+        includeUnprefixedFallback: true,
+      })
+      const result = localizeRoutes(routes, config)
+
+      expect(result.find(r => r.path === '/:locale(en|fr|ja)/about')).toBeDefined()
+      expect(findRoute(result, 'about___fr')).toBeUndefined()
+      expect(findRoute(result, 'about___ja')).toBeUndefined()
+    })
+
+    it('still blocks compaction under prefix + includeUnprefixedFallback: true', () => {
+      const config = createTestConfig({
+        locales,
+        strategy: 'prefix',
+        defaultLocale: 'en',
+        compactRoutes: true,
+        includeUnprefixedFallback: true,
+      })
+      const result = localizeRoutes(routes, config)
+
+      expect(result.find(r => r.path?.includes(':locale'))).toBeUndefined()
+    })
+  })
+
   describe('ineligible routes — must stay per-locale', () => {
     it('does NOT compact a route with custom per-locale paths', () => {
       const resolver = createMockOptionsResolver({
