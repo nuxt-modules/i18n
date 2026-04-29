@@ -58,8 +58,26 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
   if (!localeCodes.length) { return }
 
   let includeUnprefixedFallback = !nuxt.options.ssr
-  nuxt.hook('nitro:init', () => {
+  // Filled during pages:extend, drained at prerender time. nitro:init fires before
+  // pages:extend, so we can't seed nitro.options.prerender.routes directly.
+  const compactPrerenderRoutes: string[] = []
+  nuxt.hook('nitro:init', (nitro) => {
     includeUnprefixedFallback = options.strategy !== 'prefix'
+
+    if (!nuxt.options.nitro.static) { return }
+
+    // `prefix` strategy: `/` is not a valid route, ignore it.
+    if (options.strategy === 'prefix') {
+      nitro.options.prerender.ignore ??= []
+      nitro.options.prerender.ignore.push(/^\/$/)
+    }
+
+    nitro.hooks.hook('prerender:routes', (routes) => {
+      if (options.strategy === 'prefix') {
+        for (const locale of localeCodes) { routes.add('/' + locale) }
+      }
+      for (const route of compactPrerenderRoutes) { routes.add(route) }
+    })
   })
 
   const projectLayer = nuxt.options._layers[0]
@@ -126,8 +144,57 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         pages.length = 0
         pages.unshift(...localizedPages)
       }
+
+      // Expand compact regex routes into concrete per-locale paths so Nuxt's
+      // static-route extractor can prerender them. Drained by nitro:init above.
+      if (options.experimental?.compactRoutes && nuxt.options.nitro.static) {
+        compactPrerenderRoutes.push(...collectCompactPrerenderRoutes(localizedPages))
+      }
     },
   )
+}
+
+const compactRouteRE = /^\/:locale\(([^)]+)\)(.*)$/
+const remainingParamRE = /:[A-Z_]/i
+
+// The `:locale(...)` prefix defeats Nuxt's static-route extractor, so we mirror its
+// behavior here: walk the tree and emit each static descendant per locale.
+export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string[] {
+  const out: string[] = []
+
+  const emit = (locales: readonly string[], rest: string): boolean => {
+    if (remainingParamRE.test(rest)) { return false }
+    for (const locale of locales) { out.push('/' + locale + rest) }
+    return true
+  }
+
+  const walkChildren = (children: NarrowedNuxtPage[] | undefined, locales: readonly string[], parentRest: string) => {
+    if (!children?.length) { return }
+    for (const child of children) {
+      // Absolute path: Vue Router does not compose it with the parent.
+      if (child.path.startsWith('/')) { continue }
+      // Index child shares the parent's URL — already emitted, but its grandchildren may not be.
+      if (child.path === '') {
+        walkChildren(child.children, locales, parentRest)
+        continue
+      }
+      const rest = parentRest.replace(/\/$/, '') + '/' + child.path
+      if (!emit(locales, rest)) { continue }
+      walkChildren(child.children, locales, rest)
+    }
+  }
+
+  for (const route of pages) {
+    if (!(route.meta as Record<string, unknown> | undefined)?.__i18nCompact) { continue }
+    const match = compactRouteRE.exec(route.path)
+    if (!match) { continue }
+    const locales = match[1]!.split('|')
+    const rest = match[2]!
+    if (!emit(locales, rest)) { continue }
+    walkChildren(route.children, locales, rest)
+  }
+
+  return out
 }
 
 /**

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
 import { localizeSingleRoute, createRouteContext, canCompactRoute } from '../../src/kit/gen'
-import { buildPathToConfig, NuxtPageAnalyzeContext } from '../../src/pages'
+import { buildPathToConfig, collectCompactPrerenderRoutes, NuxtPageAnalyzeContext } from '../../src/pages'
 import { createMockOptionsResolver, createTestConfig, getNormalizedLocales } from './utils'
 
 import type { LocalizableRoute, LocalizeRouteParams } from '../../src/kit/gen'
@@ -788,6 +788,135 @@ describe('compact routes', () => {
       expect(result).toHaveLength(1)
       expect(result[0].path).toBe('/about')
       expect(result[0].name).toBe('about')
+    })
+  })
+
+  // Compact regex routes can't be enumerated by Nuxt's static-route extractor
+  // for `nuxt generate`, so we expand them back into concrete per-locale paths
+  // via `collectCompactPrerenderRoutes`. These tests pin down the edge cases.
+  describe('collectCompactPrerenderRoutes — prerender expansion of compact routes', () => {
+    const compact = (path: string, name: string) => ({
+      path,
+      name,
+      meta: { __i18nCompact: true },
+    } as unknown as Parameters<typeof collectCompactPrerenderRoutes>[0][number])
+
+    it('expands a compact regex route to one path per locale', () => {
+      const out = collectCompactPrerenderRoutes([compact('/:locale(en|fr|ja)/about', 'about')])
+      expect(out).toEqual(['/en/about', '/fr/about', '/ja/about'])
+    })
+
+    it('handles the root route — `/` becomes `/:locale(...)` with no rest', () => {
+      // `prefix` strategy compacts the home page to `/:locale(en|fr)` (no trailing path).
+      // We must emit `/en` and `/fr`, never `/en/` or `/fr/`.
+      const out = collectCompactPrerenderRoutes([compact('/:locale(en|fr)', 'index')])
+      expect(out).toEqual(['/en', '/fr'])
+    })
+
+    it('skips routes with dynamic params after the locale segment', () => {
+      // `/:locale(fr)/products/:id` — concrete `:id` values are unknown at build time,
+      // matches the non-compact case where Nuxt also can't auto-prerender these.
+      const out = collectCompactPrerenderRoutes([compact('/:locale(fr|ja)/products/:id', 'products-id')])
+      expect(out).toEqual([])
+    })
+
+    it('skips routes with optional params after the locale segment', () => {
+      const out = collectCompactPrerenderRoutes([compact('/:locale(fr)/blog/:slug?', 'blog-slug')])
+      expect(out).toEqual([])
+    })
+
+    it('ignores routes without `__i18nCompact` meta', () => {
+      const plain = { path: '/about', name: 'about' } as Parameters<typeof collectCompactPrerenderRoutes>[0][number]
+      const out = collectCompactPrerenderRoutes([plain])
+      expect(out).toEqual([])
+    })
+
+    it('ignores routes whose path does not start with the `:locale(...)` regex prefix', () => {
+      // Defensive: if a future change marks a non-prefixed route as compact,
+      // we should not emit garbage like `undefinedabout`.
+      const odd = compact('/about', 'about')
+      const out = collectCompactPrerenderRoutes([odd])
+      expect(out).toEqual([])
+    })
+
+    it('mixes compactable and non-compactable routes in the same call', () => {
+      const out = collectCompactPrerenderRoutes([
+        compact('/:locale(fr|ja)/about', 'about'),
+        // per-locale (not compacted) — already enumerable, must not be added
+        { path: '/contact', name: 'contact___en' } as Parameters<typeof collectCompactPrerenderRoutes>[0][number],
+        compact('/:locale(fr|ja)/help', 'help'),
+        // dynamic — skipped
+        compact('/:locale(fr|ja)/users/:id', 'users-id'),
+      ])
+      expect(out).toEqual(['/fr/about', '/ja/about', '/fr/help', '/ja/help'])
+    })
+
+    const compactWithChildren = (
+      path: string,
+      name: string,
+      children: { path: string, name?: string, children?: unknown[] }[],
+    ) => ({
+      path,
+      name,
+      meta: { __i18nCompact: true },
+      children,
+    } as unknown as Parameters<typeof collectCompactPrerenderRoutes>[0][number])
+
+    it('expands static children of a compact parent', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/parent', 'parent', [
+          { path: 'child', name: 'parent-child' },
+        ]),
+      ])
+      expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/child', '/fr/parent/child'])
+    })
+
+    it('walks deeply-nested static children', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/a', 'a', [
+          { path: 'b', name: 'a-b', children: [{ path: 'c', name: 'a-b-c' }] },
+        ]),
+      ])
+      expect(out).toEqual(['/en/a', '/fr/a', '/en/a/b', '/fr/a/b', '/en/a/b/c', '/fr/a/b/c'])
+    })
+
+    it('skips dynamic children but keeps static siblings', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/users', 'users', [
+          { path: '', name: 'users-index' },
+          { path: ':id', name: 'users-id' },
+          { path: 'list', name: 'users-list' },
+        ]),
+      ])
+      expect(out).toEqual(['/en/users', '/fr/users', '/en/users/list', '/fr/users/list'])
+    })
+
+    it('does not descend past a dynamic child (grandchildren are unreachable too)', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/users', 'users', [
+          { path: ':id', name: 'users-id', children: [{ path: 'profile', name: 'users-id-profile' }] },
+        ]),
+      ])
+      expect(out).toEqual(['/en/users', '/fr/users'])
+    })
+
+    it('treats an empty-path index child as the parent URL and walks its grandchildren', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)', 'index', [
+          { path: '', name: 'index-root', children: [{ path: 'nested', name: 'index-nested' }] },
+        ]),
+      ])
+      expect(out).toEqual(['/en', '/fr', '/en/nested', '/fr/nested'])
+    })
+
+    it('ignores absolute child paths (they are not compacted descendants)', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/parent', 'parent', [
+          { path: '/absolute', name: 'absolute' },
+          { path: 'relative', name: 'parent-relative' },
+        ]),
+      ])
+      expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/relative', '/fr/parent/relative'])
     })
   })
 
