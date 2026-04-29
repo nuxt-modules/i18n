@@ -850,6 +850,74 @@ describe('compact routes', () => {
       ])
       expect(out).toEqual(['/fr/about', '/ja/about', '/fr/help', '/ja/help'])
     })
+
+    const compactWithChildren = (
+      path: string,
+      name: string,
+      children: { path: string, name?: string, children?: unknown[] }[],
+    ) => ({
+      path,
+      name,
+      meta: { __i18nCompact: true },
+      children,
+    } as unknown as Parameters<typeof collectCompactPrerenderRoutes>[0][number])
+
+    it('expands static children of a compact parent', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/parent', 'parent', [
+          { path: 'child', name: 'parent-child' },
+        ]),
+      ])
+      expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/child', '/fr/parent/child'])
+    })
+
+    it('walks deeply-nested static children', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/a', 'a', [
+          { path: 'b', name: 'a-b', children: [{ path: 'c', name: 'a-b-c' }] },
+        ]),
+      ])
+      expect(out).toEqual(['/en/a', '/fr/a', '/en/a/b', '/fr/a/b', '/en/a/b/c', '/fr/a/b/c'])
+    })
+
+    it('skips dynamic children but keeps static siblings', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/users', 'users', [
+          { path: '', name: 'users-index' },
+          { path: ':id', name: 'users-id' },
+          { path: 'list', name: 'users-list' },
+        ]),
+      ])
+      expect(out).toEqual(['/en/users', '/fr/users', '/en/users/list', '/fr/users/list'])
+    })
+
+    it('does not descend past a dynamic child (grandchildren are unreachable too)', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/users', 'users', [
+          { path: ':id', name: 'users-id', children: [{ path: 'profile', name: 'users-id-profile' }] },
+        ]),
+      ])
+      expect(out).toEqual(['/en/users', '/fr/users'])
+    })
+
+    it('treats an empty-path index child as the parent URL and walks its grandchildren', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)', 'index', [
+          { path: '', name: 'index-root', children: [{ path: 'nested', name: 'index-nested' }] },
+        ]),
+      ])
+      expect(out).toEqual(['/en', '/fr', '/en/nested', '/fr/nested'])
+    })
+
+    it('ignores absolute child paths (they are not compacted descendants)', () => {
+      const out = collectCompactPrerenderRoutes([
+        compactWithChildren('/:locale(en|fr)/parent', 'parent', [
+          { path: '/absolute', name: 'absolute' },
+          { path: 'relative', name: 'parent-relative' },
+        ]),
+      ])
+      expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/relative', '/fr/parent/relative'])
+    })
   })
 
   describe('mixed app — some routes compacted, some per-locale', () => {
