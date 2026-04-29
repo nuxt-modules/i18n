@@ -90,7 +90,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     && strategy !== 'no_prefix'
     && !config.differentDomains
     && !config.multiDomainLocales
-    && !config.includeUnprefixedFallback
+    && !(strategy === 'prefix' && config.includeUnprefixedFallback)
   ) {
     const defaultLocale = config.defaultLocale ?? ''
     ctx.compactRoute = (route, routeOptions, params) => {
