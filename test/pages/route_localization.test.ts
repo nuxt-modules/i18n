@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
 import { localizeSingleRoute, createRouteContext, canCompactRoute } from '../../src/kit/gen'
-import { buildPathToConfig, NuxtPageAnalyzeContext } from '../../src/pages'
+import { buildPathToConfig, collectCompactPrerenderRoutes, NuxtPageAnalyzeContext } from '../../src/pages'
 import { createMockOptionsResolver, createTestConfig, getNormalizedLocales } from './utils'
 
 import type { LocalizableRoute, LocalizeRouteParams } from '../../src/kit/gen'
@@ -788,6 +788,67 @@ describe('compact routes', () => {
       expect(result).toHaveLength(1)
       expect(result[0].path).toBe('/about')
       expect(result[0].name).toBe('about')
+    })
+  })
+
+  // Compact regex routes can't be enumerated by Nuxt's static-route extractor
+  // for `nuxt generate`, so we expand them back into concrete per-locale paths
+  // via `collectCompactPrerenderRoutes`. These tests pin down the edge cases.
+  describe('collectCompactPrerenderRoutes — prerender expansion of compact routes', () => {
+    const compact = (path: string, name: string) => ({
+      path,
+      name,
+      meta: { __i18nCompact: true },
+    } as unknown as Parameters<typeof collectCompactPrerenderRoutes>[0][number])
+
+    it('expands a compact regex route to one path per locale', () => {
+      const out = collectCompactPrerenderRoutes([compact('/:locale(en|fr|ja)/about', 'about')])
+      expect(out).toEqual(['/en/about', '/fr/about', '/ja/about'])
+    })
+
+    it('handles the root route — `/` becomes `/:locale(...)` with no rest', () => {
+      // `prefix` strategy compacts the home page to `/:locale(en|fr)` (no trailing path).
+      // We must emit `/en` and `/fr`, never `/en/` or `/fr/`.
+      const out = collectCompactPrerenderRoutes([compact('/:locale(en|fr)', 'index')])
+      expect(out).toEqual(['/en', '/fr'])
+    })
+
+    it('skips routes with dynamic params after the locale segment', () => {
+      // `/:locale(fr)/products/:id` — concrete `:id` values are unknown at build time,
+      // matches the non-compact case where Nuxt also can't auto-prerender these.
+      const out = collectCompactPrerenderRoutes([compact('/:locale(fr|ja)/products/:id', 'products-id')])
+      expect(out).toEqual([])
+    })
+
+    it('skips routes with optional params after the locale segment', () => {
+      const out = collectCompactPrerenderRoutes([compact('/:locale(fr)/blog/:slug?', 'blog-slug')])
+      expect(out).toEqual([])
+    })
+
+    it('ignores routes without `__i18nCompact` meta', () => {
+      const plain = { path: '/about', name: 'about' } as Parameters<typeof collectCompactPrerenderRoutes>[0][number]
+      const out = collectCompactPrerenderRoutes([plain])
+      expect(out).toEqual([])
+    })
+
+    it('ignores routes whose path does not start with the `:locale(...)` regex prefix', () => {
+      // Defensive: if a future change marks a non-prefixed route as compact,
+      // we should not emit garbage like `undefinedabout`.
+      const odd = compact('/about', 'about')
+      const out = collectCompactPrerenderRoutes([odd])
+      expect(out).toEqual([])
+    })
+
+    it('mixes compactable and non-compactable routes in the same call', () => {
+      const out = collectCompactPrerenderRoutes([
+        compact('/:locale(fr|ja)/about', 'about'),
+        // per-locale (not compacted) — already enumerable, must not be added
+        { path: '/contact', name: 'contact___en' } as Parameters<typeof collectCompactPrerenderRoutes>[0][number],
+        compact('/:locale(fr|ja)/help', 'help'),
+        // dynamic — skipped
+        compact('/:locale(fr|ja)/users/:id', 'users-id'),
+      ])
+      expect(out).toEqual(['/fr/about', '/ja/about', '/fr/help', '/ja/help'])
     })
   })
 

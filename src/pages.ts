@@ -58,8 +58,26 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
   if (!localeCodes.length) { return }
 
   let includeUnprefixedFallback = !nuxt.options.ssr
-  nuxt.hook('nitro:init', () => {
+  // Filled during pages:extend, drained at prerender time. nitro:init fires before
+  // pages:extend, so we can't seed nitro.options.prerender.routes directly.
+  const compactPrerenderRoutes: string[] = []
+  nuxt.hook('nitro:init', (nitro) => {
     includeUnprefixedFallback = options.strategy !== 'prefix'
+
+    if (!nuxt.options.nitro.static) { return }
+
+    // `prefix` strategy: `/` is not a valid route, ignore it.
+    if (options.strategy === 'prefix') {
+      nitro.options.prerender.ignore ??= []
+      nitro.options.prerender.ignore.push(/^\/$/)
+    }
+
+    nitro.hooks.hook('prerender:routes', (routes) => {
+      if (options.strategy === 'prefix') {
+        for (const locale of localeCodes) { routes.add('/' + locale) }
+      }
+      for (const route of compactPrerenderRoutes) { routes.add(route) }
+    })
   })
 
   const projectLayer = nuxt.options._layers[0]
@@ -126,8 +144,30 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         pages.length = 0
         pages.unshift(...localizedPages)
       }
+
+      // Expand compact regex routes into concrete per-locale paths so Nuxt's
+      // static-route extractor can prerender them. Drained by nitro:init above.
+      if (options.experimental?.compactRoutes && nuxt.options.nitro.static) {
+        compactPrerenderRoutes.push(...collectCompactPrerenderRoutes(localizedPages))
+      }
     },
   )
+}
+
+const compactRouteRE = /^\/:locale\(([^)]+)\)(.*)$/
+const remainingParamRE = /:[A-Z_]/i
+
+export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string[] {
+  const out: string[] = []
+  for (const route of pages) {
+    if (!(route.meta as Record<string, unknown> | undefined)?.__i18nCompact) { continue }
+    const match = compactRouteRE.exec(route.path)
+    if (!match || remainingParamRE.test(match[2]!)) { continue }
+    for (const locale of match[1]!.split('|')) {
+      out.push('/' + locale + match[2])
+    }
+  }
+  return out
 }
 
 /**
