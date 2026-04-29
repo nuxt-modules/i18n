@@ -12,7 +12,7 @@ import { joinURL } from 'ufo'
 import { isString } from '@intlify/shared'
 
 import type { NuxtApp } from '#app'
-import type { I18n, Locale } from 'vue-i18n'
+import type { DefineLocaleMessage, I18n, Locale, LocaleMessages } from 'vue-i18n'
 import type { ComposableContext } from './utils'
 import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
@@ -103,7 +103,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     // instead of the dynamic Nitro server. SSR keeps using a relative URL to avoid bouncing
     // through the CDN for the same content the local handler can serve.
     const prefix = import.meta.client ? __I18N_CDN_URL__ : ''
-    const messages = await $fetch(`${prefix}${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`, { headers })
+    const url = joinURL(prefix, __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
+    const messages = await $fetch<LocaleMessages<DefineLocaleMessage>>(url, { headers })
     for (const k of Object.keys(messages)) {
       i18n.mergeLocaleMessage(k, messages[k])
     }
