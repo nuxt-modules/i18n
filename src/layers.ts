@@ -70,7 +70,6 @@ export async function applyLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   // collect hook configs
-  // @ts-expect-error - type issue only present within repo
   await nuxt.callHook('i18n:registerModule', ({ langDir, locales }) => langDir && locales && configs.push({ langDir, locales }))
 
   return mergeConfigLocales(configs)
