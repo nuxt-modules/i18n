@@ -11,15 +11,17 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "docus": "^5.8.1"
+    "@takumi-rs/core": "^1.1.2",
+    "docus": "^5.9.0"
   },
   "devDependencies": {
-    "@iconify-json/logos": "^1.2.10",
-    "@iconify-json/lucide": "^1.2.98",
-    "@iconify-json/simple-icons": "^1.2.75",
+    "@iconify-json/logos": "^1.2.11",
+    "@iconify-json/lucide": "^1.2.102",
+    "@iconify-json/simple-icons": "^1.2.78",
     "@iconify-json/vscode-icons": "^1.2.45",
+    "@nuxt/fonts": "0.14.0",
     "@nuxt/scripts": "^0.13.2",
-    "better-sqlite3": "^12.8.0",
+    "better-sqlite3": "^12.9.0",
     "nuxt": "^4.4.2",
     "nuxt-llms": "0.2.0"
   }

@@ -5,10 +5,42 @@ import { createBrowser } from '../browser'
 import setupVitest from './vitest'
 import consola from 'consola'
 
-import type { TestHooks, TestOptions, VitestContext } from '../types'
+import type { TestContext, TestHooks, TestOptions, VitestContext } from '../types'
+
+const activeContexts = new Set<TestContext>()
+let processCleanupRegistered = false
+
+function registerProcessCleanup() {
+  if (processCleanupRegistered) return
+  processCleanupRegistered = true
+
+  const cleanup = () => {
+    for (const ctx of activeContexts) {
+      try {
+        setTestContext(ctx)
+        stopServer()
+      } catch {
+        // best-effort: cleanup must not throw on exit
+      } finally {
+        setTestContext(undefined)
+      }
+    }
+    activeContexts.clear()
+  }
+
+  process.once('exit', cleanup)
+  for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP'] as const) {
+    process.once(signal, () => {
+      cleanup()
+      process.exit(signal === 'SIGINT' ? 130 : 1)
+    })
+  }
+}
 
 function createTest(options: Partial<TestOptions>): TestHooks {
   const ctx = createTestContext(options)
+  registerProcessCleanup()
+  activeContexts.add(ctx)
 
   const beforeEach = () => {
     setTestContext(ctx)
@@ -22,11 +54,13 @@ function createTest(options: Partial<TestOptions>): TestHooks {
   }
 
   const afterAll = async () => {
-    if (ctx.serverProcess) {
+    if (ctx.serverProcess || ctx.staticServers) {
       setTestContext(ctx)
       stopServer()
       setTestContext(undefined)
     }
+
+    activeContexts.delete(ctx)
 
     if (ctx.nuxt && ctx.nuxt.options.dev) {
       await ctx.nuxt.close()

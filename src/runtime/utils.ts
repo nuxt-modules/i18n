@@ -88,18 +88,63 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     const localizedName = getLocalizedRouteName(route.name, locale)
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
+      // Remove stale locale param inherited from a compact route — per-locale routes don't use it
+      if (__I18N_COMPACT_ROUTES__ && route.params) {
+        delete (route.params as Record<string, unknown>).locale
+      }
+    } else if (__I18N_COMPACT_ROUTES__ && isSupportedLocale(locale) && getCompactRouteNames().has(route.name!)) {
+      // Compact route: keep base name, inject locale as route param.
+      route.params = { ...(route.params || {}), locale }
+      return route
     }
 
+    // No per-locale or compact match: set localized name so router.resolve
+    // fails for unsupported locales (e.g. 'undefined'), matching per-locale behavior.
+    route.name = localizedName
     return route
   }
 
   const routeByPathResolver = createLocalizedRouteByPathResolver(router)
+  // Detect compact routes by their resolved path prefix — catches the compact
+  // parent and its children (whose own meta is empty but whose path inherits
+  // the locale segment). Route records are stable after build, so cache lazily.
+  let compactRouteRecords: Set<string> | undefined
+  function getCompactRouteNames() {
+    if (compactRouteRecords) { return compactRouteRecords }
+    compactRouteRecords = new Set()
+    if (__I18N_COMPACT_ROUTES__) {
+      for (const r of router.getRoutes()) {
+        if (r.name != null && /^\/:locale\(/.test(r.path)) { compactRouteRecords.add(String(r.name)) }
+      }
+    }
+    return compactRouteRecords
+  }
+
   function resolveLocalizedRouteByPath(input: RouteLikeWithPath, locale: string) {
     const route = routeByPathResolver(input, locale) as RouteLike
     const baseName = getRouteBaseName(route)
 
     if (baseName) {
-      route.name = getLocalizedRouteName(baseName, locale)
+      // Try per-locale route first (e.g. about___en) — this handles the default locale
+      // in prefix_except_default where the unprefixed route exists alongside the compact one.
+      const localizedName = getLocalizedRouteName(baseName, locale)
+      if (router.hasRoute(localizedName)) {
+        route.name = localizedName
+        return route
+      }
+
+      // Path-pattern check (rather than router.resolve probe) avoids vue-router warnings
+      // when `baseName` resolves to a non-compact route, e.g. defineI18nRoute(false).
+      if (__I18N_COMPACT_ROUTES__ && getCompactRouteNames().has(baseName)) {
+        const compacted = route as RouteLikeWithName
+        compacted.name = baseName
+        compacted.params = { ...(compacted.params || {}), locale }
+        return compacted
+      }
+
+      // Set the localized route name — if the route doesn't exist (e.g. disabled routes),
+      // router.resolve will fail and localePath correctly returns empty.
+      route.name = localizedName
       return route
     }
 
@@ -188,8 +233,8 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
   const ctx = useNuxtI18nContext(nuxtApp)
   const oldLocale = ctx.getLocale()
 
-  // skip if locale is already set
-  if (locale === oldLocale && !ctx.initial) {
+  // skip if locale is already set and there is no pending locale change to a different locale
+  if (locale === oldLocale && !ctx.initial && (!ctx.vueI18n.__pendingLocale || ctx.vueI18n.__pendingLocale === locale)) {
     return locale
   }
 

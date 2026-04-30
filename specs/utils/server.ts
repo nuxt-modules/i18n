@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { createServer } from 'node:http'
+import sirv from 'sirv'
 import { x } from 'tinyexec'
 import { getRandomPort, waitForPort } from 'get-port-please'
 import type { FetchOptions } from 'ofetch'
@@ -50,24 +52,25 @@ export async function startServer(env: Record<string, unknown> = {}) {
     ctx.serverProcess.kill()
     throw lastError || new Error('Timeout waiting for dev server!')
   } else if (ctx.options.prerender) {
-    const listenTo = ports.map(port => `-l tcp://${host}:${port}`).join(' ')
-    const command = `pnpx serve ${ctx.nuxt!.options.nitro!.output?.publicDir} ${listenTo} --no-port-switching`
-    // ;(await import('consola')).consola.restoreConsole()
-    const [_command, ...commandArgs] = command.split(' ')
-
-    ctx.serverProcess = x(_command, commandArgs, {
-      throwOnError: true,
-      nodeOptions: {
-        env: {
-          ...process.env,
-          PORT: String(ports[0]),
-          HOST: host,
-          ...env
-        }
-      }
+    const handler = sirv(ctx.nuxt!.options.nitro!.output!.publicDir!, {
+      dev: false,
+      etag: true,
+      single: false
     })
 
-    await waitForPort(ports[0], { retries: 50, host, delay: process.env.CI ? 1000 : 500 })
+    ctx.staticServers = await Promise.all(
+      ports.map(
+        port =>
+          new Promise<import('node:http').Server>((resolveListen, rejectListen) => {
+            const server = createServer((req, res) => handler(req, res))
+            server.once('error', rejectListen)
+            server.listen(port, host, () => {
+              server.off('error', rejectListen)
+              resolveListen(server)
+            })
+          })
+      )
+    )
   } else {
     ctx.serverProcess = x('node', [resolve(ctx.nuxt!.options.nitro.output!.dir!, 'server/index.mjs')], {
       throwOnError: true,
@@ -96,6 +99,14 @@ export async function startServer(env: Record<string, unknown> = {}) {
 export function stopServer() {
   const ctx = useTestContext()
   ctx.serverProcess?.kill()
+  ctx.serverProcess = undefined
+  if (ctx.staticServers) {
+    for (const server of ctx.staticServers) {
+      server.closeAllConnections?.()
+      server.close()
+    }
+    ctx.staticServers = undefined
+  }
 }
 
 export function fetch(path: string, options?: any) {
@@ -122,7 +133,7 @@ export function url(path: string, port?: number) {
 
   // replace port in url
   if (port != null) {
-    return ctx.url.slice(0, ctx.url.lastIndexOf(':')) + `:${port}/` + path
+    return ctx.url.slice(0, ctx.url.lastIndexOf(':')) + `:${port}` + path
   }
 
   return ctx.url + path

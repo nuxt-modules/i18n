@@ -43,13 +43,18 @@ export function createLocalizedRouteByPathResolver(
      */
     return (route, locale) => {
       const targetPath = '/' + locale + (route.path === '/' ? '' : route.path)
-      const _route = router.options.routes.find(r => r.path === targetPath)
 
-      if (_route == null) {
-        return route
+      // Exact path match for per-locale routes
+      const _route = router.options.routes.find(r => r.path === targetPath)
+      if (_route != null) {
+        return router.resolve(assign({}, route, _route, { path: targetPath }))
       }
 
-      return router.resolve(assign({}, route, _route, { path: targetPath }))
+      // For compact routes, the regex pattern (e.g. /:locale(en|ja)/path/:param)
+      // won't have an exact match above. Return the original route — downstream
+      // resolveLocalizedRouteByPath will add the prefix and router.resolve will
+      // match the compact route using path-based resolution (preserving URL encoding).
+      return route
     }
   }
 

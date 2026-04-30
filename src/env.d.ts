@@ -29,5 +29,9 @@ declare let __I18N_PRELOAD__: boolean
 declare let __I18N_ROUTING__: boolean
 declare let __I18N_STRICT_SEO__: boolean
 declare let __I18N_SERVER_REDIRECT__: boolean
-/** Includes hashed deployment timestamp */
+/** Server route prefix for i18n message endpoints */
 declare let __I18N_SERVER_ROUTE__: string
+/** Per-locale content hash, used as the `:hash` segment of message routes */
+declare let __I18N_LOCALE_HASHES__: Record<string, string>
+/** Whether compact routes are enabled */
+declare let __I18N_COMPACT_ROUTES__: boolean

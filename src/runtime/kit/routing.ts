@@ -42,7 +42,18 @@ function normalizeInput(input: RouteName | RouteObject) {
  */
 export function getLocaleFromRoute(route: RouteName | RouteObject) {
   const input = normalizeInput(route)
-  return input[0] === '/'
-    ? getLocaleFromRoutePath(input)
-    : getLocaleFromRouteName(input)
+  if (input[0] === '/') {
+    return getLocaleFromRoutePath(input)
+  }
+
+  const fromName = getLocaleFromRouteName(input)
+  if (fromName) { return fromName }
+
+  // Fallback: for compact routes the name has no locale suffix,
+  // try path-based detection if the route object has a path.
+  if (typeof route === 'object' && route?.path) {
+    return getLocaleFromRoutePath(String(route.path))
+  }
+
+  return ''
 }

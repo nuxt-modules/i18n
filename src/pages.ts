@@ -14,7 +14,7 @@ import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'vue-router/unplugin'
 import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
-import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
+import type { ComputedRouteOptions, LocalizableRoute, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
 import { type CallExpression, type ExpressionStatement, type ObjectExpression, parseSync } from 'oxc-parser'
 
@@ -58,8 +58,26 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
   if (!localeCodes.length) { return }
 
   let includeUnprefixedFallback = !nuxt.options.ssr
-  nuxt.hook('nitro:init', () => {
+  // Filled during pages:extend, drained at prerender time. nitro:init fires before
+  // pages:extend, so we can't seed nitro.options.prerender.routes directly.
+  const compactPrerenderRoutes: string[] = []
+  nuxt.hook('nitro:init', (nitro) => {
     includeUnprefixedFallback = options.strategy !== 'prefix'
+
+    if (!nuxt.options.nitro.static) { return }
+
+    // `prefix` strategy: `/` is not a valid route, ignore it.
+    if (options.strategy === 'prefix') {
+      nitro.options.prerender.ignore ??= []
+      nitro.options.prerender.ignore.push(/^\/$/)
+    }
+
+    nitro.hooks.hook('prerender:routes', (routes) => {
+      if (options.strategy === 'prefix') {
+        for (const locale of localeCodes) { routes.add('/' + locale) }
+      }
+      for (const route of compactPrerenderRoutes) { routes.add(route) }
+    })
   })
 
   const projectLayer = nuxt.options._layers[0]
@@ -82,12 +100,18 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         await typedRouter.createContext(pages).scanPages(false)
       }
 
+      const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
+
       const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
         ...options,
         includeUnprefixedFallback,
         locales: normalizedLocales,
-        optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale, options.customRoutes),
+        optionsResolver: resolver,
+        compactRoutes: !!options.experimental?.compactRoutes,
       })
+
+      // Build path config from original pages (not localized copies)
+      buildPathToConfig(ctx, localeCodes, resolver, pages as LocalizableRoute[])
 
       // keep root when using prefixed routing without prerendering
       const indexPage = pages.find(x => x.path === '/')
@@ -120,8 +144,57 @@ export const i18nPathToPath = ${JSON.stringify(routeResources.i18nPathToPath, nu
         pages.length = 0
         pages.unshift(...localizedPages)
       }
+
+      // Expand compact regex routes into concrete per-locale paths so Nuxt's
+      // static-route extractor can prerender them. Drained by nitro:init above.
+      if (options.experimental?.compactRoutes && nuxt.options.nitro.static) {
+        compactPrerenderRoutes.push(...collectCompactPrerenderRoutes(localizedPages))
+      }
     },
   )
+}
+
+const compactRouteRE = /^\/:locale\(([^)]+)\)(.*)$/
+const remainingParamRE = /:[A-Z_]/i
+
+// The `:locale(...)` prefix defeats Nuxt's static-route extractor, so we mirror its
+// behavior here: walk the tree and emit each static descendant per locale.
+export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string[] {
+  const out: string[] = []
+
+  const emit = (locales: readonly string[], rest: string): boolean => {
+    if (remainingParamRE.test(rest)) { return false }
+    for (const locale of locales) { out.push('/' + locale + rest) }
+    return true
+  }
+
+  const walkChildren = (children: NarrowedNuxtPage[] | undefined, locales: readonly string[], parentRest: string) => {
+    if (!children?.length) { return }
+    for (const child of children) {
+      // Absolute path: Vue Router does not compose it with the parent.
+      if (child.path.startsWith('/')) { continue }
+      // Index child shares the parent's URL — already emitted, but its grandchildren may not be.
+      if (child.path === '') {
+        walkChildren(child.children, locales, parentRest)
+        continue
+      }
+      const rest = parentRest.replace(/\/$/, '') + '/' + child.path
+      if (!emit(locales, rest)) { continue }
+      walkChildren(child.children, locales, rest)
+    }
+  }
+
+  for (const route of pages) {
+    if (!(route.meta as Record<string, unknown> | undefined)?.__i18nCompact) { continue }
+    const match = compactRouteRE.exec(route.path)
+    if (!match) { continue }
+    const locales = match[1]!.split('|')
+    const rest = match[2]!
+    if (!emit(locales, rest)) { continue }
+    walkChildren(route.children, locales, rest)
+  }
+
+  return out
 }
 
 /**
@@ -236,11 +309,19 @@ export {}`
 function analyzePagePath(pagePath: string, parents = 0) {
   const { dir, name } = parsePath(pagePath)
 
-  if (parents > 0 || dir !== '/') {
-    return `${dir.slice(1, dir.length)}/${name}`
-  }
+  const analyzed = (parents > 0 || dir !== '/')
+    ? `${dir.slice(1, dir.length)}/${name}`
+    : name
 
-  return name
+  return stripRouteGroups(analyzed)
+}
+
+/**
+ * Strip Nuxt route-group segments (`(name)`) from a path. Route groups are
+ * directory names used to organize files without contributing to the URL.
+ */
+function stripRouteGroups(path: string): string {
+  return path.split('/').filter(s => !/^\([^)]+\)$/.test(s)).join('/')
 }
 
 /**
@@ -264,32 +345,64 @@ export function analyzeNuxtPages(ctx: NuxtPageAnalyzeContext, pagesDir: string, 
 }
 
 /**
- * Function factory, returns a function based on the `customRoutes` option property
+ * Returns a pure RouteOptionsResolver with no side effects.
+ */
+export function createPureOptionsResolver(
+  ctx: NuxtPageAnalyzeContext,
+  defaultLocale: string,
+  customRoutes: NuxtI18nOptions['customRoutes'],
+): RouteOptionsResolver {
+  const cache = new Map<string, ComputedRouteOptions | undefined>()
+  return (route, localeCodes) => {
+    const key = `${route.file ?? route.name ?? route.path}::${localeCodes.join(',')}`
+    if (cache.has(key)) { return cache.get(key) }
+    const resolved = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
+    cache.set(key, resolved)
+    return resolved
+  }
+}
+
+/**
+ * Post-processing step: builds ctx.pathToConfig from the original (pre-localized) routes.
+ * Call this after localizeRoutes() with the same resolver used for localization.
+ */
+export function buildPathToConfig(
+  ctx: NuxtPageAnalyzeContext,
+  localeCodes: string[],
+  resolver: RouteOptionsResolver,
+  routes: LocalizableRoute[],
+): void {
+  for (const route of routes) {
+    if (route.file) {
+      const res = resolver(route, localeCodes)
+      const localeCfg = res?.srcPaths
+      const mappedPath = ctx.fileToPath[route.file]
+      if (mappedPath) {
+        ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
+        for (const l of localeCodes) {
+          ctx.pathToConfig[mappedPath][l] ??= localeCfg?.[l] ?? false
+        }
+        for (const l of res?.locales ?? []) {
+          ctx.pathToConfig[mappedPath][l] ||= true
+        }
+      }
+    }
+    if (route.children?.length) {
+      buildPathToConfig(ctx, localeCodes, resolver, route.children)
+    }
+  }
+}
+
+/**
+ * Function factory, returns a function based on the `customRoutes` option property.
+ * @deprecated Use createPureOptionsResolver + buildPathToConfig instead.
  */
 export function getRouteOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
   defaultLocale: string,
   customRoutes: NuxtI18nOptions['customRoutes'],
 ): RouteOptionsResolver {
-  return (route, localeCodes) => {
-    const res = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)
-    if (route.file) {
-      const localeCfg = res?.srcPaths
-      const mappedPath = ctx.fileToPath[route.file]!
-      ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
-
-      // set paths for all locales, assume no custom path is a disabled locale
-      for (const l of localeCodes) {
-        ctx.pathToConfig[mappedPath][l] ??= localeCfg?.[l] ?? false
-      }
-
-      for (const l of res?.locales ?? []) {
-        ctx.pathToConfig[mappedPath][l] ||= true
-      }
-    }
-
-    return res
-  }
+  return createPureOptionsResolver(ctx, defaultLocale, customRoutes)
 }
 
 function resolveRoutePath(path: string): string {

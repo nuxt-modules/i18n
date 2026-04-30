@@ -1,7 +1,6 @@
 import { createResolver } from '@nuxt/kit'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'pathe'
-import { hash } from 'ohash'
 import type { Resolver } from '@nuxt/kit'
 import type { FileMeta, LocaleInfo, LocaleObject, NuxtI18nOptions } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
@@ -18,7 +17,7 @@ export interface I18nNuxtContext {
   distDir: string
   runtimeDir: string
   fullStatic: boolean
-  deploymentHash: string
+  localeHashes: Record<string, string>
   i18nLayers: LayerWithI18n[]
 }
 
@@ -51,6 +50,6 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     normalizedLocales: undefined!,
     vueI18nConfigPaths: undefined!,
     fullStatic: undefined!,
-    deploymentHash: hash(Date.now()).slice(0, 8),
+    localeHashes: undefined!,
   }
 }

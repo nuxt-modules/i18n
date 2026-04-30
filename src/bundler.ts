@@ -60,7 +60,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
 }
 
 export function getDefineConfig(
-  { options, fullStatic, deploymentHash }: I18nNuxtContext,
+  { options, fullStatic, localeHashes }: I18nNuxtContext,
   server = false,
   nuxt = useNuxt(),
 ) {
@@ -96,8 +96,10 @@ export function getDefineConfig(
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
+    __I18N_COMPACT_ROUTES__: String(!!options.experimental?.compactRoutes),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
-    __I18N_SERVER_ROUTE__: JSON.stringify([options.serverRoutePrefix, deploymentHash].join('/')),
+    __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
+    __I18N_LOCALE_HASHES__: JSON.stringify(localeHashes),
     __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),
   }
 

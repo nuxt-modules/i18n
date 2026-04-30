@@ -199,6 +199,13 @@ export interface ExperimentalFeatures {
    * @default 10
    */
   httpCacheDuration?: number
+  /**
+   * Consolidates locale-prefixed routes into a single regex route (e.g. `/:locale(en|fr)/about`)
+   * instead of generating separate routes per locale. Only applies to routes where all locales
+   * share the same path and no locale is disabled.
+   * @default false
+   */
+  compactRoutes?: boolean
 }
 
 export interface BundleOptions

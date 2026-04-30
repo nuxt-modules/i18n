@@ -2,7 +2,7 @@ import pkg from "../package.json";
 
 export default defineNuxtConfig({
   extends: ["docus"],
-  modules: ["@nuxt/scripts", "nuxt-llms"],
+  modules: ["@nuxt/scripts", "nuxt-llms", "@nuxt/fonts"],
   routeRules: {
     // default
     "/": { prerender: true },
@@ -11,6 +11,10 @@ export default defineNuxtConfig({
 
   // SEO
   site: { name: 'Nuxt I18n', url: "https://i18n.nuxtjs.org" },
+
+  image: {
+    domains: ["raw.githubusercontent.com"],
+  },
 
   nitro: {
     prerender: {

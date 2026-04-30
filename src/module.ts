@@ -14,7 +14,7 @@ import { relative } from 'pathe'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { filterLocales, resolveLocales } from './utils'
+import { computeLocaleHashes, filterLocales, resolveLocales } from './utils'
 import { isString } from '@intlify/shared'
 
 export * from './types'
@@ -176,6 +176,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
       ctx.vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx)
 
       /**
+       * content-hash locale files now that all locales and configs are known,
+       * used to cache-bust per-locale message server routes without churning
+       * on every build
+       */
+      ctx.localeHashes = computeLocaleHashes(ctx.localeInfo, ctx.vueI18nConfigPaths)
+
+      /**
        * expose i18n options via runtime config for use in app/server contexts
        */
       // @ts-expect-error generated type
@@ -199,24 +206,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       })
 
       nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(ctx, nuxt)
-
-      /**
-       * ignore `/` during prerender when using prefixed routing
-       */
-      if (ctx.options.strategy === 'prefix' && nuxt.options.nitro.static) {
-        const localizedEntryPages = ctx.localeCodes.map(x => '/' + x)
-        nuxt.hook('nitro:config', (config) => {
-          config.prerender ??= {}
-
-          // ignore `/` which is added by nitro by default
-          config.prerender.ignore ??= []
-          config.prerender.ignore.push(/^\/$/)
-
-          // add localized routes as entry pages for prerendering
-          config.prerender.routes ??= []
-          config.prerender.routes.push(...localizedEntryPages)
-        })
-      }
 
       /**
        * disable preloading/prefetching of locale files
