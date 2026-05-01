@@ -3,7 +3,7 @@ import type { Server } from 'node:http'
 import type { exec } from 'tinyexec'
 import type { Browser, LaunchOptions } from 'playwright-core'
 import type { NuxtI18nOptions } from '../../src/types'
-import type { Suite, File } from 'vitest'
+import type { RunnerTestSuite, RunnerTestFile } from 'vitest'
 
 export interface TestOptions {
   testDir: string
@@ -52,4 +52,4 @@ export interface TestHooks {
   ctx: TestContext
 }
 
-export type VitestContext = Suite | File
+export type VitestContext = RunnerTestSuite | RunnerTestFile

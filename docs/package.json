@@ -20,7 +20,7 @@
     "@iconify-json/simple-icons": "^1.2.78",
     "@iconify-json/vscode-icons": "^1.2.45",
     "@nuxt/fonts": "0.14.0",
-    "@nuxt/scripts": "^0.13.2",
+    "@nuxt/scripts": "^1.0.5",
     "better-sqlite3": "^12.9.0",
     "nuxt": "^4.4.2",
     "nuxt-llms": "0.2.0"
