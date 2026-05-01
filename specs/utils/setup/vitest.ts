@@ -5,7 +5,7 @@ export default async function setupVitest(hooks: TestHooks) {
 
   hooks.ctx.mockFn = vitest.vi.fn
 
-  vitest.beforeAll(hooks.setup, hooks.ctx.options.setupTimeout)
+  vitest.beforeAll(({}, suite) => hooks.setup(suite), hooks.ctx.options.setupTimeout)
   vitest.beforeEach(hooks.beforeEach)
   vitest.afterEach(hooks.afterEach)
   vitest.afterAll(hooks.afterAll)
