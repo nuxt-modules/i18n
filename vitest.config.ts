@@ -13,13 +13,8 @@ export default defineConfig({
       },
     },
     setupFiles: ['./specs/utils/setup-env.ts'],
-    exclude: [...configDefaults.exclude],
-    poolOptions: {
-      forks: {
-        maxForks: process.env.CI ? undefined : 4,
-        minForks: process.env.CI ? undefined : 4,
-      },
-    },
+    exclude: [...configDefaults.exclude, '**/*.config.*'],
+    maxWorkers: process.env.CI ? undefined : 4,
   },
   resolve: {
     alias: {
