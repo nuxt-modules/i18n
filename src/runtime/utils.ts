@@ -229,9 +229,14 @@ declare global {
   }
 }
 
-export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promise<string> {
+export async function loadAndSetLocale(
+  nuxtApp: NuxtApp,
+  locale: Locale,
+  options: { syncCookie?: boolean } = {},
+): Promise<string> {
   const ctx = useNuxtI18nContext(nuxtApp)
   const oldLocale = ctx.getLocale()
+  const syncCookie = options.syncCookie ?? true
 
   // skip if locale is already set and there is no pending locale change to a different locale
   if (locale === oldLocale && !ctx.initial && (!ctx.vueI18n.__pendingLocale || ctx.vueI18n.__pendingLocale === locale)) {
@@ -250,7 +255,11 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
   }
 
   await ctx.loadMessages(locale)
-  await ctx.setLocaleSuspend(locale)
+  if (syncCookie) {
+    await ctx.setLocaleSuspend(locale)
+  } else {
+    await ctx.setLocale(locale)
+  }
 
   return locale
 }
@@ -301,6 +310,28 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
     if (detected && isSupportedLocale(detected)) {
       return detected
     }
+  }
+
+  return ctx.getLocale() || ctx.getDefaultLocale() || ''
+}
+
+// Route and domain detection are hydration-safe for prerendered pages because they match the rendered HTML.
+export function detectLocaleFromRouteOrDomain(nuxtApp: NuxtApp, route: string | CompatRoute): string {
+  const detectConfig = useI18nDetection(nuxtApp)
+  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, nuxtApp)
+  const ctx = useNuxtI18nContext(nuxtApp)
+  const path = isString(route) ? route : route.path
+
+  if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
+    const hostLocale = detectors.host(path)
+    if (hostLocale && isSupportedLocale(hostLocale)) {
+      return hostLocale
+    }
+  }
+
+  const routeLocale = detectors.route(route)
+  if (routeLocale && isSupportedLocale(routeLocale)) {
+    return routeLocale
   }
 
   return ctx.getLocale() || ctx.getDefaultLocale() || ''

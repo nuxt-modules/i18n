@@ -53,6 +53,127 @@ function createRedirectResponse(event: H3Event, dest: string, code: number) {
   }
 }
 
+function serializeInlineScript(value: unknown) {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+}
+
+function createStaticRootLocaleRedirectScript(
+  runtimeI18n: ReturnType<typeof useRuntimeI18n>,
+  detection: ReturnType<typeof useI18nDetection>,
+  defaultLocale: string,
+) {
+  const locales = runtimeI18n.locales.map(locale => ({
+    code: typeof locale === 'string' ? locale : locale.code,
+    language: typeof locale === 'string' ? locale : (locale.language || locale.code),
+  }))
+  const config = {
+    cookieKey: detection.cookieKey,
+    defaultLocale,
+    fallbackLocale: detection.fallbackLocale || '',
+    strategy: __I18N_STRATEGY__,
+    useCookie: detection.useCookie,
+  }
+  const serializedConfig = serializeInlineScript(config)
+  const serializedLocales = serializeInlineScript(locales)
+
+  return `
+<script>
+(() => {
+  const config = ${serializedConfig}
+  const locales = ${serializedLocales}
+  const currentPath = window.location.pathname
+
+  if (currentPath !== '/') {
+    return
+  }
+
+  const normalize = value => String(value || '').toLowerCase()
+  const getBaseLocale = value => normalize(value).split('-')[0]
+  const matchesLocale = (tag, locale, exact) => {
+    const normalizedTag = normalize(tag)
+    const code = normalize(locale.code)
+    const language = normalize(locale.language || locale.code)
+
+    if (exact) {
+      return normalizedTag === code || normalizedTag === language
+    }
+
+    return getBaseLocale(normalizedTag) === getBaseLocale(code) || getBaseLocale(normalizedTag) === getBaseLocale(language)
+  }
+  const findSupportedLocale = (tag, exact = true) => {
+    if (!tag) {
+      return ''
+    }
+
+    const locale = locales.find(locale => matchesLocale(tag, locale, exact))
+    return locale?.code || ''
+  }
+  const detectFromNavigator = () => {
+    const preferredLocales = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]).filter(Boolean)
+
+    for (const preferredLocale of preferredLocales) {
+      const exactLocale = findSupportedLocale(preferredLocale)
+      if (exactLocale) {
+        return exactLocale
+      }
+    }
+
+    for (const preferredLocale of preferredLocales) {
+      const partialLocale = findSupportedLocale(preferredLocale, false)
+      if (partialLocale) {
+        return partialLocale
+      }
+    }
+
+    return ''
+  }
+  const readCookie = key => {
+    const parts = document.cookie ? document.cookie.split(/; */) : []
+
+    for (const part of parts) {
+      if (part.slice(0, key.length + 1) === key + '=') {
+        return decodeURIComponent(part.slice(key.length + 1))
+      }
+    }
+
+    return ''
+  }
+  const resolveRedirectPath = locale => {
+    switch (config.strategy) {
+      case 'prefix':
+      case 'prefix_and_default':
+        return '/' + locale
+      case 'prefix_except_default':
+        return locale === config.defaultLocale ? '/' : '/' + locale
+      default:
+        return ''
+    }
+  }
+
+  let detectedLocale = ''
+
+  if (config.useCookie) {
+    detectedLocale = findSupportedLocale(readCookie(config.cookieKey))
+  }
+
+  if (!detectedLocale) {
+    detectedLocale = detectFromNavigator()
+      || findSupportedLocale(config.fallbackLocale)
+      || findSupportedLocale(config.defaultLocale)
+      || config.defaultLocale
+  }
+
+  const targetPath = detectedLocale ? resolveRedirectPath(detectedLocale) : ''
+  if (targetPath && targetPath !== currentPath) {
+    window.location.replace(targetPath + window.location.search + window.location.hash)
+  }
+})()
+</script>`.trim()
+}
+
 export default defineNitroPlugin(async (nitro) => {
   const runtimeI18n = useRuntimeI18n()
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
@@ -191,6 +312,28 @@ export default defineNitroPlugin(async (nitro) => {
 
   nitro.hooks.hook('render:html', (htmlContext, { event }) => {
     const ctx = tryUseI18nContext(event)
+    const requestURL = getRequestURL(event)
+    const isStaticRootEntry = requestURL.pathname === '/'
+      || (__I18N_STRATEGY__ === 'prefix' && requestURL.pathname === '/200.html')
+
+    if (
+      __IS_SSG__
+      && detection.enabled
+      && detection.redirectOn === 'root'
+      && __I18N_STRATEGY__ !== 'no_prefix'
+      && !__DIFFERENT_DOMAINS__
+      && !__MULTI_DOMAIN_LOCALES__
+      && !rootRedirect
+      && isStaticRootEntry
+    ) {
+      // Static hosting has no request-time redirect. Bootstrap the locale redirect on the
+      // prerendered root entry before Vue mounts so the initial paint matches the detected locale.
+      // `strategy: 'prefix'` serves the root request from `200.html`, so include that shell too.
+      htmlContext.head.unshift(
+        createStaticRootLocaleRedirectScript(runtimeI18n, detection, ctx?.vueI18nOptions?.defaultLocale || _defaultLocale),
+      )
+    }
+
     if (__I18N_PRELOAD__) {
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) { return }
 

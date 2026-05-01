@@ -1,5 +1,5 @@
 import { useNuxtI18nContext, useResolvedLocale } from '../context'
-import { detectLocale, loadAndSetLocale, navigate } from '../utils'
+import { detectLocale, detectLocaleFromRouteOrDomain, loadAndSetLocale, navigate } from '../utils'
 import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware, useNuxtApp, useRouter } from '#imports'
 
 export default defineNuxtPlugin({
@@ -22,10 +22,16 @@ export default defineNuxtPlugin({
     }
 
     const resolvedLocale = useResolvedLocale()
+    const isInitialSsgHydration = __IS_SSG__ && import.meta.client && ctx.initial && __I18N_STRATEGY__ !== 'no_prefix'
+    const initialLocale = isInitialSsgHydration
+      // Keep the prerendered locale stable through hydration and defer browser detection to the SSG plugin.
+      ? detectLocaleFromRouteOrDomain(nuxt, nuxt.$router.currentRoute.value)
+      : (resolvedLocale.value || detectLocale(nuxt, nuxt.$router.currentRoute.value))
     await nuxt.runWithContext(() =>
       loadAndSetLocale(
         nuxt,
-        (ctx.initial && resolvedLocale.value) || detectLocale(nuxt, nuxt.$router.currentRoute.value),
+        initialLocale,
+        { syncCookie: !isInitialSsgHydration },
       ),
     )
 
@@ -35,6 +41,10 @@ export default defineNuxtPlugin({
     addRouteMiddleware(
       'locale-changing',
       defineNuxtRouteMiddleware(async (to) => {
+        if (__IS_SSG__ && import.meta.client && ctx.initial) {
+          return
+        }
+
         const locale = await nuxt.runWithContext(() => loadAndSetLocale(nuxt, detectLocale(nuxt, to)))
 
         ctx.initial = false
