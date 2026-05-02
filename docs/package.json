@@ -12,13 +12,13 @@
   },
   "dependencies": {
     "@takumi-rs/core": "^1.1.2",
-    "docus": "^5.9.0"
+    "docus": "^5.10.0"
   },
   "devDependencies": {
     "@iconify-json/logos": "^1.2.11",
-    "@iconify-json/lucide": "^1.2.102",
-    "@iconify-json/simple-icons": "^1.2.78",
-    "@iconify-json/vscode-icons": "^1.2.45",
+    "@iconify-json/lucide": "^1.2.105",
+    "@iconify-json/simple-icons": "^1.2.80",
+    "@iconify-json/vscode-icons": "^1.2.48",
     "@nuxt/fonts": "0.14.0",
     "@nuxt/scripts": "^1.0.5",
     "better-sqlite3": "^12.9.0",
