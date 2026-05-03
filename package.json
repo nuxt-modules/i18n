@@ -97,7 +97,7 @@
     "unrouting": "^0.1.5",
     "unstorage": "^1.16.1",
     "vue-i18n": "^11.4.0",
-    "vue-router": "^5.0.4"
+    "vue-router": "^5.0.6"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^1.15.2",
@@ -122,7 +122,7 @@
     "unbuild": "^3.6.0",
     "undici": "^8.1.0",
     "vitest": "^4.1.5",
-    "vue": "^3.5.30"
+    "vue": "^3.5.33"
   },
   "publishConfig": {
     "access": "public"
