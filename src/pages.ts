@@ -5,7 +5,7 @@ import { parse as parseSFC } from '@vue/compiler-sfc'
 import { parseAndWalk } from 'oxc-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { parseSegment, toVueRouterSegment } from 'unrouting'
-import { localizeRoutes } from './routing'
+import { localizeRoutes, shouldLocalizeRoutes } from './routing'
 import { dirname, parse as parsePath, resolve } from 'pathe'
 import { createRoutesContext, resolveOptions } from 'vue-router/unplugin'
 import { transform } from './transform/resource'
@@ -104,16 +104,20 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
 
       const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
 
-      const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], {
+      const localizationOptions = {
         ...options,
         includeUnprefixedFallback,
         locales: normalizedLocales,
         optionsResolver: resolver,
         compactRoutes: !!options.experimental?.compactRoutes,
-      })
+      }
+
+      const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], localizationOptions)
 
       // Build path config from original pages (not localized copies)
-      buildPathToConfig(ctx, localeCodes, resolver, pages as LocalizableRoute[])
+      if (shouldLocalizeRoutes(localizationOptions)) {
+        buildPathToConfig(ctx, localeCodes, resolver, pages as LocalizableRoute[])
+      }
 
       // keep root when using prefixed routing without prerendering
       const indexPage = pages.find(x => x.path === '/')

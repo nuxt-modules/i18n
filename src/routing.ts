@@ -19,7 +19,7 @@ function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext)
   }
 }
 
-function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
+export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   if (options.strategy !== 'no_prefix') { return true }
   // no_prefix is only supported when using a separate domain per locale
   if (!options.differentDomains) { return false }
