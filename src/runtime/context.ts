@@ -99,10 +99,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const loadMessagesFromServer = async (locale: string) => {
     if (locale in localeLoaders === false) { return }
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
-    // Reuse Nuxt's `app.cdnURL` so the client hits the static origin instead of the
-    // dynamic Nitro server when a CDN is configured. SSR keeps using a relative URL
-    // to avoid bouncing through the CDN for the same content the local handler can serve.
-    const prefix = import.meta.client ? (nuxt.$config.app.cdnURL || '') : ''
+    // Client fetches from `app.cdnURL` when messages are prerendered as static assets;
+    // SSR uses a relative URL so it doesn't round-trip through the CDN.
+    const prefix = import.meta.client && __I18N_CDN__ ? (nuxt.$config.app.cdnURL || '') : ''
     const url = joinURL(prefix, __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
     const messages = await $fetch<LocaleMessages<DefineLocaleMessage>>(url, { headers })
     for (const k of Object.keys(messages)) {

@@ -206,6 +206,13 @@ export interface ExperimentalFeatures {
    * @default false
    */
   compactRoutes?: boolean
+  /**
+   * Prerender hashed `messages.json` files into `.output/public/` at build time so lazy-loaded
+   * messages are served as static assets (from `app.cdnURL` when set) instead of the Nitro route.
+   * Messages from a `vue-i18n` config are merged at runtime and are not included in these files.
+   * @default false
+   */
+  prerenderMessages?: boolean
 }
 
 export interface BundleOptions
