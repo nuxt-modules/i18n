@@ -91,7 +91,7 @@ export async function resolveLayerVueI18nConfigInfo(ctx: I18nNuxtContext, nuxt =
     const resolved = await findPath(layer.i18n.vueI18n || 'i18n.config', { cwd: layer.i18nDir, extensions: EXECUTABLE_EXTENSIONS })
 
     if (!resolved) {
-      if (import.meta.dev && layer.i18n.vueI18n) {
+      if (layer.i18n.vueI18n) {
         logger.warn(`Vue I18n configuration file \`${layer.i18n.vueI18n}\` not found in \`${layer.i18nDir}\`. Skipping...`)
       }
       continue
