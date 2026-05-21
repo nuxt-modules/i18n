@@ -99,6 +99,9 @@ export function getDefineConfig(
     __I18N_COMPACT_ROUTES__: String(!!options.experimental?.compactRoutes),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
+    // SSG already prerenders the messages routes (runtime `prerenderRoutes`), so they exist at the
+    // CDN origin there too — honor `app.cdnURL` for both that and the opt-in `prerenderMessages`.
+    __I18N_CDN__: String(!!nuxt.options.app.cdnURL && (!!options.experimental.prerenderMessages || !!nuxt.options.nitro.static)),
     __I18N_LOCALE_HASHES__: JSON.stringify(localeHashes),
     __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),
   }

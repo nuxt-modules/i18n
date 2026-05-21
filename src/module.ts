@@ -207,13 +207,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
       nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(ctx, nuxt)
 
-      /**
-       * When Nuxt's `app.cdnURL` is set, emit hashed messages JSON files into `.output/public/`
-       * at build time so they ship as static assets alongside `_nuxt/*` chunks. This makes a
-       * regular `nuxt build` produce CDN-ready artifacts without the user having to compute
-       * the content hash themselves to add it to `nitro.prerender.routes`.
-       */
-      if (nuxt.options.app.cdnURL) {
+      // Prerender the hashed messages routes into `.output/public/` so lazy-loaded messages ship
+      // as static assets (uploadable to a CDN) instead of being served from the dynamic Nitro route.
+      if (ctx.options.experimental.prerenderMessages) {
         const messagesRoutes = ctx.localeCodes.map(
           locale => `${ctx.options.serverRoutePrefix}/${ctx.localeHashes[locale]}/${locale}/messages.json`,
         )

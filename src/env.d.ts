@@ -31,6 +31,8 @@ declare let __I18N_STRICT_SEO__: boolean
 declare let __I18N_SERVER_REDIRECT__: boolean
 /** Server route prefix for i18n message endpoints */
 declare let __I18N_SERVER_ROUTE__: string
+/** Client fetches prerendered messages from `app.cdnURL` instead of the relative origin */
+declare let __I18N_CDN__: boolean
 /** Per-locale content hash, used as the `:hash` segment of message routes */
 declare let __I18N_LOCALE_HASHES__: Record<string, string>
 /** Whether compact routes are enabled */
