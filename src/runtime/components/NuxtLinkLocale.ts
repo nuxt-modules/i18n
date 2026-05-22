@@ -4,15 +4,45 @@ import { computed, defineComponent, h } from 'vue'
 import { NuxtLink } from '#components'
 import { hasProtocol } from 'ufo'
 
-import type { PropType } from 'vue'
-import type { NuxtLinkProps } from 'nuxt/app'
+import type {
+  AllowedComponentProps,
+  AnchorHTMLAttributes,
+  DefineSetupFnComponent,
+  PropType,
+  SlotsType,
+  UnwrapRef,
+  VNode,
+  VNodeProps,
+} from 'vue'
+import type { NuxtApp, NuxtLinkProps } from 'nuxt/app'
+import type { RouteLocation, UseLinkReturn } from 'vue-router'
 
-type NuxtLinkLocaleProps = Omit<NuxtLinkProps, 'to'> & {
+type NuxtLinkLocaleProps<CustomProp extends boolean = false> = Omit<NuxtLinkProps<CustomProp>, 'to'> & {
   to?: import('vue-router').RouteLocationNamedI18n
   locale?: Locale
 }
 
-export default defineComponent<NuxtLinkLocaleProps>({
+// Mirrors `NuxtLink`'s slot props, which Nuxt does not export from `nuxt/app` (#3883).
+// https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts
+type NuxtLinkLocaleSlotProps<CustomProp extends boolean = false> = CustomProp extends true
+  ? {
+      href: string
+      navigate: (e?: MouseEvent) => Promise<void>
+      prefetch: (nuxtApp?: NuxtApp) => Promise<void>
+      route: (RouteLocation & { href: string }) | undefined
+      rel: string | null
+      target: '_blank' | '_parent' | '_self' | '_top' | (string & {}) | null
+      isExternal: boolean
+      isActive: false
+      isExactActive: false
+    }
+  : UnwrapRef<UseLinkReturn>
+
+type NuxtLinkLocaleSlots<CustomProp extends boolean = false> = {
+  default?: (props: NuxtLinkLocaleSlotProps<CustomProp>) => VNode[]
+}
+
+const NuxtLinkLocaleImpl = defineComponent<NuxtLinkLocaleProps<boolean>>({
   name: 'NuxtLinkLocale',
   props: {
     ...NuxtLink.props,
@@ -26,7 +56,11 @@ export default defineComponent<NuxtLinkLocaleProps>({
     const localeRoute = useLocaleRoute()
 
     // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
-    function checkPropConflicts(props: NuxtLinkLocaleProps, main: keyof NuxtLinkLocaleProps, sub: keyof NuxtLinkProps) {
+    function checkPropConflicts(
+      props: NuxtLinkLocaleProps<boolean>,
+      main: keyof NuxtLinkLocaleProps,
+      sub: keyof NuxtLinkProps,
+    ) {
       if (import.meta.dev && props[main] !== undefined && props[sub] !== undefined) {
         console.warn(`[NuxtLinkLocale] \`${main}\` and \`${sub}\` cannot be used together. \`${sub}\` will be ignored.`)
       }
@@ -84,9 +118,27 @@ export default defineComponent<NuxtLinkLocaleProps>({
       // Remove attributes not supported by NuxtLink (#2498)
       delete _props.locale
 
-      return _props as NuxtLinkProps
+      return _props as NuxtLinkProps<boolean>
     }
 
     return () => h(NuxtLink, getNuxtLinkProps(), slots.default)
   },
 })
+
+// Typed as a generic constructor (mirroring `NuxtLink`) so the `custom` prop and slot props
+// resolve correctly through the wrapper (#3883).
+export default NuxtLinkLocaleImpl as unknown as new <CustomProp extends boolean = false>(
+  props: NuxtLinkLocaleProps<CustomProp> &
+    VNodeProps &
+    AllowedComponentProps &
+    Omit<AnchorHTMLAttributes, keyof NuxtLinkLocaleProps<CustomProp>>
+) => InstanceType<
+  DefineSetupFnComponent<
+    NuxtLinkLocaleProps<CustomProp> &
+      VNodeProps &
+      AllowedComponentProps &
+      Omit<AnchorHTMLAttributes, keyof NuxtLinkLocaleProps<CustomProp>>,
+    [],
+    SlotsType<NuxtLinkLocaleSlots<CustomProp>>
+  >
+>
