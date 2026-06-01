@@ -6,7 +6,7 @@ import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
 import { isSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { joinURL } from 'ufo'
+import { joinURL, parsePath } from 'ufo'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n-locale-detector.mjs'
@@ -169,7 +169,10 @@ export default defineNitroPlugin(async (nitro) => {
     const detector = useDetectors(event, detection)
     const localeSegment = detector.route(event.path)
     const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
-    const path = (pathLocale && url.pathname.slice(pathLocale.length + 1)) ?? url.pathname
+    // `event.path` is already stripped of `app.baseURL` by Nitro (unlike `url.pathname`), and
+    // `parsePath` drops any query string - so `path` stays an absolute, base-free route path.
+    const { pathname } = parsePath(event.path)
+    const path = (pathLocale && pathname.slice(pathLocale.length + 1)) ?? pathname
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
     if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path)) {
