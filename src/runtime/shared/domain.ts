@@ -4,6 +4,22 @@ import { toArray } from './utils'
 
 import type { LocaleObject } from '#internal-i18n-types'
 
+/**
+ * Resolves the locale served by `host`.
+ *
+ * Locales declaring a matching `domain`/`domains` win. When several match the
+ * same host, the current path locale is preferred, then the domain's
+ * configured default (`defaultForDomains`/`domainDefault`), then the runtime
+ * `defaultLocale`. When NO locale declares any domain (single-host runtime
+ * mode — one build deployed to hosts unknown at build time), every locale is
+ * treated as served by the current host and the same precedence applies.
+ *
+ * @param locales - locales to match against (domains merged from runtime config)
+ * @param host - the request host
+ * @param pathLocale - locale parsed from the current path prefix, if any
+ * @param defaultLocale - runtime default locale used as the final fallback
+ * @returns the resolved locale code, or `undefined` when nothing matches
+ */
 export function matchDomainLocale(
   locales: LocaleObject[],
   host: string,
