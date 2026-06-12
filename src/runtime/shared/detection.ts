@@ -29,6 +29,7 @@ const getHostLocale = (
   event: H3Event | undefined,
   path: string,
   domainLocales: I18nPublicRuntimeConfig['domainLocales'],
+  defaultLocale?: string,
 ) => {
   const host = import.meta.client
     ? new URL(window.location.href).host
@@ -38,7 +39,7 @@ const getHostLocale = (
     ...l,
     domain: domainLocales[l.code]?.domain ?? l.domain,
   }))
-  return matchDomainLocale(locales, host, getLocaleFromRoutePath(path))
+  return matchDomainLocale(locales, host, getLocaleFromRoutePath(path), defaultLocale)
 }
 
 export const useDetectors = (event: H3Event | undefined, config: { cookieKey: string }, nuxtApp?: NuxtApp) => {
@@ -52,7 +53,7 @@ export const useDetectors = (event: H3Event | undefined, config: { cookieKey: st
     cookie: () => getCookieLocale(event, config.cookieKey),
     header: () => (import.meta.server ? getHeaderLocale(event) : undefined),
     navigator: () => (import.meta.client ? getNavigatorLocale(event) : undefined),
-    host: (path: string) => getHostLocale(event, path, runtimeI18n.domainLocales),
+    host: (path: string) => getHostLocale(event, path, runtimeI18n.domainLocales, runtimeI18n.defaultLocale),
     route: (path: string | CompatRoute) => getRouteLocale(event, path),
   }
 }

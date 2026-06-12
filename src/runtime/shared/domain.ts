@@ -4,11 +4,24 @@ import { toArray } from './utils'
 
 import type { LocaleObject } from '#internal-i18n-types'
 
-export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
+export function matchDomainLocale(
+  locales: LocaleObject[],
+  host: string,
+  pathLocale: string,
+  defaultLocale?: string,
+): string | undefined {
   const normalizeDomain = (domain: string = '') => domain.replace(/https?:\/\//, '')
-  const matches = locales.filter(
+  let matches = locales.filter(
     locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host),
   )
+
+  // single-host runtime mode: when no locale declares any domain, every locale
+  // is served from the current host and the unprefixed default comes from
+  // runtime config (`defaultLocale`) — supports deployments where the same
+  // build runs on hosts unknown at build time (dynamic preview environments)
+  if (!matches.length && locales.every(l => !l.domain && !(Array.isArray(l.domains) && l.domains.length))) {
+    matches = locales
+  }
 
   if (matches.length <= 1) {
     return matches[0]?.code
@@ -19,6 +32,8 @@ export function matchDomainLocale(locales: LocaleObject[], host: string, pathLoc
     matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
     || matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
+    // fallback to the runtime default locale
+    || (defaultLocale ? matches.find(l => l.code === defaultLocale)?.code : undefined)
   )
 }
 

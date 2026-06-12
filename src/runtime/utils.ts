@@ -26,7 +26,7 @@ import type {
 import type { NuxtI18nContext } from './context'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 import { useDetectors } from './shared/detection'
-import { useI18nDetection } from './shared/utils'
+import { useI18nDetection, useRuntimeI18n } from './shared/utils'
 
 /**
  * Common options used internally by composable functions, these
@@ -196,6 +196,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       // remove prefix if path is default for domain
       if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
         const defaultLocale = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host)
+          || useRuntimeI18n(nuxtApp).defaultLocale
         if (locale !== defaultLocale || detectors.route(path) !== defaultLocale) {
           return path
         }
