@@ -25,6 +25,16 @@ const getHeaderLocale = (event: H3Event | undefined) =>
 
 const getNavigatorLocale = (event: H3Event | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
 
+/**
+ * Resolve the locale from the request host for domain-based routing.
+ *
+ * @param event - The current H3 request event on the server; `undefined` on the client.
+ * @param path - The current route path, used to derive the path locale.
+ * @param domainLocales - Per-locale domain configuration from the public runtime config.
+ * @param defaultLocale - Runtime default locale used as the fallback when multiple locales
+ *   share a single host (single-host `multiDomainLocales` setups).
+ * @returns The matched locale code, or `undefined` when no domain matches.
+ */
 const getHostLocale = (
   event: H3Event | undefined,
   path: string,
@@ -42,6 +52,15 @@ const getHostLocale = (
   return matchDomainLocale(locales, host, getLocaleFromRoutePath(path), defaultLocale)
 }
 
+/**
+ * Build the ordered set of locale detectors (cookie, header, navigator, host, route)
+ * for the current request, wired to the active runtime i18n config.
+ *
+ * @param event - The current H3 request event; required on the server, `undefined` on the client.
+ * @param config - Detector configuration, including the cookie key used for cookie detection.
+ * @param nuxtApp - The Nuxt app instance, when available.
+ * @returns A map of detector name to a function resolving the locale for the request.
+ */
 export const useDetectors = (event: H3Event | undefined, config: { cookieKey: string }, nuxtApp?: NuxtApp) => {
   if (import.meta.server && !event) {
     throw new Error('H3Event is required for server-side locale detection')

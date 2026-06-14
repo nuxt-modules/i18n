@@ -75,6 +75,14 @@ export function useComposableContext(nuxtApp: NuxtApp): ComposableContext {
   return context
 }
 const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
+/**
+ * Create the context consumed by the i18n composables for the current request,
+ * falling back to the runtime default locale when none has been resolved yet.
+ *
+ * @param ctx - The i18n context holding the resolved configuration and locale state.
+ * @param nuxtApp - The Nuxt app instance (defaults to `useNuxtApp()`).
+ * @returns The composable context with routing, locale-detection and head utilities.
+ */
 export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp = useNuxtApp()): ComposableContext {
   const router = useRouter()
   const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
