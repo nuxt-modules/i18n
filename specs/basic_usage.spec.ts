@@ -783,5 +783,16 @@ describe('basic usage', async () => {
 
       expect(await page.locator('#per-component-hello').innerText()).toMatch('Hello!')
     })
+    test('NuxtLinkLocale with custom prop works', async () => {
+      const { page } = await renderPage('/en')
+      // Check that the custom link renders with the correct href
+      const href = await page.getAttribute('#custom-link a', 'href')
+      expect(href).toBe('/en/about')
+      
+      // Optional: click and verify navigation
+      await page.locator('#custom-link a').click()
+      await page.waitForURL(url('/en/about'))
+      expect(page.url()).toContain('/en/about')
+    })
   })
 })
