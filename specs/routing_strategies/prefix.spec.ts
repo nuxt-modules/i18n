@@ -220,4 +220,9 @@ describe('strategy: prefix', async () => {
     const res = await fetch('/?foo=bar')
     expect(res.url).toBe(url('/en?foo=bar'))
   })
+  test('NuxtLinkLocale accepts string path (typedPages: true)', async () => {
+  const { page } = await renderPage('/en')
+  const href = await page.getAttribute('#string-path-link', 'href')
+  expect(href).toBe('/en')
+})
 })
