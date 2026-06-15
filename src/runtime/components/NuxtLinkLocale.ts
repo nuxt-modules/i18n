@@ -18,7 +18,7 @@ import type { NuxtApp, NuxtLinkProps } from 'nuxt/app'
 import type { RouteLocation, UseLinkReturn } from 'vue-router'
 
 type NuxtLinkLocaleProps<CustomProp extends boolean = false> = Omit<NuxtLinkProps<CustomProp>, 'to'> & {
-  to?: import('vue-router').RouteLocationNamedI18n
+  to?: import('vue-router').RouteLocationRaw
   locale?: Locale
 }
 
