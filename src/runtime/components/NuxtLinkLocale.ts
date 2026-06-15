@@ -9,6 +9,7 @@ import type {
   AnchorHTMLAttributes,
   DefineSetupFnComponent,
   PropType,
+  Slots,
   SlotsType,
   UnwrapRef,
   VNode,
@@ -42,7 +43,80 @@ type NuxtLinkLocaleSlots<CustomProp extends boolean = false> = {
   default?: (props: NuxtLinkLocaleSlotProps<CustomProp>) => VNode[]
 }
 
-const NuxtLinkLocaleImpl = defineComponent<NuxtLinkLocaleProps<boolean>>({
+const NuxtLinkLocaleImpl = defineComponent(<CustomProp extends boolean = false>(
+  props: NuxtLinkLocaleProps<CustomProp>,
+  { slots }: { slots: Slots },
+) => {
+  const localeRoute = useLocaleRoute()
+
+  // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
+  function checkPropConflicts(
+    props: NuxtLinkLocaleProps<CustomProp>,
+    main: keyof NuxtLinkLocaleProps,
+    sub: keyof NuxtLinkProps,
+  ) {
+    if (import.meta.dev && props[main] !== undefined && props[sub] !== undefined) {
+      console.warn(`[NuxtLinkLocale] \`${main}\` and \`${sub}\` cannot be used together. \`${sub}\` will be ignored.`)
+    }
+  }
+
+  // Lazily check whether to.value has a protocol
+  const isAbsoluteUrl = computed(() => {
+    const path = props.to || props.href || ''
+    return typeof path === 'string' && hasProtocol(path, { acceptRelative: true })
+  })
+
+  const resolvedPath = computed(() => {
+    const destination = props.to ?? props.href
+    const resolved = destination != null ? localeRoute(destination, props.locale) : destination
+    if (resolved && isObject(props.to)) {
+      resolved.state = props.to?.state
+    }
+
+    return destination != null ? resolved : destination
+  })
+
+  // Resolving link type
+  const isExternal = computed<boolean>(() => {
+    // External prop is explicitly set
+    if (props.external) {
+      return true
+    }
+
+    const path = props.to || props.href || ''
+    // When `to` is a route object then it's an internal link
+    if (isObject(path)) {
+      return false
+    }
+
+    return path === '' || isAbsoluteUrl.value
+  })
+
+  /**
+   * Get props to pass to NuxtLink
+   * @returns NuxtLink props
+   */
+  const getNuxtLinkProps = () => {
+    const _props = {
+      ...props,
+    }
+
+    if (!isExternal.value) {
+      _props.to = resolvedPath.value
+    }
+
+    // Warn when both properties are used, delete `href` to prevent warning by `NuxtLink`
+    checkPropConflicts(props, 'to', 'href')
+    delete _props.href
+
+    // Remove attributes not supported by NuxtLink (#2498)
+    delete _props.locale
+
+    return _props as NuxtLinkProps<CustomProp>
+  }
+
+  return () => h(NuxtLink, getNuxtLinkProps(), slots.default)
+}, {
   name: 'NuxtLinkLocale',
   props: {
     ...NuxtLink.props,
@@ -51,77 +125,6 @@ const NuxtLinkLocaleImpl = defineComponent<NuxtLinkLocaleProps<boolean>>({
       default: undefined,
       required: false,
     },
-  },
-  setup(props, { slots }) {
-    const localeRoute = useLocaleRoute()
-
-    // From https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/nuxt-link.ts#L57
-    function checkPropConflicts(
-      props: NuxtLinkLocaleProps<boolean>,
-      main: keyof NuxtLinkLocaleProps,
-      sub: keyof NuxtLinkProps,
-    ) {
-      if (import.meta.dev && props[main] !== undefined && props[sub] !== undefined) {
-        console.warn(`[NuxtLinkLocale] \`${main}\` and \`${sub}\` cannot be used together. \`${sub}\` will be ignored.`)
-      }
-    }
-
-    // Lazily check whether to.value has a protocol
-    const isAbsoluteUrl = computed(() => {
-      const path = props.to || props.href || ''
-      return typeof path === 'string' && hasProtocol(path, { acceptRelative: true })
-    })
-
-    const resolvedPath = computed(() => {
-      const destination = props.to ?? props.href
-      const resolved = destination != null ? localeRoute(destination, props.locale) : destination
-      if (resolved && isObject(props.to)) {
-        resolved.state = props.to?.state
-      }
-
-      return destination != null ? resolved : destination
-    })
-
-    // Resolving link type
-    const isExternal = computed<boolean>(() => {
-      // External prop is explicitly set
-      if (props.external) {
-        return true
-      }
-
-      const path = props.to || props.href || ''
-      // When `to` is a route object then it's an internal link
-      if (isObject(path)) {
-        return false
-      }
-
-      return path === '' || isAbsoluteUrl.value
-    })
-
-    /**
-     * Get props to pass to NuxtLink
-     * @returns NuxtLink props
-     */
-    const getNuxtLinkProps = () => {
-      const _props = {
-        ...props,
-      }
-
-      if (!isExternal.value) {
-        _props.to = resolvedPath.value
-      }
-
-      // Warn when both properties are used, delete `href` to prevent warning by `NuxtLink`
-      checkPropConflicts(props, 'to', 'href')
-      delete _props.href
-
-      // Remove attributes not supported by NuxtLink (#2498)
-      delete _props.locale
-
-      return _props as NuxtLinkProps<boolean>
-    }
-
-    return () => h(NuxtLink, getNuxtLinkProps(), slots.default)
   },
 })
 
