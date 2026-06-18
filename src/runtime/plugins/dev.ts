@@ -1,8 +1,9 @@
-import { vueI18nConfigs } from '#build/i18n-options.mjs'
+import { deepCopy } from '@intlify/shared'
+import { localeLoaders, vueI18nConfigs } from '#build/i18n-options.mjs'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { getComposer } from '../compatibility'
 import { useNuxtI18nContext } from '../context'
-import { loadVueI18nOptions } from '../shared/messages'
+import { getLocaleMessagesMerged, loadVueI18nOptions } from '../shared/messages'
 
 import type { I18nOptions } from 'vue-i18n'
 
@@ -37,9 +38,12 @@ export default defineNuxtPlugin({
       for (const k of messageLocales) {
         if (locale && k !== locale) { continue }
 
-        // set to vue-i18n messages or reset to account for removed messages
-        composer.setLocaleMessage(k, opts?.messages?.[k] ?? {})
-        await ctx.loadMessages(k)
+        const baseMessages = opts?.messages?.[k] ?? {}
+        const fileMessages = await nuxt.runWithContext(() => getLocaleMessagesMerged(k, localeLoaders[k] || []))
+        const merged: Record<string, unknown> = {}
+        deepCopy(baseMessages, merged)
+        deepCopy(fileMessages, merged)
+        composer.setLocaleMessage(k, merged)
       }
 
       // skip vue-i18n config properties if locale is passed (locale file HMR)
