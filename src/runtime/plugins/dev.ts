@@ -39,11 +39,15 @@ export default defineNuxtPlugin({
         if (locale && k !== locale) { continue }
 
         const baseMessages = opts?.messages?.[k] ?? {}
-        const fileMessages = await nuxt.runWithContext(() => getLocaleMessagesMerged(k, localeLoaders[k] || []))
-        const merged: Record<string, unknown> = {}
-        deepCopy(baseMessages, merged)
-        deepCopy(fileMessages, merged)
-        composer.setLocaleMessage(k, merged)
+        try {
+          const fileMessages = await nuxt.runWithContext(() => getLocaleMessagesMerged(k, localeLoaders[k] || []))
+          const merged: Record<string, unknown> = {}
+          deepCopy(baseMessages, merged)
+          deepCopy(fileMessages, merged)
+          composer.setLocaleMessage(k, merged)
+        } catch (e) {
+          console.warn(`Failed to load messages for locale "${k}"`, e)
+        }
       }
 
       // skip vue-i18n config properties if locale is passed (locale file HMR)
