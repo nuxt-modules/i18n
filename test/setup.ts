@@ -5,6 +5,7 @@ vi.stubGlobal('__I18N_CACHE__', false)
 vi.stubGlobal('__I18N_CACHE_LIFETIME__', -1)
 vi.stubGlobal('__I18N_HTTP_CACHE_DURATION__', 10)
 vi.stubGlobal('__I18N_STRICT_SEO__', false)
+vi.stubGlobal('__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__', false)
 vi.stubGlobal('__PARALLEL_PLUGIN__', false)
 
 vi.stubGlobal('__TRAILING_SLASH__', false)

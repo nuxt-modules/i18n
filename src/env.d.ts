@@ -37,3 +37,5 @@ declare let __I18N_CDN__: boolean
 declare let __I18N_LOCALE_HASHES__: Record<string, string>
 /** Whether compact routes are enabled */
 declare let __I18N_COMPACT_ROUTES__: boolean
+/** Whether the default locale resolves to a locale-agnostic `___default` route name */
+declare let __I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__: boolean

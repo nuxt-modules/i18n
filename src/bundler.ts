@@ -97,6 +97,7 @@ export function getDefineConfig(
 
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
     __I18N_COMPACT_ROUTES__: String(!!options.experimental?.compactRoutes),
+    __I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__: String(!!options.experimental?.localeAgnosticDefaultRoutes),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
     // SSG already prerenders the messages routes (runtime `prerenderRoutes`), so they exist at the
