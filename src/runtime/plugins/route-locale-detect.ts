@@ -16,7 +16,12 @@ export default defineNuxtPlugin({
       const router = useRouter()
       for (const route of router.getRoutes()) {
         if (route.meta?.__i18nCompact && route.meta.key == null) {
-          route.meta.key = (r: { path: string }) => r.path
+          // Key by the record's own interpolated pattern (mirrors Nuxt's default `<NuxtPage>`
+          // keying) instead of the full resolved path, so nested parent pages stay mounted
+          // across child navigation and only remount when the locale param actually changes.
+          const pattern = route.path.replace(/(:\w+)\([^)]+\)/g, '$1').replace(/(:\w+)[?+*]/g, '$1')
+          route.meta.key = (r: { params: Record<string, string | string[]> }) =>
+            pattern.replace(/:\w+/g, m => r.params[m.slice(1)]?.toString() || '')
         }
       }
     }
