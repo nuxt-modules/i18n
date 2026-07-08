@@ -42,7 +42,7 @@ export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
       }
     } catch (err) {
       if (!(err instanceof Error)) { throw err }
-      throw new Error(`[nuxt-i18n] ${layerHint} ${err.message}`)
+      throw new Error(`[nuxt-i18n] ${layerHint} ${err.message}`, { cause: err })
     }
   }
 }

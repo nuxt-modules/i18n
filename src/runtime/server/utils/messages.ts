@@ -47,7 +47,7 @@ const _getMergedMessages = async (locale: string, fallbackLocales: string[]) => 
 
     return merged
   } catch (e) {
-    throw new Error('Failed to merge messages: ' + (e as Error).message)
+    throw new Error('Failed to merge messages: ' + (e as Error).message, { cause: e })
   }
 }
 
@@ -75,7 +75,7 @@ const _getAllMergedMessages = async (locales: string[]) => {
 
     return merged
   } catch (e) {
-    throw new Error('Failed to merge messages: ' + (e as Error).message)
+    throw new Error('Failed to merge messages: ' + (e as Error).message, { cause: e })
   }
 }
 

@@ -88,6 +88,14 @@ export default defineNuxtModule<NuxtI18nOptions>({
     nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`)
     nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
 
+    // the aliased node build has no declaration file, drop the generated paths entries
+    // so TS resolves types from the package `types` export (`dist/core.d.ts`) instead
+    nuxt.hook('prepare:types', ({ tsConfig, nodeTsConfig, sharedTsConfig }) => {
+      for (const cfg of [tsConfig, nodeTsConfig, sharedTsConfig]) {
+        delete cfg?.compilerOptions?.paths?.['@intlify/core']
+      }
+    })
+
     nuxt.options.alias['#i18n'] = ctx.resolver.resolve('./runtime/composables/index')
     nuxt.options.alias['#i18n-kit'] = ctx.resolver.resolve('./runtime/kit')
     nuxt.options.alias['#internal-i18n-types'] = ctx.resolver.resolve('./types')
