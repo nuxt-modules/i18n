@@ -53,7 +53,7 @@ async function getLocaleMessages(locale: string, loader: LocaleLoader) {
     const getter = await nuxtApp.runWithContext(loader.load).then(x => (isModule(x) ? x.default : x))
     return isFunction(getter) ? await nuxtApp.runWithContext(() => getter(locale)) : getter
   } catch (e: unknown) {
-    throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message)
+    throw new Error(`Failed loading locale (${locale}): ` + (e as Error).message, { cause: e })
   }
 }
 
