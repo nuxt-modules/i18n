@@ -13,8 +13,16 @@ import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
 export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
-  const project = getLayerI18n(nuxt.options._layers[0]!)
-  const include = toArray(project?.bundle?.onlyLocales ?? []).filter(isString)
+  // use `onlyLocales` from the first layer that specifies it
+  let onlyLocales
+  for (const layer of nuxt.options._layers) {
+    const layerOnlyLocales = getLayerI18n(layer)?.bundle?.onlyLocales
+    if (layerOnlyLocales != null) {
+      onlyLocales = layerOnlyLocales
+      break
+    }
+  }
+  const include = toArray(onlyLocales ?? []).filter(isString)
 
   if (!include.length) {
     return ctx.options.locales
