@@ -1,4 +1,3 @@
-import { deepCopy } from '@intlify/shared'
 import { localeLoaders, vueI18nConfigs } from '#build/i18n-options.mjs'
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { getComposer } from '../compatibility'
@@ -38,13 +37,11 @@ export default defineNuxtPlugin({
       for (const k of messageLocales) {
         if (locale && k !== locale) { continue }
 
-        const baseMessages = opts?.messages?.[k] ?? {}
         try {
           const fileMessages = await nuxt.runWithContext(() => getLocaleMessagesMerged(k, localeLoaders[k] || []))
-          const merged: Record<string, unknown> = {}
-          deepCopy(baseMessages, merged)
-          deepCopy(fileMessages, merged)
-          composer.setLocaleMessage(k, merged)
+          // reset to config messages to drop removed keys, merge file messages in the same tick
+          composer.setLocaleMessage(k, opts?.messages?.[k] ?? {})
+          composer.mergeLocaleMessage(k, fileMessages)
         } catch (e) {
           console.warn(`Failed to load messages for locale "${k}"`, e)
         }
