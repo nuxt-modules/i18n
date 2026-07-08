@@ -130,6 +130,11 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       const localizedName = getLocalizedRouteName(baseName, locale)
       if (router.hasRoute(localizedName)) {
         route.name = localizedName
+        // Remove stale locale param inherited from a compact route — per-locale routes don't use it
+        const named = route as RouteLikeWithName
+        if (__I18N_COMPACT_ROUTES__ && named.params) {
+          delete (named.params as Record<string, unknown>).locale
+        }
         return route
       }
 
