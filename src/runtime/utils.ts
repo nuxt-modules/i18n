@@ -2,7 +2,7 @@ import { isEqual, joinURL, withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 import { navigateTo, useHead, useNuxtApp, useRequestEvent, useRequestURL, useRouter } from '#imports'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './routing/utils'
-import { getRouteBaseName } from '#i18n-kit/routing'
+import { getLocalizedRouteName, getRouteBaseName } from '#i18n-kit/routing'
 import {
   type RouteLike,
   type RouteLikeWithName,
@@ -311,6 +311,19 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
   return ctx.getLocale() || ctx.getDefaultLocale() || ''
 }
 
+/**
+ * Routes with localization disabled (e.g. `definePageMeta({ i18n: false })`) keep their
+ * unsuffixed record name and have no localized variants, unlike compact routes and
+ * unprefixed fallback routes (e.g. the root route kept for `strategy: 'prefix'`).
+ */
+function isUnlocalizedRoute(ctx: ComposableContext, to: CompatRoute): boolean {
+  if (__I18N_STRATEGY__ === 'no_prefix' || to.name == null) { return false }
+  const name = String(to.name)
+  if (getRouteBaseName(name) !== name) { return false }
+  if (__I18N_COMPACT_ROUTES__ && to.matched.some(r => r.meta.__i18nCompact)) { return false }
+  return !ctx.getLocales().some(locale => ctx.router.hasRoute(getLocalizedRouteName(name, locale.code, false)))
+}
+
 export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
   if (!__I18N_ROUTING__ || __DIFFERENT_DOMAINS__) { return }
 
@@ -320,6 +333,9 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
   if (to.path === '/' && ctx.rootRedirect) {
     return navigateTo(localePath(_ctx, ctx.rootRedirect.path, locale), { redirectCode: ctx.rootRedirect.code })
   }
+
+  // skip - localization disabled for route (#3987)
+  if (isUnlocalizedRoute(_ctx, to)) { return }
 
   // skip - pending locale inside navigation middleware
   if (ctx.vueI18n.__pendingLocale && useNuxtApp()._processingMiddleware) {
