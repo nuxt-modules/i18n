@@ -127,6 +127,11 @@ jobs:
         run: pnpm test
 
   edge-release:
+    if: |
+      github.event_name == 'push' &&
+      !startsWith(github.event.head_commit.message, '[skip-release]') &&
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'docs')
     needs:
       - lint
       - build
@@ -162,9 +167,4 @@ jobs:
           key: node-v${{ matrix.node-version }}-${{ github.sha }}
 
       - name: Release Edge
-        if: |
-          github.event_name == 'push' &&
-          !startsWith(github.event.head_commit.message, '[skip-release]') &&
-          !startsWith(github.event.head_commit.message, 'chore') &&
-          !startsWith(github.event.head_commit.message, 'docs')
         run: ./scripts/release-edge.sh
