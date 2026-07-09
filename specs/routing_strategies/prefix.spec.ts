@@ -168,6 +168,30 @@ describe('strategy: prefix', async () => {
     await page.waitForURL(url('/ignore-routes/disable'))
   })
 
+  test("(#3987) initial load of route with disabled localization does not redirect with `redirectOn: 'no prefix'`", async () => {
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            detectBrowserLanguage: {
+              useCookie: false,
+              redirectOn: 'no prefix'
+            }
+          }
+        }
+      },
+      true
+    )
+
+    // `/ignore-routes/disable` is shadowed by the localized catch-all `ignore-routes/[...catch].vue`,
+    // which used to give the client-side detection a resolvable localized destination
+    const { page } = await renderPage('/ignore-routes/disable', { locale: 'fr' })
+    // detection redirect is delayed until hydration, give it time to (not) happen
+    await page.waitForTimeout(500)
+    expect(page.url()).toBe(url('/ignore-routes/disable'))
+    expect(await page.locator('p').innerText()).toEqual('ignore localized route disable test')
+  })
+
   test('should not transform `defineI18nRoute()` inside template', async () => {
     const { page } = await renderPage('/', { locale: 'en' })
     await page.waitForURL(url('/en'))
