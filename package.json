@@ -64,7 +64,7 @@
     "lint:fix": "eslint . --cache --fix",
     "lint:knip": "knip --workspace .",
     "test": "nuxt-module-build prepare && pnpm test:types && pnpm test:unit && pnpm test:e2e",
-    "test:types": "tsc --noEmit",
+    "test:types": "tsc --noEmit && pnpm --filter './specs/fixtures/**' test:types",
     "test:unit": "vitest run test -c vitest.config.test.ts",
     "test:e2e": "vitest run specs"
   },
