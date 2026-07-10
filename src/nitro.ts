@@ -5,6 +5,7 @@ import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate,
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
+import { relative } from 'pathe'
 import { logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 
@@ -25,12 +26,12 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
     getContents: () => nuxt.vfs['#build/i18n-route-resources.mjs'] || '',
   })
 
-  const localeDetectorPath = await resolveLocaleDetectorPath(ctx, nuxt)
+  const localeDetector = await resolveLocaleDetectorPath(ctx, nuxt)
   addServerTemplate({
     filename: '#internal/i18n-locale-detector.mjs',
     getContents: () =>
-      localeDetectorPath
-        ? `export { default as localeDetector } from ${JSON.stringify(localeDetectorPath)}`
+      localeDetector.exists
+        ? `export { default as localeDetector } from ${JSON.stringify(localeDetector.path)}`
         : `export const localeDetector = undefined`,
   })
 
@@ -60,6 +61,14 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
     nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...new Set(ctx.localeInfo.flatMap(x => x.meta.map(m => m.path)))] })
     nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
 
+    // type the locale detector file in the server tsconfig, where `#i18n` resolves server composables
+    if (localeDetector.path) {
+      const relativeDetectorPath = relative(nuxt.options.buildDir, localeDetector.path)
+      nuxt.options.typescript.tsConfig.exclude ||= []
+      nuxt.options.typescript.tsConfig.exclude.push(relativeDetectorPath)
+      nitroConfig.typescript = defu(nitroConfig.typescript ?? {}, { tsConfig: { include: [relativeDetectorPath] } })
+    }
+
     nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
     nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
 
@@ -79,16 +88,15 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
 async function resolveLocaleDetectorPath(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const detector = ctx.i18nLayers.find(l => !!l.i18nDetector)?.i18nDetector
-  if (detector == null) { return '' }
+  if (detector == null) { return { path: '', exists: false } }
 
   const resolved = await resolvePath(detector, { cwd: nuxt.options.rootDir, extensions: EXECUTABLE_EXTENSIONS })
   const exists = existsSync(resolved)
   if (!exists) {
     logger.warn(`localeDetector file '${resolved}' does not exist.`)
-    return ''
   }
 
-  return resolved
+  return { path: resolved, exists }
 }
 
 function getResourcePathsGrouped(localeInfo: LocaleInfo[]) {
