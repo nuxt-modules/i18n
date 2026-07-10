@@ -13,6 +13,7 @@ import { type NuxtI18nContext, createNuxtI18nContext, useLocaleConfigs } from '.
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
+import { withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
@@ -59,7 +60,9 @@ export default defineNuxtPlugin({
     // extend i18n instance
     extendI18n(i18n, {
       extendComposer(composer) {
-        composer.locales = computed(() => runtimeI18n.locales)
+        composer.locales = computed(() =>
+          runtimeI18n.locales.map(locale => withRuntimeDomain(locale, runtimeI18n.domainLocales)),
+        )
         composer.localeCodes = computed(() => localeCodes)
 
         const _baseUrl = ref(ctx.getBaseUrl())
@@ -70,8 +73,11 @@ export default defineNuxtPlugin({
         }
 
         composer.strategy = __I18N_STRATEGY__
-        composer.localeProperties = computed(
-          () => normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value },
+        composer.localeProperties = computed(() =>
+          withRuntimeDomain(
+            normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value },
+            runtimeI18n.domainLocales,
+          ),
         )
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(nuxt, locale)

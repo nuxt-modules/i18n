@@ -2,7 +2,7 @@
 import { useHead } from '#imports'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
 
-const { t } = useI18n()
+const { t, locales, localeProperties } = useI18n()
 const localePath = useLocalePath()
 const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page'] } })
 
@@ -21,6 +21,8 @@ useHead(() => ({
   <div>
     <h1 id="home-header">{{ $t('home') }}</h1>
     <div id="welcome-text">{{ t('welcome') }}</div>
+    <code id="locale-properties-domain">{{ localeProperties.domain }}</code>
+    <code id="locales-domains">{{ locales.map(l => `${l.code}:${l.domain}`).join(',') }}</code>
     <BasicUsage />
     <LangSwitcher />
     <section>
