@@ -160,6 +160,19 @@ test('(#2931) detect using runtimeConfig domain', async () => {
   expect(await dom.locator('#welcome-text').textContent()).toEqual('환영하다')
 })
 
+test('(#3988) `localeProperties` and `locales` use runtimeConfig domain', async () => {
+  const res = await undiciRequest('/', {
+    headers: {
+      host: 'kr.staging.nuxt-app.localhost'
+    }
+  })
+  const dom = await getDom(await res.body.text())
+  expect(await dom.locator('#locale-properties-domain').textContent()).toEqual('kr.staging.nuxt-app.localhost')
+  expect(await dom.locator('#locales-domains').textContent()).toEqual(
+    'en:en.nuxt-app.localhost,fr:fr.nuxt-app.localhost,kr:kr.staging.nuxt-app.localhost,no:no.nuxt-app.localhost,nl:layer-nl.example.com,ja:layer-ja.example.com'
+  )
+})
+
 test('(#2374) detect with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {

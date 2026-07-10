@@ -2,7 +2,7 @@ import { hasProtocol } from 'ufo'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 import { toArray } from './utils'
 
-import type { LocaleObject } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
 export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
   const normalizeDomain = (domain: string = '') => domain.replace(/https?:\/\//, '')
@@ -41,4 +41,19 @@ export function domainFromLocale(
   }
 
   return url.protocol + '//' + domain
+}
+
+/**
+ * Returns the locale object with the domain overridden by `domainLocales` runtime config (see also `getHostLocale`)
+ */
+export function withRuntimeDomain<T extends string | LocaleObject>(
+  locale: T,
+  domainLocales: I18nPublicRuntimeConfig['domainLocales'],
+): T {
+  if ((!__DIFFERENT_DOMAINS__ && !__MULTI_DOMAIN_LOCALES__) || typeof locale === 'string') {
+    return locale
+  }
+  const properties = locale as LocaleObject
+  const domain = domainLocales[properties.code]?.domain
+  return domain && domain !== properties.domain ? ({ ...properties, domain } as T) : locale
 }
