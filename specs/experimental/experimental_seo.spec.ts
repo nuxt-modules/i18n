@@ -38,7 +38,7 @@ describe('experimental.strictSeo', async () => {
       Meta:
         og:url: http://localhost:3000/products/big-chair
         og:locale: en
-        og:locale:alternate: fr, ja, ja_JP, nl, nl_NL"
+        og:locale:alternate: fr, ja_JP, nl_NL"
     `)
 
     await page.goto(url('/nl/products/rode-mok'))
@@ -58,7 +58,7 @@ describe('experimental.strictSeo', async () => {
       Meta:
         og:url: http://localhost:3000/nl/products/rode-mok
         og:locale: nl_NL
-        og:locale:alternate: en, fr, nl"
+        og:locale:alternate: en, fr"
     `)
   })
 })

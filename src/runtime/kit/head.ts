@@ -88,12 +88,7 @@ export function localeHead(
     metaObject.meta = metaObject.meta.concat(
       getOgUrl(options),
       getCurrentOgLocale(options),
-      getAlternateOgLocales(
-        options,
-        strictSeo
-          ? alternateLinks.map(x => x.hreflang).filter(x => x !== 'x-default') as string[]
-          : options.locales.map(x => x.language || x.code),
-      ),
+      getAlternateOgLocales(options, getAlternateOgLanguages(options, alternateLinks)),
     )
   }
 
@@ -209,6 +204,19 @@ function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getC
       ? { property: 'og:locale', content: formatOgLanguage(currentLanguage) }
       : { [options.key]: 'i18n-og', property: 'og:locale', content: formatOgLanguage(currentLanguage) },
   ]
+}
+
+/**
+ * The hreflang list contains bare-language catchall entries which are not valid `og:locale` values,
+ * limit to the locales' own `language` tags while keeping the availability filtering of the links.
+ */
+function getAlternateOgLanguages(options: HeadContext, alternateLinks: MetaAttrs[]): string[] {
+  const languages = options.locales.map(x => x.language || x.code)
+  if (!strictSeo) {
+    return languages
+  }
+  const available = new Set(alternateLinks.map(x => x.hreflang))
+  return languages.filter(x => available.has(x))
 }
 
 function getAlternateOgLocales(
