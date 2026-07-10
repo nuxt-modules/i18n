@@ -28,6 +28,19 @@ describe('#3887', async () => {
     const res = await fetch('/base-path/about', { redirect: 'manual' })
 
     expect(res.status).toBe(302)
-    expect(res.headers.get('location')).toContain('/about')
+    expect(res.headers.get('location')).toEqual('/base-path/en/about')
+  })
+
+  test('redirects the root path to the localized root when `app.baseURL` is set', async () => {
+    const res = await fetch('/base-path/', { redirect: 'manual' })
+
+    expect(res.status).toBe(302)
+    expect(res.headers.get('location')).toEqual('/base-path/en')
+  })
+
+  test('does not redirect a prefixed path', async () => {
+    const res = await fetch('/base-path/en/about', { redirect: 'manual' })
+
+    expect(res.status).toBe(200)
   })
 })
