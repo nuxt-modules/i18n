@@ -6,7 +6,13 @@ import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { RouteLocationAsRelativeI18n, RouteLocationResolvedI18n, RouteMap, RouteMapI18n } from 'vue-router'
+import type {
+  RouteLocationAsPathGeneric,
+  RouteLocationAsRelativeTypedI18n,
+  RouteLocationResolvedI18n,
+  RouteMap,
+  RouteMapI18n,
+} from 'vue-router'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from '../types'
 import type { NuxtApp } from '#app'
 
@@ -100,13 +106,16 @@ export function useLocaleHead(
 
 /**
  * NOTE: regarding composables accepting narrowed route arguments
- * route path string autocompletion is disabled as this can break depending on `strategy`
- * if route resolve is improved to work regardless of strategy this can be enabled again
- *
- * the following would be the complete narrowed type
- * route: Name | RouteLocationAsRelativeI18n | RouteLocationAsStringI18n | RouteLocationAsPathI18n
+ * route path string autocompletion is disabled as this can break depending on `strategy`,
+ * path objects stay `RouteLocationAsPathGeneric` (plain string path) for the same reason.
+ * The relative form uses the `RouteLocationAsRelativeTypedI18n` interface instead of the
+ * `RouteLocationAsRelativeI18n` conditional alias, matching vue-router's `resolve()`, so
+ * `Name` is inferred from the `name` property and name/params narrowing works (#3962).
  */
-type RouteLocationI18nGenericPath = Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }
+type RouteLocationI18nInput<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
+  | Name
+  | RouteLocationAsRelativeTypedI18n<RouteMapI18n, Name>
+  | RouteLocationAsPathGeneric
 
 /**
  * Resolves the route base name for the given route.
@@ -145,7 +154,7 @@ export function useRouteBaseName(nuxtApp: NuxtApp = useNuxtApp()): RouteBaseName
  * @returns Returns the localized path for the given route.
  */
 export type LocalePathFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationI18nGenericPath,
+  route: RouteLocationI18nInput<Name>,
   locale?: Locale,
 ) => string
 
@@ -172,7 +181,7 @@ export function useLocalePath(nuxtApp: NuxtApp = useNuxtApp()): LocalePathFuncti
  * @returns A route or `undefined` if no route was resolved.
  */
 export type LocaleRouteFunction = <Name extends keyof RouteMapI18n = keyof RouteMapI18n>(
-  route: Name | RouteLocationI18nGenericPath,
+  route: RouteLocationI18nInput<Name>,
   locale?: Locale,
 ) => RouteLocationResolvedI18n<Name> | undefined
 

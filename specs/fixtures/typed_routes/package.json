@@ -1,0 +1,17 @@
+{
+  "name": "fixture-typed-routes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxi build",
+    "dev": "nuxi dev",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "test:types": "nuxi prepare && vue-tsc -b --noEmit"
+  },
+  "devDependencies": {
+    "@nuxtjs/i18n": "latest",
+    "nuxt": "latest",
+    "vue-tsc": "^3.1.9"
+  }
+}
