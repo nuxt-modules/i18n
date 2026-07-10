@@ -15,7 +15,8 @@ function createHeadContext(
   baseUrl = ctx.getBaseUrl(),
 ): HeadContext {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
-  const canonicalQueries = (typeof config.seo === 'object' && config.seo?.canonicalQueries) || []
+  // deduplicate, layered configs merge `canonicalQueries` arrays with duplicate entries
+  const canonicalQueries = [...new Set((typeof config.seo === 'object' && config.seo?.canonicalQueries) || [])]
 
   if (!baseUrl && !__DIFFERENT_DOMAINS__ && !__MULTI_DOMAIN_LOCALES__) {
     if (__I18N_STRICT_SEO__) {

@@ -141,7 +141,8 @@ export default defineNuxtPlugin({
     if (__I18N_STRICT_SEO__) {
       // enable head tag management after most of the i18n setup is done
       nuxt.hook(import.meta.server ? 'app:rendered' : 'app:mounted', () => {
-        _useLocaleHead(nuxt._nuxtI18n.composableCtx, { dir: true, lang: true, seo: true })
+        const composableCtx = nuxt._nuxtI18n.composableCtx
+        _useLocaleHead(composableCtx, composableCtx.seoSettings as Required<I18nHeadOptions>)
       })
     }
   },

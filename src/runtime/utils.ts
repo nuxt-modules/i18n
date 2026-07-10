@@ -172,7 +172,9 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     seoSettings: {
       dir: __I18N_STRICT_SEO__,
       lang: __I18N_STRICT_SEO__,
-      seo: __I18N_STRICT_SEO__,
+      // the object form carries `canonicalQueries`, `__I18N_STRICT_SEO__` only compiles its truthiness
+      seo: (typeof ctx.config.experimental.strictSeo === 'object' && ctx.config.experimental.strictSeo)
+        || __I18N_STRICT_SEO__,
     },
     localePathPayload: getLocalePathPayload(),
     routingOptions: {
