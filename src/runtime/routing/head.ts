@@ -7,6 +7,13 @@ import type { ComposableContext } from '../utils'
 import type { I18nRouteMeta } from '../types'
 import { localeRoute, switchLocalePath } from './routing'
 
+// unhead v3 narrows head input to per-property unions which the loose public `I18nHeadMetaInfo`
+// cannot satisfy, patch through a single boundary cast compatible with both v2 and v3
+type HeadEntryInput = Parameters<NonNullable<ComposableContext['head']>['patch']>[0]
+function patchHead(head: ComposableContext['head'] | undefined, input: I18nHeadMetaInfo): void {
+  head?.patch(input as unknown as HeadEntryInput)
+}
+
 function createHeadContext(
   ctx: ComposableContext,
   config: Required<I18nHeadOptions>,
@@ -73,14 +80,14 @@ export function _useLocaleHead(ctx: ComposableContext, options: Required<I18nHea
   if (import.meta.client) {
     const unsub = watch([() => ctx.router.currentRoute.value, () => ctx.getLocale()], () => {
       metaObject.value = _localeHead(createHeadContext(ctx, options))
-      __I18N_STRICT_SEO__ && ctx.head?.patch(metaObject.value)
+      __I18N_STRICT_SEO__ && patchHead(ctx.head, metaObject.value)
     })
     if (getCurrentScope()) {
       onScopeDispose(unsub)
     }
   }
 
-  __I18N_STRICT_SEO__ && ctx.head?.patch(metaObject.value)
+  __I18N_STRICT_SEO__ && patchHead(ctx.head, metaObject.value)
 
   return metaObject
 }
@@ -121,7 +128,7 @@ export function _useSetI18nParams(
 
   function updateState() {
     ctx.metaState = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
-    head?.patch(ctx.metaState)
+    patchHead(head, ctx.metaState)
   }
 
   const ctxOptions = ref({
@@ -135,7 +142,7 @@ export function _useSetI18nParams(
     __I18N_STRICT_SEO__ && updateState()
     if (!__I18N_STRICT_SEO__) {
       const val = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
-      head?.patch(val)
+      patchHead(head, val)
     }
   }
 }
