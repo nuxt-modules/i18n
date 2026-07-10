@@ -21,7 +21,7 @@
     {
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
-      "matchFileNames": ["package.json"],
+      "matchFileNames": ["package.json", "specs/fixtures/**/package.json"],
       "matchUpdateTypes": ["minor", "patch"],
       "lockFileMaintenance": {
         "enabled": true,
