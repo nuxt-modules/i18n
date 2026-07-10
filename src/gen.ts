@@ -90,16 +90,36 @@ export function generateLoaderOptions(
  *
  * Types like RouteMapGeneric, RouteRecordInfoGeneric, RouteLocationAsRelativeTypedList, etc.
  * are already provided by vue-router v5 and must not be redeclared.
+ *
+ * The import below is required: names used inside a module augmentation resolve against the
+ * file scope, not the augmented module, and `skipLibCheck` silently turns unresolved
+ * references into `any` — disabling narrowing entirely (#3962).
  */
 const typedRouterAugmentations = `
+import type {
+  TypesConfig,
+  RouteMapGeneric,
+  RouteLocationAsRelativeGeneric,
+  RouteLocationAsPathGeneric,
+  RouteLocationAsRelativeTypedList,
+  RouteLocationAsStringTypedList,
+  RouteLocationAsPathTypedList,
+  RouteLocationResolvedGeneric,
+  RouteLocationResolvedTypedList,
+  RouteLocationNormalizedLoadedGeneric,
+} from 'vue-router'
+
 declare module 'vue-router' {
   export type RouteMapI18n =
     TypesConfig extends Record<'RouteNamedMapI18n', infer RouteNamedMap> ? RouteNamedMap : RouteMapGeneric
 
   // Prefer named resolution for i18n
+  // The relative form indexes \`RouteLocationAsRelativeTypedList\` directly instead of using the
+  // \`RouteLocationAsRelativeI18n\` conditional alias so name/params narrowing works (#3962).
   export type RouteLocationNamedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
       | Name
-      | Omit<RouteLocationAsRelativeI18n, 'path'> & { path?: string }
+      | RouteLocationAsRelativeTypedList<RouteMapI18n>[Name]
+      | RouteLocationAsPathGeneric
       /**
        * Note: disabled route path string autocompletion, this can break depending on \`strategy\`
        * this can be enabled again after route resolve has been improved.
@@ -111,7 +131,9 @@ declare module 'vue-router' {
     RouteMapGeneric extends RouteMapI18n
       ? RouteLocationAsStringI18n | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric
       :
-          | _LiteralUnion<RouteLocationAsStringTypedList<RouteMapI18n>[Name], string>
+          // \`| (string & {})\` keeps autocompletion while allowing any string, the
+          // helper type vue-router v4 exported for this no longer exists in v5
+          | RouteLocationAsStringTypedList<RouteMapI18n>[Name] | (string & {})
           | RouteLocationAsRelativeTypedList<RouteMapI18n>[Name]
 
   export type RouteLocationResolvedI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
@@ -137,7 +159,7 @@ declare module 'vue-router' {
   export type RouteLocationAsStringI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
     RouteMapGeneric extends RouteMapI18n
       ? string
-      : _LiteralUnion<RouteLocationAsStringTypedList<RouteMapI18n>[Name], string>
+      : RouteLocationAsStringTypedList<RouteMapI18n>[Name] | (string & {})
 
   export type RouteLocationAsRelativeI18n<Name extends keyof RouteMapI18n = keyof RouteMapI18n> =
     RouteMapGeneric extends RouteMapI18n
