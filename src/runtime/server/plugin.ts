@@ -1,12 +1,12 @@
 import { stringify } from 'devalue'
 import { defineI18nMiddleware } from '@intlify/h3'
-import { defineNitroPlugin, useStorage } from 'nitropack/runtime'
+import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runtime'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
 import { isSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { joinURL } from 'ufo'
+import { joinURL, parsePath } from 'ufo'
 // @ts-expect-error virtual file
 import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n-locale-detector.mjs'
@@ -125,8 +125,9 @@ export default defineNitroPlugin(async (nitro) => {
     let resolvedPath = undefined
     let redirectCode = 302
 
-    const requestURL = getRequestURL(event)
-    if (rootRedirect && requestURL.pathname === '/') {
+    // base-free pathname, `getRequestURL(event).pathname` would still contain `app.baseURL`
+    const pathname = parsePath(event.path).pathname
+    if (rootRedirect && pathname === '/') {
       locale = (detection.enabled && locale) || defaultLocale
       resolvedPath
         = (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path)
@@ -138,7 +139,7 @@ export default defineNitroPlugin(async (nitro) => {
 
     switch (detection.redirectOn) {
       case 'root':
-        if (requestURL.pathname !== '/') { break }
+        if (pathname !== '/') { break }
       // fallthrough (root has no prefix)
       case 'no prefix':
         if (pathLocale) { break }
@@ -148,7 +149,7 @@ export default defineNitroPlugin(async (nitro) => {
         break
     }
 
-    if (requestURL.pathname === '/' && __I18N_STRATEGY__ === 'prefix') {
+    if (pathname === '/' && __I18N_STRATEGY__ === 'prefix') {
       resolvedPath ??= getLocalizedMatch(defaultLocale)
     }
     return { path: resolvedPath, code: redirectCode, locale }
@@ -169,7 +170,10 @@ export default defineNitroPlugin(async (nitro) => {
     const detector = useDetectors(event, detection)
     const localeSegment = detector.route(event.path)
     const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
-    const path = (pathLocale && url.pathname.slice(pathLocale.length + 1)) ?? url.pathname
+    // `event.path` is already stripped of `app.baseURL` by Nitro (unlike `url.pathname`), and
+    // `parsePath` drops any query string - so `path` stays an absolute, base-free route path.
+    const { pathname } = parsePath(event.path)
+    const path = (pathLocale && pathname.slice(pathLocale.length + 1)) ?? pathname
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
     if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path)) {
@@ -177,12 +181,17 @@ export default defineNitroPlugin(async (nitro) => {
     }
 
     const resolved = resolveRedirectPath(event, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
-    if (resolved.path && resolved.path !== url.pathname) {
+    if (resolved.path && resolved.path !== pathname) {
       ctx.detectLocale = resolved.locale
       detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
       context.response = createRedirectResponse(
         event,
-        joinURL(baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale), resolved.path + url.search),
+        // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
+        joinURL(
+          baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale),
+          useRuntimeConfig(event).app.baseURL,
+          resolved.path + url.search,
+        ),
         resolved.code,
       )
       return
