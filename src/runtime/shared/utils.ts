@@ -6,7 +6,10 @@ import type { H3Event } from 'h3'
 
 export function useRuntimeI18n(nuxtApp?: NuxtApp, event?: H3Event) {
   if (!nuxtApp) {
-    return useRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
+    // in nitro `useRuntimeConfig` accepts an event to apply env overrides, while the app-side
+    // signature accepts no arguments (https://github.com/nuxt/nuxt/pull/35376) - cast to support both
+    const getRuntimeConfig = useRuntimeConfig as (event?: H3Event) => ReturnType<typeof useRuntimeConfig>
+    return getRuntimeConfig(event).public.i18n as unknown as I18nPublicRuntimeConfig
   }
   return nuxtApp.$config.public.i18n as unknown as I18nPublicRuntimeConfig
 }
