@@ -2,7 +2,7 @@ import { type Locale, useSwitchLocalePath } from '#i18n'
 import { defineNuxtLink, useNuxtApp } from '#imports'
 import { Comment, computed, defineComponent, h } from 'vue'
 import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
-import { useComposableContext } from '../utils'
+import { useComposableContext } from '../composable-context'
 
 import type { PropType } from 'vue'
 

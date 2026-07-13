@@ -1,4 +1,5 @@
 import { createPathIndexLanguageParser } from '@intlify/utils'
+import { withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import type { RouteName, RouteObject } from './types'
 
 const separator = __ROUTE_NAME_SEPARATOR__ || '___'
@@ -25,6 +26,17 @@ export function getLocalizedRouteName(routeName: string, locale: string, isDefau
   return !isDefault
     ? routeName + separator + locale
     : routeName + separator + locale + defaultRouteNameSuffix
+}
+
+export const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
+
+export function prefixable(currentLocale: string, defaultLocale: string): boolean {
+  return (
+    !__DIFFERENT_DOMAINS__
+    && __I18N_ROUTING__
+    // only prefix default locale with strategy prefix
+    && (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
+  )
 }
 
 const pathLanguageParser = createPathIndexLanguageParser(0)

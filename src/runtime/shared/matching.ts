@@ -1,8 +1,8 @@
-import { joinURL, parsePath, withLeadingSlash, withTrailingSlash, withoutTrailingSlash } from 'ufo'
+import { joinURL, parsePath, withLeadingSlash } from 'ufo'
 import { createRouterMatcher } from 'vue-router'
 import { disabledI18nPathToPath, i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
+import { formatTrailingSlash, prefixable } from '#i18n-kit/routing'
 
-const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
 const matcher = createRouterMatcher([], {})
 for (const path of Object.keys(i18nPathToPath)) {
   matcher.addRoute({ path, component: () => '', meta: {} })
@@ -61,13 +61,4 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
     const isPrefixable = prefixable(locale, defaultLocale)
     return formatTrailingSlash(withLeadingSlash(joinURL(isPrefixable ? locale : '', match.path)), true)
   }
-}
-
-function prefixable(currentLocale: string, defaultLocale: string): boolean {
-  return (
-    !__DIFFERENT_DOMAINS__
-    && __I18N_ROUTING__
-    // only prefix default locale with strategy prefix
-    && (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
-  )
 }

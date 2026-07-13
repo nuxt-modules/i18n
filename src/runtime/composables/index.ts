@@ -1,7 +1,7 @@
 import { useCookie, useNuxtApp, useRequestEvent } from '#imports'
 import { ref, watch } from 'vue'
 import { _useLocaleHead, _useSetI18nParams } from '../routing/head'
-import { useComposableContext } from '../utils'
+import { useComposableContext } from '../composable-context'
 import { localePath, localeRoute, switchLocalePath } from '../routing/routing'
 import type { Ref } from 'vue'
 import type { Locale } from 'vue-i18n'
