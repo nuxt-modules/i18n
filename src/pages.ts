@@ -464,7 +464,7 @@ function getRouteFromConfig(
 
 /** Convert a raw `pages` config entry to the route meta `i18n` shape */
 function configValueToI18nRoute(
-  value: Record<string, string | false> | false,
+  value: Partial<Record<string, `/${string}` | false>> | false,
   localeCodes: string[],
 ): I18nRoute | false {
   if (value === false) { return false }
@@ -473,7 +473,7 @@ function configValueToI18nRoute(
   for (const [locale, path] of Object.entries(value)) {
     if (path === false) {
       hasDisabled = true
-    } else {
+    } else if (path != null) {
       paths[locale] = path
     }
   }
