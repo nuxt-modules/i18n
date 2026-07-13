@@ -114,7 +114,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
      */
     nuxt.options.typescript.hoist ||= []
     nuxt.options.typescript.hoist.push(
-      ...deps.filter((dep) => !(dep in nuxt.options.alias))
+      ...deps.filter(dep => !(dep in nuxt.options.alias)),
     )
 
     nuxt.options.typescript.tsConfig.include ||= []
