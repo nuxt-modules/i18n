@@ -14,7 +14,7 @@ import { relative } from 'pathe'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { computeLocaleHashes, filterLocales, resolveLocales } from './utils'
+import { computeLocaleHashes, filterLocales, getLocaleFilePaths, resolveLocales } from './utils'
 import { isString } from '@intlify/shared'
 
 export * from './types'
@@ -232,10 +232,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
        * disable preloading/prefetching of locale files
        */
       nuxt.hook('build:manifest', (manifest) => {
-        const langFiles = ctx.localeInfo
-          .flatMap(locale => locale.meta.map(m => m.path))
-          .map(x => relative(nuxt.options.srcDir, x))
-        const langPaths = [...new Set(langFiles)]
+        const langPaths = getLocaleFilePaths(ctx.localeInfo).map(x => relative(nuxt.options.srcDir, x))
 
         for (const key in manifest) {
           if (langPaths.some(x => key.startsWith(x))) {

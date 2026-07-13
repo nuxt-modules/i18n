@@ -1,6 +1,6 @@
 import { addBuildPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
-import { toArray } from './utils'
+import { getLocaleFilePaths, toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
@@ -34,7 +34,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * shared plugins (vite/webpack/rspack)
    */
-  const localePaths = [...new Set(ctx.localeInfo.flatMap(x => x.meta.map(m => m.path)))]
+  const localePaths = getLocaleFilePaths(ctx.localeInfo)
   ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.cache !== false)
 
   const vueI18nPluginOptions: PluginOptions = {
