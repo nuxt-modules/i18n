@@ -6,6 +6,7 @@ import { parseAndWalk } from 'oxc-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { parseSegment, toVueRouterSegment } from 'unrouting'
 import { localizeRoutes, shouldLocalizeRoutes } from './routing'
+import { logger } from './utils'
 import { dirname, parse as parsePath, resolve } from 'pathe'
 import { createRoutesContext, resolveOptions } from 'vue-router/unplugin'
 import { transform } from './transform/resource'
@@ -102,6 +103,9 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
         await typedRouter.createContext(pages).scanPages(false)
       }
 
+      // normalize per-mode route options into route meta before localization
+      normalizeRouteMeta(ctx, pages, localeCodes, options.customRoutes ?? 'page', nuxt.vfs)
+
       const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
 
       const localizationOptions = {
@@ -124,6 +128,10 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
       if (options.strategy === 'prefix' && indexPage != null) {
         localizedPages.unshift(indexPage as NarrowedNuxtPage)
       }
+
+      // custom path config is consumed at build time, drop it from the routes manifest
+      // (the boolean form is kept, it marks routes with disabled localization at runtime)
+      stripRouteMetaI18n(localizedPages)
 
       const invertedMap = {} as Record<string, Record<string, string | false>>
       const localizedMapInvert: Record<string, string> = {}
@@ -432,24 +440,103 @@ function resolveRoutePath(path: string): string {
   return '/' + toVueRouterSegment(tokens)
 }
 
+/** Raw `pages` config entry for a route, matched by analyzed name or path */
+function getConfigValue(ctx: NuxtPageAnalyzeContext, route: NuxtPage) {
+  const pageMeta = ctx.pages.get(route.file!)
+  if (pageMeta == null) { return undefined }
+
+  const valueByName = pageMeta?.name ? ctx.config?.[pageMeta.name] : undefined
+  return valueByName ?? (pageMeta?.path != null ? ctx.config?.[pageMeta.path] : undefined)
+}
+
 function getRouteFromConfig(
   ctx: NuxtPageAnalyzeContext,
   route: NuxtPage,
   localeCodes: string[],
 ): ComputedRouteOptions | false | undefined {
-  const pageMeta = ctx.pages.get(route.file!)
-
-  if (pageMeta == null) {
-    return undefined
-  }
-
-  const valueByName = pageMeta?.name ? ctx.config?.[pageMeta.name] : undefined
-  const valueByPath = pageMeta?.path != null ? ctx.config?.[pageMeta.path] : undefined
-  const resolved = valueByName ?? valueByPath
+  const resolved = getConfigValue(ctx, route)
   if (!resolved) { return resolved }
   return {
     paths: (resolved ?? {}) as Record<string, string>,
     locales: localeCodes.filter(locale => resolved[locale] !== false),
+  }
+}
+
+/** Convert a raw `pages` config entry to the route meta `i18n` shape */
+function configValueToI18nRoute(
+  value: Partial<Record<string, `/${string}` | false>> | false,
+  localeCodes: string[],
+): I18nRoute | false {
+  if (value === false) { return false }
+  const paths: Record<string, string> = {}
+  let hasDisabled = false
+  for (const [locale, path] of Object.entries(value)) {
+    if (path === false) {
+      hasDisabled = true
+    } else if (path != null) {
+      paths[locale] = path
+    }
+  }
+  const route: I18nRoute = { paths: paths as I18nRoute['paths'] }
+  if (hasDisabled) {
+    route.locales = localeCodes.filter(locale => value[locale] !== false)
+  }
+  return route
+}
+
+/** Remove object-form `i18n` route meta after localization to keep it out of the routes manifest */
+function stripRouteMetaI18n(pages: NuxtPage[]): void {
+  for (const page of pages) {
+    if (typeof page.meta?.i18n === 'object') {
+      delete page.meta.i18n
+      if (Object.keys(page.meta).length === 0) {
+        delete page.meta
+      }
+    }
+    if (page.children?.length) {
+      stripRouteMetaI18n(page.children)
+    }
+  }
+}
+
+/**
+ * Normalize the mode-specific route options (`pages` config or `defineI18nRoute()`)
+ * as the `i18n` property in route meta. Routes with an explicit meta value keep it —
+ * meta is the canonical source and takes precedence in all `customRoutes` modes.
+ */
+export function normalizeRouteMeta(
+  ctx: NuxtPageAnalyzeContext,
+  pages: NuxtPage[],
+  localeCodes: string[],
+  mode: NonNullable<NuxtI18nOptions['customRoutes']>,
+  vfs: Record<string, string> = {},
+): void {
+  for (const page of pages) {
+    if (page.file != null) {
+      let value: I18nRoute | false | undefined
+      if (mode === 'config') {
+        const raw = getConfigValue(ctx, page)
+        value = raw === undefined ? undefined : configValueToI18nRoute(raw, localeCodes)
+      } else if (mode === 'page') {
+        value = getI18nRouteConfig(page.file, vfs)
+      }
+
+      if ((page.meta?.i18n as I18nRoute | false | undefined) === undefined) {
+        if (value !== undefined) {
+          page.meta ??= {}
+          page.meta.i18n = value
+        }
+      } else if (value !== undefined) {
+        const source = mode === 'config' ? 'a `pages` config entry' : '`defineI18nRoute()`'
+        logger.warn(
+          `Route \`${String(page.name || page.path)}\` has both \`i18n\` route meta and ${source} — the route meta value takes precedence.`,
+        )
+      }
+    }
+
+    if (page.children?.length) {
+      normalizeRouteMeta(ctx, page.children, localeCodes, mode, vfs)
+    }
   }
 }
 
@@ -472,13 +559,14 @@ function getRouteOptions(
   mode: 'config' | 'page' | 'meta' = 'config',
 ) {
   let resolvedOptions
-  if (mode === 'config') {
+  const metaValue = route.meta?.i18n as I18nRoute | false | undefined
+  if (metaValue !== undefined) {
+    // meta is the canonical source in all modes (see `normalizeRouteMeta`)
+    resolvedOptions = getRouteFromResource(localeCodes, metaValue)
+  } else if (mode === 'config') {
     resolvedOptions = getRouteFromConfig(ctx, route, localeCodes)
-  } else {
-    resolvedOptions = getRouteFromResource(
-      localeCodes,
-      mode === 'page' ? getI18nRouteConfig(route.file!) : (route.meta?.i18n as I18nRoute | false | undefined),
-    )
+  } else if (mode === 'page') {
+    resolvedOptions = getRouteFromResource(localeCodes, getI18nRouteConfig(route.file!))
   }
 
   // routing disabled

@@ -99,29 +99,12 @@ exports[`Extract page meta > 'JavaScript' (meta) 1`] = `
 [
   {
     "children": [],
-    "meta": {
-      "i18n": {
-        "paths": {
-          "en": "/about-us",
-          "fr": "/a-propos",
-          "ja": "/about-ja",
-        },
-      },
-    },
     "name": "about___en",
     "path": "/about-us",
   },
   {
     "children": [],
-    "meta": {
-      "i18n": {
-        "paths": {
-          "en": "/about-us",
-          "fr": "/a-propos",
-          "ja": "/about-ja",
-        },
-      },
-    },
+    "meta": {},
     "name": "about___ja",
     "path": "/ja/about-ja",
   },
@@ -132,29 +115,12 @@ exports[`Extract page meta > 'dynamic route' (meta) 1`] = `
 [
   {
     "children": [],
-    "meta": {
-      "i18n": {
-        "paths": {
-          "en": "/articles/[name]",
-          "fr": "/articles/[name]",
-          "ja": "/記事/[name]",
-        },
-      },
-    },
     "name": "name___en",
     "path": "/articles/:name()",
   },
   {
     "children": [],
-    "meta": {
-      "i18n": {
-        "paths": {
-          "en": "/articles/[name]",
-          "fr": "/articles/[name]",
-          "ja": "/記事/[name]",
-        },
-      },
-    },
+    "meta": {},
     "name": "name___ja",
     "path": "/ja/%E8%A8%98%E4%BA%8B/:name()",
   },
@@ -178,29 +144,12 @@ exports[`Extract page meta > 'simple' (meta) 1`] = `
 [
   {
     "children": [],
-    "meta": {
-      "i18n": {
-        "paths": {
-          "en": "/about-us",
-          "fr": "/a-propos",
-          "ja": "/about-ja",
-        },
-      },
-    },
     "name": "about___en",
     "path": "/about-us",
   },
   {
     "children": [],
-    "meta": {
-      "i18n": {
-        "paths": {
-          "en": "/about-us",
-          "fr": "/a-propos",
-          "ja": "/about-ja",
-        },
-      },
-    },
+    "meta": {},
     "name": "about___ja",
     "path": "/ja/about-ja",
   },
@@ -215,13 +164,6 @@ exports[`Extract page meta > 'with definePageMeta' (meta) 1`] = `
       "__nuxt_dynamic_meta_key": Set {
         "meta",
       },
-      "i18n": {
-        "paths": {
-          "en": "/about-us",
-          "fr": "/a-propos",
-          "ja": "/about-ja",
-        },
-      },
     },
     "name": "about___en",
     "path": "/about-us",
@@ -231,13 +173,6 @@ exports[`Extract page meta > 'with definePageMeta' (meta) 1`] = `
     "meta": {
       "__nuxt_dynamic_meta_key": Set {
         "meta",
-      },
-      "i18n": {
-        "paths": {
-          "en": "/about-us",
-          "fr": "/a-propos",
-          "ja": "/about-ja",
-        },
       },
     },
     "name": "about___ja",
