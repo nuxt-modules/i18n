@@ -168,6 +168,14 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     expect(localePath('https://github.com')).toEqual('https://github.com')
     expect(localePath('mailto:example@mail.com')).toEqual('mailto:example@mail.com')
     expect(localePath('tel:+31612345678')).toEqual('tel:+31612345678')
+
+    // (#3840) localized route as parameter
+    // https://github.com/vuejs/router/blob/main/packages/router/CHANGELOG.md#414-2022-08-22
+    const warn = vi.spyOn(console, 'warn')
+    expect(localePath(router.currentRoute.value, 'ja')).toEqual(pp('/', 'ja'))
+    expect(localePath({ name: 'index___en' }, 'ja')).toEqual(pp('/', 'ja'))
+    expect(warn.mock.calls.find(call => String(call[0]).includes('Discarded invalid param(s)'))).toBeUndefined()
+    warn.mockRestore()
   })
 
   test('localeRoute', async () => {
