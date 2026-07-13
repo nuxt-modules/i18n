@@ -13,3 +13,6 @@ vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
 
 vi.stubGlobal('__ROUTE_NAME_SEPARATOR__', '___')
 vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', 'default')
+
+vi.stubGlobal('__I18N_COMPACT_ROUTES__', false)
+vi.stubGlobal('__DYNAMIC_PARAMS_KEY__', 'nuxtI18nInternal')

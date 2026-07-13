@@ -4,7 +4,7 @@ import { assign, isString } from '@intlify/shared'
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationNamedRaw, RouteLocationPathRaw, RouteLocationRaw } from 'vue-router'
 import type { CompatRoute } from '../types'
-import type { ComposableContext } from '../composable-context'
+import type { RoutingContext } from './context'
 
 export type RouteLikeWithPath = RouteLocationPathRaw & { name?: string }
 export type RouteLikeWithName = RouteLocationNamedRaw & { path?: string }
@@ -13,7 +13,7 @@ export type RouteLike = RouteLikeWithPath | RouteLikeWithName
 /**
  * Resolves a localized path of the passed in route.
  */
-export function localePath(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()): string {
+export function localePath(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()): string {
   // return external url as is
   if (isString(route) && hasProtocol(route, { acceptRelative: true })) {
     return route
@@ -29,7 +29,7 @@ export function localePath(ctx: ComposableContext, route: RouteLocationRaw, loca
 /**
  * Resolves a localized variant of the passed route.
  */
-export function localeRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
+export function localeRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale = ctx.getLocale()) {
   try {
     return resolveRoute(ctx, route, locale)
   } catch {
@@ -59,7 +59,7 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 /**
  * Try resolving route and throw on failure
  */
-function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: Locale) {
+function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale) {
   const normalized = normalizeRawLocation(route)
   const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale))
   if (resolved.name) {
@@ -74,7 +74,7 @@ function resolveRoute(ctx: ComposableContext, route: RouteLocationRaw, locale: L
  * Resolve the localized path of the current route.
  */
 export function switchLocalePath(
-  ctx: ComposableContext,
+  ctx: RoutingContext,
   locale: Locale,
   route: CompatRoute = ctx.router.currentRoute.value,
 ): string {
