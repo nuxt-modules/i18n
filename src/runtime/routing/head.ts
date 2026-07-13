@@ -3,7 +3,7 @@ import { assign } from '@intlify/shared'
 import { type HeadContext, localeHead as _localeHead } from '#i18n-kit/head'
 
 import type { I18nHeadMetaInfo, I18nHeadOptions, SeoAttributesOptions } from '#internal-i18n-types'
-import type { ComposableContext } from '../utils'
+import type { ComposableContext } from '../composable-context'
 import type { I18nRouteMeta } from '../types'
 import { localeRoute, switchLocalePath } from './routing'
 

@@ -3,18 +3,23 @@ import { isRef, unref } from 'vue'
 import { useCookie, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { getLocaleMessagesMergedCached } from './shared/messages'
-import { createBaseUrlGetter, createComposableContext } from './utils'
+import { createComposableContext } from './composable-context'
 import { getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL } from 'ufo'
-import { isString } from '@intlify/shared'
+import { isFunction, isString } from '@intlify/shared'
 
 import type { NuxtApp } from '#app'
 import type { DefineLocaleMessage, I18n, Locale, LocaleMessages } from 'vue-i18n'
-import type { ComposableContext } from './utils'
-import type { DetectBrowserLanguageOptions, I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
+import type { ComposableContext } from './composable-context'
+import type {
+  BaseUrlResolveHandler,
+  DetectBrowserLanguageOptions,
+  I18nPublicRuntimeConfig,
+  LocaleObject,
+} from '#internal-i18n-types'
 
 export const useLocaleConfigs = () =>
   useState<Record<string, { cacheable: boolean, fallbacks: string[] }> | undefined>(
@@ -55,6 +60,30 @@ export interface NuxtI18nContext {
   /** Load locale messages */
   loadMessages: (locale: Locale) => Promise<void>
   composableCtx: ComposableContext
+}
+
+/**
+ * Returns a getter function which returns the baseUrl
+ */
+function createBaseUrlGetter(
+  nuxt: NuxtApp,
+  baseUrl: string | BaseUrlResolveHandler<unknown> | undefined,
+  defaultLocale: string,
+  getDomainFromLocale: (locale: string) => string | undefined,
+): () => string {
+  if (isFunction(baseUrl)) {
+    import.meta.dev
+      && console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
+    return (): string => baseUrl(nuxt)
+  }
+
+  return (): string => {
+    if (__DIFFERENT_DOMAINS__ && defaultLocale) {
+      return (getDomainFromLocale(defaultLocale) || baseUrl) ?? ''
+    }
+
+    return baseUrl ?? ''
+  }
 }
 
 function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {

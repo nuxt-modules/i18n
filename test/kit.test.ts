@@ -1,5 +1,6 @@
 import { describe, test, expect, vi } from 'vitest'
-import { type ComposableContext, isRouteLocationPathRaw, prefixable } from '../src/runtime/utils'
+import { type ComposableContext, isRouteLocationPathRaw } from '../src/runtime/composable-context'
+import { prefixable } from '../src/runtime/kit/routing'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from '../src/runtime/routing/utils'
 import { getRouteBaseName as _getRouteBaseName } from '#i18n-kit/routing'
 import { createMemoryHistory, createRouter, type RouteLocationRaw } from 'vue-router'
