@@ -26,7 +26,7 @@ import type {
 import type { NuxtI18nContext } from './context'
 import type { CompatRoute, I18nRouteMeta, RouteLocationGenericPath } from './types'
 import { useDetectors } from './shared/detection'
-import { useI18nDetection } from './shared/utils'
+import { useI18nDetection, useRuntimeI18n } from './shared/utils'
 
 /**
  * Common options used internally by composable functions, these
@@ -75,6 +75,14 @@ export function useComposableContext(nuxtApp: NuxtApp): ComposableContext {
   return context
 }
 const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
+/**
+ * Create the context consumed by the i18n composables for the current request,
+ * falling back to the runtime default locale when none has been resolved yet.
+ *
+ * @param ctx - The i18n context holding the resolved configuration and locale state.
+ * @param nuxtApp - The Nuxt app instance (defaults to `useNuxtApp()`).
+ * @returns The composable context with routing, locale-detection and head utilities.
+ */
 export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp = useNuxtApp()): ComposableContext {
   const router = useRouter()
   const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
@@ -203,6 +211,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
       // remove prefix if path is default for domain
       if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
         const defaultLocale = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host)
+          || useRuntimeI18n(nuxtApp).defaultLocale
         if (locale !== defaultLocale || detectors.route(path) !== defaultLocale) {
           return path
         }

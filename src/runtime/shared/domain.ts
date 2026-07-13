@@ -4,11 +4,40 @@ import { toArray } from './utils'
 
 import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
-export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
+/**
+ * Resolves the locale served by `host`.
+ *
+ * Locales declaring a matching `domain`/`domains` win. When several match the
+ * same host, the current path locale is preferred, then the domain's
+ * configured default (`defaultForDomains`/`domainDefault`), then the runtime
+ * `defaultLocale`. When NO locale declares any domain (single-host runtime
+ * mode — one build deployed to hosts unknown at build time), every locale is
+ * treated as served by the current host and the same precedence applies.
+ *
+ * @param locales - locales to match against (domains merged from runtime config)
+ * @param host - the request host
+ * @param pathLocale - locale parsed from the current path prefix, if any
+ * @param defaultLocale - runtime default locale used as the final fallback
+ * @returns the resolved locale code, or `undefined` when nothing matches
+ */
+export function matchDomainLocale(
+  locales: LocaleObject[],
+  host: string,
+  pathLocale: string,
+  defaultLocale?: string,
+): string | undefined {
   const normalizeDomain = (domain: string = '') => domain.replace(/https?:\/\//, '')
-  const matches = locales.filter(
+  let matches = locales.filter(
     locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host),
   )
+
+  // single-host runtime mode: when no locale declares any domain, every locale
+  // is served from the current host and the unprefixed default comes from
+  // runtime config (`defaultLocale`) — supports deployments where the same
+  // build runs on hosts unknown at build time (dynamic preview environments)
+  if (!matches.length && locales.every(l => !l.domain && !(Array.isArray(l.domains) && l.domains.length))) {
+    matches = locales
+  }
 
   if (matches.length <= 1) {
     return matches[0]?.code
@@ -19,6 +48,8 @@ export function matchDomainLocale(locales: LocaleObject[], host: string, pathLoc
     matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
     || matches.find(l => l.defaultForDomains?.includes(host) ?? l.domainDefault)?.code
+    // fallback to the runtime default locale
+    || (defaultLocale ? matches.find(l => l.code === defaultLocale)?.code : undefined)
   )
 }
 
