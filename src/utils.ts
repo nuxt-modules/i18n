@@ -56,6 +56,13 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
   return localesResolved
 }
 
+/**
+ * Unique resolved locale file paths across all locales
+ */
+export function getLocaleFilePaths(localeInfo: LocaleInfo[]): string[] {
+  return [...new Set(localeInfo.flatMap(locale => locale.meta.map(m => m.path)))]
+}
+
 const analyzedMap = { object: 'static', function: 'dynamic', unknown: 'unknown' } as const
 function getLocaleType(path: string, vfs: Record<string, string>): LocaleType {
   if (!EXECUTABLE_EXT_RE.test(path)) { return 'static' }

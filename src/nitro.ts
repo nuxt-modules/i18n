@@ -6,7 +6,7 @@ import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
 import { relative } from 'pathe'
-import { logger, toArray } from './utils'
+import { getLocaleFilePaths, logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
@@ -58,7 +58,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
   nuxt.hook('nitro:config', async (nitroConfig) => {
     // inline module runtime in Nitro bundle
-    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...new Set(ctx.localeInfo.flatMap(x => x.meta.map(m => m.path)))] })
+    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...getLocaleFilePaths(ctx.localeInfo)] })
     nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
 
     // type the locale detector file in the server tsconfig, where `#i18n` resolves server composables
