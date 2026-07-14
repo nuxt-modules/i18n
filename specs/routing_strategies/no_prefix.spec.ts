@@ -115,6 +115,13 @@ describe('strategy: no_prefix', async () => {
     expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
   })
 
+  test('(#3039) locale set server-side is not reset client-side', async () => {
+    const { page } = await renderPage('/?serverSetLocale=fr')
+
+    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+  })
+
   test('(#2473) should respect `detectBrowserLanguage`', async () => {
     await setServerRuntimeConfig({
       public: {
