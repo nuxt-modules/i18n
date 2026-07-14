@@ -148,4 +148,24 @@ describe('strategy: prefix_and_default', async () => {
     await page.waitForURL(url('/about'))
     expect(await page.locator('#about-header').innerText()).include(`About us`)
   })
+
+  test('(#2247) navigation from prefixed default-locale route to home', async () => {
+    const { page } = await renderPage('/en/about')
+
+    await page.locator('#link-home').clickNavigate()
+    await page.waitForURL(url('/'))
+    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
+  })
+
+  test('(#2288) `setLocale` navigates to the localized route', async () => {
+    const { page } = await renderPage('/fr/about')
+
+    await page.locator('#set-locale-link-en').clickNavigate()
+    await page.waitForURL(url('/about'))
+    expect(await page.locator('#about-header').innerText()).toEqual('About us')
+
+    await page.locator('#set-locale-link-fr').clickNavigate()
+    await page.waitForURL(url('/fr/about'))
+    expect(await page.locator('#about-header').innerText()).toEqual('À propos')
+  })
 })
