@@ -35,6 +35,7 @@ function createHeadContext(
   return {
     ...config,
     key: __I18N_STRICT_SEO__ ? 'key' : 'id',
+    strictSeo: __I18N_STRICT_SEO__,
     locales,
     baseUrl,
     canonicalQueries,

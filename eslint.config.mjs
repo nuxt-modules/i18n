@@ -104,7 +104,6 @@ export default createConfigForNuxt({
         'src/runtime/server/utils/redirect.ts',
         'src/runtime/shared/detection.ts',
       ],
-      ignores: ['src/runtime/kit/head.ts'],
       name: 'local/no-flag-reads',
       rules: {
         'no-restricted-globals': [
