@@ -1,4 +1,5 @@
 import { parsePath } from 'ufo'
+import { createLocaleDetector } from '../../shared/detection'
 import { isSupportedLocale } from '../../shared/locales'
 
 import type { Strategies } from '#internal-i18n-types'
@@ -27,23 +28,7 @@ export type ResolvedRedirect = { path: string | undefined, code: number, locale:
 export function createRedirectResolver(config: RedirectResolverConfig) {
   const { detection, rootRedirect, matchLocalized, strategy, routing, domains } = config
   const isSupported = config.isSupportedLocale ?? isSupportedLocale
-
-  function* detect(detectors: Detectors, path: string) {
-    if (detection.enabled) {
-      yield detectors.cookie()
-      yield detectors.header()
-    }
-
-    if (domains) {
-      yield detectors.host(path)
-    }
-
-    if (routing) {
-      yield detectors.route(path)
-    }
-
-    yield detection.fallbackLocale
-  }
+  const detectLocale = createLocaleDetector({ detection, isSupportedLocale: isSupported, routing, domains })
 
   /**
    * Resolves the redirect for a request, `fullPath` may contain a query string while
@@ -56,14 +41,8 @@ export function createRedirectResolver(config: RedirectResolverConfig) {
     defaultLocale: string,
     detectors: Detectors,
   ): ResolvedRedirect {
-    let locale = ''
-    for (const detected of detect(detectors, fullPath)) {
-      if (detected && isSupported(detected)) {
-        locale = detected
-        break
-      }
-    }
-    locale ||= defaultLocale
+    // the server handles fresh requests, detection is always `initial`
+    let locale = detectLocale(detectors, fullPath, true) || defaultLocale
 
     function getLocalizedMatch(locale: string) {
       const res = matchLocalized(path || '/', locale, defaultLocale)

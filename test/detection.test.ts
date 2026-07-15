@@ -84,6 +84,24 @@ describe('createLocaleDetector', () => {
     expect(detect(detectors({ host: () => 'fr' }), '/', false)).toBe('fr')
   })
 
+  test('domains: the host locale is authoritative over `fallbackLocale`', () => {
+    const detect = createDetector({ domains: true, detection: detection({ fallbackLocale: 'en' }) })
+    expect(detect(detectors({ host: () => 'fr' }), '/', true)).toBe('fr')
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr' }), '/', true)).toBe('en')
+  })
+
+  test('(#2158) the route locale is not overridden by `fallbackLocale`', () => {
+    const detect = createDetector({ detection: detection({ redirectOn: 'all', fallbackLocale: 'en' }) })
+    expect(detect(detectors(), '/fr/about', true)).toBe('fr')
+    // real detection sources do take precedence over the route locale with `redirectOn: 'all'` (#3752)
+    expect(detect(detectors({ cookie: () => 'en' }), '/fr/about', true)).toBe('en')
+  })
+
+  test('(#2255) query strings do not affect path-based detection gates', () => {
+    const detect = createDetector({ detection: detection({ redirectOn: 'root' }) })
+    expect(detect(detectors({ cookie: () => 'fr' }), '/?foo=bar', true)).toBe('fr')
+  })
+
   test('returns an empty string when nothing is detected', () => {
     const detect = createDetector()
     expect(detect(detectors(), '/about', true)).toBe('')

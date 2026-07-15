@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { getCookie, getRequestHeader, getRequestURL } from 'h3'
+import { parsePath } from 'ufo'
 import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
@@ -73,6 +74,12 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
   const { detection, routing, domains } = config
   const isSupported = config.isSupportedLocale ?? isSupportedLocale
 
+  /**
+   * Gates locale adoption rather than redirection - a detected locale is only applied where
+   * `redirectOn` allows the URL to follow, otherwise app state and URL would disagree
+   * (e.g. cookie locale content rendered on a default-locale path). The redirect action
+   * itself is gated separately (see the redirect switch in `createRedirectResolver`).
+   */
   function skipDetect(path: string, pathLocale: string | undefined): boolean {
     // no routes - force detection
     if (!routing) {
@@ -96,14 +103,15 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
    * Returns the detected locale for `route`, or an empty string when no supported locale is detected
    */
   return function detectLocale(detectors: ReturnType<typeof useDetectors>, route: string | CompatRoute, initial: boolean): string {
-    const path = isString(route) ? route : route.path
+    // route objects carry a query-free `path`, server paths may include a query string
+    const path = isString(route) ? parsePath(route).pathname : route.path
 
     function* detect() {
-      if (initial && detection.enabled && !skipDetect(path, detectors.route(path))) {
+      const detecting = initial && detection.enabled && !skipDetect(path, detectors.route(path))
+      if (detecting) {
         yield detectors.cookie()
         yield detectors.header()
         yield detectors.navigator()
-        yield detection.fallbackLocale
       }
 
       if (domains) {
@@ -112,6 +120,12 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
 
       if (routing) {
         yield detectors.route(route)
+      }
+
+      // the detection fallback only applies when no other source resolves (e.g. root or
+      // unprefixed paths), the route locale is not overridden by a failed browser detection
+      if (detecting) {
+        yield detection.fallbackLocale
       }
     }
 

@@ -118,6 +118,18 @@ describe('createRedirectResolver', () => {
     expect(resolve('/fr/about', '/about', 'fr', 'en', withCookie).path).toBeUndefined()
   })
 
+  test("`redirectOn: 'all'` does not redirect to `fallbackLocale` from a prefixed path", () => {
+    const resolve = createResolver({
+      strategy: 'prefix_except_default',
+      detection: detection({ enabled: true, redirectOn: 'all', fallbackLocale: 'fr' }),
+    })
+    // the route locale wins, the default-locale prefix is normalized away
+    expect(resolve('/en/about', '/about', 'en', 'en', createDetectors())).toMatchObject({
+      path: '/about',
+      locale: 'en',
+    })
+  })
+
   test("`redirectOn: 'all'` redirects prefixed paths too", () => {
     const resolve = createResolver({
       strategy: 'prefix_except_default',
