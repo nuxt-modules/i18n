@@ -1,10 +1,11 @@
 import { joinURL } from 'ufo'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './utils'
-import { formatTrailingSlash, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
+import { createTrailingSlashFormatter, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
 import { getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
 
 import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
-import type { LocaleObject } from '#internal-i18n-types'
+import type { PrefixableOptions } from '#i18n-kit/routing'
+import type { LocaleObject, Strategies } from '#internal-i18n-types'
 import type { RouteLike, RouteLikeWithName, RouteLikeWithPath } from './routing'
 import type { I18nRouteMeta, RouteLocationGenericPath } from '../types'
 
@@ -50,6 +51,16 @@ export interface RoutingContextOptions {
    * meta (strict SEO client-side hydration), a falsy value otherwise.
    */
   getLocalePathPayload?: () => Record<string, Record<string, string> | false> | false | undefined
+  /** @default `__I18N_STRATEGY__` */
+  strategy?: Strategies
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) @default `__I18N_ROUTING__` */
+  routing?: boolean
+  /** @default `__DIFFERENT_DOMAINS__` */
+  differentDomains?: boolean
+  /** @default `__MULTI_DOMAIN_LOCALES__` */
+  multiDomainLocales?: boolean
+  /** @default `__TRAILING_SLASH__` */
+  trailingSlash?: boolean
 }
 
 // RouteLike object has a path and no name.
@@ -57,7 +68,14 @@ export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPath
 
 export function createRoutingContext(options: RoutingContextOptions): RoutingContext {
   const { router, defaultLocale } = options
-  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
+  const config: PrefixableOptions = {
+    strategy: options.strategy ?? __I18N_STRATEGY__,
+    routing: options.routing ?? __I18N_ROUTING__,
+    differentDomains: options.differentDomains ?? __DIFFERENT_DOMAINS__,
+  }
+  const multiDomainLocales = options.multiDomainLocales ?? __MULTI_DOMAIN_LOCALES__
+  const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash ?? __TRAILING_SLASH__)
+  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
     route.name = getRouteBaseName(route.name || router.currentRoute.value) // fallback to current route name
@@ -82,7 +100,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     return route
   }
 
-  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
+  const routeByPathResolver = createLocalizedRouteByPathResolver(router, config)
   // Detect compact routes by their resolved path prefix — catches the compact
   // parent and its children (whose own meta is empty but whose path inherits
   // the locale segment). Route records are stable after build, so cache lazily.
@@ -131,7 +149,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       return route
     }
 
-    if (prefixable(locale, defaultLocale)) {
+    if (prefixable(locale, defaultLocale, config)) {
       route.path = '/' + locale + route.path
     }
 
@@ -163,7 +181,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       }
 
       // remove prefix if path is default for domain
-      if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
+      if (multiDomainLocales && config.strategy === 'prefix_except_default') {
         const domainDefaultLocale = getDefaultLocaleForDomain(options.getHost() ?? '')
         if (locale !== domainDefaultLocale || getLocaleFromRoutePath(path) !== domainDefaultLocale) {
           return path
@@ -173,7 +191,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return path.slice(locale.length + 1)
       }
 
-      if (__DIFFERENT_DOMAINS__) {
+      if (config.differentDomains) {
         return joinURL(options.getBaseUrl(locale), path)
       }
       return path

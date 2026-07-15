@@ -2,29 +2,18 @@ import { describe, it, assert, test } from 'vitest'
 import { createLocaleRouteNameGetter } from '../src/runtime/routing/utils'
 import { findBrowserLocale } from '#i18n-kit/browser'
 
-const ROUTE_GEN_CONFIG = {
-  defaultLocale: 'en',
-  routesNameSeparator: '___',
-  defaultLocaleRouteNameSuffix: 'default'
-}
-
 const routeNameGetters = {
-  // noPrefix: createLocaleRouteNameGetter({ strategy: 'no_prefix', differentDomains: false, ...ROUTE_GEN_CONFIG }),
-  noPrefix: (...args) => {
-    globalThis['__I18N_STRATEGY__'] = 'no_prefix'
-    globalThis['__I18N_ROUTING__'] = false
-    return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
-  },
-  prefixAndDefault: (...args) => {
-    globalThis['__I18N_STRATEGY__'] = 'prefix_and_default'
-    globalThis['__I18N_ROUTING__'] = true
-    return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
-  },
-  prefixExceptDefault: (...args) => {
-    globalThis['__I18N_STRATEGY__'] = 'prefix_except_default'
-    globalThis['__I18N_ROUTING__'] = true
-    return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
-  }
+  noPrefix: createLocaleRouteNameGetter('en', { strategy: 'no_prefix', routing: false, differentDomains: false }),
+  prefixAndDefault: createLocaleRouteNameGetter('en', {
+    strategy: 'prefix_and_default',
+    routing: true,
+    differentDomains: false
+  }),
+  prefixExceptDefault: createLocaleRouteNameGetter('en', {
+    strategy: 'prefix_except_default',
+    routing: true,
+    differentDomains: false
+  })
 }
 
 describe('getLocaleRouteName', () => {
