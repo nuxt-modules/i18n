@@ -2,13 +2,21 @@ import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { $fetch, setup } from '../utils'
 
-describe('#3929 - route groups with `detectBrowserLanguage.redirectOn: "no prefix"` during prerender', async () => {
-  await setup({
-    rootDir: fileURLToPath(new URL(`../fixtures/issues/3929`, import.meta.url)),
-    // exercises `nuxt generate` — the original bug caused prerender to fail
-    prerender: true
-  })
+await setup({
+  rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
+  // exercises `nuxt generate` — the original bug caused prerender to fail
+  prerender: true,
+  // overrides
+  nuxtConfig: {
+    i18n: {
+      detectBrowserLanguage: {
+        redirectOn: 'no prefix'
+      }
+    }
+  }
+})
 
+describe('#3929 - route groups with `detectBrowserLanguage.redirectOn: "no prefix"` during prerender', () => {
   test('prerenders pages inside a route group', async () => {
     const html = await $fetch('/foo')
     expect(html).toContain('Foo (group)')
