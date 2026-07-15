@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
@@ -145,7 +145,6 @@ describe('localizeRoutes', function () {
   })
 
   describe('strategy: "prefix_and_default"', function () {
-    vi.stubGlobal('__I18N_STRATEGY__', 'prefix_and_default')
     it('should be localized routing', function () {
       const routes: NuxtPage[] = [
         {
@@ -186,7 +185,6 @@ describe('localizeRoutes', function () {
   // low confidence test
   describe('strategy: "prefix_and_default" + multiDomainLocales', function () {
     it('should be localized routing', function () {
-      vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', true)
       const routes: NuxtPage[] = [
         {
           path: '/',
@@ -228,7 +226,6 @@ describe('localizeRoutes', function () {
       setupMultiDomainLocales('en', 'prefix_except_default', router)
 
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
     })
   })
 
