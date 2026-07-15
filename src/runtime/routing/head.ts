@@ -25,8 +25,8 @@ function createHeadContext(
   // deduplicate, layered configs merge `canonicalQueries` arrays with duplicate entries
   const canonicalQueries = [...new Set((typeof config.seo === 'object' && config.seo?.canonicalQueries) || [])]
 
-  if (!baseUrl && !__DIFFERENT_DOMAINS__ && !__MULTI_DOMAIN_LOCALES__) {
-    if (__I18N_STRICT_SEO__) {
+  if (!baseUrl && !ctx.routingOptions.domains) {
+    if (ctx.strictSeo) {
       throw new Error('I18n `baseUrl` is required to generate valid SEO tag links.')
     }
     console.warn('I18n `baseUrl` is required to generate valid SEO tag links.')
@@ -34,13 +34,14 @@ function createHeadContext(
 
   return {
     ...config,
-    key: __I18N_STRICT_SEO__ ? 'key' : 'id',
+    key: ctx.strictSeo ? 'key' : 'id',
+    strictSeo: ctx.strictSeo,
     locales,
     baseUrl,
     canonicalQueries,
     hreflangLinks: ctx.routingOptions.hreflangLinks,
     defaultLocale: ctx.routingOptions.defaultLocale,
-    strictCanonicals: __I18N_STRICT_SEO__ || ctx.routingOptions.strictCanonicals,
+    strictCanonicals: ctx.strictSeo || ctx.routingOptions.strictCanonicals,
     getRouteBaseName: ctx.getRouteBaseName,
     getCurrentRoute: () => ctx.router.currentRoute.value,
     getCurrentLanguage: () => currentLocale.language,
@@ -80,14 +81,14 @@ export function _useLocaleHead(ctx: ComposableContext, options: Required<I18nHea
   if (import.meta.client) {
     const unsub = watch([() => ctx.router.currentRoute.value, () => ctx.getLocale()], () => {
       metaObject.value = _localeHead(createHeadContext(ctx, options))
-      __I18N_STRICT_SEO__ && patchHead(ctx.head, metaObject.value)
+      ctx.strictSeo && patchHead(ctx.head, metaObject.value)
     })
     if (getCurrentScope()) {
       onScopeDispose(unsub)
     }
   }
 
-  __I18N_STRICT_SEO__ && patchHead(ctx.head, metaObject.value)
+  ctx.strictSeo && patchHead(ctx.head, metaObject.value)
 
   return metaObject
 }
@@ -97,8 +98,8 @@ export function _useSetI18nParams(
   seo?: SeoAttributesOptions,
   router = ctx.router,
 ): (params: I18nRouteMeta) => void {
-  const head = __I18N_STRICT_SEO__ ? ctx.head : useHead({})
-  const evt = __I18N_STRICT_SEO__ && import.meta.server && useRequestEvent()
+  const head = ctx.strictSeo ? ctx.head : useHead({})
+  const evt = ctx.strictSeo && import.meta.server && useRequestEvent()
 
   const _i18nParams = ref({})
   const i18nParams = computed({
@@ -118,7 +119,7 @@ export function _useSetI18nParams(
     () => router.currentRoute.value.fullPath,
     () => {
       router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] = _i18nParams.value
-      __I18N_STRICT_SEO__ && updateState()
+      ctx.strictSeo && updateState()
     },
   )
 
@@ -133,14 +134,14 @@ export function _useSetI18nParams(
 
   const ctxOptions = ref({
     ...ctx.seoSettings,
-    key: __I18N_STRICT_SEO__ ? 'key' : 'id',
+    key: ctx.strictSeo ? 'key' : 'id',
     seo: seo ?? ctx.seoSettings.seo,
   })
 
   return function (params: I18nRouteMeta) {
     i18nParams.value = { ...params }
-    __I18N_STRICT_SEO__ && updateState()
-    if (!__I18N_STRICT_SEO__) {
+    ctx.strictSeo && updateState()
+    if (!ctx.strictSeo) {
       const val = _localeHead(createHeadContext(ctx, ctxOptions.value as Required<I18nHeadOptions>))
       patchHead(head, val)
     }

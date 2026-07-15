@@ -16,12 +16,15 @@ import type { RoutingContext } from './routing/context'
  * @internal
  */
 export type ComposableContext = RoutingContext & {
+  strictSeo: boolean
   routingOptions: {
     defaultLocale: string
     /** Use `canonicalQueries` for alternate links */
     strictCanonicals: boolean
     /** Enable/disable hreflangLinks */
     hreflangLinks: boolean
+    /** Whether locales are resolved from domains */
+    domains: boolean
   }
   head: ReturnType<typeof import('nuxt/app').useHead>
   _head: ReturnType<typeof import('nuxt/app').useHead> | undefined
@@ -61,6 +64,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
 
   return {
     ...routingCtx,
+    strictSeo: __I18N_STRICT_SEO__,
     _head: undefined,
     get head() {
       this._head ??= useHead({})
@@ -77,6 +81,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     localePathPayload,
     routingOptions: {
       defaultLocale: ctx.getDefaultLocale(),
+      domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
       strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__),
     },
