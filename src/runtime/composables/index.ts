@@ -87,12 +87,12 @@ export function useLocaleHead(
   { dir = true, lang = true, seo = true }: I18nHeadOptions = {},
   nuxtApp: NuxtApp = useNuxtApp(),
 ): Ref<I18nHeadMetaInfo> {
-  if (__I18N_STRICT_SEO__) {
+  const common = useComposableContext(nuxtApp)
+  if (common.strictSeo) {
     throw new Error(
       'Strict SEO mode is enabled, `useLocaleHead` should not be used as localized head tags are handled internally by `@nuxtjs/i18n`',
     )
   }
-  const common = useComposableContext(nuxtApp)
   common.seoSettings = { dir, lang, seo }
   const head = _useLocaleHead(common, common.seoSettings as Required<I18nHeadOptions>)
 

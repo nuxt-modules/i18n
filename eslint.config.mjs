@@ -99,6 +99,7 @@ export default createConfigForNuxt({
       files: [
         'src/runtime/kit/**',
         'src/runtime/routing/context.ts',
+        'src/runtime/routing/head.ts',
         'src/runtime/routing/navigation.ts',
         'src/runtime/routing/utils.ts',
         'src/runtime/server/utils/redirect.ts',

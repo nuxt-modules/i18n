@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, test } from 'vitest'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
@@ -29,7 +29,7 @@ const routes = [
   })),
 )
 
-function createTestContext(initialLocale = 'en') {
+function createTestContext(initialLocale = 'en', strictSeo = false) {
   let locale = initialLocale
   const router = createRouter({ history: createMemoryHistory(), routes })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
@@ -42,8 +42,7 @@ function createTestContext(initialLocale = 'en') {
       differentDomains: false,
       multiDomainLocales: false,
       trailingSlash: false,
-      // follows the stubbed global so the context matches each test's strict seo mode
-      strictSeo: __I18N_STRICT_SEO__,
+      strictSeo,
       compactRoutes: false,
       getLocale: () => locale,
       getLocales: () => locales,
@@ -52,10 +51,11 @@ function createTestContext(initialLocale = 'en') {
     }),
     _head: undefined,
     head,
+    strictSeo,
     metaState: { htmlAttrs: {}, meta: [], link: [] },
     seoSettings: { dir: true, lang: true, seo: true },
     localePathPayload: {},
-    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true },
+    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true, domains: false },
   } as unknown as ComposableContext
   return { router, ctx, head, setLocale: (l: string) => (locale = l) }
 }
@@ -134,13 +134,8 @@ describe('switchLocalePath', () => {
 })
 
 describe('strict seo mode', () => {
-  beforeEach(() => {
-    vi.stubGlobal('__I18N_STRICT_SEO__', true)
-    return () => vi.stubGlobal('__I18N_STRICT_SEO__', false)
-  })
-
   test('disables locales without localized dynamic params', async () => {
-    const { router, ctx, setLocale } = createTestContext()
+    const { router, ctx, setLocale } = createTestContext('en', true)
     await router.push('/nl/products/rode-mok')
     setLocale('nl')
     // no ja params - route should be treated as unavailable in ja
@@ -168,7 +163,7 @@ describe('strict seo mode', () => {
   })
 
   test('omits tag identity keys', async () => {
-    const { router, ctx } = createTestContext()
+    const { router, ctx } = createTestContext('en', true)
     await router.push('/products/big-chair')
     setDynamicParams(router, chairParams)
 
@@ -195,8 +190,7 @@ describe('_useLocaleHead', () => {
   })
 
   test('patches shared head state on updates in strict seo mode', async () => {
-    vi.stubGlobal('__I18N_STRICT_SEO__', true)
-    const { router, ctx, head } = createTestContext()
+    const { router, ctx, head } = createTestContext('en', true)
     await router.push('/')
 
     const metaObject = _useLocaleHead(ctx, { dir: true, lang: true, seo: true })
@@ -205,7 +199,6 @@ describe('_useLocaleHead', () => {
     await router.push('/products/big-chair')
     await nextTick()
     expect(head.patches).toHaveLength(2)
-    vi.stubGlobal('__I18N_STRICT_SEO__', false)
   })
 })
 
@@ -239,8 +232,7 @@ describe('_useSetI18nParams', () => {
   })
 
   test('seo attributes override global canonicalQueries in strict seo mode', async () => {
-    vi.stubGlobal('__I18N_STRICT_SEO__', true)
-    const { router, ctx, head } = createTestContext()
+    const { router, ctx, head } = createTestContext('en', true)
     ctx.seoSettings.seo = { canonicalQueries: ['page'] }
     await router.push('/products/big-chair?page=2&canonical=1')
 
@@ -251,6 +243,5 @@ describe('_useSetI18nParams', () => {
     expect(patched.link.find(x => x.rel === 'canonical')!.href).toBe(
       'https://example.com/products/big-chair?canonical=1',
     )
-    vi.stubGlobal('__I18N_STRICT_SEO__', false)
   })
 })
