@@ -3,8 +3,6 @@ import { createRouterMatcher } from 'vue-router'
 import { disabledI18nPathToPath, i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
 import { createTrailingSlashFormatter, prefixable } from '#i18n-kit/routing'
 
-const formatTrailingSlash = createTrailingSlashFormatter(__TRAILING_SLASH__)
-
 const matcher = createRouterMatcher([], {})
 for (const path of Object.keys(i18nPathToPath)) {
   matcher.addRoute({ path, component: () => '', meta: {} })
@@ -65,6 +63,6 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
       routing: __I18N_ROUTING__,
       differentDomains: __DIFFERENT_DOMAINS__,
     })
-    return formatTrailingSlash(withLeadingSlash(joinURL(isPrefixable ? locale : '', match.path)), true)
+    return createTrailingSlashFormatter(__TRAILING_SLASH__)(withLeadingSlash(joinURL(isPrefixable ? locale : '', match.path)), true)
   }
 }

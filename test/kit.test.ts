@@ -110,6 +110,8 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
       differentDomains: false,
       multiDomainLocales: false,
       trailingSlash: false,
+      strictSeo: false,
+      compactRoutes: false,
       getLocale: () => unref(i18nMock.locale),
       getLocales: () => unref(i18nMock.locales),
       getBaseUrl: () => unref(i18nMock.baseUrl),

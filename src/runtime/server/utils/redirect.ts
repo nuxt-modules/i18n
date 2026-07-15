@@ -15,22 +15,18 @@ export type RedirectResolverConfig = {
   matchLocalized: (path: string, locale: string, defaultLocale: string) => string | undefined
   /** @default `isSupportedLocale` */
   isSupportedLocale?: (locale?: string) => boolean
-  /** @default `__I18N_STRATEGY__` */
-  strategy?: Strategies
-  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) @default `__I18N_ROUTING__` */
-  routing?: boolean
-  /** Whether locales are resolved from domains @default `__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__` */
-  domains?: boolean
+  strategy: Strategies
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
+  routing: boolean
+  /** Whether locales are resolved from domains */
+  domains: boolean
 }
 
 export type ResolvedRedirect = { path: string | undefined, code: number, locale: string }
 
 export function createRedirectResolver(config: RedirectResolverConfig) {
-  const { detection, rootRedirect, matchLocalized } = config
+  const { detection, rootRedirect, matchLocalized, strategy, routing, domains } = config
   const isSupported = config.isSupportedLocale ?? isSupportedLocale
-  const strategy = config.strategy ?? __I18N_STRATEGY__
-  const routing = config.routing ?? __I18N_ROUTING__
-  const domains = config.domains ?? (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__)
 
   function* detect(detectors: Detectors, path: string) {
     if (detection.enabled) {

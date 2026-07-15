@@ -15,17 +15,14 @@ export type NavigationResolverConfig = {
   routeLocale: (to: CompatRoute) => string | undefined
   hasRoute: (name: string) => boolean
   getLocaleCodes: () => string[]
-  /** @default `__I18N_STRATEGY__` */
-  strategy?: Strategies
-  /** @default `__I18N_COMPACT_ROUTES__` */
-  compactRoutes?: boolean
+  strategy: Strategies
+  compactRoutes: boolean
 }
 
 export type ResolvedNavigation = { path: string, code: number | undefined }
 
 export function createNavigationResolver(config: NavigationResolverConfig) {
-  const strategy = config.strategy ?? __I18N_STRATEGY__
-  const compactRoutes = config.compactRoutes ?? __I18N_COMPACT_ROUTES__
+  const { strategy, compactRoutes } = config
 
   /**
    * Routes with localization disabled (e.g. `definePageMeta({ i18n: false })`) keep their

@@ -51,36 +51,27 @@ export interface RoutingContextOptions {
    * meta (strict SEO client-side hydration), a falsy value otherwise.
    */
   getLocalePathPayload?: () => Record<string, Record<string, string> | false> | false | undefined
-  /** @default `__I18N_STRATEGY__` */
-  strategy?: Strategies
-  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) @default `__I18N_ROUTING__` */
-  routing?: boolean
-  /** @default `__DIFFERENT_DOMAINS__` */
-  differentDomains?: boolean
-  /** @default `__MULTI_DOMAIN_LOCALES__` */
-  multiDomainLocales?: boolean
-  /** @default `__TRAILING_SLASH__` */
-  trailingSlash?: boolean
-  /** @default `__I18N_STRICT_SEO__` */
-  strictSeo?: boolean
-  /** @default `__I18N_COMPACT_ROUTES__` */
-  compactRoutes?: boolean
+  strategy: Strategies
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
+  routing: boolean
+  differentDomains: boolean
+  multiDomainLocales: boolean
+  trailingSlash: boolean
+  strictSeo: boolean
+  compactRoutes: boolean
 }
 
 // RouteLike object has a path and no name.
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
 export function createRoutingContext(options: RoutingContextOptions): RoutingContext {
-  const { router, defaultLocale } = options
+  const { router, defaultLocale, multiDomainLocales, strictSeo, compactRoutes } = options
   const config: PrefixableOptions = {
-    strategy: options.strategy ?? __I18N_STRATEGY__,
-    routing: options.routing ?? __I18N_ROUTING__,
-    differentDomains: options.differentDomains ?? __DIFFERENT_DOMAINS__,
+    strategy: options.strategy,
+    routing: options.routing,
+    differentDomains: options.differentDomains,
   }
-  const multiDomainLocales = options.multiDomainLocales ?? __MULTI_DOMAIN_LOCALES__
-  const strictSeo = options.strictSeo ?? __I18N_STRICT_SEO__
-  const compactRoutes = options.compactRoutes ?? __I18N_COMPACT_ROUTES__
-  const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash ?? __TRAILING_SLASH__)
+  const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {

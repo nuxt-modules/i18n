@@ -41,7 +41,11 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
   const detectConfig = useI18nDetection(nuxtApp)
   const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, nuxtApp)
   const ctx = useNuxtI18nContext(nuxtApp)
-  const detect = createLocaleDetector({ detection: detectConfig })
+  const detect = createLocaleDetector({
+    detection: detectConfig,
+    routing: __I18N_ROUTING__,
+    domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
+  })
 
   return detect(detectors, route, ctx.initial) || ctx.getLocale() || ctx.getDefaultLocale() || ''
 }
@@ -60,6 +64,8 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
     routeLocale: route => detectors.route(route),
     hasRoute: name => _ctx.router.hasRoute(name),
     getLocaleCodes: () => _ctx.getLocales().map(locale => locale.code),
+    strategy: __I18N_STRATEGY__,
+    compactRoutes: __I18N_COMPACT_ROUTES__,
   })
 
   const resolved = resolve(to, locale, !!ctx.vueI18n.__pendingLocale && !!useNuxtApp()._processingMiddleware)

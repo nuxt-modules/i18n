@@ -84,6 +84,9 @@ export default defineNitroPlugin(async (nitro) => {
     rootRedirect,
     redirectStatusCode: runtimeI18n.redirectStatusCode,
     matchLocalized,
+    strategy: __I18N_STRATEGY__,
+    routing: __I18N_ROUTING__,
+    domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
   })
 
   const baseUrlGetter = createBaseUrlGetter()
