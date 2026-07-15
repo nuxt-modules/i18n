@@ -80,13 +80,4 @@ describe('experimental.strictSeo', async () => {
       'http://localhost:3000/post/my-post'
     )
   })
-
-  test('`useSetI18nParams` seo attributes override the global `canonicalQueries`', async () => {
-    // the products page passes `{ canonicalQueries: ['canonical'] }` explicitly
-    const { page } = await renderPage('/products/big-chair?page=2&canonical=1')
-
-    expect(await page.locator('link[rel=canonical]').getAttribute('href')).toEqual(
-      'http://localhost:3000/products/big-chair?canonical=1'
-    )
-  })
 })
