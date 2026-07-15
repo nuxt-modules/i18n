@@ -19,6 +19,14 @@ await setup({
 })
 
 describe('default strategy: prefix_except_default', async () => {
+  test('(#3404) messages imported by the `vueI18n` config from the locales directory', async () => {
+    const { page } = await renderPage('/')
+    expect(await page.locator('#locale-file-import').innerText()).toEqual('Hello!')
+
+    await page.goto(url('/fr'))
+    expect(await page.locator('#locale-file-import').innerText()).toEqual('Bonjour !')
+  })
+
   test('can access to no prefix locale (defaultLocale: en): /', async () => {
     const { page } = await renderPage('/')
 

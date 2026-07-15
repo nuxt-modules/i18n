@@ -88,4 +88,19 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
       expect(url2).toBe(url('/fr?foo=bar'))
     })
   })
+
+  test('(#1888) `v-html` messages render the detected locale before and after hydration', async () => {
+    const { page } = await renderPage('/', { locale: 'fr' })
+    await page.waitForURL(url('/fr'))
+
+    expect(await page.locator('#html-message').innerText()).toEqual('Exemple de traduction')
+    expect(await page.locator('#html-message-mounted').innerText()).toEqual('Exemple de traduction')
+
+    // change to `en` locale
+    await page.locator('#set-locale-link-en').clickNavigate()
+    await page.waitForURL(url('/'))
+
+    expect(await page.locator('#html-message').innerText()).toEqual('Translation example')
+    expect(await page.locator('#html-message-mounted').innerText()).toEqual('Translation example')
+  })
 })

@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { watchEffect } from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
 import { useAsyncData, useHead, useRouter } from '#imports'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
 
 const { t, locale } = useI18n()
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
 const localePath = useLocalePath()
 const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page'] } })
 const { data, refresh } = useAsyncData(`home-${locale.value}`, () =>
@@ -45,6 +49,11 @@ useHead(() => ({
     </section>
     <section>
       <code id="extend-message">{{ t('my-module-exemple.hello') }}</code>
+    </section>
+    <section>
+      <p id="html-message" v-html="$t('htmlMessage')" />
+      <p v-if="isMounted" id="html-message-mounted" v-html="$t('htmlMessage')" />
+      <span id="locale-file-import">{{ $t('greeting.hello') }}</span>
     </section>
     <NuxtLink id="link-about" exact :to="localePath('about')">{{ $t('about') }}</NuxtLink>
     <NuxtLink id="link-blog" :to="localePath('blog')">{{ $t('blog') }}</NuxtLink>

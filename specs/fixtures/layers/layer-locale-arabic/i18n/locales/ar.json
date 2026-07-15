@@ -1,4 +1,7 @@
 {
   "hello": "Hello world! (Arabic)",
-  "home": "Homepage (Arabic)"
+  "home": "Homepage (Arabic)",
+  "greeting": {
+    "hello": "Hello! (Arabic)"
+  }
 }
