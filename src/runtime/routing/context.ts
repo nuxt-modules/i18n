@@ -61,6 +61,10 @@ export interface RoutingContextOptions {
   multiDomainLocales?: boolean
   /** @default `__TRAILING_SLASH__` */
   trailingSlash?: boolean
+  /** @default `__I18N_STRICT_SEO__` */
+  strictSeo?: boolean
+  /** @default `__I18N_COMPACT_ROUTES__` */
+  compactRoutes?: boolean
 }
 
 // RouteLike object has a path and no name.
@@ -74,6 +78,8 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     differentDomains: options.differentDomains ?? __DIFFERENT_DOMAINS__,
   }
   const multiDomainLocales = options.multiDomainLocales ?? __MULTI_DOMAIN_LOCALES__
+  const strictSeo = options.strictSeo ?? __I18N_STRICT_SEO__
+  const compactRoutes = options.compactRoutes ?? __I18N_COMPACT_ROUTES__
   const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash ?? __TRAILING_SLASH__)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
 
@@ -85,10 +91,10 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
       // Remove stale locale param inherited from a compact route — per-locale routes don't use it
-      if (__I18N_COMPACT_ROUTES__ && route.params) {
+      if (compactRoutes && route.params) {
         delete (route.params as Record<string, unknown>).locale
       }
-    } else if (__I18N_COMPACT_ROUTES__ && isSupportedLocale(locale) && getCompactRouteNames().has(route.name!)) {
+    } else if (compactRoutes && isSupportedLocale(locale) && getCompactRouteNames().has(route.name!)) {
       // Compact route: keep base name, inject locale as route param.
       route.params = { ...(route.params || {}), locale }
       return route
@@ -108,7 +114,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
   function getCompactRouteNames() {
     if (compactRouteRecords) { return compactRouteRecords }
     compactRouteRecords = new Set()
-    if (__I18N_COMPACT_ROUTES__) {
+    if (compactRoutes) {
       for (const r of router.getRoutes()) {
         if (r.name != null && /^\/:locale\(/.test(r.path)) { compactRouteRecords.add(String(r.name)) }
       }
@@ -128,7 +134,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         route.name = localizedName
         // Remove stale locale param inherited from a compact route — per-locale routes don't use it
         const named = route as RouteLikeWithName
-        if (__I18N_COMPACT_ROUTES__ && named.params) {
+        if (compactRoutes && named.params) {
           delete (named.params as Record<string, unknown>).locale
         }
         return route
@@ -136,7 +142,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
 
       // Path-pattern check (rather than router.resolve probe) avoids vue-router warnings
       // when `baseName` resolves to a non-compact route, e.g. defineI18nRoute(false).
-      if (__I18N_COMPACT_ROUTES__ && getCompactRouteNames().has(baseName)) {
+      if (compactRoutes && getCompactRouteNames().has(baseName)) {
         const compacted = route as RouteLikeWithName
         compacted.name = baseName
         compacted.params = { ...(compacted.params || {}), locale }
@@ -176,7 +182,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     },
     afterSwitchLocalePath: (path, locale) => {
       const params = getRouteLocalizedParams()
-      if (__I18N_STRICT_SEO__ && locale && Object.keys(params).length && !params[locale]) {
+      if (strictSeo && locale && Object.keys(params).length && !params[locale]) {
         return ''
       }
 
