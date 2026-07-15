@@ -5,7 +5,9 @@ import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
 import { matchDomainLocale } from './domain'
-import { useRuntimeI18n } from '../shared/utils'
+import { isString } from '@intlify/shared'
+import { isSupportedLocale } from './locales'
+import { useRuntimeI18n, type useI18nDetection } from '../shared/utils'
 import type { I18nPublicRuntimeConfig } from '../../types'
 
 import type { H3Event } from 'h3'
@@ -54,5 +56,73 @@ export const useDetectors = (event: H3Event | undefined, config: { cookieKey: st
     navigator: () => (import.meta.client ? getNavigatorLocale(event) : undefined),
     host: (path: string) => getHostLocale(event, path, runtimeI18n.domainLocales),
     route: (path: string | CompatRoute) => getRouteLocale(event, path),
+  }
+}
+
+export type LocaleDetectorConfig = {
+  detection: ReturnType<typeof useI18nDetection>
+  /** @default `isSupportedLocale` */
+  isSupportedLocale?: (locale?: string) => boolean
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) @default `__I18N_ROUTING__` */
+  routing?: boolean
+  /** Whether locales are resolved from domains @default `__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__` */
+  domains?: boolean
+}
+
+export function createLocaleDetector(config: LocaleDetectorConfig) {
+  const { detection } = config
+  const isSupported = config.isSupportedLocale ?? isSupportedLocale
+  const routing = config.routing ?? __I18N_ROUTING__
+  const domains = config.domains ?? (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__)
+
+  function skipDetect(path: string, pathLocale: string | undefined): boolean {
+    // no routes - force detection
+    if (!routing) {
+      return false
+    }
+
+    // detection only on root
+    if (detection.redirectOn === 'root' && path !== '/') {
+      return true
+    }
+
+    // detection only on unprefixed route
+    if (detection.redirectOn === 'no prefix' && !detection.alwaysRedirect && isSupported(pathLocale)) {
+      return true
+    }
+
+    return false
+  }
+
+  /**
+   * Returns the detected locale for `route`, or an empty string when no supported locale is detected
+   */
+  return function detectLocale(detectors: ReturnType<typeof useDetectors>, route: string | CompatRoute, initial: boolean): string {
+    const path = isString(route) ? route : route.path
+
+    function* detect() {
+      if (initial && detection.enabled && !skipDetect(path, detectors.route(path))) {
+        yield detectors.cookie()
+        yield detectors.header()
+        yield detectors.navigator()
+        yield detection.fallbackLocale
+      }
+
+      if (domains) {
+        yield detectors.host(path)
+      }
+
+      if (routing) {
+        yield detectors.route(route)
+      }
+    }
+
+    for (const detected of detect()) {
+      if (detected && isSupported(detected)) {
+        return detected
+      }
+    }
+
+    return ''
   }
 }
