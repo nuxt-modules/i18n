@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import {
   getLocaleFromRoute,
   getLocaleFromRouteName,
@@ -6,6 +6,7 @@ import {
   getRouteBaseName,
   prefixable,
 } from '../src/runtime/kit/routing'
+import type { PrefixableOptions } from '../src/runtime/kit/routing'
 
 describe('localized route name encode/decode', () => {
   test.each([
@@ -47,30 +48,22 @@ describe('getLocaleFromRoute', () => {
 })
 
 describe('prefixable', () => {
+  const options: PrefixableOptions = { strategy: 'prefix_except_default', routing: true, differentDomains: false }
+
   test('prefixes non-default locales when routing is enabled', () => {
-    vi.stubGlobal('__I18N_ROUTING__', true)
-    vi.stubGlobal('__I18N_STRATEGY__', 'prefix_except_default')
-    expect(prefixable('fr', 'en')).toBe(true)
-    expect(prefixable('en', 'en')).toBe(false)
+    expect(prefixable('fr', 'en', options)).toBe(true)
+    expect(prefixable('en', 'en', options)).toBe(false)
   })
 
   test('prefixes the default locale with strategy prefix', () => {
-    vi.stubGlobal('__I18N_ROUTING__', true)
-    vi.stubGlobal('__I18N_STRATEGY__', 'prefix')
-    expect(prefixable('en', 'en')).toBe(true)
+    expect(prefixable('en', 'en', { ...options, strategy: 'prefix' })).toBe(true)
   })
 
   test('never prefixes without routing', () => {
-    vi.stubGlobal('__I18N_ROUTING__', false)
-    vi.stubGlobal('__I18N_STRATEGY__', 'prefix')
-    expect(prefixable('fr', 'en')).toBe(false)
+    expect(prefixable('fr', 'en', { ...options, strategy: 'prefix', routing: false })).toBe(false)
   })
 
   test('never prefixes with different domains', () => {
-    vi.stubGlobal('__I18N_ROUTING__', true)
-    vi.stubGlobal('__I18N_STRATEGY__', 'prefix')
-    vi.stubGlobal('__DIFFERENT_DOMAINS__', true)
-    expect(prefixable('fr', 'en')).toBe(false)
-    vi.stubGlobal('__DIFFERENT_DOMAINS__', false)
+    expect(prefixable('fr', 'en', { ...options, strategy: 'prefix', differentDomains: true })).toBe(false)
   })
 })

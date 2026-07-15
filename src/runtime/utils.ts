@@ -1,18 +1,14 @@
-import { isEqual } from 'ufo'
-import { isString } from '@intlify/shared'
 import { navigateTo, useNuxtApp, useRequestEvent } from '#imports'
-import { getLocalizedRouteName, getRouteBaseName } from '#i18n-kit/routing'
 import { localePath, switchLocalePath } from './routing/routing'
+import { createNavigationResolver } from './routing/navigation'
 import { useNuxtI18nContext } from './context'
 import { useComposableContext } from './composable-context'
 import { isSupportedLocale } from './shared/locales'
-import { useDetectors } from './shared/detection'
+import { createLocaleDetector, useDetectors } from './shared/detection'
 import { useI18nDetection } from './shared/utils'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
-import type { DetectBrowserLanguageOptions } from '#internal-i18n-types'
-import type { ComposableContext } from './composable-context'
 import type { CompatRoute } from './types'
 
 export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promise<string> {
@@ -41,68 +37,17 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
   return locale
 }
 
-function skipDetect(detect: DetectBrowserLanguageOptions, path: string, pathLocale: string | undefined): boolean {
-  // no routes - force detection
-  if (!__I18N_ROUTING__) {
-    return false
-  }
-
-  // detection only on root
-  if (detect.redirectOn === 'root' && path !== '/') {
-    return true
-  }
-
-  // detection only on unprefixed route
-  if (detect.redirectOn === 'no prefix' && !detect.alwaysRedirect && isSupportedLocale(pathLocale)) {
-    return true
-  }
-
-  return false
-}
-
 export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): string {
   const detectConfig = useI18nDetection(nuxtApp)
   const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, nuxtApp)
   const ctx = useNuxtI18nContext(nuxtApp)
-  const path = isString(route) ? route : route.path
+  const detect = createLocaleDetector({
+    detection: detectConfig,
+    routing: __I18N_ROUTING__,
+    domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
+  })
 
-  function* detect() {
-    if (ctx.initial && detectConfig.enabled && !skipDetect(detectConfig, path, detectors.route(path))) {
-      yield detectors.cookie()
-      yield detectors.header()
-      yield detectors.navigator()
-      yield detectConfig.fallbackLocale
-    }
-
-    if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-      yield detectors.host(path)
-    }
-
-    if (__I18N_ROUTING__) {
-      yield detectors.route(route)
-    }
-  }
-
-  for (const detected of detect()) {
-    if (detected && isSupportedLocale(detected)) {
-      return detected
-    }
-  }
-
-  return ctx.getLocale() || ctx.getDefaultLocale() || ''
-}
-
-/**
- * Routes with localization disabled (e.g. `definePageMeta({ i18n: false })`) keep their
- * unsuffixed record name and have no localized variants, unlike compact routes and
- * unprefixed fallback routes (e.g. the root route kept for `strategy: 'prefix'`).
- */
-function isUnlocalizedRoute(ctx: ComposableContext, to: CompatRoute): boolean {
-  if (__I18N_STRATEGY__ === 'no_prefix' || to.name == null) { return false }
-  const name = String(to.name)
-  if (getRouteBaseName(name) !== name) { return false }
-  if (__I18N_COMPACT_ROUTES__ && to.matched.some(r => r.meta.__i18nCompact)) { return false }
-  return !ctx.getLocales().some(locale => ctx.router.hasRoute(getLocalizedRouteName(name, locale.code, false)))
+  return detect(detectors, route, ctx.initial) || ctx.getLocale() || ctx.getDefaultLocale() || ''
 }
 
 export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
@@ -110,30 +55,21 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
 
   const ctx = useNuxtI18nContext(nuxtApp)
   const _ctx = useComposableContext(nuxtApp)
-
-  if (to.path === '/' && ctx.rootRedirect) {
-    return navigateTo(localePath(_ctx, ctx.rootRedirect.path, locale), { redirectCode: ctx.rootRedirect.code })
-  }
-
-  // skip - localization disabled for route (#3987)
-  if (isUnlocalizedRoute(_ctx, to)) { return }
-
-  // skip - pending locale inside navigation middleware
-  if (ctx.vueI18n.__pendingLocale && useNuxtApp()._processingMiddleware) {
-    return
-  }
-
-  // skip - redirection optional prevents prefix removal, reconsider if needed (#2288)
   const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
-  if (detectors.route(to) === locale) {
-    return
-  }
+  const resolve = createNavigationResolver({
+    rootRedirect: ctx.rootRedirect,
+    redirectStatusCode: ctx.redirectStatusCode,
+    localePath: (path, locale) => localePath(_ctx, path, locale),
+    switchLocalePath: (locale, route) => switchLocalePath(_ctx, locale, route),
+    routeLocale: route => detectors.route(route),
+    hasRoute: name => _ctx.router.hasRoute(name),
+    getLocaleCodes: () => _ctx.getLocales().map(locale => locale.code),
+    strategy: __I18N_STRATEGY__,
+    compactRoutes: __I18N_COMPACT_ROUTES__,
+  })
 
-  // skip redirect if resolved route matches current route (#1889, #2226)
-  const destination = switchLocalePath(_ctx, locale, to) || localePath(_ctx, to.fullPath, locale)
-  if (isEqual(destination, to.fullPath)) {
-    return
+  const resolved = resolve(to, locale, !!ctx.vueI18n.__pendingLocale && !!useNuxtApp()._processingMiddleware)
+  if (resolved) {
+    return navigateTo(resolved.path, { redirectCode: resolved.code })
   }
-
-  return navigateTo(destination, { redirectCode: ctx.redirectStatusCode })
 }

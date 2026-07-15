@@ -1,5 +1,6 @@
 import { createPathIndexLanguageParser } from '@intlify/utils'
 import { withTrailingSlash, withoutTrailingSlash } from 'ufo'
+import type { Strategies } from '#internal-i18n-types'
 import type { RouteName, RouteObject } from './types'
 
 const separator = __ROUTE_NAME_SEPARATOR__ || '___'
@@ -28,14 +29,22 @@ export function getLocalizedRouteName(routeName: string, locale: string, isDefau
     : routeName + separator + locale + defaultRouteNameSuffix
 }
 
-export const formatTrailingSlash = __TRAILING_SLASH__ ? withTrailingSlash : withoutTrailingSlash
+export const createTrailingSlashFormatter = (trailingSlash: boolean) =>
+  trailingSlash ? withTrailingSlash : withoutTrailingSlash
 
-export function prefixable(currentLocale: string, defaultLocale: string): boolean {
+export type PrefixableOptions = {
+  strategy: Strategies
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
+  routing: boolean
+  differentDomains: boolean
+}
+
+export function prefixable(currentLocale: string, defaultLocale: string, options: PrefixableOptions): boolean {
   return (
-    !__DIFFERENT_DOMAINS__
-    && __I18N_ROUTING__
+    !options.differentDomains
+    && options.routing
     // only prefix default locale with strategy prefix
-    && (currentLocale !== defaultLocale || __I18N_STRATEGY__ === 'prefix')
+    && (currentLocale !== defaultLocale || options.strategy === 'prefix')
   )
 }
 

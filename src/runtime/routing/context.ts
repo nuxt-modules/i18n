@@ -1,10 +1,11 @@
 import { joinURL } from 'ufo'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './utils'
-import { formatTrailingSlash, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
+import { createTrailingSlashFormatter, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
 import { getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
 
 import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
-import type { LocaleObject } from '#internal-i18n-types'
+import type { PrefixableOptions } from '#i18n-kit/routing'
+import type { LocaleObject, Strategies } from '#internal-i18n-types'
 import type { RouteLike, RouteLikeWithName, RouteLikeWithPath } from './routing'
 import type { I18nRouteMeta, RouteLocationGenericPath } from '../types'
 
@@ -50,14 +51,28 @@ export interface RoutingContextOptions {
    * meta (strict SEO client-side hydration), a falsy value otherwise.
    */
   getLocalePathPayload?: () => Record<string, Record<string, string> | false> | false | undefined
+  strategy: Strategies
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
+  routing: boolean
+  differentDomains: boolean
+  multiDomainLocales: boolean
+  trailingSlash: boolean
+  strictSeo: boolean
+  compactRoutes: boolean
 }
 
 // RouteLike object has a path and no name.
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
 export function createRoutingContext(options: RoutingContextOptions): RoutingContext {
-  const { router, defaultLocale } = options
-  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale)
+  const { router, defaultLocale, multiDomainLocales, strictSeo, compactRoutes } = options
+  const config: PrefixableOptions = {
+    strategy: options.strategy,
+    routing: options.routing,
+    differentDomains: options.differentDomains,
+  }
+  const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
+  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
     route.name = getRouteBaseName(route.name || router.currentRoute.value) // fallback to current route name
@@ -67,10 +82,10 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     if (router.hasRoute(localizedName)) {
       route.name = localizedName
       // Remove stale locale param inherited from a compact route — per-locale routes don't use it
-      if (__I18N_COMPACT_ROUTES__ && route.params) {
+      if (compactRoutes && route.params) {
         delete (route.params as Record<string, unknown>).locale
       }
-    } else if (__I18N_COMPACT_ROUTES__ && isSupportedLocale(locale) && getCompactRouteNames().has(route.name!)) {
+    } else if (compactRoutes && isSupportedLocale(locale) && getCompactRouteNames().has(route.name!)) {
       // Compact route: keep base name, inject locale as route param.
       route.params = { ...(route.params || {}), locale }
       return route
@@ -82,7 +97,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     return route
   }
 
-  const routeByPathResolver = createLocalizedRouteByPathResolver(router)
+  const routeByPathResolver = createLocalizedRouteByPathResolver(router, config)
   // Detect compact routes by their resolved path prefix — catches the compact
   // parent and its children (whose own meta is empty but whose path inherits
   // the locale segment). Route records are stable after build, so cache lazily.
@@ -90,7 +105,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
   function getCompactRouteNames() {
     if (compactRouteRecords) { return compactRouteRecords }
     compactRouteRecords = new Set()
-    if (__I18N_COMPACT_ROUTES__) {
+    if (compactRoutes) {
       for (const r of router.getRoutes()) {
         if (r.name != null && /^\/:locale\(/.test(r.path)) { compactRouteRecords.add(String(r.name)) }
       }
@@ -110,7 +125,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         route.name = localizedName
         // Remove stale locale param inherited from a compact route — per-locale routes don't use it
         const named = route as RouteLikeWithName
-        if (__I18N_COMPACT_ROUTES__ && named.params) {
+        if (compactRoutes && named.params) {
           delete (named.params as Record<string, unknown>).locale
         }
         return route
@@ -118,7 +133,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
 
       // Path-pattern check (rather than router.resolve probe) avoids vue-router warnings
       // when `baseName` resolves to a non-compact route, e.g. defineI18nRoute(false).
-      if (__I18N_COMPACT_ROUTES__ && getCompactRouteNames().has(baseName)) {
+      if (compactRoutes && getCompactRouteNames().has(baseName)) {
         const compacted = route as RouteLikeWithName
         compacted.name = baseName
         compacted.params = { ...(compacted.params || {}), locale }
@@ -131,7 +146,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       return route
     }
 
-    if (prefixable(locale, defaultLocale)) {
+    if (prefixable(locale, defaultLocale, config)) {
       route.path = '/' + locale + route.path
     }
 
@@ -158,12 +173,12 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     },
     afterSwitchLocalePath: (path, locale) => {
       const params = getRouteLocalizedParams()
-      if (__I18N_STRICT_SEO__ && locale && Object.keys(params).length && !params[locale]) {
+      if (strictSeo && locale && Object.keys(params).length && !params[locale]) {
         return ''
       }
 
       // remove prefix if path is default for domain
-      if (__MULTI_DOMAIN_LOCALES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
+      if (multiDomainLocales && config.strategy === 'prefix_except_default') {
         const domainDefaultLocale = getDefaultLocaleForDomain(options.getHost() ?? '')
         if (locale !== domainDefaultLocale || getLocaleFromRoutePath(path) !== domainDefaultLocale) {
           return path
@@ -173,7 +188,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return path.slice(locale.length + 1)
       }
 
-      if (__DIFFERENT_DOMAINS__) {
+      if (config.differentDomains) {
         return joinURL(options.getBaseUrl(locale), path)
       }
       return path

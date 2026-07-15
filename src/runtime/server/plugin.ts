@@ -18,27 +18,7 @@ import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainFromLocale } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
-
-function* detect(
-  detectors: ReturnType<typeof useDetectors>,
-  detection: ReturnType<typeof useI18nDetection>,
-  path: string,
-) {
-  if (detection.enabled) {
-    yield { locale: detectors.cookie(), source: 'cookie' }
-    yield { locale: detectors.header(), source: 'header' }
-  }
-
-  if (__DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__) {
-    yield { locale: detectors.host(path), source: 'domain' }
-  }
-
-  if (__I18N_ROUTING__) {
-    yield { locale: detectors.route(path), source: 'route' }
-  }
-
-  yield { locale: detection.fallbackLocale, source: 'fallback' }
-}
+import { createRedirectResolver } from './utils/redirect'
 
 // Adapted from H3 v1
 // https://github.com/h3js/h3/blob/24231b9c448aa852b15b889c53253a783f67a126/src/utils/response.ts#L166-L179
@@ -99,61 +79,15 @@ export default defineNitroPlugin(async (nitro) => {
     }
   }
 
-  function resolveRedirectPath(
-    event: H3Event,
-    path: string | undefined,
-    pathLocale: string | undefined,
-    defaultLocale: string,
-    detector: ReturnType<typeof useDetectors>,
-  ) {
-    let locale = ''
-    for (const detected of detect(detector, detection, event.path)) {
-      if (detected.locale && isSupportedLocale(detected.locale)) {
-        locale = detected.locale
-        break
-      }
-    }
-    locale ||= defaultLocale
-
-    function getLocalizedMatch(locale: string) {
-      const res = matchLocalized(path || '/', locale, defaultLocale)
-      if (res && res !== event.path) {
-        return res
-      }
-    }
-
-    let resolvedPath = undefined
-    let redirectCode = 302
-
-    // base-free pathname, `getRequestURL(event).pathname` would still contain `app.baseURL`
-    const pathname = parsePath(event.path).pathname
-    if (rootRedirect && pathname === '/') {
-      locale = (detection.enabled && locale) || defaultLocale
-      resolvedPath
-        = (isSupportedLocale(detector.route(rootRedirect.path)) && rootRedirect.path)
-          || matchLocalized(rootRedirect.path, locale, defaultLocale)
-      redirectCode = rootRedirect.code
-    } else if (runtimeI18n.redirectStatusCode) {
-      redirectCode = runtimeI18n.redirectStatusCode
-    }
-
-    switch (detection.redirectOn) {
-      case 'root':
-        if (pathname !== '/') { break }
-      // fallthrough (root has no prefix)
-      case 'no prefix':
-        if (pathLocale) { break }
-      // fallthrough to resolve
-      case 'all':
-        resolvedPath ??= getLocalizedMatch(locale)
-        break
-    }
-
-    if (pathname === '/' && __I18N_STRATEGY__ === 'prefix') {
-      resolvedPath ??= getLocalizedMatch(defaultLocale)
-    }
-    return { path: resolvedPath, code: redirectCode, locale }
-  }
+  const resolveRedirectPath = createRedirectResolver({
+    detection,
+    rootRedirect,
+    redirectStatusCode: runtimeI18n.redirectStatusCode,
+    matchLocalized,
+    strategy: __I18N_STRATEGY__,
+    routing: __I18N_ROUTING__,
+    domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
+  })
 
   const baseUrlGetter = createBaseUrlGetter()
 
@@ -180,7 +114,7 @@ export default defineNitroPlugin(async (nitro) => {
       return
     }
 
-    const resolved = resolveRedirectPath(event, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
+    const resolved = resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
     if (resolved.path && resolved.path !== pathname) {
       ctx.detectLocale = resolved.locale
       detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)

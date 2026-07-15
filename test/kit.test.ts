@@ -95,8 +95,6 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
   beforeAll(async () => {
     const pages = await loadPages()
 
-    vi.stubGlobal('__I18N_STRATEGY__', strategy)
-    vi.stubGlobal('__I18N_ROUTING__', strategy !== 'no_prefix')
 
     const localized = localizeRoutes(pages as LocalizableRoute[], {
       ...routingOptions,
@@ -107,6 +105,13 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     ctx = createRoutingContext({
       router,
       defaultLocale: DEFAULT_LOCALE,
+      strategy,
+      routing: strategy !== 'no_prefix',
+      differentDomains: false,
+      multiDomainLocales: false,
+      trailingSlash: false,
+      strictSeo: false,
+      compactRoutes: false,
       getLocale: () => unref(i18nMock.locale),
       getLocales: () => unref(i18nMock.locales),
       getBaseUrl: () => unref(i18nMock.baseUrl),

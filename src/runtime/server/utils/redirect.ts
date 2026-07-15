@@ -1,0 +1,86 @@
+import { parsePath } from 'ufo'
+import { createLocaleDetector } from '../../shared/detection'
+import { isSupportedLocale } from '../../shared/locales'
+
+import type { Strategies } from '#internal-i18n-types'
+import type { useDetectors } from '../../shared/detection'
+import type { useI18nDetection } from '../../shared/utils'
+
+type Detectors = ReturnType<typeof useDetectors>
+
+export type RedirectResolverConfig = {
+  detection: ReturnType<typeof useI18nDetection>
+  rootRedirect?: { path: string, code: number }
+  redirectStatusCode?: number
+  /** Resolves the localized variant of a path, returns `undefined` when it cannot be matched */
+  matchLocalized: (path: string, locale: string, defaultLocale: string) => string | undefined
+  /** @default `isSupportedLocale` */
+  isSupportedLocale?: (locale?: string) => boolean
+  strategy: Strategies
+  /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
+  routing: boolean
+  /** Whether locales are resolved from domains */
+  domains: boolean
+}
+
+export type ResolvedRedirect = { path: string | undefined, code: number, locale: string }
+
+export function createRedirectResolver(config: RedirectResolverConfig) {
+  const { detection, rootRedirect, matchLocalized, strategy, routing, domains } = config
+  const isSupported = config.isSupportedLocale ?? isSupportedLocale
+  const detectLocale = createLocaleDetector({ detection, isSupportedLocale: isSupported, routing, domains })
+
+  /**
+   * Resolves the redirect for a request, `fullPath` may contain a query string while
+   * `path` is the base- and prefix-free route path.
+   */
+  return function resolveRedirectPath(
+    fullPath: string,
+    path: string | undefined,
+    pathLocale: string | undefined,
+    defaultLocale: string,
+    detectors: Detectors,
+  ): ResolvedRedirect {
+    // the server handles fresh requests, detection is always `initial`
+    let locale = detectLocale(detectors, fullPath, true) || defaultLocale
+
+    function getLocalizedMatch(locale: string) {
+      const res = matchLocalized(path || '/', locale, defaultLocale)
+      if (res && res !== fullPath) {
+        return res
+      }
+    }
+
+    let resolvedPath: string | undefined = undefined
+    let redirectCode = 302
+
+    // base-free pathname, `getRequestURL(event).pathname` would still contain `app.baseURL`
+    const pathname = parsePath(fullPath).pathname
+    if (rootRedirect && pathname === '/') {
+      locale = (detection.enabled && locale) || defaultLocale
+      resolvedPath
+        = (isSupported(detectors.route(rootRedirect.path)) && rootRedirect.path)
+          || matchLocalized(rootRedirect.path, locale, defaultLocale)
+      redirectCode = rootRedirect.code
+    } else if (config.redirectStatusCode) {
+      redirectCode = config.redirectStatusCode
+    }
+
+    switch (detection.redirectOn) {
+      case 'root':
+        if (pathname !== '/') { break }
+      // fallthrough (root has no prefix)
+      case 'no prefix':
+        if (pathLocale) { break }
+      // fallthrough to resolve
+      case 'all':
+        resolvedPath ??= getLocalizedMatch(locale)
+        break
+    }
+
+    if (pathname === '/' && strategy === 'prefix') {
+      resolvedPath ??= getLocalizedMatch(defaultLocale)
+    }
+    return { path: resolvedPath, code: redirectCode, locale }
+  }
+}
