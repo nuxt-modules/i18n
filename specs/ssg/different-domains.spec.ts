@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup } from '../utils'
+import { setup, url, waitForHydration } from '../utils'
 import { getHeadSnapshot, renderPage } from '../helper'
 
 await setup({
@@ -16,18 +16,29 @@ test('`differentDomains` with `no_prefix` has hreflang links', async () => {
   const { page } = await renderPage('/')
   expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
     "HTML:
-      lang: en-US
+      lang: es-ES
       dir: ltr
     Link:
-      canonical: http://localhost:7786
-      alternate[x-default]: http://localhost:7786
-      alternate[en]: http://localhost:7786
-      alternate[en-US]: http://localhost:7786
-      alternate[es]: http://localhost:7787
-      alternate[es-ES]: http://localhost:7787
+      canonical: http://127.0.0.1:7786
+      alternate[x-default]: http://127.0.0.1:7786
+      alternate[en]: http://127.0.0.1:7786
+      alternate[en-US]: http://127.0.0.1:7786
+      alternate[es]: http://127.0.0.1:7787
+      alternate[es-ES]: http://127.0.0.1:7787
     Meta:
-      og:url: http://localhost:7786
-      og:locale: en_US
-      og:locale:alternate: es_ES"
+      og:url: http://127.0.0.1:7786
+      og:locale: es_ES
+      og:locale:alternate: en_US"
   `)
+})
+
+test('(#3407) locale messages are loaded with `detectBrowserLanguage: false`', async () => {
+  const { page } = await renderPage('/')
+  const heading = page.locator('#translated-heading')
+  expect(await heading.innerText()).toEqual('Problema de i18n SSG')
+
+  const enPath = url('/', 7786)
+  await page.goto(enPath)
+  await waitForHydration(page, enPath, 'hydration')
+  expect(await heading.innerText()).toEqual('i18n SSG issue')
 })
