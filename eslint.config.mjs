@@ -94,6 +94,33 @@ export default createConfigForNuxt({
   })
 
   .append(
+    // The parameterized routing/detection layer receives flags as config, reads live at composition points
+    {
+      files: [
+        'src/runtime/kit/**',
+        'src/runtime/routing/context.ts',
+        'src/runtime/routing/navigation.ts',
+        'src/runtime/routing/utils.ts',
+        'src/runtime/server/utils/redirect.ts',
+        'src/runtime/shared/detection.ts',
+      ],
+      ignores: ['src/runtime/kit/head.ts'],
+      name: 'local/no-flag-reads',
+      rules: {
+        'no-restricted-globals': [
+          'error',
+          ...[
+            '__I18N_STRATEGY__',
+            '__I18N_ROUTING__',
+            '__DIFFERENT_DOMAINS__',
+            '__MULTI_DOMAIN_LOCALES__',
+            '__TRAILING_SLASH__',
+            '__I18N_STRICT_SEO__',
+            '__I18N_COMPACT_ROUTES__',
+          ].map(name => ({ message: 'Pass the flag through the factory config, flags are read at composition points.', name })),
+        ],
+      },
+    },
     {
       rules: {
         '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
