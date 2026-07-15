@@ -207,6 +207,15 @@ export interface ExperimentalFeatures {
    */
   compactRoutes?: boolean
   /**
+   * Resolve the default locale to a locale-agnostic `___default` route name under
+   * `prefix_except_default`, decoupling default-locale routes from the build-time `defaultLocale`.
+   * Combined with a build step that names the default-locale tree `___default` (and typically
+   * `compactRoutes`), this lets a single build serve regions whose default locale is chosen at
+   * runtime. Proof of concept.
+   * @default false
+   */
+  localeAgnosticDefaultRoutes?: boolean
+  /**
    * Prerender hashed `messages.json` files into `.output/public/` at build time so lazy-loaded
    * messages are served as static assets (from `app.cdnURL` when set) instead of the Nitro route.
    * Messages from a `vue-i18n` config are merged at runtime and are not included in these files.

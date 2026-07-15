@@ -1,5 +1,5 @@
 import { assign } from '@intlify/shared'
-import { getLocalizedRouteName, normalizeRouteName } from '#i18n-kit/routing'
+import { defaultRouteNameSuffix, getLocalizedRouteName, normalizeRouteName } from '#i18n-kit/routing'
 
 import type { Locale } from 'vue-i18n'
 import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, RouteRecordNameGeneric, Router } from 'vue-router'
@@ -22,6 +22,15 @@ export function createLocaleRouteNameGetter(
   }
 
   // routes are localized
+  if (__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__ && __I18N_STRATEGY__ === 'prefix_except_default') {
+    // Resolve the default locale to a locale-agnostic `___default` route name so a single build can
+    // serve regions whose default locale is chosen at runtime (pairs with a build step that names
+    // the default-locale tree `___default`). Non-default locales resolve as usual.
+    return (name, locale) =>
+      locale === defaultLocale
+        ? normalizeRouteName(name) + defaultRouteNameSuffix
+        : getLocalizedRouteName(normalizeRouteName(name), locale, false)
+  }
   return (name, locale) => getLocalizedRouteName(normalizeRouteName(name), locale, false)
 }
 

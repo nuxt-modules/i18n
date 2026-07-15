@@ -24,6 +24,17 @@ const routeNameGetters = {
     globalThis['__I18N_STRATEGY__'] = 'prefix_except_default'
     globalThis['__I18N_ROUTING__'] = true
     return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
+  },
+  prefixExceptDefaultLocaleAgnostic: (...args) => {
+    globalThis['__I18N_STRATEGY__'] = 'prefix_except_default'
+    globalThis['__I18N_ROUTING__'] = true
+    globalThis['__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__'] = true
+    try {
+      return createLocaleRouteNameGetter(ROUTE_GEN_CONFIG.defaultLocale)(...args)
+    }
+    finally {
+      globalThis['__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__'] = false
+    }
   }
 }
 
@@ -37,6 +48,15 @@ describe('getLocaleRouteName', () => {
   describe('strategy: prefix_except_default', () => {
     it('should be `route1___en`', () => {
       assert.equal(routeNameGetters.prefixExceptDefault('route1', 'en'), 'route1___en')
+    })
+  })
+
+  describe('strategy: prefix_except_default + experimental.localeAgnosticDefaultRoutes', () => {
+    it('default locale resolves to the locale-agnostic `route1___default`', () => {
+      assert.equal(routeNameGetters.prefixExceptDefaultLocaleAgnostic('route1', 'en'), 'route1___default')
+    })
+    it('non-default locale resolves as usual `route1___fr`', () => {
+      assert.equal(routeNameGetters.prefixExceptDefaultLocaleAgnostic('route1', 'fr'), 'route1___fr')
     })
   })
 
