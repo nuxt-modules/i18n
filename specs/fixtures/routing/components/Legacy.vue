@@ -15,6 +15,6 @@ export default defineComponent({
 
 <template>
   <p>
-    Legacy: <code id="msg">{{ $t('hello') }}</code>
+    Legacy: <code id="legacy-local-msg">{{ $t('hello') }}</code>
   </p>
 </template>

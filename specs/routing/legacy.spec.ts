@@ -10,7 +10,10 @@ await setup({
   // overrides
   nuxtConfig: {
     i18n: {
-      vueI18n: 'i18n-legacy.config.ts'
+      vueI18n: 'i18n-legacy.config.ts',
+      bundle: {
+        compositionOnly: false
+      }
     }
   }
 })
@@ -33,5 +36,11 @@ describe('vue-i18n legacy API mode', () => {
     await gotoPath(page, '/ja/about')
     expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about')
     expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about')
+  })
+
+  it('(#2315) component `i18n` options create a local scope', async () => {
+    const { page } = await renderPage('/en')
+
+    expect(await page.locator('#legacy-local-msg').innerText()).toEqual('Hello, local!')
   })
 })
