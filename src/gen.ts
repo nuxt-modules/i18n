@@ -2,6 +2,7 @@ import { isString } from '@intlify/shared'
 import { genDynamicImport, genImport, genSafeVariableName, genString } from 'knitwork'
 import { basename, join, relative, resolve } from 'pathe'
 import { asI18nVirtual } from './transform/utils'
+import { normalizeDomainLocale } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleObject } from './types'
@@ -16,7 +17,8 @@ function stripLocaleFiles(locale: LocaleObject) {
 export function simplifyLocaleOptions(ctx: I18nNuxtContext, _nuxt: Nuxt) {
   const locales = (ctx.options.locales ?? []) as LocaleObject[]
   const hasLocaleObjects = locales?.some(x => !isString(x))
-  return locales.map(locale => (!hasLocaleObjects ? locale.code : stripLocaleFiles(locale)))
+  // normalize so runtime locale consumers (e.g. `defaultForDomains` reads) only handle one shape
+  return locales.map(locale => (!hasLocaleObjects ? locale.code : stripLocaleFiles(normalizeDomainLocale(locale))))
 }
 
 type LocaleLoaderData = {
