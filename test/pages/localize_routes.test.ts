@@ -232,6 +232,33 @@ describe('localizeRoutes', function () {
     })
   })
 
+  describe('strategy: "prefix_except_default" + differentDomains', function () {
+    it('generates unprefixed routes for domain default locales in both option shapes', function () {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'ja', domain: 'ja.example.com' },
+          // unnormalized single-domain form
+          { code: 'fr', domain: 'fr.example.com', domainDefault: true },
+          // multi-domain form
+          { code: 'nl', domains: ['nl.example.com'], defaultForDomains: ['nl.example.com'] }
+        ]
+      })
+
+      const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
+      expect(paths['about___en']).toBe('/about')
+      expect(paths['about___ja']).toBe('/ja/about')
+      expect(paths['about___fr']).toBe('/about')
+      expect(paths['about___nl']).toBe('/about')
+    })
+  })
+
   describe('strategy: "prefix_except_default"', function () {
     it('should be localized routing', function () {
       const routes: NuxtPage[] = [

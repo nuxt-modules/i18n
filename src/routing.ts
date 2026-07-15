@@ -41,11 +41,18 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   return true
 }
 
+/**
+ * Locales acting as the default (unprefixed) locale for at least one domain,
+ * `domainDefault` is read as the unnormalized form of `defaultForDomains`.
+ */
+function getDomainDefaultLocales(locales: LocaleObject[]): string[] {
+  return locales.filter(locale => locale.defaultForDomains?.length || locale.domainDefault).map(locale => locale.code)
+}
+
 function resolveDefaultLocales(config: SetupLocalizeRoutesOptions) {
   let defaultLocales = [config.defaultLocale ?? '']
   if (config.differentDomains) {
-    const domainDefaults = config.locales.filter(locale => !!locale.domainDefault).map(locale => locale.code)
-    defaultLocales = defaultLocales.concat(domainDefaults)
+    defaultLocales = defaultLocales.concat(getDomainDefaultLocales(config.locales))
   }
   return defaultLocales
 }
@@ -169,9 +176,12 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
    */
   const multiDomainLocales = config.multiDomainLocales ?? false
   if (multiDomainLocales && (config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default')) {
+    // only locales that are the default for some domain need an unprefixed variant,
+    // `setupMultiDomainLocales` rebuilds the current domain's default routes from these at runtime
+    const domainDefaults = new Set(getDomainDefaultLocales(config.locales))
     // unshift to preserve test snapshots
     ctx.localizers.unshift({
-      enabled: ({ usePrefix }) => usePrefix,
+      enabled: ({ usePrefix, locale }) => usePrefix && domainDefaults.has(locale),
       localizer: ({ unprefixed, route, ctx, locale }) => [
         { ...route, name: ctx.localizeRouteName(route, locale, true), path: unprefixed },
       ],
