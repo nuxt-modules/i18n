@@ -44,7 +44,7 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
   const detect = createLocaleDetector({
     detection: detectConfig,
     routing: __I18N_ROUTING__,
-    domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
+    domains: __I18N_DOMAINS__,
   })
 
   return detect(detectors, route, ctx.initial) || ctx.getLocale() || ctx.getDefaultLocale() || ''

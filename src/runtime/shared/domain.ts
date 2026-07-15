@@ -50,7 +50,7 @@ export function withRuntimeDomain<T extends string | LocaleObject>(
   locale: T,
   domainLocales: I18nPublicRuntimeConfig['domainLocales'],
 ): T {
-  if ((!__DIFFERENT_DOMAINS__ && !__MULTI_DOMAIN_LOCALES__) || typeof locale === 'string') {
+  if (!__I18N_DOMAINS__ || typeof locale === 'string') {
     return locale
   }
   const properties = locale as LocaleObject

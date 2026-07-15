@@ -10,6 +10,7 @@ vi.stubGlobal('__PARALLEL_PLUGIN__', false)
 vi.stubGlobal('__TRAILING_SLASH__', false)
 vi.stubGlobal('__DIFFERENT_DOMAINS__', false)
 vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
+vi.stubGlobal('__I18N_DOMAINS__', false)
 
 vi.stubGlobal('__ROUTE_NAME_SEPARATOR__', '___')
 vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', 'default')

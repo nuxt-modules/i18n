@@ -78,7 +78,7 @@ function createBaseUrlGetter(
   }
 
   return (): string => {
-    if (__DIFFERENT_DOMAINS__ && defaultLocale) {
+    if (__I18N_DOMAINS__ && defaultLocale) {
       return (getDomainFromLocale(defaultLocale) || baseUrl) ?? ''
     }
 
