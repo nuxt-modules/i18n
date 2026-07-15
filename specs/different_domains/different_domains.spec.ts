@@ -97,9 +97,8 @@ test('pass `<NuxtLink> to props', async () => {
   expect(await dom.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual(
     `http://en.nuxt-app.localhost`
   )
-  expect(await dom.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual(
-    `http://fr.nuxt-app.localhost`
-  )
+  // `fr` is served on the current host and links relative
+  expect(await dom.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual('/')
 })
 
 test('layer provides locales with domains', async () => {

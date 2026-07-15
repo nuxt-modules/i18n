@@ -316,9 +316,10 @@ describe('switchLocalePath with differentDomains', () => {
     })
 
     await router.push('/about')
-    // the domain default is unprefixed on its own domain
+    // off-host targets get absolute URLs in the target domain's shape
     expect(_switchLocalePath(ctx, 'en')).toBe('http://en.example.com/about')
     expect(_switchLocalePath(ctx, 'no')).toBe('http://en.example.com/no/about')
-    expect(_switchLocalePath(ctx, 'fr')).toBe('http://fr.example.com/about')
+    // on-host targets navigate relative
+    expect(_switchLocalePath(ctx, 'fr')).toBe('/about')
   })
 })

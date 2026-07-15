@@ -4,11 +4,18 @@ import { toArray } from './utils'
 
 import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
-export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
+/**
+ * Whether the locale is served on the given host
+ */
+export function isLocaleOnHost(locale: LocaleObject | undefined, host: string): boolean {
   const normalizeDomain = (domain: string = '') => domain.replace(/https?:\/\//, '')
-  const matches = locales.filter(
-    locale => normalizeDomain(locale.domain) === host || toArray(locale.domains).includes(host),
+  return (
+    !!locale && (normalizeDomain(locale.domain) === host || toArray(locale.domains).some(x => normalizeDomain(x) === host))
   )
+}
+
+export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
+  const matches = locales.filter(locale => isLocaleOnHost(locale, host))
 
   if (matches.length <= 1) {
     return matches[0]?.code
