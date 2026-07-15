@@ -225,7 +225,7 @@ describe('localizeRoutes', function () {
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      setupMultiDomainLocales('en', router)
+      setupMultiDomainLocales('en', 'prefix_except_default', router)
 
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
       vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
@@ -262,7 +262,7 @@ describe('localizeRoutes', function () {
 
       // the runtime surgery unprefixes the domain's default locale
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
-      setupMultiDomainLocales('fr', router)
+      setupMultiDomainLocales('fr', 'prefix_except_default', router)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___fr']).toBe('/about')
       expect(domainPaths['about___nl']).toBe('/nl/about')

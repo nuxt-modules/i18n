@@ -297,7 +297,7 @@ describe('switchLocalePath with differentDomains', () => {
     })
     const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
     // acting as `fr.example.com`
-    setupMultiDomainLocales('fr', router)
+    setupMultiDomainLocales('fr', 'prefix_except_default', router)
 
     const ctx = createRoutingContext({
       router,

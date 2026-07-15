@@ -44,13 +44,14 @@ export function domainFromLocale(
 }
 
 /**
- * Returns the locale object with the domain overridden by `domainLocales` runtime config (see also `getHostLocale`)
+ * Returns the locale object with the domain overridden by `domainLocales` runtime config (see also `getHostLocale`),
+ * a no-op outside domain setups since the override entries are empty.
  */
 export function withRuntimeDomain<T extends string | LocaleObject>(
   locale: T,
   domainLocales: I18nPublicRuntimeConfig['domainLocales'],
 ): T {
-  if (!__I18N_DOMAINS__ || typeof locale === 'string') {
+  if (typeof locale === 'string') {
     return locale
   }
   const properties = locale as LocaleObject
