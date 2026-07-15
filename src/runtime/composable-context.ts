@@ -55,8 +55,7 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     getLocalePathPayload: () => __I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && localePathPayload,
     strategy: __I18N_STRATEGY__,
     routing: __I18N_ROUTING__,
-    differentDomains: __DIFFERENT_DOMAINS__,
-    multiDomainLocales: __MULTI_DOMAIN_LOCALES__,
+    domains: __I18N_DOMAINS__,
     trailingSlash: __TRAILING_SLASH__,
     strictSeo: __I18N_STRICT_SEO__,
     compactRoutes: __I18N_COMPACT_ROUTES__,
@@ -81,9 +80,9 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     localePathPayload,
     routingOptions: {
       defaultLocale: ctx.getDefaultLocale(),
-      domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
+      domains: __I18N_DOMAINS__,
       strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
-      hreflangLinks: !(!__I18N_ROUTING__ && !__DIFFERENT_DOMAINS__),
+      hreflangLinks: !(!__I18N_ROUTING__ && !__I18N_DOMAINS__),
     },
   }
 }

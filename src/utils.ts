@@ -31,6 +31,22 @@ export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   return ctx.options.locales.filter(x => include.includes(isString(x) ? x : x.code)) as string[] | LocaleObject[]
 }
 
+/**
+ * Normalizes the single-domain fields (`domain`/`domainDefault`) into their multi-domain forms
+ * (`domains`/`defaultForDomains`) so runtime domain resolution only handles one shape,
+ * the scalar fields are kept as-is for compatibility.
+ */
+export function normalizeDomainLocale(locale: LocaleObject): LocaleObject {
+  const normalized = assign({}, locale)
+  if (locale.domain && !locale.domains) {
+    normalized.domains = [locale.domain]
+  }
+  if (locale.domainDefault && normalized.domains && !locale.defaultForDomains) {
+    normalized.defaultForDomains = normalized.domains
+  }
+  return normalized
+}
+
 export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Record<string, string>): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {

@@ -40,8 +40,8 @@ export default defineNuxtPlugin({
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
     }
 
-    if (__MULTI_DOMAIN_LOCALES__) {
-      setupMultiDomainLocales(optionsI18n.defaultLocale)
+    if (__I18N_DOMAINS__) {
+      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
     }
 
     prerenderRoutes(localeCodes.map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`))
@@ -85,7 +85,7 @@ export default defineNuxtPlugin({
         }
         composer.loadLocaleMessages = ctx.loadMessages
 
-        composer.differentDomains = __DIFFERENT_DOMAINS__
+        composer.differentDomains = __I18N_DOMAINS__
         composer.defaultLocale = optionsI18n.defaultLocale
 
         composer.getBrowserLocale = () =>
@@ -114,7 +114,7 @@ export default defineNuxtPlugin({
           ['localeProperties', () => c.localeProperties],
           ['setLocale', () => (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
           ['loadLocaleMessages', () => (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
-          ['differentDomains', () => __DIFFERENT_DOMAINS__],
+          ['differentDomains', () => __I18N_DOMAINS__],
           ['defaultLocale', () => c.defaultLocale],
           ['getBrowserLocale', () => () => Reflect.apply(c.getBrowserLocale, c, [])],
           ['getLocaleCookie', () => () => Reflect.apply(c.getLocaleCookie, c, [])],

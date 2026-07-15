@@ -61,7 +61,6 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
     const isPrefixable = prefixable(locale, defaultLocale, {
       strategy: __I18N_STRATEGY__,
       routing: __I18N_ROUTING__,
-      differentDomains: __DIFFERENT_DOMAINS__,
     })
     return createTrailingSlashFormatter(__TRAILING_SLASH__)(withLeadingSlash(joinURL(isPrefixable ? locale : '', match.path)), true)
   }

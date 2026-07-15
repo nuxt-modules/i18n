@@ -57,7 +57,7 @@ export default defineNitroPlugin(async (nitro) => {
   }
 
   const getDomainFromLocale = (event: H3Event, locale: string) => {
-    if (!__MULTI_DOMAIN_LOCALES__ && !__DIFFERENT_DOMAINS__) { return }
+    if (!__I18N_DOMAINS__) { return }
     return domainFromLocale(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }), locale)
   }
 
@@ -70,7 +70,7 @@ export default defineNitroPlugin(async (nitro) => {
     }
 
     return (event: H3Event, defaultLocale: string): string => {
-      if ((__MULTI_DOMAIN_LOCALES__ || __DIFFERENT_DOMAINS__) && defaultLocale) {
+      if (__I18N_DOMAINS__ && defaultLocale) {
         return getDomainFromLocale(event, defaultLocale) || baseUrl
       }
 
@@ -86,7 +86,7 @@ export default defineNitroPlugin(async (nitro) => {
     matchLocalized,
     strategy: __I18N_STRATEGY__,
     routing: __I18N_ROUTING__,
-    domains: __DIFFERENT_DOMAINS__ || __MULTI_DOMAIN_LOCALES__,
+    domains: __I18N_DOMAINS__,
   })
 
   const baseUrlGetter = createBaseUrlGetter()

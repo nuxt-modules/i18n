@@ -77,4 +77,13 @@ describe('createNavigationResolver', () => {
     const resolve = createResolver()
     expect(resolve(route(), 'en')).toBeUndefined()
   })
+
+  test('navigates to locales served on the current host under domain setups', () => {
+    const resolve = createResolver({ isLocaleOnHost: locale => locale !== 'fr' })
+    expect(resolve(route(), 'fr')).toBeUndefined()
+    expect(resolve(route({ path: '/fr/about', fullPath: '/fr/about', name: 'about___fr' }), 'en')).toEqual({
+      path: '/about',
+      code: undefined,
+    })
+  })
 })

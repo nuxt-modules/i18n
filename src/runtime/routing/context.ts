@@ -2,6 +2,7 @@ import { joinURL } from 'ufo'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './utils'
 import { createTrailingSlashFormatter, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
 import { getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
+import { isLocaleOnHost } from '../shared/domain'
 
 import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
 import type { PrefixableOptions } from '#i18n-kit/routing'
@@ -54,8 +55,8 @@ export interface RoutingContextOptions {
   strategy: Strategies
   /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
   routing: boolean
-  differentDomains: boolean
-  multiDomainLocales: boolean
+  /** Whether locales are resolved from domains */
+  domains: boolean
   trailingSlash: boolean
   strictSeo: boolean
   compactRoutes: boolean
@@ -65,11 +66,11 @@ export interface RoutingContextOptions {
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
 export function createRoutingContext(options: RoutingContextOptions): RoutingContext {
-  const { router, defaultLocale, multiDomainLocales, strictSeo, compactRoutes } = options
+  const { router, defaultLocale, strictSeo, compactRoutes } = options
   const config: PrefixableOptions = {
     strategy: options.strategy,
     routing: options.routing,
-    differentDomains: options.differentDomains,
+    domains: options.domains,
   }
   const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
@@ -177,21 +178,29 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return ''
       }
 
-      // remove prefix if path is default for domain
-      if (multiDomainLocales && config.strategy === 'prefix_except_default') {
-        const domainDefaultLocale = getDefaultLocaleForDomain(options.getHost() ?? '')
-        if (locale !== domainDefaultLocale || getLocaleFromRoutePath(path) !== domainDefaultLocale) {
-          return path
+      if (!config.domains) {
+        return path
+      }
+
+      // per-locale host membership decides the link shape: on-host targets navigate
+      // relative (unprefixed when the host default), off-host targets get an absolute
+      // URL in the target domain's shape
+      const host = options.getHost() ?? ''
+      const target = options.getLocales().find(l => l.code === locale)
+      const stripsDefaultPrefix
+        = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
+
+      if (isLocaleOnHost(target, host)) {
+        if (stripsDefaultPrefix && locale === getDefaultLocaleForDomain(host) && getLocaleFromRoutePath(path) === locale) {
+          return path.slice(locale.length + 1) || '/'
         }
-
-        // remove default locale prefix
-        return path.slice(locale.length + 1)
+        return path
       }
 
-      if (config.differentDomains) {
-        return joinURL(options.getBaseUrl(locale), path)
+      if (stripsDefaultPrefix && target?.defaultForDomains?.length && getLocaleFromRoutePath(path) === locale) {
+        path = path.slice(locale.length + 1) || '/'
       }
-      return path
+      return joinURL(options.getBaseUrl(locale), path)
     },
     resolveLocalizedRouteObject: (route, locale) => {
       return isRouteLocationPathRaw(route)

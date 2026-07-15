@@ -14,7 +14,7 @@ export function createLocaleRouteNameGetter(
   config: PrefixableOptions,
 ): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
-  if (!config.routing && !config.differentDomains) {
+  if (!config.routing && !config.domains) {
     return routeName => normalizeRouteName(routeName)
   }
 

@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
@@ -145,7 +145,6 @@ describe('localizeRoutes', function () {
   })
 
   describe('strategy: "prefix_and_default"', function () {
-    vi.stubGlobal('__I18N_STRATEGY__', 'prefix_and_default')
     it('should be localized routing', function () {
       const routes: NuxtPage[] = [
         {
@@ -186,7 +185,6 @@ describe('localizeRoutes', function () {
   // low confidence test
   describe('strategy: "prefix_and_default" + multiDomainLocales', function () {
     it('should be localized routing', function () {
-      vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', true)
       const routes: NuxtPage[] = [
         {
           path: '/',
@@ -225,10 +223,48 @@ describe('localizeRoutes', function () {
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      setupMultiDomainLocales('en', router)
+      setupMultiDomainLocales('en', 'prefix_except_default', router)
 
       expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      vi.stubGlobal('__MULTI_DOMAIN_LOCALES__', false)
+    })
+  })
+
+  describe('strategy: "prefix_except_default" + differentDomains', function () {
+    it('generates unprefixed routes for domain default locales in both option shapes', function () {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'ja', domain: 'ja.example.com' },
+          // unnormalized single-domain form
+          { code: 'fr', domain: 'fr.example.com', domainDefault: true },
+          // multi-domain form
+          { code: 'nl', domains: ['nl.example.com'], defaultForDomains: ['nl.example.com'] }
+        ]
+      })
+
+      const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
+      expect(paths['about___en']).toBe('/about')
+      expect(paths['about___ja']).toBe('/ja/about')
+      // domain defaults are prefixed with an unprefixed `___default` variant
+      expect(paths['about___fr']).toBe('/fr/about')
+      expect(paths['about___fr___default']).toBe('/about')
+      expect(paths['about___nl']).toBe('/nl/about')
+      expect(paths['about___nl___default']).toBe('/about')
+
+      // the runtime surgery unprefixes the domain's default locale
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      setupMultiDomainLocales('fr', 'prefix_except_default', router)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___fr']).toBe('/about')
+      expect(domainPaths['about___nl']).toBe('/nl/about')
+      expect(domainPaths['about___fr___default']).toBeUndefined()
+      expect(domainPaths['about___nl___default']).toBeUndefined()
     })
   })
 
