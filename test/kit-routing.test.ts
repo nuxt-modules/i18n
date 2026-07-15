@@ -6,7 +6,6 @@ import {
   getRouteBaseName,
   prefixable,
 } from '../src/runtime/kit/routing'
-import type { PrefixableOptions } from '../src/runtime/kit/routing'
 
 describe('localized route name encode/decode', () => {
   test.each([
@@ -48,7 +47,7 @@ describe('getLocaleFromRoute', () => {
 })
 
 describe('prefixable', () => {
-  const options: PrefixableOptions = { strategy: 'prefix_except_default', routing: true, differentDomains: false }
+  const options = { strategy: 'prefix_except_default', routing: true } as const
 
   test('prefixes non-default locales when routing is enabled', () => {
     expect(prefixable('fr', 'en', options)).toBe(true)
@@ -63,7 +62,9 @@ describe('prefixable', () => {
     expect(prefixable('fr', 'en', { ...options, strategy: 'prefix', routing: false })).toBe(false)
   })
 
-  test('never prefixes with different domains', () => {
-    expect(prefixable('fr', 'en', { ...options, strategy: 'prefix', differentDomains: true })).toBe(false)
+  // domain setups need no exemption, `defaultLocale` is the domain's default
+  test('does not prefix the domain default locale', () => {
+    expect(prefixable('fr', 'fr', options)).toBe(false)
+    expect(prefixable('en', 'fr', options)).toBe(true)
   })
 })

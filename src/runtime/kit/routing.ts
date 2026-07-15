@@ -39,13 +39,9 @@ export type PrefixableOptions = {
   differentDomains: boolean
 }
 
-export function prefixable(currentLocale: string, defaultLocale: string, options: PrefixableOptions): boolean {
-  return (
-    !options.differentDomains
-    && options.routing
-    // only prefix default locale with strategy prefix
-    && (currentLocale !== defaultLocale || options.strategy === 'prefix')
-  )
+export function prefixable(currentLocale: string, defaultLocale: string, options: Pick<PrefixableOptions, 'strategy' | 'routing'>): boolean {
+  // `defaultLocale` is the domain's default under domain setups, no exemption needed
+  return options.routing && (currentLocale !== defaultLocale || options.strategy === 'prefix')
 }
 
 const pathLanguageParser = createPathIndexLanguageParser(0)
