@@ -85,7 +85,7 @@ export default defineNuxtPlugin({
         }
         composer.loadLocaleMessages = ctx.loadMessages
 
-        composer.differentDomains = __DIFFERENT_DOMAINS__
+        composer.differentDomains = __I18N_DOMAINS__
         composer.defaultLocale = optionsI18n.defaultLocale
 
         composer.getBrowserLocale = () =>
@@ -114,7 +114,7 @@ export default defineNuxtPlugin({
           ['localeProperties', () => c.localeProperties],
           ['setLocale', () => (locale: string) => Reflect.apply(c.setLocale, c, [locale])],
           ['loadLocaleMessages', () => (locale: string) => Reflect.apply(c.loadLocaleMessages, c, [locale])],
-          ['differentDomains', () => __DIFFERENT_DOMAINS__],
+          ['differentDomains', () => __I18N_DOMAINS__],
           ['defaultLocale', () => c.defaultLocale],
           ['getBrowserLocale', () => () => Reflect.apply(c.getBrowserLocale, c, [])],
           ['getLocaleCookie', () => () => Reflect.apply(c.getLocaleCookie, c, [])],

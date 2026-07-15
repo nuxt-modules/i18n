@@ -5,7 +5,7 @@ import { useNuxtI18nContext } from './context'
 import { useComposableContext } from './composable-context'
 import { isSupportedLocale } from './shared/locales'
 import { createLocaleDetector, useDetectors } from './shared/detection'
-import { useI18nDetection } from './shared/utils'
+import { useI18nDetection, useRuntimeI18n } from './shared/utils'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -51,7 +51,8 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
 }
 
 export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
-  if (!__I18N_ROUTING__ || __DIFFERENT_DOMAINS__) { return }
+  // switching may leave the host when locales are bound to domains, handled by `setLocale` instead
+  if (!__I18N_ROUTING__ || useRuntimeI18n(nuxtApp).differentDomains) { return }
 
   const ctx = useNuxtI18nContext(nuxtApp)
   const _ctx = useComposableContext(nuxtApp)

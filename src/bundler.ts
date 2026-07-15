@@ -82,9 +82,7 @@ export function getDefineConfig(
     __NUXT_I18N_VERSION__: JSON.stringify(version),
     __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
-    __DIFFERENT_DOMAINS__: String(options.differentDomains),
-    __MULTI_DOMAIN_LOCALES__: String(options.multiDomainLocales),
-    // shared gate for domain-based locale resolution, the specific flags remain only where behavior genuinely differs
+    // gate for domain-based locale resolution
     __I18N_DOMAINS__: String(options.differentDomains || options.multiDomainLocales),
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),

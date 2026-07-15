@@ -115,8 +115,6 @@ export default createConfigForNuxt({
             '__I18N_DOMAINS__',
             '__I18N_STRATEGY__',
             '__I18N_ROUTING__',
-            '__DIFFERENT_DOMAINS__',
-            '__MULTI_DOMAIN_LOCALES__',
             '__TRAILING_SLASH__',
             '__I18N_STRICT_SEO__',
             '__I18N_COMPACT_ROUTES__',
