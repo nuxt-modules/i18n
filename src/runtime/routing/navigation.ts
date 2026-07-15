@@ -15,6 +15,8 @@ export type NavigationResolverConfig = {
   routeLocale: (to: CompatRoute) => string | undefined
   hasRoute: (name: string) => boolean
   getLocaleCodes: () => string[]
+  /** Whether the locale is served on the current host, set under domain setups */
+  isLocaleOnHost?: (locale: string) => boolean
   strategy: Strategies
   compactRoutes: boolean
 }
@@ -38,6 +40,10 @@ export function createNavigationResolver(config: NavigationResolverConfig) {
   }
 
   return function resolveNavigation(to: CompatRoute, locale: string, pendingLocale = false): ResolvedNavigation | undefined {
+    // only navigate to locales served on the current host, switching to another
+    // domain happens through anchor navigation (`switchLocalePath` links)
+    if (config.isLocaleOnHost && !config.isLocaleOnHost(locale)) { return }
+
     if (to.path === '/' && config.rootRedirect) {
       return { path: config.localePath(config.rootRedirect.path, locale), code: config.rootRedirect.code }
     }

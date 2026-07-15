@@ -204,7 +204,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
         skipSettingLocaleOnNavigate: ctx.options.skipSettingLocaleOnNavigate,
         locales: ctx.options.locales,
         detectBrowserLanguage: ctx.options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
-        differentDomains: ctx.options.differentDomains ?? false,
         experimental: ctx.options.experimental,
         domainLocales: Object.fromEntries(
           ctx.options.locales.map((l) => {

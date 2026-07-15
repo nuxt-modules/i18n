@@ -613,8 +613,6 @@ export interface I18nPublicRuntimeConfig {
   rootRedirect: NuxtI18nOptions['rootRedirect']
   /** Status code for redirects */
   redirectStatusCode?: NuxtI18nOptions['redirectStatusCode']
-  /** Whether locales are bound to their own domains */
-  differentDomains: boolean
   /** Domain locales mapping */
   domainLocales: { [key: Locale]: { domain: string | undefined } }
   /** @internal Overwritten at build time, used to pass generated options to runtime */
