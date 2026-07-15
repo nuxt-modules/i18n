@@ -36,7 +36,8 @@ export type PrefixableOptions = {
   strategy: Strategies
   /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
   routing: boolean
-  differentDomains: boolean
+  /** Whether locales are resolved from domains */
+  domains: boolean
 }
 
 export function prefixable(currentLocale: string, defaultLocale: string, options: Pick<PrefixableOptions, 'strategy' | 'routing'>): boolean {

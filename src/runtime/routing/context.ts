@@ -55,8 +55,8 @@ export interface RoutingContextOptions {
   strategy: Strategies
   /** Whether routes are localized (pages enabled and strategy is not `no_prefix`) */
   routing: boolean
-  differentDomains: boolean
-  multiDomainLocales: boolean
+  /** Whether locales are resolved from domains */
+  domains: boolean
   trailingSlash: boolean
   strictSeo: boolean
   compactRoutes: boolean
@@ -66,12 +66,11 @@ export interface RoutingContextOptions {
 export const isRouteLocationPathRaw = (val: RouteLike): val is RouteLocationPathRaw => !!val.path && !val.name
 
 export function createRoutingContext(options: RoutingContextOptions): RoutingContext {
-  const { router, defaultLocale, multiDomainLocales, strictSeo, compactRoutes } = options
-  const domainsEnabled = options.differentDomains || multiDomainLocales
+  const { router, defaultLocale, strictSeo, compactRoutes } = options
   const config: PrefixableOptions = {
     strategy: options.strategy,
     routing: options.routing,
-    differentDomains: options.differentDomains,
+    domains: options.domains,
   }
   const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
   const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
@@ -179,7 +178,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return ''
       }
 
-      if (!domainsEnabled) {
+      if (!config.domains) {
         return path
       }
 
