@@ -7,6 +7,9 @@ const localeRoute = useLocaleRoute()
 
 <template>
   <div>
+    <section id="legacy-component">
+      <Legacy />
+    </section>
     <section id="locale-path">
       <span class="index">{{ localePath('/') }}</span>
       <span class="index-ja">{{ localePath('index', 'ja') }}</span>

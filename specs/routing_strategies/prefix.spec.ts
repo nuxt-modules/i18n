@@ -192,6 +192,49 @@ describe('strategy: prefix', async () => {
     expect(await page.locator('p').innerText()).toEqual('ignore localized route disable test')
   })
 
+  test("(#3910) SSR request for a route with disabled localization reaches the page with `redirectOn: 'no prefix'`", async () => {
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            detectBrowserLanguage: {
+              useCookie: true,
+              redirectOn: 'no prefix'
+            }
+          }
+        }
+      },
+      true
+    )
+
+    const res = await fetch(url('/ignore-routes/disable'))
+
+    expect(res.status).toBe(200)
+    expect(new URL(res.url).pathname).toBe('/ignore-routes/disable')
+    expect(await res.text()).toContain('ignore localized route disable test')
+  })
+
+  test("(#3842) server routes are not redirected with `redirectOn: 'no prefix'`", async () => {
+    await startServerWithRuntimeConfig(
+      {
+        public: {
+          i18n: {
+            detectBrowserLanguage: {
+              useCookie: true,
+              redirectOn: 'no prefix'
+            }
+          }
+        }
+      },
+      true
+    )
+
+    const res = await fetch(url('/ignore-routes/data'))
+
+    expect(res.redirected).toBe(false)
+    expect(await res.json()).toEqual({ message: 'Hello from test endpoint!' })
+  })
+
   test('should not transform `defineI18nRoute()` inside template', async () => {
     const { page } = await renderPage('/', { locale: 'en' })
     await page.waitForURL(url('/en'))

@@ -39,4 +39,15 @@ describe('inline options are handled correctly', async () => {
     const res = await $fetch(url('/api/translate'))
     expect(res).toEqual('Homepage')
   })
+
+  test('(#2590) locale `language` is used in head attributes', async () => {
+    const { page } = await renderPage('/')
+
+    expect(await page.getAttribute('html', 'lang')).toEqual('en-US')
+    expect(await page.getAttribute('html', 'dir')).toEqual('ltr')
+
+    // `fr` is registered by the i18n module with `language: 'fr-FR'`
+    await page.locator('#set-locale-link-fr').clickNavigate()
+    expect(await page.getAttribute('html', 'lang')).toEqual('fr-FR')
+  })
 })

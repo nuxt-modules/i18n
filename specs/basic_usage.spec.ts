@@ -578,6 +578,11 @@ describe('basic usage', async () => {
       expect(jaRes?.['server-key']).toMatch('こんにちは！')
     })
 
+    test('(#2220) vue-i18n message compiler works in server routes', async () => {
+      const res = await $fetch('/api/vue-i18n-compile')
+      expect(res).toMatchObject({ message: 'Hello, nitro!' })
+    })
+
     test('dynamic parameters', async () => {
       const { page } = await renderPage('/products/big-chair')
 
