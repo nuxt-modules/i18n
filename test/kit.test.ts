@@ -10,6 +10,7 @@ import { ref, unref } from 'vue'
 import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
+import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { getNormalizedLocales } from './pages/utils'
 import type { NuxtPage } from '@nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
@@ -277,5 +278,47 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     await router.push(pp('/count/三', 'ja') + '?foo=bär&four=四&foo=bar')
     expect(switchLocalePath('en')).toEqual(pp('/count/三', 'en') + '?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
     expect(switchLocalePath('ja')).toEqual(pp('/count/三', 'ja') + '?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+  })
+})
+
+describe('switchLocalePath with differentDomains', () => {
+  test('cross-domain links use the target domain shape', async () => {
+    const locales = [
+      { code: 'en', language: 'en', domain: 'en.example.com', defaultForDomains: ['en.example.com'] },
+      { code: 'no', language: 'no', domain: 'en.example.com' },
+      { code: 'fr', language: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+    ]
+    const localized = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
+      ...routingOptions,
+      strategy: 'prefix_except_default',
+      defaultLocale: '',
+      differentDomains: true,
+      locales
+    })
+    const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
+    // acting as `fr.example.com`
+    setupMultiDomainLocales('fr', router)
+
+    const ctx = createRoutingContext({
+      router,
+      defaultLocale: '',
+      strategy: 'prefix_except_default',
+      routing: true,
+      differentDomains: true,
+      multiDomainLocales: false,
+      trailingSlash: false,
+      strictSeo: false,
+      compactRoutes: false,
+      getLocale: () => 'fr',
+      getLocales: () => locales,
+      getBaseUrl: locale => `http://${locales.find(l => l.code === (locale ?? 'fr'))?.domain}`,
+      getHost: () => 'fr.example.com'
+    })
+
+    await router.push('/about')
+    // the domain default is unprefixed on its own domain
+    expect(_switchLocalePath(ctx, 'en')).toBe('http://en.example.com/about')
+    expect(_switchLocalePath(ctx, 'no')).toBe('http://en.example.com/no/about')
+    expect(_switchLocalePath(ctx, 'fr')).toBe('http://fr.example.com/about')
   })
 })

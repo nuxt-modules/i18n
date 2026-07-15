@@ -254,8 +254,20 @@ describe('localizeRoutes', function () {
       const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
       expect(paths['about___en']).toBe('/about')
       expect(paths['about___ja']).toBe('/ja/about')
-      expect(paths['about___fr']).toBe('/about')
-      expect(paths['about___nl']).toBe('/about')
+      // domain defaults are prefixed with an unprefixed `___default` variant
+      expect(paths['about___fr']).toBe('/fr/about')
+      expect(paths['about___fr___default']).toBe('/about')
+      expect(paths['about___nl']).toBe('/nl/about')
+      expect(paths['about___nl___default']).toBe('/about')
+
+      // the runtime surgery unprefixes the domain's default locale
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      setupMultiDomainLocales('fr', router)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___fr']).toBe('/about')
+      expect(domainPaths['about___nl']).toBe('/nl/about')
+      expect(domainPaths['about___fr___default']).toBeUndefined()
+      expect(domainPaths['about___nl___default']).toBeUndefined()
     })
   })
 

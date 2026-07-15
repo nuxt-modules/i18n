@@ -51,7 +51,10 @@ function getDomainDefaultLocales(locales: LocaleObject[]): string[] {
 
 function resolveDefaultLocales(config: SetupLocalizeRoutesOptions) {
   let defaultLocales = [config.defaultLocale ?? '']
-  if (config.differentDomains) {
+  // under the `*_default` strategies domain defaults use `___default` variants + runtime surgery instead
+  const usesDefaultVariants
+    = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
+  if (config.differentDomains && !usesDefaultVariants) {
     defaultLocales = defaultLocales.concat(getDomainDefaultLocales(config.locales))
   }
   return defaultLocales
@@ -174,8 +177,8 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
   /**
    * Unprefixed default routes for multi domain locales
    */
-  const multiDomainLocales = config.multiDomainLocales ?? false
-  if (multiDomainLocales && (config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default')) {
+  const domainLocales = (config.multiDomainLocales || config.differentDomains) ?? false
+  if (domainLocales && (config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default')) {
     // only locales that are the default for some domain need an unprefixed variant,
     // `setupMultiDomainLocales` rebuilds the current domain's default routes from these at runtime
     const domainDefaults = new Set(getDomainDefaultLocales(config.locales))

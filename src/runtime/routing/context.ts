@@ -189,6 +189,14 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       }
 
       if (config.differentDomains) {
+        // under the `*_default` strategies the path is unprefixed on the target domain
+        // when the locale is that domain's default
+        const stripsDefaultPrefix
+          = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
+        const target = options.getLocales().find(l => l.code === locale)
+        if (stripsDefaultPrefix && target?.defaultForDomains?.length && getLocaleFromRoutePath(path) === locale) {
+          path = path.slice(locale.length + 1) || '/'
+        }
         return joinURL(options.getBaseUrl(locale), path)
       }
       return path

@@ -40,7 +40,7 @@ export default defineNuxtPlugin({
       localeConfigs.value ??= createLocaleConfigs(optionsI18n.fallbackLocale)
     }
 
-    if (__MULTI_DOMAIN_LOCALES__) {
+    if (__I18N_DOMAINS__) {
       setupMultiDomainLocales(optionsI18n.defaultLocale)
     }
 
