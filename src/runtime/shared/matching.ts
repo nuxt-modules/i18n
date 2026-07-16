@@ -1,25 +1,25 @@
 import { joinURL, parsePath, withLeadingSlash } from 'ufo'
 import { createRouterMatcher } from 'vue-router'
-import { disabledI18nPathToPath, i18nPathToPath, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
+import { disabledPaths, i18nPathToPath, localizedPaths, pathToI18nConfig } from '#build/i18n-route-resources.mjs'
 import { createTrailingSlashFormatter, prefixable } from '#i18n-kit/routing'
 
 const matcher = createRouterMatcher([], {})
-for (const path of Object.keys(i18nPathToPath)) {
+for (const path of [...localizedPaths, ...Object.keys(i18nPathToPath)]) {
   matcher.addRoute({ path, component: () => '', meta: {} })
 }
 
 const disabledI18nMatcher = createRouterMatcher([], {})
-for (const path of Object.keys(disabledI18nPathToPath)) {
+for (const path of disabledPaths) {
   disabledI18nMatcher.addRoute({ path, component: () => '', meta: {} })
 }
 
 const getI18nPathToI18nPath = (path: string, locale: string) => {
   if (!path || !locale) { return }
-  const plainPath = i18nPathToPath[path]!
-  const i18nConfig = pathToI18nConfig[plainPath]!
-  if (i18nConfig && i18nConfig[locale]) {
-    return i18nConfig[locale] === true ? plainPath : i18nConfig[locale]
-  }
+  const plainPath = i18nPathToPath[path] ?? path
+  const i18nConfig = pathToI18nConfig[plainPath]
+  // locales without an entry use the plain path
+  if (i18nConfig == null || !(locale in i18nConfig)) { return plainPath }
+  return i18nConfig[locale] || undefined
 }
 
 export function isExistingNuxtRoute(path: string) {

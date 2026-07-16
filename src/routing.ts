@@ -10,9 +10,14 @@ import {
 import type { LocaleObject, Strategies } from './types'
 
 export type RouteResources = {
+  /** plain paths mounted as-is for at least one locale */
+  localizedPaths: string[]
+  /** per-locale custom paths and disables, locales without an entry use the plain path */
   pathToI18nConfig: Record<string, Record<string, string | false>>
+  /** custom localized path to plain path */
   i18nPathToPath: Record<string, string>
-  disabledI18nPathToPath: Record<string, string>
+  /** paths with localization fully disabled */
+  disabledPaths: string[]
 }
 
 /**
@@ -43,15 +48,28 @@ export function createRouteResourcesCollector() {
   }
 
   const toResources = (): RouteResources => {
-    const resources: RouteResources = { pathToI18nConfig: pathToConfig, i18nPathToPath: {}, disabledI18nPathToPath: {} }
+    const resources: RouteResources = { localizedPaths: [], pathToI18nConfig: {}, i18nPathToPath: {}, disabledPaths: [] }
     for (const [path, entry] of Object.entries(pathToConfig)) {
+      // identity localizations (localized path equals the plain path) are kept implicit
+      const exceptions: Record<string, string | false> = {}
+      let hasIdentity = false
       let hasLocalized = false
-      for (const localized of Object.values(entry)) {
+      for (const [locale, localized] of Object.entries(entry)) {
+        if (localized === path) {
+          hasIdentity = hasLocalized = true
+          continue
+        }
+        exceptions[locale] = localized
         if (!localized) { continue }
         resources.i18nPathToPath[localized] = path
         hasLocalized = true
       }
-      if (!hasLocalized) { resources.disabledI18nPathToPath[path] = path }
+      if (!hasLocalized) {
+        resources.disabledPaths.push(path)
+        continue
+      }
+      if (hasIdentity) { resources.localizedPaths.push(path) }
+      if (Object.keys(exceptions).length) { resources.pathToI18nConfig[path] = exceptions }
     }
     return resources
   }

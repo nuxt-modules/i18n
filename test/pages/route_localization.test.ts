@@ -506,17 +506,18 @@ describe('createRouteResourcesCollector', () => {
     return collector.toResources()
   }
 
-  it('maps a route with no custom paths to itself for all locales', () => {
+  it('keeps a route with no custom paths implicit as a localized path', () => {
     const resources = collectResources(
       [{ path: '/about', name: 'about', file: '/pages/about.vue' }],
       createTestConfig({ optionsResolver: createMockOptionsResolver() }),
     )
-    expect(resources.pathToI18nConfig['/about']).toEqual({ en: '/about', fr: '/about' })
-    expect(resources.i18nPathToPath['/about']).toBe('/about')
-    expect(resources.disabledI18nPathToPath).toEqual({})
+    expect(resources.localizedPaths).toEqual(['/about'])
+    expect(resources.pathToI18nConfig).toEqual({})
+    expect(resources.i18nPathToPath).toEqual({})
+    expect(resources.disabledPaths).toEqual([])
   })
 
-  it('maps custom paths and inverts them', () => {
+  it('maps custom paths and inverts them, identity locales stay implicit', () => {
     const resources = collectResources(
       [{ path: '/about', name: 'about', file: '/pages/about.vue' }],
       createTestConfig({
@@ -525,9 +526,23 @@ describe('createRouteResourcesCollector', () => {
         }),
       }),
     )
-    expect(resources.pathToI18nConfig['/about']).toEqual({ en: '/about', fr: '/a-propos' })
-    expect(resources.i18nPathToPath['/a-propos']).toBe('/about')
-    expect(resources.i18nPathToPath['/about']).toBe('/about')
+    expect(resources.localizedPaths).toEqual(['/about'])
+    expect(resources.pathToI18nConfig['/about']).toEqual({ fr: '/a-propos' })
+    expect(resources.i18nPathToPath).toEqual({ '/a-propos': '/about' })
+  })
+
+  it('drops the plain path when all locales use custom paths', () => {
+    const resources = collectResources(
+      [{ path: '/history', name: 'history', file: '/pages/history.vue' }],
+      createTestConfig({
+        optionsResolver: createMockOptionsResolver({
+          history: { locales: ['en', 'fr'], paths: { en: '/our-history', fr: '/notre-histoire' } },
+        }),
+      }),
+    )
+    expect(resources.localizedPaths).toEqual([])
+    expect(resources.pathToI18nConfig['/history']).toEqual({ en: '/our-history', fr: '/notre-histoire' })
+    expect(resources.i18nPathToPath).toEqual({ '/our-history': '/history', '/notre-histoire': '/history' })
   })
 
   it('marks locales without route options as false', () => {
@@ -539,8 +554,9 @@ describe('createRouteResourcesCollector', () => {
         }),
       }),
     )
-    expect(resources.pathToI18nConfig['/about']).toEqual({ en: '/about', fr: false })
-    expect(resources.disabledI18nPathToPath).toEqual({})
+    expect(resources.localizedPaths).toEqual(['/about'])
+    expect(resources.pathToI18nConfig['/about']).toEqual({ fr: false })
+    expect(resources.disabledPaths).toEqual([])
   })
 
   it('records routes with disabled localization', () => {
@@ -548,8 +564,9 @@ describe('createRouteResourcesCollector', () => {
       [{ path: '/secret', name: 'secret', file: '/pages/secret.vue', meta: { i18n: false } }],
       createTestConfig({ optionsResolver: createMockOptionsResolver({ secret: false }) }),
     )
-    expect(resources.pathToI18nConfig['/secret']).toEqual({ en: false, fr: false })
-    expect(resources.disabledI18nPathToPath['/secret']).toBe('/secret')
+    expect(resources.localizedPaths).toEqual([])
+    expect(resources.pathToI18nConfig).toEqual({})
+    expect(resources.disabledPaths).toEqual(['/secret'])
   })
 
   it('skips redirect-only routes without a file', () => {
@@ -557,8 +574,8 @@ describe('createRouteResourcesCollector', () => {
       [{ path: '/old', name: 'old', redirect: '/new' }],
       createTestConfig({ optionsResolver: createMockOptionsResolver() }),
     )
-    expect(resources.pathToI18nConfig).toEqual({})
-    expect(resources.disabledI18nPathToPath).toEqual({})
+    expect(resources.localizedPaths).toEqual([])
+    expect(resources.disabledPaths).toEqual([])
   })
 
   it('keys nested children by their full route path', () => {
@@ -573,8 +590,8 @@ describe('createRouteResourcesCollector', () => {
       ],
       createTestConfig({ optionsResolver: createMockOptionsResolver() }),
     )
-    expect(resources.pathToI18nConfig['/account']).toEqual({ en: '/account', fr: '/account' })
-    expect(resources.pathToI18nConfig['/account/profile']).toEqual({ en: '/account/profile', fr: '/account/profile' })
+    expect(resources.localizedPaths).toEqual(['/account', '/account/profile'])
+    expect(resources.pathToI18nConfig).toEqual({})
   })
 
   it('composes child paths under a custom parent path', () => {
@@ -593,7 +610,7 @@ describe('createRouteResourcesCollector', () => {
         }),
       }),
     )
-    expect(resources.pathToI18nConfig['/account/profile']).toEqual({ en: '/account/profile', fr: '/compte/profile' })
+    expect(resources.pathToI18nConfig['/account/profile']).toEqual({ fr: '/compte/profile' })
     expect(resources.i18nPathToPath['/compte/profile']).toBe('/account/profile')
   })
 
@@ -609,8 +626,7 @@ describe('createRouteResourcesCollector', () => {
       ],
       createTestConfig({ strategy: 'prefix', compactRoutes: true, optionsResolver: createMockOptionsResolver() }),
     )
-    expect(resources.pathToI18nConfig['/account/profile']).toEqual({ en: '/account/profile', fr: '/account/profile' })
-    expect(resources.i18nPathToPath['/account/profile']).toBe('/account/profile')
+    expect(resources.localizedPaths).toEqual(['/account', '/account/profile'])
   })
 
   it('collects nothing when routes are not localized', () => {
@@ -618,6 +634,7 @@ describe('createRouteResourcesCollector', () => {
       [{ path: '/about', name: 'about', file: '/pages/about.vue' }],
       createTestConfig({ strategy: 'no_prefix', optionsResolver: createMockOptionsResolver() }),
     )
+    expect(resources.localizedPaths).toEqual([])
     expect(resources.pathToI18nConfig).toEqual({})
   })
 })
