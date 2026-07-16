@@ -60,9 +60,9 @@ await setup({
 
 describe('detection locale with host on server', () => {
   test.each([
-    ['en', 'en.nuxt-app.localhost', 'Homepage'],
-    ['fr', 'fr.nuxt-app.localhost', 'Accueil']
-  ])('%s host', async (locale, host, header) => {
+    ['en', 'en.nuxt-app.localhost', 'Homepage', 'Welcome'],
+    ['fr', 'fr.nuxt-app.localhost', 'Accueil', 'Bienvenue']
+  ])('%s host', async (locale, host, header, welcome) => {
     const res = await undiciRequest('/', {
       headers: {
         Host: host
@@ -72,6 +72,8 @@ describe('detection locale with host on server', () => {
 
     expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual(locale)
     expect(await dom.locator('#home-header').textContent()).toEqual(header)
+    // (#2374) locale messages are resolved for the host locale
+    expect(await dom.locator('#welcome-text').textContent()).toEqual(welcome)
   })
 })
 
@@ -85,6 +87,8 @@ test('detection locale with x-forwarded-host on server', async () => {
 
   expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('fr')
   expect(await dom.locator('#home-header').textContent()).toEqual('Accueil')
+  // (#2374) locale messages are resolved for the host locale
+  expect(await dom.locator('#welcome-text').textContent()).toEqual('Bienvenue')
 })
 
 test('pass `<NuxtLink> to props', async () => {
@@ -136,20 +140,7 @@ test('pass `<NuxtLink> to props using domains from runtimeConfig', async () => {
   )
 })
 
-test.each([
-  ['en.nuxt-app.localhost', 'Welcome'],
-  ['fr.nuxt-app.localhost', 'Bienvenue']
-])('(#2374) detect %s with host on server', async (host, header) => {
-  const res = await undiciRequest('/', {
-    headers: {
-      host: host
-    }
-  })
-  const dom = await getDom(await res.body.text())
-  expect(await dom.locator('#welcome-text').textContent()).toEqual(header)
-})
-
-test('(#2931) detect using runtimeConfig domain', async () => {
+test('(#2931, #3988) detection, `localeProperties` and `locales` use runtimeConfig domain', async () => {
   const res = await undiciRequest('/', {
     headers: {
       host: 'kr.staging.nuxt-app.localhost'
@@ -157,30 +148,10 @@ test('(#2931) detect using runtimeConfig domain', async () => {
   })
   const dom = await getDom(await res.body.text())
   expect(await dom.locator('#welcome-text').textContent()).toEqual('환영하다')
-})
-
-test('(#3988) `localeProperties` and `locales` use runtimeConfig domain', async () => {
-  const res = await undiciRequest('/', {
-    headers: {
-      host: 'kr.staging.nuxt-app.localhost'
-    }
-  })
-  const dom = await getDom(await res.body.text())
   expect(await dom.locator('#locale-properties-domain').textContent()).toEqual('kr.staging.nuxt-app.localhost')
   expect(await dom.locator('#locales-domains').textContent()).toEqual(
     'en:en.nuxt-app.localhost,fr:fr.nuxt-app.localhost,kr:kr.staging.nuxt-app.localhost,no:no.nuxt-app.localhost,nl:layer-nl.example.com,ja:layer-ja.example.com'
   )
-})
-
-test('(#2374) detect with x-forwarded-host on server', async () => {
-  const html = await $fetch('/', {
-    headers: {
-      'X-Forwarded-Host': 'fr.nuxt-app.localhost'
-    }
-  })
-  const dom = await getDom(html)
-
-  expect(await dom.locator('#welcome-text').textContent()).toEqual('Bienvenue')
 })
 
 test("supports custom routes with `strategy: 'no_prefix'`", async () => {

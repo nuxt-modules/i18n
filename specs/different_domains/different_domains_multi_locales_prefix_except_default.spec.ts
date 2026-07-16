@@ -76,6 +76,15 @@ test('detection locale with x-forwarded-host on server', async () => {
   expect(await dom.locator('#home-header').textContent()).toEqual('Accueil')
 })
 
+test('cookie locale is applied for locales on the current host', async () => {
+  const res = await undiciRequest('/', {
+    headers: { Host: 'nuxt-app.localhost', Cookie: 'i18n_redirected=no' }
+  })
+
+  expect(res.statusCode).toBe(302)
+  expect(res.headers.location).toEqual('http://nuxt-app.localhost/no')
+})
+
 test('pass `<NuxtLink> to props', async () => {
   const res = await undiciRequest('/', {
     headers: {

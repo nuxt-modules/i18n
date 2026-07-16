@@ -33,8 +33,9 @@ export function domainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,
   url: { host: string, protocol: string },
   locale: string,
+  locales: LocaleObject[] = normalizedLocales,
 ): string | undefined {
-  const lang = normalizedLocales.find(x => x.code === locale)
+  const lang = locales.find(x => x.code === locale)
   // lookup the `differentDomain` origin associated with given locale.
   const domain = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find(v => v === url.host)
 

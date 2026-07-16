@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
+import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { _useLocaleHead, _useSetI18nParams, localeHead } from '../src/runtime/routing/head'
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
@@ -29,24 +30,34 @@ const routes = [
   })),
 )
 
-function createTestContext(initialLocale = 'en', strictSeo = false) {
+function createTestContext(initialLocale = 'en', strictSeo = false, domains = false) {
   let locale = initialLocale
   const router = createRouter({ history: createMemoryHistory(), routes })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
+  const domainLocales = locales.map(l => ({
+    ...l,
+    domain: `${l.code}.example.com`,
+    defaultForDomains: [`${l.code}.example.com`],
+  }))
+  if (domains) {
+    // rebuild the route table for the current host, mirrors the runtime plugin
+    setupMultiDomainLocales(initialLocale, 'prefix_except_default', router)
+  }
   const ctx = {
     ...createRoutingContext({
       router,
       defaultLocale: 'en',
       strategy: 'prefix_except_default',
       routing: true,
-      domains: false,
+      domains,
       trailingSlash: false,
       strictSeo,
       compactRoutes: false,
       getLocale: () => locale,
-      getLocales: () => locales,
-      getBaseUrl: () => 'https://example.com',
-      getHost: () => 'example.com',
+      getLocales: () => (domains ? domainLocales : locales),
+      // the default (no-locale) base URL under domains is the default locale's domain
+      getBaseUrl: l => (domains ? `https://${l ?? 'en'}.example.com` : 'https://example.com'),
+      getHost: () => (domains ? `${locale}.example.com` : 'example.com'),
     }),
     _head: undefined,
     head,
@@ -54,7 +65,7 @@ function createTestContext(initialLocale = 'en', strictSeo = false) {
     metaState: { htmlAttrs: {}, meta: [], link: [] },
     seoSettings: { dir: true, lang: true, seo: true },
     localePathPayload: {},
-    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true, domains: false },
+    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true, domains },
   } as unknown as ComposableContext
   return { router, ctx, head, setLocale: (l: string) => (locale = l) }
 }
@@ -108,6 +119,33 @@ describe('localeHead', () => {
     await router.push('/products/big-chair?foo=bar')
     const noMatch = localeHead(ctx, { seo: { canonicalQueries: ['page'] } })
     expect(noMatch.link.find(x => x.rel === 'canonical')!.href).toBe('https://example.com/products/big-chair')
+  })
+})
+
+describe('localeHead with domains', () => {
+  test('(#2595) alternate and canonical links are absolute in each locale domain', async () => {
+    const { router, ctx } = createTestContext('fr', false, true)
+    await router.push('/')
+
+    const head = localeHead(ctx, {})
+    expect(head.link.map(x => [x.hreflang ?? x.rel, x.href])).toEqual([
+      ['x-default', 'https://en.example.com'],
+      ['en', 'https://en.example.com'],
+      ['fr', 'https://fr.example.com'],
+      ['ja', 'https://ja.example.com'],
+      ['ja-JP', 'https://ja.example.com'],
+      ['nl', 'https://nl.example.com'],
+      ['nl-NL', 'https://nl.example.com'],
+      // the canonical self-references the current locale domain
+      ['canonical', 'https://fr.example.com'],
+    ])
+    expect(head.meta.map(x => [x.property, x.content])).toEqual([
+      ['og:url', 'https://fr.example.com'],
+      ['og:locale', 'fr'],
+      ['og:locale:alternate', 'en'],
+      ['og:locale:alternate', 'ja_JP'],
+      ['og:locale:alternate', 'nl_NL'],
+    ])
   })
 })
 

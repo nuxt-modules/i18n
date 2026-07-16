@@ -20,7 +20,9 @@ function createHeadContext(
   config: Required<I18nHeadOptions>,
   locale = ctx.getLocale(),
   locales = ctx.getLocales(),
-  baseUrl = ctx.getBaseUrl(),
+  // the default base URL under domain setups is the default locale's domain, resolve the
+  // current locale's domain so canonical and og:url self-reference the current host (#2595)
+  baseUrl = ctx.routingOptions.domains ? ctx.getBaseUrl(locale) : ctx.getBaseUrl(),
 ): HeadContext {
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
   // deduplicate, layered configs merge `canonicalQueries` arrays with duplicate entries

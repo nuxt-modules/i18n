@@ -281,36 +281,56 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
 })
 
 describe('switchLocalePath with differentDomains', () => {
-  test('cross-domain links use the target domain shape', async () => {
-    const locales = [
-      { code: 'en', language: 'en', domain: 'en.example.com', defaultForDomains: ['en.example.com'] },
-      { code: 'no', language: 'no', domain: 'en.example.com' },
-      { code: 'fr', language: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
-    ]
+  const DOMAIN_LOCALES = [
+    { code: 'en', language: 'en', domain: 'en.example.com', defaultForDomains: ['en.example.com'] },
+    { code: 'no', language: 'no', domain: 'en.example.com' },
+    { code: 'fr', language: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+  ]
+
+  function createDomainContext(opts: {
+    strategy: Strategies
+    host: string
+    locale: string
+    locales?: typeof DOMAIN_LOCALES
+    /** default locale to rebuild the route table for, mirrors the runtime plugin */
+    hostDefault?: string
+  }) {
+    const locales = opts.locales ?? DOMAIN_LOCALES
     const localized = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
       ...routingOptions,
-      strategy: 'prefix_except_default',
+      strategy: opts.strategy,
       defaultLocale: '',
       differentDomains: true,
       locales
     })
     const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
-    // acting as `fr.example.com`
-    setupMultiDomainLocales('fr', 'prefix_except_default', router)
+    if (opts.hostDefault) {
+      setupMultiDomainLocales(opts.hostDefault, opts.strategy, router)
+    }
 
     const ctx = createRoutingContext({
       router,
       defaultLocale: '',
-      strategy: 'prefix_except_default',
+      strategy: opts.strategy,
       routing: true,
       domains: true,
       trailingSlash: false,
       strictSeo: false,
       compactRoutes: false,
-      getLocale: () => 'fr',
+      getLocale: () => opts.locale,
       getLocales: () => locales,
-      getBaseUrl: locale => `http://${locales.find(l => l.code === (locale ?? 'fr'))?.domain}`,
-      getHost: () => 'fr.example.com'
+      getBaseUrl: locale => `http://${locales.find(l => l.code === (locale ?? opts.locale))?.domain ?? opts.host}`,
+      getHost: () => opts.host
+    })
+    return { router, ctx }
+  }
+
+  test('cross-domain links use the target domain shape', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_except_default',
+      host: 'fr.example.com',
+      locale: 'fr',
+      hostDefault: 'fr'
     })
 
     await router.push('/about')
@@ -319,5 +339,50 @@ describe('switchLocalePath with differentDomains', () => {
     expect(_switchLocalePath(ctx, 'no')).toBe('http://en.example.com/no/about')
     // on-host targets navigate relative
     expect(_switchLocalePath(ctx, 'fr')).toBe('/about')
+  })
+
+  test('`strategy: prefix` keeps prefixes in links for all locales', async () => {
+    const { router, ctx } = createDomainContext({ strategy: 'prefix', host: 'fr.example.com', locale: 'fr' })
+
+    await router.push('/fr/about')
+    expect(_switchLocalePath(ctx, 'en')).toBe('http://en.example.com/en/about')
+    expect(_switchLocalePath(ctx, 'no')).toBe('http://en.example.com/no/about')
+    expect(_switchLocalePath(ctx, 'fr')).toBe('/fr/about')
+  })
+
+  test('on-host targets link relative, unprefixed for the host default locale', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_except_default',
+      host: 'en.example.com',
+      locale: 'no'
+    })
+
+    await router.push('/no/about')
+    expect(_switchLocalePath(ctx, 'en')).toBe('/about')
+    expect(_switchLocalePath(ctx, 'no')).toBe('/no/about')
+    expect(_switchLocalePath(ctx, 'fr')).toBe('http://fr.example.com/about')
+  })
+
+  test('multi-domain locales on the current host all link relative', async () => {
+    const domains = ['a.example.com', 'b.example.com']
+    const locales = [
+      { code: 'en', language: 'en', domains, defaultForDomains: ['a.example.com'] },
+      { code: 'no', language: 'no', domains, defaultForDomains: [] },
+      { code: 'fr', language: 'fr', domains, defaultForDomains: ['b.example.com'] }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ] as any as typeof DOMAIN_LOCALES
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_except_default',
+      host: 'a.example.com',
+      locale: 'en',
+      locales,
+      hostDefault: 'en'
+    })
+
+    await router.push('/about')
+    expect(_switchLocalePath(ctx, 'en')).toBe('/about')
+    expect(_switchLocalePath(ctx, 'no')).toBe('/no/about')
+    // domain defaults of other hosts stay reachable through their prefixed paths
+    expect(_switchLocalePath(ctx, 'fr')).toBe('/fr/about')
   })
 })

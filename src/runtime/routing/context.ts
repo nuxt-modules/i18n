@@ -191,7 +191,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
 
       if (isLocaleOnHost(target, host)) {
-        if (stripsDefaultPrefix && locale === getDefaultLocaleForDomain(host) && getLocaleFromRoutePath(path) === locale) {
+        if (stripsDefaultPrefix && locale === getDefaultLocaleForDomain(host, options.getLocales()) && getLocaleFromRoutePath(path) === locale) {
           return path.slice(locale.length + 1) || '/'
         }
         return path

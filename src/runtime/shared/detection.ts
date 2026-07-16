@@ -5,7 +5,7 @@ import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
-import { matchDomainLocale } from './domain'
+import { matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
 import { type useI18nDetection, useRuntimeI18n } from '../shared/utils'
@@ -37,10 +37,7 @@ const getHostLocale = (
     ? new URL(window.location.href).host
     : getRequestURL(event!, { xForwardedHost: true }).host
 
-  const locales = normalizedLocales.map(l => ({
-    ...l,
-    domain: domainLocales[l.code]?.domain ?? l.domain,
-  }))
+  const locales = normalizedLocales.map(l => withRuntimeDomain(l, domainLocales))
   return matchDomainLocale(locales, host, getLocaleFromRoutePath(path))
 }
 
