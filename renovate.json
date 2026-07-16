@@ -1,35 +1,76 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>nuxt/renovate-config-nuxt", ":prHourlyLimit4"],
-  "baseBranches": ["$default"],
+  "extends": [
+    "github>nuxt/renovate-config-nuxt",
+    ":prHourlyLimit4"
+  ],
+  "baseBranches": [
+    "$default"
+  ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "enabled": false
     },
     {
-      "groupName": "Docs dependencies",
-      "matchFileNames": ["docs/package.json"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "schedule": ["before 4am on the first day of the month"]
+      "groupName": "docs",
+      "matchFileNames": [
+        "docs/package.json"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "schedule": [
+        "before 4am on the first day of the month"
+      ]
     },
     {
-      "groupName": "Intlify dependencies",
-      "matchFileNames": ["package.json"],
-      "matchPackageNames": ["vue-i18n", "@intlify/**"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "groupName": "intlify",
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchPackageNames": [
+        "vue-i18n",
+        "@intlify/**"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
     },
     {
       "groupName": "vitest",
-      "matchPackageNames": ["vitest", "@vitest/**"]
+      "matchPackageNames": [
+        "vitest",
+        "/^@vitest//"
+      ]
     },
     {
-      "groupName": "oxc",
-      "matchPackageNames": ["oxc-parser", "oxc-transform", "oxc-walker"]
+      "groupName": "rolldown",
+      "groupSlug": "rolldown",
+      "matchPackageNames": [
+        "rolldown",
+        "obuild",
+        "tsdown",
+        "oxc-parser",
+        "oxc-walker",
+        "oxc-transform",
+        "@oxc-project/types"
+      ]
     },
     {
       "groupName": "nitro",
-      "matchPackageNames": ["nitropack", "h3", "ofetch", "unstorage"]
+      "groupSlug": "nitro",
+      "matchPackageNames": [
+        "nitro",
+        "nitropack",
+        "h3",
+        "ofetch",
+        "unstorage"
+      ]
     }
   ]
 }
