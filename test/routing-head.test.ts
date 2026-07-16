@@ -29,24 +29,30 @@ const routes = [
   })),
 )
 
-function createTestContext(initialLocale = 'en', strictSeo = false) {
+function createTestContext(initialLocale = 'en', strictSeo = false, domains = false) {
   let locale = initialLocale
   const router = createRouter({ history: createMemoryHistory(), routes })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
+  const domainLocales = locales.map(l => ({
+    ...l,
+    domain: `${l.code}.example.com`,
+    defaultForDomains: [`${l.code}.example.com`],
+  }))
   const ctx = {
     ...createRoutingContext({
       router,
       defaultLocale: 'en',
       strategy: 'prefix_except_default',
       routing: true,
-      domains: false,
+      domains,
       trailingSlash: false,
       strictSeo,
       compactRoutes: false,
       getLocale: () => locale,
-      getLocales: () => locales,
-      getBaseUrl: () => 'https://example.com',
-      getHost: () => 'example.com',
+      getLocales: () => (domains ? domainLocales : locales),
+      // the default (no-locale) base URL under domains is the default locale's domain
+      getBaseUrl: l => (domains ? `https://${l ?? 'en'}.example.com` : 'https://example.com'),
+      getHost: () => (domains ? `${locale}.example.com` : 'example.com'),
     }),
     _head: undefined,
     head,
@@ -54,7 +60,7 @@ function createTestContext(initialLocale = 'en', strictSeo = false) {
     metaState: { htmlAttrs: {}, meta: [], link: [] },
     seoSettings: { dir: true, lang: true, seo: true },
     localePathPayload: {},
-    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true, domains: false },
+    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true, domains },
   } as unknown as ComposableContext
   return { router, ctx, head, setLocale: (l: string) => (locale = l) }
 }
@@ -108,6 +114,75 @@ describe('localeHead', () => {
     await router.push('/products/big-chair?foo=bar')
     const noMatch = localeHead(ctx, { seo: { canonicalQueries: ['page'] } })
     expect(noMatch.link.find(x => x.rel === 'canonical')!.href).toBe('https://example.com/products/big-chair')
+  })
+})
+
+describe('localeHead with domains', () => {
+  test('alternate links are absolute in each locale domain', async () => {
+    const { router, ctx } = createTestContext('fr', false, true)
+    await router.push('/fr')
+
+    const head = localeHead(ctx, {})
+    expect(head.link.map(x => [x.hreflang ?? x.rel, x.href])).toMatchInlineSnapshot(`
+      [
+        [
+          "x-default",
+          "https://en.example.com",
+        ],
+        [
+          "en",
+          "https://en.example.com",
+        ],
+        [
+          "fr",
+          "https://fr.example.com",
+        ],
+        [
+          "ja",
+          "https://ja.example.com",
+        ],
+        [
+          "ja-JP",
+          "https://ja.example.com",
+        ],
+        [
+          "nl",
+          "https://nl.example.com",
+        ],
+        [
+          "nl-NL",
+          "https://nl.example.com",
+        ],
+        [
+          "canonical",
+          "https://en.example.com/fr",
+        ],
+      ]
+    `)
+    expect(head.meta.map(x => [x.property, x.content])).toMatchInlineSnapshot(`
+      [
+        [
+          "og:url",
+          "https://en.example.com/fr",
+        ],
+        [
+          "og:locale",
+          "fr",
+        ],
+        [
+          "og:locale:alternate",
+          "en",
+        ],
+        [
+          "og:locale:alternate",
+          "ja_JP",
+        ],
+        [
+          "og:locale:alternate",
+          "nl_NL",
+        ],
+      ]
+    `)
   })
 })
 
