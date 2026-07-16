@@ -8,7 +8,6 @@ const join = (...args: (string | undefined)[]) => args.filter(Boolean).join('')
 export interface ComputedRouteOptions {
   locales: readonly string[]
   paths: Record<string, string>
-  srcPaths?: Record<string, string>
 }
 
 /**
@@ -39,6 +38,19 @@ export type LocalizeRouteParams = {
   parent?: LocalizableRoute
   /** localized parent route */
   parentLocalized?: LocalizableRoute
+  /** accumulated full path of the parent route */
+  parentPath?: string
+}
+
+/**
+ * Compose a child path with its parent's full path, absolute child paths are kept as-is
+ * (matching how Vue Router resolves nested paths).
+ */
+export function joinPath(parent: string | undefined, path: string): string {
+  const full = (!parent || path.startsWith('/'))
+    ? path
+    : (parent === '/' ? '' : parent) + (path ? '/' + path : '')
+  return full.replace(/\/+$/, '') || '/'
 }
 
 function handlePathNesting(localizedPath: string, parentLocalizedPath: string = '') {
@@ -80,7 +92,13 @@ function createLocalizeAliases(ctx: RouteContext): RouteContext['localizeAliases
 
 function createLocalizeChildren(ctx: RouteContext): RouteContext['localizeChildren'] {
   return (route: LocalizableRoute, parentLocalized: LocalizableRoute, locale: string, opts: LocalizeRouteParams) => {
-    const localizeParams = { ...opts, parent: route, locales: [locale], parentLocalized }
+    const localizeParams = {
+      ...opts,
+      parent: route,
+      locales: [locale],
+      parentLocalized,
+      parentPath: joinPath(opts.parentPath, route.path),
+    }
     return route.children?.flatMap(child => localizeSingleRoute(child, localizeParams, ctx)) ?? []
   }
 }
@@ -108,6 +126,7 @@ export function localizeSingleRoute(
 ): LocalizableRoute[] {
   // resolve custom route (config/page) options
   const routeOptions = ctx.optionsResolver(route, options.locales)
+  ctx.onLocalize?.(route, routeOptions, options)
   if (!routeOptions) {
     return [route]
   }
@@ -118,7 +137,11 @@ export function localizeSingleRoute(
     && canCompactRoute(routeOptions, options.locales)
     && canCompactChildren(route.children, options.locales, ctx)) {
     const compacted = ctx.compactRoute(route, routeOptions, options)
-    if (compacted) { return compacted }
+    if (compacted) {
+      // compaction keeps children as-is instead of walking them, report them here
+      reportSkippedChildren(route, options, ctx)
+      return compacted
+    }
   }
 
   const resultRoutes: LocalizableRoute[] = []
@@ -137,6 +160,19 @@ export function localizeSingleRoute(
   }
 
   return resultRoutes
+}
+
+/**
+ * Fire `onLocalize` for descendants of a compacted route — these are compact-eligible
+ * (all locales, no custom paths) so their localized paths are identical to their plain paths.
+ */
+function reportSkippedChildren(route: LocalizableRoute, options: LocalizeRouteParams, ctx: RouteContext): void {
+  if (ctx.onLocalize == null || !route.children?.length) { return }
+  const opts = { ...options, parentPath: joinPath(options.parentPath, route.path) }
+  for (const child of route.children) {
+    ctx.onLocalize(child, ctx.optionsResolver(child, options.locales), opts)
+    reportSkippedChildren(child, opts, ctx)
+  }
 }
 
 type LocalizerData = {
@@ -163,6 +199,12 @@ export type RouteContext = {
   localizeRouteName: (name: LocalizableRoute, locale: string, isDefault: boolean) => string | undefined
   handleTrailingSlash: (localizedPath: string, hasParent: boolean) => string
   localizers: { enabled: (data: LocalizerData) => boolean, localizer: LocalizerFn }[]
+  /** Called for each route visited during localization, before locale variants are produced. */
+  onLocalize?: (
+    route: LocalizableRoute,
+    routeOptions: ComputedRouteOptions | undefined,
+    options: LocalizeRouteParams,
+  ) => void
   /** When set, eligible routes are compacted into a single regex-prefixed route instead of per-locale duplicates. */
   compactRoute?: (
     route: LocalizableRoute,
@@ -206,9 +248,11 @@ export function createRouteContext(opts: {
   optionsResolver?: RouteOptionsResolver
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
+  onLocalize?: RouteContext['onLocalize']
 }) {
   const ctx = { localizers: [] as RouteContext['localizers'] } as RouteContext
   ctx.trailingSlash = opts.trailingSlash ?? false
+  ctx.onLocalize = opts.onLocalize
   ctx.isDefaultLocale = (locale: string) => opts.defaultLocales.includes(locale)
   ctx.localizeRouteName = createLocalizeRouteName(opts)
   ctx.optionsResolver = createDefaultOptionsResolver(opts)

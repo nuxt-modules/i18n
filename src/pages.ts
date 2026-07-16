@@ -5,7 +5,7 @@ import { parse as parseSFC } from '@vue/compiler-sfc'
 import { parseAndWalk } from 'oxc-walker'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { parseSegment, toVueRouterSegment } from 'unrouting'
-import { localizeRoutes, shouldLocalizeRoutes } from './routing'
+import { createRouteResourcesCollector, localizeRoutes } from './routing'
 import { logger } from './utils'
 import { dirname, parse as parsePath, resolve } from 'pathe'
 import { createRoutesContext, resolveOptions } from 'vue-router/unplugin'
@@ -15,15 +15,13 @@ import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'vue-router/unplugin'
 import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
-import type { ComputedRouteOptions, LocalizableRoute, RouteOptionsResolver } from './kit/gen'
+import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
 import { type CallExpression, type ExpressionStatement, type ObjectExpression, parseSync } from 'oxc-parser'
 
 export class NuxtPageAnalyzeContext {
   config: NuxtI18nOptions['pages']
   pages: Map<string, { path: string, name?: string }> = new Map()
-  pathToConfig: Record<string, Record<string, string | boolean> | undefined> = {}
-  fileToPath: Record<string, string> = {}
 
   constructor(config: NuxtI18nOptions['pages']) {
     this.config = config || {}
@@ -31,8 +29,6 @@ export class NuxtPageAnalyzeContext {
 
   addPage(page: NuxtPage, path: string, name?: string) {
     this.pages.set(page.file!, { path, name })
-    const p = path === 'index' ? '/' : '/' + path.replace(/\/index$/, '')
-    this.fileToPath[page.file!] = p
   }
 }
 
@@ -42,7 +38,7 @@ type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
 }
 
 export async function setupPages({ localeCodes, options, normalizedLocales }: I18nNuxtContext, nuxt: Nuxt) {
-  const routeResources = {
+  let routeResources = {
     i18nPathToPath: {},
     pathToI18nConfig: {},
     disabledI18nPathToPath: {},
@@ -104,20 +100,17 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
       normalizeRouteMeta(ctx, pages, localeCodes, options.customRoutes ?? 'page', nuxt.vfs)
 
       const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
+      const resources = createRouteResourcesCollector()
 
       const localizationOptions = {
         ...options,
         locales: normalizedLocales,
         optionsResolver: resolver,
         compactRoutes: !!options.experimental?.compactRoutes,
+        onLocalize: resources.collect,
       }
 
       const localizedPages = localizeRoutes(pages as NarrowedNuxtPage[], localizationOptions)
-
-      // Build path config from original pages (not localized copies)
-      if (shouldLocalizeRoutes(localizationOptions)) {
-        buildPathToConfig(ctx, localeCodes, resolver, pages as LocalizableRoute[])
-      }
 
       // keep root when using prefixed routing without prerendering
       const indexPage = pages.find(x => x.path === '/')
@@ -129,28 +122,7 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
       // (the boolean form is kept, it marks routes with disabled localization at runtime)
       stripRouteMetaI18n(localizedPages)
 
-      const invertedMap = {} as Record<string, Record<string, string | false>>
-      const localizedMapInvert: Record<string, string> = {}
-      const notLocalizedMapInvert: Record<string, string> = {}
-      for (const [path, localeConfig] of Object.entries(ctx.pathToConfig)) {
-        const resPath = resolveRoutePath(path)
-        invertedMap[resPath] ??= {}
-        let hasLocalized = false
-        for (const [locale, localePath] of Object.entries(localeConfig!)) {
-          const localized = localePath === true ? path : localePath
-          invertedMap[resPath][locale] = localized && resolveRoutePath(localized)
-          if (invertedMap[resPath][locale]) {
-            localizedMapInvert[invertedMap[resPath][locale]] = resPath
-            hasLocalized = true
-          }
-        }
-        if (!hasLocalized) {
-          notLocalizedMapInvert[resPath] = resPath
-        }
-      }
-      routeResources.i18nPathToPath = localizedMapInvert
-      routeResources.pathToI18nConfig = invertedMap
-      routeResources.disabledI18nPathToPath = notLocalizedMapInvert
+      routeResources = resources.toResources()
 
       await updateTemplates({
         filter: (template: ResolvedNuxtTemplate) => template.filename === 'i18n-route-resources.mjs',
@@ -389,39 +361,8 @@ export function createPureOptionsResolver(
 }
 
 /**
- * Post-processing step: builds ctx.pathToConfig from the original (pre-localized) routes.
- * Call this after localizeRoutes() with the same resolver used for localization.
- */
-export function buildPathToConfig(
-  ctx: NuxtPageAnalyzeContext,
-  localeCodes: string[],
-  resolver: RouteOptionsResolver,
-  routes: LocalizableRoute[],
-): void {
-  for (const route of routes) {
-    if (route.file) {
-      const res = resolver(route, localeCodes)
-      const localeCfg = res?.srcPaths
-      const mappedPath = ctx.fileToPath[route.file]
-      if (mappedPath) {
-        ctx.pathToConfig[mappedPath] ??= {} as Record<string, string | boolean>
-        for (const l of localeCodes) {
-          ctx.pathToConfig[mappedPath][l] ??= localeCfg?.[l] ?? false
-        }
-        for (const l of res?.locales ?? []) {
-          ctx.pathToConfig[mappedPath][l] ||= true
-        }
-      }
-    }
-    if (route.children?.length) {
-      buildPathToConfig(ctx, localeCodes, resolver, route.children)
-    }
-  }
-}
-
-/**
  * Function factory, returns a function based on the `customRoutes` option property.
- * @deprecated Use createPureOptionsResolver + buildPathToConfig instead.
+ * @deprecated Use createPureOptionsResolver instead.
  */
 export function getRouteOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
@@ -592,7 +533,7 @@ function getRouteOptions(
     }
   }
 
-  return { locales, paths, srcPaths: resolvedOptions.paths }
+  return { locales, paths }
 }
 
 /**
