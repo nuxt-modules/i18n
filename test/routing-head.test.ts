@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
+import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { _useLocaleHead, _useSetI18nParams, localeHead } from '../src/runtime/routing/head'
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
@@ -38,6 +39,10 @@ function createTestContext(initialLocale = 'en', strictSeo = false, domains = fa
     domain: `${l.code}.example.com`,
     defaultForDomains: [`${l.code}.example.com`],
   }))
+  if (domains) {
+    // rebuild the route table for the current host, mirrors the runtime plugin
+    setupMultiDomainLocales(initialLocale, 'prefix_except_default', router)
+  }
   const ctx = {
     ...createRoutingContext({
       router,
@@ -118,71 +123,29 @@ describe('localeHead', () => {
 })
 
 describe('localeHead with domains', () => {
-  test('alternate links are absolute in each locale domain', async () => {
+  test('(#2595) alternate and canonical links are absolute in each locale domain', async () => {
     const { router, ctx } = createTestContext('fr', false, true)
-    await router.push('/fr')
+    await router.push('/')
 
     const head = localeHead(ctx, {})
-    expect(head.link.map(x => [x.hreflang ?? x.rel, x.href])).toMatchInlineSnapshot(`
-      [
-        [
-          "x-default",
-          "https://en.example.com",
-        ],
-        [
-          "en",
-          "https://en.example.com",
-        ],
-        [
-          "fr",
-          "https://fr.example.com",
-        ],
-        [
-          "ja",
-          "https://ja.example.com",
-        ],
-        [
-          "ja-JP",
-          "https://ja.example.com",
-        ],
-        [
-          "nl",
-          "https://nl.example.com",
-        ],
-        [
-          "nl-NL",
-          "https://nl.example.com",
-        ],
-        [
-          "canonical",
-          "https://en.example.com/fr",
-        ],
-      ]
-    `)
-    expect(head.meta.map(x => [x.property, x.content])).toMatchInlineSnapshot(`
-      [
-        [
-          "og:url",
-          "https://en.example.com/fr",
-        ],
-        [
-          "og:locale",
-          "fr",
-        ],
-        [
-          "og:locale:alternate",
-          "en",
-        ],
-        [
-          "og:locale:alternate",
-          "ja_JP",
-        ],
-        [
-          "og:locale:alternate",
-          "nl_NL",
-        ],
-      ]
-    `)
+    expect(head.link.map(x => [x.hreflang ?? x.rel, x.href])).toEqual([
+      ['x-default', 'https://en.example.com'],
+      ['en', 'https://en.example.com'],
+      ['fr', 'https://fr.example.com'],
+      ['ja', 'https://ja.example.com'],
+      ['ja-JP', 'https://ja.example.com'],
+      ['nl', 'https://nl.example.com'],
+      ['nl-NL', 'https://nl.example.com'],
+      // the canonical self-references the current locale domain
+      ['canonical', 'https://fr.example.com'],
+    ])
+    expect(head.meta.map(x => [x.property, x.content])).toEqual([
+      ['og:url', 'https://fr.example.com'],
+      ['og:locale', 'fr'],
+      ['og:locale:alternate', 'en'],
+      ['og:locale:alternate', 'ja_JP'],
+      ['og:locale:alternate', 'nl_NL'],
+    ])
   })
 })
 

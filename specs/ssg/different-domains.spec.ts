@@ -19,14 +19,14 @@ test('`differentDomains` with `no_prefix` has hreflang links', async () => {
       lang: es-ES
       dir: ltr
     Link:
-      canonical: http://127.0.0.1:7786
+      canonical: http://127.0.0.1:7787
       alternate[x-default]: http://127.0.0.1:7786
       alternate[en]: http://127.0.0.1:7786
       alternate[en-US]: http://127.0.0.1:7786
       alternate[es]: http://127.0.0.1:7787
       alternate[es-ES]: http://127.0.0.1:7787
     Meta:
-      og:url: http://127.0.0.1:7786
+      og:url: http://127.0.0.1:7787
       og:locale: es_ES
       og:locale:alternate: en_US"
   `)
