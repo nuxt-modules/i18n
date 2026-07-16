@@ -63,27 +63,21 @@ export interface NuxtI18nContext {
 }
 
 /**
- * Returns a getter function which returns the baseUrl
+ * Returns a getter resolving the base URL for a locale, joined with `app.baseURL` exactly
+ * once - locale domains and `baseUrl` are configured without it (#3628, #3887).
  */
-function createBaseUrlGetter(
-  nuxt: NuxtApp,
-  baseUrl: string | BaseUrlResolveHandler<unknown> | undefined,
-  defaultLocale: string,
-  getDomainFromLocale: (locale: string) => string | undefined,
-): () => string {
-  if (isFunction(baseUrl)) {
-    import.meta.dev
-      && console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
-    return (): string => baseUrl(nuxt)
-  }
-
-  return (): string => {
-    if (__I18N_DOMAINS__ && defaultLocale) {
-      return (getDomainFromLocale(defaultLocale) || baseUrl) ?? ''
-    }
-
-    return baseUrl ?? ''
-  }
+export function createBaseUrlGetter(opts: {
+  baseUrl: string | (() => string) | undefined
+  appBase: string
+  domains: boolean
+  defaultLocale: string
+  getDomainFromLocale: (locale: string) => string | undefined
+}): (locale?: string) => string {
+  const { baseUrl, appBase, domains, defaultLocale, getDomainFromLocale } = opts
+  const base = isFunction(baseUrl)
+    ? baseUrl
+    : () => (domains && defaultLocale && getDomainFromLocale(defaultLocale)) || baseUrl || ''
+  return locale => joinURL((locale && getDomainFromLocale(locale)) || base(), appBase)
 }
 
 function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKey }: DetectBrowserLanguageOptions) {
@@ -110,7 +104,16 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value![locale]
   const getDomainFromLocale = (locale: string) =>
     domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
-  const baseUrl = createBaseUrlGetter(nuxt, runtimeI18n.baseUrl, defaultLocale, getDomainFromLocale)
+  if (import.meta.dev && isFunction(runtimeI18n.baseUrl)) {
+    console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
+  }
+  const getBaseUrl = createBaseUrlGetter({
+    baseUrl: isFunction(runtimeI18n.baseUrl) ? () => (runtimeI18n.baseUrl as BaseUrlResolveHandler<unknown>)(nuxt) : runtimeI18n.baseUrl,
+    appBase: nuxt.$config.app.baseURL,
+    domains: __I18N_DOMAINS__,
+    defaultLocale,
+    getDomainFromLocale,
+  })
   const resolvedLocale = useResolvedLocale()
   if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
@@ -186,12 +189,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         localeCookie.value = locale
       }
     },
-    getBaseUrl: (locale?: string) => {
-      if (locale) {
-        return joinURL(getDomainFromLocale(locale) || baseUrl(), nuxt.$config.app.baseURL)
-      }
-      return joinURL(baseUrl(), nuxt.$config.app.baseURL)
-    },
+    getBaseUrl,
     loadMessages: async (locale: string) => {
       // prevent multiple loads during hydration
       if (nuxt.isHydrating && loadMap.has(locale)) { return }
