@@ -1,49 +1,35 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":prHourlyLimit4", ":semanticCommitTypeAll(chore)"],
+  "extends": ["github>nuxt/renovate-config-nuxt", ":prHourlyLimit4"],
   "baseBranches": ["$default"],
-  "meteor": {
-    "enabled": false
-  },
-  "rangeStrategy": "bump",
-  "npm": {
-    "commitMessageTopic": "{{prettyDepType}} {{depName}}"
-  },
   "packageRules": [
     {
       "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
-      "matchPackageNames": ["node"],
-      "enabled": false
-    },
-    {
-      "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch",
-      "matchFileNames": ["package.json", "specs/fixtures/**/package.json"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "lockFileMaintenance": {
-        "enabled": true,
-        "extends": ["schedule:weekly"]
-      }
-    },
-    {
       "groupName": "Docs dependencies",
       "matchFileNames": ["docs/package.json"],
-      "matchUpdateTypes": ["minor", "patch"]
-    },
-    {
-      "groupName": "Nuxt & Vue dependencies",
-      "matchFileNames": ["package.json", "docs/package.json"],
-      "matchPackageNames": ["nuxt", "@nuxt/**", "vue", "vue-router"],
-      "matchUpdateTypes": ["minor", "patch"]
+      "matchUpdateTypes": ["minor", "patch"],
+      "schedule": ["before 4am on the first day of the month"]
     },
     {
       "groupName": "Intlify dependencies",
       "matchFileNames": ["package.json"],
       "matchPackageNames": ["vue-i18n", "@intlify/**"],
       "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "groupName": "vitest",
+      "matchPackageNames": ["vitest", "@vitest/**"]
+    },
+    {
+      "groupName": "oxc",
+      "matchPackageNames": ["oxc-parser", "oxc-transform", "oxc-walker"]
+    },
+    {
+      "groupName": "nitro",
+      "matchPackageNames": ["nitropack", "h3", "ofetch", "unstorage"]
     }
   ]
 }
