@@ -66,7 +66,6 @@ type SetupLocalizeRoutesOptions = {
   trailingSlash?: boolean
   differentDomains?: boolean
   multiDomainLocales?: boolean
-  includeUnprefixedFallback?: boolean
   locales: LocaleObject[]
   routesNameSeparator: string
   defaultLocaleRouteNameSuffix: string
@@ -100,7 +99,6 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     && strategy !== 'no_prefix'
     && !config.differentDomains
     && !config.multiDomainLocales
-    && !(strategy === 'prefix' && config.includeUnprefixedFallback)
   ) {
     const defaultLocale = config.defaultLocale ?? ''
     ctx.compactRoute = (route, routeOptions, params) => {
@@ -188,18 +186,6 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
       localizer: ({ unprefixed, route, ctx, locale }) => [
         { ...route, name: ctx.localizeRouteName(route, locale, true), path: unprefixed },
       ],
-    })
-  }
-
-  /**
-   * Unprefixed fallback routes
-   */
-  const includeUnprefixedFallback = config.includeUnprefixedFallback ?? false
-  if (strategy === 'prefix' && includeUnprefixedFallback) {
-    // unshift to preserve test snapshots
-    ctx.localizers.unshift({
-      enabled: ({ usePrefix, locale }) => usePrefix && ctx.isDefaultLocale(locale),
-      localizer: ({ route }) => [route],
     })
   }
 
