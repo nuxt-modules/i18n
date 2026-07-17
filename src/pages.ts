@@ -60,13 +60,10 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
   })
   if (!localeCodes.length) { return }
 
-  let includeUnprefixedFallback = !nuxt.options.ssr
   // Filled during pages:extend, drained at prerender time. nitro:init fires before
   // pages:extend, so we can't seed nitro.options.prerender.routes directly.
   const compactPrerenderRoutes: string[] = []
   nuxt.hook('nitro:init', (nitro) => {
-    includeUnprefixedFallback = options.strategy !== 'prefix'
-
     if (!nuxt.options.nitro.static) { return }
 
     // `prefix` strategy: `/` is not a valid route, ignore it.
@@ -110,7 +107,6 @@ export const disabledI18nPathToPath = ${JSON.stringify(routeResources.disabledI1
 
       const localizationOptions = {
         ...options,
-        includeUnprefixedFallback,
         locales: normalizedLocales,
         optionsResolver: resolver,
         compactRoutes: !!options.experimental?.compactRoutes,

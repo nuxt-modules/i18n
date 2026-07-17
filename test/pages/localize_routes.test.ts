@@ -309,7 +309,6 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix',
         locales: getNormalizedLocales(['en', 'ja']),
-        includeUnprefixedFallback: true
       })
 
       expect(localizedRoutes).toMatchSnapshot()

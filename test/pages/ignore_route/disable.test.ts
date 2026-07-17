@@ -117,7 +117,6 @@ describe.each([
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUnprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(localizedPages).toMatchSnapshot()
@@ -142,7 +141,6 @@ describe.each([
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUnprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()

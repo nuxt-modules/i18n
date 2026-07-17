@@ -14,7 +14,6 @@ function localize(pages: NuxtPage[], options: ReturnType<typeof getNuxtOptions>)
   normalizeRouteMeta(ctx, pages, localeCodes, options.customRoutes!)
   return localizeRoutes(pages, {
     ...options,
-    includeUnprefixedFallback: false,
     optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!),
   } as Parameters<typeof localizeRoutes>[1])
 }

@@ -84,7 +84,6 @@ export function createTestConfig(opts: {
   defaultLocale?: string
   trailingSlash?: boolean
   optionsResolver?: RouteOptionsResolver
-  includeUnprefixedFallback?: boolean
   differentDomains?: boolean
   multiDomainLocales?: boolean
   routesNameSeparator?: string
@@ -99,7 +98,6 @@ export function createTestConfig(opts: {
     routesNameSeparator: opts.routesNameSeparator ?? '___',
     defaultLocaleRouteNameSuffix: opts.defaultLocaleRouteNameSuffix ?? 'default',
     optionsResolver: opts.optionsResolver,
-    includeUnprefixedFallback: opts.includeUnprefixedFallback ?? false,
     differentDomains: opts.differentDomains,
     multiDomainLocales: opts.multiDomainLocales,
     compactRoutes: opts.compactRoutes,

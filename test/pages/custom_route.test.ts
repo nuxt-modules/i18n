@@ -120,7 +120,6 @@ describe.each([
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUnprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
 
@@ -233,7 +232,6 @@ describe('Page components', () => {
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      includeUnprefixedFallback: false,
       optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
@@ -292,7 +290,6 @@ test('#1649', () => {
   analyzeNuxtPages(ctx, 'pages', pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    includeUnprefixedFallback: false,
     optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
   } as Parameters<typeof localizeRoutes>[1])
 
@@ -355,7 +352,6 @@ test('#3781', () => {
   analyzeNuxtPages(ctx, 'pages', pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    includeUnprefixedFallback: false,
     optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
   } as Parameters<typeof localizeRoutes>[1])
 
@@ -447,7 +443,6 @@ test('pages config using route name', () => {
   analyzeNuxtPages(ctx, 'pages', pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    includeUnprefixedFallback: false,
     optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
   } as Parameters<typeof localizeRoutes>[1])
   expect(localizedPages).toMatchSnapshot()
