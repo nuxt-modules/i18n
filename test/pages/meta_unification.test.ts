@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { describe, test, expect } from 'vitest'
 import { localizeRoutes } from '../../src/routing'
-import { getRouteOptionsResolver, analyzeNuxtPages, normalizeRouteMeta, NuxtPageAnalyzeContext } from '../../src/pages'
+import { createPureOptionsResolver, analyzeNuxtPages, normalizeRouteMeta, NuxtPageAnalyzeContext } from '../../src/pages'
 import { getNuxtOptions } from './utils'
 
 import type { NuxtPage } from '@nuxt/schema'
@@ -14,7 +14,7 @@ function localize(pages: NuxtPage[], options: ReturnType<typeof getNuxtOptions>)
   normalizeRouteMeta(ctx, pages, localeCodes, options.customRoutes!)
   return localizeRoutes(pages, {
     ...options,
-    optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!),
+    optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!),
   } as Parameters<typeof localizeRoutes>[1])
 }
 

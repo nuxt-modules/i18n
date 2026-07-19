@@ -363,18 +363,6 @@ export function createPureOptionsResolver(
   }
 }
 
-/**
- * Function factory, returns a function based on the `customRoutes` option property.
- * @deprecated Use createPureOptionsResolver instead.
- */
-export function getRouteOptionsResolver(
-  ctx: NuxtPageAnalyzeContext,
-  defaultLocale: string,
-  customRoutes: NuxtI18nOptions['customRoutes'],
-): RouteOptionsResolver {
-  return createPureOptionsResolver(ctx, defaultLocale, customRoutes)
-}
-
 function resolveRoutePath(path: string): string {
   const tokens = parseSegment(path.slice(1))
   return '/' + toVueRouterSegment(tokens)
