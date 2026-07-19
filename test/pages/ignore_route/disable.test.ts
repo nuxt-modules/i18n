@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { vi, describe, test, expect } from 'vitest'
 import { localizeRoutes } from '../../../src/routing'
-import { getRouteOptionsResolver, analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../../src/pages'
+import { createPureOptionsResolver, analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from '../utils'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
@@ -117,7 +117,7 @@ describe.each([
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+      optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(localizedPages).toMatchSnapshot()
   })
@@ -141,7 +141,7 @@ describe.each([
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+      optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
   })

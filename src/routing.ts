@@ -4,9 +4,78 @@ import {
   type RouteContext,
   type RouteOptionsResolver,
   createRouteContext,
+  joinPath,
   localizeSingleRoute,
 } from './kit/gen'
 import type { LocaleObject, Strategies } from './types'
+
+export type RouteResources = {
+  /** plain paths mounted as-is for at least one locale */
+  localizedPaths: string[]
+  /** per-locale custom paths and disables, locales without an entry use the plain path */
+  pathToI18nConfig: Record<string, Record<string, string | false>>
+  /** custom localized path to plain path */
+  i18nPathToPath: Record<string, string>
+  /** paths with localization fully disabled */
+  disabledPaths: string[]
+}
+
+/**
+ * Collects the runtime route resources (`i18n-route-resources.mjs`) during route
+ * localization, keyed by the full paths routes actually mount at.
+ */
+export function createRouteResourcesCollector() {
+  const pathToConfig: Record<string, Record<string, string | false>> = {}
+
+  const collect: RouteContext['onLocalize'] = (route, routeOptions, options) => {
+    const path = joinPath(options.parentPath, route.path)
+    if (routeOptions == null) {
+      // only routes with localization explicitly disabled are recorded (not e.g. redirect-only routes)
+      if ((route.meta as Record<string, unknown> | undefined)?.i18n === false) {
+        const entry = (pathToConfig[path] ??= {})
+        for (const locale of options.locales) { entry[locale] ??= false }
+      }
+      return
+    }
+
+    const entry = (pathToConfig[path] ??= {})
+    for (const locale of routeOptions.locales) {
+      // the walk is top-down, the parent's localized path (unprefixed) is already collected
+      const parentPath = options.parentPath ? pathToConfig[options.parentPath]?.[locale] || options.parentPath : undefined
+      entry[locale] = joinPath(parentPath, routeOptions.paths[locale] ?? route.path)
+    }
+    for (const locale of options.locales) { entry[locale] ??= false }
+  }
+
+  const toResources = (): RouteResources => {
+    const resources: RouteResources = { localizedPaths: [], pathToI18nConfig: {}, i18nPathToPath: {}, disabledPaths: [] }
+    for (const [path, entry] of Object.entries(pathToConfig)) {
+      // identity localizations (localized path equals the plain path) are kept implicit
+      const exceptions: Record<string, string | false> = {}
+      let hasIdentity = false
+      let hasLocalized = false
+      for (const [locale, localized] of Object.entries(entry)) {
+        if (localized === path) {
+          hasIdentity = hasLocalized = true
+          continue
+        }
+        exceptions[locale] = localized
+        if (!localized) { continue }
+        resources.i18nPathToPath[localized] = path
+        hasLocalized = true
+      }
+      if (!hasLocalized) {
+        resources.disabledPaths.push(path)
+        continue
+      }
+      if (hasIdentity) { resources.localizedPaths.push(path) }
+      if (Object.keys(exceptions).length) { resources.pathToI18nConfig[path] = exceptions }
+    }
+    return resources
+  }
+
+  return { collect, toResources }
+}
 
 function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext) {
   if (opts.strategy === 'no_prefix') { return () => false }
@@ -72,6 +141,7 @@ type SetupLocalizeRoutesOptions = {
   defaultLocale?: string
   optionsResolver?: RouteOptionsResolver
   compactRoutes?: boolean
+  onLocalize?: RouteContext['onLocalize']
 }
 
 /**
@@ -86,6 +156,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     defaultLocales: resolveDefaultLocales(config),
     routesNameSeparator: config.routesNameSeparator,
     defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
+    onLocalize: config.onLocalize,
   })
 
   const strategy = config.strategy ?? 'prefix_and_default'

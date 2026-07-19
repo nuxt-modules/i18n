@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { localizeRoutes } from '../../src/routing'
-import { getRouteOptionsResolver, analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../src/pages'
+import { createPureOptionsResolver, analyzeNuxtPages, NuxtPageAnalyzeContext } from '../../src/pages'
 import { getNuxtOptions, stripFilePropertyFromPages } from './utils'
 import { vi, afterAll, describe, test, expect } from 'vitest'
 
@@ -120,7 +120,7 @@ describe.each([
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+      optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
 
     expect(localizedPages).toMatchSnapshot()
@@ -232,7 +232,7 @@ describe('Page components', () => {
     analyzeNuxtPages(ctx, 'pages', pages)
     const localizedPages = localizeRoutes(pages, {
       ...options,
-      optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+      optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
     } as Parameters<typeof localizeRoutes>[1])
     expect(stripFilePropertyFromPages(localizedPages)).toMatchSnapshot()
   })
@@ -290,7 +290,7 @@ test('#1649', () => {
   analyzeNuxtPages(ctx, 'pages', pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+    optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
   } as Parameters<typeof localizeRoutes>[1])
 
   expect(localizedPages).toMatchSnapshot()
@@ -352,7 +352,7 @@ test('#3781', () => {
   analyzeNuxtPages(ctx, 'pages', pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+    optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
   } as Parameters<typeof localizeRoutes>[1])
 
   expect(localizedPages).toMatchInlineSnapshot(`
@@ -443,7 +443,7 @@ test('pages config using route name', () => {
   analyzeNuxtPages(ctx, 'pages', pages)
   const localizedPages = localizeRoutes(pages, {
     ...options,
-    optionsResolver: getRouteOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
+    optionsResolver: createPureOptionsResolver(ctx, options.defaultLocale!, options.customRoutes!)
   } as Parameters<typeof localizeRoutes>[1])
   expect(localizedPages).toMatchSnapshot()
 })
