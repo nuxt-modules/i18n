@@ -81,6 +81,8 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
 
   const projectLayer = nuxt.options._layers[0]
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
+  // nuxt's pages runtime dir is a sibling of `appDir` in its dist
+  const stubFile = resolve(nuxt.options.appDir, '../pages/runtime/component-stub')
 
   nuxt.options.experimental.extraPageMetaExtractionKeys ??= []
   nuxt.options.experimental.extraPageMetaExtractionKeys.push('i18n')
@@ -102,7 +104,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
       // normalize per-mode route options into route meta before localization
       normalizeRouteMeta(ctx, pages, localeCodes, options.customRoutes ?? 'page', nuxt.vfs)
 
-      const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes)
+      const resolver = createPureOptionsResolver(ctx, options.defaultLocale, options.customRoutes, stubFile)
       const resources = createRouteResourcesCollector()
 
       const localizationOptions = {
@@ -352,9 +354,13 @@ export function createPureOptionsResolver(
   ctx: NuxtPageAnalyzeContext,
   defaultLocale: string,
   customRoutes: NuxtI18nOptions['customRoutes'],
+  /** extensionless path of nuxt's page component stub */
+  stubFile?: string,
 ): RouteOptionsResolver {
   const cache = new Map<string, ComputedRouteOptions | undefined>()
   return (route, localeCodes) => {
+    // skip - stub pages nuxt injects for `routeRules` redirects, the rules only match unprefixed paths (#3606)
+    if (stubFile && route.file?.replace(/\.\w+$/, '') === stubFile) { return undefined }
     const key = `${route.file ?? route.name ?? route.path}::${localeCodes.join(',')}`
     if (cache.has(key)) { return cache.get(key) }
     const resolved = getRouteOptions(route, localeCodes, ctx, defaultLocale, customRoutes)

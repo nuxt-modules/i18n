@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { createRouteResourcesCollector, localizeRoutes } from '../../src/routing'
 import { localizeSingleRoute, createRouteContext, canCompactRoute } from '../../src/kit/gen'
-import { collectCompactPrerenderRoutes } from '../../src/pages'
+import { collectCompactPrerenderRoutes, createPureOptionsResolver, NuxtPageAnalyzeContext } from '../../src/pages'
 import { createMockOptionsResolver, createTestConfig, getNormalizedLocales } from './utils'
 
 import type { LocalizableRoute, LocalizeRouteParams } from '../../src/kit/gen'
@@ -636,6 +636,54 @@ describe('createRouteResourcesCollector', () => {
     )
     expect(resources.localizedPaths).toEqual([])
     expect(resources.pathToI18nConfig).toEqual({})
+  })
+})
+
+// nuxt injects stub pages for `routeRules` redirects, the rules only match unprefixed paths (#3606)
+describe.each([false, true])('routeRules redirect stubs (compactRoutes: %s)', (compactRoutes) => {
+  const stubFile = '/app/node_modules/nuxt/dist/pages/runtime/component-stub'
+
+  function makeConfig(resolver: ReturnType<typeof createPureOptionsResolver>) {
+    return createTestConfig({
+      locales: ['en', 'fr'],
+      strategy: 'prefix_except_default',
+      defaultLocale: 'en',
+      optionsResolver: resolver,
+      compactRoutes,
+    })
+  }
+
+  it('passes stubs through unlocalized and keeps them out of route resources', () => {
+    const resolver = createPureOptionsResolver(new NuxtPageAnalyzeContext({}), 'en', 'config', stubFile)
+    const collector = createRouteResourcesCollector()
+    const result = localizeRoutes(
+      [
+        { path: '/about', name: 'about', file: '/pages/about.vue' },
+        { _sync: true, path: '/old-path', file: `${stubFile}.js` },
+      ],
+      { ...makeConfig(resolver), onLocalize: collector.collect },
+    )
+
+    const stubs = result.filter(r => r.path.includes('old-path'))
+    expect(stubs).toHaveLength(1)
+    expect(stubs[0]!.path).toBe('/old-path')
+    expect(result.find(r => r.path === (compactRoutes ? '/:locale(fr)/about' : '/fr/about'))).toBeDefined()
+
+    const resources = collector.toResources()
+    expect(resources.localizedPaths).not.toContain('/old-path')
+    expect(resources.disabledPaths).not.toContain('/old-path')
+  })
+
+  it('does not skip a project page named component-stub', () => {
+    const resolver = createPureOptionsResolver(new NuxtPageAnalyzeContext({}), 'en', 'config', stubFile)
+    const result = localizeRoutes(
+      [{ path: '/runtime/component-stub', name: 'stub-page', file: '/pages/runtime/component-stub.vue' }],
+      makeConfig(resolver),
+    )
+    expect(result.find(r => r.name === 'stub-page___en')).toBeDefined()
+    expect(
+      result.find(r => r.path === (compactRoutes ? '/:locale(fr)/runtime/component-stub' : '/fr/runtime/component-stub')),
+    ).toBeDefined()
   })
 })
 
