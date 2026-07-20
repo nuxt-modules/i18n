@@ -58,7 +58,7 @@
     "dev:build": "nuxt build playground",
     "dev:generate": "nuxt generate playground",
     "dev:preview": "nuxt preview playground",
-    "docs:generate": "pnpm run --filter docs generate",
+    "docs:generate": "nuxt-module-build prepare && pnpm run --filter docs generate",
     "docs:dev": "pnpm run --filter docs dev",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --cache --fix",
