@@ -8,11 +8,8 @@ import type { ComposableContext } from '../composable-context'
 import type { I18nRouteMeta } from '../types'
 import { localeRoute, switchLocalePath } from './routing'
 
-// unhead v3 narrows head input to per-property unions which the loose public `I18nHeadMetaInfo`
-// cannot satisfy, patch through a single boundary cast compatible with both v2 and v3
-type HeadEntryInput = Parameters<NonNullable<ComposableContext['head']>['patch']>[0]
 function patchHead(head: ComposableContext['head'] | undefined, input: I18nHeadMetaInfo): void {
-  head?.patch(input as unknown as HeadEntryInput)
+  head?.patch(input)
 }
 
 function createHeadContext(

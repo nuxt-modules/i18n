@@ -3,21 +3,16 @@ import { hasProtocol, joinURL, withQuery } from 'ufo'
 import type { QueryValue } from 'ufo'
 import type { RouteLocationNormalizedLoadedGeneric, RouteLocationResolvedGeneric } from 'vue-router'
 import type { HeadLocale } from './types'
-
-/**
- * Meta attributes for head properties.
- * @internal
- */
-export type MetaAttrs = Record<string, string>
+import type { AlternateLanguageLink, CanonicalLink, HtmlAttributes, PropertyMeta, ResolvableLink, ResolvableMeta } from 'unhead/types'
 
 /**
  * I18n header meta info.
  * @internal
  */
 export interface I18nHeadMetaInfo {
-  htmlAttrs: MetaAttrs
-  meta: MetaAttrs[]
-  link: MetaAttrs[]
+  htmlAttrs: HtmlAttributes
+  meta: ResolvableMeta[]
+  link: ResolvableLink[]
 }
 
 type SeoAttributesOptions = {
@@ -45,7 +40,7 @@ export type HeadContext = {
   strictCanonicals: boolean
   canonicalQueries: string[]
   getCurrentLanguage: () => string | undefined
-  getCurrentDirection: () => string
+  getCurrentDirection: () => 'ltr' | 'rtl' | 'auto'
   getRouteBaseName: (route: RouteLocationResolvedGeneric | RouteLocationNormalizedLoadedGeneric) => string | undefined
   getLocaleRoute: (route: RouteLocationResolvedGeneric) => RouteLocationResolvedGeneric | undefined
   getCurrentRoute: () => RouteLocationNormalizedLoadedGeneric
@@ -119,7 +114,7 @@ function createLocaleMap(locales: HeadLocale[]) {
 function getHreflangLinks(options: HeadContext) {
   if (!options.hreflangLinks) { return [] }
 
-  const links: MetaAttrs[] = []
+  const links: AlternateLanguageLink[] = []
   const localeMap = createLocaleMap(options.locales)
   for (const [language, locale] of localeMap.entries()) {
     const link = getHreflangLink(language, locale, options)
@@ -143,7 +138,7 @@ function getHreflangLink(
   locale: HeadLocale,
   options: HeadContext,
   routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
-): MetaAttrs | undefined {
+): AlternateLanguageLink | undefined {
   const localePath = options.getLocalizedRoute(locale.code, routeWithoutQuery)
   if (!localePath) { return undefined }
 
@@ -165,7 +160,7 @@ function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()
   return withQuery(joinURL(options.baseUrl, currentRoute.path), getCanonicalQueryParams(options))
 }
 
-function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
+function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): CanonicalLink[] {
   if (!href) { return [] }
   return [options.strictSeo ? { rel: 'canonical', href } : { [options.key]: 'i18n-can', rel: 'canonical', href }]
 }
@@ -187,7 +182,7 @@ function getCanonicalQueryParams(options: HeadContext, route = options.getCurren
   return params
 }
 
-function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAttrs[] {
+function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): PropertyMeta[] {
   if (!href) { return [] }
   return [
     options.strictSeo
@@ -196,7 +191,7 @@ function getOgUrl(options: HeadContext, href = getCanonicalUrl(options)): MetaAt
   ]
 }
 
-function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): MetaAttrs[] {
+function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getCurrentLanguage()): PropertyMeta[] {
   if (!currentLanguage) { return [] }
   return [
     options.strictSeo
@@ -209,7 +204,7 @@ function getCurrentOgLocale(options: HeadContext, currentLanguage = options.getC
  * The hreflang list contains bare-language catchall entries which are not valid `og:locale` values,
  * limit to the locales' own `language` tags while keeping the availability filtering of the links.
  */
-function getAlternateOgLanguages(options: HeadContext, alternateLinks: MetaAttrs[]): string[] {
+function getAlternateOgLanguages(options: HeadContext, alternateLinks: AlternateLanguageLink[]): string[] {
   const languages = options.locales.map(x => x.language || x.code)
   if (!options.strictSeo) {
     return languages
@@ -222,7 +217,7 @@ function getAlternateOgLocales(
   options: HeadContext,
   languages: string[],
   currentLanguage = options.getCurrentLanguage(),
-): MetaAttrs[] {
+): PropertyMeta[] {
   const alternateLocales = languages.filter(locale => locale && locale !== currentLanguage)
 
   return alternateLocales.map(locale =>

@@ -17,7 +17,7 @@ declare let __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: string
 declare let __I18N_STRATEGY__: 'no_prefix' | 'prefix' | 'prefix_except_default' | 'prefix_and_default'
 declare let __ROUTE_NAME_SEPARATOR__: string
 declare let __ROUTE_NAME_DEFAULT_SUFFIX__: string
-declare let __DEFAULT_DIRECTION__: string
+declare let __DEFAULT_DIRECTION__: 'ltr' | 'rtl' | 'auto'
 declare let __I18N_CACHE__: boolean
 declare let __I18N_CACHE_LIFETIME__: number
 declare let __I18N_HTTP_CACHE_DURATION__: number

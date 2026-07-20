@@ -93,6 +93,7 @@
     "oxc-walker": "^0.7.0",
     "pathe": "^2.0.3",
     "ufo": "^1.6.1",
+    "unhead": "^3.2.1",
     "unplugin": "^3.0.0",
     "unrouting": "^0.1.5",
     "unstorage": "^1.17.5",
