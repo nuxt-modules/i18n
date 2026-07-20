@@ -2,6 +2,7 @@ import type { I18nOptions, Locale } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { RouteMapGeneric, RouteMapI18n } from 'vue-router'
 import type { STRATEGIES } from './constants'
+import type { HtmlAttributes, ResolvableLink, ResolvableMeta } from 'unhead/types'
 
 export type {
   STRATEGY_NO_PREFIX,
@@ -587,6 +588,7 @@ export interface I18nHeadOptions {
 /**
  * Meta attributes for head properties.
  * @public
+ * @deprecated incompatible with unhead v3 - use `ResolvableMeta`, `ResolvableLink` and `HtmlAttributes` from `unhead/types` instead.
  */
 export type MetaAttrs = Record<string, string>
 
@@ -596,11 +598,11 @@ export type MetaAttrs = Record<string, string>
  */
 export interface I18nHeadMetaInfo {
   /** HTML attributes for the HTML element */
-  htmlAttrs: MetaAttrs
+  htmlAttrs: HtmlAttributes
   /** Meta tags */
-  meta: MetaAttrs[]
+  meta: ResolvableMeta[]
   /** Link tags */
-  link: MetaAttrs[]
+  link: ResolvableLink[]
 }
 
 /**
