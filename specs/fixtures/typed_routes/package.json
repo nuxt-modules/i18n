@@ -12,6 +12,6 @@
   "devDependencies": {
     "@nuxtjs/i18n": "latest",
     "nuxt": "latest",
-    "vue-tsc": "^3.1.9"
+    "vue-tsc": "^3.3.7"
   }
 }
