@@ -1,6 +1,6 @@
 import { defu } from 'defu'
 import { readFileSync } from 'node:fs'
-import { type BinaryLike, createHash } from 'node:crypto'
+import { createHash } from 'node:crypto'
 import { useLogger } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
@@ -194,7 +194,7 @@ export const mergeConfigLocales = (configs: LocaleConfig[]) => {
   return Array.from(merged.values())
 }
 
-function getHash(text: BinaryLike): string {
+function getHash(text: string): string {
   return createHash('sha256').update(text).digest('hex').substring(0, 8)
 }
 
