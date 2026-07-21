@@ -3,16 +3,16 @@ import { hasProtocol, joinURL, withQuery } from 'ufo'
 import type { QueryValue } from 'ufo'
 import type { RouteLocationNormalizedLoadedGeneric, RouteLocationResolvedGeneric } from 'vue-router'
 import type { HeadLocale } from './types'
-import type { AlternateLanguageLink, CanonicalLink, HtmlAttributes, PropertyMeta, ResolvableLink, ResolvableMeta } from 'unhead/types'
+import type { AlternateLanguageLink, CanonicalLink, HtmlAttributes, PropertyMeta } from 'unhead/types'
 
 /**
  * I18n header meta info.
  * @internal
  */
 export interface I18nHeadMetaInfo {
-  htmlAttrs: HtmlAttributes
-  meta: ResolvableMeta[]
-  link: ResolvableLink[]
+  htmlAttrs: Pick<HtmlAttributes, 'lang' | 'dir'>
+  meta: PropertyMeta[]
+  link: (AlternateLanguageLink | CanonicalLink)[]
 }
 
 type SeoAttributesOptions = {
