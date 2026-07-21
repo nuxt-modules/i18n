@@ -82,6 +82,22 @@ describe('normalizeRouteMeta', () => {
     expect(fr?.path).toBe('/fr/meta-wins')
   })
 
+  test('localizes routes added by hooks/modules with `i18n` route meta', () => {
+    const pages: NuxtPage[] = [
+      {
+        name: 'soup',
+        path: '/soup',
+        file: '~/pages/soup.vue',
+        meta: { i18n: { paths: { fr: '/soupe' } } },
+        children: [],
+      },
+    ]
+
+    const localized = localize(pages, getNuxtOptions({}))
+    expect(localized.find(x => x.name === 'soup___en')?.path).toBe('/soup')
+    expect(localized.find(x => x.name === 'soup___fr')?.path).toBe('/fr/soupe')
+  })
+
   test('meta `i18n: false` disables localization in `config` mode (#3951)', () => {
     const pages: NuxtPage[] = [
       {
