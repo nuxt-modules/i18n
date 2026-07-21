@@ -2,7 +2,7 @@ import type { I18nOptions, Locale } from 'vue-i18n'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { RouteMapGeneric, RouteMapI18n } from 'vue-router'
 import type { STRATEGIES } from './constants'
-import type { HtmlAttributes, ResolvableLink, ResolvableMeta } from 'unhead/types'
+import type { AlternateLanguageLink, CanonicalLink, HtmlAttributes, PropertyMeta } from 'unhead/types'
 
 export type {
   STRATEGY_NO_PREFIX,
@@ -598,11 +598,11 @@ export type MetaAttrs = Record<string, string>
  */
 export interface I18nHeadMetaInfo {
   /** HTML attributes for the HTML element */
-  htmlAttrs: HtmlAttributes
+  htmlAttrs: Pick<HtmlAttributes, 'lang' | 'dir'>
   /** Meta tags */
-  meta: ResolvableMeta[]
+  meta: PropertyMeta[]
   /** Link tags */
-  link: ResolvableLink[]
+  link: (AlternateLanguageLink | CanonicalLink)[]
 }
 
 /**
