@@ -34,7 +34,9 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   /**
    * shared plugins (vite/webpack/rspack)
    */
-  const localePaths = getLocaleFilePaths(ctx.localeInfo)
+  // exclude dynamic locale files - optimization is a no-op for these, and since vite 8 matching them
+  // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049)
+  const localePaths = getLocaleFilePaths(ctx.localeInfo.map(x => ({ ...x, meta: x.meta.filter(m => m.type !== 'dynamic') })))
   ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.cache !== false)
 
   const vueI18nPluginOptions: PluginOptions = {
@@ -47,7 +49,6 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
   addBuildPlugin({
     vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
-
     webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions),
   })
   addBuildPlugin(TransformMacroPlugin(pluginOptions))

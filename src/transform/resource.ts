@@ -1,6 +1,6 @@
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
-import { NUXT_I18N_VIRTUAL_PREFIX, VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
+import { VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
 import { dirname, resolve } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
@@ -35,8 +35,14 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
 
       // resolve virtual hash to file path
       resolveId(id) {
-        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX) || !id.startsWith(NUXT_I18N_VIRTUAL_PREFIX)) {
+        if (!id || id.startsWith(VIRTUAL_PREFIX_HEX)) {
           return
+        }
+
+        // claim i18n file paths so other plugins (e.g. `unplugin-vue-i18n` since vite 8) cannot
+        // resolve these to virtual modules loaded from disk, which would skip our transforms (#4049)
+        if (i18nPathSet.has(id)) {
+          return id
         }
 
         if (i18nFileHashSet.has(id)) {
