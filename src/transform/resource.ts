@@ -1,6 +1,6 @@
 import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
-import { NUXT_I18N_VIRTUAL_PREFIX, VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
+import { VIRTUAL_PREFIX_HEX, asI18nVirtual } from './utils'
 import { dirname, resolve } from 'pathe'
 import { findStaticImports } from 'mlly'
 import { resolvePath, tryUseNuxt } from '@nuxt/kit'
