@@ -14,7 +14,7 @@ import { relative } from 'pathe'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { computeLocaleHashes, filterLocales, getLocaleFilePaths, normalizeDomainLocale, resolveLocales } from './utils'
+import { computeLocaleHashes, filterLocales, getLocaleFilePaths, normalizeDomainLocale, resolveLocales, validateLocaleCodes } from './utils'
 import { isString } from '@intlify/shared'
 
 export * from './types'
@@ -181,6 +181,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
         normalizeDomainLocale(isString(x) ? { code: x, language: x } : x),
       )
       ctx.localeCodes = ctx.normalizedLocales.map(locale => locale.code)
+      validateLocaleCodes(ctx.localeCodes)
       ctx.localeInfo = resolveLocales(nuxt.options.srcDir, ctx.normalizedLocales, nuxt.vfs)
 
       ctx.vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx)

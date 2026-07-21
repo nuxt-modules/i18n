@@ -1,4 +1,4 @@
-import { filterLocales, resolveLocales } from '../src/utils'
+import { filterLocales, resolveLocales, validateLocaleCodes } from '../src/utils'
 import type { LocaleObject, NuxtI18nOptions } from '../src/types'
 import type { I18nNuxtContext } from '../src/context'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
@@ -59,6 +59,22 @@ describe('filterLocales', () => {
 
     // empty `onlyLocales` means no filtering; the downstream `'fr'` must not be applied
     expect(filterLocales(ctx, nuxt)).toEqual(['en', 'fr', 'nl'])
+  })
+})
+
+describe('validateLocaleCodes', () => {
+  test('accepts path-segment-safe codes', () => {
+    expect(() => validateLocaleCodes(['en', 'de-AT', 'zh-Hans', 'pt_BR', 'kr.v2'])).not.toThrow()
+  })
+
+  test.each(['at/de', 'at\\de', 'en us', 'en?', 'en#x', 'en%20', 'en:us', ''])('throws for %j', code => {
+    expect(() => validateLocaleCodes([code])).toThrowError('[nuxt-i18n] Invalid locale code')
+  })
+
+  test('lists all invalid codes', () => {
+    expect(() => validateLocaleCodes(['en', 'at/de', 'at/en'])).toThrowError(
+      /Invalid locale codes: "at\/de", "at\/en"/,
+    )
   })
 })
 

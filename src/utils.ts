@@ -31,6 +31,19 @@ export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
   return ctx.options.locales.filter(x => include.includes(isString(x) ? x : x.code)) as string[] | LocaleObject[]
 }
 
+// locale codes are used as single URL path segments (route prefixes, messages endpoint), in route names and in cookies (#4036)
+const INVALID_LOCALE_CODE_CHAR_RE = /[/\\?#%:\s]/
+
+export function validateLocaleCodes(codes: string[]) {
+  const invalid = codes.filter(code => !code || INVALID_LOCALE_CODE_CHAR_RE.test(code))
+  if (invalid.length) {
+    throw new Error(
+      `[nuxt-i18n] Invalid locale code${invalid.length > 1 ? 's' : ''}: ${invalid.map(x => JSON.stringify(x)).join(', ')}. `
+      + 'Locale codes are used as URL path segments and must not be empty or contain `/ \\ ? # % :` or whitespace.',
+    )
+  }
+}
+
 /**
  * Normalizes the single-domain fields (`domain`/`domainDefault`) into their multi-domain forms
  * (`domains`/`defaultForDomains`) so runtime domain resolution only handles one shape,
