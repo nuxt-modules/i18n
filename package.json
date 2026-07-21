@@ -1,7 +1,7 @@
 {
   "name": "@nuxtjs/i18n",
   "type": "module",
-  "version": "10.4.1",
+  "version": "10.5.0",
   "packageManager": "pnpm@10.34.5",
   "description": "Internationalization for Nuxt",
   "contributors": [
