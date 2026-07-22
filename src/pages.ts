@@ -1,4 +1,5 @@
 import { addTemplate, updateTemplates } from '@nuxt/kit'
+import { defu } from 'defu'
 import { readFileSync } from 'node:fs'
 import { isString } from '@intlify/shared'
 import { parse as parseSFC } from '@vue/compiler-sfc'
@@ -13,6 +14,7 @@ import { createRoutesContext, resolveOptions } from 'vue-router/unplugin'
 import { transform } from './transform/resource'
 
 import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
+import type { NitroRouteConfig } from 'nitropack/types'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'vue-router/unplugin'
 import type { NuxtI18nOptions } from './types'
 import type { I18nNuxtContext } from './context'
@@ -36,6 +38,8 @@ export class NuxtPageAnalyzeContext {
 type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   redirect?: (Omit<NarrowedNuxtPage, 'name'> & { name?: string }) | string
   children?: NarrowedNuxtPage[]
+  /** inline route rules extracted by nuxt */
+  rules?: NitroRouteConfig
 }
 
 export async function setupPages({ localeCodes, options, normalizedLocales }: I18nNuxtContext, nuxt: Nuxt) {
@@ -78,6 +82,21 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
       for (const route of compactPrerenderRoutes) { routes.add(route) }
     })
   })
+
+  // Consume inline route rules before nuxt's own collection (see `collectRouteRulesFromPages`)
+  const handleRouteRules = !!nuxt.options.experimental.inlineRouteRules && !!options.experimental?.compactRoutes
+  let routeRulesFromPages: Record<string, NitroRouteConfig> = {}
+  let applyRouteRules: (() => Promise<void>) | undefined
+  if (handleRouteRules) {
+    nuxt.hook('nitro:init', (nitro) => {
+      let applied = {} as Record<string, NitroRouteConfig>
+      applyRouteRules = async () => {
+        if (JSON.stringify(applied) === JSON.stringify(routeRulesFromPages)) { return }
+        applied = routeRulesFromPages
+        await nitro.updateConfig({ routeRules: defu(routeRulesFromPages, nitro.options._config.routeRules) })
+      }
+    })
+  }
 
   const projectLayer = nuxt.options._layers[0]
   const typedRouter = await setupExperimentalTypedRoutes(options, nuxt)
@@ -144,6 +163,11 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
       if (options.experimental?.compactRoutes && nuxt.options.nitro.static) {
         compactPrerenderRoutes.push(...collectCompactPrerenderRoutes(localizedPages))
       }
+
+      if (handleRouteRules) {
+        routeRulesFromPages = collectRouteRulesFromPages(localizedPages)
+        await applyRouteRules?.()
+      }
     },
   )
 }
@@ -189,6 +213,46 @@ export function collectCompactPrerenderRoutes(pages: NarrowedNuxtPage[]): string
   }
 
   return out
+}
+
+// Ported from nuxt's `pathToNitroGlob`
+const PATH_TO_NITRO_GLOB_RE = /\/[^:/]*:\w.*$/
+function pathToNitroGlob(path: string): string | null {
+  if (!path) { return null }
+  if (path.indexOf(':') !== path.lastIndexOf(':')) { return null }
+  return path.replace(PATH_TO_NITRO_GLOB_RE, '/**')
+}
+
+/** `/:locale(en|nl)/about` -> `['/en/about', '/nl/about']` */
+function expandCompactPath(path: string): string[] {
+  const match = compactRouteRE.exec(path)
+  if (!match) { return [path] }
+  return match[1]!.split('|').map(locale => '/' + locale + match[2]!)
+}
+
+// Nuxt maps rules on compact `/:locale(...)` paths to an overly broad `/**` rule
+// (https://github.com/nuxt/nuxt/pull/35455), we mirror `globRouteRulesFromPages` here
+// to expand the locale prefix instead, removing the rules before nuxt collects them.
+export function collectRouteRulesFromPages(
+  pages: NarrowedNuxtPage[],
+  rules: Record<string, NitroRouteConfig> = {},
+  prefix = '',
+): Record<string, NitroRouteConfig> {
+  for (const page of pages) {
+    if (page.rules) {
+      if (Object.keys(page.rules).length) {
+        for (const path of expandCompactPath(prefix + page.path)) {
+          const glob = pathToNitroGlob(path)
+          if (glob) { rules[glob] = page.rules }
+        }
+      }
+      delete page.rules
+    }
+    if (page.children?.length) {
+      collectRouteRulesFromPages(page.children, rules, prefix + page.path + '/')
+    }
+  }
+  return rules
 }
 
 /**

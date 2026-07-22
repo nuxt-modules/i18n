@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { createRouteResourcesCollector, localizeRoutes } from '../../src/routing'
 import { localizeSingleRoute, createRouteContext, canCompactRoute } from '../../src/kit/gen'
-import { collectCompactPrerenderRoutes, createPureOptionsResolver, NuxtPageAnalyzeContext } from '../../src/pages'
+import { collectCompactPrerenderRoutes, collectRouteRulesFromPages, createPureOptionsResolver, NuxtPageAnalyzeContext } from '../../src/pages'
 import { createMockOptionsResolver, createTestConfig, getNormalizedLocales } from './utils'
 
 import type { LocalizableRoute, LocalizeRouteParams } from '../../src/kit/gen'
@@ -945,6 +945,83 @@ describe('compact routes', () => {
         ]),
       ])
       expect(out).toEqual(['/en/parent', '/fr/parent', '/en/parent/relative', '/fr/parent/relative'])
+    })
+  })
+
+  // Nuxt maps rules on compact `/:locale(...)` paths to a `/**` rule (nuxt#35455),
+  // `collectRouteRulesFromPages` consumes them first and expands per locale instead.
+  describe('collectRouteRulesFromPages — inline route rules on compact routes', () => {
+    type RulesPage = Parameters<typeof collectRouteRulesFromPages>[0][number]
+    const page = (path: string, rules?: Record<string, unknown>, children?: RulesPage[]) =>
+      ({ path, rules, children } as RulesPage)
+
+    it('expands a compact route to one rule per locale', () => {
+      const pages = [page('/:locale(en|fr)/account', { prerender: true })]
+      expect(collectRouteRulesFromPages(pages)).toEqual({
+        '/en/account': { prerender: true },
+        '/fr/account': { prerender: true },
+      })
+    })
+
+    it('handles the root route — `/:locale(...)` with no rest', () => {
+      const pages = [page('/:locale(en|fr)', { swr: 60 })]
+      expect(collectRouteRulesFromPages(pages)).toEqual({
+        '/en': { swr: 60 },
+        '/fr': { swr: 60 },
+      })
+    })
+
+    it('converts non-compact paths like nuxt does', () => {
+      const pages = [page('/about', { prerender: true }), page('/blog/:slug', { swr: 60 })]
+      expect(collectRouteRulesFromPages(pages)).toEqual({
+        '/about': { prerender: true },
+        '/blog/**': { swr: 60 },
+      })
+    })
+
+    it('converts a dynamic tail after the locale segment to a per-locale glob', () => {
+      // nuxt drops this path entirely (two dynamic params), expansion makes it representable
+      const pages = [page('/:locale(en|fr)/blog/:slug', { swr: 60 })]
+      expect(collectRouteRulesFromPages(pages)).toEqual({
+        '/en/blog/**': { swr: 60 },
+        '/fr/blog/**': { swr: 60 },
+      })
+    })
+
+    it('skips paths with multiple dynamic params after expansion', () => {
+      const pages = [page('/:locale(en|fr)/:foo/:bar', { swr: 60 })]
+      expect(collectRouteRulesFromPages(pages)).toEqual({})
+      expect(pages[0]!.rules).toBeUndefined()
+    })
+
+    it('collects rules from children of a compact parent', () => {
+      const pages = [
+        page('/:locale(en|fr)/parent', undefined, [page('child', { prerender: true })]),
+      ]
+      expect(collectRouteRulesFromPages(pages)).toEqual({
+        '/en/parent/child': { prerender: true },
+        '/fr/parent/child': { prerender: true },
+      })
+    })
+
+    it('removes rules from the pages, including empty rules', () => {
+      const pages = [page('/:locale(en|fr)/account', { prerender: true }), page('/about', {})]
+      collectRouteRulesFromPages(pages)
+      expect(pages[0]!.rules).toBeUndefined()
+      expect(pages[1]!.rules).toBeUndefined()
+    })
+
+    it('collects expanded and plain rules across localized routes', () => {
+      const config = createTestConfig({ locales, strategy: 'prefix_except_default', defaultLocale: 'en', compactRoutes: true })
+      const input: LocalizableRoute[] = [{ path: '/about', name: 'about', rules: { prerender: true } } as LocalizableRoute]
+      const result = localizeRoutes(input, config)
+
+      expect(collectRouteRulesFromPages(result as Parameters<typeof collectRouteRulesFromPages>[0])).toEqual({
+        '/about': { prerender: true },
+        '/fr/about': { prerender: true },
+        '/ja/about': { prerender: true },
+      })
+      expect(result.every(r => (r as { rules?: unknown }).rules === undefined)).toBe(true)
     })
   })
 
