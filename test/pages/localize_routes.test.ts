@@ -353,8 +353,8 @@ describe('localizeRoutes', function () {
       })
 
       expect(localizedRoutes).toEqual(routes)
+      // no manual restore needed - `restoreMocks: true` restores the spy even when an assertion fails
       expect(errorSpy).toHaveBeenCalledOnce()
-      errorSpy.mockRestore()
     })
   })
 
