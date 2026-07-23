@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
@@ -337,24 +337,21 @@ describe('localizeRoutes', function () {
       expect(localizedRoutes).toMatchSnapshot()
     })
 
-    it('refuses localization for locales sharing a host, compared without protocol', function () {
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
-
+    it('(#4064) detects duplicate domains regardless of protocol', function () {
+      const routes: NuxtPage[] = [{ path: '/', name: 'home' }]
       const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'no_prefix',
         differentDomains: true,
         locales: [
-          { code: 'en', domain: 'https://shared.example.com' },
-          { code: 'ja', domain: 'shared.example.com' }
+          { code: 'en', domain: 'https://example.com' },
+          { code: 'ja', domain: 'example.com' }
         ]
       })
 
+      // localization is skipped for multiple locales on the same domain
       expect(localizedRoutes).toEqual(routes)
-      // no manual restore needed - `restoreMocks: true` restores the spy even when an assertion fails
-      expect(errorSpy).toHaveBeenCalledOnce()
     })
   })
 

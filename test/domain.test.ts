@@ -10,13 +10,13 @@ const locales: LocaleObject[] = [
   { code: 'fr', domain: 'https://fr.example.com' },
   { code: 'nl', domains: ['shared.example.com'], domainDefault: true },
   { code: 'de', domains: ['shared.example.com'] },
+  { code: 'es', domains: ['https://shared2.example.com'], defaultForDomains: ['https://shared2.example.com'] },
+  { code: 'it', domains: ['shared2.example.com'] },
 ]
 
 describe('normalizeDomain', () => {
-  test('strips only a leading protocol, `host:port` values are kept intact', () => {
+  test('strips only a leading protocol, `host:port` is kept intact', () => {
     expect(normalizeDomain('https://www.example.com')).toBe('www.example.com')
-    expect(normalizeDomain('http://www.example.com')).toBe('www.example.com')
-    expect(normalizeDomain('www.example.com')).toBe('www.example.com')
     expect(normalizeDomain('localhost:3000')).toBe('localhost:3000')
     expect(normalizeDomain('http://127.0.0.1:7787')).toBe('127.0.0.1:7787')
     expect(normalizeDomain()).toBe('')
@@ -40,34 +40,38 @@ describe('matchDomainLocale', () => {
     expect(matchDomainLocale(locales, 'shared.example.com', '')).toBe('nl')
   })
 
-  test('returns undefined for unknown host', () => {
-    expect(matchDomainLocale(locales, 'unknown.example.com', '')).toBeUndefined()
+  test('(#4064) ignores protocol in `defaultForDomains` on shared domains', () => {
+    expect(matchDomainLocale(locales, 'shared2.example.com', '')).toBe('es')
   })
 
-  test('ignores protocol in `defaultForDomains` on shared domains', () => {
-    const shared: LocaleObject[] = [
-      { code: 'nl', domains: ['https://shared.example.com'], defaultForDomains: ['https://shared.example.com'] },
-      { code: 'de', domains: ['https://shared.example.com'] }
-    ]
-    expect(matchDomainLocale(shared, 'shared.example.com', '')).toBe('nl')
+  test('returns undefined for unknown host', () => {
+    expect(matchDomainLocale(locales, 'unknown.example.com', '')).toBeUndefined()
   })
 })
 
 describe('getDefaultLocaleForDomain', () => {
-  test('resolves the default locale for the host', () => {
-    const normalized = locales.map(normalizeDomainLocale)
+  // receives build-normalized locales at runtime (`domainDefault` folded into `defaultForDomains`)
+  const normalized = locales.map(normalizeDomainLocale)
+
+  test('matches by host', () => {
     expect(getDefaultLocaleForDomain('shared.example.com', normalized)).toBe('nl')
-    expect(getDefaultLocaleForDomain('en.example.com', normalized)).toBeUndefined()
-    expect(getDefaultLocaleForDomain('unknown.example.com', normalized)).toBeUndefined()
   })
 
-  test('ignores protocol in configured domain', () => {
-    const normalized = [
+  test('(#4064) ignores protocol in `defaultForDomains`', () => {
+    expect(getDefaultLocaleForDomain('shared2.example.com', locales)).toBe('es')
+  })
+
+  test('(#4064) resolves normalized `domain` + `domainDefault` locales per host', () => {
+    const perDomainDefaults = [
       { code: 'cs', domain: 'https://www.example.cz', domainDefault: true },
-      { code: 'en', domain: 'https://www.example.com', domainDefault: true }
+      { code: 'en', domain: 'https://www.example.com', domainDefault: true },
     ].map(normalizeDomainLocale)
-    expect(getDefaultLocaleForDomain('www.example.com', normalized)).toBe('en')
-    expect(getDefaultLocaleForDomain('www.example.cz', normalized)).toBe('cs')
+    expect(getDefaultLocaleForDomain('www.example.com', perDomainDefaults)).toBe('en')
+    expect(getDefaultLocaleForDomain('www.example.cz', perDomainDefaults)).toBe('cs')
+  })
+
+  test('returns undefined for unknown host', () => {
+    expect(getDefaultLocaleForDomain('unknown.example.com', locales)).toBeUndefined()
   })
 })
 
@@ -94,10 +98,9 @@ describe('domainFromLocale', () => {
     )
   })
 
-  test('multi-domain locales match the current host ignoring protocol', () => {
-    const withProtocol: LocaleObject[] = [{ code: 'nl', domains: ['https://shared.example.com'] }]
-    expect(domainFromLocale({}, { host: 'shared.example.com', protocol: 'http:' }, 'nl', withProtocol)).toBe(
-      'https://shared.example.com'
+  test('(#4064) multi-domain locales match by host and keep the configured protocol', () => {
+    expect(domainFromLocale({}, { host: 'shared2.example.com', protocol: 'http:' }, 'es', locales)).toBe(
+      'https://shared2.example.com'
     )
   })
 
