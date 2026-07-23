@@ -26,6 +26,7 @@ type LocaleLoaderData = {
   load: string
   loadServer: string
   relative: string
+  virtualId: string
   cache: boolean
 }
 
@@ -50,6 +51,7 @@ export function generateLoaderOptions(
         importMapper.set(meta.path, {
           key,
           relative: relative(nuxt.options.buildDir, meta.path),
+          virtualId: asI18nVirtual(meta.hash),
           cache: meta.cache ?? true,
           load: genDynamicImport(asI18nVirtual(meta.hash), { comment: `webpackChunkName: ${key}` }),
           loadServer: `() => Promise.resolve(${identifier})`,
@@ -73,6 +75,7 @@ export function generateLoaderOptions(
       importer: genDynamicImport(asI18nVirtual(config.hash), { comment: `webpackChunkName: ${key}` }),
       importerServer: `() => Promise.resolve(${identifier})`,
       relative: relative(nuxt.options.buildDir, config.path),
+      virtualId: asI18nVirtual(config.hash),
     })
   }
 
