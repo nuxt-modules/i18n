@@ -4,8 +4,7 @@ import { resolveLocales, resolveRelativeLocales, resolveVueI18nConfigInfo } from
 import { vi, beforeEach, afterEach, test, expect } from 'vitest'
 import { parse } from 'pathe'
 
-import type { FileMeta, LocaleInfo, LocaleObject, NuxtI18nOptions } from '../src/types'
-import type { Nuxt } from '@nuxt/schema'
+import type { FileMeta, LocaleObject, NuxtI18nOptions } from '../src/types'
 
 vi.mock('node:fs')
 
@@ -60,24 +59,6 @@ const NUXT_I18N_VUE_I18N_CONFIG = {
   path: '/path/to/i18n.config.ts'
 } as Required<FileMeta>
 
-const makeNuxtOptions = (localeInfo: LocaleInfo[]) => {
-  return {
-    options: {
-      rootDir: '/test',
-      srcDir: '/test',
-      buildDir: '/test/.nuxt',
-      _layers: [
-        {
-          config: {
-            i18n: {
-              locales: localeInfo
-            }
-          }
-        }
-      ]
-    }
-  } as unknown as Nuxt
-}
 
 test('basic', async () => {
   const locales = getMockLocales()
@@ -89,8 +70,7 @@ test('basic', async () => {
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
       options: { ...NUXT_I18N_OPTIONS }
-    },
-    makeNuxtOptions(localeInfo)
+    }
   )
 
   expect(code).toMatchSnapshot()
@@ -106,8 +86,7 @@ test('lazy', async () => {
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
       options: { ...NUXT_I18N_OPTIONS }
-    },
-    makeNuxtOptions(localeInfo)
+    }
   )
 
   expect(code).toMatchSnapshot()
@@ -139,8 +118,7 @@ test('multiple files', async () => {
       localeInfo,
       options: { ...NUXT_I18N_OPTIONS },
       normalizedLocales: getNormalizedLocales(locales)
-    },
-    makeNuxtOptions(localeInfo)
+    }
   )
 
   expect(code).toMatchSnapshot()
@@ -175,8 +153,7 @@ test('files with cache configuration', async () => {
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
       options: { ...NUXT_I18N_OPTIONS }
-    },
-    makeNuxtOptions(localeInfo)
+    }
   )
 
   expect(code).toMatchSnapshot()
@@ -206,8 +183,7 @@ test('locale file in nested', async () => {
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
       options: { ...NUXT_I18N_OPTIONS }
-    },
-    { ...makeNuxtOptions(localeInfo), options: { ...makeNuxtOptions(localeInfo).options, rootDir: '/test' } }
+    }
   )
 
   expect(code).toMatchSnapshot()
@@ -241,8 +217,7 @@ test('vueI18n option', async () => {
       options: {
         vueI18n: 'vue-i18n.config.ts'
       } as Required<NuxtI18nOptions>
-    },
-    makeNuxtOptions(localeInfo)
+    }
   )
 
   expect(code).toMatchSnapshot()

@@ -131,7 +131,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     addTemplate({
       filename: 'i18n-options.mjs',
-      getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt)),
+      getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx)),
     })
 
     /**

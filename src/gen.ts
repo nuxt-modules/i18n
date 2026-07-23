@@ -25,14 +25,12 @@ type LocaleLoaderData = {
   key: string
   load: string
   loadServer: string
-  relative: string
   virtualId: string
   cache: boolean
 }
 
 export function generateLoaderOptions(
   ctx: Pick<I18nNuxtContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales'>,
-  nuxt: Nuxt,
 ) {
   /**
    * Prepare locale file imports
@@ -46,14 +44,14 @@ export function generateLoaderOptions(
       if (!importMapper.has(meta.path)) {
         const identifier = `locale_${genSafeVariableName(basename(meta.path))}_${meta.hash}`
         const key = genString(identifier)
+        const virtualId = asI18nVirtual(meta.hash)
 
-        importStatements.add(genImport(asI18nVirtual(meta.hash), identifier))
+        importStatements.add(genImport(virtualId, identifier))
         importMapper.set(meta.path, {
           key,
-          relative: relative(nuxt.options.buildDir, meta.path),
-          virtualId: asI18nVirtual(meta.hash),
+          virtualId,
           cache: meta.cache ?? true,
-          load: genDynamicImport(asI18nVirtual(meta.hash), { comment: `webpackChunkName: ${key}` }),
+          load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
           loadServer: `() => Promise.resolve(${identifier})`,
         })
       }
@@ -69,13 +67,13 @@ export function generateLoaderOptions(
     const config = ctx.vueI18nConfigPaths[i]!
     const identifier = `config_${genSafeVariableName(basename(config.path))}_${config.hash}`
     const key = genString(identifier)
+    const virtualId = asI18nVirtual(config.hash)
 
-    importStatements.add(genImport(asI18nVirtual(config.hash), identifier))
+    importStatements.add(genImport(virtualId, identifier))
     vueI18nConfigs.push({
-      importer: genDynamicImport(asI18nVirtual(config.hash), { comment: `webpackChunkName: ${key}` }),
+      importer: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
       importerServer: `() => Promise.resolve(${identifier})`,
-      relative: relative(nuxt.options.buildDir, config.path),
-      virtualId: asI18nVirtual(config.hash),
+      virtualId,
     })
   }
 
