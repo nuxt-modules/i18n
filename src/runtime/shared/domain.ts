@@ -5,8 +5,9 @@ import { toArray } from './utils'
 import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
 
 /**
- * Strips the protocol from a configured domain so it can be compared to a request host,
- * `ufo` helpers are unsuitable here as they treat the `host:port` shape as a protocol.
+ * Configured domains may include a protocol (used when generating URLs), comparisons
+ * against the request host use the host part only. `ufo` helpers are unsuitable here
+ * as they treat the `host:port` shape as a protocol.
  */
 export const normalizeDomain = (domain: string = '') => domain.replace(/^https?:\/\//, '')
 
@@ -30,7 +31,7 @@ export function matchDomainLocale(locales: LocaleObject[], host: string, pathLoc
     // match by current path locale
     matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
-    || matches.find(l => l.defaultForDomains?.some(x => normalizeDomain(x) === host) ?? l.domainDefault)?.code
+    || matches.find(l => l.defaultForDomains?.some(domain => normalizeDomain(domain) === host) ?? l.domainDefault)?.code
   )
 }
 
@@ -42,8 +43,7 @@ export function domainFromLocale(
 ): string | undefined {
   const lang = locales.find(x => x.code === locale)
   // lookup the `differentDomain` origin associated with given locale.
-  const domain
-    = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find(v => normalizeDomain(v) === url.host)
+  const domain = domainLocales?.[locale]?.domain || lang?.domain || lang?.domains?.find(v => normalizeDomain(v) === url.host)
 
   if (!domain) {
     import.meta.dev && console.warn('[nuxt-i18n] Could not find domain name for locale ' + locale)
