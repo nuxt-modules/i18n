@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
@@ -335,6 +335,26 @@ describe('localizeRoutes', function () {
       })
 
       expect(localizedRoutes).toMatchSnapshot()
+    })
+
+    it('refuses localization for locales sharing a host, compared without protocol', function () {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'no_prefix',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'https://shared.example.com' },
+          { code: 'ja', domain: 'shared.example.com' }
+        ]
+      })
+
+      expect(localizedRoutes).toEqual(routes)
+      expect(errorSpy).toHaveBeenCalledOnce()
+      errorSpy.mockRestore()
     })
   })
 
