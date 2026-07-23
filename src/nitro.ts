@@ -18,7 +18,7 @@ import { generateTemplateNuxtI18nOptions } from './template'
 export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
-    getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx, nuxt), true),
+    getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx), true),
   })
 
   addServerTemplate({
