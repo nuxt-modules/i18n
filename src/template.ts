@@ -1,7 +1,7 @@
 import { useNuxt } from '@nuxt/kit'
 import type { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
-import type { I18nNuxtContext } from './context'
+import type { ResolvedI18nContext } from './context'
 
 type TemplateNuxtI18nOptions = ReturnType<typeof generateLoaderOptions>
 
@@ -59,11 +59,11 @@ function genVueI18nConfigHMR(configs: TemplateNuxtI18nOptions['vueI18nConfigs'])
 }
 
 export function generateTemplateNuxtI18nOptions(
-  ctx: I18nNuxtContext,
-  opts: TemplateNuxtI18nOptions,
+  ctx: ResolvedI18nContext,
   server: boolean = false,
   nuxt = useNuxt(),
 ): string {
+  const opts = ctx.loaderOptions
   const codeHMR
     = nuxt.options.dev
       && ctx.options.hmr

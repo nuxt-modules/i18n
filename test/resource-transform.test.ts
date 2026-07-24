@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { ResourcePlugin } from '../src/transform/resource'
 
-import type { I18nNuxtContext } from '../src/context'
+import type { ResolvedI18nContext } from '../src/context'
 
 function createPlugin(paths: string[]) {
   const ctx = {
-    localeInfo: [{ meta: paths.map(path => ({ path, hash: path })) }],
+    localeFileMetas: paths.map(path => ({ path, hash: path })),
     vueI18nConfigPaths: []
-  } as unknown as I18nNuxtContext
+  } as unknown as ResolvedI18nContext
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return ResourcePlugin({ sourcemap: false }, ctx).raw({}, { framework: 'vite' } as any) as any
 }
