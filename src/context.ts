@@ -88,7 +88,10 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     localeHashes: computeLocaleHashes(localeInfo, vueI18nConfigPaths),
     fullStatic: localeFileMetas.every(meta => meta.type === 'static' || meta.cache !== false),
   })
-  resolved.loaderOptions = generateLoaderOptions(resolved)
+  resolved.loaderOptions = generateLoaderOptions(
+    resolved,
+    !!ctx.options.experimental.optimizeMessageBundling && !nuxt.options.dev,
+  )
 
   return resolved
 }

@@ -1,6 +1,7 @@
 import { assign, isString } from '@intlify/shared'
 import { genDynamicImport, genImport, genSafeVariableName, genString } from 'knitwork'
 import { basename, join, relative, resolve } from 'pathe'
+import { STATIC_RESOURCE_RE } from './transform/json-parse'
 import { asI18nVirtual } from './transform/utils'
 import { normalizeDomainLocale } from './utils'
 
@@ -33,6 +34,7 @@ type LocaleLoaderData = {
 
 export function generateLoaderOptions(
   ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales'>,
+  serverAssetLoaders = false,
 ) {
   /**
    * Prepare locale file imports
@@ -48,13 +50,20 @@ export function generateLoaderOptions(
         const key = genString(identifier)
         const virtualId = asI18nVirtual(meta.hash)
 
-        importStatements.add(genImport(virtualId, identifier))
+        // static resources ship as nitro server assets, read lazily instead of imported eagerly -
+        // the message data stays out of the server bundle (see `setupNitro`)
+        const asServerAsset = serverAssetLoaders && STATIC_RESOURCE_RE.test(meta.path)
+        if (!asServerAsset) {
+          importStatements.add(genImport(virtualId, identifier))
+        }
         importMapper.set(meta.path, {
           key,
           virtualId,
           cache: meta.cache ?? true,
           load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
-          loadServer: `() => Promise.resolve(${identifier})`,
+          loadServer: asServerAsset
+            ? `() => useStorage('assets/i18n').getItem(${genString(`${meta.hash}.json`)})`
+            : `() => Promise.resolve(${identifier})`,
         })
       }
       localeLoaders[locale.code]!.push(importMapper.get(meta.path)!)
@@ -84,7 +93,7 @@ export function generateLoaderOptions(
    */
   const normalizedLocales = ctx.normalizedLocales.map(x => stripLocaleFiles(x))
 
-  return { localeLoaders, vueI18nConfigs, normalizedLocales, importStatements: Array.from(importStatements) }
+  return { localeLoaders, vueI18nConfigs, normalizedLocales, importStatements: Array.from(importStatements), serverAssetLoaders }
 }
 
 /**

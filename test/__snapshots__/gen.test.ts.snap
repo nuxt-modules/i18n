@@ -48,6 +48,7 @@ exports[`basic 1`] = `
       "code": "fr",
     },
   ],
+  "serverAssetLoaders": false,
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
@@ -139,6 +140,7 @@ exports[`files with cache configuration 1`] = `
       "code": "es-AR",
     },
   ],
+  "serverAssetLoaders": false,
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
@@ -197,6 +199,7 @@ exports[`lazy 1`] = `
       "code": "fr",
     },
   ],
+  "serverAssetLoaders": false,
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
@@ -255,6 +258,7 @@ exports[`locale file in nested 1`] = `
       "code": "fr",
     },
   ],
+  "serverAssetLoaders": false,
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
@@ -346,6 +350,7 @@ exports[`multiple files 1`] = `
       "code": "es-AR",
     },
   ],
+  "serverAssetLoaders": false,
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",
@@ -404,6 +409,7 @@ exports[`vueI18n option 1`] = `
       "code": "fr",
     },
   ],
+  "serverAssetLoaders": false,
   "vueI18nConfigs": [
     {
       "importer": "() => import("#nuxt-i18n/c3216fe6" /* webpackChunkName: "config_to_c3216fe6" */)",

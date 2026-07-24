@@ -45,6 +45,15 @@ function validateMessages(value: unknown, options: { strictMessage: boolean, esc
  * skipping bundler AST/sourcemap work over message data (precompiled message ASTs are ~3x raw size).
  * Must resolve before `ResourcePlugin`: both claim the `#nuxt-i18n/<hash>` ids at `enforce: 'pre'`.
  */
+/** parse, validate and minify a static locale resource */
+export function readStaticResource(ctx: ResolvedI18nContext, path: string): string {
+  const messages = validateMessages(parseResource(path), {
+    strictMessage: ctx.options.compilation.strictMessage ?? true,
+    escapeHtml: !!ctx.options.compilation.escapeHtml,
+  }, path)
+  return JSON.stringify(messages)
+}
+
 export const JsonParseMessagesPlugin = (ctx: ResolvedI18nContext) =>
   createUnplugin(() => {
     const virtualToPath = new Map<string, string>()
@@ -66,11 +75,7 @@ export const JsonParseMessagesPlugin = (ctx: ResolvedI18nContext) =>
       load(id) {
         const path = virtualToPath.get(id.slice(JSON_PARSE_VIRTUAL_PREFIX.length))!
         this.addWatchFile(path)
-        const messages = validateMessages(parseResource(path), {
-          strictMessage: ctx.options.compilation.strictMessage ?? true,
-          escapeHtml: !!ctx.options.compilation.escapeHtml,
-        }, path)
-        const raw = JSON.stringify(messages)
+        const raw = readStaticResource(ctx, path)
         return {
           code: `export default /* @__PURE__ */ JSON.parse(${JSON.stringify(raw)})`,
           map: { version: 3, sources: [], names: [], mappings: '' },
