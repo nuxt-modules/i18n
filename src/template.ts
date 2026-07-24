@@ -75,9 +75,18 @@ export function generateTemplateNuxtI18nOptions(
         '}',
       ].join('\n\n')
 
+  // the production client only imports locale files when `dynamicResourcesSSG` (runtime/context.ts)
+  // resolves to true - in endpoint mode the loaders are unreachable, stubbing them behind
+  // `import.meta.client` (folded per graph) skips compiling and emitting client locale chunks
+  const stripClientLoaders = !server
+    && !nuxt.options.dev
+    && nuxt.options.ssr
+    && (ctx.fullStatic || !nuxt.options.nitro.static)
+  const clientLoad = (load: string) => (stripClientLoaders ? `import.meta.client ? () => Promise.resolve({}) : ${load}` : load)
+
   const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
-    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, loadServer, cache }) => ({ key, load: server ? loadServer : load, cache }))
+    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, loadServer, cache }) => ({ key, load: server ? loadServer : clientLoad(load), cache }))
   }
 
   return `// @ts-nocheck
