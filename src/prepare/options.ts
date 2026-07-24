@@ -4,8 +4,9 @@ import { logger } from '../utils'
 import { checkLayerOptions } from '../layers'
 import { isString } from '@intlify/shared'
 
-export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
-  checkLayerOptions(options, nuxt)
+export function prepareOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
+  const { options, rawOptions } = ctx
+  checkLayerOptions(ctx, nuxt)
 
   /**
    * Check conflicting options
@@ -17,25 +18,22 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
     )
   }
 
-  if (nuxt.options.i18n && nuxt.options.i18n.autoDeclare && nuxt.options.imports.autoImport === false) {
+  if (rawOptions.autoDeclare && nuxt.options.imports.autoImport === false) {
     logger.warn(
       'Disabling `autoImports` in Nuxt is not compatible with `autoDeclare`, either enable `autoImports` or disable `autoDeclare`.',
     )
   }
 
-  const strategy = (nuxt.options.i18n && nuxt.options.i18n.strategy) || options.strategy
-  const defaultLocale = (nuxt.options.i18n && nuxt.options.i18n.defaultLocale) || options.defaultLocale
-  const hasMultiDomainLocales = (nuxt.options.i18n && nuxt.options.i18n.multiDomainLocales) || options.multiDomainLocales
+  const { strategy, defaultLocale, multiDomainLocales } = options
 
-  if (strategy.endsWith('_default') && !defaultLocale && !hasMultiDomainLocales) {
+  if (strategy.endsWith('_default') && !defaultLocale && !multiDomainLocales) {
     logger.warn(
-      `The \`${strategy}\` i18n strategy${(nuxt.options.i18n && nuxt.options.i18n.strategy) == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
+      `The \`${strategy}\` i18n strategy${rawOptions.strategy == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
     )
   }
 
-  if (hasMultiDomainLocales) {
-    const locales = (nuxt.options.i18n && nuxt.options.i18n.locales) || options.locales || []
-    const hasDomainLocales = locales.some(locale => !isString(locale) && locale.domains?.length)
+  if (multiDomainLocales) {
+    const hasDomainLocales = (options.locales || []).some(locale => !isString(locale) && locale.domains?.length)
 
     if (!hasDomainLocales) {
       logger.warn(
@@ -54,7 +52,7 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
     const conflicts: string[] = []
     if (strategy === 'no_prefix') { conflicts.push('`strategy: "no_prefix"`') }
     if (options.differentDomains) { conflicts.push('`differentDomains`') }
-    if (hasMultiDomainLocales) { conflicts.push('`multiDomainLocales`') }
+    if (multiDomainLocales) { conflicts.push('`multiDomainLocales`') }
     if (conflicts.length) {
       logger.warn(
         `\`experimental.compactRoutes\` is enabled but has no effect due to incompatible option(s): ${conflicts.join(', ')}. Routes will fall back to per-locale duplication.`,

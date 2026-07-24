@@ -6,19 +6,18 @@ import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
 import { relative } from 'pathe'
-import { getLocaleFilePaths, logger, toArray } from './utils'
+import { logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { Nuxt } from '@nuxt/schema'
-import type { LocaleInfo } from './types'
-import type { I18nNuxtContext } from './context'
-import { generateLoaderOptions } from './gen'
+import type { FileMeta } from './types'
+import type { ResolvedI18nContext } from './context'
 import { generateTemplateNuxtI18nOptions } from './template'
 
-export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
+export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
-    getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx), true),
+    getContents: () => generateTemplateNuxtI18nOptions(ctx, true),
   })
 
   addServerTemplate({
@@ -58,7 +57,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
   nuxt.hook('nitro:config', async (nitroConfig) => {
     // inline module runtime in Nitro bundle
-    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...getLocaleFilePaths(ctx.localeInfo)] })
+    nitroConfig.externals = defu(nitroConfig.externals ?? {}, { inline: [ctx.resolver.resolve('./runtime'), ...ctx.localeFilePaths] })
     nitroConfig.alias!['#i18n'] = ctx.resolver.resolve('./runtime/composables/index-server')
 
     // type the locale detector file in the server tsconfig, where `#i18n` resolves server composables
@@ -72,7 +71,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
     nitroConfig.rollupConfig!.plugins = (await nitroConfig.rollupConfig!.plugins) || []
     nitroConfig.rollupConfig!.plugins = toArray(nitroConfig.rollupConfig!.plugins)
 
-    const localePathsByType = getResourcePathsGrouped(ctx.localeInfo)
+    const localePathsByType = getResourcePathsGrouped(ctx.localeFileMetas)
     // install server resource transform plugin for yaml / json5 format
     if (localePathsByType.yaml.length > 0) {
       nitroConfig.rollupConfig!.plugins.push(yamlPlugin({ include: localePathsByType.yaml }))
@@ -86,7 +85,7 @@ export async function setupNitro(ctx: I18nNuxtContext, nuxt: Nuxt) {
   })
 }
 
-async function resolveLocaleDetectorPath(ctx: I18nNuxtContext, nuxt: Nuxt) {
+async function resolveLocaleDetectorPath(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   const detector = ctx.i18nLayers.find(l => !!l.i18nDetector)?.i18nDetector
   if (detector == null) { return { path: '', exists: false } }
 
@@ -99,11 +98,9 @@ async function resolveLocaleDetectorPath(ctx: I18nNuxtContext, nuxt: Nuxt) {
   return { path: resolved, exists }
 }
 
-function getResourcePathsGrouped(localeInfo: LocaleInfo[]) {
-  const groups: { yaml: string[], json5: string[] } = { yaml: [], json5: [] }
-  for (const locale of localeInfo) {
-    groups.yaml = groups.yaml.concat(locale.meta.filter(meta => /\.ya?ml$/.test(meta.path)).map(x => x.path))
-    groups.json5 = groups.json5.concat(locale.meta.filter(meta => /\.json5?$/.test(meta.path)).map(x => x.path))
+function getResourcePathsGrouped(fileMetas: FileMeta[]) {
+  return {
+    yaml: fileMetas.filter(meta => /\.ya?ml$/.test(meta.path)).map(x => x.path),
+    json5: fileMetas.filter(meta => /\.json5?$/.test(meta.path)).map(x => x.path),
   }
-  return groups
 }

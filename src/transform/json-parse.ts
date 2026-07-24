@@ -5,7 +5,7 @@ import { parseJSON5, parseYAML } from 'confbox'
 import { createUnplugin } from 'unplugin'
 import { asI18nVirtual } from './utils'
 
-import type { I18nNuxtContext } from '../context'
+import type { ResolvedI18nContext } from '../context'
 
 const JSON_PARSE_VIRTUAL_PREFIX = '\0i18n-json-parse/'
 
@@ -45,10 +45,10 @@ function validateMessages(value: unknown, options: { strictMessage: boolean, esc
  * skipping bundler AST/sourcemap work over message data (precompiled message ASTs are ~3x raw size).
  * Must resolve before `ResourcePlugin`: both claim the `#nuxt-i18n/<hash>` ids at `enforce: 'pre'`.
  */
-export const JsonParseMessagesPlugin = (ctx: I18nNuxtContext) =>
+export const JsonParseMessagesPlugin = (ctx: ResolvedI18nContext) =>
   createUnplugin(() => {
     const virtualToPath = new Map<string, string>()
-    for (const fileMeta of ctx.localeInfo.flatMap(x => x.meta)) {
+    for (const fileMeta of ctx.localeFileMetas) {
       if (STATIC_RESOURCE_RE.test(fileMeta.path)) {
         virtualToPath.set(asI18nVirtual(fileMeta.hash), fileMeta.path)
       }

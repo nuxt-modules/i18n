@@ -1,5 +1,5 @@
 import { findPath, useNuxt } from '@nuxt/kit'
-import { getLayerI18n, getLocaleFiles, logger, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
+import { getLocaleFiles, logger, mergeConfigLocales, resolveVueI18nConfigInfo } from './utils'
 
 import { isAbsolute, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
@@ -7,17 +7,13 @@ import { EXECUTABLE_EXTENSIONS } from './constants'
 
 import type { LocaleConfig } from './utils'
 import type { Nuxt } from '@nuxt/schema'
-import type { FileMeta, LocaleObject, NuxtI18nOptions } from './types'
+import type { FileMeta, LocaleObject } from './types'
 import type { I18nNuxtContext } from './context'
 
-export function checkLayerOptions(_options: NuxtI18nOptions, nuxt: Nuxt) {
+export function checkLayerOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   const project = nuxt.options._layers[0]!
-  const layers = nuxt.options._layers
 
-  for (const layer of layers) {
-    const layerI18n = getLayerI18n(layer)
-    if (layerI18n == null) { continue }
-
+  for (const { config: layer, i18n: layerI18n } of ctx.i18nLayers) {
     const configLocation = project.config.rootDir === layer.config.rootDir ? 'project' : 'extended'
     const layerHint = `In ${configLocation} layer (\`${resolve(project.config.rootDir, layer.configFile)}\`) -`
 

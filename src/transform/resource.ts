@@ -8,7 +8,7 @@ import { transformSync as oxcTransform } from 'oxc-transform'
 import type { TransformOptions, TransformResult } from 'oxc-transform'
 
 import type { BundlerPluginOptions } from './utils'
-import type { I18nNuxtContext } from '../context'
+import type { ResolvedI18nContext } from '../context'
 
 export function transform(id: string, input: string, options?: TransformOptions): TransformResult {
   const oxcOptions = (tryUseNuxt()?.options?.oxc?.transform?.options ?? {}) as TransformOptions
@@ -17,10 +17,10 @@ export function transform(id: string, input: string, options?: TransformOptions)
 
 const DEFINE_I18N_FN_RE = /\b(defineI18nLocale|defineI18nConfig)\s*\((.+)\)/gs
 
-export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext) =>
+export const ResourcePlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nContext) =>
   createUnplugin(() => {
     // TODO: track all i18n files found in configuration
-    const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths]
+    const i18nFileMetas = [...ctx.localeFileMetas, ...ctx.vueI18nConfigPaths]
     const i18nPathSet = new Set<string>()
     const i18nFileHashSet = new Map<string, string>()
     for (const meta of i18nFileMetas) {
