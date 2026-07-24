@@ -74,6 +74,7 @@
   "dependencies": {
     "@intlify/core": "^11.4.6",
     "@intlify/h3": "^0.7.4",
+    "@intlify/message-compiler": "^11.4.7",
     "@intlify/shared": "^11.4.6",
     "@intlify/unplugin-vue-i18n": "^11.2.4",
     "@intlify/utils": "^0.14.1",
@@ -81,6 +82,7 @@
     "@nuxt/kit": "^4.5.0",
     "@rollup/plugin-yaml": "^4.1.2",
     "@vue/compiler-sfc": "^3.5.40",
+    "confbox": "^0.2.4",
     "defu": "^6.1.7",
     "devalue": "^5.8.1",
     "h3": "^1.15.11",

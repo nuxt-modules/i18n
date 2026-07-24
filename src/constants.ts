@@ -30,6 +30,7 @@ export const DEFAULT_OPTIONS = {
     httpCacheDuration: 10,
     compactRoutes: false,
     prerenderMessages: false,
+    optimizeMessageBundling: false,
   },
   bundle: {
     compositionOnly: true,
