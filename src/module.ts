@@ -113,7 +113,9 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * hoist deps and include i18n directories
      */
     nuxt.options.typescript.hoist ||= []
-    nuxt.options.typescript.hoist.push(...deps)
+    nuxt.options.typescript.hoist.push(
+      ...deps.filter(dep => !(dep in nuxt.options.alias)),
+    )
 
     nuxt.options.typescript.tsConfig.include ||= []
     nuxt.options.typescript.tsConfig.include.push(
