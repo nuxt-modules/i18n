@@ -1,11 +1,11 @@
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolveModule, resolvePath } from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
-import { readStaticResource, STATIC_RESOURCE_RE } from './transform/json-parse'
+import { readStaticResource } from './resources'
 import { join, relative } from 'pathe'
 import { logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
@@ -21,9 +21,10 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     getContents: () => generateTemplateNuxtI18nOptions(ctx, true),
   })
 
-  // static resources ship as server assets read lazily at runtime (see `generateLoaderOptions`) -
-  // keeps message data out of the nitro bundle and its build memory
-  if (ctx.loaderOptions.serverAssetLoaders) {
+  // resources with an `assetKey` ship as server assets read lazily at runtime (see
+  // `generateLoaderOptions`) - keeps message data out of the nitro bundle and its build memory
+  const assetFiles = new Map(ctx.localeFileMetas.filter(meta => meta.assetKey).map(meta => [meta.assetKey!, meta.path]))
+  if (assetFiles.size) {
     const assetsDir = join(nuxt.options.buildDir, 'i18n-assets')
     nuxt.hook('nitro:config', (nitroConfig) => {
       nitroConfig.serverAssets ||= []
@@ -31,10 +32,10 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     })
     // written right before the nitro build - the build dir is cleaned after `modules:done`
     nuxt.hook('nitro:build:before', () => {
+      rmSync(assetsDir, { recursive: true, force: true })
       mkdirSync(assetsDir, { recursive: true })
-      for (const meta of ctx.localeFileMetas) {
-        if (!STATIC_RESOURCE_RE.test(meta.path)) { continue }
-        writeFileSync(join(assetsDir, `${meta.hash}.json`), readStaticResource(ctx, meta.path))
+      for (const [assetKey, path] of assetFiles) {
+        writeFileSync(join(assetsDir, assetKey), readStaticResource(ctx, path))
       }
     })
   }

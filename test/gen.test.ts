@@ -69,6 +69,7 @@ test('basic', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
+      runtimeDir: '/runtime',
       options: { ...NUXT_I18N_OPTIONS }
     }
   )
@@ -85,6 +86,7 @@ test('lazy', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
+      runtimeDir: '/runtime',
       options: { ...NUXT_I18N_OPTIONS }
     }
   )
@@ -116,6 +118,7 @@ test('multiple files', async () => {
     {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
+      runtimeDir: '/runtime',
       options: { ...NUXT_I18N_OPTIONS },
       normalizedLocales: getNormalizedLocales(locales)
     }
@@ -152,6 +155,7 @@ test('files with cache configuration', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
+      runtimeDir: '/runtime',
       options: { ...NUXT_I18N_OPTIONS }
     }
   )
@@ -182,6 +186,7 @@ test('locale file in nested', async () => {
       vueI18nConfigPaths: [vueI18nConfig].filter((x): x is Required<FileMeta> => x != null),
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
+      runtimeDir: '/runtime',
       options: { ...NUXT_I18N_OPTIONS }
     }
   )
@@ -214,9 +219,28 @@ test('vueI18n option', async () => {
       vueI18nConfigPaths: vueI18nConfigs as Required<FileMeta>[],
       localeInfo,
       normalizedLocales: getNormalizedLocales(locales),
+      runtimeDir: '/runtime',
       options: {
         vueI18n: 'vue-i18n.config.ts'
       } as Required<NuxtI18nOptions>
+    }
+  )
+
+  expect(code).toMatchSnapshot()
+})
+test('server asset loaders', async () => {
+  const locales = getMockLocales()
+  const localeInfo = await resolveLocales('/test', locales, {})
+  for (const meta of localeInfo.flatMap(x => x.meta)) {
+    meta.assetKey = `${meta.hash}.json`
+  }
+  const code = generateLoaderOptions(
+    {
+      vueI18nConfigPaths: [],
+      localeInfo,
+      normalizedLocales: getNormalizedLocales(locales),
+      runtimeDir: '/runtime',
+      options: { ...NUXT_I18N_OPTIONS }
     }
   )
 

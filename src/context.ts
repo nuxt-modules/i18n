@@ -4,6 +4,7 @@ import { dirname, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateLocaleCodes } from './utils'
+import { STATIC_RESOURCE_RE } from './resources'
 import { generateLoaderOptions } from './gen'
 
 import type { Resolver } from '@nuxt/kit'
@@ -73,6 +74,16 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
   const localeFileMetas = localeInfo.flatMap(x => x.meta)
   const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx)
 
+  // static resources ship as lazily read nitro server assets, keeping message data out of the
+  // server bundles - dev keeps eager imports for HMR and virtual file support
+  if (ctx.options.experimental.optimizeMessageBundling && !nuxt.options.dev) {
+    for (const meta of localeFileMetas) {
+      if (STATIC_RESOURCE_RE.test(meta.path)) {
+        meta.assetKey = `${meta.hash}.json`
+      }
+    }
+  }
+
   const resolved = assign(ctx as ResolvedI18nContext, {
     normalizedLocales,
     localeCodes,
@@ -88,10 +99,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     localeHashes: computeLocaleHashes(localeInfo, vueI18nConfigPaths),
     fullStatic: localeFileMetas.every(meta => meta.type === 'static' || meta.cache !== false),
   })
-  resolved.loaderOptions = generateLoaderOptions(
-    resolved,
-    !!ctx.options.experimental.optimizeMessageBundling && !nuxt.options.dev,
-  )
+  resolved.loaderOptions = generateLoaderOptions(resolved)
 
   return resolved
 }

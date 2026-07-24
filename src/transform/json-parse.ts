@@ -1,59 +1,16 @@
-import { readFileSync } from 'node:fs'
-import { detectHtmlTag } from '@intlify/message-compiler'
-import { escapeHtml, isString } from '@intlify/shared'
-import { parseJSON5, parseYAML } from 'confbox'
 import { createUnplugin } from 'unplugin'
+import { STATIC_RESOURCE_RE, readStaticResource } from '../resources'
 import { asI18nVirtual } from './utils'
 
 import type { ResolvedI18nContext } from '../context'
 
 const JSON_PARSE_VIRTUAL_PREFIX = '\0i18n-json-parse/'
 
-export const STATIC_RESOURCE_RE = /\.(?:json5?|ya?ml)$/
-
-function parseResource(path: string) {
-  const content = readFileSync(path, 'utf8')
-  if (path.endsWith('.json5')) { return parseJSON5(content) }
-  if (/\.ya?ml$/.test(path)) { return parseYAML(content) }
-  return JSON.parse(content)
-}
-
-// mirrors the `@intlify/bundle-utils` compile-time checks skipped by intercepted resources
-function validateMessages(value: unknown, options: { strictMessage: boolean, escapeHtml: boolean }, path: string): unknown {
-  if (isString(value)) {
-    if (detectHtmlTag(value)) {
-      if (options.strictMessage) {
-        throw new Error(`Detected HTML in '${value}' message (${path}). Recommend not using HTML messages to avoid XSS.`)
-      }
-      if (options.escapeHtml) { return escapeHtml(value) }
-    }
-    return value
-  }
-  if (Array.isArray(value)) {
-    return value.map(x => validateMessages(x, options, path))
-  }
-  if (value && typeof value === 'object') {
-    for (const k of Object.keys(value)) {
-      ;(value as Record<string, unknown>)[k] = validateMessages((value as Record<string, unknown>)[k], options, path)
-    }
-  }
-  return value
-}
-
 /**
  * Serves static locale resources as `export default JSON.parse("...")` modules in server builds,
  * skipping bundler AST/sourcemap work over message data (precompiled message ASTs are ~3x raw size).
  * Must resolve before `ResourcePlugin`: both claim the `#nuxt-i18n/<hash>` ids at `enforce: 'pre'`.
  */
-/** parse, validate and minify a static locale resource */
-export function readStaticResource(ctx: ResolvedI18nContext, path: string): string {
-  const messages = validateMessages(parseResource(path), {
-    strictMessage: ctx.options.compilation.strictMessage ?? true,
-    escapeHtml: !!ctx.options.compilation.escapeHtml,
-  }, path)
-  return JSON.stringify(messages)
-}
-
 export const JsonParseMessagesPlugin = (ctx: ResolvedI18nContext) =>
   createUnplugin(() => {
     const virtualToPath = new Map<string, string>()

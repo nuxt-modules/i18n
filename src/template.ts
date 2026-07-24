@@ -84,7 +84,7 @@ export function generateTemplateNuxtI18nOptions(
     && (ctx.fullStatic || !nuxt.options.nitro.static)
   // full-static servers always fetch messages from the (prerendered) endpoint, even while
   // prerendering - the SSR graph loaders are unreachable too, so message data stays out of both graphs
-  const stripServerLoaders = stripClientLoaders && ctx.fullStatic
+  const stripServerLoaders = !server && !nuxt.options.dev && nuxt.options.ssr && ctx.fullStatic
   const clientLoad = (load: string) => {
     if (stripServerLoaders) { return '() => Promise.resolve({})' }
     return stripClientLoaders ? `import.meta.client ? () => Promise.resolve({}) : ${load}` : load
@@ -96,7 +96,7 @@ export function generateTemplateNuxtI18nOptions(
   }
 
   return `// @ts-nocheck
-${server && opts.serverAssetLoaders ? `import { useStorage } from 'nitropack/runtime'\n` : ''}${server ? opts.importStatements.join('\n') : ''}
+${server ? opts.importStatements.join('\n') : ''}
 export const localeCodes =  ${genArrayFromRaw(ctx.localeCodes.map(x => genString(x)))}
 export const localeLoaders = ${genObjectFromRaw(localeLoaderEntries)}
 export const vueI18nConfigs = ${genArrayFromRaw(opts.vueI18nConfigs.map(x => server ? x.importerServer : x.importer))}

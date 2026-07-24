@@ -1,7 +1,6 @@
 import { assign, isString } from '@intlify/shared'
 import { genDynamicImport, genImport, genSafeVariableName, genString } from 'knitwork'
 import { basename, join, relative, resolve } from 'pathe'
-import { STATIC_RESOURCE_RE } from './transform/json-parse'
 import { asI18nVirtual } from './transform/utils'
 import { normalizeDomainLocale } from './utils'
 
@@ -33,8 +32,7 @@ type LocaleLoaderData = {
 }
 
 export function generateLoaderOptions(
-  ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales'>,
-  serverAssetLoaders = false,
+  ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales' | 'runtimeDir'>,
 ) {
   /**
    * Prepare locale file imports
@@ -50,10 +48,11 @@ export function generateLoaderOptions(
         const key = genString(identifier)
         const virtualId = asI18nVirtual(meta.hash)
 
-        // static resources ship as nitro server assets, read lazily instead of imported eagerly -
-        // the message data stays out of the server bundle (see `setupNitro`)
-        const asServerAsset = serverAssetLoaders && STATIC_RESOURCE_RE.test(meta.path)
-        if (!asServerAsset) {
+        // resources with an `assetKey` ship as nitro server assets, read lazily instead of
+        // imported eagerly - the message data stays out of the server bundle (see `setupNitro`)
+        if (meta.assetKey) {
+          importStatements.add(genImport(resolve(ctx.runtimeDir, 'server/utils/assets'), [{ name: 'readI18nAsset' }]))
+        } else {
           importStatements.add(genImport(virtualId, identifier))
         }
         importMapper.set(meta.path, {
@@ -61,8 +60,8 @@ export function generateLoaderOptions(
           virtualId,
           cache: meta.cache ?? true,
           load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
-          loadServer: asServerAsset
-            ? `() => useStorage('assets/i18n').getItem(${genString(`${meta.hash}.json`)})`
+          loadServer: meta.assetKey
+            ? `() => readI18nAsset(${genString(meta.assetKey)})`
             : `() => Promise.resolve(${identifier})`,
         })
       }
@@ -93,7 +92,7 @@ export function generateLoaderOptions(
    */
   const normalizedLocales = ctx.normalizedLocales.map(x => stripLocaleFiles(x))
 
-  return { localeLoaders, vueI18nConfigs, normalizedLocales, importStatements: Array.from(importStatements), serverAssetLoaders }
+  return { localeLoaders, vueI18nConfigs, normalizedLocales, importStatements: Array.from(importStatements) }
 }
 
 /**
