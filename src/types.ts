@@ -109,6 +109,8 @@ export type FileMeta = {
   hash: string
   cache: boolean
   type: LocaleType
+  /** server asset filename when the resource ships as a lazily read nitro server asset */
+  assetKey?: string
 }
 
 /**
