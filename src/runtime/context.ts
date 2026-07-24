@@ -9,7 +9,7 @@ import { domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL } from 'ufo'
-import { isFunction, isString } from '@intlify/shared'
+import { deepCopy, isFunction, isString } from '@intlify/shared'
 
 import type { NuxtApp } from '#app'
 import type { DefineLocaleMessage, I18n, Locale, LocaleMessages } from 'vue-i18n'
@@ -92,8 +92,42 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
   })
 }
 
+/**
+ * Hands a locale's messages to vue-i18n by reference instead of deep copying them.
+ *
+ * The messages come from a cache shared by every request, so a locale has to be made request-local
+ * again before anything merges into it - `mergeLocaleMessage` deep copies into its target, which
+ * would otherwise write into that shared cache and leak between requests.
+ */
+function createMessageSharer(i18n: ReturnType<typeof getI18nTarget>) {
+  const shared = new Set<string>()
+  const merge = i18n.mergeLocaleMessage.bind(i18n) as (locale: string, message: object) => void
+  const set = i18n.setLocaleMessage.bind(i18n) as (locale: string, message: object) => void
+
+  i18n.mergeLocaleMessage = ((locale: string, message: object) => {
+    if (shared.delete(locale)) {
+      const unshared = {}
+      deepCopy(i18n.getLocaleMessage(locale), unshared)
+      set(locale, unshared)
+    }
+    merge(locale, message)
+  }) as typeof i18n.mergeLocaleMessage
+
+  // replaces the reference rather than mutating it, so the shared messages stay untouched
+  i18n.setLocaleMessage = ((locale: string, message: object) => {
+    shared.delete(locale)
+    set(locale, message)
+  }) as typeof i18n.setLocaleMessage
+
+  return (locale: string, message: object) => {
+    set(locale, message)
+    shared.add(locale)
+  }
+}
+
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
+  const shareLocaleMessage = import.meta.server ? createMessageSharer(i18n) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
   const detectConfig = useI18nDetection(nuxt)
   const serverLocaleConfigs = useLocaleConfigs()
@@ -137,8 +171,18 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       const serverCtx = nuxt.ssrContext?.event?.context?.nuxtI18n
       if (serverCtx?.loadMessages) {
         const messages = await serverCtx.loadMessages(locale)
+        // `flatJson` rewrites the message tree in place, which the shared cache must not undergo
+        const canShare = shareLocaleMessage && !serverCtx.vueI18nOptions?.flatJson
         for (const k of Object.keys(messages)) {
-          i18n.mergeLocaleMessage(k, messages[k])
+          const message = messages[k]
+          if (message == null) { continue }
+          // `mergeLocaleMessage` deep copies the whole tree - on a fresh instance there is nothing
+          // to merge with, so hand vue-i18n the cached object directly
+          if (canShare && Object.keys(i18n.getLocaleMessage(k)).length === 0) {
+            shareLocaleMessage(k, message)
+          } else {
+            i18n.mergeLocaleMessage(k, message)
+          }
         }
         return
       }
