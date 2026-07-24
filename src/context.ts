@@ -13,6 +13,8 @@ import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 export interface I18nNuxtContext {
   resolver: Resolver
   options: Required<NuxtI18nOptions>
+  /** `nuxt.options.i18n` unmerged with defaults, to detect explicitly set options */
+  rawOptions: Partial<NuxtI18nOptions>
   distDir: string
   runtimeDir: string
   i18nLayers: LayerWithI18n[]
@@ -42,6 +44,8 @@ const runtimeDir = fileURLToPath(new URL('./runtime', import.meta.url))
 
 export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNuxtContext {
   const options = userOptions as Required<NuxtI18nOptions>
+  // the `i18n` key may be configured with a falsy non-object value (#3900)
+  const rawOptions = (nuxt.options.i18n || {}) as Partial<NuxtI18nOptions>
 
   const i18nLayers: LayerWithI18n[] = []
   for (const l of nuxt.options._layers) {
@@ -52,7 +56,7 @@ export function createContext(userOptions: NuxtI18nOptions, nuxt: Nuxt): I18nNux
     i18nLayers.push({ config: l, i18n, i18nDir, i18nDetector })
   }
 
-  return { options, resolver, distDir, runtimeDir, i18nLayers }
+  return { options, rawOptions, resolver, distDir, runtimeDir, i18nLayers }
 }
 
 export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<ResolvedI18nContext> {

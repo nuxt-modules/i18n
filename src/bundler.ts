@@ -81,7 +81,7 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
 }
 
 export function getDefineConfig(
-  { options, fullStatic, localeHashes }: ResolvedI18nContext,
+  { options, rawOptions, fullStatic, localeHashes }: ResolvedI18nContext,
   server = false,
   nuxt = useNuxt(),
 ) {
@@ -89,10 +89,7 @@ export function getDefineConfig(
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true
-  let stripMessagesPayload = !!options.experimental.preload
-  if (nuxt.options.i18n && nuxt.options.i18n.experimental?.stripMessagesPayload != null) {
-    stripMessagesPayload = nuxt.options.i18n.experimental.stripMessagesPayload
-  }
+  const stripMessagesPayload = rawOptions.experimental?.stripMessagesPayload ?? !!options.experimental.preload
 
   const common = {
     __IS_SSR__: String(nuxt.options.ssr),
