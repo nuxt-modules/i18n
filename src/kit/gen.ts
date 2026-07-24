@@ -85,7 +85,8 @@ function createLocalizeAliases(ctx: RouteContext): RouteContext['localizeAliases
     return aliases.map((x) => {
       const alias = ctx.handleTrailingSlash(x, !!options.parent)
       const shouldPrefix = options.shouldPrefix(x, locale, options)
-      return shouldPrefix ? join('/', locale, alias) : alias
+      const prefix = ctx.getLocalePrefix(locale)
+      return shouldPrefix ? join('/', prefix, alias) : alias
     })
   }
 }
@@ -149,7 +150,8 @@ export function localizeSingleRoute(
     // use custom path if found
     const unprefixed = routeOptions.paths?.[locale] ?? route.path
 
-    const prefixed = join('/', locale, unprefixed)
+    const prefix = ctx.getLocalePrefix(locale)
+    const prefixed = join('/', prefix, unprefixed)
     const usePrefix = options.shouldPrefix(unprefixed, locale, options)
 
     const data = { route, prefixed, unprefixed, locale, usePrefix, ctx, options }
@@ -189,6 +191,7 @@ export type RouteContext = {
   trailingSlash: boolean
   optionsResolver: RouteOptionsResolver
   isDefaultLocale: (locale: string) => boolean
+  getLocalePrefix: (locale: string) => string
   localizeAliases: (route: LocalizableRoute, locale: string, options: LocalizeRouteParams) => string[]
   localizeChildren: (
     route: LocalizableRoute,
@@ -245,6 +248,7 @@ function createLocalizeRouteName(opts: {
 export function createRouteContext(opts: {
   trailingSlash: boolean
   defaultLocales: string[]
+  localePrefixes?: Record<string, string>
   optionsResolver?: RouteOptionsResolver
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
@@ -254,6 +258,7 @@ export function createRouteContext(opts: {
   ctx.trailingSlash = opts.trailingSlash ?? false
   ctx.onLocalize = opts.onLocalize
   ctx.isDefaultLocale = (locale: string) => opts.defaultLocales.includes(locale)
+  ctx.getLocalePrefix = (locale: string) => opts.localePrefixes?.[locale] || locale
   ctx.localizeRouteName = createLocalizeRouteName(opts)
   ctx.optionsResolver = createDefaultOptionsResolver(opts)
   ctx.localizeAliases = createLocalizeAliases(ctx)
