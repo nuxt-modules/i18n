@@ -1,6 +1,6 @@
 import { addBuildPlugin, addVitePlugin, addWebpackPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
-import { getLocaleFilePaths, toArray } from './utils'
+import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { JsonParseMessagesPlugin, STATIC_RESOURCE_RE } from './transform/json-parse'
@@ -11,11 +11,11 @@ import { addDefinePlugin } from 'nuxt-define'
 import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
-import type { I18nNuxtContext } from './context'
+import type { ResolvedI18nContext } from './context'
 import { DEFAULT_COOKIE_KEY, DYNAMIC_PARAMS_KEY, FULL_STATIC_LIFETIME, SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from './constants'
 import { version } from '../package.json'
 
-export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
+export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   /**
    * shared plugins (nuxt/nitro)
    */
@@ -41,8 +41,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
    */
   // exclude dynamic locale files - optimization is a no-op for these, and since vite 8 matching them
   // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049)
-  const localePaths = getLocaleFilePaths(ctx.localeInfo.map(x => ({ ...x, meta: x.meta.filter(m => m.type !== 'dynamic') })))
-  ctx.fullStatic = ctx.localeInfo.flatMap(x => x.meta).every(x => x.type === 'static' || x.cache !== false)
+  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type !== 'dynamic').map(m => m.path))]
 
   const vueI18nPluginOptions: PluginOptions = {
     ...ctx.options.bundle,
@@ -82,7 +81,7 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
 }
 
 export function getDefineConfig(
-  { options, fullStatic, localeHashes }: I18nNuxtContext,
+  { options, fullStatic, localeHashes }: ResolvedI18nContext,
   server = false,
   nuxt = useNuxt(),
 ) {

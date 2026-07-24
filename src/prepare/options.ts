@@ -4,8 +4,9 @@ import { logger } from '../utils'
 import { checkLayerOptions } from '../layers'
 import { isString } from '@intlify/shared'
 
-export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
-  checkLayerOptions(options, nuxt)
+export function prepareOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
+  const { options } = ctx
+  checkLayerOptions(ctx, nuxt)
 
   /**
    * Check conflicting options
