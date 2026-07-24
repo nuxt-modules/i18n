@@ -214,6 +214,13 @@ export interface ExperimentalFeatures {
    * @default false
    */
   prerenderMessages?: boolean
+  /**
+   * Skip precompiling static locale resources (JSON/JSON5/YAML) in server builds, embedding them as
+   * raw messages instead to reduce build time and memory. The client bundle keeps precompiled
+   * messages, the server compiles messages at runtime. Vite only.
+   * @default false
+   */
+  optimizeMessageBundling?: boolean
 }
 
 export interface BundleOptions

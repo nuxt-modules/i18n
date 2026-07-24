@@ -1,8 +1,9 @@
-import { addBuildPlugin, useNuxt } from '@nuxt/kit'
+import { addBuildPlugin, addVitePlugin, addWebpackPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
 import { getLocaleFilePaths, toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
+import { JsonParseMessagesPlugin, STATIC_RESOURCE_RE } from './transform/json-parse'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { HeistPlugin } from './transform/heist'
 import { addDefinePlugin } from 'nuxt-define'
@@ -22,11 +23,15 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     sourcemap: !!nuxt.options.sourcemap.server || !!nuxt.options.sourcemap.client,
   }
   const resourcePlugin = ResourcePlugin(pluginOptions, ctx)
+  const jsonParsePlugin = ctx.options.experimental.optimizeMessageBundling ? JsonParseMessagesPlugin(ctx) : undefined
 
   addBuildPlugin(resourcePlugin)
   nuxt.hook('nitro:config', async (cfg) => {
     cfg.rollupConfig!.plugins = (await cfg.rollupConfig!.plugins) || []
     cfg.rollupConfig!.plugins = toArray(cfg.rollupConfig!.plugins)
+    if (jsonParsePlugin) {
+      cfg.rollupConfig!.plugins.push(jsonParsePlugin.rollup())
+    }
     cfg.rollupConfig!.plugins.push(HeistPlugin(pluginOptions, ctx).rollup())
     cfg.rollupConfig!.plugins.push(resourcePlugin.rollup())
   })
@@ -47,10 +52,26 @@ export async function extendBundler(ctx: I18nNuxtContext, nuxt: Nuxt) {
     optimizeTranslationDirective: false,
     include: localePaths.length ? localePaths : [],
   }
-  addBuildPlugin({
-    vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
-    webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions),
-  })
+  if (ctx.options.experimental.optimizeMessageBundling) {
+    // precompiling only pays off client-side - the server graphs serve static resources raw
+    // (JsonParseMessagesPlugin) and need the runtime compiler regardless of the client bundle settings
+    const serverPluginOptions: PluginOptions = {
+      ...vueI18nPluginOptions,
+      dropMessageCompiler: false,
+      runtimeOnly: false,
+      include: localePaths.filter(x => !STATIC_RESOURCE_RE.test(x)),
+    }
+    // `prepend` - without it kit appends after ResourcePlugin, which then claims the virtual ids
+    addVitePlugin(() => jsonParsePlugin!.vite(), { client: false, prepend: true })
+    addVitePlugin(() => VueI18nPlugin.vite(vueI18nPluginOptions), { server: false })
+    addVitePlugin(() => VueI18nPlugin.vite(serverPluginOptions), { client: false })
+    addWebpackPlugin(() => VueI18nPlugin.webpack(vueI18nPluginOptions))
+  } else {
+    addBuildPlugin({
+      vite: () => VueI18nPlugin.vite(vueI18nPluginOptions),
+      webpack: () => VueI18nPlugin.webpack(vueI18nPluginOptions),
+    })
+  }
   addBuildPlugin(TransformMacroPlugin(pluginOptions))
   if (ctx.options.autoDeclare && nuxt.options.imports.autoImport !== false) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
