@@ -130,6 +130,20 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
   const loadMessagesFromServer = async (locale: string) => {
     if (locale in localeLoaders === false) { return }
+
+    // during SSR the messages endpoint runs in this same process - calling it over `$fetch` would
+    // serialize the whole message tree to JSON and parse it back on every request
+    if (import.meta.server) {
+      const serverCtx = nuxt.ssrContext?.event?.context?.nuxtI18n
+      if (serverCtx?.loadMessages) {
+        const messages = await serverCtx.loadMessages(locale)
+        for (const k of Object.keys(messages)) {
+          i18n.mergeLocaleMessage(k, messages[k])
+        }
+        return
+      }
+    }
+
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
     // Client fetches from `app.cdnURL` when messages are prerendered as static assets;
     // SSR uses a relative URL so it doesn't round-trip through the CDN.
