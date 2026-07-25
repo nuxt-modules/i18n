@@ -45,7 +45,7 @@ describe('basic lazy loading', async () => {
     // `en` present on initial load
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 8,
       }
     `)
 
@@ -58,7 +58,7 @@ describe('basic lazy loading', async () => {
     // `fr` locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 8,
         "fr": 5,
       }
     `)
@@ -72,7 +72,7 @@ describe('basic lazy loading', async () => {
     // `nl` (module) locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 8,
         "fr": 5,
         "nl": 3,
       }
