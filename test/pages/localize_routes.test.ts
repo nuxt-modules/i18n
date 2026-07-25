@@ -353,6 +353,22 @@ describe('localizeRoutes', function () {
       // localization is skipped for multiple locales on the same domain
       expect(localizedRoutes).toEqual(routes)
     })
+
+    it('detects duplicate domains declared through `domains`', function () {
+      const routes: NuxtPage[] = [{ path: '/', name: 'home' }]
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'no_prefix',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domains: ['https://example.com'] },
+          { code: 'ja', domains: ['example.com'] }
+        ]
+      })
+
+      expect(localizedRoutes).toEqual(routes)
+    })
   })
 
   describe('Route options resolver: routing disable', () => {

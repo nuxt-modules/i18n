@@ -93,19 +93,24 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   // no_prefix is only supported when using a separate domain per locale
   if (!options.differentDomains) { return false }
 
-  // check if domains are used multiple times, compared by host as domains may include a protocol
-  const domains = new Set<string>()
+  // check if domains are used multiple times, compared by host since a configured domain may
+  // include a protocol (mirrors `normalizeDomain` in runtime/shared/domain.ts)
+  const seen = new Set<string>()
   for (const locale of options.locales) {
-    if (!locale.domain) { continue }
-    const host = locale.domain.replace(/^https?:\/\//, '')
-    if (domains.has(host)) {
-      console.error(
-        `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
-        + ` - found multiple entries with ${locale.domain}`,
-      )
-      return false
+    const hosts = [locale.domain, ...(locale.domains ?? [])]
+      .filter((v): v is string => !!v)
+      .map(v => v.replace(/^https?:\/\//, ''))
+
+    for (const host of new Set(hosts)) {
+      if (seen.has(host)) {
+        console.error(
+          `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
+          + ` - found multiple entries with ${host}`,
+        )
+        return false
+      }
+      seen.add(host)
     }
-    domains.add(host)
   }
 
   return true
