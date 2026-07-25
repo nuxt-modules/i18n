@@ -252,13 +252,13 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
   },
   {
     "children": [],
-    "name": "home___ja",
-    "path": "/ja",
+    "name": "home___en",
+    "path": "/",
   },
   {
     "children": [],
-    "name": "home___en",
-    "path": "/",
+    "name": "home___ja",
+    "path": "/ja",
   },
   {
     "children": [],

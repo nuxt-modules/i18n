@@ -20,8 +20,14 @@ export function setupMultiDomainLocales(defaultLocale: string, strategy: Strateg
     }
 
     const locale = getLocaleFromRouteName(routeName)
-    if (locale === defaultLocale) {
-      router.addRoute({ ...route, path: route.path.replace(new RegExp(`^/${locale}/?`), '/') })
+    // locale-agnostic content path, regardless of whether this route is currently prefixed
+    // it may still be unprefixed from being the *build-time* default locale, which needs to be
+    // re-prefixed here if a different locale is this domain's actual default
+    const contentPath = route.path.replace(new RegExp(`^/${locale}/?`), '/')
+    const path = locale === defaultLocale ? contentPath : contentPath === '/' ? `/${locale}` : `/${locale}${contentPath}`
+
+    if (path !== route.path) {
+      router.addRoute({ ...route, path })
     }
   }
 }

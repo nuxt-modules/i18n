@@ -265,6 +265,7 @@ describe('localizeRoutes', function () {
       expect(domainPaths['about___nl']).toBe('/nl/about')
       expect(domainPaths['about___fr___default']).toBeUndefined()
       expect(domainPaths['about___nl___default']).toBeUndefined()
+      expect(domainPaths['about___en']).toBe('/en/about')
     })
   })
 
