@@ -14,23 +14,37 @@ function parseResource(path: string) {
   return JSON.parse(content)
 }
 
-// mirrors the `@intlify/bundle-utils` compile-time checks skipped for resources that are not precompiled
-function validateMessages(value: unknown, options: { strictMessage: boolean, escapeHtml: boolean }, path: string): unknown {
+type ValidateOptions = { strictMessage: boolean, escapeHtml: boolean }
+
+// mirrors the `@intlify/bundle-utils` compile-time checks skipped for resources that are not
+// precompiled - `keys` tracks the message path for errors and is mutated to avoid copying it per node
+function validateMessages(value: unknown, options: ValidateOptions, path: string, keys: string[]): unknown {
   if (isString(value)) {
     if (detectHtmlTag(value)) {
       if (options.strictMessage) {
-        throw new Error(`Detected HTML in '${value}' message (${path}). Recommend not using HTML messages to avoid XSS.`)
+        throw new Error(
+          `Detected HTML in '${value}' message at "${keys.join('.')}" (${path}).`
+          + ` Recommend not using HTML messages to avoid XSS.`,
+        )
       }
       if (options.escapeHtml) { return escapeHtml(value) }
     }
     return value
   }
   if (Array.isArray(value)) {
-    return value.map(x => validateMessages(x, options, path))
+    return value.map((entry, i) => {
+      keys.push(String(i))
+      const validated = validateMessages(entry, options, path, keys)
+      keys.pop()
+      return validated
+    })
   }
   if (value && typeof value === 'object') {
-    for (const k of Object.keys(value)) {
-      ;(value as Record<string, unknown>)[k] = validateMessages((value as Record<string, unknown>)[k], options, path)
+    const record = value as Record<string, unknown>
+    for (const k of Object.keys(record)) {
+      keys.push(k)
+      record[k] = validateMessages(record[k], options, path, keys)
+      keys.pop()
     }
   }
   return value
@@ -41,6 +55,6 @@ export function readStaticResource(ctx: Pick<ResolvedI18nContext, 'options'>, pa
   const messages = validateMessages(parseResource(path), {
     strictMessage: ctx.options.compilation.strictMessage ?? true,
     escapeHtml: !!ctx.options.compilation.escapeHtml,
-  }, path)
+  }, path, [])
   return JSON.stringify(messages)
 }
