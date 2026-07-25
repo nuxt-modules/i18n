@@ -17,6 +17,19 @@ const storage = prefixStorage(useStorage(), 'i18n')
 type CachedValue<T> = { ttl: number, value: T, mtime: number }
 
 /**
+ * Cached values are served by reference to every request, so freezing them turns any stray
+ * per-request mutation into a loud error instead of silent cross-request state pollution.
+ * Functions are left mutable: vue-i18n stamps `locale`/`key` onto message functions.
+ */
+function deepFreeze<T>(value: T): T {
+  if (value == null || typeof value !== 'object' || Object.isFrozen(value)) { return value }
+  for (const key of Object.keys(value)) {
+    deepFreeze((value as Record<string, unknown>)[key])
+  }
+  return Object.freeze(value)
+}
+
+/**
  * Create a cached function
  * Adapted from nitropack/runtime `cachedFunction`
  */
@@ -53,6 +66,8 @@ export function cachedFunctionI18n<T, ArgsT extends unknown[] = any[]>(
       const value = await get(key, () => fn(...args))
 
       if (isCacheable) {
+        // the first caller receives the same object that is stored, so freeze covers both
+        deepFreeze(value)
         await storage.setItemRaw(key, { ttl: Date.now() + maxAge * 1000, value, mtime: Date.now() })
       }
 

@@ -29,6 +29,23 @@ describe('cached messages during SSR', () => {
     expect(await third.locator('#merged-keys')!.textContent()).toEqual('merged-c')
   })
 
+  test('cached messages are shared by reference and frozen', async () => {
+    // canary for the mechanism itself: direct mutation throws only when the store holds the
+    // frozen shared cache object - a fresh copy (e.g. a silent fallback to `$fetch`) would
+    // accept the write and this assertion would catch the regression
+    const dom = await getDom(await $fetch('/mutate-message'))
+    expect(await dom.locator('#mutation-threw')!.textContent()).toEqual('true')
+    expect(await dom.locator('#translated')!.textContent()).toEqual('Homepage')
+  })
+
+  test('merge after mutation attempt still isolates requests', async () => {
+    const merged = await getDom(await $fetch('/merge-message?id=z'))
+    expect(await merged.locator('#merged-keys')!.textContent()).toEqual('merged-z')
+
+    const canary = await getDom(await $fetch('/mutate-message'))
+    expect(await canary.locator('#mutation-threw')!.textContent()).toEqual('true')
+  })
+
   test('cached messages are still translated correctly', async () => {
     const dom = await getDom(await $fetch('/'))
     expect(await dom.locator('#home-header')!.textContent()).toEqual('Homepage')
