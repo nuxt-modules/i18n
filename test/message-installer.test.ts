@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest'
 import { deepCopy } from '@intlify/shared'
+import { createI18n } from 'vue-i18n'
 import { createMessageInstaller } from '../src/runtime/context'
+import { getComposer } from '../src/runtime/compatibility'
 import { cloneDeep } from '../src/runtime/shared/messages'
 
 import type { Composer } from 'vue-i18n'
@@ -111,6 +113,21 @@ describe('createMessageInstaller', () => {
 
     i18n.mergeLocaleMessage('fr', { salut: 'y' })
     expect(i18n.store.fr.salut).toBe('y')
+  })
+
+  // in legacy mode `useI18n()` reaches the composer while `$i18n` goes through the VueI18n
+  // facade - patching the composer has to cover both
+  test('a legacy VueI18n instance protects composer and facade merges alike', () => {
+    const i18n = createI18n({ legacy: true, locale: 'en', messages: { en: {} } })
+    const install = createMessageInstaller(getComposer(i18n))
+    const cached = cachedTree()
+
+    install('en', cached)
+    getComposer(i18n).mergeLocaleMessage('en', { viaComposer: 'x' })
+    i18n.global.mergeLocaleMessage('en', { viaFacade: 'y' })
+
+    expect(cached).toEqual({ greeting: 'hello', nested: { deep: 'value' }, list: ['a', 'b'] })
+    expect(i18n.global.getLocaleMessage('en')).toMatchObject({ viaComposer: 'x', viaFacade: 'y' })
   })
 })
 
