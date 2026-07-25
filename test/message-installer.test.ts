@@ -1,14 +1,15 @@
 import { describe, expect, test } from 'vitest'
 import { deepCopy } from '@intlify/shared'
-import { createMessageSharer } from '../src/runtime/context'
+import { createMessageInstaller } from '../src/runtime/context'
 import { cloneDeep } from '../src/runtime/shared/messages'
 
 import type { Composer } from 'vue-i18n'
 
-// minimal composer stand-in with vue-i18n's real semantics: set assigns by reference,
-// merge deep-copies into the stored tree via @intlify/shared `deepCopy`
+type Store = Record<string, Record<string, unknown>>
+
+// stand-in with vue-i18n's semantics: set assigns by reference, merge deep copies into the target
 function createFakeComposer() {
-  const store: Record<string, Record<string, unknown>> = {}
+  const store: Store = {}
   return {
     store,
     getLocaleMessage: (locale: string) => store[locale] || {},
@@ -19,34 +20,43 @@ function createFakeComposer() {
       store[locale] ||= {}
       deepCopy(message, store[locale])
     },
-  } as unknown as Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'> & {
-    store: Record<string, Record<string, unknown>>
-  }
+  } as unknown as Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'> & { store: Store }
 }
 
-function frozenTree() {
+function cachedTree() {
   const tree = { greeting: 'hello', nested: { deep: 'value' }, list: ['a', 'b'] }
   Object.freeze(tree.nested)
   Object.freeze(tree.list)
   return Object.freeze(tree)
 }
 
-describe('createMessageSharer', () => {
-  test('share hands the object to the store by reference', () => {
+describe('createMessageInstaller', () => {
+  test('installs into an empty locale by reference', () => {
     const i18n = createFakeComposer()
-    const share = createMessageSharer(i18n)
-    const cached = frozenTree()
+    const install = createMessageInstaller(i18n)
+    const cached = cachedTree()
 
-    share('en', cached)
+    install('en', cached)
     expect(i18n.store.en).toBe(cached)
   })
 
-  test('merge into a shared locale copies first and leaves the shared object untouched', () => {
+  test('merges into a locale that already has messages', () => {
     const i18n = createFakeComposer()
-    const share = createMessageSharer(i18n)
-    const cached = frozenTree()
+    const install = createMessageInstaller(i18n)
+    i18n.setLocaleMessage('en', { fromConfig: 'keep' })
 
-    share('en', cached)
+    install('en', cachedTree())
+
+    expect(i18n.store.en.fromConfig).toBe('keep')
+    expect(i18n.store.en.greeting).toBe('hello')
+  })
+
+  test('merging after a by-reference install copies first', () => {
+    const i18n = createFakeComposer()
+    const install = createMessageInstaller(i18n)
+    const cached = cachedTree()
+
+    install('en', cached)
     i18n.mergeLocaleMessage('en', { added: 'x' })
 
     expect(i18n.store.en).not.toBe(cached)
@@ -55,12 +65,12 @@ describe('createMessageSharer', () => {
     expect('added' in cached).toBe(false)
   })
 
-  test('the private copy does not alias arrays of the shared object', () => {
+  test('the copy does not alias arrays of the installed tree', () => {
     const i18n = createFakeComposer()
-    const share = createMessageSharer(i18n)
-    const cached = frozenTree()
+    const install = createMessageInstaller(i18n)
+    const cached = cachedTree()
 
-    share('en', cached)
+    install('en', cached)
     i18n.mergeLocaleMessage('en', { added: 'x' })
 
     const list = i18n.store.en.list as string[]
@@ -69,42 +79,38 @@ describe('createMessageSharer', () => {
     expect(cached.list).toEqual(['a', 'b'])
   })
 
-  test('merge into a non-shared locale passes through without copying', () => {
+  test('only copies once per install', () => {
     const i18n = createFakeComposer()
-    createMessageSharer(i18n)
+    const install = createMessageInstaller(i18n)
 
-    i18n.mergeLocaleMessage('fr', { salut: 'y' })
-    expect(i18n.store.fr.salut).toBe('y')
+    install('en', cachedTree())
+    i18n.mergeLocaleMessage('en', { a: '1' })
+    const afterFirst = i18n.store.en
+    i18n.mergeLocaleMessage('en', { b: '2' })
+
+    expect(i18n.store.en).toBe(afterFirst)
+    expect(i18n.store.en).toMatchObject({ a: '1', b: '2' })
   })
 
-  test('setLocaleMessage un-shares without copying', () => {
+  test('setLocaleMessage replaces the reference without copying', () => {
     const i18n = createFakeComposer()
-    const share = createMessageSharer(i18n)
-    const cached = frozenTree()
-    share('en', cached)
+    const install = createMessageInstaller(i18n)
+    install('en', cachedTree())
 
     const replacement = { fresh: 'tree' }
     i18n.setLocaleMessage('en', replacement)
-    expect(i18n.store.en).toBe(replacement)
-
-    // merging afterwards must not clone (locale is no longer marked shared)
     i18n.mergeLocaleMessage('en', { more: 'z' })
+
     expect(i18n.store.en).toBe(replacement)
     expect(replacement).toEqual({ fresh: 'tree', more: 'z' })
   })
 
-  test('sharing again after un-share re-arms the copy-on-write', () => {
+  test('leaves locales it never installed alone', () => {
     const i18n = createFakeComposer()
-    const share = createMessageSharer(i18n)
-    const cached = frozenTree()
+    createMessageInstaller(i18n)
 
-    share('en', cached)
-    i18n.mergeLocaleMessage('en', { a: '1' })
-    share('en', cached)
-    i18n.mergeLocaleMessage('en', { b: '2' })
-
-    expect('b' in cached).toBe(false)
-    expect(i18n.store.en.b).toBe('2')
+    i18n.mergeLocaleMessage('fr', { salut: 'y' })
+    expect(i18n.store.fr.salut).toBe('y')
   })
 })
 
@@ -122,8 +128,9 @@ describe('cloneDeep', () => {
     expect(out).toEqual(src)
   })
 
-  test('clone of a frozen tree is mutable throughout', () => {
-    const out = cloneDeep(frozenTree())
+  test('the clone of a frozen tree is mutable throughout', () => {
+    const out = cloneDeep(cachedTree())
+
     expect(Object.isFrozen(out)).toBe(false)
     ;(out.nested as Record<string, string>).deep = 'changed'
     ;(out.list as string[]).push('c')

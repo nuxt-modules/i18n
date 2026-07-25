@@ -5,6 +5,7 @@ import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { useRuntimeI18n } from '../shared/utils'
 import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
+import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
 export function useI18nContext(event: H3Event) {
@@ -65,7 +66,8 @@ export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
       if (__I18N_PRELOAD__) {
         deepCopy(messages, this.messages)
       }
-      return messages
+      // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
+      return this.vueI18nOptions?.flatJson ? cloneDeep(messages) : messages
     },
   }
 }
@@ -111,7 +113,7 @@ declare module 'h3' {
        */
       trackKey: (key: string, locale: string) => void
       /**
-       * Load merged messages for a locale in-process, skipping the messages endpoint round-trip
+       * Load merged messages for a locale, skipping the messages endpoint round-trip
        * @internal
        */
       loadMessages: (locale: string) => Promise<LocaleMessages<DefineLocaleMessage>>

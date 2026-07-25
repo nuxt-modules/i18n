@@ -92,47 +92,48 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
   })
 }
 
+type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'>
+
 /**
- * Hands a locale's messages to vue-i18n by reference instead of deep copying them.
+ * Returns a function installing loaded messages into `i18n`, by reference where the locale is
+ * empty. Installed trees may be shared with the message cache, so `mergeLocaleMessage` - which
+ * deep copies into its target - gets a private copy first.
  *
- * The messages come from a cache shared by every request (deep-frozen at cache time, so stray
- * mutation throws instead of leaking between requests), and a locale has to be made request-local
- * again before anything merges into it - `mergeLocaleMessage` deep copies into its target, which
- * would otherwise write into that shared cache.
- *
- * Wraps the composer, not the VueI18n facade: in legacy mode `useI18n()` and `<i18n>` blocks call
- * the raw composer methods directly, and the facade delegates to the composer at call time anyway.
- * @internal exported for unit tests
+ * Patches the composer, not the VueI18n facade: legacy `useI18n()` and `<i18n>` blocks reach
+ * composer methods directly, and the facade delegates to it at call time.
+ * @internal exported for testing
  */
-export function createMessageSharer(i18n: Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'>) {
-  const shared = new Set<string>()
+export function createMessageInstaller(i18n: MessageStore) {
+  const byRef = new Set<string>()
   const merge = i18n.mergeLocaleMessage.bind(i18n) as (locale: string, message: object) => void
   const set = i18n.setLocaleMessage.bind(i18n) as (locale: string, message: object) => void
 
   i18n.mergeLocaleMessage = ((locale: string, message: object) => {
-    if (shared.delete(locale)) {
-      // cloneDeep, not @intlify deepCopy: deepCopy assigns arrays by reference, which would keep
-      // the "private" tree aliased into the frozen cache
+    // `deepCopy` shares arrays, which would leave the copy aliased into the cache
+    if (byRef.delete(locale)) {
       set(locale, cloneDeep(i18n.getLocaleMessage(locale)))
     }
     merge(locale, message)
   }) as typeof i18n.mergeLocaleMessage
 
-  // replaces the reference rather than mutating it, so the shared messages stay untouched
   i18n.setLocaleMessage = ((locale: string, message: object) => {
-    shared.delete(locale)
+    byRef.delete(locale)
     set(locale, message)
   }) as typeof i18n.setLocaleMessage
 
   return (locale: string, message: object) => {
+    if (Object.keys(i18n.getLocaleMessage(locale)).length > 0) {
+      i18n.mergeLocaleMessage(locale, message)
+      return
+    }
     set(locale, message)
-    shared.add(locale)
+    byRef.add(locale)
   }
 }
 
 export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
-  const shareLocaleMessage = import.meta.server ? createMessageSharer(getComposer(vueI18n)) : undefined
+  const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
   const detectConfig = useI18nDetection(nuxt)
   const serverLocaleConfigs = useLocaleConfigs()
@@ -170,37 +171,15 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const loadMessagesFromServer = async (locale: string) => {
     if (locale in localeLoaders === false) { return }
 
-    // during SSR the messages endpoint runs in this same process - calling it over `$fetch` would
-    // serialize the whole message tree to JSON and parse it back on every request
-    if (import.meta.server) {
-      const serverCtx = nuxt.ssrContext?.event?.context?.nuxtI18n
-      if (serverCtx?.loadMessages) {
-        const messages = await serverCtx.loadMessages(locale)
-        const flatJson = !!serverCtx.vueI18nOptions?.flatJson
-        const cacheable = getLocaleConfig(locale)?.cacheable ?? false
-        for (const k of Object.keys(messages)) {
-          const message = messages[k]
-          if (message == null) { continue }
-          // `mergeLocaleMessage` deep copies the whole tree - on a fresh instance there is nothing
-          // to merge with, so hand vue-i18n the loaded object directly: the frozen shared cache
-          // with copy-on-write armed, or a request-fresh (non-cacheable) tree as-is. (With
-          // `preload`, the payload plugin aliases the store objects and `loadMessages` fills them
-          // first, so the store is never empty here and neither fast path fires.)
-          if (Object.keys(i18n.getLocaleMessage(k)).length === 0) {
-            // flatJson is the exception: `setLocaleMessage` runs `handleFlatJson` on its input,
-            // which a frozen cached tree must not undergo
-            if (shareLocaleMessage && cacheable && !flatJson) {
-              shareLocaleMessage(k, message)
-              continue
-            }
-            i18n.setLocaleMessage(k, flatJson && cacheable ? cloneDeep(message) : message)
-            continue
-          }
-          // vue-i18n's merge also runs `handleFlatJson` on its *source*
-          i18n.mergeLocaleMessage(k, flatJson && cacheable ? cloneDeep(message) : message)
-        }
-        return
+    // during SSR the messages endpoint runs in this same process - `$fetch` would serialize the
+    // whole message tree to JSON and parse it back on every request
+    const serverCtx = import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined
+    if (serverCtx?.loadMessages && installMessages) {
+      const messages = await serverCtx.loadMessages(locale)
+      for (const k of Object.keys(messages)) {
+        installMessages(k, messages[k]!)
       }
+      return
     }
 
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
