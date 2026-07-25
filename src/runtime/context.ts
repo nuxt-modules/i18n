@@ -177,24 +177,27 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       if (serverCtx?.loadMessages) {
         const messages = await serverCtx.loadMessages(locale)
         const flatJson = !!serverCtx.vueI18nOptions?.flatJson
-        // non-cacheable locales get a fresh object per load, so sharing would only add a
-        // pointless copy-on-write later; flatJson trees are rewritten in place by vue-i18n's merge
         const cacheable = getLocaleConfig(locale)?.cacheable ?? false
-        const canShare = shareLocaleMessage && cacheable && !flatJson
         for (const k of Object.keys(messages)) {
           const message = messages[k]
           if (message == null) { continue }
           // `mergeLocaleMessage` deep copies the whole tree - on a fresh instance there is nothing
-          // to merge with, so hand vue-i18n the cached object directly. (With `preload`, the
-          // payload plugin aliases the store objects and `loadMessages` fills them first, so the
-          // store is never empty here and sharing simply doesn't fire - both paths are correct.)
-          if (canShare && Object.keys(i18n.getLocaleMessage(k)).length === 0) {
-            shareLocaleMessage(k, message)
-          } else {
-            // vue-i18n's merge runs `handleFlatJson` on its *source* - a frozen cached tree must
-            // not be handed to it directly
-            i18n.mergeLocaleMessage(k, flatJson && cacheable ? cloneDeep(message) : message)
+          // to merge with, so hand vue-i18n the loaded object directly: the frozen shared cache
+          // with copy-on-write armed, or a request-fresh (non-cacheable) tree as-is. (With
+          // `preload`, the payload plugin aliases the store objects and `loadMessages` fills them
+          // first, so the store is never empty here and neither fast path fires.)
+          if (Object.keys(i18n.getLocaleMessage(k)).length === 0) {
+            // flatJson is the exception: `setLocaleMessage` runs `handleFlatJson` on its input,
+            // which a frozen cached tree must not undergo
+            if (shareLocaleMessage && cacheable && !flatJson) {
+              shareLocaleMessage(k, message)
+              continue
+            }
+            i18n.setLocaleMessage(k, flatJson && cacheable ? cloneDeep(message) : message)
+            continue
           }
+          // vue-i18n's merge also runs `handleFlatJson` on its *source*
+          i18n.mergeLocaleMessage(k, flatJson && cacheable ? cloneDeep(message) : message)
         }
         return
       }

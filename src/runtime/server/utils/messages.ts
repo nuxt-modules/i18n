@@ -32,14 +32,16 @@ const _getMessagesCached = cachedFunctionI18n(_getMessages, {
 const getMessages = import.meta.dev ? _getMessages : _getMessagesCached
 
 const _getMergedMessages = async (locale: string, fallbackLocales: string[]) => {
-  const merged = {} as LocaleMessages<DefineLocaleMessage>
-
   try {
-    if (fallbackLocales.length > 0) {
-      const messages = await Promise.all(fallbackLocales.map(getMessages))
-      for (const message of messages) {
-        deepCopy(message, merged)
-      }
+    // nothing to merge - copying the per-locale result would only duplicate the tree
+    if (fallbackLocales.length === 0) {
+      return (await getMessages(locale)) ?? {}
+    }
+
+    const merged = {} as LocaleMessages<DefineLocaleMessage>
+    const messages = await Promise.all(fallbackLocales.map(getMessages))
+    for (const message of messages) {
+      deepCopy(message, merged)
     }
 
     const message = await getMessages(locale)
@@ -64,9 +66,12 @@ export const getMergedMessages = cachedFunctionI18n(_getMergedMessages, {
 })
 
 const _getAllMergedMessages = async (locales: string[]) => {
-  const merged = {} as LocaleMessages<DefineLocaleMessage>
-
   try {
+    if (locales.length === 1) {
+      return (await getMessages(locales[0]!)) ?? {}
+    }
+
+    const merged = {} as LocaleMessages<DefineLocaleMessage>
     const messages = await Promise.all(locales.map(getMessages))
 
     for (const message of messages) {
