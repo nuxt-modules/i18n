@@ -98,9 +98,18 @@ function analyzeResource(path: string, vfs: Record<string, string>) {
   }
 }
 
-// `() => ({ ... })` parses with an explicit `ParenthesizedExpression` node
-const unwrap = (node?: Node | null): Node | undefined =>
-  node?.type === 'ParenthesizedExpression' ? unwrap(node.expression) : (node ?? undefined)
+// `() => ({ ... })` parses with an explicit `ParenthesizedExpression` node, and TS assertions
+// (`as` / `satisfies` / `!`) nest the runtime expression the same way
+function unwrap(node?: Node | null): Node | undefined {
+  switch (node?.type) {
+    case 'ParenthesizedExpression':
+    case 'TSAsExpression':
+    case 'TSSatisfiesExpression':
+    case 'TSNonNullExpression':
+      return unwrap(node.expression)
+  }
+  return node ?? undefined
+}
 
 /** The expression a module's default export evaluates to, following a single variable hop */
 function resolveDefaultExport(program: Program) {
@@ -157,7 +166,8 @@ function visibleMessages(exported?: Node): ObjectExpression | undefined {
  * expression still evaluates to a value JSON can carry, and a loader building its messages from
  * runtime values is the ordinary case.
  */
-function hasMessageFunction(node: Node): boolean {
+function hasMessageFunction(wrapped: Node): boolean {
+  const node = unwrap(wrapped)!
   switch (node.type) {
     case 'ObjectExpression':
       return node.properties.some(x => x.type === 'Property' && hasMessageFunction(x.value))

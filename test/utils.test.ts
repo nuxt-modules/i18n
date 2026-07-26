@@ -156,6 +156,19 @@ describe('message source classification', () => {
     })
   })
 
+  test('reads through TS assertion wrappers', () => {
+    expect(analyze(`export default { a: () => 'x' } satisfies Record<string, unknown>`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    expect(analyze(`const messages = { a: () => 'x' } as const\nexport default messages`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    expect(analyze(`export default { a: (() => 'x') as unknown }`)).toMatchObject({ serializable: false })
+    expect(analyze(`export default { a: 'x' as string }`)).toMatchObject({ type: 'static', serializable: true })
+  })
+
   test('reads through the loader wrapper', () => {
     expect(analyze(`export default defineI18nLocale(() => ({ a: () => 'x' }))`)).toMatchObject({
       type: 'dynamic',
