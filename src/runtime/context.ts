@@ -2,7 +2,7 @@ import { isRef, unref } from 'vue'
 
 import { useCookie, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
-import { cloneDeep, fillMissing, getLocaleMessagesMergedCached } from './shared/messages'
+import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
@@ -163,8 +163,20 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
   }
 
+  // there is no endpoint to read from without a server, and a statically hosted build only ends
+  // up with the messages that were prerendered - both need the loaders. Anything the build can
+  // resolve to serializable content is served from the endpoint instead, decided per locale.
+  const buildUsesRuntimeLoaders = (locale: string) =>
+    !__IS_SSR__
+    || __I18N_UNSERIALIZABLE_LOCALES__.includes(locale)
+    || (__I18N_DYNAMIC_LOCALES__.includes(locale) && (import.meta.prerender || __IS_SSG__))
+
   const loadMessagesFromLoaders = async (locale: string) => {
     const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+    // dev always loads from loaders - warn when production would deliver this locale as JSON instead
+    if (import.meta.dev && !buildUsesRuntimeLoaders(locale)) {
+      warnMissedMessageFunctions(locale, msg)
+    }
     i18n.mergeLocaleMessage(locale, msg)
   }
 
@@ -205,15 +217,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     config: runtimeI18n,
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
     redirectStatusCode: runtimeI18n.redirectStatusCode ?? 302,
-    // there is no endpoint to read from without a server, and a statically hosted build only ends
-    // up with the messages that were prerendered - both need the loaders, as does dev so that edits
-    // to locale files take effect. Anything the build can resolve to serializable content is served
-    // from the endpoint instead, decided per locale.
-    usesRuntimeLoaders: locale =>
-      import.meta.dev
-      || !__IS_SSR__
-      || __I18N_UNSERIALIZABLE_LOCALES__.includes(locale)
-      || (__I18N_DYNAMIC_LOCALES__.includes(locale) && (import.meta.prerender || __IS_SSG__)),
+    // dev is forced onto the loaders regardless of the build's decision, so that edits to locale
+    // files take effect
+    usesRuntimeLoaders: locale => import.meta.dev || buildUsesRuntimeLoaders(locale),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: async (locale: string) => {

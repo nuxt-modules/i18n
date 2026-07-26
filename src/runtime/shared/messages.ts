@@ -30,6 +30,28 @@ export function cloneDeep<T>(value: T): T {
   return out as T
 }
 
+/** Whether a message tree holds a function anywhere - JSON delivery drops these silently */
+export function hasMessageFunction(value: unknown): boolean {
+  if (isFunction(value)) { return true }
+  if (value == null || typeof value !== 'object') { return false }
+  return Object.values(value).some(hasMessageFunction)
+}
+
+/**
+ * Backstop for the build-time scan, which only sees literal message functions (#3880): warns when
+ * a locale it classified as serializable turns out to hold functions after all. Callers gate this
+ * to dev/prerender - walking every tree is not a production cost.
+ */
+export function warnMissedMessageFunctions(locale: string, messages: unknown) {
+  // assigned before use: this module is also compiled by nitro, whose `replace` leaves
+  // identifiers alone when they are immediately followed by `.`
+  const unserializable: string[] = __I18N_UNSERIALIZABLE_LOCALES__
+  if (unserializable.includes(locale) || !hasMessageFunction(messages)) { return }
+  console.warn(
+    `[nuxt-i18n] Messages for locale "${locale}" contain message functions the build did not detect - they are dropped when messages are delivered as JSON. Write message functions literally in a locale file to make them detectable.`,
+  )
+}
+
 const isTree = (value: unknown): value is Record<string, unknown> =>
   value != null && typeof value === 'object' && !Array.isArray(value)
 

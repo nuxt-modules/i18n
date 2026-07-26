@@ -1,6 +1,7 @@
 import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
+import { warnMissedMessageFunctions } from '../../shared/messages'
 
 import type { H3Event } from 'h3'
 
@@ -19,7 +20,14 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
 
-  return await ctx.loadMessages(locale)
+  const messages = await ctx.loadMessages(locale)
+  // this response is where message functions get dropped - prerender is when SSG bakes it
+  if (import.meta.dev || import.meta.prerender) {
+    for (const k of Object.keys(messages)) {
+      warnMissedMessageFunctions(k, messages[k])
+    }
+  }
+  return messages
 })
 
 const getCacheKey = (event: H3Event) =>

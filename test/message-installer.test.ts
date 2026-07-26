@@ -3,7 +3,7 @@ import { deepCopy } from '@intlify/shared'
 import { createI18n } from 'vue-i18n'
 import { createMessageInstaller } from '../src/runtime/context'
 import { getComposer } from '../src/runtime/compatibility'
-import { cloneDeep, fillMissing } from '../src/runtime/shared/messages'
+import { cloneDeep, fillMissing, hasMessageFunction } from '../src/runtime/shared/messages'
 
 import type { Composer } from 'vue-i18n'
 
@@ -196,6 +196,17 @@ describe('fillMissing', () => {
     expect(fillMissing({ a: 'str' }, { a: { deep: 'x' } })).toEqual({ a: 'str' })
     expect(fillMissing({ a: { deep: 'x' } }, { a: 'str' })).toEqual({ a: { deep: 'x' } })
     expect(fillMissing({ a: ['x'] }, { a: ['y', 'z'] })).toEqual({ a: ['x'] })
+  })
+})
+
+describe('hasMessageFunction', () => {
+  test('finds functions at any depth', () => {
+    expect(hasMessageFunction({ a: { b: () => 'x' } })).toBe(true)
+    expect(hasMessageFunction({ list: ['x', () => 'y'] })).toBe(true)
+  })
+
+  test('plain trees pass', () => {
+    expect(hasMessageFunction({ a: 'x', n: 1, deep: { b: 'y' }, list: ['z'] })).toBe(false)
   })
 })
 
