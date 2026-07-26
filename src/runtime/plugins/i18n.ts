@@ -44,7 +44,14 @@ export default defineNuxtPlugin({
       setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
     }
 
-    prerenderRoutes(localeCodes.map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`))
+    // only endpoint-delivered locales are prerendered: a prerendered response would shadow the
+    // handler with a build-time snapshot (dynamic locales in hybrid builds), or bake stripped
+    // messages nothing fetches (unserializable ones)
+    prerenderRoutes(
+      localeCodes
+        .filter(l => !__I18N_DYNAMIC_LOCALES__.includes(l) && !__I18N_UNSERIALIZABLE_LOCALES__.includes(l))
+        .map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`),
+    )
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
