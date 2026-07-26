@@ -85,7 +85,10 @@ export function getDefineConfig(
   server = false,
   nuxt = useNuxt(),
 ) {
-  const cacheLifetime = options.experimental.cacheLifetime ?? (fullStatic ? FULL_STATIC_LIFETIME : -1)
+  // every cache site is guarded per loader (`cache`) or per locale (`isLocaleCacheable`), so this
+  // only decides whether the mechanism exists - a single dynamic locale file used to switch it off
+  // for the whole project
+  const cacheLifetime = options.experimental.cacheLifetime ?? FULL_STATIC_LIFETIME
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true

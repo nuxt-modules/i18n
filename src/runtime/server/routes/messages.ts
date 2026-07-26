@@ -22,17 +22,22 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   return await ctx.loadMessages(locale)
 })
 
+const getCacheKey = (event: H3Event) =>
+  [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
+
+async function shouldBypassCache(event: H3Event) {
+  const locale = getRouterParam(event, 'locale')
+  if (locale == null) { return false }
+  // prerendering may require initializing context
+  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+  return !ctx.localeConfigs?.[locale]?.cacheable
+}
+
 const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {
   name: 'i18n:messages-internal',
   maxAge: !__I18N_CACHE__ ? -1 : 60 * 60 * 24,
-  getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-'),
-  async shouldBypassCache(event) {
-    const locale = getRouterParam(event, 'locale')
-    if (locale == null) { return false }
-    // prerendering may require initializing context
-    const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
-    return !ctx.localeConfigs?.[locale]?.cacheable
-  },
+  getKey: getCacheKey,
+  shouldBypassCache,
 })
 
 /**
@@ -42,7 +47,8 @@ const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
   name: 'i18n:messages',
   maxAge: !__I18N_CACHE__ ? -1 : __I18N_HTTP_CACHE_DURATION__,
   swr: false,
-  getKey: event => [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-'),
+  getKey: getCacheKey,
+  shouldBypassCache,
 })
 
 /**
