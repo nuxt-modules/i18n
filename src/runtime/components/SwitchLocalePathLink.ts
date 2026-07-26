@@ -3,6 +3,7 @@ import { defineNuxtLink, useNuxtApp } from '#imports'
 import { Comment, computed, defineComponent, h } from 'vue'
 import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
 import { useComposableContext } from '../composable-context'
+import { encodePath } from '../shared/utils'
 
 import type { PropType } from 'vue'
 
@@ -25,7 +26,7 @@ const SlpComponent = defineComponent({
       if (__I18N_STRICT_SEO__ && nuxtApp.isHydrating && Object.keys(payload ?? {}).length && !payload?.[props.locale]) {
         return '#'
       }
-      return encodeURI(switchLocalePath(props.locale)) || (__I18N_STRICT_SEO__ && '#') || ''
+      return encodePath(switchLocalePath(props.locale)) || (__I18N_STRICT_SEO__ && '#') || ''
     })
 
     const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)

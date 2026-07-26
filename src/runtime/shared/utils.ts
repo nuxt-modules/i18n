@@ -37,3 +37,13 @@ export function resolveRootRedirect(config: string | RootRedirectOptions | undef
 export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
+
+/**
+ * Percent-encodes a path without double-encoding segments that are already percent-encoded.
+ * `localePath`/`switchLocalePath` return a mix of the two: a static custom path with
+ * non-ASCII characters comes back pre-encoded from the compiled route, while a dynamic
+ * param can come back as raw, unencoded text.
+ */
+export function encodePath(path: string): string {
+  return encodeURI(path).replace(/%25([0-9a-f]{2})/gi, '%$1')
+}
