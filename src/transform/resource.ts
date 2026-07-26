@@ -18,7 +18,7 @@ export function transform(id: string, input: string, options?: TransformOptions)
 const DEFINE_I18N_FN_RE = /\b(defineI18nLocale|defineI18nConfig)\s*\((.+)\)/gs
 
 export const ResourcePlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nContext) =>
-  createUnplugin(() => {
+  createUnplugin((_options, meta) => {
     // TODO: track all i18n files found in configuration
     const i18nFileMetas = [...ctx.localeFileMetas, ...ctx.vueI18nConfigPaths]
     const i18nPathSet = new Set<string>()
@@ -39,9 +39,10 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nC
           return
         }
 
-        // claim i18n file paths so other plugins (e.g. `unplugin-vue-i18n` since vite 8) cannot
-        // resolve these to virtual modules loaded from disk, which would skip our transforms (#4049)
-        if (i18nPathSet.has(id)) {
+        // claim i18n file paths so `unplugin-vue-i18n` cannot resolve these to virtual modules
+        // loaded from disk, which would skip our transforms (#4049) - it only does so under vite,
+        // and webpack reads a path resolving to itself as `Recursion in resolving`
+        if (meta.framework === 'vite' && i18nPathSet.has(id)) {
           return id
         }
 
