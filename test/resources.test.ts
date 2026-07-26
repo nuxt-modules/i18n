@@ -2,7 +2,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { readStaticResource } from '../src/resources'
+import { readStaticResource, resolveRawResourcePaths } from '../src/resources'
 import { logger } from '../src/utils'
 
 import type { ResolvedI18nContext } from '../src/context'
@@ -112,5 +112,38 @@ describe('readStaticResource', () => {
     expect(result.greeting).toBe('&lt;b&gt;hello&lt;&#x2F;b&gt;')
     // no tag detected, left untouched - matches `@intlify/bundle-utils`
     expect(result.plain).toBe('a > b')
+  })
+})
+
+describe('resolveRawResourcePaths', () => {
+  test('collects static resources and ignores executable locale files', () => {
+    const json = writeResource('raw-en.json', '{"hello":"world"}')
+    const yaml = writeResource('raw-en.yaml', 'hello: world')
+    const json5 = writeResource('raw-en.json5', '{ hello: "world" }')
+    const ts = writeResource('raw-en.ts', 'export default defineI18nLocale(() => ({}))')
+
+    expect(resolveRawResourcePaths([json, yaml, json5, ts])).toEqual(new Set([json, yaml, json5]))
+  })
+
+  test('leaves unparseable resources to the bundler instead of throwing', () => {
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+    const ok = writeResource('raw-ok.json', '{"hello":"world"}')
+    const broken = writeResource('raw-broken.json', '{"hello":')
+
+    expect(resolveRawResourcePaths([ok, broken])).toEqual(new Set([ok]))
+    expect(warn.mock.calls[0]![0]).toContain('Leaving raw-broken.json to the bundler')
+  })
+
+  test('does not validate messages, HTML is rejected on read instead', () => {
+    const path = writeResource('raw-html.json', '{"greeting":"<b>hello</b>"}')
+
+    expect(resolveRawResourcePaths([path])).toEqual(new Set([path]))
+    expect(() => readStaticResource(createCtx({ strictMessage: true }), path)).toThrow(/Detected HTML/)
+  })
+
+  test('deduplicates paths shared by several locales', () => {
+    const path = writeResource('raw-shared.json', '{"hello":"world"}')
+
+    expect(resolveRawResourcePaths([path, path])).toEqual(new Set([path]))
   })
 })

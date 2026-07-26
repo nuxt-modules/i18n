@@ -8,7 +8,7 @@ import { logger } from './utils'
 
 import type { ResolvedI18nContext } from './context'
 
-export const STATIC_RESOURCE_RE = /\.(?:json5?|ya?ml)$/
+const STATIC_RESOURCE_RE = /\.(?:json5?|ya?ml)$/
 const BOM_RE = /^\uFEFF/
 
 function parseResource(path: string) {
@@ -23,6 +23,27 @@ function parseResource(path: string) {
   } catch (err) {
     throw new Error(`Could not parse locale file (${path}): ${(err as Error).message}`, { cause: err })
   }
+}
+
+const toRelative = (path: string) => relative(tryUseNuxt()?.options.rootDir ?? '', path)
+
+/**
+ * The static resources we can read ourselves, the rest are left to the bundler loaders. A resource
+ * we fail to parse may be one they accept, and where it is not they report it with better context -
+ * either way falling back keeps this from breaking a build that worked without the optimization.
+ */
+export function resolveRawResourcePaths(paths: string[]): Set<string> {
+  const raw = new Set<string>()
+  for (const path of new Set(paths)) {
+    if (!STATIC_RESOURCE_RE.test(path)) { continue }
+    try {
+      parseResource(path)
+      raw.add(path)
+    } catch (err) {
+      logger.warn(`Leaving ${toRelative(path)} to the bundler: ${(err as Error).message}`)
+    }
+  }
+  return raw
 }
 
 type ValidateOptions = { strictMessage: boolean | undefined, escapeHtml: boolean, htmlKeys: string[] }
@@ -68,8 +89,8 @@ function warnHtmlMessages(path: string, keys: string[]) {
   if (warnedPaths.has(path)) { return }
   warnedPaths.add(path)
   logger.warn(
-    `Detected HTML in ${keys.length} message${keys.length > 1 ? 's' : ''} in `
-    + `${relative(tryUseNuxt()?.options.rootDir ?? '', path)} (first: "${keys[0]}"). `
+    `Detected HTML in ${keys.length} message${keys.length > 1 ? 's' : ''} in ${toRelative(path)} `
+    + `(first: "${keys[0]}"). `
     + 'Set `compilation.strictMessage` to `true` to reject these, or to `false` to silence this warning.',
   )
 }

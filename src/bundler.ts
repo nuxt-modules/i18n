@@ -4,7 +4,6 @@ import { toArray } from './utils'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { JsonParseMessagesPlugin } from './transform/json-parse'
-import { STATIC_RESOURCE_RE } from './resources'
 import { TransformI18nFunctionPlugin } from './transform/i18n-function-injection'
 import { HeistPlugin } from './transform/heist'
 import { addDefinePlugin } from 'nuxt-define'
@@ -59,7 +58,7 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
       ...vueI18nPluginOptions,
       dropMessageCompiler: false,
       runtimeOnly: false,
-      include: localePaths.filter(x => !STATIC_RESOURCE_RE.test(x)),
+      include: localePaths.filter(x => !ctx.rawResourcePaths.has(x)),
     }
     // `prepend` - without it kit appends after ResourcePlugin, which then claims the virtual ids
     addVitePlugin(() => jsonParsePlugin!.vite(), { client: false, prepend: true })
