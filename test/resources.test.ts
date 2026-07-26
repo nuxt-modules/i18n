@@ -1,15 +1,25 @@
 import { mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 import { readStaticResource } from '../src/resources'
+import { logger } from '../src/utils'
 
 import type { ResolvedI18nContext } from '../src/context'
 
 const dir = mkdtempSync(join(tmpdir(), 'i18n-resources-'))
+const nuxt = { vfs: {} as Record<string, string>, options: { rootDir: dir } }
+
+vi.mock('@nuxt/kit', async importOriginal => ({
+  ...(await importOriginal<typeof import('@nuxt/kit')>()),
+  tryUseNuxt: () => nuxt,
+}))
 
 function createCtx(compilation: { strictMessage?: boolean, escapeHtml?: boolean } = {}) {
-  return { options: { compilation } } as unknown as Pick<ResolvedI18nContext, 'options'>
+  return { options: { compilation }, rawOptions: { compilation } } as unknown as Pick<
+    ResolvedI18nContext,
+    'options' | 'rawOptions'
+  >
 }
 
 function writeResource(name: string, contents: string) {
@@ -17,6 +27,11 @@ function writeResource(name: string, contents: string) {
   writeFileSync(path, contents)
   return path
 }
+
+afterEach(() => {
+  nuxt.vfs = {}
+  vi.restoreAllMocks()
+})
 
 describe('readStaticResource', () => {
   test('minifies json', () => {
@@ -37,17 +52,57 @@ describe('readStaticResource', () => {
     expect(readStaticResource(createCtx(), path)).toBe('{"n":1,"b":true,"nil":null,"list":["a","b"]}')
   })
 
-  test('throws for HTML messages when `strictMessage` is enabled (the default)', () => {
+  test('strips a byte order mark', () => {
+    const path = writeResource('bom.json', '﻿{"hello":"world"}')
+    expect(readStaticResource(createCtx(), path)).toBe('{"hello":"world"}')
+  })
+
+  test('reports the file path when parsing fails', () => {
+    const path = writeResource('broken.json', '{"hello":')
+    expect(() => readStaticResource(createCtx(), path)).toThrow(new RegExp(`Could not parse locale file \\(${path}\\)`))
+  })
+
+  test('reads locale files from the virtual file system', () => {
+    const path = join(dir, 'virtual.json')
+    nuxt.vfs[path] = '{"hello":"virtual"}'
+
+    expect(readStaticResource(createCtx(), path)).toBe('{"hello":"virtual"}')
+  })
+
+  test('throws for HTML messages when `strictMessage` is explicitly enabled', () => {
     const path = writeResource('strict.json', '{"greeting":"<b>hello</b>"}')
-    expect(() => readStaticResource(createCtx(), path)).toThrow(/Detected HTML/)
+    expect(() => readStaticResource(createCtx({ strictMessage: true }), path)).toThrow(/Detected HTML/)
   })
 
   test('reports the message path of the offending message', () => {
+    const ctx = createCtx({ strictMessage: true })
+
     const path = writeResource('nested.json', '{"a":{"b":{"c":"<b>hello</b>"}}}')
-    expect(() => readStaticResource(createCtx(), path)).toThrow(/at "a\.b\.c"/)
+    expect(() => readStaticResource(ctx, path)).toThrow(/at "a\.b\.c"/)
 
     const inArray = writeResource('array.json', '{"list":["ok","<i>bad</i>"]}')
-    expect(() => readStaticResource(createCtx(), inArray)).toThrow(/at "list\.1"/)
+    expect(() => readStaticResource(ctx, inArray)).toThrow(/at "list\.1"/)
+  })
+
+  // these resources are not precompiled, so nothing rejected HTML in them before
+  // `optimizeMessageBundling` - warn rather than break builds that have always passed
+  test('warns once per file instead of throwing when `strictMessage` is not set', () => {
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+    const path = writeResource('warn.json', '{"a":"<b>hello</b>","b":{"c":"<i>hi</i>"},"d":"plain"}')
+
+    expect(JSON.parse(readStaticResource(createCtx(), path)).a).toBe('<b>hello</b>')
+    readStaticResource(createCtx(), path)
+
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn.mock.calls[0]![0]).toContain('Detected HTML in 2 messages in warn.json (first: "a")')
+  })
+
+  test('stays silent when `strictMessage` is explicitly disabled', () => {
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+    const path = writeResource('silent.json', '{"greeting":"<b>hello</b>"}')
+
+    expect(JSON.parse(readStaticResource(createCtx({ strictMessage: false }), path)).greeting).toBe('<b>hello</b>')
+    expect(warn).not.toHaveBeenCalled()
   })
 
   test('escapes HTML when `escapeHtml` is enabled and strict is off', () => {
@@ -57,12 +112,5 @@ describe('readStaticResource', () => {
     expect(result.greeting).toBe('&lt;b&gt;hello&lt;&#x2F;b&gt;')
     // no tag detected, left untouched - matches `@intlify/bundle-utils`
     expect(result.plain).toBe('a > b')
-  })
-
-  test('leaves HTML untouched when both checks are disabled', () => {
-    const path = writeResource('loose.json', '{"greeting":"<b>hello</b>"}')
-    const ctx = createCtx({ strictMessage: false, escapeHtml: false })
-
-    expect(JSON.parse(readStaticResource(ctx, path)).greeting).toBe('<b>hello</b>')
   })
 })
