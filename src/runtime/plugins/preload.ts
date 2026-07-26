@@ -17,21 +17,10 @@ export default defineNuxtPlugin({
     const ctx = useNuxtI18nContext(nuxt)
 
     if (import.meta.server) {
+      // loadMessages dispatches per locale between the endpoint (read directly, no `$fetch`
+      // round-trip) and runtime loaders, and installs shared trees instead of copying
       for (const locale of localeCodes) {
-        try {
-          // the endpoint would drop this locale's message functions
-          if (ctx.usesRuntimeLoaders(locale)) {
-            nuxt.$i18n.mergeLocaleMessage(locale, await getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
-            continue
-          }
-
-          const messages = await $fetch(`${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`)
-          for (const locale of Object.keys(messages)) {
-            nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])
-          }
-        } catch (e) {
-          console.warn('Error loading messages', e)
-        }
+        await ctx.loadMessages(locale)
       }
 
       ctx.preloaded = true
