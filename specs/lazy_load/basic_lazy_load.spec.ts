@@ -9,7 +9,15 @@ import { Page } from 'playwright-core'
 describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-    browser: true
+    browser: true,
+    // pins the opt-out, `optimize_message_bundling.spec.ts` covers the default on the same fixture
+    nuxtConfig: {
+      i18n: {
+        experimental: {
+          optimizeMessageBundling: false
+        }
+      }
+    }
   })
 
   test('dynamic locale files are not cached', async () => {
