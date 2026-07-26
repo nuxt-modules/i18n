@@ -114,9 +114,12 @@ export default defineNitroPlugin(async (nitro) => {
       return
     }
 
-    const resolved = resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
+    const host = __I18N_DOMAINS__ ? getRequestURL(event, { xForwardedHost: true }).host : undefined
+    const resolved = resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector, host)
+    // set even without a path change, since a domain-restricted locale detected from the
+    // browser or cookie gets corrected back to the domain's own default here (see `resolveHostLocale`)
+    ctx.detectLocale = resolved.locale
     if (resolved.path && resolved.path !== pathname) {
-      ctx.detectLocale = resolved.locale
       detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
       context.response = createRedirectResponse(
         event,

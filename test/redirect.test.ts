@@ -164,3 +164,58 @@ describe('createRedirectResolver', () => {
     expect(resolve('/fr/about', '/about', 'fr', 'en', createDetectors()).locale).toBe('fr')
   })
 })
+
+describe('createRedirectResolver (domains)', () => {
+  const DOMAIN_LOCALES = [
+    { code: 'en', domain: 'a.example.com' },
+    // shared between both domains, not the default on either
+    { code: 'fr', domains: ['a.example.com', 'b.example.com'] },
+    { code: 'ja', domain: 'b.example.com' },
+  ]
+
+  function createDomainResolver(overrides: Partial<RedirectResolverConfig> = {}) {
+    return createResolver({
+      strategy: 'prefix_except_default',
+      domains: true,
+      locales: DOMAIN_LOCALES,
+      detection: detection({ enabled: true, redirectOn: 'root' }),
+      isSupportedLocale: locale => ['en', 'fr', 'ja'].includes(locale || ''),
+      ...overrides,
+    })
+  }
+
+  test('falls back to `defaultLocale` when the detected locale does not exist on this host', () => {
+    const resolve = createDomainResolver()
+    const withCookie = createDetectors({ cookie: () => 'ja' })
+    const result = resolve('/', '/', undefined, 'en', withCookie, 'a.example.com')
+    expect(result).toMatchObject({ locale: 'en', path: undefined })
+  })
+
+  test('still redirects to a detected locale that is shared onto this host', () => {
+    const resolve = createDomainResolver()
+    const withCookie = createDetectors({ cookie: () => 'fr' })
+    const result = resolve('/', '/', undefined, 'en', withCookie, 'a.example.com')
+    expect(result).toMatchObject({ locale: 'fr', path: '/fr' })
+  })
+
+  test('still redirects to a detected locale that is this host\'s own default', () => {
+    const resolve = createDomainResolver()
+    const withCookie = createDetectors({ cookie: () => 'ja' })
+    const result = resolve('/', '/', undefined, 'ja', withCookie, 'b.example.com')
+    expect(result).toMatchObject({ locale: 'ja', path: undefined })
+  })
+
+  test('does not restrict anything on an unrecognized host', () => {
+    const resolve = createDomainResolver()
+    const withCookie = createDetectors({ cookie: () => 'ja' })
+    const result = resolve('/', '/', undefined, 'en', withCookie, 'unknown.example.com')
+    expect(result).toMatchObject({ locale: 'ja', path: '/ja' })
+  })
+
+  test('does not restrict anything when no host is given', () => {
+    const resolve = createDomainResolver()
+    const withCookie = createDetectors({ cookie: () => 'ja' })
+    const result = resolve('/', '/', undefined, 'en', withCookie)
+    expect(result).toMatchObject({ locale: 'ja', path: '/ja' })
+  })
+})

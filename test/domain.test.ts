@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { domainFromLocale, matchDomainLocale, normalizeDomain, withRuntimeDomain } from '../src/runtime/shared/domain'
+import { domainFromLocale, matchDomainLocale, normalizeDomain, resolveHostLocale, withRuntimeDomain } from '../src/runtime/shared/domain'
 import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
 import { createBaseUrlGetter } from '../src/runtime/context'
 import { normalizeDomainLocale } from '../src/utils'
@@ -72,6 +72,33 @@ describe('getDefaultLocaleForDomain', () => {
 
   test('returns undefined for unknown host', () => {
     expect(getDefaultLocaleForDomain('unknown.example.com', locales)).toBeUndefined()
+  })
+})
+
+describe('resolveHostLocale', () => {
+  test('falls back to `defaultLocale` when the locale is restricted away from this host', () => {
+    expect(resolveHostLocale('fr', 'en', 'en.example.com', locales)).toBe('en')
+  })
+
+  test('keeps the locale when it is restricted to this host', () => {
+    expect(resolveHostLocale('en', 'en', 'en.example.com', locales)).toBe('en')
+  })
+
+  test('keeps a locale shared between multiple domains when this host is one of them', () => {
+    expect(resolveHostLocale('de', 'nl', 'shared.example.com', locales)).toBe('de')
+  })
+
+  test('a locale with no `domain`/`domains` is available on every host', () => {
+    const withUnrestricted = [...locales, { code: 'xx' }]
+    expect(resolveHostLocale('xx', 'en', 'en.example.com', withUnrestricted)).toBe('xx')
+  })
+
+  test('an unrecognized host is not restricted at all', () => {
+    expect(resolveHostLocale('fr', 'en', 'unknown.example.com', locales)).toBe('fr')
+  })
+
+  test('no host given is not restricted at all', () => {
+    expect(resolveHostLocale('fr', 'en', undefined, locales)).toBe('fr')
   })
 })
 

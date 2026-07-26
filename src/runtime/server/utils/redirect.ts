@@ -1,8 +1,9 @@
 import { parsePath } from 'ufo'
 import { createLocaleDetector } from '../../shared/detection'
 import { isSupportedLocale } from '../../shared/locales'
+import { resolveHostLocale } from '../../shared/domain'
 
-import type { Strategies } from '#internal-i18n-types'
+import type { LocaleObject, Strategies } from '#internal-i18n-types'
 import type { useDetectors } from '../../shared/detection'
 import type { useI18nDetection } from '../../shared/utils'
 
@@ -21,6 +22,8 @@ export type RedirectResolverConfig = {
   routing: boolean
   /** Whether locales are resolved from domains */
   domains: boolean
+  /** @default `normalizedLocales` */
+  locales?: LocaleObject[]
 }
 
 export type ResolvedRedirect = { path: string | undefined, code: number, locale: string }
@@ -40,9 +43,16 @@ export function createRedirectResolver(config: RedirectResolverConfig) {
     pathLocale: string | undefined,
     defaultLocale: string,
     detectors: Detectors,
+    host?: string,
   ): ResolvedRedirect {
     // the server handles fresh requests, detection is always `initial`
     let locale = detectLocale(detectors, fullPath, true) || defaultLocale
+
+    // a locale detected from the browser or cookie may not actually exist on this domain,
+    // stick with the domain's default instead of redirecting to a locale or path that 404s
+    if (domains) {
+      locale = resolveHostLocale(locale, defaultLocale, host, config.locales)
+    }
 
     function getLocalizedMatch(locale: string) {
       const res = matchLocalized(path || '/', locale, defaultLocale)

@@ -20,6 +20,27 @@ export function isLocaleOnHost(locale: LocaleObject | undefined, host: string): 
   )
 }
 
+/**
+ * Resolves the locale to actually use on `host`: if `locale` is restricted to specific
+ * domains and isn't available on this one, falls back to `defaultLocale` instead, so a
+ * detected locale never points at a locale/path that doesn't exist on the current domain.
+ * A locale with no `domain`/`domains` configured is available everywhere, and an
+ * unrecognized host (not listed for any locale) isn't restricted at all.
+ */
+export function resolveHostLocale(
+  locale: string,
+  defaultLocale: string,
+  host: string | undefined,
+  locales: LocaleObject[] = normalizedLocales,
+): string {
+  const configuredHost = host && locales.some(l => isLocaleOnHost(l, host)) ? host : undefined
+  if (!configuredHost) { return locale }
+
+  const localeConfig = locales.find(l => l.code === locale)
+  const restricted = localeConfig && (localeConfig.domain || localeConfig.domains?.length)
+  return restricted && !isLocaleOnHost(localeConfig, configuredHost) ? defaultLocale : locale
+}
+
 export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
   const matches = locales.filter(locale => isLocaleOnHost(locale, host))
 
