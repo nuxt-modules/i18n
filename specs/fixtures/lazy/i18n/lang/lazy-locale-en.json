@@ -5,5 +5,8 @@
   "dynamic": "Dynamic",
   "html": "<span>This is the danger</span>",
   "dynamicTime": "Not dynamic",
-  "welcome": "Welcome!"
+  "welcome": "Welcome!",
+  "nested": {
+    "deep": "Deeply nested"
+  }
 }

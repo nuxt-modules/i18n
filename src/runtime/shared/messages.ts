@@ -16,6 +16,20 @@ type LocaleLoader<T = LocaleMessages<DefineLocaleMessage>> = {
 
 const cacheMessages = new Map<string, { ttl: number, value: LocaleMessages<DefineLocaleMessage> }>()
 
+/**
+ * Clone a message tree. Unlike `@intlify/shared`'s `deepCopy` this copies arrays instead of
+ * sharing them; message functions are shared, vue-i18n treats them as opaque values.
+ */
+export function cloneDeep<T>(value: T): T {
+  if (value == null || typeof value !== 'object') { return value }
+  if (Array.isArray(value)) { return value.map(cloneDeep) as T }
+  const out = create(null) as Record<string, unknown>
+  for (const key of Object.keys(value)) {
+    out[key] = cloneDeep((value as Record<string, unknown>)[key])
+  }
+  return out as T
+}
+
 const merger = createDefu((obj, key, value) => {
   if (key === 'messages' || key === 'datetimeFormats' || key === 'numberFormats') {
     // @ts-expect-error generic object
