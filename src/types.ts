@@ -217,10 +217,11 @@ export interface ExperimentalFeatures {
    */
   prerenderMessages?: boolean
   /**
-   * Skip precompiling static locale resources (JSON/JSON5/YAML) in server builds, embedding them as
-   * raw messages instead to reduce build time and memory. The client bundle keeps precompiled
-   * messages, the server compiles messages at runtime. Vite only.
-   * @default false
+   * Embed static locale resources (JSON/JSON5/YAML) in server builds as raw messages instead of
+   * handing them to the bundler, reducing build time and memory. The client bundle is unaffected.
+   * Disable this if a custom Nitro Rollup plugin transforms your locale files, they are no longer
+   * imported into the server graph.
+   * @default true
    */
   optimizeMessageBundling?: boolean
 }
@@ -236,6 +237,9 @@ export interface CustomBlocksOptions extends Pick<PluginOptions, 'defaultSFCLang
 export interface LocaleMessageCompilationOptions {
   /**
    * Whether to strictly check that the locale message does not contain HTML tags. If HTML tags are included, an error is thrown.
+   *
+   * Resources that are not precompiled were never checked, so HTML in those is reported as a build
+   * warning while this option is left at its default. Set it explicitly to reject or allow them.
    *
    * @default true
    */
