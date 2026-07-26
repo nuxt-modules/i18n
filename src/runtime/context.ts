@@ -171,12 +171,17 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const loadMessagesFromServer = async (locale: string) => {
     if (locale in localeLoaders === false) { return }
 
+    // a response can embed fallback locales that belong to runtime loaders - merging those would
+    // overwrite the loader-produced messages with a (possibly prerendered) build-time snapshot
+    const deliverable = (messages: LocaleMessages<DefineLocaleMessage>) =>
+      Object.keys(messages).filter(k => !ctx.usesRuntimeLoaders(k))
+
     // during SSR the messages endpoint runs in this same process - `$fetch` would serialize the
     // whole message tree to JSON and parse it back on every request
     const serverCtx = import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined
     if (serverCtx?.loadMessages && installMessages) {
       const messages = await serverCtx.loadMessages(locale)
-      for (const k of Object.keys(messages)) {
+      for (const k of deliverable(messages)) {
         installMessages(k, messages[k]!)
       }
       return
@@ -188,7 +193,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     const prefix = import.meta.client && __I18N_CDN__ ? (nuxt.$config.app.cdnURL || '') : ''
     const url = joinURL(prefix, __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
     const messages = await $fetch<LocaleMessages<DefineLocaleMessage>>(url, { headers })
-    for (const k of Object.keys(messages)) {
+    for (const k of deliverable(messages)) {
       i18n.mergeLocaleMessage(k, messages[k])
     }
   }
