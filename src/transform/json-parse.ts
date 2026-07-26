@@ -1,5 +1,5 @@
 import { createUnplugin } from 'unplugin'
-import { STATIC_RESOURCE_RE, readStaticResource } from '../resources'
+import { readStaticResource } from '../resources'
 import { asI18nVirtual } from './utils'
 
 import type { ResolvedI18nContext } from '../context'
@@ -15,7 +15,7 @@ export const JsonParseMessagesPlugin = (ctx: ResolvedI18nContext) =>
   createUnplugin(() => {
     const virtualToPath = new Map<string, string>()
     for (const fileMeta of ctx.localeFileMetas) {
-      if (STATIC_RESOURCE_RE.test(fileMeta.path)) {
+      if (ctx.rawResourcePaths.has(fileMeta.path)) {
         virtualToPath.set(asI18nVirtual(fileMeta.hash), fileMeta.path)
       }
     }

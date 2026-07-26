@@ -4,7 +4,7 @@ import { dirname, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateLocaleCodes } from './utils'
-import { STATIC_RESOURCE_RE } from './resources'
+import { resolveRawResourcePaths } from './resources'
 import { generateLoaderOptions } from './gen'
 
 import type { Resolver } from '@nuxt/kit'
@@ -32,6 +32,8 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
   localeFileMetas: FileMeta[]
   /** unique resolved locale file paths */
   localeFilePaths: string[]
+  /** locale file paths served as raw messages instead of being handed to the bundler */
+  rawResourcePaths: Set<string>
   vueI18nConfigPaths: Omit<FileMeta, 'cache'>[]
   localeHashes: Record<string, string>
   fullStatic: boolean
@@ -74,11 +76,16 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
   const localeFileMetas = localeInfo.flatMap(x => x.meta)
   const vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx)
 
-  // static resources ship as lazily read nitro server assets, keeping message data out of the
+  const localeFilePaths = [...new Set(localeFileMetas.map(meta => meta.path))]
+  const rawResourcePaths = ctx.options.experimental.optimizeMessageBundling
+    ? resolveRawResourcePaths(localeFilePaths)
+    : new Set<string>()
+
+  // raw resources ship as lazily read nitro server assets, keeping message data out of the
   // server bundles - dev keeps eager imports for HMR and virtual file support
-  if (ctx.options.experimental.optimizeMessageBundling && !nuxt.options.dev) {
+  if (!nuxt.options.dev) {
     for (const meta of localeFileMetas) {
-      if (STATIC_RESOURCE_RE.test(meta.path)) {
+      if (rawResourcePaths.has(meta.path)) {
         meta.assetKey = `${meta.hash}.json`
       }
     }
@@ -89,7 +96,8 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     localeCodes,
     localeInfo,
     localeFileMetas,
-    localeFilePaths: [...new Set(localeFileMetas.map(meta => meta.path))],
+    localeFilePaths,
+    rawResourcePaths,
     vueI18nConfigPaths,
     /**
      * content-hash locale files now that all locales and configs are known,
