@@ -59,7 +59,8 @@ describe('readStaticResource', () => {
 
   test('reports the file path when parsing fails', () => {
     const path = writeResource('broken.json', '{"hello":')
-    expect(() => readStaticResource(createCtx(), path)).toThrow(new RegExp(`Could not parse locale file \\(${path}\\)`))
+    // string matcher - a path interpolated into a regex escapes its own separators on windows
+    expect(() => readStaticResource(createCtx(), path)).toThrow(`Could not parse locale file (${path})`)
   })
 
   test('reads locale files from the virtual file system', () => {
