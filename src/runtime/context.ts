@@ -39,8 +39,8 @@ export interface NuxtI18nContext {
   initial: boolean
   /** Locale messages attached during SSR and loaded during hydration */
   preloaded: boolean
-  /** SSG with dynamic locale resources */
-  dynamicResourcesSSG: boolean
+  /** Whether a locale's messages have to be produced by running its loaders */
+  usesRuntimeLoaders: (locale: Locale) => boolean
   rootRedirect: { path: string, code: number } | undefined
   redirectStatusCode: number
   /** Get default locale */
@@ -159,13 +159,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
   }
 
-  const loadMessagesFromClient = async (locale: string) => {
-    const locales = getLocaleConfig(locale)?.fallbacks ?? []
-    if (!locales.includes(locale)) { locales.push(locale) }
-    for (const k of locales) {
-      const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(k, localeLoaders[k]))
-      i18n.mergeLocaleMessage(k, msg)
-    }
+  const loadMessagesFromLoaders = async (locale: string) => {
+    const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+    i18n.mergeLocaleMessage(locale, msg)
   }
 
   const loadMessagesFromServer = async (locale: string) => {
@@ -200,7 +196,14 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     config: runtimeI18n,
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
     redirectStatusCode: runtimeI18n.redirectStatusCode ?? 302,
-    dynamicResourcesSSG: !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)),
+    // there is no endpoint to read from without a server, and a statically hosted build only ends
+    // up with the messages that were prerendered - both need the loaders, as does dev so that edits
+    // to locale files take effect. Anything the build can resolve to fixed content is served from
+    // the endpoint instead, decided per locale.
+    usesRuntimeLoaders: locale =>
+      import.meta.dev
+      || !__IS_SSR__
+      || (__I18N_DYNAMIC_LOCALES__.includes(locale) && (import.meta.prerender || __IS_SSG__)),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: async (locale: string) => {
@@ -247,9 +250,17 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       if (nuxt.isHydrating && loadMap.has(locale)) { return }
 
       try {
-        return ctx.dynamicResourcesSSG || import.meta.dev
-          ? await loadMessagesFromClient(locale)
-          : await loadMessagesFromServer(locale)
+        const fallbacks = getLocaleConfig(locale)?.fallbacks ?? []
+        const chain = fallbacks.includes(locale) ? fallbacks : [...fallbacks, locale]
+        // the endpoint merges a locale with its fallbacks, so one request covers a chain of them
+        if (!chain.some(x => ctx.usesRuntimeLoaders(x))) {
+          return await loadMessagesFromServer(locale)
+        }
+        // a static fallback of a dynamic locale has no loaders left to run, so each locale in the
+        // chain is loaded through whichever source holds its messages
+        for (const k of chain) {
+          await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
+        }
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       } finally {

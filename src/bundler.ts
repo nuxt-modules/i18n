@@ -81,7 +81,7 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
 }
 
 export function getDefineConfig(
-  { options, rawOptions, fullStatic, localeHashes }: ResolvedI18nContext,
+  { options, rawOptions, dynamicLocales, localeHashes }: ResolvedI18nContext,
   server = false,
   nuxt = useNuxt(),
 ) {
@@ -112,7 +112,7 @@ export function getDefineConfig(
     __I18N_CACHE__: String(isCacheEnabled),
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
-    __I18N_FULL_STATIC__: String(fullStatic),
+    __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 

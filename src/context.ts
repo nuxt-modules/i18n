@@ -36,9 +36,16 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
   rawResourcePaths: Set<string>
   vueI18nConfigPaths: Omit<FileMeta, 'cache'>[]
   localeHashes: Record<string, string>
-  fullStatic: boolean
+  /**
+   * Locales whose messages are not build-time content and can only be produced by running their
+   * loaders. Everything else can be served from the (prerenderable) messages endpoint.
+   */
+  dynamicLocales: string[]
   loaderOptions: ReturnType<typeof generateLoaderOptions>
 }
+
+/** A file the build cannot resolve to fixed content - its loader has to run at runtime */
+const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache === false
 
 type LayerWithI18n = { config: NuxtConfigLayer, i18n: Partial<NuxtI18nOptions>, i18nDir: string, i18nDetector?: string }
 const resolver = createResolver(import.meta.url)
@@ -91,6 +98,8 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     }
   }
 
+  const dynamicLocales = localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code)
+
   const resolved = assign(ctx as ResolvedI18nContext, {
     normalizedLocales,
     localeCodes,
@@ -105,7 +114,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
      * on every build
      */
     localeHashes: computeLocaleHashes(localeInfo, vueI18nConfigPaths),
-    fullStatic: localeFileMetas.every(meta => meta.type === 'static' || meta.cache !== false),
+    dynamicLocales,
   })
   resolved.loaderOptions = generateLoaderOptions(resolved)
 

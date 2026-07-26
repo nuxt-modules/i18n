@@ -68,31 +68,25 @@ async function mergePayloadMessages(ctx: NuxtI18nContext, i18n: Composer | VueI1
   const preloadedMessages: LocaleMessages<DefineLocaleMessage> = content && parse(content)
   const preloadedKeys = Object.keys(preloadedMessages || {})
 
-  if (preloadedKeys.length) {
-    if (ctx.dynamicResourcesSSG) {
-      const getKeyedLocaleMessages = async (locale: string) => {
-        return { [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale]) }
-      }
+  if (!preloadedKeys.length) { return }
 
-      try {
-        const msg = await Promise.all(preloadedKeys.map(getKeyedLocaleMessages))
-        for (const m of msg) {
-          for (const k in m) {
-            i18n.mergeLocaleMessage(k, m[k])
-          }
-        }
-      } catch (e) {
-        console.warn('Error loading messages', e)
-      }
-      ctx.preloaded = true
-    } else {
-      for (const locale of preloadedKeys) {
-        const messages = preloadedMessages[locale]
-        if (messages) {
-          i18n.mergeLocaleMessage(locale, messages)
-        }
-      }
-      ctx.preloaded = true
+  for (const locale of preloadedKeys) {
+    if (ctx.usesRuntimeLoaders(locale)) { continue }
+    const messages = preloadedMessages[locale]
+    if (messages) {
+      i18n.mergeLocaleMessage(locale, messages)
     }
   }
+
+  // the payload of a locale behind runtime loaders holds whatever the build resolved, so its
+  // messages are loaded again here
+  try {
+    const reloaded = preloadedKeys.filter(locale => ctx.usesRuntimeLoaders(locale))
+    const messages = await Promise.all(reloaded.map(x => getLocaleMessagesMergedCached(x, localeLoaders[x])))
+    reloaded.forEach((locale, i) => i18n.mergeLocaleMessage(locale, messages[i]))
+  } catch (e) {
+    console.warn('Error loading messages', e)
+  }
+
+  ctx.preloaded = true
 }

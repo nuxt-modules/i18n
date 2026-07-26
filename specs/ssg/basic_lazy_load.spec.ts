@@ -1,7 +1,13 @@
 import { test, expect, describe } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { setup, url } from '../utils'
-import { getLocalesMessageKeyCount, renderPage, waitForLocaleFileNetwork, waitForLocaleSwitch } from '../helper'
+import {
+  getLocalesMessageKeyCount,
+  renderPage,
+  waitForLocaleFileNetwork,
+  waitForLocaleNetwork,
+  waitForLocaleSwitch
+} from '../helper'
 import { Page } from 'playwright-core'
 
 describe('basic lazy loading', async () => {
@@ -49,11 +55,8 @@ describe('basic lazy loading', async () => {
       }
     `)
 
-    // navigate and wait for locale file request
-    await Promise.all([
-      waitForLocaleFileNetwork(page, 'lazy-locale-fr.js', 'response'),
-      page.click('#nuxt-locale-link-fr')
-    ])
+    // `fr` messages are static, so they come from the prerendered endpoint instead of a chunk
+    await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#nuxt-locale-link-fr')])
 
     // `fr` locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
