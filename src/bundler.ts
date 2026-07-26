@@ -12,7 +12,7 @@ import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
 import type { ResolvedI18nContext } from './context'
-import { DEFAULT_COOKIE_KEY, DYNAMIC_PARAMS_KEY, FULL_STATIC_LIFETIME, SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from './constants'
+import { DEFAULT_CACHE_LIFETIME, DEFAULT_COOKIE_KEY, DYNAMIC_PARAMS_KEY, SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from './constants'
 import { version } from '../package.json'
 
 export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
@@ -81,14 +81,15 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
 }
 
 export function getDefineConfig(
-  { options, rawOptions, dynamicLocales, unserializableLocales, localeHashes }: ResolvedI18nContext,
+  { options, rawOptions, dynamicLocales, unserializableLocales, localeFileMetas, localeHashes }: ResolvedI18nContext,
   server = false,
   nuxt = useNuxt(),
 ) {
   // every cache site is guarded per loader (`cache`) or per locale (`isLocaleCacheable`), so this
   // only decides whether the mechanism exists - a single dynamic locale file used to switch it off
-  // for the whole project
-  const cacheLifetime = options.experimental.cacheLifetime ?? FULL_STATIC_LIFETIME
+  // for the whole project, while a project without any cacheable file has no use for it
+  const cacheLifetime = options.experimental.cacheLifetime
+    ?? (localeFileMetas.some(m => m.cache) ? DEFAULT_CACHE_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true
