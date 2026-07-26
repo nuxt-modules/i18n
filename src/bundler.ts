@@ -85,6 +85,9 @@ export function getDefineConfig(
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
     // gate for domain-based locale resolution
     __I18N_DOMAINS__: String(options.differentDomains || options.multiDomainLocales),
+    // gate for behavior specific to `multiDomainLocales` (as opposed to `differentDomains`,
+    // which intentionally cross-links every locale across domains)
+    __I18N_MULTI_DOMAIN_LOCALES__: String(options.multiDomainLocales),
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),

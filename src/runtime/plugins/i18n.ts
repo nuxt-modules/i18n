@@ -13,7 +13,7 @@ import { type NuxtI18nContext, createNuxtI18nContext, useLocaleConfigs } from '.
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
-import { withRuntimeDomain } from '../shared/domain'
+import { isLocaleOnHost, withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
 import type { I18nHeadOptions } from '#internal-i18n-types'
@@ -28,8 +28,8 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale
-      = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
+    const host = __I18N_DOMAINS__ ? useRequestURL({ xForwardedHost: true }).host : ''
+    const _defaultLocale = getDefaultLocaleForDomain(host) || runtimeI18n.defaultLocale || ''
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
@@ -41,7 +41,7 @@ export default defineNuxtPlugin({
     }
 
     if (__I18N_DOMAINS__) {
-      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
+      setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__, undefined, normalizedLocales, host)
     }
 
     prerenderRoutes(localeCodes.map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`))
@@ -60,9 +60,16 @@ export default defineNuxtPlugin({
     // extend i18n instance
     extendI18n(i18n, {
       extendComposer(composer) {
-        composer.locales = computed(() =>
-          runtimeI18n.locales.map(locale => withRuntimeDomain(locale, runtimeI18n.domainLocales)),
-        )
+        composer.locales = computed(() => {
+          const locales = runtimeI18n.locales.map(locale => withRuntimeDomain(locale, runtimeI18n.domainLocales))
+          // only for multiDomainLocales, hide locales that aren't served on this host.
+          // differentDomains intentionally links every locale across domains, so it keeps
+          // them all visible. This is skipped entirely on an unrecognized host, it just
+          // falls back to showing every locale, as if nothing were restricted
+          if (!__I18N_MULTI_DOMAIN_LOCALES__) { return locales }
+          const onHost = locales.map(l => (typeof l === 'string' ? null : isLocaleOnHost(l, host)))
+          return onHost.includes(true) ? locales.filter((_, i) => onHost[i] !== false) : locales
+        })
         composer.localeCodes = computed(() => localeCodes)
 
         const _baseUrl = ref(ctx.getBaseUrl())

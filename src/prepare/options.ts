@@ -27,9 +27,18 @@ export function prepareOptions({ options }: I18nNuxtContext, nuxt: Nuxt) {
   const defaultLocale = (nuxt.options.i18n && nuxt.options.i18n.defaultLocale) || options.defaultLocale
   const hasMultiDomainLocales = (nuxt.options.i18n && nuxt.options.i18n.multiDomainLocales) || options.multiDomainLocales
 
-  if (strategy.endsWith('_default') && !defaultLocale && !hasMultiDomainLocales) {
+  if (strategy.endsWith('_default') && !defaultLocale) {
     logger.warn(
-      `The \`${strategy}\` i18n strategy${(nuxt.options.i18n && nuxt.options.i18n.strategy) == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
+      `The \`${strategy}\` i18n strategy${(nuxt.options.i18n && nuxt.options.i18n.strategy) == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`
+      + (hasMultiDomainLocales
+        ? ' Even with `multiDomainLocales`, this is still needed as the fallback default for a host that doesn\'t match any configured domain.'
+        : ''),
+    )
+  }
+
+  if (options.differentDomains && hasMultiDomainLocales) {
+    logger.warn(
+      'Both `differentDomains` and `multiDomainLocales` are enabled, use only one of them. Having both active at once causes inconsistent behavior, such as the locale switcher hiding locales that `differentDomains` would normally cross-link.',
     )
   }
 

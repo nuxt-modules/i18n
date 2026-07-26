@@ -269,6 +269,105 @@ describe('localizeRoutes', function () {
     })
   })
 
+  describe('strategy: "prefix_except_default" + multiDomainLocales with restricted locale subsets', function () {
+    const locales = [
+      // 'en' has no domain restriction at all, so it's available on every host
+      { code: 'en' },
+      { code: 'fr', domains: ['a.example.com'], defaultForDomains: ['a.example.com'] },
+      { code: 'es', domains: ['b.example.com'], defaultForDomains: ['b.example.com'] }
+    ]
+
+    function buildRouter() {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        multiDomainLocales: true,
+        locales
+      })
+      return createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+    }
+
+    it('removes routes for locales not served on the current (recognized) host', function () {
+      const router = buildRouter()
+      setupMultiDomainLocales('fr', 'prefix_except_default', router, locales, 'a.example.com')
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___fr']).toBe('/about')
+      expect(domainPaths['about___en']).toBe('/en/about')
+      expect(domainPaths['about___es']).toBeUndefined()
+    })
+
+    it('keeps a locale with no domain restriction on every host', function () {
+      const router = buildRouter()
+      setupMultiDomainLocales('es', 'prefix_except_default', router, locales, 'b.example.com')
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___es']).toBe('/about')
+      expect(domainPaths['about___en']).toBe('/en/about')
+      expect(domainPaths['about___fr']).toBeUndefined()
+    })
+
+    it('falls back to serving every locale when the host is not a recognized domain', function () {
+      const router = buildRouter()
+      setupMultiDomainLocales('en', 'prefix_except_default', router, locales, 'unknown.example.com')
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___en']).toBe('/about')
+      expect(domainPaths['about___fr']).toBe('/fr/about')
+      expect(domainPaths['about___es']).toBe('/es/about')
+    })
+
+    it('serves every locale when no host is given', function () {
+      const router = buildRouter()
+      setupMultiDomainLocales('en', 'prefix_except_default', router, locales)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___en']).toBe('/about')
+      expect(domainPaths['about___fr']).toBe('/fr/about')
+      expect(domainPaths['about___es']).toBe('/es/about')
+    })
+  })
+
+  describe('strategy: "prefix" + multiDomainLocales with restricted locale subsets', function () {
+    const locales = [
+      { code: 'en' },
+      { code: 'fr', domains: ['a.example.com'], defaultForDomains: ['a.example.com'] },
+      { code: 'es', domains: ['b.example.com'], defaultForDomains: ['b.example.com'] }
+    ]
+
+    function buildRouter() {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix',
+        multiDomainLocales: true,
+        locales
+      })
+      return createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+    }
+
+    it('removes routes for locales not served on the current host, every locale stays prefixed', function () {
+      const router = buildRouter()
+      setupMultiDomainLocales('en', 'prefix', router, locales, 'a.example.com')
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___en']).toBe('/en/about')
+      expect(domainPaths['about___fr']).toBe('/fr/about')
+      expect(domainPaths['about___es']).toBeUndefined()
+    })
+  })
+
+  describe('strategy: "no_prefix"', function () {
+    it('setupMultiDomainLocales is a no-op, no_prefix only supports one locale per domain', function () {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about___en' }, { path: '/about', name: 'about___fr' }]
+      const router = createRouter({ routes: routes as any, history: createMemoryHistory() })
+      const before = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+
+      setupMultiDomainLocales('en', 'no_prefix', router, [{ code: 'en' }, { code: 'fr', domains: ['a.example.com'] }], 'b.example.com')
+
+      const after = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(after).toEqual(before)
+    })
+  })
+
   describe('strategy: "prefix_except_default"', function () {
     it('should be localized routing', function () {
       const routes: NuxtPage[] = [
