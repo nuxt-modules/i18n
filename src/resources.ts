@@ -86,6 +86,11 @@ function validateMessages(value: unknown, options: ValidateOptions, path: string
 const warnedPaths = new Set<string>()
 
 function warnHtmlMessages(path: string, keys: string[]) {
+  // dev re-reads a file on every edit - re-arm once it comes back clean so a later regression warns again
+  if (!keys.length) {
+    warnedPaths.delete(path)
+    return
+  }
   if (warnedPaths.has(path)) { return }
   warnedPaths.add(path)
   logger.warn(
@@ -106,7 +111,7 @@ export function readStaticResource(ctx: Pick<ResolvedI18nContext, 'options' | 'r
     htmlKeys,
   }, path, [])
 
-  if (htmlKeys.length) { warnHtmlMessages(path, htmlKeys) }
+  warnHtmlMessages(path, htmlKeys)
 
   return JSON.stringify(messages)
 }

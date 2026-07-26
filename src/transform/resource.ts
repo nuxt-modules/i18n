@@ -23,10 +23,10 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nC
     const i18nFileMetas = [...ctx.localeFileMetas, ...ctx.vueI18nConfigPaths]
     const i18nPathSet = new Set<string>()
     const i18nFileHashSet = new Map<string, string>()
-    for (const meta of i18nFileMetas) {
-      if (i18nPathSet.has(meta.path)) { continue }
-      i18nPathSet.add(meta.path)
-      i18nFileHashSet.set(asI18nVirtual(meta.hash), meta.path)
+    for (const fileMeta of i18nFileMetas) {
+      if (i18nPathSet.has(fileMeta.path)) { continue }
+      i18nPathSet.add(fileMeta.path)
+      i18nFileHashSet.set(asI18nVirtual(fileMeta.hash), fileMeta.path)
     }
 
     return {

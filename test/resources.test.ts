@@ -98,6 +98,20 @@ describe('readStaticResource', () => {
     expect(warn.mock.calls[0]![0]).toContain('Detected HTML in 2 messages in warn.json (first: "a")')
   })
 
+  test('warns again after a file comes back clean', () => {
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+    const path = writeResource('rearm.json', '{"a":"<b>hello</b>"}')
+    readStaticResource(createCtx(), path)
+
+    writeResource('rearm.json', '{"a":"plain"}')
+    readStaticResource(createCtx(), path)
+
+    writeResource('rearm.json', '{"a":"<i>back</i>"}')
+    readStaticResource(createCtx(), path)
+
+    expect(warn).toHaveBeenCalledTimes(2)
+  })
+
   test('stays silent when `strictMessage` is explicitly disabled', () => {
     const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
     const path = writeResource('silent.json', '{"greeting":"<b>hello</b>"}')
