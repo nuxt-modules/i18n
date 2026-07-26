@@ -40,9 +40,8 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
    * shared plugins (vite/webpack/rspack)
    */
   // exclude dynamic locale files - optimization is a no-op for these, and since vite 8 matching them
-  // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049).
-  // Files holding message functions are excluded for the same reason: there is nothing to compile.
-  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type !== 'dynamic' && m.serializable).map(m => m.path))]
+  // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049)
+  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type !== 'dynamic').map(m => m.path))]
 
   const vueI18nPluginOptions: PluginOptions = {
     ...ctx.options.bundle,
