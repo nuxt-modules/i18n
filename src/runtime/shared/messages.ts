@@ -1,4 +1,4 @@
-import { create, deepCopy, isFunction, toTypeString } from '@intlify/shared'
+import { assign, create, deepCopy, isFunction, toTypeString } from '@intlify/shared'
 import { useNuxtApp } from '#app'
 import { createDefu } from 'defu'
 
@@ -28,6 +28,37 @@ export function cloneDeep<T>(value: T): T {
     out[key] = cloneDeep((value as Record<string, unknown>)[key])
   }
   return out as T
+}
+
+const isTree = (value: unknown): value is Record<string, unknown> =>
+  value != null && typeof value === 'object' && !Array.isArray(value)
+
+/**
+ * Returns a tree where `base` fills the gaps in `over`, sharing every subtree `base` does not
+ * reach. Equivalent to merging `over` into a copy of `base`, but the copying is proportional to
+ * `base` - which is what makes it worth having over `mergeLocaleMessage`, whose deep copy is
+ * proportional to `over`.
+ */
+export function fillMissing<T>(over: T, base: unknown): T {
+  return isTree(over) && isTree(base) ? (fillTree(over, base) as T) : over
+}
+
+function fillTree(over: Record<string, unknown>, base: Record<string, unknown>) {
+  let out = over
+  for (const key of Object.keys(base)) {
+    // `in` would match `toString` and friends on a tree that JSON.parse gave a prototype
+    const has = Object.hasOwn(over, key)
+    const current = over[key]
+    const filled = !has
+      ? base[key]
+      : isTree(current) && isTree(base[key]) ? fillTree(current, base[key]) : current
+
+    if (has && filled === current) { continue }
+    if (out === over) { out = assign(create(null), over) }
+    out[key] = filled
+  }
+
+  return out
 }
 
 const merger = createDefu((obj, key, value) => {

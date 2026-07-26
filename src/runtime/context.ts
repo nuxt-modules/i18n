@@ -2,7 +2,7 @@ import { isRef, unref } from 'vue'
 
 import { useCookie, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
-import { cloneDeep, getLocaleMessagesMergedCached } from './shared/messages'
+import { cloneDeep, fillMissing, getLocaleMessagesMergedCached } from './shared/messages'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
@@ -95,9 +95,10 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
 type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'>
 
 /**
- * Returns a function installing loaded messages into `i18n`, by reference where the locale is
- * empty. Installed trees may be shared with the message cache, so `mergeLocaleMessage` - which
- * deep copies into its target - gets a private copy first.
+ * Returns a function installing loaded messages into `i18n` by reference, with any messages the
+ * vue-i18n config already put there filled in underneath. Installed trees may be shared with the
+ * message cache, so `mergeLocaleMessage` - which deep copies into its target - gets a private
+ * copy first.
  *
  * Patches the composer, not the VueI18n facade: legacy `useI18n()` and `<i18n>` blocks reach
  * composer methods directly, and the facade delegates to it at call time.
@@ -122,11 +123,14 @@ export function createMessageInstaller(i18n: MessageStore) {
   }) as typeof i18n.setLocaleMessage
 
   return (locale: string, message: object) => {
-    if (Object.keys(i18n.getLocaleMessage(locale)).length > 0) {
+    // a second install has no small tree left to fill from - the first one is already in place
+    if (byRef.has(locale)) {
       i18n.mergeLocaleMessage(locale, message)
       return
     }
-    set(locale, message)
+    // whatever is present before anything is loaded comes from the vue-i18n config, and filling it
+    // in underneath keeps the loaded tree shared instead of deep copying it into the config's
+    set(locale, fillMissing(message, i18n.getLocaleMessage(locale)))
     byRef.add(locale)
   }
 }
