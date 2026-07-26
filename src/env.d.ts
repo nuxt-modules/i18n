@@ -23,6 +23,8 @@ declare let __I18N_CACHE_LIFETIME__: number
 declare let __I18N_HTTP_CACHE_DURATION__: number
 /** Locales whose messages can only be produced by running their loaders at runtime */
 declare let __I18N_DYNAMIC_LOCALES__: string[]
+/** Locales the messages endpoint cannot deliver, because JSON would drop their message functions */
+declare let __I18N_UNSERIALIZABLE_LOCALES__: string[]
 declare let __I18N_STRIP_UNUSED__: boolean
 declare let __I18N_PRELOAD__: boolean
 /** Project has pages and strategy is not `no_prefix` */

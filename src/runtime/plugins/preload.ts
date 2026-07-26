@@ -19,6 +19,12 @@ export default defineNuxtPlugin({
     if (import.meta.server) {
       for (const locale of localeCodes) {
         try {
+          // the endpoint would drop this locale's message functions
+          if (ctx.usesRuntimeLoaders(locale)) {
+            nuxt.$i18n.mergeLocaleMessage(locale, await getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+            continue
+          }
+
           const messages = await $fetch(`${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`)
           for (const locale of Object.keys(messages)) {
             nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])

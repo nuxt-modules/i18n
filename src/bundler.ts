@@ -40,8 +40,9 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
    * shared plugins (vite/webpack/rspack)
    */
   // exclude dynamic locale files - optimization is a no-op for these, and since vite 8 matching them
-  // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049)
-  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type !== 'dynamic').map(m => m.path))]
+  // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049).
+  // Files holding message functions are excluded for the same reason: there is nothing to compile.
+  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type !== 'dynamic' && m.serializable).map(m => m.path))]
 
   const vueI18nPluginOptions: PluginOptions = {
     ...ctx.options.bundle,
@@ -81,7 +82,7 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
 }
 
 export function getDefineConfig(
-  { options, rawOptions, dynamicLocales, localeHashes }: ResolvedI18nContext,
+  { options, rawOptions, dynamicLocales, unserializableLocales, localeHashes }: ResolvedI18nContext,
   server = false,
   nuxt = useNuxt(),
 ) {
@@ -113,6 +114,7 @@ export function getDefineConfig(
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
     __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
+    __I18N_UNSERIALIZABLE_LOCALES__: JSON.stringify(unserializableLocales),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 

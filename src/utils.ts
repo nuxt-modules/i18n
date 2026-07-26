@@ -9,7 +9,7 @@ import { parseSync } from 'oxc-parser'
 
 import type { FileMeta, LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
 import type { NuxtConfigLayer } from '@nuxt/schema'
-import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
+import type { Node, ObjectExpression, Program } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
 export function filterLocales(ctx: I18nNuxtContext) {
@@ -62,10 +62,11 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
 
     for (const f of getLocaleFiles(locale)) {
       const path = resolve(srcDir, f.path)
-      const type = getLocaleType(path, vfs)
+      const { type, serializable } = analyzeResource(path, vfs)
 
       resolved.meta.push({
         type,
+        serializable,
         path,
         hash: getHash(path),
         cache: f.cache ?? type !== 'dynamic',
@@ -78,74 +79,99 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
   return localesResolved
 }
 
-const analyzedMap = { object: 'static', function: 'dynamic', unknown: 'unknown' } as const
-function getLocaleType(path: string, vfs: Record<string, string>): LocaleType {
-  if (!EXECUTABLE_EXT_RE.test(path)) { return 'static' }
+/**
+ * Classifies a message source: whether the build can resolve its messages, and whether those
+ * messages survive the JSON messages endpoint - message functions do not, and are dropped
+ * without a trace (#3880).
+ */
+function analyzeResource(path: string, vfs: Record<string, string>) {
+  if (!EXECUTABLE_EXT_RE.test(path)) { return { type: 'static' as LocaleType, serializable: true } }
 
-  const parsed = parseSync(path, vfs[path] ?? readFileSync(path, 'utf-8'))
-  return analyzedMap[scanProgram(parsed.program) || 'unknown']
+  const exported = resolveDefaultExport(parseSync(path, vfs[path] ?? readFileSync(path, 'utf-8')).program)
+  const messages = visibleMessages(exported)
+
+  return {
+    type: localeTypeOf(exported),
+    // messages that cannot be read here are assumed to be JSON already - a loader fetching them
+    // could not have carried functions in the first place
+    serializable: messages == null || !hasMessageFunction(messages),
+  }
 }
 
-function scanProgram(program: Program) {
-  let varDeclarationName: IdentifierName | undefined
-  const varDeclarations: VariableDeclarator[] = []
+// `() => ({ ... })` parses with an explicit `ParenthesizedExpression` node
+const unwrap = (node?: Node | null): Node | undefined =>
+  node?.type === 'ParenthesizedExpression' ? unwrap(node.expression) : (node ?? undefined)
+
+/** The expression a module's default export evaluates to, following a single variable hop */
+function resolveDefaultExport(program: Program) {
+  const declared = new Map<string, Node>()
+  let exported: Node | undefined
 
   for (const node of program.body) {
-    switch (node.type) {
-      // collect variable declarations
-      case 'VariableDeclaration':
-        for (const decl of node.declarations) {
-          if (decl.type !== 'VariableDeclarator' || decl.init == null) { continue }
-          if ('name' in decl.id === false) { continue }
-          varDeclarations.push(decl)
-        }
-        break
-      // check default export - store identifier if exporting variable name
-      case 'ExportDefaultDeclaration':
-        if (node.declaration.type === 'Identifier') {
-          varDeclarationName = node.declaration
-          break
-        }
+    if (node.type === 'VariableDeclaration') {
+      for (const decl of node.declarations) {
+        if (decl.type !== 'VariableDeclarator' || decl.init == null) { continue }
+        if ('name' in decl.id === false) { continue }
+        declared.set(decl.id.name, decl.init)
+      }
+      continue
+    }
 
-        if (node.declaration.type === 'ObjectExpression') {
-          return 'object'
-        }
-
-        if (node.declaration.type === 'CallExpression' && node.declaration.callee.type === 'Identifier') {
-          const [fnNode] = node.declaration.arguments
-          if (fnNode?.type === 'FunctionExpression' || fnNode?.type === 'ArrowFunctionExpression') {
-            return 'function'
-          }
-        }
-        break
+    if (node.type === 'ExportDefaultDeclaration') {
+      exported = unwrap(node.declaration)
     }
   }
 
-  if (varDeclarationName) {
-    const n = varDeclarations.find(x => x.id.type === 'Identifier' && x.id.name === varDeclarationName.name)
-    if (n) {
-      if (n.init?.type === 'ObjectExpression') {
-        return 'object'
-      }
+  return exported?.type === 'Identifier' ? unwrap(declared.get(exported.name)) : exported
+}
 
-      if (n.init?.type === 'CallExpression' && n.init.callee.type === 'Identifier') {
-        const [fnNode] = n.init.arguments
-        if (fnNode?.type === 'FunctionExpression' || fnNode?.type === 'ArrowFunctionExpression') {
-          return 'function'
-        }
-      }
-    }
+/** The function a `defineI18nLocale(fn)` wraps - the callee is not checked by name */
+function loaderFunction(node?: Node) {
+  if (node?.type !== 'CallExpression' || node.callee.type !== 'Identifier') { return }
+  const [fnNode] = node.arguments
+  if (fnNode?.type === 'FunctionExpression' || fnNode?.type === 'ArrowFunctionExpression') { return fnNode }
+}
+
+function localeTypeOf(exported?: Node): LocaleType {
+  if (exported?.type === 'ObjectExpression') { return 'static' }
+  return loaderFunction(exported) ? 'dynamic' : 'unknown'
+}
+
+/** The messages object the build can read, when the module makes one visible at all */
+function visibleMessages(exported?: Node): ObjectExpression | undefined {
+  if (exported?.type === 'ObjectExpression') { return exported }
+
+  const body = unwrap(loaderFunction(exported)?.body)
+  if (body?.type === 'ObjectExpression') { return body }
+  if (body?.type !== 'BlockStatement') { return }
+
+  for (const statement of body.body) {
+    if (statement.type !== 'ReturnStatement') { continue }
+    const returned = unwrap(statement.argument)
+    return returned?.type === 'ObjectExpression' ? returned : undefined
   }
+}
 
+/**
+ * Whether the object visibly holds a message function. Only functions are looked for: any other
+ * expression still evaluates to a value JSON can carry, and a loader building its messages from
+ * runtime values is the ordinary case.
+ */
+function hasMessageFunction(node: Node): boolean {
+  switch (node.type) {
+    case 'ObjectExpression':
+      return node.properties.some(x => x.type === 'Property' && hasMessageFunction(x.value))
+    case 'ArrayExpression':
+      return node.elements.some(x => x != null && x.type !== 'SpreadElement' && hasMessageFunction(x))
+    case 'FunctionExpression':
+    case 'ArrowFunctionExpression':
+      return true
+  }
   return false
 }
 
 export function resolveVueI18nConfigInfo(path: string, vfs: Record<string, string>) {
-  return {
-    path,
-    hash: getHash(path),
-    type: getLocaleType(path, vfs),
-  }
+  return { path, hash: getHash(path), ...analyzeResource(path, vfs) }
 }
 
 export const getLocaleFiles = (locale: LocaleObject): LocaleFile[] => {

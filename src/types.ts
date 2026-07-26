@@ -109,6 +109,8 @@ export type FileMeta = {
   hash: string
   cache: boolean
   type: LocaleType
+  /** Whether the messages survive the JSON messages endpoint - message functions do not (#3880) */
+  serializable: boolean
   /** server asset filename when the resource ships as a lazily read nitro server asset */
   assetKey?: string
 }

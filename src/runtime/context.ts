@@ -202,11 +202,12 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     redirectStatusCode: runtimeI18n.redirectStatusCode ?? 302,
     // there is no endpoint to read from without a server, and a statically hosted build only ends
     // up with the messages that were prerendered - both need the loaders, as does dev so that edits
-    // to locale files take effect. Anything the build can resolve to fixed content is served from
-    // the endpoint instead, decided per locale.
+    // to locale files take effect. Anything the build can resolve to serializable content is served
+    // from the endpoint instead, decided per locale.
     usesRuntimeLoaders: locale =>
       import.meta.dev
       || !__IS_SSR__
+      || __I18N_UNSERIALIZABLE_LOCALES__.includes(locale)
       || (__I18N_DYNAMIC_LOCALES__.includes(locale) && (import.meta.prerender || __IS_SSG__)),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),

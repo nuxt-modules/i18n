@@ -41,6 +41,8 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
    * loaders. Everything else can be served from the (prerenderable) messages endpoint.
    */
   dynamicLocales: string[]
+  /** Locales the messages endpoint cannot deliver, because JSON would drop message functions */
+  unserializableLocales: string[]
   loaderOptions: ReturnType<typeof generateLoaderOptions>
 }
 
@@ -99,6 +101,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
   }
 
   const dynamicLocales = localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code)
+  const unserializableLocales = localeInfo.filter(x => x.meta.some(meta => !meta.serializable)).map(x => x.code)
 
   const resolved = assign(ctx as ResolvedI18nContext, {
     normalizedLocales,
@@ -115,6 +118,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
      */
     localeHashes: computeLocaleHashes(localeInfo, vueI18nConfigPaths),
     dynamicLocales,
+    unserializableLocales,
   })
   resolved.loaderOptions = generateLoaderOptions(resolved)
 

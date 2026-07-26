@@ -82,6 +82,8 @@ export function generateTemplateNuxtI18nOptions(
   const stub = '() => Promise.resolve({})'
   const appLoad = (load: string, locale: string) => {
     if (server || nuxt.options.dev || !nuxt.options.ssr) { return load }
+    // the endpoint would drop this locale's message functions, so both graphs load it themselves
+    if (ctx.unserializableLocales.includes(locale)) { return load }
     // static locales are served by the endpoint in both graphs, including while prerendering
     if (!ctx.dynamicLocales.includes(locale)) { return stub }
     // a static host has no endpoint left to fetch from, so there the client keeps its chunks too

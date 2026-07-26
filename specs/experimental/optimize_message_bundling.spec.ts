@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { describe, expect, test } from 'vitest'
 
-import { getDom, renderPage, waitForLocaleNetwork } from '../helper'
+import { getDom, renderPage, waitForLocaleNetwork, waitForLocaleSwitch } from '../helper'
 import { $fetch, setup } from '../utils'
 
 await setup({
@@ -14,7 +14,10 @@ await setup({
         optimizeMessageBundling: true
       },
       // add a yaml locale - the lazy fixture covers json/json5/js/ts
-      locales: [{ code: 'ja', language: 'ja-JP', file: 'lazy-locale-ja.yaml', name: '日本語' }]
+      locales: [
+        { code: 'ja', language: 'ja-JP', file: 'lazy-locale-ja.yaml', name: '日本語' },
+        { code: 'de', language: 'de-DE', file: 'lazy-locale-de.ts', name: 'Deutsch' }
+      ]
     }
   }
 })
@@ -59,5 +62,21 @@ describe('experimental.optimizeMessageBundling', () => {
 
     await Promise.all([waitForLocaleNetwork(page, 'ja', 'response'), page.click('#nuxt-locale-link-ja')])
     expect(await page.locator('#home-header').innerText()).toEqual('ホームページ')
+  })
+
+  // JSON drops message functions, so `de` keeps its loaders instead of using the endpoint
+  describe('(#3880) message functions in locale files', () => {
+    test('server renders them', async () => {
+      const dom = await getDom(await $fetch('/de'))
+      expect(await dom.locator('#home-header')!.textContent()).toEqual('Startseite')
+    })
+
+    test('they survive a client-side locale switch', async () => {
+      const { page } = await renderPage('/')
+
+      await Promise.all([waitForLocaleSwitch(page), page.click('#nuxt-locale-link-de')])
+      expect(await page.locator('#home-header').innerText()).toEqual('Startseite')
+      expect(await page.locator('#link-about').innerText()).toEqual('Über uns')
+    })
   })
 })
