@@ -73,7 +73,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     domains: options.domains,
   }
   const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
-  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config)
+  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config, name => router.hasRoute(name))
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
     route.name = getRouteBaseName(route.name || router.currentRoute.value) // fallback to current route name
@@ -185,6 +185,9 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       // per-locale host membership decides the link shape: on-host targets navigate
       // relative (unprefixed when the host default), off-host targets get an absolute
       // URL in the target domain's shape
+      // membership is strict here on purpose: a locale that lives on another domain needs an
+      // absolute link even from a host matching no configured domain, under `no_prefix` the
+      // relative path is identical for every locale and would not switch anything
       const host = options.getHost() ?? ''
       const target = options.getLocales().find(l => l.code === locale)
       const stripsDefaultPrefix

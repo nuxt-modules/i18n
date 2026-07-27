@@ -12,6 +12,7 @@ import type { PrefixableOptions } from '#i18n-kit/routing'
 export function createLocaleRouteNameGetter(
   defaultLocale: string,
   config: PrefixableOptions,
+  hasRoute?: (name: string) => boolean,
 ): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
   if (!config.routing && !config.domains) {
@@ -20,7 +21,15 @@ export function createLocaleRouteNameGetter(
 
   // default locale routes have default suffix
   if (config.strategy === 'prefix_and_default') {
-    return (name, locale) => getLocalizedRouteName(normalizeRouteName(name), locale, locale === defaultLocale)
+    return (name, locale) => {
+      const normalized = normalizeRouteName(name)
+      if (locale !== defaultLocale) { return getLocalizedRouteName(normalized, locale, false) }
+
+      // under domain routing the suffixed variant is only generated for domain defaults, the
+      // route table decides whether this locale has one rather than the strategy alone
+      const suffixed = getLocalizedRouteName(normalized, locale, true)
+      return !hasRoute || hasRoute(suffixed) ? suffixed : getLocalizedRouteName(normalized, locale, false)
+    }
   }
 
   // routes are localized
