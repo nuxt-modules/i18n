@@ -29,10 +29,11 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nCont
       handler(code) {
         const s = new MagicString(code)
 
-        // add nitro runtime import
-        if (code.includes('useRuntimeConfig()')) {
-          s.prepend('import { useRuntimeConfig } from "nitropack/runtime";\n')
-        }
+        s.replace(
+          /import\s+\{\s*useRuntimeConfig\s*\}\s+from\s+["']#imports["'];?/,
+          'import { useRuntimeConfig } from "#internal/i18n-nitro.mjs";',
+        )
+        s.replaceAll('#build/i18n-h3.mjs', '#internal/i18n-nitro.mjs')
 
         // replace `#app` import with a mock variable definition
         s.replace(/import.+["']#app["'];?/, replacementMock)
