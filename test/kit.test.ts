@@ -269,14 +269,29 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     expect(switchLocalePath('en')).toEqual(pp('/about', 'en') + '#foo=bar')
     expect(switchLocalePath('ja')).toEqual(pp('/about', 'ja') + '#foo=bar')
 
-    // preserve unicode dynamic params
+    // encode unicode dynamic params
     await router.push(pp('/count/三', 'ja'))
-    expect(switchLocalePath('en')).toEqual(pp('/count/三', 'en'))
-    expect(switchLocalePath('ja')).toEqual(pp('/count/三', 'ja'))
+    expect(switchLocalePath('en')).toEqual(pp('/count/%E4%B8%89', 'en'))
+    expect(switchLocalePath('ja')).toEqual(pp('/count/%E4%B8%89', 'ja'))
 
     await router.push(pp('/count/三', 'ja') + '?foo=bär&four=四&foo=bar')
-    expect(switchLocalePath('en')).toEqual(pp('/count/三', 'en') + '?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
-    expect(switchLocalePath('ja')).toEqual(pp('/count/三', 'ja') + '?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+    expect(switchLocalePath('en')).toEqual(pp('/count/%E4%B8%89', 'en') + '?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+    expect(switchLocalePath('ja')).toEqual(pp('/count/%E4%B8%89', 'ja') + '?foo=b%C3%A4r&foo=bar&four=%E5%9B%9B')
+
+    // (#2909) reserved characters stay in the param instead of becoming a hash
+    await router.push(pp('/count/my-blog-post%23number1', 'ja'))
+    expect(switchLocalePath('en')).toEqual(pp('/count/my-blog-post%23number1', 'en'))
+    expect(switchLocalePath('ja')).toEqual(pp('/count/my-blog-post%23number1', 'ja'))
+
+    // (#4079) params keep their own escapes - `%23` is literal text here, not a `#`
+    await router.push(pp('/count/C%2523', 'ja'))
+    expect(switchLocalePath('en')).toEqual(pp('/count/C%2523', 'en'))
+    expect(switchLocalePath('ja')).toEqual(pp('/count/C%2523', 'ja'))
+
+    // (#4079) static non-ASCII segments are encoded into the route record at build time
+    await router.push(pp('/%E7%B4%84', 'ja'))
+    expect(switchLocalePath('en')).toEqual(pp('/%E7%B4%84', 'en'))
+    expect(switchLocalePath('ja')).toEqual(pp('/%E7%B4%84', 'ja'))
   })
 })
 

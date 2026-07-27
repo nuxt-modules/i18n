@@ -1,7 +1,7 @@
 import { test, expect } from 'vitest'
 import { fileURLToPath } from 'node:url'
-import { setup, url } from '../utils'
-import { renderPage } from '../helper'
+import { $fetch, setup, url } from '../utils'
+import { getDom, renderPage } from '../helper'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/basic`, import.meta.url)),
@@ -24,7 +24,8 @@ await setup({
           en: '/news'
         },
         'blog/article': {
-          en: '/news/article'
+          en: '/news/article',
+          fr: '/actualités/article'
         }
       },
       detectBrowserLanguage: false
@@ -63,6 +64,21 @@ test('can access to custom nested route path', async () => {
   // navigate to blog article page
   await page.locator('#link-blog-article').clickNavigate()
   await page.waitForURL(url('/news/article'))
+})
+
+test('(#4079) non-ASCII custom route path is not double-encoded', async () => {
+  // the route record is encoded at build time, so the resolved path is already link-safe
+  const encoded = '/fr/actualit%C3%A9s/article'
+
+  const html = await $fetch('/news/article')
+  expect(html).toContain(`href="${encoded}"`)
+
+  const dom = await getDom(html)
+  expect(await dom.locator('#switch-locale-path-link-fr')?.getAttribute('href')).toEqual(encoded)
+
+  const { page } = await renderPage('/news/article')
+  await page.locator('#switch-locale-path-link-fr').clickNavigate()
+  expect(await page.locator('#locale-properties-code').innerText()).toEqual('fr')
 })
 
 test('can not access to pick route path', async () => {
