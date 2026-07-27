@@ -110,20 +110,28 @@ function analyzeResource(path: string, vfs: Record<string, string>) {
 }
 
 // `() => ({ ... })` parses with an explicit `ParenthesizedExpression` node, and TS assertions
-// (`as` / `satisfies` / `!`) nest the runtime expression the same way
-function unwrap(node?: Node | null): Node | undefined {
-  switch (node?.type) {
+// (`as` / `satisfies` / `!`) nest the runtime expression the same way - the resource transform
+// strips both before it reads what they wrap
+function unwrapAssertion(node: Node): Node {
+  switch (node.type) {
     case 'ParenthesizedExpression':
     case 'TSAsExpression':
     case 'TSSatisfiesExpression':
     case 'TSNonNullExpression':
-      return unwrap(node.expression)
-    case 'AwaitExpression':
-      return unwrap(node.argument)
-    case 'SequenceExpression':
-      return unwrap(node.expressions.at(-1))
+      return unwrapAssertion(node.expression)
   }
-  return node ?? undefined
+  return node
+}
+
+function unwrap(node?: Node | null): Node | undefined {
+  const resolved = node != null ? unwrapAssertion(node) : undefined
+  switch (resolved?.type) {
+    case 'AwaitExpression':
+      return unwrap(resolved.argument)
+    case 'SequenceExpression':
+      return unwrap(resolved.expressions.at(-1))
+  }
+  return resolved
 }
 
 type Scope = { declared: Map<string, Node>, exported?: Node }
@@ -164,10 +172,11 @@ function loaderFunction(node: Node | undefined, scope: Scope) {
 }
 
 function localeTypeOf(exported: Node | undefined, scope: Scope): LocaleType {
-  if (exported?.type === 'ObjectExpression') {
-    // a computed key is not readable here, and the bundler's resource transform cannot parse one
-    // either - such a file has to stay a module rather than be treated as a static resource (#3961)
-    return holds(exported, scope, isComputedKey) ? 'unknown' : 'static'
+  // the bundler's resource transform reads the object literal a file exports directly and nothing
+  // else - a locale reaching its messages any other way has to stay a module (#2145)
+  const declared = unwrap(scope.exported)
+  if (declared?.type === 'ObjectExpression') {
+    return isEmittable(declared) ? 'static' : 'unknown'
   }
   return loaderFunction(exported, scope) ? 'dynamic' : 'unknown'
 }
@@ -276,8 +285,37 @@ function holds(node: Node | null | undefined, scope: Scope, test: (node: Node) =
 const isMessageFunction = (node: Node) =>
   node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression'
 
-const isComputedKey = (node: Node) =>
-  node.type === 'ObjectExpression' && node.properties.some(x => x.type === 'Property' && x.computed)
+/**
+ * Whether the resource transform can re-emit a message as written. It reads the literal rather than
+ * the value behind it: an expression it cannot read becomes a reference to the key it was written
+ * under (#3308), a computed key is read as the source text of the key expression (#3961), and an
+ * item it cannot read is dropped - all of them leave the message missing at runtime.
+ */
+function isEmittable(input: Node): boolean {
+  const node = unwrapAssertion(input)
+  switch (node.type) {
+    case 'Literal':
+      // a regex is dropped and a bigint is emitted as a number, neither carries a message anyway
+      return !('regex' in node) && !('bigint' in node)
+    case 'TemplateLiteral':
+      // only the static parts are read, an interpolation is dropped from the message
+      return node.expressions.length === 0
+    case 'ObjectExpression':
+      return node.properties.every(isEmittableProperty)
+    case 'ArrayExpression':
+      return node.elements.every(x => x != null && isEmittable(x))
+  }
+  return false
+}
+
+function isEmittableProperty(node: Node): boolean {
+  // a spread is emitted as `...<name>`, so only a reference survives it
+  if (node.type === 'SpreadElement') { return node.argument.type === 'Identifier' }
+  if (node.type !== 'Property' || node.computed) { return false }
+  // a reference is emitted as written, next to the declaration it points at, a function verbatim
+  const value = unwrapAssertion(node.value)
+  return isEmittable(value) || value.type === 'Identifier' || isMessageFunction(value)
+}
 
 export function resolveVueI18nConfigInfo(path: string, vfs: Record<string, string>) {
   return { path, hash: getHash(path), ...analyzeResource(path, vfs) }

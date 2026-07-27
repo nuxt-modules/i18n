@@ -139,7 +139,7 @@ describe('message source classification', () => {
     resolveLocales('/project', [{ code: 'en', file }] as LocaleObject[], { [`/project/${file}`]: source })[0]!.meta[0]!
 
   test('reads plain data as endpoint deliverable', () => {
-    expect(analyze(`export default { a: 'x', deep: { b: 'y' }, list: ['z'], n: -1, t: \`plain\` }`)).toMatchObject({
+    expect(analyze(`export default { a: 'x', deep: { b: 'y' }, list: ['z'], n: 1, t: \`plain\` }`)).toMatchObject({
       type: 'static',
       serializable: true
     })
@@ -151,7 +151,6 @@ describe('message source classification', () => {
     expect(analyze(`export default { deep: { a: ctx => ctx.named('n') } }`)).toMatchObject({ serializable: false })
     expect(analyze(`export default { a() { return 'x' } }`)).toMatchObject({ serializable: false })
     expect(analyze(`const messages = { a: () => 'x' }\nexport default messages`)).toMatchObject({
-      type: 'static',
       serializable: false
     })
   })
@@ -162,7 +161,6 @@ describe('message source classification', () => {
       serializable: false
     })
     expect(analyze(`const messages = { a: () => 'x' } as const\nexport default messages`)).toMatchObject({
-      type: 'static',
       serializable: false
     })
     expect(analyze(`export default { a: (() => 'x') as unknown }`)).toMatchObject({ serializable: false })
@@ -214,12 +212,13 @@ describe('message source classification', () => {
   })
 
   test('follows variable hops, exported or not', () => {
+    // (#2145) the transform only reads an object exported directly, so a hop keeps the file a module
     expect(analyze(`export const messages = { a: () => 'x' }\nexport default messages`)).toMatchObject({
-      type: 'static',
+      type: 'unknown',
       serializable: false
     })
     expect(analyze(`const a = { x: () => 'y' }\nconst b = a\nexport default b`)).toMatchObject({
-      type: 'static',
+      type: 'unknown',
       serializable: false
     })
     // a self-referential declaration resolves to nothing rather than looping
@@ -261,6 +260,38 @@ describe('message source classification', () => {
     })
     expect(analyze(`export default { [key]: () => 'x' }`)).toMatchObject({ type: 'unknown', serializable: false })
     expect(analyze(`export default { a: 'x' }`)).toMatchObject({ type: 'static' })
+  })
+
+  test('(#3308) a value the resource transform cannot re-emit is not a readable resource', () => {
+    // it would emit `hello: hello` - the message resolves to nothing rather than to its value
+    expect(analyze(`export default { hello: 'Hello' + 'World' }`)).toMatchObject({
+      type: 'unknown',
+      serializable: true
+    })
+    expect(analyze(`export default { a: makeMessage() }`)).toMatchObject({ type: 'unknown' })
+    expect(analyze(`export default { n: -1 }`)).toMatchObject({ type: 'unknown' })
+    expect(analyze(`export default { deep: { a: 'Hello' + 'World' }, b: 'y' }`)).toMatchObject({ type: 'unknown' })
+    // an interpolation is dropped from a template literal, leaving only its static parts
+    expect(analyze('export default { a: `Hello ${name}` }')).toMatchObject({ type: 'unknown' })
+    // an item it cannot read is dropped, shifting the rest of the array up
+    expect(analyze(`export default { list: ['a' + 'b', 'c'] }`)).toMatchObject({ type: 'unknown' })
+    expect(analyze(`export default { list: [ref, 'c'] }`)).toMatchObject({ type: 'unknown' })
+    // a spread of anything but a reference is emitted as `...false`
+    expect(analyze(`export default { ...getBase() }`)).toMatchObject({ type: 'unknown' })
+  })
+
+  test('(#3308) values it re-emits as written stay readable', () => {
+    // the declaration a reference points at is emitted alongside the messages, so it resolves
+    expect(analyze(`const greeting = 'Hello' + 'World'\nexport default { hello: greeting }`)).toMatchObject({
+      type: 'static',
+      serializable: true
+    })
+    expect(analyze(`import en from './en.json'\nexport default { en }`)).toMatchObject({ type: 'static' })
+    expect(analyze(`const nested = { [key]: 'x' }\nexport default { deep: nested }`)).toMatchObject({
+      type: 'static'
+    })
+    expect(analyze(`export default { ...base, a: 'x' }`)).toMatchObject({ type: 'static' })
+    expect(analyze(`export default { list: [{ a: 'x' }, ['y'], 1, true, null] }`)).toMatchObject({ type: 'static' })
   })
 
   test('a shape it cannot read at all is assumed to hold message functions', () => {
