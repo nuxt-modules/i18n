@@ -160,8 +160,9 @@ export default defineNitroPlugin(async (nitro) => {
     if (__I18N_PRELOAD__) {
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) { return }
 
-      // only include the messages used in the current page
-      if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
+      // only include the messages used in the current page - a prerendered one is served to every
+      // visitor, so it keeps the whole set instead of the first render's keys
+      if (__I18N_STRIP_UNUSED__ && !import.meta.prerender) {
         const trackedLocales = Object.keys(ctx.trackMap)
         for (const locale of Object.keys(ctx.messages)) {
           if (!trackedLocales.includes(locale)) {
