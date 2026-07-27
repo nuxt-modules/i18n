@@ -114,7 +114,14 @@ export function getDefineConfig(
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
-    __I18N_COMPACT_ROUTES__: String(!!options.experimental?.compactRoutes),
+    // mirrors the build time gate in `localizeRoutes`, an ungated flag makes the runtime take
+    // compact route branches against a table that has none
+    __I18N_COMPACT_ROUTES__: String(
+      !!options.experimental?.compactRoutes
+      && !options.differentDomains
+      && !options.multiDomainLocales
+      && options.strategy !== 'no_prefix',
+    ),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
     // SSG already prerenders the messages routes (runtime `prerenderRoutes`), so they exist at the

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   domainFromLocale,
+  isLocaleOnHost,
   isLocaleServedOnHost,
   matchDomainLocale,
   normalizeDomain,
@@ -161,6 +162,16 @@ describe('withRuntimeDomain', () => {
       code: 'en',
       domain: 'en.staging.example.com'
     })
+  })
+
+  test('an overridden locale stops matching the host it was configured with', () => {
+    const configured = normalizeDomainLocale({ code: 'en', domain: 'en.example.com', domainDefault: true })
+    const patched = withRuntimeDomain(configured, { en: { domain: 'en.staging.example.com' } })
+
+    expect(isLocaleOnHost(patched, 'en.staging.example.com')).toBe(true)
+    expect(isLocaleOnHost(patched, 'en.example.com')).toBe(false)
+    // the locale is still the default, for the domain it was moved to
+    expect(getDefaultLocaleForDomain('en.staging.example.com', [patched])).toBe('en')
   })
 
   test('returns the locale as-is without an override', () => {
