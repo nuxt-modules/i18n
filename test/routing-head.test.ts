@@ -3,9 +3,10 @@ import { nextTick } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
 import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
-import { _useLocaleHead, _useSetI18nParams, localeHead } from '../src/runtime/routing/head'
+import { _useLocaleHead, _useSetI18nParams, localeHead, missesClusterFallback } from '../src/runtime/routing/head'
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
+import { resolveDefaultLocale } from '../src/runtime/shared/locales'
 
 import type { Router } from 'vue-router'
 import type { ComposableContext } from '../src/runtime/composable-context'
@@ -30,7 +31,7 @@ const routes = [
   })),
 )
 
-function createTestContext(initialLocale = 'en', strictSeo = false, domains = false) {
+function createTestContext(initialLocale = 'en', strictSeo = false, domains = false, configuredDefault = 'en') {
   let locale = initialLocale
   const router = createRouter({ history: createMemoryHistory(), routes })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
@@ -43,10 +44,12 @@ function createTestContext(initialLocale = 'en', strictSeo = false, domains = fa
     // rebuild the route table for the current host, mirrors the runtime plugin
     setupMultiDomainLocales(initialLocale, 'prefix_except_default', router)
   }
+  const host = domains ? `${initialLocale}.example.com` : 'example.com'
   const ctx = {
     ...createRoutingContext({
       router,
-      defaultLocale: 'en',
+      // resolved the way the runtime plugin does, rather than supplied
+      defaultLocale: resolveDefaultLocale(host, configuredDefault, domains ? domainLocales : locales),
       strategy: 'prefix_except_default',
       routing: true,
       domains,
@@ -65,7 +68,13 @@ function createTestContext(initialLocale = 'en', strictSeo = false, domains = fa
     metaState: { htmlAttrs: {}, meta: [], link: [] },
     seoSettings: { dir: true, lang: true, seo: true },
     localePathPayload: {},
-    routingOptions: { defaultLocale: 'en', strictCanonicals: true, hreflangLinks: true, domains },
+    routingOptions: {
+      // `createComposableContext` feeds `x-default` the configured value, not the host's default
+      defaultLocale: configuredDefault || '',
+      strictCanonicals: true,
+      hreflangLinks: true,
+      domains,
+    },
   } as unknown as ComposableContext
   return { router, ctx, head, setLocale: (l: string) => (locale = l) }
 }
@@ -146,6 +155,40 @@ describe('localeHead with domains', () => {
       ['og:locale:alternate', 'ja_JP'],
       ['og:locale:alternate', 'nl_NL'],
     ])
+  })
+
+  test('every domain annotates the same `x-default`', async () => {
+    for (const host of ['en', 'fr', 'nl']) {
+      const { router, ctx } = createTestContext(host, false, true)
+      await router.push('/')
+
+      const xDefault = localeHead(ctx, {}).link.find(x => x.hreflang === 'x-default')
+      expect(xDefault?.href).toBe('https://en.example.com')
+    }
+  })
+
+  test('a missing cluster fallback is only worth reporting where alternates are emitted', () => {
+    const seo = { dir: true, lang: true, seo: true }
+    const withDomains = (configuredDefault: string) => createTestContext('fr', false, true, configuredDefault).ctx
+
+    expect(missesClusterFallback(withDomains(''), seo)).toBe(true)
+    // `defaultLocale` names the fallback
+    expect(missesClusterFallback(withDomains('en'), seo)).toBe(false)
+    // no alternate links to annotate
+    expect(missesClusterFallback(withDomains(''), { ...seo, seo: false })).toBe(false)
+    // a single domain cluster resolves `x-default` from the routing default as before
+    expect(missesClusterFallback(createTestContext('fr', false, false, '').ctx, seo)).toBe(false)
+  })
+
+  test('no configured `defaultLocale` annotates no fallback, rather than one per domain', async () => {
+    // the domain default is host-resolved and would disagree across the cluster, `prepareOptions`
+    // warns instead - a locale has no way to claim the cluster fallback on its own
+    const { router, ctx } = createTestContext('fr', false, true, '')
+    await router.push('/')
+
+    const links = localeHead(ctx, {}).link
+    expect(links.filter(x => x.hreflang === 'x-default')).toEqual([])
+    expect(links.map(x => x.hreflang ?? x.rel)).toContain('fr')
   })
 })
 
