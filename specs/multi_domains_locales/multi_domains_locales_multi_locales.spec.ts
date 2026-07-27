@@ -36,7 +36,8 @@ await setup({
           code: 'ja',
           language: 'jp-JA',
           name: 'Japan',
-          domains: i18nDomains,
+          // restricted to its own domain, the other locales stay on all of them
+          domains: ['ja.nuxt-app.localhost'],
           defaultForDomains: ['ja.nuxt-app.localhost']
         }
       ],
@@ -80,6 +81,49 @@ test('detection locale with x-forwarded-host on server', async () => {
 
   expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('fr')
   expect(await dom.locator('#home-header').textContent()).toEqual('Accueil')
+})
+
+describe('locales restricted to specific domains', () => {
+  test.each([
+    ['/ja', 'http://ja.nuxt-app.localhost'],
+    ['/ja/parent/child', 'http://ja.nuxt-app.localhost/parent/child'],
+    ['/ja/about?foo=bar', 'http://ja.nuxt-app.localhost/about?foo=bar']
+  ])('%s is relocated to the domain serving it', async (path, location) => {
+    const res = await undiciRequest(path, { headers: { Host: 'nuxt-app.localhost' } })
+
+    expect(res.statusCode).toBe(302)
+    // `ja` is the default on its own domain, so it lands there unprefixed
+    expect(res.headers.location).toEqual(location)
+  })
+
+  test('a restricted locale is served on its own domain', async () => {
+    const res = await undiciRequest('/', { headers: { Host: 'ja.nuxt-app.localhost' } })
+    const dom = await getDom(await res.body.text())
+
+    expect(res.statusCode).toBe(200)
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('ja')
+  })
+
+  test('a cookie holding a restricted locale does not redirect off the current domain', async () => {
+    const res = await undiciRequest('/', {
+      headers: { Host: 'nuxt-app.localhost', Cookie: 'i18n_redirected=ja' }
+    })
+    const dom = await getDom(await res.body.text())
+
+    expect(res.statusCode).toBe(200)
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('en')
+  })
+
+  test('a restricted locale stays in the switcher and links to its own domain', async () => {
+    const res = await undiciRequest('/', { headers: { Host: 'nuxt-app.localhost' } })
+    const dom = await getDom(await res.body.text())
+
+    expect(await dom.locator('#switch-locale-path-usages .switch-to-ja a').getAttribute('href')).toEqual(
+      'http://ja.nuxt-app.localhost'
+    )
+    // locales served on the current host keep linking relative
+    expect(await dom.locator('#switch-locale-path-usages .switch-to-no a').getAttribute('href')).toEqual('/no')
+  })
 })
 
 describe('detection locale with child routes', () => {
