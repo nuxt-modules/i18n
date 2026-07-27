@@ -1,4 +1,4 @@
-import { isString } from '@intlify/shared'
+import { assign, isString } from '@intlify/shared'
 import { genDynamicImport, genImport, genSafeVariableName, genString } from 'knitwork'
 import { basename, join, relative, resolve } from 'pathe'
 import { asI18nVirtual } from './transform/utils'
@@ -6,15 +6,17 @@ import { normalizeDomainLocale } from './utils'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { LocaleObject } from './types'
-import type { I18nNuxtContext } from './context'
+import type { ResolvedI18nContext } from './context'
 
+// copy - generators run repeatedly (template re-emits) and must not alter context locales
 function stripLocaleFiles(locale: LocaleObject) {
-  delete locale.files
-  delete locale.file
-  return locale
+  const stripped = assign({}, locale)
+  delete stripped.files
+  delete stripped.file
+  return stripped
 }
 
-export function simplifyLocaleOptions(ctx: I18nNuxtContext, _nuxt: Nuxt) {
+export function simplifyLocaleOptions(ctx: ResolvedI18nContext, _nuxt: Nuxt) {
   const locales = (ctx.options.locales ?? []) as LocaleObject[]
   const hasLocaleObjects = locales?.some(x => !isString(x))
   // normalize so runtime locale consumers (e.g. `defaultForDomains` reads) only handle one shape
@@ -30,7 +32,7 @@ type LocaleLoaderData = {
 }
 
 export function generateLoaderOptions(
-  ctx: Pick<I18nNuxtContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales'>,
+  ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales' | 'runtimeDir'>,
 ) {
   /**
    * Prepare locale file imports
@@ -46,13 +48,21 @@ export function generateLoaderOptions(
         const key = genString(identifier)
         const virtualId = asI18nVirtual(meta.hash)
 
-        importStatements.add(genImport(virtualId, identifier))
+        // resources with an `assetKey` ship as nitro server assets, read lazily instead of
+        // imported eagerly - the message data stays out of the server bundle (see `setupNitro`)
+        if (meta.assetKey) {
+          importStatements.add(genImport(resolve(ctx.runtimeDir, 'server/utils/assets'), [{ name: 'readI18nAsset' }]))
+        } else {
+          importStatements.add(genImport(virtualId, identifier))
+        }
         importMapper.set(meta.path, {
           key,
           virtualId,
           cache: meta.cache ?? true,
           load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
-          loadServer: `() => Promise.resolve(${identifier})`,
+          loadServer: meta.assetKey
+            ? `() => readI18nAsset(${genString(meta.assetKey)})`
+            : `() => Promise.resolve(${identifier})`,
         })
       }
       localeLoaders[locale.code]!.push(importMapper.get(meta.path)!)
@@ -184,8 +194,8 @@ declare module 'vue-router' {
   }
 }`
 
-export function generateI18nTypes(nuxt: Nuxt, ctx: I18nNuxtContext) {
-  const legacyTypes = ctx.userOptions.types === 'legacy'
+export function generateI18nTypes(nuxt: Nuxt, ctx: ResolvedI18nContext) {
+  const legacyTypes = ctx.options.types === 'legacy'
   const i18nType = legacyTypes ? 'VueI18n' : 'Composer'
   const generatedLocales = simplifyLocaleOptions(ctx, nuxt)
   const resolvedLocaleType = isString(generatedLocales.at(0)) ? 'Locale[]' : 'LocaleObject[]'
@@ -245,7 +255,7 @@ declare module 'vue-router' {
 
 ${typedRouterAugmentations}
 
-${(ctx.userOptions.autoDeclare && globalTranslationTypes) || ''}
+${(ctx.options.autoDeclare && globalTranslationTypes) || ''}
 
 export {}`
 }

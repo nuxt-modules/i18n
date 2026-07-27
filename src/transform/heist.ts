@@ -2,7 +2,7 @@ import MagicString from 'magic-string'
 import { createUnplugin } from 'unplugin'
 
 import type { BundlerPluginOptions } from './utils'
-import type { I18nNuxtContext } from '../context'
+import type { ResolvedI18nContext } from '../context'
 import { relative } from 'pathe'
 import { useNuxt } from '@nuxt/kit'
 
@@ -11,7 +11,7 @@ import { useNuxt } from '@nuxt/kit'
  * - replaces "#app" import with a mock variable definition
  * - replaces `useNuxtApp()` with the mock variable
  */
-export const HeistPlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext, nuxt = useNuxt()) => {
+export const HeistPlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nContext, nuxt = useNuxt()) => {
   // transform `runtime/shared` to be nuxt/nitro context agnostic
   const shared = ctx.resolver.resolve(ctx.distDir, 'runtime/shared/*')
 

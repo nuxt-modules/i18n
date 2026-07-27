@@ -1,8 +1,6 @@
-import { deepCopy } from '@intlify/shared'
 import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
-import { getMergedMessages } from '../utils/messages'
 
 import type { H3Event } from 'h3'
 
@@ -21,10 +19,7 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
 
-  const messages = await getMergedMessages(locale, ctx.localeConfigs?.[locale]?.fallbacks ?? [])
-  deepCopy(messages, ctx.messages)
-
-  return ctx.messages
+  return await ctx.loadMessages(locale)
 })
 
 const _cachedMessageLoader = defineCachedFunction(_messagesHandler, {

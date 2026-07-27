@@ -15,7 +15,7 @@ import { transform } from './transform/resource'
 import type { Nuxt, NuxtPage, ResolvedNuxtTemplate } from '@nuxt/schema'
 import type { EditableTreeNode, Options as TypedRouterOptions } from 'vue-router/unplugin'
 import type { NuxtI18nOptions } from './types'
-import type { I18nNuxtContext } from './context'
+import type { ResolvedI18nContext } from './context'
 import type { ComputedRouteOptions, RouteOptionsResolver } from './kit/gen'
 import type { I18nRoute } from './runtime/composables'
 import { type CallExpression, type ExpressionStatement, type ObjectExpression, parseSync } from 'oxc-parser'
@@ -38,7 +38,7 @@ type NarrowedNuxtPage = Omit<NuxtPage, 'redirect' | 'children'> & {
   children?: NarrowedNuxtPage[]
 }
 
-export async function setupPages({ localeCodes, options, normalizedLocales }: I18nNuxtContext, nuxt: Nuxt) {
+export async function setupPages({ localeCodes, options, normalizedLocales }: ResolvedI18nContext, nuxt: Nuxt) {
   let routeResources: RouteResources = {
     localizedPaths: [],
     pathToI18nConfig: {},

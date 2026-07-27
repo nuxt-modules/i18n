@@ -1,9 +1,12 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
+import { deepCopy } from '@intlify/shared'
 import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { useRuntimeI18n } from '../shared/utils'
 import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
+import { cloneDeep } from '../shared/messages'
+import { getMergedMessages } from './utils/messages'
 
 export function useI18nContext(event: H3Event) {
   if (event.context.nuxtI18n == null) {
@@ -57,6 +60,15 @@ export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
       this.trackMap[locale] ??= new Set<string>()
       this.trackMap[locale].add(key)
     },
+    async loadMessages(locale: string) {
+      const messages = (await getMergedMessages(locale, this.localeConfigs?.[locale]?.fallbacks ?? [])) ?? {}
+      // only the payload reads `ctx.messages`, and copying the full tree per request is expensive
+      if (__I18N_PRELOAD__) {
+        deepCopy(messages, this.messages)
+      }
+      // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
+      return this.vueI18nOptions?.flatJson ? cloneDeep(messages) : messages
+    },
   }
 }
 
@@ -100,6 +112,11 @@ declare module 'h3' {
        * @internal
        */
       trackKey: (key: string, locale: string) => void
+      /**
+       * Load merged messages for a locale, skipping the messages endpoint round-trip
+       * @internal
+       */
+      loadMessages: (locale: string) => Promise<LocaleMessages<DefineLocaleMessage>>
       detectLocale?: string
       vueI18nOptions?: ResolvedI18nOptions
     }

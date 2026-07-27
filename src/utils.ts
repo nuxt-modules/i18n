@@ -8,20 +8,13 @@ import { EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
 
 import type { FileMeta, LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
-import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
+import type { NuxtConfigLayer } from '@nuxt/schema'
 import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
-export function filterLocales(ctx: I18nNuxtContext, nuxt: Nuxt) {
+export function filterLocales(ctx: I18nNuxtContext) {
   // use `onlyLocales` from the first layer that specifies it
-  let onlyLocales
-  for (const layer of nuxt.options._layers) {
-    const layerOnlyLocales = getLayerI18n(layer)?.bundle?.onlyLocales
-    if (layerOnlyLocales != null) {
-      onlyLocales = layerOnlyLocales
-      break
-    }
-  }
+  const onlyLocales = ctx.i18nLayers.map(layer => layer.i18n.bundle?.onlyLocales).find(x => x != null)
   const include = toArray(onlyLocales ?? []).filter(isString)
 
   if (!include.length) {
@@ -83,13 +76,6 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
   }
 
   return localesResolved
-}
-
-/**
- * Unique resolved locale file paths across all locales
- */
-export function getLocaleFilePaths(localeInfo: LocaleInfo[]): string[] {
-  return [...new Set(localeInfo.flatMap(locale => locale.meta.map(m => m.path)))]
 }
 
 const analyzedMap = { object: 'static', function: 'dynamic', unknown: 'unknown' } as const

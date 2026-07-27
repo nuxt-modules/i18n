@@ -1,13 +1,23 @@
 import { test, expect, describe } from 'vitest'
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { setup, url, $fetch } from '../utils'
+import { setup, url, $fetch, useTestContext } from '../utils'
 import { renderPage, getDom, waitForLocaleNetwork, getLocalesMessageKeyCount } from '../helper'
 import { Page } from 'playwright-core'
 
 describe('basic lazy loading', async () => {
   await setup({
     rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-    browser: true
+    browser: true,
+    // pins the opt-out, `optimize_message_bundling.spec.ts` covers the default on the same fixture
+    nuxtConfig: {
+      i18n: {
+        experimental: {
+          optimizeMessageBundling: false
+        }
+      }
+    }
   })
 
   test('dynamic locale files are not cached', async () => {
@@ -41,7 +51,7 @@ describe('basic lazy loading', async () => {
     // `en` present on initial load
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 8,
       }
     `)
 
@@ -51,7 +61,7 @@ describe('basic lazy loading', async () => {
     // `fr` locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 8,
         "fr": 5,
       }
     `)
@@ -62,7 +72,7 @@ describe('basic lazy loading', async () => {
     // `nl` (module) locale has been fetched
     expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
       {
-        "en": 7,
+        "en": 8,
         "fr": 5,
         "nl": 3,
       }
@@ -160,5 +170,24 @@ describe('basic lazy loading', async () => {
     const html = await $fetch('/en-GB')
     const runtimeText = await (await getDom(html)).locator('#runtime-config-key')!.textContent()!
     expect(runtimeText).toEqual('runtime-config-value')
+  })
+
+  describe('client locale chunks stripped in endpoint mode', () => {
+    test('client assets contain no bundled locale messages', async () => {
+      // ssr builds always load messages from the endpoint, so client locale chunks are not emitted
+      const assetsDir = join(useTestContext().nuxt!.options.nitro.output!.dir!, 'public/_nuxt')
+      const chunks = readdirSync(assetsDir).filter(x => x.endsWith('.js'))
+      expect(chunks.length).toBeGreaterThan(0)
+      for (const chunk of chunks) {
+        expect(readFileSync(join(assetsDir, chunk), 'utf8')).not.toContain('Homepage')
+      }
+    })
+
+    test('client-side locale switch fetches messages from the endpoint', async () => {
+      const { page } = await renderPage('/')
+
+      await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#nuxt-locale-link-fr')])
+      expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    })
   })
 })
