@@ -28,19 +28,19 @@ describe('vue-i18n legacy API mode', () => {
   it('initializes the plugin and provides working routing composables', async () => {
     const { page } = await renderPage('/en')
 
-    expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en')
-    expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja')
-    expect(await page.locator('#locale-path .about').innerText()).toEqual('/en/about')
+    await expect.poll(() => page.locator('#switch-locale-path .en').innerText()).toEqual('/en')
+    await expect.poll(() => page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja')
+    await expect.poll(() => page.locator('#locale-path .about').innerText()).toEqual('/en/about')
 
     // locale switch updates state through the legacy instance
     await gotoPath(page, '/ja/about')
-    expect(await page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about')
-    expect(await page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about')
+    await expect.poll(() => page.locator('#switch-locale-path .en').innerText()).toEqual('/en/about')
+    await expect.poll(() => page.locator('#switch-locale-path .ja').innerText()).toEqual('/ja/about')
   })
 
   it('(#2315) component `i18n` options create a local scope', async () => {
     const { page } = await renderPage('/en')
 
-    expect(await page.locator('#legacy-local-msg').innerText()).toEqual('Hello, local!')
+    await expect.poll(() => page.locator('#legacy-local-msg').innerText()).toEqual('Hello, local!')
   })
 })
