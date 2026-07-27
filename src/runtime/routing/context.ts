@@ -73,7 +73,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
     domains: options.domains,
   }
   const formatTrailingSlash = createTrailingSlashFormatter(options.trailingSlash)
-  const getLocalizedRouteName = createLocaleRouteNameGetter(defaultLocale, config, name => router.hasRoute(name))
+  const getLocalizedRouteName = createLocaleRouteNameGetter(name => router.hasRoute(name), config)
 
   function resolveLocalizedRouteByName(route: RouteLikeWithName, locale: string) {
     route.name = getRouteBaseName(route.name || router.currentRoute.value) // fallback to current route name
