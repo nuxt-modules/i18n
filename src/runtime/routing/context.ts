@@ -200,6 +200,12 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return path
       }
 
+      // the route does not resolve for this locale (disabled for the page), joining an empty
+      // path would point the link and its hreflang at the target domain's home page
+      if (!path) {
+        return path
+      }
+
       if (stripsDefaultPrefix && target?.defaultForDomains?.length && getLocaleFromRoutePath(path) === locale) {
         path = path.slice(locale.length + 1) || '/'
       }

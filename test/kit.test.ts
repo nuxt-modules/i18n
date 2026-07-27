@@ -416,6 +416,19 @@ describe('switchLocalePath with differentDomains', () => {
     expect(_switchLocalePath(ctx, 'en')).toBe('http://en.example.com/about')
   })
 
+  test('a locale the page is unavailable in produces no link', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_except_default',
+      host: 'fr.example.com',
+      locale: 'fr',
+      hostDefault: 'fr'
+    })
+
+    await router.push('/about')
+    // the route does not resolve, joining an empty path would link to the target domain's home page
+    expect(_switchLocalePath(ctx, 'xx')).toBe('')
+  })
+
   test('`strategy: prefix` keeps prefixes in links for all locales', async () => {
     const { router, ctx } = createDomainContext({ strategy: 'prefix', host: 'fr.example.com', locale: 'fr' })
 
