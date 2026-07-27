@@ -15,8 +15,8 @@ importers:
         specifier: ^11.4.6
         version: 11.4.6
       '@intlify/h3':
-        specifier: ^0.7.4
-        version: 0.7.4
+        specifier: ^1.0.0
+        version: 1.0.0
       '@intlify/message-compiler':
         specifier: ^11.4.7
         version: 11.4.7
@@ -1339,8 +1339,8 @@ packages:
     resolution: {integrity: sha512-wowQPpNem56b2d43IJmqbrzG2FeBKe5f/kUGlpNuBmXs6OSqncF8m1+1lxHuW8ISZJF0ma2RkW3iLkw0g0G4VA==}
     engines: {node: '>= 22'}
 
-  '@intlify/h3@0.7.4':
-    resolution: {integrity: sha512-BtL5+U3Dd9Qz6so+ArOMQWZ+nV21rOqqYUXnqwvW6J3VUXr66A9+9+vUFb/NAQvOU4kdfkO3c/9LMRGU9WZ8vw==}
+  '@intlify/h3@1.0.0':
+    resolution: {integrity: sha512-/gSX/6UZlREHDcjQhVx2IywqE0lz8/05SwEFfqQ03vIuoCIKIRfowwtNZiVsHihu5+bT2RuU9OWl/TUdypYvkQ==}
     engines: {node: '>= 20'}
 
   '@intlify/message-compiler@11.4.6':
@@ -9721,7 +9721,7 @@ snapshots:
       '@intlify/core-base': 11.4.6
       '@intlify/shared': 11.4.6
 
-  '@intlify/h3@0.7.4':
+  '@intlify/h3@1.0.0':
     dependencies:
       '@intlify/core': 11.4.6
       '@intlify/utils': 0.13.0

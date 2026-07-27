@@ -73,7 +73,7 @@
   },
   "dependencies": {
     "@intlify/core": "^11.4.6",
-    "@intlify/h3": "^0.7.4",
+    "@intlify/h3": "^1.0.0",
     "@intlify/message-compiler": "^11.4.7",
     "@intlify/shared": "^11.4.6",
     "@intlify/unplugin-vue-i18n": "^11.2.4",
