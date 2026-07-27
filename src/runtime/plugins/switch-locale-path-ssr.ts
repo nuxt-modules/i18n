@@ -1,6 +1,6 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 import { useSwitchLocalePath } from '#i18n'
-import { encodePath } from '../shared/utils'
+import { escapeHtmlAttr } from '../shared/utils'
 
 const identifier = __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__
 const switchLocalePathLinkWrapperExpr = new RegExp(
@@ -22,10 +22,12 @@ export default defineNuxtPlugin({
       ctx.renderResult.html = ctx.renderResult.html.replaceAll(
         switchLocalePathLinkWrapperExpr,
         (match: string, p1: string) => {
-          const resolved = encodePath(switchLocalePath(p1 ?? ''))
+          // interpolated into raw html, so it needs escaping vue would otherwise apply itself (#3042)
+          const resolved = escapeHtmlAttr(switchLocalePath(p1 ?? ''))
+          // replacer function - a `$` in the path would otherwise be read as a substitution pattern
           return match.replace(
             /href="([^"]+)"/,
-            `href="${resolved || '#'}" ${!resolved && __I18N_STRICT_SEO__ ? 'data-i18n-disabled' : ''}`,
+            () => `href="${resolved || '#'}" ${!resolved && __I18N_STRICT_SEO__ ? 'data-i18n-disabled' : ''}`,
           )
         },
       )

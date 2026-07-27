@@ -545,6 +545,9 @@ describe('basic usage', async () => {
       const html = await $fetch(url)
       const dom = await getDom(html)
 
+      // the ssr plugin interpolates the href into raw html, so check it before the dom decodes entities
+      expect(html).toContain(`href="${encodeURI('/nl' + url)}"`)
+
       // the localized should be the same as encoded
       expect(await dom.locator('#slp-xss a')?.getAttribute('href')).toEqual(encodeURI('/nl' + url))
     })
