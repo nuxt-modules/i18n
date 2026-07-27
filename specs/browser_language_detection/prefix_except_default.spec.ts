@@ -45,8 +45,8 @@ describe('`detectBrowserLanguage` using strategy `prefix_except_default`', async
 
     // direct access to root `/`
     await page.goto(url('/'))
-    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
     await page.waitForURL(url('/fr'))
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
     // change to `en`
     await page.locator('#nuxt-locale-link-en').clickNavigate()

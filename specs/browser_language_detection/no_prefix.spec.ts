@@ -53,7 +53,7 @@ test('detection with cookie', async () => {
   // detect locale from persisted cookie
   await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   // navigate with home link
-  await page.locator('#link-home').click()
+  await page.locator('#link-home').clickNavigate()
 
   // locale in home
   await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
@@ -161,7 +161,7 @@ test('disable', async () => {
   await Promise.all([waitForLocaleSwitch(page), page.locator('#set-locale-link-fr').click()])
 
   // navigate with home link
-  await page.locator('#link-home').click()
+  await page.locator('#link-home').clickNavigate()
 
   // set default locale
   await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')

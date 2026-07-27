@@ -143,7 +143,7 @@ describe('strategy: no_prefix', async () => {
     await expect.poll(() => page.locator('#about-header').innerText()).toEqual(`À propos`)
 
     // one more change page
-    await page.locator('#link-home').click()
+    await page.locator('#link-home').clickNavigate()
     await expect.poll(() => page.locator('#home-header').innerText()).toEqual(`Accueil`)
   })
 
