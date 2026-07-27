@@ -12,6 +12,18 @@ function patchHead(head: ComposableContext['head'] | undefined, input: I18nHeadM
   head?.patch(input)
 }
 
+/**
+ * Alternate links annotate the domains as one cluster, and a cluster has a single fallback for
+ * unmatched languages. It cannot be resolved from the current domain - every domain would name a
+ * different one - so `x-default` is left out until `defaultLocale` names it.
+ */
+export function missesClusterFallback(ctx: ComposableContext, config: Required<I18nHeadOptions>): boolean {
+  const { domains, hreflangLinks, defaultLocale } = ctx.routingOptions
+  return !!config.seo && domains && hreflangLinks && !defaultLocale
+}
+
+let warnedClusterFallback = false
+
 function createHeadContext(
   ctx: ComposableContext,
   config: Required<I18nHeadOptions>,
@@ -24,6 +36,11 @@ function createHeadContext(
   const currentLocale = locales.find(l => l.code === locale) || { code: locale }
   // deduplicate, layered configs merge `canonicalQueries` arrays with duplicate entries
   const canonicalQueries = [...new Set((typeof config.seo === 'object' && config.seo?.canonicalQueries) || [])]
+
+  if (import.meta.dev && !warnedClusterFallback && missesClusterFallback(ctx, config)) {
+    warnedClusterFallback = true
+    console.warn('[nuxt-i18n] Set `defaultLocale` to annotate an `x-default` alternate for your domains.')
+  }
 
   if (!baseUrl && !ctx.routingOptions.domains) {
     if (ctx.strictSeo) {
