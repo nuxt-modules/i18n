@@ -119,12 +119,29 @@ function getDomainDefaultLocales(locales: LocaleObject[]): string[] {
   return locales.filter(locale => locale.defaultForDomains?.length || locale.domainDefault).map(locale => locale.code)
 }
 
+const usesDefaultVariants = (strategy: Strategies | undefined) =>
+  strategy === 'prefix_except_default' || strategy === 'prefix_and_default'
+
+/**
+ * Locales getting an unprefixed `___default` tree alongside their prefixed routes.
+ */
+function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies): string[] {
+  if (config.differentDomains || config.multiDomainLocales) {
+    // `setupMultiDomainLocales` keeps the current host's variant at runtime
+    return usesDefaultVariants(strategy) ? getDomainDefaultLocales(config.locales) : []
+  }
+  return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
+}
+
 function resolveDefaultLocales(config: SetupLocalizeRoutesOptions) {
+  // under the `*_default` strategies the unprefixed locale differs per domain, `___default`
+  // variants + runtime surgery resolve it - a build time default would claim the same path
+  if ((config.differentDomains || config.multiDomainLocales) && usesDefaultVariants(config.strategy)) {
+    return []
+  }
+
   let defaultLocales = [config.defaultLocale ?? '']
-  // under the `*_default` strategies domain defaults use `___default` variants + runtime surgery instead
-  const usesDefaultVariants
-    = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
-  if (config.differentDomains && !usesDefaultVariants) {
+  if (config.differentDomains) {
     defaultLocales = defaultLocales.concat(getDomainDefaultLocales(config.locales))
   }
   return defaultLocales
@@ -232,32 +249,14 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     }
   }
 
-  /**
-   * Default tree for prefix_and_default strategy
-   */
-  if (strategy === 'prefix_and_default') {
+  const defaultTreeLocales = new Set(resolveDefaultTreeLocales(config, strategy))
+  if (defaultTreeLocales.size) {
     // unshift to preserve test snapshots
     ctx.localizers.unshift({
-      enabled: ({ options, locale }) => ctx.isDefaultLocale(locale) && !options.defaultTree && options.parent == null,
+      enabled: ({ locale, options }) =>
+        defaultTreeLocales.has(locale) && !options.defaultTree && options.parent == null,
       localizer: ({ route, ctx, locale, options }) =>
         localizeSingleRoute(route, { ...options, locales: [locale], defaultTree: true }, ctx),
-    })
-  }
-
-  /**
-   * Unprefixed default routes for multi domain locales
-   */
-  const domainLocales = (config.multiDomainLocales || config.differentDomains) ?? false
-  if (domainLocales && (config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default')) {
-    // only locales that are the default for some domain need an unprefixed variant,
-    // `setupMultiDomainLocales` rebuilds the current domain's default routes from these at runtime
-    const domainDefaults = new Set(getDomainDefaultLocales(config.locales))
-    // unshift to preserve test snapshots
-    ctx.localizers.unshift({
-      enabled: ({ usePrefix, locale }) => usePrefix && domainDefaults.has(locale),
-      localizer: ({ unprefixed, route, ctx, locale }) => [
-        { ...route, name: ctx.localizeRouteName(route, locale, true), path: unprefixed },
-      ],
     })
   }
 
