@@ -249,7 +249,8 @@ describe('localizeRoutes', function () {
       })
 
       const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
-      expect(paths['about___en']).toBe('/about')
+      // every locale is prefixed, `defaultLocale` is not the default on every domain
+      expect(paths['about___en']).toBe('/en/about')
       expect(paths['about___ja']).toBe('/ja/about')
       // domain defaults are prefixed with an unprefixed `___default` variant
       expect(paths['about___fr']).toBe('/fr/about')
@@ -265,6 +266,109 @@ describe('localizeRoutes', function () {
       expect(domainPaths['about___nl']).toBe('/nl/about')
       expect(domainPaths['about___fr___default']).toBeUndefined()
       expect(domainPaths['about___nl___default']).toBeUndefined()
+      // `en` keeps its prefix here, it is only unprefixed on the domains it is the default for
+      expect(domainPaths['about___en']).toBe('/en/about')
+    })
+
+    it('unprefixes the domain default without breaking nested routes', function () {
+      const routes: NuxtPage[] = [
+        { path: '/', name: 'home' },
+        { path: '/user/:id', name: 'user', children: [{ path: 'profile', name: 'user-profile' }] }
+      ]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+        ]
+      })
+
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      setupMultiDomainLocales('fr', 'prefix_except_default', router)
+
+      expect(router.resolve('/').name).toBe('home___fr')
+      expect(router.resolve('/en').name).toBe('home___en')
+      // the re-added child is registered under its parent, not as a route of its own
+      const profile = router.resolve('/user/1/profile')
+      expect(profile.name).toBe('user-profile___fr')
+      expect(profile.matched.map(x => x.name)).toEqual(['user___fr', 'user-profile___fr'])
+      expect(router.resolve('/en/user/1/profile').name).toBe('user-profile___en')
+    })
+
+    it('keeps the configured trailing slash when unprefixing', function () {
+      const routes: NuxtPage[] = [{ path: '/', name: 'home' }, { path: '/about', name: 'about' }]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        trailingSlash: true,
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+        ]
+      })
+
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      setupMultiDomainLocales('fr', 'prefix_except_default', router)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['home___fr']).toBe('/')
+      expect(domainPaths['home___en']).toBe('/en/')
+      expect(domainPaths['about___en']).toBe('/en/about/')
+    })
+
+    it('localizes the children of a domain default\'s unprefixed variant', function () {
+      const routes: NuxtPage[] = [
+        { path: '/user/:id', name: 'user', children: [{ path: 'profile', name: 'user-profile' }] }
+      ]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+        ]
+      })
+
+      const tree = localizedRoutes.find(r => r.name === 'user___fr___default')
+      expect(tree?.children?.map(c => c.name)).toEqual(['user-profile___fr___default'])
+    })
+  })
+
+  describe('strategy: "prefix_and_default" + differentDomains', function () {
+    it('only generates an unprefixed variant for domain defaults, not for `defaultLocale`', function () {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_and_default',
+        differentDomains: true,
+        locales: [
+          { code: 'en', domain: 'en.example.com' },
+          { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
+        ]
+      })
+
+      const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
+      expect(paths['about___en']).toBe('/en/about')
+      expect(paths['about___en___default']).toBeUndefined()
+      expect(paths['about___fr']).toBe('/fr/about')
+      expect(paths['about___fr___default']).toBe('/about')
+
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      setupMultiDomainLocales('fr', 'prefix_and_default', router)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___fr']).toBe('/about')
+      expect(domainPaths['about___en']).toBe('/en/about')
     })
   })
 

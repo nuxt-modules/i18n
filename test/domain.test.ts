@@ -1,5 +1,11 @@
 import { describe, expect, test } from 'vitest'
-import { domainFromLocale, matchDomainLocale, normalizeDomain, withRuntimeDomain } from '../src/runtime/shared/domain'
+import {
+  domainFromLocale,
+  isLocaleServedOnHost,
+  matchDomainLocale,
+  normalizeDomain,
+  withRuntimeDomain,
+} from '../src/runtime/shared/domain'
 import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
 import { createBaseUrlGetter } from '../src/runtime/context'
 import { normalizeDomainLocale } from '../src/utils'
@@ -20,6 +26,8 @@ describe('normalizeDomain', () => {
     expect(normalizeDomain('localhost:3000')).toBe('localhost:3000')
     expect(normalizeDomain('http://127.0.0.1:7787')).toBe('127.0.0.1:7787')
     expect(normalizeDomain()).toBe('')
+    // request hosts are always lowercase, a configured domain may not be
+    expect(normalizeDomain('https://EN.Example.com')).toBe('en.example.com')
   })
 })
 
@@ -46,6 +54,31 @@ describe('matchDomainLocale', () => {
 
   test('returns undefined for unknown host', () => {
     expect(matchDomainLocale(locales, 'unknown.example.com', '')).toBeUndefined()
+  })
+})
+
+describe('isLocaleServedOnHost', () => {
+  test('a restricted locale is served on its own domains', () => {
+    expect(isLocaleServedOnHost(locales, 'shared.example.com', 'de')).toBe(true)
+    expect(isLocaleServedOnHost(locales, 'fr.example.com', 'fr')).toBe(true)
+  })
+
+  test('a restricted locale is not served on another configured domain', () => {
+    expect(isLocaleServedOnHost(locales, 'shared.example.com', 'en')).toBe(false)
+    expect(isLocaleServedOnHost(locales, 'en.example.com', 'de')).toBe(false)
+  })
+
+  test('a locale without domains is served everywhere', () => {
+    expect(isLocaleServedOnHost([...locales, { code: 'pl' }], 'en.example.com', 'pl')).toBe(true)
+  })
+
+  test('an unconfigured host is not restricted', () => {
+    expect(isLocaleServedOnHost(locales, 'staging.example.com', 'en')).toBe(true)
+    expect(isLocaleServedOnHost(locales, '127.0.0.1:3000', 'de')).toBe(true)
+  })
+
+  test('an unknown locale is not restricted', () => {
+    expect(isLocaleServedOnHost(locales, 'en.example.com', 'xx')).toBe(true)
   })
 })
 
@@ -104,8 +137,20 @@ describe('domainFromLocale', () => {
     )
   })
 
-  test('returns undefined without a matching domain', () => {
-    expect(domainFromLocale({}, url, 'nl', locales)).toBeUndefined()
+  test('a locale served on none of the current host resolves to the domain it belongs to', () => {
+    expect(domainFromLocale({}, url, 'nl', locales)).toBe('http://shared.example.com')
+    // the domain the locale is the default for wins over the rest of its `domains`
+    const multi = [...locales, { code: 'pt', domains: ['a.example.com', 'b.example.com'], defaultForDomains: ['b.example.com'] }]
+    expect(domainFromLocale({}, url, 'pt', multi)).toBe('http://b.example.com')
+  })
+
+  test('returns undefined for a locale without domains', () => {
+    expect(domainFromLocale({}, url, 'pl', [...locales, { code: 'pl' }])).toBeUndefined()
+  })
+
+  test('a host matching no configured domain resolves no domain, so URLs stay relative', () => {
+    // otherwise `nuxt dev` and staging would link and redirect to the configured domains
+    expect(domainFromLocale({}, { host: 'localhost:3000', protocol: 'http:' }, 'nl', locales)).toBeUndefined()
   })
 })
 
