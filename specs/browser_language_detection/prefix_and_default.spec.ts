@@ -31,15 +31,15 @@ test('redirectOn: all', async () => {
   const { page } = await renderPage('/blog/article', { locale: 'fr' })
 
   // detect locale from navigator language
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
   await page.locator('#set-locale-link-en').clickNavigate()
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // navigate to home
   await gotoPath(page, '/')
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 })
 
 test('redirectOn: no prefix', async () => {
@@ -59,15 +59,15 @@ test('redirectOn: no prefix', async () => {
   const { page } = await renderPage('/blog/article', { locale: 'fr' })
 
   // detect locale from navigator language
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // click `en` lang switch link
   await page.locator('#set-locale-link-en').clickNavigate()
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // navigate to fr blog
   await gotoPath(page, '/fr/blog/article')
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   await restore()
 })
 
@@ -86,16 +86,16 @@ test('alwaysRedirect: all', async () => {
   const { page } = await renderPage(blog, { locale: 'en' }) // set browser locale
 
   // detect locale from navigator language
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
   // click `fr` lang switch link
   await page.locator('#set-locale-link-fr').clickNavigate()
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // go to `en` home page
   await page.goto(url(blog))
   await page.waitForURL(url('/fr/blog/article'))
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 })
 
 test('alwaysRedirect: no prefix', async () => {
@@ -113,21 +113,21 @@ test('alwaysRedirect: no prefix', async () => {
   const ctx = await page.context()
 
   // detect locale from navigator language
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
   expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'en' }])
 
   // click `fr` lang switch with nutlink
   await page.locator('#set-locale-link-fr').clickNavigate()
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   expect(await ctx.cookies()).toMatchObject([{ name: 'i18n_redirected', value: 'fr' }])
 
   // go to `blog/article` page
   await page.goto(url('/blog/article'))
   expect(page.url().endsWith('/fr/about'))
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
   // go to `/about` page
   await page.goto(url('/about'))
   expect(page.url().endsWith('/fr/about'))
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 })

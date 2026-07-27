@@ -40,7 +40,7 @@ describe('basic usage', async () => {
       const { page } = await renderPage('/')
 
       // vue-i18n using
-      expect(await page.locator('#vue-i18n-usage p').innerText()).toEqual('Welcome')
+      await expect.poll(() => page.locator('#vue-i18n-usage p').innerText()).toEqual('Welcome')
 
       // URL path localizing with `useLocalePath`
       expect(await page.locator('#locale-path-usages .name a').getAttribute('href')).toEqual('/')
@@ -79,7 +79,7 @@ describe('basic usage', async () => {
 
       // URL path with Route object with `useLocaleRoute`
       await page.locator('#locale-route-usages button').clickNavigate()
-      expect(await page.locator('#profile-page').innerText()).toEqual('This is profile page')
+      await expect.poll(() => page.locator('#profile-page').innerText()).toEqual('This is profile page')
       expect(await page.url()).include('/user/profile?foo=1')
     })
 
@@ -116,10 +116,10 @@ describe('basic usage', async () => {
     test('nuxt context extension', async () => {
       const { page } = await renderPage('/nuxt-context-extension')
 
-      expect(await page.locator('#get-route-base-name').innerText()).toEqual('nuxt-context-extension')
-      expect(await page.locator('#get-route-base-name-string').innerText()).toEqual('nuxt-context-extension')
-      expect(await page.locator('#switch-locale-path').innerText()).toEqual('/ja/nuxt-context-extension')
-      expect(await page.locator('#locale-path').innerText()).toEqual('/nl/nuxt-context-extension')
+      await expect.poll(() => page.locator('#get-route-base-name').innerText()).toEqual('nuxt-context-extension')
+      await expect.poll(() => page.locator('#get-route-base-name-string').innerText()).toEqual('nuxt-context-extension')
+      await expect.poll(() => page.locator('#switch-locale-path').innerText()).toEqual('/ja/nuxt-context-extension')
+      await expect.poll(() => page.locator('#locale-path').innerText()).toEqual('/nl/nuxt-context-extension')
 
       const localeRoute = JSON.parse(await page.locator('#locale-route').innerText()) as RouteLocation
       // remove properties that vary based on test environment and vue-router version
@@ -165,6 +165,7 @@ describe('basic usage', async () => {
     `
       )
 
+      // `expect.poll` does not support snapshot matchers, they always succeed
       expect(await page.locator('#locale-head').innerText()).toMatchInlineSnapshot(
         `"{ "htmlAttrs": { "lang": "en" }, "link": [ { "id": "i18n-xd", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "x-default" }, { "id": "i18n-alt-en", "rel": "alternate", "href": "http://localhost:3000/nuxt-context-extension", "hreflang": "en" }, { "id": "i18n-alt-fr", "rel": "alternate", "href": "http://localhost:3000/fr/nuxt-context-extension", "hreflang": "fr" }, { "id": "i18n-alt-ja", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja" }, { "id": "i18n-alt-ja-JP", "rel": "alternate", "href": "http://localhost:3000/ja/nuxt-context-extension", "hreflang": "ja-JP" }, { "id": "i18n-alt-nl", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl" }, { "id": "i18n-alt-nl-NL", "rel": "alternate", "href": "http://localhost:3000/nl/nuxt-context-extension", "hreflang": "nl-NL" }, { "id": "i18n-alt-nl-BE", "rel": "alternate", "href": "http://localhost:3000/be/nuxt-context-extension", "hreflang": "nl-BE" }, { "id": "i18n-alt-kr", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr" }, { "id": "i18n-alt-kr-KO", "rel": "alternate", "href": "http://localhost:3000/kr/nuxt-context-extension", "hreflang": "kr-KO" }, { "id": "i18n-can", "rel": "canonical", "href": "http://localhost:3000/nuxt-context-extension" } ], "meta": [ { "id": "i18n-og-url", "property": "og:url", "content": "http://localhost:3000/nuxt-context-extension" }, { "id": "i18n-og", "property": "og:locale", "content": "en" }, { "id": "i18n-og-alt-fr", "property": "og:locale:alternate", "content": "fr" }, { "id": "i18n-og-alt-ja-JP", "property": "og:locale:alternate", "content": "ja_JP" }, { "id": "i18n-og-alt-nl-NL", "property": "og:locale:alternate", "content": "nl_NL" }, { "id": "i18n-og-alt-nl-BE", "property": "og:locale:alternate", "content": "nl_BE" }, { "id": "i18n-og-alt-kr-KO", "property": "og:locale:alternate", "content": "kr_KO" } ] }"`
       )
@@ -173,13 +174,13 @@ describe('basic usage', async () => {
     test('register module hook', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#register-module').innerText()).toEqual('This is a merged module layer locale key')
+      await expect.poll(() => page.locator('#register-module').innerText()).toEqual('This is a merged module layer locale key')
 
       // click `fr` lang switch link
       await page.locator('.switch-to-fr a').clickNavigate()
       await page.waitForURL(url('/fr'))
 
-      expect(await page.locator('#register-module').innerText()).toEqual(
+      await expect.poll(() => page.locator('#register-module').innerText()).toEqual(
         'This is a merged module layer locale key in French'
       )
     })
@@ -187,7 +188,7 @@ describe('basic usage', async () => {
     test('vueI18n config file can access runtimeConfig', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#runtime-config').innerText()).toEqual('Hello from runtime config!')
+      await expect.poll(() => page.locator('#runtime-config').innerText()).toEqual('Hello from runtime config!')
 
       const restore = await startServerWithRuntimeConfig(
         { public: { runtimeValue: 'The environment variable has changed!' } },
@@ -195,21 +196,21 @@ describe('basic usage', async () => {
       )
 
       await gotoPath(page, '/')
-      expect(await page.locator('#runtime-config').innerText()).toEqual('The environment variable has changed!')
+      await expect.poll(() => page.locator('#runtime-config').innerText()).toEqual('The environment variable has changed!')
       await restore()
     })
 
     test('layer provides locale `nl` and translation for key `hello`', async () => {
       const { page } = await renderPage('/layer-page')
 
-      expect(await page.locator('#i18n-layer-target').innerText()).toEqual('Hello world!')
+      await expect.poll(() => page.locator('#i18n-layer-target').innerText()).toEqual('Hello world!')
       expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/layer-parent')
       expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
         '/layer-parent/layer-child'
       )
 
       await gotoPath(page, '/nl/layer-page')
-      expect(await page.locator('#i18n-layer-target').innerText()).toEqual('Hallo wereld!')
+      await expect.poll(() => page.locator('#i18n-layer-target').innerText()).toEqual('Hallo wereld!')
       expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/nl/layer-ouder')
       expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
         '/nl/layer-ouder/layer-kind'
@@ -219,14 +220,14 @@ describe('basic usage', async () => {
     test('layer vueI18n options provides `nl` message', async () => {
       const { page } = await renderPage('/nl')
 
-      expect(await page.locator('#layer-message').innerText()).toEqual('Bedankt!')
+      await expect.poll(() => page.locator('#layer-message').innerText()).toEqual('Bedankt!')
     })
 
     test('layer vueI18n options properties are merge and override by priority', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#snake-case').innerText()).toEqual('About-this-site')
-      expect(await page.locator('#pascal-case').innerText()).toEqual('AboutThisSite')
+      await expect.poll(() => page.locator('#snake-case').innerText()).toEqual('About-this-site')
+      await expect.poll(() => page.locator('#pascal-case').innerText()).toEqual('AboutThisSite')
 
       await Promise.all([
         waitForLocaleNetwork(page, 'fr', 'response'),
@@ -234,9 +235,9 @@ describe('basic usage', async () => {
       ])
       await page.waitForTimeout(100)
 
-      expect(await page.locator('#snake-case').innerText()).toEqual('À-propos-de-ce-site')
-      expect(await page.locator('#pascal-case').innerText()).toEqual('ÀProposDeCeSite')
-      expect(await page.locator('#fallback-message').innerText()).toEqual('Unique translation')
+      await expect.poll(() => page.locator('#snake-case').innerText()).toEqual('À-propos-de-ce-site')
+      await expect.poll(() => page.locator('#pascal-case').innerText()).toEqual('ÀProposDeCeSite')
+      await expect.poll(() => page.locator('#fallback-message').innerText()).toEqual('Unique translation')
     })
 
     test('load option successfully', async () => {
@@ -246,36 +247,36 @@ describe('basic usage', async () => {
       await page.locator('#switch-locale-path-usages .switch-to-fr a').clickNavigate()
       await page.waitForURL(url('/fr'))
 
-      expect(await page.locator('#home-header').innerText()).toEqual('Bonjour-le-monde!')
+      await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Bonjour-le-monde!')
 
       // click `en` lang switch link
       await page.locator('#switch-locale-path-usages .switch-to-en a').clickNavigate()
       await page.waitForURL(url('/'))
-      expect(await page.locator('#home-header').innerText()).toEqual('Hello-world!')
+      await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Hello-world!')
     })
 
     test('(#1740) should be loaded vue-i18n related modules', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#app-config-name').innerText()).toEqual('This is Nuxt layer')
+      await expect.poll(() => page.locator('#app-config-name').innerText()).toEqual('This is Nuxt layer')
     })
 
     test('fallback to target lang', async () => {
       const { page } = await renderPage('/')
 
       // `en` rendering
-      expect(await page.locator('#locale-path-usages .name a').innerText()).toEqual('Homepage')
-      expect(await page.locator('title').innerText()).toEqual('Page - Homepage')
-      expect(await page.locator('#fallback-key').innerText()).toEqual('This is the fallback message!')
+      await expect.poll(() => page.locator('#locale-path-usages .name a').innerText()).toEqual('Homepage')
+      await expect.poll(() => page.locator('title').innerText()).toEqual('Page - Homepage')
+      await expect.poll(() => page.locator('#fallback-key').innerText()).toEqual('This is the fallback message!')
 
       // click `nl` lang switch with `<NuxtLink>`
       await page.locator('#switch-locale-path-usages .switch-to-nl a').clickNavigate()
       await page.waitForURL(url('/nl'))
 
       // fallback to en content translation
-      expect(await page.locator('#locale-path-usages .name a').innerText()).toEqual('Homepage')
-      expect(await page.locator('title').innerText()).toEqual('Page - Homepage')
-      expect(await page.locator('#fallback-key').innerText()).toEqual('This is the fallback message!')
+      await expect.poll(() => page.locator('#locale-path-usages .name a').innerText()).toEqual('Homepage')
+      await expect.poll(() => page.locator('title').innerText()).toEqual('Page - Homepage')
+      await expect.poll(() => page.locator('#fallback-key').innerText()).toEqual('This is the fallback message!')
 
       // page path
       expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
@@ -283,7 +284,7 @@ describe('basic usage', async () => {
       })
 
       // current locale
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('nl')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('nl')
     })
 
     test('(#2525) localePath should keep hash', async () => {
@@ -326,8 +327,8 @@ describe('basic usage', async () => {
     test('(#2476) Parametrized messages can be overwritten', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#module-layer-base-key').innerText()).toEqual('Layer base key overwritten!')
-      expect(await page.locator('#module-layer-base-key-named').innerText()).toEqual(
+      await expect.poll(() => page.locator('#module-layer-base-key').innerText()).toEqual('Layer base key overwritten!')
+      await expect.poll(() => page.locator('#module-layer-base-key-named').innerText()).toEqual(
         'Layer base key overwritten, greetings bar!'
       )
     })
@@ -380,7 +381,7 @@ describe('basic usage', async () => {
       // expect(consoleLogs.find(log => log.text.includes('i18n:beforeLocaleSwitch fr fr true'))).toBeTruthy()
 
       // current locale
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
     })
 
     test('render with meta components', async () => {
@@ -391,14 +392,14 @@ describe('basic usage', async () => {
        */
 
       // title tag
-      expect(await page.locator('title').innerText()).toMatch('Page - Homepage')
+      await expect.poll(() => page.locator('title').innerText()).toMatch('Page - Homepage')
       await page.waitForURL(url('/'))
 
       // html tag `lang` attribute
-      expect(await page.getAttribute('html', 'lang')).toMatch('en')
+      await expect.poll(() => page.getAttribute('html', 'lang')).toMatch('en')
 
       // html tag `dir` attribute
-      expect(await page.getAttribute('html', 'dir')).toMatch('ltr')
+      await expect.poll(() => page.getAttribute('html', 'dir')).toMatch('ltr')
 
       // rendering link tag and meta tag in head tag
       await assetLocaleHead(page, '#layout-use-locale-head')
@@ -412,10 +413,10 @@ describe('basic usage', async () => {
       await page.waitForURL(url('/fr'))
 
       // title tag
-      expect(await page.locator('title').innerText()).toMatch('Page - Accueil')
+      await expect.poll(() => page.locator('title').innerText()).toMatch('Page - Accueil')
 
       // html tag `lang` attribute
-      expect(await page.getAttribute('html', 'lang')).toMatch('fr')
+      await expect.poll(() => page.getAttribute('html', 'lang')).toMatch('fr')
 
       // rendering link tag and meta tag in head tag
       await assetLocaleHead(page, '#layout-use-locale-head')
@@ -429,10 +430,10 @@ describe('basic usage', async () => {
       await page.waitForURL(url('/fr/about'))
 
       // title tag
-      expect(await page.locator('title').innerText()).toMatch('Page - À propos')
+      await expect.poll(() => page.locator('title').innerText()).toMatch('Page - À propos')
 
       // html tag `lang` attribute
-      expect(await page.getAttribute('html', 'lang')).toMatch('fr')
+      await expect.poll(() => page.getAttribute('html', 'lang')).toMatch('fr')
 
       // rendering link tag and meta tag in head tag
       await assetLocaleHead(page, '#layout-use-locale-head')
@@ -633,14 +634,14 @@ describe('basic usage', async () => {
 
       const { page } = await renderPage('/nl/long-text')
 
-      expect(await page.locator('#long-text').innerText()).toEqual('hallo,'.repeat(8 * 500))
+      await expect.poll(() => page.locator('#long-text').innerText()).toEqual('hallo,'.repeat(8 * 500))
       await restore()
     })
 
     test('(#2094) vue-i18n messages are loaded from config exported as variable', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#issue-2094').innerText()).toEqual('Exporting using variable identifier works!')
+      await expect.poll(() => page.locator('#issue-2094').innerText()).toEqual('Exporting using variable identifier works!')
     })
 
     test('(#2726) composables correctly initialize common options, no internal server error', async () => {
@@ -656,8 +657,8 @@ describe('basic usage', async () => {
     test('(#2874) options `locales` and `vueI18n` passed using `installModule` are not overridden', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#install-module-locale').innerText()).toEqual('Installer module locale works!')
-      expect(await page.locator('#install-module-vue-i18n').innerText()).toEqual('Installer module vue-i18n works!')
+      await expect.poll(() => page.locator('#install-module-locale').innerText()).toEqual('Installer module locale works!')
+      await expect.poll(() => page.locator('#install-module-vue-i18n').innerText()).toEqual('Installer module vue-i18n works!')
     })
 
     test('can use `$t` in `<template>` with `autoDeclare``', async () => {
@@ -722,12 +723,12 @@ describe('basic usage', async () => {
       await page.waitForURL(url('/fr'))
 
       // `fr` rendering
-      expect(await page.locator('#home-header').innerText()).toMatch('Bonjour-le-monde!')
-      expect(await page.locator('#link-about').innerText()).toMatch('À propos')
+      await expect.poll(() => page.locator('#home-header').innerText()).toMatch('Bonjour-le-monde!')
+      await expect.poll(() => page.locator('#link-about').innerText()).toMatch('À propos')
 
       // lang switcher rendering
-      expect(await page.locator('#nuxt-locale-link-en').innerText()).toMatch('English')
-      expect(await page.locator('#set-locale-link-en').innerText()).toMatch('English')
+      await expect.poll(() => page.locator('#nuxt-locale-link-en').innerText()).toMatch('English')
+      await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toMatch('English')
 
       await page.locator('#set-locale-link-en').clickNavigate()
       await waitForTransition(page)
@@ -738,16 +739,16 @@ describe('basic usage', async () => {
         aboutPath: '/about',
         aboutTranslation: 'About us'
       })
-      expect(await page.getAttribute('#nuxt-locale-link-fr', 'href')).toEqual('/fr')
+      await expect.poll(() => page.getAttribute('#nuxt-locale-link-fr', 'href')).toEqual('/fr')
 
       // current locale
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
     })
 
     test('(#3766) persists locale after hydration', async () => {
       const { page } = await renderPage('/fr')
       await page.waitForFunction(() => !window.useNuxtApp?.().isHydrating)
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
     })
 
     test('retains query parameters', async () => {
@@ -770,7 +771,7 @@ describe('basic usage', async () => {
       await page.locator('#nuxt-locale-link-fr').clickNavigate()
       await waitForTransition(page)
       await page.waitForURL(url('/fr/post/mon-article'))
-      expect(await page.locator('#post-id').innerText()).toMatch('mon-article')
+      await expect.poll(() => page.locator('#post-id').innerText()).toMatch('mon-article')
     })
 
     test('dynamic route parameters - catch all', async () => {
@@ -779,25 +780,25 @@ describe('basic usage', async () => {
       await page.locator('#nuxt-locale-link-fr').clickNavigate()
       await waitForTransition(page)
       await page.waitForURL(url('/fr/mon-article/xyz'))
-      expect(await page.locator('#catch-all-id').innerText()).toMatch('mon-article/xyz')
+      await expect.poll(() => page.locator('#catch-all-id').innerText()).toMatch('mon-article/xyz')
     })
 
     test('wait for page transition', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
       // click `fr` lang switching
       await page.locator('#nuxt-locale-link-fr').clickNavigate()
       await waitForTransition(page)
       await page.waitForURL(url('/fr'))
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
       // click `en` lang switching
       await page.locator('#nuxt-locale-link-en').clickNavigate()
       await waitForTransition(page)
       await page.waitForURL(url('/'))
-      expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+      await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
     })
 
     test('i18n custom block', async () => {
@@ -811,13 +812,13 @@ describe('basic usage', async () => {
       await page.locator('#link-greetings').clickNavigate()
       await waitForTransition(page)
 
-      expect(await page.locator('#per-component-hello').innerText()).toMatch('Bonjour!')
+      await expect.poll(() => page.locator('#per-component-hello').innerText()).toMatch('Bonjour!')
 
       // click `en` lang switch with `<NuxtLink>`
       await page.locator('#nuxt-locale-link-en').clickNavigate()
       await waitForTransition(page)
 
-      expect(await page.locator('#per-component-hello').innerText()).toMatch('Hello!')
+      await expect.poll(() => page.locator('#per-component-hello').innerText()).toMatch('Hello!')
     })
   })
 })

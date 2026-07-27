@@ -36,7 +36,7 @@ test('(#2313) detection locale from domain', async () => {
       locale: browserLocale
     })
 
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual(locale)
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual(locale)
     await page.close()
   }
 
@@ -47,5 +47,5 @@ test('(#2313) detection locale from domain', async () => {
 test('(#2334) should not redirect loop, when use no_prefix and ssr: false', async () => {
   const page = await createPage(url('/'), { locale: 'fr' })
 
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 })

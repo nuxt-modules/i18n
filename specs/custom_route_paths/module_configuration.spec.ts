@@ -49,8 +49,8 @@ test('can access to custom route path', async () => {
   await page.locator('#link-about').clickNavigate()
   await page.waitForURL(url('/fr/about-fr'))
 
-  expect(await page.locator('#about-header').innerText()).toEqual('À propos')
-  expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#about-header').innerText()).toEqual('À propos')
+  await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   await page.waitForURL(url('/fr/about-fr'))
 })
 
@@ -78,7 +78,7 @@ test('(#4079) non-ASCII custom route path is not double-encoded', async () => {
 
   const { page } = await renderPage('/news/article')
   await page.locator('#switch-locale-path-link-fr').clickNavigate()
-  expect(await page.locator('#locale-properties-code').innerText()).toEqual('fr')
+  await expect.poll(() => page.locator('#locale-properties-code').innerText()).toEqual('fr')
 })
 
 test('can not access to pick route path', async () => {
