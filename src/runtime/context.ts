@@ -273,9 +273,14 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
           return await loadMessagesFromServer(locale)
         }
         // a static fallback of a dynamic locale has no loaders left to run, so each locale in the
-        // chain is loaded through whichever source holds its messages
+        // chain is loaded through whichever source holds its messages - a failing fallback should
+        // not keep the rest of the chain from loading
         for (const k of chain) {
-          await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
+          try {
+            await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
+          } catch (e) {
+            console.warn(`Failed to load messages for locale "${k}"`, e)
+          }
         }
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
