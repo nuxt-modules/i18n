@@ -79,7 +79,9 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
     },
     localePathPayload,
     routingOptions: {
-      defaultLocale: ctx.getDefaultLocale(),
+      // `x-default` annotates the page cluster, so every domain has to agree on it - unlike the
+      // routing `defaultLocale` above, which is the current host's unprefixed locale
+      defaultLocale: ctx.config.defaultLocale || '',
       domains: __I18N_DOMAINS__,
       strictCanonicals: ctx.config.experimental.alternateLinkCanonicalQueries ?? true,
       hreflangLinks: !(!__I18N_ROUTING__ && !__I18N_DOMAINS__),
