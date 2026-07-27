@@ -8,7 +8,7 @@ import { transformSync as oxcTransform } from 'oxc-transform'
 import type { TransformOptions, TransformResult } from 'oxc-transform'
 
 import type { BundlerPluginOptions } from './utils'
-import type { I18nNuxtContext } from '../context'
+import type { ResolvedI18nContext } from '../context'
 
 export function transform(id: string, input: string, options?: TransformOptions): TransformResult {
   const oxcOptions = (tryUseNuxt()?.options?.oxc?.transform?.options ?? {}) as TransformOptions
@@ -17,16 +17,16 @@ export function transform(id: string, input: string, options?: TransformOptions)
 
 const DEFINE_I18N_FN_RE = /\b(defineI18nLocale|defineI18nConfig)\s*\((.+)\)/gs
 
-export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtContext) =>
-  createUnplugin(() => {
+export const ResourcePlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nContext) =>
+  createUnplugin((_options, meta) => {
     // TODO: track all i18n files found in configuration
-    const i18nFileMetas = [...ctx.localeInfo.flatMap(x => x.meta), ...ctx.vueI18nConfigPaths]
+    const i18nFileMetas = [...ctx.localeFileMetas, ...ctx.vueI18nConfigPaths]
     const i18nPathSet = new Set<string>()
     const i18nFileHashSet = new Map<string, string>()
-    for (const meta of i18nFileMetas) {
-      if (i18nPathSet.has(meta.path)) { continue }
-      i18nPathSet.add(meta.path)
-      i18nFileHashSet.set(asI18nVirtual(meta.hash), meta.path)
+    for (const fileMeta of i18nFileMetas) {
+      if (i18nPathSet.has(fileMeta.path)) { continue }
+      i18nPathSet.add(fileMeta.path)
+      i18nFileHashSet.set(asI18nVirtual(fileMeta.hash), fileMeta.path)
     }
 
     return {
@@ -39,9 +39,10 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: I18nNuxtConte
           return
         }
 
-        // claim i18n file paths so other plugins (e.g. `unplugin-vue-i18n` since vite 8) cannot
-        // resolve these to virtual modules loaded from disk, which would skip our transforms (#4049)
-        if (i18nPathSet.has(id)) {
+        // claim i18n file paths so `unplugin-vue-i18n` cannot resolve these to virtual modules
+        // loaded from disk, which would skip our transforms (#4049) - it only does so under vite,
+        // and webpack reads a path resolving to itself as `Recursion in resolving`
+        if (meta.framework === 'vite' && i18nPathSet.has(id)) {
           return id
         }
 

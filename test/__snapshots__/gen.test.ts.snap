@@ -356,6 +356,55 @@ exports[`multiple files 1`] = `
 }
 `;
 
+exports[`server asset loaders 1`] = `
+{
+  "importStatements": [
+    "import { readI18nAsset } from "/runtime/server/utils/assets";",
+  ],
+  "localeLoaders": {
+    "en": [
+      {
+        "cache": true,
+        "key": ""locale_en_46json_f7535dc0"",
+        "load": "() => import("#nuxt-i18n/f7535dc0" /* webpackChunkName: "locale_en_46json_f7535dc0" */)",
+        "loadServer": "() => readI18nAsset("f7535dc0.json")",
+        "virtualId": "#nuxt-i18n/f7535dc0",
+      },
+    ],
+    "fr": [
+      {
+        "cache": true,
+        "key": ""locale_fr_46json_3d83f3b3"",
+        "load": "() => import("#nuxt-i18n/3d83f3b3" /* webpackChunkName: "locale_fr_46json_3d83f3b3" */)",
+        "loadServer": "() => readI18nAsset("3d83f3b3.json")",
+        "virtualId": "#nuxt-i18n/3d83f3b3",
+      },
+    ],
+    "ja": [
+      {
+        "cache": true,
+        "key": ""locale_ja_46json_5843ecf1"",
+        "load": "() => import("#nuxt-i18n/5843ecf1" /* webpackChunkName: "locale_ja_46json_5843ecf1" */)",
+        "loadServer": "() => readI18nAsset("5843ecf1.json")",
+        "virtualId": "#nuxt-i18n/5843ecf1",
+      },
+    ],
+  },
+  "normalizedLocales": [
+    {
+      "code": "en",
+    },
+    {
+      "code": "ja",
+    },
+    {
+      "code": "fr",
+    },
+  ],
+  "vueI18nConfigs": [],
+}
+`;
+
 exports[`vueI18n option 1`] = `
 {
   "importStatements": [

@@ -12,7 +12,7 @@ jobs:
   reproduire:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: Hebilicious/reproduire@4b686ae9cbb72dad60f001d278b6e3b2ce40a9ac # v0.0.9
         with:
           label: 'need reproduction' # Optional, will default to this value.

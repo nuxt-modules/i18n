@@ -1,7 +1,6 @@
 import { filterLocales, resolveLocales, validateLocaleCodes } from '../src/utils'
-import type { LocaleObject, NuxtI18nOptions } from '../src/types'
+import type { NuxtI18nOptions } from '../src/types'
 import type { I18nNuxtContext } from '../src/context'
-import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 import { vi, describe, test, expect } from 'vitest'
 
 vi.mock('pathe', async () => {
@@ -9,56 +8,47 @@ vi.mock('pathe', async () => {
   return { ...mod, resolve: vi.fn((...args: string[]) => mod.normalize(args.join('/'))) }
 })
 
-function createLayer(i18n?: NuxtI18nOptions): NuxtConfigLayer {
-  return { config: { i18n } } as unknown as NuxtConfigLayer
-}
-
-function createContext(locales: NuxtI18nOptions['locales']): I18nNuxtContext {
-  return { options: { locales } } as I18nNuxtContext
-}
-
-function createNuxt(layers: NuxtConfigLayer[]): Nuxt {
-  return { options: { _layers: layers } } as unknown as Nuxt
+function createContext(locales: NuxtI18nOptions['locales'], layerI18ns: NuxtI18nOptions[] = []): I18nNuxtContext {
+  return {
+    options: { locales },
+    i18nLayers: layerI18ns.map(i18n => ({ i18n })),
+  } as I18nNuxtContext
 }
 
 describe('filterLocales', () => {
   test('uses `onlyLocales` from the running project', () => {
-    const ctx = createContext(['en', 'fr', 'nl'])
-    const nuxt = createNuxt([
-      createLayer({ bundle: { onlyLocales: 'en' } }),
-      createLayer({ bundle: { onlyLocales: 'fr' } })
+    const ctx = createContext(['en', 'fr', 'nl'], [
+      { bundle: { onlyLocales: 'en' } },
+      { bundle: { onlyLocales: 'fr' } },
     ])
 
-    expect(filterLocales(ctx, nuxt)).toEqual(['en'])
+    expect(filterLocales(ctx)).toEqual(['en'])
   })
 
   test('falls back to the first downstream layer that specifies `onlyLocales`', () => {
-    const ctx = createContext(['en', 'fr', 'nl'])
-    const nuxt = createNuxt([
-      createLayer({}),
-      createLayer({ bundle: { onlyLocales: 'fr' } }),
-      createLayer({ bundle: { onlyLocales: 'nl' } })
+    const ctx = createContext(['en', 'fr', 'nl'], [
+      {},
+      { bundle: { onlyLocales: 'fr' } },
+      { bundle: { onlyLocales: 'nl' } },
     ])
 
-    expect(filterLocales(ctx, nuxt)).toEqual(['fr'])
+    expect(filterLocales(ctx)).toEqual(['fr'])
   })
 
   test('returns all locales when no layer specifies `onlyLocales`', () => {
-    const ctx = createContext(['en', 'fr', 'nl'])
-    const nuxt = createNuxt([createLayer({}), createLayer({ bundle: {} })])
+    const ctx = createContext(['en', 'fr', 'nl'], [{}, { bundle: {} }])
 
-    expect(filterLocales(ctx, nuxt)).toEqual(['en', 'fr', 'nl'])
+    expect(filterLocales(ctx)).toEqual(['en', 'fr', 'nl'])
   })
 
   test('treats an explicit empty `onlyLocales` as specified and stops the search', () => {
-    const ctx = createContext(['en', 'fr', 'nl'])
-    const nuxt = createNuxt([
-      createLayer({ bundle: { onlyLocales: [] } }),
-      createLayer({ bundle: { onlyLocales: 'fr' } })
+    const ctx = createContext(['en', 'fr', 'nl'], [
+      { bundle: { onlyLocales: [] } },
+      { bundle: { onlyLocales: 'fr' } },
     ])
 
     // empty `onlyLocales` means no filtering; the downstream `'fr'` must not be applied
-    expect(filterLocales(ctx, nuxt)).toEqual(['en', 'fr', 'nl'])
+    expect(filterLocales(ctx)).toEqual(['en', 'fr', 'nl'])
   })
 })
 

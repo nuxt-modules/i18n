@@ -7,15 +7,12 @@ import { DEFAULT_OPTIONS } from './constants'
 import type { HookResult } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
-import { createContext } from './context'
+import { createContext, resolveContext } from './context'
 import { prepareOptions } from './prepare/options'
 import { prepareTypeGeneration } from './prepare/type-generation'
 import { relative } from 'pathe'
 import { generateTemplateNuxtI18nOptions } from './template'
-import { generateI18nTypes, generateLoaderOptions, simplifyLocaleOptions } from './gen'
-import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { computeLocaleHashes, filterLocales, getLocaleFilePaths, normalizeDomainLocale, resolveLocales, validateLocaleCodes } from './utils'
-import { isString } from '@intlify/shared'
+import { generateI18nTypes, simplifyLocaleOptions } from './gen'
 
 export * from './types'
 
@@ -129,20 +126,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
     addPlugin(ctx.resolver.resolve('./runtime/plugins/ssg-detect'))
     addPlugin(ctx.resolver.resolve('./runtime/plugins/switch-locale-path-ssr'))
 
-    addTemplate({
-      filename: 'i18n-options.mjs',
-      getContents: () => generateTemplateNuxtI18nOptions(ctx, generateLoaderOptions(ctx)),
-    })
-
-    /**
-     * `$i18n` type narrowing based on 'legacy' or 'composition'
-     * `locales` type narrowing based on generated configuration
-     */
-    addTypeTemplate({
-      filename: 'types/i18n-plugin.d.ts',
-      getContents: () => generateI18nTypes(nuxt, ctx),
-    })
-
     /**
      * HMR plugin
      */
@@ -174,40 +157,37 @@ export default defineNuxtModule<NuxtI18nOptions>({
      * allow other modules to register i18n hooks - locales and options will be resolved in this hook
      */
     nuxt.hook('modules:done', async () => {
-      ctx.options.locales = await applyLayerOptions(ctx, nuxt)
-      ctx.options.locales = filterLocales(ctx, nuxt)
+      const resolved = await resolveContext(ctx, nuxt)
 
-      ctx.normalizedLocales = ctx.options.locales.map(x =>
-        normalizeDomainLocale(isString(x) ? { code: x, language: x } : x),
-      )
-      ctx.localeCodes = ctx.normalizedLocales.map(locale => locale.code)
-      validateLocaleCodes(ctx.localeCodes)
-      ctx.localeInfo = resolveLocales(nuxt.options.srcDir, ctx.normalizedLocales, nuxt.vfs)
-
-      ctx.vueI18nConfigPaths = await resolveLayerVueI18nConfigInfo(ctx)
+      addTemplate({
+        filename: 'i18n-options.mjs',
+        getContents: () => generateTemplateNuxtI18nOptions(resolved),
+      })
 
       /**
-       * content-hash locale files now that all locales and configs are known,
-       * used to cache-bust per-locale message server routes without churning
-       * on every build
+       * `$i18n` type narrowing based on 'legacy' or 'composition'
+       * `locales` type narrowing based on generated configuration
        */
-      ctx.localeHashes = computeLocaleHashes(ctx.localeInfo, ctx.vueI18nConfigPaths)
+      addTypeTemplate({
+        filename: 'types/i18n-plugin.d.ts',
+        getContents: () => generateI18nTypes(nuxt, resolved),
+      })
 
       /**
        * expose i18n options via runtime config for use in app/server contexts
        */
       // @ts-expect-error generated type
       nuxt.options.runtimeConfig.public.i18n = defu(nuxt.options.runtimeConfig.public.i18n, {
-        baseUrl: ctx.options.baseUrl,
-        defaultLocale: ctx.options.defaultLocale,
-        rootRedirect: ctx.options.rootRedirect,
-        redirectStatusCode: ctx.options.redirectStatusCode,
-        skipSettingLocaleOnNavigate: ctx.options.skipSettingLocaleOnNavigate,
-        locales: ctx.options.locales,
-        detectBrowserLanguage: ctx.options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
-        experimental: ctx.options.experimental,
+        baseUrl: resolved.options.baseUrl,
+        defaultLocale: resolved.options.defaultLocale,
+        rootRedirect: resolved.options.rootRedirect,
+        redirectStatusCode: resolved.options.redirectStatusCode,
+        skipSettingLocaleOnNavigate: resolved.options.skipSettingLocaleOnNavigate,
+        locales: resolved.options.locales,
+        detectBrowserLanguage: resolved.options.detectBrowserLanguage ?? DEFAULT_OPTIONS.detectBrowserLanguage,
+        experimental: resolved.options.experimental,
         domainLocales: Object.fromEntries(
-          ctx.options.locales.map((l) => {
+          resolved.options.locales.map((l) => {
             if (typeof l === 'string') {
               return [l, { domain: '' }]
             }
@@ -216,13 +196,13 @@ export default defineNuxtModule<NuxtI18nOptions>({
         ) as I18nPublicRuntimeConfig['domainLocales'],
       })
 
-      nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(ctx, nuxt)
+      nuxt.options.runtimeConfig.public.i18n.locales = simplifyLocaleOptions(resolved, nuxt)
 
       // Prerender the hashed messages routes into `.output/public/` so lazy-loaded messages ship
       // as static assets (uploadable to a CDN) instead of being served from the dynamic Nitro route.
-      if (ctx.options.experimental.prerenderMessages) {
-        const messagesRoutes = ctx.localeCodes.map(
-          locale => `${ctx.options.serverRoutePrefix}/${ctx.localeHashes[locale]}/${locale}/messages.json`,
+      if (resolved.options.experimental.prerenderMessages) {
+        const messagesRoutes = resolved.localeCodes.map(
+          locale => `${resolved.options.serverRoutePrefix}/${resolved.localeHashes[locale]}/${locale}/messages.json`,
         )
         nuxt.hook('nitro:config', (config) => {
           config.prerender ??= {}
@@ -235,7 +215,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
        * disable preloading/prefetching of locale files
        */
       nuxt.hook('build:manifest', (manifest) => {
-        const langPaths = getLocaleFilePaths(ctx.localeInfo).map(x => relative(nuxt.options.srcDir, x))
+        const langPaths = resolved.localeFilePaths.map(x => relative(nuxt.options.srcDir, x))
 
         for (const key in manifest) {
           if (langPaths.some(x => key.startsWith(x))) {
@@ -245,11 +225,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
         }
       })
 
-      await setupPages(ctx, nuxt)
+      await setupPages(resolved, nuxt)
 
-      await extendBundler(ctx, nuxt)
+      await extendBundler(resolved, nuxt)
 
-      await setupNitro(ctx, nuxt)
+      await setupNitro(resolved, nuxt)
     })
   },
 })
