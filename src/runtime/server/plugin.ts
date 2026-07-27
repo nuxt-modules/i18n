@@ -160,8 +160,9 @@ export default defineNitroPlugin(async (nitro) => {
     if (__I18N_PRELOAD__) {
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) { return }
 
-      // only include the messages used in the current page
-      if (__I18N_STRIP_UNUSED__ && !__IS_SSG__) {
+      // only the messages used in the current page - a prerendered one is served to every visitor,
+      // so it keeps the whole set instead of the first render's keys
+      if (__I18N_STRIP_UNUSED__ && !import.meta.prerender) {
         const trackedLocales = Object.keys(ctx.trackMap)
         for (const locale of Object.keys(ctx.messages)) {
           if (!trackedLocales.includes(locale)) {
@@ -174,12 +175,11 @@ export default defineNitroPlugin(async (nitro) => {
         }
       }
 
-      try {
+      const payload = stringifyMessages(ctx.messages)
+      if (payload != null) {
         htmlContext.bodyAppend.unshift(
-          `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`,
+          `<script type="application/json" data-nuxt-i18n="${appId}">${payload}</script>`,
         )
-      } catch (_) {
-        console.warn(_)
       }
     }
 
@@ -205,3 +205,28 @@ export default defineNitroPlugin(async (nitro) => {
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
+
+/**
+ * Drops only the locales `devalue` cannot carry - a message function the build missed (#3880) would
+ * otherwise cost every locale its payload. The whole tree is tried first, so it usually costs one pass.
+ */
+function stringifyMessages(messages: Record<string, unknown>) {
+  try {
+    return stringify(messages)
+  } catch {
+    const safe: Record<string, unknown> = {}
+    for (const locale of Object.keys(messages)) {
+      try {
+        stringify(messages[locale])
+        safe[locale] = messages[locale]
+      } catch (e) {
+        console.warn(`[nuxt-i18n] Dropped locale "${locale}" from the preload payload`, e)
+      }
+    }
+    try {
+      return stringify(safe)
+    } catch (e) {
+      console.warn('[nuxt-i18n] Could not serialize the preload payload', e)
+    }
+  }
+}

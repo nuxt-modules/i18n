@@ -7,7 +7,7 @@ import { DEFAULT_OPTIONS } from './constants'
 import type { HookResult } from '@nuxt/schema'
 import type { I18nPublicRuntimeConfig, LocaleObject, NuxtI18nOptions } from './types'
 import type { Locale } from 'vue-i18n'
-import { createContext, resolveContext } from './context'
+import { createContext, prerenderableLocales, resolveContext } from './context'
 import { prepareOptions } from './prepare/options'
 import { prepareTypeGeneration } from './prepare/type-generation'
 import { relative } from 'pathe'
@@ -201,7 +201,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
       // Prerender the hashed messages routes into `.output/public/` so lazy-loaded messages ship
       // as static assets (uploadable to a CDN) instead of being served from the dynamic Nitro route.
       if (resolved.options.experimental.prerenderMessages) {
-        const messagesRoutes = resolved.localeCodes.map(
+        const messagesRoutes = prerenderableLocales(resolved).map(
           locale => `${resolved.options.serverRoutePrefix}/${resolved.localeHashes[locale]}/${locale}/messages.json`,
         )
         nuxt.hook('nitro:config', (config) => {
@@ -227,7 +227,7 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
       await setupPages(resolved, nuxt)
 
-      await extendBundler(resolved, nuxt)
+      extendBundler(resolved, nuxt)
 
       await setupNitro(resolved, nuxt)
     })

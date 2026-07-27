@@ -17,15 +17,9 @@ export default defineNuxtPlugin({
     const ctx = useNuxtI18nContext(nuxt)
 
     if (import.meta.server) {
+      // dispatches per locale, reading the endpoint in-process rather than over `$fetch`
       for (const locale of localeCodes) {
-        try {
-          const messages = await $fetch(`${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`)
-          for (const locale of Object.keys(messages)) {
-            nuxt.$i18n.mergeLocaleMessage(locale, messages[locale])
-          }
-        } catch (e) {
-          console.warn('Error loading messages', e)
-        }
+        await ctx.loadMessages(locale)
       }
 
       ctx.preloaded = true
@@ -36,7 +30,9 @@ export default defineNuxtPlugin({
         const msg = unref(ctx.vueI18n.global.messages) as LocaleMessages<DefineLocaleMessage>
         serverI18n.messages ??= {}
         for (const k in msg) {
-          serverI18n.messages[k] = msg[k]!
+          // the client loads these from their own chunk and discards the payload copy, which
+          // `devalue` could not carry anyway - one message function fails the whole payload
+          serverI18n.messages[k] = __I18N_UNSERIALIZABLE_LOCALES__.includes(k) ? {} : msg[k]!
         }
       }
     }
@@ -68,31 +64,27 @@ async function mergePayloadMessages(ctx: NuxtI18nContext, i18n: Composer | VueI1
   const preloadedMessages: LocaleMessages<DefineLocaleMessage> = content && parse(content)
   const preloadedKeys = Object.keys(preloadedMessages || {})
 
-  if (preloadedKeys.length) {
-    if (ctx.dynamicResourcesSSG) {
-      const getKeyedLocaleMessages = async (locale: string) => {
-        return { [locale]: await getLocaleMessagesMergedCached(locale, localeLoaders[locale]) }
-      }
+  if (!preloadedKeys.length) { return }
 
-      try {
-        const msg = await Promise.all(preloadedKeys.map(getKeyedLocaleMessages))
-        for (const m of msg) {
-          for (const k in m) {
-            i18n.mergeLocaleMessage(k, m[k])
-          }
-        }
-      } catch (e) {
-        console.warn('Error loading messages', e)
-      }
-      ctx.preloaded = true
-    } else {
-      for (const locale of preloadedKeys) {
-        const messages = preloadedMessages[locale]
-        if (messages) {
-          i18n.mergeLocaleMessage(locale, messages)
-        }
-      }
-      ctx.preloaded = true
+  for (const locale of preloadedKeys) {
+    if (ctx.usesRuntimeLoaders(locale)) { continue }
+    const messages = preloadedMessages[locale]
+    if (messages) {
+      i18n.mergeLocaleMessage(locale, messages)
     }
   }
+
+  // the payload of a locale behind runtime loaders holds whatever the build resolved, so its
+  // messages are loaded again here - one failing locale should not discard the others
+  const reloaded = preloadedKeys.filter(locale => ctx.usesRuntimeLoaders(locale))
+  const results = await Promise.allSettled(reloaded.map(x => getLocaleMessagesMergedCached(x, localeLoaders[x])))
+  results.forEach((result, i) => {
+    if (result.status === 'fulfilled') {
+      i18n.mergeLocaleMessage(reloaded[i]!, result.value)
+    } else {
+      console.warn(`Failed to load messages for locale "${reloaded[i]}"`, result.reason)
+    }
+  })
+
+  ctx.preloaded = true
 }

@@ -9,7 +9,7 @@ import { _useLocaleHead, localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
 import { createLocaleConfigs, resolveDefaultLocale, resolveSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
-import { type NuxtI18nContext, createNuxtI18nContext, useLocaleConfigs } from '../context'
+import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
@@ -43,13 +43,17 @@ export default defineNuxtPlugin({
       setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
     }
 
-    prerenderRoutes(localeCodes.map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`))
+    prerenderRoutes(
+      localeCodes
+        .filter(isPrerenderable)
+        .map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`),
+    )
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
     const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(nuxt), nuxt)
 
-    const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale)
+    const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, !!optionsI18n.flatJson)
     nuxt._nuxtI18n = ctx
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server) {

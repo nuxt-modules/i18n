@@ -12,10 +12,10 @@ import type { Nuxt } from '@nuxt/schema'
 import type { PluginOptions } from '@intlify/unplugin-vue-i18n'
 import type { BundlerPluginOptions } from './transform/utils'
 import type { ResolvedI18nContext } from './context'
-import { DEFAULT_COOKIE_KEY, DYNAMIC_PARAMS_KEY, FULL_STATIC_LIFETIME, SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from './constants'
+import { DEFAULT_CACHE_LIFETIME, DEFAULT_COOKIE_KEY, DYNAMIC_PARAMS_KEY, SWITCH_LOCALE_PATH_LINK_IDENTIFIER } from './constants'
 import { version } from '../package.json'
 
-export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
+export function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   /**
    * shared plugins (nuxt/nitro)
    */
@@ -39,9 +39,10 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   /**
    * shared plugins (vite/webpack/rspack)
    */
-  // exclude dynamic locale files - optimization is a no-op for these, and since vite 8 matching them
-  // makes unplugin-vue-i18n load them raw during dev SSR, skipping the `defineI18nLocale` transform (#4049)
-  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type !== 'dynamic').map(m => m.path))]
+  // only fully readable resources - since vite 8, matching anything else makes unplugin-vue-i18n
+  // load it raw during dev SSR, skipping the `defineI18nLocale` transform (#4049) and failing
+  // outright on syntax it cannot parse (#3961)
+  const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type === 'static').map(m => m.path))]
 
   const vueI18nPluginOptions: PluginOptions = {
     ...ctx.options.bundle,
@@ -76,16 +77,23 @@ export async function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
-  const defineConfig = getDefineConfig(ctx)
-  await addDefinePlugin(defineConfig)
+  // `staticDeploy` is only known once nitro has applied its preset, which is still before the
+  // bundlers read their config - registering now would freeze the defines that depend on it
+  nuxt.hook('nitro:init', async () => {
+    await addDefinePlugin(getDefineConfig(ctx))
+  })
 }
 
 export function getDefineConfig(
-  { options, rawOptions, fullStatic, localeHashes }: ResolvedI18nContext,
+  ctx: ResolvedI18nContext,
   server = false,
   nuxt = useNuxt(),
 ) {
-  const cacheLifetime = options.experimental.cacheLifetime ?? (fullStatic ? FULL_STATIC_LIFETIME : -1)
+  const { options, rawOptions, dynamicLocales, unserializableLocales, localeFileMetas, localeHashes } = ctx
+  // every cache site is guarded per loader (`cache`) or per locale (`isLocaleCacheable`), so this
+  // only decides whether the mechanism exists at all
+  const cacheLifetime = options.experimental.cacheLifetime
+    ?? (localeFileMetas.some(m => m.cache) ? DEFAULT_CACHE_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)
 
   // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true
@@ -93,7 +101,7 @@ export function getDefineConfig(
 
   const common = {
     __IS_SSR__: String(nuxt.options.ssr),
-    __IS_SSG__: String(!!nuxt.options.nitro.static),
+    __IS_SSG__: String(ctx.staticDeploy),
     __PARALLEL_PLUGIN__: String(options.parallelPlugin),
     __DYNAMIC_PARAMS_KEY__: JSON.stringify(DYNAMIC_PARAMS_KEY),
     __DEFAULT_COOKIE_KEY__: JSON.stringify(DEFAULT_COOKIE_KEY),
@@ -109,7 +117,8 @@ export function getDefineConfig(
     __I18N_CACHE__: String(isCacheEnabled),
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
-    __I18N_FULL_STATIC__: String(fullStatic),
+    __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
+    __I18N_UNSERIALIZABLE_LOCALES__: JSON.stringify(unserializableLocales),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 
@@ -126,7 +135,7 @@ export function getDefineConfig(
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
     // SSG already prerenders the messages routes (runtime `prerenderRoutes`), so they exist at the
     // CDN origin there too — honor `app.cdnURL` for both that and the opt-in `prerenderMessages`.
-    __I18N_CDN__: String(!!nuxt.options.app.cdnURL && (!!options.experimental.prerenderMessages || !!nuxt.options.nitro.static)),
+    __I18N_CDN__: String(!!nuxt.options.app.cdnURL && (!!options.experimental.prerenderMessages || ctx.staticDeploy)),
     __I18N_LOCALE_HASHES__: JSON.stringify(localeHashes),
     __I18N_SERVER_REDIRECT__: JSON.stringify(!!options.experimental.nitroContextDetection),
   }

@@ -109,6 +109,8 @@ export type FileMeta = {
   hash: string
   cache: boolean
   type: LocaleType
+  /** Whether the messages survive the JSON messages endpoint - message functions do not (#3880) */
+  serializable: boolean
   /** server asset filename when the resource ships as a lazily read nitro server asset */
   assetKey?: string
 }
@@ -167,7 +169,7 @@ export interface ExperimentalFeatures {
   /**
    * Locale messages cache lifetime in seconds
    * - `-1` cache disabled
-   * @default -1 // disabled, or `86400` (1 day) if all locale files are static files
+   * @default -1 // disabled, or `86400` (1 day) if any locale file is cacheable
    */
   cacheLifetime?: number
   /**

@@ -2,7 +2,8 @@ import { isRef, unref } from 'vue'
 
 import { useCookie, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
-import { cloneDeep, getLocaleMessagesMergedCached } from './shared/messages'
+import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
+import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
@@ -39,8 +40,7 @@ export interface NuxtI18nContext {
   initial: boolean
   /** Locale messages attached during SSR and loaded during hydration */
   preloaded: boolean
-  /** SSG with dynamic locale resources */
-  dynamicResourcesSSG: boolean
+  usesRuntimeLoaders: (locale: Locale) => boolean
   rootRedirect: { path: string, code: number } | undefined
   redirectStatusCode: number
   /** Get default locale */
@@ -94,17 +94,22 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
 
 type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'>
 
+export const isPrerenderable = createPrerenderablePredicate({
+  dynamic: __I18N_DYNAMIC_LOCALES__,
+  unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
+})
+
 /**
- * Returns a function installing loaded messages into `i18n`, by reference where the locale is
- * empty. Installed trees may be shared with the message cache, so `mergeLocaleMessage` - which
- * deep copies into its target - gets a private copy first.
+ * Installs loaded messages into `i18n` by reference, with whatever the vue-i18n config already put
+ * there filled in underneath. Installed trees may be shared with the message cache, so
+ * `mergeLocaleMessage` - which deep copies into its target - gets a private copy first.
  *
  * Patches the composer, not the VueI18n facade: legacy `useI18n()` and `<i18n>` blocks reach
  * composer methods directly, and the facade delegates to it at call time.
  * @internal exported for testing
  */
 export function createMessageInstaller(i18n: MessageStore) {
-  const byRef = new Set<string>()
+  const byRef = new Map<string, object>()
   const merge = i18n.mergeLocaleMessage.bind(i18n) as (locale: string, message: object) => void
   const set = i18n.setLocaleMessage.bind(i18n) as (locale: string, message: object) => void
 
@@ -122,16 +127,22 @@ export function createMessageInstaller(i18n: MessageStore) {
   }) as typeof i18n.setLocaleMessage
 
   return (locale: string, message: object) => {
-    if (Object.keys(i18n.getLocaleMessage(locale)).length > 0) {
+    // an endpoint response carries the locale's fallbacks, so a shared fallback arrives once per
+    // locale that falls back to it - reinstalling it would deep copy the tree both ways
+    if (byRef.get(locale) === message) { return }
+    // a second install has no small tree left to fill from - the first one is already in place
+    if (byRef.has(locale)) {
       i18n.mergeLocaleMessage(locale, message)
       return
     }
-    set(locale, message)
-    byRef.add(locale)
+    // whatever is present before anything is loaded comes from the vue-i18n config, and filling it
+    // in underneath keeps the loaded tree shared instead of deep copying it into the config's
+    set(locale, fillMissing(message, i18n.getLocaleMessage(locale)))
+    byRef.set(locale, message)
   }
 }
 
-export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
+export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string, flatJson = false): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
   const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
@@ -159,36 +170,57 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
   }
 
-  const loadMessagesFromClient = async (locale: string) => {
-    const locales = getLocaleConfig(locale)?.fallbacks ?? []
-    if (!locales.includes(locale)) { locales.push(locale) }
-    for (const k of locales) {
-      const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(k, localeLoaders[k]))
-      i18n.mergeLocaleMessage(k, msg)
+  const buildUsesRuntimeLoaders = createRuntimeLoaderPredicate({
+    ssr: __IS_SSR__,
+    ssg: __IS_SSG__,
+    prerender: !!import.meta.prerender,
+    dynamic: __I18N_DYNAMIC_LOCALES__,
+    unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
+  })
+
+  // only prerendered responses reach the CDN - a dynamic locale in a hybrid build still fetches the
+  // live handler, and SSR stays relative either way so it does not round-trip through the CDN
+  const cdnPrefix = (locale: string) =>
+    import.meta.client && __I18N_CDN__ && isPrerenderable(locale) ? (nuxt.$config.app.cdnURL || '') : ''
+
+  const loadMessagesFromLoaders = async (locale: string) => {
+    // merging `{}` for a `fallbackLocale` that is not a configured locale would create it
+    if (locale in localeLoaders === false) { return }
+
+    const loaded = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+    // vue-i18n rewrites flat keys in place on the tree it is handed, which shares subtrees with the
+    // message cache (mirrors `server/context.ts`)
+    const msg = flatJson ? cloneDeep(loaded) : loaded
+    // dev always loads from loaders - warn when production would deliver this locale as JSON instead
+    if (import.meta.dev && !buildUsesRuntimeLoaders(locale)) {
+      warnMissedMessageFunctions(locale, msg)
     }
+    i18n.mergeLocaleMessage(locale, msg)
   }
 
   const loadMessagesFromServer = async (locale: string) => {
     if (locale in localeLoaders === false) { return }
+
+    // a response can embed fallback locales that belong to runtime loaders - merging those would
+    // overwrite the loader-produced messages with a (possibly prerendered) build-time snapshot
+    const deliverable = (messages: LocaleMessages<DefineLocaleMessage>) =>
+      Object.keys(messages).filter(k => !ctx.usesRuntimeLoaders(k))
 
     // during SSR the messages endpoint runs in this same process - `$fetch` would serialize the
     // whole message tree to JSON and parse it back on every request
     const serverCtx = import.meta.server ? nuxt.ssrContext?.event?.context?.nuxtI18n : undefined
     if (serverCtx?.loadMessages && installMessages) {
       const messages = await serverCtx.loadMessages(locale)
-      for (const k of Object.keys(messages)) {
+      for (const k of deliverable(messages)) {
         installMessages(k, messages[k]!)
       }
       return
     }
 
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
-    // Client fetches from `app.cdnURL` when messages are prerendered as static assets;
-    // SSR uses a relative URL so it doesn't round-trip through the CDN.
-    const prefix = import.meta.client && __I18N_CDN__ ? (nuxt.$config.app.cdnURL || '') : ''
-    const url = joinURL(prefix, __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
+    const url = joinURL(cdnPrefix(locale), __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
     const messages = await $fetch<LocaleMessages<DefineLocaleMessage>>(url, { headers })
-    for (const k of Object.keys(messages)) {
+    for (const k of deliverable(messages)) {
       i18n.mergeLocaleMessage(k, messages[k])
     }
   }
@@ -200,7 +232,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     config: runtimeI18n,
     rootRedirect: resolveRootRedirect(runtimeI18n.rootRedirect),
     redirectStatusCode: runtimeI18n.redirectStatusCode ?? 302,
-    dynamicResourcesSSG: !__IS_SSR__ || (!__I18N_FULL_STATIC__ && (import.meta.prerender || __IS_SSG__)),
+    // dev is forced onto the loaders regardless of the build's decision, so that edits to locale
+    // files take effect
+    usesRuntimeLoaders: locale => import.meta.dev || buildUsesRuntimeLoaders(locale),
     getDefaultLocale: () => defaultLocale,
     getLocale: () => unref(i18n.locale),
     setLocale: async (locale: string) => {
@@ -251,9 +285,21 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       if (nuxt.isHydrating && loadMap.has(locale)) { return }
 
       try {
-        return ctx.dynamicResourcesSSG || import.meta.dev
-          ? await loadMessagesFromClient(locale)
-          : await loadMessagesFromServer(locale)
+        const fallbacks = getLocaleConfig(locale)?.fallbacks ?? []
+        const chain = fallbacks.includes(locale) ? fallbacks : [...fallbacks, locale]
+        // the endpoint merges a locale with its fallbacks, so one request covers a chain of them
+        if (!chain.some(x => ctx.usesRuntimeLoaders(x))) {
+          return await loadMessagesFromServer(locale)
+        }
+        // a mixed chain has to take each locale from whichever source holds it, and one failing
+        // fallback should not keep the rest from loading
+        for (const k of chain) {
+          try {
+            await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))
+          } catch (e) {
+            console.warn(`Failed to load messages for locale "${k}"`, e)
+          }
+        }
       } catch (e) {
         console.warn(`Failed to load messages for locale "${locale}"`, e)
       } finally {

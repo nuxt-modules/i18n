@@ -3,7 +3,7 @@ import { deepCopy } from '@intlify/shared'
 import { createI18n } from 'vue-i18n'
 import { createMessageInstaller } from '../src/runtime/context'
 import { getComposer } from '../src/runtime/compatibility'
-import { cloneDeep } from '../src/runtime/shared/messages'
+import { cloneDeep, fillMissing, hasMessageFunction } from '../src/runtime/shared/messages'
 
 import type { Composer } from 'vue-i18n'
 
@@ -42,15 +42,41 @@ describe('createMessageInstaller', () => {
     expect(i18n.store.en).toBe(cached)
   })
 
-  test('merges into a locale that already has messages', () => {
+  test('keeps messages a locale already has, without copying the installed tree', () => {
     const i18n = createFakeComposer()
     const install = createMessageInstaller(i18n)
     i18n.setLocaleMessage('en', { fromConfig: 'keep' })
+    const cached = cachedTree()
 
-    install('en', cachedTree())
+    install('en', cached)
 
     expect(i18n.store.en.fromConfig).toBe('keep')
     expect(i18n.store.en.greeting).toBe('hello')
+    // the point of filling underneath - the loaded subtrees stay shared with the cache
+    expect(i18n.store.en.nested).toBe(cached.nested)
+    expect(i18n.store.en.list).toBe(cached.list)
+  })
+
+  test('loaded messages win over the ones already present', () => {
+    const i18n = createFakeComposer()
+    const install = createMessageInstaller(i18n)
+    i18n.setLocaleMessage('en', { greeting: 'from config', nested: { deep: 'from config', extra: 'kept' } })
+
+    install('en', cachedTree())
+
+    expect(i18n.store.en.greeting).toBe('hello')
+    expect(i18n.store.en.nested).toEqual({ deep: 'value', extra: 'kept' })
+  })
+
+  test('message functions from the config survive the install', () => {
+    const i18n = createFakeComposer()
+    const install = createMessageInstaller(i18n)
+    const fn = () => 'from a function'
+    i18n.setLocaleMessage('en', { fn })
+
+    install('en', cachedTree())
+
+    expect(i18n.store.en.fn).toBe(fn)
   })
 
   test('merging after a by-reference install copies first', () => {
@@ -79,6 +105,20 @@ describe('createMessageInstaller', () => {
     expect(list).not.toBe(cached.list)
     list.push('c')
     expect(cached.list).toEqual(['a', 'b'])
+  })
+
+  test('installing the same tree again is a no-op', () => {
+    // an endpoint response carries the locale's fallbacks, so a shared fallback arrives once per
+    // locale that falls back to it - copying it each time is what `fillMissing` exists to avoid
+    const i18n = createFakeComposer()
+    const install = createMessageInstaller(i18n)
+    const cached = cachedTree()
+
+    install('en', cached)
+    install('en', cached)
+    install('en', cached)
+
+    expect(i18n.store.en).toBe(cached)
   })
 
   test('only copies once per install', () => {
@@ -128,6 +168,69 @@ describe('createMessageInstaller', () => {
 
     expect(cached).toEqual({ greeting: 'hello', nested: { deep: 'value' }, list: ['a', 'b'] })
     expect(i18n.global.getLocaleMessage('en')).toMatchObject({ viaComposer: 'x', viaFacade: 'y' })
+  })
+})
+
+describe('fillMissing', () => {
+  test('returns the same reference when there is nothing to fill', () => {
+    const over = { a: '1' }
+    expect(fillMissing(over, {})).toBe(over)
+    expect(fillMissing(over, { a: '2' })).toBe(over)
+  })
+
+  test('only copies the levels it touches', () => {
+    const over = { keep: { deep: 'x' }, shared: { deep: 'y' } }
+    const out = fillMissing(over, { keep: { added: 'z' } })
+
+    expect(out).not.toBe(over)
+    expect(out.keep).not.toBe(over.keep)
+    expect(out.shared).toBe(over.shared)
+    expect(out).toEqual({ keep: { deep: 'x', added: 'z' }, shared: { deep: 'y' } })
+  })
+
+  test('never writes into either input', () => {
+    const over = Object.freeze({ a: Object.freeze({ x: '1' }) })
+    const base = { a: { y: '2' }, b: '3' }
+
+    expect(fillMissing(over, base)).toEqual({ a: { x: '1', y: '2' }, b: '3' })
+    expect(over).toEqual({ a: { x: '1' } })
+    expect(base).toEqual({ a: { y: '2' }, b: '3' })
+  })
+
+  test('fills keys that collide with prototype members', () => {
+    // `over` comes from JSON.parse in production, so it carries Object.prototype
+    expect(fillMissing({ a: '1' }, { toString: 'a message', constructor: 'another' })).toMatchObject({
+      a: '1',
+      toString: 'a message',
+      constructor: 'another'
+    })
+  })
+
+  test('a non-object on either side is not merged into', () => {
+    expect(fillMissing({ a: 'str' }, { a: { deep: 'x' } })).toEqual({ a: 'str' })
+    expect(fillMissing({ a: { deep: 'x' } }, { a: 'str' })).toEqual({ a: { deep: 'x' } })
+    expect(fillMissing({ a: ['x'] }, { a: ['y', 'z'] })).toEqual({ a: ['x'] })
+  })
+})
+
+describe('hasMessageFunction', () => {
+  test('finds functions at any depth', () => {
+    expect(hasMessageFunction({ a: { b: () => 'x' } })).toBe(true)
+    expect(hasMessageFunction({ list: ['x', () => 'y'] })).toBe(true)
+  })
+
+  test('plain trees pass', () => {
+    expect(hasMessageFunction({ a: 'x', n: 1, deep: { b: 'y' }, list: ['z'] })).toBe(false)
+  })
+
+  test('a self-referential tree terminates', () => {
+    // this runs while prerendering, where throwing would fail the route instead of warning
+    const cyclic: Record<string, unknown> = { a: 'x' }
+    cyclic.self = cyclic
+    expect(hasMessageFunction(cyclic)).toBe(false)
+
+    cyclic.fn = () => 'y'
+    expect(hasMessageFunction(cyclic)).toBe(true)
   })
 })
 

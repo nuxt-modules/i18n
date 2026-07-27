@@ -94,6 +94,7 @@ test('resolveLocales', async () => {
             "cache": true,
             "hash": "5c407b7f",
             "path": "/path/to/project/en.json",
+            "serializable": true,
             "type": "static",
           },
         ],
@@ -105,12 +106,14 @@ test('resolveLocales', async () => {
             "cache": true,
             "hash": "c78280fb",
             "path": "/path/to/project/es.json",
+            "serializable": true,
             "type": "static",
           },
           {
             "cache": true,
             "hash": "65220c0a",
             "path": "/path/to/project/es-AR.json",
+            "serializable": true,
             "type": "static",
           },
         ],
@@ -122,10 +125,150 @@ test('resolveLocales', async () => {
             "cache": false,
             "hash": "b7971e5b",
             "path": "/path/to/project/nl.js",
+            "serializable": true,
             "type": "dynamic",
           },
         ],
       },
     ]
   `)
+})
+
+describe('message source classification', () => {
+  const analyze = (source: string, file = 'locale.ts') =>
+    resolveLocales('/project', [{ code: 'en', file }] as LocaleObject[], { [`/project/${file}`]: source })[0]!.meta[0]!
+
+  test('reads plain data as endpoint deliverable', () => {
+    expect(analyze(`export default { a: 'x', deep: { b: 'y' }, list: ['z'], n: -1, t: \`plain\` }`)).toMatchObject({
+      type: 'static',
+      serializable: true
+    })
+    expect(analyze(`export default {}`, 'locale.json')).toMatchObject({ type: 'static', serializable: true })
+  })
+
+  test('(#3880) a message function makes the messages undeliverable', () => {
+    expect(analyze(`export default { a: () => 'x' }`)).toMatchObject({ type: 'static', serializable: false })
+    expect(analyze(`export default { deep: { a: ctx => ctx.named('n') } }`)).toMatchObject({ serializable: false })
+    expect(analyze(`export default { a() { return 'x' } }`)).toMatchObject({ serializable: false })
+    expect(analyze(`const messages = { a: () => 'x' }\nexport default messages`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+  })
+
+  test('reads through TS assertion wrappers', () => {
+    expect(analyze(`export default { a: () => 'x' } satisfies Record<string, unknown>`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    expect(analyze(`const messages = { a: () => 'x' } as const\nexport default messages`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    expect(analyze(`export default { a: (() => 'x') as unknown }`)).toMatchObject({ serializable: false })
+    expect(analyze(`export default { a: 'x' as string }`)).toMatchObject({ type: 'static', serializable: true })
+  })
+
+  test('reads through the loader wrapper', () => {
+    expect(analyze(`export default defineI18nLocale(() => ({ a: () => 'x' }))`)).toMatchObject({
+      type: 'dynamic',
+      serializable: false
+    })
+    expect(analyze(`export default defineI18nLocale(() => { return { a: () => 'x' } })`)).toMatchObject({
+      serializable: false
+    })
+    expect(analyze(`export default defineI18nLocale(() => ({ a: 'x' }))`)).toMatchObject({ serializable: true })
+  })
+
+  test('finds message functions behind branching returns', () => {
+    expect(analyze(`export default defineI18nLocale((l) => {
+      if (l === 'de') { return { a: () => 'x' } }
+      return { a: 'x' }
+    })`)).toMatchObject({ serializable: false })
+    expect(analyze(`export default defineI18nLocale(() => {
+      try { return { a: () => 'x' } } catch { return {} }
+    })`)).toMatchObject({ serializable: false })
+    // a nested function's return is not the loader's return
+    expect(analyze(`export default defineI18nLocale(() => {
+      const make = () => ({ a: () => 'x' })
+      return { b: 'y' }
+    })`)).toMatchObject({ serializable: true })
+  })
+
+  test('messages it cannot read are left on the endpoint', () => {
+    // a loader fetching its messages could not have carried functions in the first place
+    expect(analyze(`export default defineI18nLocale(l => $fetch('/api/' + l))`)).toMatchObject({
+      type: 'dynamic',
+      serializable: true
+    })
+  })
+
+  test('only functions are ruled out, not every non-literal value', () => {
+    // anything else still evaluates to a value JSON can carry
+    expect(analyze(`export default defineI18nLocale(() => ({ a: useRuntimeConfig().public.x }))`)).toMatchObject({
+      serializable: true
+    })
+    expect(analyze(`export default { ...base, a: 'x' }`)).toMatchObject({ serializable: true })
+    expect(analyze(`import en from './en.json'\nexport default { en }`)).toMatchObject({ serializable: true })
+    expect(analyze(`export default { a: makeMessage() }`)).toMatchObject({ serializable: true })
+  })
+
+  test('follows variable hops, exported or not', () => {
+    expect(analyze(`export const messages = { a: () => 'x' }\nexport default messages`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    expect(analyze(`const a = { x: () => 'y' }\nconst b = a\nexport default b`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    // a self-referential declaration resolves to nothing rather than looping
+    expect(analyze(`const a = a\nexport default a`)).toMatchObject({ type: 'unknown' })
+  })
+
+  test('reads spread message sources it can resolve', () => {
+    expect(analyze(`const base = { a: () => 'x' }\nexport default { ...base }`)).toMatchObject({
+      serializable: false
+    })
+    expect(analyze(`const nested = { a: () => 'x' }\nexport default { deep: { ...nested } }`)).toMatchObject({
+      serializable: false
+    })
+  })
+
+  test('reads returned variables and branch expressions', () => {
+    expect(analyze(`export default defineI18nLocale(() => {
+      const messages = { a: () => 'x' }
+      return messages
+    })`)).toMatchObject({ type: 'dynamic', serializable: false })
+    expect(analyze(`export default defineI18nLocale(c => { return c ? { a: () => 'x' } : { b: 'y' } })`)).toMatchObject({
+      serializable: false
+    })
+    expect(analyze(`export default defineI18nLocale(async () => { return await { a: () => 'x' } })`)).toMatchObject({
+      serializable: false
+    })
+    // the loader function reached through a variable is still a loader
+    expect(analyze(`const loader = () => ({ a: 'x' })\nexport default defineI18nLocale(loader)`)).toMatchObject({
+      type: 'dynamic',
+      serializable: true
+    })
+  })
+
+  test('(#3961) a computed key is not a readable resource', () => {
+    // the bundler's resource transform cannot parse one either, so it must stay a module
+    expect(analyze(`const S = { HP: 'hp' }\nexport default { stats: { [S.HP]: 'HP' } }`)).toMatchObject({
+      type: 'unknown',
+      serializable: true
+    })
+    expect(analyze(`export default { [key]: () => 'x' }`)).toMatchObject({ type: 'unknown', serializable: false })
+    expect(analyze(`export default { a: 'x' }`)).toMatchObject({ type: 'static' })
+  })
+
+  test('a shape it cannot read at all is assumed to hold message functions', () => {
+    // being wrong here drops messages silently (#3880), so the locale keeps its loaders instead
+    expect(analyze(`export default Object.freeze({ a: 'x' })`)).toMatchObject({
+      type: 'unknown',
+      serializable: false
+    })
+    expect(analyze(`export { default } from './en'`)).toMatchObject({ type: 'unknown', serializable: false })
+  })
 })

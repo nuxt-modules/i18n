@@ -6,6 +6,8 @@ import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
 import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateLocaleCodes } from './utils'
 import { resolveRawResourcePaths } from './resources'
 import { generateLoaderOptions } from './gen'
+// takes its facts as config and reads no `__FLAG__` defines, so the build can share it
+import { createPrerenderablePredicate } from './runtime/shared/delivery'
 
 import type { Resolver } from '@nuxt/kit'
 import type { FileMeta, LocaleInfo, NormalizedLocaleObject, NuxtI18nOptions } from './types'
@@ -36,9 +38,34 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
   rawResourcePaths: Set<string>
   vueI18nConfigPaths: Omit<FileMeta, 'cache'>[]
   localeHashes: Record<string, string>
-  fullStatic: boolean
+  /** Locales whose messages can only be produced by running their loaders */
+  dynamicLocales: string[]
+  /** Locales the messages endpoint cannot deliver, because JSON would drop message functions */
+  unserializableLocales: string[]
+  /**
+   * Whether the build is deployed without a server. Only accurate once `nitro:init` has run:
+   * `nuxi generate` sets `nuxt.options.nitro.static`, a static preset (`github-pages`, ...) does not.
+   */
+  staticDeploy: boolean
   loaderOptions: ReturnType<typeof generateLoaderOptions>
 }
+
+/** A file the build cannot resolve to fixed content - its loader has to run at runtime */
+const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache === false
+
+export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
+  return {
+    dynamicLocales: localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code),
+    unserializableLocales: localeInfo.filter(x => x.meta.some(meta => !meta.serializable)).map(x => x.code),
+  }
+}
+
+/** Shares its rule with the runtime `isPrerenderable` rather than restating it - they must agree */
+export const prerenderableLocales = (ctx: ResolvedI18nContext) =>
+  ctx.localeCodes.filter(createPrerenderablePredicate({
+    dynamic: ctx.dynamicLocales,
+    unserializable: ctx.unserializableLocales,
+  }))
 
 type LayerWithI18n = { config: NuxtConfigLayer, i18n: Partial<NuxtI18nOptions>, i18nDir: string, i18nDetector?: string }
 const resolver = createResolver(import.meta.url)
@@ -91,6 +118,8 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     }
   }
 
+  const { dynamicLocales, unserializableLocales } = resolveDeliveryLocales(localeInfo)
+
   const resolved = assign(ctx as ResolvedI18nContext, {
     normalizedLocales,
     localeCodes,
@@ -105,7 +134,13 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
      * on every build
      */
     localeHashes: computeLocaleHashes(localeInfo, vueI18nConfigPaths),
-    fullStatic: localeFileMetas.every(meta => meta.type === 'static' || meta.cache !== false),
+    dynamicLocales,
+    unserializableLocales,
+    staticDeploy: !!nuxt.options.nitro.static,
+  })
+  // registered before the `nitro:init` hooks that read it - hooks run in registration order
+  nuxt.hook('nitro:init', (nitro) => {
+    resolved.staticDeploy = !!nitro.options.static
   })
   resolved.loaderOptions = generateLoaderOptions(resolved)
 

@@ -75,24 +75,23 @@ export function generateTemplateNuxtI18nOptions(
         '}',
       ].join('\n\n')
 
-  // the production client only imports locale files when `dynamicResourcesSSG` (runtime/context.ts)
-  // resolves to true - in endpoint mode the loaders are unreachable, stubbing them behind
-  // `import.meta.client` (folded per graph) skips compiling and emitting client locale chunks
-  const stripClientLoaders = !server
-    && !nuxt.options.dev
-    && nuxt.options.ssr
-    && (ctx.fullStatic || !nuxt.options.nitro.static)
-  // full-static servers always fetch messages from the (prerendered) endpoint, even while
-  // prerendering - the SSR graph loaders are unreachable too, so message data stays out of both graphs
-  const stripServerLoaders = !server && !nuxt.options.dev && nuxt.options.ssr && ctx.fullStatic
-  const clientLoad = (load: string) => {
-    if (stripServerLoaders) { return '() => Promise.resolve({})' }
-    return stripClientLoaders ? `import.meta.client ? () => Promise.resolve({}) : ${load}` : load
+  // mirrors `createRuntimeLoaderPredicate`, stubbing the loaders it will not reach so the locale
+  // files stay out of that graph - `import.meta.client` folds per graph, so the client and SSR
+  // halves of this shared template can differ
+  const stub = '() => Promise.resolve({})'
+  const appLoad = (load: string, locale: string) => {
+    if (server || nuxt.options.dev || !nuxt.options.ssr) { return load }
+    // the endpoint would drop this locale's message functions, so both graphs load it themselves
+    if (ctx.unserializableLocales.includes(locale)) { return load }
+    // static locales are served by the endpoint in both graphs, including while prerendering
+    if (!ctx.dynamicLocales.includes(locale)) { return stub }
+    // a static host has no endpoint left to fetch from, so there the client keeps its chunks too
+    return ctx.staticDeploy ? load : `import.meta.client ? ${stub} : ${load}`
   }
 
   const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}
   for (const locale in opts.localeLoaders) {
-    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, loadServer, cache }) => ({ key, load: server ? loadServer : clientLoad(load), cache }))
+    localeLoaderEntries[locale] = opts.localeLoaders[locale]!.map(({ key, load, loadServer, cache }) => ({ key, load: server ? loadServer : appLoad(load, locale), cache }))
   }
 
   return `// @ts-nocheck
