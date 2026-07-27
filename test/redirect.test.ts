@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { createRedirectResolver } from '../src/runtime/server/utils/redirect'
 import { resolveRootRedirect } from '../src/runtime/shared/utils'
 import { getLocaleFromRoutePath } from '../src/runtime/kit/routing'
+import { createPathMatcher } from '../src/runtime/shared/matching'
 
 import type { RedirectResolverConfig } from '../src/runtime/server/utils/redirect'
 import type { Strategies } from '../src/types'
@@ -20,11 +21,18 @@ const detectors = () => ({
   onHost: (locale: string | null | undefined) => locale,
 })
 
-// mirrors the `matchLocalized` contract for paths that match a route
-const createMatchLocalized = (strategy: Strategies) => (path: string, locale: string, defaultLocale: string) => {
-  const prefixed = strategy === 'prefix' || locale !== defaultLocale
-  return prefixed ? '/' + locale + (path === '/' ? '' : path) : path
-}
+// the real matcher over a small route set, so the resolver is tested against the contract the
+// runtime gives it - including returning nothing for a path with no localized variant
+const createMatchLocalized = (strategy: Strategies) =>
+  createPathMatcher(
+    {
+      localizedPaths: ['/', '/about', '/test-route', '/posts/:id'],
+      pathToI18nConfig: { '/about': { fr: '/a-propos' } },
+      i18nPathToPath: { '/a-propos': '/about' },
+      disabledPaths: [],
+    },
+    { strategy, routing: true, trailingSlash: false },
+  ).matchLocalized
 
 const detection = (overrides: Partial<RedirectResolverConfig['detection']> = {}) =>
   ({ enabled: false, cookieKey: 'i18n_redirected', ...overrides }) as RedirectResolverConfig['detection']
@@ -115,7 +123,8 @@ describe('createRedirectResolver', () => {
       detection: detection({ enabled: true, redirectOn: 'no prefix' }),
     })
     const withCookie = createDetectors({ cookie: () => 'fr' })
-    expect(resolve('/about', '/about', undefined, 'en', withCookie)).toMatchObject({ path: '/fr/about' })
+    // `/about` has a custom `fr` path, the resolver redirects to the localized one
+    expect(resolve('/about', '/about', undefined, 'en', withCookie)).toMatchObject({ path: '/fr/a-propos' })
     expect(resolve('/fr/about', '/about', 'fr', 'en', withCookie).path).toBeUndefined()
   })
 
@@ -137,7 +146,7 @@ describe('createRedirectResolver', () => {
       detection: detection({ enabled: true, redirectOn: 'all' }),
     })
     const withCookie = createDetectors({ cookie: () => 'fr' })
-    expect(resolve('/en/about', '/about', 'en', 'en', withCookie)).toMatchObject({ path: '/fr/about' })
+    expect(resolve('/en/about', '/about', 'en', 'en', withCookie)).toMatchObject({ path: '/fr/a-propos' })
   })
 
   test('detection prefers the cookie locale over the header locale', () => {
@@ -185,4 +194,23 @@ describe('createRedirectResolver', () => {
       expect(resolve('/', '/', undefined, 'en', onHost)).toMatchObject({ path: '/fr', locale: 'fr' })
     })
   })
+})
+
+test('a path with no localized variant for the target locale is not redirected to', () => {
+  const matchLocalized = createPathMatcher(
+    { localizedPaths: ['/', '/about'], pathToI18nConfig: { '/about': { fr: false } }, i18nPathToPath: {}, disabledPaths: [] },
+    { strategy: 'prefix_except_default', routing: true, trailingSlash: false }
+  ).matchLocalized
+
+  const resolve = createRedirectResolver({
+    detection: detection({ enabled: true, redirectOn: 'all' }),
+    matchLocalized,
+    isSupportedLocale: locale => LOCALES.includes(locale || ''),
+    strategy: 'prefix_except_default',
+    routing: true,
+    domains: false
+  })
+
+  // redirecting would have to invent a path, previously the home page
+  expect(resolve('/about', '/about', undefined, 'en', createDetectors({ cookie: () => 'fr' })).path).toBeUndefined()
 })

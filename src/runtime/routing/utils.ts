@@ -6,34 +6,25 @@ import type { RouteLocationPathRaw, RouteLocationResolvedGeneric, RouteRecordNam
 import type { PrefixableOptions } from '#i18n-kit/routing'
 
 /**
- * Returns a getter function which returns a localized route name for the given route and locale.
- * The returned function can vary based on the strategy and domain configuration.
+ * Returns a getter function which returns a localized route name for the given route and locale,
+ * resolved against the routes that were generated rather than from the strategy.
  */
 export function createLocaleRouteNameGetter(
-  defaultLocale: string,
-  config: PrefixableOptions,
-  hasRoute?: (name: string) => boolean,
+  hasRoute: (name: string) => boolean,
+  config: Pick<PrefixableOptions, 'routing' | 'domains'>,
 ): (name: RouteRecordNameGeneric | null, locale: string) => string {
   // no route localization
   if (!config.routing && !config.domains) {
     return routeName => normalizeRouteName(routeName)
   }
 
-  // default locale routes have default suffix
-  if (config.strategy === 'prefix_and_default') {
-    return (name, locale) => {
-      const normalized = normalizeRouteName(name)
-      if (locale !== defaultLocale) { return getLocalizedRouteName(normalized, locale, false) }
-
-      // under domain routing the suffixed variant is only generated for domain defaults, the
-      // route table decides whether this locale has one rather than the strategy alone
-      const suffixed = getLocalizedRouteName(normalized, locale, true)
-      return !hasRoute || hasRoute(suffixed) ? suffixed : getLocalizedRouteName(normalized, locale, false)
-    }
+  return (name, locale) => {
+    const normalized = normalizeRouteName(name)
+    // which locales get an unprefixed `___default` variant is decided by the strategy at build
+    // time and pruned per host by `setupMultiDomainLocales`, so the route table is the authority
+    const suffixed = getLocalizedRouteName(normalized, locale, true)
+    return hasRoute(suffixed) ? suffixed : getLocalizedRouteName(normalized, locale, false)
   }
-
-  // routes are localized
-  return (name, locale) => getLocalizedRouteName(normalizeRouteName(name), locale, false)
 }
 
 /**

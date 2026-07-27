@@ -7,7 +7,7 @@ import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { _useLocaleHead, localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
-import { createLocaleConfigs, getDefaultLocaleForDomain, resolveSupportedLocale } from '../shared/locales'
+import { createLocaleConfigs, resolveDefaultLocale, resolveSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { type NuxtI18nContext, createNuxtI18nContext, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
@@ -28,8 +28,7 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale
-      = getDefaultLocaleForDomain(useRequestURL({ xForwardedHost: true }).host) || runtimeI18n.defaultLocale || ''
+    const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()

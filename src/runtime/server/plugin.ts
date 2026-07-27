@@ -4,7 +4,7 @@ import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runti
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
-import { getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
+import { isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { joinURL, parsePath } from 'ufo'
 // @ts-expect-error virtual file
@@ -101,7 +101,7 @@ export default defineNitroPlugin(async (nitro) => {
     // a target on the current host would redirect to itself
     if (!origin || host === getRequestURL(event, { xForwardedHost: true }).host) { return }
 
-    const relocated = matchLocalized(path, pathLocale, getDefaultLocaleForDomain(host) || _defaultLocale)
+    const relocated = matchLocalized(path, pathLocale, resolveDefaultLocale(host, _defaultLocale))
     if (!relocated) { return }
 
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale: pathLocale, origin }

@@ -14,6 +14,7 @@ export default defineConfig({
     alias: {
       ...vitestConfig.test?.alias,
       '#build/i18n-options.mjs': resolve('./test/mocks/i18n.options.ts'),
+      '#build/i18n-route-resources.mjs': resolve('./test/mocks/i18n.route-resources.ts'),
       '#app': 'nuxt',
       '#imports': resolve('./test/mocks/imports.ts'),
       // resolve from source - the package `imports` map points at `dist`, which may be stale
