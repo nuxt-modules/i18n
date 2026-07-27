@@ -4,7 +4,7 @@ import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runti
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
-import { isSupportedLocale } from '../shared/locales'
+import { getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { joinURL, parsePath } from 'ufo'
 // @ts-expect-error virtual file
@@ -16,7 +16,7 @@ import { isFunction } from '@intlify/shared'
 import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
-import { domainFromLocale } from '../shared/domain'
+import { domainFromLocale, normalizeDomain } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 import { createRedirectResolver } from './utils/redirect'
 
@@ -91,6 +91,22 @@ export default defineNitroPlugin(async (nitro) => {
 
   const baseUrlGetter = createBaseUrlGetter()
 
+  /**
+   * Redirect moving a locale path to the domain that serves it, the target domain has its own
+   * default locale so the path is prefixed for that domain rather than the current one.
+   */
+  const resolveRelocation = (event: H3Event, pathLocale: string, path: string) => {
+    const origin = getDomainFromLocale(event, pathLocale)
+    const host = normalizeDomain(origin)
+    // a target on the current host would redirect to itself
+    if (!origin || host === getRequestURL(event, { xForwardedHost: true }).host) { return }
+
+    const relocated = matchLocalized(path, pathLocale, getDefaultLocaleForDomain(host) || _defaultLocale)
+    if (!relocated) { return }
+
+    return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale: pathLocale, origin }
+  }
+
   nitro.hooks.hook('request', async (event: H3Event) => {
     await initializeI18nContext(event)
   })
@@ -107,22 +123,29 @@ export default defineNitroPlugin(async (nitro) => {
     // `event.path` is already stripped of `app.baseURL` by Nitro (unlike `url.pathname`), and
     // `parsePath` drops any query string - so `path` stays an absolute, base-free route path.
     const { pathname } = parsePath(event.path)
-    const path = (pathLocale && pathname.slice(pathLocale.length + 1)) ?? pathname
+    // a locale-prefixed root (`/ja`) leaves nothing behind the prefix, its route path is `/`
+    const path = (pathLocale ? pathname.slice(pathLocale.length + 1) || '/' : pathname)
 
     // attempt to only run i18n detection for nuxt pages and i18n server routes
     if (!url.pathname.includes(__I18N_SERVER_ROUTE__) && !isExistingNuxtRoute(path)) {
       return
     }
 
-    const resolved = resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
-    if (resolved.path && resolved.path !== pathname) {
+    // a locale restricted to other domains cannot be served here, the request moves to a domain
+    // that does serve it rather than rendering its path in the wrong locale
+    const relocation = (__I18N_ROUTING__ && __I18N_DOMAINS__ && pathLocale && !detector.onHost(pathLocale)
+      && resolveRelocation(event, pathLocale, path)) || undefined
+
+    const resolved = relocation || resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
+    if (resolved.path && (relocation || resolved.path !== pathname)) {
       ctx.detectLocale = resolved.locale
-      detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
+      // the origin host would not send the cookie to the domain being redirected to
+      !relocation && detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
       context.response = createRedirectResponse(
         event,
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
         joinURL(
-          baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale),
+          relocation?.origin || baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),

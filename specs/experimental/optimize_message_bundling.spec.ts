@@ -49,19 +49,19 @@ describe('experimental.optimizeMessageBundling', () => {
   test('merges static files with executable locale files', async () => {
     const { page } = await renderPage('/en-GB')
 
-    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
-    expect(await page.locator('#profile-js').innerText()).toEqual('Profile1')
-    expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('#profile-js').innerText()).toEqual('Profile1')
+    await expect.poll(() => page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
   test('client-side locale switch fetches and renders messages', async () => {
     const { page } = await renderPage('/')
 
     await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#nuxt-locale-link-fr')])
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
 
     await Promise.all([waitForLocaleNetwork(page, 'ja', 'response'), page.click('#nuxt-locale-link-ja')])
-    expect(await page.locator('#home-header').innerText()).toEqual('ホームページ')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('ホームページ')
   })
 
   // JSON drops message functions, so `de` keeps its loaders instead of using the endpoint

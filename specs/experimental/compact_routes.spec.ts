@@ -25,26 +25,26 @@ describe('compact routes `<NuxtPage>` keys', () => {
 
     await page.locator('#counter').click()
     await page.locator('#counter').click()
-    expect(await page.locator('#counter').innerText()).toEqual('parent state: 2')
+    await expect.poll(() => page.locator('#counter').innerText()).toEqual('parent state: 2')
 
     await page.locator('#to-baz').clickNavigate()
     await page.waitForURL(url('/ja/foo/baz'))
 
-    expect(await page.locator('#child').innerText()).toEqual('child: baz')
+    await expect.poll(() => page.locator('#child').innerText()).toEqual('child: baz')
     // parent state survives — the parent page was not remounted
-    expect(await page.locator('#counter').innerText()).toEqual('parent state: 2')
+    await expect.poll(() => page.locator('#counter').innerText()).toEqual('parent state: 2')
   })
 
   it('remounts the page when the locale param changes within a compact route', async () => {
     const { page } = await renderPage('/ja/foo/bar')
 
     await page.locator('#counter').click()
-    expect(await page.locator('#counter').innerText()).toEqual('parent state: 1')
+    await expect.poll(() => page.locator('#counter').innerText()).toEqual('parent state: 1')
 
     await page.locator('#to-fr').clickNavigate()
     await page.waitForURL(url('/fr/foo/bar'))
 
     // state reset — locale change remounts so transitions can trigger
-    expect(await page.locator('#counter').innerText()).toEqual('parent state: 0')
+    await expect.poll(() => page.locator('#counter').innerText()).toEqual('parent state: 0')
   })
 })

@@ -24,7 +24,7 @@ describe('experimental.strictSeo', async () => {
   test('dynamic parameters rendered correctly during SSR', async () => {
     const { page } = await renderPage('/')
     await page.goto(url('/products/big-chair'))
-    expect(await page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
+    await expect.poll(() => page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
     expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
       "HTML:
         lang: en
@@ -45,8 +45,8 @@ describe('experimental.strictSeo', async () => {
     `)
 
     await page.goto(url('/nl/products/rode-mok'))
-    expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
-    expect(await page.locator('#switch-locale-path-link-ja[data-i18n-disabled]').getAttribute('href')).toEqual('#')
+    await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
+    await expect.poll(() => page.locator('#switch-locale-path-link-ja[data-i18n-disabled]').getAttribute('href')).toEqual('#')
     expect(await getHeadSnapshot(page)).toMatchInlineSnapshot(`
       "HTML:
         lang: nl-NL
@@ -68,15 +68,15 @@ describe('experimental.strictSeo', async () => {
   test('canonical link keeps queries listed in `canonicalQueries`', async () => {
     const { page } = await renderPage('/post/my-post?page=2&foo=bar')
 
-    expect(await page.locator('link[rel=canonical]').getAttribute('href')).toEqual(
+    await expect.poll(() => page.locator('link[rel=canonical]').getAttribute('href')).toEqual(
       'http://localhost:3000/post/my-post?page=2'
     )
-    expect(await page.locator('link[rel=alternate][hreflang=fr]').getAttribute('href')).toEqual(
+    await expect.poll(() => page.locator('link[rel=alternate][hreflang=fr]').getAttribute('href')).toEqual(
       'http://localhost:3000/fr/post/mon-article?page=2'
     )
 
     await page.goto(url('/post/my-post?foo=bar'))
-    expect(await page.locator('link[rel=canonical]').getAttribute('href')).toEqual(
+    await expect.poll(() => page.locator('link[rel=canonical]').getAttribute('href')).toEqual(
       'http://localhost:3000/post/my-post'
     )
   })

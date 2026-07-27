@@ -53,42 +53,42 @@ describe('strategy: prefix', async () => {
     const { page } = await renderPage('/en')
 
     // `en` rendering
-    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
-    expect(await page.locator('title').innerText()).toEqual('Homepage')
-    expect(await page.locator('#link-about').innerText()).toEqual('About us')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('title').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('#link-about').innerText()).toEqual('About us')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').innerText()).toEqual('Français')
-    expect(await page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
+    await expect.poll(() => page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').innerText()).toEqual('Français')
+    await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/en/about' })
-    expect(await page.locator('#route-path').innerText()).toEqual('route: /en')
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toEqual('/fr')
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/en/about' })
+    await expect.poll(() => page.locator('#route-path').innerText()).toEqual('route: /en')
+    await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toEqual('/fr')
 
     // current locale
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
   })
 
   test('can access to prefix locale: /fr', async () => {
     const { page } = await renderPage('/fr')
 
     // `fr` rendering
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
-    expect(await page.locator('title').innerText()).toEqual('Accueil')
-    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('title').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-en').innerText()).toEqual('English')
-    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
+    await expect.poll(() => page.locator('#lang-switcher-with-nuxt-link .switch-to-en').innerText()).toEqual('English')
+    await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
-    expect(await page.locator('#route-path').innerText()).toEqual('route: /fr')
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-en', 'href')).toEqual('/en')
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(() => page.locator('#route-path').innerText()).toEqual('route: /fr')
+    await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-en', 'href')).toEqual('/en')
 
     // current locale
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   })
 
   test('cannot access to not defined locale: /ja', async () => {
@@ -112,21 +112,21 @@ describe('strategy: prefix', async () => {
     await page.waitForURL(url('/fr'))
 
     // `fr` rendering
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
-    expect(await page.locator('title').innerText()).toEqual('Accueil')
-    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('title').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await page.locator('#lang-switcher-with-nuxt-link .switch-to-en').innerText()).toEqual('English')
-    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
+    await expect.poll(() => page.locator('#lang-switcher-with-nuxt-link .switch-to-en').innerText()).toEqual('English')
+    await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
-    expect(await page.locator('#route-path').innerText()).toEqual('route: /fr')
-    expect(await page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-en', 'href')).toEqual('/en')
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(() => page.locator('#route-path').innerText()).toEqual('route: /fr')
+    await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-en', 'href')).toEqual('/en')
 
     // current locale
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
   })
 
   test('(#1889) navigation to page with `defineI18nRoute(false)`', async () => {
@@ -151,17 +151,17 @@ describe('strategy: prefix', async () => {
     // switch 'fr' locale
     await page.locator('#lang-switcher-with-nuxt-link .switch-to-fr').clickNavigate()
     await page.waitForURL(url('/fr'))
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
 
     // navigate to disabled route
     await page.locator('#link-define-i18n-route-false').clickNavigate()
     await page.waitForURL(url('/define-i18n-route-false'))
 
-    expect(await page.locator('#disable-route-text').innerText()).toEqual('Page with disabled localized route')
+    await expect.poll(() => page.locator('#disable-route-text').innerText()).toEqual('Page with disabled localized route')
 
     // back to home
     await page.locator('#goto-home').clickNavigate()
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
 
     // does not redirect to prefixed route for routes with disabled localization
     await page.goto(url('/ignore-routes/disable'))
@@ -189,7 +189,7 @@ describe('strategy: prefix', async () => {
     // detection redirect is delayed until hydration, give it time to (not) happen
     await page.waitForTimeout(500)
     expect(page.url()).toBe(url('/ignore-routes/disable'))
-    expect(await page.locator('p').innerText()).toEqual('ignore localized route disable test')
+    await expect.poll(() => page.locator('p').innerText()).toEqual('ignore localized route disable test')
   })
 
   test("(#3910) SSR request for a route with disabled localization reaches the page with `redirectOn: 'no prefix'`", async () => {
@@ -239,7 +239,7 @@ describe('strategy: prefix', async () => {
     const { page } = await renderPage('/', { locale: 'en' })
     await page.waitForURL(url('/en'))
 
-    expect(await page.locator('#link-define-i18n-route-false').innerText()).toEqual('go to defineI18nRoute(false)')
+    await expect.poll(() => page.locator('#link-define-i18n-route-false').innerText()).toEqual('go to defineI18nRoute(false)')
   })
 
   test("(#2132) should redirect on root url with `redirectOn: 'no prefix'`", async () => {
@@ -260,17 +260,17 @@ describe('strategy: prefix', async () => {
     )
 
     const { page } = await renderPage('/', { locale: 'fr' })
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
 
     await gotoPath(page, '/en')
-    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Homepage')
   })
 
   test('(#2020) pass query parameter', async () => {
     const { page } = await renderPage('/')
 
-    expect(await page.locator('#issue-2020-existing').innerText()).toBe('/en/test-route?foo=bar')
-    expect(await page.locator('#issue-2020-nonexistent').innerText()).toBe('/i-dont-exist?foo=bar')
+    await expect.poll(() => page.locator('#issue-2020-existing').innerText()).toBe('/en/test-route?foo=bar')
+    await expect.poll(() => page.locator('#issue-2020-nonexistent').innerText()).toBe('/i-dont-exist?foo=bar')
   })
   test('should keep query params when redirecting', async () => {
     await startServerWithRuntimeConfig(

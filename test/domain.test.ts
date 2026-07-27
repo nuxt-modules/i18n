@@ -28,6 +28,7 @@ describe('normalizeDomain', () => {
     expect(normalizeDomain()).toBe('')
     // request hosts are always lowercase, a configured domain may not be
     expect(normalizeDomain('https://EN.Example.com')).toBe('en.example.com')
+    expect(normalizeDomain('HTTPS://EN.Example.com')).toBe('en.example.com')
   })
 })
 

@@ -33,7 +33,7 @@ describe('basic lazy loading', async () => {
 
     await page.click('#nuxt-locale-link-fr')
     await page.waitForURL(url('/fr'))
-    expect(await page.locator('#dynamic-time').innerText()).toEqual('Not dynamic')
+    await expect.poll(() => page.locator('#dynamic-time').innerText()).toEqual('Not dynamic')
 
     // dynamicTime depends on passage of some time
     await page.waitForTimeout(1)
@@ -41,7 +41,7 @@ describe('basic lazy loading', async () => {
     // dynamicTime does not match captured dynamicTime
     await page.click('#nuxt-locale-link-nl')
     await page.waitForURL(url('/nl'))
-    expect(await page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
+    await expect.poll(() => page.locator('#dynamic-time').innerText()).to.not.equal(dynamicTime)
   })
 
   test('locales are fetched on demand', async () => {
@@ -86,54 +86,54 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage('/')
 
     // `en` rendering
-    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
-    expect(await page.locator('title').innerText()).toEqual('Homepage')
-    expect(await page.locator('#link-about').innerText()).toEqual('About us')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('title').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('#link-about').innerText()).toEqual('About us')
 
     // lang switcher rendering
-    expect(await page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
+    await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
 
     // current locale
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
 
     // html tag `lang` attribute with language code
-    expect(await page.getAttribute('html', 'lang')).toEqual('en-US')
+    await expect.poll(() => page.getAttribute('html', 'lang')).toEqual('en-US')
   })
 
   test('can access to prefix locale: /fr', async () => {
     const { page } = await renderPage('/fr')
 
     // `fr` rendering
-    expect(await page.locator('#home-header').innerText()).toEqual('Accueil')
-    expect(await page.locator('title').innerText()).toEqual('Accueil')
-    expect(await page.locator('#link-about').innerText()).toEqual('À propos')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('title').innerText()).toEqual('Accueil')
+    await expect.poll(() => page.locator('#link-about').innerText()).toEqual('À propos')
 
     // lang switcher rendering
-    expect(await page.locator('#set-locale-link-en').innerText()).toEqual('English')
+    await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
 
     // current locale
-    expect(await page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
+    await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')
 
     // html tag `lang` attribute with language code
-    expect(await page.getAttribute('html', 'lang')).toEqual('fr-FR')
+    await expect.poll(() => page.getAttribute('html', 'lang')).toEqual('fr-FR')
   })
 
   test('multiple lazy loading', async () => {
     const { page } = await renderPage('/en-GB')
 
     // `en` base rendering
-    expect(await page.locator('#home-header').innerText()).toEqual('Homepage')
-    expect(await page.locator('title').innerText()).toEqual('Homepage')
-    expect(await page.locator('#link-about').innerText()).toEqual('About us')
+    await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('title').innerText()).toEqual('Homepage')
+    await expect.poll(() => page.locator('#link-about').innerText()).toEqual('About us')
 
-    expect(await page.locator('#profile-js').innerText()).toEqual('Profile1')
-    expect(await page.locator('#profile-ts').innerText()).toEqual('Profile2')
+    await expect.poll(() => page.locator('#profile-js').innerText()).toEqual('Profile1')
+    await expect.poll(() => page.locator('#profile-ts').innerText()).toEqual('Profile2')
   })
 
   test('files with cache disabled bypass caching', async () => {
@@ -152,7 +152,7 @@ describe('basic lazy loading', async () => {
   test('manually loaded messages can be used in translations', async () => {
     const { page } = await renderPage('/manual-load')
 
-    expect(await page.locator('#welcome-english').innerText()).toEqual('Welcome!')
-    expect(await page.locator('#welcome-dutch').innerText()).toEqual('Welkom!')
+    await expect.poll(() => page.locator('#welcome-english').innerText()).toEqual('Welcome!')
+    await expect.poll(() => page.locator('#welcome-dutch').innerText()).toEqual('Welkom!')
   })
 })

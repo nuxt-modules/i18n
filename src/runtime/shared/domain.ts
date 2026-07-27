@@ -9,7 +9,7 @@ import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types
  * against the request host use the host part only. `ufo` helpers are unsuitable here
  * as they treat the `host:port` shape as a protocol.
  */
-export const normalizeDomain = (domain: string = '') => domain.replace(/^https?:\/\//, '').toLowerCase()
+export const normalizeDomain = (domain: string = '') => domain.replace(/^https?:\/\//i, '').toLowerCase()
 
 /**
  * Whether the locale is served on the given host
