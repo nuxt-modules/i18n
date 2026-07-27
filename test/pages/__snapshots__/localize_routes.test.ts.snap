@@ -126,6 +126,16 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
 [
   {
     "children": [],
+    "name": "user-profile___en",
+    "path": "/en/user/:id/profile",
+  },
+  {
+    "children": [],
+    "name": "user-posts___en",
+    "path": "/en/user/:id/posts",
+  },
+  {
+    "children": [],
     "name": "user-profile___ja",
     "path": "/ja/user/:id/profile",
   },
@@ -133,6 +143,20 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
     "children": [],
     "name": "user-posts___ja",
     "path": "/ja/user/:id/posts",
+  },
+  {
+    "children": [
+      {
+        "name": "user-profile___en",
+        "path": "profile",
+      },
+      {
+        "name": "user-posts___en",
+        "path": "posts",
+      },
+    ],
+    "name": "user___en",
+    "path": "/en/user/:id",
   },
   {
     "children": [
@@ -150,37 +174,47 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
   },
   {
     "children": [],
+    "name": "about___en",
+    "path": "/en/about",
+  },
+  {
+    "children": [],
     "name": "about___ja",
     "path": "/ja/about",
   },
   {
     "children": [],
-    "name": "user-profile___en",
+    "name": "user-profile___en___default",
     "path": "/user/:id/profile",
   },
   {
     "children": [],
-    "name": "user-posts___en",
+    "name": "user-posts___en___default",
     "path": "/user/:id/posts",
   },
   {
     "children": [
       {
-        "name": "user-profile___en",
+        "name": "user-profile___en___default",
         "path": "profile",
       },
       {
-        "name": "user-posts___en",
+        "name": "user-posts___en___default",
         "path": "posts",
       },
     ],
-    "name": "user___en",
+    "name": "user___en___default",
     "path": "/user/:id",
   },
   {
     "children": [],
-    "name": "home___en",
+    "name": "home___en___default",
     "path": "/",
+  },
+  {
+    "children": [],
+    "name": "home___en",
+    "path": "/en",
   },
   {
     "children": [],
@@ -189,7 +223,7 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
   },
   {
     "children": [],
-    "name": "about___en",
+    "name": "about___en___default",
     "path": "/about",
   },
 ]
@@ -257,13 +291,13 @@ exports[`localizeRoutes > strategy: "prefix_and_default" + multiDomainLocales > 
   },
   {
     "children": [],
-    "name": "home___en",
-    "path": "/",
+    "name": "about___en",
+    "path": "/about",
   },
   {
     "children": [],
-    "name": "about___en",
-    "path": "/about",
+    "name": "home___en",
+    "path": "/",
   },
 ]
 `;
