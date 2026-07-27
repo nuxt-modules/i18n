@@ -133,10 +133,10 @@ function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy:
   return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
 }
 
-function resolveDefaultLocales(config: SetupLocalizeRoutesOptions) {
+function resolveDefaultLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies) {
   // under the `*_default` strategies the unprefixed locale differs per domain, `___default`
   // variants + runtime surgery resolve it - a build time default would claim the same path
-  if ((config.differentDomains || config.multiDomainLocales) && usesDefaultVariants(config.strategy)) {
+  if ((config.differentDomains || config.multiDomainLocales) && usesDefaultVariants(strategy)) {
     return []
   }
 
@@ -168,16 +168,16 @@ type SetupLocalizeRoutesOptions = {
 export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalizeRoutesOptions): LocalizableRoute[] {
   if (!shouldLocalizeRoutes(config)) { return routes }
 
+  const strategy = config.strategy ?? 'prefix_and_default'
+
   const ctx = createRouteContext({
     optionsResolver: config.optionsResolver,
     trailingSlash: config.trailingSlash ?? false,
-    defaultLocales: resolveDefaultLocales(config),
+    defaultLocales: resolveDefaultLocales(config, strategy),
     routesNameSeparator: config.routesNameSeparator,
     defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
     onLocalize: config.onLocalize,
   })
-
-  const strategy = config.strategy ?? 'prefix_and_default'
 
   /**
    * Compact routes: merge all per-locale routes into a single `/:locale(en|fr)/path` route

@@ -325,7 +325,8 @@ describe('switchLocalePath with differentDomains', () => {
 
     const ctx = createRoutingContext({
       router,
-      defaultLocale: '',
+      // the runtime resolves this per host, not from the build time `defaultLocale`
+      defaultLocale: opts.hostDefault ?? '',
       strategy: opts.strategy,
       routing: true,
       domains: true,
@@ -354,6 +355,78 @@ describe('switchLocalePath with differentDomains', () => {
     expect(_switchLocalePath(ctx, 'no')).toBe('http://en.example.com/no/about')
     // on-host targets navigate relative
     expect(_switchLocalePath(ctx, 'fr')).toBe('/about')
+  })
+
+  test('`strategy: prefix_and_default` falls back to unprefixing when no locale is a domain default', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_and_default',
+      host: 'en.example.com',
+      locale: 'en',
+      hostDefault: 'en',
+      locales: [
+        { code: 'en', language: 'en', domain: 'en.example.com' },
+        { code: 'fr', language: 'fr', domain: 'fr.example.com' }
+      ]
+    })
+
+    // no `___default` variants exist to keep, so the host default is unprefixed instead
+    const paths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+    expect(paths['about___en']).toBe('/about')
+    expect(paths['about___en___default']).toBeUndefined()
+
+    await router.push('/about')
+    expect(_localePath(ctx, '/about', 'en')).toBe('/about')
+    expect(_switchLocalePath(ctx, 'en')).toBe('/about')
+  })
+
+  test('a host matching no configured domain links each locale to its own domain', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_except_default',
+      host: 'staging.example.com',
+      locale: 'fr'
+    })
+
+    await router.push('/fr/about')
+    // no locale is served on this host, so every link is absolute in the target domain's shape
+    // and stays consistent with the hreflang alternates, which are always absolute per locale
+    expect(_switchLocalePath(ctx, 'en')).toBe('http://en.example.com/about')
+    expect(_switchLocalePath(ctx, 'no')).toBe('http://en.example.com/no/about')
+    expect(_switchLocalePath(ctx, 'fr')).toBe('http://fr.example.com/about')
+  })
+
+  test('`strategy: prefix_and_default` serves the host default unprefixed and prefixed', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_and_default',
+      host: 'fr.example.com',
+      locale: 'fr',
+      hostDefault: 'fr'
+    })
+
+    const paths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+    // the host default keeps both variants, route names for it resolve to the `___default` form
+    expect(paths['about___fr___default']).toBe('/about')
+    expect(paths['about___fr']).toBe('/fr/about')
+    // the other domains' unprefixed variants are removed
+    expect(paths['about___en___default']).toBeUndefined()
+    expect(paths['about___en']).toBe('/en/about')
+
+    await router.push('/about')
+    expect(_localePath(ctx, '/about', 'fr')).toBe('/about')
+    expect(_switchLocalePath(ctx, 'fr')).toBe('/about')
+    expect(_switchLocalePath(ctx, 'en')).toBe('http://en.example.com/about')
+  })
+
+  test('a locale the page is unavailable in produces no link', async () => {
+    const { router, ctx } = createDomainContext({
+      strategy: 'prefix_except_default',
+      host: 'fr.example.com',
+      locale: 'fr',
+      hostDefault: 'fr'
+    })
+
+    await router.push('/about')
+    // the route does not resolve, joining an empty path would link to the target domain's home page
+    expect(_switchLocalePath(ctx, 'xx')).toBe('')
   })
 
   test('`strategy: prefix` keeps prefixes in links for all locales', async () => {

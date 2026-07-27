@@ -53,9 +53,13 @@ export function matchLocalized(path: string, locale: string, defaultLocale: stri
 
   if (resolvedMatch.matched.length > 0) {
     const alternate = getI18nPathToI18nPath(resolvedMatch.matched[0]!.path, locale)
+    // the path is disabled for this locale, matching `/` instead would send the request
+    // to the home page of whichever locale or domain it was being resolved for
+    if (!alternate) { return }
+
     const match = matcher.resolve(
       { params: resolvedMatch.params },
-      { path: alternate || '/', name: '', matched: [], params: {}, meta: {} },
+      { path: alternate, name: '', matched: [], params: {}, meta: {} },
     )
 
     const isPrefixable = prefixable(locale, defaultLocale, {
