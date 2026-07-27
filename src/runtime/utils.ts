@@ -6,7 +6,7 @@ import { useComposableContext } from './composable-context'
 import { isSupportedLocale } from './shared/locales'
 import { createLocaleDetector, useDetectors } from './shared/detection'
 import { useI18nDetection } from './shared/utils'
-import { isLocaleOnHost } from './shared/domain'
+import { isLocaleOnHost, resolveHostLocale } from './shared/domain'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -48,7 +48,12 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
     domains: __I18N_DOMAINS__,
   })
 
-  return detect(detectors, route, ctx.initial) || ctx.getLocale() || ctx.getDefaultLocale() || ''
+  const detected = detect(detectors, route, ctx.initial) || ctx.getLocale() || ctx.getDefaultLocale() || ''
+  // a locale detected from the cookie/header may be left over from a different domain
+  // (`server/utils/redirect.ts` already guards the initial SSR request, this covers
+  // client-side navigation and hydration picking the cookie back up)
+  if (!__I18N_DOMAINS__ || !detected) { return detected }
+  return resolveHostLocale(detected, ctx.getDefaultLocale(), useRequestURL({ xForwardedHost: true }).host)
 }
 
 export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
