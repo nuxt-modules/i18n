@@ -180,6 +180,21 @@ describe('message source classification', () => {
     expect(analyze(`export default defineI18nLocale(() => ({ a: 'x' }))`)).toMatchObject({ serializable: true })
   })
 
+  test('finds message functions behind branching returns', () => {
+    expect(analyze(`export default defineI18nLocale((l) => {
+      if (l === 'de') { return { a: () => 'x' } }
+      return { a: 'x' }
+    })`)).toMatchObject({ serializable: false })
+    expect(analyze(`export default defineI18nLocale(() => {
+      try { return { a: () => 'x' } } catch { return {} }
+    })`)).toMatchObject({ serializable: false })
+    // a nested function's return is not the loader's return
+    expect(analyze(`export default defineI18nLocale(() => {
+      const make = () => ({ a: () => 'x' })
+      return { b: 'y' }
+    })`)).toMatchObject({ serializable: true })
+  })
+
   test('messages it cannot read are left on the endpoint', () => {
     // a loader fetching its messages could not have carried functions in the first place
     expect(analyze(`export default defineI18nLocale(l => $fetch('/api/' + l))`)).toMatchObject({

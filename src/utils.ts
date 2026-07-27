@@ -9,7 +9,7 @@ import { parseSync } from 'oxc-parser'
 
 import type { FileMeta, LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
 import type { NuxtConfigLayer } from '@nuxt/schema'
-import type { Node, ObjectExpression, Program } from 'oxc-parser'
+import type { Node, ObjectExpression, Program, Statement } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
 export function filterLocales(ctx: I18nNuxtContext) {
@@ -88,13 +88,12 @@ function analyzeResource(path: string, vfs: Record<string, string>) {
   if (!EXECUTABLE_EXT_RE.test(path)) { return { type: 'static' as LocaleType, serializable: true } }
 
   const exported = resolveDefaultExport(parseSync(path, vfs[path] ?? readFileSync(path, 'utf-8')).program)
-  const messages = visibleMessages(exported)
 
   return {
     type: localeTypeOf(exported),
     // messages that cannot be read here are assumed to be JSON already - a loader fetching them
     // could not have carried functions in the first place
-    serializable: messages == null || !hasMessageFunction(messages),
+    serializable: !visibleMessages(exported).some(hasMessageFunction),
   }
 }
 
@@ -146,19 +145,53 @@ function localeTypeOf(exported?: Node): LocaleType {
   return loaderFunction(exported) ? 'dynamic' : 'unknown'
 }
 
-/** The messages object the build can read, when the module makes one visible at all */
-function visibleMessages(exported?: Node): ObjectExpression | undefined {
-  if (exported?.type === 'ObjectExpression') { return exported }
+/** Every `return` in reach of the function body - nested functions keep their own returns */
+function* returnsOf(statement: Statement): Generator<Node | null | undefined> {
+  switch (statement.type) {
+    case 'ReturnStatement':
+      yield statement.argument
+      return
+    case 'BlockStatement':
+      for (const s of statement.body) { yield* returnsOf(s) }
+      return
+    case 'IfStatement':
+      yield* returnsOf(statement.consequent)
+      if (statement.alternate) { yield* returnsOf(statement.alternate) }
+      return
+    case 'TryStatement':
+      yield* returnsOf(statement.block)
+      if (statement.handler) { yield* returnsOf(statement.handler.body) }
+      if (statement.finalizer) { yield* returnsOf(statement.finalizer) }
+      return
+    case 'SwitchStatement':
+      for (const c of statement.cases) {
+        for (const s of c.consequent) { yield* returnsOf(s) }
+      }
+      return
+    case 'ForStatement':
+    case 'ForInStatement':
+    case 'ForOfStatement':
+    case 'WhileStatement':
+    case 'DoWhileStatement':
+    case 'LabeledStatement':
+      yield* returnsOf(statement.body)
+  }
+}
+
+/** The message objects the build can read - a loader body may return one per branch */
+function visibleMessages(exported?: Node): ObjectExpression[] {
+  if (exported?.type === 'ObjectExpression') { return [exported] }
 
   const body = unwrap(loaderFunction(exported)?.body)
-  if (body?.type === 'ObjectExpression') { return body }
-  if (body?.type !== 'BlockStatement') { return }
+  if (body?.type === 'ObjectExpression') { return [body] }
+  if (body?.type !== 'BlockStatement') { return [] }
 
-  for (const statement of body.body) {
-    if (statement.type !== 'ReturnStatement') { continue }
-    const returned = unwrap(statement.argument)
-    return returned?.type === 'ObjectExpression' ? returned : undefined
+  const objects: ObjectExpression[] = []
+  for (const returned of returnsOf(body)) {
+    const node = unwrap(returned)
+    if (node?.type === 'ObjectExpression') { objects.push(node) }
   }
+  return objects
 }
 
 /**
