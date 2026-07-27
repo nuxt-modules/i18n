@@ -7,8 +7,7 @@ import {
   joinPath,
   localizeSingleRoute,
 } from './kit/gen'
-import { normalizeDomainLocale } from './utils'
-import type { LocaleObject, Strategies } from './types'
+import type { NormalizedLocaleObject, Strategies } from './types'
 
 export type RouteResources = {
   /** plain paths mounted as-is for at least one locale */
@@ -97,8 +96,7 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   // check if domains are used multiple times, compared by host as domains may include a protocol
   const domains = new Set<string>()
   for (const locale of options.locales) {
-    for (const domain of locale.domains?.length ? locale.domains : [locale.domain]) {
-      if (!domain) { continue }
+    for (const domain of locale.domains) {
       const host = domain.replace(/^https?:\/\//, '')
       if (domains.has(host)) {
         console.error(
@@ -114,13 +112,9 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   return true
 }
 
-/**
- * Locales acting as the default (unprefixed) locale for at least one domain. Normalizing here
- * rather than reading `domainDefault` directly keeps this in step with the runtime, which
- * resolves the domain default from `defaultForDomains` alone.
- */
-function getDomainDefaultLocales(locales: LocaleObject[]): string[] {
-  return locales.filter(locale => normalizeDomainLocale(locale).defaultForDomains?.length).map(locale => locale.code)
+/** Locales acting as the default (unprefixed) locale for at least one domain */
+function getDomainDefaultLocales(locales: NormalizedLocaleObject[]): string[] {
+  return locales.filter(locale => locale.defaultForDomains.length).map(locale => locale.code)
 }
 
 const usesDefaultVariants = (strategy: Strategies | undefined) =>
@@ -157,7 +151,7 @@ type SetupLocalizeRoutesOptions = {
   trailingSlash?: boolean
   differentDomains?: boolean
   multiDomainLocales?: boolean
-  locales: LocaleObject[]
+  locales: NormalizedLocaleObject[]
   routesNameSeparator: string
   defaultLocaleRouteNameSuffix: string
   defaultLocale?: string

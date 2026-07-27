@@ -40,12 +40,18 @@ exports[`basic 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [
@@ -125,18 +131,28 @@ exports[`files with cache configuration 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "es",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "es-AR",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [
@@ -189,12 +205,18 @@ exports[`lazy 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [
@@ -247,12 +269,18 @@ exports[`locale file in nested 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [
@@ -332,18 +360,28 @@ exports[`multiple files 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "es",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "es-AR",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [
@@ -393,12 +431,18 @@ exports[`server asset loaders 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [],
@@ -445,12 +489,18 @@ exports[`vueI18n option 1`] = `
   "normalizedLocales": [
     {
       "code": "en",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "ja",
+      "defaultForDomains": [],
+      "domains": [],
     },
     {
       "code": "fr",
+      "defaultForDomains": [],
+      "domains": [],
     },
   ],
   "vueI18nConfigs": [

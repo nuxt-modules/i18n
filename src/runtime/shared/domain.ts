@@ -1,8 +1,7 @@
 import { hasProtocol } from 'ufo'
 import { normalizedLocales } from '#build/i18n-options.mjs'
-import { toArray } from './utils'
 
-import type { I18nPublicRuntimeConfig, LocaleObject } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '#internal-i18n-types'
 
 /**
  * Configured domains may include a protocol (used when generating URLs), comparisons
@@ -14,10 +13,8 @@ export const normalizeDomain = (domain: string = '') => domain.replace(/^https?:
 /**
  * Whether the locale is served on the given host
  */
-export function isLocaleOnHost(locale: LocaleObject | undefined, host: string): boolean {
-  return (
-    !!locale && (normalizeDomain(locale.domain) === host || toArray(locale.domains).some(x => normalizeDomain(x) === host))
-  )
+export function isLocaleOnHost(locale: NormalizedLocaleObject | undefined, host: string): boolean {
+  return !!locale?.domains.some(x => normalizeDomain(x) === host)
 }
 
 /**
@@ -25,9 +22,9 @@ export function isLocaleOnHost(locale: LocaleObject | undefined, host: string): 
  * configured without domains qualifies, as does any locale on a host configured for none of
  * them (a staging domain, a health check by IP) so the site keeps working there.
  */
-export function isLocaleServedOnHost(locales: LocaleObject[], host: string, locale: string): boolean {
+export function isLocaleServedOnHost(locales: NormalizedLocaleObject[], host: string, locale: string): boolean {
   const target = locales.find(l => l.code === locale)
-  if (!target?.domain && !target?.domains?.length) { return true }
+  if (!target?.domains.length) { return true }
   return isLocaleOnHost(target, host) || !locales.some(l => isLocaleOnHost(l, host))
 }
 
@@ -36,14 +33,18 @@ export function isLocaleServedOnHost(locales: LocaleObject[], host: string, loca
  * default for. Undefined when the current host can serve it, which keeps hosts that match no
  * configured domain on relative URLs instead of sending them to a configured domain.
  */
-function relocateHostForLocale(host: string, locale: string, locales: LocaleObject[]): string | undefined {
+function relocateHostForLocale(host: string, locale: string, locales: NormalizedLocaleObject[]): string | undefined {
   if (isLocaleServedOnHost(locales, host, locale)) { return }
 
   const target = locales.find(l => l.code === locale)
-  return target?.defaultForDomains?.[0] || target?.domain || target?.domains?.[0]
+  return target?.defaultForDomains[0] || target?.domain || target?.domains[0]
 }
 
-export function matchDomainLocale(locales: LocaleObject[], host: string, pathLocale: string): string | undefined {
+export function matchDomainLocale(
+  locales: NormalizedLocaleObject[],
+  host: string,
+  pathLocale: string,
+): string | undefined {
   const matches = locales.filter(locale => isLocaleOnHost(locale, host))
 
   if (matches.length <= 1) {
@@ -54,7 +55,7 @@ export function matchDomainLocale(locales: LocaleObject[], host: string, pathLoc
     // match by current path locale
     matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
-    || matches.find(l => l.defaultForDomains?.some(domain => normalizeDomain(domain) === host) ?? l.domainDefault)?.code
+    || matches.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))?.code
   )
 }
 
@@ -62,14 +63,14 @@ export function domainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,
   url: { host: string, protocol: string },
   locale: string,
-  locales: LocaleObject[] = normalizedLocales,
+  locales: NormalizedLocaleObject[] = normalizedLocales,
 ): string | undefined {
   const lang = locales.find(x => x.code === locale)
   // lookup the `differentDomain` origin associated with given locale
   const domain
     = domainLocales?.[locale]?.domain
       || lang?.domain
-      || lang?.domains?.find(v => normalizeDomain(v) === url.host)
+      || lang?.domains.find(v => normalizeDomain(v) === url.host)
       || relocateHostForLocale(url.host, locale, locales)
 
   if (!domain) {
@@ -88,15 +89,17 @@ export function domainFromLocale(
  * Returns the locale object with the domain overridden by `domainLocales` runtime config (see also `getHostLocale`),
  * a no-op outside domain setups since the override entries are empty.
  */
-export function withRuntimeDomain<T extends string | LocaleObject>(
+export function withRuntimeDomain<T extends string | NormalizedLocaleObject>(
   locale: T,
   domainLocales: I18nPublicRuntimeConfig['domainLocales'],
 ): T {
   if (typeof locale === 'string') {
     return locale
   }
-  const properties = locale as LocaleObject
+  const properties = locale as NormalizedLocaleObject
   const domain = domainLocales[properties.code]?.domain
+  // `domainLocales` is seeded from the configured scalar `domain`, an entry matching it is not an
+  // override - rebuilding on it would drop the locale's other domains
   if (!domain || domain === properties.domain) {
     return locale
   }
@@ -107,6 +110,6 @@ export function withRuntimeDomain<T extends string | LocaleObject>(
     ...properties,
     domain,
     domains: [domain],
-    ...(properties.defaultForDomains?.length ? { defaultForDomains: [domain] } : {}),
+    defaultForDomains: properties.defaultForDomains.length ? [domain] : [],
   } as T
 }
