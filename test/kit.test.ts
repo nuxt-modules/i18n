@@ -12,6 +12,7 @@ import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
 import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { getNormalizedLocales } from './pages/utils'
+import { resolveDefaultLocale } from '../src/runtime/shared/locales'
 import type { NuxtPage } from '@nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
 import { LocalizableRoute } from '../src/kit/gen'
@@ -307,26 +308,25 @@ describe('switchLocalePath with differentDomains', () => {
     host: string
     locale: string
     locales?: typeof DOMAIN_LOCALES
-    /** default locale to rebuild the route table for, mirrors the runtime plugin */
-    hostDefault?: string
+    /** configured `defaultLocale`, the host's own default takes precedence over it */
+    defaultLocale?: string
   }) {
     const locales = opts.locales ?? DOMAIN_LOCALES
     const localized = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
       ...routingOptions,
       strategy: opts.strategy,
-      defaultLocale: '',
+      defaultLocale: opts.defaultLocale ?? '',
       differentDomains: true,
       locales
     })
     const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
-    if (opts.hostDefault) {
-      setupMultiDomainLocales(opts.hostDefault, opts.strategy, router)
-    }
+    // resolved the way the runtime does, rather than supplied, so the test cannot drift from it
+    const hostDefault = resolveDefaultLocale(opts.host, opts.defaultLocale, locales)
+    setupMultiDomainLocales(hostDefault, opts.strategy, router)
 
     const ctx = createRoutingContext({
       router,
-      // the runtime resolves this per host, not from the build time `defaultLocale`
-      defaultLocale: opts.hostDefault ?? '',
+      defaultLocale: hostDefault,
       strategy: opts.strategy,
       routing: true,
       domains: true,
@@ -346,7 +346,7 @@ describe('switchLocalePath with differentDomains', () => {
       strategy: 'prefix_except_default',
       host: 'fr.example.com',
       locale: 'fr',
-      hostDefault: 'fr'
+      defaultLocale: 'fr'
     })
 
     await router.push('/about')
@@ -362,7 +362,7 @@ describe('switchLocalePath with differentDomains', () => {
       strategy: 'prefix_and_default',
       host: 'en.example.com',
       locale: 'en',
-      hostDefault: 'en',
+      defaultLocale: 'en',
       locales: [
         { code: 'en', language: 'en', domain: 'en.example.com' },
         { code: 'fr', language: 'fr', domain: 'fr.example.com' }
@@ -399,7 +399,7 @@ describe('switchLocalePath with differentDomains', () => {
       strategy: 'prefix_and_default',
       host: 'fr.example.com',
       locale: 'fr',
-      hostDefault: 'fr'
+      defaultLocale: 'fr'
     })
 
     const paths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
@@ -421,7 +421,7 @@ describe('switchLocalePath with differentDomains', () => {
       strategy: 'prefix_except_default',
       host: 'fr.example.com',
       locale: 'fr',
-      hostDefault: 'fr'
+      defaultLocale: 'fr'
     })
 
     await router.push('/about')
@@ -464,7 +464,7 @@ describe('switchLocalePath with differentDomains', () => {
       host: 'a.example.com',
       locale: 'en',
       locales,
-      hostDefault: 'en'
+      defaultLocale: 'en'
     })
 
     await router.push('/about')
