@@ -4,7 +4,7 @@ import { deepCopy } from '@intlify/shared'
 import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { useRuntimeI18n } from '../shared/utils'
-import { createLocaleConfigs, getDefaultLocaleForDomain } from '../shared/locales'
+import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
 import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
@@ -24,7 +24,7 @@ const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true 
 export async function initializeI18nContext(event: H3Event) {
   const runtimeI18n = useRuntimeI18n(undefined, event)
   const defaultLocale: string = runtimeI18n.defaultLocale || ''
-  const options = await setupVueI18nOptions(getDefaultLocaleForDomain(getHost(event)) || defaultLocale)
+  const options = await setupVueI18nOptions(resolveDefaultLocale(getHost(event), defaultLocale))
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
   const ctx = createI18nContext()
 

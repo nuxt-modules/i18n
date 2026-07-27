@@ -101,3 +101,15 @@ test('pass `<NuxtLink> to props', async () => {
   // `fr` is served on the current host and links relative
   expect(await dom.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual('/')
 })
+
+test('`x-default` annotates the cluster, so every domain agrees on it', async () => {
+  const hrefs: string[] = []
+  for (const host of ['nuxt-app.localhost', 'fr.nuxt-app.localhost', 'ja.nuxt-app.localhost']) {
+    const res = await undiciRequest('/', { headers: { Host: host } })
+    const dom = await getDom(await res.body.text())
+    hrefs.push((await dom.locator('link[hreflang="x-default"]')?.getAttribute('href')) as string)
+  }
+
+  expect(new Set(hrefs).size).toBe(1)
+  expect(hrefs[0]).toBeTruthy()
+})

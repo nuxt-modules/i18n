@@ -7,6 +7,7 @@ import {
   joinPath,
   localizeSingleRoute,
 } from './kit/gen'
+import { normalizeDomainLocale } from './utils'
 import type { LocaleObject, Strategies } from './types'
 
 export type RouteResources = {
@@ -96,27 +97,30 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   // check if domains are used multiple times, compared by host as domains may include a protocol
   const domains = new Set<string>()
   for (const locale of options.locales) {
-    if (!locale.domain) { continue }
-    const host = locale.domain.replace(/^https?:\/\//, '')
-    if (domains.has(host)) {
-      console.error(
-        `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
-        + ` - found multiple entries with ${locale.domain}`,
-      )
-      return false
+    for (const domain of locale.domains?.length ? locale.domains : [locale.domain]) {
+      if (!domain) { continue }
+      const host = domain.replace(/^https?:\/\//, '')
+      if (domains.has(host)) {
+        console.error(
+          `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
+          + ` - found multiple entries with ${domain}`,
+        )
+        return false
+      }
+      domains.add(host)
     }
-    domains.add(host)
   }
 
   return true
 }
 
 /**
- * Locales acting as the default (unprefixed) locale for at least one domain,
- * `domainDefault` is read as the unnormalized form of `defaultForDomains`.
+ * Locales acting as the default (unprefixed) locale for at least one domain. Normalizing here
+ * rather than reading `domainDefault` directly keeps this in step with the runtime, which
+ * resolves the domain default from `defaultForDomains` alone.
  */
 function getDomainDefaultLocales(locales: LocaleObject[]): string[] {
-  return locales.filter(locale => locale.defaultForDomains?.length || locale.domainDefault).map(locale => locale.code)
+  return locales.filter(locale => normalizeDomainLocale(locale).defaultForDomains?.length).map(locale => locale.code)
 }
 
 const usesDefaultVariants = (strategy: Strategies | undefined) =>
@@ -133,10 +137,10 @@ function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy:
   return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
 }
 
-function resolveDefaultLocales(config: SetupLocalizeRoutesOptions) {
+function resolveDefaultLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies) {
   // under the `*_default` strategies the unprefixed locale differs per domain, `___default`
   // variants + runtime surgery resolve it - a build time default would claim the same path
-  if ((config.differentDomains || config.multiDomainLocales) && usesDefaultVariants(config.strategy)) {
+  if ((config.differentDomains || config.multiDomainLocales) && usesDefaultVariants(strategy)) {
     return []
   }
 
@@ -168,16 +172,16 @@ type SetupLocalizeRoutesOptions = {
 export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalizeRoutesOptions): LocalizableRoute[] {
   if (!shouldLocalizeRoutes(config)) { return routes }
 
+  const strategy = config.strategy ?? 'prefix_and_default'
+
   const ctx = createRouteContext({
     optionsResolver: config.optionsResolver,
     trailingSlash: config.trailingSlash ?? false,
-    defaultLocales: resolveDefaultLocales(config),
+    defaultLocales: resolveDefaultLocales(config, strategy),
     routesNameSeparator: config.routesNameSeparator,
     defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
     onLocalize: config.onLocalize,
   })
-
-  const strategy = config.strategy ?? 'prefix_and_default'
 
   /**
    * Compact routes: merge all per-locale routes into a single `/:locale(en|fr)/path` route

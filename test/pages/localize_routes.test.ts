@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 import { getNormalizedLocales, getNuxtOptions } from './utils'
-import { localizeRoutes } from '../../src/routing'
+import { localizeRoutes, shouldLocalizeRoutes } from '../../src/routing'
 import { setupMultiDomainLocales } from '../../src/runtime/routing/domain'
 import type { NuxtPage } from '@nuxt/schema'
 import type { LocaleObject } from '../../src/types'
@@ -343,6 +343,60 @@ describe('localizeRoutes', function () {
     })
   })
 
+  describe('shouldLocalizeRoutes', function () {
+    it('rejects `no_prefix` with locales sharing a domain, in either option shape', function () {
+      const err = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const shared = 'shared.example.com'
+
+      expect(
+        shouldLocalizeRoutes({
+          ...nuxtOptions,
+          strategy: 'no_prefix',
+          differentDomains: true,
+          locales: [{ code: 'en', domain: shared }, { code: 'fr', domain: shared }]
+        })
+      ).toBe(false)
+
+      expect(
+        shouldLocalizeRoutes({
+          ...nuxtOptions,
+          strategy: 'no_prefix',
+          differentDomains: true,
+          locales: [{ code: 'en', domains: [shared] }, { code: 'fr', domains: [shared] }]
+        })
+      ).toBe(false)
+
+      expect(err).toHaveBeenCalledTimes(2)
+      err.mockRestore()
+    })
+
+    it('allows one locale to serve several domains', function () {
+      expect(
+        shouldLocalizeRoutes({
+          ...nuxtOptions,
+          strategy: 'no_prefix',
+          differentDomains: true,
+          locales: [{ code: 'en', domains: ['a.example.com', 'b.example.com'] }, { code: 'fr', domain: 'c.example.com' }]
+        })
+      ).toBe(true)
+    })
+  })
+
+  it('does not generate an unprefixed variant for `domainDefault` without a domain', function () {
+    const localizedRoutes = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
+      ...nuxtOptions,
+      defaultLocale: '',
+      strategy: 'prefix_except_default',
+      differentDomains: true,
+      locales: [{ code: 'en', domainDefault: true }, { code: 'fr', domain: 'fr.example.com', domainDefault: true }]
+    })
+
+    const names = localizedRoutes.map(x => x.name)
+    // `fr` has a domain to be the default for, `en` has none and the runtime resolves no default for it
+    expect(names).toContain('about___fr___default')
+    expect(names).not.toContain('about___en___default')
+  })
+
   describe('strategy: "prefix_and_default" + differentDomains', function () {
     it('only generates an unprefixed variant for domain defaults, not for `defaultLocale`', function () {
       const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
@@ -367,8 +421,34 @@ describe('localizeRoutes', function () {
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
       setupMultiDomainLocales('fr', 'prefix_and_default', router)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
-      expect(domainPaths['about___fr']).toBe('/about')
+      // the host default keeps both variants, `prefix_and_default` serves it either way
+      expect(domainPaths['about___fr___default']).toBe('/about')
+      expect(domainPaths['about___fr']).toBe('/fr/about')
       expect(domainPaths['about___en']).toBe('/en/about')
+      expect(domainPaths['about___en___default']).toBeUndefined()
+    })
+
+    it('unprefixes the fallback default locale on a host matching no configured domain', function () {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_and_default',
+        multiDomainLocales: true,
+        locales: [
+          // `en` is served everywhere but is the default for no domain
+          { code: 'en', domains: ['a.example.com', 'b.example.com'] },
+          { code: 'fr', domains: ['a.example.com'], defaultForDomains: ['a.example.com'] }
+        ]
+      })
+
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      // an unmatched host falls back to the configured `defaultLocale`, which has no variant to keep
+      setupMultiDomainLocales('en', 'prefix_and_default', router)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___en']).toBe('/about')
+      expect(domainPaths['about___fr___default']).toBeUndefined()
     })
   })
 
