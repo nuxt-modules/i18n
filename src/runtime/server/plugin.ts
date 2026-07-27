@@ -174,12 +174,11 @@ export default defineNitroPlugin(async (nitro) => {
         }
       }
 
-      try {
+      const payload = stringifyMessages(ctx.messages)
+      if (payload != null) {
         htmlContext.bodyAppend.unshift(
-          `<script type="application/json" data-nuxt-i18n="${appId}">${stringify(ctx.messages)}</script>`,
+          `<script type="application/json" data-nuxt-i18n="${appId}">${payload}</script>`,
         )
-      } catch (_) {
-        console.warn(_)
       }
     }
 
@@ -205,3 +204,29 @@ export default defineNitroPlugin(async (nitro) => {
     nitro.hooks.hook('afterResponse', i18nMiddleware.onAfterResponse)
   }
 })
+
+/**
+ * Serializes the preload payload, dropping only the locales `devalue` cannot carry - a message
+ * function the build missed (#3880) would otherwise cost every locale its payload. Tries the whole
+ * tree first, so the normal case still costs one pass.
+ */
+function stringifyMessages(messages: Record<string, unknown>) {
+  try {
+    return stringify(messages)
+  } catch {
+    const safe: Record<string, unknown> = {}
+    for (const locale of Object.keys(messages)) {
+      try {
+        stringify(messages[locale])
+        safe[locale] = messages[locale]
+      } catch (e) {
+        console.warn(`[nuxt-i18n] Dropped locale "${locale}" from the preload payload`, e)
+      }
+    }
+    try {
+      return stringify(safe)
+    } catch (e) {
+      console.warn('[nuxt-i18n] Could not serialize the preload payload', e)
+    }
+  }
+}

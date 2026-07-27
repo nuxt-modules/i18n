@@ -212,4 +212,63 @@ describe('message source classification', () => {
     expect(analyze(`import en from './en.json'\nexport default { en }`)).toMatchObject({ serializable: true })
     expect(analyze(`export default { a: makeMessage() }`)).toMatchObject({ serializable: true })
   })
+
+  test('follows variable hops, exported or not', () => {
+    expect(analyze(`export const messages = { a: () => 'x' }\nexport default messages`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    expect(analyze(`const a = { x: () => 'y' }\nconst b = a\nexport default b`)).toMatchObject({
+      type: 'static',
+      serializable: false
+    })
+    // a self-referential declaration resolves to nothing rather than looping
+    expect(analyze(`const a = a\nexport default a`)).toMatchObject({ type: 'unknown' })
+  })
+
+  test('reads spread message sources it can resolve', () => {
+    expect(analyze(`const base = { a: () => 'x' }\nexport default { ...base }`)).toMatchObject({
+      serializable: false
+    })
+    expect(analyze(`const nested = { a: () => 'x' }\nexport default { deep: { ...nested } }`)).toMatchObject({
+      serializable: false
+    })
+  })
+
+  test('reads returned variables and branch expressions', () => {
+    expect(analyze(`export default defineI18nLocale(() => {
+      const messages = { a: () => 'x' }
+      return messages
+    })`)).toMatchObject({ type: 'dynamic', serializable: false })
+    expect(analyze(`export default defineI18nLocale(c => { return c ? { a: () => 'x' } : { b: 'y' } })`)).toMatchObject({
+      serializable: false
+    })
+    expect(analyze(`export default defineI18nLocale(async () => { return await { a: () => 'x' } })`)).toMatchObject({
+      serializable: false
+    })
+    // the loader function reached through a variable is still a loader
+    expect(analyze(`const loader = () => ({ a: 'x' })\nexport default defineI18nLocale(loader)`)).toMatchObject({
+      type: 'dynamic',
+      serializable: true
+    })
+  })
+
+  test('(#3961) a computed key is not a readable resource', () => {
+    // the bundler's resource transform cannot parse one either, so it must stay a module
+    expect(analyze(`const S = { HP: 'hp' }\nexport default { stats: { [S.HP]: 'HP' } }`)).toMatchObject({
+      type: 'unknown',
+      serializable: true
+    })
+    expect(analyze(`export default { [key]: () => 'x' }`)).toMatchObject({ type: 'unknown', serializable: false })
+    expect(analyze(`export default { a: 'x' }`)).toMatchObject({ type: 'static' })
+  })
+
+  test('a shape it cannot read at all is assumed to hold message functions', () => {
+    // being wrong here drops messages silently (#3880), so the locale keeps its loaders instead
+    expect(analyze(`export default Object.freeze({ a: 'x' })`)).toMatchObject({
+      type: 'unknown',
+      serializable: false
+    })
+    expect(analyze(`export { default } from './en'`)).toMatchObject({ type: 'unknown', serializable: false })
+  })
 })

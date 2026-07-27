@@ -3,6 +3,7 @@ import { isRef, unref } from 'vue'
 import { useCookie, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
+import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
 import { domainFromLocale } from './shared/domain'
@@ -94,6 +95,11 @@ function useI18nCookie({ cookieCrossOrigin, cookieDomain, cookieSecure, cookieKe
 
 type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'mergeLocaleMessage'>
 
+export const isPrerenderable = createPrerenderablePredicate({
+  dynamic: __I18N_DYNAMIC_LOCALES__,
+  unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
+})
+
 /**
  * Returns a function installing loaded messages into `i18n` by reference, with any messages the
  * vue-i18n config already put there filled in underneath. Installed trees may be shared with the
@@ -105,7 +111,7 @@ type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'me
  * @internal exported for testing
  */
 export function createMessageInstaller(i18n: MessageStore) {
-  const byRef = new Set<string>()
+  const byRef = new Map<string, object>()
   const merge = i18n.mergeLocaleMessage.bind(i18n) as (locale: string, message: object) => void
   const set = i18n.setLocaleMessage.bind(i18n) as (locale: string, message: object) => void
 
@@ -123,6 +129,9 @@ export function createMessageInstaller(i18n: MessageStore) {
   }) as typeof i18n.setLocaleMessage
 
   return (locale: string, message: object) => {
+    // an endpoint response carries the locale's fallbacks, so a shared fallback arrives once per
+    // locale that falls back to it - reinstalling it would deep copy the tree both ways
+    if (byRef.get(locale) === message) { return }
     // a second install has no small tree left to fill from - the first one is already in place
     if (byRef.has(locale)) {
       i18n.mergeLocaleMessage(locale, message)
@@ -131,11 +140,11 @@ export function createMessageInstaller(i18n: MessageStore) {
     // whatever is present before anything is loaded comes from the vue-i18n config, and filling it
     // in underneath keeps the loaded tree shared instead of deep copying it into the config's
     set(locale, fillMissing(message, i18n.getLocaleMessage(locale)))
-    byRef.add(locale)
+    byRef.set(locale, message)
   }
 }
 
-export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string): NuxtI18nContext {
+export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string, flatJson = false): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
   const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
@@ -166,13 +175,25 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   // there is no endpoint to read from without a server, and a statically hosted build only ends
   // up with the messages that were prerendered - both need the loaders. Anything the build can
   // resolve to serializable content is served from the endpoint instead, decided per locale.
-  const buildUsesRuntimeLoaders = (locale: string) =>
-    !__IS_SSR__
-    || __I18N_UNSERIALIZABLE_LOCALES__.includes(locale)
-    || (__I18N_DYNAMIC_LOCALES__.includes(locale) && (import.meta.prerender || __IS_SSG__))
+  const buildUsesRuntimeLoaders = createRuntimeLoaderPredicate({
+    ssr: __IS_SSR__,
+    ssg: __IS_SSG__,
+    prerender: !!import.meta.prerender,
+    dynamic: __I18N_DYNAMIC_LOCALES__,
+    unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
+  })
+
+  // only prerendered responses reach the CDN, and only prerenderable locales are prerendered - a
+  // dynamic locale in a hybrid build still fetches the live handler, at its own origin. SSR stays
+  // relative either way so it does not round-trip through the CDN.
+  const cdnPrefix = (locale: string) =>
+    import.meta.client && __I18N_CDN__ && isPrerenderable(locale) ? (nuxt.$config.app.cdnURL || '') : ''
 
   const loadMessagesFromLoaders = async (locale: string) => {
-    const msg = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+    const loaded = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
+    // vue-i18n rewrites flat keys in place, on the tree it is handed - which shares subtrees with
+    // the message cache, so it can't be the one that gets rewritten (mirrors `server/context.ts`)
+    const msg = flatJson ? cloneDeep(loaded) : loaded
     // dev always loads from loaders - warn when production would deliver this locale as JSON instead
     if (import.meta.dev && !buildUsesRuntimeLoaders(locale)) {
       warnMissedMessageFunctions(locale, msg)
@@ -200,10 +221,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     }
 
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
-    // Client fetches from `app.cdnURL` when messages are prerendered as static assets;
-    // SSR uses a relative URL so it doesn't round-trip through the CDN.
-    const prefix = import.meta.client && __I18N_CDN__ ? (nuxt.$config.app.cdnURL || '') : ''
-    const url = joinURL(prefix, __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
+    const url = joinURL(cdnPrefix(locale), __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
     const messages = await $fetch<LocaleMessages<DefineLocaleMessage>>(url, { headers })
     for (const k of deliverable(messages)) {
       i18n.mergeLocaleMessage(k, messages[k])

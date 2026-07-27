@@ -100,8 +100,14 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     if (localePathsByType.json5.length > 0) {
       nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
     }
-
+    // the prerender pass builds its own nitro from this config, so it has to be set here
     nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
+  })
+
+  // ...but the preset is applied after `nitro:config`, so anything derived from `staticDeploy` was
+  // snapshotted above from the user's own config - correct it once nitro knows
+  nuxt.hook('nitro:init', (nitro) => {
+    Object.assign(nitro.options.replace, getDefineConfig(ctx, true))
   })
 }
 

@@ -87,7 +87,7 @@ export function generateTemplateNuxtI18nOptions(
     // static locales are served by the endpoint in both graphs, including while prerendering
     if (!ctx.dynamicLocales.includes(locale)) { return stub }
     // a static host has no endpoint left to fetch from, so there the client keeps its chunks too
-    return nuxt.options.nitro.static ? load : `import.meta.client ? ${stub} : ${load}`
+    return ctx.staticDeploy ? load : `import.meta.client ? ${stub} : ${load}`
   }
 
   const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}

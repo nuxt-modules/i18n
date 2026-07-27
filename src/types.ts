@@ -169,7 +169,10 @@ export interface ExperimentalFeatures {
   /**
    * Locale messages cache lifetime in seconds
    * - `-1` cache disabled
-   * @default -1 // disabled, or `86400` (1 day) if all locale files are static files
+   *
+   * Only decides whether the caching mechanism exists - each site is still guarded per loader
+   * (`cache`) or per locale, so a project with no cacheable file has no use for it.
+   * @default -1 // disabled, or `86400` (1 day) if any locale file is cacheable
    */
   cacheLifetime?: number
   /**

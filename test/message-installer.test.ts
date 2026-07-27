@@ -107,6 +107,20 @@ describe('createMessageInstaller', () => {
     expect(cached.list).toEqual(['a', 'b'])
   })
 
+  test('installing the same tree again is a no-op', () => {
+    // an endpoint response carries the locale's fallbacks, so a shared fallback arrives once per
+    // locale that falls back to it - copying it each time is what `fillMissing` exists to avoid
+    const i18n = createFakeComposer()
+    const install = createMessageInstaller(i18n)
+    const cached = cachedTree()
+
+    install('en', cached)
+    install('en', cached)
+    install('en', cached)
+
+    expect(i18n.store.en).toBe(cached)
+  })
+
   test('only copies once per install', () => {
     const i18n = createFakeComposer()
     const install = createMessageInstaller(i18n)

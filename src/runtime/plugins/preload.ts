@@ -31,7 +31,9 @@ export default defineNuxtPlugin({
         const msg = unref(ctx.vueI18n.global.messages) as LocaleMessages<DefineLocaleMessage>
         serverI18n.messages ??= {}
         for (const k in msg) {
-          serverI18n.messages[k] = msg[k]!
+          // the client loads these from their own chunk and discards the payload copy, which
+          // `devalue` could not carry anyway - one message function fails the whole payload
+          serverI18n.messages[k] = __I18N_UNSERIALIZABLE_LOCALES__.includes(k) ? {} : msg[k]!
         }
       }
     }
