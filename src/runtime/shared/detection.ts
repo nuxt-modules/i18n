@@ -9,7 +9,7 @@ import { isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './do
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
 import { type useI18nDetection, useRuntimeI18n } from '../shared/utils'
-import type { I18nPublicRuntimeConfig, LocaleObject } from '../../types'
+import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '../../types'
 
 import type { H3Event } from 'h3'
 import type { CompatRoute } from '../types'
@@ -42,7 +42,7 @@ export const useDetectors = (event: H3Event | undefined, config: { cookieKey: st
   const runtimeI18n = useRuntimeI18n(nuxtApp)
   // constant for the lifetime of these detectors, a fresh set is created per request
   let host: string | undefined
-  let locales: LocaleObject[] | undefined
+  let locales: NormalizedLocaleObject[] | undefined
   const getHost = () => (host ??= getRequestHost(event))
   const getLocales = () => (locales ??= getDomainLocales(runtimeI18n.domainLocales))
 
