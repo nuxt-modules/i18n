@@ -21,8 +21,9 @@ const fixtures = [
 
 async function stopServer(server: ChildProcess) {
   if (server.exitCode !== null) return
+  const exited = once(server, 'exit')
   server.kill()
-  await once(server, 'exit')
+  await exited
 }
 
 async function buildFixture(fixture: string, env: NodeJS.ProcessEnv = process.env) {
@@ -49,9 +50,13 @@ async function startFixture(fixture: string) {
     },
     stdio: ['ignore', 'inherit', 'inherit']
   })
-  await waitForPort(port, { host, retries: 200, delay: 100 })
-
-  return { server, url: `http://${host}:${port}` }
+  try {
+    await waitForPort(port, { host, retries: 200, delay: 100 })
+    return { server, url: `http://${host}:${port}` }
+  } catch (error) {
+    await stopServer(server)
+    throw error
+  }
 }
 
 describe.each(fixtures)('%s', (_name, fixture, nuxtVersion, nitroVersion) => {
@@ -99,9 +104,10 @@ test(
     const fixture = fixtures[1][1]
     await buildFixture(fixture, { ...process.env, I18N_PRELOAD: 'false' })
     const { server, url } = await startFixture(fixture)
-    const browser = await chromium.launch()
+    let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined
 
     try {
+      browser = await chromium.launch()
       const page = await browser.newPage({ locale: 'en' })
       await page.goto(url, { waitUntil: 'networkidle' })
       await expect.poll(() => page.locator('#message').textContent()).toContain('Hello')
@@ -109,8 +115,11 @@ test(
       await page.locator('#switch-fr').click()
       await expect.poll(() => page.locator('#message').textContent()).toContain('Bonjour')
     } finally {
-      await browser.close()
-      await stopServer(server)
+      try {
+        await browser?.close()
+      } finally {
+        await stopServer(server)
+      }
     }
   },
   120_000,
