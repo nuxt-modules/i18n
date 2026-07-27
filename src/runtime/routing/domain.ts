@@ -6,13 +6,17 @@ import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routin
 import { isLocaleOnHost } from '../shared/domain'
 
 /**
- * Rebuilds the route table for the current domain: drops routes for locales that aren't
- * served on this host so they 404 instead of silently rendering under the wrong locale and
- * URL. Under `prefix_except_default`/`prefix_and_default` it also removes the generated
- * `___default` variants and unprefixes the routes of the domain's default locale, since only
- * those two strategies have an unprefixed default locale that needs adjusting per domain.
- * `no_prefix` is skipped entirely: it only supports one locale per domain, so there's nothing
- * to remove. Used by both `differentDomains` and `multiDomainLocales`.
+ * Rebuilds the route table for the current domain. Under `prefix_except_default`/
+ * `prefix_and_default` it removes the generated `___default` variants and unprefixes the
+ * routes of the domain's default locale, since only those two strategies have an unprefixed
+ * default locale that needs adjusting per domain. `no_prefix` is skipped entirely: it only
+ * supports one locale per domain, so there's nothing to remove. Used by both
+ * `differentDomains` and `multiDomainLocales`.
+ *
+ * For `multiDomainLocales` specifically, it also drops routes for locales that aren't served
+ * on this host so they 404 instead of silently rendering under the wrong locale and URL.
+ * `differentDomains` intentionally keeps every locale's routes so `switchLocalePath` can still
+ * resolve links across domains.
  */
 export function setupMultiDomainLocales(
   defaultLocale: string,
@@ -20,6 +24,7 @@ export function setupMultiDomainLocales(
   router: Router = useRouter(),
   locales: LocaleObject[] = normalizedLocales,
   host?: string,
+  multiDomainLocales = false,
 ) {
   if (strategy === 'no_prefix') { return }
   const usesDefaultVariants = strategy === 'prefix_except_default' || strategy === 'prefix_and_default'
@@ -27,7 +32,7 @@ export function setupMultiDomainLocales(
   // only restrict routes to the host's own locales when the host is itself one of the
   // recognized domains. An unrecognized host, just falls back to serving every locale,
   // as if nothing were restricted
-  const configuredHost = host && locales.some(l => isLocaleOnHost(l, host)) ? host : undefined
+  const configuredHost = multiDomainLocales && host && locales.some(l => isLocaleOnHost(l, host)) ? host : undefined
   const localesByCode = configuredHost && new Map(locales.map(l => [l.code, l]))
   const prefixPatterns = new Map<string, RegExp>()
 

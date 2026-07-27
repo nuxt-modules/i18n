@@ -267,6 +267,32 @@ describe('localizeRoutes', function () {
       expect(domainPaths['about___nl___default']).toBeUndefined()
       expect(domainPaths['about___en']).toBe('/en/about')
     })
+
+    it('keeps every locale route even when a recognized host is passed, unlike multiDomainLocales', function () {
+      const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
+      const locales = [
+        { code: 'en', domain: 'en.example.com' },
+        { code: 'ja', domain: 'ja.example.com' }
+      ]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        differentDomains: true,
+        locales
+      })
+
+      // `switchLocalePath` needs the other domain's route to still resolve locally so it
+      // can build a cross-domain link, so it must survive setupMultiDomainLocales here even
+      // though a recognized host is passed and even if `multiDomainLocales` were mistakenly
+      // passed as `true` for a `differentDomains` setup
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      setupMultiDomainLocales('en', 'prefix_except_default', router, locales, 'en.example.com', false)
+      const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
+      expect(domainPaths['about___en']).toBe('/about')
+      expect(domainPaths['about___ja']).toBe('/ja/about')
+    })
   })
 
   describe('strategy: "prefix_except_default" + multiDomainLocales with restricted locale subsets', function () {
@@ -291,7 +317,7 @@ describe('localizeRoutes', function () {
 
     it('removes routes for locales not served on the current (recognized) host', function () {
       const router = buildRouter()
-      setupMultiDomainLocales('fr', 'prefix_except_default', router, locales, 'a.example.com')
+      setupMultiDomainLocales('fr', 'prefix_except_default', router, locales, 'a.example.com', true)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___fr']).toBe('/about')
       expect(domainPaths['about___en']).toBe('/en/about')
@@ -300,7 +326,7 @@ describe('localizeRoutes', function () {
 
     it('keeps a locale with no domain restriction on every host', function () {
       const router = buildRouter()
-      setupMultiDomainLocales('es', 'prefix_except_default', router, locales, 'b.example.com')
+      setupMultiDomainLocales('es', 'prefix_except_default', router, locales, 'b.example.com', true)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___es']).toBe('/about')
       expect(domainPaths['about___en']).toBe('/en/about')
@@ -309,7 +335,7 @@ describe('localizeRoutes', function () {
 
     it('falls back to serving every locale when the host is not a recognized domain', function () {
       const router = buildRouter()
-      setupMultiDomainLocales('en', 'prefix_except_default', router, locales, 'unknown.example.com')
+      setupMultiDomainLocales('en', 'prefix_except_default', router, locales, 'unknown.example.com', true)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___en']).toBe('/about')
       expect(domainPaths['about___fr']).toBe('/fr/about')
@@ -318,7 +344,7 @@ describe('localizeRoutes', function () {
 
     it('serves every locale when no host is given', function () {
       const router = buildRouter()
-      setupMultiDomainLocales('en', 'prefix_except_default', router, locales)
+      setupMultiDomainLocales('en', 'prefix_except_default', router, locales, undefined, true)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___en']).toBe('/about')
       expect(domainPaths['about___fr']).toBe('/fr/about')
@@ -347,7 +373,7 @@ describe('localizeRoutes', function () {
 
     it('removes routes for locales not served on the current host, every locale stays prefixed', function () {
       const router = buildRouter()
-      setupMultiDomainLocales('en', 'prefix', router, locales, 'a.example.com')
+      setupMultiDomainLocales('en', 'prefix', router, locales, 'a.example.com', true)
       const domainPaths = Object.fromEntries(router.getRoutes().map(x => [x.name, x.path]))
       expect(domainPaths['about___en']).toBe('/en/about')
       expect(domainPaths['about___fr']).toBe('/fr/about')
