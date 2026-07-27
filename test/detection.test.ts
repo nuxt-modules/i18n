@@ -16,7 +16,12 @@ const createDetectors = () => ({
   navigator: (): string | undefined => undefined,
   host: (): string | undefined => undefined,
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
+  onHost: (locale: string | null | undefined) => locale,
 })
+
+/** Mirrors `useDetectors().onHost`, which passes a locale through only when the host serves it */
+const servedExcept = (restricted: string) => (locale: string | null | undefined) =>
+  locale === restricted ? undefined : locale
 
 const detection = (overrides: Partial<LocaleDetectorConfig['detection']> = {}) =>
   ({ enabled: true, cookieKey: 'i18n_redirected', ...overrides }) as LocaleDetectorConfig['detection']
@@ -88,6 +93,29 @@ describe('createLocaleDetector', () => {
     const detect = createDetector({ domains: true, detection: detection({ fallbackLocale: 'en' }) })
     expect(detect(detectors({ host: () => 'fr' }), '/', true)).toBe('fr')
     expect(detect(detectors({ cookie: () => 'en', host: () => 'fr' }), '/', true)).toBe('en')
+  })
+
+  test('domains: a browser locale the host does not serve falls through to the host locale', () => {
+    const detect = createDetector({ domains: true })
+    const onHost = servedExcept('en')
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
+    expect(detect(detectors({ header: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
+    expect(detect(detectors({ navigator: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
+  })
+
+  test('domains: a `fallbackLocale` the host does not serve is not adopted', () => {
+    const detect = createDetector({ domains: true, detection: detection({ fallbackLocale: 'en' }) })
+    expect(detect(detectors({ host: () => undefined, onHost: servedExcept('en') }), '/', true)).toBe('')
+  })
+
+  test('browser locales are unrestricted without domain routing', () => {
+    const detect = createDetector({ domains: false })
+    expect(detect(detectors({ cookie: () => 'fr', onHost: () => undefined }), '/', true)).toBe('fr')
+  })
+
+  test('domains: the restriction does not apply to the route locale', () => {
+    const detect = createDetector({ domains: true, detection: detection({ redirectOn: 'all' }) })
+    expect(detect(detectors({ host: () => undefined, onHost: servedExcept('fr') }), '/fr/about', true)).toBe('fr')
   })
 
   test('(#2158) the route locale is not overridden by `fallbackLocale`', () => {

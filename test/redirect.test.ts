@@ -17,6 +17,7 @@ const detectors = () => ({
   navigator: (): string | undefined => undefined,
   host: (): string | undefined => undefined,
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
+  onHost: (locale: string | null | undefined) => locale,
 })
 
 // mirrors the `matchLocalized` contract for paths that match a route
@@ -162,5 +163,26 @@ describe('createRedirectResolver', () => {
   test('resolves the locale from the route prefix', () => {
     const resolve = createResolver({ strategy: 'prefix_except_default' })
     expect(resolve('/fr/about', '/about', 'fr', 'en', createDetectors()).locale).toBe('fr')
+  })
+
+  describe('domains', () => {
+    const resolveDomain = () =>
+      createResolver({
+        strategy: 'prefix_except_default',
+        domains: true,
+        detection: detection({ enabled: true, redirectOn: 'root' }),
+      })
+
+    test('a cookie locale the host does not serve resolves to the host default without redirecting', () => {
+      const resolve = resolveDomain()
+      const offHost = createDetectors({ cookie: () => 'fr', host: () => 'en', onHost: l => (l === 'fr' ? undefined : l) })
+      expect(resolve('/', '/', undefined, 'en', offHost)).toMatchObject({ path: undefined, locale: 'en' })
+    })
+
+    test('a cookie locale the host serves still redirects', () => {
+      const resolve = resolveDomain()
+      const onHost = createDetectors({ cookie: () => 'fr', host: () => 'en' })
+      expect(resolve('/', '/', undefined, 'en', onHost)).toMatchObject({ path: '/fr', locale: 'fr' })
+    })
   })
 })
