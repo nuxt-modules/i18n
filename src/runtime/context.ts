@@ -184,6 +184,9 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     import.meta.client && __I18N_CDN__ && isPrerenderable(locale) ? (nuxt.$config.app.cdnURL || '') : ''
 
   const loadMessagesFromLoaders = async (locale: string) => {
+    // merging `{}` for a `fallbackLocale` that is not a configured locale would create it
+    if (locale in localeLoaders === false) { return }
+
     const loaded = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
     // vue-i18n rewrites flat keys in place on the tree it is handed, which shares subtrees with the
     // message cache (mirrors `server/context.ts`)

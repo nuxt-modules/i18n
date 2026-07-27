@@ -222,6 +222,16 @@ describe('hasMessageFunction', () => {
   test('plain trees pass', () => {
     expect(hasMessageFunction({ a: 'x', n: 1, deep: { b: 'y' }, list: ['z'] })).toBe(false)
   })
+
+  test('a self-referential tree terminates', () => {
+    // this runs while prerendering, where throwing would fail the route instead of warning
+    const cyclic: Record<string, unknown> = { a: 'x' }
+    cyclic.self = cyclic
+    expect(hasMessageFunction(cyclic)).toBe(false)
+
+    cyclic.fn = () => 'y'
+    expect(hasMessageFunction(cyclic)).toBe(true)
+  })
 })
 
 describe('cloneDeep', () => {

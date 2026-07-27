@@ -31,10 +31,13 @@ export function cloneDeep<T>(value: T): T {
 }
 
 /** Whether a message tree holds a function anywhere - JSON delivery drops these silently */
-export function hasMessageFunction(value: unknown): boolean {
+export function hasMessageFunction(value: unknown, seen = new WeakSet<object>()): boolean {
   if (isFunction(value)) { return true }
   if (value == null || typeof value !== 'object') { return false }
-  return Object.values(value).some(hasMessageFunction)
+  // a loader is free to return a tree that references itself, and this runs while prerendering
+  if (seen.has(value)) { return false }
+  seen.add(value)
+  return Object.values(value).some(x => hasMessageFunction(x, seen))
 }
 
 /**
