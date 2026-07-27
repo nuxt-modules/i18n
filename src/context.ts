@@ -38,10 +38,7 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
   rawResourcePaths: Set<string>
   vueI18nConfigPaths: Omit<FileMeta, 'cache'>[]
   localeHashes: Record<string, string>
-  /**
-   * Locales whose messages are not build-time content and can only be produced by running their
-   * loaders. Everything else can be served from the (prerenderable) messages endpoint.
-   */
+  /** Locales whose messages can only be produced by running their loaders */
   dynamicLocales: string[]
   /** Locales the messages endpoint cannot deliver, because JSON would drop message functions */
   unserializableLocales: string[]

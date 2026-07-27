@@ -86,9 +86,8 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
 }
 
 /**
- * Classifies a message source: whether the build can resolve its messages, and whether those
- * messages survive the JSON messages endpoint - message functions do not, and are dropped
- * without a trace (#3880).
+ * Classifies a message source: whether the build can resolve its messages, and whether they survive
+ * the JSON messages endpoint - message functions do not, and are dropped without a trace (#3880).
  */
 function analyzeResource(path: string, vfs: Record<string, string>) {
   if (!EXECUTABLE_EXT_RE.test(path)) { return { type: 'static' as LocaleType, serializable: true } }

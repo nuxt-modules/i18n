@@ -39,9 +39,9 @@ export function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   /**
    * shared plugins (vite/webpack/rspack)
    */
-  // only fully readable resources - optimization is a no-op for anything else, and since vite 8
-  // matching them makes unplugin-vue-i18n load them raw during dev SSR, skipping the
-  // `defineI18nLocale` transform (#4049) and failing outright on syntax it cannot parse (#3961)
+  // only fully readable resources - since vite 8, matching anything else makes unplugin-vue-i18n
+  // load it raw during dev SSR, skipping the `defineI18nLocale` transform (#4049) and failing
+  // outright on syntax it cannot parse (#3961)
   const localePaths = [...new Set(ctx.localeFileMetas.filter(m => m.type === 'static').map(m => m.path))]
 
   const vueI18nPluginOptions: PluginOptions = {
@@ -91,8 +91,7 @@ export function getDefineConfig(
 ) {
   const { options, rawOptions, dynamicLocales, unserializableLocales, localeFileMetas, localeHashes } = ctx
   // every cache site is guarded per loader (`cache`) or per locale (`isLocaleCacheable`), so this
-  // only decides whether the mechanism exists - a single dynamic locale file used to switch it off
-  // for the whole project, while a project without any cacheable file has no use for it
+  // only decides whether the mechanism exists at all
   const cacheLifetime = options.experimental.cacheLifetime
     ?? (localeFileMetas.some(m => m.cache) ? DEFAULT_CACHE_LIFETIME : -1)
   const isCacheEnabled = cacheLifetime >= 0 && (!nuxt.options.dev || !!options.experimental.devCache)

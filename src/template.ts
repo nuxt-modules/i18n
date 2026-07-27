@@ -75,10 +75,9 @@ export function generateTemplateNuxtI18nOptions(
         '}',
       ].join('\n\n')
 
-  // loaders are only reachable where `usesRuntimeLoaders` (runtime/context.ts) resolves to true,
-  // everywhere else messages come from the endpoint. Stubbing the unreachable ones keeps locale
-  // files out of that graph - `import.meta.client` folds per graph, so the client and SSR halves
-  // of this shared template can differ.
+  // mirrors `createRuntimeLoaderPredicate`, stubbing the loaders it will not reach so the locale
+  // files stay out of that graph - `import.meta.client` folds per graph, so the client and SSR
+  // halves of this shared template can differ
   const stub = '() => Promise.resolve({})'
   const appLoad = (load: string, locale: string) => {
     if (server || nuxt.options.dev || !nuxt.options.ssr) { return load }

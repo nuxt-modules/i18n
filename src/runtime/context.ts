@@ -40,7 +40,6 @@ export interface NuxtI18nContext {
   initial: boolean
   /** Locale messages attached during SSR and loaded during hydration */
   preloaded: boolean
-  /** Whether a locale's messages have to be produced by running its loaders */
   usesRuntimeLoaders: (locale: Locale) => boolean
   rootRedirect: { path: string, code: number } | undefined
   redirectStatusCode: number
@@ -101,10 +100,9 @@ export const isPrerenderable = createPrerenderablePredicate({
 })
 
 /**
- * Returns a function installing loaded messages into `i18n` by reference, with any messages the
- * vue-i18n config already put there filled in underneath. Installed trees may be shared with the
- * message cache, so `mergeLocaleMessage` - which deep copies into its target - gets a private
- * copy first.
+ * Installs loaded messages into `i18n` by reference, with whatever the vue-i18n config already put
+ * there filled in underneath. Installed trees may be shared with the message cache, so
+ * `mergeLocaleMessage` - which deep copies into its target - gets a private copy first.
  *
  * Patches the composer, not the VueI18n facade: legacy `useI18n()` and `<i18n>` blocks reach
  * composer methods directly, and the facade delegates to it at call time.
@@ -172,9 +170,6 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
   }
 
-  // there is no endpoint to read from without a server, and a statically hosted build only ends
-  // up with the messages that were prerendered - both need the loaders. Anything the build can
-  // resolve to serializable content is served from the endpoint instead, decided per locale.
   const buildUsesRuntimeLoaders = createRuntimeLoaderPredicate({
     ssr: __IS_SSR__,
     ssg: __IS_SSG__,
@@ -293,9 +288,8 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         if (!chain.some(x => ctx.usesRuntimeLoaders(x))) {
           return await loadMessagesFromServer(locale)
         }
-        // a static fallback of a dynamic locale has no loaders left to run, so each locale in the
-        // chain is loaded through whichever source holds its messages - a failing fallback should
-        // not keep the rest of the chain from loading
+        // a mixed chain has to take each locale from whichever source holds it, and one failing
+        // fallback should not keep the rest from loading
         for (const k of chain) {
           try {
             await (ctx.usesRuntimeLoaders(k) ? loadMessagesFromLoaders(k) : loadMessagesFromServer(k))

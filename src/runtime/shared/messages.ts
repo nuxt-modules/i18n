@@ -38,9 +38,8 @@ export function hasMessageFunction(value: unknown): boolean {
 }
 
 /**
- * Backstop for the build-time scan, which only sees literal message functions (#3880): warns when
- * a locale it classified as serializable turns out to hold functions after all. Callers gate this
- * to dev/prerender - walking every tree is not a production cost.
+ * Backstop for the build-time scan (#3880): warns when a locale it classified as serializable turns
+ * out to hold functions after all. Callers gate this to dev/prerender, walking every tree is not free.
  */
 export function warnMissedMessageFunctions(locale: string, messages: unknown) {
   // assigned before use: this module is also compiled by nitro, whose `replace` leaves
@@ -56,10 +55,9 @@ const isTree = (value: unknown): value is Record<string, unknown> =>
   value != null && typeof value === 'object' && !Array.isArray(value)
 
 /**
- * Returns a tree where `base` fills the gaps in `over`, sharing every subtree `base` does not
- * reach. Equivalent to merging `over` into a copy of `base`, but the copying is proportional to
- * `base` - which is what makes it worth having over `mergeLocaleMessage`, whose deep copy is
- * proportional to `over`.
+ * Returns a tree where `base` fills the gaps in `over`, sharing every subtree `base` does not reach.
+ * Equivalent to merging `over` into a copy of `base`, but the copying is proportional to `base` -
+ * where `mergeLocaleMessage` deep copies proportional to `over`, which is the whole point.
  */
 export function fillMissing<T>(over: T, base: unknown): T {
   return isTree(over) && isTree(base) ? (fillTree(over, base) as T) : over

@@ -101,8 +101,8 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
       nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
     }
     // the prerender pass builds its own nitro from this config, so this is the only place reaching
-    // it - but it runs before the preset is applied, leaving `staticDeploy` stale here. Server code
-    // reads anything derived from it (`__IS_SSG__`, `__I18N_CDN__`) from the app graph instead.
+    // it - but it runs before the preset is applied, so `staticDeploy` is stale here. Server code
+    // reads what derives from it (`__IS_SSG__`, `__I18N_CDN__`) from the app graph instead.
     nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
   })
 }

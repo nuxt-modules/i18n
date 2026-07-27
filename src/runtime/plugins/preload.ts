@@ -17,8 +17,7 @@ export default defineNuxtPlugin({
     const ctx = useNuxtI18nContext(nuxt)
 
     if (import.meta.server) {
-      // loadMessages dispatches per locale between the endpoint (read directly, no `$fetch`
-      // round-trip) and runtime loaders, and installs shared trees instead of copying
+      // dispatches per locale, reading the endpoint in-process rather than over `$fetch`
       for (const locale of localeCodes) {
         await ctx.loadMessages(locale)
       }
