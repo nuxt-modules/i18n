@@ -49,6 +49,6 @@ describe('`app.baseURL` is set', () => {
   test('(#2911) `useLocaleHead` uses Nuxt `app.baseURL` in meta tags', async () => {
     const { page } = await renderPage('/base-path/en')
 
-    expect(await page.locator('head #i18n-alt-en').getAttribute('href')).toMatch(/\/base-path\/en$/)
+    await expect.poll(() => page.locator('head #i18n-alt-en').getAttribute('href')).toMatch(/\/base-path\/en$/)
   })
 })

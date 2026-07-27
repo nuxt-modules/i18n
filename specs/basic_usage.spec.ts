@@ -43,28 +43,28 @@ describe('basic usage', async () => {
       await expect.poll(() => page.locator('#vue-i18n-usage p').innerText()).toEqual('Welcome')
 
       // URL path localizing with `useLocalePath`
-      expect(await page.locator('#locale-path-usages .name a').getAttribute('href')).toEqual('/')
-      expect(await page.locator('#locale-path-usages .path a').getAttribute('href')).toEqual('/')
-      expect(await page.locator('#locale-path-usages .named-with-locale a').getAttribute('href')).toEqual('/fr')
-      expect(await page.locator('#locale-path-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
-      expect(await page.locator('#locale-path-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
-      expect(await page.locator('#locale-path-usages .object-with-named a').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#locale-path-usages .name a').getAttribute('href')).toEqual('/')
+      await expect.poll(() => page.locator('#locale-path-usages .path a').getAttribute('href')).toEqual('/')
+      await expect.poll(() => page.locator('#locale-path-usages .named-with-locale a').getAttribute('href')).toEqual('/fr')
+      await expect.poll(() => page.locator('#locale-path-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
+      await expect.poll(() => page.locator('#locale-path-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
+      await expect.poll(() => page.locator('#locale-path-usages .object-with-named a').getAttribute('href')).toEqual(
         '/category/nintendo'
       )
 
       // URL path localizing with `NuxtLinkLocale`
-      expect(await page.locator('#nuxt-link-locale-usages .name a').getAttribute('href')).toEqual('/')
-      expect(await page.locator('#nuxt-link-locale-usages .path a').getAttribute('href')).toEqual('/')
-      expect(await page.locator('#nuxt-link-locale-usages .named-with-locale a').getAttribute('href')).toEqual('/fr')
-      expect(await page.locator('#nuxt-link-locale-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
-      expect(await page.locator('#nuxt-link-locale-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
-      expect(await page.locator('#nuxt-link-locale-usages .object-with-named a').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .name a').getAttribute('href')).toEqual('/')
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .path a').getAttribute('href')).toEqual('/')
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .named-with-locale a').getAttribute('href')).toEqual('/fr')
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .nest-path a').getAttribute('href')).toEqual('/user/profile')
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .nest-named a').getAttribute('href')).toEqual('/user/profile')
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .object-with-named a').getAttribute('href')).toEqual(
         '/category/nintendo'
       )
-      expect(await page.locator('#nuxt-link-locale-usages .external-url a').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .external-url a').getAttribute('href')).toEqual(
         'https://nuxt.com/'
       )
-      expect(await page.locator('#nuxt-link-locale-usages .target-blank-with-locale a').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#nuxt-link-locale-usages .target-blank-with-locale a').getAttribute('href')).toEqual(
         '/fr/about'
       )
 
@@ -74,8 +74,8 @@ describe('basic usage', async () => {
       await page.goBackNavigate()
 
       // Language switching path localizing with `useSwitchLocalePath`
-      expect(await page.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual('/')
-      expect(await page.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual('/fr')
+      await expect.poll(() => page.locator('#switch-locale-path-usages .switch-to-en a').getAttribute('href')).toEqual('/')
+      await expect.poll(() => page.locator('#switch-locale-path-usages .switch-to-fr a').getAttribute('href')).toEqual('/fr')
 
       // URL path with Route object with `useLocaleRoute`
       await page.locator('#locale-route-usages button').clickNavigate()
@@ -204,15 +204,15 @@ describe('basic usage', async () => {
       const { page } = await renderPage('/layer-page')
 
       await expect.poll(() => page.locator('#i18n-layer-target').innerText()).toEqual('Hello world!')
-      expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/layer-parent')
-      expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/layer-parent')
+      await expect.poll(() => page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
         '/layer-parent/layer-child'
       )
 
       await gotoPath(page, '/nl/layer-page')
       await expect.poll(() => page.locator('#i18n-layer-target').innerText()).toEqual('Hallo wereld!')
-      expect(await page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/nl/layer-ouder')
-      expect(await page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#i18n-layer-parent-link').getAttribute('href')).toEqual('/nl/layer-ouder')
+      await expect.poll(() => page.locator('#i18n-layer-parent-child-link').getAttribute('href')).toEqual(
         '/nl/layer-ouder/layer-kind'
       )
     })
@@ -279,7 +279,7 @@ describe('basic usage', async () => {
       await expect.poll(() => page.locator('#fallback-key').innerText()).toEqual('This is the fallback message!')
 
       // page path
-      expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
+      await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
         aboutPath: '/nl/about'
       })
 
@@ -290,21 +290,21 @@ describe('basic usage', async () => {
     test('(#2525) localePath should keep hash', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#link-about-hash').getAttribute('href')).toEqual('/about#my-hash')
-      expect(await page.locator('#link-about-hash-object').getAttribute('href')).toEqual('/about#my-hash')
+      await expect.poll(() => page.locator('#link-about-hash').getAttribute('href')).toEqual('/about#my-hash')
+      await expect.poll(() => page.locator('#link-about-hash-object').getAttribute('href')).toEqual('/about#my-hash')
 
-      expect(await page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/about?foo=bar#my-hash')
-      expect(await page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual('/about?foo=bar#my-hash')
+      await expect.poll(() => page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/about?foo=bar#my-hash')
+      await expect.poll(() => page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual('/about?foo=bar#my-hash')
 
       // click `nl` lang switch with `<NuxtLink>`
       await page.locator('#switch-locale-path-usages .switch-to-nl a').clickNavigate()
       await page.waitForURL(url('/nl'))
 
-      expect(await page.locator('#link-about-hash').getAttribute('href')).toEqual('/nl/about#my-hash')
-      expect(await page.locator('#link-about-hash-object').getAttribute('href')).toEqual('/nl/about#my-hash')
+      await expect.poll(() => page.locator('#link-about-hash').getAttribute('href')).toEqual('/nl/about#my-hash')
+      await expect.poll(() => page.locator('#link-about-hash-object').getAttribute('href')).toEqual('/nl/about#my-hash')
 
-      expect(await page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
-      expect(await page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#link-about-query-hash').getAttribute('href')).toEqual('/nl/about?foo=bar#my-hash')
+      await expect.poll(() => page.locator('#link-about-query-hash-object').getAttribute('href')).toEqual(
         '/nl/about?foo=bar#my-hash'
       )
     })
@@ -313,15 +313,15 @@ describe('basic usage', async () => {
       const { page } = await renderPage('/')
       const encodedPath = encodeURI('page with spaces')
 
-      expect(await page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/${encodedPath}`)
-      expect(await page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/${encodedPath}`)
+      await expect.poll(() => page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/${encodedPath}`)
+      await expect.poll(() => page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/${encodedPath}`)
 
       // click `nl` lang switch with `<NuxtLink>`
       await page.locator('#switch-locale-path-usages .switch-to-nl a').clickNavigate()
       await page.waitForURL(url('/nl'))
 
-      expect(await page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
-      expect(await page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
+      await expect.poll(() => page.locator('#link-page-with-spaces').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
+      await expect.poll(() => page.locator('#link-page-with-spaces-encoded').getAttribute('href')).toEqual(`/nl/${encodedPath}`)
     })
 
     test('(#2476) Parametrized messages can be overwritten', async () => {
@@ -591,24 +591,24 @@ describe('basic usage', async () => {
     test('dynamic parameters', async () => {
       const { page } = await renderPage('/products/big-chair')
 
-      expect(await page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
+      await expect.poll(() => page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
 
       await gotoPath(page, '/nl/products/rode-mok')
       await page.waitForFunction(
         () => document.querySelector('#switch-locale-path-link-en')?.getAttribute('href') === '/products/red-mug'
       )
-      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
+      await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
 
       // Translated params are not lost on query changes
       await page.locator('#params-add-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok?test=123&canonical=123'))
-      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
         '/products/red-mug?test=123&canonical=123'
       )
 
       await page.locator('#params-remove-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok'))
-      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
+      await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
 
       // head tags - alt links are updated server side
       const product1Html = await $fetch('/products/big-chair')
@@ -672,21 +672,21 @@ describe('basic usage', async () => {
     test('dynamic parameters render and update reactively client-side', async () => {
       const { page } = await renderPage('/products/big-chair')
 
-      expect(await page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
+      await expect.poll(() => page.locator('#switch-locale-path-link-nl').getAttribute('href')).toEqual('/nl/products/grote-stoel')
 
       await gotoPath(page, '/nl/products/rode-mok')
-      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
+      await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
 
       // Translated params are not lost on query changes
       await page.locator('#params-add-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok?test=123&canonical=123'))
-      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
+      await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual(
         '/products/red-mug?test=123&canonical=123'
       )
 
       await page.locator('#params-remove-query').clickNavigate()
       await page.waitForURL(url('/nl/products/rode-mok'))
-      expect(await page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
+      await expect.poll(() => page.locator('#switch-locale-path-link-en').getAttribute('href')).toEqual('/products/red-mug')
     })
 
     test('(#3790) RegExp missingWarn', async () => {
@@ -735,7 +735,7 @@ describe('basic usage', async () => {
       await page.waitForURL(url('/'))
 
       // page path
-      expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
+      await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
         aboutPath: '/about',
         aboutTranslation: 'About us'
       })

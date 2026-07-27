@@ -60,7 +60,7 @@ describe('strategy: no_prefix', async () => {
     await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     await expect.poll(() => page.getAttribute('#nuxt-locale-link-fr', 'href')).toEqual('/')
 
     // current locale
@@ -84,7 +84,7 @@ describe('strategy: no_prefix', async () => {
     await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     await expect.poll(() => page.getAttribute('#nuxt-locale-link-en', 'href')).toEqual('/')
 
     // current locale

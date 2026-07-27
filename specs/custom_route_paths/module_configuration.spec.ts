@@ -41,7 +41,7 @@ test('can access to custom route path', async () => {
   await page.waitForURL(url('/fr'))
 
   // page path
-  expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
+  await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({
     aboutPath: '/fr/about-fr'
   })
 
@@ -89,7 +89,7 @@ test('can not access to pick route path', async () => {
   await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
-  expect(await page.locator('#link-history').getAttribute('href')).toBe(null)
+  await expect.poll(() => page.locator('#link-history').getAttribute('href')).toBe(null)
 
   // disable direct url access
   let res: Awaited<ReturnType<typeof page.goto>> | (Error & { status: () => number }) | null = null
@@ -110,7 +110,7 @@ test('can not access to disable route path', async () => {
   await page.waitForURL(url('/fr'))
 
   // disable href with <NuxtLink>
-  expect(await page.locator('#link-category').getAttribute('href')).toBe(null)
+  await expect.poll(() => page.locator('#link-category').getAttribute('href')).toBe(null)
 
   // disable direct url access
   let res: Awaited<ReturnType<typeof page.goto>> | (Error & { status: () => number }) | null = null

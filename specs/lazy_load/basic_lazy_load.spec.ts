@@ -91,7 +91,7 @@ describe('basic lazy loading', async () => {
     await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
 
     // current locale
     await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('en')
@@ -112,7 +112,7 @@ describe('basic lazy loading', async () => {
     await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
 
     // current locale
     await expect.poll(() => page.locator('#lang-switcher-current-locale code').innerText()).toEqual('fr')

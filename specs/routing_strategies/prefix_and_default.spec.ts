@@ -32,7 +32,7 @@ describe('strategy: prefix_and_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toMatch('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toMatch('/fr')
 
     // current locale
@@ -52,7 +52,7 @@ describe('strategy: prefix_and_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toMatch('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toMatch('/fr')
 
     // current locale
@@ -72,7 +72,7 @@ describe('strategy: prefix_and_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
 
     // current locale
@@ -109,7 +109,7 @@ describe('strategy: prefix_and_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link a', 'href')).toEqual('/')
 
     // current locale

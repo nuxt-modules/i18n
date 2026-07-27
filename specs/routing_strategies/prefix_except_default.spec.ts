@@ -40,7 +40,7 @@ describe('default strategy: prefix_except_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-fr').innerText()).toEqual('Français')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-fr', 'href')).toEqual('/fr')
 
     // current locale
@@ -60,7 +60,7 @@ describe('default strategy: prefix_except_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-en', 'href')).toEqual('/')
 
     // current locale
@@ -97,7 +97,7 @@ describe('default strategy: prefix_except_default', async () => {
     await expect.poll(() => page.locator('#set-locale-link-en').innerText()).toEqual('English')
 
     // page path
-    expect(JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
+    await expect.poll(async () => JSON.parse(await page.locator('#home-use-async-data').innerText())).toMatchObject({ aboutPath: '/fr/about' })
     await expect.poll(() => page.getAttribute('#lang-switcher-with-nuxt-link .switch-to-en', 'href')).toEqual('/')
 
     // current locale
@@ -205,7 +205,7 @@ describe('default strategy: prefix_except_default', async () => {
       await page.waitForURL(url('/fr'))
 
       // pick href with <NuxtLink>
-      expect(await page.locator('#link-ignore-pick').getAttribute('href')).toBe('/fr/ignore-routes/pick')
+      await expect.poll(() => page.locator('#link-ignore-pick').getAttribute('href')).toBe('/fr/ignore-routes/pick')
     })
 
     test('can not access to disable route path', async () => {
@@ -216,7 +216,7 @@ describe('default strategy: prefix_except_default', async () => {
       await page.waitForURL(url('/fr'))
 
       // disable href with <NuxtLink>
-      expect(await page.locator('#link-ignore-disable').getAttribute('href')).toBe(null)
+      await expect.poll(() => page.locator('#link-ignore-disable').getAttribute('href')).toBe(null)
 
       // disable direct url access
       let res: Response | (Error & { status: () => number }) | null = null
@@ -235,7 +235,7 @@ describe('default strategy: prefix_except_default', async () => {
     test('(#3831) nested index root custom routes', async () => {
       const { page } = await renderPage('/')
 
-      expect(await page.locator('#issue-3831-nested-root').getAttribute('href')).toBe('/my-localized-nested-root-page')
+      await expect.poll(() => page.locator('#issue-3831-nested-root').getAttribute('href')).toBe('/my-localized-nested-root-page')
       await page.locator('#issue-3831-nested-root').clickNavigate()
       await page.waitForURL(url('/my-localized-nested-root-page'))
     })
