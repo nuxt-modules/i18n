@@ -17,6 +17,7 @@ import type {
   NuxtI18nOptions,
 } from './types'
 import type { NuxtConfigLayer } from '@nuxt/schema'
+import type { ConsolaInstance } from 'consola'
 import type { Node, ObjectExpression, Program, Statement } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
 
@@ -373,4 +374,5 @@ export function toArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value]
 }
 
-export const logger = useLogger('nuxt-i18n')
+// annotated so the declaration does not have to name consola through its resolved path (TS2742)
+export const logger: ConsolaInstance = useLogger('nuxt-i18n')
