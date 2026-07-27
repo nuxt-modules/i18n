@@ -25,7 +25,8 @@ const SlpComponent = defineComponent({
       if (__I18N_STRICT_SEO__ && nuxtApp.isHydrating && Object.keys(payload ?? {}).length && !payload?.[props.locale]) {
         return '#'
       }
-      return encodeURI(switchLocalePath(props.locale)) || (__I18N_STRICT_SEO__ && '#') || ''
+      // no encoding here - `switchLocalePath` returns an encoded path and vue escapes the attribute
+      return switchLocalePath(props.locale) || (__I18N_STRICT_SEO__ && '#') || ''
     })
 
     const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)

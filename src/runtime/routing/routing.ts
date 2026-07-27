@@ -88,6 +88,10 @@ export function switchLocalePath(
    * Nuxt route uses a proxy with getters for performance reasons (https://github.com/nuxt/nuxt/pull/21957).
    * Spreading will result in an empty object, so we make a copy of the route by accessing each getter property by name.
    * We skip the `matched` and `redirectedFrom` properties.
+   *
+   * `path` is deliberately omitted: the route matcher ignores it whenever `name` is set, but its
+   * presence makes `router.resolve()` take its path branch, which skips `encodeParams()` and returns
+   * a path with unencoded params (#4079).
    */
   const routeCopy = {
     name,
@@ -99,7 +103,6 @@ export function switchLocalePath(
     fullPath: route.fullPath,
     query: route.query,
     hash: route.hash,
-    path: route.path,
     meta: route.meta,
   }
 
