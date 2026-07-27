@@ -97,5 +97,16 @@ export function withRuntimeDomain<T extends string | LocaleObject>(
   }
   const properties = locale as LocaleObject
   const domain = domainLocales[properties.code]?.domain
-  return domain && domain !== properties.domain ? ({ ...properties, domain } as T) : locale
+  if (!domain || domain === properties.domain) {
+    return locale
+  }
+
+  // the override is a single domain, leaving the build time `domains` in place would keep the
+  // locale matching the host it was configured with as well as the one it was moved to
+  return {
+    ...properties,
+    domain,
+    domains: [domain],
+    ...(properties.defaultForDomains?.length ? { defaultForDomains: [domain] } : {}),
+  } as T
 }
