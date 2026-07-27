@@ -183,16 +183,15 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
   })
 
-  // only prerendered responses reach the CDN, and only prerenderable locales are prerendered - a
-  // dynamic locale in a hybrid build still fetches the live handler, at its own origin. SSR stays
-  // relative either way so it does not round-trip through the CDN.
+  // only prerendered responses reach the CDN - a dynamic locale in a hybrid build still fetches the
+  // live handler, and SSR stays relative either way so it does not round-trip through the CDN
   const cdnPrefix = (locale: string) =>
     import.meta.client && __I18N_CDN__ && isPrerenderable(locale) ? (nuxt.$config.app.cdnURL || '') : ''
 
   const loadMessagesFromLoaders = async (locale: string) => {
     const loaded = await nuxt.runWithContext(() => getLocaleMessagesMergedCached(locale, localeLoaders[locale]))
-    // vue-i18n rewrites flat keys in place, on the tree it is handed - which shares subtrees with
-    // the message cache, so it can't be the one that gets rewritten (mirrors `server/context.ts`)
+    // vue-i18n rewrites flat keys in place on the tree it is handed, which shares subtrees with the
+    // message cache (mirrors `server/context.ts`)
     const msg = flatJson ? cloneDeep(loaded) : loaded
     // dev always loads from loaders - warn when production would deliver this locale as JSON instead
     if (import.meta.dev && !buildUsesRuntimeLoaders(locale)) {

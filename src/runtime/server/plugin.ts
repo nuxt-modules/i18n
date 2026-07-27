@@ -160,8 +160,8 @@ export default defineNitroPlugin(async (nitro) => {
     if (__I18N_PRELOAD__) {
       if (ctx == null || Object.keys(ctx.messages ?? {}).length == 0) { return }
 
-      // only include the messages used in the current page - a prerendered one is served to every
-      // visitor, so it keeps the whole set instead of the first render's keys
+      // only the messages used in the current page - a prerendered one is served to every visitor,
+      // so it keeps the whole set instead of the first render's keys
       if (__I18N_STRIP_UNUSED__ && !import.meta.prerender) {
         const trackedLocales = Object.keys(ctx.trackMap)
         for (const locale of Object.keys(ctx.messages)) {
@@ -207,9 +207,8 @@ export default defineNitroPlugin(async (nitro) => {
 })
 
 /**
- * Serializes the preload payload, dropping only the locales `devalue` cannot carry - a message
- * function the build missed (#3880) would otherwise cost every locale its payload. Tries the whole
- * tree first, so the normal case still costs one pass.
+ * Drops only the locales `devalue` cannot carry - a message function the build missed (#3880) would
+ * otherwise cost every locale its payload. The whole tree is tried first, so it usually costs one pass.
  */
 function stringifyMessages(messages: Record<string, unknown>) {
   try {

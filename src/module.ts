@@ -201,9 +201,6 @@ export default defineNuxtModule<NuxtI18nOptions>({
       // Prerender the hashed messages routes into `.output/public/` so lazy-loaded messages ship
       // as static assets (uploadable to a CDN) instead of being served from the dynamic Nitro route.
       if (resolved.options.experimental.prerenderMessages) {
-        // prerendering a locale the endpoint cannot deliver would shadow its handler with a
-        // build-time snapshot, or bake stripped messages nothing fetches - same rule the runtime
-        // `prerenderRoutes` applies under SSG
         const messagesRoutes = prerenderableLocales(resolved).map(
           locale => `${resolved.options.serverRoutePrefix}/${resolved.localeHashes[locale]}/${locale}/messages.json`,
         )

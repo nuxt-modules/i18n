@@ -47,8 +47,7 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
   unserializableLocales: string[]
   /**
    * Whether the build is deployed without a server. Only accurate once `nitro:init` has run:
-   * `nuxt.options.nitro.static` is the user's own config, which `nuxi generate` sets but a static
-   * preset (`github-pages`, `netlify-static`, ...) does not - nitro resolves that while creating.
+   * `nuxi generate` sets `nuxt.options.nitro.static`, a static preset (`github-pages`, ...) does not.
    */
   staticDeploy: boolean
   loaderOptions: ReturnType<typeof generateLoaderOptions>
@@ -57,7 +56,6 @@ export interface ResolvedI18nContext extends I18nNuxtContext {
 /** A file the build cannot resolve to fixed content - its loader has to run at runtime */
 const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache === false
 
-/** Splits locales by what the messages endpoint can deliver, which decides where each is loaded */
 export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
   return {
     dynamicLocales: localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code),
@@ -65,11 +63,7 @@ export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
   }
 }
 
-/**
- * Locales worth prerendering the messages endpoint for. Shares its rule with the runtime
- * `isPrerenderable` rather than restating it - the two disagreeing means a locale is fetched from
- * a route that was never rendered, or served a build-time snapshot that shadows its loaders.
- */
+/** Shares its rule with the runtime `isPrerenderable` rather than restating it - they must agree */
 export const prerenderableLocales = (ctx: ResolvedI18nContext) =>
   ctx.localeCodes.filter(createPrerenderablePredicate({
     dynamic: ctx.dynamicLocales,
@@ -147,8 +141,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
     unserializableLocales,
     staticDeploy: !!nuxt.options.nitro.static,
   })
-  // corrected once nitro has applied its preset. Registered here, before `extendBundler` and
-  // `setupNitro` register the `nitro:init` hooks that read it - hooks run in registration order
+  // registered before the `nitro:init` hooks that read it - hooks run in registration order
   nuxt.hook('nitro:init', (nitro) => {
     resolved.staticDeploy = !!nitro.options.static
   })

@@ -77,8 +77,8 @@ export function extendBundler(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     addBuildPlugin(TransformI18nFunctionPlugin(pluginOptions))
   }
 
-  // `staticDeploy` is only known once nitro has applied its preset, and the bundlers read their
-  // config after that - registering here would freeze the defines that depend on it
+  // `staticDeploy` is only known once nitro has applied its preset, which is still before the
+  // bundlers read their config - registering now would freeze the defines that depend on it
   nuxt.hook('nitro:init', async () => {
     await addDefinePlugin(getDefineConfig(ctx))
   })

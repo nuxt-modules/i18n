@@ -101,8 +101,8 @@ function analyzeResource(path: string, vfs: Record<string, string>) {
   return {
     type,
     // an unreadable shape is assumed to hold message functions, so the locale keeps its loaders
-    // rather than silently losing them to JSON (#3880) - but a loader whose body cannot be read
-    // stays optimistic, messages it fetches never carried functions to begin with
+    // instead of losing them to JSON (#3880) - a loader body stays optimistic, what it fetches
+    // never carried functions to begin with
     serializable: type === 'unknown' && visible.length === 0
       ? false
       : !visible.some(x => holds(x, scope, isMessageFunction)),
@@ -252,8 +252,8 @@ function visibleMessages(exported: Node | undefined, scope: Scope): ObjectExpres
 }
 
 /**
- * Whether any node in a message tree satisfies `test`, following spreads and variable hops.
- * Values that are not object or array literals are left to `test` - the build cannot see into them.
+ * Whether any node in a message tree satisfies `test`, following spreads and variable hops. Values
+ * that are not object or array literals are left to `test` - the build cannot see into them.
  */
 function holds(node: Node | null | undefined, scope: Scope, test: (node: Node) => boolean, seen = new Set<Node>()): boolean {
   const resolved = deref(node, scope)
@@ -272,10 +272,7 @@ function holds(node: Node | null | undefined, scope: Scope, test: (node: Node) =
   return false
 }
 
-/**
- * Only functions count as unserializable: any other expression still evaluates to a value JSON can
- * carry, and a loader building its messages from runtime values is the ordinary case.
- */
+// only functions are unserializable - any other expression evaluates to a value JSON can carry
 const isMessageFunction = (node: Node) =>
   node.type === 'FunctionExpression' || node.type === 'ArrowFunctionExpression'
 
