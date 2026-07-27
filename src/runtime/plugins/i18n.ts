@@ -81,7 +81,8 @@ export default defineNuxtPlugin({
         composer.strategy = __I18N_STRATEGY__
         composer.localeProperties = computed(() =>
           withRuntimeDomain(
-            normalizedLocales.find(l => l.code === composer.locale.value) || { code: composer.locale.value },
+            normalizedLocales.find(l => l.code === composer.locale.value)
+            || { code: composer.locale.value, domains: [], defaultForDomains: [] },
             runtimeI18n.domainLocales,
           ),
         )

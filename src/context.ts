@@ -8,7 +8,7 @@ import { resolveRawResourcePaths } from './resources'
 import { generateLoaderOptions } from './gen'
 
 import type { Resolver } from '@nuxt/kit'
-import type { FileMeta, LocaleInfo, LocaleObject, NuxtI18nOptions } from './types'
+import type { FileMeta, LocaleInfo, NormalizedLocaleObject, NuxtI18nOptions } from './types'
 import type { Nuxt, NuxtConfigLayer } from '@nuxt/schema'
 
 export interface I18nNuxtContext {
@@ -25,7 +25,7 @@ export interface I18nNuxtContext {
  * Locale-derived context, resolved in `modules:done` once all modules have registered locales.
  */
 export interface ResolvedI18nContext extends I18nNuxtContext {
-  normalizedLocales: LocaleObject<string>[]
+  normalizedLocales: NormalizedLocaleObject<string>[]
   localeCodes: string[]
   localeInfo: LocaleInfo[]
   /** flattened `localeInfo` file metas */

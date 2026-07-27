@@ -6,7 +6,7 @@ import { isLocaleOnHost } from '../shared/domain'
 
 import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
 import type { PrefixableOptions } from '#i18n-kit/routing'
-import type { LocaleObject, Strategies } from '#internal-i18n-types'
+import type { NormalizedLocaleObject, Strategies } from '#internal-i18n-types'
 import type { RouteLike, RouteLikeWithName, RouteLikeWithPath } from './routing'
 import type { I18nRouteMeta, RouteLocationGenericPath } from '../types'
 
@@ -19,7 +19,7 @@ import type { I18nRouteMeta, RouteLocationGenericPath } from '../types'
 export type RoutingContext = {
   router: Router
   getLocale: () => string
-  getLocales: () => LocaleObject[]
+  getLocales: () => NormalizedLocaleObject[]
   getBaseUrl: (locale?: string) => string
   /** Extracts the route base name (without locale suffix) */
   getRouteBaseName: (route: RouteRecordNameGeneric | RouteLocationGenericPath | null) => string | undefined
@@ -43,7 +43,7 @@ export interface RoutingContextOptions {
   router: Router
   defaultLocale: string
   getLocale: () => string
-  getLocales: () => LocaleObject[]
+  getLocales: () => NormalizedLocaleObject[]
   getBaseUrl: (locale?: string) => string
   /** Host of the current request/page, used for domain-based behavior */
   getHost: () => string | undefined
@@ -206,7 +206,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return path
       }
 
-      if (stripsDefaultPrefix && target?.defaultForDomains?.length && getLocaleFromRoutePath(path) === locale) {
+      if (stripsDefaultPrefix && target?.defaultForDomains.length && getLocaleFromRoutePath(path) === locale) {
         path = path.slice(locale.length + 1) || '/'
       }
       return joinURL(options.getBaseUrl(locale), path)

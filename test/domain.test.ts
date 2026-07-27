@@ -10,16 +10,17 @@ import {
 import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
 import { createBaseUrlGetter } from '../src/runtime/context'
 import { normalizeDomainLocale } from '../src/utils'
-import type { LocaleObject } from '../src/types'
+import { getNormalizedLocales } from './pages/utils'
 
-const locales: LocaleObject[] = [
+// the runtime only ever sees build-normalized locales, resolve them the same way here
+const locales = getNormalizedLocales([
   { code: 'en', domain: 'en.example.com' },
   { code: 'fr', domain: 'https://fr.example.com' },
   { code: 'nl', domains: ['shared.example.com'], domainDefault: true },
   { code: 'de', domains: ['shared.example.com'] },
   { code: 'es', domains: ['https://shared2.example.com'], defaultForDomains: ['https://shared2.example.com'] },
   { code: 'it', domains: ['shared2.example.com'] },
-]
+])
 
 describe('normalizeDomain', () => {
   test('strips only a leading protocol, `host:port` is kept intact', () => {
@@ -71,7 +72,7 @@ describe('isLocaleServedOnHost', () => {
   })
 
   test('a locale without domains is served everywhere', () => {
-    expect(isLocaleServedOnHost([...locales, { code: 'pl' }], 'en.example.com', 'pl')).toBe(true)
+    expect(isLocaleServedOnHost([...locales, ...getNormalizedLocales(['pl'])], 'en.example.com', 'pl')).toBe(true)
   })
 
   test('an unconfigured host is not restricted', () => {
@@ -85,11 +86,8 @@ describe('isLocaleServedOnHost', () => {
 })
 
 describe('getDefaultLocaleForDomain', () => {
-  // receives build-normalized locales at runtime (`domainDefault` folded into `defaultForDomains`)
-  const normalized = locales.map(normalizeDomainLocale)
-
   test('matches by host', () => {
-    expect(getDefaultLocaleForDomain('shared.example.com', normalized)).toBe('nl')
+    expect(getDefaultLocaleForDomain('shared.example.com', locales)).toBe('nl')
   })
 
   test('(#4064) ignores protocol in `defaultForDomains`', () => {
@@ -97,10 +95,10 @@ describe('getDefaultLocaleForDomain', () => {
   })
 
   test('(#4064) resolves normalized `domain` + `domainDefault` locales per host', () => {
-    const perDomainDefaults = [
+    const perDomainDefaults = getNormalizedLocales([
       { code: 'cs', domain: 'https://www.example.cz', domainDefault: true },
       { code: 'en', domain: 'https://www.example.com', domainDefault: true },
-    ].map(normalizeDomainLocale)
+    ])
     expect(getDefaultLocaleForDomain('www.example.com', perDomainDefaults)).toBe('en')
     expect(getDefaultLocaleForDomain('www.example.cz', perDomainDefaults)).toBe('cs')
   })
@@ -142,12 +140,15 @@ describe('domainFromLocale', () => {
   test('a locale served on none of the current host resolves to the domain it belongs to', () => {
     expect(domainFromLocale({}, url, 'nl', locales)).toBe('http://shared.example.com')
     // the domain the locale is the default for wins over the rest of its `domains`
-    const multi = [...locales, { code: 'pt', domains: ['a.example.com', 'b.example.com'], defaultForDomains: ['b.example.com'] }]
+    const multi = [
+      ...locales,
+      ...getNormalizedLocales([{ code: 'pt', domains: ['a.example.com', 'b.example.com'], defaultForDomains: ['b.example.com'] }]),
+    ]
     expect(domainFromLocale({}, url, 'pt', multi)).toBe('http://b.example.com')
   })
 
   test('returns undefined for a locale without domains', () => {
-    expect(domainFromLocale({}, url, 'pl', [...locales, { code: 'pl' }])).toBeUndefined()
+    expect(domainFromLocale({}, url, 'pl', [...locales, ...getNormalizedLocales(['pl'])])).toBeUndefined()
   })
 
   test('a host matching no configured domain resolves no domain, so URLs stay relative', () => {
@@ -177,6 +178,26 @@ describe('withRuntimeDomain', () => {
   test('returns the locale as-is without an override', () => {
     expect(withRuntimeDomain(locales[0], {})).toBe(locales[0])
     expect(withRuntimeDomain('en', { en: { domain: 'en.staging.example.com' } })).toBe('en')
+  })
+
+  test('an entry matching a configured domain is not an override, the other domains survive', () => {
+    // `domainLocales` is seeded from the scalar `domain` for every locale, so it is populated
+    // without the user setting anything - see `module.ts`
+    const configured = normalizeDomainLocale({
+      code: 'en',
+      domain: 'en.example.com',
+      domains: ['en.example.com', 'www.example.com'],
+    })
+    expect(withRuntimeDomain(configured, { en: { domain: 'en.example.com' } })).toBe(configured)
+  })
+
+  test('a locale that is not configured has no domains to override', () => {
+    // `composer.localeProperties` falls back to a bare locale when the current one is unknown
+    const unknown = { code: 'en', domains: [], defaultForDomains: [] }
+    expect(withRuntimeDomain(unknown, { en: { domain: 'en.staging.example.com' } })).toMatchObject({
+      domains: ['en.staging.example.com'],
+      defaultForDomains: []
+    })
   })
 })
 
@@ -247,8 +268,11 @@ describe('normalizeDomainLocale', () => {
     expect(normalizeDomainLocale(locale)).toEqual(locale)
   })
 
-  test('does not add fields for locales without domains', () => {
-    expect(normalizeDomainLocale({ code: 'en' })).toEqual({ code: 'en' })
-    expect(normalizeDomainLocale({ code: 'en', domainDefault: true })).toEqual({ code: 'en', domainDefault: true })
+  test('both fields are always resolved, a locale without domains gets the empty form', () => {
+    expect(normalizeDomainLocale({ code: 'en' })).toEqual({ code: 'en', domains: [], defaultForDomains: [] })
+  })
+
+  test('`domainDefault` without a domain has nothing to be the default for', () => {
+    expect(normalizeDomainLocale({ code: 'en', domainDefault: true })).toMatchObject({ defaultForDomains: [] })
   })
 })

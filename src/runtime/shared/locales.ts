@@ -2,7 +2,7 @@ import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n-optio
 import { isArray, isString } from '@intlify/shared'
 import { normalizeDomain } from './domain'
 import type { FallbackLocale } from 'vue-i18n'
-import type { LocaleObject } from '#internal-i18n-types'
+import type { NormalizedLocaleObject } from '#internal-i18n-types'
 
 type LocaleConfig = { cacheable: boolean, fallbacks: string[] }
 export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<string, LocaleConfig> {
@@ -55,8 +55,8 @@ export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: 
 /**
  * The locale configured as the default for `host`, undefined when no locale claims it
  */
-export function getDefaultLocaleForDomain(host: string, locales: LocaleObject[] = normalizedLocales): string | undefined {
-  return locales.find(l => l.defaultForDomains?.some(domain => normalizeDomain(domain) === host))?.code
+export function getDefaultLocaleForDomain(host: string, locales: NormalizedLocaleObject[] = normalizedLocales): string | undefined {
+  return locales.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))?.code
 }
 
 /**
@@ -67,7 +67,7 @@ export function getDefaultLocaleForDomain(host: string, locales: LocaleObject[] 
 export function resolveDefaultLocale(
   host: string,
   defaultLocale: string | undefined,
-  locales: LocaleObject[] = normalizedLocales,
+  locales: NormalizedLocaleObject[] = normalizedLocales,
 ): string {
   return getDefaultLocaleForDomain(host, locales) || defaultLocale || ''
 }

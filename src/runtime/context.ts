@@ -18,7 +18,7 @@ import type {
   BaseUrlResolveHandler,
   DetectBrowserLanguageOptions,
   I18nPublicRuntimeConfig,
-  LocaleObject,
+  NormalizedLocaleObject,
 } from '#internal-i18n-types'
 
 export const useLocaleConfigs = () =>
@@ -52,7 +52,7 @@ export interface NuxtI18nContext {
   /** Set locale - suspend if `skipSettingLocaleOnNavigate` is enabled  */
   setLocaleSuspend: (locale: string) => Promise<void>
   /** Get normalized runtime locales */
-  getLocales: () => LocaleObject[]
+  getLocales: () => NormalizedLocaleObject[]
   /** Set locale to locale cookie */
   setCookieLocale: (locale: string) => void
   /** Get current base URL */
@@ -254,7 +254,11 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         await ctx.vueI18n.__resolvePendingLocalePromise?.()
       }
     },
-    getLocales: () => unref(i18n.locales).map(x => (isString(x) ? { code: x } : (x as LocaleObject<string>))),
+    // string locales carry no domain configuration, they normalize to the empty form
+    getLocales: () =>
+      unref(i18n.locales).map(x =>
+        isString(x) ? { code: x, domains: [], defaultForDomains: [] } : (x as NormalizedLocaleObject<string>),
+      ),
     setCookieLocale: (locale: string) => {
       if (detectConfig.useCookie && isSupportedLocale(locale)) {
         localeCookie.value = locale

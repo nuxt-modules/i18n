@@ -1,11 +1,13 @@
-import type { NuxtI18nOptions, LocaleObject, Strategies } from '../../src/types'
+import type { NuxtI18nOptions, LocaleObject, NormalizedLocaleObject, Strategies } from '../../src/types'
 import type { NuxtPage } from '@nuxt/schema'
 import type { ComputedRouteOptions, LocalizableRoute, RouteOptionsResolver } from '../../src/kit/gen'
 
 import { isString } from '@intlify/shared'
+import { normalizeDomainLocale } from '../../src/utils'
 
-export const getNormalizedLocales = (locales: string[] | LocaleObject[] = []): LocaleObject[] =>
-  locales.map(x => (isString(x) ? { code: x, language: x } : x))
+/** Mirrors how `resolveContext` normalizes configured locales - see `src/context.ts` */
+export const getNormalizedLocales = (locales: string[] | LocaleObject[] = []): NormalizedLocaleObject[] =>
+  locales.map(x => normalizeDomainLocale(isString(x) ? { code: x, language: x } : x))
 
 type MarkRequired<Type, Keys extends keyof Type> = Type extends Type ? Omit<Type, Keys> & Required<Pick<Type, Keys>> : never;
 export function getNuxtOptions(

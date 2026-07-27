@@ -297,11 +297,11 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
 })
 
 describe('switchLocalePath with differentDomains', () => {
-  const DOMAIN_LOCALES = [
+  const DOMAIN_LOCALES = getNormalizedLocales([
     { code: 'en', language: 'en', domain: 'en.example.com', defaultForDomains: ['en.example.com'] },
     { code: 'no', language: 'no', domain: 'en.example.com' },
     { code: 'fr', language: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
-  ]
+  ])
 
   function createDomainContext(opts: {
     strategy: Strategies
@@ -335,7 +335,7 @@ describe('switchLocalePath with differentDomains', () => {
       compactRoutes: false,
       getLocale: () => opts.locale,
       getLocales: () => locales,
-      getBaseUrl: locale => `http://${locales.find(l => l.code === (locale ?? opts.locale))?.domain ?? opts.host}`,
+      getBaseUrl: locale => `http://${locales.find(l => l.code === (locale ?? opts.locale))?.domains[0] ?? opts.host}`,
       getHost: () => opts.host
     })
     return { router, ctx }
@@ -363,10 +363,10 @@ describe('switchLocalePath with differentDomains', () => {
       host: 'en.example.com',
       locale: 'en',
       defaultLocale: 'en',
-      locales: [
+      locales: getNormalizedLocales([
         { code: 'en', language: 'en', domain: 'en.example.com' },
         { code: 'fr', language: 'fr', domain: 'fr.example.com' }
-      ]
+      ])
     })
 
     // no `___default` variants exist to keep, so the host default is unprefixed instead
