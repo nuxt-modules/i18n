@@ -215,10 +215,10 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
         multiDomainLocales: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', iso: 'en-US', domainDefault: true },
           { code: 'ja', iso: 'ja-JP' }
-        ]
+        ])
       })
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
@@ -238,14 +238,14 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
         differentDomains: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'ja', domain: 'ja.example.com' },
           // unnormalized single-domain form
           { code: 'fr', domain: 'fr.example.com', domainDefault: true },
           // multi-domain form
           { code: 'nl', domains: ['nl.example.com'], defaultForDomains: ['nl.example.com'] }
-        ]
+        ])
       })
 
       const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
@@ -281,10 +281,10 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
         differentDomains: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
-        ]
+        ])
       })
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
@@ -308,10 +308,10 @@ describe('localizeRoutes', function () {
         strategy: 'prefix_except_default',
         trailingSlash: true,
         differentDomains: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
-        ]
+        ])
       })
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
@@ -332,10 +332,10 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
         differentDomains: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
-        ]
+        ])
       })
 
       const tree = localizedRoutes.find(r => r.name === 'user___fr___default')
@@ -353,7 +353,7 @@ describe('localizeRoutes', function () {
           ...nuxtOptions,
           strategy: 'no_prefix',
           differentDomains: true,
-          locales: [{ code: 'en', domain: shared }, { code: 'fr', domain: shared }]
+          locales: getNormalizedLocales([{ code: 'en', domain: shared }, { code: 'fr', domain: shared }])
         })
       ).toBe(false)
 
@@ -362,7 +362,7 @@ describe('localizeRoutes', function () {
           ...nuxtOptions,
           strategy: 'no_prefix',
           differentDomains: true,
-          locales: [{ code: 'en', domains: [shared] }, { code: 'fr', domains: [shared] }]
+          locales: getNormalizedLocales([{ code: 'en', domains: [shared] }, { code: 'fr', domains: [shared] }])
         })
       ).toBe(false)
 
@@ -376,7 +376,7 @@ describe('localizeRoutes', function () {
           ...nuxtOptions,
           strategy: 'no_prefix',
           differentDomains: true,
-          locales: [{ code: 'en', domains: ['a.example.com', 'b.example.com'] }, { code: 'fr', domain: 'c.example.com' }]
+          locales: getNormalizedLocales([{ code: 'en', domains: ['a.example.com', 'b.example.com'] }, { code: 'fr', domain: 'c.example.com' }])
         })
       ).toBe(true)
     })
@@ -388,7 +388,7 @@ describe('localizeRoutes', function () {
       defaultLocale: '',
       strategy: 'prefix_except_default',
       differentDomains: true,
-      locales: [{ code: 'en', domainDefault: true }, { code: 'fr', domain: 'fr.example.com', domainDefault: true }]
+      locales: getNormalizedLocales([{ code: 'en', domainDefault: true }, { code: 'fr', domain: 'fr.example.com', domainDefault: true }])
     })
 
     const names = localizedRoutes.map(x => x.name)
@@ -406,10 +406,10 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
         differentDomains: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
-        ]
+        ])
       })
 
       const paths = Object.fromEntries(localizedRoutes.map(x => [x.name, x.path]))
@@ -436,11 +436,11 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
         multiDomainLocales: true,
-        locales: [
+        locales: getNormalizedLocales([
           // `en` is served everywhere but is the default for no domain
           { code: 'en', domains: ['a.example.com', 'b.example.com'] },
           { code: 'fr', domains: ['a.example.com'], defaultForDomains: ['a.example.com'] }
-        ]
+        ])
       })
 
       const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
@@ -528,10 +528,10 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'no_prefix',
         differentDomains: true,
-        locales: [
+        locales: getNormalizedLocales([
           { code: 'en', domain: 'https://example.com' },
           { code: 'ja', domain: 'example.com' }
-        ]
+        ])
       })
 
       // localization is skipped for multiple locales on the same domain

@@ -7,17 +7,18 @@ import { _useLocaleHead, _useSetI18nParams, localeHead, missesClusterFallback } 
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
+import { getNormalizedLocales } from './pages/utils'
 
 import type { Router } from 'vue-router'
 import type { ComposableContext } from '../src/runtime/composable-context'
 import type { I18nHeadMetaInfo } from '../src/runtime/kit/head'
 
-const locales = [
+const locales = getNormalizedLocales([
   { code: 'en', language: 'en' },
   { code: 'fr', language: 'fr' },
   { code: 'ja', language: 'ja-JP' },
   { code: 'nl', language: 'nl-NL' },
-]
+])
 
 const component = {}
 const routes = [
@@ -35,11 +36,9 @@ function createTestContext(initialLocale = 'en', strictSeo = false, domains = fa
   let locale = initialLocale
   const router = createRouter({ history: createMemoryHistory(), routes })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
-  const domainLocales = locales.map(l => ({
-    ...l,
-    domain: `${l.code}.example.com`,
-    defaultForDomains: [`${l.code}.example.com`],
-  }))
+  const domainLocales = getNormalizedLocales(
+    locales.map(l => ({ ...l, domain: `${l.code}.example.com`, defaultForDomains: [`${l.code}.example.com`] })),
+  )
   if (domains) {
     // rebuild the route table for the current host, mirrors the runtime plugin
     setupMultiDomainLocales(initialLocale, 'prefix_except_default', router)

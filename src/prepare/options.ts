@@ -1,6 +1,6 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { logger } from '../utils'
+import { logger, normalizeDomainLocale } from '../utils'
 import { checkLayerOptions } from '../layers'
 import { isString } from '@intlify/shared'
 
@@ -33,7 +33,10 @@ export function prepareOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   if (multiDomainLocales) {
-    const hasDomainLocales = (options.locales || []).some(locale => !isString(locale) && locale.domains?.length)
+    // `domain` normalizes into `domains` and configures the feature just as well
+    const hasDomainLocales = (options.locales || []).some(
+      locale => !isString(locale) && normalizeDomainLocale(locale).domains.length,
+    )
 
     if (!hasDomainLocales) {
       logger.warn(

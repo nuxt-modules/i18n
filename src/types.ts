@@ -558,6 +558,19 @@ export interface LocaleObject<T = Locale> {
 }
 
 /**
+ * A locale passed through `normalizeDomainLocale`: `domains` and `defaultForDomains` are always
+ * set, so domain logic can read them without a fallback. `domainDefault` is fully resolved into
+ * `defaultForDomains` and reading it past normalization means the two can disagree, so the type
+ * takes it away. `domain` is kept: it additionally marks the locale's own domain, which
+ * `domains` cannot express.
+ */
+export type NormalizedLocaleObject<T = Locale> = LocaleObject<T> & {
+  domains: string[]
+  defaultForDomains: string[]
+  domainDefault?: never
+}
+
+/**
  * @public
  * @deprecated Configuring baseUrl as a function is deprecated and will be removed in the v11.
  *
@@ -631,7 +644,7 @@ export interface I18nPublicRuntimeConfig {
   /** Domain locales mapping */
   domainLocales: { [key: Locale]: { domain: string | undefined } }
   /** @internal Overwritten at build time, used to pass generated options to runtime */
-  locales: NonNullable<Required<NuxtI18nOptions<unknown>>['locales']>
+  locales: string[] | NormalizedLocaleObject[]
   /** @internal Overwritten at build time, used to pass generated options to runtime */
   defaultLocale: Required<NuxtI18nOptions>['defaultLocale']
   /** @internal Overwritten at build time, used to pass generated options to runtime */

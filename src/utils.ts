@@ -7,7 +7,15 @@ import { assign, isArray, isString } from '@intlify/shared'
 import { EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
 
-import type { FileMeta, LocaleFile, LocaleInfo, LocaleObject, LocaleType, NuxtI18nOptions } from './types'
+import type {
+  FileMeta,
+  LocaleFile,
+  LocaleInfo,
+  LocaleObject,
+  LocaleType,
+  NormalizedLocaleObject,
+  NuxtI18nOptions,
+} from './types'
 import type { NuxtConfigLayer } from '@nuxt/schema'
 import type { IdentifierName, Program, VariableDeclarator } from 'oxc-parser'
 import type { I18nNuxtContext } from './context'
@@ -38,19 +46,17 @@ export function validateLocaleCodes(codes: string[]) {
 }
 
 /**
- * Normalizes the single-domain fields (`domain`/`domainDefault`) into their multi-domain forms
- * (`domains`/`defaultForDomains`) so runtime domain resolution only handles one shape,
- * the scalar fields are kept as-is for compatibility.
+ * Resolves the single-domain fields (`domain`/`domainDefault`) into their multi-domain forms
+ * (`domains`/`defaultForDomains`) so domain logic only handles one shape. Both are always set,
+ * which is what {@link NormalizedLocaleObject} narrows for. The scalar fields stay on the value
+ * for user code reading `locales`.
  */
-export function normalizeDomainLocale(locale: LocaleObject): LocaleObject {
-  const normalized = assign({}, locale)
-  if (locale.domain && !locale.domains) {
-    normalized.domains = [locale.domain]
-  }
-  if (locale.domainDefault && normalized.domains && !locale.defaultForDomains) {
-    normalized.defaultForDomains = normalized.domains
-  }
-  return normalized
+export function normalizeDomainLocale<T extends string>(locale: LocaleObject<T>): NormalizedLocaleObject<T> {
+  const domains = locale.domains?.length ? locale.domains : locale.domain ? [locale.domain] : []
+  return assign({}, locale, {
+    domains,
+    defaultForDomains: locale.defaultForDomains ?? (locale.domainDefault ? domains : []),
+  }) as NormalizedLocaleObject<T>
 }
 
 export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Record<string, string>): LocaleInfo[] {

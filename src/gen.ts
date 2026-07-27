@@ -9,7 +9,7 @@ import type { LocaleObject } from './types'
 import type { ResolvedI18nContext } from './context'
 
 // copy - generators run repeatedly (template re-emits) and must not alter context locales
-function stripLocaleFiles(locale: LocaleObject) {
+function stripLocaleFiles<T extends LocaleObject>(locale: T): T {
   const stripped = assign({}, locale)
   delete stripped.files
   delete stripped.file
