@@ -53,10 +53,23 @@ export function isLocaleWithFallbacksCacheable(locale: string, fallbackLocales: 
 }
 
 /**
- * Returns default locale for the current domain, returns `defaultLocale` by default
+ * The locale configured as the default for `host`, undefined when no locale claims it
  */
 export function getDefaultLocaleForDomain(host: string, locales: LocaleObject[] = normalizedLocales): string | undefined {
   return locales.find(l => l.defaultForDomains?.some(domain => normalizeDomain(domain) === host))?.code
+}
+
+/**
+ * The unprefixed locale for `host`: the locale that domain is the default for, falling back to the
+ * configured `defaultLocale` where the host claims none. Route generation, the routing context and
+ * the server all have to agree on this, so they resolve it here rather than each deriving it.
+ */
+export function resolveDefaultLocale(
+  host: string,
+  defaultLocale: string | undefined,
+  locales: LocaleObject[] = normalizedLocales,
+): string {
+  return getDefaultLocaleForDomain(host, locales) || defaultLocale || ''
 }
 
 export const isSupportedLocale = (locale?: string): boolean => localeCodes.includes(locale || '')
