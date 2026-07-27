@@ -5,15 +5,10 @@ import { describe, expect, test } from 'vitest'
 
 import { setup, useTestContext } from '../utils'
 
+// its own fixture: this build prerenders, and sharing a rootDir with the specs that run alongside
+// it made the build directory race on windows
 await setup({
-  rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
-  nuxtConfig: {
-    i18n: {
-      experimental: { prerenderMessages: true },
-      // `de` holds message functions, the fixture's `en-GB` runs `defineI18nLocale` loaders
-      locales: [{ code: 'de', language: 'de-DE', file: 'lazy-locale-de.ts', name: 'Deutsch' }]
-    }
-  }
+  rootDir: fileURLToPath(new URL(`../fixtures/prerender_messages`, import.meta.url))
 })
 
 describe('experimental.prerenderMessages', () => {
@@ -22,8 +17,8 @@ describe('experimental.prerenderMessages', () => {
     // `_i18n/<hash>/<locale>/messages.json`
     const prerendered = readdirSync(messagesDir).flatMap(hash => readdirSync(join(messagesDir, hash)))
 
-    // `en-GB` and `nl` run loaders (`nl` even returns `new Date()`) so a baked file would freeze
-    // them, and `de` would lose its message functions - all three keep using their loaders
-    expect(prerendered.sort()).toEqual(['en', 'fr'])
+    // `dyn` runs a loader so a baked file would freeze it, and `fn` would lose its message
+    // function - both keep loading through their loaders instead
+    expect(prerendered.sort()).toEqual(['en'])
   })
 })
