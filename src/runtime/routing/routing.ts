@@ -63,9 +63,13 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
  * `path` as a fresh location string, so a literal '#' or '?' left over from decoding is
  * read as an actual fragment/query delimiter instead of path text, silently truncating
  * the path — `query`/`hash` are unaffected, populated separately and not re-parsed.
- * Only `path` (and the `fullPath` built from it) needs the fix; re-escape both.
+ * Only `path` (and the `fullPath`/`href` strings built from it) need the fix; re-escape
+ * both characters and recompute `href` the same way vue-router derives it from `fullPath`.
  */
-function sanitizeResolvedPath<T extends { path: string, fullPath: string }>(resolved: T): T {
+function sanitizeResolvedPath<T extends { path: string, fullPath: string, href?: string }>(
+  ctx: RoutingContext,
+  resolved: T,
+): T {
   if (!/[#?]/.test(resolved.path)) {
     return resolved
   }
@@ -73,6 +77,9 @@ function sanitizeResolvedPath<T extends { path: string, fullPath: string }>(reso
   const suffix = resolved.fullPath.slice(resolved.path.length)
   resolved.path = resolved.path.replace(/#/g, '%23').replace(/\?/g, '%3F')
   resolved.fullPath = resolved.path + suffix
+  if (resolved.href !== undefined) {
+    resolved.href = ctx.router.options.history.createHref(resolved.fullPath)
+  }
   return resolved
 }
 
@@ -83,11 +90,11 @@ function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Loca
   const normalized = normalizeRawLocation(route)
   const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale))
   if (resolved.name) {
-    return sanitizeResolvedPath(resolved)
+    return sanitizeResolvedPath(ctx, resolved)
   }
 
   // if unable to resolve route try resolving route based on original input
-  return sanitizeResolvedPath(ctx.router.resolve(route))
+  return sanitizeResolvedPath(ctx, ctx.router.resolve(route))
 }
 
 /**

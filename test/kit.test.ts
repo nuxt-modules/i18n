@@ -168,6 +168,11 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     expect(localePath('/path/as%20a%20test%23one?foo=bar')).toEqual(
       normalizesEncoding ? pp('/path/as a test%23one?foo=bar') : pp('/path/as%20a%20test%23one?foo=bar')
     )
+    // same for an encoded '?' within the path itself, distinct from the real '?foo=bar'
+    // query delimiter that follows it — only the former must stay percent-encoded
+    expect(localePath('/path/as%20a%20test%3Fone?foo=bar')).toEqual(
+      normalizesEncoding ? pp('/path/as a test%3Fone?foo=bar') : pp('/path/as%20a%20test%3Fone?foo=bar')
+    )
 
     // preserve hash
     expect(localePath({ path: '/about', hash: '#foo=bar' })).toEqual(pp('/about#foo=bar'))
@@ -246,6 +251,15 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
 
     // undefined name
     expect(localeRoute('vue-i18n', 'ja')).toBeUndefined()
+
+    // (#4098) href must reflect the same '#'/'?' escaping fix as fullPath/path — true for
+    // every strategy: normalizesEncoding strategies re-escape it after decoding, the others
+    // never decoded it in the first place
+    expect(localeRoute('/blog%23one', 'ja')).toMatchObject({
+      fullPath: pp('/blog%23one', 'ja'),
+      href: pp('/blog%23one', 'ja'),
+      name: rn('pathMatch', 'ja')
+    })
   })
 
   test('switchLocalePath', async () => {
