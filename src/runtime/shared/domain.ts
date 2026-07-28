@@ -56,6 +56,9 @@ export function matchDomainLocale(
     matches.find(l => l.code === pathLocale)?.code
     // fallback to default locale for the domain
     || matches.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))?.code
+    // a host claiming no default still resolves one of its own locales, resolving the
+    // configured `defaultLocale` instead could name a locale served on another domain
+    || matches[0]?.code
   )
 }
 

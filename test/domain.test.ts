@@ -59,6 +59,15 @@ describe('matchDomainLocale', () => {
   test('returns undefined for unknown host', () => {
     expect(matchDomainLocale(locales, 'unknown.example.com', '')).toBeUndefined()
   })
+
+  test('a shared domain claiming no default resolves its first locale', () => {
+    const shared = getNormalizedLocales([
+      { code: 'ja', domains: ['brands.example.com'] },
+      { code: 'ko', domains: ['brands.example.com'] },
+    ])
+    expect(matchDomainLocale(shared, 'brands.example.com', '')).toBe('ja')
+    expect(matchDomainLocale(shared, 'brands.example.com', 'ko')).toBe('ko')
+  })
 })
 
 describe('isLocaleServedOnHost', () => {
