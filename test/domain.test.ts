@@ -167,6 +167,14 @@ describe('domainForHost', () => {
     expect(domainForHost({}, { host: 'fr.example.com', protocol: 'http:' }, locales)).toBe('https://fr.example.com')
   })
 
+  test('matches the scalar `domain` of a locale that also configures `domains`', () => {
+    // `normalizeDomainLocale` only folds `domain` into `domains` when `domains` is empty
+    const both = getNormalizedLocales([
+      { code: 'en', domain: 'en.example.com', domains: ['shared.example.com'], defaultForDomains: ['shared.example.com'] },
+    ])
+    expect(domainForHost({}, { host: 'en.example.com', protocol: 'http:' }, both)).toBe('http://en.example.com')
+  })
+
   test('a host shared by several locales resolves once, the configured protocol wins over order', () => {
     expect(domainForHost({}, { host: 'shared.example.com', protocol: 'http:' }, locales)).toBe(
       'http://shared.example.com'
@@ -178,6 +186,18 @@ describe('domainForHost', () => {
     expect(domainForHost({}, { host: 'shared2.example.com', protocol: 'http:' }, [...locales].reverse())).toBe(
       'https://shared2.example.com'
     )
+  })
+
+  test('two locales configuring the same host with different protocols keep the first', () => {
+    // nothing disambiguates this, the result at least does not depend on which locale is asked
+    const conflicting = getNormalizedLocales([
+      { code: 'en', domains: ['https://shared.example.com'] },
+      { code: 'fr', domains: ['http://shared.example.com'] },
+    ])
+    const url = { host: 'shared.example.com', protocol: 'http:' }
+
+    expect(domainForHost({}, url, conflicting)).toBe('https://shared.example.com')
+    expect(domainForHost({}, url, [...conflicting].reverse())).toBe('http://shared.example.com')
   })
 
   test('a host serving locales but no default resolves to itself, not to `defaultLocale`', () => {

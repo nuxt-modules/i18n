@@ -97,11 +97,15 @@ export function domainForHost(
 ): string | undefined {
   let match: string | undefined
   for (const locale of locales) {
-    const domain = withRuntimeDomain(locale, domainLocales).domains.find(v => normalizeDomain(v) === url.host)
-    // locales sharing a host may not all configure it with a protocol, prefer the one that does
-    // so the origin does not depend on the order the locales are configured in
-    if (domain && (!match || hasProtocol(domain, { strict: true }))) {
-      match = domain
+    const patched = withRuntimeDomain(locale, domainLocales)
+    // a locale configuring both keeps `domain` outside `domains`, `domainFromLocale` reads it too
+    for (const candidate of [patched.domain, ...patched.domains]) {
+      if (!candidate || normalizeDomain(candidate) !== url.host) { continue }
+      // locales sharing a host may not all configure it with a protocol, take the first match but
+      // let one carrying a protocol replace it so `https` is not lost to configuration order
+      if (!match || (!hasProtocol(match, { strict: true }) && hasProtocol(candidate, { strict: true }))) {
+        match = candidate
+      }
     }
   }
 

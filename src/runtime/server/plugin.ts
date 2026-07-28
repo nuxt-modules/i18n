@@ -62,23 +62,17 @@ export default defineNitroPlugin(async (nitro) => {
   }
 
   const createBaseUrlGetter = () => {
-    const baseUrl: string = isFunction(runtimeI18n.baseUrl) ? '' : runtimeI18n.baseUrl || ''
     if (isFunction(runtimeI18n.baseUrl)) {
       import.meta.dev
         && console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
       return (): string => ''
     }
 
-    return (event: H3Event): string => {
-      if (__I18N_DOMAINS__) {
-        // the origin of the current host, resolving it from `defaultLocale` would send a host
-        // that serves no default locale to whichever domain that locale lives on
-        return domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true })) || baseUrl
-      }
-
-      // if baseUrl is not determined by domain then prefer relative URL from server-side
-      return ''
-    }
+    // a redirect stays on the host it was requested on: the configured origin of the current host
+    // under domains, relative otherwise. Resolving it from `defaultLocale` sent a host serving no
+    // default locale to that locale's domain, and `baseUrl` would send staging to production
+    return (event: H3Event): string =>
+      (__I18N_DOMAINS__ && domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }))) || ''
   }
 
   const resolveRedirectPath = createRedirectResolver({
