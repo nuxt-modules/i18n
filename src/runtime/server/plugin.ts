@@ -16,7 +16,7 @@ import { isFunction } from '@intlify/shared'
 import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
-import { domainFromLocale, normalizeDomain } from '../shared/domain'
+import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 import { createRedirectResolver } from './utils/redirect'
 
@@ -62,21 +62,17 @@ export default defineNitroPlugin(async (nitro) => {
   }
 
   const createBaseUrlGetter = () => {
-    const baseUrl: string = isFunction(runtimeI18n.baseUrl) ? '' : runtimeI18n.baseUrl || ''
     if (isFunction(runtimeI18n.baseUrl)) {
       import.meta.dev
         && console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
       return (): string => ''
     }
 
-    return (event: H3Event, defaultLocale: string): string => {
-      if (__I18N_DOMAINS__ && defaultLocale) {
-        return getDomainFromLocale(event, defaultLocale) || baseUrl
-      }
-
-      // if baseUrl is not determined by domain then prefer relative URL from server-side
-      return ''
-    }
+    // a redirect stays on the host it was requested on: the configured origin of the current host
+    // under domains, relative otherwise. Resolving it from `defaultLocale` sent a host serving no
+    // default locale to that locale's domain, and `baseUrl` would send staging to production
+    return (event: H3Event): string =>
+      (__I18N_DOMAINS__ && domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }))) || ''
   }
 
   const resolveRedirectPath = createRedirectResolver({
@@ -145,7 +141,7 @@ export default defineNitroPlugin(async (nitro) => {
         event,
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
         joinURL(
-          relocation?.origin || baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale),
+          relocation?.origin || baseUrlGetter(event),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),

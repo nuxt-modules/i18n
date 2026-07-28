@@ -6,7 +6,7 @@ import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessag
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
-import { domainFromLocale } from './shared/domain'
+import { domainForHost, domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL } from 'ufo'
@@ -70,13 +70,13 @@ export function createBaseUrlGetter(opts: {
   baseUrl: string | (() => string) | undefined
   appBase: string
   domains: boolean
-  defaultLocale: string
+  getDomainForHost: () => string | undefined
   getDomainFromLocale: (locale: string) => string | undefined
 }): (locale?: string) => string {
-  const { baseUrl, appBase, domains, defaultLocale, getDomainFromLocale } = opts
+  const { baseUrl, appBase, domains, getDomainForHost, getDomainFromLocale } = opts
   const base = isFunction(baseUrl)
     ? baseUrl
-    : () => (domains && defaultLocale && getDomainFromLocale(defaultLocale)) || baseUrl || ''
+    : () => (domains && getDomainForHost()) || baseUrl || ''
   return locale => joinURL((locale && getDomainFromLocale(locale)) || base(), appBase)
 }
 
@@ -162,7 +162,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     baseUrl: isFunction(runtimeI18n.baseUrl) ? () => (runtimeI18n.baseUrl as BaseUrlResolveHandler<unknown>)(nuxt) : runtimeI18n.baseUrl,
     appBase: nuxt.$config.app.baseURL,
     domains: __I18N_DOMAINS__,
-    defaultLocale,
+    getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true })),
     getDomainFromLocale,
   })
   const resolvedLocale = useResolvedLocale()

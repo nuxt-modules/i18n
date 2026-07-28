@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  domainForHost,
   domainFromLocale,
   isLocaleOnHost,
   isLocaleServedOnHost,
@@ -157,6 +158,74 @@ describe('domainFromLocale', () => {
   })
 })
 
+describe('domainForHost', () => {
+  test('resolves the current host with the request protocol', () => {
+    expect(domainForHost({}, { host: 'en.example.com', protocol: 'http:' }, locales)).toBe('http://en.example.com')
+  })
+
+  test('keeps the protocol of the configured domain', () => {
+    expect(domainForHost({}, { host: 'fr.example.com', protocol: 'http:' }, locales)).toBe('https://fr.example.com')
+  })
+
+  test('matches the scalar `domain` of a locale that also configures `domains`', () => {
+    // `normalizeDomainLocale` only folds `domain` into `domains` when `domains` is empty
+    const both = getNormalizedLocales([
+      { code: 'en', domain: 'en.example.com', domains: ['shared.example.com'], defaultForDomains: ['shared.example.com'] },
+    ])
+    expect(domainForHost({}, { host: 'en.example.com', protocol: 'http:' }, both)).toBe('http://en.example.com')
+  })
+
+  test('a host shared by several locales resolves once, the configured protocol wins over order', () => {
+    expect(domainForHost({}, { host: 'shared.example.com', protocol: 'http:' }, locales)).toBe(
+      'http://shared.example.com'
+    )
+    // `es` configures it with a protocol, `it` without - the result cannot depend on which comes first
+    expect(domainForHost({}, { host: 'shared2.example.com', protocol: 'http:' }, locales)).toBe(
+      'https://shared2.example.com'
+    )
+    expect(domainForHost({}, { host: 'shared2.example.com', protocol: 'http:' }, [...locales].reverse())).toBe(
+      'https://shared2.example.com'
+    )
+  })
+
+  test('two locales configuring the same host with different protocols keep the first', () => {
+    // nothing disambiguates this, the result at least does not depend on which locale is asked
+    const conflicting = getNormalizedLocales([
+      { code: 'en', domains: ['https://shared.example.com'] },
+      { code: 'fr', domains: ['http://shared.example.com'] },
+    ])
+    const url = { host: 'shared.example.com', protocol: 'http:' }
+
+    expect(domainForHost({}, url, conflicting)).toBe('https://shared.example.com')
+    expect(domainForHost({}, url, [...conflicting].reverse())).toBe('http://shared.example.com')
+  })
+
+  test('a host serving locales but no default resolves to itself, not to `defaultLocale`', () => {
+    const brands = getNormalizedLocales([
+      { code: 'en', domains: ['brand-a.example.com'], defaultForDomains: ['brand-a.example.com'] },
+      { code: 'ja', domains: ['brand-c.example.com'] },
+    ])
+    const url = { host: 'brand-c.example.com', protocol: 'http:' }
+
+    expect(domainForHost({}, url, brands)).toBe('http://brand-c.example.com')
+    // the locale lookup resolves where `en` is served, which is what made the redirect leave the host
+    expect(domainFromLocale({}, url, 'en', brands)).toBe('http://brand-a.example.com')
+  })
+
+  test('a host matching no configured domain resolves no domain, so URLs stay relative', () => {
+    expect(domainForHost({}, { host: 'localhost:3000', protocol: 'http:' }, locales)).toBeUndefined()
+  })
+
+  test('(#3988) resolves a host the locale was moved to by `domainLocales`', () => {
+    const url = { host: 'en.staging.example.com', protocol: 'http:' }
+
+    expect(domainForHost({ en: { domain: 'en.staging.example.com' } }, url, locales)).toBe(
+      'http://en.staging.example.com'
+    )
+    expect(domainForHost({}, url, locales)).toBeUndefined()
+  })
+})
+
 describe('withRuntimeDomain', () => {
   test('(#3988) overrides the locale domain from runtime config', () => {
     expect(withRuntimeDomain(locales[0], { en: { domain: 'en.staging.example.com' } })).toMatchObject({
@@ -208,7 +277,7 @@ describe('createBaseUrlGetter', () => {
       baseUrl: 'http://localhost:3000',
       appBase: '/',
       domains: false,
-      defaultLocale: 'en',
+      getDomainForHost: () => 'http://en.example.com',
       getDomainFromLocale: locale => domains[locale],
       ...overrides
     })
@@ -217,7 +286,7 @@ describe('createBaseUrlGetter', () => {
     expect(getBaseUrl()()).toBe('http://localhost:3000')
   })
 
-  test('domains: resolves the default locale domain', () => {
+  test('domains: resolves the current host domain', () => {
     expect(getBaseUrl({ domains: true })()).toBe('http://en.example.com')
   })
 
@@ -225,9 +294,16 @@ describe('createBaseUrlGetter', () => {
     expect(getBaseUrl({ domains: true })('fr')).toBe('http://fr.example.com')
   })
 
-  test('falls back to the default locale domain, then `baseUrl`', () => {
+  test('falls back to the current host domain, then `baseUrl`', () => {
     expect(getBaseUrl({ domains: true })('nl')).toBe('http://en.example.com')
-    expect(getBaseUrl({ domains: true, getDomainFromLocale: () => undefined })('nl')).toBe('http://localhost:3000')
+    expect(getBaseUrl({ domains: true, getDomainForHost: () => undefined })('nl')).toBe('http://localhost:3000')
+  })
+
+  test('a host serving no default locale keeps its own origin', () => {
+    // resolving the base from `defaultLocale` sent it to that locale's domain instead
+    expect(getBaseUrl({ domains: true, getDomainForHost: () => 'http://shared.example.com' })()).toBe(
+      'http://shared.example.com'
+    )
   })
 
   test('(#3628, #3887) joins `app.baseURL` after the locale domain', () => {
