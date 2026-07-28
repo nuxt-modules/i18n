@@ -8,18 +8,29 @@ import type { DeliveryConfig } from '../src/runtime/shared/delivery'
 import type { ResolvedI18nContext } from '../src/context'
 import type { LocaleObject } from '../src/types'
 
-const LOCALES = { plain: 'en', dynamic: 'dy', unserializable: 'un', both: 'bo' }
+const LOCALES = { plain: 'en', dynamic: 'dy', unserializable: 'un', both: 'bo', appContext: 'ap' }
 
 const delivery = (overrides: Partial<DeliveryConfig> = {}): DeliveryConfig => ({
   ssr: true,
   ssg: false,
   prerender: false,
-  dynamic: [LOCALES.dynamic, LOCALES.both],
-  unserializable: [LOCALES.unserializable, LOCALES.both],
+  dynamic: [LOCALES.dynamic, LOCALES.both, LOCALES.appContext],
+  undeliverable: [LOCALES.unserializable, LOCALES.both, LOCALES.appContext],
   ...overrides
 })
 
 describe('message delivery', () => {
+  test('(#3940) a locale the server cannot produce always runs its loaders', () => {
+    for (const config of [
+      delivery(),
+      delivery({ ssg: true }),
+      delivery({ prerender: true }),
+      delivery({ ssr: false })
+    ]) {
+      expect(createRuntimeLoaderPredicate(config)(LOCALES.appContext)).toBe(true)
+    }
+  })
+
   test('a locale whose messages JSON cannot carry always runs its loaders', () => {
     for (const config of [
       delivery(),
@@ -54,6 +65,7 @@ describe('message delivery', () => {
     expect(deliverable(LOCALES.dynamic)).toBe(false)
     expect(deliverable(LOCALES.unserializable)).toBe(false)
     expect(deliverable(LOCALES.both)).toBe(false)
+    expect(deliverable(LOCALES.appContext)).toBe(false)
   })
 })
 
@@ -62,11 +74,11 @@ const SOURCES: Record<string, string> = {
   [LOCALES.plain]: `export default { a: 'x' }`,
   [LOCALES.dynamic]: `export default defineI18nLocale(() => $fetch('/api'))`,
   [LOCALES.unserializable]: `export default { a: () => 'x' }`,
-  [LOCALES.both]: `export default defineI18nLocale(() => ({ a: () => 'x' }))`
+  [LOCALES.both]: `export default defineI18nLocale(() => ({ a: () => 'x' }))`,
+  [LOCALES.appContext]: `export default defineI18nLocale(() => ({ a: useNuxtApp().$greeting }))`
 }
 
-/** The loaders `src/template.ts` leaves reachable in each graph, per locale */
-function emittedLoaders(build: { dev: boolean, ssr: boolean, staticDeploy: boolean }, server: boolean) {
+function buildContext(staticDeploy = false) {
   const vfs = Object.fromEntries(Object.keys(SOURCES).map(code => [`/i18n/${code}.ts`, SOURCES[code]!]))
   const locales = Object.keys(SOURCES).map(code => ({ code, file: `${code}.ts` })) as LocaleObject[]
   const localeInfo = resolveLocales('/i18n', locales, vfs)
@@ -74,7 +86,7 @@ function emittedLoaders(build: { dev: boolean, ssr: boolean, staticDeploy: boole
   const ctx = {
     options: { experimental: {}, bundle: {}, lazy: true },
     ...resolveDeliveryLocales(localeInfo),
-    staticDeploy: build.staticDeploy,
+    staticDeploy,
     localeCodes: Object.keys(SOURCES),
     localeInfo,
     normalizedLocales: locales,
@@ -84,6 +96,12 @@ function emittedLoaders(build: { dev: boolean, ssr: boolean, staticDeploy: boole
   } as unknown as ResolvedI18nContext
   ctx.loaderOptions = generateLoaderOptions(ctx)
 
+  return ctx
+}
+
+/** The loaders `src/template.ts` leaves reachable in each graph, per locale */
+function emittedLoaders(build: { dev: boolean, ssr: boolean, staticDeploy: boolean }, server: boolean) {
+  const ctx = buildContext(build.staticDeploy)
   const nuxt = { options: { dev: build.dev, ssr: build.ssr, nitro: {} } }
   const generated = generateTemplateNuxtI18nOptions(ctx, server, nuxt as never)
   const loaders = /export const localeLoaders = ([\s\S]*?)\nexport const/.exec(generated)?.[1] ?? ''
@@ -130,5 +148,15 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
       const serverUsesLoaders = build.dev || createRuntimeLoaderPredicate(config)(locale)
       expect({ locale, reachable: app[locale]!.present || !serverUsesLoaders }).toEqual({ locale, reachable: true })
     }
+  })
+
+  test('(#3940) the nitro graph neither imports nor runs a locale file that needs the Nuxt app', () => {
+    const { localeLoaders, importStatements } = buildContext().loaderOptions
+    const loaders = localeLoaders[LOCALES.appContext]!
+
+    expect(loaders.map(x => x.loadServer)).toEqual(['() => Promise.resolve({})'])
+    // the file is left out of the bundle entirely, its app-only imports would come with it
+    expect(importStatements.join('\n')).not.toContain(loaders[0]!.virtualId)
+    expect(importStatements.join('\n')).toContain(localeLoaders[LOCALES.dynamic]![0]!.virtualId)
   })
 })

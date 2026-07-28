@@ -47,8 +47,8 @@ export function hasMessageFunction(value: unknown, seen = new WeakSet<object>())
 export function warnMissedMessageFunctions(locale: string, messages: unknown) {
   // assigned before use: this module is also compiled by nitro, whose `replace` leaves
   // identifiers alone when they are immediately followed by `.`
-  const unserializable: string[] = __I18N_UNSERIALIZABLE_LOCALES__
-  if (unserializable.includes(locale) || !hasMessageFunction(messages)) { return }
+  const undeliverable: string[] = __I18N_UNDELIVERABLE_LOCALES__
+  if (undeliverable.includes(locale) || !hasMessageFunction(messages)) { return }
   console.warn(
     `[nuxt-i18n] Messages for locale "${locale}" contain message functions the build did not detect - they are dropped when messages are delivered as JSON. Write message functions literally in a locale file to make them detectable.`,
   )

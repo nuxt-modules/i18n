@@ -89,7 +89,7 @@ export function getDefineConfig(
   server = false,
   nuxt = useNuxt(),
 ) {
-  const { options, rawOptions, dynamicLocales, unserializableLocales, localeFileMetas, localeHashes } = ctx
+  const { options, rawOptions, dynamicLocales, undeliverableLocales, localeFileMetas, localeHashes } = ctx
   // every cache site is guarded per loader (`cache`) or per locale (`isLocaleCacheable`), so this
   // only decides whether the mechanism exists at all
   const cacheLifetime = options.experimental.cacheLifetime
@@ -118,7 +118,7 @@ export function getDefineConfig(
     __I18N_CACHE_LIFETIME__: JSON.stringify(cacheLifetime),
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
     __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
-    __I18N_UNSERIALIZABLE_LOCALES__: JSON.stringify(unserializableLocales),
+    __I18N_UNDELIVERABLE_LOCALES__: JSON.stringify(undeliverableLocales),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 
