@@ -31,6 +31,9 @@ type LocaleLoaderData = {
   cache: boolean
 }
 
+/** A loader that resolves to no messages, for the graph a locale file is kept out of */
+export const STUB_LOADER = '() => Promise.resolve({})'
+
 export function generateLoaderOptions(
   ctx: Pick<ResolvedI18nContext, 'options' | 'vueI18nConfigPaths' | 'localeInfo' | 'normalizedLocales' | 'runtimeDir'>,
 ) {
@@ -48,21 +51,25 @@ export function generateLoaderOptions(
         const key = genString(identifier)
         const virtualId = asI18nVirtual(meta.hash)
 
-        // resources with an `assetKey` ship as nitro server assets, read lazily instead of
-        // imported eagerly - the message data stays out of the server bundle (see `setupNitro`)
-        if (meta.assetKey) {
-          importStatements.add(genImport(resolve(ctx.runtimeDir, 'server/utils/assets'), [{ name: 'readI18nAsset' }]))
-        } else {
-          importStatements.add(genImport(virtualId, identifier))
+        // a file reaching for the Nuxt app has nothing to run in nitro, and dragging app-only
+        // modules into that bundle is what breaks its build (#3940)
+        if (!meta.appContext) {
+          // resources with an `assetKey` ship as nitro server assets, read lazily instead of
+          // imported eagerly - the message data stays out of the server bundle (see `setupNitro`)
+          importStatements.add(meta.assetKey
+            ? genImport(resolve(ctx.runtimeDir, 'server/utils/assets'), [{ name: 'readI18nAsset' }])
+            : genImport(virtualId, identifier))
         }
         importMapper.set(meta.path, {
           key,
           virtualId,
           cache: meta.cache ?? true,
           load: genDynamicImport(virtualId, { comment: `webpackChunkName: ${key}` }),
-          loadServer: meta.assetKey
-            ? `() => readI18nAsset(${genString(meta.assetKey)})`
-            : `() => Promise.resolve(${identifier})`,
+          loadServer: meta.appContext
+            ? STUB_LOADER
+            : meta.assetKey
+              ? `() => readI18nAsset(${genString(meta.assetKey)})`
+              : `() => Promise.resolve(${identifier})`,
         })
       }
       localeLoaders[locale.code]!.push(importMapper.get(meta.path)!)

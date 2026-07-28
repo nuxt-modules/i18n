@@ -96,7 +96,7 @@ type MessageStore = Pick<Composer, 'getLocaleMessage' | 'setLocaleMessage' | 'me
 
 export const isPrerenderable = createPrerenderablePredicate({
   dynamic: __I18N_DYNAMIC_LOCALES__,
-  unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
+  undeliverable: __I18N_UNDELIVERABLE_LOCALES__,
 })
 
 /**
@@ -175,7 +175,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     ssg: __IS_SSG__,
     prerender: !!import.meta.prerender,
     dynamic: __I18N_DYNAMIC_LOCALES__,
-    unserializable: __I18N_UNSERIALIZABLE_LOCALES__,
+    undeliverable: __I18N_UNDELIVERABLE_LOCALES__,
   })
 
   // only prerendered responses reach the CDN - a dynamic locale in a hybrid build still fetches the

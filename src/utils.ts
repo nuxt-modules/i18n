@@ -6,6 +6,7 @@ import { resolve } from 'pathe'
 import { assign, isArray, isString } from '@intlify/shared'
 import { EXECUTABLE_EXT_RE } from './constants'
 import { parseSync } from 'oxc-parser'
+import { walk } from 'oxc-walker'
 
 import type {
   FileMeta,
@@ -69,14 +70,17 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
 
     for (const f of getLocaleFiles(locale)) {
       const path = resolve(srcDir, f.path)
-      const { type, serializable } = analyzeResource(path, vfs)
+      const { type, serializable, appContext } = analyzeResource(path, vfs)
 
       resolved.meta.push({
         type,
         serializable,
+        appContext,
         path,
         hash: getHash(path),
-        cache: f.cache ?? type !== 'dynamic',
+        // a loader reaching for the Nuxt app reads per-request state, and the message cache is
+        // process-wide - caching it would serve one request's messages to the next
+        cache: !appContext && (f.cache ?? type !== 'dynamic'),
       })
     }
 
@@ -87,13 +91,17 @@ export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Rec
 }
 
 /**
- * Classifies a message source: whether the build can resolve its messages, and whether they survive
- * the JSON messages endpoint - message functions do not, and are dropped without a trace (#3880).
+ * Classifies a message source: whether the build can resolve its messages, whether they survive
+ * the JSON messages endpoint - message functions do not, and are dropped without a trace (#3880) -
+ * and whether producing them at all requires the Nuxt app (#3940).
  */
 function analyzeResource(path: string, vfs: Record<string, string>) {
-  if (!EXECUTABLE_EXT_RE.test(path)) { return { type: 'static' as LocaleType, serializable: true } }
+  if (!EXECUTABLE_EXT_RE.test(path)) {
+    return { type: 'static' as LocaleType, serializable: true, appContext: false }
+  }
 
-  const scope = collectDeclarations(parseSync(path, vfs[path] ?? readFileSync(path, 'utf-8')).program)
+  const program = parseSync(path, vfs[path] ?? readFileSync(path, 'utf-8')).program
+  const scope = collectDeclarations(program)
   const exported = resolveDefaultExport(scope)
   const type = localeTypeOf(exported, scope)
   const visible = visibleMessages(exported, scope)
@@ -106,7 +114,35 @@ function analyzeResource(path: string, vfs: Record<string, string>) {
     serializable: type === 'unknown' && visible.length === 0
       ? false
       : !visible.some(x => holds(x, scope, isMessageFunction)),
+    appContext: usesAppContext(program),
   }
+}
+
+/**
+ * Composables that only exist in the Nuxt app. Nitro compiles the same locale files to answer the
+ * messages endpoint, and there these are not defined at all. Ones it also provides
+ * (`useRuntimeConfig`, `$fetch`, the h3 utils) are what a loader may reach for either way.
+ */
+const APP_ONLY_COMPOSABLES = new Set([
+  'useNuxtApp', 'tryUseNuxtApp', 'useState', 'useCookie', 'useRoute', 'useRouter',
+  'useRequestEvent', 'useRequestHeader', 'useRequestHeaders', 'useRequestURL', 'useRequestFetch',
+  'useAsyncData', 'useLazyAsyncData', 'useFetch', 'useLazyFetch', 'useNuxtData',
+])
+
+/** Whether a file reaches for the Nuxt app, which leaves it runnable only from within it (#3940) */
+function usesAppContext(program: Program): boolean {
+  let found = false
+  walk(program, {
+    enter(node) {
+      // an import of `#app` needs the app whatever it pulls in, `#imports` resolves in both graphs
+      if (node.type === 'ImportDeclaration' && /^#app(?:\/|$)/.test(node.source.value)) { found = true }
+      if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && APP_ONLY_COMPOSABLES.has(node.callee.name)) {
+        found = true
+      }
+      if (found) { this.skip() }
+    },
+  })
+  return found
 }
 
 // `() => ({ ... })` parses with an explicit `ParenthesizedExpression` node, and TS assertions

@@ -1,4 +1,5 @@
 import { useNuxt } from '@nuxt/kit'
+import { STUB_LOADER } from './gen'
 import type { generateLoaderOptions } from './gen'
 import { genArrayFromRaw, genObjectFromRaw, genObjectFromValues, genString } from 'knitwork'
 import type { ResolvedI18nContext } from './context'
@@ -78,15 +79,14 @@ export function generateTemplateNuxtI18nOptions(
   // mirrors `createRuntimeLoaderPredicate`, stubbing the loaders it will not reach so the locale
   // files stay out of that graph - `import.meta.client` folds per graph, so the client and SSR
   // halves of this shared template can differ
-  const stub = '() => Promise.resolve({})'
   const appLoad = (load: string, locale: string) => {
     if (server || nuxt.options.dev || !nuxt.options.ssr) { return load }
-    // the endpoint would drop this locale's message functions, so both graphs load it themselves
-    if (ctx.unserializableLocales.includes(locale)) { return load }
+    // the endpoint has no response for these, so both graphs load the locale themselves
+    if (ctx.undeliverableLocales.includes(locale)) { return load }
     // static locales are served by the endpoint in both graphs, including while prerendering
-    if (!ctx.dynamicLocales.includes(locale)) { return stub }
+    if (!ctx.dynamicLocales.includes(locale)) { return STUB_LOADER }
     // a static host has no endpoint left to fetch from, so there the client keeps its chunks too
-    return ctx.staticDeploy ? load : `import.meta.client ? ${stub} : ${load}`
+    return ctx.staticDeploy ? load : `import.meta.client ? ${STUB_LOADER} : ${load}`
   }
 
   const localeLoaderEntries: Record<string, { key: string, load: string, cache: boolean }[]> = {}

@@ -91,6 +91,7 @@ test('resolveLocales', async () => {
         "code": "en",
         "meta": [
           {
+            "appContext": false,
             "cache": true,
             "hash": "5c407b7f",
             "path": "/path/to/project/en.json",
@@ -103,6 +104,7 @@ test('resolveLocales', async () => {
         "code": "es-AR",
         "meta": [
           {
+            "appContext": false,
             "cache": true,
             "hash": "c78280fb",
             "path": "/path/to/project/es.json",
@@ -110,6 +112,7 @@ test('resolveLocales', async () => {
             "type": "static",
           },
           {
+            "appContext": false,
             "cache": true,
             "hash": "65220c0a",
             "path": "/path/to/project/es-AR.json",
@@ -122,6 +125,7 @@ test('resolveLocales', async () => {
         "code": "nl",
         "meta": [
           {
+            "appContext": false,
             "cache": false,
             "hash": "b7971e5b",
             "path": "/path/to/project/nl.js",
@@ -292,6 +296,32 @@ describe('message source classification', () => {
     })
     expect(analyze(`export default { ...base, a: 'x' }`)).toMatchObject({ type: 'static' })
     expect(analyze(`export default { list: [{ a: 'x' }, ['y'], 1, true, null] }`)).toMatchObject({ type: 'static' })
+  })
+
+  test('(#3940) a file reaching for the Nuxt app cannot be run by the server', () => {
+    expect(analyze(`export default defineI18nLocale(async () => {
+      const { $store } = useNuxtApp()
+      return { a: $store.greeting }
+    })`)).toMatchObject({ type: 'dynamic', appContext: true })
+    expect(analyze(`export default defineI18nLocale(() => ({ a: useCookie('tenant').value }))`)).toMatchObject({
+      appContext: true
+    })
+    // module scope runs wherever the file is imported, the same as a loader body
+    expect(analyze(`const tenant = useRequestHeaders(['host'])\nexport default { a: tenant.host }`)).toMatchObject({
+      appContext: true
+    })
+    expect(analyze(`import { useNuxtApp } from '#app'\nexport default defineI18nLocale(() => ({}))`)).toMatchObject({
+      appContext: true
+    })
+  })
+
+  test('what nitro provides too keeps a locale on the endpoint', () => {
+    expect(analyze(`export default defineI18nLocale(() => ({ a: useRuntimeConfig().public.x }))`)).toMatchObject({
+      appContext: false
+    })
+    expect(analyze(`export default defineI18nLocale(l => $fetch('/api/' + l))`)).toMatchObject({ appContext: false })
+    expect(analyze(`export default { a: 'x' }`)).toMatchObject({ appContext: false })
+    expect(analyze(`export default {}`, 'locale.json')).toMatchObject({ appContext: false })
   })
 
   test('a shape it cannot read at all is assumed to hold message functions', () => {

@@ -32,7 +32,7 @@ export default defineNuxtPlugin({
         for (const k in msg) {
           // the client loads these from their own chunk and discards the payload copy, which
           // `devalue` could not carry anyway - one message function fails the whole payload
-          serverI18n.messages[k] = __I18N_UNSERIALIZABLE_LOCALES__.includes(k) ? {} : msg[k]!
+          serverI18n.messages[k] = __I18N_UNDELIVERABLE_LOCALES__.includes(k) ? {} : msg[k]!
         }
       }
     }

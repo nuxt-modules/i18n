@@ -31,6 +31,14 @@ const _getMessagesCached = cachedFunctionI18n(_getMessages, {
  */
 const getMessages = import.meta.dev ? _getMessages : _getMessagesCached
 
+/** Backstop for the build-time scan (#3940), which cannot see a composable an imported helper calls */
+function appContextHint(e: Error) {
+  if (!/ is not defined|Nuxt instance unavailable/.test(e.message)) { return '' }
+  return '. Locale loaders run outside the Nuxt app when the server produces messages, so Nuxt app '
+    + 'composables (`useNuxtApp`, `useState`, `useCookie`, ...) are unavailable - call them in the '
+    + 'locale file itself to have the build keep that locale in the app instead.'
+}
+
 const _getMergedMessages = async (locale: string, fallbackLocales: string[]) => {
   try {
     // with nothing to merge, copying would only duplicate the tree
@@ -48,7 +56,7 @@ const _getMergedMessages = async (locale: string, fallbackLocales: string[]) => 
 
     return merged
   } catch (e) {
-    throw new Error('Failed to merge messages: ' + (e as Error).message, { cause: e })
+    throw new Error('Failed to merge messages: ' + (e as Error).message + appContextHint(e as Error), { cause: e })
   }
 }
 

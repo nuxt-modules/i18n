@@ -111,6 +111,8 @@ export type FileMeta = {
   type: LocaleType
   /** Whether the messages survive the JSON messages endpoint - message functions do not (#3880) */
   serializable: boolean
+  /** Whether producing the messages needs the Nuxt app, which nitro cannot provide (#3940) */
+  appContext: boolean
   /** server asset filename when the resource ships as a lazily read nitro server asset */
   assetKey?: string
 }

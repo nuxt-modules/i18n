@@ -8,19 +8,22 @@ export interface DeliveryConfig {
   prerender: boolean
   /** Locales whose messages can only be produced by running their loaders */
   dynamic: string[]
-  /** Locales the endpoint cannot deliver, because JSON would drop their message functions */
-  unserializable: string[]
+  /**
+   * Locales the endpoint has no response for: JSON would drop their message functions (#3880), or
+   * the server cannot run their loaders at all (#3940)
+   */
+  undeliverable: string[]
 }
 
 /**
  * Whether a locale's endpoint response is worth baking into a file: a dynamic locale's would shadow
- * the handler that still resolves it per request, and an unserializable one's would have had its
- * message functions stripped. Being the only responses that exist as files, these are also the only
- * ones a CDN can hold. Not the same as "the endpoint can serve it" - a live handler serves a dynamic
- * locale fine, by running its loader in-process.
+ * the handler that still resolves it per request, and an undeliverable one has no response to bake.
+ * Being the only responses that exist as files, these are also the only ones a CDN can hold. Not the
+ * same as "the endpoint can serve it" - a live handler serves a dynamic locale fine, by running its
+ * loader in-process.
  */
-export function createPrerenderablePredicate(config: Pick<DeliveryConfig, 'dynamic' | 'unserializable'>) {
-  return (locale: Locale) => !config.dynamic.includes(locale) && !config.unserializable.includes(locale)
+export function createPrerenderablePredicate(config: Pick<DeliveryConfig, 'dynamic' | 'undeliverable'>) {
+  return (locale: Locale) => !config.dynamic.includes(locale) && !config.undeliverable.includes(locale)
 }
 
 /**
@@ -32,6 +35,6 @@ export function createPrerenderablePredicate(config: Pick<DeliveryConfig, 'dynam
 export function createRuntimeLoaderPredicate(config: DeliveryConfig) {
   return (locale: Locale) =>
     !config.ssr
-    || config.unserializable.includes(locale)
+    || config.undeliverable.includes(locale)
     || (config.dynamic.includes(locale) && (config.prerender || config.ssg))
 }
