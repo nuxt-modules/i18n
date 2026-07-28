@@ -57,17 +57,37 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 }
 
 /**
+ * `resolveLocalizedRouteObject` may return an already-resolved route (its `path`
+ * decoded for readability, e.g. `%20` becomes a literal space — see `context.ts`
+ * `resolveLocalizedRouteByPath`). Resolving that object a second time below re-parses
+ * `path` as a fresh location string, so a literal '#' or '?' left over from decoding is
+ * read as an actual fragment/query delimiter instead of path text, silently truncating
+ * the path — `query`/`hash` are unaffected, populated separately and not re-parsed.
+ * Only `path` (and the `fullPath` built from it) needs the fix; re-escape both.
+ */
+function sanitizeResolvedPath<T extends { path: string, fullPath: string }>(resolved: T): T {
+  if (!/[#?]/.test(resolved.path)) {
+    return resolved
+  }
+
+  const suffix = resolved.fullPath.slice(resolved.path.length)
+  resolved.path = resolved.path.replace(/#/g, '%23').replace(/\?/g, '%3F')
+  resolved.fullPath = resolved.path + suffix
+  return resolved
+}
+
+/**
  * Try resolving route and throw on failure
  */
 function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale) {
   const normalized = normalizeRawLocation(route)
   const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale))
   if (resolved.name) {
-    return resolved
+    return sanitizeResolvedPath(resolved)
   }
 
   // if unable to resolve route try resolving route based on original input
-  return ctx.router.resolve(route)
+  return sanitizeResolvedPath(ctx.router.resolve(route))
 }
 
 /**

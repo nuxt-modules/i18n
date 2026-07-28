@@ -162,6 +162,13 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
       normalizesEncoding ? pp('/path/as a test?foo=bar+sentence') : pp('/path/as%20a%20test?foo=bar+sentence')
     )
 
+    // (#4098) '#' and '?' must stay escaped even when normalizesEncoding decodes the
+    // rest of the path — left literal, they'd be misread as an actual fragment/query
+    // delimiter by the second `router.resolve()` call in `resolveRoute`, truncating the path
+    expect(localePath('/path/as%20a%20test%23one?foo=bar')).toEqual(
+      normalizesEncoding ? pp('/path/as a test%23one?foo=bar') : pp('/path/as%20a%20test%23one?foo=bar')
+    )
+
     // preserve hash
     expect(localePath({ path: '/about', hash: '#foo=bar' })).toEqual(pp('/about#foo=bar'))
 
