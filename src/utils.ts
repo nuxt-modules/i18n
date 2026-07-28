@@ -120,8 +120,8 @@ function analyzeResource(path: string, vfs: Record<string, string>) {
 
 /**
  * Composables that only exist in the Nuxt app. Nitro compiles the same locale files to answer the
- * messages endpoint, and there these are not defined at all. Ones it also provides
- * (`useRuntimeConfig`, `$fetch`, the h3 utils) are what a loader may reach for either way.
+ * messages endpoint, and there these are not defined at all. Only what both graphs provide
+ * (`useRuntimeConfig`, `$fetch`) is what a loader may reach for either way.
  */
 const APP_ONLY_COMPOSABLES = new Set([
   'useNuxtApp', 'tryUseNuxtApp', 'useState', 'useCookie', 'useRoute', 'useRouter',
@@ -129,17 +129,29 @@ const APP_ONLY_COMPOSABLES = new Set([
   'useAsyncData', 'useLazyAsyncData', 'useFetch', 'useLazyFetch', 'useNuxtData',
 ])
 
+// `#app` needs the app whatever it pulls in, `#imports` resolves in both graphs
+const APP_MODULE_RE = /^#app(?:\/|$)/
+
+/** Whether one node reaches for the Nuxt app, by importing it or by calling one of its composables */
+function reachesApp(node: Node): boolean {
+  switch (node.type) {
+    case 'ImportDeclaration':
+      return APP_MODULE_RE.test(node.source.value)
+    case 'ImportExpression':
+      return node.source.type === 'Literal' && isString(node.source.value) && APP_MODULE_RE.test(node.source.value)
+    case 'CallExpression':
+      return node.callee.type === 'Identifier' && APP_ONLY_COMPOSABLES.has(node.callee.name)
+  }
+  return false
+}
+
 /** Whether a file reaches for the Nuxt app, which leaves it runnable only from within it (#3940) */
 function usesAppContext(program: Program): boolean {
   let found = false
   walk(program, {
     enter(node) {
-      // an import of `#app` needs the app whatever it pulls in, `#imports` resolves in both graphs
-      if (node.type === 'ImportDeclaration' && /^#app(?:\/|$)/.test(node.source.value)) { found = true }
-      if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && APP_ONLY_COMPOSABLES.has(node.callee.name)) {
-        found = true
-      }
-      if (found) { this.skip() }
+      if (found) { this.skip(); return }
+      if (reachesApp(node)) { found = true }
     },
   })
   return found

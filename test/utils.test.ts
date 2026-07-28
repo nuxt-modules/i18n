@@ -313,6 +313,11 @@ describe('message source classification', () => {
     expect(analyze(`import { useNuxtApp } from '#app'\nexport default defineI18nLocale(() => ({}))`)).toMatchObject({
       appContext: true
     })
+    // an alias hides the call, so the import is what gives this away
+    expect(analyze(`export default defineI18nLocale(async () => {
+      const { useNuxtApp: nuxt } = await import('#app/nuxt')
+      return { a: nuxt().$x }
+    })`)).toMatchObject({ appContext: true })
   })
 
   test('what nitro provides too keeps a locale on the endpoint', () => {
