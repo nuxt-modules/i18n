@@ -17,6 +17,7 @@ const createDetectors = () => ({
   host: (): string | undefined => undefined,
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
   onHost: (locale: string | null | undefined) => locale,
+  fromOwnDomain: () => false,
 })
 
 /** Mirrors `useDetectors().onHost`, which passes a locale through only when the host serves it */
@@ -95,12 +96,34 @@ describe('createLocaleDetector', () => {
     expect(detect(detectors({ cookie: () => 'en', host: () => 'fr' }), '/', true)).toBe('en')
   })
 
-  test('domains: a browser locale the host does not serve falls through to the host locale', () => {
+  test('domains: a browser locale another domain serves is adopted', () => {
+    const detect = createDetector({ domains: true })
+    const onHost = servedExcept('en')
+    expect(detect(detectors({ header: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('en')
+    expect(detect(detectors({ navigator: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('en')
+  })
+
+  test('domains: a cookie locale another domain serves falls through to the host locale', () => {
+    // a per-host cookie can disagree with the target domain's detection, following it
+    // off-host would have the two hosts redirect at each other indefinitely
     const detect = createDetector({ domains: true })
     const onHost = servedExcept('en')
     expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
-    expect(detect(detectors({ header: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
-    expect(detect(detectors({ navigator: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
+  })
+
+  test('domains: a cookie locale is followed off-host when `cookieDomain` spans the domains', () => {
+    const detect = createDetector({ domains: true, detection: detection({ cookieDomain: '.nuxt-app.localhost' }) })
+    const onHost = servedExcept('en')
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('en')
+  })
+
+  test('domains: an arrival from a configured domain stays on the host it chose', () => {
+    const detect = createDetector({ domains: true, detection: detection({ cookieDomain: '.nuxt-app.localhost' }) })
+    const onHost = servedExcept('en')
+    const fromOwnDomain = () => true
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost, fromOwnDomain }), '/', true)).toBe('fr')
+    expect(detect(detectors({ header: () => 'en', host: () => 'fr', onHost, fromOwnDomain }), '/', true)).toBe('fr')
+    expect(detect(detectors({ navigator: () => 'en', host: () => 'fr', onHost, fromOwnDomain }), '/', true)).toBe('fr')
   })
 
   test('domains: a `fallbackLocale` the host does not serve is not adopted', () => {

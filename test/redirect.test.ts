@@ -19,6 +19,7 @@ const detectors = () => ({
   host: (): string | undefined => undefined,
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
   onHost: (locale: string | null | undefined) => locale,
+  fromOwnDomain: () => false,
 })
 
 // the real matcher over a small route set, so the resolver is tested against the contract the

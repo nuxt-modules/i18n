@@ -78,12 +78,35 @@ describe('createNavigationResolver', () => {
     expect(resolve(route(), 'en')).toBeUndefined()
   })
 
-  test('navigates to locales served on the current host under domain setups', () => {
+  test('domains: locales served on the current host navigate through the router', () => {
     const resolve = createResolver({ isLocaleOnHost: locale => locale !== 'fr' })
-    expect(resolve(route(), 'fr')).toBeUndefined()
     expect(resolve(route({ path: '/fr/about', fullPath: '/fr/about', name: 'about___fr' }), 'en')).toEqual({
       path: '/about',
       code: undefined,
     })
+  })
+
+  test('domains: a locale served on another domain relocates to its absolute URL', () => {
+    const resolve = createResolver({
+      isLocaleOnHost: locale => locale !== 'fr',
+      switchLocalePath: (locale, to) => 'http://fr.example.com' + unprefixedPath(String(to.fullPath)),
+    })
+    expect(resolve(route(), 'fr')).toEqual({ path: 'http://fr.example.com/about', code: undefined, external: true })
+  })
+
+  test('domains: a locale served on an unconfigured host stays put', () => {
+    const resolve = createResolver({
+      isLocaleOnHost: locale => locale !== 'fr',
+      isLocaleServed: () => true,
+      switchLocalePath: () => 'http://fr.example.com/about',
+    })
+    expect(resolve(route(), 'fr')).toBeUndefined()
+  })
+
+  test('domains: an off-host locale without an absolute destination stays put', () => {
+    // the mocked `switchLocalePath` resolves a relative path, a real domain setup returns an
+    // absolute URL for off-host locales - anything else cannot be navigated to externally
+    const resolve = createResolver({ isLocaleOnHost: locale => locale !== 'fr' })
+    expect(resolve(route(), 'fr')).toBeUndefined()
   })
 })

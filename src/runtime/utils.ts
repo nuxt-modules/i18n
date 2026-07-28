@@ -6,7 +6,7 @@ import { useComposableContext } from './composable-context'
 import { isSupportedLocale } from './shared/locales'
 import { createLocaleDetector, useDetectors } from './shared/detection'
 import { useI18nDetection } from './shared/utils'
-import { isLocaleOnHost } from './shared/domain'
+import { isLocaleOnHost, isLocaleServedOnHost } from './shared/domain'
 
 import type { Locale } from 'vue-i18n'
 import type { NuxtApp } from '#app'
@@ -65,6 +65,9 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
           useRequestURL({ xForwardedHost: true }).host,
         )
       : undefined,
+    isLocaleServed: __I18N_DOMAINS__
+      ? locale => isLocaleServedOnHost(_ctx.getLocales(), useRequestURL({ xForwardedHost: true }).host, locale)
+      : undefined,
     rootRedirect: ctx.rootRedirect,
     redirectStatusCode: ctx.redirectStatusCode,
     localePath: (path, locale) => localePath(_ctx, path, locale),
@@ -78,6 +81,6 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
 
   const resolved = resolve(to, locale, !!ctx.vueI18n.__pendingLocale && !!useNuxtApp()._processingMiddleware)
   if (resolved) {
-    return navigateTo(resolved.path, { redirectCode: resolved.code })
+    return navigateTo(resolved.path, { redirectCode: resolved.code, external: resolved.external })
   }
 }

@@ -77,6 +77,54 @@ describe('detection locale with host on server', () => {
   })
 })
 
+describe('browser language detection relocates to the domain serving the locale', () => {
+  test('a detected locale served on another domain redirects there', async () => {
+    const res = await undiciRequest('/', {
+      headers: { 'Host': 'en.nuxt-app.localhost', 'Accept-Language': 'fr' },
+    })
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('http://fr.nuxt-app.localhost')
+  })
+
+  test('custom route paths relocate to the path the target locale gives the route', async () => {
+    const res = await undiciRequest('/localized-in-english', {
+      headers: { 'Host': 'en.nuxt-app.localhost', 'Accept-Language': 'fr' },
+    })
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('http://fr.nuxt-app.localhost/localized-in-french')
+  })
+
+  test('a detected locale served on the current host stays', async () => {
+    const res = await undiciRequest('/', {
+      headers: { 'Host': 'fr.nuxt-app.localhost', 'Accept-Language': 'fr' },
+    })
+
+    expect(res.statusCode).toBe(200)
+  })
+
+  test('an arrival from a configured domain is an explicit choice and stays', async () => {
+    const res = await undiciRequest('/', {
+      headers: { 'Host': 'en.nuxt-app.localhost', 'Accept-Language': 'fr', 'Referer': 'http://fr.nuxt-app.localhost/' },
+    })
+    const dom = await getDom(await res.body.text())
+
+    expect(res.statusCode).toBe(200)
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('en')
+  })
+
+  test('a cookie locale is not followed off-host without a `cookieDomain` spanning the domains', async () => {
+    const res = await undiciRequest('/', {
+      headers: { Host: 'en.nuxt-app.localhost', Cookie: 'i18n_redirected=fr' },
+    })
+    const dom = await getDom(await res.body.text())
+
+    expect(res.statusCode).toBe(200)
+    expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('en')
+  })
+})
+
 test('detection locale with x-forwarded-host on server', async () => {
   const html = await $fetch('/', {
     headers: {

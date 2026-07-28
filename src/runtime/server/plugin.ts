@@ -132,16 +132,21 @@ export default defineNitroPlugin(async (nitro) => {
     const relocation = (__I18N_ROUTING__ && __I18N_DOMAINS__ && pathLocale && !detector.onHost(pathLocale)
       && resolveRelocation(event, pathLocale, path)) || undefined
 
-    const resolved = relocation || resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
-    if (resolved.path && (relocation || resolved.path !== pathname)) {
+    let resolved = relocation || resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
+    // a detected locale served by another domain redirects there directly, shaped for that
+    // domain's default locale, instead of localizing on the current host and relocating again
+    if (__I18N_DOMAINS__ && !resolved.origin && !detector.onHost(resolved.locale)) {
+      resolved = resolveRelocation(event, resolved.locale, path) || resolved
+    }
+    if (resolved.path && (resolved.origin || resolved.path !== pathname)) {
       ctx.detectLocale = resolved.locale
       // the origin host would not send the cookie to the domain being redirected to
-      !relocation && detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
+      !resolved.origin && detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
       context.response = createRedirectResponse(
         event,
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
         joinURL(
-          relocation?.origin || baseUrlGetter(event),
+          resolved.origin || baseUrlGetter(event),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),

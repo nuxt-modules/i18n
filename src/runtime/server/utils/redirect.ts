@@ -23,7 +23,8 @@ export type RedirectResolverConfig = {
   domains: boolean
 }
 
-export type ResolvedRedirect = { path: string | undefined, code: number, locale: string }
+/** `origin` is set when the redirect moves to another domain, a relative redirect otherwise */
+export type ResolvedRedirect = { path: string | undefined, code: number, locale: string, origin?: string }
 
 export function createRedirectResolver(config: RedirectResolverConfig) {
   const { detection, rootRedirect, matchLocalized, strategy, routing, domains } = config

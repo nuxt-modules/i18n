@@ -5,7 +5,7 @@ import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
-import { isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
+import { isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
 import { type useI18nDetection, useRuntimeI18n } from '../shared/utils'
@@ -31,6 +31,15 @@ const getNavigatorLocale = (event: H3Event | undefined) => findBrowserLocale(nor
 const getRequestHost = (event: H3Event | undefined) =>
   import.meta.client ? new URL(window.location.href).host : getRequestURL(event!, { xForwardedHost: true }).host
 
+const getRefererHost = (event: H3Event | undefined): string | undefined => {
+  const referer = import.meta.client ? document.referrer : getRequestHeader(event!, 'referer')
+  try {
+    return (referer && new URL(referer).host) || undefined
+  } catch {
+    return undefined
+  }
+}
+
 const getDomainLocales = (domainLocales: I18nPublicRuntimeConfig['domainLocales']) =>
   normalizedLocales.map(l => withRuntimeDomain(l, domainLocales))
 
@@ -55,6 +64,11 @@ export const useDetectors = (event: H3Event | undefined, config: { cookieKey: st
     /** Passes the locale through when the current host serves it, `undefined` otherwise */
     onHost: (locale: string | null | undefined) =>
       !locale || isLocaleServedOnHost(getLocales(), getHost(), locale) ? locale : undefined,
+    /** Whether the visitor arrived from one of the configured domains */
+    fromOwnDomain: () => {
+      const referer = getRefererHost(event)
+      return !!referer && getLocales().some(l => isLocaleOnHost(l, referer))
+    },
   }
 }
 
@@ -104,15 +118,21 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
     // route objects carry a query-free `path`, server paths may include a query string
     const path = isString(route) ? parsePath(route).pathname : route.path
 
-    // detection never moves the visitor to another domain
-    const onHost = domains ? detectors.onHost : (locale: string | null | undefined) => locale
+    const pass = (locale: string | null | undefined) => locale
+    const onHost = domains ? detectors.onHost : pass
 
     function* detect() {
       const detecting = initial && detection.enabled && !skipDetect(path, detectors.route(path))
       if (detecting) {
-        yield onHost(detectors.cookie())
-        yield onHost(detectors.header())
-        yield onHost(detectors.navigator())
+        // off-host adoption is limited to external arrivals (one from a configured domain already
+        // chose its destination) and to sources reading the same on every domain - per-host
+        // cookies can disagree and would have two hosts redirect at each other indefinitely
+        const internal = domains && detectors.fromOwnDomain()
+        const cookie = !domains || (detection.cookieDomain && !internal) ? pass : detectors.onHost
+        const browser = !domains || !internal ? pass : detectors.onHost
+        yield cookie(detectors.cookie())
+        yield browser(detectors.header())
+        yield browser(detectors.navigator())
       }
 
       if (domains) {
