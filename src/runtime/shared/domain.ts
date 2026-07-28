@@ -59,6 +59,9 @@ export function matchDomainLocale(
   )
 }
 
+const withProtocol = (domain: string, url: { protocol: string }) =>
+  hasProtocol(domain, { strict: true }) ? domain : url.protocol + '//' + domain
+
 export function domainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,
   url: { host: string, protocol: string },
@@ -78,11 +81,31 @@ export function domainFromLocale(
     return
   }
 
-  if (hasProtocol(domain, { strict: true })) {
-    return domain
+  return withProtocol(domain, url)
+}
+
+/**
+ * The configured domain matching the request host, keeping the protocol it was configured with.
+ * This answers "where am I", unlike {@link domainFromLocale} which answers "where is this locale
+ * served" and may resolve to another domain - deriving the current origin from a locale sends
+ * hosts that serve no default locale to whichever domain `defaultLocale` happens to live on.
+ */
+export function domainForHost(
+  domainLocales: I18nPublicRuntimeConfig['domainLocales'],
+  url: { host: string, protocol: string },
+  locales: NormalizedLocaleObject[] = normalizedLocales,
+): string | undefined {
+  let match: string | undefined
+  for (const locale of locales) {
+    const domain = withRuntimeDomain(locale, domainLocales).domains.find(v => normalizeDomain(v) === url.host)
+    // locales sharing a host may not all configure it with a protocol, prefer the one that does
+    // so the origin does not depend on the order the locales are configured in
+    if (domain && (!match || hasProtocol(domain, { strict: true }))) {
+      match = domain
+    }
   }
 
-  return url.protocol + '//' + domain
+  return match && withProtocol(match, url)
 }
 
 /**

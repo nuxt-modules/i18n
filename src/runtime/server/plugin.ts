@@ -16,7 +16,7 @@ import { isFunction } from '@intlify/shared'
 import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
 import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
-import { domainFromLocale, normalizeDomain } from '../shared/domain'
+import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 import { createRedirectResolver } from './utils/redirect'
 
@@ -69,9 +69,11 @@ export default defineNitroPlugin(async (nitro) => {
       return (): string => ''
     }
 
-    return (event: H3Event, defaultLocale: string): string => {
-      if (__I18N_DOMAINS__ && defaultLocale) {
-        return getDomainFromLocale(event, defaultLocale) || baseUrl
+    return (event: H3Event): string => {
+      if (__I18N_DOMAINS__) {
+        // the origin of the current host, resolving it from `defaultLocale` would send a host
+        // that serves no default locale to whichever domain that locale lives on
+        return domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true })) || baseUrl
       }
 
       // if baseUrl is not determined by domain then prefer relative URL from server-side
@@ -145,7 +147,7 @@ export default defineNitroPlugin(async (nitro) => {
         event,
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
         joinURL(
-          relocation?.origin || baseUrlGetter(event, ctx.vueI18nOptions!.defaultLocale),
+          relocation?.origin || baseUrlGetter(event),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),
