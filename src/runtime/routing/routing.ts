@@ -61,7 +61,14 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
  */
 function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale) {
   const normalized = normalizeRawLocation(route)
-  const resolved = ctx.router.resolve(ctx.resolveLocalizedRouteObject(normalized, locale))
+  const localized = ctx.resolveLocalizedRouteObject(normalized, locale)
+  // the matcher ignores `path` whenever `name` is set, but its presence makes `router.resolve()`
+  // take its path branch, which skips `encodeParams()` and returns the params decoded — turning
+  // an escape such as `%23` back into a `#` delimiter (#4079, #4098)
+  if (localized.name) {
+    localized.path = undefined
+  }
+  const resolved = ctx.router.resolve(localized)
   if (resolved.name) {
     return resolved
   }
@@ -87,11 +94,7 @@ export function switchLocalePath(
   /**
    * Nuxt route uses a proxy with getters for performance reasons (https://github.com/nuxt/nuxt/pull/21957).
    * Spreading will result in an empty object, so we make a copy of the route by accessing each getter property by name.
-   * We skip the `matched` and `redirectedFrom` properties.
-   *
-   * `path` is deliberately omitted: the route matcher ignores it whenever `name` is set, but its
-   * presence makes `router.resolve()` take its path branch, which skips `encodeParams()` and returns
-   * a path with unencoded params (#4079).
+   * We skip the `matched`, `redirectedFrom` and `path` properties.
    */
   const routeCopy = {
     name,

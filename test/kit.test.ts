@@ -153,14 +153,17 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     expect(localePath('/?foo=1')).toEqual(pp('?foo=1'))
     expect(localePath('/about?foo=1')).toEqual(pp('/about?foo=1'))
     expect(localePath('/about?foo=1&test=2')).toEqual(pp('/about?foo=1&test=2'))
-    expect(localePath('/path/as a test?foo=bar sentence')).toEqual(pp('/path/as a test?foo=bar+sentence'))
-    // encoded path input is normalized (decoded) only when the path resolver matches a route
-    // record and re-resolves it by name; `prefix` (exact-path lookup misses param routes) and
-    // `no_prefix` (no path resolver) pass the raw path through and keep its encoding
-    const normalizesEncoding = strategy === 'prefix_and_default' || strategy === 'prefix_except_default'
-    expect(localePath('/path/as%20a%20test?foo=bar%20sentence')).toEqual(
-      normalizesEncoding ? pp('/path/as a test?foo=bar+sentence') : pp('/path/as%20a%20test?foo=bar+sentence')
+    // params are re-encoded only when the path resolver matches a route record and re-resolves
+    // it by name; `prefix` (exact-path lookup misses param routes) and `no_prefix` (no path
+    // resolver) pass the raw path through
+    const encodesParams = strategy === 'prefix_and_default' || strategy === 'prefix_except_default'
+    expect(localePath('/path/as a test?foo=bar sentence')).toEqual(
+      pp(encodesParams ? '/path/as%20a%20test?foo=bar+sentence' : '/path/as a test?foo=bar+sentence')
     )
+    expect(localePath('/path/as%20a%20test?foo=bar%20sentence')).toEqual(pp('/path/as%20a%20test?foo=bar+sentence'))
+    // (#4098) escapes in a param survive resolution instead of decoding into delimiters
+    expect(localePath('/path/a%23b%3Fc%2Fd%25e')).toEqual(pp('/path/a%23b%3Fc%2Fd%25e'))
+    expect(localePath('/blog/my%20post%20%231')).toEqual(pp('/blog/my%20post%20%231'))
 
     // preserve hash
     expect(localePath({ path: '/about', hash: '#foo=bar' })).toEqual(pp('/about#foo=bar'))
