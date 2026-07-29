@@ -62,9 +62,8 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale) {
   const normalized = normalizeRawLocation(route)
   const localized = ctx.resolveLocalizedRouteObject(normalized, locale)
-  // the matcher ignores `path` whenever `name` is set, but its presence makes `router.resolve()`
-  // take its path branch, which skips `encodeParams()` and returns the params decoded — turning
-  // an escape such as `%23` back into a `#` delimiter (#4079, #4098)
+  // the matcher ignores `path` when `name` is set, but its presence makes `router.resolve()` take
+  // its path branch, which skips `encodeParams()` and decodes escapes into delimiters (#4079, #4098)
   if (localized.name) {
     localized.path = undefined
   }

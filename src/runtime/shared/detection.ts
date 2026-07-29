@@ -124,12 +124,12 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
     function* detect() {
       const detecting = initial && detection.enabled && !skipDetect(path, detectors.route(path))
       if (detecting) {
-        // off-host adoption is limited to external arrivals (one from a configured domain already
-        // chose its destination) and to sources reading the same on every domain - per-host
-        // cookies can disagree and would have two hosts redirect at each other indefinitely
-        const internal = domains && detectors.fromOwnDomain()
-        const cookie = !domains || (detection.cookieDomain && !internal) ? pass : detectors.onHost
-        const browser = !domains || !internal ? pass : detectors.onHost
+        // only an external arrival may follow a source off-host (an internal one already chose
+        // its destination), and only sources reading the same on every domain - per-host cookies
+        // can disagree and would have two hosts redirect at each other indefinitely
+        const external = domains && !detectors.fromOwnDomain()
+        const cookie = external && detection.cookieDomain ? pass : onHost
+        const browser = external ? pass : onHost
         yield cookie(detectors.cookie())
         yield browser(detectors.header())
         yield browser(detectors.navigator())

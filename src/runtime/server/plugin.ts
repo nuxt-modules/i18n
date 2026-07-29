@@ -56,24 +56,16 @@ export default defineNitroPlugin(async (nitro) => {
     secure: detection.cookieSecure,
   }
 
-  const getDomainFromLocale = (event: H3Event, locale: string) => {
-    if (!__I18N_DOMAINS__) { return }
-    return domainFromLocale(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }), locale)
+  const legacyBaseUrl = isFunction(runtimeI18n.baseUrl)
+  if (import.meta.dev && legacyBaseUrl) {
+    console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
   }
 
-  const createBaseUrlGetter = () => {
-    if (isFunction(runtimeI18n.baseUrl)) {
-      import.meta.dev
-        && console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
-      return (): string => ''
-    }
-
-    // a redirect stays on the host it was requested on: the configured origin of the current host
-    // under domains, relative otherwise. Resolving it from `defaultLocale` sent a host serving no
-    // default locale to that locale's domain, and `baseUrl` would send staging to production
-    return (event: H3Event): string =>
-      (__I18N_DOMAINS__ && domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }))) || ''
-  }
+  // a redirect stays on the host it was requested on: the configured origin of the current host
+  // under domains, relative otherwise. Resolving it from `defaultLocale` sent a host serving no
+  // default locale to that locale's domain, and `baseUrl` would send staging to production
+  const baseUrlGetter = (event: H3Event): string =>
+    (__I18N_DOMAINS__ && !legacyBaseUrl && domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }))) || ''
 
   const resolveRedirectPath = createRedirectResolver({
     detection,
@@ -85,22 +77,21 @@ export default defineNitroPlugin(async (nitro) => {
     domains: __I18N_DOMAINS__,
   })
 
-  const baseUrlGetter = createBaseUrlGetter()
-
   /**
-   * Redirect moving a locale path to the domain that serves it, the target domain has its own
-   * default locale so the path is prefixed for that domain rather than the current one.
+   * Redirect moving the request to the domain serving `locale`, with the path prefixed
+   * for that domain's own default locale rather than the current one.
    */
-  const resolveRelocation = (event: H3Event, pathLocale: string, path: string) => {
-    const origin = getDomainFromLocale(event, pathLocale)
+  const resolveRelocation = (event: H3Event, locale: string, path: string) => {
+    const url = getRequestURL(event, { xForwardedHost: true })
+    const origin = domainFromLocale(runtimeI18n.domainLocales, url, locale)
     const host = normalizeDomain(origin)
     // a target on the current host would redirect to itself
-    if (!origin || host === getRequestURL(event, { xForwardedHost: true }).host) { return }
+    if (!origin || host === url.host) { return }
 
-    const relocated = matchLocalized(path, pathLocale, resolveDefaultLocale(host, _defaultLocale))
+    const relocated = matchLocalized(path, locale, resolveDefaultLocale(host, _defaultLocale))
     if (!relocated) { return }
 
-    return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale: pathLocale, origin }
+    return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
   nitro.hooks.hook('request', async (event: H3Event) => {
@@ -127,17 +118,14 @@ export default defineNitroPlugin(async (nitro) => {
       return
     }
 
-    // a locale restricted to other domains cannot be served here, the request moves to a domain
-    // that does serve it rather than rendering its path in the wrong locale
-    const relocation = (__I18N_ROUTING__ && __I18N_DOMAINS__ && pathLocale && !detector.onHost(pathLocale)
-      && resolveRelocation(event, pathLocale, path)) || undefined
-
-    let resolved = relocation || resolveRedirectPath(event.path, path, pathLocale, ctx.vueI18nOptions!.defaultLocale, detector)
-    // a detected locale served by another domain redirects there directly, shaped for that
-    // domain's default locale, instead of localizing on the current host and relocating again
-    if (__I18N_DOMAINS__ && !resolved.origin && !detector.onHost(resolved.locale)) {
-      resolved = resolveRelocation(event, resolved.locale, path) || resolved
-    }
+    const resolved = resolveRedirectPath(
+      event.path,
+      path,
+      pathLocale,
+      ctx.vueI18nOptions!.defaultLocale,
+      detector,
+      __I18N_DOMAINS__ ? locale => resolveRelocation(event, locale, path) : undefined,
+    )
     if (resolved.path && (resolved.origin || resolved.path !== pathname)) {
       ctx.detectLocale = resolved.locale
       // the origin host would not send the cookie to the domain being redirected to

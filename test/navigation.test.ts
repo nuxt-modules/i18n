@@ -104,8 +104,7 @@ describe('createNavigationResolver', () => {
   })
 
   test('domains: an off-host locale without an absolute destination stays put', () => {
-    // the mocked `switchLocalePath` resolves a relative path, a real domain setup returns an
-    // absolute URL for off-host locales - anything else cannot be navigated to externally
+    // the default mock resolves a relative path - only an absolute URL can navigate externally
     const resolve = createResolver({ isLocaleOnHost: locale => locale !== 'fr' })
     expect(resolve(route(), 'fr')).toBeUndefined()
   })

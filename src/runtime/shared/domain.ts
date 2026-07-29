@@ -47,19 +47,14 @@ export function matchDomainLocale(
 ): string | undefined {
   const matches = locales.filter(locale => isLocaleOnHost(locale, host))
 
-  if (matches.length <= 1) {
-    return matches[0]?.code
-  }
-
   return (
     // match by current path locale
-    matches.find(l => l.code === pathLocale)?.code
+    matches.find(l => l.code === pathLocale)
     // fallback to default locale for the domain
-    || matches.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))?.code
-    // a host claiming no default still resolves one of its own locales, resolving the
-    // configured `defaultLocale` instead could name a locale served on another domain
-    || matches[0]?.code
-  )
+    || matches.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))
+    // a host claiming no default still resolves one of its own locales, never one served elsewhere
+    || matches[0]
+  )?.code
 }
 
 const withProtocol = (domain: string, url: { protocol: string }) =>

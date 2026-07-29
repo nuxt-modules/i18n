@@ -42,9 +42,8 @@ export function createNavigationResolver(config: NavigationResolverConfig) {
   }
 
   return function resolveNavigation(to: CompatRoute, locale: string, pendingLocale = false): ResolvedNavigation | undefined {
-    // a locale restricted to other domains cannot be reached by router navigation, it relocates
-    // to the URL the serving domain gives the route (absolute via `switchLocalePath`) - a host
-    // matching no configured domain serves every locale in place (a staging domain) and stays
+    // a locale restricted to other domains relocates to its absolute `switchLocalePath` URL,
+    // while a host matching no configured domain (e.g. staging) serves every locale in place
     if (config.isLocaleOnHost && !config.isLocaleOnHost(locale)) {
       if (config.isLocaleServed?.(locale) || isUnlocalizedRoute(to) || pendingLocale) { return }
       const destination = config.switchLocalePath(locale, to)
