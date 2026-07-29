@@ -23,7 +23,8 @@ export type RedirectResolverConfig = {
   domains: boolean
 }
 
-export type ResolvedRedirect = { path: string | undefined, code: number, locale: string }
+/** `origin` is set when the redirect moves to another domain, a relative redirect otherwise */
+export type ResolvedRedirect = { path: string | undefined, code: number, locale: string, origin?: string }
 
 export function createRedirectResolver(config: RedirectResolverConfig) {
   const { detection, rootRedirect, matchLocalized, strategy, routing, domains } = config
@@ -32,7 +33,8 @@ export function createRedirectResolver(config: RedirectResolverConfig) {
 
   /**
    * Resolves the redirect for a request, `fullPath` may contain a query string while
-   * `path` is the base- and prefix-free route path.
+   * `path` is the base- and prefix-free route path. `relocate` resolves the cross-domain
+   * redirect for a locale the current host does not serve.
    */
   return function resolveRedirectPath(
     fullPath: string,
@@ -40,7 +42,15 @@ export function createRedirectResolver(config: RedirectResolverConfig) {
     pathLocale: string | undefined,
     defaultLocale: string,
     detectors: Detectors,
+    relocate?: (locale: string) => ResolvedRedirect | undefined,
   ): ResolvedRedirect {
+    // a path locale restricted to other domains moves to a domain serving it before detection
+    // gets to strip the prefix and keep the request here in another locale
+    if (routing && domains && pathLocale && !detectors.onHost(pathLocale)) {
+      const relocated = relocate?.(pathLocale)
+      if (relocated) { return relocated }
+    }
+
     // the server handles fresh requests, detection is always `initial`
     let locale = detectLocale(detectors, fullPath, true) || defaultLocale
 
@@ -81,6 +91,14 @@ export function createRedirectResolver(config: RedirectResolverConfig) {
     if (pathname === '/' && strategy === 'prefix') {
       resolvedPath ??= getLocalizedMatch(defaultLocale)
     }
+
+    // a detected locale served by another domain redirects there directly, shaped for that
+    // domain's default locale, instead of localizing here and relocating again
+    if (domains && !detectors.onHost(locale)) {
+      const relocated = relocate?.(locale)
+      if (relocated) { return relocated }
+    }
+
     return { path: resolvedPath, code: redirectCode, locale }
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createServer } from 'node:http'
+import { createServer, request as httpRequest } from 'node:http'
 import sirv from 'sirv'
 import { x } from 'tinyexec'
 import { getRandomPort, waitForPort } from 'get-port-please'
@@ -93,6 +93,32 @@ export async function startServer(env: Record<string, unknown> = {}) {
     })
 
     await waitForPort(ports[0], { retries: process.env.CI ? 50 : 200, host, delay: process.env.CI ? 500 : 100 })
+
+    // additional ports forward to the nitro server with the `Host` header intact, so one SSR
+    // build can be addressed as multiple real origins (domain fixtures with browser tests)
+    ctx.staticServers = await Promise.all(
+      ports.slice(1).map(
+        port =>
+          new Promise<import('node:http').Server>((resolveListen, rejectListen) => {
+            const server = createServer((req, res) => {
+              const proxied = httpRequest(
+                { host, port: ports[0], path: req.url, method: req.method, headers: req.headers },
+                upstream => {
+                  res.writeHead(upstream.statusCode || 500, upstream.headers)
+                  upstream.pipe(res)
+                }
+              )
+              proxied.on('error', () => (res.headersSent ? res.destroy() : res.writeHead(502).end()))
+              req.pipe(proxied)
+            })
+            server.once('error', rejectListen)
+            server.listen(port, host, () => {
+              server.off('error', rejectListen)
+              resolveListen(server)
+            })
+          })
+      )
+    )
   }
 }
 

@@ -1,8 +1,10 @@
 import { type Locale, useSwitchLocalePath } from '#i18n'
 import { defineNuxtLink, useNuxtApp } from '#imports'
-import { Comment, computed, defineComponent, h } from 'vue'
+import { Comment, computed, defineComponent, h, mergeProps } from 'vue'
+import { hasProtocol } from 'ufo'
 import { nuxtLinkDefaults } from '#build/nuxt.config.mjs'
 import { useComposableContext } from '../composable-context'
+import { useNuxtI18nContext } from '../context'
 
 import type { PropType } from 'vue'
 
@@ -31,7 +33,28 @@ const SlpComponent = defineComponent({
 
     const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)
 
-    return () => h(NuxtLink, { ...attrs, 'to': resolved.value, 'data-i18n-disabled': disabled.value }, slots.default)
+    // the target recognizes an internal switch by its referer - NuxtLink's default `noreferrer`
+    // and document-wide referrer policies would strip it, the explicit `origin` beats both
+    const external = computed(() => hasProtocol(resolved.value, { strict: true }))
+    // merged last so user handlers run first and cancelling the navigation skips the write;
+    // the cookie records the choice where a spanning `cookieDomain` carries it to the target
+    const onClick = (event: MouseEvent) =>
+      __I18N_DOMAINS__
+      && external.value
+      && !disabled.value
+      && !event.defaultPrevented
+      && useNuxtI18nContext(nuxtApp).setCookieLocale(props.locale)
+
+    return () =>
+      h(
+        NuxtLink,
+        mergeProps(
+          { rel: external.value ? 'noopener' : undefined, referrerpolicy: external.value ? 'origin' : undefined },
+          attrs,
+          { 'to': resolved.value, 'data-i18n-disabled': disabled.value, onClick },
+        ),
+        slots.default,
+      )
   },
 })
 

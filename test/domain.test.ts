@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  cookieSpansDomains,
   domainForHost,
   domainFromLocale,
   isLocaleOnHost,
@@ -58,6 +59,33 @@ describe('matchDomainLocale', () => {
 
   test('returns undefined for unknown host', () => {
     expect(matchDomainLocale(locales, 'unknown.example.com', '')).toBeUndefined()
+  })
+
+  test('a shared domain claiming no default resolves its first locale', () => {
+    const shared = getNormalizedLocales([
+      { code: 'ja', domains: ['brands.example.com'] },
+      { code: 'ko', domains: ['brands.example.com'] },
+    ])
+    expect(matchDomainLocale(shared, 'brands.example.com', '')).toBe('ja')
+    expect(matchDomainLocale(shared, 'brands.example.com', 'ko')).toBe('ko')
+  })
+})
+
+describe('cookieSpansDomains', () => {
+  test('a cookie scope covering every domain spans, one excluding any domain does not', () => {
+    const subdomains = getNormalizedLocales([
+      { code: 'en', domain: 'en.example.com' },
+      { code: 'fr', domains: ['fr.example.com:3000'] },
+    ])
+    expect(cookieSpansDomains(subdomains, '.example.com')).toBe(true)
+    expect(cookieSpansDomains(subdomains, 'example.com')).toBe(true)
+    expect(cookieSpansDomains(subdomains, '.fr.example.com')).toBe(false)
+    // ccTLD siblings can never share a cookie scope
+    const cctld = getNormalizedLocales([
+      { code: 'en', domain: 'mysite.com' },
+      { code: 'fr', domain: 'mysite.fr' },
+    ])
+    expect(cookieSpansDomains(cctld, '.mysite.com')).toBe(false)
   })
 })
 

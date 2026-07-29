@@ -47,15 +47,27 @@ export function matchDomainLocale(
 ): string | undefined {
   const matches = locales.filter(locale => isLocaleOnHost(locale, host))
 
-  if (matches.length <= 1) {
-    return matches[0]?.code
-  }
-
   return (
     // match by current path locale
-    matches.find(l => l.code === pathLocale)?.code
+    matches.find(l => l.code === pathLocale)
     // fallback to default locale for the domain
-    || matches.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))?.code
+    || matches.find(l => l.defaultForDomains.some(domain => normalizeDomain(domain) === host))
+    // a host claiming no default still resolves one of its own locales, never one served elsewhere
+    || matches[0]
+  )?.code
+}
+
+/**
+ * Whether a cookie scoped to `cookieDomain` reaches every configured domain, i.e. each domain
+ * equals the scope or is a subdomain of it. Ports are irrelevant to cookies.
+ */
+export function cookieSpansDomains(locales: NormalizedLocaleObject[], cookieDomain: string): boolean {
+  const scope = cookieDomain.replace(/^\./, '').replace(/:\d+$/, '').toLowerCase()
+  return locales.every(l =>
+    l.domains.concat(l.domain || []).every((domain) => {
+      const host = normalizeDomain(domain).replace(/:\d+$/, '')
+      return host === scope || host.endsWith('.' + scope)
+    }),
   )
 }
 

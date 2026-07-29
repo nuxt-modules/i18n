@@ -85,6 +85,32 @@ test('cookie locale is applied for locales on the current host', async () => {
   expect(res.headers.location).toEqual('http://nuxt-app.localhost/no')
 })
 
+test('a detected locale served on another domain redirects there in one hop', async () => {
+  const res = await undiciRequest('/', {
+    headers: { 'Host': 'nuxt-app.localhost', 'Accept-Language': 'fr' }
+  })
+
+  expect(res.statusCode).toBe(302)
+  // `fr` is the default of its own domain, the path is shaped for that domain
+  expect(res.headers.location).toEqual('http://fr.nuxt-app.localhost')
+})
+
+test('an arrival from a configured domain is an explicit choice and stays', async () => {
+  const res = await undiciRequest('/', {
+    headers: { 'Host': 'nuxt-app.localhost', 'Accept-Language': 'fr', 'Referer': 'http://fr.nuxt-app.localhost/' }
+  })
+
+  expect(res.statusCode).toBe(200)
+})
+
+test('a cookie locale is not followed off-host without a `cookieDomain` spanning the domains', async () => {
+  const res = await undiciRequest('/', {
+    headers: { Host: 'nuxt-app.localhost', Cookie: 'i18n_redirected=fr' }
+  })
+
+  expect(res.statusCode).toBe(200)
+})
+
 test('pass `<NuxtLink> to props', async () => {
   const res = await undiciRequest('/', {
     headers: {

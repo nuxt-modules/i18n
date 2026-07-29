@@ -19,6 +19,8 @@ const detectors = () => ({
   host: (): string | undefined => undefined,
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
   onHost: (locale: string | null | undefined) => locale,
+  fromOwnDomain: () => false,
+  cookieSpans: () => false,
 })
 
 // the real matcher over a small route set, so the resolver is tested against the contract the
@@ -192,6 +194,44 @@ describe('createRedirectResolver', () => {
       const resolve = resolveDomain()
       const onHost = createDetectors({ cookie: () => 'fr', host: () => 'en' })
       expect(resolve('/', '/', undefined, 'en', onHost)).toMatchObject({ path: '/fr', locale: 'fr' })
+    })
+
+    const relocate = (locale: string) => ({ path: '/', code: 302, locale, origin: 'http://fr.example.com' })
+
+    test('a path locale served on another domain relocates before detection', () => {
+      const resolve = resolveDomain()
+      const offHost = createDetectors({ host: () => 'en', onHost: l => (l === 'fr' ? undefined : l) })
+      expect(resolve('/fr/about', '/about', 'fr', 'en', offHost, relocate)).toMatchObject({
+        locale: 'fr',
+        origin: 'http://fr.example.com',
+      })
+    })
+
+    test('a detected locale served on another domain relocates to it', () => {
+      const resolve = createResolver({
+        strategy: 'prefix_except_default',
+        domains: true,
+        detection: detection({ enabled: true, redirectOn: 'root' }),
+      })
+      const offHost = createDetectors({
+        cookie: () => 'fr',
+        host: () => 'en',
+        onHost: l => (l === 'fr' ? undefined : l),
+        cookieSpans: () => true,
+      })
+      expect(resolve('/', '/', undefined, 'en', offHost, relocate)).toMatchObject({
+        locale: 'fr',
+        origin: 'http://fr.example.com',
+      })
+    })
+
+    test('a failed relocation falls back to resolving on the current host', () => {
+      const resolve = resolveDomain()
+      const offHost = createDetectors({ host: () => 'en', onHost: l => (l === 'fr' ? undefined : l) })
+      expect(resolve('/fr/about', '/about', 'fr', 'en', offHost, () => undefined)).toMatchObject({
+        path: undefined,
+        locale: 'en',
+      })
     })
   })
 })

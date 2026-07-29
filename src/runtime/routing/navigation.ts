@@ -1,4 +1,4 @@
-import { isEqual } from 'ufo'
+import { hasProtocol, isEqual } from 'ufo'
 import { getLocalizedRouteName, getRouteBaseName } from '#i18n-kit/routing'
 
 import type { Strategies } from '#internal-i18n-types'
@@ -17,11 +17,13 @@ export type NavigationResolverConfig = {
   getLocaleCodes: () => string[]
   /** Whether the locale is served on the current host, set under domain setups */
   isLocaleOnHost?: (locale: string) => boolean
+  /** Whether the locale can be served on the current host (see `isLocaleServedOnHost`), set under domain setups */
+  isLocaleServed?: (locale: string) => boolean
   strategy: Strategies
   compactRoutes: boolean
 }
 
-export type ResolvedNavigation = { path: string, code: number | undefined }
+export type ResolvedNavigation = { path: string, code: number | undefined, external?: boolean }
 
 export function createNavigationResolver(config: NavigationResolverConfig) {
   const { strategy, compactRoutes } = config
@@ -40,9 +42,14 @@ export function createNavigationResolver(config: NavigationResolverConfig) {
   }
 
   return function resolveNavigation(to: CompatRoute, locale: string, pendingLocale = false): ResolvedNavigation | undefined {
-    // only navigate to locales served on the current host, switching to another
-    // domain happens through anchor navigation (`switchLocalePath` links)
-    if (config.isLocaleOnHost && !config.isLocaleOnHost(locale)) { return }
+    // a locale restricted to other domains relocates to its absolute `switchLocalePath` URL,
+    // while a host matching no configured domain (e.g. staging) serves every locale in place
+    if (config.isLocaleOnHost && !config.isLocaleOnHost(locale)) {
+      if (config.isLocaleServed?.(locale) || isUnlocalizedRoute(to) || pendingLocale) { return }
+      const destination = config.switchLocalePath(locale, to)
+      if (!destination || !hasProtocol(destination, { strict: true })) { return }
+      return { path: destination, code: config.redirectStatusCode, external: true }
+    }
 
     if (to.path === '/' && config.rootRedirect) {
       return { path: config.localePath(config.rootRedirect.path, locale), code: config.rootRedirect.code }
