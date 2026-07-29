@@ -57,6 +57,20 @@ export function matchDomainLocale(
   )?.code
 }
 
+/**
+ * Whether a cookie scoped to `cookieDomain` reaches every configured domain, i.e. each domain
+ * equals the scope or is a subdomain of it. Ports are irrelevant to cookies.
+ */
+export function cookieSpansDomains(locales: NormalizedLocaleObject[], cookieDomain: string): boolean {
+  const scope = cookieDomain.replace(/^\./, '').replace(/:\d+$/, '').toLowerCase()
+  return locales.every(l =>
+    l.domains.concat(l.domain || []).every((domain) => {
+      const host = normalizeDomain(domain).replace(/:\d+$/, '')
+      return host === scope || host.endsWith('.' + scope)
+    }),
+  )
+}
+
 const withProtocol = (domain: string, url: { protocol: string }) =>
   hasProtocol(domain, { strict: true }) ? domain : url.protocol + '//' + domain
 

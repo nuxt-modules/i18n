@@ -128,8 +128,9 @@ export default defineNitroPlugin(async (nitro) => {
     )
     if (resolved.path && (resolved.origin || resolved.path !== pathname)) {
       ctx.detectLocale = resolved.locale
-      // the origin host would not send the cookie to the domain being redirected to
-      !resolved.origin && detection.useCookie && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
+      // a host-scoped cookie cannot reach a cross-domain redirect target, a spanning `cookieDomain` can
+      detection.useCookie && (!resolved.origin || detection.cookieDomain)
+        && setCookie(event, detection.cookieKey, resolved.locale, cookieOptions)
       context.response = createRedirectResponse(
         event,
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`

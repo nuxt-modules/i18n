@@ -18,6 +18,7 @@ const createDetectors = () => ({
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
   onHost: (locale: string | null | undefined) => locale,
   fromOwnDomain: () => false,
+  cookieSpans: () => false,
 })
 
 /** Mirrors `useDetectors().onHost`, which passes a locale through only when the host serves it */
@@ -111,19 +112,26 @@ describe('createLocaleDetector', () => {
     expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
   })
 
-  test('domains: a cookie locale is followed off-host when `cookieDomain` spans the domains', () => {
-    const detect = createDetector({ domains: true, detection: detection({ cookieDomain: '.nuxt-app.localhost' }) })
+  test('domains: a cookie locale is followed off-host when the cookie spans the domains', () => {
+    const detect = createDetector({ domains: true })
     const onHost = servedExcept('en')
-    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('en')
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost, cookieSpans: () => true }), '/', true)).toBe('en')
+  })
+
+  test('domains: a `cookieDomain` not covering every domain keeps the cookie on-host', () => {
+    // following it would bounce the visitor between hosts that cannot read each other's cookie
+    const detect = createDetector({ domains: true, detection: detection({ cookieDomain: '.mysite.com' }) })
+    const onHost = servedExcept('en')
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
   })
 
   test('domains: an arrival from a configured domain stays on the host it chose', () => {
-    const detect = createDetector({ domains: true, detection: detection({ cookieDomain: '.nuxt-app.localhost' }) })
+    const detect = createDetector({ domains: true })
     const onHost = servedExcept('en')
-    const fromOwnDomain = () => true
-    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost, fromOwnDomain }), '/', true)).toBe('fr')
-    expect(detect(detectors({ header: () => 'en', host: () => 'fr', onHost, fromOwnDomain }), '/', true)).toBe('fr')
-    expect(detect(detectors({ navigator: () => 'en', host: () => 'fr', onHost, fromOwnDomain }), '/', true)).toBe('fr')
+    const overrides = { host: () => 'fr', onHost, fromOwnDomain: () => true, cookieSpans: () => true }
+    expect(detect(detectors({ cookie: () => 'en', ...overrides }), '/', true)).toBe('fr')
+    expect(detect(detectors({ header: () => 'en', ...overrides }), '/', true)).toBe('fr')
+    expect(detect(detectors({ navigator: () => 'en', ...overrides }), '/', true)).toBe('fr')
   })
 
   test('domains: a `fallbackLocale` the host does not serve is not adopted', () => {

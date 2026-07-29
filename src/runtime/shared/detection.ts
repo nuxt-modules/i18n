@@ -5,7 +5,7 @@ import { normalizedLocales } from '#build/i18n-options.mjs'
 import { getLocaleFromRoute, getLocaleFromRoutePath } from '#i18n-kit/routing'
 import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
-import { isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
+import { cookieSpansDomains, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
 import { isSupportedLocale } from './locales'
 import { type useI18nDetection, useRuntimeI18n } from '../shared/utils'
@@ -43,7 +43,11 @@ const getRefererHost = (event: H3Event | undefined): string | undefined => {
 const getDomainLocales = (domainLocales: I18nPublicRuntimeConfig['domainLocales']) =>
   normalizedLocales.map(l => withRuntimeDomain(l, domainLocales))
 
-export const useDetectors = (event: H3Event | undefined, config: { cookieKey: string }, nuxtApp?: NuxtApp) => {
+export const useDetectors = (
+  event: H3Event | undefined,
+  config: { cookieKey: string, cookieDomain?: string | null },
+  nuxtApp?: NuxtApp,
+) => {
   if (import.meta.server && !event) {
     throw new Error('H3Event is required for server-side locale detection')
   }
@@ -69,6 +73,8 @@ export const useDetectors = (event: H3Event | undefined, config: { cookieKey: st
       const referer = getRefererHost(event)
       return !!referer && getLocales().some(l => isLocaleOnHost(l, referer))
     },
+    /** Whether a cookie scoped to the configured `cookieDomain` is readable on every domain */
+    cookieSpans: () => !!config.cookieDomain && cookieSpansDomains(getLocales(), config.cookieDomain),
   }
 }
 
@@ -128,7 +134,7 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
         // its destination), and only sources reading the same on every domain - per-host cookies
         // can disagree and would have two hosts redirect at each other indefinitely
         const external = domains && !detectors.fromOwnDomain()
-        const cookie = external && detection.cookieDomain ? pass : onHost
+        const cookie = external && detectors.cookieSpans() ? pass : onHost
         const browser = external ? pass : onHost
         yield cookie(detectors.cookie())
         yield browser(detectors.header())

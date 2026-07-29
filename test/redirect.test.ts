@@ -20,6 +20,7 @@ const detectors = () => ({
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
   onHost: (locale: string | null | undefined) => locale,
   fromOwnDomain: () => false,
+  cookieSpans: () => false,
 })
 
 // the real matcher over a small route set, so the resolver is tested against the contract the
@@ -210,9 +211,14 @@ describe('createRedirectResolver', () => {
       const resolve = createResolver({
         strategy: 'prefix_except_default',
         domains: true,
-        detection: detection({ enabled: true, redirectOn: 'root', cookieDomain: '.example.com' }),
+        detection: detection({ enabled: true, redirectOn: 'root' }),
       })
-      const offHost = createDetectors({ cookie: () => 'fr', host: () => 'en', onHost: l => (l === 'fr' ? undefined : l) })
+      const offHost = createDetectors({
+        cookie: () => 'fr',
+        host: () => 'en',
+        onHost: l => (l === 'fr' ? undefined : l),
+        cookieSpans: () => true,
+      })
       expect(resolve('/', '/', undefined, 'en', offHost, relocate)).toMatchObject({
         locale: 'fr',
         origin: 'http://fr.example.com',
