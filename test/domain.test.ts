@@ -11,7 +11,7 @@ import {
   withRuntimeDomain,
 } from '../src/runtime/shared/domain'
 import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
-import { createBaseUrlGetter } from '../src/runtime/context'
+import { createBaseUrlGetter, withConfiguredProtocol } from '../src/runtime/context'
 import { normalizeDomainLocale } from '../src/utils'
 import { getNormalizedLocales } from './pages/utils'
 
@@ -340,6 +340,23 @@ describe('withRuntimeDomain', () => {
       domains: ['en.staging.example.com'],
       defaultForDomains: []
     })
+  })
+})
+
+describe('withConfiguredProtocol', () => {
+  const url = { host: 'en.example.com', protocol: 'http:' }
+
+  test('takes the scheme from `baseUrl`, which the request cannot be trusted for', () => {
+    // prerender has no request, and a proxy terminating TLS reports `http` for an https site
+    expect(withConfiguredProtocol(url, 'https://example.com')).toEqual({ host: 'en.example.com', protocol: 'https:' })
+    expect(withConfiguredProtocol(url, 'http://example.com')).toEqual({ host: 'en.example.com', protocol: 'http:' })
+  })
+
+  test('keeps the request URL when `baseUrl` names no scheme', () => {
+    expect(withConfiguredProtocol(url, '')).toBe(url)
+    expect(withConfiguredProtocol(url, undefined)).toBe(url)
+    expect(withConfiguredProtocol(url, '/base-path')).toBe(url)
+    expect(withConfiguredProtocol(url, () => 'https://example.com')).toBe(url)
   })
 })
 

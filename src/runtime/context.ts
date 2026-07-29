@@ -65,6 +65,20 @@ export interface NuxtI18nContext {
 }
 
 /**
+ * The request URL with the scheme `baseUrl` was configured with, used to complete domains
+ * configured without one. `useRequestURL` reports the scheme the server was reached on, which is
+ * `http` behind a proxy terminating TLS and during prerender, where there is no request at all.
+ * @internal exported for testing
+ */
+export function withConfiguredProtocol(
+  url: { host: string, protocol: string },
+  baseUrl: string | BaseUrlResolveHandler<unknown> | undefined,
+): { host: string, protocol: string } {
+  const protocol = !isFunction(baseUrl) && baseUrl?.match(/^(https?:)\/\//)?.[1]
+  return protocol ? { host: url.host, protocol } : url
+}
+
+/**
  * Returns a getter resolving the base URL for a locale, joined with `app.baseURL` exactly
  * once - locale domains and `baseUrl` are configured without it (#3628, #3887).
  */
@@ -158,13 +172,14 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   if (import.meta.dev && isFunction(runtimeI18n.baseUrl)) {
     console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
   }
+  const requestUrl = () => withConfiguredProtocol(useRequestURL({ xForwardedHost: true }), runtimeI18n.baseUrl)
   const getDomainFromLocale = (locale: string) =>
-    domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
+    domainFromLocale(runtimeI18n.domainLocales, requestUrl(), locale)
   const baseUrlOptions = {
     baseUrl: isFunction(runtimeI18n.baseUrl) ? () => (runtimeI18n.baseUrl as BaseUrlResolveHandler<unknown>)(nuxt) : runtimeI18n.baseUrl,
     appBase: nuxt.$config.app.baseURL,
     domains: __I18N_DOMAINS__,
-    getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true })),
+    getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, requestUrl()),
   }
   const getBaseUrl = createBaseUrlGetter({ ...baseUrlOptions, getDomainFromLocale })
   const getCanonicalBaseUrl = createBaseUrlGetter({
@@ -173,7 +188,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     // domain serving `defaultLocale` - the cluster has no domain with a better claim, and leaving
     // it to the current host would advertise that one locale differently from each of them
     getDomainFromLocale: (locale) => {
-      const url = useRequestURL({ xForwardedHost: true })
+      const url = requestUrl()
       return canonicalDomainFromLocale(runtimeI18n.domainLocales, url, locale)
         || canonicalDomainFromLocale(runtimeI18n.domainLocales, url, runtimeI18n.defaultLocale)
     },
