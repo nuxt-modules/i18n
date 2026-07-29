@@ -6,7 +6,7 @@ import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessag
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
-import { domainForHost, domainFromLocale } from './shared/domain'
+import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL } from 'ufo'
@@ -57,6 +57,8 @@ export interface NuxtI18nContext {
   setCookieLocale: (locale: string) => void
   /** Get current base URL */
   getBaseUrl: (locale?: string) => string
+  /** Get the base URL canonically naming a locale (alternate links), without current-host preference */
+  getCanonicalBaseUrl: (locale: string) => string
   /** Load locale messages */
   loadMessages: (locale: Locale) => Promise<void>
   composableCtx: ComposableContext
@@ -158,12 +160,17 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   if (import.meta.dev && isFunction(runtimeI18n.baseUrl)) {
     console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
   }
-  const getBaseUrl = createBaseUrlGetter({
+  const baseUrlOptions = {
     baseUrl: isFunction(runtimeI18n.baseUrl) ? () => (runtimeI18n.baseUrl as BaseUrlResolveHandler<unknown>)(nuxt) : runtimeI18n.baseUrl,
     appBase: nuxt.$config.app.baseURL,
     domains: __I18N_DOMAINS__,
     getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true })),
-    getDomainFromLocale,
+  }
+  const getBaseUrl = createBaseUrlGetter({ ...baseUrlOptions, getDomainFromLocale })
+  const getCanonicalBaseUrl = createBaseUrlGetter({
+    ...baseUrlOptions,
+    getDomainFromLocale: locale =>
+      canonicalDomainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale),
   })
   const resolvedLocale = useResolvedLocale()
   if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
@@ -280,6 +287,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       }
     },
     getBaseUrl,
+    getCanonicalBaseUrl,
     loadMessages: async (locale: string) => {
       // prevent multiple loads during hydration
       if (nuxt.isHydrating && loadMap.has(locale)) { return }

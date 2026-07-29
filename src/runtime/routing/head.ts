@@ -1,5 +1,4 @@
 import { type Ref, computed, getCurrentScope, onScopeDispose, ref, useHead, useRequestEvent, watch } from '#imports'
-import { joinURL } from 'ufo'
 import { assign } from '@intlify/shared'
 import { type HeadContext, localeHead as _localeHead } from '#i18n-kit/head'
 
@@ -54,6 +53,7 @@ function createHeadContext(
     key: ctx.strictSeo ? 'key' : 'id',
     strictSeo: ctx.strictSeo,
     locales,
+    currentLocale: locale,
     baseUrl,
     canonicalQueries,
     hreflangLinks: ctx.routingOptions.hreflangLinks,
@@ -64,14 +64,10 @@ function createHeadContext(
     getCurrentLanguage: () => currentLocale.language,
     getCurrentDirection: () => currentLocale.dir || __DEFAULT_DIRECTION__,
     getLocaleRoute: route => localeRoute(ctx, route),
-    getLocalizedRoute: (locale, route) => {
-      const path = switchLocalePath(ctx, locale, route)
-      // head links are absolute per locale under domain setups, navigation links may be host-relative
-      if (ctx.routingOptions.domains && path && path[0] === '/') {
-        return joinURL(ctx.getBaseUrl(locale), path)
-      }
-      return path
-    },
+    // alternate links name the locale's canonical domain rather than the current host, so hosts
+    // sharing a locale agree on its href. A locale configuring no domain has none to name and
+    // still resolves per host
+    getLocalizedRoute: (locale, route) => switchLocalePath(ctx, locale, route, ctx.getAlternatePath),
     getRouteWithoutQuery: () => {
       try {
         return assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })

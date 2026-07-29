@@ -7,6 +7,8 @@ import { _useLocaleHead, _useSetI18nParams, localeHead, missesClusterFallback } 
 import { switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
+import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from '../src/runtime/shared/domain'
+import { createBaseUrlGetter } from '../src/runtime/context'
 import { getNormalizedLocales } from './pages/utils'
 
 import type { Router } from 'vue-router'
@@ -32,34 +34,79 @@ const routes = [
   })),
 )
 
-function createTestContext(initialLocale = 'en', strictSeo = false, domains = false, configuredDefault = 'en') {
+// one cluster of two hosts sharing every locale, with per-host defaults (`multiDomainLocales`)
+const clusterLocales = getNormalizedLocales([
+  { code: 'en', language: 'en', domains: ['example.nl', 'example.be'] },
+  { code: 'nl', language: 'nl-NL', domains: ['example.nl', 'example.be'], defaultForDomains: ['example.nl'] },
+  { code: 'fr', language: 'fr', domains: ['example.nl', 'example.be'], defaultForDomains: ['example.be'] },
+])
+
+// mirrors the build output: every locale prefixed, `___default` variants for domain defaults,
+// `setupMultiDomainLocales` rebuilds them per host
+const clusterRoutesFor = (cluster: typeof clusterLocales) => [
+  ...cluster.map(l => ({ name: `index___${l.code}`, path: `/${l.code}`, component })),
+  ...cluster
+    .filter(l => l.defaultForDomains.length)
+    .map(l => ({ name: `index___${l.code}___default`, path: '/', component })),
+]
+
+function createTestContext(
+  initialLocale = 'en',
+  strictSeo = false,
+  domains: boolean | { host: string, locales?: typeof clusterLocales } = false,
+  configuredDefault = 'en',
+) {
   let locale = initialLocale
-  const router = createRouter({ history: createMemoryHistory(), routes })
+  const cluster = typeof domains === 'object' ? (domains.locales ?? clusterLocales) : undefined
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: cluster ? clusterRoutesFor(cluster) : routes,
+  })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
   const domainLocales = getNormalizedLocales(
     locales.map(l => ({ ...l, domain: `${l.code}.example.com`, defaultForDomains: [`${l.code}.example.com`] })),
   )
+  const testLocales = cluster ?? (domains ? domainLocales : locales)
+  const host = typeof domains === 'object'
+    ? domains.host
+    : domains ? `${initialLocale}.example.com` : 'example.com'
+  // resolved the way the runtime plugin does, rather than supplied
+  const hostDefault = resolveDefaultLocale(host, configuredDefault, testLocales)
   if (domains) {
     // rebuild the route table for the current host, mirrors the runtime plugin
-    setupMultiDomainLocales(initialLocale, 'prefix_except_default', router)
+    setupMultiDomainLocales(hostDefault, 'prefix_except_default', router)
   }
-  const host = domains ? `${initialLocale}.example.com` : 'example.com'
+  // base URLs derived through the runtime getters, seeded like `module.ts` seeds `domainLocales`
+  const url = { host, protocol: 'https:' }
+  const domainLocalesMap = Object.fromEntries(testLocales.map(l => [l.code, { domain: l.domain ?? '' }]))
+  const baseUrlOptions = {
+    baseUrl: domains ? undefined : 'https://example.com',
+    appBase: '/',
+    domains: !!domains,
+    getDomainForHost: () => domainForHost(domainLocalesMap, url, testLocales),
+  }
   const ctx = {
     ...createRoutingContext({
       router,
-      // resolved the way the runtime plugin does, rather than supplied
-      defaultLocale: resolveDefaultLocale(host, configuredDefault, domains ? domainLocales : locales),
+      defaultLocale: hostDefault,
+      configuredDefaultLocale: configuredDefault || '',
       strategy: 'prefix_except_default',
       routing: true,
-      domains,
+      domains: !!domains,
       trailingSlash: false,
       strictSeo,
       compactRoutes: false,
       getLocale: () => locale,
-      getLocales: () => (domains ? domainLocales : locales),
-      // the default (no-locale) base URL under domains is the default locale's domain
-      getBaseUrl: l => (domains ? `https://${l ?? 'en'}.example.com` : 'https://example.com'),
-      getHost: () => (domains ? `${locale}.example.com` : 'example.com'),
+      getLocales: () => testLocales,
+      getBaseUrl: createBaseUrlGetter({
+        ...baseUrlOptions,
+        getDomainFromLocale: l => domainFromLocale(domainLocalesMap, url, l, testLocales),
+      }),
+      getCanonicalBaseUrl: createBaseUrlGetter({
+        ...baseUrlOptions,
+        getDomainFromLocale: l => canonicalDomainFromLocale(domainLocalesMap, url, l, testLocales),
+      }),
+      getHost: () => host,
     }),
     _head: undefined,
     head,
@@ -72,7 +119,7 @@ function createTestContext(initialLocale = 'en', strictSeo = false, domains = fa
       defaultLocale: configuredDefault || '',
       strictCanonicals: true,
       hreflangLinks: true,
-      domains,
+      domains: !!domains,
     },
   } as unknown as ComposableContext
   return { router, ctx, head, setLocale: (l: string) => (locale = l) }
@@ -188,6 +235,96 @@ describe('localeHead with domains', () => {
     const links = localeHead(ctx, {}).link
     expect(links.filter(x => x.hreflang === 'x-default')).toEqual([])
     expect(links.map(x => x.hreflang ?? x.rel)).toContain('fr')
+  })
+})
+
+describe('localeHead with locales served on several domains', () => {
+  const clusterHosts = [
+    ['example.nl', 'nl'],
+    ['example.be', 'fr'],
+  ] as const
+
+  test('every host emits the same alternate links, shaped for each locale`s canonical domain', async () => {
+    const alternates = []
+    for (const [host, currentLocale] of clusterHosts) {
+      const { router, ctx } = createTestContext(currentLocale, false, { host })
+      await router.push('/')
+      alternates.push(localeHead(ctx, {}).link.filter(x => x.rel === 'alternate').map(x => [x.hreflang, x.href]))
+    }
+
+    // `nl` and `fr` resolve to the domain they are the default for (unprefixed there), `en` is
+    // no host's default and resolves prefixed to its first domain - including `x-default`
+    expect(alternates[0]).toEqual([
+      ['x-default', 'https://example.nl/en'],
+      ['en', 'https://example.nl/en'],
+      ['nl', 'https://example.nl'],
+      ['nl-NL', 'https://example.nl'],
+      ['fr', 'https://example.be'],
+    ])
+    expect(alternates[1]).toEqual(alternates[0])
+  })
+
+  test('(#2595) the canonical keeps self-referencing the host serving the locale', async () => {
+    for (const [host, currentLocale] of clusterHosts) {
+      const { router, ctx } = createTestContext(currentLocale, false, { host })
+      await router.push('/')
+
+      expect(localeHead(ctx, {}).link.find(x => x.rel === 'canonical')!.href).toBe(`https://${host}`)
+    }
+  })
+
+  test('a page served off its locale`s canonical domain canonicalises to it', async () => {
+    // `example.be` serves `nl` too, but the cluster advertises `nl` on `example.nl` - the duplicate
+    // has to point there instead of claiming itself, or it competes with the URL it is a copy of
+    const { router, ctx } = createTestContext('nl', false, { host: 'example.be' })
+    await router.push('/nl')
+
+    const head = localeHead(ctx, {})
+    const canonical = head.link.find(x => x.rel === 'canonical')!.href
+    expect(canonical).toBe('https://example.nl')
+    expect(head.meta.find(x => x.property === 'og:url')!.content).toBe('https://example.nl')
+    // the canonical is a member of the set emitted alongside it
+    expect(head.link.filter(x => x.rel === 'alternate').map(x => x.href)).toContain(canonical)
+  })
+
+  test('navigation links stay on the current host for the locales it serves', async () => {
+    const { router, ctx } = createTestContext('nl', false, { host: 'example.nl' })
+    await router.push('/')
+
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr')
+    expect(switchLocalePath(ctx, 'en')).toBe('/en')
+  })
+
+  test('a locale unprefixed on its canonical domain only through `defaultLocale` is not linked prefixed', async () => {
+    // `nl` claims no `defaultForDomains`, so example.nl serves it unprefixed by falling back to the
+    // configured `defaultLocale` - annotating `example.nl/nl` would name a route that host never got
+    const locales = getNormalizedLocales([
+      { code: 'nl', language: 'nl-NL', domains: ['example.nl', 'example.be'] },
+      { code: 'fr', language: 'fr', domains: ['example.nl', 'example.be'], defaultForDomains: ['example.be'] },
+    ])
+    const { router, ctx } = createTestContext('fr', false, { host: 'example.be', locales }, 'nl')
+    await router.push('/')
+
+    const links = localeHead(ctx, {}).link.filter(x => x.rel === 'alternate').map(x => [x.hreflang, x.href])
+    expect(links).toEqual([
+      ['x-default', 'https://example.nl'],
+      ['nl', 'https://example.nl'],
+      ['nl-NL', 'https://example.nl'],
+      ['fr', 'https://example.be'],
+    ])
+  })
+
+  test('an unconfigured host keeps navigation relative while alternates stay canonical', async () => {
+    // dev and staging must never link to the configured domains, but their alternates still
+    // annotate the cluster - the two resolve through different base URLs
+    const { router, ctx } = createTestContext('nl', false, { host: 'localhost:3000' })
+    await router.push('/nl')
+
+    // relative paths resolve against this host's own table, where `en` is unprefixed (it is the
+    // configured `defaultLocale`) and every other locale keeps its prefix
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr')
+    expect(switchLocalePath(ctx, 'en')).toBe('/')
+    expect(ctx.getAlternatePath('/fr', 'fr')).toBe('https://example.be')
   })
 })
 

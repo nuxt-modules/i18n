@@ -1,8 +1,8 @@
 import { joinURL } from 'ufo'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './utils'
 import { createTrailingSlashFormatter, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
-import { getDefaultLocaleForDomain, isSupportedLocale } from '../shared/locales'
-import { isLocaleOnHost } from '../shared/domain'
+import { getDefaultLocaleForDomain, isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
+import { canonicalDomain, isLocaleOnHost, normalizeDomain } from '../shared/domain'
 
 import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
 import type { PrefixableOptions } from '#i18n-kit/routing'
@@ -25,6 +25,11 @@ export type RoutingContext = {
   getRouteBaseName: (route: RouteRecordNameGeneric | RouteLocationGenericPath | null) => string | undefined
   /** Modifies the resolved localized path. Middleware for `switchLocalePath` */
   afterSwitchLocalePath: (path: string, locale: string) => string
+  /**
+   * `afterSwitchLocalePath` for alternate links: the path is shaped for the locale's canonical
+   * domain instead of the current host, so every host in the cluster emits the same href
+   */
+  getAlternatePath: (path: string, locale: string) => string
   /** Provides localized dynamic parameters for the current route */
   getLocalizedDynamicParams: (locale: string) => Record<string, unknown> | false | undefined
   /** Prepares a route object to be resolved as a localized route */
@@ -41,10 +46,18 @@ export type RoutingContext = {
  */
 export interface RoutingContextOptions {
   router: Router
+  /** The current host's unprefixed locale */
   defaultLocale: string
+  /**
+   * The configured `defaultLocale`, which a domain claiming none of its own falls back to. Needed to
+   * shape a link for another domain, where the current host's `defaultLocale` says nothing.
+   */
+  configuredDefaultLocale: string
   getLocale: () => string
   getLocales: () => NormalizedLocaleObject[]
   getBaseUrl: (locale?: string) => string
+  /** Base URL canonically naming a locale (alternate links), without current-host preference */
+  getCanonicalBaseUrl: (locale: string) => string
   /** Host of the current request/page, used for domain-based behavior */
   getHost: () => string | undefined
   /**
@@ -158,6 +171,40 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
   const getRouteLocalizedParams = () =>
     (router.currentRoute.value.meta[__DYNAMIC_PARAMS_KEY__] ?? {}) as Partial<I18nRouteMeta>
 
+  // a route carrying localized params it misses for `locale` is unavailable there (strict SEO)
+  const missesLocalizedParams = (locale: string, params = getRouteLocalizedParams()) =>
+    strictSeo && !!locale && Object.keys(params).length > 0 && !params[locale]
+
+  const stripsDefaultPrefix
+    = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
+
+  // whether `locale` is served unprefixed on `domain`. `defaultForDomains` alone is not the answer:
+  // a domain claiming no default of its own serves the configured `defaultLocale` unprefixed, and
+  // emitting a prefixed URL for it links to a route that domain never generated
+  const unprefixesLocale = (domain: string | undefined, locale: string) =>
+    !!domain && resolveDefaultLocale(normalizeDomain(domain), options.configuredDefaultLocale, options.getLocales()) === locale
+
+  // shapes `path` for the domain `getBase` resolves the locale to. Without a base the path stays
+  // relative to the current host, which prefixes the locale - stripping would link to whichever
+  // locale is unprefixed here (`joinURL('', '/')` collapses to an empty href)
+  const toDomainUrl = (getBase: (locale: string) => string) =>
+    (path: string, locale: string, target: NormalizedLocaleObject | undefined) => {
+      const base = getBase(locale)
+      if (!base) {
+        return path
+      }
+      if (stripsDefaultPrefix && unprefixesLocale(canonicalDomain(target), locale) && getLocaleFromRoutePath(path) === locale) {
+        path = path.slice(locale.length + 1) || '/'
+      }
+      return joinURL(base, path)
+    }
+
+  // navigation relocates to where the locale is SERVED, which stays relative on a host matching no
+  // configured domain so dev and staging never link to production; hreflang instead names one
+  // canonical domain per locale, identical from every host in the cluster
+  const toServingUrl = toDomainUrl(options.getBaseUrl)
+  const toCanonicalUrl = toDomainUrl(options.getCanonicalBaseUrl)
+
   return {
     router,
     getLocale: options.getLocale,
@@ -173,8 +220,7 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       return getRouteLocalizedParams()?.[locale]
     },
     afterSwitchLocalePath: (path, locale) => {
-      const params = getRouteLocalizedParams()
-      if (strictSeo && locale && Object.keys(params).length && !params[locale]) {
+      if (missesLocalizedParams(locale)) {
         return ''
       }
 
@@ -190,8 +236,6 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       // relative path is identical for every locale and would not switch anything
       const host = options.getHost() ?? ''
       const target = options.getLocales().find(l => l.code === locale)
-      const stripsDefaultPrefix
-        = config.strategy === 'prefix_except_default' || config.strategy === 'prefix_and_default'
 
       if (isLocaleOnHost(target, host)) {
         if (stripsDefaultPrefix && locale === getDefaultLocaleForDomain(host, options.getLocales()) && getLocaleFromRoutePath(path) === locale) {
@@ -206,10 +250,19 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
         return path
       }
 
-      if (stripsDefaultPrefix && target?.defaultForDomains.length && getLocaleFromRoutePath(path) === locale) {
-        path = path.slice(locale.length + 1) || '/'
+      return toServingUrl(path, locale, target)
+    },
+    getAlternatePath: (path, locale) => {
+      // the page being rendered has a URL of its own even when the params map omits its locale, and
+      // its canonical is resolved through here - a set that excluded the page itself is worse than
+      // one advertising a locale the author did not list
+      if (locale !== options.getLocale() && missesLocalizedParams(locale)) {
+        return ''
       }
-      return joinURL(options.getBaseUrl(locale), path)
+      if (!config.domains || !path) {
+        return path
+      }
+      return toCanonicalUrl(path, locale, options.getLocales().find(l => l.code === locale))
     },
     resolveLocalizedRouteObject: (route, locale) => {
       return isRouteLocationPathRaw(route)

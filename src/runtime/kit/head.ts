@@ -35,6 +35,7 @@ export type HeadContext = {
   seo: boolean | SeoAttributesOptions | undefined
   baseUrl: string
   locales: HeadLocale[]
+  currentLocale: string
   defaultLocale: string | undefined
   hreflangLinks: boolean
   strictCanonicals: boolean
@@ -133,6 +134,15 @@ function getHreflangLinks(options: HeadContext) {
   return links
 }
 
+/**
+ * A resolved locale path is already absolute under domain setups. `joinURL` collapses a root path
+ * against an empty base, so a site without `baseUrl` keeps the path as-is.
+ */
+function absolutize(options: HeadContext, path: string) {
+  if (hasProtocol(path) || !options.baseUrl) { return path }
+  return joinURL(options.baseUrl, path)
+}
+
 function getHreflangLink(
   language: string,
   locale: HeadLocale,
@@ -143,7 +153,7 @@ function getHreflangLink(
   if (!localePath) { return undefined }
 
   const href = withQuery(
-    hasProtocol(localePath) ? localePath : joinURL(options.baseUrl, localePath),
+    absolutize(options, localePath),
     options.strictCanonicals ? getCanonicalQueryParams(options) : {},
   )
   return options.strictSeo
@@ -151,13 +161,18 @@ function getHreflangLink(
     : { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
 }
 
-function getCanonicalUrl(options: HeadContext, route = options.getCurrentRoute()) {
-  const currentRoute = options.getLocaleRoute(
-    Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) }),
-  )
-
-  if (!currentRoute) { return '' }
-  return withQuery(joinURL(options.baseUrl, currentRoute.path), getCanonicalQueryParams(options))
+/**
+ * The current locale's own alternate link, so the canonical is by construction a member of the
+ * hreflang set it is emitted with. Under domains that means the locale's canonical domain rather
+ * than the host being served, which is what makes a page reachable on several domains name one URL.
+ */
+function getCanonicalUrl(
+  options: HeadContext,
+  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
+) {
+  const localePath = options.getLocalizedRoute(options.currentLocale, routeWithoutQuery)
+  if (!localePath) { return '' }
+  return withQuery(absolutize(options, localePath), getCanonicalQueryParams(options))
 }
 
 function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): CanonicalLink[] {

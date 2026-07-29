@@ -48,9 +48,11 @@ export function createComposableContext(ctx: NuxtI18nContext, nuxtApp: NuxtApp =
   const routingCtx = createRoutingContext({
     router: useRouter(),
     defaultLocale: ctx.getDefaultLocale(),
+    configuredDefaultLocale: ctx.config.defaultLocale || '',
     getLocale: ctx.getLocale,
     getLocales: ctx.getLocales,
     getBaseUrl: ctx.getBaseUrl,
+    getCanonicalBaseUrl: ctx.getCanonicalBaseUrl,
     getHost: () => useRequestURL({ xForwardedHost: true }).host,
     getLocalePathPayload: () => __I18N_STRICT_SEO__ && import.meta.client && nuxtApp.isHydrating && localePathPayload,
     strategy: __I18N_STRATEGY__,

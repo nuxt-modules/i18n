@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  canonicalDomainFromLocale,
   cookieSpansDomains,
   domainForHost,
   domainFromLocale,
@@ -183,6 +184,50 @@ describe('domainFromLocale', () => {
   test('a host matching no configured domain resolves no domain, so URLs stay relative', () => {
     // otherwise `nuxt dev` and staging would link and redirect to the configured domains
     expect(domainFromLocale({}, { host: 'localhost:3000', protocol: 'http:' }, 'nl', locales)).toBeUndefined()
+  })
+})
+
+describe('canonicalDomainFromLocale', () => {
+  const url = { host: 'en.example.com', protocol: 'http:' }
+  const multi = [
+    ...locales,
+    ...getNormalizedLocales([
+      { code: 'pt', domains: ['a.example.com', 'b.example.com'], defaultForDomains: ['b.example.com'] },
+    ]),
+  ]
+
+  test('resolves the same domain from every host for a locale served on several', () => {
+    for (const host of ['a.example.com', 'b.example.com', 'en.example.com', 'localhost:3000']) {
+      expect(canonicalDomainFromLocale({}, { host, protocol: 'http:' }, 'pt', multi)).toBe('http://b.example.com')
+    }
+    // `domainFromLocale` prefers the current host, which made hreflang links non-reciprocal
+    expect(domainFromLocale({}, { host: 'a.example.com', protocol: 'http:' }, 'pt', multi)).toBe(
+      'http://a.example.com'
+    )
+  })
+
+  test('the domain the locale is the default for wins over its own `domain`', () => {
+    // the unprefixed shape is derived from `defaultForDomains` too, resolving `domain` here would
+    // emit an unprefixed path for a domain that prefixes the locale
+    const own = getNormalizedLocales([
+      { code: 'en', domain: 'own.example.com', domains: ['shared.example.com'], defaultForDomains: ['shared.example.com'] },
+    ])
+    expect(canonicalDomainFromLocale({}, url, 'en', own)).toBe('http://shared.example.com')
+    expect(canonicalDomainFromLocale({}, url, 'nl', locales)).toBe('http://shared.example.com')
+  })
+
+  test('keeps the protocol of the configured domain', () => {
+    expect(canonicalDomainFromLocale({}, url, 'es', locales)).toBe('https://shared2.example.com')
+  })
+
+  test('`domainLocales` runtime config overrides the configured domain', () => {
+    expect(canonicalDomainFromLocale({ pt: { domain: 'pt.staging.example.com' } }, url, 'pt', multi)).toBe(
+      'http://pt.staging.example.com'
+    )
+  })
+
+  test('returns undefined for a locale without domains', () => {
+    expect(canonicalDomainFromLocale({}, url, 'pl', [...locales, ...getNormalizedLocales(['pl'])])).toBeUndefined()
   })
 })
 

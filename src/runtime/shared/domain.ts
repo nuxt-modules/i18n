@@ -29,15 +29,21 @@ export function isLocaleServedOnHost(locales: NormalizedLocaleObject[], host: st
 }
 
 /**
- * The domain that should serve `locale` when `host` does not, preferring the one it is the
- * default for. Undefined when the current host can serve it, which keeps hosts that match no
- * configured domain on relative URLs instead of sending them to a configured domain.
+ * The domain canonically naming `locale`. `defaultForDomains` leads so the domain agrees with the
+ * unprefixed shape callers derive from that same field.
+ */
+export const canonicalDomain = (target: NormalizedLocaleObject | undefined) =>
+  target?.defaultForDomains[0] || target?.domain || target?.domains[0]
+
+/**
+ * The domain that should serve `locale` when `host` does not. Undefined when the current host
+ * can serve it, which keeps hosts that match no configured domain on relative URLs instead of
+ * sending them to a configured domain.
  */
 function relocateHostForLocale(host: string, locale: string, locales: NormalizedLocaleObject[]): string | undefined {
   if (isLocaleServedOnHost(locales, host, locale)) { return }
 
-  const target = locales.find(l => l.code === locale)
-  return target?.defaultForDomains[0] || target?.domain || target?.domains[0]
+  return canonicalDomain(locales.find(l => l.code === locale))
 }
 
 export function matchDomainLocale(
@@ -94,6 +100,22 @@ export function domainFromLocale(
   }
 
   return withProtocol(domain, url)
+}
+
+/**
+ * Resolves {@link canonicalDomain} for `locale`, unlike {@link domainFromLocale} without a
+ * current-host preference: alternate links must name one URL for a locale served on several
+ * domains, identical from every host in the cluster, or the hreflang set is non-reciprocal.
+ * Undefined for a locale without domains, which is served wherever it is asked for.
+ */
+export function canonicalDomainFromLocale(
+  domainLocales: Record<string, { domain: string | undefined }>,
+  url: { host: string, protocol: string },
+  locale: string,
+  locales: NormalizedLocaleObject[] = normalizedLocales,
+): string | undefined {
+  const domain = domainLocales?.[locale]?.domain || canonicalDomain(locales.find(x => x.code === locale))
+  return domain ? withProtocol(domain, url) : undefined
 }
 
 /**
