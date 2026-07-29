@@ -380,6 +380,35 @@ describe('localizeRoutes', function () {
         })
       ).toBe(true)
     })
+
+    it('accepts `no_prefix` under `multiDomainLocales` when each locale has its own domain', function () {
+      // the locale data decides, not which option turned domains on
+      expect(
+        shouldLocalizeRoutes({
+          ...nuxtOptions,
+          strategy: 'no_prefix',
+          multiDomainLocales: true,
+          locales: getNormalizedLocales([
+            { code: 'en', domains: ['en.example.com'] },
+            { code: 'fr', domains: ['fr.example.com'] }
+          ])
+        })
+      ).toBe(true)
+    })
+
+    it('rejects `no_prefix` without any domain, so a plain site keeps unlocalized routes', function () {
+      expect(
+        shouldLocalizeRoutes({ ...nuxtOptions, strategy: 'no_prefix', locales: getNormalizedLocales(['en', 'fr']) })
+      ).toBe(false)
+      // domains alone qualify, with neither option set (the v11 direction)
+      expect(
+        shouldLocalizeRoutes({
+          ...nuxtOptions,
+          strategy: 'no_prefix',
+          locales: getNormalizedLocales([{ code: 'en', domains: ['en.example.com'] }, { code: 'fr', domains: ['fr.example.com'] }])
+        })
+      ).toBe(true)
+    })
   })
 
   it('does not generate an unprefixed variant for `domainDefault` without a domain', function () {
