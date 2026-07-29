@@ -64,8 +64,12 @@ export default defineNitroPlugin(async (nitro) => {
   // a redirect stays on the host it was requested on: the configured origin of the current host
   // under domains, relative otherwise. Resolving it from `defaultLocale` sent a host serving no
   // default locale to that locale's domain, and `baseUrl` would send staging to production
-  const baseUrlGetter = (event: H3Event): string =>
-    (__I18N_DOMAINS__ && !legacyBaseUrl && domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true }))) || ''
+  const baseUrlGetter = (event: H3Event): string => {
+    if (__I18N_DOMAINS__ && !legacyBaseUrl) {
+      return domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true })) || ''
+    }
+    return ''
+  }
 
   const resolveRedirectPath = createRedirectResolver({
     detection,
