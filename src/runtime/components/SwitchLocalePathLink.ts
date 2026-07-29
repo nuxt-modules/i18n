@@ -33,13 +33,14 @@ const SlpComponent = defineComponent({
 
     const disabled = computed(() => (__I18N_STRICT_SEO__ && resolved.value === '#') || undefined)
 
-    // detection on the target recognizes an internal switch by its referer, which NuxtLink's
-    // default `noreferrer` on absolute URLs would strip - the cookie records the choice for
-    // hosts the referer cannot reach (a `cookieDomain` spanning the domains travels along)
+    // the target recognizes an internal switch by its referer - NuxtLink's default `noreferrer`
+    // and document-wide referrer policies would strip it, the explicit `origin` beats both
     const external = computed(() => hasProtocol(resolved.value, { strict: true }))
-    // merged last so user handlers run first and cancelling the navigation skips the write
+    // merged last so user handlers run first and cancelling the navigation skips the write;
+    // the cookie records the choice where a spanning `cookieDomain` carries it to the target
     const onClick = (event: MouseEvent) =>
       __I18N_DOMAINS__
+      && external.value
       && !disabled.value
       && !event.defaultPrevented
       && useNuxtI18nContext(nuxtApp).setCookieLocale(props.locale)
@@ -47,11 +48,11 @@ const SlpComponent = defineComponent({
     return () =>
       h(
         NuxtLink,
-        mergeProps({ rel: external.value ? 'noopener' : undefined }, attrs, {
-          'to': resolved.value,
-          'data-i18n-disabled': disabled.value,
-          onClick,
-        }),
+        mergeProps(
+          { rel: external.value ? 'noopener' : undefined, referrerpolicy: external.value ? 'origin' : undefined },
+          attrs,
+          { 'to': resolved.value, 'data-i18n-disabled': disabled.value, onClick },
+        ),
         slots.default,
       )
   },
