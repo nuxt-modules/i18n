@@ -106,7 +106,8 @@ export function domainFromLocale(
  * Resolves {@link canonicalDomain} for `locale`, unlike {@link domainFromLocale} without a
  * current-host preference: alternate links must name one URL for a locale served on several
  * domains, identical from every host in the cluster, or the hreflang set is non-reciprocal.
- * Undefined for a locale without domains, which is served wherever it is asked for.
+ * Undefined for a locale configuring no domain, which is served on all of them - callers resolve
+ * the cluster's own domain by asking for `defaultLocale` instead.
  */
 export function canonicalDomainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,

@@ -104,7 +104,10 @@ function createTestContext(
       }),
       getCanonicalBaseUrl: createBaseUrlGetter({
         ...baseUrlOptions,
-        getDomainFromLocale: l => canonicalDomainFromLocale(domainLocalesMap, url, l, testLocales),
+        // composed the way `createNuxtI18nContext` does, including the cluster fallback
+        getDomainFromLocale: l =>
+          canonicalDomainFromLocale(domainLocalesMap, url, l, testLocales)
+          || canonicalDomainFromLocale(domainLocalesMap, url, configuredDefault, testLocales),
       }),
       getHost: () => host,
     }),
@@ -311,6 +314,40 @@ describe('localeHead with locales served on several domains', () => {
       ['nl', 'https://example.nl'],
       ['nl-NL', 'https://example.nl'],
       ['fr', 'https://example.be'],
+    ])
+  })
+
+  test('a locale served on every domain is annotated on the one serving `defaultLocale`', async () => {
+    // it has no domain of its own, and annotating the answering host would give the cluster a
+    // different URL for this one locale from each domain
+    const withPlain = [...clusterLocales, ...getNormalizedLocales([{ code: 'de', language: 'de' }])]
+    const hrefs = []
+    for (const [host, currentLocale] of clusterHosts) {
+      const { router, ctx } = createTestContext(currentLocale, false, { host, locales: withPlain }, 'nl')
+      await router.push('/')
+      hrefs.push(localeHead(ctx, {}).link.find(x => x.hreflang === 'de')!.href)
+    }
+
+    // `nl` is the configured `defaultLocale` and is served unprefixed on example.nl
+    expect(hrefs).toEqual(['https://example.nl/de', 'https://example.nl/de'])
+  })
+
+  test('only the locale that wins a shared `defaultForDomains` entry is linked unprefixed', async () => {
+    // both claim example.nl but the route table can only unprefix one of them, so the other has to
+    // keep its prefix or the two would advertise the same URL for different languages
+    const locales = getNormalizedLocales([
+      { code: 'nl', language: 'nl-NL', domains: ['example.nl'], defaultForDomains: ['example.nl'] },
+      { code: 'be', language: 'nl-BE', domains: ['example.nl'], defaultForDomains: ['example.nl'] },
+    ])
+    const { router, ctx } = createTestContext('nl', false, { host: 'example.nl', locales }, 'nl')
+    await router.push('/')
+
+    const hrefs = localeHead(ctx, {}).link.filter(x => x.rel === 'alternate').map(x => [x.hreflang, x.href])
+    expect(hrefs).toEqual([
+      ['x-default', 'https://example.nl'],
+      ['nl', 'https://example.nl'],
+      ['nl-NL', 'https://example.nl'],
+      ['nl-BE', 'https://example.nl/be'],
     ])
   })
 

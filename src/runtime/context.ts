@@ -155,11 +155,11 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value![locale]
-  const getDomainFromLocale = (locale: string) =>
-    domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   if (import.meta.dev && isFunction(runtimeI18n.baseUrl)) {
     console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
   }
+  const getDomainFromLocale = (locale: string) =>
+    domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   const baseUrlOptions = {
     baseUrl: isFunction(runtimeI18n.baseUrl) ? () => (runtimeI18n.baseUrl as BaseUrlResolveHandler<unknown>)(nuxt) : runtimeI18n.baseUrl,
     appBase: nuxt.$config.app.baseURL,
@@ -169,8 +169,14 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   const getBaseUrl = createBaseUrlGetter({ ...baseUrlOptions, getDomainFromLocale })
   const getCanonicalBaseUrl = createBaseUrlGetter({
     ...baseUrlOptions,
-    getDomainFromLocale: locale =>
-      canonicalDomainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale),
+    // a locale served on every domain has none of its own to be annotated on, so it takes the
+    // domain serving `defaultLocale` - the cluster has no domain with a better claim, and leaving
+    // it to the current host would advertise that one locale differently from each of them
+    getDomainFromLocale: (locale) => {
+      const url = useRequestURL({ xForwardedHost: true })
+      return canonicalDomainFromLocale(runtimeI18n.domainLocales, url, locale)
+        || canonicalDomainFromLocale(runtimeI18n.domainLocales, url, runtimeI18n.defaultLocale)
+    },
   })
   const resolvedLocale = useResolvedLocale()
   if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
