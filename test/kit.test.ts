@@ -302,7 +302,7 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
   })
 })
 
-describe('switchLocalePath with differentDomains', () => {
+describe('switchLocalePath with domain routing', () => {
   const DOMAIN_LOCALES = getNormalizedLocales([
     { code: 'en', language: 'en', domain: 'en.example.com', defaultForDomains: ['en.example.com'] },
     { code: 'no', language: 'no', domain: 'en.example.com' },

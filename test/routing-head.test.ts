@@ -32,7 +32,7 @@ const routes = [
   })),
 )
 
-// one cluster of two hosts sharing every locale, with per-host defaults (`multiDomainLocales`)
+// one cluster of two hosts sharing every locale, with per-host defaults
 const clusterLocales = getNormalizedLocales([
   { code: 'en', language: 'en', domains: ['example.nl', 'example.be'] },
   { code: 'nl', language: 'nl-NL', domains: ['example.nl', 'example.be'], defaultForDomains: ['example.nl'] },

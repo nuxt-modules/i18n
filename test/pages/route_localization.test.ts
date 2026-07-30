@@ -287,7 +287,7 @@ describe('localizeRoutes strategies', () => {
   })
 
   describe('no_prefix', () => {
-    it('routes pass through unchanged without differentDomains', () => {
+    it('routes pass through unchanged without domain routing', () => {
       const config = createTestConfig({ locales: ['en', 'fr'], strategy: 'no_prefix', defaultLocale: 'en' })
       const result = localizeRoutes(routes, config)
 

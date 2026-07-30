@@ -182,54 +182,7 @@ describe('localizeRoutes', function () {
     })
   })
 
-  // low confidence test
-  describe('strategy: "prefix_and_default" + multiDomainLocales', function () {
-    it('should be localized routing', function () {
-      const routes: NuxtPage[] = [
-        {
-          path: '/',
-          name: 'home'
-        },
-        {
-          path: '/about',
-          name: 'about'
-        },
-        {
-          path: '/user/:id',
-          name: 'user',
-          children: [
-            {
-              path: 'profile',
-              name: 'user-profile'
-            },
-            {
-              path: 'posts',
-              name: 'user-posts'
-            }
-          ]
-        }
-      ]
-
-      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
-        ...nuxtOptions,
-        defaultLocale: 'en',
-        strategy: 'prefix_except_default',
-        domains: true,
-        locales: getNormalizedLocales([
-          { code: 'en', iso: 'en-US', domainDefault: true },
-          { code: 'ja', iso: 'ja-JP' }
-        ])
-      })
-
-      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
-      expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-      setupMultiDomainLocales('en', 'prefix_except_default', router)
-
-      expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
-    })
-  })
-
-  describe('strategy: "prefix_except_default" + differentDomains', function () {
+  describe('strategy: "prefix_except_default" + domains', function () {
     it('generates unprefixed routes for domain default locales in both option shapes', function () {
       const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
 
@@ -341,6 +294,51 @@ describe('localizeRoutes', function () {
       const tree = localizedRoutes.find(r => r.name === 'user___fr___default')
       expect(tree?.children?.map(c => c.name)).toEqual(['user-profile___fr___default'])
     })
+
+    // low confidence test
+    it('should be localized routing', function () {
+      const routes: NuxtPage[] = [
+        {
+          path: '/',
+          name: 'home'
+        },
+        {
+          path: '/about',
+          name: 'about'
+        },
+        {
+          path: '/user/:id',
+          name: 'user',
+          children: [
+            {
+              path: 'profile',
+              name: 'user-profile'
+            },
+            {
+              path: 'posts',
+              name: 'user-posts'
+            }
+          ]
+        }
+      ]
+
+      const localizedRoutes = localizeRoutes(routes as LocalizableRoute[], {
+        ...nuxtOptions,
+        defaultLocale: 'en',
+        strategy: 'prefix_except_default',
+        domains: true,
+        locales: getNormalizedLocales([
+          { code: 'en', iso: 'en-US', domainDefault: true },
+          { code: 'ja', iso: 'ja-JP' }
+        ])
+      })
+
+      const router = createRouter({ routes: localizedRoutes as any, history: createMemoryHistory() })
+      expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
+      setupMultiDomainLocales('en', 'prefix_except_default', router)
+
+      expect(router.getRoutes().map(x => ({ name: x.name, path: x.path, children: x.children }))).toMatchSnapshot()
+    })
   })
 
   describe('shouldLocalizeRoutes', function () {
@@ -381,7 +379,7 @@ describe('localizeRoutes', function () {
       ).toBe(true)
     })
 
-    it('accepts `no_prefix` under `multiDomainLocales` when each locale has its own domain', function () {
+    it('accepts `no_prefix` when each locale has its own domain', function () {
       expect(
         shouldLocalizeRoutes({
           ...nuxtOptions,
@@ -433,7 +431,7 @@ describe('localizeRoutes', function () {
     expect(names).not.toContain('about___en___default')
   })
 
-  describe('strategy: "prefix_and_default" + differentDomains', function () {
+  describe('strategy: "prefix_and_default" + domains', function () {
     it('only generates an unprefixed variant for domain defaults, not for `defaultLocale`', function () {
       const routes: NuxtPage[] = [{ path: '/about', name: 'about' }]
 
