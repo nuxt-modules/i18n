@@ -7,7 +7,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { parseSegment, toVueRouterSegment } from 'unrouting'
 import { createRouteResourcesCollector, localizeRoutes } from './routing'
 import type { RouteResources } from './routing'
-import { logger } from './utils'
+import { logger, usesDomainRouting } from './utils'
 import { dirname, parse as parsePath, resolve } from 'pathe'
 import { createRoutesContext, resolveOptions } from 'vue-router/unplugin'
 import { transform } from './transform/resource'
@@ -110,6 +110,7 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
       const localizationOptions = {
         ...options,
         locales: normalizedLocales,
+        domains: usesDomainRouting(options),
         optionsResolver: resolver,
         compactRoutes: !!options.experimental?.compactRoutes,
         onLocalize: resources.collect,

@@ -88,8 +88,7 @@ export function createTestConfig(opts: {
   defaultLocale?: string
   trailingSlash?: boolean
   optionsResolver?: RouteOptionsResolver
-  differentDomains?: boolean
-  multiDomainLocales?: boolean
+  domains?: boolean
   routesNameSeparator?: string
   defaultLocaleRouteNameSuffix?: string
   compactRoutes?: boolean
@@ -102,8 +101,7 @@ export function createTestConfig(opts: {
     routesNameSeparator: opts.routesNameSeparator ?? '___',
     defaultLocaleRouteNameSuffix: opts.defaultLocaleRouteNameSuffix ?? 'default',
     optionsResolver: opts.optionsResolver,
-    differentDomains: opts.differentDomains,
-    multiDomainLocales: opts.multiDomainLocales,
+    domains: opts.domains,
     compactRoutes: opts.compactRoutes,
   }
 }

@@ -1,6 +1,7 @@
 import { addBuildPlugin, addVitePlugin, addWebpackPlugin, useNuxt } from '@nuxt/kit'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n'
-import { toArray } from './utils'
+import { toArray, usesDomainRouting } from './utils'
+import { usesCompactRoutes } from './routing'
 import { TransformMacroPlugin } from './transform/macros'
 import { ResourcePlugin } from './transform/resource'
 import { JsonParseMessagesPlugin } from './transform/json-parse'
@@ -99,6 +100,8 @@ export function getDefineConfig(
   // `stripMessagesPayload` is enabled by default when `experimental.preload` is set to true
   const stripMessagesPayload = rawOptions.experimental?.stripMessagesPayload ?? !!options.experimental.preload
 
+  const domains = usesDomainRouting(options)
+
   const common = {
     __IS_SSR__: String(nuxt.options.ssr),
     __IS_SSG__: String(ctx.staticDeploy),
@@ -109,7 +112,7 @@ export function getDefineConfig(
     __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__: JSON.stringify(SWITCH_LOCALE_PATH_LINK_IDENTIFIER),
     __I18N_STRATEGY__: JSON.stringify(options.strategy),
     // gate for domain-based locale resolution
-    __I18N_DOMAINS__: String(options.differentDomains || options.multiDomainLocales),
+    __I18N_DOMAINS__: String(domains),
     __ROUTE_NAME_SEPARATOR__: JSON.stringify(options.routesNameSeparator),
     __ROUTE_NAME_DEFAULT_SUFFIX__: JSON.stringify(options.defaultLocaleRouteNameSuffix),
     __TRAILING_SLASH__: String(options.trailingSlash),
@@ -123,14 +126,11 @@ export function getDefineConfig(
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 
     __I18N_ROUTING__: JSON.stringify(nuxt.options.pages.toString() && options.strategy !== 'no_prefix'),
-    // mirrors the build time gate in `localizeRoutes`, an ungated flag makes the runtime take
-    // compact route branches against a table that has none
-    __I18N_COMPACT_ROUTES__: String(
-      !!options.experimental?.compactRoutes
-      && !options.differentDomains
-      && !options.multiDomainLocales
-      && options.strategy !== 'no_prefix',
-    ),
+    __I18N_COMPACT_ROUTES__: String(usesCompactRoutes({
+      compactRoutes: options.experimental?.compactRoutes,
+      strategy: options.strategy,
+      domains,
+    })),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
     // SSG already prerenders the messages routes (runtime `prerenderRoutes`), so they exist at the

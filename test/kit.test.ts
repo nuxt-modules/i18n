@@ -20,7 +20,7 @@ import { LocalizableRoute } from '../src/kit/gen'
 const DEFAULT_LOCALE = 'en'
 
 const routingOptions = {
-  differentDomains: false,
+  domains: false,
   routesNameSeparator: '___',
   defaultLocaleRouteNameSuffix: 'default',
   trailingSlash: false,
@@ -322,7 +322,7 @@ describe('switchLocalePath with differentDomains', () => {
       ...routingOptions,
       strategy: opts.strategy,
       defaultLocale: opts.defaultLocale ?? '',
-      differentDomains: true,
+      domains: true,
       locales
     })
     const router = createRouter({ routes: localized as any, history: createMemoryHistory() })

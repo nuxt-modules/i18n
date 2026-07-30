@@ -61,6 +61,19 @@ export function validateLocaleCodes(codes: string[]) {
   }
 }
 
+const DOMAIN_ROUTING_OPTIONS = ['differentDomains', 'multiDomainLocales'] as const
+type DomainRoutingOptions = Pick<NuxtI18nOptions, (typeof DOMAIN_ROUTING_OPTIONS)[number]>
+
+/** The domain options a project enabled - warnings name what was configured, not the concept */
+export const enabledDomainOptions = (options: DomainRoutingOptions) => DOMAIN_ROUTING_OPTIONS.filter(x => options[x])
+
+/**
+ * Whether locales are resolved from domains. Both options configure one mechanism and produce
+ * identical route tables, so nothing downstream distinguishes them - this is the single seam
+ * deciding it, and what a future release flips to infer domain routing from the locale config.
+ */
+export const usesDomainRouting = (options: DomainRoutingOptions) => enabledDomainOptions(options).length > 0
+
 /**
  * Resolves the single-domain fields (`domain`/`domainDefault`) into their multi-domain forms
  * (`domains`/`defaultForDomains`) so domain logic only handles one shape. Both are always set,

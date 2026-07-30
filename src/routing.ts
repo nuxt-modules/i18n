@@ -91,9 +91,9 @@ function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext)
 export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   if (options.strategy !== 'no_prefix') { return true }
 
-  // without a prefix the host is all that names a locale, and only these options make the runtime
+  // without a prefix the host is all that names a locale, and only domain routing makes the runtime
   // resolve one from it (`__I18N_DOMAINS__`) - localizing routes without it leaves them unreachable
-  if (!options.differentDomains && !options.multiDomainLocales) { return false }
+  if (!options.domains) { return false }
 
   // compared by host, as configured domains may include a protocol
   const domains = new Set<string>()
@@ -128,7 +128,7 @@ const usesDefaultVariants = (strategy: Strategies | undefined) =>
  * Locales getting an unprefixed `___default` tree alongside their prefixed routes.
  */
 function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies): string[] {
-  if (config.differentDomains || config.multiDomainLocales) {
+  if (config.domains) {
     // `setupMultiDomainLocales` keeps the current host's variant at runtime
     return usesDefaultVariants(strategy) ? getDomainDefaultLocales(config.locales) : []
   }
@@ -138,23 +138,28 @@ function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy:
 function resolveDefaultLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies) {
   // under the `*_default` strategies the unprefixed locale differs per domain, `___default`
   // variants + runtime surgery resolve it - a build time default would claim the same path
-  if ((config.differentDomains || config.multiDomainLocales) && usesDefaultVariants(strategy)) {
+  if (config.domains && usesDefaultVariants(strategy)) {
     return []
   }
 
-  let defaultLocales = [config.defaultLocale ?? '']
-  if (config.differentDomains) {
-    defaultLocales = defaultLocales.concat(getDomainDefaultLocales(config.locales))
-  }
-  return defaultLocales
+  return [config.defaultLocale ?? '']
+}
+
+/**
+ * Whether routes are compacted into a single `/:locale(en|fr)/path` route per path. Shared with the
+ * `__I18N_COMPACT_ROUTES__` define - a runtime taking compact branches against a table that has
+ * none resolves nothing.
+ */
+export function usesCompactRoutes(config: Pick<SetupLocalizeRoutesOptions, 'compactRoutes' | 'strategy' | 'domains'>) {
+  return !!config.compactRoutes && config.strategy !== 'no_prefix' && !config.domains
 }
 
 // lenient options to setup localize routes context
 type SetupLocalizeRoutesOptions = {
   strategy?: Strategies
   trailingSlash?: boolean
-  differentDomains?: boolean
-  multiDomainLocales?: boolean
+  /** Whether locales are resolved from domains */
+  domains?: boolean
   locales: NormalizedLocaleObject[]
   routesNameSeparator: string
   defaultLocaleRouteNameSuffix: string
@@ -185,12 +190,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
    * Compact routes: merge all per-locale routes into a single `/:locale(en|fr)/path` route
    * for routes where all locales share the same path.
    */
-  if (
-    config.compactRoutes
-    && strategy !== 'no_prefix'
-    && !config.differentDomains
-    && !config.multiDomainLocales
-  ) {
+  if (usesCompactRoutes({ compactRoutes: config.compactRoutes, strategy, domains: config.domains })) {
     const defaultLocale = config.defaultLocale ?? ''
     ctx.compactRoute = (route, routeOptions, params) => {
       // Skip compaction if the route already defines a :locale param to avoid collisions

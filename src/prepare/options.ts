@@ -1,6 +1,6 @@
 import type { I18nNuxtContext } from '../context'
 import type { Nuxt } from '@nuxt/schema'
-import { logger, normalizeDomainLocale } from '../utils'
+import { enabledDomainOptions, logger, normalizeDomainLocale, usesDomainRouting } from '../utils'
 import { checkLayerOptions } from '../layers'
 import { isString } from '@intlify/shared'
 
@@ -24,15 +24,17 @@ export function prepareOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
     )
   }
 
-  const { strategy, defaultLocale, multiDomainLocales } = options
+  const { strategy, defaultLocale } = options
+  const domains = usesDomainRouting(options)
 
-  if (strategy.endsWith('_default') && !defaultLocale && !multiDomainLocales) {
+  // under domains the unprefixed locale is resolved per host, the option only names a fallback
+  if (strategy.endsWith('_default') && !defaultLocale && !domains) {
     logger.warn(
       `The \`${strategy}\` i18n strategy${rawOptions.strategy == null ? ' (used by default)' : ''} needs \`defaultLocale\` to be set.`,
     )
   }
 
-  if (multiDomainLocales) {
+  if (domains) {
     // `domain` normalizes into `domains` and configures the feature just as well
     const hasDomainLocales = (options.locales || []).some(
       locale => !isString(locale) && normalizeDomainLocale(locale).domains.length,
@@ -40,7 +42,7 @@ export function prepareOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
 
     if (!hasDomainLocales) {
       logger.warn(
-        `Locale \`domains\` must be configured when \`multiDomainLocales\` is enabled.`,
+        `Locale \`domains\` must be configured to use ${enabledDomainOptions(options).map(x => `\`${x}\``).join(' and ')}.`,
       )
     }
   }
@@ -52,10 +54,8 @@ export function prepareOptions(ctx: I18nNuxtContext, nuxt: Nuxt) {
   }
 
   if (options.experimental?.compactRoutes) {
-    const conflicts: string[] = []
-    if (strategy === 'no_prefix') { conflicts.push('`strategy: "no_prefix"`') }
-    if (options.differentDomains) { conflicts.push('`differentDomains`') }
-    if (multiDomainLocales) { conflicts.push('`multiDomainLocales`') }
+    const conflicts = enabledDomainOptions(options).map(x => `\`${x}\``)
+    if (strategy === 'no_prefix') { conflicts.unshift('`strategy: "no_prefix"`') }
     if (conflicts.length) {
       logger.warn(
         `\`experimental.compactRoutes\` is enabled but has no effect due to incompatible option(s): ${conflicts.join(', ')}. Routes will fall back to per-locale duplication.`,

@@ -289,7 +289,8 @@ export type NuxtI18nOptions<
   /**
    * Enable when using different domains for each locale
    *
-   * If enabled, no prefix is added to routes and `locales` must be configured as an array of `LocaleObject` objects with the `domain` property set.
+   * If enabled, `locales` must be configured as an array of `LocaleObject` objects with the `domain` property set.
+   * Configures the same domain routing as {@link NuxtI18nOptions.multiDomainLocales}, enabling either is enough.
    * @default false
    */
   differentDomains?: boolean
@@ -297,6 +298,7 @@ export type NuxtI18nOptions<
    * Enable when using different domains with different locales
    *
    * If enabled, `locales` must be configured as an array of `LocaleObject` objects with the `domains` and `defaultForDomains` property set.
+   * Configures the same domain routing as {@link NuxtI18nOptions.differentDomains}, enabling either is enough.
    * @default false
    */
   multiDomainLocales?: boolean

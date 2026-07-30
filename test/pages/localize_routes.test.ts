@@ -214,7 +214,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
-        multiDomainLocales: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', iso: 'en-US', domainDefault: true },
           { code: 'ja', iso: 'ja-JP' }
@@ -237,7 +237,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
-        differentDomains: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'ja', domain: 'ja.example.com' },
@@ -280,7 +280,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
-        differentDomains: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
@@ -307,7 +307,7 @@ describe('localizeRoutes', function () {
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
         trailingSlash: true,
-        differentDomains: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
@@ -331,7 +331,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_except_default',
-        differentDomains: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
@@ -352,7 +352,7 @@ describe('localizeRoutes', function () {
         shouldLocalizeRoutes({
           ...nuxtOptions,
           strategy: 'no_prefix',
-          differentDomains: true,
+          domains: true,
           locales: getNormalizedLocales([{ code: 'en', domain: shared }, { code: 'fr', domain: shared }])
         })
       ).toBe(false)
@@ -361,7 +361,7 @@ describe('localizeRoutes', function () {
         shouldLocalizeRoutes({
           ...nuxtOptions,
           strategy: 'no_prefix',
-          differentDomains: true,
+          domains: true,
           locales: getNormalizedLocales([{ code: 'en', domains: [shared] }, { code: 'fr', domains: [shared] }])
         })
       ).toBe(false)
@@ -375,7 +375,7 @@ describe('localizeRoutes', function () {
         shouldLocalizeRoutes({
           ...nuxtOptions,
           strategy: 'no_prefix',
-          differentDomains: true,
+          domains: true,
           locales: getNormalizedLocales([{ code: 'en', domains: ['a.example.com', 'b.example.com'] }, { code: 'fr', domain: 'c.example.com' }])
         })
       ).toBe(true)
@@ -386,7 +386,7 @@ describe('localizeRoutes', function () {
         shouldLocalizeRoutes({
           ...nuxtOptions,
           strategy: 'no_prefix',
-          multiDomainLocales: true,
+          domains: true,
           locales: getNormalizedLocales([
             { code: 'en', domains: ['en.example.com'] },
             { code: 'fr', domains: ['fr.example.com'] }
@@ -411,7 +411,7 @@ describe('localizeRoutes', function () {
         shouldLocalizeRoutes({
           ...nuxtOptions,
           strategy: 'no_prefix',
-          multiDomainLocales: true,
+          domains: true,
           locales: getNormalizedLocales(['en', 'fr'])
         })
       ).toBe(false)
@@ -423,7 +423,7 @@ describe('localizeRoutes', function () {
       ...nuxtOptions,
       defaultLocale: '',
       strategy: 'prefix_except_default',
-      differentDomains: true,
+      domains: true,
       locales: getNormalizedLocales([{ code: 'en', domainDefault: true }, { code: 'fr', domain: 'fr.example.com', domainDefault: true }])
     })
 
@@ -441,7 +441,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
-        differentDomains: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', domain: 'en.example.com' },
           { code: 'fr', domain: 'fr.example.com', defaultForDomains: ['fr.example.com'] }
@@ -471,7 +471,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'prefix_and_default',
-        multiDomainLocales: true,
+        domains: true,
         locales: getNormalizedLocales([
           // `en` is served everywhere but is the default for no domain
           { code: 'en', domains: ['a.example.com', 'b.example.com'] },
@@ -563,7 +563,7 @@ describe('localizeRoutes', function () {
         ...nuxtOptions,
         defaultLocale: 'en',
         strategy: 'no_prefix',
-        differentDomains: true,
+        domains: true,
         locales: getNormalizedLocales([
           { code: 'en', domain: 'https://example.com' },
           { code: 'ja', domain: 'example.com' }
