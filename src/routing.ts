@@ -91,10 +91,11 @@ function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext)
 export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   if (options.strategy !== 'no_prefix') { return true }
 
-  // without a prefix the host is the only thing naming a locale, so `no_prefix` localizes routes
-  // exactly when each locale has a domain of its own. The locale data decides that, not which
-  // option turned domains on - `differentDomains` and `multiDomainLocales` qualify alike
-  // domains are compared by host as they may include a protocol
+  // without a prefix the host is all that names a locale, and only these options make the runtime
+  // resolve one from it (`__I18N_DOMAINS__`) - localizing routes without it leaves them unreachable
+  if (!options.differentDomains && !options.multiDomainLocales) { return false }
+
+  // compared by host, as configured domains may include a protocol
   const domains = new Set<string>()
   for (const locale of options.locales) {
     for (const domain of locale.domains) {
@@ -111,7 +112,7 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
     }
   }
 
-  // no domains at all is a plain `no_prefix` site, where routes are meant to stay unlocalized
+  // one domain per locale is the requirement, so a domain setup configuring none localizes nothing
   return domains.size > 0
 }
 
