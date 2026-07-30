@@ -19,6 +19,7 @@ function createHeadContext(overrides: Partial<HeadContext> = {}): HeadContext {
     seo: true,
     baseUrl: 'https://example.com',
     locales,
+    currentLocale: 'en',
     defaultLocale: 'en',
     hreflangLinks: true,
     strictCanonicals: true,
@@ -111,7 +112,8 @@ describe('canonical link', () => {
   })
 
   test('omits canonical when the route cannot be resolved', () => {
-    const head = localeHead(createHeadContext({ getLocaleRoute: () => undefined }))
+    // the canonical is the current locale's own alternate, so it goes when that cannot be resolved
+    const head = localeHead(createHeadContext({ getLocalizedRoute: () => '' }))
     expect(head.link.find(x => x.rel === 'canonical')).toBeUndefined()
     expect(head.meta.find(x => x.property === 'og:url')).toBeUndefined()
   })

@@ -6,10 +6,10 @@ import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessag
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
-import { domainForHost, domainFromLocale } from './shared/domain'
+import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
-import { joinURL } from 'ufo'
+import { joinURL, parseURL } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 
 import type { NuxtApp } from '#app'
@@ -57,9 +57,24 @@ export interface NuxtI18nContext {
   setCookieLocale: (locale: string) => void
   /** Get current base URL */
   getBaseUrl: (locale?: string) => string
+  /** Base URL for a locale, ignoring the current host (alternate links) */
+  getCanonicalBaseUrl: (locale: string) => string
   /** Load locale messages */
   loadMessages: (locale: Locale) => Promise<void>
   composableCtx: ComposableContext
+}
+
+/**
+ * `useRequestURL` reports the scheme the server was reached on: `http` behind a TLS-terminating
+ * proxy, and nothing meaningful while prerendering. A configured `baseUrl` names the real one.
+ * @internal exported for testing
+ */
+export function withConfiguredProtocol(
+  url: { host: string, protocol: string },
+  baseUrl: string | BaseUrlResolveHandler<unknown> | undefined,
+): { host: string, protocol: string } {
+  const protocol = !isFunction(baseUrl) && parseURL(baseUrl).protocol
+  return protocol ? { host: url.host, protocol } : url
 }
 
 /**
@@ -153,18 +168,29 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
 
   /** Get computed config for locale */
   const getLocaleConfig = (locale: string) => serverLocaleConfigs.value![locale]
-  const getDomainFromLocale = (locale: string) =>
-    domainFromLocale(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true }), locale)
   if (import.meta.dev && isFunction(runtimeI18n.baseUrl)) {
     console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
   }
-  const getBaseUrl = createBaseUrlGetter({
+  // host and protocol cannot change while a context lives - one per request on the server, one per
+  // app on the client - and every link and head tag resolves through here
+  let url: { host: string, protocol: string } | undefined
+  const requestUrl = () => (url ??= withConfiguredProtocol(useRequestURL({ xForwardedHost: true }), runtimeI18n.baseUrl))
+  const getDomainFromLocale = (locale: string) =>
+    domainFromLocale(runtimeI18n.domainLocales, requestUrl(), locale)
+  const baseUrlOptions = {
     baseUrl: isFunction(runtimeI18n.baseUrl) ? () => (runtimeI18n.baseUrl as BaseUrlResolveHandler<unknown>)(nuxt) : runtimeI18n.baseUrl,
     appBase: nuxt.$config.app.baseURL,
     domains: __I18N_DOMAINS__,
-    getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, useRequestURL({ xForwardedHost: true })),
-    getDomainFromLocale,
-  })
+    getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, requestUrl()),
+  }
+  const getBaseUrl = createBaseUrlGetter({ ...baseUrlOptions, getDomainFromLocale })
+  const getCanonicalBaseUrl = __I18N_DOMAINS__
+    ? createBaseUrlGetter({
+        ...baseUrlOptions,
+        getDomainFromLocale: locale =>
+          canonicalDomainFromLocale(runtimeI18n.domainLocales, requestUrl(), locale, runtimeI18n.defaultLocale),
+      })
+    : getBaseUrl
   const resolvedLocale = useResolvedLocale()
   if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
@@ -280,6 +306,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
       }
     },
     getBaseUrl,
+    getCanonicalBaseUrl,
     loadMessages: async (locale: string) => {
       // prevent multiple loads during hydration
       if (nuxt.isHydrating && loadMap.has(locale)) { return }

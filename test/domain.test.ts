@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  canonicalDomainFromLocale,
   cookieSpansDomains,
   domainForHost,
   domainFromLocale,
@@ -10,7 +11,7 @@ import {
   withRuntimeDomain,
 } from '../src/runtime/shared/domain'
 import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
-import { createBaseUrlGetter } from '../src/runtime/context'
+import { createBaseUrlGetter, withConfiguredProtocol } from '../src/runtime/context'
 import { normalizeDomainLocale } from '../src/utils'
 import { getNormalizedLocales } from './pages/utils'
 
@@ -186,6 +187,54 @@ describe('domainFromLocale', () => {
   })
 })
 
+describe('canonicalDomainFromLocale', () => {
+  const url = { host: 'en.example.com', protocol: 'http:' }
+  const multi = [
+    ...locales,
+    ...getNormalizedLocales([
+      { code: 'pt', domains: ['a.example.com', 'b.example.com'], defaultForDomains: ['b.example.com'] },
+    ]),
+  ]
+
+  test('resolves the same domain from every host for a locale served on several', () => {
+    for (const host of ['a.example.com', 'b.example.com', 'en.example.com', 'localhost:3000']) {
+      expect(canonicalDomainFromLocale({}, { host, protocol: 'http:' }, 'pt', undefined, multi)).toBe('http://b.example.com')
+    }
+    // `domainFromLocale` prefers the current host, which made hreflang links non-reciprocal
+    expect(domainFromLocale({}, { host: 'a.example.com', protocol: 'http:' }, 'pt', multi)).toBe(
+      'http://a.example.com'
+    )
+  })
+
+  test('the domain the locale is the default for wins over its own `domain`', () => {
+    // the unprefixed shape is derived from `defaultForDomains` too, resolving `domain` here would
+    // emit an unprefixed path for a domain that prefixes the locale
+    const own = getNormalizedLocales([
+      { code: 'en', domain: 'own.example.com', domains: ['shared.example.com'], defaultForDomains: ['shared.example.com'] },
+    ])
+    expect(canonicalDomainFromLocale({}, url, 'en', undefined, own)).toBe('http://shared.example.com')
+    expect(canonicalDomainFromLocale({}, url, 'nl', undefined, locales)).toBe('http://shared.example.com')
+  })
+
+  test('keeps the protocol of the configured domain', () => {
+    expect(canonicalDomainFromLocale({}, url, 'es', undefined, locales)).toBe('https://shared2.example.com')
+  })
+
+  test('`domainLocales` runtime config overrides the configured domain', () => {
+    expect(canonicalDomainFromLocale({ pt: { domain: 'pt.staging.example.com' } }, url, 'pt', undefined, multi)).toBe(
+      'http://pt.staging.example.com'
+    )
+  })
+
+  test('a locale without domains falls back to the domain naming `fallbackLocale`', () => {
+    const withPlain = [...locales, ...getNormalizedLocales(['pl'])]
+    expect(canonicalDomainFromLocale({}, url, 'pl', 'nl', withPlain)).toBe('http://shared.example.com')
+    // nothing to fall back to leaves the caller on its own base
+    expect(canonicalDomainFromLocale({}, url, 'pl', undefined, withPlain)).toBeUndefined()
+    expect(canonicalDomainFromLocale({}, url, 'pl', 'pl', withPlain)).toBeUndefined()
+  })
+})
+
 describe('domainForHost', () => {
   test('resolves the current host with the request protocol', () => {
     expect(domainForHost({}, { host: 'en.example.com', protocol: 'http:' }, locales)).toBe('http://en.example.com')
@@ -295,6 +344,22 @@ describe('withRuntimeDomain', () => {
       domains: ['en.staging.example.com'],
       defaultForDomains: []
     })
+  })
+})
+
+describe('withConfiguredProtocol', () => {
+  const url = { host: 'en.example.com', protocol: 'http:' }
+
+  test('takes the scheme from `baseUrl`, which the request cannot be trusted for', () => {
+    expect(withConfiguredProtocol(url, 'https://example.com')).toEqual({ host: 'en.example.com', protocol: 'https:' })
+    expect(withConfiguredProtocol(url, 'http://example.com')).toEqual({ host: 'en.example.com', protocol: 'http:' })
+  })
+
+  test('keeps the request URL when `baseUrl` names no scheme', () => {
+    expect(withConfiguredProtocol(url, '')).toBe(url)
+    expect(withConfiguredProtocol(url, undefined)).toBe(url)
+    expect(withConfiguredProtocol(url, '/base-path')).toBe(url)
+    expect(withConfiguredProtocol(url, () => 'https://example.com')).toBe(url)
   })
 })
 

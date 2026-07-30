@@ -1,5 +1,4 @@
 import { type Ref, computed, getCurrentScope, onScopeDispose, ref, useHead, useRequestEvent, watch } from '#imports'
-import { joinURL } from 'ufo'
 import { assign } from '@intlify/shared'
 import { type HeadContext, localeHead as _localeHead } from '#i18n-kit/head'
 
@@ -29,8 +28,7 @@ function createHeadContext(
   config: Required<I18nHeadOptions>,
   locale = ctx.getLocale(),
   locales = ctx.getLocales(),
-  // the default base URL under domain setups is the default locale's domain, resolve the
-  // current locale's domain so canonical and og:url self-reference the current host (#2595)
+  // only reached for a relative path, which under domains means a host matching none of them
   baseUrl = ctx.routingOptions.domains ? ctx.getBaseUrl(locale) : ctx.getBaseUrl(),
 ): HeadContext {
   const currentLocale: LocaleObject = locales.find(l => l.code === locale) || { code: locale }
@@ -41,6 +39,9 @@ function createHeadContext(
     warnedClusterFallback = true
     console.warn('[nuxt-i18n] Set `defaultLocale` to annotate an `x-default` alternate for your domains.')
   }
+
+  // alternate links resolve through the same routing as navigation, shaped for the canonical domain
+  const alternateCtx = { ...ctx, afterSwitchLocalePath: ctx.getAlternatePath }
 
   if (!baseUrl && !ctx.routingOptions.domains) {
     if (ctx.strictSeo) {
@@ -54,6 +55,7 @@ function createHeadContext(
     key: ctx.strictSeo ? 'key' : 'id',
     strictSeo: ctx.strictSeo,
     locales,
+    currentLocale: locale,
     baseUrl,
     canonicalQueries,
     hreflangLinks: ctx.routingOptions.hreflangLinks,
@@ -64,14 +66,7 @@ function createHeadContext(
     getCurrentLanguage: () => currentLocale.language,
     getCurrentDirection: () => currentLocale.dir || __DEFAULT_DIRECTION__,
     getLocaleRoute: route => localeRoute(ctx, route),
-    getLocalizedRoute: (locale, route) => {
-      const path = switchLocalePath(ctx, locale, route)
-      // head links are absolute per locale under domain setups, navigation links may be host-relative
-      if (ctx.routingOptions.domains && path && path[0] === '/') {
-        return joinURL(ctx.getBaseUrl(locale), path)
-      }
-      return path
-    },
+    getLocalizedRoute: (locale, route) => switchLocalePath(alternateCtx, locale, route),
     getRouteWithoutQuery: () => {
       try {
         return assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })

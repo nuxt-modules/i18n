@@ -2,10 +2,12 @@ import { describe, expect, test, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { createLocalizedRouteByPathResolver } from '../src/runtime/routing/utils'
 import { localizeRoutes } from '../src/routing'
+import { getNormalizedLocales } from './pages/utils'
 import type { LocalizableRoute } from '../src/kit/gen'
 import type { Strategies } from '#internal-i18n-types'
 
-const LOCALES = [{ code: 'en', language: 'en' }, { code: 'ja', language: 'ja' }]
+// normalized the way `resolveContext` does - `localizeRoutes` reads the domain fields
+const LOCALES = getNormalizedLocales([{ code: 'en', language: 'en' }, { code: 'ja', language: 'ja' }])
 const PAGES = [
   { path: '/', name: 'index' },
   { path: '/about', name: 'about' },

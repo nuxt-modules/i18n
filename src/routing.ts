@@ -90,10 +90,12 @@ function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext)
 
 export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
   if (options.strategy !== 'no_prefix') { return true }
-  // no_prefix is only supported when using a separate domain per locale
-  if (!options.differentDomains) { return false }
 
-  // check if domains are used multiple times, compared by host as domains may include a protocol
+  // without a prefix the host is all that names a locale, and only these options make the runtime
+  // resolve one from it (`__I18N_DOMAINS__`) - localizing routes without it leaves them unreachable
+  if (!options.differentDomains && !options.multiDomainLocales) { return false }
+
+  // compared by host, as configured domains may include a protocol
   const domains = new Set<string>()
   for (const locale of options.locales) {
     for (const domain of locale.domains) {
@@ -101,7 +103,8 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
       if (domains.has(host)) {
         console.error(
           `Cannot use \`strategy: no_prefix\` when using multiple locales on the same domain`
-          + ` - found multiple entries with ${domain}`,
+          + ` - found multiple entries with ${domain}.`
+          + ` Routes stay unlocalized, so \`switchLocalePath\` and the \`hreflang\`/\`canonical\` tags resolve to nothing.`,
         )
         return false
       }
@@ -109,7 +112,8 @@ export function shouldLocalizeRoutes(options: SetupLocalizeRoutesOptions) {
     }
   }
 
-  return true
+  // one domain per locale is the requirement, so a domain setup configuring none localizes nothing
+  return domains.size > 0
 }
 
 /** Locales acting as the default (unprefixed) locale for at least one domain */

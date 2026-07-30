@@ -11,7 +11,7 @@ import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
 import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
-import { getNormalizedLocales } from './pages/utils'
+import { createTestBaseUrls, getNormalizedLocales } from './pages/utils'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
 import type { NuxtPage } from '@nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
@@ -30,10 +30,10 @@ const routingOptions = {
 
 const i18nMock = {
   locale: ref('en'),
-  locales: ref([
+  locales: ref(getNormalizedLocales([
     { code: 'en', language: 'en-US' },
     { code: 'ja', language: 'ja-JP' }
-  ]),
+  ])),
   baseUrl: ref('http://localhost')
 }
 
@@ -48,7 +48,8 @@ async function loadFixtureAndRoutes() {
   })
   const locales = getNormalizedLocales(nuxt.options.i18n.locales)
   i18nMock.locale.value = locales[0].code
-  i18nMock.locales.value = locales.map(x => ({ code: x.code, language: x.language ?? x.code }))
+  // kept normalized - `localizeRoutes` and the routing context both read the domain fields
+  i18nMock.locales.value = locales.map(x => ({ ...x, language: x.language ?? x.code }))
   i18nMock.baseUrl.value = String(nuxt.options.i18n.baseUrl)
   try {
     return await new Promise<NuxtPage[]>(res => {
@@ -107,6 +108,7 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
     ctx = createRoutingContext({
       router,
       defaultLocale: DEFAULT_LOCALE,
+      configuredDefaultLocale: DEFAULT_LOCALE,
       strategy,
       routing: strategy !== 'no_prefix',
       domains: false,
@@ -116,6 +118,7 @@ describe.each(STRATEGIES)('routing context (strategy: %s)', strategy => {
       getLocale: () => unref(i18nMock.locale),
       getLocales: () => unref(i18nMock.locales),
       getBaseUrl: () => unref(i18nMock.baseUrl),
+      getCanonicalBaseUrl: () => unref(i18nMock.baseUrl),
       getHost: () => 'localhost'
     })
   })
@@ -330,6 +333,7 @@ describe('switchLocalePath with differentDomains', () => {
     const ctx = createRoutingContext({
       router,
       defaultLocale: hostDefault,
+      configuredDefaultLocale: opts.defaultLocale ?? '',
       strategy: opts.strategy,
       routing: true,
       domains: true,
@@ -338,7 +342,7 @@ describe('switchLocalePath with differentDomains', () => {
       compactRoutes: false,
       getLocale: () => opts.locale,
       getLocales: () => locales,
-      getBaseUrl: locale => `http://${locales.find(l => l.code === (locale ?? opts.locale))?.domains[0] ?? opts.host}`,
+      ...createTestBaseUrls({ locales, host: opts.host, protocol: 'http:', defaultLocale: opts.defaultLocale }),
       getHost: () => opts.host
     })
     return { router, ctx }
