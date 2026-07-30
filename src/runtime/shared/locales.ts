@@ -69,7 +69,14 @@ export function resolveDefaultLocale(
   defaultLocale: string | undefined,
   locales: NormalizedLocaleObject[] = normalizedLocales,
 ): string {
-  return getDefaultLocaleForDomain(host, locales) || defaultLocale || ''
+  const resolved = getDefaultLocaleForDomain(host, locales) || defaultLocale
+  if (resolved) { return resolved }
+
+  // under domains `defaultLocale` is optional, so a host claiming none of them can end up with no
+  // unprefixed locale at all - the route table then has nothing at `/` and every unprefixed path
+  // 404s. Serving the first locale there keeps such a host (dev, staging, a health check by IP)
+  // usable, matching the promise that every locale is served on it
+  return (locales.some(l => l.domains.length) ? locales[0]?.code : '') || ''
 }
 
 export const isSupportedLocale = (locale?: string): boolean => localeCodes.includes(locale || '')
