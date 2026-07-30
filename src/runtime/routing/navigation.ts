@@ -15,10 +15,8 @@ export type NavigationResolverConfig = {
   routeLocale: (to: CompatRoute) => string | undefined
   hasRoute: (name: string) => boolean
   getLocaleCodes: () => string[]
-  /** Whether the locale is served on the current host, set under domain setups */
-  isLocaleOnHost?: (locale: string) => boolean
-  /** Whether the locale can be served on the current host (see `isLocaleServedOnHost`), set under domain setups */
-  isLocaleServed?: (locale: string) => boolean
+  /** How the current host can reach a locale (see `resolveLocaleReach`), set under domain setups */
+  localeReach?: (locale: string) => 'here' | 'other-domain' | 'off-host'
   strategy: Strategies
   compactRoutes: boolean
 }
@@ -42,10 +40,15 @@ export function createNavigationResolver(config: NavigationResolverConfig) {
   }
 
   return function resolveNavigation(to: CompatRoute, locale: string, pendingLocale = false): ResolvedNavigation | undefined {
-    // a locale restricted to other domains relocates to its absolute `switchLocalePath` URL,
-    // while a host matching no configured domain (e.g. staging) serves every locale in place
-    if (config.isLocaleOnHost && !config.isLocaleOnHost(locale)) {
-      if (config.isLocaleServed?.(locale) || isUnlocalizedRoute(to) || pendingLocale) { return }
+    const reach = config.localeReach?.(locale)
+
+    // an unconfigured host serves every locale in place, and must not send a visitor to a domain
+    if (reach === 'off-host') { return }
+
+    // vue-router cannot cross origins, so a locale belonging to other domains needs a full load of
+    // its absolute `switchLocalePath` URL
+    if (reach === 'other-domain') {
+      if (isUnlocalizedRoute(to) || pendingLocale) { return }
       const destination = config.switchLocalePath(locale, to)
       if (!destination || !hasProtocol(destination, { strict: true })) { return }
       return { path: destination, code: config.redirectStatusCode, external: true }

@@ -18,14 +18,29 @@ export function isLocaleOnHost(locale: NormalizedLocaleObject | undefined, host:
 }
 
 /**
- * Whether the locale can be served on the given host. Unlike {@link isLocaleOnHost} a locale
- * configured without domains qualifies, as does any locale on a host configured for none of
- * them (a staging domain, a health check by IP) so the site keeps working there.
+ * How `host` can reach `locale`:
+ * - `here` - served on this host, either because it is one of the locale's domains or because the
+ *   locale configures none and is served on all of them
+ * - `other-domain` - the locale belongs to domains this host is not one of
+ * - `off-host` - same, but this host matches no configured domain at all (a staging domain, a health
+ *   check by IP), where the site keeps serving every locale and never sends a visitor to a domain
+ */
+export function resolveLocaleReach(
+  locales: NormalizedLocaleObject[],
+  host: string,
+  locale: string,
+): 'here' | 'other-domain' | 'off-host' {
+  const target = locales.find(l => l.code === locale)
+  if (!target?.domains.length || isLocaleOnHost(target, host)) { return 'here' }
+  return locales.some(l => isLocaleOnHost(l, host)) ? 'other-domain' : 'off-host'
+}
+
+/**
+ * Whether the locale can be served on the given host - every {@link resolveLocaleReach} answer but
+ * `other-domain`. Shares that resolution so the two cannot disagree.
  */
 export function isLocaleServedOnHost(locales: NormalizedLocaleObject[], host: string, locale: string): boolean {
-  const target = locales.find(l => l.code === locale)
-  if (!target?.domains.length) { return true }
-  return isLocaleOnHost(target, host) || !locales.some(l => isLocaleOnHost(l, host))
+  return resolveLocaleReach(locales, host, locale) !== 'other-domain'
 }
 
 /** `defaultForDomains` leads so the domain agrees with the unprefixed shape derived from it */

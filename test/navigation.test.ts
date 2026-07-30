@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest'
 import { createNavigationResolver } from '../src/runtime/routing/navigation'
 import { getLocaleFromRoutePath } from '../src/runtime/kit/routing'
+import { resolveLocaleReach } from '../src/runtime/shared/domain'
+import { getNormalizedLocales } from './pages/utils'
 
 import type { NavigationResolverConfig } from '../src/runtime/routing/navigation'
 import type { CompatRoute } from '../src/runtime/types'
@@ -12,6 +14,15 @@ const route = (overrides: Partial<CompatRoute> = {}): CompatRoute =>
   ({ path: '/about', fullPath: '/about', name: 'about___en', matched: [], meta: {}, ...overrides }) as any
 
 const ROUTES = new Set(['index___en', 'index___fr', 'about___en', 'about___fr', 'test-route___en', 'test-route___fr'])
+
+const DOMAIN_LOCALES = getNormalizedLocales([
+  { code: 'en', domains: ['en.example.com'], defaultForDomains: ['en.example.com'] },
+  { code: 'fr', domains: ['fr.example.com'], defaultForDomains: ['fr.example.com'] },
+])
+
+// derived through the real predicate, so the harness cannot describe a host the runtime never sees
+const reachFrom = (host: string, locales = DOMAIN_LOCALES) => (locale: string) =>
+  resolveLocaleReach(locales, host, locale)
 
 // mirrors `localePath`/`switchLocalePath` for existing routes with `strategy: prefix_except_default`
 const localizePath = (path: string, locale: string) =>
@@ -79,7 +90,7 @@ describe('createNavigationResolver', () => {
   })
 
   test('domains: locales served on the current host navigate through the router', () => {
-    const resolve = createResolver({ isLocaleOnHost: locale => locale !== 'fr' })
+    const resolve = createResolver({ localeReach: reachFrom('en.example.com') })
     expect(resolve(route({ path: '/fr/about', fullPath: '/fr/about', name: 'about___fr' }), 'en')).toEqual({
       path: '/about',
       code: undefined,
@@ -88,7 +99,7 @@ describe('createNavigationResolver', () => {
 
   test('domains: a locale served on another domain relocates to its absolute URL', () => {
     const resolve = createResolver({
-      isLocaleOnHost: locale => locale !== 'fr',
+      localeReach: reachFrom('en.example.com'),
       switchLocalePath: (locale, to) => 'http://fr.example.com' + unprefixedPath(String(to.fullPath)),
     })
     expect(resolve(route(), 'fr')).toEqual({ path: 'http://fr.example.com/about', code: undefined, external: true })
@@ -96,8 +107,7 @@ describe('createNavigationResolver', () => {
 
   test('domains: a locale served on an unconfigured host stays put', () => {
     const resolve = createResolver({
-      isLocaleOnHost: locale => locale !== 'fr',
-      isLocaleServed: () => true,
+      localeReach: reachFrom('staging.example.com'),
       switchLocalePath: () => 'http://fr.example.com/about',
     })
     expect(resolve(route(), 'fr')).toBeUndefined()
@@ -105,7 +115,18 @@ describe('createNavigationResolver', () => {
 
   test('domains: an off-host locale without an absolute destination stays put', () => {
     // the default mock resolves a relative path - only an absolute URL can navigate externally
-    const resolve = createResolver({ isLocaleOnHost: locale => locale !== 'fr' })
+    const resolve = createResolver({ localeReach: reachFrom('en.example.com') })
     expect(resolve(route(), 'fr')).toBeUndefined()
+  })
+
+  test('domains: a locale configuring no domain navigates in place', () => {
+    // it is served on every domain, so it has nowhere to be relocated to - resolving it as off-host
+    // left `setLocale` setting the locale and its cookie while the URL never changed
+    const withPlain = [...DOMAIN_LOCALES, ...getNormalizedLocales([{ code: 'de' }])]
+    const resolve = createResolver({
+      localeReach: reachFrom('en.example.com', withPlain),
+      getLocaleCodes: () => ['en', 'fr', 'de'],
+    })
+    expect(resolve(route(), 'de')).toEqual({ path: '/de/about', code: undefined })
   })
 })
