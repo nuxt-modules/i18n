@@ -1,4 +1,4 @@
-import { generateLoaderOptions } from '../src/gen'
+import { generateLoaderOptions, simplifyLocaleOptions } from '../src/gen'
 import { getNormalizedLocales } from './pages/utils'
 import { resolveLocales, resolveRelativeLocales, resolveVueI18nConfigInfo } from '../src/utils'
 import { vi, beforeEach, afterEach, test, expect } from 'vitest'
@@ -245,4 +245,19 @@ test('server asset loaders', async () => {
   )
 
   expect(code).toMatchSnapshot()
+})
+
+test('simplifyLocaleOptions keeps locale codes and resolves objects through the domain passes', () => {
+  const run = (locales: unknown) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    simplifyLocaleOptions({ options: { locales } } as any, {} as any)
+
+  // `mergeConfigLocales` objectifies every locale before this runs, so a string only reaches it
+  // through a direct call - it must still not be spread into a character-indexed object
+  expect(run(['en', 'fr'])).toEqual(['en', 'fr'])
+  expect(run([])).toEqual([])
+  expect(run(['en', { code: 'fr', domain: 'fr.example.com' }])).toEqual([
+    { code: 'en', language: 'en', domains: [], defaultForDomains: [] },
+    { code: 'fr', domain: 'fr.example.com', domains: ['fr.example.com'], defaultForDomains: ['fr.example.com'] },
+  ])
 })

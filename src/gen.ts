@@ -17,13 +17,18 @@ function stripLocaleFiles<T extends LocaleObject>(locale: T): T {
 }
 
 export function simplifyLocaleOptions(ctx: ResolvedI18nContext, _nuxt: Nuxt) {
-  const locales = (ctx.options.locales ?? []) as LocaleObject[]
+  const locales = ctx.options.locales ?? []
+  // codes alone carry no domain configuration, and keeping them saves shipping empty objects.
+  // `mergeConfigLocales` resolves every locale into an object before this runs, so this is only
+  // reached for an empty list - spreading a string here yields a character-indexed object
   if (!locales.some(x => !isString(x))) {
-    return locales.map(locale => locale.code)
+    return locales
   }
   // normalize so runtime locale consumers (e.g. `defaultForDomains` reads) only handle one shape,
   // through the same passes as `ctx.normalizedLocales` so both channels agree on route shape
-  return withImplicitDomainDefaults(locales.map(normalizeDomainLocale)).map(stripLocaleFiles)
+  return withImplicitDomainDefaults(
+    locales.map(locale => normalizeDomainLocale(isString(locale) ? { code: locale, language: locale } : locale)),
+  ).map(stripLocaleFiles)
 }
 
 type LocaleLoaderData = {
