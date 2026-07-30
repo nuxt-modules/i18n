@@ -39,3 +39,5 @@ declare let __I18N_CDN__: boolean
 declare let __I18N_LOCALE_HASHES__: Record<string, string>
 /** Whether compact routes are enabled */
 declare let __I18N_COMPACT_ROUTES__: boolean
+/** Message assets are read from the server output instead of nitro storage (see `setupNitro`) */
+declare let __I18N_FS_ASSETS__: boolean

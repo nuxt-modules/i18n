@@ -10,6 +10,8 @@ import { join, relative } from 'pathe'
 import { logger, toArray } from './utils'
 import { EXECUTABLE_EXTENSIONS } from './constants'
 
+import type { Plugin } from 'rollup'
+import type { Nitro } from 'nitropack'
 import type { Nuxt } from '@nuxt/schema'
 import type { FileMeta } from './types'
 import type { ResolvedI18nContext } from './context'
@@ -21,22 +23,28 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     getContents: () => generateTemplateNuxtI18nOptions(ctx, true),
   })
 
-  // resources with an `assetKey` ship as server assets read lazily at runtime (see
+  // resources with an `assetKey` ship as message assets read lazily at runtime (see
   // `generateLoaderOptions`) - keeps message data out of the nitro bundle and its build memory
   const assetFiles = new Map(ctx.localeFileMetas.filter(meta => meta.assetKey).map(meta => [meta.assetKey!, meta.path]))
   if (assetFiles.size) {
     const assetsDir = join(nuxt.options.buildDir, 'i18n-assets')
-    nuxt.hook('nitro:config', (nitroConfig) => {
-      nitroConfig.serverAssets ||= []
-      nitroConfig.serverAssets.push({ baseName: 'i18n', dir: assetsDir })
-    })
-    // written right before the nitro build - the build dir is cleaned after `modules:done`
+    const assetSources = new Map<string, string>()
+    // read right before the nitro build - the build dir is cleaned after `modules:done` - and kept
+    // for the prerender build, which renders from a nitro of its own
     nuxt.hook('nitro:build:before', () => {
-      rmSync(assetsDir, { recursive: true, force: true })
-      mkdirSync(assetsDir, { recursive: true })
       for (const [assetKey, path] of assetFiles) {
-        writeFileSync(join(assetsDir, assetKey), readStaticResource(ctx, path))
+        assetSources.set(assetKey, readStaticResource(ctx, path))
       }
+    })
+
+    // nitro can only ship a server asset by embedding it in the bundle, which for message data is
+    // most of the nitro build - the assets are emitted next to the server entry and read back with
+    // `readFile` instead, only targets without a filesystem keep the embed. The preset deciding
+    // that resolves after `nitro:config`, so each build answers from its own resolved options.
+    const setupAssetDelivery = (nitro: Nitro) => setupMessageAssets(nitro, assetsDir, assetSources)
+    nuxt.hook('nitro:init', (nitro) => {
+      setupAssetDelivery(nitro)
+      nitro.hooks.hook('prerender:init', setupAssetDelivery)
     })
   }
 
@@ -100,11 +108,44 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     if (localePathsByType.json5.length > 0) {
       nitroConfig.rollupConfig!.plugins.push(json5Plugin({ include: localePathsByType.json5 }))
     }
+
     // the prerender pass builds its own nitro from this config, so this is the only place reaching
     // it - but it runs before the preset is applied, so `staticDeploy` is stale here. Server code
     // reads what derives from it (`__IS_SSG__`, `__I18N_CDN__`) from the app graph instead.
     nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
   })
+}
+
+/** Ships message assets as files this build emits, or embedded when it has no filesystem to read */
+function setupMessageAssets(nitro: Nitro, assetsDir: string, sources: Map<string, string>) {
+  nitro.options.replace.__I18N_FS_ASSETS__ = String(nitro.options.node)
+
+  if (nitro.options.node) {
+    nitro.options.rollupConfig!.plugins = [...toArray(nitro.options.rollupConfig!.plugins as Plugin[]), emitI18nAssets(sources)]
+    return
+  }
+
+  // nitro embeds what it finds on disk, so this build needs the assets written out
+  nitro.hooks.hook('build:before', () => {
+    rmSync(assetsDir, { recursive: true, force: true })
+    mkdirSync(assetsDir, { recursive: true })
+    for (const [assetKey, source] of sources) {
+      writeFileSync(join(assetsDir, assetKey), source)
+    }
+  })
+  nitro.options.serverAssets.push({ baseName: 'i18n', dir: assetsDir })
+}
+
+/** Emits message assets into the server output, next to the entry `readI18nAsset` resolves against */
+function emitI18nAssets(sources: Map<string, string>): Plugin {
+  return {
+    name: 'nuxtjs:i18n-assets',
+    generateBundle() {
+      for (const [assetKey, source] of sources) {
+        this.emitFile({ type: 'asset', fileName: `i18n-assets/${assetKey}`, source })
+      }
+    },
+  }
 }
 
 async function resolveLocaleDetectorPath(ctx: ResolvedI18nContext, nuxt: Nuxt) {

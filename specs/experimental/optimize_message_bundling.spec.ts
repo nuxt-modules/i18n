@@ -1,8 +1,10 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, test } from 'vitest'
 
 import { getDom, renderPage, waitForLocaleNetwork, waitForLocaleSwitch } from '../helper'
-import { $fetch, setup } from '../utils'
+import { $fetch, setup, useTestContext } from '../utils'
 
 await setup({
   rootDir: fileURLToPath(new URL(`../fixtures/lazy`, import.meta.url)),
@@ -62,6 +64,16 @@ describe('experimental.optimizeMessageBundling', () => {
 
     await Promise.all([waitForLocaleNetwork(page, 'ja', 'response'), page.click('#nuxt-locale-link-ja')])
     await expect.poll(() => page.locator('#home-header').innerText()).toEqual('ホームページ')
+  })
+
+  test('messages ship next to the server build instead of inside it', () => {
+    const serverDir = join(useTestContext().nuxt!.options.nitro.output!.dir!, 'server')
+    const assetsDir = join(serverDir, 'i18n-assets')
+    const assets = readdirSync(assetsDir).map(asset => readFileSync(join(assetsDir, asset), 'utf8'))
+
+    expect(assets.filter(content => content.includes('Homepage'))).not.toHaveLength(0)
+    // nitro turns every server asset it is handed into an embedded `raw:` module
+    expect(existsSync(join(serverDir, 'chunks/raw'))).toBe(false)
   })
 
   // JSON drops message functions, so `de` keeps its loaders instead of using the endpoint

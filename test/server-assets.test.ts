@@ -1,7 +1,8 @@
 import { beforeEach, expect, test, vi } from 'vitest'
 
-const { getItemRaw } = vi.hoisted(() => ({ getItemRaw: vi.fn() }))
+const { getItemRaw, readFile } = vi.hoisted(() => ({ getItemRaw: vi.fn(), readFile: vi.fn() }))
 vi.mock('nitropack/runtime', () => ({ useStorage: () => ({ getItemRaw }) }))
+vi.mock('node:fs/promises', () => ({ readFile }))
 
 // fresh module per test - the memo is module-scope
 async function importReadI18nAsset() {
@@ -11,6 +12,8 @@ async function importReadI18nAsset() {
 beforeEach(() => {
   vi.resetModules()
   getItemRaw.mockReset()
+  readFile.mockReset()
+  vi.stubGlobal('__I18N_FS_ASSETS__', false)
 })
 
 test('parses an asset once and memoizes the result', async () => {
@@ -43,6 +46,16 @@ test('throws a named error for missing assets', async () => {
   getItemRaw.mockResolvedValue(null)
 
   await expect(readI18nAsset('missing.json')).rejects.toThrow(`Missing messages asset 'missing.json'`)
+})
+
+test('reads assets emitted into the server output', async () => {
+  vi.stubGlobal('__I18N_FS_ASSETS__', true)
+  const readI18nAsset = await importReadI18nAsset()
+  readFile.mockResolvedValue('{"d":4}')
+
+  await expect(readI18nAsset('d.json')).resolves.toEqual({ d: 4 })
+  expect((readFile.mock.calls[0]![0] as URL).pathname).toMatch(/\/i18n-assets\/d\.json$/)
+  expect(getItemRaw).not.toHaveBeenCalled()
 })
 
 test('does not memoize failures, reads succeed after a transient error', async () => {

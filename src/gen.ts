@@ -62,8 +62,8 @@ export function generateLoaderOptions(
         // a file reaching for the Nuxt app has nothing to run in nitro, and dragging app-only
         // modules into that bundle is what breaks its build (#3940)
         if (!meta.appContext) {
-          // resources with an `assetKey` ship as nitro server assets, read lazily instead of
-          // imported eagerly - the message data stays out of the server bundle (see `setupNitro`)
+          // resources with an `assetKey` ship as message assets, read lazily instead of imported
+          // eagerly - the message data stays out of the server bundle (see `setupNitro`)
           importStatements.add(meta.assetKey
             ? genImport(resolve(ctx.runtimeDir, 'server/utils/assets'), [{ name: 'readI18nAsset' }])
             : genImport(virtualId, identifier))
