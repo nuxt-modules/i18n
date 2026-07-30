@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateLocaleCodes } from './utils'
+import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateLocaleCodes, withImplicitDomainDefaults } from './utils'
 import { resolveRawResourcePaths } from './resources'
 import { generateLoaderOptions } from './gen'
 // takes its facts as config and reads no `__FLAG__` defines, so the build can share it
@@ -94,8 +94,8 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
   ctx.options.locales = await applyLayerOptions(ctx, nuxt)
   ctx.options.locales = filterLocales(ctx)
 
-  const normalizedLocales = ctx.options.locales.map(x =>
-    normalizeDomainLocale(isString(x) ? { code: x, language: x } : x),
+  const normalizedLocales = withImplicitDomainDefaults(
+    ctx.options.locales.map(x => normalizeDomainLocale(isString(x) ? { code: x, language: x } : x)),
   )
   const localeCodes = normalizedLocales.map(locale => locale.code)
   validateLocaleCodes(localeCodes)

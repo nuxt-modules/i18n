@@ -61,6 +61,49 @@ export function normalizeDomainLocale<T extends string>(locale: LocaleObject<T>)
   }) as NormalizedLocaleObject<T>
 }
 
+/**
+ * A domain served by exactly one locale is that locale's default. The documented `differentDomains`
+ * shape names a `domain` per locale and never sets `domainDefault`, and since #4042 the unprefixed
+ * route for a domain comes from `defaultForDomains` alone - without this those sites prefix every
+ * locale and serve nothing at `/`. Domains shared by several locales stay ambiguous, they need an
+ * explicit `defaultForDomains`.
+ *
+ * Runs across all locales, so it cannot live in {@link normalizeDomainLocale}. Both locale channels
+ * (`ctx.normalizedLocales` and the runtime config) must apply it or they disagree on route shape.
+ */
+export function withImplicitDomainDefaults<T extends string>(
+  locales: NormalizedLocaleObject<T>[],
+): NormalizedLocaleObject<T>[] {
+  // mirrors `normalizeDomain`, which reads compile-time defines and so cannot be imported here
+  const toHost = (domain: string) => domain.replace(/^https?:\/\//i, '').toLowerCase()
+  const claimed = new Set(locales.flatMap(l => l.defaultForDomains.map(toHost)))
+  const servedBy = new Map<string, { locale: NormalizedLocaleObject<T>, domain: string }[]>()
+  for (const locale of locales) {
+    for (const domain of locale.domains) {
+      const host = toHost(domain)
+      if (claimed.has(host)) { continue }
+      const entries = servedBy.get(host) ?? []
+      entries.push({ locale, domain })
+      servedBy.set(host, entries)
+    }
+  }
+
+  // keep the configured spelling - `defaultForDomains` entries are also read as URL origins
+  const implicit = new Map<NormalizedLocaleObject<T>, string[]>()
+  for (const entries of servedBy.values()) {
+    if (entries.length !== 1) { continue }
+    const { locale, domain } = entries[0]!
+    implicit.set(locale, [...(implicit.get(locale) ?? []), domain])
+  }
+  if (!implicit.size) { return locales }
+
+  return locales.map(locale =>
+    implicit.has(locale)
+      ? { ...locale, defaultForDomains: [...locale.defaultForDomains, ...implicit.get(locale)!] }
+      : locale,
+  )
+}
+
 export function resolveLocales(srcDir: string, locales: LocaleObject[], vfs: Record<string, string>): LocaleInfo[] {
   const localesResolved: LocaleInfo[] = []
   for (const locale of locales) {

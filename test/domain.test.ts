@@ -12,7 +12,7 @@ import {
 } from '../src/runtime/shared/domain'
 import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
 import { createBaseUrlGetter, withConfiguredProtocol } from '../src/runtime/context'
-import { normalizeDomainLocale } from '../src/utils'
+import { normalizeDomainLocale, withImplicitDomainDefaults } from '../src/utils'
 import { getNormalizedLocales } from './pages/utils'
 
 // the runtime only ever sees build-normalized locales, resolve them the same way here
@@ -443,5 +443,53 @@ describe('normalizeDomainLocale', () => {
 
   test('`domainDefault` without a domain has nothing to be the default for', () => {
     expect(normalizeDomainLocale({ code: 'en', domainDefault: true })).toMatchObject({ defaultForDomains: [] })
+  })
+})
+
+describe('withImplicitDomainDefaults', () => {
+  const defaultsFor = (locales: Parameters<typeof getNormalizedLocales>[0]) =>
+    withImplicitDomainDefaults(getNormalizedLocales(locales)).map(l => [l.code, l.defaultForDomains])
+
+  test('a domain serving one locale makes it the default, keeping the configured spelling', () => {
+    // the documented `differentDomains` shape, which never sets `domainDefault`
+    expect(defaultsFor([
+      { code: 'en', domain: 'en.example.com' },
+      { code: 'fr', domain: 'https://fr.example.com' },
+    ])).toEqual([['en', ['en.example.com']], ['fr', ['https://fr.example.com']]])
+  })
+
+  test('a domain serving several locales stays ambiguous', () => {
+    expect(defaultsFor([
+      { code: 'en', domains: ['shared.example.com'] },
+      { code: 'de', domains: ['shared.example.com'] },
+    ])).toEqual([['en', []], ['de', []]])
+  })
+
+  test('an explicit claim on a domain is never overridden or duplicated', () => {
+    expect(defaultsFor([
+      { code: 'en', domains: ['a.example.com'], defaultForDomains: ['a.example.com'] },
+      // `b` is served only by `fr`, so it is claimed implicitly alongside the explicit `a`
+      { code: 'fr', domains: ['a.example.com', 'b.example.com'] },
+    ])).toEqual([['en', ['a.example.com']], ['fr', ['b.example.com']]])
+  })
+
+  test('a claim by another locale, in any spelling, blocks the implicit default', () => {
+    expect(defaultsFor([
+      { code: 'en', domains: ['https://shared.example.com'], defaultForDomains: ['https://shared.example.com'] },
+      { code: 'fr', domains: ['shared.example.com'] },
+    ])).toEqual([['en', ['https://shared.example.com']], ['fr', []]])
+  })
+
+  test('the multi-domain shape is untouched, every domain serves every locale', () => {
+    const all = ['a.example.com', 'b.example.com']
+    expect(defaultsFor([
+      { code: 'en', domains: all, defaultForDomains: ['a.example.com'] },
+      { code: 'fr', domains: all, defaultForDomains: ['b.example.com'] },
+      { code: 'de', domains: all },
+    ])).toEqual([['en', ['a.example.com']], ['fr', ['b.example.com']], ['de', []]])
+  })
+
+  test('locales without domains are left alone', () => {
+    expect(defaultsFor(['en', 'fr'])).toEqual([['en', []], ['fr', []]])
   })
 })
