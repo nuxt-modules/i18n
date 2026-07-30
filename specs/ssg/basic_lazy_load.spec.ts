@@ -49,22 +49,14 @@ describe('basic lazy loading', async () => {
     const { page } = await renderPage(home)
 
     // `en` present on initial load
-    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
-      {
-        "en": 8,
-      }
-    `)
+    await expect.poll(() => getLocalesMessageKeyCount(page)).toEqual({ en: 8 })
 
     // `fr` messages are static, so they come from the prerendered endpoint instead of a chunk
     await Promise.all([waitForLocaleNetwork(page, 'fr', 'response'), page.click('#nuxt-locale-link-fr')])
 
-    // `fr` locale has been fetched
-    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
-      {
-        "en": 8,
-        "fr": 5,
-      }
-    `)
+    // `fr` locale has been fetched. Polled rather than read once: the network wait resolves when the
+    // response arrives, the messages are only installed once the client has merged it
+    await expect.poll(() => getLocalesMessageKeyCount(page)).toEqual({ en: 8, fr: 5 })
 
     // navigate and wait for locale file request
     await Promise.all([
@@ -73,13 +65,7 @@ describe('basic lazy loading', async () => {
     ])
 
     // `nl` (module) locale has been fetched
-    expect(await getLocalesMessageKeyCount(page)).toMatchInlineSnapshot(`
-      {
-        "en": 8,
-        "fr": 5,
-        "nl": 3,
-      }
-    `)
+    await expect.poll(() => getLocalesMessageKeyCount(page)).toEqual({ en: 8, fr: 5, nl: 3 })
   })
 
   test('can access to no prefix locale (en): /', async () => {
