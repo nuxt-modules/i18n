@@ -1,7 +1,7 @@
 import { joinURL } from 'ufo'
 import { createLocaleRouteNameGetter, createLocalizedRouteByPathResolver } from './utils'
 import { createTrailingSlashFormatter, getLocaleFromRoutePath, getRouteBaseName, prefixable } from '#i18n-kit/routing'
-import { getDefaultLocaleForDomain, isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
+import { isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
 import { canonicalDomain, isLocaleOnHost, normalizeDomain } from '../shared/domain'
 
 import type { RouteLocationPathRaw, RouteRecordNameGeneric, Router } from 'vue-router'
@@ -221,10 +221,9 @@ export function createRoutingContext(options: RoutingContextOptions): RoutingCon
       const locales = options.getLocales()
       const target = locales.find(l => l.code === locale)
 
+      // `setupMultiDomainLocales` already unprefixed this host's own default locale in the route
+      // table, so a path resolved here needs no reshaping
       if (isLocaleOnHost(target, host)) {
-        if (stripsDefaultPrefix && locale === getDefaultLocaleForDomain(host, locales) && getLocaleFromRoutePath(path) === locale) {
-          return path.slice(locale.length + 1) || '/'
-        }
         return path
       }
 
