@@ -1,4 +1,4 @@
-import { filterLocales, resolveLocales, validateLocaleCodes } from '../src/utils'
+import { filterLocales, logger, resolveLocales, validateDefaultLocale, validateLocaleCodes } from '../src/utils'
 import type { NuxtI18nOptions } from '../src/types'
 import type { I18nNuxtContext } from '../src/context'
 import { vi, describe, test, expect } from 'vitest'
@@ -336,5 +336,24 @@ describe('message source classification', () => {
       serializable: false
     })
     expect(analyze(`export { default } from './en'`)).toMatchObject({ type: 'unknown', serializable: false })
+  })
+})
+
+describe('validateDefaultLocale', () => {
+  test('warns when `defaultLocale` names no configured locale', () => {
+    const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+
+    validateDefaultLocale('ja', ['en', 'fr'])
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn.mock.calls[0]![0]).toContain('"ja"')
+
+    warn.mockClear()
+    // a layer may contribute the locale, so this is only checkable after they are merged
+    validateDefaultLocale('ja', ['en', 'fr', 'ja'])
+    validateDefaultLocale('', ['en', 'fr'])
+    validateDefaultLocale(undefined, ['en', 'fr'])
+    expect(warn).not.toHaveBeenCalled()
+
+    warn.mockRestore()
   })
 })

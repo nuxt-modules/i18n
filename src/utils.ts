@@ -37,6 +37,20 @@ export function filterLocales(ctx: I18nNuxtContext) {
 // locale codes are used as single URL path segments (route prefixes, messages endpoint), in route names and in cookies (#4036)
 const INVALID_LOCALE_CODE_CHAR_RE = /[/\\?#%:\s]/
 
+/**
+ * A `defaultLocale` naming no configured locale cannot be the unprefixed locale, so a host relying
+ * on it (one matching no configured domain, or any host without domains) resolves none and serves
+ * nothing at `/`. Only checkable once layers have contributed their locales.
+ */
+export function validateDefaultLocale(defaultLocale: string | undefined, codes: string[]) {
+  if (defaultLocale && !codes.includes(defaultLocale)) {
+    logger.warn(
+      `\`defaultLocale: ${JSON.stringify(defaultLocale)}\` is not one of the configured locales (${codes.join(', ')}),`
+      + ` so it cannot be served as the unprefixed locale.`,
+    )
+  }
+}
+
 export function validateLocaleCodes(codes: string[]) {
   const invalid = codes.filter(code => !code || INVALID_LOCALE_CODE_CHAR_RE.test(code))
   if (invalid.length) {

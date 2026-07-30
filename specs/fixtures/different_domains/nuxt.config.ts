@@ -25,6 +25,6 @@ export default defineNuxtConfig({
       }
     ],
     differentDomains: true,
-    defaultLocale: 'ja'
+    defaultLocale: 'en'
   }
 })

@@ -8,9 +8,10 @@ import {
   isLocaleServedOnHost,
   matchDomainLocale,
   normalizeDomain,
+  resolveLocaleReach,
   withRuntimeDomain,
 } from '../src/runtime/shared/domain'
-import { getDefaultLocaleForDomain } from '../src/runtime/shared/locales'
+import { getDefaultLocaleForDomain, resolveDefaultLocale } from '../src/runtime/shared/locales'
 import { createBaseUrlGetter, withConfiguredProtocol } from '../src/runtime/context'
 import { normalizeDomainLocale, withImplicitDomainDefaults } from '../src/utils'
 import { getNormalizedLocales } from './pages/utils'
@@ -112,6 +113,40 @@ describe('isLocaleServedOnHost', () => {
 
   test('an unknown locale is not restricted', () => {
     expect(isLocaleServedOnHost(locales, 'en.example.com', 'xx')).toBe(true)
+  })
+})
+
+describe('resolveLocaleReach', () => {
+  test('distinguishes the two reasons a locale is not on this host', () => {
+    // `isLocaleServedOnHost` answers `true` for both, which is why they were conflated
+    expect(resolveLocaleReach(locales, 'en.example.com', 'de')).toBe('other-domain')
+    expect(resolveLocaleReach(locales, 'staging.example.com', 'de')).toBe('off-host')
+  })
+
+  test('a locale on this host, and one configuring no domain, are both served here', () => {
+    expect(resolveLocaleReach(locales, 'shared.example.com', 'de')).toBe('here')
+    expect(resolveLocaleReach([...locales, ...getNormalizedLocales(['pl'])], 'en.example.com', 'pl')).toBe('here')
+  })
+})
+
+describe('resolveDefaultLocale', () => {
+  test('the host it is the default for wins over the configured `defaultLocale`', () => {
+    expect(resolveDefaultLocale('shared.example.com', 'en', locales)).toBe('nl')
+  })
+
+  test('a host claiming no default falls back to the configured `defaultLocale`', () => {
+    expect(resolveDefaultLocale('staging.example.com', 'fr', locales)).toBe('fr')
+  })
+
+  test('under domains a host claiming none serves the first locale rather than nothing', () => {
+    // `defaultLocale` is optional under domains, and with no unprefixed locale the route table has
+    // nothing at `/` - every unprefixed path on such a host 404s
+    expect(resolveDefaultLocale('staging.example.com', undefined, locales)).toBe('en')
+    expect(resolveDefaultLocale('staging.example.com', '', locales)).toBe('en')
+  })
+
+  test('without domains nothing is invented, an unset `defaultLocale` stays unset', () => {
+    expect(resolveDefaultLocale('example.com', undefined, getNormalizedLocales(['en', 'fr']))).toBe('')
   })
 })
 

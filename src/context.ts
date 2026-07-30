@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'pathe'
 import { assign, isString } from '@intlify/shared'
 import { applyLayerOptions, resolveLayerVueI18nConfigInfo } from './layers'
-import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateLocaleCodes, withImplicitDomainDefaults } from './utils'
+import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale, resolveLocales, validateDefaultLocale, validateLocaleCodes, withImplicitDomainDefaults } from './utils'
 import { resolveRawResourcePaths } from './resources'
 import { generateLoaderOptions } from './gen'
 // takes its facts as config and reads no `__FLAG__` defines, so the build can share it
@@ -99,6 +99,7 @@ export async function resolveContext(ctx: I18nNuxtContext, nuxt: Nuxt): Promise<
   )
   const localeCodes = normalizedLocales.map(locale => locale.code)
   validateLocaleCodes(localeCodes)
+  validateDefaultLocale(ctx.options.defaultLocale, localeCodes)
 
   const localeInfo = resolveLocales(nuxt.options.srcDir, normalizedLocales, nuxt.vfs)
   const localeFileMetas = localeInfo.flatMap(x => x.meta)
