@@ -83,7 +83,6 @@ export function switchLocalePath(
   ctx: RoutingContext,
   locale: Locale,
   route: CompatRoute = ctx.router.currentRoute.value,
-  shapePath: (path: string, locale: string) => string = ctx.afterSwitchLocalePath,
 ): string {
   const name = ctx.getRouteBaseName(route)
   // unable to localize nameless path
@@ -111,5 +110,5 @@ export function switchLocalePath(
 
   const path = localePath(ctx, routeCopy, locale)
   // custom locale path for domains
-  return shapePath(path, locale)
+  return ctx.afterSwitchLocalePath(path, locale)
 }

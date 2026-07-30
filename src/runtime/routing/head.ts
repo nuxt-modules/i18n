@@ -28,8 +28,7 @@ function createHeadContext(
   config: Required<I18nHeadOptions>,
   locale = ctx.getLocale(),
   locales = ctx.getLocales(),
-  // the default base URL under domain setups is the default locale's domain, resolve the
-  // current locale's domain so canonical and og:url self-reference the current host (#2595)
+  // only reached for a relative path, which under domains means a host matching none of them
   baseUrl = ctx.routingOptions.domains ? ctx.getBaseUrl(locale) : ctx.getBaseUrl(),
 ): HeadContext {
   const currentLocale: LocaleObject = locales.find(l => l.code === locale) || { code: locale }
@@ -40,6 +39,9 @@ function createHeadContext(
     warnedClusterFallback = true
     console.warn('[nuxt-i18n] Set `defaultLocale` to annotate an `x-default` alternate for your domains.')
   }
+
+  // alternate links resolve through the same routing as navigation, shaped for the canonical domain
+  const alternateCtx = { ...ctx, afterSwitchLocalePath: ctx.getAlternatePath }
 
   if (!baseUrl && !ctx.routingOptions.domains) {
     if (ctx.strictSeo) {
@@ -64,10 +66,7 @@ function createHeadContext(
     getCurrentLanguage: () => currentLocale.language,
     getCurrentDirection: () => currentLocale.dir || __DEFAULT_DIRECTION__,
     getLocaleRoute: route => localeRoute(ctx, route),
-    // alternate links name the locale's canonical domain rather than the current host, so hosts
-    // sharing a locale agree on its href. A locale configuring no domain has none to name and
-    // still resolves per host
-    getLocalizedRoute: (locale, route) => switchLocalePath(ctx, locale, route, ctx.getAlternatePath),
+    getLocalizedRoute: (locale, route) => switchLocalePath(alternateCtx, locale, route),
     getRouteWithoutQuery: () => {
       try {
         return assign({}, ctx.router.resolve({ query: {} }), { meta: ctx.router.currentRoute.value.meta })

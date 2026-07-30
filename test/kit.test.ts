@@ -11,10 +11,8 @@ import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
 import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
-import { getNormalizedLocales } from './pages/utils'
+import { createTestBaseUrls, getNormalizedLocales } from './pages/utils'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
-import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from '../src/runtime/shared/domain'
-import { createBaseUrlGetter } from '../src/runtime/context'
 import type { NuxtPage } from '@nuxt/schema'
 import type { Strategies } from '#internal-i18n-types'
 import { LocalizableRoute } from '../src/kit/gen'
@@ -332,15 +330,6 @@ describe('switchLocalePath with differentDomains', () => {
     const hostDefault = resolveDefaultLocale(opts.host, opts.defaultLocale, locales)
     setupMultiDomainLocales(hostDefault, opts.strategy, router)
 
-    // base URLs derived through the runtime getters, seeded like `module.ts` seeds `domainLocales`
-    const url = { host: opts.host, protocol: 'http:' }
-    const domainLocales = Object.fromEntries(locales.map(l => [l.code, { domain: l.domain ?? '' }]))
-    const baseUrlOptions = {
-      baseUrl: undefined,
-      appBase: '/',
-      domains: true,
-      getDomainForHost: () => domainForHost(domainLocales, url, locales)
-    }
     const ctx = createRoutingContext({
       router,
       defaultLocale: hostDefault,
@@ -353,14 +342,7 @@ describe('switchLocalePath with differentDomains', () => {
       compactRoutes: false,
       getLocale: () => opts.locale,
       getLocales: () => locales,
-      getBaseUrl: createBaseUrlGetter({
-        ...baseUrlOptions,
-        getDomainFromLocale: l => domainFromLocale(domainLocales, url, l, locales)
-      }),
-      getCanonicalBaseUrl: createBaseUrlGetter({
-        ...baseUrlOptions,
-        getDomainFromLocale: l => canonicalDomainFromLocale(domainLocales, url, l, locales)
-      }),
+      ...createTestBaseUrls({ locales, host: opts.host, protocol: 'http:', defaultLocale: opts.defaultLocale }),
       getHost: () => opts.host
     })
     return { router, ctx }

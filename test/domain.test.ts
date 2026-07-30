@@ -198,7 +198,7 @@ describe('canonicalDomainFromLocale', () => {
 
   test('resolves the same domain from every host for a locale served on several', () => {
     for (const host of ['a.example.com', 'b.example.com', 'en.example.com', 'localhost:3000']) {
-      expect(canonicalDomainFromLocale({}, { host, protocol: 'http:' }, 'pt', multi)).toBe('http://b.example.com')
+      expect(canonicalDomainFromLocale({}, { host, protocol: 'http:' }, 'pt', undefined, multi)).toBe('http://b.example.com')
     }
     // `domainFromLocale` prefers the current host, which made hreflang links non-reciprocal
     expect(domainFromLocale({}, { host: 'a.example.com', protocol: 'http:' }, 'pt', multi)).toBe(
@@ -212,22 +212,26 @@ describe('canonicalDomainFromLocale', () => {
     const own = getNormalizedLocales([
       { code: 'en', domain: 'own.example.com', domains: ['shared.example.com'], defaultForDomains: ['shared.example.com'] },
     ])
-    expect(canonicalDomainFromLocale({}, url, 'en', own)).toBe('http://shared.example.com')
-    expect(canonicalDomainFromLocale({}, url, 'nl', locales)).toBe('http://shared.example.com')
+    expect(canonicalDomainFromLocale({}, url, 'en', undefined, own)).toBe('http://shared.example.com')
+    expect(canonicalDomainFromLocale({}, url, 'nl', undefined, locales)).toBe('http://shared.example.com')
   })
 
   test('keeps the protocol of the configured domain', () => {
-    expect(canonicalDomainFromLocale({}, url, 'es', locales)).toBe('https://shared2.example.com')
+    expect(canonicalDomainFromLocale({}, url, 'es', undefined, locales)).toBe('https://shared2.example.com')
   })
 
   test('`domainLocales` runtime config overrides the configured domain', () => {
-    expect(canonicalDomainFromLocale({ pt: { domain: 'pt.staging.example.com' } }, url, 'pt', multi)).toBe(
+    expect(canonicalDomainFromLocale({ pt: { domain: 'pt.staging.example.com' } }, url, 'pt', undefined, multi)).toBe(
       'http://pt.staging.example.com'
     )
   })
 
-  test('returns undefined for a locale without domains', () => {
-    expect(canonicalDomainFromLocale({}, url, 'pl', [...locales, ...getNormalizedLocales(['pl'])])).toBeUndefined()
+  test('a locale without domains falls back to the domain naming `fallbackLocale`', () => {
+    const withPlain = [...locales, ...getNormalizedLocales(['pl'])]
+    expect(canonicalDomainFromLocale({}, url, 'pl', 'nl', withPlain)).toBe('http://shared.example.com')
+    // nothing to fall back to leaves the caller on its own base
+    expect(canonicalDomainFromLocale({}, url, 'pl', undefined, withPlain)).toBeUndefined()
+    expect(canonicalDomainFromLocale({}, url, 'pl', 'pl', withPlain)).toBeUndefined()
   })
 })
 
@@ -347,7 +351,6 @@ describe('withConfiguredProtocol', () => {
   const url = { host: 'en.example.com', protocol: 'http:' }
 
   test('takes the scheme from `baseUrl`, which the request cannot be trusted for', () => {
-    // prerender has no request, and a proxy terminating TLS reports `http` for an https site
     expect(withConfiguredProtocol(url, 'https://example.com')).toEqual({ host: 'en.example.com', protocol: 'https:' })
     expect(withConfiguredProtocol(url, 'http://example.com')).toEqual({ host: 'en.example.com', protocol: 'http:' })
   })

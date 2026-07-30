@@ -1,4 +1,4 @@
-import { hasProtocol, joinURL, withQuery } from 'ufo'
+import { withBase, withQuery } from 'ufo'
 
 import type { QueryValue } from 'ufo'
 import type { RouteLocationNormalizedLoadedGeneric, RouteLocationResolvedGeneric } from 'vue-router'
@@ -74,14 +74,17 @@ export function localeHead(
 
   // Adding SEO Meta
   if (options.seo) {
-    const alternateLinks = getHreflangLinks(options)
+    const routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined
+    const alternateLinks = getHreflangLinks(options, routeWithoutQuery)
+    // `og:url` is the canonical by definition, resolving it twice lets the two disagree
+    const canonical = getCanonicalUrl(options, routeWithoutQuery)
     metaObject.link = metaObject.link.concat(
       alternateLinks,
-      getCanonicalLink(options),
+      getCanonicalLink(options, canonical),
     )
 
     metaObject.meta = metaObject.meta.concat(
-      getOgUrl(options),
+      getOgUrl(options, canonical),
       getCurrentOgLocale(options),
       getAlternateOgLocales(options, getAlternateOgLanguages(options, alternateLinks)),
     )
@@ -112,21 +115,31 @@ function createLocaleMap(locales: HeadLocale[]) {
   return localeMap
 }
 
-function getHreflangLinks(options: HeadContext) {
+function getHreflangLinks(
+  options: HeadContext,
+  routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
+) {
   if (!options.hreflangLinks) { return [] }
 
   const links: AlternateLanguageLink[] = []
   const localeMap = createLocaleMap(options.locales)
+  // a region-tagged locale holds two entries (`en` and `en-US`) resolving to the same href
+  const hrefs = new Map<string, string>()
   for (const [language, locale] of localeMap.entries()) {
-    const link = getHreflangLink(language, locale, options)
-    if (!link) { continue }
+    const href = hrefs.get(locale.code) ?? resolveAlternateHref(locale.code, options, routeWithoutQuery)
+    if (!href) { continue }
+    hrefs.set(locale.code, href)
+
+    const link: AlternateLanguageLink = options.strictSeo
+      ? { rel: 'alternate', href, hreflang: language }
+      : { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
 
     links.push(link)
     if (options.defaultLocale && options.defaultLocale === locale.code && links[0]!.hreflang !== 'x-default') {
       links.unshift(
         options.strictSeo
-          ? { rel: 'alternate', href: link.href!, hreflang: 'x-default' }
-          : { [options.key]: 'i18n-xd', rel: 'alternate', href: link.href!, hreflang: 'x-default' },
+          ? { rel: 'alternate', href, hreflang: 'x-default' }
+          : { [options.key]: 'i18n-xd', rel: 'alternate', href, hreflang: 'x-default' },
       )
     }
   }
@@ -134,45 +147,28 @@ function getHreflangLinks(options: HeadContext) {
   return links
 }
 
-/**
- * A resolved locale path is already absolute under domain setups. `joinURL` collapses a root path
- * against an empty base, so a site without `baseUrl` keeps the path as-is.
- */
-function absolutize(options: HeadContext, path: string) {
-  if (hasProtocol(path) || !options.baseUrl) { return path }
-  return joinURL(options.baseUrl, path)
-}
-
-function getHreflangLink(
-  language: string,
-  locale: HeadLocale,
+function resolveAlternateHref(
+  locale: string,
   options: HeadContext,
   routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
-): AlternateLanguageLink | undefined {
-  const localePath = options.getLocalizedRoute(locale.code, routeWithoutQuery)
+): string | undefined {
+  const localePath = options.getLocalizedRoute(locale, routeWithoutQuery)
   if (!localePath) { return undefined }
 
-  const href = withQuery(
-    absolutize(options, localePath),
+  return withQuery(
+    withBase(localePath, options.baseUrl),
     options.strictCanonicals ? getCanonicalQueryParams(options) : {},
   )
-  return options.strictSeo
-    ? { rel: 'alternate', href, hreflang: language }
-    : { [options.key]: `i18n-alt-${language}`, rel: 'alternate', href, hreflang: language }
 }
 
-/**
- * The current locale's own alternate link, so the canonical is by construction a member of the
- * hreflang set it is emitted with. Under domains that means the locale's canonical domain rather
- * than the host being served, which is what makes a page reachable on several domains name one URL.
- */
+/** the current locale's own alternate, so the canonical is always a member of the set it ships with */
 function getCanonicalUrl(
   options: HeadContext,
   routeWithoutQuery = options.strictCanonicals ? options.getRouteWithoutQuery() : undefined,
 ) {
   const localePath = options.getLocalizedRoute(options.currentLocale, routeWithoutQuery)
   if (!localePath) { return '' }
-  return withQuery(absolutize(options, localePath), getCanonicalQueryParams(options))
+  return withQuery(withBase(localePath, options.baseUrl), getCanonicalQueryParams(options))
 }
 
 function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options)): CanonicalLink[] {
@@ -181,6 +177,8 @@ function getCanonicalLink(options: HeadContext, href = getCanonicalUrl(options))
 }
 
 function getCanonicalQueryParams(options: HeadContext, route = options.getCurrentRoute()) {
+  if (!options.canonicalQueries.length) { return {} }
+
   const currentRoute = options.getLocaleRoute(
     Object.assign({}, route, { path: undefined, name: options.getRouteBaseName(route) }),
   )

@@ -28,10 +28,7 @@ export function isLocaleServedOnHost(locales: NormalizedLocaleObject[], host: st
   return isLocaleOnHost(target, host) || !locales.some(l => isLocaleOnHost(l, host))
 }
 
-/**
- * The domain canonically naming `locale`. `defaultForDomains` leads so the domain agrees with the
- * unprefixed shape callers derive from that same field.
- */
+/** `defaultForDomains` leads so the domain agrees with the unprefixed shape derived from it */
 export const canonicalDomain = (target: NormalizedLocaleObject | undefined) =>
   target?.defaultForDomains[0] || target?.domain || target?.domains[0]
 
@@ -104,18 +101,19 @@ export function domainFromLocale(
 
 /**
  * Resolves {@link canonicalDomain} for `locale`, unlike {@link domainFromLocale} without a
- * current-host preference: alternate links must name one URL for a locale served on several
- * domains, identical from every host in the cluster, or the hreflang set is non-reciprocal.
- * Undefined for a locale configuring no domain, which is served on all of them - callers resolve
- * the cluster's own domain by asking for `defaultLocale` instead.
+ * current-host preference - alternate links naming a different URL per host are non-reciprocal.
+ * A locale configuring no domain is served on all of them, so it falls back to `fallbackLocale`'s
+ * domain (the cluster's own) rather than to whichever host is answering.
  */
 export function canonicalDomainFromLocale(
   domainLocales: Record<string, { domain: string | undefined }>,
   url: { host: string, protocol: string },
   locale: string,
+  fallbackLocale?: string,
   locales: NormalizedLocaleObject[] = normalizedLocales,
 ): string | undefined {
-  const domain = domainLocales?.[locale]?.domain || canonicalDomain(locales.find(x => x.code === locale))
+  const forLocale = (code: string) => domainLocales?.[code]?.domain || canonicalDomain(locales.find(x => x.code === code))
+  const domain = forLocale(locale) || (fallbackLocale ? forLocale(fallbackLocale) : undefined)
   return domain ? withProtocol(domain, url) : undefined
 }
 

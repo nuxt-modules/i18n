@@ -9,7 +9,7 @@ import { getComposer, getI18nTarget } from './compatibility'
 import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from './shared/domain'
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
-import { joinURL } from 'ufo'
+import { joinURL, parseURL } from 'ufo'
 import { isFunction, isString } from '@intlify/shared'
 
 import type { NuxtApp } from '#app'
@@ -57,7 +57,7 @@ export interface NuxtI18nContext {
   setCookieLocale: (locale: string) => void
   /** Get current base URL */
   getBaseUrl: (locale?: string) => string
-  /** Get the base URL canonically naming a locale (alternate links), without current-host preference */
+  /** Base URL for a locale, ignoring the current host (alternate links) */
   getCanonicalBaseUrl: (locale: string) => string
   /** Load locale messages */
   loadMessages: (locale: Locale) => Promise<void>
@@ -65,16 +65,15 @@ export interface NuxtI18nContext {
 }
 
 /**
- * The request URL with the scheme `baseUrl` was configured with, used to complete domains
- * configured without one. `useRequestURL` reports the scheme the server was reached on, which is
- * `http` behind a proxy terminating TLS and during prerender, where there is no request at all.
+ * `useRequestURL` reports the scheme the server was reached on: `http` behind a TLS-terminating
+ * proxy, and nothing meaningful while prerendering. A configured `baseUrl` names the real one.
  * @internal exported for testing
  */
 export function withConfiguredProtocol(
   url: { host: string, protocol: string },
   baseUrl: string | BaseUrlResolveHandler<unknown> | undefined,
 ): { host: string, protocol: string } {
-  const protocol = !isFunction(baseUrl) && baseUrl?.match(/^(https?:)\/\//)?.[1]
+  const protocol = !isFunction(baseUrl) && parseURL(baseUrl).protocol
   return protocol ? { host: url.host, protocol } : url
 }
 
@@ -172,7 +171,10 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
   if (import.meta.dev && isFunction(runtimeI18n.baseUrl)) {
     console.warn('[nuxt-i18n] Configuring baseUrl as a function is deprecated and will be removed in v11.')
   }
-  const requestUrl = () => withConfiguredProtocol(useRequestURL({ xForwardedHost: true }), runtimeI18n.baseUrl)
+  // host and protocol cannot change while a context lives - one per request on the server, one per
+  // app on the client - and every link and head tag resolves through here
+  let url: { host: string, protocol: string } | undefined
+  const requestUrl = () => (url ??= withConfiguredProtocol(useRequestURL({ xForwardedHost: true }), runtimeI18n.baseUrl))
   const getDomainFromLocale = (locale: string) =>
     domainFromLocale(runtimeI18n.domainLocales, requestUrl(), locale)
   const baseUrlOptions = {
@@ -182,17 +184,13 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     getDomainForHost: () => domainForHost(runtimeI18n.domainLocales, requestUrl()),
   }
   const getBaseUrl = createBaseUrlGetter({ ...baseUrlOptions, getDomainFromLocale })
-  const getCanonicalBaseUrl = createBaseUrlGetter({
-    ...baseUrlOptions,
-    // a locale served on every domain has none of its own to be annotated on, so it takes the
-    // domain serving `defaultLocale` - the cluster has no domain with a better claim, and leaving
-    // it to the current host would advertise that one locale differently from each of them
-    getDomainFromLocale: (locale) => {
-      const url = requestUrl()
-      return canonicalDomainFromLocale(runtimeI18n.domainLocales, url, locale)
-        || canonicalDomainFromLocale(runtimeI18n.domainLocales, url, runtimeI18n.defaultLocale)
-    },
-  })
+  const getCanonicalBaseUrl = __I18N_DOMAINS__
+    ? createBaseUrlGetter({
+        ...baseUrlOptions,
+        getDomainFromLocale: locale =>
+          canonicalDomainFromLocale(runtimeI18n.domainLocales, requestUrl(), locale, runtimeI18n.defaultLocale),
+      })
+    : getBaseUrl
   const resolvedLocale = useResolvedLocale()
   if (__I18N_SERVER_REDIRECT__ && import.meta.server && nuxt.ssrContext?.event?.context?.nuxtI18n?.detectLocale) {
     resolvedLocale.value = nuxt.ssrContext.event.context.nuxtI18n.detectLocale
