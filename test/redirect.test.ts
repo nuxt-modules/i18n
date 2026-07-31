@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { createRedirectResolver } from '../src/runtime/server/utils/redirect'
 import { resolveRootRedirect } from '../src/runtime/shared/utils'
 import { getLocaleFromRoutePath } from '../src/runtime/kit/routing'
@@ -223,6 +223,37 @@ describe('createRedirectResolver', () => {
         locale: 'fr',
         origin: 'http://fr.example.com',
       })
+    })
+
+    test('isolate: a path locale served on another domain never relocates', () => {
+      const resolve = createResolver({
+        strategy: 'prefix_except_default',
+        domains: true,
+        isolate: true,
+        detection: detection({ enabled: true, redirectOn: 'root' }),
+      })
+      const offHost = createDetectors({ host: () => 'en', onHost: l => (l === 'fr' ? undefined : l) })
+      const relocateSpy = vi.fn(relocate)
+      expect(resolve('/fr/about', '/about', 'fr', 'en', offHost, relocateSpy)).toMatchObject({ path: undefined, locale: 'en' })
+      expect(relocateSpy).not.toHaveBeenCalled()
+    })
+
+    test('isolate: a detected locale served on another domain never relocates either', () => {
+      const resolve = createResolver({
+        strategy: 'prefix_except_default',
+        domains: true,
+        isolate: true,
+        detection: detection({ enabled: true, redirectOn: 'root' }),
+      })
+      const offHost = createDetectors({
+        cookie: () => 'fr',
+        host: () => 'en',
+        onHost: l => (l === 'fr' ? undefined : l),
+        cookieSpans: () => true,
+      })
+      const relocateSpy = vi.fn(relocate)
+      expect(resolve('/', '/', undefined, 'en', offHost, relocateSpy)).toMatchObject({ path: undefined, locale: 'en' })
+      expect(relocateSpy).not.toHaveBeenCalled()
     })
 
     test('a failed relocation falls back to resolving on the current host', () => {

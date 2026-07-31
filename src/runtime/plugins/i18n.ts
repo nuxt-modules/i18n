@@ -12,11 +12,15 @@ import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
-import { setupMultiDomainLocales } from '../routing/domain'
-import { withRuntimeDomain } from '../shared/domain'
+import { pruneOffHostRoutes, setupMultiDomainLocales } from '../routing/domain'
+import { isLocaleServedOnHost, withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
-import type { I18nHeadOptions } from '#internal-i18n-types'
+import type { I18nHeadOptions, NormalizedLocaleObject } from '#internal-i18n-types'
+
+// string locales carry no domain configuration, they normalize to the empty form (mirrors `getLocales` in `context.ts`)
+const normalizeLocale = (l: string | NormalizedLocaleObject): NormalizedLocaleObject =>
+  typeof l === 'string' ? { code: l, domains: [], defaultForDomains: [] } : l
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin',
@@ -28,7 +32,8 @@ export default defineNuxtPlugin({
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
     const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
+    const host = useRequestURL({ xForwardedHost: true }).host
+    const _defaultLocale = resolveDefaultLocale(host, runtimeI18n.defaultLocale)
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
@@ -41,6 +46,9 @@ export default defineNuxtPlugin({
 
     if (__I18N_DOMAINS__) {
       setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
+      if (__I18N_ISOLATE_MULTIDOMAINLOCALES__) {
+        pruneOffHostRoutes(runtimeI18n.locales.map(l => normalizeLocale(withRuntimeDomain(l, runtimeI18n.domainLocales))), host)
+      }
     }
 
     prerenderRoutes(
@@ -63,9 +71,12 @@ export default defineNuxtPlugin({
     // extend i18n instance
     extendI18n(i18n, {
       extendComposer(composer) {
-        composer.locales = computed(() =>
-          runtimeI18n.locales.map(locale => withRuntimeDomain(locale, runtimeI18n.domainLocales)),
-        )
+        composer.locales = computed(() => {
+          const locales = runtimeI18n.locales.map(locale => withRuntimeDomain(locale, runtimeI18n.domainLocales))
+          if (!__I18N_ISOLATE_MULTIDOMAINLOCALES__) { return locales }
+          const normalized = locales.map(normalizeLocale)
+          return locales.filter((_, i) => isLocaleServedOnHost(normalized, host, normalized[i]!.code))
+        })
         composer.localeCodes = computed(() => localeCodes)
 
         const _baseUrl = ref(ctx.getBaseUrl())
