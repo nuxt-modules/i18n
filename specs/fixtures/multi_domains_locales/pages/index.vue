@@ -2,7 +2,7 @@
 import { useHead } from '#imports'
 import { useI18n, useLocalePath, useLocaleHead } from '#i18n'
 
-const { t, locale } = useI18n()
+const { t, locale, localeCodes, getBrowserLocale, getLocaleCookie } = useI18n()
 const localePath = useLocalePath()
 const i18nHead = useLocaleHead({ seo: { canonicalQueries: ['page'] } })
 
@@ -30,6 +30,13 @@ useHead(() => ({
     </section>
     <section>
       <code id="extend-message">{{ t('my-module-exemple.hello') }}</code>
+    </section>
+    <section>
+      <code id="locale-codes">{{ localeCodes }}</code>
+    </section>
+    <section>
+      <code id="browser-locale">{{ getBrowserLocale() }}</code>
+      <code id="cookie-locale">{{ getLocaleCookie() }}</code>
     </section>
     <NuxtLink id="link-about" exact :to="localePath('about')">{{ $t('about') }}</NuxtLink>
     <NuxtLink id="link-blog" :to="localePath('blog')">{{ $t('blog') }}</NuxtLink>

@@ -62,6 +62,15 @@ test('a browser-detected off-host locale does not redirect off the current domai
   expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('en')
 })
 
+test('getBrowserLocale does not report a locale pruned off this domain', async () => {
+  const res = await undiciRequest('/', {
+    headers: { Host: 'brand-a.nuxt-app.localhost', 'Accept-Language': 'fr' }
+  })
+
+  const dom = await getDom(await res.body.text())
+  expect(await dom.locator('#browser-locale').textContent()).toEqual('')
+})
+
 test('a cookie spanning the domains still keeps the other brand off-host', async () => {
   // without isolate, a `cookieDomain` spanning both domains would follow this cookie to brand-b
   const res = await undiciRequest('/', {
@@ -73,12 +82,28 @@ test('a cookie spanning the domains still keeps the other brand off-host', async
   expect(await dom.locator('#lang-switcher-current-locale code').textContent()).toEqual('en')
 })
 
+test('getLocaleCookie does not report a locale pruned off this domain', async () => {
+  const res = await undiciRequest('/', {
+    headers: { Host: 'brand-a.nuxt-app.localhost', Cookie: 'i18n_redirected=fr' }
+  })
+
+  const dom = await getDom(await res.body.text())
+  expect(await dom.locator('#cookie-locale').textContent()).toEqual('')
+})
+
 test('the switcher only lists the locale served on this domain', async () => {
   const res = await undiciRequest('/', { headers: { Host: 'brand-a.nuxt-app.localhost' } })
   const dom = await getDom(await res.body.text())
 
   expect(await dom.locator('#switch-locale-path-usages .switch-to-en').count()).toBe(1)
   expect(await dom.locator('#switch-locale-path-usages .switch-to-fr').count()).toBe(0)
+})
+
+test('composer.localeCodes excludes the locale pruned off this domain', async () => {
+  const res = await undiciRequest('/', { headers: { Host: 'brand-a.nuxt-app.localhost' } })
+  const dom = await getDom(await res.body.text())
+
+  expect(JSON.parse(await dom.locator('#locale-codes').textContent())).toEqual(['en'])
 })
 
 test('hreflang alternates only list the locale served on this domain', async () => {

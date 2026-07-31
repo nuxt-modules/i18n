@@ -77,7 +77,10 @@ export default defineNuxtPlugin({
           const normalized = locales.map(normalizeLocale)
           return locales.filter((_, i) => isLocaleServedOnHost(normalized, host, normalized[i]!.code))
         })
-        composer.localeCodes = computed(() => localeCodes)
+        composer.localeCodes = computed(() => {
+          if (!__I18N_ISOLATE_MULTIDOMAINLOCALES__) { return localeCodes }
+          return composer.locales.value.map(l => normalizeLocale(l).code)
+        })
 
         const _baseUrl = ref(ctx.getBaseUrl())
         composer.baseUrl = computed(() => _baseUrl.value)
@@ -103,12 +106,21 @@ export default defineNuxtPlugin({
         composer.differentDomains = __I18N_DOMAINS__
         composer.defaultLocale = optionsI18n.defaultLocale
 
+        // `resolveSupportedLocale` only checks the locale is configured at all, under isolate a
+        // locale off this host is still "supported" globally, so it needs its own host gate
+        const resolveOnHostLocale = (locale: string | undefined) => {
+          const resolved = resolveSupportedLocale(locale)
+          return resolved && __I18N_ISOLATE_MULTIDOMAINLOCALES__ && !composer.localeCodes.value.includes(resolved)
+            ? undefined
+            : resolved
+        }
+
         composer.getBrowserLocale = () =>
           import.meta.client
-            ? resolveSupportedLocale(detectors.navigator())
-            : resolveSupportedLocale(detectors.header())
+            ? resolveOnHostLocale(detectors.navigator())
+            : resolveOnHostLocale(detectors.header())
 
-        composer.getLocaleCookie = () => resolveSupportedLocale(detectors.cookie())
+        composer.getLocaleCookie = () => resolveOnHostLocale(detectors.cookie())
         composer.setLocaleCookie = ctx.setCookieLocale
 
         composer.finalizePendingLocaleChange = async () => {
