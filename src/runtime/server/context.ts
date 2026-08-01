@@ -1,10 +1,11 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
+import type { NormalizedLocaleObject } from '#internal-i18n-types'
 import { deepCopy } from '@intlify/shared'
 import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { useRuntimeI18n } from '../shared/utils'
-import { createLocaleConfigs, resolveDefaultLocale, resolveEffectiveLocales } from '../shared/locales'
+import { createLocaleConfigs, resolveDefaultLocale, resolveRequestLocales } from '../shared/locales'
 import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
@@ -23,13 +24,19 @@ const getHost = (event: H3Event) => getRequestURL(event, { xForwardedHost: true 
 
 export async function initializeI18nContext(event: H3Event) {
   const runtimeI18n = useRuntimeI18n(undefined, event)
-  const defaultLocale: string = runtimeI18n.defaultLocale || ''
-  const options = await setupVueI18nOptions(
-    resolveDefaultLocale(getHost(event), defaultLocale, resolveEffectiveLocales(runtimeI18n.locales)),
-  )
+  const locales = resolveRequestLocales(runtimeI18n)
+  const defaultLocale = resolveDefaultLocale(getHost(event), runtimeI18n.defaultLocale || '', locales)
+
+  // the unprefixed locale of a host it does not serve leaves nothing at `/` - its routes are pruned
+  if (import.meta.dev && defaultLocale && !locales.some(l => l.code === defaultLocale)) {
+    console.warn(`[nuxt-i18n] This request serves ${locales.map(l => l.code).join(', ')}, but resolves "${defaultLocale}" as its default locale - unprefixed paths will 404.`)
+  }
+
+  const options = await setupVueI18nOptions(defaultLocale)
   const localeConfigs = createLocaleConfigs(options.fallbackLocale)
   const ctx = createI18nContext()
 
+  ctx.locales = locales
   ctx.vueI18nOptions = options
   ctx.localeConfigs = localeConfigs
 
@@ -55,6 +62,7 @@ export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
   return {
     messages: {},
     slp: {},
+    locales: [],
     localeConfigs: {},
     trackMap: {},
     vueI18nOptions: undefined,
@@ -89,6 +97,11 @@ declare module 'h3' {
   interface H3EventContext {
     /** @internal */
     nuxtI18n?: {
+      /**
+       * The locales this request serves, resolved once from the (possibly narrowed) runtime config
+       * @internal
+       */
+      locales: NormalizedLocaleObject[]
       /**
        * Cached locale configurations based on runtime config
        * @internal

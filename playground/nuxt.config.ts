@@ -8,11 +8,6 @@ export default defineNuxtConfig({
       { code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Dutch' },
       { code: 'ja', language: 'ja-JP', file: 'ja.json', name: 'Japanese' }
     ],
-    experimental: {
-      strictSeo: true,
-
-    },
-    baseUrl: 'https://example.com',
     defaultLocale: 'en'
   },
 

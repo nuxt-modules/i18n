@@ -1,8 +1,8 @@
 import { localeCodes, localeLoaders, normalizedLocales } from '#build/i18n-options.mjs'
 import { isArray, isString } from '@intlify/shared'
-import { normalizeDomain } from './domain'
+import { normalizeDomain, withRuntimeDomain } from './domain'
 import type { FallbackLocale } from 'vue-i18n'
-import type { NormalizedLocaleObject } from '#internal-i18n-types'
+import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '#internal-i18n-types'
 
 type LocaleConfig = { cacheable: boolean, fallbacks: string[] }
 export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<string, LocaleConfig> {
@@ -79,25 +79,32 @@ export function resolveDefaultLocale(
   return (locales.some(l => l.domains.length) ? locales[0]?.code : '') || ''
 }
 
+let warnedPrerenderNarrowing = false
+
 /**
- * The locales in effect for the current request: the runtime config list (which an
- * `i18n:request-config` nitro hook may have narrowed per request) resolved against the built
- * locales. A code the build does not know is dropped - it has no routes, messages or loaders.
+ * The locales served for the current request: the configured list, which an `i18n:request-config`
+ * nitro hook may have narrowed, selected from the built locales and patched with the `domainLocales`
+ * override. The hook selects rather than defines - routes, messages and loaders are built per locale
+ * - so an unknown code is dropped from the config too, keeping its readers and this in agreement.
  */
-export function resolveEffectiveLocales(
-  runtimeLocales: string[] | NormalizedLocaleObject[],
-): NormalizedLocaleObject[] {
-  const effective: NormalizedLocaleObject[] = []
-  for (const locale of runtimeLocales) {
-    const code = isString(locale) ? locale : locale.code
-    const built = normalizedLocales.find(l => l.code === code)
-    if (!built) {
-      import.meta.dev && console.warn(`[nuxt-i18n] Ignoring locale "${code}" - it is not part of the build`)
-      continue
+export function resolveRequestLocales(config: I18nPublicRuntimeConfig): NormalizedLocaleObject[] {
+  const codes = new Set(config.locales.map(locale => (isString(locale) ? locale : locale.code)))
+  const resolved = normalizedLocales.filter(locale => codes.has(locale.code))
+
+  if (resolved.length !== codes.size) {
+    if (import.meta.dev) {
+      const unknown = [...codes].filter(code => !resolved.some(l => l.code === code))
+      console.warn(`[nuxt-i18n] Ignoring locales that are not part of the build: ${unknown.join(', ')}`)
     }
-    effective.push(isString(locale) ? built : locale)
+    config.locales = resolved
   }
-  return effective
+
+  if (import.meta.dev && import.meta.prerender && !warnedPrerenderNarrowing && resolved.length !== localeCodes.length) {
+    warnedPrerenderNarrowing = true
+    console.warn('[nuxt-i18n] `i18n:request-config` narrowed the locales while prerendering - there is no request host at generate time, so this decision is frozen into every prerendered page.')
+  }
+
+  return resolved.map(locale => withRuntimeDomain(locale, config.domainLocales))
 }
 
 export const isSupportedLocale = (locale?: string): boolean => localeCodes.includes(locale || '')

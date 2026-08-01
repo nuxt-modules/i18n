@@ -648,7 +648,7 @@ export interface I18nPublicRuntimeConfig {
   /** Domain locales mapping */
   domainLocales: { [key: Locale]: { domain: string | undefined } }
   /** @internal Overwritten at build time, used to pass generated options to runtime */
-  locales: string[] | NormalizedLocaleObject[]
+  locales: (string | NormalizedLocaleObject)[]
   /** @internal Overwritten at build time, used to pass generated options to runtime */
   defaultLocale: Required<NuxtI18nOptions>['defaultLocale']
   /** @internal Overwritten at build time, used to pass generated options to runtime */

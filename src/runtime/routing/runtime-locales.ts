@@ -5,18 +5,16 @@ import { localeCodes } from '#build/i18n-options.mjs'
 import { getLocaleFromRouteName } from '#i18n-kit/routing'
 
 /**
- * Removes the routes of locales an `i18n:request-config` nitro hook disabled for this request,
- * so a disabled locale's prefix 404s instead of serving content the config says does not exist.
- * Follows the `setupMultiDomainLocales` pattern: the server router is request-scoped and the
- * client rebuilds from the payload config, so both derive the same table.
+ * Removes the routes of locales this request does not serve, so their prefixes 404 instead of
+ * serving content the request's config says does not exist.
  */
-export function pruneDisabledLocaleRoutes(effective: NormalizedLocaleObject[], router: Router = useRouter()) {
-  if (effective.length === localeCodes.length) { return }
+export function pruneUnservedLocaleRoutes(locales: NormalizedLocaleObject[], router: Router = useRouter()) {
+  if (locales.length === localeCodes.length) { return }
 
-  const enabled = new Set(effective.map(l => l.code))
+  const served = new Set(locales.map(l => l.code))
   for (const route of router.getRoutes()) {
     const locale = getLocaleFromRouteName(String(route.name))
-    if (locale && !enabled.has(locale)) {
+    if (locale && !served.has(locale)) {
       router.removeRoute(route.name!)
     }
   }
