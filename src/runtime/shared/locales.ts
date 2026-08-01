@@ -79,6 +79,27 @@ export function resolveDefaultLocale(
   return (locales.some(l => l.domains.length) ? locales[0]?.code : '') || ''
 }
 
+/**
+ * The locales in effect for the current request: the runtime config list (which an
+ * `i18n:request-config` nitro hook may have narrowed per request) resolved against the built
+ * locales. A code the build does not know is dropped - it has no routes, messages or loaders.
+ */
+export function resolveEffectiveLocales(
+  runtimeLocales: string[] | NormalizedLocaleObject[],
+): NormalizedLocaleObject[] {
+  const effective: NormalizedLocaleObject[] = []
+  for (const locale of runtimeLocales) {
+    const code = isString(locale) ? locale : locale.code
+    const built = normalizedLocales.find(l => l.code === code)
+    if (!built) {
+      import.meta.dev && console.warn(`[nuxt-i18n] Ignoring locale "${code}" - it is not part of the build`)
+      continue
+    }
+    effective.push(isString(locale) ? built : locale)
+  }
+  return effective
+}
+
 export const isSupportedLocale = (locale?: string): boolean => localeCodes.includes(locale || '')
 
 export const resolveSupportedLocale = (locale: string | undefined) => (isSupportedLocale(locale) ? locale : undefined)

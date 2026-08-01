@@ -4,7 +4,7 @@ import { defineNitroPlugin, useRuntimeConfig, useStorage } from 'nitropack/runti
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from './context'
 import { createUserLocaleDetector } from './utils/locale-detector'
 import { pickNested } from './utils/messages-utils'
-import { isSupportedLocale, resolveDefaultLocale } from '../shared/locales'
+import { isSupportedLocale, resolveDefaultLocale, resolveEffectiveLocales } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { joinURL, parsePath } from 'ufo'
 // @ts-expect-error virtual file
@@ -15,6 +15,18 @@ import { isFunction } from '@intlify/shared'
 
 import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
 import type { CoreOptions } from '@intlify/core'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+
+declare module 'nitropack' {
+  interface NitroRuntimeHooks {
+    /**
+     * Called before the i18n request context is created, with the event-scoped runtime config.
+     * Mutations are request-scoped: they are seen by the server handlers, the SSR render and
+     * the hydrated client (through the payload config), and reset on the next request.
+     */
+    'i18n:request-config': (event: H3Event, config: I18nPublicRuntimeConfig) => void | Promise<void>
+  }
+}
 import { useDetectors } from '../shared/detection'
 import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
@@ -66,7 +78,12 @@ export default defineNitroPlugin(async (nitro) => {
   // default locale to that locale's domain, and `baseUrl` would send staging to production
   const baseUrlGetter = (event: H3Event): string => {
     if (__I18N_DOMAINS__ && !legacyBaseUrl) {
-      return domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true })) || ''
+      const { domainLocales, locales } = useRuntimeI18n(undefined, event)
+      return domainForHost(
+        domainLocales,
+        getRequestURL(event, { xForwardedHost: true }),
+        resolveEffectiveLocales(locales),
+      ) || ''
     }
     return ''
   }
@@ -87,18 +104,24 @@ export default defineNitroPlugin(async (nitro) => {
    */
   const resolveRelocation = (event: H3Event, locale: string, path: string) => {
     const url = getRequestURL(event, { xForwardedHost: true })
-    const origin = domainFromLocale(runtimeI18n.domainLocales, url, locale)
+    const eventI18n = useRuntimeI18n(undefined, event)
+    const effective = resolveEffectiveLocales(eventI18n.locales)
+    const origin = domainFromLocale(eventI18n.domainLocales, url, locale, effective)
     const host = normalizeDomain(origin)
     // a target on the current host would redirect to itself
     if (!origin || host === url.host) { return }
 
-    const relocated = matchLocalized(path, locale, resolveDefaultLocale(host, _defaultLocale))
+    const relocated = matchLocalized(path, locale, resolveDefaultLocale(host, _defaultLocale, effective))
     if (!relocated) { return }
 
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
   nitro.hooks.hook('request', async (event: H3Event) => {
+    // the hook receives the event-scoped runtime config clone, so a mutation here is visible to
+    // every later reader of this request: the nitro handlers, the SSR render (`ssrContext.runtimeConfig`)
+    // and, through the serialized payload config, the hydrated client
+    await nitro.hooks.callHook('i18n:request-config', event, useRuntimeI18n(undefined, event))
     await initializeI18nContext(event)
   })
 

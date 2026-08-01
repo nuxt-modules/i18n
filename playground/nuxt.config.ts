@@ -5,8 +5,14 @@ export default defineNuxtConfig({
   i18n: {
     locales: [
       { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
+      { code: 'nl', language: 'nl-NL', file: 'nl.json', name: 'Dutch' },
       { code: 'ja', language: 'ja-JP', file: 'ja.json', name: 'Japanese' }
     ],
+    experimental: {
+      strictSeo: true,
+
+    },
+    baseUrl: 'https://example.com',
     defaultLocale: 'en'
   },
 

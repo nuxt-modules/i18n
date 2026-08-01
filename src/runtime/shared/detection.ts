@@ -7,7 +7,7 @@ import { findBrowserLocale } from '#i18n-kit/browser'
 import { parseAcceptLanguage } from '@intlify/utils'
 import { cookieSpansDomains, isLocaleOnHost, isLocaleServedOnHost, matchDomainLocale, withRuntimeDomain } from './domain'
 import { isString } from '@intlify/shared'
-import { isSupportedLocale } from './locales'
+import { isSupportedLocale, resolveEffectiveLocales } from './locales'
 import { type useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import type { I18nPublicRuntimeConfig, NormalizedLocaleObject } from '../../types'
 
@@ -23,10 +23,11 @@ const getCookieLocale = (event: H3Event | undefined, cookieName: string): string
 const getRouteLocale = (event: H3Event | undefined, route: string | CompatRoute): string | undefined =>
   getLocaleFromRoute(route)
 
-const getHeaderLocale = (event: H3Event | undefined) =>
-  findBrowserLocale(normalizedLocales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
+const getHeaderLocale = (event: H3Event | undefined, locales: NormalizedLocaleObject[] = normalizedLocales) =>
+  findBrowserLocale(locales, parseAcceptLanguage(getRequestHeader(event!, 'accept-language') || ''))
 
-const getNavigatorLocale = (event: H3Event | undefined) => findBrowserLocale(normalizedLocales, navigator.languages)
+const getNavigatorLocale = (event: H3Event | undefined, locales: NormalizedLocaleObject[] = normalizedLocales) =>
+  findBrowserLocale(locales, navigator.languages)
 
 const getRequestHost = (event: H3Event | undefined) =>
   import.meta.client ? new URL(window.location.href).host : getRequestURL(event!, { xForwardedHost: true }).host
@@ -40,8 +41,8 @@ const getRefererHost = (event: H3Event | undefined): string | undefined => {
   }
 }
 
-const getDomainLocales = (domainLocales: I18nPublicRuntimeConfig['domainLocales']) =>
-  normalizedLocales.map(l => withRuntimeDomain(l, domainLocales))
+const getDomainLocales = (runtimeI18n: I18nPublicRuntimeConfig) =>
+  resolveEffectiveLocales(runtimeI18n.locales).map(l => withRuntimeDomain(l, runtimeI18n.domainLocales))
 
 export const useDetectors = (
   event: H3Event | undefined,
@@ -52,17 +53,20 @@ export const useDetectors = (
     throw new Error('H3Event is required for server-side locale detection')
   }
 
-  const runtimeI18n = useRuntimeI18n(nuxtApp)
+  // the event-scoped runtime config, so a per-request `i18n:request-config` mutation is seen here
+  const runtimeI18n = useRuntimeI18n(nuxtApp, event)
   // constant for the lifetime of these detectors, a fresh set is created per request
   let host: string | undefined
   let locales: NormalizedLocaleObject[] | undefined
   const getHost = () => (host ??= getRequestHost(event))
-  const getLocales = () => (locales ??= getDomainLocales(runtimeI18n.domainLocales))
+  const getLocales = () => (locales ??= getDomainLocales(runtimeI18n))
 
   return {
     cookie: () => getCookieLocale(event, config.cookieKey),
-    header: () => (import.meta.server ? getHeaderLocale(event) : undefined),
-    navigator: () => (import.meta.client ? getNavigatorLocale(event) : undefined),
+    header: () => (import.meta.server ? getHeaderLocale(event, getLocales()) : undefined),
+    navigator: () => (import.meta.client ? getNavigatorLocale(event, getLocales()) : undefined),
+    /** Whether the locale is part of the request's effective locales */
+    isEnabled: (locale: string) => getLocales().some(l => l.code === locale),
     host: (path: string) => matchDomainLocale(getLocales(), getHost(), getLocaleFromRoutePath(path)),
     route: (path: string | CompatRoute) => getRouteLocale(event, path),
     /** Passes the locale through when the current host serves it, `undefined` otherwise */
@@ -157,7 +161,8 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
     }
 
     for (const detected of detect()) {
-      if (detected && isSupported(detected)) {
+      // `isSupported` answers for the build, `isEnabled` for the request's narrowed config
+      if (detected && isSupported(detected) && detectors.isEnabled(detected)) {
         return detected
       }
     }
