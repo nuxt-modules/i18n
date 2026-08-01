@@ -16,7 +16,13 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
   }
 
   const ctx = useI18nContext(event)
-  if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
+  if (
+    // reject a locale the build doesn't know about
+    (ctx.localeConfigs && locale in ctx.localeConfigs === false) ||
+    // reject any hash that isn't the build's own for this locale, so an arbitrary path segment
+    // can't mint unbounded cache entries (24h, per miss)
+    getRouterParam(event, 'hash') !== __I18N_LOCALE_HASHES__[locale]
+  ) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
 
