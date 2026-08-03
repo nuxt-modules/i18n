@@ -1,9 +1,8 @@
 import { fileURLToPath } from 'node:url'
-import { readFileSync, readdirSync } from 'node:fs'
-import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 
-import { setup, fetch, useTestContext } from '../utils'
+import { setup, fetch } from '../utils'
+import { findLocaleHash } from '../helper'
 
 // `cacheLifetime` enables the messages.json HTTP cache (`__I18N_CACHE__`, see `isCacheEnabled`
 // in src/bundler.ts). `locales` is overridden (arrays replace rather than merge) to a plain
@@ -22,22 +21,6 @@ await setup({
     }
   }
 })
-
-// the endpoint rejects any `:hash` that isn't the build's own content hash for the locale, so
-// read the real one straight out of the built server instead of hardcoding it, which would go
-// stale the moment the fixture's locale files change
-function findLocaleHash(locale: string) {
-  const chunksDir = join(useTestContext().nuxt!.options.nitro!.output!.dir!, 'server/chunks')
-  const pattern = new RegExp(`"${locale}":\\s*"([a-f0-9]+)"`)
-
-  for (const name of readdirSync(chunksDir, { recursive: true }) as string[]) {
-    if (!name.endsWith('.mjs')) continue
-    const match = pattern.exec(readFileSync(join(chunksDir, name), 'utf-8'))
-    if (match) return match[1]!
-  }
-
-  throw new Error(`Could not find the build's content hash for locale '${locale}'`)
-}
 
 describe('(security) messages.json cache key collision', () => {
   test('a hash colliding across the locale/hash join cannot read another locale\'s cache entry', async () => {

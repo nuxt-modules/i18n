@@ -5,6 +5,9 @@ import { warnMissedMessageFunctions } from '../../shared/messages'
 
 import type { H3Event } from 'h3'
 
+// prerendering may require initializing context
+const getOrInitContext = async (event: H3Event) => tryUseI18nContext(event) || await initializeI18nContext(event)
+
 /**
  * Reject a bad locale/hash pair before either cache layer computes a key or does a
  * lookup, so a colliding hash for one locale can never read another locale's cache entry.
@@ -16,8 +19,7 @@ async function validateLocaleRequest(event: H3Event) {
     throw createError({ status: 400, message: 'Locale not specified.' })
   }
 
-  // prerendering may require initializing context
-  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+  const ctx = await getOrInitContext(event)
   if (
     // reject a locale the build doesn't know about
     (ctx.localeConfigs && !Object.hasOwn(ctx.localeConfigs, locale)) ||
@@ -51,8 +53,7 @@ const getCacheKey = (event: H3Event) =>
 async function shouldBypassCache(event: H3Event) {
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
-  // prerendering may require initializing context
-  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+  const ctx = await getOrInitContext(event)
   return !ctx.localeConfigs?.[locale]?.cacheable
 }
 

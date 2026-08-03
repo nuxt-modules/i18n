@@ -1,6 +1,8 @@
 // @ts-ignore
 import { getBrowser, startServer, TestContext, url, useTestContext } from './utils'
 import { onTestFinished } from 'vitest'
+import { readFileSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
 
 import type { BrowserContextOptions, Page } from 'playwright-core'
 
@@ -392,4 +394,22 @@ export async function getHeadSnapshot(page: Page): Promise<string> {
   }
 
   return formattedOutput.join('\n')
+}
+
+/**
+ * The messages endpoint rejects any `:hash` that isn't the build's own content hash for the
+ * locale, so read the real one straight out of the built server instead of hardcoding it, which
+ * would go stale the moment a fixture's locale files change.
+ */
+export function findLocaleHash(locale: string) {
+  const chunksDir = join(useTestContext().nuxt!.options.nitro!.output!.dir!, 'server/chunks')
+  const pattern = new RegExp(`"${locale}":\\s*"([a-f0-9]+)"`)
+
+  for (const name of readdirSync(chunksDir, { recursive: true }) as string[]) {
+    if (!name.endsWith('.mjs')) continue
+    const match = pattern.exec(readFileSync(join(chunksDir, name), 'utf-8'))
+    if (match) return match[1]!
+  }
+
+  throw new Error(`Could not find the build's content hash for locale '${locale}'`)
 }
