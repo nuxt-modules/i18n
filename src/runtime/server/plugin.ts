@@ -12,13 +12,34 @@ import { appId } from '#internal/nuxt.config.mjs'
 import { localeDetector } from '#internal/i18n-locale-detector.mjs'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { isFunction } from '@intlify/shared'
-
-import { type H3Event, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
-import type { CoreOptions } from '@intlify/core'
 import { useDetectors } from '../shared/detection'
 import { domainForHost, domainFromLocale, normalizeDomain } from '../shared/domain'
 import { isExistingNuxtRoute, matchLocalized } from '../shared/matching'
 import { createRedirectResolver } from './utils/redirect'
+
+import { type H3Event, type H3EventContext, getRequestURL, sanitizeStatusCode, setCookie } from 'h3'
+import type { CoreOptions } from '@intlify/core'
+import type { I18nPublicRuntimeConfig } from '#internal-i18n-types'
+
+type I18nRequestContext = NonNullable<H3EventContext['nuxtI18n']>
+
+declare module 'nitropack' {
+  interface NitroRuntimeHooks {
+    /**
+     * Called once per request, before the i18n context is resolved, with that request's own copy of
+     * the runtime config - mutations are seen by the server handlers, the SSR render and, through
+     * the payload config, the hydrated client, and are gone on the next request.
+     *
+     * Only `locales` and `defaultLocale` are read per request. `locales` selects among the built
+     * locales: a code the build does not know is dropped, because its routes, messages and loaders
+     * do not exist. The remaining fields are read once at startup and ignored here.
+     */
+    'i18n:request-config': (
+      event: H3Event,
+      config: Pick<I18nPublicRuntimeConfig, 'locales' | 'defaultLocale'>,
+    ) => void | Promise<void>
+  }
+}
 
 // Adapted from H3 v1
 // https://github.com/h3js/h3/blob/24231b9c448aa852b15b889c53253a783f67a126/src/utils/response.ts#L166-L179
@@ -64,9 +85,10 @@ export default defineNitroPlugin(async (nitro) => {
   // a redirect stays on the host it was requested on: the configured origin of the current host
   // under domains, relative otherwise. Resolving it from `defaultLocale` sent a host serving no
   // default locale to that locale's domain, and `baseUrl` would send staging to production
-  const baseUrlGetter = (event: H3Event): string => {
+  const baseUrlGetter = (event: H3Event, ctx: I18nRequestContext): string => {
     if (__I18N_DOMAINS__ && !legacyBaseUrl) {
-      return domainForHost(runtimeI18n.domainLocales, getRequestURL(event, { xForwardedHost: true })) || ''
+      const url = getRequestURL(event, { xForwardedHost: true })
+      return domainForHost(useRuntimeI18n(undefined, event).domainLocales, url, ctx.locales) || ''
     }
     return ''
   }
@@ -85,20 +107,22 @@ export default defineNitroPlugin(async (nitro) => {
    * Redirect moving the request to the domain serving `locale`, with the path prefixed
    * for that domain's own default locale rather than the current one.
    */
-  const resolveRelocation = (event: H3Event, locale: string, path: string) => {
+  const resolveRelocation = (event: H3Event, ctx: I18nRequestContext, locale: string, path: string) => {
     const url = getRequestURL(event, { xForwardedHost: true })
-    const origin = domainFromLocale(runtimeI18n.domainLocales, url, locale)
+    const eventI18n = useRuntimeI18n(undefined, event)
+    const origin = domainFromLocale(eventI18n.domainLocales, url, locale, ctx.locales)
     const host = normalizeDomain(origin)
     // a target on the current host would redirect to itself
     if (!origin || host === url.host) { return }
 
-    const relocated = matchLocalized(path, locale, resolveDefaultLocale(host, _defaultLocale))
+    const relocated = matchLocalized(path, locale, resolveDefaultLocale(host, eventI18n.defaultLocale, ctx.locales))
     if (!relocated) { return }
 
     return { path: relocated, code: runtimeI18n.redirectStatusCode ?? 302, locale, origin }
   }
 
   nitro.hooks.hook('request', async (event: H3Event) => {
+    await nitro.hooks.callHook('i18n:request-config', event, useRuntimeI18n(undefined, event))
     await initializeI18nContext(event)
   })
 
@@ -108,7 +132,7 @@ export default defineNitroPlugin(async (nitro) => {
 
     const ctx = import.meta.prerender && !event.context.nuxtI18n ? await initializeI18nContext(event) : useI18nContext(event)
     const url = getRequestURL(event)
-    const detector = useDetectors(event, detection)
+    const detector = useDetectors(event, detection, ctx.locales)
     const localeSegment = detector.route(event.path)
     const pathLocale = (isSupportedLocale(localeSegment) && localeSegment) || undefined
     // `event.path` is already stripped of `app.baseURL` by Nitro (unlike `url.pathname`), and
@@ -128,7 +152,7 @@ export default defineNitroPlugin(async (nitro) => {
       pathLocale,
       ctx.vueI18nOptions!.defaultLocale,
       detector,
-      __I18N_DOMAINS__ ? locale => resolveRelocation(event, locale, path) : undefined,
+      __I18N_DOMAINS__ ? locale => resolveRelocation(event, ctx, locale, path) : undefined,
     )
     if (resolved.path && (resolved.origin || resolved.path !== pathname)) {
       ctx.detectLocale = resolved.locale
@@ -139,7 +163,7 @@ export default defineNitroPlugin(async (nitro) => {
         event,
         // the resolved path is base-free (matched against base-free routes), re-add `app.baseURL`
         joinURL(
-          resolved.origin || baseUrlGetter(event),
+          resolved.origin || baseUrlGetter(event, ctx),
           useRuntimeConfig(event).app.baseURL,
           resolved.path + url.search,
         ),

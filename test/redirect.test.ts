@@ -19,6 +19,7 @@ const detectors = () => ({
   host: (): string | undefined => undefined,
   route: (path: string | object) => getLocaleFromRoutePath(String(path)),
   onHost: (locale: string | null | undefined) => locale,
+  supports: () => true,
   fromOwnDomain: () => false,
   cookieSpans: () => false,
 })
