@@ -23,7 +23,12 @@ async function stopServer(server: ChildProcess) {
   if (server.exitCode !== null) return
   const exited = once(server, 'exit')
   server.kill()
-  await exited
+  const timeout = setTimeout(() => server.kill('SIGKILL'), 5000)
+  try {
+    await exited
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 async function buildFixture(fixture: string, env: NodeJS.ProcessEnv = process.env) {

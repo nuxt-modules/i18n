@@ -67,6 +67,19 @@ export const config = useRuntimeConfig as () => unknown`,
     }
   })
 
+  test('preserves TypeScript import kinds while rewriting runtime config', async () => {
+    const plugin = getPlugin()
+    const result = await plugin.transform.handler(
+      `import type { RuntimeConfig } from '#imports'
+import { type Locale, useRuntimeConfig as getRuntimeConfig } from '#imports'`,
+      '/project/dist/runtime/shared/utils.ts',
+    )
+
+    expect(result.code).toContain(`import type { RuntimeConfig } from '#imports'`)
+    expect(result.code).toContain(`import { type Locale } from '#imports'`)
+    expect(result.code).toContain(`import { useRuntimeConfig as getRuntimeConfig } from '#internal/i18n-nitro.mjs'`)
+  })
+
   test('replaces the app H3 template in the server build', async () => {
     const plugin = getPlugin()
     const result = await plugin.transform.handler(
