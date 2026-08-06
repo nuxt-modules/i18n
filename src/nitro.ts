@@ -1,7 +1,16 @@
 import { resolveModuleExportNames } from 'mlly'
 import { defu } from 'defu'
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addServerHandler, addServerImports, addServerPlugin, addServerTemplate, resolveModule, resolvePath } from '@nuxt/kit'
+import {
+  addServerHandler,
+  addServerImports,
+  addServerPlugin,
+  addServerTemplate,
+  addTemplate,
+  getNuxtVersion,
+  resolveModule,
+  resolvePath,
+} from '@nuxt/kit'
 import yamlPlugin from '@rollup/plugin-yaml'
 import json5Plugin from '@miyaneee/rollup-plugin-json5'
 import { getDefineConfig } from './bundler'
@@ -16,6 +25,18 @@ import type { ResolvedI18nContext } from './context'
 import { generateTemplateNuxtI18nOptions } from './template'
 
 export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
+  const nuxtVersion = getNuxtVersion(nuxt)
+
+  addServerTemplate({
+    filename: '#internal/i18n-nitro.mjs',
+    getContents: () => generateNitroRuntimeTemplate(nuxtVersion),
+  })
+
+  addTemplate({
+    filename: 'i18n-h3.mjs',
+    getContents: () => generateH3RuntimeTemplate(nuxtVersion),
+  })
+
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
     getContents: () => generateTemplateNuxtI18nOptions(ctx, true),
@@ -105,6 +126,38 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     // reads what derives from it (`__IS_SSG__`, `__I18N_CDN__`) from the app graph instead.
     nitroConfig.replace = Object.assign({}, nitroConfig.replace, getDefineConfig(ctx, true))
   })
+}
+
+export function generateH3RuntimeTemplate(nuxtVersion: string) {
+  const source = Number(nuxtVersion.split('.')[0]) >= 5 ? 'nitro/h3' : 'h3'
+  return `export { createError, defineEventHandler, getCookie, getRequestHeader, getRequestURL, getResponseHeaders, getResponseStatus, getRouterParam, sanitizeStatusCode, setCookie, setResponseHeader, setResponseStatus } from '${source}'`
+}
+
+export function generateNitroRuntimeTemplate(nuxtVersion: string) {
+  if (Number(nuxtVersion.split('.')[0]) >= 5) {
+    return [
+      `export { definePlugin as defineNitroPlugin } from 'nitro'`,
+      `export { defineCachedHandler as defineCachedEventHandler, defineCachedFunction } from 'nitro/cache'`,
+      `export { createError, defineEventHandler, getCookie, getRequestHeader, getRequestURL, getResponseHeaders, getResponseStatus, getRouterParam, sanitizeStatusCode, setCookie, setResponseHeader, setResponseStatus } from 'nitro/h3'`,
+      `export { useRuntimeConfig } from 'nitro/runtime-config'`,
+      `export { useStorage } from 'nitro/storage'`,
+      `export const hookNitroRender = (nitro, handler) => nitro.hooks.hook('render:route', (_context, { event }) => handler({ event }))`,
+      `export const setNitroRedirectResponse = () => {}`,
+    ].join('\n')
+  }
+
+  return [
+    `export {`,
+    `  defineCachedEventHandler,`,
+    `  defineCachedFunction,`,
+    `  defineNitroPlugin,`,
+    `  useRuntimeConfig,`,
+    `  useStorage,`,
+    `} from 'nitropack/runtime'`,
+    `export { createError, defineEventHandler, getCookie, getRequestHeader, getRequestURL, getResponseHeaders, getResponseStatus, getRouterParam, sanitizeStatusCode, setCookie, setResponseHeader, setResponseStatus } from 'h3'`,
+    `export const hookNitroRender = (nitro, handler) => nitro.hooks.hook('render:before', handler)`,
+    `export const setNitroRedirectResponse = (context, body, headers, status) => { context.response = { body, headers, statusCode: status } }`,
+  ].join('\n')
 }
 
 async function resolveLocaleDetectorPath(ctx: ResolvedI18nContext, nuxt: Nuxt) {

@@ -1,4 +1,4 @@
-import { useStorage } from 'nitropack/runtime'
+import { useStorage } from '#internal/i18n-nitro.mjs'
 
 import type { DefineLocaleMessage, LocaleMessages } from 'vue-i18n'
 
