@@ -17,11 +17,32 @@ export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<stri
   return localeConfigs
 }
 
-function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): string[] {
-  if (fallback === false) { return [] }
-  if (isArray(fallback)) { return fallback }
+/**
+ * When a key is missing on a region-tagged locale like `en-US`, vue-i18n automatically tries its
+ * base tag `en` before it even looks at `fallbackLocale`. That only works if `en`'s messages are
+ * actually loaded though, so we add the base tag here when it's also a configured locale. If it
+ * isn't configured, there's no file to load for it anyway, so we leave it alone rather than
+ * fetching something the user never defined.
+ */
+const localeCodeSet = new Set(localeCodes)
 
-  let fallbackLocales: string[] = []
+function configuredBaseTags(locale: string): string[] {
+  const tags: string[] = []
+  let tag = locale
+  while (tag.includes('-')) {
+    tag = tag.slice(0, tag.lastIndexOf('-'))
+    if (localeCodeSet.has(tag)) { tags.push(tag) }
+  }
+  return tags
+}
+
+export function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): string[] {
+  const baseTags = locales.flatMap(configuredBaseTags).filter(tag => !locales.includes(tag))
+
+  if (fallback === false) { return baseTags }
+  if (isArray(fallback)) { return [...baseTags, ...fallback] }
+
+  const fallbackLocales: string[] = [...baseTags]
   if (isString(fallback)) {
     if (locales.every(locale => locale !== fallback)) {
       fallbackLocales.push(fallback)
@@ -32,7 +53,7 @@ function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): st
   const targets = [...locales, 'default']
   for (const locale of targets) {
     if (locale in fallback == false) { continue }
-    fallbackLocales = [...fallbackLocales, ...fallback[locale]!.filter(Boolean)]
+    fallbackLocales.push(...fallback[locale]!.filter(Boolean))
   }
 
   return fallbackLocales
