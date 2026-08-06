@@ -38,4 +38,12 @@ describe('getFallbackLocaleCodes', () => {
   test('does not duplicate a base tag that is already an explicit locale', () => {
     expect(getFallbackLocaleCodes({ default: ['ja'] }, ['en-US', 'en'])).toEqual(['ja'])
   })
+
+  test('(#regression) does not duplicate a base tag the user also lists explicitly', () => {
+    // writing `en` explicitly here achieves exactly what the base-tag walk already adds on its
+    // own, so the two sources overlap and need deduping rather than appearing twice
+    expect(getFallbackLocaleCodes({ 'en-US': ['en'] }, ['en-US'])).toEqual(['en'])
+    expect(getFallbackLocaleCodes(['en'], ['en-US'])).toEqual(['en'])
+    expect(getFallbackLocaleCodes('en', ['en-US'])).toEqual(['en'])
+  })
 })

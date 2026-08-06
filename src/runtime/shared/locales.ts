@@ -17,6 +17,8 @@ export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<stri
   return localeConfigs
 }
 
+const localeCodeSet = new Set(localeCodes)
+
 /**
  * When a key is missing on a region-tagged locale like `en-US`, vue-i18n automatically tries its
  * base tag `en` before it even looks at `fallbackLocale`. That only works if `en`'s messages are
@@ -24,8 +26,6 @@ export function createLocaleConfigs(fallbackLocale: FallbackLocale): Record<stri
  * isn't configured, there's no file to load for it anyway, so we leave it alone rather than
  * fetching something the user never defined.
  */
-const localeCodeSet = new Set(localeCodes)
-
 function configuredBaseTags(locale: string): string[] {
   const tags: string[] = []
   let tag = locale
@@ -38,25 +38,26 @@ function configuredBaseTags(locale: string): string[] {
 
 export function getFallbackLocaleCodes(fallback: FallbackLocale, locales: string[]): string[] {
   const baseTags = locales.flatMap(configuredBaseTags).filter(tag => !locales.includes(tag))
-
-  if (fallback === false) { return baseTags }
-  if (isArray(fallback)) { return [...baseTags, ...fallback] }
-
   const fallbackLocales: string[] = [...baseTags]
-  if (isString(fallback)) {
+
+  // an explicit `fallbackLocale` entry can name the same locale the base-tag walk already added
+  // (e.g. `{'en-US': ['en']}` alongside `en-US`'s own implicit `en`), so dedupe once at the end
+  // rather than special-casing it in every branch below
+  if (isArray(fallback)) {
+    fallbackLocales.push(...fallback)
+  } else if (isString(fallback)) {
     if (locales.every(locale => locale !== fallback)) {
       fallbackLocales.push(fallback)
     }
-    return fallbackLocales
+  } else if (fallback !== false) {
+    const targets = [...locales, 'default']
+    for (const locale of targets) {
+      if (locale in fallback == false) { continue }
+      fallbackLocales.push(...fallback[locale]!.filter(Boolean))
+    }
   }
 
-  const targets = [...locales, 'default']
-  for (const locale of targets) {
-    if (locale in fallback == false) { continue }
-    fallbackLocales.push(...fallback[locale]!.filter(Boolean))
-  }
-
-  return fallbackLocales
+  return [...new Set(fallbackLocales)]
 }
 
 /**
