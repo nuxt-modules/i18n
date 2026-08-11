@@ -46,8 +46,14 @@ export const ResourcePlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nC
           return id
         }
 
-        if (i18nFileHashSet.has(id)) {
-          return i18nFileHashSet.get(id)
+        const path = i18nFileHashSet.get(id)
+        const environment = (this as typeof this & { environment?: { config: { consumer: string } } }).environment
+        if (meta.framework === 'vite' && environment?.config.consumer === 'server' && path && ctx.rawResourcePaths.has(path)) {
+          return
+        }
+
+        if (path) {
+          return path
         }
       },
 
