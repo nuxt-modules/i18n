@@ -9,4 +9,7 @@ const { setLocale, t } = useI18n()
   <button id="switch-fr" @click="setLocale('fr')">
     Français
   </button>
+  <SwitchLocalePathLink id="switch-en" locale="en">
+    English
+  </SwitchLocalePathLink>
 </template>

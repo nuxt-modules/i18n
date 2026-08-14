@@ -1,5 +1,5 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
-import { useSwitchLocalePath } from '#i18n'
+import { useSwitchLocalePath } from '../composables/index'
 import { escapeHtmlAttr } from '../shared/utils'
 
 const identifier = __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__
