@@ -97,6 +97,7 @@ describe.each(fixtures)('%s', (_name, fixture, nuxtVersion, nitroVersion) => {
       expect(html).toContain('Bonjour')
       expect(html).toContain('data-nuxt-i18n')
       expect(html).toContain('Unused English message')
+      expect(html).toMatch(/(?:href="\/"[^>]*id="switch-en"|id="switch-en"[^>]*href="\/")/)
     } finally {
       await stopServer(server)
     }
