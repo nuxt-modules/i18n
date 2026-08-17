@@ -146,25 +146,18 @@ describe('experimental.localeAgnosticDefaultRoutes', () => {
   })
 })
 
-/**
- * The intended pairing from #4016: `compactRoutes` collapses the prefixed locales into one
- * `/:locale(…)` route, so the two features meet in `resolveLocalizedRouteByName` - the default
- * locale resolves by name through the agnostic tree, while every other locale takes the compact
- * branch and gets `locale` injected as a route param. Built from `localizeRoutes` rather than by
- * hand so the fixture is the table the generator actually emits.
- */
-describe('getLocaleRouteName: + experimental.compactRoutes', () => {
-  const pages: LocalizableRoute[] = [
-    { name: 'index', path: '/', file: 'index.vue' },
-    {
-      name: 'about',
-      path: '/about',
-      file: 'about.vue',
-      children: [{ name: 'about-team', path: 'team', file: 'team.vue' }],
-    },
-  ]
+const pages: LocalizableRoute[] = [
+  { name: 'index', path: '/', file: 'index.vue' },
+  {
+    name: 'about',
+    path: '/about',
+    file: 'about.vue',
+    children: [{ name: 'about-team', path: 'team', file: 'team.vue' }],
+  },
+]
 
-  const generated = localizeRoutes(pages, {
+function generate(opts: { agnostic?: boolean, compactRoutes?: boolean } = {}) {
+  return localizeRoutes(pages, {
     strategy: 'prefix_except_default',
     trailingSlash: false,
     differentDomains: false,
@@ -172,35 +165,59 @@ describe('getLocaleRouteName: + experimental.compactRoutes', () => {
     routesNameSeparator: '___',
     defaultLocaleRouteNameSuffix: 'default',
     defaultLocale: 'en',
-    compactRoutes: true,
+    compactRoutes: opts.compactRoutes,
+    localeAgnosticDefaultRoutes: opts.agnostic,
+  })
+}
+
+/** `localizeRoutes` emits `file`, vue-router wants a component - the only fixup the tests need */
+function toRouteRecords(routes: LocalizableRoute[]): RouteRecordRaw[] {
+  return routes.map(route => ({
+    ...route,
+    component: {},
+    children: route.children && toRouteRecords(route.children),
+  }) as unknown as RouteRecordRaw)
+}
+
+const flatten = (routes: (LocalizableRoute | RouteRecordRaw)[]): string[] =>
+  routes.flatMap(r => [`${String(r.name)} :: ${r.path}`, ...flatten(r.children ?? [])])
+
+describe('localizeRoutes: experimental.localeAgnosticDefaultRoutes', () => {
+  test('off: the table is unchanged', () => {
+    expect(flatten(generate())).toEqual([
+      'index___en :: /',
+      'index___fr :: /fr',
+      'index___ja :: /ja',
+      'about___en :: /about',
+      'about-team___en :: team',
+      'about___fr :: /fr/about',
+      'about-team___fr :: team',
+      'about___ja :: /ja/about',
+      'about-team___ja :: team',
+    ])
   })
 
-  /**
-   * What a consumer's `pages:resolved` hook does today, and what generating the tree natively
-   * (follow-up 1 in #4016) would make unnecessary: rename the unprefixed `___en` tree to the
-   * agnostic name, and widen the compact pattern so `en` is prefixable like any other locale.
-   */
-  function toLocaleAgnostic(routes: LocalizableRoute[]): RouteRecordRaw[] {
-    return routes.map((route) => {
-      const renamed = {
-        ...route,
-        component: {},
-        path: route.path.replace(/^\/:locale\(([^)]+)\)/, '/:locale(en|$1)'),
-        name: route.name?.replace(/___en$/, '___default'),
-        children: route.children && toLocaleAgnostic(route.children),
-      }
-      return renamed as unknown as RouteRecordRaw
-    })
-  }
+  test('on: the unprefixed tree loses the locale from its name, and the default gains a prefix', () => {
+    // the same two-variant shape `prefix_and_default` produces, except the unprefixed variant is
+    // named `___default` rather than `___en___default`, and `en` is prefixable like any other locale
+    expect(flatten(generate({ agnostic: true }))).toEqual([
+      'index___default :: /',
+      'index___en :: /en',
+      'index___fr :: /fr',
+      'index___ja :: /ja',
+      'about___default :: /about',
+      'about-team___default :: team',
+      'about___en :: /en/about',
+      'about-team___en :: team',
+      'about___fr :: /fr/about',
+      'about-team___fr :: team',
+      'about___ja :: /ja/about',
+      'about-team___ja :: team',
+    ])
+  })
 
-  const compactRoutes = toLocaleAgnostic(generated)
-  const compactOpts = { routes: compactRoutes, compactRoutes: true }
-
-  test('the generated table is the one this pairing produces', () => {
-    const flatten = (routes: RouteRecordRaw[]): string[] =>
-      routes.flatMap(r => [`${String(r.name)} :: ${r.path}`, ...flatten(r.children ?? [])])
-
-    expect(flatten(compactRoutes)).toEqual([
+  test('on: + compactRoutes keeps one regex route, widened to every locale', () => {
+    expect(flatten(generate({ agnostic: true, compactRoutes: true }))).toEqual([
       'index___default :: /',
       'index :: /:locale(en|fr|ja)',
       'about___default :: /about',
@@ -210,11 +227,37 @@ describe('getLocaleRouteName: + experimental.compactRoutes', () => {
     ])
   })
 
-  test('off: the runtime default locale is stuck on the compact prefixed route', () => {
+  test('off: + compactRoutes still binds the unprefixed tree to the build default', () => {
+    expect(flatten(generate({ compactRoutes: true }))).toEqual([
+      'index___en :: /',
+      'index :: /:locale(fr|ja)',
+      'about___en :: /about',
+      'about-team___en :: team',
+      'about :: /:locale(fr|ja)/about',
+      'about-team :: team',
+    ])
+  })
+})
+
+/**
+ * The intended pairing from #4016: `compactRoutes` collapses the prefixed locales into one
+ * `/:locale(…)` route, so the two features meet in `resolveLocalizedRouteByName` - the default
+ * locale resolves by name through the agnostic tree, while every other locale takes the compact
+ * branch and gets `locale` injected as a route param.
+ */
+describe('getLocaleRouteName: + experimental.compactRoutes', () => {
+  const compactOpts = {
+    routes: toRouteRecords(generate({ agnostic: true, compactRoutes: true })),
+    compactRoutes: true,
+  }
+
+  test('the runtime half is what makes the generated tree reachable', () => {
+    // Not a configuration anyone runs - both halves come from the same option - but it isolates the
+    // name getter's contribution: given the generated table and the runtime resolution left as-is,
+    // `about___ja` does not exist, so the compact branch injects `ja` as the param and prefixes the
+    // very locale that is meant to be unprefixed on this deployment.
     const { ctx } = createTestContext({ ...compactOpts, defaultLocale: 'ja' })
 
-    // `about___ja` does not exist, so the compact branch injects `ja` as the param - a prefixed
-    // path for the locale that is supposed to be unprefixed on this deployment
     expect(localePath(ctx, 'about', 'ja')).toEqual('/ja/about')
   })
 

@@ -214,12 +214,13 @@ export interface ExperimentalFeatures {
    */
   compactRoutes?: boolean
   /**
-   * Resolves the host's default locale to the locale-agnostic `<base>___default` route name under
-   * `prefix_except_default`, so the unprefixed route tree is addressable without knowing which
-   * locale the build defaulted to. Combined with a build step that names the unprefixed tree
-   * `___default` (and typically `compactRoutes`), this lets a single build serve deployments whose
-   * `defaultLocale` comes from runtime config. Ignored under `differentDomains` and
-   * `multiDomainLocales`, where the unprefixed locale is already resolved per host.
+   * Names the unprefixed route tree `<base>___default` instead of `<base>___<defaultLocale>` under
+   * `prefix_except_default`, gives the build's own default locale a prefixed tree alongside it, and
+   * resolves the host's default locale to that locale-agnostic name at runtime. The unprefixed tree
+   * is then addressable without knowing which locale the build defaulted to, so a single build can
+   * serve deployments whose `defaultLocale` comes from runtime config. Ignored under
+   * `differentDomains` and `multiDomainLocales`, where the unprefixed locale is already resolved
+   * per host.
    * @default false
    */
   localeAgnosticDefaultRoutes?: boolean
