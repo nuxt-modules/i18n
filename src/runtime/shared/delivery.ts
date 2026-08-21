@@ -38,3 +38,26 @@ export function createRuntimeLoaderPredicate(config: DeliveryConfig) {
     || config.undeliverable.includes(locale)
     || (config.dynamic.includes(locale) && (config.prerender || config.ssg))
 }
+
+/**
+ * Path segments after the server route prefix for a locale's messages endpoint. The route matches
+ * `:hash/:locale/messages.json` as single segments, and a locale code is free to contain characters
+ * (`/`, `?`, ...) that would otherwise split into extra segments or corrupt the URL, so it gets
+ * encoded here to keep the request a single segment. h3 decodes route params back to the original
+ * locale on the way in (#4036).
+ */
+export function messagesRoutePath(hash: string, locale: Locale): string {
+  return `${hash}/${encodeURIComponent(locale)}/messages.json`
+}
+
+/**
+ * Whether a locale code needs percent-encoding to fit `messagesRoutePath` as a single path segment.
+ * Nitro's own prerender crawler can only carry a route through unencoded (it round-trips every
+ * queued route through `decodeURI`/`encodeURI`, which never reproduces a pre-encoded segment), so a
+ * locale like this can never be baked into a static messages file - callers treat it as `dynamic`
+ * and have it run its own loaders instead, wherever there's no live server left to fall back on
+ * (prerendering, static hosting) (#4142).
+ */
+export function localeNeedsPathEncoding(locale: Locale): boolean {
+  return encodeURIComponent(locale) !== locale
+}

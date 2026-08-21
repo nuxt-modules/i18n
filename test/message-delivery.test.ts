@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
+import { createPrerenderablePredicate, createRuntimeLoaderPredicate, messagesRoutePath } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
 import { resolveDeliveryLocales } from '../src/context'
 import { resolveLocales } from '../src/utils'
@@ -66,6 +66,21 @@ describe('message delivery', () => {
     expect(deliverable(LOCALES.unserializable)).toBe(false)
     expect(deliverable(LOCALES.both)).toBe(false)
     expect(deliverable(LOCALES.appContext)).toBe(false)
+  })
+
+  test('(#4036) a locale code with characters that would otherwise split the URL stays a single segment', () => {
+    // `/` (or `?`, `#`, ...) in a locale code would otherwise be read as extra path segments or
+    // query/hash markers, so the messages endpoint (`:hash/:locale/messages.json`) never matches
+    expect(messagesRoutePath('abc123', 'at/de')).toBe('abc123/at%2Fde/messages.json')
+    expect(messagesRoutePath('abc123', 'en')).toBe('abc123/en/messages.json')
+  })
+
+  test('(#4142) a locale needing URL encoding also runs its own loaders', () => {
+    // nitro's prerender crawler can only carry a route through unencoded, so it can never bake a
+    // static messages file for this locale, it has to fall back on running its own loaders instead
+    const locales = [{ code: 'en', file: 'en.json' }, { code: 'en/formal', file: 'en.json' }] as LocaleObject[]
+    const { dynamicLocales } = resolveDeliveryLocales(resolveLocales('/i18n', locales, {}))
+    expect(dynamicLocales).toEqual(['en/formal'])
   })
 })
 

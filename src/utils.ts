@@ -34,8 +34,10 @@ export function filterLocales(ctx: I18nNuxtContext) {
   return ctx.options.locales.filter(x => include.includes(isString(x) ? x : x.code)) as string[] | LocaleObject[]
 }
 
-// locale codes are used as single URL path segments (route prefixes, messages endpoint), in route names and in cookies (#4036)
-const INVALID_LOCALE_CODE_CHAR_RE = /[/\\?#%:\s]/
+// locale codes are used as single URL path segments (route prefixes, messages endpoint), in route
+// names and in cookies (#4036). `/` is no longer banned here since the messages endpoint now encodes
+// it (#4142), the rest is still unsafe.
+const INVALID_LOCALE_CODE_CHAR_RE = /[\\?#%:\s]/
 
 /**
  * A `defaultLocale` naming no configured locale cannot be the unprefixed locale, so a host relying
@@ -56,7 +58,7 @@ export function validateLocaleCodes(codes: string[]) {
   if (invalid.length) {
     throw new Error(
       `[nuxt-i18n] Invalid locale code${invalid.length > 1 ? 's' : ''}: ${invalid.map(x => JSON.stringify(x)).join(', ')}. `
-      + 'Locale codes are used as URL path segments and must not be empty or contain `/ \\ ? # % :` or whitespace.',
+      + 'Locale codes are used as URL path segments and must not be empty or contain `\\ ? # % :` or whitespace.',
     )
   }
 }

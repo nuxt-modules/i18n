@@ -9,7 +9,7 @@ import type { H3Event } from 'h3'
  * Load messages for the specified locale event parameter
  */
 const _messagesHandler = defineEventHandler(async (event: H3Event) => {
-  const locale = getRouterParam(event, 'locale')
+  const locale = getRouterParam(event, 'locale', { decode: true })
 
   if (!locale) {
     throw createError({ status: 400, message: 'Locale not specified.' })
@@ -31,10 +31,10 @@ const _messagesHandler = defineEventHandler(async (event: H3Event) => {
 })
 
 const getCacheKey = (event: H3Event) =>
-  [getRouterParam(event, 'locale') ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
+  [getRouterParam(event, 'locale', { decode: true }) ?? 'null', getRouterParam(event, 'hash') ?? 'null'].join('-')
 
 async function shouldBypassCache(event: H3Event) {
-  const locale = getRouterParam(event, 'locale')
+  const locale = getRouterParam(event, 'locale', { decode: true })
   if (locale == null) { return false }
   // prerendering may require initializing context
   const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)

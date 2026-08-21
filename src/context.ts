@@ -7,7 +7,7 @@ import { computeLocaleHashes, filterLocales, getLayerI18n, normalizeDomainLocale
 import { resolveRawResourcePaths } from './resources'
 import { generateLoaderOptions } from './gen'
 // takes its facts as config and reads no `__FLAG__` defines, so the build can share it
-import { createPrerenderablePredicate } from './runtime/shared/delivery'
+import { createPrerenderablePredicate, localeNeedsPathEncoding } from './runtime/shared/delivery'
 
 import type { Resolver } from '@nuxt/kit'
 import type { FileMeta, LocaleInfo, NormalizedLocaleObject, NuxtI18nOptions } from './types'
@@ -55,7 +55,11 @@ const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache =
 
 export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
   return {
-    dynamicLocales: localeInfo.filter(x => x.meta.some(isDynamicMeta)).map(x => x.code),
+    // a locale needing URL encoding is "dynamic" too - nitro's prerender crawler can't carry it
+    // through, so it has to run its own loaders instead of relying on a baked file (#4142)
+    dynamicLocales: localeInfo
+      .filter(x => x.meta.some(isDynamicMeta) || localeNeedsPathEncoding(x.code))
+      .map(x => x.code),
     // one list, because nothing downstream cares which of the two reasons applies
     undeliverableLocales: localeInfo.filter(x => x.meta.some(m => !m.serializable || m.appContext)).map(x => x.code),
   }

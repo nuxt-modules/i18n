@@ -57,13 +57,17 @@ describe('validateLocaleCodes', () => {
     expect(() => validateLocaleCodes(['en', 'de-AT', 'zh-Hans', 'pt_BR', 'kr.v2'])).not.toThrow()
   })
 
-  test.each(['at/de', 'at\\de', 'en us', 'en?', 'en#x', 'en%20', 'en:us', ''])('throws for %j', code => {
+  test('(#4142) accepts codes containing a slash', () => {
+    expect(() => validateLocaleCodes(['en/formal', 'en/informal'])).not.toThrow()
+  })
+
+  test.each(['at\\de', 'en us', 'en?', 'en#x', 'en%20', 'en:us', ''])('throws for %j', code => {
     expect(() => validateLocaleCodes([code])).toThrowError('[nuxt-i18n] Invalid locale code')
   })
 
   test('lists all invalid codes', () => {
-    expect(() => validateLocaleCodes(['en', 'at/de', 'at/en'])).toThrowError(
-      /Invalid locale codes: "at\/de", "at\/en"/,
+    expect(() => validateLocaleCodes(['en', 'en?', 'en#x'])).toThrowError(
+      /Invalid locale codes: "en\?", "en#x"/,
     )
   })
 })

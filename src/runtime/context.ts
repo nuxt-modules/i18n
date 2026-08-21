@@ -3,7 +3,7 @@ import { isRef, unref } from 'vue'
 import { useCookie, useRequestURL, useState } from '#imports'
 import { localeLoaders } from '#build/i18n-options.mjs'
 import { cloneDeep, fillMissing, getLocaleMessagesMergedCached, warnMissedMessageFunctions } from './shared/messages'
-import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from './shared/delivery'
+import { createPrerenderablePredicate, createRuntimeLoaderPredicate, messagesRoutePath } from './shared/delivery'
 import { createComposableContext } from './composable-context'
 import { getComposer, getI18nTarget } from './compatibility'
 import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from './shared/domain'
@@ -244,7 +244,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
     }
 
     const headers: HeadersInit = getLocaleConfig(locale)?.cacheable ? {} : { 'Cache-Control': 'no-cache' }
-    const url = joinURL(cdnPrefix(locale), __I18N_SERVER_ROUTE__, __I18N_LOCALE_HASHES__[locale]!, locale, 'messages.json')
+    const url = joinURL(cdnPrefix(locale), __I18N_SERVER_ROUTE__, messagesRoutePath(__I18N_LOCALE_HASHES__[locale]!, locale))
     const messages = await $fetch<LocaleMessages<DefineLocaleMessage>>(url, { headers })
     for (const k of deliverable(messages)) {
       i18n.mergeLocaleMessage(k, messages[k])
