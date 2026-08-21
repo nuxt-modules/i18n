@@ -65,6 +65,13 @@ describe('validateLocaleCodes', () => {
     expect(() => validateLocaleCodes([code])).toThrowError('[nuxt-i18n] Invalid locale code')
   })
 
+  // (#4142) a `/` is only safe as a real path segment. A leading, trailing, or doubled slash
+  // would build an empty segment nothing can ever match.
+  test.each(['en/', '/en', 'en//formal', 'en/./formal', 'en/../formal', '.', '..'])(
+    'throws for %j',
+    code => expect(() => validateLocaleCodes([code])).toThrowError('[nuxt-i18n] Invalid locale code'),
+  )
+
   test('lists all invalid codes', () => {
     expect(() => validateLocaleCodes(['en', 'en?', 'en#x'])).toThrowError(
       /Invalid locale codes: "en\?", "en#x"/,

@@ -51,13 +51,33 @@ export function messagesRoutePath(hash: string, locale: Locale): string {
 }
 
 /**
- * Whether a locale code needs percent-encoding to fit `messagesRoutePath` as a single path segment.
- * Nitro's own prerender crawler can only carry a route through unencoded (it round-trips every
- * queued route through `decodeURI`/`encodeURI`, which never reproduces a pre-encoded segment), so a
- * locale like this can never be baked into a static messages file - callers treat it as `dynamic`
- * and have it run its own loaders instead, wherever there's no live server left to fall back on
- * (prerendering, static hosting) (#4142).
+ * Whether a locale code survives Nitro's own prerender crawler, which round-trips every queued
+ * route through `encodeURI(decodeURI(...))` before fetching it. That never reproduces a segment
+ * `messagesRoutePath` already percent-encoded (`/` decodes to itself, then re-encoding turns the
+ * literal `%` back into `%25`), so a locale needing that encoding can never be baked into a static
+ * messages file. Callers treat it as `dynamic` and have it run its own loaders instead, wherever
+ * there's no live server left to fall back on (prerendering, static hosting) (#4142). A code using
+ * only non-ASCII characters still round-trips fine (those aren't in `decodeURI`'s protected set),
+ * so it isn't penalized here just for needing `encodeURIComponent` at all.
  */
 export function localeNeedsPathEncoding(locale: Locale): boolean {
-  return encodeURIComponent(locale) !== locale
+  let encoded: string
+  try {
+    encoded = encodeURIComponent(locale)
+  } catch {
+    // malformed input, such as a lone surrogate, can't be routed to at all, so treat it the same
+    // as needing encoding, which sends it to the loaders instead of failing later, less clearly
+    return true
+  }
+  return encodeURI(decodeURI(encoded)) !== encoded
+}
+
+/**
+ * The cache key the messages endpoint gives Nitro for a (locale, hash) pair. Nitro escapes a
+ * custom key by stripping every non-word character, so joining the raw locale and hash with `-`
+ * can collide, since `en/formal` and `enformal` both reduce to the same key. Encoding the locale
+ * first keeps a `/` (or any other stripped character) from disappearing outright (#4142).
+ */
+export function buildCacheKey(locale: string, hash: string): string {
+  return `${encodeURIComponent(locale)}-${hash}`
 }

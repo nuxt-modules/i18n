@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createPrerenderablePredicate, createRuntimeLoaderPredicate, messagesRoutePath } from '../src/runtime/shared/delivery'
+import { buildCacheKey, createPrerenderablePredicate, createRuntimeLoaderPredicate, localeNeedsPathEncoding, messagesRoutePath } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
 import { resolveDeliveryLocales } from '../src/context'
 import { resolveLocales } from '../src/utils'
@@ -81,6 +81,25 @@ describe('message delivery', () => {
     const locales = [{ code: 'en', file: 'en.json' }, { code: 'en/formal', file: 'en.json' }] as LocaleObject[]
     const { dynamicLocales } = resolveDeliveryLocales(resolveLocales('/i18n', locales, {}))
     expect(dynamicLocales).toEqual(['en/formal'])
+  })
+
+  test('(#4142) a locale code needing only non-ASCII characters still survives the crawler', () => {
+    // non-ASCII characters aren't in `decodeURI`'s protected set, so they round-trip through the
+    // crawler's `encodeURI(decodeURI(...))` cleanly and don't need the loader fallback
+    expect(localeNeedsPathEncoding('français')).toBe(false)
+    expect(localeNeedsPathEncoding('en/formal')).toBe(true)
+  })
+
+  test('(#4142) a malformed locale code (lone surrogate) is treated as needing encoding, not a crash', () => {
+    expect(() => localeNeedsPathEncoding('en\uD800formal')).not.toThrow()
+    expect(localeNeedsPathEncoding('en\uD800formal')).toBe(true)
+  })
+
+  test('(#4142) a slash-containing locale no longer collides with its slash-stripped sibling in the cache key', () => {
+    // mirrors nitro's own key escaping (`String(key).replace(/\W/g, '')`), applied to a custom
+    // `getKey` result before it's used as the actual cache entry name
+    const escapeKey = (key: string) => key.replace(/\W/g, '')
+    expect(escapeKey(buildCacheKey('en/formal', 'abc123'))).not.toBe(escapeKey(buildCacheKey('enformal', 'abc123')))
   })
 })
 

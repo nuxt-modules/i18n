@@ -78,6 +78,12 @@ describe('getLocaleFromRoutePath', () => {
     expect(getLocaleFromRoutePath('/', ['en'])).toBe('')
     expect(getLocaleFromRoutePath('/de/about', ['en'])).toBe('')
   })
+
+  // a fragment glued onto the last segment must not shadow a longer configured locale
+  test('strips a query string or hash fragment before matching', () => {
+    expect(getLocaleFromRoutePath('/en/formal?x=1', ['en', 'en/formal'])).toBe('en/formal')
+    expect(getLocaleFromRoutePath('/en/formal#pricing', ['en', 'en/formal'])).toBe('en/formal')
+  })
 })
 
 describe('prefixable', () => {

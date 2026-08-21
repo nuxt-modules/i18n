@@ -1,4 +1,4 @@
-import { withTrailingSlash, withoutTrailingSlash } from 'ufo'
+import { parsePath, withTrailingSlash, withoutTrailingSlash } from 'ufo'
 import type { Strategies } from '#internal-i18n-types'
 import type { RouteName, RouteObject } from './types'
 
@@ -47,20 +47,20 @@ export function prefixable(currentLocale: string, defaultLocale: string, options
 /**
  * Extract the locale from a route path. A locale code may span more than one path segment
  * (`en/formal`), so recognizing one takes matching against the actual configured codes rather than
- * just taking the first `/`-delimited segment. Walks from the longest possible prefix down to a
- * single segment, so a configured `en/formal` is not shadowed by a shorter, coincidentally matching
- * `en` (#4142). Costs one pass over the path's own segments rather than over `localeCodes`, so it
- * stays cheap regardless of how many locales are configured.
+ * just taking the first `/`-delimited segment. Trims one segment off the end at a time, so a
+ * configured `en/formal` is not shadowed by a shorter, coincidentally matching `en` (#4142). Costs
+ * one pass over the path's own segments rather than over `localeCodes`, so it stays cheap regardless
+ * of how many locales are configured.
  */
 export function getLocaleFromRoutePath(path: string, localeCodes: readonly string[]): string {
-  const withoutQuery = path.split('?')[0] ?? ''
-  const trimmed = withoutQuery[0] === '/' ? withoutQuery.slice(1) : withoutQuery
-  if (!trimmed) { return '' }
+  const { pathname } = parsePath(path)
+  let candidate = pathname[0] === '/' ? pathname.slice(1) : pathname
 
-  const segments = trimmed.split('/')
-  for (let end = segments.length; end > 0; end--) {
-    const candidate = segments.slice(0, end).join('/')
+  while (candidate) {
     if (localeCodes.includes(candidate)) { return candidate }
+    const lastSlash = candidate.lastIndexOf('/')
+    if (lastSlash === -1) { break }
+    candidate = candidate.slice(0, lastSlash)
   }
   return ''
 }
