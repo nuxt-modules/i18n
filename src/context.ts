@@ -56,7 +56,7 @@ const isDynamicMeta = (meta: FileMeta) => meta.type !== 'static' && meta.cache =
 export function resolveDeliveryLocales(localeInfo: LocaleInfo[]) {
   return {
     // a locale needing URL encoding is "dynamic" too - nitro's prerender crawler can't carry it
-    // through, so it has to run its own loaders instead of relying on a baked file (#4142)
+    // through, so it has to run its own loaders instead of relying on a baked file
     dynamicLocales: localeInfo
       .filter(x => x.meta.some(isDynamicMeta) || localeNeedsPathEncoding(x.code))
       .map(x => x.code),

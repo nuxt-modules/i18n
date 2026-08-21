@@ -57,7 +57,7 @@ describe('validateLocaleCodes', () => {
     expect(() => validateLocaleCodes(['en', 'de-AT', 'zh-Hans', 'pt_BR', 'kr.v2'])).not.toThrow()
   })
 
-  test('(#4142) accepts codes containing a slash', () => {
+  test('accepts codes containing a slash', () => {
     expect(() => validateLocaleCodes(['en/formal', 'en/informal'])).not.toThrow()
   })
 
@@ -65,7 +65,7 @@ describe('validateLocaleCodes', () => {
     expect(() => validateLocaleCodes([code])).toThrowError('[nuxt-i18n] Invalid locale code')
   })
 
-  // (#4142) a `/` is only safe as a real path segment. A leading, trailing, or doubled slash
+  // a `/` is only safe as a real path segment. A leading, trailing, or doubled slash
   // would build an empty segment nothing can ever match.
   test.each(['en/', '/en', 'en//formal', 'en/./formal', 'en/../formal', '.', '..'])(
     'throws for %j',

@@ -17,7 +17,7 @@ import { type NuxtApp, useCookie } from '#app'
 
 // TODO: add unit tests for these detectors
 
-// locale codes may span more than one path segment (#4142), path-based detection needs the full
+// locale codes may span more than one path segment, path-based detection needs the full
 // configured list to tell those apart from a plain path segment that happens to match a prefix
 const localeCodes = normalizedLocales.map(l => l.code)
 

@@ -6,7 +6,7 @@ import { buildCacheKey } from '../../shared/delivery'
 
 import type { H3Event } from 'h3'
 
-// the route matches `:locale` as a single, percent-encoded segment (#4036). h3 only decodes a
+// the route matches `:locale` as a single, percent-encoded segment. h3 only decodes a
 // router param when asked to, so every read of it needs the same option, or the locale comes back
 // still encoded.
 const getLocaleParam = (event: H3Event) => getRouterParam(event, 'locale', { decode: true })

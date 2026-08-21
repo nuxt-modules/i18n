@@ -35,7 +35,7 @@ export function filterLocales(ctx: I18nNuxtContext) {
 }
 
 // locale codes are used as URL path segments (route prefixes, messages endpoint), in route names
-// and cookies (#4036). `/` is not banned since a locale can span more than one path segment (#4142).
+// and cookies. `/` is not banned since a locale can span more than one path segment.
 const INVALID_LOCALE_CODE_CHAR_RE = /[\\?#%:[\]\s]/
 
 // a `/`-containing code is still only safe as a sequence of real path segments. A leading,

@@ -44,7 +44,7 @@ export function createRuntimeLoaderPredicate(config: DeliveryConfig) {
  * `:hash/:locale/messages.json` as single segments, and a locale code is free to contain characters
  * (`/`, `?`, ...) that would otherwise split into extra segments or corrupt the URL, so it gets
  * encoded here to keep the request a single segment. h3 decodes route params back to the original
- * locale on the way in (#4036).
+ * locale on the way in.
  */
 export function messagesRoutePath(hash: string, locale: Locale): string {
   return `${hash}/${encodeURIComponent(locale)}/messages.json`
@@ -56,7 +56,7 @@ export function messagesRoutePath(hash: string, locale: Locale): string {
  * `messagesRoutePath` already percent-encoded (`/` decodes to itself, then re-encoding turns the
  * literal `%` back into `%25`), so a locale needing that encoding can never be baked into a static
  * messages file. Callers treat it as `dynamic` and have it run its own loaders instead, wherever
- * there's no live server left to fall back on (prerendering, static hosting) (#4142). A code using
+ * there's no live server left to fall back on (prerendering, static hosting). A code using
  * only non-ASCII characters still round-trips fine (those aren't in `decodeURI`'s protected set),
  * so it isn't penalized here just for needing `encodeURIComponent` at all.
  */
@@ -80,7 +80,7 @@ export function localeNeedsPathEncoding(locale: Locale): boolean {
  * the first into `en%2Fformal`, which strips right back down to the same `en2Fformal` as the
  * second. `JSON.stringify` puts the pair into one string with the boundary between locale and hash
  * spelled out explicitly, and hex-encoding every character of that string turns it into one made
- * only of digits and `a` to `f`, which are all word characters the stripping leaves alone (#4142).
+ * only of digits and `a` to `f`, which are all word characters the stripping leaves alone.
  */
 export function buildCacheKey(locale: string, hash: string): string {
   const pair = JSON.stringify([locale, hash])

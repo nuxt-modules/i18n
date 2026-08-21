@@ -48,7 +48,7 @@ export function prefixable(currentLocale: string, defaultLocale: string, options
  * Extract the locale from a route path. A locale code may span more than one path segment
  * (`en/formal`), so recognizing one takes matching against the actual configured codes rather than
  * just taking the first `/`-delimited segment. Trims one segment off the end at a time, so a
- * configured `en/formal` is not shadowed by a shorter, coincidentally matching `en` (#4142). Costs
+ * configured `en/formal` is not shadowed by a shorter, coincidentally matching `en`. Costs
  * one pass over the path's own segments rather than over `localeCodes`, so it stays cheap regardless
  * of how many locales are configured.
  */

@@ -48,7 +48,7 @@ describe('getLocaleFromRoute', () => {
     expect(getLocaleFromRoute({ name: 'about', path: '/en/about' }, LOCALES)).toBe('en')
   })
 
-  // (#4142) a locale code can span more than one path segment
+  // a locale code can span more than one path segment
   test('recognizes a locale code that spans more than one path segment', () => {
     expect(getLocaleFromRoute('/en/formal/about', ['en', 'en/formal'])).toBe('en/formal')
     expect(getLocaleFromRoute({ path: '/en/formal' }, ['en', 'en/formal'])).toBe('en/formal')
@@ -60,7 +60,7 @@ describe('getLocaleFromRoutePath', () => {
     expect(getLocaleFromRoutePath('/en/about', ['en', 'fr'])).toBe('en')
   })
 
-  // (#4142) a locale code may span more than one path segment
+  // a locale code may span more than one path segment
   test('matches a multi-segment locale, even alongside an overlapping shorter one', () => {
     expect(getLocaleFromRoutePath('/en/formal/about', ['en', 'en/formal'])).toBe('en/formal')
     expect(getLocaleFromRoutePath('/en/about', ['en', 'en/formal'])).toBe('en')

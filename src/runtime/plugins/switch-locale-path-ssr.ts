@@ -3,7 +3,7 @@ import { useSwitchLocalePath } from '#i18n'
 import { escapeHtmlAttr } from '../shared/utils'
 
 const identifier = __SWITCH_LOCALE_PATH_LINK_IDENTIFIER__
-// `\w+` couldn't capture a locale code containing `/` (#4142). Matching up to the closing `]`
+// `\w+` couldn't capture a locale code containing `/`. Matching up to the closing `]`
 // instead covers that, along with anything else a locale code is allowed to contain.
 const switchLocalePathLinkWrapperExpr = new RegExp(
   [`<!--${identifier}-\\[([^\\]]+)\\]-->`, `.+?`, `<!--/${identifier}-->`].join(''),

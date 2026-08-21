@@ -260,7 +260,7 @@ export async function startServerWithRuntimeConfig(env: Record<string, unknown>,
  * Wait for the locale route to be requested or received.
  */
 export function waitForLocaleNetwork(page: Page, locale: string, type: 'request' | 'response') {
-  // the real request encodes the locale into a single path segment (#4142), so a locale
+  // the real request encodes the locale into a single path segment, so a locale
   // containing `/` (or other reserved characters) needs the same encoding to match it
   const encodedLocale = encodeURIComponent(locale)
   if (type === 'request') {
