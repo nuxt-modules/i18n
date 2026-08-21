@@ -61,7 +61,7 @@ describe('validateLocaleCodes', () => {
     expect(() => validateLocaleCodes(['en/formal', 'en/informal'])).not.toThrow()
   })
 
-  test.each(['at\\de', 'en us', 'en?', 'en#x', 'en%20', 'en:us', ''])('throws for %j', code => {
+  test.each(['at\\de', 'en us', 'en?', 'en#x', 'en%20', 'en:us', 'en[x]', 'en]', ''])('throws for %j', code => {
     expect(() => validateLocaleCodes([code])).toThrowError('[nuxt-i18n] Invalid locale code')
   })
 

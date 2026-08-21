@@ -35,9 +35,8 @@ export function filterLocales(ctx: I18nNuxtContext) {
 }
 
 // locale codes are used as URL path segments (route prefixes, messages endpoint), in route names
-// and in cookies (#4036). `/` is no longer banned here since a locale can now span more than one
-// path segment (#4142), the rest is still unsafe.
-const INVALID_LOCALE_CODE_CHAR_RE = /[\\?#%:\s]/
+// and cookies (#4036). `/` is not banned since a locale can span more than one path segment (#4142).
+const INVALID_LOCALE_CODE_CHAR_RE = /[\\?#%:[\]\s]/
 
 // a `/`-containing code is still only safe as a sequence of real path segments. A leading,
 // trailing, or doubled slash would build an empty segment nothing can ever match, and a `.`/`..`
@@ -65,7 +64,7 @@ export function validateLocaleCodes(codes: string[]) {
     throw new Error(
       `[nuxt-i18n] Invalid locale code${invalid.length > 1 ? 's' : ''}: ${invalid.map(x => JSON.stringify(x)).join(', ')}. `
       + 'Locale codes are used as URL path segments and must not be empty, start or end with `/`, contain `//`, '
-      + 'contain `.` or `..` as a segment, or contain `\\ ? # % :` or whitespace.',
+      + 'contain `.` or `..` as a segment, or contain `\\ ? # % : [ ]` or whitespace.',
     )
   }
 }

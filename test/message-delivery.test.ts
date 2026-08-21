@@ -100,6 +100,12 @@ describe('message delivery', () => {
     // `getKey` result before it's used as the actual cache entry name
     const escapeKey = (key: string) => key.replace(/\W/g, '')
     expect(escapeKey(buildCacheKey('en/formal', 'abc123'))).not.toBe(escapeKey(buildCacheKey('enformal', 'abc123')))
+    // encoding the locale on its own isn't enough: encoding `/` and then stripping non-word
+    // characters lands `en/formal` on the same key as a locale literally spelled `en2Fformal`
+    expect(escapeKey(buildCacheKey('en/formal', 'abc123'))).not.toBe(escapeKey(buildCacheKey('en2Fformal', 'abc123')))
+    // joining locale and hash with a fixed separator collides whenever a locale or hash contains
+    // that separator itself, `en-US` with hash `formal` looks the same as `en` with hash `US-formal`
+    expect(escapeKey(buildCacheKey('en-US', 'formal'))).not.toBe(escapeKey(buildCacheKey('en', 'US-formal')))
   })
 })
 

@@ -74,10 +74,19 @@ export function localeNeedsPathEncoding(locale: Locale): boolean {
 
 /**
  * The cache key the messages endpoint gives Nitro for a (locale, hash) pair. Nitro escapes a
- * custom key by stripping every non-word character, so joining the raw locale and hash with `-`
- * can collide, since `en/formal` and `enformal` both reduce to the same key. Encoding the locale
- * first keeps a `/` (or any other stripped character) from disappearing outright (#4142).
+ * custom key by stripping every character that is not a word character, so the key has to survive
+ * that stripping without losing what makes two pairs different. Encoding just the locale isn't
+ * enough on its own: `en/formal` and `en2Fformal` are both valid locale codes, and encoding turns
+ * the first into `en%2Fformal`, which strips right back down to the same `en2Fformal` as the
+ * second. `JSON.stringify` puts the pair into one string with the boundary between locale and hash
+ * spelled out explicitly, and hex-encoding every character of that string turns it into one made
+ * only of digits and `a` to `f`, which are all word characters the stripping leaves alone (#4142).
  */
 export function buildCacheKey(locale: string, hash: string): string {
-  return `${encodeURIComponent(locale)}-${hash}`
+  const pair = JSON.stringify([locale, hash])
+  let key = ''
+  for (let i = 0; i < pair.length; i++) {
+    key += pair.charCodeAt(i).toString(16).padStart(4, '0')
+  }
+  return key
 }
