@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import {
   getLocaleFromRoute,
   getLocaleFromRouteName,
+  getLocaleFromRoutePath,
   getLocalizedRouteName,
   getRouteBaseName,
   prefixable,
@@ -32,17 +33,50 @@ describe('localized route name encode/decode', () => {
 })
 
 describe('getLocaleFromRoute', () => {
+  const LOCALES = ['en', 'nl', 'fr']
+
   test('parses locale from path input', () => {
-    expect(getLocaleFromRoute('/en/about')).toBe('en')
-    expect(getLocaleFromRoute({ path: '/nl/about' })).toBe('nl')
+    expect(getLocaleFromRoute('/en/about', LOCALES)).toBe('en')
+    expect(getLocaleFromRoute({ path: '/nl/about' }, LOCALES)).toBe('nl')
   })
 
   test('prefers route name over path', () => {
-    expect(getLocaleFromRoute({ name: 'about___fr', path: '/en/about' })).toBe('fr')
+    expect(getLocaleFromRoute({ name: 'about___fr', path: '/en/about' }, LOCALES)).toBe('fr')
   })
 
   test('falls back to path for names without locale suffix (compact routes)', () => {
-    expect(getLocaleFromRoute({ name: 'about', path: '/en/about' })).toBe('en')
+    expect(getLocaleFromRoute({ name: 'about', path: '/en/about' }, LOCALES)).toBe('en')
+  })
+
+  // (#4142) a locale code can span more than one path segment
+  test('recognizes a locale code that spans more than one path segment', () => {
+    expect(getLocaleFromRoute('/en/formal/about', ['en', 'en/formal'])).toBe('en/formal')
+    expect(getLocaleFromRoute({ path: '/en/formal' }, ['en', 'en/formal'])).toBe('en/formal')
+  })
+})
+
+describe('getLocaleFromRoutePath', () => {
+  test('matches a single-segment locale', () => {
+    expect(getLocaleFromRoutePath('/en/about', ['en', 'fr'])).toBe('en')
+  })
+
+  // (#4142) a locale code may span more than one path segment
+  test('matches a multi-segment locale, even alongside an overlapping shorter one', () => {
+    expect(getLocaleFromRoutePath('/en/formal/about', ['en', 'en/formal'])).toBe('en/formal')
+    expect(getLocaleFromRoutePath('/en/about', ['en', 'en/formal'])).toBe('en')
+  })
+
+  test('does not match a segment that merely starts with a configured code', () => {
+    expect(getLocaleFromRoutePath('/english/about', ['en'])).toBe('')
+  })
+
+  test('matches the locale alone, with nothing trailing', () => {
+    expect(getLocaleFromRoutePath('/en/formal', ['en/formal'])).toBe('en/formal')
+  })
+
+  test('returns nothing for the root path or an unconfigured locale', () => {
+    expect(getLocaleFromRoutePath('/', ['en'])).toBe('')
+    expect(getLocaleFromRoutePath('/de/about', ['en'])).toBe('')
   })
 })
 
