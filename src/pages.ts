@@ -112,6 +112,12 @@ export const disabledPaths = ${JSON.stringify(routeResources.disabledPaths, null
         locales: normalizedLocales,
         optionsResolver: resolver,
         compactRoutes: !!options.experimental?.compactRoutes,
+        // gated to the one strategy that has an unprefixed tree to rename, mirroring the
+        // `__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__` define the runtime reads
+        localeAgnosticDefaultRoutes: !!options.experimental?.localeAgnosticDefaultRoutes
+          && options.strategy === 'prefix_except_default'
+          && !options.differentDomains
+          && !options.multiDomainLocales,
         onLocalize: resources.collect,
       }
 

@@ -83,7 +83,13 @@ function createShouldPrefix(opts: SetupLocalizeRoutesOptions, ctx: RouteContext)
     if (options.defaultTree) { return false }
     // child route with relative path
     if (options.parent != null && !path.startsWith('/')) { return false }
-    if (ctx.isDefaultLocale(locale) && opts.strategy === 'prefix_except_default') { return false }
+    // under `localeAgnosticDefaultRoutes` the default locale keeps a prefixed tree as well - the
+    // unprefixed one is claimed by whichever locale the deployment defaults to, so exempting the
+    // build's own default would leave it with no reachable route at all
+    if (ctx.isDefaultLocale(locale) && opts.strategy === 'prefix_except_default'
+      && !opts.localeAgnosticDefaultRoutes) {
+      return false
+    }
     return true
   }
 }
@@ -132,7 +138,14 @@ function resolveDefaultTreeLocales(config: SetupLocalizeRoutesOptions, strategy:
     // `setupMultiDomainLocales` keeps the current host's variant at runtime
     return usesDefaultVariants(strategy) ? getDomainDefaultLocales(config.locales) : []
   }
-  return strategy === 'prefix_and_default' && config.defaultLocale ? [config.defaultLocale] : []
+  if (!config.defaultLocale) { return [] }
+  // `localeAgnosticDefaultRoutes` gives `prefix_except_default` the same two-variant shape
+  // `prefix_and_default` has - prefixed plus unprefixed - differing only in that the unprefixed
+  // one is named without a locale
+  if (strategy === 'prefix_except_default' && config.localeAgnosticDefaultRoutes) {
+    return [config.defaultLocale]
+  }
+  return strategy === 'prefix_and_default' ? [config.defaultLocale] : []
 }
 
 function resolveDefaultLocales(config: SetupLocalizeRoutesOptions, strategy: Strategies) {
@@ -161,6 +174,7 @@ type SetupLocalizeRoutesOptions = {
   defaultLocale?: string
   optionsResolver?: RouteOptionsResolver
   compactRoutes?: boolean
+  localeAgnosticDefaultRoutes?: boolean
   onLocalize?: RouteContext['onLocalize']
 }
 
@@ -178,6 +192,7 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
     defaultLocales: resolveDefaultLocales(config, strategy),
     routesNameSeparator: config.routesNameSeparator,
     defaultLocaleRouteNameSuffix: config.defaultLocaleRouteNameSuffix,
+    localeAgnosticDefaultRoutes: config.localeAgnosticDefaultRoutes,
     onLocalize: config.onLocalize,
   })
 
@@ -222,16 +237,25 @@ export function localizeRoutes(routes: LocalizableRoute[], config: SetupLocalize
 
       if (strategy === 'prefix_except_default' && defaultLocale) {
         const result: LocalizableRoute[] = []
-        // Unprefixed route for default locale (name: about___en)
+        // Unprefixed route for default locale (name: about___en, or about___default under
+        // `localeAgnosticDefaultRoutes`)
+        const agnostic = !!config.localeAgnosticDefaultRoutes
         const unprefixed: LocalizableRoute = { ...route }
-        unprefixed.name &&= ctx.localizeRouteName(unprefixed, defaultLocale, false)
-        // Localize children for the default locale so they get ___en suffixes
-        unprefixed.children &&= ctx.localizeChildren(route, unprefixed, defaultLocale, params)
+        unprefixed.name &&= ctx.localizeRouteName(unprefixed, defaultLocale, agnostic)
+        // Localize children for the default locale so they get matching suffixes
+        unprefixed.children &&= ctx.localizeChildren(route, unprefixed, defaultLocale, {
+          ...params,
+          defaultTree: agnostic,
+        })
         result.push(unprefixed)
-        // Regex route for non-default locales (keeps base name)
-        const nonDefault = routeOptions.locales.filter(l => !ctx.isDefaultLocale(l))
-        if (nonDefault.length > 0) {
-          result.push(makeRegexRoute(nonDefault))
+        // Regex route for the prefixed locales (keeps base name). Under
+        // `localeAgnosticDefaultRoutes` the build's default is prefixable too, since the unprefixed
+        // route belongs to whichever locale the deployment defaults to.
+        const prefixed = agnostic
+          ? routeOptions.locales
+          : routeOptions.locales.filter(l => !ctx.isDefaultLocale(l))
+        if (prefixed.length > 0) {
+          result.push(makeRegexRoute(prefixed))
         }
         return result
       }
