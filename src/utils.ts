@@ -518,4 +518,4 @@ export function toArray<T>(value: T | T[]): T[] {
 }
 
 // annotated so the declaration does not have to name consola through its resolved path (TS2742)
-export const logger: ConsolaInstance = useLogger('nuxt-i18n')
+export const logger: Pick<ConsolaInstance, 'debug' | 'error' | 'info' | 'warn'> = useLogger('nuxt-i18n')
