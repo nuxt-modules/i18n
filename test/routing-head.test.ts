@@ -21,16 +21,19 @@ const locales = getNormalizedLocales([
 ])
 
 const component = {}
-const routes = [
+const routeDefs = [
   { name: 'index', path: '/' },
   { name: 'products-slug', path: '/products/:slug()' },
-].flatMap(r =>
-  locales.map(l => ({
-    name: `${r.name}___${l.code}`,
-    path: l.code === 'en' ? r.path : `/${l.code}${r.path === '/' ? '' : r.path}`,
-    component,
-  })),
-)
+]
+const localizeRoutes = (defs: typeof routeDefs) =>
+  defs.flatMap(r =>
+    locales.map(l => ({
+      name: `${r.name}___${l.code}`,
+      path: l.code === 'en' ? r.path : `/${l.code}${r.path === '/' ? '' : r.path}`,
+      component,
+    })),
+  )
+const routes = localizeRoutes(routeDefs)
 
 // one cluster of two hosts sharing every locale, with per-host defaults (`multiDomainLocales`)
 const clusterLocales = getNormalizedLocales([
@@ -47,20 +50,25 @@ const clusterRoutesFor = (cluster: typeof clusterLocales) => [
     .map(l => ({ name: `index___${l.code}___default`, path: '/', component })),
 ]
 
+// mirrors the trailing slash the build appends to every localized route path, catch-all included
+const trailingSlashRoutes = localizeRoutes([...routeDefs, { name: 'slug', path: '/:slug(.*)*' }])
+  .map(r => ({ ...r, path: r.path.replace(/\/+$/, '') + '/' }))
+
 type TestContextOptions = {
   strictSeo?: boolean
   /** `true` gives every locale its own domain, an object selects the shared-domain cluster */
   domains?: boolean | { host: string, locales?: typeof clusterLocales }
   defaultLocale?: string
+  trailingSlash?: boolean
 }
 
 function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) {
-  const { strictSeo = false, domains = false, defaultLocale: configuredDefault = 'en' } = opts
+  const { strictSeo = false, domains = false, defaultLocale: configuredDefault = 'en', trailingSlash = false } = opts
   let locale = initialLocale
   const cluster = typeof domains === 'object' ? (domains.locales ?? clusterLocales) : undefined
   const router = createRouter({
     history: createMemoryHistory(),
-    routes: cluster ? clusterRoutesFor(cluster) : routes,
+    routes: cluster ? clusterRoutesFor(cluster) : trailingSlash ? trailingSlashRoutes : routes,
   })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
   const domainLocales = getNormalizedLocales(
@@ -84,7 +92,7 @@ function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) 
       strategy: 'prefix_except_default',
       routing: true,
       domains: !!domains,
-      trailingSlash: false,
+      trailingSlash,
       strictSeo,
       compactRoutes: false,
       getLocale: () => locale,
@@ -369,6 +377,19 @@ describe('switchLocalePath', () => {
 
     expect(switchLocalePath(ctx, 'en')).toBe('/products/red-mug')
     expect(switchLocalePath(ctx, 'ja')).toBe('/ja/products/rode-mok')
+  })
+
+  test('(#4135) a catch-all route under `trailingSlash` keeps a single trailing slash', async () => {
+    const { router, ctx } = createTestContext('en', { trailingSlash: true })
+    await router.push('/posts/')
+
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr/posts/')
+    expect(localeHead(ctx, {}).link.find(x => x.rel === 'canonical')!.href).toBe('https://example.com/posts/')
+
+    // each switch resolves the path the previous one produced, which is where the slashes stacked
+    await router.push(switchLocalePath(ctx, 'fr'))
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr/posts/')
+    expect(switchLocalePath(ctx, 'en')).toBe('/posts/')
   })
 })
 

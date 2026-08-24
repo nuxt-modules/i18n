@@ -77,6 +77,19 @@ function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Loca
 }
 
 /**
+ * A repeatable param matched against a trailing slash captures a trailing empty segment, which the
+ * route it is resolved against turns into a duplicate slash (#4135)
+ */
+function trimEmptyParamSegments(params: CompatRoute['params']) {
+  const trimmed: CompatRoute['params'] = {}
+  for (const key in params) {
+    const value = params[key]!
+    trimmed[key] = Array.isArray(value) ? value.slice(0, value.findLastIndex(x => x !== '') + 1) : value
+  }
+  return trimmed
+}
+
+/**
  * Resolve the localized path of the current route.
  */
 export function switchLocalePath(
@@ -99,7 +112,7 @@ export function switchLocalePath(
     name,
     params: assign(
       {},
-      route.params,
+      trimEmptyParamSegments(route.params),
       ctx.getLocalizedDynamicParams(locale),
     ),
     fullPath: route.fullPath,
