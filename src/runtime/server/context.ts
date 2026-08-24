@@ -5,6 +5,7 @@ import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { useRuntimeI18n } from '../shared/utils'
 import { createLocaleConfigs, resolveDefaultLocale } from '../shared/locales'
+import { messagesRoutePath } from '../shared/delivery'
 import { cloneDeep } from '../shared/messages'
 import { getMergedMessages } from './utils/messages'
 
@@ -44,7 +45,7 @@ export const fetchMessages = async (locale: string) => {
   if (import.meta.dev) {
     headers.set('Cache-Control', 'no-cache')
   }
-  return await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`, {
+  return await $fetch<LocaleMessages<DefineLocaleMessage>>(`${__I18N_SERVER_ROUTE__}/${messagesRoutePath(__I18N_LOCALE_HASHES__[locale]!, locale)}`, {
     headers,
   })
 }
