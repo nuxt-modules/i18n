@@ -1,18 +1,19 @@
 import { computed, ref, watch } from 'vue'
 import { createI18n } from 'vue-i18n'
 import { defineNuxtPlugin, prerenderRoutes, useNuxtApp, useRequestEvent, useRequestURL } from '#imports'
-import { localeCodes, normalizedLocales } from '#build/i18n-options.mjs'
+import { localeCodes } from '#build/i18n-options.mjs'
 import { loadAndSetLocale, navigate } from '../utils'
 import { extendI18n } from '../routing/i18n'
 import { getI18nTarget } from '../compatibility'
 import { _useLocaleHead, localeHead } from '../routing/head'
 import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } from '../composables'
-import { createLocaleConfigs, resolveDefaultLocale, resolveSupportedLocale } from '../shared/locales'
+import { createLocaleConfigs, resolveDefaultLocale, resolveRequestLocales, resolveSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocaleConfigs } from '../context'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
+import { pruneUnservedLocaleRoutes } from '../routing/runtime-locales'
 import { withRuntimeDomain } from '../shared/domain'
 
 import type { Composer, TranslateOptions } from 'vue-i18n'
@@ -27,8 +28,16 @@ export default defineNuxtPlugin({
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
-    const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
-    const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
+    const serverCtx = nuxt.ssrContext?.event?.context?.nuxtI18n
+    // the server resolved these for this request, the client re-resolves from the payload copy of
+    // the same (possibly narrowed) config and arrives at the same list
+    const requestLocales = serverCtx?.locales ?? resolveRequestLocales(runtimeI18n)
+    const preloadedOptions = serverCtx?.vueI18nOptions
+    const _defaultLocale = resolveDefaultLocale(
+      useRequestURL({ xForwardedHost: true }).host,
+      runtimeI18n.defaultLocale,
+      requestLocales,
+    )
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
     const localeConfigs = useLocaleConfigs()
@@ -43,6 +52,10 @@ export default defineNuxtPlugin({
       setupMultiDomainLocales(optionsI18n.defaultLocale, __I18N_STRATEGY__)
     }
 
+    if (__I18N_ROUTING__) {
+      pruneUnservedLocaleRoutes(requestLocales)
+    }
+
     prerenderRoutes(
       localeCodes
         .filter(isPrerenderable)
@@ -51,9 +64,9 @@ export default defineNuxtPlugin({
 
     // create i18n instance
     const i18n = createI18n(optionsI18n)
-    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(nuxt), nuxt)
+    const detectors = useDetectors(useRequestEvent(nuxt), useI18nDetection(nuxt), requestLocales)
 
-    const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, !!optionsI18n.flatJson)
+    const ctx = createNuxtI18nContext(nuxt, i18n, optionsI18n.defaultLocale, requestLocales, !!optionsI18n.flatJson)
     nuxt._nuxtI18n = ctx
 
     if (__I18N_STRIP_UNUSED__ && import.meta.server) {
@@ -66,7 +79,7 @@ export default defineNuxtPlugin({
         composer.locales = computed(() =>
           runtimeI18n.locales.map(locale => withRuntimeDomain(locale, runtimeI18n.domainLocales)),
         )
-        composer.localeCodes = computed(() => localeCodes)
+        composer.localeCodes = computed(() => requestLocales.map(locale => locale.code))
 
         const _baseUrl = ref(ctx.getBaseUrl())
         composer.baseUrl = computed(() => _baseUrl.value)
@@ -76,12 +89,10 @@ export default defineNuxtPlugin({
         }
 
         composer.strategy = __I18N_STRATEGY__
-        composer.localeProperties = computed(() =>
-          withRuntimeDomain(
-            normalizedLocales.find(l => l.code === composer.locale.value)
+        composer.localeProperties = computed(
+          () =>
+            requestLocales.find(l => l.code === composer.locale.value)
             || { code: composer.locale.value, domains: [], defaultForDomains: [] },
-            runtimeI18n.domainLocales,
-          ),
         )
         composer.setLocale = async (locale: string) => {
           await loadAndSetLocale(nuxt, locale)
