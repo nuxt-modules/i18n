@@ -86,10 +86,12 @@ export type LocaleDetectorConfig = {
   routing: boolean
   /** Whether locales are resolved from domains */
   domains: boolean
+  /** `multiDomainLocales: { isolate: true }` never lets an external arrival's cookie or browser signal cross to another domain's locale */
+  isolate?: boolean
 }
 
 export function createLocaleDetector(config: LocaleDetectorConfig) {
-  const { detection, routing, domains } = config
+  const { detection, routing, domains, isolate } = config
   const isSupported = config.isSupportedLocale ?? isSupportedLocale
 
   /**
@@ -133,7 +135,7 @@ export function createLocaleDetector(config: LocaleDetectorConfig) {
         // only an external arrival may follow a source off-host (an internal one already chose
         // its destination), and only sources reading the same on every domain - per-host cookies
         // can disagree and would have two hosts redirect at each other indefinitely
-        const external = domains && !detectors.fromOwnDomain()
+        const external = domains && !isolate && !detectors.fromOwnDomain()
         const cookie = external && detectors.cookieSpans() ? pass : onHost
         const browser = external ? pass : onHost
         yield cookie(detectors.cookie())
