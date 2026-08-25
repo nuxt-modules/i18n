@@ -77,7 +77,8 @@ describe.each(fixtures)('%s', (_name, fixture, nuxtVersion, nitroVersion) => {
     try {
       const redirect = await request(`${url}/`, {
         headers: { 'accept-language': 'fr' },
-        maxRedirections: 0
+        headersTimeout: 10_000,
+        maxRedirections: 0,
       })
       const setCookie = redirect.headers['set-cookie']
       const cookie = Array.isArray(setCookie) ? setCookie[0] : setCookie
@@ -89,7 +90,8 @@ describe.each(fixtures)('%s', (_name, fixture, nuxtVersion, nitroVersion) => {
 
       const localized = await request(`${url}/fr`, {
         headers: { cookie: cookie! },
-        maxRedirections: 0
+        headersTimeout: 10_000,
+        maxRedirections: 0,
       })
       const html = await localized.body.text()
 
