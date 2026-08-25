@@ -14,6 +14,8 @@ import { relative } from 'pathe'
 import { generateTemplateNuxtI18nOptions } from './template'
 import { generateI18nTypes, simplifyLocaleOptions } from './gen'
 
+const moduleURL = new URL(import.meta.url)
+
 export * from './types'
 
 export default defineNuxtModule<NuxtI18nOptions>({
@@ -79,11 +81,11 @@ export default defineNuxtModule<NuxtI18nOptions>({
     for (const dep of deps) {
       if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
       const alias = dep === '@intlify/utils' ? '@intlify/utils$' : dep
-      nuxt.options.alias[alias] = resolveModule(dep)
+      nuxt.options.alias[alias] = resolveModule(dep, { url: moduleURL })
     }
     const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
-    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`)
-    nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`)
+    nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`, { url: moduleURL })
+    nuxt.options.alias['@intlify/core'] = resolveModule(`@intlify/core/dist/core.node`, { url: moduleURL })
     nuxt.options.build.transpile.push('@nuxtjs/i18n', ...deps)
 
     // the aliased node build has no declaration file, drop the generated paths entries
