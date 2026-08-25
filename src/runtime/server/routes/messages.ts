@@ -1,5 +1,10 @@
-import { defineCachedEventHandler, defineCachedFunction } from 'nitropack/runtime'
-import { createError, defineEventHandler, getRouterParam } from 'h3'
+import {
+  createError,
+  defineCachedEventHandler,
+  defineCachedFunction,
+  defineEventHandler,
+  getRouterParam,
+} from '#internal/i18n-nitro.mjs'
 import { initializeI18nContext, tryUseI18nContext, useI18nContext } from '../context'
 import { warnMissedMessageFunctions } from '../../shared/messages'
 

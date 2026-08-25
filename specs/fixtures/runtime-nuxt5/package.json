@@ -1,0 +1,12 @@
+{
+  "name": "fixture-runtime-nuxt5",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build"
+  },
+  "devDependencies": {
+    "@nuxtjs/i18n": "latest",
+    "nuxt": "npm:nuxt-nightly@5.0.0-29745766.482f3357"
+  }
+}

@@ -20,8 +20,65 @@ declare module '#internal/i18n-options.mjs' {
   export const normalizedLocales: NormalizedLocaleObject[]
 }
 
+declare module '#build/i18n-h3.mjs' {
+  export {
+    createError,
+    defineEventHandler,
+    getCookie,
+    getRequestHeader,
+    getRequestURL,
+    getResponseHeaders,
+    getResponseStatus,
+    getRouterParam,
+    sanitizeStatusCode,
+    setCookie,
+    setResponseHeader,
+    setResponseStatus,
+  } from 'h3'
+}
+
 declare module '#internal/i18n-locale-detector.mjs' {
   export const localeDetector: ((event: H3Event, config: LocaleConfig) => string) | undefined
+}
+
+declare module '#internal/i18n-nitro.mjs' {
+  import type { NitroApp, RenderContext } from 'nitropack'
+
+  export const defineNitroPlugin: (plugin: (nitro: NitroApp) => void) => (nitro: NitroApp) => void
+
+  export function hookNitroRender(
+    nitro: NitroApp,
+    handler: (context: RenderContext) => void | Promise<void>,
+  ): void
+
+  export function setNitroRedirectResponse(
+    context: RenderContext,
+    body: string,
+    headers: Record<string, string>,
+    status: number,
+  ): void
+
+  export {
+    defineCachedEventHandler,
+    defineCachedFunction,
+    useRuntimeConfig,
+    useStorage,
+  } from 'nitropack/runtime'
+
+  export {
+    createError,
+    defineEventHandler,
+    getCookie,
+    getRequestHeader,
+    getRequestURL,
+    getResponseHeaders,
+    getResponseStatus,
+    getRouterParam,
+    sanitizeStatusCode,
+    setCookie,
+    setResponseHeader,
+    setResponseStatus,
+  } from 'h3'
 }
 
 declare module '#internal/i18n-type-generation-options' {
