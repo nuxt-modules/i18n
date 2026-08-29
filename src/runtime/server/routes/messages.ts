@@ -5,21 +5,38 @@ import { warnMissedMessageFunctions } from '../../shared/messages'
 
 import type { H3Event } from 'h3'
 
+// prerendering may require initializing context
+const getOrInitContext = async (event: H3Event) => tryUseI18nContext(event) || await initializeI18nContext(event)
+
 /**
- * Load messages for the specified locale event parameter
+ * Reject a bad locale/hash pair before either cache layer computes a key or does a
+ * lookup, so a colliding hash for one locale can never read another locale's cache entry.
  */
-const _messagesHandler = defineEventHandler(async (event: H3Event) => {
+async function validateLocaleRequest(event: H3Event) {
   const locale = getRouterParam(event, 'locale')
 
   if (!locale) {
     throw createError({ status: 400, message: 'Locale not specified.' })
   }
 
-  const ctx = useI18nContext(event)
-  if (ctx.localeConfigs && locale in ctx.localeConfigs === false) {
+  const ctx = await getOrInitContext(event)
+  if (
+    // reject a locale the build doesn't know about
+    (ctx.localeConfigs && !Object.hasOwn(ctx.localeConfigs, locale)) ||
+    // reject any hash that isn't the build's own for this locale, so an arbitrary path segment
+    // can't mint unbounded cache entries (24h, per miss)
+    getRouterParam(event, 'hash') !== __I18N_LOCALE_HASHES__[locale]
+  ) {
     throw createError({ status: 404, message: `Locale '${locale}' not found.` })
   }
+}
 
+/**
+ * Load messages for the specified locale event parameter
+ */
+const _messagesHandler = defineEventHandler(async (event: H3Event) => {
+  const locale = getRouterParam(event, 'locale')!
+  const ctx = useI18nContext(event)
   const messages = await ctx.loadMessages(locale)
   // this response is where message functions get dropped - prerender is when SSG bakes it
   if (import.meta.dev || import.meta.prerender) {
@@ -36,8 +53,7 @@ const getCacheKey = (event: H3Event) =>
 async function shouldBypassCache(event: H3Event) {
   const locale = getRouterParam(event, 'locale')
   if (locale == null) { return false }
-  // prerendering may require initializing context
-  const ctx = tryUseI18nContext(event) || await initializeI18nContext(event)
+  const ctx = await getOrInitContext(event)
   return !ctx.localeConfigs?.[locale]?.cacheable
 }
 
@@ -61,8 +77,11 @@ const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
 
 /**
  * Load messages for the specified locale event parameter
- * - uses `messagesHandler` in development
- * - uses `cachedMessagesHandler` in production
+ * - validates the locale/hash before either cache layer sees the request
+ * - uses `_messagesHandler` in development
+ * - uses `_messagesHandlerCached` in production
  */
-// export default _messagesHandler
-export default import.meta.dev ? _messagesHandler : _messagesHandlerCached
+export default defineEventHandler(async (event: H3Event) => {
+  await validateLocaleRequest(event)
+  return import.meta.dev ? _messagesHandler(event) : _messagesHandlerCached(event)
+})
