@@ -124,7 +124,7 @@
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
     "undici": "^8.9.0",
-    "vitest": "^4.1.10",
+    "vitest": "^4.1.11",
     "vue": "^3.5.40"
   },
   "publishConfig": {
