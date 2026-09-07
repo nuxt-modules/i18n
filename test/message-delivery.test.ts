@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
 import { resolveDeliveryLocales } from '../src/context'
-import { resolveLocales } from '../src/utils'
+import { resolveLocales, resolveVueI18nConfigInfo } from '../src/utils'
 import { generateLoaderOptions } from '../src/gen'
 import type { DeliveryConfig } from '../src/runtime/shared/delivery'
 import type { ResolvedI18nContext } from '../src/context'
@@ -158,5 +158,22 @@ describe('(#4093) the build and the runtime agree on where messages come from', 
     // the file is left out of the bundle entirely, its app-only imports would come with it
     expect(importStatements.join('\n')).not.toContain(loaders[0]!.virtualId)
     expect(importStatements.join('\n')).toContain(localeLoaders[LOCALES.dynamic]![0]!.virtualId)
+  })
+
+  test('(#4150) the nitro graph neither imports nor runs a vue-i18n config that needs the Nuxt app', () => {
+    const configs = {
+      '/i18n/plain.config.ts': `export default defineI18nConfig(() => ({ locale: 'en' }))`,
+      '/i18n/app.config.ts': `export default defineI18nConfig(() => ({ locale: useRequestURL().host }))`
+    }
+    const ctx = buildContext()
+    ctx.vueI18nConfigPaths = Object.keys(configs).map(path => resolveVueI18nConfigInfo(path, configs))
+    // the configs are walked back to front, so the app-context one comes out first
+    const { vueI18nConfigs, importStatements } = generateLoaderOptions(ctx)
+    const [appContext, plain] = vueI18nConfigs
+
+    expect(appContext!.importerServer).toBe('() => Promise.resolve({})')
+    // the config is left out of the bundle entirely, its app-only imports would come with it
+    expect(importStatements.join('\n')).not.toContain(appContext!.virtualId)
+    expect(importStatements.join('\n')).toContain(plain!.virtualId)
   })
 })

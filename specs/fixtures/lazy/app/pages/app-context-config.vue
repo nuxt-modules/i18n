@@ -7,5 +7,6 @@ const { t } = useI18n()
 <template>
   <div>
     <span id="request-host">{{ t('requestHost') }}</span>
+    <span id="fallback-key">{{ t('welcome') }}</span>
   </div>
 </template>

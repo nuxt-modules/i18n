@@ -121,7 +121,7 @@ export function getDefineConfig(
     __I18N_HTTP_CACHE_DURATION__: JSON.stringify(options.experimental.httpCacheDuration ?? 10),
     __I18N_DYNAMIC_LOCALES__: JSON.stringify(dynamicLocales),
     __I18N_UNDELIVERABLE_LOCALES__: JSON.stringify(undeliverableLocales),
-    __I18N_APP_CONFIG__: String(ctx.vueI18nConfigPaths.some(x => x.appContext)),
+    __I18N_APP_CONTEXT_CONFIG__: String(ctx.vueI18nConfigPaths.some(x => x.appContext)),
     __I18N_STRIP_UNUSED__: JSON.stringify(stripMessagesPayload),
     __I18N_PRELOAD__: JSON.stringify(!!options.experimental.preload),
 
