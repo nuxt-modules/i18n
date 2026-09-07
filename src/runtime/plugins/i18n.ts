@@ -27,7 +27,8 @@ export default defineNuxtPlugin({
     // @ts-expect-error untyped internal id parameter
     const nuxt = useNuxtApp(_nuxt._id)
     const runtimeI18n = useRuntimeI18n(nuxt)
-    const preloadedOptions = nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
+    // options resolved without the app are missing what an app-context config contributes (#4150)
+    const preloadedOptions = __I18N_APP_CONFIG__ ? undefined : nuxt.ssrContext?.event?.context?.nuxtI18n?.vueI18nOptions
     const _defaultLocale = resolveDefaultLocale(useRequestURL({ xForwardedHost: true }).host, runtimeI18n.defaultLocale)
     const optionsI18n = preloadedOptions || (await setupVueI18nOptions(_defaultLocale))
 
