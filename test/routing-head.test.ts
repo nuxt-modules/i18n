@@ -4,12 +4,12 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import { createRoutingContext } from '../src/runtime/routing/context'
 import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { _useLocaleHead, _useSetI18nParams, localeHead, missesClusterFallback } from '../src/runtime/routing/head'
-import { switchLocalePath } from '../src/runtime/routing/routing'
+import { localePath, localeRoute, switchLocalePath } from '../src/runtime/routing/routing'
 import { headEntries } from './mocks/imports'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
 import { createTestBaseUrls, getNormalizedLocales } from './pages/utils'
 
-import type { Router } from 'vue-router'
+import type { RouteRecordRaw, Router } from 'vue-router'
 import type { ComposableContext } from '../src/runtime/composable-context'
 import type { I18nHeadMetaInfo } from '../src/runtime/kit/head'
 
@@ -52,15 +52,23 @@ type TestContextOptions = {
   /** `true` gives every locale its own domain, an object selects the shared-domain cluster */
   domains?: boolean | { host: string, locales?: typeof clusterLocales }
   defaultLocale?: string
+  routeRecords?: RouteRecordRaw[]
+  trailingSlash?: boolean
 }
 
 function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) {
-  const { strictSeo = false, domains = false, defaultLocale: configuredDefault = 'en' } = opts
+  const {
+    strictSeo = false,
+    domains = false,
+    defaultLocale: configuredDefault = 'en',
+    routeRecords = routes,
+    trailingSlash = false,
+  } = opts
   let locale = initialLocale
   const cluster = typeof domains === 'object' ? (domains.locales ?? clusterLocales) : undefined
   const router = createRouter({
     history: createMemoryHistory(),
-    routes: cluster ? clusterRoutesFor(cluster) : routes,
+    routes: cluster ? clusterRoutesFor(cluster) : routeRecords,
   })
   const head = { patches: [] as I18nHeadMetaInfo[], patch(val: I18nHeadMetaInfo) { this.patches.push(val) } }
   const domainLocales = getNormalizedLocales(
@@ -84,7 +92,7 @@ function createTestContext(initialLocale = 'en', opts: TestContextOptions = {}) 
       strategy: 'prefix_except_default',
       routing: true,
       domains: !!domains,
-      trailingSlash: false,
+      trailingSlash,
       strictSeo,
       compactRoutes: false,
       getLocale: () => locale,
@@ -123,6 +131,64 @@ const chairParams = { fr: { slug: 'french-chair' }, ja: { slug: 'japanese-chair'
 
 beforeEach(() => {
   headEntries.length = 0
+})
+
+describe('catch-all routes with trailing slash', () => {
+  const catchAllRoutes: RouteRecordRaw[] = [
+    { name: 'slug___en', path: '/:slug(.*)*/', component },
+    { name: 'slug___fr', path: '/fr/:slug(.*)*/', component },
+  ]
+
+  const createCatchAllContext = () => createTestContext('en', {
+    routeRecords: catchAllRoutes,
+    trailingSlash: true,
+  })
+
+  test('keeps locale switching idempotent without mutating route params', async () => {
+    const { router, ctx, setLocale } = createCatchAllContext()
+    await router.push('/posts/')
+
+    expect(router.currentRoute.value.params).toEqual({ slug: ['posts', ''] })
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr/posts/')
+
+    await router.push('/fr/posts/')
+    setLocale('fr')
+    expect(switchLocalePath(ctx, 'en')).toBe('/posts/')
+
+    await router.push('/posts//')
+    setLocale('en')
+    const params = router.currentRoute.value.params
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr/posts/')
+    expect(params).toEqual({ slug: ['posts', '', ''] })
+  })
+
+  test('preserves interior empty segments, queries, hashes and resolved route consistency', async () => {
+    const { router, ctx } = createCatchAllContext()
+    await router.push('/posts//draft/?page=2#section')
+
+    expect(switchLocalePath(ctx, 'fr')).toBe('/fr/posts//draft/?page=2#section')
+    expect(localePath(ctx, '/posts//draft/?page=2#section', 'fr')).toBe('/fr/posts//draft/?page=2#section')
+    expect(localeRoute(ctx, router.currentRoute.value, 'fr')).toMatchObject({
+      path: '/fr/posts//draft/',
+      fullPath: '/fr/posts//draft/?page=2#section',
+      href: '/fr/posts//draft/?page=2#section',
+      params: { slug: ['posts', '', 'draft'] },
+    })
+  })
+
+  test('generates canonical locale-head URLs with exactly one trailing slash', async () => {
+    const { router, ctx } = createCatchAllContext()
+    await router.push('/posts/')
+
+    const head = localeHead(ctx, {})
+    expect(head.link.map(x => [x.hreflang ?? x.rel, x.href])).toEqual([
+      ['x-default', 'https://example.com/posts/'],
+      ['en', 'https://example.com/posts/'],
+      ['fr', 'https://example.com/fr/posts/'],
+      ['canonical', 'https://example.com/posts/'],
+    ])
+    expect(head.meta.find(x => x.property === 'og:url')?.content).toBe('https://example.com/posts/')
+  })
 })
 
 describe('localeHead', () => {
