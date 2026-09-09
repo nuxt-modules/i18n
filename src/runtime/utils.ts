@@ -40,8 +40,8 @@ export async function loadAndSetLocale(nuxtApp: NuxtApp, locale: Locale): Promis
 
 export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): string {
   const detectConfig = useI18nDetection(nuxtApp)
-  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, nuxtApp)
   const ctx = useNuxtI18nContext(nuxtApp)
+  const detectors = useDetectors(useRequestEvent(nuxtApp), detectConfig, ctx.getLocales())
   const detect = createLocaleDetector({
     detection: detectConfig,
     routing: __I18N_ROUTING__,
@@ -56,7 +56,7 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
 
   const ctx = useNuxtI18nContext(nuxtApp)
   const _ctx = useComposableContext(nuxtApp)
-  const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
+  const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), _ctx.getLocales())
   const host = __I18N_DOMAINS__ ? useRequestURL({ xForwardedHost: true }).host : ''
   const resolve = createNavigationResolver({
     localeReach: __I18N_DOMAINS__
