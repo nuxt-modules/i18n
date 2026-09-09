@@ -33,7 +33,7 @@ function createResolver(overrides: Partial<NavigationResolverConfig> = {}) {
   return createNavigationResolver({
     localePath: localizePath,
     switchLocalePath: (locale, to) => localizePath(unprefixedPath(String(to.fullPath)), locale),
-    routeLocale: to => getLocaleFromRoutePath(String(to.path)),
+    routeLocale: to => getLocaleFromRoutePath(String(to.path), LOCALES),
     hasRoute: name => ROUTES.has(name),
     getLocaleCodes: () => LOCALES,
     strategy: 'prefix_except_default',

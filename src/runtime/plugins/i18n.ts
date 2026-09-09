@@ -10,6 +10,7 @@ import { useLocalePath, useLocaleRoute, useRouteBaseName, useSwitchLocalePath } 
 import { createLocaleConfigs, resolveDefaultLocale, resolveSupportedLocale } from '../shared/locales'
 import { setupVueI18nOptions } from '../shared/vue-i18n'
 import { type NuxtI18nContext, createNuxtI18nContext, isPrerenderable, useLocaleConfigs } from '../context'
+import { messagesRoutePath } from '../shared/delivery'
 import { useI18nDetection, useRuntimeI18n } from '../shared/utils'
 import { useDetectors } from '../shared/detection'
 import { setupMultiDomainLocales } from '../routing/domain'
@@ -46,7 +47,7 @@ export default defineNuxtPlugin({
     prerenderRoutes(
       localeCodes
         .filter(isPrerenderable)
-        .map(locale => `${__I18N_SERVER_ROUTE__}/${__I18N_LOCALE_HASHES__[locale]}/${locale}/messages.json`),
+        .map(locale => `${__I18N_SERVER_ROUTE__}/${messagesRoutePath(__I18N_LOCALE_HASHES__[locale]!, locale)}`),
     )
 
     // create i18n instance

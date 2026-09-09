@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { createPrerenderablePredicate, createRuntimeLoaderPredicate } from '../src/runtime/shared/delivery'
+import { buildCacheKey, createPrerenderablePredicate, createRuntimeLoaderPredicate, localeNeedsPathEncoding, messagesRoutePath } from '../src/runtime/shared/delivery'
 import { generateTemplateNuxtI18nOptions } from '../src/template'
 import { resolveDeliveryLocales } from '../src/context'
 import { resolveLocales } from '../src/utils'
@@ -66,6 +66,46 @@ describe('message delivery', () => {
     expect(deliverable(LOCALES.unserializable)).toBe(false)
     expect(deliverable(LOCALES.both)).toBe(false)
     expect(deliverable(LOCALES.appContext)).toBe(false)
+  })
+
+  test('a locale code with characters that would otherwise split the URL stays a single segment', () => {
+    // `/` (or `?`, `#`, ...) in a locale code would otherwise be read as extra path segments or
+    // query/hash markers, so the messages endpoint (`:hash/:locale/messages.json`) never matches
+    expect(messagesRoutePath('abc123', 'at/de')).toBe('abc123/at%2Fde/messages.json')
+    expect(messagesRoutePath('abc123', 'en')).toBe('abc123/en/messages.json')
+  })
+
+  test('a locale needing URL encoding also runs its own loaders', () => {
+    // nitro's prerender crawler can only carry a route through unencoded, so it can never bake a
+    // static messages file for this locale, it has to fall back on running its own loaders instead
+    const locales = [{ code: 'en', file: 'en.json' }, { code: 'en/formal', file: 'en.json' }] as LocaleObject[]
+    const { dynamicLocales } = resolveDeliveryLocales(resolveLocales('/i18n', locales, {}))
+    expect(dynamicLocales).toEqual(['en/formal'])
+  })
+
+  test('a locale code needing only non-ASCII characters still survives the crawler', () => {
+    // non-ASCII characters aren't in `decodeURI`'s protected set, so they round-trip through the
+    // crawler's `encodeURI(decodeURI(...))` cleanly and don't need the loader fallback
+    expect(localeNeedsPathEncoding('français')).toBe(false)
+    expect(localeNeedsPathEncoding('en/formal')).toBe(true)
+  })
+
+  test('a malformed locale code (lone surrogate) is treated as needing encoding, not a crash', () => {
+    expect(() => localeNeedsPathEncoding('en\uD800formal')).not.toThrow()
+    expect(localeNeedsPathEncoding('en\uD800formal')).toBe(true)
+  })
+
+  test('a slash-containing locale no longer collides with its slash-stripped sibling in the cache key', () => {
+    // mirrors nitro's own key escaping (`String(key).replace(/\W/g, '')`), applied to a custom
+    // `getKey` result before it's used as the actual cache entry name
+    const escapeKey = (key: string) => key.replace(/\W/g, '')
+    expect(escapeKey(buildCacheKey('en/formal', 'abc123'))).not.toBe(escapeKey(buildCacheKey('enformal', 'abc123')))
+    // encoding the locale on its own isn't enough: encoding `/` and then stripping non-word
+    // characters lands `en/formal` on the same key as a locale literally spelled `en2Fformal`
+    expect(escapeKey(buildCacheKey('en/formal', 'abc123'))).not.toBe(escapeKey(buildCacheKey('en2Fformal', 'abc123')))
+    // joining locale and hash with a fixed separator collides whenever a locale or hash contains
+    // that separator itself, `en-US` with hash `formal` looks the same as `en` with hash `US-formal`
+    expect(escapeKey(buildCacheKey('en-US', 'formal'))).not.toBe(escapeKey(buildCacheKey('en', 'US-formal')))
   })
 })
 
