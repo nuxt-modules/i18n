@@ -1,0 +1,12 @@
+{
+  "name": "fixture-runtime-nuxt4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build"
+  },
+  "devDependencies": {
+    "@nuxtjs/i18n": "latest",
+    "nuxt": "4.5.1"
+  }
+}

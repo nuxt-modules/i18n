@@ -1,4 +1,5 @@
 import MagicString from 'magic-string'
+import { parseSync } from 'oxc-parser'
 import { createUnplugin } from 'unplugin'
 
 import type { BundlerPluginOptions } from './utils'
@@ -26,13 +27,42 @@ export const HeistPlugin = (options: BundlerPluginOptions, ctx: ResolvedI18nCont
       filter: {
         id: [shared, relative(nuxt.options.rootDir, shared)],
       },
-      handler(code) {
+      handler(code, id) {
         const s = new MagicString(code)
 
-        // add nitro runtime import
-        if (code.includes('useRuntimeConfig()')) {
-          s.prepend('import { useRuntimeConfig } from "nitropack/runtime";\n')
+        for (const statement of parseSync(id, code).program.body) {
+          if (
+            statement.type !== 'ImportDeclaration'
+            || statement.source.value !== '#imports'
+            || statement.importKind === 'type'
+          ) { continue }
+
+          const runtimeConfigImports = statement.specifiers.filter(
+            specifier => specifier.type === 'ImportSpecifier'
+              && specifier.imported.type === 'Identifier'
+              && specifier.imported.name === 'useRuntimeConfig'
+              && specifier.importKind !== 'type',
+          )
+          if (!runtimeConfigImports.length) { continue }
+
+          const remaining = statement.specifiers.filter(specifier => !runtimeConfigImports.includes(specifier))
+          const defaultImport = remaining.find(specifier => specifier.type === 'ImportDefaultSpecifier')
+          const namespaceImport = remaining.find(specifier => specifier.type === 'ImportNamespaceSpecifier')
+          const namedImports = remaining.filter(specifier => specifier.type === 'ImportSpecifier')
+          const remainingImports = [
+            defaultImport && code.slice(defaultImport.start, defaultImport.end),
+            namespaceImport && code.slice(namespaceImport.start, namespaceImport.end),
+            namedImports.length && `{ ${namedImports.map(specifier => code.slice(specifier.start, specifier.end)).join(', ')} }`,
+          ].filter(Boolean)
+          const runtimeConfigSpecifiers = runtimeConfigImports.map(specifier => code.slice(specifier.start, specifier.end))
+          const replacement = [
+            remainingImports.length && `import ${remainingImports.join(', ')} from '#imports'`,
+            `import { ${runtimeConfigSpecifiers.join(', ')} } from '#internal/i18n-nitro.mjs'`,
+          ].filter(Boolean).join('\n')
+
+          s.overwrite(statement.start, statement.end, replacement)
         }
+        s.replaceAll('#build/i18n-h3.mjs', '#internal/i18n-nitro.mjs')
 
         // replace `#app` import with a mock variable definition
         s.replace(/import.+["']#app["'];?/, replacementMock)
