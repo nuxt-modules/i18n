@@ -1,6 +1,5 @@
 import type { LocaleMessages } from '@intlify/core'
 import type { DefineLocaleMessage } from '@intlify/h3'
-import { deepCopy } from '@intlify/shared'
 import { type H3Event, type H3EventContext, getRequestURL } from 'h3'
 import { type ResolvedI18nOptions, setupVueI18nOptions } from '../shared/vue-i18n'
 import { useRuntimeI18n } from '../shared/utils'
@@ -64,7 +63,9 @@ export function createI18nContext(): NonNullable<H3EventContext['nuxtI18n']> {
       const messages = (await getMergedMessages(locale, this.localeConfigs?.[locale]?.fallbacks ?? [])) ?? {}
       // only the payload reads `ctx.messages`, and copying the full tree per request is expensive
       if (__I18N_PRELOAD__) {
-        deepCopy(messages, this.messages)
+        for (const key of Object.keys(messages)) {
+          this.messages[key] ??= messages[key]!
+        }
       }
       // vue-i18n rewrites flat keys in place, so it can't be handed cached messages
       return this.vueI18nOptions?.flatJson ? cloneDeep(messages) : messages
