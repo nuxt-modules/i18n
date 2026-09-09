@@ -35,6 +35,9 @@ function createRedirectResponse(event: H3Event, dest: string, code: number) {
 
 export default defineNitroPlugin(async (nitro) => {
   const runtimeI18n = useRuntimeI18n()
+  const { baseURL, buildAssetsDir } = useRuntimeConfig().app
+  // unlike in `render:before`, `event.path` still carries `app.baseURL` in the `request` hook
+  const buildAssetsPath = buildAssetsDir !== '/' ? joinURL(baseURL, buildAssetsDir) : undefined
   const rootRedirect = resolveRootRedirect(runtimeI18n.rootRedirect)
   const _defaultLocale: string = runtimeI18n.defaultLocale || ''
 
@@ -99,6 +102,9 @@ export default defineNitroPlugin(async (nitro) => {
   }
 
   nitro.hooks.hook('request', async (event: H3Event) => {
+    // build assets are served without ever reading the context, and setting it up reprocesses
+    // the runtime config on every one of those requests (#4144)
+    if (buildAssetsPath && event.path.startsWith(buildAssetsPath)) { return }
     await initializeI18nContext(event)
   })
 
