@@ -1,7 +1,8 @@
 import type { Router } from 'vue-router'
-import type { Strategies } from '#internal-i18n-types'
+import type { NormalizedLocaleObject, Strategies } from '#internal-i18n-types'
 import { useRouter } from '#imports'
 import { defaultRouteNameSuffix, getLocaleFromRouteName } from '#i18n-kit/routing'
+import { isLocaleServedOnHost } from '../shared/domain'
 
 /**
  * Rebuilds the route table for the current domain from the `___default` variants generated for
@@ -34,6 +35,23 @@ export function setupMultiDomainLocales(defaultLocale: string, strategy: Strateg
 
     if (!keepsDefaultVariant && locale === defaultLocale) {
       router.addRoute({ ...route, path: route.path.replace(new RegExp(`^/${locale}/?`), '/') })
+    }
+  }
+}
+
+/**
+ * Removes every route whose locale isn't served on `host`. Kept separate from
+ * `setupMultiDomainLocales` since that only adjusts routes for the `*_default` strategies, and
+ * this has to run for every strategy. Used by `multiDomainLocales: { isolate: true }`: an off-host
+ * route becomes unmatchable, so both the initial SSR request and any later client-side navigation
+ * to it resolve as a 404 instead of ever being reachable on this host.
+ */
+export function pruneOffHostRoutes(locales: NormalizedLocaleObject[], host: string, router: Router = useRouter()) {
+  for (const route of router.getRoutes()) {
+    const routeName = String(route.name)
+    const locale = getLocaleFromRouteName(routeName)
+    if (locale && !isLocaleServedOnHost(locales, host, locale)) {
+      router.removeRoute(routeName)
     }
   }
 }

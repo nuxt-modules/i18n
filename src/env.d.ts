@@ -9,6 +9,8 @@ declare let __IS_SSR__: boolean
 declare let __TRAILING_SLASH__: boolean
 declare let __PARALLEL_PLUGIN__: boolean
 declare let __I18N_DOMAINS__: boolean
+/** `multiDomainLocales: { isolate: true }` blocks cross-domain relocation and prunes off-host routes and locales */
+declare let __I18N_ISOLATE_MULTIDOMAINLOCALES__: boolean
 
 declare let __DYNAMIC_PARAMS_KEY__: string
 declare let __DEFAULT_COOKIE_KEY__: string
