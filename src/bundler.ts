@@ -133,6 +133,15 @@ export function getDefineConfig(
       && !options.multiDomainLocales
       && options.strategy !== 'no_prefix',
     ),
+    // gated the same way as `__I18N_COMPACT_ROUTES__`: only `prefix_except_default` generates an
+    // unprefixed tree that a locale-agnostic name can address, and under domains the unprefixed
+    // locale is already resolved per host, so there is nothing for this to decouple
+    __I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__: String(
+      !!options.experimental?.localeAgnosticDefaultRoutes
+      && options.strategy === 'prefix_except_default'
+      && !options.differentDomains
+      && !options.multiDomainLocales,
+    ),
     __I18N_STRICT_SEO__: JSON.stringify(!!options.experimental.strictSeo),
     __I18N_SERVER_ROUTE__: JSON.stringify(options.serverRoutePrefix),
     // SSG already prerenders the messages routes (runtime `prerenderRoutes`), so they exist at the
