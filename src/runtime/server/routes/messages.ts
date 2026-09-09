@@ -61,8 +61,8 @@ const _messagesHandlerCached = defineCachedEventHandler(_cachedMessageLoader, {
 
 /**
  * Load messages for the specified locale event parameter
- * - uses `messagesHandler` in development
+ * - uses `messagesHandler` in development or when caching is disabled
  * - uses `cachedMessagesHandler` in production
  */
 // export default _messagesHandler
-export default import.meta.dev ? _messagesHandler : _messagesHandlerCached
+export default import.meta.dev || !__I18N_CACHE__ ? _messagesHandler : _messagesHandlerCached
