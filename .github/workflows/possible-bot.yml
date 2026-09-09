@@ -1,0 +1,22 @@
+name: possible-bot
+
+on:
+  issues:
+    types:
+      - labeled
+  # zizmor: ignore[dangerous-triggers] needs write access to comment on PRs from forks
+  # DO NOT add actions/checkout to this workflow
+  pull_request_target:
+    types:
+      - labeled
+
+permissions: {}
+
+jobs:
+  possible-bot:
+    name: Comment on possible bot
+    if: github.event.label.name == 'possible bot'
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/possible-bot-flag.yml
