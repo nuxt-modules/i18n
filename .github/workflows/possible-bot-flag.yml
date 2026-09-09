@@ -30,7 +30,9 @@ jobs:
           script: |
             const item = context.payload.pull_request || context.payload.issue
             const isPR = !!context.payload.pull_request
+            // reopening is the appeal route, so a bot PR is only ever closed on its first pass
             const shouldClose = process.env.CLOSE === 'true' && isPR && item.state === 'open'
+              && context.payload.action !== 'reopened'
 
             if (!item.labels?.some(l => l.name === 'possible bot')) {
               await github.rest.issues.addLabels({
@@ -80,7 +82,7 @@ jobs:
               },
             )
 
-            if (shouldClose && !alreadyCommented) {
+            if (shouldClose) {
               await github.rest.pulls.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -94,7 +96,7 @@ jobs:
             const actionTaken = [
               'Added `possible bot` label',
               alreadyCommented ? null : 'posted policy comment',
-              shouldClose && !alreadyCommented ? 'closed PR' : null,
+              shouldClose ? 'closed PR' : null,
             ].filter(Boolean).join(', ')
 
             core.summary

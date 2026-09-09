@@ -84,4 +84,4 @@ We welcome the thoughtful use of AI tools when contributing to Nuxt i18n, yet as
 
 Contributions that look fully automated are labelled `possible bot`, and pull requests from accounts that look automated are closed. If we get that wrong, reopen the pull request or leave a comment and we'll take another look.
 
-If you know a contribution is machine-generated, prefix its title with `🤖🤖🤖` so it is flagged up front.
+If you know a contribution is machine-generated, put `🤖🤖🤖` in its title so it is flagged up front.
