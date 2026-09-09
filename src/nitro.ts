@@ -15,6 +15,8 @@ import type { FileMeta } from './types'
 import type { ResolvedI18nContext } from './context'
 import { generateTemplateNuxtI18nOptions } from './template'
 
+const moduleURL = new URL(import.meta.url)
+
 export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
   addServerTemplate({
     filename: '#internal/i18n-options.mjs',
@@ -61,7 +63,7 @@ export async function setupNitro(ctx: ResolvedI18nContext, nuxt: Nuxt) {
     { name: 'defineI18nLocaleDetector', from: ctx.resolver.resolve('runtime/composables/server') },
   ])
 
-  const h3UtilsExports = await resolveModuleExportNames(resolveModule('@intlify/utils/h3'))
+  const h3UtilsExports = await resolveModuleExportNames(resolveModule('@intlify/utils/h3', { url: moduleURL }))
   addServerImports([
     { name: 'useTranslation', from: '@intlify/h3' },
     ...h3UtilsExports.map(name => ({ name, from: '@intlify/utils/h3' })),
