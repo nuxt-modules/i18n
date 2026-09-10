@@ -159,6 +159,9 @@ describe('strategy: prefix', async () => {
 
     await expect.poll(() => page.locator('#disable-route-text').innerText()).toEqual('Page with disabled localized route')
 
+    // only the route is unlocalized, the page still renders in the active locale
+    await expect.poll(() => page.locator('#disable-route-translation').innerText()).toEqual('Accueil')
+
     // back to home
     await page.locator('#goto-home').clickNavigate()
     await expect.poll(() => page.locator('#home-header').innerText()).toEqual('Accueil')
