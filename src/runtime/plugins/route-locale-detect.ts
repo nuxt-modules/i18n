@@ -1,13 +1,11 @@
 import { useNuxtI18nContext, useResolvedLocale } from '../context'
 import { detectLocale, loadAndSetLocale, navigate } from '../utils'
-import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware, useNuxtApp } from '#imports'
+import { addRouteMiddleware, defineNuxtPlugin, defineNuxtRouteMiddleware } from '#imports'
 
 export default defineNuxtPlugin({
   name: 'i18n:plugin:route-locale-detect',
   dependsOn: !__I18N_PRELOAD__ ? ['i18n:plugin'] : ['i18n:plugin', 'i18n:plugin:preload'],
-  async setup(_nuxt) {
-    // @ts-expect-error untyped internal id parameter
-    const nuxt = useNuxtApp(_nuxt._id)
+  async setup(nuxt) {
     const ctx = useNuxtI18nContext(nuxt)
 
     const resolvedLocale = useResolvedLocale()

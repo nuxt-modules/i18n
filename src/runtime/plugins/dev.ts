@@ -1,5 +1,5 @@
 import { localeLoaders, vueI18nConfigs } from '#build/i18n-options.mjs'
-import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import { defineNuxtPlugin } from '#imports'
 import { getComposer } from '../compatibility'
 import { useNuxtI18nContext } from '../context'
 import { getLocaleMessagesMerged, loadVueI18nOptions } from '../shared/messages'
@@ -18,10 +18,8 @@ declare module '../context' {
 export default defineNuxtPlugin({
   name: 'i18n:dev',
   dependsOn: ['i18n:plugin'],
-  setup(_nuxt) {
+  setup(nuxt) {
     if (!import.meta.dev) { return }
-    // @ts-expect-error untyped internal id parameter
-    const nuxt = useNuxtApp(_nuxt._id)
     const ctx = useNuxtI18nContext(nuxt)
     const composer = getComposer(ctx.vueI18n)
 
