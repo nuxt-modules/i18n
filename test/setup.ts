@@ -14,6 +14,7 @@ vi.stubGlobal('__ROUTE_NAME_SEPARATOR__', '___')
 vi.stubGlobal('__ROUTE_NAME_DEFAULT_SUFFIX__', 'default')
 
 vi.stubGlobal('__I18N_COMPACT_ROUTES__', false)
+vi.stubGlobal('__I18N_LOCALE_AGNOSTIC_DEFAULT_ROUTES__', false)
 vi.stubGlobal('__DYNAMIC_PARAMS_KEY__', 'nuxtI18nInternal')
 
 vi.stubGlobal('__I18N_ROUTING__', true)
