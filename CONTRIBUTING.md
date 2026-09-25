@@ -65,3 +65,23 @@ pnpm docs:dev
 
 - Commit and push your changes
 - Once you're done, submit that shiny PR!
+
+## AI-Assisted Contributions
+
+We welcome the thoughtful use of AI tools when contributing to Nuxt i18n, yet ask all contributors to follow [two core principles](https://roe.dev/blog/using-ai-in-open-source).
+
+### Never let an LLM speak for you
+
+- All comments, issues, and pull request descriptions should be written in your own voice
+- We value clear, human communication over perfect grammar or spelling
+- Avoid copy-pasting AI-generated summaries that don't reflect your own understanding
+
+### Never let an LLM think for you
+
+- Feel free to use AI tools to generate code or explore ideas
+- Only submit contributions you fully understand and can explain
+- Contributions should reflect your own reasoning and problem-solving
+
+Contributions that look fully automated are labelled `possible bot`, and pull requests from accounts that look automated are closed. If we get that wrong, reopen the pull request or leave a comment and we'll take another look.
+
+If you know a contribution is machine-generated, put `🤖🤖🤖` in its title so it is flagged up front.
