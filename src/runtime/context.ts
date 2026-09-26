@@ -10,7 +10,7 @@ import { canonicalDomainFromLocale, domainForHost, domainFromLocale } from './sh
 import { isSupportedLocale } from './shared/locales'
 import { resolveRootRedirect, useI18nDetection, useRuntimeI18n } from './shared/utils'
 import { joinURL, parseURL } from 'ufo'
-import { isFunction, isString } from '@intlify/shared'
+import { isFunction } from '@intlify/shared'
 
 import type { NuxtApp } from '#app'
 import type { Composer, DefineLocaleMessage, I18n, Locale, LocaleMessages } from 'vue-i18n'
@@ -51,7 +51,7 @@ export interface NuxtI18nContext {
   setLocale: (locale: string) => Promise<void>
   /** Set locale - suspend if `skipSettingLocaleOnNavigate` is enabled  */
   setLocaleSuspend: (locale: string) => Promise<void>
-  /** Get normalized runtime locales */
+  /** The locales served for this request */
   getLocales: () => NormalizedLocaleObject[]
   /** Set locale to locale cookie */
   setCookieLocale: (locale: string) => void
@@ -157,7 +157,13 @@ export function createMessageInstaller(i18n: MessageStore) {
   }
 }
 
-export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocale: string, flatJson = false): NuxtI18nContext {
+export function createNuxtI18nContext(
+  nuxt: NuxtApp,
+  vueI18n: I18n,
+  defaultLocale: string,
+  locales: NormalizedLocaleObject[],
+  flatJson = false,
+): NuxtI18nContext {
   const i18n = getI18nTarget(vueI18n)
   const installMessages = import.meta.server ? createMessageInstaller(getComposer(vueI18n)) : undefined
   const runtimeI18n = useRuntimeI18n(nuxt)
@@ -295,11 +301,7 @@ export function createNuxtI18nContext(nuxt: NuxtApp, vueI18n: I18n, defaultLocal
         await ctx.vueI18n.__resolvePendingLocalePromise?.()
       }
     },
-    // string locales carry no domain configuration, they normalize to the empty form
-    getLocales: () =>
-      unref(i18n.locales).map(x =>
-        isString(x) ? { code: x, domains: [], defaultForDomains: [] } : (x as NormalizedLocaleObject<string>),
-      ),
+    getLocales: () => locales,
     setCookieLocale: (locale: string) => {
       if (detectConfig.useCookie && isSupportedLocale(locale)) {
         localeCookie.value = locale
