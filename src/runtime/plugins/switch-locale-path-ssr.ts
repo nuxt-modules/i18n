@@ -1,4 +1,4 @@
-import { defineNuxtPlugin, useNuxtApp } from '#imports'
+import { defineNuxtPlugin } from '#imports'
 import { useSwitchLocalePath } from '#i18n'
 import { escapeHtmlAttr } from '../shared/utils'
 
@@ -12,9 +12,7 @@ const switchLocalePathLinkWrapperExpr = new RegExp(
 export default defineNuxtPlugin({
   name: 'i18n:plugin:switch-locale-path-ssr',
   dependsOn: ['i18n:plugin'],
-  setup(_nuxt) {
-    // @ts-expect-error untyped internal id parameter
-    const nuxt = useNuxtApp(_nuxt._id)
+  setup(nuxt) {
     const switchLocalePath = useSwitchLocalePath(nuxt)
     nuxt.hook('app:rendered', (ctx) => {
       if (ctx.renderResult?.html == null) { return }
