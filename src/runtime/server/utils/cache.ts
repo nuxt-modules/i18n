@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useStorage } from 'nitropack/runtime'
+import { useStorage } from '#internal/i18n-nitro.mjs'
 import { prefixStorage } from 'unstorage'
 
 export interface CacheOptions<ArgsT extends unknown[] = any[]> {

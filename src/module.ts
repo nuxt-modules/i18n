@@ -80,7 +80,8 @@ export default defineNuxtModule<NuxtI18nOptions>({
 
     for (const dep of deps) {
       if (dep === 'vue-i18n' || dep === '@intlify/core') { continue }
-      nuxt.options.alias[dep] = resolveModule(dep, { url: moduleURL })
+      const alias = dep === '@intlify/utils' ? '@intlify/utils$' : dep
+      nuxt.options.alias[alias] = resolveModule(dep, { url: moduleURL })
     }
     const vueI18nRuntimeOnly = !nuxt.options.dev && !nuxt.options._prepare && ctx.options.bundle?.runtimeOnly
     nuxt.options.alias['vue-i18n'] = resolveModule(`vue-i18n/dist/vue-i18n${vueI18nRuntimeOnly ? '.runtime' : ''}`, { url: moduleURL })
