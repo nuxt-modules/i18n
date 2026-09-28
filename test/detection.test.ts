@@ -118,6 +118,19 @@ describe('createLocaleDetector', () => {
     expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost, cookieSpans: () => true }), '/', true)).toBe('en')
   })
 
+  test('domains: isolate keeps a browser locale off-host even from an external arrival', () => {
+    const detect = createDetector({ domains: true, isolate: true })
+    const onHost = servedExcept('en')
+    expect(detect(detectors({ header: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
+    expect(detect(detectors({ navigator: () => 'en', host: () => 'fr', onHost }), '/', true)).toBe('fr')
+  })
+
+  test('domains: isolate keeps a spanning cookie locale off-host too', () => {
+    const detect = createDetector({ domains: true, isolate: true })
+    const onHost = servedExcept('en')
+    expect(detect(detectors({ cookie: () => 'en', host: () => 'fr', onHost, cookieSpans: () => true }), '/', true)).toBe('fr')
+  })
+
   test('domains: a `cookieDomain` not covering every domain keeps the cookie on-host', () => {
     // following it would bounce the visitor between hosts that cannot read each other's cookie
     const detect = createDetector({ domains: true, detection: detection({ cookieDomain: '.mysite.com' }) })

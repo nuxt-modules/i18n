@@ -46,6 +46,7 @@ export function detectLocale(nuxtApp: NuxtApp, route: string | CompatRoute): str
     detection: detectConfig,
     routing: __I18N_ROUTING__,
     domains: __I18N_DOMAINS__,
+    isolate: __I18N_ISOLATE_MULTIDOMAINLOCALES__,
   })
 
   return detect(detectors, route, ctx.initial) || ctx.getLocale() || ctx.getDefaultLocale() || ''
@@ -59,7 +60,7 @@ export function navigate(nuxtApp: NuxtApp, to: CompatRoute, locale: string) {
   const detectors = useDetectors(useRequestEvent(), useI18nDetection(nuxtApp), nuxtApp)
   const host = __I18N_DOMAINS__ ? useRequestURL({ xForwardedHost: true }).host : ''
   const resolve = createNavigationResolver({
-    localeReach: __I18N_DOMAINS__
+    localeReach: __I18N_DOMAINS__ && !__I18N_ISOLATE_MULTIDOMAINLOCALES__
       ? locale => resolveLocaleReach(_ctx.getLocales(), host, locale)
       : undefined,
     rootRedirect: ctx.rootRedirect,

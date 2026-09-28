@@ -10,7 +10,7 @@ import { ref, unref } from 'vue'
 import { buildNuxt, loadNuxt } from '@nuxt/kit'
 import { resolve } from 'pathe'
 import { localizeRoutes } from '../src/routing'
-import { setupMultiDomainLocales } from '../src/runtime/routing/domain'
+import { pruneOffHostRoutes, setupMultiDomainLocales } from '../src/runtime/routing/domain'
 import { createTestBaseUrls, getNormalizedLocales } from './pages/utils'
 import { resolveDefaultLocale } from '../src/runtime/shared/locales'
 import type { NuxtPage } from '@nuxt/schema'
@@ -479,5 +479,68 @@ describe('switchLocalePath with differentDomains', () => {
     expect(_switchLocalePath(ctx, 'no')).toBe('/no/about')
     // domain defaults of other hosts stay reachable through their prefixed paths
     expect(_switchLocalePath(ctx, 'fr')).toBe('/fr/about')
+  })
+})
+
+describe('pruneOffHostRoutes', () => {
+  function createIsolatedRouter(strategy: Strategies, locales = ISOLATE_LOCALES) {
+    const localized = localizeRoutes([{ path: '/about', name: 'about' }] as LocalizableRoute[], {
+      ...routingOptions,
+      strategy,
+      defaultLocale: 'en',
+      differentDomains: false,
+      multiDomainLocales: true,
+      locales
+    })
+    const router = createRouter({ routes: localized as any, history: createMemoryHistory() })
+    setupMultiDomainLocales('en', strategy, router)
+    return router
+  }
+
+  const ISOLATE_LOCALES = getNormalizedLocales([
+    { code: 'en', language: 'en', domains: ['en.example.com'], defaultForDomains: ['en.example.com'] },
+    { code: 'fr', language: 'fr', domains: ['fr.example.com'], defaultForDomains: ['fr.example.com'] }
+  ])
+
+  test('removes routes for a locale restricted to another domain', () => {
+    const router = createIsolatedRouter('prefix_except_default')
+    pruneOffHostRoutes(ISOLATE_LOCALES, 'en.example.com', router)
+
+    const names = router.getRoutes().map(x => String(x.name))
+    expect(names).toContain('about___en')
+    expect(names).not.toContain('about___fr')
+  })
+
+  test('runs for every strategy, not only the `*_default` ones', () => {
+    const router = createIsolatedRouter('prefix')
+    pruneOffHostRoutes(ISOLATE_LOCALES, 'en.example.com', router)
+
+    const names = router.getRoutes().map(x => String(x.name))
+    expect(names).toContain('about___en')
+    expect(names).not.toContain('about___fr')
+  })
+
+  test('a host matching no configured domain keeps every locale', () => {
+    const router = createIsolatedRouter('prefix_except_default')
+    pruneOffHostRoutes(ISOLATE_LOCALES, 'staging.example.com', router)
+
+    const names = router.getRoutes().map(x => String(x.name))
+    expect(names).toContain('about___en')
+    expect(names).toContain('about___fr')
+  })
+
+  test('a locale configuring no domains is kept on every host', () => {
+    const locales = getNormalizedLocales([
+      { code: 'en', language: 'en', domains: ['en.example.com'], defaultForDomains: ['en.example.com'] },
+      { code: 'fr', language: 'fr', domains: ['fr.example.com'], defaultForDomains: ['fr.example.com'] },
+      { code: 'de', language: 'de' }
+    ])
+    const router = createIsolatedRouter('prefix_except_default', locales)
+    pruneOffHostRoutes(locales, 'en.example.com', router)
+
+    const names = router.getRoutes().map(x => String(x.name))
+    expect(names).toContain('about___en')
+    expect(names).not.toContain('about___fr')
+    expect(names).toContain('about___de')
   })
 })
