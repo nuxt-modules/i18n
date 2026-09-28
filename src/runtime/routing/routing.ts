@@ -2,7 +2,7 @@ import { hasProtocol, parsePath, parseQuery } from 'ufo'
 import { assign, isString } from '@intlify/shared'
 
 import type { Locale } from 'vue-i18n'
-import type { RouteLocationNamedRaw, RouteLocationPathRaw, RouteLocationRaw } from 'vue-router'
+import type { RouteLocationNamedRaw, RouteLocationPathRaw, RouteLocationRaw, RouteParamsRawGeneric } from 'vue-router'
 import type { CompatRoute } from '../types'
 import type { RoutingContext } from './context'
 
@@ -57,6 +57,30 @@ function normalizeRawLocation(route: RouteLocationRaw): RouteLike {
 }
 
 /**
+ * Remove URL syntax captured as trailing empty segments of repeatable params.
+ *
+ * Vue Router parses a catch-all route such as `/posts/` into `{ slug: ['posts', ''] }`.
+ * When resolving by name, the empty segment contributes a slash in addition to the slash
+ * already configured on the localized route record. Keep interior empty segments intact.
+ */
+function normalizeRepeatableParams(params: RouteParamsRawGeneric | undefined): RouteParamsRawGeneric | undefined {
+  if (!params) { return params }
+
+  const normalized = assign({}, params)
+  for (const key in normalized) {
+    const value = normalized[key]
+    if (!Array.isArray(value)) { continue }
+
+    let end = value.length
+    while (end > 0 && value[end - 1] === '') { end-- }
+    if (end !== value.length) {
+      normalized[key] = value.slice(0, end)
+    }
+  }
+  return normalized
+}
+
+/**
  * Try resolving route and throw on failure
  */
 function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Locale) {
@@ -65,7 +89,9 @@ function resolveRoute(ctx: RoutingContext, route: RouteLocationRaw, locale: Loca
   // the matcher ignores `path` when `name` is set, but its presence makes `router.resolve()` take
   // its path branch, which skips `encodeParams()` and decodes escapes into delimiters (#4079, #4098)
   if (localized.name) {
-    localized.path = undefined
+    const named = localized as RouteLikeWithName
+    named.path = undefined
+    named.params = normalizeRepeatableParams(named.params)
   }
   const resolved = ctx.router.resolve(localized)
   if (resolved.name) {
